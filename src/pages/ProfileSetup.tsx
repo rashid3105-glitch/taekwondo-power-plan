@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Zap } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
+import { Zap, Camera, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekSchedulePicker";
 
@@ -36,7 +37,11 @@ export default function ProfileSetup() {
   const [experience, setExperience] = useState("");
   const [goals, setGoals] = useState<string[]>([]);
   const [schedule, setSchedule] = useState<DaySchedule[]>(DEFAULT_SCHEDULE);
+  const [programWeeks, setProgramWeeks] = useState(8);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -47,6 +52,47 @@ export default function ProfileSetup() {
   };
 
   const tkdCount = schedule.filter((s) => s.type === "tkd").length;
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Please select an image file", variant: "destructive" });
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const ext = file.name.split(".").pop();
+      const filePath = `${user.id}/avatar.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(filePath);
+
+      setAvatarUrl(publicUrl + "?t=" + Date.now());
+
+      await supabase.from("profiles").update({
+        avatar_url: publicUrl,
+      }).eq("user_id", user.id);
+
+      toast({ title: "Photo uploaded!" });
+    } catch (err: any) {
+      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,6 +110,7 @@ export default function ProfileSetup() {
         tkd_sessions_per_week: tkdCount,
         goals,
         weekly_schedule: schedule as any,
+        program_weeks: programWeeks,
       }).eq("user_id", user.id);
 
       if (error) throw error;
@@ -88,6 +135,38 @@ export default function ProfileSetup() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Avatar upload */}
+          <div className="flex justify-center">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="relative group cursor-pointer"
+            >
+              <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full border-2 border-border bg-muted overflow-hidden flex items-center justify-center transition-all group-hover:border-primary">
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="Profile" className="h-full w-full object-cover" />
+                ) : (
+                  <Camera className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
+                )}
+              </div>
+              {uploading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-background/60 rounded-full">
+                  <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                </div>
+              )}
+              <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 text-[9px] text-muted-foreground font-medium whitespace-nowrap">
+                {avatarUrl ? "Change photo" : "Add photo"}
+              </span>
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleAvatarUpload}
+            />
+          </div>
+
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
             <div>
               <Label htmlFor="age">Age</Label>
@@ -116,6 +195,26 @@ export default function ProfileSetup() {
             <div>
               <Label htmlFor="exp">Years of Experience</Label>
               <Input id="exp" type="number" value={experience} onChange={(e) => setExperience(e.target.value)} placeholder="3" />
+            </div>
+          </div>
+
+          {/* Program Length */}
+          <div>
+            <Label>Program Length</Label>
+            <p className="text-xs text-muted-foreground mb-3">
+              {programWeeks} weeks
+            </p>
+            <Slider
+              value={[programWeeks]}
+              onValueChange={(v) => setProgramWeeks(v[0])}
+              min={4}
+              max={12}
+              step={1}
+              className="w-full"
+            />
+            <div className="flex justify-between text-[10px] text-muted-foreground mt-1">
+              <span>4 weeks</span>
+              <span>12 weeks</span>
             </div>
           </div>
 
