@@ -56,6 +56,11 @@ Return a valid JSON object with this exact structure:
 
 IMPORTANT: Return ONLY the JSON object, no markdown, no code fences, no explanatory text.`;
 
+    const weeklySchedule = profile.weekly_schedule || [];
+    const scheduleDescription = weeklySchedule.length > 0
+      ? weeklySchedule.map((d: any) => `${d.day}: ${d.type.toUpperCase()}`).join(', ')
+      : 'Not specified';
+
     const userPrompt = `Create a personalized taekwondo fitness plan for this athlete:
 - Age: ${profile.age || 'not specified'}
 - Weight: ${profile.weight_kg ? profile.weight_kg + ' kg' : 'not specified'}
@@ -63,8 +68,9 @@ IMPORTANT: Return ONLY the JSON object, no markdown, no code fences, no explanat
 - Years of experience: ${profile.experience_years || 'not specified'}
 - TKD sessions per week: ${profile.tkd_sessions_per_week || 3}
 - Goals: ${profile.goals?.length ? profile.goals.join(', ') : 'general performance improvement'}
+- Weekly schedule: ${scheduleDescription}
 
-Design the weekly schedule around ${profile.tkd_sessions_per_week || 3} taekwondo sessions. Place gym sessions on non-TKD days or at least 6 hours apart. Include a recovery day.`;
+IMPORTANT: Follow the athlete's chosen weekly schedule EXACTLY. Each day must match the type they selected (TKD, Gym, or Rest). For TKD days, don't list exercises — just label and focus. For Gym days, provide full exercise details. For Rest days, suggest light recovery work only.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

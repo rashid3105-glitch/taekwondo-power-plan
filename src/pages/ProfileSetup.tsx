@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekSchedulePicker";
 
 const BELT_LEVELS = ["white", "yellow", "green", "blue", "red", "black"];
 const GOAL_OPTIONS = [
@@ -18,13 +19,23 @@ const GOAL_OPTIONS = [
   "General fitness",
 ];
 
+const DEFAULT_SCHEDULE: DaySchedule[] = [
+  { day: "Monday", type: "tkd" },
+  { day: "Tuesday", type: "gym" },
+  { day: "Wednesday", type: "tkd" },
+  { day: "Thursday", type: "gym" },
+  { day: "Friday", type: "tkd" },
+  { day: "Saturday", type: "gym" },
+  { day: "Sunday", type: "rest" },
+];
+
 export default function ProfileSetup() {
   const [age, setAge] = useState("");
   const [weight, setWeight] = useState("");
   const [belt, setBelt] = useState("white");
   const [experience, setExperience] = useState("");
-  const [tkdSessions, setTkdSessions] = useState("3");
   const [goals, setGoals] = useState<string[]>([]);
+  const [schedule, setSchedule] = useState<DaySchedule[]>(DEFAULT_SCHEDULE);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -34,6 +45,8 @@ export default function ProfileSetup() {
       prev.includes(goal) ? prev.filter((g) => g !== goal) : [...prev, goal]
     );
   };
+
+  const tkdCount = schedule.filter((s) => s.type === "tkd").length;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,8 +61,9 @@ export default function ProfileSetup() {
         weight_kg: weight ? parseFloat(weight) : null,
         belt_level: belt,
         experience_years: experience ? parseInt(experience) : null,
-        tkd_sessions_per_week: parseInt(tkdSessions),
+        tkd_sessions_per_week: tkdCount,
         goals,
+        weekly_schedule: schedule as any,
       }).eq("user_id", user.id);
 
       if (error) throw error;
@@ -64,8 +78,8 @@ export default function ProfileSetup() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container max-w-lg mx-auto px-4 py-8">
-        <div className="text-center mb-8">
+      <div className="container max-w-lg mx-auto px-4 py-6 sm:py-8">
+        <div className="text-center mb-6">
           <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-energy mb-3">
             <Zap className="h-5 w-5 text-primary-foreground" />
           </div>
@@ -74,7 +88,7 @@ export default function ProfileSetup() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
             <div>
               <Label htmlFor="age">Age</Label>
               <Input id="age" type="number" value={age} onChange={(e) => setAge(e.target.value)} placeholder="25" />
@@ -85,7 +99,7 @@ export default function ProfileSetup() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
             <div>
               <Label htmlFor="belt">Belt Level</Label>
               <select
@@ -100,14 +114,16 @@ export default function ProfileSetup() {
               </select>
             </div>
             <div>
-              <Label htmlFor="exp">Years of TKD Experience</Label>
+              <Label htmlFor="exp">Years of Experience</Label>
               <Input id="exp" type="number" value={experience} onChange={(e) => setExperience(e.target.value)} placeholder="3" />
             </div>
           </div>
 
+          {/* Weekly Schedule */}
           <div>
-            <Label htmlFor="sessions">TKD Sessions per Week</Label>
-            <Input id="sessions" type="number" min="1" max="7" value={tkdSessions} onChange={(e) => setTkdSessions(e.target.value)} />
+            <Label>Weekly Schedule</Label>
+            <p className="text-xs text-muted-foreground mb-2">Tap each day to cycle between TKD, Gym, and Rest</p>
+            <WeekSchedulePicker schedule={schedule} onChange={setSchedule} />
           </div>
 
           <div>

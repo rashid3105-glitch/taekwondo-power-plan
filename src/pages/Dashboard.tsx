@@ -99,17 +99,17 @@ export default function Dashboard() {
   const activePlan = plans.find((p) => p.is_active);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-16 sm:pb-0">
       {/* Header */}
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="container max-w-4xl mx-auto px-3 sm:px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2 sm:gap-3">
             <div className="h-8 w-8 rounded-lg bg-gradient-energy flex items-center justify-center">
               <Zap className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="text-base font-extrabold text-foreground">TKD POWER</span>
+            <span className="text-sm sm:text-base font-extrabold text-foreground">TKD POWER</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="hidden sm:flex items-center gap-2">
             <Button variant="ghost" size="sm" onClick={() => navigate("/profile-setup")}>
               <User className="h-4 w-4 mr-1" /> Profile
             </Button>
@@ -120,35 +120,56 @@ export default function Dashboard() {
               <LogOut className="h-4 w-4" />
             </Button>
           </div>
+          <Button variant="ghost" size="icon" className="sm:hidden" onClick={handleSignOut}>
+            <LogOut className="h-4 w-4" />
+          </Button>
         </div>
       </header>
 
-      <main className="container max-w-4xl mx-auto px-4 py-6 space-y-6">
+      {/* Mobile bottom nav */}
+      <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-card/95 backdrop-blur-sm sm:hidden">
+        <div className="flex items-center justify-around py-2">
+          <button onClick={() => navigate("/dashboard")} className="flex flex-col items-center gap-0.5 px-3 py-1 text-primary">
+            <Zap className="h-5 w-5" />
+            <span className="text-[10px] font-semibold">Plan</span>
+          </button>
+          <button onClick={() => navigate("/library")} className="flex flex-col items-center gap-0.5 px-3 py-1 text-muted-foreground">
+            <BookOpen className="h-5 w-5" />
+            <span className="text-[10px] font-semibold">Library</span>
+          </button>
+          <button onClick={() => navigate("/profile-setup")} className="flex flex-col items-center gap-0.5 px-3 py-1 text-muted-foreground">
+            <User className="h-5 w-5" />
+            <span className="text-[10px] font-semibold">Profile</span>
+          </button>
+        </div>
+      </nav>
+
+      <main className="container max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* Profile summary */}
         {profile && (
-          <div className="rounded-xl border border-border bg-card p-5 shadow-card">
-            <div className="flex items-center justify-between">
+          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
               <div>
                 <h2 className="font-bold text-foreground">
                   {profile.display_name || "Athlete"}
                 </h2>
-                <div className="flex flex-wrap gap-2 mt-2">
+                <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-2">
                   {profile.belt_level && (
-                    <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full capitalize">
+                    <span className="text-[10px] sm:text-xs bg-muted text-muted-foreground px-2 py-0.5 sm:py-1 rounded-full capitalize">
                       {profile.belt_level} belt
                     </span>
                   )}
                   {profile.age && (
-                    <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full">
-                      {profile.age} years old
+                    <span className="text-[10px] sm:text-xs bg-muted text-muted-foreground px-2 py-0.5 sm:py-1 rounded-full">
+                      {profile.age}y
                     </span>
                   )}
                   {profile.weight_kg && (
-                    <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full">
-                      {profile.weight_kg} kg
+                    <span className="text-[10px] sm:text-xs bg-muted text-muted-foreground px-2 py-0.5 sm:py-1 rounded-full">
+                      {profile.weight_kg}kg
                     </span>
                   )}
-                  <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full">
+                  <span className="text-[10px] sm:text-xs bg-muted text-muted-foreground px-2 py-0.5 sm:py-1 rounded-full">
                     {profile.tkd_sessions_per_week}x TKD/week
                   </span>
                 </div>
@@ -162,7 +183,7 @@ export default function Dashboard() {
                   </div>
                 )}
               </div>
-              <Button onClick={generatePlan} disabled={generating} size="sm">
+              <Button onClick={generatePlan} disabled={generating} size="sm" className="w-full sm:w-auto">
                 {generating ? (
                   <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> Generating...</>
                 ) : (

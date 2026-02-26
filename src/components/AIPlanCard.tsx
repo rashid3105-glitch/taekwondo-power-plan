@@ -39,7 +39,7 @@ export function AIPlanCard({ plan }: AIPlanCardProps) {
       </div>
 
       {/* Week overview */}
-      <div className="grid grid-cols-7 gap-2">
+      <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5 sm:gap-2">
         {schedule.map((day: any, i: number) => {
           const config = TYPE_BADGES[day.type] || TYPE_BADGES.gym;
           const Icon = config.icon;
@@ -47,15 +47,15 @@ export function AIPlanCard({ plan }: AIPlanCardProps) {
             <button
               key={i}
               onClick={() => setSelectedDay(selectedDay === i ? null : i)}
-              className={`flex flex-col items-center gap-1.5 rounded-lg border-2 p-2.5 transition-all cursor-pointer hover:bg-secondary/50 ${
+              className={`flex flex-col items-center gap-1 sm:gap-1.5 rounded-lg border-2 p-2 sm:p-2.5 transition-all cursor-pointer hover:bg-secondary/50 ${
                 selectedDay === i ? "border-primary bg-secondary" : "border-border bg-card"
               }`}
             >
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              <span className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                 {day.dayOfWeek?.slice(0, 3)}
               </span>
               <Icon className={`h-4 w-4 ${selectedDay === i ? "text-primary" : "text-muted-foreground"}`} />
-              <span className="text-[9px] font-medium text-foreground text-center leading-tight">
+              <span className="text-[8px] sm:text-[9px] font-medium text-foreground text-center leading-tight">
                 {day.label}
               </span>
             </button>
@@ -65,7 +65,7 @@ export function AIPlanCard({ plan }: AIPlanCardProps) {
 
       {/* Day detail */}
       {selectedDay !== null && schedule[selectedDay] && (
-        <div className="animate-slide-up rounded-xl border border-border bg-card p-5 shadow-card">
+        <div className="animate-slide-up rounded-xl border border-border bg-card p-3 sm:p-5 shadow-card">
           <div className="mb-4">
             <h3 className="font-bold text-foreground">{schedule[selectedDay].dayOfWeek} — {schedule[selectedDay].label}</h3>
             {schedule[selectedDay].focus && (
@@ -110,7 +110,7 @@ function AIExerciseRow({ exercise, index }: { exercise: any; index: number }) {
 
       {open && (
         <div className="px-4 pb-4 pt-1 space-y-3 animate-slide-up">
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
             <div className="rounded-md bg-muted p-2.5">
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Sets × Reps</p>
               <p className="text-sm font-bold text-foreground">{exercise.sets} × {exercise.reps}</p>

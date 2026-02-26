@@ -26,6 +26,7 @@ export type Database = {
           tkd_sessions_per_week: number
           updated_at: string
           user_id: string
+          weekly_schedule: Json | null
           weight_kg: number | null
         }
         Insert: {
@@ -39,6 +40,7 @@ export type Database = {
           tkd_sessions_per_week?: number
           updated_at?: string
           user_id: string
+          weekly_schedule?: Json | null
           weight_kg?: number | null
         }
         Update: {
@@ -52,6 +54,7 @@ export type Database = {
           tkd_sessions_per_week?: number
           updated_at?: string
           user_id?: string
+          weekly_schedule?: Json | null
           weight_kg?: number | null
         }
         Relationships: []
