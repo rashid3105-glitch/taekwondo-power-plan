@@ -54,7 +54,7 @@ const exercises: Record<string, Exercise> = {
     tempo: "X (explosive concentric)",
     rest: "3 min",
     notes: "Focus on maximal force into the ground. Stand tall explosively. No grinding reps — stop the set if bar speed drops.",
-    videoId: "GXt_fFOjCmM",
+    videoId: "WzvsIU9FW60",
     whyItMatters: "Builds total-body force production without the spinal loading of back squats. The upright torso mimics kicking posture.",
   },
   boxJumps: {
@@ -79,7 +79,7 @@ const exercises: Record<string, Exercise> = {
     tempo: "Explosive triple extension",
     rest: "2-3 min",
     notes: "Drive through the floor, shrug hard at the top. No need to catch — focus on the pull. Use straps if grip limits load.",
-    videoId: "9OkpGSYetJY",
+    videoId: "FZaEqAAzH4Y",
     whyItMatters: "Trains rate of force development (RFD) and triple extension — ankles, knees, hips — exactly the chain used in explosive kicks.",
   },
   splitSquat: {
@@ -105,7 +105,7 @@ const exercises: Record<string, Exercise> = {
     tempo: "5 sec eccentric",
     rest: "2 min",
     notes: "Control the descent as slowly as possible. Push off the floor to assist the concentric if needed. Crucial for hamstring injury prevention.",
-    videoId: "BnJFnOWzAJc",
+    videoId: "6NCN6kOagfY",
     whyItMatters: "Prevents hamstring tears from high kicks. Eccentric hamstring strength is the #1 predictor of injury resilience in kicking athletes.",
   },
   medicBallRotationalThrow: {
@@ -117,7 +117,7 @@ const exercises: Record<string, Exercise> = {
     reps: "5 each side",
     rest: "90 sec",
     notes: "Initiate from the hips, not the arms. Release with maximum intent. Use a 3-5 kg ball. Think 'turning kick' rotation.",
-    videoId: "GNBSPAReAfg",
+    videoId: "DttZ5JU-b_U",
     whyItMatters: "Directly mimics the rotational power pattern of roundhouse and hook kicks. Develops core RFD.",
   },
   bandedHipFlexorDrive: {
@@ -129,7 +129,7 @@ const exercises: Record<string, Exercise> = {
     reps: "8-10 each leg (fast)",
     rest: "60 sec",
     notes: "Attach band low behind you. Drive knee up explosively against resistance. Mimic chambering a front kick. Speed over load.",
-    videoId: "vByjGMCdO5Q",
+    videoId: "LHzdOtePvTs",
     whyItMatters: "Strengthens hip flexors with speed — the muscle group that chambers every kick. Weak hip flexors = slow kicks.",
   },
   depthJumpToSprint: {
@@ -141,7 +141,7 @@ const exercises: Record<string, Exercise> = {
     reps: "3",
     rest: "2-3 min",
     notes: "Step off a 30-40 cm box, land and immediately explode forward into a 5m sprint. Minimal ground contact time. This is ADVANCED — master box jumps first.",
-    videoId: "Bw9YpA_jMEo",
+    videoId: "ZHVWsggG4Ig",
     whyItMatters: "Trains reactive strength and amortization phase — the ability to absorb and redirect force instantly, like a fast step-in to attack.",
   },
   copenhagenPlank: {
@@ -153,7 +153,7 @@ const exercises: Record<string, Exercise> = {
     reps: "20-30 sec each side",
     rest: "60 sec",
     notes: "Top leg on bench, bottom leg floating. Straight line from head to toe. Brutal on adductors and obliques — critical for side kicks.",
-    videoId: "WzAvB2PRJXQ",
+    videoId: "yByUFuQsgCg",
     whyItMatters: "Bulletproofs the groin/adductors against injury from side kicks and wide stances. Also builds anti-lateral flexion core strength.",
   },
   ankleHops: {
@@ -165,7 +165,7 @@ const exercises: Record<string, Exercise> = {
     reps: "15-20",
     rest: "60 sec",
     notes: "Stiff ankles, minimal knee bend. Bounce off the ground using only ankle stiffness. Think 'hot coals.' Develops foot speed and reactive stiffness.",
-    videoId: "zynVwPoFKoQ",
+    videoId: "wa1ClvLqSHo",
     whyItMatters: "Develops ankle stiffness for bouncing footwork. Fast fighters have stiff, reactive ankles that let them change direction instantly.",
   },
   halfKneelingPallofPress: {
@@ -189,7 +189,7 @@ const exercises: Record<string, Exercise> = {
     reps: "5 each direction, each leg",
     rest: "None",
     notes: "Slow, controlled circles through full hip range. Keep pelvis stable — only the femur moves. Do these daily, not just on gym days.",
-    videoId: "mFy1fEBiMOE",
+    videoId: "zbH4XmSREoc",
     whyItMatters: "Maintains and expands hip range of motion under control. High kicks require both flexibility AND strength at end range.",
   },
   worldsGreatestStretch: {
@@ -201,7 +201,7 @@ const exercises: Record<string, Exercise> = {
     reps: "5 each side",
     rest: "None",
     notes: "Lunge, plant hand, rotate thoracic spine to the sky. Hold each position 2-3 sec. Perfect warm-up flow.",
-    videoId: "sEh0wSHsmKo",
+    videoId: "NIz2MdMqBxk",
     whyItMatters: "Opens up every chain used in TKD — hips, thoracic spine, ankles. The single best warm-up movement for martial artists.",
   },
 };
