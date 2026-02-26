@@ -14,6 +14,9 @@ interface Profile {
   goals: string[];
   tkd_sessions_per_week: number;
   experience_years: number | null;
+  avatar_url: string | null;
+  program_weeks: number | null;
+  weekly_schedule: any;
 }
 
 interface TrainingPlan {
@@ -149,10 +152,15 @@ export default function Dashboard() {
         {profile && (
           <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
             <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
-              <div>
-                <h2 className="font-bold text-foreground">
-                  {profile.display_name || "Athlete"}
-                </h2>
+              <div className="flex items-center gap-3">
+                {profile.avatar_url ? (
+                  <img src={profile.avatar_url} alt="" className="h-10 w-10 sm:h-12 sm:w-12 rounded-full object-cover border-2 border-border flex-shrink-0" />
+                ) : (
+                  <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-muted flex items-center justify-center border-2 border-border flex-shrink-0">
+                    <User className="h-5 w-5 text-muted-foreground" />
+                  </div>
+                )}
+                <div>
                 <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-2">
                   {profile.belt_level && (
                     <span className="text-[10px] sm:text-xs bg-muted text-muted-foreground px-2 py-0.5 sm:py-1 rounded-full capitalize">
@@ -182,6 +190,7 @@ export default function Dashboard() {
                     ))}
                   </div>
                 )}
+                </div>
               </div>
               <Button onClick={generatePlan} disabled={generating} size="sm" className="w-full sm:w-auto">
                 {generating ? (

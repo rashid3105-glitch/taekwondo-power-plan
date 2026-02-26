@@ -17,12 +17,14 @@ export type Database = {
       profiles: {
         Row: {
           age: number | null
+          avatar_url: string | null
           belt_level: string
           created_at: string
           display_name: string
           experience_years: number | null
           goals: string[] | null
           id: string
+          program_weeks: number | null
           tkd_sessions_per_week: number
           updated_at: string
           user_id: string
@@ -31,12 +33,14 @@ export type Database = {
         }
         Insert: {
           age?: number | null
+          avatar_url?: string | null
           belt_level?: string
           created_at?: string
           display_name?: string
           experience_years?: number | null
           goals?: string[] | null
           id?: string
+          program_weeks?: number | null
           tkd_sessions_per_week?: number
           updated_at?: string
           user_id: string
@@ -45,12 +49,14 @@ export type Database = {
         }
         Update: {
           age?: number | null
+          avatar_url?: string | null
           belt_level?: string
           created_at?: string
           display_name?: string
           experience_years?: number | null
           goals?: string[] | null
           id?: string
+          program_weeks?: number | null
           tkd_sessions_per_week?: number
           updated_at?: string
           user_id?: string

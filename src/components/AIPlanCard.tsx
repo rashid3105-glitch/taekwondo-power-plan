@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Shield, Dumbbell, Battery } from "lucide-react";
+import { ChevronDown, ChevronUp, Shield, Dumbbell, Battery, Download, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 const CATEGORY_DOT: Record<string, string> = {
   power: "bg-accent",
@@ -24,18 +26,157 @@ interface AIPlanCardProps {
   };
 }
 
+async function generatePDF(plan: AIPlanCardProps["plan"]) {
+  const { jsPDF } = await import("jspdf");
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
+  const schedule = plan.plan_data?.weeklySchedule || [];
+  const margin = 15;
+  const pageW = 210 - margin * 2;
+  let y = margin;
+
+  const addPage = () => { doc.addPage(); y = margin; };
+  const checkSpace = (needed: number) => { if (y + needed > 280) addPage(); };
+
+  // Title
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(20);
+  doc.text(plan.name, margin, y);
+  y += 8;
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(120);
+  doc.text(`Generated ${new Date(plan.created_at).toLocaleDateString()}`, margin, y);
+  y += 12;
+  doc.setTextColor(0);
+
+  for (const day of schedule) {
+    checkSpace(30);
+
+    // Day header
+    doc.setFillColor(30, 35, 50);
+    doc.roundedRect(margin, y, pageW, 10, 2, 2, "F");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.setTextColor(255);
+    doc.text(`${day.dayOfWeek} — ${day.label}`, margin + 4, y + 7);
+    const typeLabel = TYPE_BADGES[day.type]?.label || day.type;
+    doc.setFontSize(8);
+    doc.text(typeLabel.toUpperCase(), margin + pageW - 4, y + 7, { align: "right" });
+    doc.setTextColor(0);
+    y += 14;
+
+    if (day.focus) {
+      checkSpace(8);
+      doc.setFont("helvetica", "italic");
+      doc.setFontSize(9);
+      doc.setTextColor(100);
+      doc.text(`Focus: ${day.focus}`, margin + 2, y);
+      doc.setTextColor(0);
+      y += 6;
+    }
+
+    if (day.exercises?.length > 0) {
+      // Table header
+      checkSpace(10);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      doc.setTextColor(100);
+      doc.text("#", margin + 2, y);
+      doc.text("Exercise", margin + 10, y);
+      doc.text("Sets×Reps", margin + 90, y);
+      doc.text("Rest", margin + 120, y);
+      doc.text("Tempo", margin + 145, y);
+      doc.setTextColor(0);
+      y += 2;
+      doc.setDrawColor(200);
+      doc.line(margin, y, margin + pageW, y);
+      y += 4;
+
+      for (let j = 0; j < day.exercises.length; j++) {
+        const ex = day.exercises[j];
+        checkSpace(20);
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        doc.text(String(j + 1).padStart(2, "0"), margin + 2, y);
+        doc.setFont("helvetica", "bold");
+        doc.text(ex.name || "", margin + 10, y);
+        doc.setFont("helvetica", "normal");
+        doc.text(`${ex.sets}×${ex.reps}`, margin + 90, y);
+        doc.text(ex.rest || "", margin + 120, y);
+        doc.text(ex.tempo || "—", margin + 145, y);
+        y += 5;
+
+        if (ex.coachingCue) {
+          checkSpace(8);
+          doc.setFontSize(8);
+          doc.setTextColor(80);
+          const cueLines = doc.splitTextToSize(`Coaching: ${ex.coachingCue}`, pageW - 12);
+          doc.text(cueLines, margin + 10, y);
+          y += cueLines.length * 3.5;
+          doc.setTextColor(0);
+        }
+
+        if (ex.whyItMatters) {
+          checkSpace(8);
+          doc.setFontSize(8);
+          doc.setTextColor(0, 130, 130);
+          const whyLines = doc.splitTextToSize(`Why for TKD: ${ex.whyItMatters}`, pageW - 12);
+          doc.text(whyLines, margin + 10, y);
+          y += whyLines.length * 3.5;
+          doc.setTextColor(0);
+        }
+
+        y += 3;
+      }
+    } else {
+      checkSpace(10);
+      doc.setFont("helvetica", "italic");
+      doc.setFontSize(9);
+      doc.setTextColor(120);
+      doc.text("Follow your dojang's programming for this session.", margin + 4, y);
+      doc.setTextColor(0);
+      y += 6;
+    }
+
+    y += 6;
+  }
+
+  doc.save(`${plan.name.replace(/\s+/g, "_")}.pdf`);
+}
+
 export function AIPlanCard({ plan }: AIPlanCardProps) {
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
+  const [exporting, setExporting] = useState(false);
   const schedule = plan.plan_data?.weeklySchedule || [];
+  const { toast } = useToast();
+
+  const handleDownload = async () => {
+    setExporting(true);
+    try {
+      await generatePDF(plan);
+      toast({ title: "PDF downloaded!" });
+    } catch {
+      toast({ title: "PDF export failed", variant: "destructive" });
+    } finally {
+      setExporting(false);
+    }
+  };
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-bold text-foreground">{plan.name}</h2>
+      <div className="flex items-center justify-between gap-2">
+        <div className="min-w-0">
+          <h2 className="text-base sm:text-lg font-bold text-foreground truncate">{plan.name}</h2>
           <p className="text-xs text-muted-foreground">Generated {new Date(plan.created_at).toLocaleDateString()}</p>
         </div>
-        <span className="text-xs bg-speed/20 text-speed px-2 py-1 rounded-full font-semibold">Active</span>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <Button variant="outline" size="sm" onClick={handleDownload} disabled={exporting}>
+            {exporting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
+            <span className="hidden sm:inline ml-1">PDF</span>
+          </Button>
+          <span className="text-xs bg-speed/20 text-speed px-2 py-1 rounded-full font-semibold">Active</span>
+        </div>
       </div>
 
       {/* Week overview */}

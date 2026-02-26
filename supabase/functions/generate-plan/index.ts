@@ -67,10 +67,12 @@ IMPORTANT: Return ONLY the JSON object, no markdown, no code fences, no explanat
 - Belt level: ${profile.belt_level || 'not specified'}
 - Years of experience: ${profile.experience_years || 'not specified'}
 - TKD sessions per week: ${profile.tkd_sessions_per_week || 3}
+- Program length: ${profile.program_weeks || 8} weeks
 - Goals: ${profile.goals?.length ? profile.goals.join(', ') : 'general performance improvement'}
 - Weekly schedule: ${scheduleDescription}
 
-IMPORTANT: Follow the athlete's chosen weekly schedule EXACTLY. Each day must match the type they selected (TKD, Gym, or Rest). For TKD days, don't list exercises — just label and focus. For Gym days, provide full exercise details. For Rest days, suggest light recovery work only.`;
+IMPORTANT: Follow the athlete's chosen weekly schedule EXACTLY. Each day must match the type they selected (TKD, Gym, or Rest). For TKD days, don't list exercises — just label and focus. For Gym days, provide full exercise details. For Rest days, suggest light recovery work only.
+Design the program for ${profile.program_weeks || 8} weeks with appropriate periodization.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
