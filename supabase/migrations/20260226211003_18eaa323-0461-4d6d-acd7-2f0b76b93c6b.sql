@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN weekly_schedule jsonb DEFAULT '[{"day":"Monday","type":"tkd"},{"day":"Tuesday","type":"gym"},{"day":"Wednesday","type":"tkd"},{"day":"Thursday","type":"gym"},{"day":"Friday","type":"tkd"},{"day":"Saturday","type":"gym"},{"day":"Sunday","type":"rest"}]'::jsonb;
