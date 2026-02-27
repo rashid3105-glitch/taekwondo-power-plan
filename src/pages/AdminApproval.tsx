@@ -327,12 +327,14 @@ export default function AdminApproval() {
   return (
     <div className="min-h-screen bg-background">
       <div className="container max-w-lg mx-auto px-4 py-6">
-        <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")} className="mb-4">
-          <ArrowLeft className="h-4 w-4 mr-1" /> {t("backToDashboard")}
-        </Button>
-        <Button variant="outline" size="sm" onClick={() => navigate("/coach")} className="mb-4 ml-2">
-          <Shield className="h-4 w-4 mr-1" /> {t("coachDashboard")}
-        </Button>
+        <div className="flex flex-wrap gap-2 mb-4">
+          <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")}>
+            <ArrowLeft className="h-4 w-4 mr-1" /> {t("backToDashboard")}
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => navigate("/coach")}>
+            <Shield className="h-4 w-4 mr-1" /> {t("coachDashboard")}
+          </Button>
+        </div>
 
         <h1 className="text-xl font-extrabold text-foreground mb-6">{t("userApproval")}</h1>
 
