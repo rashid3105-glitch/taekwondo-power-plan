@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Shield, Dumbbell, Battery, Download, Loader2, Check } from "lucide-react";
+import { ChevronDown, ChevronUp, Shield, Dumbbell, Battery, Download, Loader2, Check, Layers } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useWorkoutLogs, type WorkoutLog } from "@/hooks/useWorkoutLogs";
+import { PeriodizationView } from "@/components/PeriodizationView";
 import { cn } from "@/lib/utils";
 
 const CATEGORY_DOT: Record<string, string> = {
@@ -163,7 +164,9 @@ async function generatePDF(plan: AIPlanCardProps["plan"]) {
 export function AIPlanCard({ plan }: AIPlanCardProps) {
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [exporting, setExporting] = useState(false);
+  const [activeTab, setActiveTab] = useState<"schedule" | "periodization">("schedule");
   const schedule = plan.plan_data?.weeklySchedule || [];
+  const periodization = plan.plan_data?.periodization || [];
   const { toast } = useToast();
   const { upsertLog, getLog, today } = useWorkoutLogs(plan.id, selectedDay);
 
@@ -203,62 +206,95 @@ export function AIPlanCard({ plan }: AIPlanCardProps) {
         </div>
       </div>
 
-      {/* Week overview */}
-      <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5 sm:gap-2">
-        {schedule.map((day: any, i: number) => {
-          const config = TYPE_BADGES[day.type] || TYPE_BADGES.gym;
-          const Icon = config.icon;
-          return (
-            <button
-              key={i}
-              onClick={() => setSelectedDay(selectedDay === i ? null : i)}
-              className={`flex flex-col items-center gap-1 sm:gap-1.5 rounded-lg border-2 p-2 sm:p-2.5 transition-all cursor-pointer hover:bg-secondary/50 ${
-                selectedDay === i ? "border-primary bg-secondary" : "border-border bg-card"
-              }`}
-            >
-              <span className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                {day.dayOfWeek?.slice(0, 3)}
-              </span>
-              <Icon className={`h-4 w-4 ${selectedDay === i ? "text-primary" : "text-muted-foreground"}`} />
-              <span className="text-[8px] sm:text-[9px] font-medium text-foreground text-center leading-tight">
-                {day.label}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Day detail */}
-      {selectedDay !== null && schedule[selectedDay] && (
-        <div className="animate-slide-up rounded-xl border border-border bg-card p-3 sm:p-5 shadow-card">
-          <div className="mb-4">
-            <h3 className="font-bold text-foreground">{schedule[selectedDay].dayOfWeek} — {schedule[selectedDay].label}</h3>
-            {schedule[selectedDay].focus && (
-              <p className="text-sm text-muted-foreground">{schedule[selectedDay].focus}</p>
+      {/* Tab toggle */}
+      {periodization.length > 0 && (
+        <div className="flex rounded-lg border border-border bg-secondary/30 p-0.5">
+          <button
+            onClick={() => setActiveTab("schedule")}
+            className={cn(
+              "flex-1 flex items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition-all",
+              activeTab === "schedule" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
             )}
+          >
+            <Dumbbell className="h-3.5 w-3.5" /> Weekly Schedule
+          </button>
+          <button
+            onClick={() => setActiveTab("periodization")}
+            className={cn(
+              "flex-1 flex items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition-all",
+              activeTab === "periodization" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <Layers className="h-3.5 w-3.5" /> Periodization
+          </button>
+        </div>
+      )}
+
+      {/* Periodization view */}
+      {activeTab === "periodization" && periodization.length > 0 && (
+        <PeriodizationView periodization={periodization} programWeeks={plan.plan_data?.programWeeks} />
+      )}
+
+      {/* Week overview */}
+      {activeTab === "schedule" && (
+        <>
+          <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5 sm:gap-2">
+            {schedule.map((day: any, i: number) => {
+              const config = TYPE_BADGES[day.type] || TYPE_BADGES.gym;
+              const Icon = config.icon;
+              return (
+                <button
+                  key={i}
+                  onClick={() => setSelectedDay(selectedDay === i ? null : i)}
+                  className={`flex flex-col items-center gap-1 sm:gap-1.5 rounded-lg border-2 p-2 sm:p-2.5 transition-all cursor-pointer hover:bg-secondary/50 ${
+                    selectedDay === i ? "border-primary bg-secondary" : "border-border bg-card"
+                  }`}
+                >
+                  <span className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    {day.dayOfWeek?.slice(0, 3)}
+                  </span>
+                  <Icon className={`h-4 w-4 ${selectedDay === i ? "text-primary" : "text-muted-foreground"}`} />
+                  <span className="text-[8px] sm:text-[9px] font-medium text-foreground text-center leading-tight">
+                    {day.label}
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
-          {schedule[selectedDay].exercises?.length > 0 ? (
-            <div className="space-y-2">
-              {schedule[selectedDay].exercises.map((ex: any, j: number) => (
-                <AIExerciseRow
-                  key={j}
-                  exercise={ex}
-                  index={j + 1}
-                  log={getLog(j)}
-                  onToggleComplete={(completed) => upsertLog(j, { completed })}
-                  onUpdateSets={(actual_sets) => upsertLog(j, { actual_sets })}
-                  onUpdateReps={(actual_reps) => upsertLog(j, { actual_reps })}
-                  onUpdateNotes={(notes) => upsertLog(j, { notes })}
-                />
-              ))}
+          {/* Day detail */}
+          {selectedDay !== null && schedule[selectedDay] && (
+            <div className="animate-slide-up rounded-xl border border-border bg-card p-3 sm:p-5 shadow-card">
+              <div className="mb-4">
+                <h3 className="font-bold text-foreground">{schedule[selectedDay].dayOfWeek} — {schedule[selectedDay].label}</h3>
+                {schedule[selectedDay].focus && (
+                  <p className="text-sm text-muted-foreground">{schedule[selectedDay].focus}</p>
+                )}
+              </div>
+
+              {schedule[selectedDay].exercises?.length > 0 ? (
+                <div className="space-y-2">
+                  {schedule[selectedDay].exercises.map((ex: any, j: number) => (
+                    <AIExerciseRow
+                      key={j}
+                      exercise={ex}
+                      index={j + 1}
+                      log={getLog(j)}
+                      onToggleComplete={(completed) => upsertLog(j, { completed })}
+                      onUpdateSets={(actual_sets) => upsertLog(j, { actual_sets })}
+                      onUpdateReps={(actual_reps) => upsertLog(j, { actual_reps })}
+                      onUpdateNotes={(notes) => upsertLog(j, { notes })}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  Follow your dojang's programming for this session.
+                </p>
+              )}
             </div>
-          ) : (
-            <p className="text-sm text-muted-foreground text-center py-4">
-              Follow your dojang's programming for this session.
-            </p>
           )}
-        </div>
+        </>
       )}
     </div>
   );
