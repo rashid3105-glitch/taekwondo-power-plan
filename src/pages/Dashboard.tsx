@@ -2,9 +2,12 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3 } from "lucide-react";
+import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { AIPlanCard } from "@/components/AIPlanCard";
+import { RehabPlanCard } from "@/components/RehabPlanCard";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface Profile {
   display_name: string;
@@ -17,6 +20,7 @@ interface Profile {
   avatar_url: string | null;
   program_weeks: number | null;
   weekly_schedule: any;
+  current_injury: string | null;
 }
 
 interface TrainingPlan {
@@ -31,6 +35,9 @@ export default function Dashboard() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [plans, setPlans] = useState<TrainingPlan[]>([]);
   const [generating, setGenerating] = useState(false);
+  const [generatingRehab, setGeneratingRehab] = useState(false);
+  const [rehabInjury, setRehabInjury] = useState("");
+  const [rehabPlan, setRehabPlan] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -83,6 +90,27 @@ export default function Dashboard() {
       toast({ title: "Error", description: err.message, variant: "destructive" });
     } finally {
       setGenerating(false);
+    }
+  };
+
+  const generateRehabPlan = async () => {
+    if (!rehabInjury.trim()) {
+      toast({ title: "Please describe your injury", variant: "destructive" });
+      return;
+    }
+    setGeneratingRehab(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-rehab-plan", {
+        body: { injury: rehabInjury, profile },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      setRehabPlan(data.plan);
+      toast({ title: "Rehab plan generated!" });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    } finally {
+      setGeneratingRehab(false);
     }
   };
 
@@ -222,6 +250,36 @@ export default function Dashboard() {
             </p>
           </div>
         )}
+
+        {/* Rehab Plan Generator */}
+        <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
+          <div className="flex items-center gap-2">
+            <Heart className="h-5 w-5 text-destructive" />
+            <h3 className="font-bold text-foreground">Injury Rehab Plan</h3>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Describe your injury to generate a personalized rehabilitation program with progressive return-to-sport protocols.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Input
+              value={rehabInjury}
+              onChange={(e) => setRehabInjury(e.target.value)}
+              placeholder="e.g. Grade 1 hamstring tear, left knee tendinitis..."
+              maxLength={200}
+              className="flex-1"
+            />
+            <Button onClick={generateRehabPlan} disabled={generatingRehab || !rehabInjury.trim()} size="sm" className="w-full sm:w-auto">
+              {generatingRehab ? (
+                <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> Generating...</>
+              ) : (
+                <><Heart className="h-4 w-4 mr-1" /> Generate Rehab Plan</>
+              )}
+            </Button>
+          </div>
+        </div>
+
+        {/* Rehab plan result */}
+        {rehabPlan && <RehabPlanCard plan={rehabPlan} />}
 
         {/* Previous plans */}
         {plans.filter(p => !p.is_active).length > 0 && (
