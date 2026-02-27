@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -57,6 +59,9 @@ export default function CoachDashboard() {
   const [newAthleteName, setNewAthleteName] = useState("");
   const [newAthleteEmail, setNewAthleteEmail] = useState("");
   const [newAthletePassword, setNewAthletePassword] = useState("");
+  const [newAthleteAge, setNewAthleteAge] = useState("");
+  const [newAthleteBelt, setNewAthleteBelt] = useState("white");
+  const [newAthleteExpYears, setNewAthleteExpYears] = useState("");
   const [creating, setCreating] = useState(false);
   const [selectedAthlete, setSelectedAthlete] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -164,7 +169,14 @@ export default function CoachDashboard() {
     setCreating(true);
     try {
       const { data, error } = await supabase.functions.invoke("create-athlete", {
-        body: { name: newAthleteName.trim(), email: newAthleteEmail.trim(), password: newAthletePassword },
+        body: {
+          name: newAthleteName.trim(),
+          email: newAthleteEmail.trim(),
+          password: newAthletePassword,
+          age: newAthleteAge ? parseInt(newAthleteAge) : null,
+          belt_level: newAthleteBelt,
+          experience_years: newAthleteExpYears ? parseInt(newAthleteExpYears) : null,
+        },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
@@ -173,6 +185,9 @@ export default function CoachDashboard() {
       setNewAthleteName("");
       setNewAthleteEmail("");
       setNewAthletePassword("");
+      setNewAthleteAge("");
+      setNewAthleteBelt("white");
+      setNewAthleteExpYears("");
       setShowCreateForm(false);
       await loadAthletes();
     } catch (err: any) {
@@ -248,6 +263,45 @@ export default function CoachDashboard() {
                 placeholder={t("athletePassword")}
                 minLength={6}
               />
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                <div className="space-y-1">
+                  <Label className="text-xs">{t("age")}</Label>
+                  <Input
+                    type="number"
+                    min={5}
+                    max={99}
+                    value={newAthleteAge}
+                    onChange={(e) => setNewAthleteAge(e.target.value)}
+                    placeholder="—"
+                    className="h-9"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">{t("beltLevel")}</Label>
+                  <Select value={newAthleteBelt} onValueChange={setNewAthleteBelt}>
+                    <SelectTrigger className="h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {["white", "yellow", "green", "blue", "red", "black"].map((b) => (
+                        <SelectItem key={b} value={b}>{t(b as any)}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">{t("yearsOfExperience")}</Label>
+                  <Input
+                    type="number"
+                    min={0}
+                    max={50}
+                    value={newAthleteExpYears}
+                    onChange={(e) => setNewAthleteExpYears(e.target.value)}
+                    placeholder="—"
+                    className="h-9"
+                  />
+                </div>
+              </div>
               <div className="flex gap-2">
                 <Button onClick={createAthlete} disabled={creating || !newAthleteName.trim() || !newAthleteEmail.trim() || !newAthletePassword.trim()} size="sm">
                   {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <><UserPlus className="h-4 w-4 mr-1" /> {t("createAccount")}</>}
