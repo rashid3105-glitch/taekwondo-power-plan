@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield } from "lucide-react";
+import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { AIPlanCard } from "@/components/AIPlanCard";
 import { RehabPlanCard } from "@/components/RehabPlanCard";
@@ -22,6 +22,7 @@ interface Profile {
   program_weeks: number | null;
   weekly_schedule: any;
   current_injury: string | null;
+  athlete_code: string | null;
 }
 
 interface TrainingPlan {
@@ -45,6 +46,7 @@ export default function Dashboard() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [plans, setPlans] = useState<TrainingPlan[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isCoach, setIsCoach] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [generatingRehab, setGeneratingRehab] = useState(false);
   const [rehabInjury, setRehabInjury] = useState("");
@@ -63,6 +65,10 @@ export default function Dashboard() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { navigate("/auth"); return; }
     if (user.email === "rashid3105@gmail.com") setIsAdmin(true);
+
+    // Check coach role
+    const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", user.id);
+    if (roles?.some((r: any) => r.role === "coach")) setIsCoach(true);
 
     const [profileRes, plansRes, rehabRes] = await Promise.all([
       supabase.from("profiles").select("*").eq("user_id", user.id).single(),
@@ -198,6 +204,11 @@ export default function Dashboard() {
                 <Shield className="h-4 w-4 mr-1" /> {t("manageUsers")}
               </Button>
             )}
+            {isCoach && (
+              <Button variant="ghost" size="sm" onClick={() => navigate("/coach")}>
+                <Users className="h-4 w-4 mr-1" /> {t("coachDashboard")}
+              </Button>
+            )}
             <Button variant="ghost" size="sm" onClick={handleSignOut}>
               <LogOut className="h-4 w-4" />
             </Button>
@@ -247,6 +258,9 @@ export default function Dashboard() {
                   </div>
                 )}
                 <div>
+                {profile.athlete_code && (
+                  <p className="text-[10px] text-muted-foreground font-mono">{t("yourAthleteCode")}: {profile.athlete_code}</p>
+                )}
                 <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-2">
                   {profile.belt_level && (
                     <span className="text-[10px] sm:text-xs bg-muted text-muted-foreground px-2 py-0.5 sm:py-1 rounded-full capitalize">
