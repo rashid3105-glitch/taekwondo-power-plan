@@ -1,16 +1,20 @@
 import { useState } from "react";
-import { WEEKLY_PLAN, type TrainingDay } from "@/data/exercises";
+import { getWeeklyPlan, setExerciseLocale, type TrainingDay } from "@/data/exercises";
 import { DayCard } from "./DayCard";
 import { DayDetail } from "./DayDetail";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 export function WeeklyPlan() {
+  const { locale } = useLanguage();
+  setExerciseLocale(locale);
+  const weeklyPlan = getWeeklyPlan(locale);
   const [selectedDay, setSelectedDay] = useState<TrainingDay | null>(null);
 
   return (
     <div className="space-y-6">
       {/* Week overview */}
       <div className="grid grid-cols-7 gap-2">
-        {WEEKLY_PLAN.map((day) => (
+        {weeklyPlan.map((day) => (
           <DayCard
             key={day.id}
             day={day}

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { getAllExercises, CATEGORY_LABELS, type ExerciseCategory, type Exercise } from "@/data/exercises";
+import { getAllExercises, setExerciseLocale, CATEGORY_LABELS, type ExerciseCategory, type Exercise } from "@/data/exercises";
 import { ExerciseCard } from "./ExerciseCard";
+import { useLanguage } from "@/i18n/LanguageContext";
 import { AddExerciseForm } from "./AddExerciseForm";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -62,6 +63,8 @@ export function ExerciseLibrary() {
   const [userExercises, setUserExercises] = useState<(Exercise & { isCustom: true; dbId: string })[]>([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { toast } = useToast();
+  const { locale } = useLanguage();
+  setExerciseLocale(locale);
   const allBuiltIn = getAllExercises();
 
   useEffect(() => {

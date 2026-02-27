@@ -9,7 +9,8 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { profile } = await req.json();
+    const { profile, language } = await req.json();
+    const lang = language === "da" ? "Danish" : "English";
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
@@ -73,7 +74,8 @@ Return a valid JSON object with this exact structure:
 
 The weeklySchedule represents the BASE WEEK template. The periodization array describes how to modify volume/intensity across the entire program duration. Create realistic periodization phases that make sense for the athlete's level and goals.
 
-IMPORTANT: Return ONLY the JSON object, no markdown, no code fences, no explanatory text.`;
+IMPORTANT: Return ONLY the JSON object, no markdown, no code fences, no explanatory text.
+IMPORTANT: ALL text content (planName, labels, focus descriptions, exercise names where appropriate, coachingCues, whyItMatters, alternative reasons) MUST be written in ${lang}.`;
 
     const weeklySchedule = profile.weekly_schedule || [];
     const scheduleDescription = weeklySchedule.length > 0
