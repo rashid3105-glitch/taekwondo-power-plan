@@ -330,6 +330,9 @@ export default function AdminApproval() {
         <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")} className="mb-4">
           <ArrowLeft className="h-4 w-4 mr-1" /> {t("backToDashboard")}
         </Button>
+        <Button variant="outline" size="sm" onClick={() => navigate("/coach")} className="mb-4 ml-2">
+          <Shield className="h-4 w-4 mr-1" /> {t("coachDashboard")}
+        </Button>
 
         <h1 className="text-xl font-extrabold text-foreground mb-6">{t("userApproval")}</h1>
 
