@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart } from "lucide-react";
+import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { AIPlanCard } from "@/components/AIPlanCard";
 import { RehabPlanCard } from "@/components/RehabPlanCard";
@@ -44,6 +44,7 @@ interface RehabPlanRow {
 export default function Dashboard() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [plans, setPlans] = useState<TrainingPlan[]>([]);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [generatingRehab, setGeneratingRehab] = useState(false);
   const [rehabInjury, setRehabInjury] = useState("");
@@ -61,6 +62,7 @@ export default function Dashboard() {
   const loadData = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { navigate("/auth"); return; }
+    if (user.email === "rashid3105@gmail.com") setIsAdmin(true);
 
     const [profileRes, plansRes, rehabRes] = await Promise.all([
       supabase.from("profiles").select("*").eq("user_id", user.id).single(),
@@ -68,7 +70,14 @@ export default function Dashboard() {
       supabase.from("rehab_plans").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
     ]);
 
-    if (profileRes.data) setProfile(profileRes.data as unknown as Profile);
+    if (profileRes.data) {
+      const profileData = profileRes.data as any;
+      if (!profileData.is_approved) {
+        navigate("/pending-approval");
+        return;
+      }
+      setProfile(profileData as Profile);
+    }
     if (plansRes.data) setPlans(plansRes.data as unknown as TrainingPlan[]);
     if (rehabRes.data) {
       setRehabPlans(rehabRes.data as unknown as RehabPlanRow[]);
@@ -184,6 +193,11 @@ export default function Dashboard() {
             <Button variant="ghost" size="sm" onClick={() => navigate("/library")}>
               <BookOpen className="h-4 w-4 mr-1" /> {t("library")}
             </Button>
+            {isAdmin && (
+              <Button variant="ghost" size="sm" onClick={() => navigate("/admin/approval")}>
+                <Shield className="h-4 w-4 mr-1" /> {t("manageUsers")}
+              </Button>
+            )}
             <Button variant="ghost" size="sm" onClick={handleSignOut}>
               <LogOut className="h-4 w-4" />
             </Button>

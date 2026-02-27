@@ -25,6 +25,7 @@ export type Database = {
           experience_years: number | null
           goals: string[] | null
           id: string
+          is_approved: boolean
           program_weeks: number | null
           tkd_sessions_per_week: number
           updated_at: string
@@ -42,6 +43,7 @@ export type Database = {
           experience_years?: number | null
           goals?: string[] | null
           id?: string
+          is_approved?: boolean
           program_weeks?: number | null
           tkd_sessions_per_week?: number
           updated_at?: string
@@ -59,6 +61,7 @@ export type Database = {
           experience_years?: number | null
           goals?: string[] | null
           id?: string
+          is_approved?: boolean
           program_weeks?: number | null
           tkd_sessions_per_week?: number
           updated_at?: string
@@ -243,7 +246,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
