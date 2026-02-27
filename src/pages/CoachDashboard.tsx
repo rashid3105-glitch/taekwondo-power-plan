@@ -42,6 +42,11 @@ export default function CoachDashboard() {
   const [loading, setLoading] = useState(true);
   const [athleteCode, setAthleteCode] = useState("");
   const [adding, setAdding] = useState(false);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [newAthleteName, setNewAthleteName] = useState("");
+  const [newAthleteEmail, setNewAthleteEmail] = useState("");
+  const [newAthletePassword, setNewAthletePassword] = useState("");
+  const [creating, setCreating] = useState(false);
   const [generatingFor, setGeneratingFor] = useState<string | null>(null);
   const [selectedAthlete, setSelectedAthlete] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -137,6 +142,29 @@ export default function CoachDashboard() {
     }
   };
 
+  const createAthlete = async () => {
+    if (!newAthleteName.trim() || !newAthleteEmail.trim() || !newAthletePassword.trim()) return;
+    setCreating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-athlete", {
+        body: { name: newAthleteName.trim(), email: newAthleteEmail.trim(), password: newAthletePassword },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      toast({ title: t("athleteCreated"), description: t("athleteCreatedDesc") });
+      setNewAthleteName("");
+      setNewAthleteEmail("");
+      setNewAthletePassword("");
+      setShowCreateForm(false);
+      await loadAthletes();
+    } catch (err: any) {
+      toast({ title: t("error"), description: err.message, variant: "destructive" });
+    } finally {
+      setCreating(false);
+    }
+  };
+
   const removeAthlete = async (athleteId: string) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
@@ -210,22 +238,62 @@ export default function CoachDashboard() {
       </header>
 
       <main className="container max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
-        {/* Add athlete by code */}
+        {/* Create athlete */}
         <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
           <h3 className="font-bold text-foreground flex items-center gap-2">
-            <UserPlus className="h-5 w-5" /> {t("addAthlete")}
+            <UserPlus className="h-5 w-5" /> {t("createAthlete")}
           </h3>
-          <p className="text-xs text-muted-foreground">{t("addAthleteDesc")}</p>
-          <div className="flex flex-col sm:flex-row gap-2">
-            <Input
-              value={athleteCode}
-              onChange={(e) => setAthleteCode(e.target.value)}
-              placeholder={t("athleteCodePlaceholder")}
-              className="flex-1 uppercase"
-            />
-            <Button onClick={addAthlete} disabled={adding || !athleteCode.trim()} size="sm" className="w-full sm:w-auto">
-              {adding ? <Loader2 className="h-4 w-4 animate-spin" /> : <><UserPlus className="h-4 w-4 mr-1" /> {t("add")}</>}
+          <p className="text-xs text-muted-foreground">{t("createAthleteDesc")}</p>
+
+          {showCreateForm ? (
+            <div className="space-y-3">
+              <Input
+                value={newAthleteName}
+                onChange={(e) => setNewAthleteName(e.target.value)}
+                placeholder={t("athleteName")}
+              />
+              <Input
+                type="email"
+                value={newAthleteEmail}
+                onChange={(e) => setNewAthleteEmail(e.target.value)}
+                placeholder={t("athleteEmail")}
+              />
+              <Input
+                type="password"
+                value={newAthletePassword}
+                onChange={(e) => setNewAthletePassword(e.target.value)}
+                placeholder={t("athletePassword")}
+                minLength={6}
+              />
+              <div className="flex gap-2">
+                <Button onClick={createAthlete} disabled={creating || !newAthleteName.trim() || !newAthleteEmail.trim() || !newAthletePassword.trim()} size="sm">
+                  {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <><UserPlus className="h-4 w-4 mr-1" /> {t("createAccount")}</>}
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => setShowCreateForm(false)}>
+                  {t("cancel")}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <Button onClick={() => setShowCreateForm(true)} size="sm" className="w-full sm:w-auto">
+              <Plus className="h-4 w-4 mr-1" /> {t("createAthlete")}
             </Button>
+          )}
+
+          {/* Or add by code */}
+          <div className="border-t border-border pt-3 space-y-2">
+            <p className="text-xs text-muted-foreground">{t("orAddByCode")}</p>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Input
+                value={athleteCode}
+                onChange={(e) => setAthleteCode(e.target.value)}
+                placeholder={t("athleteCodePlaceholder")}
+                className="flex-1 uppercase"
+              />
+              <Button onClick={addAthlete} disabled={adding || !athleteCode.trim()} size="sm" variant="outline" className="w-full sm:w-auto">
+                {adding ? <Loader2 className="h-4 w-4 animate-spin" /> : <><UserPlus className="h-4 w-4 mr-1" /> {t("add")}</>}
+              </Button>
+            </div>
           </div>
         </div>
 
