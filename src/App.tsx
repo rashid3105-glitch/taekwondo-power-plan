@@ -10,6 +10,9 @@ import ProfileSetup from "./pages/ProfileSetup";
 import Dashboard from "./pages/Dashboard";
 import Library from "./pages/Library";
 import Progress from "./pages/Progress";
+import ResetPassword from "./pages/ResetPassword";
+import PendingApproval from "./pages/PendingApproval";
+import AdminApproval from "./pages/AdminApproval";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +27,9 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/pending-approval" element={<PendingApproval />} />
+            <Route path="/admin/approval" element={<AdminApproval />} />
             <Route path="/profile-setup" element={<ProfileSetup />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/library" element={<Library />} />
