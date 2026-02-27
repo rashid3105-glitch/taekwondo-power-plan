@@ -95,6 +95,60 @@ export type Database = {
         }
         Relationships: []
       }
+      user_exercises: {
+        Row: {
+          alternatives: Json | null
+          category: string
+          created_at: string
+          id: string
+          muscle_groups: string[]
+          name: string
+          notes: string
+          reps: string
+          rest: string
+          sets: number
+          tempo: string | null
+          updated_at: string
+          user_id: string
+          video_url: string | null
+          why_it_matters: string
+        }
+        Insert: {
+          alternatives?: Json | null
+          category?: string
+          created_at?: string
+          id?: string
+          muscle_groups?: string[]
+          name: string
+          notes?: string
+          reps?: string
+          rest?: string
+          sets?: number
+          tempo?: string | null
+          updated_at?: string
+          user_id: string
+          video_url?: string | null
+          why_it_matters?: string
+        }
+        Update: {
+          alternatives?: Json | null
+          category?: string
+          created_at?: string
+          id?: string
+          muscle_groups?: string[]
+          name?: string
+          notes?: string
+          reps?: string
+          rest?: string
+          sets?: number
+          tempo?: string | null
+          updated_at?: string
+          user_id?: string
+          video_url?: string | null
+          why_it_matters?: string
+        }
+        Relationships: []
+      }
       workout_logs: {
         Row: {
           actual_reps: string | null
