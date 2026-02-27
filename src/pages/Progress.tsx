@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Zap, User, BookOpen, LogOut, Loader2, BarChart3, TrendingUp, Target, Calendar } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  AreaChart, Area, RadialBarChart, RadialBar, Legend,
+  AreaChart, Area,
 } from "recharts";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 interface WorkoutLog {
   id: string;
@@ -29,6 +31,7 @@ export default function Progress() {
   const [plan, setPlan] = useState<PlanData | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   useEffect(() => {
     loadData();
@@ -53,19 +56,14 @@ export default function Progress() {
 
     const completedLogs = logs.filter((l) => l.completed);
     const completionRate = Math.round((completedLogs.length / logs.length) * 100);
-
-    // Total volume (sets logged)
     const totalSets = completedLogs.reduce((sum, l) => sum + (l.actual_sets ?? 0), 0);
-
-    // Unique training days
     const uniqueDays = new Set(completedLogs.map((l) => l.logged_date)).size;
 
-    // Weekly data
     const weeklyMap = new Map<string, { completed: number; total: number; volume: number }>();
     for (const log of logs) {
       const d = new Date(log.logged_date);
       const weekStart = new Date(d);
-      weekStart.setDate(d.getDate() - d.getDay() + 1); // Monday
+      weekStart.setDate(d.getDate() - d.getDay() + 1);
       const key = weekStart.toISOString().split("T")[0];
       if (!weeklyMap.has(key)) weeklyMap.set(key, { completed: 0, total: 0, volume: 0 });
       const w = weeklyMap.get(key)!;
@@ -85,7 +83,6 @@ export default function Progress() {
         exercises: data.completed,
       }));
 
-    // Daily consistency (last 28 days)
     const today = new Date();
     const consistencyData: { day: string; logged: number }[] = [];
     for (let i = 27; i >= 0; i--) {
@@ -99,7 +96,6 @@ export default function Progress() {
       });
     }
 
-    // By day of week
     const schedule = plan?.plan_data?.weeklySchedule || [];
     const dayCompletionData = schedule.map((day: any, i: number) => {
       const dayLogs = logs.filter((l) => l.day_index === i);
@@ -111,7 +107,6 @@ export default function Progress() {
       };
     }).filter((d: any) => d.rate > 0);
 
-    // Current streak
     let streak = 0;
     const sortedDates = [...new Set(completedLogs.map((l) => l.logged_date))].sort().reverse();
     const todayStr = today.toISOString().split("T")[0];
@@ -154,22 +149,26 @@ export default function Progress() {
             <span className="text-sm sm:text-base font-extrabold text-foreground">TKD POWER</span>
           </div>
           <div className="hidden sm:flex items-center gap-2">
+            <LanguageSwitcher />
             <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")}>
-              <Zap className="h-4 w-4 mr-1" /> Plan
+              <Zap className="h-4 w-4 mr-1" /> {t("plan")}
             </Button>
             <Button variant="ghost" size="sm" onClick={() => navigate("/library")}>
-              <BookOpen className="h-4 w-4 mr-1" /> Library
+              <BookOpen className="h-4 w-4 mr-1" /> {t("library")}
             </Button>
             <Button variant="ghost" size="sm" onClick={() => navigate("/profile-setup")}>
-              <User className="h-4 w-4 mr-1" /> Profile
+              <User className="h-4 w-4 mr-1" /> {t("profile")}
             </Button>
             <Button variant="ghost" size="sm" onClick={handleSignOut}>
               <LogOut className="h-4 w-4" />
             </Button>
           </div>
-          <Button variant="ghost" size="icon" className="sm:hidden" onClick={handleSignOut}>
-            <LogOut className="h-4 w-4" />
-          </Button>
+          <div className="flex items-center gap-2 sm:hidden">
+            <LanguageSwitcher />
+            <Button variant="ghost" size="icon" onClick={handleSignOut}>
+              <LogOut className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -178,48 +177,48 @@ export default function Progress() {
         <div className="flex items-center justify-around py-2">
           <button onClick={() => navigate("/dashboard")} className="flex flex-col items-center gap-0.5 px-3 py-1 text-muted-foreground">
             <Zap className="h-5 w-5" />
-            <span className="text-[10px] font-semibold">Plan</span>
+            <span className="text-[10px] font-semibold">{t("plan")}</span>
           </button>
           <button onClick={() => navigate("/progress")} className="flex flex-col items-center gap-0.5 px-3 py-1 text-primary">
             <BarChart3 className="h-5 w-5" />
-            <span className="text-[10px] font-semibold">Progress</span>
+            <span className="text-[10px] font-semibold">{t("progress")}</span>
           </button>
           <button onClick={() => navigate("/library")} className="flex flex-col items-center gap-0.5 px-3 py-1 text-muted-foreground">
             <BookOpen className="h-5 w-5" />
-            <span className="text-[10px] font-semibold">Library</span>
+            <span className="text-[10px] font-semibold">{t("library")}</span>
           </button>
           <button onClick={() => navigate("/profile-setup")} className="flex flex-col items-center gap-0.5 px-3 py-1 text-muted-foreground">
             <User className="h-5 w-5" />
-            <span className="text-[10px] font-semibold">Profile</span>
+            <span className="text-[10px] font-semibold">{t("profile")}</span>
           </button>
         </div>
       </nav>
 
       <main className="container max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
-        <h1 className="text-xl sm:text-2xl font-extrabold text-foreground">Progress Dashboard</h1>
+        <h1 className="text-xl sm:text-2xl font-extrabold text-foreground">{t("progressDashboard")}</h1>
 
         {!stats || logs.length === 0 ? (
           <div className="rounded-xl border border-border bg-card p-12 text-center shadow-card">
             <BarChart3 className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
-            <h3 className="font-bold text-foreground mb-1">No Workout Data Yet</h3>
+            <h3 className="font-bold text-foreground mb-1">{t("noWorkoutData")}</h3>
             <p className="text-sm text-muted-foreground mb-4">
-              Start logging workouts in your training plan to see progress charts here.
+              {t("noWorkoutDataDesc")}
             </p>
-            <Button onClick={() => navigate("/dashboard")} size="sm">Go to Plan</Button>
+            <Button onClick={() => navigate("/dashboard")} size="sm">{t("goToPlan")}</Button>
           </div>
         ) : (
           <>
             {/* Stat cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-              <StatCard icon={Target} label="Completion" value={`${stats.completionRate}%`} />
-              <StatCard icon={TrendingUp} label="Total Sets" value={String(stats.totalSets)} />
-              <StatCard icon={Calendar} label="Days Trained" value={String(stats.uniqueDays)} />
-              <StatCard icon={Zap} label="Streak" value={`${stats.streak}d`} />
+              <StatCard icon={Target} label={t("completion")} value={`${stats.completionRate}%`} />
+              <StatCard icon={TrendingUp} label={t("totalSets")} value={String(stats.totalSets)} />
+              <StatCard icon={Calendar} label={t("daysTrained")} value={String(stats.uniqueDays)} />
+              <StatCard icon={Zap} label={t("streak")} value={`${stats.streak}d`} />
             </div>
 
             {/* Weekly volume chart */}
             <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
-              <h3 className="text-sm font-bold text-foreground mb-4">Weekly Training Volume</h3>
+              <h3 className="text-sm font-bold text-foreground mb-4">{t("weeklyTrainingVolume")}</h3>
               <div className="h-48 sm:h-56">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={stats.weeklyData}>
@@ -230,8 +229,8 @@ export default function Progress() {
                       contentStyle={{ backgroundColor: "hsl(220, 18%, 10%)", border: "1px solid hsl(220, 15%, 18%)", borderRadius: 8, fontSize: 12 }}
                       labelStyle={{ color: "hsl(210, 20%, 95%)" }}
                     />
-                    <Bar dataKey="volume" name="Total Sets" fill="hsl(190, 95%, 50%)" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="exercises" name="Exercises Done" fill="hsl(35, 100%, 55%)" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="volume" name={t("totalSets")} fill="hsl(190, 95%, 50%)" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="exercises" name={t("completion")} fill="hsl(35, 100%, 55%)" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -239,7 +238,7 @@ export default function Progress() {
 
             {/* Completion rate over time */}
             <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
-              <h3 className="text-sm font-bold text-foreground mb-4">Weekly Completion Rate</h3>
+              <h3 className="text-sm font-bold text-foreground mb-4">{t("weeklyCompletionRate")}</h3>
               <div className="h-48 sm:h-56">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={stats.weeklyData}>
@@ -249,7 +248,7 @@ export default function Progress() {
                     <Tooltip
                       contentStyle={{ backgroundColor: "hsl(220, 18%, 10%)", border: "1px solid hsl(220, 15%, 18%)", borderRadius: 8, fontSize: 12 }}
                       labelStyle={{ color: "hsl(210, 20%, 95%)" }}
-                      formatter={(value: number) => [`${value}%`, "Completion"]}
+                      formatter={(value: number) => [`${value}%`, t("completion")]}
                     />
                     <Area
                       type="monotone"
@@ -266,7 +265,7 @@ export default function Progress() {
 
             {/* 28-day consistency heatmap */}
             <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
-              <h3 className="text-sm font-bold text-foreground mb-4">Last 28 Days Consistency</h3>
+              <h3 className="text-sm font-bold text-foreground mb-4">{t("last28DaysConsistency")}</h3>
               <div className="grid grid-cols-7 gap-1.5">
                 {stats.consistencyData.map((d, i) => (
                   <div key={i} className="flex flex-col items-center gap-1">
@@ -277,14 +276,13 @@ export default function Progress() {
                           ? `hsl(190, 95%, ${Math.min(30 + d.logged * 15, 55)}%)`
                           : "hsl(220, 15%, 12%)",
                       }}
-                      title={`${d.logged} exercises completed`}
                     />
                     <span className="text-[8px] text-muted-foreground">{d.day}</span>
                   </div>
                 ))}
               </div>
               <div className="flex items-center gap-2 mt-3 justify-end">
-                <span className="text-[10px] text-muted-foreground">Less</span>
+                <span className="text-[10px] text-muted-foreground">{t("less")}</span>
                 {[0, 2, 4, 6].map((v) => (
                   <div
                     key={v}
@@ -294,14 +292,14 @@ export default function Progress() {
                     }}
                   />
                 ))}
-                <span className="text-[10px] text-muted-foreground">More</span>
+                <span className="text-[10px] text-muted-foreground">{t("more")}</span>
               </div>
             </div>
 
             {/* Completion by day of week */}
             {stats.dayCompletionData.length > 0 && (
               <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
-                <h3 className="text-sm font-bold text-foreground mb-4">Completion by Training Day</h3>
+                <h3 className="text-sm font-bold text-foreground mb-4">{t("completionByDay")}</h3>
                 <div className="h-48 sm:h-56">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={stats.dayCompletionData} layout="vertical">
@@ -310,7 +308,7 @@ export default function Progress() {
                       <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: "hsl(215, 15%, 55%)" }} width={40} />
                       <Tooltip
                         contentStyle={{ backgroundColor: "hsl(220, 18%, 10%)", border: "1px solid hsl(220, 15%, 18%)", borderRadius: 8, fontSize: 12 }}
-                        formatter={(value: number) => [`${value}%`, "Completion"]}
+                        formatter={(value: number) => [`${value}%`, t("completion")]}
                       />
                       <Bar dataKey="rate" fill="hsl(190, 95%, 50%)" radius={[0, 4, 4, 0]} />
                     </BarChart>

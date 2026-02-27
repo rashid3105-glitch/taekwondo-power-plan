@@ -7,7 +7,8 @@ import { useToast } from "@/hooks/use-toast";
 import { AIPlanCard } from "@/components/AIPlanCard";
 import { RehabPlanCard } from "@/components/RehabPlanCard";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 interface Profile {
   display_name: string;
@@ -51,6 +52,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   useEffect(() => {
     loadData();
@@ -100,10 +102,10 @@ export default function Dashboard() {
 
       if (insertError) throw insertError;
 
-      toast({ title: "Plan generated!", description: "Your AI-powered training plan is ready." });
+      toast({ title: t("planGenerated"), description: t("planGeneratedDesc") });
       loadData();
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: t("error"), description: err.message, variant: "destructive" });
     } finally {
       setGenerating(false);
     }
@@ -111,7 +113,7 @@ export default function Dashboard() {
 
   const generateRehabPlan = async () => {
     if (!rehabInjury.trim()) {
-      toast({ title: "Please describe your injury", variant: "destructive" });
+      toast({ title: t("describeInjury"), variant: "destructive" });
       return;
     }
     setGeneratingRehab(true);
@@ -125,7 +127,6 @@ export default function Dashboard() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      // Deactivate previous rehab plans
       await supabase.from("rehab_plans").update({ is_active: false } as any).eq("user_id", user.id);
 
       await supabase.from("rehab_plans").insert({
@@ -137,10 +138,10 @@ export default function Dashboard() {
       } as any);
 
       setRehabPlan(data.plan);
-      toast({ title: "Rehab plan generated and saved!" });
+      toast({ title: t("rehabGenerated") });
       loadData();
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: t("error"), description: err.message, variant: "destructive" });
     } finally {
       setGeneratingRehab(false);
     }
@@ -173,22 +174,26 @@ export default function Dashboard() {
             <span className="text-sm sm:text-base font-extrabold text-foreground">TKD POWER</span>
           </div>
           <div className="hidden sm:flex items-center gap-2">
+            <LanguageSwitcher />
             <Button variant="ghost" size="sm" onClick={() => navigate("/progress")}>
-              <BarChart3 className="h-4 w-4 mr-1" /> Progress
+              <BarChart3 className="h-4 w-4 mr-1" /> {t("progress")}
             </Button>
             <Button variant="ghost" size="sm" onClick={() => navigate("/profile-setup")}>
-              <User className="h-4 w-4 mr-1" /> Profile
+              <User className="h-4 w-4 mr-1" /> {t("profile")}
             </Button>
             <Button variant="ghost" size="sm" onClick={() => navigate("/library")}>
-              <BookOpen className="h-4 w-4 mr-1" /> Library
+              <BookOpen className="h-4 w-4 mr-1" /> {t("library")}
             </Button>
             <Button variant="ghost" size="sm" onClick={handleSignOut}>
               <LogOut className="h-4 w-4" />
             </Button>
           </div>
-          <Button variant="ghost" size="icon" className="sm:hidden" onClick={handleSignOut}>
-            <LogOut className="h-4 w-4" />
-          </Button>
+          <div className="flex items-center gap-2 sm:hidden">
+            <LanguageSwitcher />
+            <Button variant="ghost" size="icon" onClick={handleSignOut}>
+              <LogOut className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -197,19 +202,19 @@ export default function Dashboard() {
         <div className="flex items-center justify-around py-2">
           <button onClick={() => navigate("/dashboard")} className="flex flex-col items-center gap-0.5 px-3 py-1 text-primary">
             <Zap className="h-5 w-5" />
-            <span className="text-[10px] font-semibold">Plan</span>
+            <span className="text-[10px] font-semibold">{t("plan")}</span>
           </button>
           <button onClick={() => navigate("/progress")} className="flex flex-col items-center gap-0.5 px-3 py-1 text-muted-foreground">
             <BarChart3 className="h-5 w-5" />
-            <span className="text-[10px] font-semibold">Progress</span>
+            <span className="text-[10px] font-semibold">{t("progress")}</span>
           </button>
           <button onClick={() => navigate("/library")} className="flex flex-col items-center gap-0.5 px-3 py-1 text-muted-foreground">
             <BookOpen className="h-5 w-5" />
-            <span className="text-[10px] font-semibold">Library</span>
+            <span className="text-[10px] font-semibold">{t("library")}</span>
           </button>
           <button onClick={() => navigate("/profile-setup")} className="flex flex-col items-center gap-0.5 px-3 py-1 text-muted-foreground">
             <User className="h-5 w-5" />
-            <span className="text-[10px] font-semibold">Profile</span>
+            <span className="text-[10px] font-semibold">{t("profile")}</span>
           </button>
         </div>
       </nav>
@@ -231,7 +236,7 @@ export default function Dashboard() {
                 <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-2">
                   {profile.belt_level && (
                     <span className="text-[10px] sm:text-xs bg-muted text-muted-foreground px-2 py-0.5 sm:py-1 rounded-full capitalize">
-                      {profile.belt_level} belt
+                      {profile.belt_level} {t("belt")}
                     </span>
                   )}
                   {profile.age && (
@@ -245,14 +250,14 @@ export default function Dashboard() {
                     </span>
                   )}
                   <span className="text-[10px] sm:text-xs bg-muted text-muted-foreground px-2 py-0.5 sm:py-1 rounded-full">
-                    {profile.tkd_sessions_per_week}x TKD/week
+                    {profile.tkd_sessions_per_week}x {t("tkdPerWeek")}
                   </span>
                 </div>
                 {profile.goals?.length > 0 && (
                   <div className="flex flex-wrap gap-1 mt-2">
                     {profile.goals.map((g) => (
                       <span key={g} className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                        {g}
+                        {t(g as any) || g}
                       </span>
                     ))}
                   </div>
@@ -261,9 +266,9 @@ export default function Dashboard() {
               </div>
               <Button onClick={generatePlan} disabled={generating} size="sm" className="w-full sm:w-auto">
                 {generating ? (
-                  <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> Generating...</>
+                  <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
                 ) : (
-                  <><Plus className="h-4 w-4 mr-1" /> Generate Plan</>
+                  <><Plus className="h-4 w-4 mr-1" /> {t("generatePlan")}</>
                 )}
               </Button>
             </div>
@@ -276,9 +281,9 @@ export default function Dashboard() {
         ) : (
           <div className="rounded-xl border border-border bg-card p-12 text-center shadow-card">
             <Zap className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
-            <h3 className="font-bold text-foreground mb-1">No Training Plan Yet</h3>
+            <h3 className="font-bold text-foreground mb-1">{t("noTrainingPlanYet")}</h3>
             <p className="text-sm text-muted-foreground mb-4">
-              Click "Generate Plan" above to create an AI-powered training plan tailored to your profile.
+              {t("noTrainingPlanDesc")}
             </p>
           </div>
         )}
@@ -287,24 +292,24 @@ export default function Dashboard() {
         <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
           <div className="flex items-center gap-2">
             <Heart className="h-5 w-5 text-destructive" />
-            <h3 className="font-bold text-foreground">Injury Rehab Plan</h3>
+            <h3 className="font-bold text-foreground">{t("injuryRehabPlan")}</h3>
           </div>
           <p className="text-xs text-muted-foreground">
-            Describe your injury to generate a personalized rehabilitation program with progressive return-to-sport protocols.
+            {t("rehabDescription")}
           </p>
           <div className="flex flex-col sm:flex-row gap-2">
             <Input
               value={rehabInjury}
               onChange={(e) => setRehabInjury(e.target.value)}
-              placeholder="e.g. Grade 1 hamstring tear, left knee tendinitis..."
+              placeholder={t("rehabPlaceholder")}
               maxLength={200}
               className="flex-1"
             />
             <Button onClick={generateRehabPlan} disabled={generatingRehab || !rehabInjury.trim()} size="sm" className="w-full sm:w-auto">
               {generatingRehab ? (
-                <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> Generating...</>
+                <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
               ) : (
-                <><Heart className="h-4 w-4 mr-1" /> Generate Rehab Plan</>
+                <><Heart className="h-4 w-4 mr-1" /> {t("generateRehabPlan")}</>
               )}
             </Button>
           </div>
@@ -316,7 +321,7 @@ export default function Dashboard() {
         {/* Previous plans */}
         {plans.filter(p => !p.is_active).length > 0 && (
           <div>
-            <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">Previous Plans</h3>
+            <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">{t("previousPlans")}</h3>
             <div className="space-y-3">
               {plans.filter(p => !p.is_active).map((plan) => (
                 <div key={plan.id} className="rounded-lg border border-border bg-card/50 p-4 flex items-center justify-between">
@@ -331,7 +336,7 @@ export default function Dashboard() {
                     await supabase.from("training_plans").update({ is_active: true }).eq("id", plan.id);
                     loadData();
                   }}>
-                    Activate
+                    {t("activate")}
                   </Button>
                 </div>
               ))}
@@ -342,7 +347,7 @@ export default function Dashboard() {
         {/* Previous rehab plans */}
         {rehabPlans.filter(p => !p.is_active).length > 0 && (
           <div>
-            <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">Previous Rehab Plans</h3>
+            <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">{t("previousRehabPlans")}</h3>
             <div className="space-y-3">
               {rehabPlans.filter(p => !p.is_active).map((rp) => (
                 <div key={rp.id} className="rounded-lg border border-border bg-card/50 p-4 flex items-center justify-between">
@@ -358,13 +363,13 @@ export default function Dashboard() {
                       await supabase.from("rehab_plans").update({ is_active: true } as any).eq("id", rp.id);
                       loadData();
                     }}>
-                      Activate
+                      {t("activate")}
                     </Button>
                     <Button variant="ghost" size="sm" className="text-destructive" onClick={async () => {
                       await supabase.from("rehab_plans").delete().eq("id", rp.id);
                       loadData();
                     }}>
-                      Delete
+                      {t("delete")}
                     </Button>
                   </div>
                 </div>
