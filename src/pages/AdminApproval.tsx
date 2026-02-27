@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Loader2, CheckCircle, XCircle, ArrowLeft, Download, Shield } from "lucide-react";
+import { Loader2, CheckCircle, XCircle, ArrowLeft, Download, Shield, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 
@@ -191,6 +191,26 @@ export default function AdminApproval() {
     loadUsers();
   };
 
+  const [deletingUser, setDeletingUser] = useState<string | null>(null);
+
+  const deleteUser = async (userId: string, displayName: string) => {
+    if (!confirm(`Are you sure you want to permanently delete "${displayName || "this user"}"? This cannot be undone.`)) return;
+    setDeletingUser(userId);
+    try {
+      const { data, error } = await supabase.functions.invoke("delete-user", {
+        body: { user_id: userId },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      toast({ title: "User deleted" });
+      loadUsers();
+    } catch (err: any) {
+      toast({ title: t("error"), description: err.message, variant: "destructive" });
+    } finally {
+      setDeletingUser(null);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -271,7 +291,7 @@ export default function AdminApproval() {
           ))}
         </div>
       )}
-      {/* Coach role toggle */}
+      {/* Coach role toggle & delete */}
       <div className="flex items-center gap-2 pt-1 border-t border-border mt-2">
         <Button
           variant={u.isCoach ? "destructive" : "outline"}
@@ -287,6 +307,19 @@ export default function AdminApproval() {
             {t("coach")}
           </span>
         )}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-7 text-xs text-destructive ml-auto"
+          disabled={deletingUser === u.user_id}
+          onClick={() => deleteUser(u.user_id, u.display_name)}
+        >
+          {deletingUser === u.user_id ? (
+            <Loader2 className="h-3 w-3 animate-spin" />
+          ) : (
+            <><Trash2 className="h-3 w-3 mr-1" /> Delete</>
+          )}
+        </Button>
       </div>
     </div>
   );
