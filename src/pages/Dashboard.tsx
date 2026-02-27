@@ -31,6 +31,15 @@ interface TrainingPlan {
   created_at: string;
 }
 
+interface RehabPlanRow {
+  id: string;
+  name: string;
+  injury_description: string;
+  plan_data: any;
+  is_active: boolean;
+  created_at: string;
+}
+
 export default function Dashboard() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [plans, setPlans] = useState<TrainingPlan[]>([]);
@@ -38,6 +47,7 @@ export default function Dashboard() {
   const [generatingRehab, setGeneratingRehab] = useState(false);
   const [rehabInjury, setRehabInjury] = useState("");
   const [rehabPlan, setRehabPlan] = useState<any>(null);
+  const [rehabPlans, setRehabPlans] = useState<RehabPlanRow[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -50,13 +60,19 @@ export default function Dashboard() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { navigate("/auth"); return; }
 
-    const [profileRes, plansRes] = await Promise.all([
+    const [profileRes, plansRes, rehabRes] = await Promise.all([
       supabase.from("profiles").select("*").eq("user_id", user.id).single(),
       supabase.from("training_plans").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
+      supabase.from("rehab_plans").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
     ]);
 
     if (profileRes.data) setProfile(profileRes.data as unknown as Profile);
     if (plansRes.data) setPlans(plansRes.data as unknown as TrainingPlan[]);
+    if (rehabRes.data) {
+      setRehabPlans(rehabRes.data as unknown as RehabPlanRow[]);
+      const active = (rehabRes.data as unknown as RehabPlanRow[]).find(r => r.is_active);
+      if (active) setRehabPlan(active.plan_data);
+    }
     setLoading(false);
   };
 
@@ -105,8 +121,24 @@ export default function Dashboard() {
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      // Deactivate previous rehab plans
+      await supabase.from("rehab_plans").update({ is_active: false } as any).eq("user_id", user.id);
+
+      await supabase.from("rehab_plans").insert({
+        user_id: user.id,
+        name: data.plan.rehabPlanName || "Rehab Plan",
+        injury_description: rehabInjury,
+        plan_data: data.plan,
+        is_active: true,
+      } as any);
+
       setRehabPlan(data.plan);
-      toast({ title: "Rehab plan generated!" });
+      toast({ title: "Rehab plan generated and saved!" });
+      loadData();
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
     } finally {
@@ -301,6 +333,40 @@ export default function Dashboard() {
                   }}>
                     Activate
                   </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Previous rehab plans */}
+        {rehabPlans.filter(p => !p.is_active).length > 0 && (
+          <div>
+            <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">Previous Rehab Plans</h3>
+            <div className="space-y-3">
+              {rehabPlans.filter(p => !p.is_active).map((rp) => (
+                <div key={rp.id} className="rounded-lg border border-border bg-card/50 p-4 flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-sm text-foreground">{rp.name}</p>
+                    <p className="text-xs text-muted-foreground">{rp.injury_description} · {new Date(rp.created_at).toLocaleDateString()}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={async () => {
+                      const { data: { user } } = await supabase.auth.getUser();
+                      if (!user) return;
+                      await supabase.from("rehab_plans").update({ is_active: false } as any).eq("user_id", user.id);
+                      await supabase.from("rehab_plans").update({ is_active: true } as any).eq("id", rp.id);
+                      loadData();
+                    }}>
+                      Activate
+                    </Button>
+                    <Button variant="ghost" size="sm" className="text-destructive" onClick={async () => {
+                      await supabase.from("rehab_plans").delete().eq("id", rp.id);
+                      loadData();
+                    }}>
+                      Delete
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>

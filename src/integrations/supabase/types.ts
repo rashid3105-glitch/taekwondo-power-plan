@@ -68,6 +68,39 @@ export type Database = {
         }
         Relationships: []
       }
+      rehab_plans: {
+        Row: {
+          created_at: string
+          id: string
+          injury_description: string
+          is_active: boolean
+          name: string
+          plan_data: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          injury_description?: string
+          is_active?: boolean
+          name?: string
+          plan_data?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          injury_description?: string
+          is_active?: boolean
+          name?: string
+          plan_data?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       training_plans: {
         Row: {
           created_at: string
