@@ -53,12 +53,9 @@ const Index = () => {
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <div className="flex justify-center">
             <Button onClick={() => navigate("/auth")} size="lg">
               {t("getStarted")} <ArrowRight className="h-4 w-4 ml-1" />
-            </Button>
-            <Button variant="outline" onClick={() => navigate("/library")} size="lg">
-              {t("browseExercises")}
             </Button>
           </div>
         </div>
