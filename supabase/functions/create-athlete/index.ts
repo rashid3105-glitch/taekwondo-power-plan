@@ -51,14 +51,31 @@ Deno.serve(async (req) => {
 
     if (createError) throw createError;
 
+    // Wait for the handle_new_user trigger to create the profile row
+    let profileExists = false;
+    for (let i = 0; i < 10; i++) {
+      const { data: check } = await adminClient
+        .from("profiles")
+        .select("user_id")
+        .eq("user_id", newUser.user!.id)
+        .maybeSingle();
+      if (check) { profileExists = true; break; }
+      await new Promise((r) => setTimeout(r, 300));
+    }
+
+    if (!profileExists) {
+      console.error("Profile not created by trigger after retries");
+    }
+
     // Update profile with additional fields if provided
     const profileUpdates: Record<string, any> = {};
-    if (age && typeof age === "number" && age >= 5 && age <= 99) profileUpdates.age = age;
+    if (age != null && typeof age === "number" && age >= 5 && age <= 99) profileUpdates.age = age;
     if (belt_level && typeof belt_level === "string") profileUpdates.belt_level = belt_level;
     if (experience_years != null && typeof experience_years === "number" && experience_years >= 0 && experience_years <= 50) profileUpdates.experience_years = experience_years;
 
     if (Object.keys(profileUpdates).length > 0) {
-      await adminClient.from("profiles").update(profileUpdates).eq("user_id", newUser.user!.id);
+      const { error: updateError } = await adminClient.from("profiles").update(profileUpdates).eq("user_id", newUser.user!.id);
+      if (updateError) console.error("Profile update error:", updateError);
     }
 
     // Link athlete to coach
