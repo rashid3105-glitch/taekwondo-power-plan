@@ -2,12 +2,14 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { AIPlanCard } from "@/components/AIPlanCard";
 import { RehabPlanCard } from "@/components/RehabPlanCard";
 import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekSchedulePicker";
-import { Loader2, Plus, Zap, Heart, Save, Calendar } from "lucide-react";
+import { Loader2, Plus, Zap, Heart, Save, Calendar, UserCog } from "lucide-react";
 
 interface AthleteProfile {
   user_id: string;
@@ -61,6 +63,9 @@ const DEFAULT_SCHEDULE: DaySchedule[] = [
   { day: "Sunday", type: "rest" },
 ];
 
+const BELT_LEVELS = ["white", "yellow", "green", "blue", "red", "black"];
+const EXPERIENCE_LEVELS = ["beginner", "intermediate", "elite"];
+
 export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: CoachAthleteDetailProps) {
   const { toast } = useToast();
   const { t, locale } = useLanguage();
@@ -68,12 +73,43 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
   const [generatingRehab, setGeneratingRehab] = useState(false);
   const [rehabDescription, setRehabDescription] = useState("");
   const [savingSchedule, setSavingSchedule] = useState(false);
+  const [savingProfile, setSavingProfile] = useState(false);
   const [schedule, setSchedule] = useState<DaySchedule[]>(
     (athlete.weekly_schedule as DaySchedule[]) || DEFAULT_SCHEDULE
   );
 
+  // Profile fields
+  const [age, setAge] = useState<string>(athlete.age?.toString() || "");
+  const [beltLevel, setBeltLevel] = useState(athlete.belt_level || "white");
+  const [experienceYears, setExperienceYears] = useState<string>(athlete.experience_years?.toString() || "");
+  const [weightKg, setWeightKg] = useState<string>(athlete.weight_kg?.toString() || "");
+
   const activePlan = plans.find(p => p.is_active);
   const activeRehab = rehabPlans.find(p => p.is_active);
+
+  const saveProfile = async () => {
+    setSavingProfile(true);
+    try {
+      const updates: Record<string, any> = {
+        belt_level: beltLevel,
+      };
+      if (age) updates.age = Math.min(Math.max(parseInt(age), 5), 99);
+      if (experienceYears) updates.experience_years = Math.min(Math.max(parseInt(experienceYears), 0), 50);
+      if (weightKg) updates.weight_kg = Math.min(Math.max(parseFloat(weightKg), 20), 200);
+
+      const { error } = await supabase
+        .from("profiles")
+        .update(updates)
+        .eq("user_id", athlete.user_id);
+      if (error) throw error;
+      toast({ title: t("profileSaved") });
+      await onRefresh();
+    } catch (err: any) {
+      toast({ title: t("error"), description: err.message, variant: "destructive" });
+    } finally {
+      setSavingProfile(false);
+    }
+  };
 
   const saveSchedule = async () => {
     setSavingSchedule(true);
@@ -165,6 +201,69 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
     <div className="space-y-4">
       <h3 className="font-bold text-foreground">{athlete.display_name}</h3>
 
+      {/* Athlete Profile */}
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
+        <div className="flex items-center justify-between">
+          <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+            <UserCog className="h-4 w-4" /> {t("athleteProfile")}
+          </h4>
+          <Button size="sm" variant="outline" onClick={saveProfile} disabled={savingProfile}>
+            {savingProfile ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Save className="h-4 w-4 mr-1" /> {t("save")}</>}
+          </Button>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="space-y-1">
+            <Label className="text-xs">{t("age")}</Label>
+            <Input
+              type="number"
+              min={5}
+              max={99}
+              value={age}
+              onChange={(e) => setAge(e.target.value)}
+              placeholder="—"
+              className="h-9"
+            />
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs">{t("weightKg")}</Label>
+            <Input
+              type="number"
+              min={20}
+              max={200}
+              step={0.1}
+              value={weightKg}
+              onChange={(e) => setWeightKg(e.target.value)}
+              placeholder="—"
+              className="h-9"
+            />
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs">{t("beltLevel")}</Label>
+            <Select value={beltLevel} onValueChange={setBeltLevel}>
+              <SelectTrigger className="h-9">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {BELT_LEVELS.map((b) => (
+                  <SelectItem key={b} value={b}>{t(b as any)}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs">{t("yearsOfExperience")}</Label>
+            <Input
+              type="number"
+              min={0}
+              max={50}
+              value={experienceYears}
+              onChange={(e) => setExperienceYears(e.target.value)}
+              placeholder="—"
+              className="h-9"
+            />
+          </div>
+        </div>
+      </div>
       {/* Weekly Schedule */}
       <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
         <div className="flex items-center justify-between">
