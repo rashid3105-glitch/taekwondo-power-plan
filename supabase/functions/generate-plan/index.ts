@@ -28,6 +28,7 @@ For each exercise, include:
 - Brief coaching cue
 - Why it matters for taekwondo specifically
 - A category: "power", "speed", "strength", "plyometric", or "mobility"
+- Two alternative exercises (with name + brief reason) the athlete can do if the primary exercise isn't possible in their gym
 
 Return a valid JSON object with this exact structure:
 {
@@ -47,7 +48,11 @@ Return a valid JSON object with this exact structure:
           "tempo": "string or null",
           "rest": "string",
           "coachingCue": "string",
-          "whyItMatters": "string"
+          "whyItMatters": "string",
+          "alternatives": [
+            { "name": "string", "reason": "string" },
+            { "name": "string", "reason": "string" }
+          ]
         }
       ]
     }

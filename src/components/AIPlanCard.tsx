@@ -127,6 +127,22 @@ async function generatePDF(plan: AIPlanCardProps["plan"]) {
           doc.setTextColor(0);
         }
 
+        if (ex.alternatives?.length > 0) {
+          checkSpace(12);
+          doc.setFontSize(8);
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor(100);
+          doc.text("Alternatives:", margin + 10, y);
+          y += 3.5;
+          doc.setFont("helvetica", "normal");
+          for (const alt of ex.alternatives) {
+            const altLine = doc.splitTextToSize(`• ${alt.name} — ${alt.reason}`, pageW - 14);
+            doc.text(altLine, margin + 12, y);
+            y += altLine.length * 3.5;
+          }
+          doc.setTextColor(0);
+        }
+
         y += 3;
       }
     } else {
@@ -275,6 +291,17 @@ function AIExerciseRow({ exercise, index }: { exercise: any; index: number }) {
             <span className="font-semibold text-primary">Why for TKD: </span>
             {exercise.whyItMatters}
           </p>
+          {exercise.alternatives?.length > 0 && (
+            <div className="rounded-md bg-muted/60 p-2.5 space-y-1">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Alternatives</p>
+              {exercise.alternatives.map((alt: any, k: number) => (
+                <p key={k} className="text-xs text-foreground">
+                  <span className="font-semibold">{alt.name}</span>
+                  <span className="text-muted-foreground"> — {alt.reason}</span>
+                </p>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
