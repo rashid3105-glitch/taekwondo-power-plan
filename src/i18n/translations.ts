@@ -171,6 +171,14 @@ const translations = {
     yourAthleteCode: "Your Athlete Code",
     iAmACoach: "I am a coach",
     iAmACoachDesc: "Check this if you want to create training plans for athletes. Requires admin approval.",
+    createAthlete: "Create Athlete",
+    createAthleteDesc: "Create a new athlete account. The athlete will need admin approval before they can log in.",
+    athleteName: "Name",
+    athleteEmail: "Email",
+    athletePassword: "Password",
+    athleteCreated: "Athlete account created!",
+    athleteCreatedDesc: "The athlete will need admin approval before they can log in.",
+    orAddByCode: "Or add existing athlete by code",
   },
   da: {
     // Common
@@ -342,6 +350,14 @@ const translations = {
     yourAthleteCode: "Din atletkode",
     iAmACoach: "Jeg er træner",
     iAmACoachDesc: "Markér dette, hvis du vil oprette træningsplaner for atleter. Kræver administratorgodkendelse.",
+    createAthlete: "Opret atlet",
+    createAthleteDesc: "Opret en ny atletkonto. Atleten skal godkendes af en administrator, før de kan logge ind.",
+    athleteName: "Navn",
+    athleteEmail: "E-mail",
+    athletePassword: "Adgangskode",
+    athleteCreated: "Atletkonto oprettet!",
+    athleteCreatedDesc: "Atleten skal godkendes af en administrator, før de kan logge ind.",
+    orAddByCode: "Eller tilføj eksisterende atlet med kode",
   },
 } as const;
 
