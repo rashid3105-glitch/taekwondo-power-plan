@@ -33,6 +33,18 @@ For each exercise, include:
 Return a valid JSON object with this exact structure:
 {
   "planName": "string",
+  "periodization": [
+    {
+      "phase": "string (e.g. 'Anatomical Adaptation', 'Accumulation', 'Intensification', 'Peaking', 'Deload')",
+      "weeks": "string (e.g. '1-3')",
+      "startWeek": number,
+      "endWeek": number,
+      "focus": "string (brief description of what this phase targets)",
+      "volumePercent": number (0-100, relative training volume),
+      "intensityPercent": number (0-100, relative intensity/load),
+      "keyChanges": "string (what changes from previous phase, e.g. 'Add plyometrics, reduce sets by 20%')"
+    }
+  ],
   "weeklySchedule": [
     {
       "dayOfWeek": "Monday",
@@ -58,6 +70,8 @@ Return a valid JSON object with this exact structure:
     }
   ]
 }
+
+The weeklySchedule represents the BASE WEEK template. The periodization array describes how to modify volume/intensity across the entire program duration. Create realistic periodization phases that make sense for the athlete's level and goals.
 
 IMPORTANT: Return ONLY the JSON object, no markdown, no code fences, no explanatory text.`;
 
