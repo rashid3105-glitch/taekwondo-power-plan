@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Zap, User, BookOpen, Plus, LogOut, Loader2 } from "lucide-react";
+import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { AIPlanCard } from "@/components/AIPlanCard";
 
@@ -113,6 +113,9 @@ export default function Dashboard() {
             <span className="text-sm sm:text-base font-extrabold text-foreground">TKD POWER</span>
           </div>
           <div className="hidden sm:flex items-center gap-2">
+            <Button variant="ghost" size="sm" onClick={() => navigate("/progress")}>
+              <BarChart3 className="h-4 w-4 mr-1" /> Progress
+            </Button>
             <Button variant="ghost" size="sm" onClick={() => navigate("/profile-setup")}>
               <User className="h-4 w-4 mr-1" /> Profile
             </Button>
@@ -135,6 +138,10 @@ export default function Dashboard() {
           <button onClick={() => navigate("/dashboard")} className="flex flex-col items-center gap-0.5 px-3 py-1 text-primary">
             <Zap className="h-5 w-5" />
             <span className="text-[10px] font-semibold">Plan</span>
+          </button>
+          <button onClick={() => navigate("/progress")} className="flex flex-col items-center gap-0.5 px-3 py-1 text-muted-foreground">
+            <BarChart3 className="h-5 w-5" />
+            <span className="text-[10px] font-semibold">Progress</span>
           </button>
           <button onClick={() => navigate("/library")} className="flex flex-col items-center gap-0.5 px-3 py-1 text-muted-foreground">
             <BookOpen className="h-5 w-5" />
