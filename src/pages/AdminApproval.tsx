@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Loader2, CheckCircle, XCircle, ArrowLeft, Download } from "lucide-react";
+import { Loader2, CheckCircle, XCircle, ArrowLeft, Download, Shield } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 
@@ -26,6 +26,7 @@ interface PendingUser {
   tkd_sessions_per_week: number;
   email?: string;
   plans?: UserPlan[];
+  isCoach?: boolean;
 }
 
 export default function AdminApproval() {
@@ -49,7 +50,7 @@ export default function AdminApproval() {
   };
 
   const loadUsers = async () => {
-    const [profilesRes, emailsRes, plansRes] = await Promise.all([
+    const [profilesRes, emailsRes, plansRes, rolesRes] = await Promise.all([
       supabase
         .from("profiles")
         .select("user_id, display_name, created_at, is_approved, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week")
@@ -59,11 +60,15 @@ export default function AdminApproval() {
         .from("training_plans")
         .select("id, name, plan_data, created_at, user_id, is_active")
         .eq("is_active", true),
+      supabase.from("user_roles").select("user_id, role"),
     ]);
 
     const profiles = (profilesRes.data || []) as PendingUser[];
     const emailMap: Record<string, string> = emailsRes.data?.emailMap || {};
     const plans = (plansRes.data || []) as (UserPlan & { user_id: string })[];
+    const roles = (rolesRes.data || []) as { user_id: string; role: string }[];
+
+    const coachSet = new Set(roles.filter(r => r.role === "coach").map(r => r.user_id));
 
     const plansByUser: Record<string, UserPlan[]> = {};
     for (const p of plans) {
@@ -71,7 +76,12 @@ export default function AdminApproval() {
       plansByUser[p.user_id].push(p);
     }
 
-    setUsers(profiles.map(p => ({ ...p, email: emailMap[p.user_id] || "", plans: plansByUser[p.user_id] || [] })));
+    setUsers(profiles.map(p => ({
+      ...p,
+      email: emailMap[p.user_id] || "",
+      plans: plansByUser[p.user_id] || [],
+      isCoach: coachSet.has(p.user_id),
+    })));
     setLoading(false);
   };
 
@@ -170,6 +180,17 @@ export default function AdminApproval() {
     }
   };
 
+  const toggleCoachRole = async (userId: string, isCurrentlyCoach: boolean) => {
+    if (isCurrentlyCoach) {
+      await supabase.from("user_roles").delete().eq("user_id", userId).eq("role", "coach" as any);
+      toast({ title: t("coachRoleRevoked") });
+    } else {
+      await supabase.from("user_roles").insert({ user_id: userId, role: "coach" as any } as any);
+      toast({ title: t("coachRoleGranted") });
+    }
+    loadUsers();
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -250,6 +271,23 @@ export default function AdminApproval() {
           ))}
         </div>
       )}
+      {/* Coach role toggle */}
+      <div className="flex items-center gap-2 pt-1 border-t border-border mt-2">
+        <Button
+          variant={u.isCoach ? "destructive" : "outline"}
+          size="sm"
+          className="h-7 text-xs"
+          onClick={() => toggleCoachRole(u.user_id, !!u.isCoach)}
+        >
+          <Shield className="h-3 w-3 mr-1" />
+          {u.isCoach ? t("removeCoach") : t("makeCoach")}
+        </Button>
+        {u.isCoach && (
+          <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-semibold">
+            {t("coach")}
+          </span>
+        )}
+      </div>
     </div>
   );
 
