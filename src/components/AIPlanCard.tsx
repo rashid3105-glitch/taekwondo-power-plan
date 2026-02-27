@@ -1,7 +1,11 @@
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Shield, Dumbbell, Battery, Download, Loader2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Shield, Dumbbell, Battery, Download, Loader2, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { useWorkoutLogs, type WorkoutLog } from "@/hooks/useWorkoutLogs";
+import { cn } from "@/lib/utils";
 
 const CATEGORY_DOT: Record<string, string> = {
   power: "bg-accent",
@@ -37,7 +41,6 @@ async function generatePDF(plan: AIPlanCardProps["plan"]) {
   const addPage = () => { doc.addPage(); y = margin; };
   const checkSpace = (needed: number) => { if (y + needed > 280) addPage(); };
 
-  // Title
   doc.setFont("helvetica", "bold");
   doc.setFontSize(20);
   doc.text(plan.name, margin, y);
@@ -51,8 +54,6 @@ async function generatePDF(plan: AIPlanCardProps["plan"]) {
 
   for (const day of schedule) {
     checkSpace(30);
-
-    // Day header
     doc.setFillColor(30, 35, 50);
     doc.roundedRect(margin, y, pageW, 10, 2, 2, "F");
     doc.setFont("helvetica", "bold");
@@ -76,7 +77,6 @@ async function generatePDF(plan: AIPlanCardProps["plan"]) {
     }
 
     if (day.exercises?.length > 0) {
-      // Table header
       checkSpace(10);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(8);
@@ -95,7 +95,6 @@ async function generatePDF(plan: AIPlanCardProps["plan"]) {
       for (let j = 0; j < day.exercises.length; j++) {
         const ex = day.exercises[j];
         checkSpace(20);
-
         doc.setFont("helvetica", "normal");
         doc.setFontSize(9);
         doc.text(String(j + 1).padStart(2, "0"), margin + 2, y);
@@ -166,6 +165,7 @@ export function AIPlanCard({ plan }: AIPlanCardProps) {
   const [exporting, setExporting] = useState(false);
   const schedule = plan.plan_data?.weeklySchedule || [];
   const { toast } = useToast();
+  const { upsertLog, getLog, today } = useWorkoutLogs(plan.id, selectedDay);
 
   const handleDownload = async () => {
     setExporting(true);
@@ -179,12 +179,20 @@ export function AIPlanCard({ plan }: AIPlanCardProps) {
     }
   };
 
+  // Count completed exercises for each day
+  const completedCounts = schedule.map((_: any, i: number) => {
+    // We only have logs for the selected day, so show a checkmark logic in the day cards
+    return null;
+  });
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-2">
         <div className="min-w-0">
           <h2 className="text-base sm:text-lg font-bold text-foreground truncate">{plan.name}</h2>
-          <p className="text-xs text-muted-foreground">Generated {new Date(plan.created_at).toLocaleDateString()}</p>
+          <p className="text-xs text-muted-foreground">
+            Generated {new Date(plan.created_at).toLocaleDateString()} · Logging for {new Date(today).toLocaleDateString()}
+          </p>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
           <Button variant="outline" size="sm" onClick={handleDownload} disabled={exporting}>
@@ -233,7 +241,16 @@ export function AIPlanCard({ plan }: AIPlanCardProps) {
           {schedule[selectedDay].exercises?.length > 0 ? (
             <div className="space-y-2">
               {schedule[selectedDay].exercises.map((ex: any, j: number) => (
-                <AIExerciseRow key={j} exercise={ex} index={j + 1} />
+                <AIExerciseRow
+                  key={j}
+                  exercise={ex}
+                  index={j + 1}
+                  log={getLog(j)}
+                  onToggleComplete={(completed) => upsertLog(j, { completed })}
+                  onUpdateSets={(actual_sets) => upsertLog(j, { actual_sets })}
+                  onUpdateReps={(actual_reps) => upsertLog(j, { actual_reps })}
+                  onUpdateNotes={(notes) => upsertLog(j, { notes })}
+                />
               ))}
             </div>
           ) : (
@@ -247,29 +264,104 @@ export function AIPlanCard({ plan }: AIPlanCardProps) {
   );
 }
 
-function AIExerciseRow({ exercise, index }: { exercise: any; index: number }) {
+interface AIExerciseRowProps {
+  exercise: any;
+  index: number;
+  log?: WorkoutLog;
+  onToggleComplete: (completed: boolean) => void;
+  onUpdateSets: (sets: number | null) => void;
+  onUpdateReps: (reps: string | null) => void;
+  onUpdateNotes: (notes: string | null) => void;
+}
+
+function AIExerciseRow({ exercise, index, log, onToggleComplete, onUpdateSets, onUpdateReps, onUpdateNotes }: AIExerciseRowProps) {
   const [open, setOpen] = useState(false);
+  const completed = log?.completed ?? false;
 
   return (
-    <div className="rounded-lg border border-border bg-secondary/30 overflow-hidden">
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary/60 transition-colors cursor-pointer"
-      >
-        <span className="mono text-xs text-muted-foreground w-5">{String(index).padStart(2, "0")}</span>
-        <span className={`h-2 w-2 rounded-full flex-shrink-0 ${CATEGORY_DOT[exercise.category] || "bg-muted"}`} />
-        <span className="font-semibold text-sm text-foreground flex-1 text-left">{exercise.name}</span>
-        <span className="text-xs text-muted-foreground mr-2">
-          {exercise.sets}×{exercise.reps}
-        </span>
-        {open ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
-      </button>
+    <div className={cn(
+      "rounded-lg border overflow-hidden transition-all",
+      completed ? "border-primary/40 bg-primary/5" : "border-border bg-secondary/30"
+    )}>
+      <div className="flex items-center">
+        {/* Checkbox */}
+        <div
+          className="flex items-center justify-center px-3 py-3 cursor-pointer"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Checkbox
+            checked={completed}
+            onCheckedChange={(checked) => onToggleComplete(!!checked)}
+            className="h-5 w-5"
+          />
+        </div>
+
+        {/* Header button */}
+        <button
+          onClick={() => setOpen(!open)}
+          className="flex-1 flex items-center gap-3 px-1 py-3 hover:bg-secondary/60 transition-colors cursor-pointer"
+        >
+          <span className="mono text-xs text-muted-foreground w-5">{String(index).padStart(2, "0")}</span>
+          <span className={`h-2 w-2 rounded-full flex-shrink-0 ${CATEGORY_DOT[exercise.category] || "bg-muted"}`} />
+          <span className={cn(
+            "font-semibold text-sm flex-1 text-left",
+            completed ? "text-muted-foreground line-through" : "text-foreground"
+          )}>
+            {exercise.name}
+          </span>
+          <span className="text-xs text-muted-foreground mr-2">
+            {log?.actual_sets ?? exercise.sets}×{log?.actual_reps ?? exercise.reps}
+          </span>
+          {completed && <Check className="h-4 w-4 text-primary mr-1" />}
+          {open ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+        </button>
+      </div>
 
       {open && (
         <div className="px-4 pb-4 pt-1 space-y-3 animate-slide-up">
+          {/* Logging inputs */}
+          <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 space-y-3">
+            <p className="text-[10px] uppercase tracking-wider text-primary font-bold">Log Your Workout</p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              <div>
+                <label className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1 block">Actual Sets</label>
+                <Input
+                  type="number"
+                  min={0}
+                  max={20}
+                  placeholder={String(exercise.sets)}
+                  value={log?.actual_sets ?? ""}
+                  onChange={(e) => onUpdateSets(e.target.value ? Number(e.target.value) : null)}
+                  className="h-8 text-sm"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1 block">Actual Reps</label>
+                <Input
+                  type="text"
+                  placeholder={exercise.reps}
+                  value={log?.actual_reps ?? ""}
+                  onChange={(e) => onUpdateReps(e.target.value || null)}
+                  className="h-8 text-sm"
+                />
+              </div>
+              <div className="col-span-2 sm:col-span-1">
+                <label className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1 block">Notes</label>
+                <Input
+                  type="text"
+                  placeholder="Weight, RPE, etc."
+                  value={log?.notes ?? ""}
+                  onChange={(e) => onUpdateNotes(e.target.value || null)}
+                  className="h-8 text-sm"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Prescribed details */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
             <div className="rounded-md bg-muted p-2.5">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Sets × Reps</p>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Prescribed Sets × Reps</p>
               <p className="text-sm font-bold text-foreground">{exercise.sets} × {exercise.reps}</p>
             </div>
             <div className="rounded-md bg-muted p-2.5">

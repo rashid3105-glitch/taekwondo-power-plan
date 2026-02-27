@@ -95,6 +95,59 @@ export type Database = {
         }
         Relationships: []
       }
+      workout_logs: {
+        Row: {
+          actual_reps: string | null
+          actual_sets: number | null
+          completed: boolean
+          created_at: string
+          day_index: number
+          exercise_index: number
+          id: string
+          logged_date: string
+          notes: string | null
+          plan_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          actual_reps?: string | null
+          actual_sets?: number | null
+          completed?: boolean
+          created_at?: string
+          day_index: number
+          exercise_index: number
+          id?: string
+          logged_date?: string
+          notes?: string | null
+          plan_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          actual_reps?: string | null
+          actual_sets?: number | null
+          completed?: boolean
+          created_at?: string
+          day_index?: number
+          exercise_index?: number
+          id?: string
+          logged_date?: string
+          notes?: string | null
+          plan_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workout_logs_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "training_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
