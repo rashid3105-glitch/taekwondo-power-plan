@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { AIPlanCard } from "@/components/AIPlanCard";
+import { CoachAthleteDetail } from "@/components/CoachAthleteDetail";
 import {
   ArrowLeft, Loader2, UserPlus, Trash2, Zap, Plus, User,
 } from "lucide-react";
@@ -36,9 +36,20 @@ interface AthletePlan {
   user_id: string;
 }
 
+interface RehabPlan {
+  id: string;
+  name: string;
+  plan_data: any;
+  is_active: boolean;
+  created_at: string;
+  user_id: string;
+  injury_description: string;
+}
+
 export default function CoachDashboard() {
   const [athletes, setAthletes] = useState<AthleteProfile[]>([]);
   const [plans, setPlans] = useState<AthletePlan[]>([]);
+  const [rehabPlans, setRehabPlans] = useState<RehabPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [athleteCode, setAthleteCode] = useState("");
   const [adding, setAdding] = useState(false);
@@ -47,7 +58,6 @@ export default function CoachDashboard() {
   const [newAthleteEmail, setNewAthleteEmail] = useState("");
   const [newAthletePassword, setNewAthletePassword] = useState("");
   const [creating, setCreating] = useState(false);
-  const [generatingFor, setGeneratingFor] = useState<string | null>(null);
   const [selectedAthlete, setSelectedAthlete] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -80,13 +90,14 @@ export default function CoachDashboard() {
     if (!links || links.length === 0) {
       setAthletes([]);
       setPlans([]);
+      setRehabPlans([]);
       setLoading(false);
       return;
     }
 
     const athleteIds = links.map((l: any) => l.athlete_id);
 
-    const [profilesRes, plansRes] = await Promise.all([
+    const [profilesRes, plansRes, rehabRes] = await Promise.all([
       supabase
         .from("profiles")
         .select("user_id, display_name, athlete_code, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, current_injury, program_weeks, weekly_schedule, avatar_url")
@@ -96,10 +107,16 @@ export default function CoachDashboard() {
         .select("id, name, plan_data, is_active, created_at, user_id")
         .in("user_id", athleteIds)
         .order("created_at", { ascending: false }),
+      supabase
+        .from("rehab_plans")
+        .select("id, name, plan_data, is_active, created_at, user_id, injury_description")
+        .in("user_id", athleteIds)
+        .order("created_at", { ascending: false }),
     ]);
 
     setAthletes((profilesRes.data || []) as unknown as AthleteProfile[]);
     setPlans((plansRes.data || []) as unknown as AthletePlan[]);
+    setRehabPlans((rehabRes.data || []) as unknown as RehabPlan[]);
     setLoading(false);
   };
 
@@ -174,40 +191,6 @@ export default function CoachDashboard() {
     await loadAthletes();
   };
 
-  const generatePlanForAthlete = async (athlete: AthleteProfile) => {
-    setGeneratingFor(athlete.user_id);
-    try {
-      const { data, error } = await supabase.functions.invoke("generate-plan", {
-        body: { profile: athlete, language: locale },
-      });
-
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-
-      // Deactivate existing plans for this athlete
-      await supabase
-        .from("training_plans")
-        .update({ is_active: false })
-        .eq("user_id", athlete.user_id);
-
-      const { error: insertError } = await supabase.from("training_plans").insert({
-        user_id: athlete.user_id,
-        name: data.plan.planName || "Coach Generated Plan",
-        plan_data: data.plan,
-        is_active: true,
-      });
-
-      if (insertError) throw insertError;
-
-      toast({ title: t("planGenerated"), description: `${t("planGeneratedDesc")} - ${athlete.display_name}` });
-      await loadAthletes();
-    } catch (err: any) {
-      toast({ title: t("error"), description: err.message, variant: "destructive" });
-    } finally {
-      setGeneratingFor(null);
-    }
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -218,7 +201,7 @@ export default function CoachDashboard() {
 
   const selectedAthleteProfile = athletes.find(a => a.user_id === selectedAthlete);
   const selectedAthletePlans = plans.filter(p => p.user_id === selectedAthlete);
-  const activePlan = selectedAthletePlans.find(p => p.is_active);
+  const selectedAthleteRehabs = rehabPlans.filter(p => p.user_id === selectedAthlete);
 
   return (
     <div className="min-h-screen bg-background">
@@ -387,33 +370,12 @@ export default function CoachDashboard() {
 
         {/* Selected athlete detail */}
         {selectedAthleteProfile && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-foreground">
-                {selectedAthleteProfile.display_name} — {t("plan")}
-              </h3>
-              <Button
-                onClick={() => generatePlanForAthlete(selectedAthleteProfile)}
-                disabled={generatingFor === selectedAthleteProfile.user_id}
-                size="sm"
-              >
-                {generatingFor === selectedAthleteProfile.user_id ? (
-                  <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
-                ) : (
-                  <><Plus className="h-4 w-4 mr-1" /> {t("generatePlan")}</>
-                )}
-              </Button>
-            </div>
-
-            {activePlan ? (
-              <AIPlanCard plan={activePlan} />
-            ) : (
-              <div className="rounded-xl border border-border bg-card p-8 text-center shadow-card">
-                <Zap className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
-                <p className="text-sm text-muted-foreground">{t("noTrainingPlanYet")}</p>
-              </div>
-            )}
-          </div>
+          <CoachAthleteDetail
+            athlete={selectedAthleteProfile}
+            plans={selectedAthletePlans}
+            rehabPlans={selectedAthleteRehabs}
+            onRefresh={loadAthletes}
+          />
         )}
       </main>
     </div>
