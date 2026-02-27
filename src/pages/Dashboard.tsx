@@ -52,7 +52,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
 
   useEffect(() => {
     loadData();
@@ -84,7 +84,7 @@ export default function Dashboard() {
 
     try {
       const { data, error } = await supabase.functions.invoke("generate-plan", {
-        body: { profile },
+        body: { profile, language: locale },
       });
 
       if (error) throw error;
@@ -119,7 +119,7 @@ export default function Dashboard() {
     setGeneratingRehab(true);
     try {
       const { data, error } = await supabase.functions.invoke("generate-rehab-plan", {
-        body: { injury: rehabInjury, profile },
+        body: { injury: rehabInjury, profile, language: locale },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);

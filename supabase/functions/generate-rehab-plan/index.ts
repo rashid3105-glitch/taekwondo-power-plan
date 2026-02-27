@@ -9,7 +9,8 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { injury, profile } = await req.json();
+    const { injury, profile, language } = await req.json();
+    const lang = language === "da" ? "Danish" : "English";
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
@@ -59,7 +60,8 @@ Return a valid JSON object with this exact structure:
   ]
 }
 
-IMPORTANT: Return ONLY the JSON object, no markdown, no code fences.`;
+IMPORTANT: Return ONLY the JSON object, no markdown, no code fences.
+IMPORTANT: ALL text content (rehabPlanName, injurySummary, importantNotes, phase names, goals, criteria, exercise names where appropriate, coachingCues, whyItMatters, progressionTips, painGuidelines) MUST be written in ${lang}.`;
 
     const userPrompt = `Create a rehabilitation plan for a taekwondo athlete with the following injury:
 
