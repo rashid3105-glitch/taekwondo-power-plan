@@ -2,9 +2,16 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Loader2, CheckCircle, XCircle, ArrowLeft } from "lucide-react";
+import { Loader2, CheckCircle, XCircle, ArrowLeft, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
+
+interface UserPlan {
+  id: string;
+  name: string;
+  plan_data: any;
+  created_at: string;
+}
 
 interface PendingUser {
   user_id: string;
@@ -18,6 +25,7 @@ interface PendingUser {
   goals: string[] | null;
   tkd_sessions_per_week: number;
   email?: string;
+  plans?: UserPlan[];
 }
 
 export default function AdminApproval() {
@@ -41,19 +49,99 @@ export default function AdminApproval() {
   };
 
   const loadUsers = async () => {
-    const [profilesRes, emailsRes] = await Promise.all([
+    const [profilesRes, emailsRes, plansRes] = await Promise.all([
       supabase
         .from("profiles")
         .select("user_id, display_name, created_at, is_approved, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week")
         .order("created_at", { ascending: false }),
       supabase.functions.invoke("get-admin-users"),
+      supabase
+        .from("training_plans")
+        .select("id, name, plan_data, created_at, user_id, is_active")
+        .eq("is_active", true),
     ]);
 
     const profiles = (profilesRes.data || []) as PendingUser[];
     const emailMap: Record<string, string> = emailsRes.data?.emailMap || {};
+    const plans = (plansRes.data || []) as (UserPlan & { user_id: string })[];
 
-    setUsers(profiles.map(p => ({ ...p, email: emailMap[p.user_id] || "" })));
+    const plansByUser: Record<string, UserPlan[]> = {};
+    for (const p of plans) {
+      if (!plansByUser[p.user_id]) plansByUser[p.user_id] = [];
+      plansByUser[p.user_id].push(p);
+    }
+
+    setUsers(profiles.map(p => ({ ...p, email: emailMap[p.user_id] || "", plans: plansByUser[p.user_id] || [] })));
     setLoading(false);
+  };
+
+  const [downloadingPlan, setDownloadingPlan] = useState<string | null>(null);
+
+  const handleDownloadPlan = async (plan: UserPlan) => {
+    setDownloadingPlan(plan.id);
+    try {
+      const { jsPDF } = await import("jspdf");
+      const doc = new jsPDF({ unit: "mm", format: "a4" });
+      const schedule = plan.plan_data?.weeklySchedule || [];
+      const margin = 15;
+      const pageW = 210 - margin * 2;
+      let y = margin;
+      const addPage = () => { doc.addPage(); y = margin; };
+      const checkSpace = (needed: number) => { if (y + needed > 280) addPage(); };
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(20);
+      doc.text(plan.name, margin, y);
+      y += 8;
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(120);
+      doc.text(`Generated ${new Date(plan.created_at).toLocaleDateString()}`, margin, y);
+      y += 12;
+      doc.setTextColor(0);
+
+      for (const day of schedule) {
+        checkSpace(30);
+        doc.setFillColor(30, 35, 50);
+        doc.roundedRect(margin, y, pageW, 10, 2, 2, "F");
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(11);
+        doc.setTextColor(255);
+        doc.text(`${day.dayOfWeek} — ${day.label}`, margin + 4, y + 7);
+        doc.setTextColor(0);
+        y += 14;
+
+        if (day.exercises?.length > 0) {
+          for (let j = 0; j < day.exercises.length; j++) {
+            const ex = day.exercises[j];
+            checkSpace(20);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(9);
+            doc.text(`${j + 1}. ${ex.name || ""}`, margin + 2, y);
+            doc.setFont("helvetica", "normal");
+            doc.text(`${ex.sets}×${ex.reps}  Rest: ${ex.rest || "—"}`, margin + 90, y);
+            y += 5;
+            if (ex.coachingCue) {
+              doc.setFontSize(8);
+              doc.setTextColor(80);
+              const lines = doc.splitTextToSize(`Coaching: ${ex.coachingCue}`, pageW - 12);
+              doc.text(lines, margin + 6, y);
+              y += lines.length * 3.5;
+              doc.setTextColor(0);
+            }
+            y += 2;
+          }
+        }
+        y += 4;
+      }
+
+      doc.save(`${plan.name.replace(/\s+/g, "_")}.pdf`);
+      toast({ title: "PDF downloaded!" });
+    } catch {
+      toast({ title: "PDF export failed", variant: "destructive" });
+    } finally {
+      setDownloadingPlan(null);
+    }
   };
 
   const approveUser = async (userId: string) => {
@@ -141,6 +229,27 @@ export default function AdminApproval() {
       <p className="text-[10px] text-muted-foreground">
         Joined: {new Date(u.created_at).toLocaleDateString()}
       </p>
+      {u.plans && u.plans.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 pt-1 border-t border-border mt-2">
+          {u.plans.map((plan) => (
+            <Button
+              key={plan.id}
+              variant="outline"
+              size="sm"
+              className="h-7 text-xs"
+              disabled={downloadingPlan === plan.id}
+              onClick={() => handleDownloadPlan(plan)}
+            >
+              {downloadingPlan === plan.id ? (
+                <Loader2 className="h-3 w-3 animate-spin mr-1" />
+              ) : (
+                <Download className="h-3 w-3 mr-1" />
+              )}
+              {plan.name}
+            </Button>
+          ))}
+        </div>
+      )}
     </div>
   );
 
