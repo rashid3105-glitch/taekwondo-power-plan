@@ -169,6 +169,8 @@ const translations = {
     coachRoleRevoked: "Coach role revoked.",
     coach: "Coach",
     yourAthleteCode: "Your Athlete Code",
+    iAmACoach: "I am a coach",
+    iAmACoachDesc: "Check this if you want to create training plans for athletes. Requires admin approval.",
   },
   da: {
     // Common
@@ -338,6 +340,8 @@ const translations = {
     coachRoleRevoked: "Trænerrolle fjernet.",
     coach: "Træner",
     yourAthleteCode: "Din atletkode",
+    iAmACoach: "Jeg er træner",
+    iAmACoachDesc: "Markér dette, hvis du vil oprette træningsplaner for atleter. Kræver administratorgodkendelse.",
   },
 } as const;
 

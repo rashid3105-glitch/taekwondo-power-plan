@@ -4,7 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Zap } from "lucide-react";
+import { Zap, Users } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -15,6 +16,7 @@ export default function AuthPage() {
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [wantsCoach, setWantsCoach] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
@@ -32,7 +34,7 @@ export default function AuthPage() {
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: { data: { display_name: displayName } },
+          options: { data: { display_name: displayName, wants_coach: wantsCoach } },
         });
         if (error) throw error;
         toast({ title: t("accountCreated"), description: t("youreSignedIn") });
@@ -94,9 +96,25 @@ export default function AuthPage() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
-              minLength={6}
-            />
+            minLength={6}
+          />
           </div>
+          {!isLogin && (
+            <div className="flex items-start gap-3 rounded-lg border border-border bg-card p-3">
+              <Checkbox
+                id="coach"
+                checked={wantsCoach}
+                onCheckedChange={(checked) => setWantsCoach(checked === true)}
+                className="mt-0.5"
+              />
+              <div className="space-y-0.5">
+                <label htmlFor="coach" className="text-sm font-medium text-foreground flex items-center gap-1.5 cursor-pointer">
+                  <Users className="h-4 w-4" /> {t("iAmACoach")}
+                </label>
+                <p className="text-[11px] text-muted-foreground leading-tight">{t("iAmACoachDesc")}</p>
+              </div>
+            </div>
+          )}
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? t("pleaseWait") : isLogin ? t("signIn") : t("createAccount")}
           </Button>
