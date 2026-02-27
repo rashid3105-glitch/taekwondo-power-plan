@@ -4,6 +4,11 @@ export type MuscleGroup =
   | "glutes" | "quads" | "hamstrings" | "calves" 
   | "core" | "hip-flexors" | "shoulders" | "back" | "chest";
 
+export interface ExerciseAlternative {
+  name: string;
+  reason: string;
+}
+
 export interface Exercise {
   id: string;
   name: string;
@@ -14,8 +19,9 @@ export interface Exercise {
   tempo?: string;
   rest: string;
   notes: string;
-  videoId: string; // YouTube video ID
+  videoId: string;
   whyItMatters: string;
+  alternatives?: ExerciseAlternative[];
 }
 
 export interface TrainingDay {
@@ -56,6 +62,10 @@ const exercises: Record<string, Exercise> = {
     notes: "Focus on maximal force into the ground. Stand tall explosively. No grinding reps — stop the set if bar speed drops.",
     videoId: "WzvsIU9FW60",
     whyItMatters: "Builds total-body force production without the spinal loading of back squats. The upright torso mimics kicking posture.",
+    alternatives: [
+      { name: "Barbell Deadlift", reason: "Same movement pattern if no trap bar is available" },
+      { name: "Goblet Squat", reason: "Lighter alternative that still trains hip extension with upright torso" },
+    ],
   },
   boxJumps: {
     id: "box-jumps",
@@ -68,6 +78,10 @@ const exercises: Record<string, Exercise> = {
     notes: "Maximum height intent. Step down (don't jump down) to protect joints. Full hip extension at the top.",
     videoId: "52r_Ul5k03g",
     whyItMatters: "Develops explosive hip extension — the engine behind roundhouse kicks and spinning techniques.",
+    alternatives: [
+      { name: "Squat Jumps", reason: "No box needed, still trains explosive hip extension" },
+      { name: "Broad Jumps", reason: "Horizontal plyometric that builds similar power" },
+    ],
   },
   hangCleanPull: {
     id: "hang-clean-pull",
@@ -81,6 +95,10 @@ const exercises: Record<string, Exercise> = {
     notes: "Drive through the floor, shrug hard at the top. No need to catch — focus on the pull. Use straps if grip limits load.",
     videoId: "FZaEqAAzH4Y",
     whyItMatters: "Trains rate of force development (RFD) and triple extension — ankles, knees, hips — exactly the chain used in explosive kicks.",
+    alternatives: [
+      { name: "Dumbbell High Pull", reason: "Similar triple extension pattern with dumbbells" },
+      { name: "Kettlebell Swing", reason: "Trains hip hinge explosiveness with simpler technique" },
+    ],
   },
   splitSquat: {
     id: "bulgarian-split-squat",
@@ -94,6 +112,10 @@ const exercises: Record<string, Exercise> = {
     notes: "Control the eccentric (3 sec down). Drive up powerfully. Keep torso upright. Addresses single-leg imbalances critical for kicking.",
     videoId: "2C-uNgKwPLE",
     whyItMatters: "Taekwondo is a single-leg sport. This builds unilateral strength and hip stability for powerful kicks off either leg.",
+    alternatives: [
+      { name: "Reverse Lunge", reason: "Similar unilateral pattern without needing a bench" },
+      { name: "Step-Up", reason: "Single-leg strength with less balance demand" },
+    ],
   },
   nordicCurl: {
     id: "nordic-curl",
@@ -107,6 +129,10 @@ const exercises: Record<string, Exercise> = {
     notes: "Control the descent as slowly as possible. Push off the floor to assist the concentric if needed. Crucial for hamstring injury prevention.",
     videoId: "6NCN6kOagfY",
     whyItMatters: "Prevents hamstring tears from high kicks. Eccentric hamstring strength is the #1 predictor of injury resilience in kicking athletes.",
+    alternatives: [
+      { name: "Slider Leg Curl", reason: "Eccentric hamstring work using sliders or towel on smooth floor" },
+      { name: "Romanian Deadlift", reason: "Trains hamstring lengthening under load" },
+    ],
   },
   medicBallRotationalThrow: {
     id: "med-ball-rotational-throw",
@@ -119,6 +145,10 @@ const exercises: Record<string, Exercise> = {
     notes: "Initiate from the hips, not the arms. Release with maximum intent. Use a 3-5 kg ball. Think 'turning kick' rotation.",
     videoId: "DttZ5JU-b_U",
     whyItMatters: "Directly mimics the rotational power pattern of roundhouse and hook kicks. Develops core RFD.",
+    alternatives: [
+      { name: "Cable Woodchop", reason: "Same rotational pattern with adjustable resistance" },
+      { name: "Landmine Rotation", reason: "Rotational power using a barbell in a landmine" },
+    ],
   },
   bandedHipFlexorDrive: {
     id: "banded-hip-flexor-drive",
@@ -131,6 +161,10 @@ const exercises: Record<string, Exercise> = {
     notes: "Attach band low behind you. Drive knee up explosively against resistance. Mimic chambering a front kick. Speed over load.",
     videoId: "LHzdOtePvTs",
     whyItMatters: "Strengthens hip flexors with speed — the muscle group that chambers every kick. Weak hip flexors = slow kicks.",
+    alternatives: [
+      { name: "Cable Knee Drive", reason: "Same movement using a cable machine for consistent resistance" },
+      { name: "Hanging Knee Raise (fast)", reason: "Trains hip flexor speed with bodyweight" },
+    ],
   },
   depthJumpToSprint: {
     id: "depth-jump-sprint",
@@ -143,6 +177,10 @@ const exercises: Record<string, Exercise> = {
     notes: "Step off a 30-40 cm box, land and immediately explode forward into a 5m sprint. Minimal ground contact time. This is ADVANCED — master box jumps first.",
     videoId: "ZHVWsggG4Ig",
     whyItMatters: "Trains reactive strength and amortization phase — the ability to absorb and redirect force instantly, like a fast step-in to attack.",
+    alternatives: [
+      { name: "Drop Jump (vertical)", reason: "Same reactive concept without sprint space needed" },
+      { name: "Hurdle Hops", reason: "Reactive plyometric using consecutive low hurdles" },
+    ],
   },
   copenhagenPlank: {
     id: "copenhagen-plank",
@@ -155,6 +193,10 @@ const exercises: Record<string, Exercise> = {
     notes: "Top leg on bench, bottom leg floating. Straight line from head to toe. Brutal on adductors and obliques — critical for side kicks.",
     videoId: "yByUFuQsgCg",
     whyItMatters: "Bulletproofs the groin/adductors against injury from side kicks and wide stances. Also builds anti-lateral flexion core strength.",
+    alternatives: [
+      { name: "Side Plank with Adduction", reason: "Similar adductor + core work with simpler setup" },
+      { name: "Sumo Squat Hold", reason: "Isometric adductor and groin strengthening" },
+    ],
   },
   ankleHops: {
     id: "ankle-hops",
@@ -167,6 +209,10 @@ const exercises: Record<string, Exercise> = {
     notes: "Stiff ankles, minimal knee bend. Bounce off the ground using only ankle stiffness. Think 'hot coals.' Develops foot speed and reactive stiffness.",
     videoId: "wa1ClvLqSHo",
     whyItMatters: "Develops ankle stiffness for bouncing footwork. Fast fighters have stiff, reactive ankles that let them change direction instantly.",
+    alternatives: [
+      { name: "Calf Raises (fast)", reason: "Builds calf strength when plyometrics aren't suitable" },
+      { name: "Jump Rope", reason: "Similar ankle stiffness training with rhythm" },
+    ],
   },
   halfKneelingPallofPress: {
     id: "pallof-press",
@@ -179,6 +225,10 @@ const exercises: Record<string, Exercise> = {
     notes: "Press cable/band away from chest while resisting rotation. Half-kneeling forces hip stability. Slow and controlled.",
     videoId: "AH_QZLm_0-s",
     whyItMatters: "Anti-rotation core strength prevents energy leaks during kicks. If your core collapses mid-kick, power is lost.",
+    alternatives: [
+      { name: "Band Anti-Rotation Hold", reason: "Simpler setup using a resistance band around a post" },
+      { name: "Dead Bug", reason: "Anti-extension core work without cable equipment" },
+    ],
   },
   hipCARs: {
     id: "hip-cars",
@@ -191,6 +241,10 @@ const exercises: Record<string, Exercise> = {
     notes: "Slow, controlled circles through full hip range. Keep pelvis stable — only the femur moves. Do these daily, not just on gym days.",
     videoId: "zbH4XmSREoc",
     whyItMatters: "Maintains and expands hip range of motion under control. High kicks require both flexibility AND strength at end range.",
+    alternatives: [
+      { name: "Leg Swings (front/side)", reason: "Dynamic hip mobility with simpler execution" },
+      { name: "90/90 Hip Switches", reason: "Seated hip rotation drill for internal/external rotation" },
+    ],
   },
   worldsGreatestStretch: {
     id: "worlds-greatest-stretch",
@@ -203,6 +257,10 @@ const exercises: Record<string, Exercise> = {
     notes: "Lunge, plant hand, rotate thoracic spine to the sky. Hold each position 2-3 sec. Perfect warm-up flow.",
     videoId: "NIz2MdMqBxk",
     whyItMatters: "Opens up every chain used in TKD — hips, thoracic spine, ankles. The single best warm-up movement for martial artists.",
+    alternatives: [
+      { name: "Spiderman Lunge with Reach", reason: "Similar multi-joint stretch with rotation" },
+      { name: "Inchworm to Lunge", reason: "Full-body warm-up flow without rotation component" },
+    ],
   },
 };
 

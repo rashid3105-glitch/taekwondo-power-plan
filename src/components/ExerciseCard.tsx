@@ -85,6 +85,19 @@ export function ExerciseCard({ exercise, index }: ExerciseCardProps) {
               {exercise.whyItMatters}
             </p>
           </div>
+
+          {/* Alternatives */}
+          {exercise.alternatives && exercise.alternatives.length > 0 && (
+            <div className="rounded-md bg-muted/60 p-2.5 space-y-1">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Alternatives</p>
+              {exercise.alternatives.map((alt, k) => (
+                <p key={k} className="text-xs text-foreground">
+                  <span className="font-semibold">{alt.name}</span>
+                  <span className="text-muted-foreground"> — {alt.reason}</span>
+                </p>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
