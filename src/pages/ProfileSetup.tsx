@@ -8,6 +8,8 @@ import { Slider } from "@/components/ui/slider";
 import { Zap, Camera, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekSchedulePicker";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 const BELT_LEVELS = ["white", "yellow", "green", "blue", "red", "black"];
 const GOAL_OPTIONS = [
@@ -45,6 +47,7 @@ export default function ProfileSetup() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const toggleGoal = (goal: string) => {
     setGoals((prev) =>
@@ -59,7 +62,7 @@ export default function ProfileSetup() {
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      toast({ title: "Please select an image file", variant: "destructive" });
+      toast({ title: t("selectImageFile"), variant: "destructive" });
       return;
     }
 
@@ -87,9 +90,9 @@ export default function ProfileSetup() {
         avatar_url: publicUrl,
       }).eq("user_id", user.id);
 
-      toast({ title: "Photo uploaded!" });
+      toast({ title: t("photoUploaded") });
     } catch (err: any) {
-      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+      toast({ title: t("uploadFailed"), description: err.message, variant: "destructive" });
     } finally {
       setUploading(false);
     }
@@ -116,10 +119,10 @@ export default function ProfileSetup() {
       }).eq("user_id", user.id);
 
       if (error) throw error;
-      toast({ title: "Profile saved!" });
+      toast({ title: t("profileSaved") });
       navigate("/dashboard");
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: t("error"), description: err.message, variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -128,12 +131,15 @@ export default function ProfileSetup() {
   return (
     <div className="min-h-screen bg-background">
       <div className="container max-w-lg mx-auto px-4 py-6 sm:py-8">
+        <div className="flex justify-end mb-4">
+          <LanguageSwitcher />
+        </div>
         <div className="text-center mb-6">
           <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-energy mb-3">
             <Zap className="h-5 w-5 text-primary-foreground" />
           </div>
-          <h1 className="text-xl font-extrabold text-foreground">Athlete Profile</h1>
-          <p className="text-sm text-muted-foreground">Tell us about yourself so we can build your perfect plan</p>
+          <h1 className="text-xl font-extrabold text-foreground">{t("athleteProfile")}</h1>
+          <p className="text-sm text-muted-foreground">{t("profileSubtitle")}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -157,7 +163,7 @@ export default function ProfileSetup() {
                 </div>
               )}
               <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 text-[9px] text-muted-foreground font-medium whitespace-nowrap">
-                {avatarUrl ? "Change photo" : "Add photo"}
+                {avatarUrl ? t("changePhoto") : t("addPhoto")}
               </span>
             </button>
             <input
@@ -171,18 +177,18 @@ export default function ProfileSetup() {
 
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
             <div>
-              <Label htmlFor="age">Age</Label>
+              <Label htmlFor="age">{t("age")}</Label>
               <Input id="age" type="number" value={age} onChange={(e) => setAge(e.target.value)} placeholder="25" />
             </div>
             <div>
-              <Label htmlFor="weight">Weight (kg)</Label>
+              <Label htmlFor="weight">{t("weightKg")}</Label>
               <Input id="weight" type="number" step="0.1" value={weight} onChange={(e) => setWeight(e.target.value)} placeholder="70" />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
             <div>
-              <Label htmlFor="belt">Belt Level</Label>
+              <Label htmlFor="belt">{t("beltLevel")}</Label>
               <select
                 id="belt"
                 value={belt}
@@ -190,21 +196,21 @@ export default function ProfileSetup() {
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {BELT_LEVELS.map((b) => (
-                  <option key={b} value={b}>{b.charAt(0).toUpperCase() + b.slice(1)} Belt</option>
+                  <option key={b} value={b}>{t(b as any)} {t("belt")}</option>
                 ))}
               </select>
             </div>
             <div>
-              <Label htmlFor="exp">Years of Experience</Label>
+              <Label htmlFor="exp">{t("yearsOfExperience")}</Label>
               <Input id="exp" type="number" value={experience} onChange={(e) => setExperience(e.target.value)} placeholder="3" />
             </div>
           </div>
 
           {/* Program Length */}
           <div>
-            <Label>Program Length</Label>
+            <Label>{t("programLength")}</Label>
             <p className="text-xs text-muted-foreground mb-3">
-              {programWeeks} weeks
+              {programWeeks} {t("weeks")}
             </p>
             <Slider
               value={[programWeeks]}
@@ -215,21 +221,21 @@ export default function ProfileSetup() {
               className="w-full"
             />
             <div className="flex justify-between text-[10px] text-muted-foreground mt-1">
-              <span>4 weeks</span>
-              <span>12 weeks</span>
+              <span>4 {t("weeks")}</span>
+              <span>12 {t("weeks")}</span>
             </div>
           </div>
 
           {/* Weekly Schedule */}
           <div>
-            <Label>Weekly Schedule</Label>
-            <p className="text-xs text-muted-foreground mb-2">Tap each day to cycle between TKD, Gym, and Rest</p>
+            <Label>{t("weeklySchedule")}</Label>
+            <p className="text-xs text-muted-foreground mb-2">{t("weeklyScheduleHint")}</p>
             <WeekSchedulePicker schedule={schedule} onChange={setSchedule} />
           </div>
 
           <div>
-            <Label>Training Goals</Label>
-            <p className="text-xs text-muted-foreground mb-2">Select all that apply</p>
+            <Label>{t("trainingGoals")}</Label>
+            <p className="text-xs text-muted-foreground mb-2">{t("selectAllThatApply")}</p>
             <div className="flex flex-wrap gap-2">
               {GOAL_OPTIONS.map((goal) => (
                 <button
@@ -241,7 +247,7 @@ export default function ProfileSetup() {
                     data-[active=true]:bg-primary data-[active=true]:text-primary-foreground
                     data-[active=false]:text-muted-foreground hover:text-foreground"
                 >
-                  {goal}
+                  {t(goal as any)}
                 </button>
               ))}
             </div>
@@ -249,21 +255,21 @@ export default function ProfileSetup() {
 
           {/* Current Injury */}
           <div>
-            <Label htmlFor="injury">Current Injury (optional)</Label>
+            <Label htmlFor="injury">{t("currentInjury")}</Label>
             <p className="text-xs text-muted-foreground mb-2">
-              Describe any current muscle/tendon injury so your plan includes rehab exercises and avoids aggravating movements
+              {t("currentInjuryHint")}
             </p>
             <Input
               id="injury"
               value={currentInjury}
               onChange={(e) => setCurrentInjury(e.target.value)}
-              placeholder="e.g. Grade 1 hamstring tear, left knee tendinitis, ankle sprain..."
+              placeholder={t("injuryPlaceholder")}
               maxLength={200}
             />
           </div>
 
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Saving..." : "Save Profile & Continue"}
+            {loading ? t("saving") : t("saveProfileContinue")}
           </Button>
         </form>
       </div>
