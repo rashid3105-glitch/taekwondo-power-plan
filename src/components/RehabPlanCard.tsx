@@ -1,6 +1,154 @@
 import { useState } from "react";
-import { ChevronDown, ChevronUp, AlertTriangle, Heart, ArrowRight } from "lucide-react";
+import { ChevronDown, ChevronUp, AlertTriangle, Heart, ArrowRight, Download, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+
+async function generateRehabPDF(plan: any) {
+  const { jsPDF } = await import("jspdf");
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
+  const margin = 15;
+  const pageW = 210 - margin * 2;
+  let y = margin;
+
+  const addPage = () => { doc.addPage(); y = margin; };
+  const checkSpace = (needed: number) => { if (y + needed > 280) addPage(); };
+
+  // Title
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(20);
+  doc.text(plan.rehabPlanName || "Rehab Plan", margin, y);
+  y += 8;
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(120);
+  doc.text(`Estimated recovery: ~${plan.estimatedWeeks} weeks`, margin, y);
+  y += 6;
+  if (plan.injurySummary) {
+    const summaryLines = doc.splitTextToSize(plan.injurySummary, pageW);
+    doc.text(summaryLines, margin, y);
+    y += summaryLines.length * 4;
+  }
+  doc.setTextColor(0);
+  y += 6;
+
+  // Safety notes
+  if (plan.importantNotes?.length > 0) {
+    checkSpace(20);
+    doc.setFillColor(254, 226, 226);
+    doc.roundedRect(margin, y, pageW, 8 + plan.importantNotes.length * 5, 2, 2, "F");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.setTextColor(220, 38, 38);
+    doc.text("SAFETY NOTES", margin + 4, y + 6);
+    doc.setTextColor(0);
+    y += 10;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    for (const note of plan.importantNotes) {
+      const noteLines = doc.splitTextToSize(`• ${note}`, pageW - 8);
+      doc.text(noteLines, margin + 4, y);
+      y += noteLines.length * 4;
+    }
+    y += 4;
+  }
+
+  // Phases
+  const phaseColors: Record<number, [number, number, number]> = {
+    0: [220, 38, 38],
+    1: [245, 158, 11],
+    2: [59, 130, 246],
+    3: [34, 197, 94],
+  };
+
+  for (let i = 0; i < (plan.phases?.length || 0); i++) {
+    const phase = plan.phases[i];
+    checkSpace(30);
+    const color = phaseColors[i] || [100, 100, 100];
+    doc.setFillColor(...color);
+    doc.roundedRect(margin, y, pageW, 10, 2, 2, "F");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.setTextColor(255);
+    doc.text(phase.phase, margin + 4, y + 7);
+    doc.setFontSize(8);
+    doc.text(`Weeks ${phase.weeks} · ${phase.goal}`, margin + pageW - 4, y + 7, { align: "right" });
+    doc.setTextColor(0);
+    y += 14;
+
+    if (phase.criteria) {
+      checkSpace(10);
+      doc.setFont("helvetica", "italic");
+      doc.setFontSize(8);
+      doc.setTextColor(59, 130, 246);
+      const criteriaLines = doc.splitTextToSize(`Progress when: ${phase.criteria}`, pageW - 8);
+      doc.text(criteriaLines, margin + 4, y);
+      y += criteriaLines.length * 4 + 2;
+      doc.setTextColor(0);
+    }
+
+    // Exercise table header
+    if (phase.exercises?.length > 0) {
+      checkSpace(10);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      doc.setTextColor(100);
+      doc.text("#", margin + 2, y);
+      doc.text("Exercise", margin + 10, y);
+      doc.text("Sets×Reps", margin + 90, y);
+      doc.text("Rest", margin + 120, y);
+      doc.setTextColor(0);
+      y += 2;
+      doc.setDrawColor(200);
+      doc.line(margin, y, margin + pageW, y);
+      y += 4;
+
+      for (let j = 0; j < phase.exercises.length; j++) {
+        const ex = phase.exercises[j];
+        checkSpace(25);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9);
+        doc.text(String(j + 1).padStart(2, "0"), margin + 2, y);
+        doc.text(ex.name || "", margin + 10, y);
+        doc.setFont("helvetica", "normal");
+        doc.text(`${ex.sets}×${ex.reps}`, margin + 90, y);
+        doc.text(ex.rest || "", margin + 120, y);
+        y += 5;
+
+        if (ex.coachingCue) {
+          doc.setFontSize(8);
+          doc.setTextColor(80);
+          const cueLines = doc.splitTextToSize(`Coaching: ${ex.coachingCue}`, pageW - 12);
+          doc.text(cueLines, margin + 10, y);
+          y += cueLines.length * 3.5;
+          doc.setTextColor(0);
+        }
+
+        if (ex.painGuideline) {
+          doc.setFontSize(8);
+          doc.setTextColor(220, 38, 38);
+          const painLines = doc.splitTextToSize(`⚠ ${ex.painGuideline}`, pageW - 12);
+          doc.text(painLines, margin + 10, y);
+          y += painLines.length * 3.5;
+          doc.setTextColor(0);
+        }
+
+        if (ex.progressionTip) {
+          doc.setFontSize(8);
+          doc.setTextColor(34, 197, 94);
+          const progLines = doc.splitTextToSize(`Progression: ${ex.progressionTip}`, pageW - 12);
+          doc.text(progLines, margin + 10, y);
+          y += progLines.length * 3.5;
+          doc.setTextColor(0);
+        }
+
+        y += 2;
+      }
+    }
+    y += 6;
+  }
+
+  doc.save(`${(plan.rehabPlanName || "rehab-plan").replace(/\s+/g, "-").toLowerCase()}.pdf`);
+}
 
 const PHASE_COLORS: Record<number, string> = {
   0: "border-destructive/40 bg-destructive/5",
@@ -22,6 +170,12 @@ interface RehabPlanCardProps {
 
 export function RehabPlanCard({ plan }: RehabPlanCardProps) {
   const [openPhase, setOpenPhase] = useState<number | null>(0);
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownload = async () => {
+    setDownloading(true);
+    try { await generateRehabPDF(plan); } finally { setDownloading(false); }
+  };
 
   if (!plan) return null;
 
@@ -39,9 +193,12 @@ export function RehabPlanCard({ plan }: RehabPlanCardProps) {
               Estimated recovery: ~{plan.estimatedWeeks} weeks
             </p>
             {plan.injurySummary && (
-              <p className="text-sm text-muted-foreground mt-2">{plan.injurySummary}</p>
+            <p className="text-sm text-muted-foreground mt-2">{plan.injurySummary}</p>
             )}
           </div>
+          <Button variant="outline" size="sm" onClick={handleDownload} disabled={downloading} className="flex-shrink-0 ml-auto">
+            {downloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Download className="h-4 w-4 mr-1" /> PDF</>}
+          </Button>
         </div>
       </div>
 
