@@ -80,6 +80,11 @@ IMPORTANT: Return ONLY the JSON object, no markdown, no code fences, no explanat
       ? weeklySchedule.map((d: any) => `${d.day}: ${d.type.toUpperCase()}`).join(', ')
       : 'Not specified';
 
+    const injuryInfo = profile.current_injury ? `\n- Current injury: ${profile.current_injury}` : '';
+    const injuryInstructions = profile.current_injury
+      ? `\n\nCRITICAL INJURY CONSIDERATION: The athlete has reported "${profile.current_injury}". You MUST:\n1. AVOID all exercises that could aggravate this injury\n2. Include specific rehab/prehab exercises for this injury on gym days\n3. Add coaching cues about pain-free range of motion\n4. Note in whyItMatters when an exercise specifically helps with the injury recovery\n5. Reduce plyometric intensity if the injury involves lower limbs`
+      : '';
+
     const userPrompt = `Create a personalized taekwondo fitness plan for this athlete:
 - Age: ${profile.age || 'not specified'}
 - Weight: ${profile.weight_kg ? profile.weight_kg + ' kg' : 'not specified'}
@@ -88,10 +93,10 @@ IMPORTANT: Return ONLY the JSON object, no markdown, no code fences, no explanat
 - TKD sessions per week: ${profile.tkd_sessions_per_week || 3}
 - Program length: ${profile.program_weeks || 8} weeks
 - Goals: ${profile.goals?.length ? profile.goals.join(', ') : 'general performance improvement'}
-- Weekly schedule: ${scheduleDescription}
+- Weekly schedule: ${scheduleDescription}${injuryInfo}
 
 IMPORTANT: Follow the athlete's chosen weekly schedule EXACTLY. Each day must match the type they selected (TKD, Gym, or Rest). For TKD days, don't list exercises — just label and focus. For Gym days, provide full exercise details. For Rest days, suggest light recovery work only.
-Design the program for ${profile.program_weeks || 8} weeks with appropriate periodization.`;
+Design the program for ${profile.program_weeks || 8} weeks with appropriate periodization.${injuryInstructions}`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

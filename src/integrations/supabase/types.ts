@@ -20,6 +20,7 @@ export type Database = {
           avatar_url: string | null
           belt_level: string
           created_at: string
+          current_injury: string | null
           display_name: string
           experience_years: number | null
           goals: string[] | null
@@ -36,6 +37,7 @@ export type Database = {
           avatar_url?: string | null
           belt_level?: string
           created_at?: string
+          current_injury?: string | null
           display_name?: string
           experience_years?: number | null
           goals?: string[] | null
@@ -52,6 +54,7 @@ export type Database = {
           avatar_url?: string | null
           belt_level?: string
           created_at?: string
+          current_injury?: string | null
           display_name?: string
           experience_years?: number | null
           goals?: string[] | null

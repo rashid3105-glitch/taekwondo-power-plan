@@ -38,6 +38,7 @@ export default function ProfileSetup() {
   const [goals, setGoals] = useState<string[]>([]);
   const [schedule, setSchedule] = useState<DaySchedule[]>(DEFAULT_SCHEDULE);
   const [programWeeks, setProgramWeeks] = useState(8);
+  const [currentInjury, setCurrentInjury] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -111,6 +112,7 @@ export default function ProfileSetup() {
         goals,
         weekly_schedule: schedule as any,
         program_weeks: programWeeks,
+        current_injury: currentInjury || null,
       }).eq("user_id", user.id);
 
       if (error) throw error;
@@ -243,6 +245,21 @@ export default function ProfileSetup() {
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Current Injury */}
+          <div>
+            <Label htmlFor="injury">Current Injury (optional)</Label>
+            <p className="text-xs text-muted-foreground mb-2">
+              Describe any current muscle/tendon injury so your plan includes rehab exercises and avoids aggravating movements
+            </p>
+            <Input
+              id="injury"
+              value={currentInjury}
+              onChange={(e) => setCurrentInjury(e.target.value)}
+              placeholder="e.g. Grade 1 hamstring tear, left knee tendinitis, ankle sprain..."
+              maxLength={200}
+            />
           </div>
 
           <Button type="submit" className="w-full" disabled={loading}>
