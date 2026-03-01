@@ -24,6 +24,17 @@ const translations = {
     tkdSpecific: "TKD Specific",
     getStarted: "Get Started",
     browseExercises: "Browse Exercises",
+    // Landing section previews
+    sectionPlanTitle: "Smart Training Plans",
+    sectionPlanDesc: "AI generates periodized programs tailored to your belt level, goals, and weekly schedule. Every session is optimized for TKD performance.",
+    sectionProgressTitle: "Track Your Progress",
+    sectionProgressDesc: "Visualize training volume, completion rates, and consistency streaks. Know exactly where you stand week by week.",
+    sectionMentalTitle: "Mental Performance",
+    sectionMentalDesc: "Assess your mental toughness, focus, and competition anxiety. Get personalized sports psychology advice from AI.",
+    sectionRehabTitle: "Injury Rehab",
+    sectionRehabDesc: "Recovering from an injury? Generate phased rehab programs with pain guidelines and safety protocols built in.",
+    sectionLibraryTitle: "Exercise Library",
+    sectionLibraryDesc: "Browse a curated collection of TKD-specific exercises with alternatives, tempo guides, and muscle group targeting.",
     footerText: "Built for taekwondo athletes. Train fast, stay fast.",
 
     // Auth
@@ -221,6 +232,17 @@ const translations = {
     tkdSpecific: "TKD Specifik",
     getStarted: "Kom i gang",
     browseExercises: "Udforsk øvelser",
+    // Landing section previews
+    sectionPlanTitle: "Smarte træningsplaner",
+    sectionPlanDesc: "AI genererer periodiserede programmer tilpasset dit bælteniveau, mål og ugentlige skema. Hver session er optimeret til TKD-præstation.",
+    sectionProgressTitle: "Følg din fremgang",
+    sectionProgressDesc: "Visualiser træningsvolumen, gennemførelsesrater og konsistens-streaks. Ved præcis hvor du står uge for uge.",
+    sectionMentalTitle: "Mental præstation",
+    sectionMentalDesc: "Vurder din mentale styrke, fokus og konkurrenceangst. Få personlig sportspsykologisk rådgivning fra AI.",
+    sectionRehabTitle: "Skade-genoptræning",
+    sectionRehabDesc: "Kommer du dig efter en skade? Generer faseopdelte genoptræningsprogrammer med smertevejledning og sikkerhedsprotokoller.",
+    sectionLibraryTitle: "Øvelsesbibliotek",
+    sectionLibraryDesc: "Udforsk en kurateret samling af TKD-specifikke øvelser med alternativer, tempoguider og muskelgruppefokus.",
     footerText: "Bygget til taekwondo-atleter. Træn hurtigt, forbliv hurtig.",
 
     // Auth
