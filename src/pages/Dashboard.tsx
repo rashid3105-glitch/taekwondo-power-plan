@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users } from "lucide-react";
+import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { AIPlanCard } from "@/components/AIPlanCard";
 import { RehabPlanCard } from "@/components/RehabPlanCard";
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { MentalAssessment } from "@/components/MentalAssessment";
 
 interface Profile {
   display_name: string;
@@ -53,6 +54,7 @@ export default function Dashboard() {
   const [rehabPlan, setRehabPlan] = useState<any>(null);
   const [rehabPlans, setRehabPlans] = useState<RehabPlanRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<"plan" | "mental">("plan");
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, locale } = useLanguage();
@@ -193,6 +195,9 @@ export default function Dashboard() {
             <Button variant="ghost" size="sm" onClick={() => navigate("/progress")}>
               <BarChart3 className="h-4 w-4 mr-1" /> {t("progress")}
             </Button>
+            <Button variant="ghost" size="sm" onClick={() => setActiveTab(activeTab === "mental" ? "plan" : "mental")}>
+              <Brain className="h-4 w-4 mr-1" /> {locale === "da" ? "Mental" : "Mental"}
+            </Button>
             <Button variant="ghost" size="sm" onClick={() => navigate("/profile-setup")}>
               <User className="h-4 w-4 mr-1" /> {t("profile")}
             </Button>
@@ -225,9 +230,13 @@ export default function Dashboard() {
       {/* Mobile bottom nav */}
       <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-card/95 backdrop-blur-sm sm:hidden">
         <div className="flex items-center justify-around py-2">
-          <button onClick={() => navigate("/dashboard")} className="flex flex-col items-center gap-0.5 px-3 py-1 text-primary">
+          <button onClick={() => setActiveTab("plan")} className={`flex flex-col items-center gap-0.5 px-3 py-1 ${activeTab === "plan" ? "text-primary" : "text-muted-foreground"}`}>
             <Zap className="h-5 w-5" />
             <span className="text-[10px] font-semibold">{t("plan")}</span>
+          </button>
+          <button onClick={() => setActiveTab("mental")} className={`flex flex-col items-center gap-0.5 px-3 py-1 ${activeTab === "mental" ? "text-primary" : "text-muted-foreground"}`}>
+            <Brain className="h-5 w-5" />
+            <span className="text-[10px] font-semibold">Mental</span>
           </button>
           <button onClick={() => navigate("/progress")} className="flex flex-col items-center gap-0.5 px-3 py-1 text-muted-foreground">
             <BarChart3 className="h-5 w-5" />
@@ -251,6 +260,10 @@ export default function Dashboard() {
       </nav>
 
       <main className="container max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
+        {activeTab === "mental" ? (
+          <MentalAssessment profile={profile} />
+        ) : (
+          <>
         {/* Profile summary */}
         {profile && (
           <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
@@ -410,6 +423,8 @@ export default function Dashboard() {
               ))}
             </div>
           </div>
+        )}
+        </>
         )}
       </main>
     </div>
