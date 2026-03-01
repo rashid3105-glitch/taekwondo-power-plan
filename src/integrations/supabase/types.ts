@@ -35,6 +35,36 @@ export type Database = {
         }
         Relationships: []
       }
+      mental_assessments: {
+        Row: {
+          ai_advice: string | null
+          answers: Json
+          created_at: string
+          id: string
+          scores: Json
+          total_score: number
+          user_id: string
+        }
+        Insert: {
+          ai_advice?: string | null
+          answers?: Json
+          created_at?: string
+          id?: string
+          scores?: Json
+          total_score?: number
+          user_id: string
+        }
+        Update: {
+          ai_advice?: string | null
+          answers?: Json
+          created_at?: string
+          id?: string
+          scores?: Json
+          total_score?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           age: number | null
