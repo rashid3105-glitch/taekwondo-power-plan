@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { MentalAssessment } from "@/components/MentalAssessment";
+import { ProgressDashboard } from "@/components/ProgressDashboard";
 
 interface Profile {
   display_name: string;
@@ -54,7 +55,7 @@ export default function Dashboard() {
   const [rehabPlan, setRehabPlan] = useState<any>(null);
   const [rehabPlans, setRehabPlans] = useState<RehabPlanRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"plan" | "rehab" | "mental">("plan");
+  const [activeTab, setActiveTab] = useState<"plan" | "rehab" | "mental" | "progress">("plan");
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, locale } = useLanguage();
@@ -192,7 +193,7 @@ export default function Dashboard() {
           </div>
           <div className="hidden sm:flex items-center gap-2">
             <LanguageSwitcher />
-            <Button variant="ghost" size="sm" onClick={() => navigate("/progress")}>
+            <Button variant="ghost" size="sm" onClick={() => setActiveTab("progress")}>
               <BarChart3 className="h-4 w-4 mr-1" /> {t("progress")}
             </Button>
             <Button variant="ghost" size="sm" onClick={() => setActiveTab("rehab")}>
@@ -245,7 +246,7 @@ export default function Dashboard() {
             <Brain className="h-5 w-5" />
             <span className="text-[10px] font-semibold">Mental</span>
           </button>
-          <button onClick={() => navigate("/progress")} className="flex flex-col items-center gap-0.5 px-3 py-1 text-muted-foreground">
+          <button onClick={() => setActiveTab("progress")} className={`flex flex-col items-center gap-0.5 px-3 py-1 ${activeTab === "progress" ? "text-primary" : "text-muted-foreground"}`}>
             <BarChart3 className="h-5 w-5" />
             <span className="text-[10px] font-semibold">{t("progress")}</span>
           </button>
@@ -267,7 +268,9 @@ export default function Dashboard() {
       </nav>
 
       <main className="container max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
-        {activeTab === "mental" ? (
+        {activeTab === "progress" ? (
+          <ProgressDashboard onGoToPlan={() => setActiveTab("plan")} />
+        ) : activeTab === "mental" ? (
           <MentalAssessment profile={profile} />
         ) : activeTab === "rehab" ? (
           <>
