@@ -179,6 +179,8 @@ const translations = {
     athletePassword: "Password",
     athleteCreated: "Athlete account created!",
     athleteCreatedDesc: "The athlete will need admin approval before they can log in.",
+    mental: "Mental",
+    rehab: "Rehab",
     orAddByCode: "Or add existing athlete by code",
   },
   da: {
@@ -359,6 +361,8 @@ const translations = {
     athletePassword: "Adgangskode",
     athleteCreated: "Atletkonto oprettet!",
     athleteCreatedDesc: "Atleten skal godkendes af en administrator, før de kan logge ind.",
+    mental: "Mental",
+    rehab: "Genoptræning",
     orAddByCode: "Eller tilføj eksisterende atlet med kode",
   },
 } as const;

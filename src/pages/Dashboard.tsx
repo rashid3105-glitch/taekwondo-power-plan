@@ -200,7 +200,7 @@ export default function Dashboard() {
               <Heart className="h-4 w-4 mr-1" /> {t("injuryRehabPlan")}
             </Button>
             <Button variant="ghost" size="sm" onClick={() => setActiveTab("mental")}>
-              <Brain className="h-4 w-4 mr-1" /> Mental
+              <Brain className="h-4 w-4 mr-1" /> {t("mental")}
             </Button>
             <Button variant="ghost" size="sm" onClick={() => navigate("/profile-setup")}>
               <User className="h-4 w-4 mr-1" /> {t("profile")}
@@ -240,11 +240,11 @@ export default function Dashboard() {
           </button>
           <button onClick={() => setActiveTab("rehab")} className={`flex flex-col items-center gap-0.5 px-3 py-1 ${activeTab === "rehab" ? "text-primary" : "text-muted-foreground"}`}>
             <Heart className="h-5 w-5" />
-            <span className="text-[10px] font-semibold">Rehab</span>
+            <span className="text-[10px] font-semibold">{t("rehab")}</span>
           </button>
           <button onClick={() => setActiveTab("mental")} className={`flex flex-col items-center gap-0.5 px-3 py-1 ${activeTab === "mental" ? "text-primary" : "text-muted-foreground"}`}>
             <Brain className="h-5 w-5" />
-            <span className="text-[10px] font-semibold">Mental</span>
+            <span className="text-[10px] font-semibold">{t("mental")}</span>
           </button>
           <button onClick={() => setActiveTab("progress")} className={`flex flex-col items-center gap-0.5 px-3 py-1 ${activeTab === "progress" ? "text-primary" : "text-muted-foreground"}`}>
             <BarChart3 className="h-5 w-5" />
