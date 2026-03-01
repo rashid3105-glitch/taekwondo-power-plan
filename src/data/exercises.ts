@@ -86,6 +86,7 @@ const exercisesData: Record<string, ExerciseBase> = {
       alternatives: [
         { name: "Barbell Deadlift", reason: "Same movement pattern if no trap bar is available" },
         { name: "Goblet Squat", reason: "Lighter alternative that still trains hip extension with upright torso" },
+        { name: "Pistol Squat Negatives", reason: "No equipment needed — trains single-leg hip extension with bodyweight" },
       ],
     },
     da: {
@@ -94,6 +95,7 @@ const exercisesData: Record<string, ExerciseBase> = {
       alternatives: [
         { name: "Barbell Deadlift", reason: "Samme bevægelsesmønster hvis der ikke er en trap bar tilgængelig" },
         { name: "Goblet Squat", reason: "Lettere alternativ der stadig træner hofteekstension med oprejst overkrop" },
+        { name: "Pistol Squat Negatives", reason: "Intet udstyr nødvendigt — træner ét-bens hofteekstension med kropsvægt" },
       ],
     },
   },
@@ -139,6 +141,7 @@ const exercisesData: Record<string, ExerciseBase> = {
       alternatives: [
         { name: "Dumbbell High Pull", reason: "Similar triple extension pattern with dumbbells" },
         { name: "Kettlebell Swing", reason: "Trains hip hinge explosiveness with simpler technique" },
+        { name: "Explosive Broad Jump", reason: "No equipment — trains full triple extension with bodyweight" },
       ],
     },
     da: {
@@ -147,6 +150,7 @@ const exercisesData: Record<string, ExerciseBase> = {
       alternatives: [
         { name: "Dumbbell High Pull", reason: "Lignende trippelekstensionsmønster med håndvægte" },
         { name: "Kettlebell Swing", reason: "Træner hoftehængsel-eksplosivitet med enklere teknik" },
+        { name: "Eksplosivt Længdespring", reason: "Intet udstyr — træner fuld trippelekstension med kropsvægt" },
       ],
     },
   },
@@ -166,6 +170,7 @@ const exercisesData: Record<string, ExerciseBase> = {
       alternatives: [
         { name: "Reverse Lunge", reason: "Similar unilateral pattern without needing a bench" },
         { name: "Step-Up", reason: "Single-leg strength with less balance demand" },
+        { name: "Bodyweight Split Squat", reason: "No equipment — same pattern using bodyweight only" },
       ],
     },
     da: {
@@ -174,6 +179,7 @@ const exercisesData: Record<string, ExerciseBase> = {
       alternatives: [
         { name: "Reverse Lunge", reason: "Lignende unilateralt mønster uden brug af bænk" },
         { name: "Step-Up", reason: "Ét-bens styrke med mindre balancekrav" },
+        { name: "Kropsvægt Split Squat", reason: "Intet udstyr — samme mønster kun med kropsvægt" },
       ],
     },
   },
@@ -219,6 +225,7 @@ const exercisesData: Record<string, ExerciseBase> = {
       alternatives: [
         { name: "Cable Woodchop", reason: "Same rotational pattern with adjustable resistance" },
         { name: "Landmine Rotation", reason: "Rotational power using a barbell in a landmine" },
+        { name: "Standing Rotational Throw (no ball)", reason: "No equipment — mimic the throw motion explosively with clasped hands" },
       ],
     },
     da: {
@@ -227,6 +234,7 @@ const exercisesData: Record<string, ExerciseBase> = {
       alternatives: [
         { name: "Cable Woodchop", reason: "Samme rotationsmønster med justerbar modstand" },
         { name: "Landmine Rotation", reason: "Rotationskraft med vægtstang i en landmine" },
+        { name: "Stående Rotationskast (uden bold)", reason: "Intet udstyr — efterlign kastbevægelsen eksplosivt med foldede hænder" },
       ],
     },
   },
@@ -245,6 +253,7 @@ const exercisesData: Record<string, ExerciseBase> = {
       alternatives: [
         { name: "Cable Knee Drive", reason: "Same movement using a cable machine for consistent resistance" },
         { name: "Hanging Knee Raise (fast)", reason: "Trains hip flexor speed with bodyweight" },
+        { name: "Standing Fast Knee Drives", reason: "No equipment — explosive knee drives from standing position" },
       ],
     },
     da: {
@@ -253,6 +262,7 @@ const exercisesData: Record<string, ExerciseBase> = {
       alternatives: [
         { name: "Cable Knee Drive", reason: "Samme bevægelse med kabelmaskine for ensartet modstand" },
         { name: "Hanging Knee Raise (hurtigt)", reason: "Træner hoftefleksorhastighed med kropsvægt" },
+        { name: "Stående Hurtige Knædrivninger", reason: "Intet udstyr — eksplosive knædrivninger fra stående position" },
       ],
     },
   },
@@ -349,6 +359,7 @@ const exercisesData: Record<string, ExerciseBase> = {
       alternatives: [
         { name: "Band Anti-Rotation Hold", reason: "Simpler setup using a resistance band around a post" },
         { name: "Dead Bug", reason: "Anti-extension core work without cable equipment" },
+        { name: "Bird Dog with Pause", reason: "No equipment — anti-rotation core stability from all fours" },
       ],
     },
     da: {
@@ -357,6 +368,7 @@ const exercisesData: Record<string, ExerciseBase> = {
       alternatives: [
         { name: "Elastik Anti-Rotations Hold", reason: "Enklere opsætning med elastik rundt om en stolpe" },
         { name: "Dead Bug", reason: "Anti-ekstension corearbejde uden kabeludstyr" },
+        { name: "Bird Dog med Pause", reason: "Intet udstyr — anti-rotations corestabilitet fra alle fire" },
       ],
     },
   },
