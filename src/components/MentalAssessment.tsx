@@ -20,7 +20,9 @@ import {
   Sparkles,
   History,
   Trash2,
+  Download,
 } from "lucide-react";
+import jsPDF from "jspdf";
 
 interface Profile {
   belt_level: string;
@@ -254,6 +256,7 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
       noHistory: "No previous assessments yet.",
       score: "Score",
       delete: "Delete",
+      downloadPlan: "Download Plan",
     },
     da: {
       title: "Mental præstation",
@@ -280,6 +283,7 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
       noHistory: "Ingen tidligere vurderinger endnu.",
       score: "Score",
       delete: "Slet",
+      downloadPlan: "Download plan",
     },
   };
 
@@ -370,6 +374,76 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
     setTotalScore(assessment.total_score);
     setAdvice(assessment.ai_advice);
     setStep("results");
+  };
+
+  const downloadPDF = () => {
+    if (!advice) return;
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const margin = 15;
+    const maxWidth = pageWidth - margin * 2;
+    let y = 20;
+
+    const addText = (text: string, size: number, bold = false, color: [number, number, number] = [0, 0, 0]) => {
+      doc.setFontSize(size);
+      doc.setFont("helvetica", bold ? "bold" : "normal");
+      doc.setTextColor(...color);
+      const lines = doc.splitTextToSize(text, maxWidth);
+      if (y + lines.length * size * 0.5 > doc.internal.pageSize.getHeight() - 20) {
+        doc.addPage();
+        y = 20;
+      }
+      doc.text(lines, margin, y);
+      y += lines.length * size * 0.45 + 4;
+    };
+
+    addText(txt.title, 20, true, [30, 64, 175]);
+    addText(`${txt.yourScore}: ${totalScore}/30 — ${getOverallLabel(totalScore)}`, 12, false);
+    y += 4;
+
+    // Category scores
+    Object.entries(scores).forEach(([cat, score]) => {
+      addText(`${categoryLabels[cat][l]}: ${score}/5`, 11, true);
+    });
+    y += 4;
+
+    // Summary
+    if (advice.summary) {
+      addText(advice.summary, 10);
+      y += 2;
+    }
+
+    // Strengths
+    if (advice.strengths?.length > 0) {
+      addText(txt.strengths, 13, true, [34, 139, 34]);
+      advice.strengths.forEach((s: string) => addText(`✓ ${s}`, 10));
+      y += 2;
+    }
+
+    // Improvement areas
+    advice.improvementAreas?.forEach((area: any) => {
+      addText(`${area.area} (${area.score}/5)`, 13, true, [30, 64, 175]);
+      area.techniques?.forEach((tech: string) => addText(`• ${tech}`, 10));
+      if (area.dailyHabit) {
+        addText(`${txt.dailyHabit}: ${area.dailyHabit}`, 10, false, [80, 80, 80]);
+      }
+      y += 2;
+    });
+
+    // Pre-competition routine
+    if (advice.preCompetitionRoutine) {
+      addText(txt.preCompRoutine, 13, true, [30, 64, 175]);
+      addText(advice.preCompetitionRoutine, 10);
+      y += 2;
+    }
+
+    // Affirmations
+    if (advice.affirmations?.length > 0) {
+      addText(txt.affirmations, 13, true, [180, 140, 0]);
+      advice.affirmations.forEach((a: string) => addText(`"${a}"`, 10, false, [80, 80, 80]));
+    }
+
+    doc.save("mental-plan.pdf");
   };
 
   const resetQuiz = () => {
@@ -628,9 +702,16 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
         </>
       ) : null}
 
-      <Button variant="outline" onClick={resetQuiz} className="w-full">
-        <RefreshCw className="h-4 w-4 mr-2" /> {txt.retake}
-      </Button>
+      <div className="flex gap-2">
+        {advice && (
+          <Button onClick={downloadPDF} className="flex-1">
+            <Download className="h-4 w-4 mr-2" /> {txt.downloadPlan}
+          </Button>
+        )}
+        <Button variant="outline" onClick={resetQuiz} className="flex-1">
+          <RefreshCw className="h-4 w-4 mr-2" /> {txt.retake}
+        </Button>
+      </div>
     </div>
   );
 }
