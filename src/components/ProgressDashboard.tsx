@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Loader2, BarChart3, TrendingUp, Target, Calendar, Zap, Brain, HeartPulse } from "lucide-react";
+import { Loader2, BarChart3, TrendingUp, Target, Calendar, Zap, Brain, ClipboardList } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   AreaChart, Area,
@@ -40,7 +40,6 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
   const [logs, setLogs] = useState<WorkoutLog[]>([]);
   const [plan, setPlan] = useState<PlanData | null>(null);
   const [mentalAssessments, setMentalAssessments] = useState<any[]>([]);
-  const [rehabPlans, setRehabPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { t } = useLanguage();
 
@@ -52,17 +51,15 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const [logsRes, planRes, mentalRes, rehabRes] = await Promise.all([
+    const [logsRes, planRes, mentalRes] = await Promise.all([
       supabase.from("workout_logs").select("*").eq("user_id", user.id).order("logged_date", { ascending: true }),
-      supabase.from("training_plans").select("id, plan_data").eq("user_id", user.id).eq("is_active", true).single(),
+      supabase.from("training_plans").select("id, plan_data, name, created_at").eq("user_id", user.id).eq("is_active", true).single(),
       supabase.from("mental_assessments").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
-      supabase.from("rehab_plans").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
     ]);
 
     if (logsRes.data) setLogs(logsRes.data as unknown as WorkoutLog[]);
     if (planRes.data) setPlan(planRes.data as unknown as PlanData);
     if (mentalRes.data) setMentalAssessments(mentalRes.data);
-    if (rehabRes.data) setRehabPlans(rehabRes.data);
     setLoading(false);
   };
 
@@ -162,6 +159,25 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
     return map[key]?.[lang] || key;
   };
 
+  // Training plan progress
+  const planProgress = useMemo(() => {
+    if (!plan?.plan_data) return null;
+    const schedule = plan.plan_data?.weeklySchedule || [];
+    const totalExercises = schedule.reduce((sum: number, day: any) => sum + (day.exercises?.length || 0), 0);
+    const todayStr = new Date().toISOString().split("T")[0];
+    const todayLogs = logs.filter(l => l.plan_id === plan.id && l.logged_date === todayStr && l.completed);
+    const allCompleted = logs.filter(l => l.plan_id === plan.id && l.completed);
+    const daysWithLogs = new Set(allCompleted.map(l => l.logged_date)).size;
+    return {
+      name: (plan as any).name || "Training Plan",
+      totalDays: schedule.length,
+      totalExercises,
+      todayCompleted: todayLogs.length,
+      totalCompleted: allCompleted.length,
+      daysLogged: daysWithLogs,
+    };
+  }, [plan, logs]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -172,10 +188,8 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
 
   const hasWorkoutData = stats && logs.length > 0;
   const hasMentalData = mentalAssessments.length > 0;
-  const activeRehab = rehabPlans.find((r: any) => r.is_active);
-  const hasRehabData = rehabPlans.length > 0;
 
-  if (!hasWorkoutData && !hasMentalData && !hasRehabData) {
+  if (!hasWorkoutData && !hasMentalData && !planProgress) {
     return (
       <div className="rounded-xl border border-border bg-card p-12 text-center shadow-card">
         <BarChart3 className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
@@ -343,28 +357,29 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
         )}
       </div>
 
-      {/* Rehab Section */}
+      {/* Training Plan Progress */}
       <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
         <div className="flex items-center gap-2 mb-4">
-          <HeartPulse className="h-5 w-5 text-primary" />
-          <h3 className="text-sm font-bold text-foreground">{t("rehabProgress")}</h3>
+          <ClipboardList className="h-5 w-5 text-primary" />
+          <h3 className="text-sm font-bold text-foreground">{t("trainingPlanProgress")}</h3>
         </div>
-        {hasRehabData ? (
+        {planProgress ? (
           <div className="space-y-3">
-            <div className="grid grid-cols-2 gap-2">
-              <StatCard icon={Target} label={t("activeRehabPlan")} value={activeRehab ? activeRehab.name : t("none")} />
-              <StatCard icon={Calendar} label={t("rehabPhases")} value={
-                activeRehab?.plan_data?.phases ? String((activeRehab.plan_data as any).phases.length) : "—"
-              } />
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <StatCard icon={ClipboardList} label={t("activePlan")} value={planProgress.name} />
+              <StatCard icon={Calendar} label={t("trainingDays")} value={`${planProgress.totalDays}`} />
+              <StatCard icon={Target} label={t("exercisesInPlan")} value={String(planProgress.totalExercises)} />
+              <StatCard icon={Zap} label={t("todayCompleted")} value={String(planProgress.todayCompleted)} />
             </div>
-            {activeRehab && (
-              <div className="text-xs text-muted-foreground">
-                <span className="font-medium text-foreground">{activeRehab.injury_description}</span>
-              </div>
-            )}
+            <div className="flex items-center gap-2 mt-2">
+              <span className="text-xs text-muted-foreground">{t("totalLogged")}:</span>
+              <span className="text-xs font-bold text-foreground">{planProgress.totalCompleted} {t("exercises")}</span>
+              <span className="text-xs text-muted-foreground ml-2">{t("across")}</span>
+              <span className="text-xs font-bold text-foreground">{planProgress.daysLogged} {t("daysTrained").toLowerCase()}</span>
+            </div>
           </div>
         ) : (
-          <p className="text-sm text-muted-foreground">{t("noRehabData")}</p>
+          <p className="text-sm text-muted-foreground">{t("noPlanData")}</p>
         )}
       </div>
     </div>
