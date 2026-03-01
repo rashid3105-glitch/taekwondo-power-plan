@@ -36,6 +36,7 @@ interface Question {
 }
 
 const questions: Question[] = [
+  // Mental Toughness (2 questions)
   {
     id: "mt1",
     category: "mentalToughness",
@@ -49,6 +50,19 @@ const questions: Question[] = [
     ],
   },
   {
+    id: "mt2",
+    category: "mentalToughness",
+    text: { en: "When I'm behind on points in a match, I...", da: "Når jeg er bagud på point i en kamp, så..." },
+    options: [
+      { value: 1, label: { en: "Panic and lose composure completely", da: "Går i panik og mister fatningen helt" } },
+      { value: 2, label: { en: "Get frustrated and make more mistakes", da: "Bliver frustreret og laver flere fejl" } },
+      { value: 3, label: { en: "Stay calm but struggle to change tactics", da: "Forbliver rolig, men kæmper med at ændre taktik" } },
+      { value: 4, label: { en: "Stay composed and adjust my strategy", da: "Bevarer fatningen og justerer min strategi" } },
+      { value: 5, label: { en: "Get more determined — being behind fuels me", da: "Bliver mere beslutsom — at være bagud driver mig" } },
+    ],
+  },
+  // Competition Anxiety (2 questions)
+  {
     id: "ca1",
     category: "competitionAnxiety",
     text: { en: "Before a competition or sparring match, I feel...", da: "Før en konkurrence eller sparringkamp føler jeg mig..." },
@@ -60,6 +74,19 @@ const questions: Question[] = [
       { value: 5, label: { en: "Calm and excited — I channel energy positively", da: "Rolig og begejstret — jeg kanaliserer energien positivt" } },
     ],
   },
+  {
+    id: "ca2",
+    category: "competitionAnxiety",
+    text: { en: "My body's physical response to competition stress is...", da: "Min krops fysiske reaktion på konkurrencestress er..." },
+    options: [
+      { value: 1, label: { en: "Severe — shaking, nausea, can't warm up properly", da: "Alvorlig — rysten, kvalme, kan ikke varme ordentligt op" } },
+      { value: 2, label: { en: "Noticeable tension, tight muscles, shallow breathing", da: "Mærkbar spænding, stramme muskler, overfladisk vejrtrækning" } },
+      { value: 3, label: { en: "Some butterflies but I can still perform", da: "Lidt sommerfugle, men jeg kan stadig præstere" } },
+      { value: 4, label: { en: "Controlled adrenaline, I use breathing techniques", da: "Kontrolleret adrenalin, jeg bruger vejrtræningsteknikker" } },
+      { value: 5, label: { en: "I feel energized and physically ready to compete", da: "Jeg føler mig energisk og fysisk klar til at konkurrere" } },
+    ],
+  },
+  // Focus & Concentration (2 questions)
   {
     id: "fc1",
     category: "focusConcentration",
@@ -73,6 +100,19 @@ const questions: Question[] = [
     ],
   },
   {
+    id: "fc2",
+    category: "focusConcentration",
+    text: { en: "When the crowd is loud or my opponent trash-talks, I...", da: "Når publikum er højlydt eller min modstander provokerer, så..." },
+    options: [
+      { value: 1, label: { en: "Get completely thrown off my game", da: "Bliver fuldstændig distraheret fra min kamp" } },
+      { value: 2, label: { en: "It bothers me and affects my decisions", da: "Det generer mig og påvirker mine beslutninger" } },
+      { value: 3, label: { en: "Notice it but can refocus after a moment", da: "Bemærker det, men kan genfokusere efter et øjeblik" } },
+      { value: 4, label: { en: "Block it out and stay in my zone", da: "Blokerer det og forbliver i min zone" } },
+      { value: 5, label: { en: "Use it as fuel — external noise sharpens me", da: "Bruger det som brændstof — ekstern støj skærper mig" } },
+    ],
+  },
+  // Recovery from Loss (2 questions)
+  {
     id: "rl1",
     category: "recoveryFromLoss",
     text: { en: "After losing a fight or performing poorly, I...", da: "Efter at have tabt en kamp eller præsteret dårligt..." },
@@ -84,6 +124,19 @@ const questions: Question[] = [
       { value: 5, label: { en: "See losses as the best learning opportunities", da: "Ser nederlag som de bedste læringsmuligheder" } },
     ],
   },
+  {
+    id: "rl2",
+    category: "recoveryFromLoss",
+    text: { en: "When I watch video of a match I lost, I...", da: "Når jeg ser video af en kamp, jeg tabte, så..." },
+    options: [
+      { value: 1, label: { en: "Avoid it completely — too painful to watch", da: "Undgår det fuldstændigt — for smertefuldt at se" } },
+      { value: 2, label: { en: "Watch but get frustrated and emotional", da: "Ser det, men bliver frustreret og følelsesladet" } },
+      { value: 3, label: { en: "Can watch it and notice some mistakes", da: "Kan se det og bemærke nogle fejl" } },
+      { value: 4, label: { en: "Analyze calmly and make notes for improvement", da: "Analyserer roligt og tager noter til forbedring" } },
+      { value: 5, label: { en: "Love reviewing — I build a detailed improvement plan", da: "Elsker at gennemgå — jeg laver en detaljeret forbedringsplan" } },
+    ],
+  },
+  // Confidence (2 questions)
   {
     id: "cf1",
     category: "confidence",
@@ -97,6 +150,19 @@ const questions: Question[] = [
     ],
   },
   {
+    id: "cf2",
+    category: "confidence",
+    text: { en: "When facing a higher-ranked or bigger opponent, I...", da: "Når jeg møder en højere rangeret eller større modstander, så..." },
+    options: [
+      { value: 1, label: { en: "Feel defeated before the match even starts", da: "Føler mig besejret, før kampen overhovedet begynder" } },
+      { value: 2, label: { en: "Feel intimidated and play it too safe", da: "Føler mig skræmt og spiller det for sikkert" } },
+      { value: 3, label: { en: "Respect them but still give my best effort", da: "Respekterer dem, men giver stadig mit bedste" } },
+      { value: 4, label: { en: "See it as a great test and rise to the occasion", da: "Ser det som en stor test og rejser mig til lejligheden" } },
+      { value: 5, label: { en: "Love the challenge — I compete harder against top fighters", da: "Elsker udfordringen — jeg kæmper hårdere mod topkæmpere" } },
+    ],
+  },
+  // Motivation (2 questions)
+  {
     id: "mo1",
     category: "motivation",
     text: { en: "My motivation to train and compete is...", da: "Min motivation til at træne og konkurrere er..." },
@@ -106,6 +172,18 @@ const questions: Question[] = [
       { value: 3, label: { en: "Steady but could be stronger", da: "Stabil, men kunne være stærkere" } },
       { value: 4, label: { en: "Strong, I'm committed to improvement", da: "Stærk, jeg er dedikeret til forbedring" } },
       { value: 5, label: { en: "Burning — TKD is my passion and purpose", da: "Brændende — TKD er min passion og mit formål" } },
+    ],
+  },
+  {
+    id: "mo2",
+    category: "motivation",
+    text: { en: "When I hit a training plateau with no visible progress, I...", da: "Når jeg rammer et træningsplateau uden synlige fremskridt, så..." },
+    options: [
+      { value: 1, label: { en: "Lose interest and consider quitting", da: "Mister interessen og overvejer at stoppe" } },
+      { value: 2, label: { en: "Get discouraged and train with less intensity", da: "Bliver modløs og træner med mindre intensitet" } },
+      { value: 3, label: { en: "Keep going but feel frustrated", da: "Fortsætter, men føler mig frustreret" } },
+      { value: 4, label: { en: "Trust the process and stay consistent", da: "Stoler på processen og forbliver konsekvent" } },
+      { value: 5, label: { en: "Get creative — try new approaches and seek coaching", da: "Bliver kreativ — prøver nye tilgange og søger coaching" } },
     ],
   },
 ];
@@ -233,11 +311,16 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
   };
 
   const calculateScores = () => {
-    const catScores: Record<string, number> = {};
+    const catSums: Record<string, number[]> = {};
     questions.forEach((q) => {
-      catScores[q.category] = answers[q.id] || 1;
+      if (!catSums[q.category]) catSums[q.category] = [];
+      catSums[q.category].push(answers[q.id] || 1);
     });
-    const total = Object.values(catScores).reduce((a, b) => a + b, 0);
+    const catScores: Record<string, number> = {};
+    for (const [cat, vals] of Object.entries(catSums)) {
+      catScores[cat] = Math.round((vals.reduce((a, b) => a + b, 0) / vals.length) * 10) / 10;
+    }
+    const total = Math.round(Object.values(catScores).reduce((a, b) => a + b, 0) * 10) / 10;
     setScores(catScores);
     setTotalScore(total);
     return { catScores, total };
