@@ -148,6 +148,7 @@ const translations = {
     noName: "(No name)",
     backToDashboard: "Back to Dashboard",
     manageUsers: "Manage Users",
+    admin: "Admin",
 
     // Coach
     coachDashboard: "Coach Dashboard",
@@ -327,6 +328,7 @@ const translations = {
     noName: "(Intet navn)",
     backToDashboard: "Tilbage til dashboard",
     manageUsers: "Administrer brugere",
+    admin: "Admin",
 
     // Coach
     coachDashboard: "Træner Dashboard",
