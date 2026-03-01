@@ -54,7 +54,7 @@ export default function Dashboard() {
   const [rehabPlan, setRehabPlan] = useState<any>(null);
   const [rehabPlans, setRehabPlans] = useState<RehabPlanRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"plan" | "mental">("plan");
+  const [activeTab, setActiveTab] = useState<"plan" | "rehab" | "mental">("plan");
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, locale } = useLanguage();
@@ -195,8 +195,11 @@ export default function Dashboard() {
             <Button variant="ghost" size="sm" onClick={() => navigate("/progress")}>
               <BarChart3 className="h-4 w-4 mr-1" /> {t("progress")}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => setActiveTab(activeTab === "mental" ? "plan" : "mental")}>
-              <Brain className="h-4 w-4 mr-1" /> {locale === "da" ? "Mental" : "Mental"}
+            <Button variant="ghost" size="sm" onClick={() => setActiveTab("rehab")}>
+              <Heart className="h-4 w-4 mr-1" /> {t("injuryRehabPlan")}
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => setActiveTab("mental")}>
+              <Brain className="h-4 w-4 mr-1" /> Mental
             </Button>
             <Button variant="ghost" size="sm" onClick={() => navigate("/profile-setup")}>
               <User className="h-4 w-4 mr-1" /> {t("profile")}
@@ -234,6 +237,10 @@ export default function Dashboard() {
             <Zap className="h-5 w-5" />
             <span className="text-[10px] font-semibold">{t("plan")}</span>
           </button>
+          <button onClick={() => setActiveTab("rehab")} className={`flex flex-col items-center gap-0.5 px-3 py-1 ${activeTab === "rehab" ? "text-primary" : "text-muted-foreground"}`}>
+            <Heart className="h-5 w-5" />
+            <span className="text-[10px] font-semibold">Rehab</span>
+          </button>
           <button onClick={() => setActiveTab("mental")} className={`flex flex-col items-center gap-0.5 px-3 py-1 ${activeTab === "mental" ? "text-primary" : "text-muted-foreground"}`}>
             <Brain className="h-5 w-5" />
             <span className="text-[10px] font-semibold">Mental</span>
@@ -262,169 +269,171 @@ export default function Dashboard() {
       <main className="container max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {activeTab === "mental" ? (
           <MentalAssessment profile={profile} />
-        ) : (
+        ) : activeTab === "rehab" ? (
           <>
-        {/* Profile summary */}
-        {profile && (
-          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
-              <div className="flex items-center gap-3">
-                {profile.avatar_url ? (
-                  <img src={profile.avatar_url} alt="" className="h-10 w-10 sm:h-12 sm:w-12 rounded-full object-cover border-2 border-border flex-shrink-0" />
-                ) : (
-                  <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-muted flex items-center justify-center border-2 border-border flex-shrink-0">
-                    <User className="h-5 w-5 text-muted-foreground" />
-                  </div>
-                )}
-                <div>
-                {profile.athlete_code && (
-                  <p className="text-[10px] text-muted-foreground font-mono">{t("yourAthleteCode")}: {profile.athlete_code}</p>
-                )}
-                <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-2">
-                  {profile.belt_level && (
-                    <span className="text-[10px] sm:text-xs bg-muted text-muted-foreground px-2 py-0.5 sm:py-1 rounded-full capitalize">
-                      {profile.belt_level} {t("belt")}
-                    </span>
+            {/* Rehab Plan Generator */}
+            <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
+              <div className="flex items-center gap-2">
+                <Heart className="h-5 w-5 text-destructive" />
+                <h3 className="font-bold text-foreground">{t("injuryRehabPlan")}</h3>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {t("rehabDescription")}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Input
+                  value={rehabInjury}
+                  onChange={(e) => setRehabInjury(e.target.value)}
+                  placeholder={t("rehabPlaceholder")}
+                  maxLength={200}
+                  className="flex-1"
+                />
+                <Button onClick={generateRehabPlan} disabled={generatingRehab || !rehabInjury.trim()} size="sm" className="w-full sm:w-auto">
+                  {generatingRehab ? (
+                    <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
+                  ) : (
+                    <><Heart className="h-4 w-4 mr-1" /> {t("generateRehabPlan")}</>
                   )}
-                  {profile.age && (
-                    <span className="text-[10px] sm:text-xs bg-muted text-muted-foreground px-2 py-0.5 sm:py-1 rounded-full">
-                      {profile.age}y
-                    </span>
-                  )}
-                  {profile.weight_kg && (
-                    <span className="text-[10px] sm:text-xs bg-muted text-muted-foreground px-2 py-0.5 sm:py-1 rounded-full">
-                      {profile.weight_kg}kg
-                    </span>
-                  )}
-                  <span className="text-[10px] sm:text-xs bg-muted text-muted-foreground px-2 py-0.5 sm:py-1 rounded-full">
-                    {profile.tkd_sessions_per_week}x {t("tkdPerWeek")}
-                  </span>
-                </div>
-                {profile.goals?.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {profile.goals.map((g) => (
-                      <span key={g} className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                        {t(g as any) || g}
-                      </span>
-                    ))}
-                  </div>
-                )}
+                </Button>
+              </div>
+            </div>
+
+            {/* Rehab plan result */}
+            {rehabPlan && <RehabPlanCard plan={rehabPlan} />}
+
+            {/* Previous rehab plans */}
+            {rehabPlans.filter(p => !p.is_active).length > 0 && (
+              <div>
+                <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">{t("previousRehabPlans")}</h3>
+                <div className="space-y-3">
+                  {rehabPlans.filter(p => !p.is_active).map((rp) => (
+                    <div key={rp.id} className="rounded-lg border border-border bg-card/50 p-4 flex items-center justify-between">
+                      <div>
+                        <p className="font-medium text-sm text-foreground">{rp.name}</p>
+                        <p className="text-xs text-muted-foreground">{rp.injury_description} · {new Date(rp.created_at).toLocaleDateString()}</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button variant="outline" size="sm" onClick={async () => {
+                          const { data: { user } } = await supabase.auth.getUser();
+                          if (!user) return;
+                          await supabase.from("rehab_plans").update({ is_active: false } as any).eq("user_id", user.id);
+                          await supabase.from("rehab_plans").update({ is_active: true } as any).eq("id", rp.id);
+                          loadData();
+                        }}>
+                          {t("activate")}
+                        </Button>
+                        <Button variant="ghost" size="sm" className="text-destructive" onClick={async () => {
+                          await supabase.from("rehab_plans").delete().eq("id", rp.id);
+                          loadData();
+                        }}>
+                          {t("delete")}
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-              <Button onClick={generatePlan} disabled={generating} size="sm" className="w-full sm:w-auto">
-                {generating ? (
-                  <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
-                ) : (
-                  <><Plus className="h-4 w-4 mr-1" /> {t("generatePlan")}</>
-                )}
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* Active plan */}
-        {activePlan ? (
-          <AIPlanCard plan={activePlan} />
+            )}
+          </>
         ) : (
-          <div className="rounded-xl border border-border bg-card p-12 text-center shadow-card">
-            <Zap className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
-            <h3 className="font-bold text-foreground mb-1">{t("noTrainingPlanYet")}</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              {t("noTrainingPlanDesc")}
-            </p>
-          </div>
-        )}
-
-        {/* Rehab Plan Generator */}
-        <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
-          <div className="flex items-center gap-2">
-            <Heart className="h-5 w-5 text-destructive" />
-            <h3 className="font-bold text-foreground">{t("injuryRehabPlan")}</h3>
-          </div>
-          <p className="text-xs text-muted-foreground">
-            {t("rehabDescription")}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-2">
-            <Input
-              value={rehabInjury}
-              onChange={(e) => setRehabInjury(e.target.value)}
-              placeholder={t("rehabPlaceholder")}
-              maxLength={200}
-              className="flex-1"
-            />
-            <Button onClick={generateRehabPlan} disabled={generatingRehab || !rehabInjury.trim()} size="sm" className="w-full sm:w-auto">
-              {generatingRehab ? (
-                <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
-              ) : (
-                <><Heart className="h-4 w-4 mr-1" /> {t("generateRehabPlan")}</>
-              )}
-            </Button>
-          </div>
-        </div>
-
-        {/* Rehab plan result */}
-        {rehabPlan && <RehabPlanCard plan={rehabPlan} />}
-
-        {/* Previous plans */}
-        {plans.filter(p => !p.is_active).length > 0 && (
-          <div>
-            <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">{t("previousPlans")}</h3>
-            <div className="space-y-3">
-              {plans.filter(p => !p.is_active).map((plan) => (
-                <div key={plan.id} className="rounded-lg border border-border bg-card/50 p-4 flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-sm text-foreground">{plan.name}</p>
-                    <p className="text-xs text-muted-foreground">{new Date(plan.created_at).toLocaleDateString()}</p>
+          <>
+            {/* Profile summary */}
+            {profile && (
+              <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
+                  <div className="flex items-center gap-3">
+                    {profile.avatar_url ? (
+                      <img src={profile.avatar_url} alt="" className="h-10 w-10 sm:h-12 sm:w-12 rounded-full object-cover border-2 border-border flex-shrink-0" />
+                    ) : (
+                      <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-muted flex items-center justify-center border-2 border-border flex-shrink-0">
+                        <User className="h-5 w-5 text-muted-foreground" />
+                      </div>
+                    )}
+                    <div>
+                      {profile.athlete_code && (
+                        <p className="text-[10px] text-muted-foreground font-mono">{t("yourAthleteCode")}: {profile.athlete_code}</p>
+                      )}
+                      <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-2">
+                        {profile.belt_level && (
+                          <span className="text-[10px] sm:text-xs bg-muted text-muted-foreground px-2 py-0.5 sm:py-1 rounded-full capitalize">
+                            {profile.belt_level} {t("belt")}
+                          </span>
+                        )}
+                        {profile.age && (
+                          <span className="text-[10px] sm:text-xs bg-muted text-muted-foreground px-2 py-0.5 sm:py-1 rounded-full">
+                            {profile.age}y
+                          </span>
+                        )}
+                        {profile.weight_kg && (
+                          <span className="text-[10px] sm:text-xs bg-muted text-muted-foreground px-2 py-0.5 sm:py-1 rounded-full">
+                            {profile.weight_kg}kg
+                          </span>
+                        )}
+                        <span className="text-[10px] sm:text-xs bg-muted text-muted-foreground px-2 py-0.5 sm:py-1 rounded-full">
+                          {profile.tkd_sessions_per_week}x {t("tkdPerWeek")}
+                        </span>
+                      </div>
+                      {profile.goals?.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {profile.goals.map((g) => (
+                            <span key={g} className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                              {t(g as any) || g}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <Button variant="outline" size="sm" onClick={async () => {
-                    const { data: { user } } = await supabase.auth.getUser();
-                    if (!user) return;
-                    await supabase.from("training_plans").update({ is_active: false }).eq("user_id", user.id);
-                    await supabase.from("training_plans").update({ is_active: true }).eq("id", plan.id);
-                    loadData();
-                  }}>
-                    {t("activate")}
+                  <Button onClick={generatePlan} disabled={generating} size="sm" className="w-full sm:w-auto">
+                    {generating ? (
+                      <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
+                    ) : (
+                      <><Plus className="h-4 w-4 mr-1" /> {t("generatePlan")}</>
+                    )}
                   </Button>
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
+              </div>
+            )}
 
-        {/* Previous rehab plans */}
-        {rehabPlans.filter(p => !p.is_active).length > 0 && (
-          <div>
-            <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">{t("previousRehabPlans")}</h3>
-            <div className="space-y-3">
-              {rehabPlans.filter(p => !p.is_active).map((rp) => (
-                <div key={rp.id} className="rounded-lg border border-border bg-card/50 p-4 flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-sm text-foreground">{rp.name}</p>
-                    <p className="text-xs text-muted-foreground">{rp.injury_description} · {new Date(rp.created_at).toLocaleDateString()}</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={async () => {
-                      const { data: { user } } = await supabase.auth.getUser();
-                      if (!user) return;
-                      await supabase.from("rehab_plans").update({ is_active: false } as any).eq("user_id", user.id);
-                      await supabase.from("rehab_plans").update({ is_active: true } as any).eq("id", rp.id);
-                      loadData();
-                    }}>
-                      {t("activate")}
-                    </Button>
-                    <Button variant="ghost" size="sm" className="text-destructive" onClick={async () => {
-                      await supabase.from("rehab_plans").delete().eq("id", rp.id);
-                      loadData();
-                    }}>
-                      {t("delete")}
-                    </Button>
-                  </div>
+            {/* Active plan */}
+            {activePlan ? (
+              <AIPlanCard plan={activePlan} />
+            ) : (
+              <div className="rounded-xl border border-border bg-card p-12 text-center shadow-card">
+                <Zap className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
+                <h3 className="font-bold text-foreground mb-1">{t("noTrainingPlanYet")}</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  {t("noTrainingPlanDesc")}
+                </p>
+              </div>
+            )}
+
+            {/* Previous plans */}
+            {plans.filter(p => !p.is_active).length > 0 && (
+              <div>
+                <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">{t("previousPlans")}</h3>
+                <div className="space-y-3">
+                  {plans.filter(p => !p.is_active).map((plan) => (
+                    <div key={plan.id} className="rounded-lg border border-border bg-card/50 p-4 flex items-center justify-between">
+                      <div>
+                        <p className="font-medium text-sm text-foreground">{plan.name}</p>
+                        <p className="text-xs text-muted-foreground">{new Date(plan.created_at).toLocaleDateString()}</p>
+                      </div>
+                      <Button variant="outline" size="sm" onClick={async () => {
+                        const { data: { user } } = await supabase.auth.getUser();
+                        if (!user) return;
+                        await supabase.from("training_plans").update({ is_active: false }).eq("user_id", user.id);
+                        await supabase.from("training_plans").update({ is_active: true }).eq("id", plan.id);
+                        loadData();
+                      }}>
+                        {t("activate")}
+                      </Button>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
-        </>
+              </div>
+            )}
+          </>
         )}
       </main>
     </div>
