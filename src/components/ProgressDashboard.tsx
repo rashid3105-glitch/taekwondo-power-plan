@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Loader2, BarChart3, TrendingUp, Target, Calendar, Zap } from "lucide-react";
+import { Loader2, BarChart3, TrendingUp, Target, Calendar, Zap, Brain, HeartPulse } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   AreaChart, Area,
@@ -39,6 +39,8 @@ function StatCard({ icon: Icon, label, value }: { icon: typeof Target; label: st
 export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
   const [logs, setLogs] = useState<WorkoutLog[]>([]);
   const [plan, setPlan] = useState<PlanData | null>(null);
+  const [mentalAssessments, setMentalAssessments] = useState<any[]>([]);
+  const [rehabPlans, setRehabPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { t } = useLanguage();
 
@@ -50,13 +52,17 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const [logsRes, planRes] = await Promise.all([
+    const [logsRes, planRes, mentalRes, rehabRes] = await Promise.all([
       supabase.from("workout_logs").select("*").eq("user_id", user.id).order("logged_date", { ascending: true }),
       supabase.from("training_plans").select("id, plan_data").eq("user_id", user.id).eq("is_active", true).single(),
+      supabase.from("mental_assessments").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
+      supabase.from("rehab_plans").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
     ]);
 
     if (logsRes.data) setLogs(logsRes.data as unknown as WorkoutLog[]);
     if (planRes.data) setPlan(planRes.data as unknown as PlanData);
+    if (mentalRes.data) setMentalAssessments(mentalRes.data);
+    if (rehabRes.data) setRehabPlans(rehabRes.data);
     setLoading(false);
   };
 
@@ -133,6 +139,29 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
     return { completionRate, totalSets, uniqueDays, weeklyData, consistencyData, dayCompletionData, streak, totalExercises: completedLogs.length };
   }, [logs, plan]);
 
+  const mentalStats = useMemo(() => {
+    if (!mentalAssessments.length) return null;
+    const latest = mentalAssessments[0];
+    const scores = latest.scores as Record<string, number>;
+    const categories = Object.entries(scores);
+    const best = categories.reduce((a, b) => (b[1] > a[1] ? b : a));
+    const worst = categories.reduce((a, b) => (b[1] < a[1] ? b : a));
+    return { latest, total: mentalAssessments.length, best, worst };
+  }, [mentalAssessments]);
+
+  const categoryLabel = (key: string) => {
+    const map: Record<string, Record<string, string>> = {
+      toughness: { en: "Toughness", da: "Mental styrke" },
+      anxiety: { en: "Anxiety Mgmt", da: "Angst" },
+      focus: { en: "Focus", da: "Fokus" },
+      recovery: { en: "Recovery", da: "Restitution" },
+      confidence: { en: "Confidence", da: "Selvtillid" },
+      motivation: { en: "Motivation", da: "Motivation" },
+    };
+    const lang = (t("plan") === "Plan" && t("profile") === "Profile") ? "en" : "da";
+    return map[key]?.[lang] || key;
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -141,7 +170,12 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
     );
   }
 
-  if (!stats || logs.length === 0) {
+  const hasWorkoutData = stats && logs.length > 0;
+  const hasMentalData = mentalAssessments.length > 0;
+  const activeRehab = rehabPlans.find((r: any) => r.is_active);
+  const hasRehabData = rehabPlans.length > 0;
+
+  if (!hasWorkoutData && !hasMentalData && !hasRehabData) {
     return (
       <div className="rounded-xl border border-border bg-card p-12 text-center shadow-card">
         <BarChart3 className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
@@ -158,114 +192,181 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
     <div className="space-y-4 sm:space-y-6">
       <h2 className="text-xl sm:text-2xl font-extrabold text-foreground">{t("progressDashboard")}</h2>
 
-      {/* Stat cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-        <StatCard icon={Target} label={t("completion")} value={`${stats.completionRate}%`} />
-        <StatCard icon={TrendingUp} label={t("totalSets")} value={String(stats.totalSets)} />
-        <StatCard icon={Calendar} label={t("daysTrained")} value={String(stats.uniqueDays)} />
-        <StatCard icon={Zap} label={t("streak")} value={`${stats.streak}d`} />
-      </div>
-
-      {/* Weekly volume chart */}
-      <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
-        <h3 className="text-sm font-bold text-foreground mb-4">{t("weeklyTrainingVolume")}</h3>
-        <div className="h-48 sm:h-56">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={stats.weeklyData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(220, 15%, 18%)" />
-              <XAxis dataKey="week" tick={{ fontSize: 11, fill: "hsl(215, 15%, 55%)" }} />
-              <YAxis tick={{ fontSize: 11, fill: "hsl(215, 15%, 55%)" }} />
-              <Tooltip
-                contentStyle={{ backgroundColor: "hsl(220, 18%, 10%)", border: "1px solid hsl(220, 15%, 18%)", borderRadius: 8, fontSize: 12 }}
-                labelStyle={{ color: "hsl(210, 20%, 95%)" }}
-              />
-              <Bar dataKey="volume" name={t("totalSets")} fill="hsl(190, 95%, 50%)" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="exercises" name={t("completion")} fill="hsl(35, 100%, 55%)" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
-      {/* Completion rate over time */}
-      <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
-        <h3 className="text-sm font-bold text-foreground mb-4">{t("weeklyCompletionRate")}</h3>
-        <div className="h-48 sm:h-56">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={stats.weeklyData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(220, 15%, 18%)" />
-              <XAxis dataKey="week" tick={{ fontSize: 11, fill: "hsl(215, 15%, 55%)" }} />
-              <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: "hsl(215, 15%, 55%)" }} unit="%" />
-              <Tooltip
-                contentStyle={{ backgroundColor: "hsl(220, 18%, 10%)", border: "1px solid hsl(220, 15%, 18%)", borderRadius: 8, fontSize: 12 }}
-                labelStyle={{ color: "hsl(210, 20%, 95%)" }}
-                formatter={(value: number) => [`${value}%`, t("completion")]}
-              />
-              <Area
-                type="monotone"
-                dataKey="completionRate"
-                stroke="hsl(160, 80%, 45%)"
-                fill="hsl(160, 80%, 45%)"
-                fillOpacity={0.15}
-                strokeWidth={2}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
-      {/* 28-day consistency heatmap */}
-      <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
-        <h3 className="text-sm font-bold text-foreground mb-4">{t("last28DaysConsistency")}</h3>
-        <div className="grid grid-cols-7 gap-1.5">
-          {stats.consistencyData.map((d, i) => (
-            <div key={i} className="flex flex-col items-center gap-1">
-              <div
-                className="w-full aspect-square rounded-md border border-border transition-colors"
-                style={{
-                  backgroundColor: d.logged > 0
-                    ? `hsl(190, 95%, ${Math.min(30 + d.logged * 15, 55)}%)`
-                    : "hsl(220, 15%, 12%)",
-                }}
-              />
-              <span className="text-[8px] text-muted-foreground">{d.day}</span>
-            </div>
-          ))}
-        </div>
-        <div className="flex items-center gap-2 mt-3 justify-end">
-          <span className="text-[10px] text-muted-foreground">{t("less")}</span>
-          {[0, 2, 4, 6].map((v) => (
-            <div
-              key={v}
-              className="h-3 w-3 rounded-sm border border-border"
-              style={{
-                backgroundColor: v === 0 ? "hsl(220, 15%, 12%)" : `hsl(190, 95%, ${30 + v * 5}%)`,
-              }}
-            />
-          ))}
-          <span className="text-[10px] text-muted-foreground">{t("more")}</span>
-        </div>
-      </div>
-
-      {/* Completion by day of week */}
-      {stats.dayCompletionData.length > 0 && (
-        <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
-          <h3 className="text-sm font-bold text-foreground mb-4">{t("completionByDay")}</h3>
-          <div className="h-48 sm:h-56">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={stats.dayCompletionData} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(220, 15%, 18%)" />
-                <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 11, fill: "hsl(215, 15%, 55%)" }} unit="%" />
-                <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: "hsl(215, 15%, 55%)" }} width={40} />
-                <Tooltip
-                  contentStyle={{ backgroundColor: "hsl(220, 18%, 10%)", border: "1px solid hsl(220, 15%, 18%)", borderRadius: 8, fontSize: 12 }}
-                  formatter={(value: number) => [`${value}%`, t("completion")]}
-                />
-                <Bar dataKey="rate" fill="hsl(190, 95%, 50%)" radius={[0, 4, 4, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+      {/* Workout stat cards */}
+      {hasWorkoutData && (
+        <>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+            <StatCard icon={Target} label={t("completion")} value={`${stats.completionRate}%`} />
+            <StatCard icon={TrendingUp} label={t("totalSets")} value={String(stats.totalSets)} />
+            <StatCard icon={Calendar} label={t("daysTrained")} value={String(stats.uniqueDays)} />
+            <StatCard icon={Zap} label={t("streak")} value={`${stats.streak}d`} />
           </div>
-        </div>
+
+          {/* Weekly volume chart */}
+          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
+            <h3 className="text-sm font-bold text-foreground mb-4">{t("weeklyTrainingVolume")}</h3>
+            <div className="h-48 sm:h-56">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={stats.weeklyData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(220, 15%, 18%)" />
+                  <XAxis dataKey="week" tick={{ fontSize: 11, fill: "hsl(215, 15%, 55%)" }} />
+                  <YAxis tick={{ fontSize: 11, fill: "hsl(215, 15%, 55%)" }} />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: "hsl(220, 18%, 10%)", border: "1px solid hsl(220, 15%, 18%)", borderRadius: 8, fontSize: 12 }}
+                    labelStyle={{ color: "hsl(210, 20%, 95%)" }}
+                  />
+                  <Bar dataKey="volume" name={t("totalSets")} fill="hsl(190, 95%, 50%)" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="exercises" name={t("completion")} fill="hsl(35, 100%, 55%)" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Completion rate over time */}
+          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
+            <h3 className="text-sm font-bold text-foreground mb-4">{t("weeklyCompletionRate")}</h3>
+            <div className="h-48 sm:h-56">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={stats.weeklyData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(220, 15%, 18%)" />
+                  <XAxis dataKey="week" tick={{ fontSize: 11, fill: "hsl(215, 15%, 55%)" }} />
+                  <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: "hsl(215, 15%, 55%)" }} unit="%" />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: "hsl(220, 18%, 10%)", border: "1px solid hsl(220, 15%, 18%)", borderRadius: 8, fontSize: 12 }}
+                    labelStyle={{ color: "hsl(210, 20%, 95%)" }}
+                    formatter={(value: number) => [`${value}%`, t("completion")]}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="completionRate"
+                    stroke="hsl(160, 80%, 45%)"
+                    fill="hsl(160, 80%, 45%)"
+                    fillOpacity={0.15}
+                    strokeWidth={2}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* 28-day consistency heatmap */}
+          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
+            <h3 className="text-sm font-bold text-foreground mb-4">{t("last28DaysConsistency")}</h3>
+            <div className="grid grid-cols-7 gap-1.5">
+              {stats.consistencyData.map((d, i) => (
+                <div key={i} className="flex flex-col items-center gap-1">
+                  <div
+                    className="w-full aspect-square rounded-md border border-border transition-colors"
+                    style={{
+                      backgroundColor: d.logged > 0
+                        ? `hsl(190, 95%, ${Math.min(30 + d.logged * 15, 55)}%)`
+                        : "hsl(220, 15%, 12%)",
+                    }}
+                  />
+                  <span className="text-[8px] text-muted-foreground">{d.day}</span>
+                </div>
+              ))}
+            </div>
+            <div className="flex items-center gap-2 mt-3 justify-end">
+              <span className="text-[10px] text-muted-foreground">{t("less")}</span>
+              {[0, 2, 4, 6].map((v) => (
+                <div
+                  key={v}
+                  className="h-3 w-3 rounded-sm border border-border"
+                  style={{
+                    backgroundColor: v === 0 ? "hsl(220, 15%, 12%)" : `hsl(190, 95%, ${30 + v * 5}%)`,
+                  }}
+                />
+              ))}
+              <span className="text-[10px] text-muted-foreground">{t("more")}</span>
+            </div>
+          </div>
+
+          {/* Completion by day of week */}
+          {stats.dayCompletionData.length > 0 && (
+            <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
+              <h3 className="text-sm font-bold text-foreground mb-4">{t("completionByDay")}</h3>
+              <div className="h-48 sm:h-56">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={stats.dayCompletionData} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(220, 15%, 18%)" />
+                    <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 11, fill: "hsl(215, 15%, 55%)" }} unit="%" />
+                    <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: "hsl(215, 15%, 55%)" }} width={40} />
+                    <Tooltip
+                      contentStyle={{ backgroundColor: "hsl(220, 18%, 10%)", border: "1px solid hsl(220, 15%, 18%)", borderRadius: 8, fontSize: 12 }}
+                      formatter={(value: number) => [`${value}%`, t("completion")]}
+                    />
+                    <Bar dataKey="rate" fill="hsl(190, 95%, 50%)" radius={[0, 4, 4, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          )}
+        </>
       )}
+
+      {/* Mental Performance Section */}
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
+        <div className="flex items-center gap-2 mb-4">
+          <Brain className="h-5 w-5 text-primary" />
+          <h3 className="text-sm font-bold text-foreground">{t("mentalPerformance")}</h3>
+        </div>
+        {mentalStats ? (
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <StatCard icon={Target} label={t("latestMentalScore")} value={`${mentalStats.latest.total_score}/30`} />
+              <StatCard icon={Calendar} label={t("assessmentsTaken")} value={String(mentalStats.total)} />
+              <StatCard icon={TrendingUp} label={t("topStrength")} value={categoryLabel(mentalStats.best[0])} />
+              <StatCard icon={Zap} label={t("needsWork")} value={categoryLabel(mentalStats.worst[0])} />
+            </div>
+            {/* Category breakdown bar */}
+            <div className="space-y-2 mt-3">
+              {Object.entries(mentalStats.latest.scores as Record<string, number>).map(([cat, score]) => (
+                <div key={cat} className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground w-24 truncate">{categoryLabel(cat)}</span>
+                  <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all"
+                      style={{
+                        width: `${(score / 5) * 100}%`,
+                        backgroundColor: score >= 4 ? "hsl(160, 80%, 45%)" : score >= 3 ? "hsl(35, 100%, 55%)" : "hsl(0, 70%, 55%)",
+                      }}
+                    />
+                  </div>
+                  <span className="text-xs font-semibold text-foreground w-6 text-right">{score}/5</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">{t("noMentalData")}</p>
+        )}
+      </div>
+
+      {/* Rehab Section */}
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
+        <div className="flex items-center gap-2 mb-4">
+          <HeartPulse className="h-5 w-5 text-primary" />
+          <h3 className="text-sm font-bold text-foreground">{t("rehabProgress")}</h3>
+        </div>
+        {hasRehabData ? (
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-2">
+              <StatCard icon={Target} label={t("activeRehabPlan")} value={activeRehab ? activeRehab.name : t("none")} />
+              <StatCard icon={Calendar} label={t("rehabPhases")} value={
+                activeRehab?.plan_data?.phases ? String((activeRehab.plan_data as any).phases.length) : "—"
+              } />
+            </div>
+            {activeRehab && (
+              <div className="text-xs text-muted-foreground">
+                <span className="font-medium text-foreground">{activeRehab.injury_description}</span>
+              </div>
+            )}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">{t("noRehabData")}</p>
+        )}
+      </div>
     </div>
   );
 }
