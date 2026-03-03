@@ -10,7 +10,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { CoachAthleteDetail } from "@/components/CoachAthleteDetail";
 import {
-  ArrowLeft, Loader2, UserPlus, Trash2, Zap, Plus, User,
+  ArrowLeft, Loader2, UserPlus, Trash2, Zap, Plus, User, Users,
 } from "lucide-react";
 
 interface AthleteProfile {
@@ -50,11 +50,13 @@ interface RehabPlan {
 
 export default function CoachDashboard() {
   const [athletes, setAthletes] = useState<AthleteProfile[]>([]);
+  const [approvedAthletes, setApprovedAthletes] = useState<AthleteProfile[]>([]);
   const [plans, setPlans] = useState<AthletePlan[]>([]);
   const [rehabPlans, setRehabPlans] = useState<RehabPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [athleteCode, setAthleteCode] = useState("");
   const [adding, setAdding] = useState(false);
+  const [addingId, setAddingId] = useState<string | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newAthleteName, setNewAthleteName] = useState("");
   const [newAthleteEmail, setNewAthleteEmail] = useState("");
@@ -64,6 +66,7 @@ export default function CoachDashboard() {
   const [newAthleteExpYears, setNewAthleteExpYears] = useState("");
   const [creating, setCreating] = useState(false);
   const [selectedAthlete, setSelectedAthlete] = useState<string | null>(null);
+  const [coachUserId, setCoachUserId] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, locale } = useLanguage();
@@ -75,6 +78,7 @@ export default function CoachDashboard() {
   const checkRoleAndLoad = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { navigate("/auth"); return; }
+    setCoachUserId(user.id);
 
     const { data: roles } = await supabase
       .from("user_roles")
@@ -92,36 +96,46 @@ export default function CoachDashboard() {
       .from("coach_athletes")
       .select("athlete_id");
 
-    if (!links || links.length === 0) {
+    const athleteIds = (links || []).map((l: any) => l.athlete_id);
+
+    if (athleteIds.length === 0) {
       setAthletes([]);
       setPlans([]);
       setRehabPlans([]);
-      setLoading(false);
-      return;
+    } else {
+      const [profilesRes, plansRes, rehabRes] = await Promise.all([
+        supabase
+          .from("profiles")
+          .select("user_id, display_name, athlete_code, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, current_injury, program_weeks, weekly_schedule, avatar_url")
+          .in("user_id", athleteIds),
+        supabase
+          .from("training_plans")
+          .select("id, name, plan_data, is_active, created_at, user_id")
+          .in("user_id", athleteIds)
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("rehab_plans")
+          .select("id, name, plan_data, is_active, created_at, user_id, injury_description")
+          .in("user_id", athleteIds)
+          .order("created_at", { ascending: false }),
+      ]);
+
+      setAthletes((profilesRes.data || []) as unknown as AthleteProfile[]);
+      setPlans((plansRes.data || []) as unknown as AthletePlan[]);
+      setRehabPlans((rehabRes.data || []) as unknown as RehabPlan[]);
     }
 
-    const athleteIds = links.map((l: any) => l.athlete_id);
+    // Fetch approved athletes not yet in roster (exclude coach's own profile)
+    const { data: allApproved } = await supabase
+      .from("profiles")
+      .select("user_id, display_name, athlete_code, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, current_injury, program_weeks, weekly_schedule, avatar_url")
+      .eq("is_approved", true);
 
-    const [profilesRes, plansRes, rehabRes] = await Promise.all([
-      supabase
-        .from("profiles")
-        .select("user_id, display_name, athlete_code, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, current_injury, program_weeks, weekly_schedule, avatar_url")
-        .in("user_id", athleteIds),
-      supabase
-        .from("training_plans")
-        .select("id, name, plan_data, is_active, created_at, user_id")
-        .in("user_id", athleteIds)
-        .order("created_at", { ascending: false }),
-      supabase
-        .from("rehab_plans")
-        .select("id, name, plan_data, is_active, created_at, user_id, injury_description")
-        .in("user_id", athleteIds)
-        .order("created_at", { ascending: false }),
-    ]);
+    const available = (allApproved || []).filter(
+      (p: any) => !athleteIds.includes(p.user_id) && p.user_id !== coachUserId
+    );
+    setApprovedAthletes(available as unknown as AthleteProfile[]);
 
-    setAthletes((profilesRes.data || []) as unknown as AthleteProfile[]);
-    setPlans((plansRes.data || []) as unknown as AthletePlan[]);
-    setRehabPlans((rehabRes.data || []) as unknown as RehabPlan[]);
     setLoading(false);
   };
 
@@ -161,6 +175,23 @@ export default function CoachDashboard() {
       toast({ title: t("error"), description: err.message, variant: "destructive" });
     } finally {
       setAdding(false);
+    }
+  };
+
+  const addApprovedAthlete = async (athleteId: string) => {
+    if (!coachUserId) return;
+    setAddingId(athleteId);
+    try {
+      const { error } = await supabase
+        .from("coach_athletes")
+        .insert({ coach_id: coachUserId, athlete_id: athleteId });
+      if (error) throw error;
+      toast({ title: t("athleteAdded") });
+      await loadAthletes();
+    } catch (err: any) {
+      toast({ title: t("error"), description: err.message, variant: "destructive" });
+    } finally {
+      setAddingId(null);
     }
   };
 
@@ -333,6 +364,48 @@ export default function CoachDashboard() {
             </div>
           </div>
         </div>
+
+        {/* Browse approved athletes */}
+        {approvedAthletes.length > 0 && (
+          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
+            <h3 className="font-bold text-foreground flex items-center gap-2">
+              <Users className="h-5 w-5" /> {t("browseApproved")}
+            </h3>
+            <p className="text-xs text-muted-foreground">{t("browseApprovedDesc")}</p>
+            <div className="grid gap-2 max-h-64 overflow-y-auto">
+              {approvedAthletes.map((a) => (
+                <div key={a.user_id} className="flex items-center justify-between rounded-lg border border-border p-3 hover:bg-muted/50 transition-colors">
+                  <div className="flex items-center gap-3">
+                    {a.avatar_url ? (
+                      <img src={a.avatar_url} alt="" className="h-8 w-8 rounded-full object-cover border border-border" />
+                    ) : (
+                      <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center border border-border">
+                        <User className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                    )}
+                    <div>
+                      <p className="text-sm font-medium text-foreground">{a.display_name || t("noName")}</p>
+                      <div className="flex gap-1.5">
+                        {a.belt_level && (
+                          <span className="text-[10px] text-muted-foreground capitalize">{a.belt_level} {t("belt")}</span>
+                        )}
+                        {a.age && <span className="text-[10px] text-muted-foreground">• {a.age}y</span>}
+                      </div>
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={addingId === a.user_id}
+                    onClick={() => addApprovedAthlete(a.user_id)}
+                  >
+                    {addingId === a.user_id ? <Loader2 className="h-4 w-4 animate-spin" /> : <><UserPlus className="h-4 w-4 mr-1" /> {t("addToRoster")}</>}
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Athlete list */}
         {athletes.length === 0 ? (

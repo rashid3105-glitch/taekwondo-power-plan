@@ -208,6 +208,10 @@ const translations = {
     mental: "Mental",
     rehab: "Rehab",
     orAddByCode: "Or add existing athlete by code",
+    browseApproved: "Browse Approved Athletes",
+    browseApprovedDesc: "Select approved athletes to add to your roster.",
+    noApprovedAthletes: "No approved athletes available to add.",
+    addToRoster: "Add",
   },
   da: {
     // Common
@@ -416,6 +420,10 @@ const translations = {
     mental: "Mental",
     rehab: "Genoptræning",
     orAddByCode: "Eller tilføj eksisterende atlet med kode",
+    browseApproved: "Gennemse godkendte atleter",
+    browseApprovedDesc: "Vælg godkendte atleter for at tilføje dem til din liste.",
+    noApprovedAthletes: "Ingen godkendte atleter tilgængelige at tilføje.",
+    addToRoster: "Tilføj",
   },
 } as const;
 
