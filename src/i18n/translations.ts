@@ -219,6 +219,12 @@ const translations = {
     browseApprovedDesc: "Select approved athletes to add to your roster.",
     noApprovedAthletes: "No approved athletes available to add.",
     addToRoster: "Add",
+    assignToCoach: "Assign to Coach",
+    reassignCoach: "Reassign Coach",
+    selectCoach: "Select Coach",
+    noCoach: "No Coach",
+    athleteReassigned: "Athlete reassigned to new coach!",
+    currentCoach: "Current Coach",
   },
   da: {
     // Common
@@ -438,6 +444,12 @@ const translations = {
     browseApprovedDesc: "Vælg godkendte atleter for at tilføje dem til din liste.",
     noApprovedAthletes: "Ingen godkendte atleter tilgængelige at tilføje.",
     addToRoster: "Tilføj",
+    assignToCoach: "Tildel til træner",
+    reassignCoach: "Skift træner",
+    selectCoach: "Vælg træner",
+    noCoach: "Ingen træner",
+    athleteReassigned: "Atlet omfordelt til ny træner!",
+    currentCoach: "Nuværende træner",
   },
 } as const;
 

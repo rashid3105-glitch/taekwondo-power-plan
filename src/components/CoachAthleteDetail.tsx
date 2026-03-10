@@ -25,6 +25,7 @@ interface AthleteProfile {
   program_weeks: number | null;
   weekly_schedule: any;
   avatar_url: string | null;
+  discipline: string;
 }
 
 interface AthletePlan {
@@ -83,6 +84,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
   const [beltLevel, setBeltLevel] = useState(athlete.belt_level || "white");
   const [experienceYears, setExperienceYears] = useState<string>(athlete.experience_years?.toString() || "");
   const [weightKg, setWeightKg] = useState<string>(athlete.weight_kg?.toString() || "");
+  const [discipline, setDiscipline] = useState(athlete.discipline || "sparring");
 
   const activePlan = plans.find(p => p.is_active);
   const activeRehab = rehabPlans.find(p => p.is_active);
@@ -92,6 +94,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
     try {
       const updates: Record<string, any> = {
         belt_level: beltLevel,
+        discipline,
       };
       if (age) updates.age = Math.min(Math.max(parseInt(age), 5), 99);
       if (experienceYears) updates.experience_years = Math.min(Math.max(parseInt(experienceYears), 0), 50);
@@ -262,6 +265,18 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
               className="h-9"
             />
           </div>
+        </div>
+        <div className="space-y-1">
+          <Label className="text-xs">{t("discipline")}</Label>
+          <Select value={discipline} onValueChange={setDiscipline}>
+            <SelectTrigger className="h-9">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="sparring">{t("sparring")}</SelectItem>
+              <SelectItem value="poomsae">{t("poomsae")}</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
       {/* Weekly Schedule */}

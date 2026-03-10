@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Loader2, CheckCircle, XCircle, ArrowLeft, Download, Shield, Trash2 } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Loader2, CheckCircle, XCircle, ArrowLeft, Download, Shield, Trash2, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 
@@ -27,12 +28,16 @@ interface PendingUser {
   email?: string;
   plans?: UserPlan[];
   isCoach?: boolean;
+  coachId?: string | null;
+  coachName?: string;
 }
 
 export default function AdminApproval() {
   const [users, setUsers] = useState<PendingUser[]>([]);
+  const [coaches, setCoaches] = useState<{ user_id: string; display_name: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [reassigning, setReassigning] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
@@ -50,7 +55,7 @@ export default function AdminApproval() {
   };
 
   const loadUsers = async () => {
-    const [profilesRes, emailsRes, plansRes, rolesRes] = await Promise.all([
+    const [profilesRes, emailsRes, plansRes, rolesRes, coachAthletesRes] = await Promise.all([
       supabase
         .from("profiles")
         .select("user_id, display_name, created_at, is_approved, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week")
@@ -61,14 +66,26 @@ export default function AdminApproval() {
         .select("id, name, plan_data, created_at, user_id, is_active")
         .eq("is_active", true),
       supabase.from("user_roles").select("user_id, role"),
+      supabase.from("coach_athletes").select("coach_id, athlete_id"),
     ]);
 
     const profiles = (profilesRes.data || []) as PendingUser[];
     const emailMap: Record<string, string> = emailsRes.data?.emailMap || {};
     const plans = (plansRes.data || []) as (UserPlan & { user_id: string })[];
     const roles = (rolesRes.data || []) as { user_id: string; role: string }[];
+    const coachAthleteLinks = (coachAthletesRes.data || []) as { coach_id: string; athlete_id: string }[];
 
     const coachSet = new Set(roles.filter(r => r.role === "coach").map(r => r.user_id));
+
+    // Build athlete->coach mapping
+    const athleteCoachMap: Record<string, string> = {};
+    for (const link of coachAthleteLinks) {
+      athleteCoachMap[link.athlete_id] = link.coach_id;
+    }
+
+    // Build coach display name map
+    const coachProfiles = profiles.filter(p => coachSet.has(p.user_id));
+    setCoaches(coachProfiles.map(p => ({ user_id: p.user_id, display_name: p.display_name })));
 
     const plansByUser: Record<string, UserPlan[]> = {};
     for (const p of plans) {
@@ -76,11 +93,16 @@ export default function AdminApproval() {
       plansByUser[p.user_id].push(p);
     }
 
+    const profileNameMap: Record<string, string> = {};
+    for (const p of profiles) profileNameMap[p.user_id] = p.display_name;
+
     setUsers(profiles.map(p => ({
       ...p,
       email: emailMap[p.user_id] || "",
       plans: plansByUser[p.user_id] || [],
       isCoach: coachSet.has(p.user_id),
+      coachId: athleteCoachMap[p.user_id] || null,
+      coachName: athleteCoachMap[p.user_id] ? (profileNameMap[athleteCoachMap[p.user_id]] || "") : undefined,
     })));
     setLoading(false);
   };
@@ -211,6 +233,28 @@ export default function AdminApproval() {
     }
   };
 
+  const reassignAthlete = async (athleteId: string, newCoachId: string | null) => {
+    setReassigning(athleteId);
+    try {
+      // Remove existing coach link
+      await supabase.from("coach_athletes").delete().eq("athlete_id", athleteId);
+      // Add new coach link if selected
+      if (newCoachId) {
+        const { error } = await supabase.from("coach_athletes").insert({
+          coach_id: newCoachId,
+          athlete_id: athleteId,
+        });
+        if (error) throw error;
+      }
+      toast({ title: t("athleteReassigned") });
+      await loadUsers();
+    } catch (err: any) {
+      toast({ title: t("error"), description: err.message, variant: "destructive" });
+    } finally {
+      setReassigning(null);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -289,6 +333,29 @@ export default function AdminApproval() {
               {plan.name}
             </Button>
           ))}
+        </div>
+      )}
+      {/* Coach assignment */}
+      {!u.isCoach && (
+        <div className="flex items-center gap-2 pt-1 border-t border-border mt-2">
+          <Users className="h-3 w-3 text-muted-foreground" />
+          <span className="text-[10px] text-muted-foreground">{t("assignToCoach")}:</span>
+          <Select
+            value={u.coachId || "none"}
+            onValueChange={(val) => reassignAthlete(u.user_id, val === "none" ? null : val)}
+            disabled={reassigning === u.user_id}
+          >
+            <SelectTrigger className="h-7 text-xs flex-1">
+              <SelectValue placeholder={t("selectCoach")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">{t("noCoach")}</SelectItem>
+              {coaches.map((c) => (
+                <SelectItem key={c.user_id} value={c.user_id}>{c.display_name || t("noName")}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {reassigning === u.user_id && <Loader2 className="h-3 w-3 animate-spin" />}
         </div>
       )}
       {/* Coach role toggle & delete */}

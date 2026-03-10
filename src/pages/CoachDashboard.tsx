@@ -27,6 +27,7 @@ interface AthleteProfile {
   program_weeks: number | null;
   weekly_schedule: any;
   avatar_url: string | null;
+  discipline: string;
 }
 
 interface AthletePlan {
@@ -64,6 +65,7 @@ export default function CoachDashboard() {
   const [newAthleteAge, setNewAthleteAge] = useState("");
   const [newAthleteBelt, setNewAthleteBelt] = useState("white");
   const [newAthleteExpYears, setNewAthleteExpYears] = useState("");
+  const [newAthleteDiscipline, setNewAthleteDiscipline] = useState("sparring");
   const [creating, setCreating] = useState(false);
   const [selectedAthlete, setSelectedAthlete] = useState<string | null>(null);
   const [coachUserId, setCoachUserId] = useState<string | null>(null);
@@ -106,7 +108,7 @@ export default function CoachDashboard() {
       const [profilesRes, plansRes, rehabRes] = await Promise.all([
         supabase
           .from("profiles")
-          .select("user_id, display_name, athlete_code, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, current_injury, program_weeks, weekly_schedule, avatar_url")
+          .select("user_id, display_name, athlete_code, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, current_injury, program_weeks, weekly_schedule, avatar_url, discipline")
           .in("user_id", athleteIds),
         supabase
           .from("training_plans")
@@ -128,7 +130,7 @@ export default function CoachDashboard() {
     // Fetch approved athletes not yet in roster (exclude coach's own profile)
     const { data: allApproved } = await supabase
       .from("profiles")
-      .select("user_id, display_name, athlete_code, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, current_injury, program_weeks, weekly_schedule, avatar_url")
+      .select("user_id, display_name, athlete_code, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, current_injury, program_weeks, weekly_schedule, avatar_url, discipline")
       .eq("is_approved", true);
 
     const available = (allApproved || []).filter(
@@ -207,6 +209,7 @@ export default function CoachDashboard() {
           age: newAthleteAge ? parseInt(newAthleteAge) : null,
           belt_level: newAthleteBelt,
           experience_years: newAthleteExpYears ? parseInt(newAthleteExpYears) : null,
+          discipline: newAthleteDiscipline,
         },
       });
       if (error) throw error;
@@ -219,7 +222,7 @@ export default function CoachDashboard() {
       setNewAthleteAge("");
       setNewAthleteBelt("white");
       setNewAthleteExpYears("");
-      setShowCreateForm(false);
+      setNewAthleteDiscipline("sparring");
       await loadAthletes();
     } catch (err: any) {
       toast({ title: t("error"), description: err.message, variant: "destructive" });
@@ -332,6 +335,18 @@ export default function CoachDashboard() {
                     className="h-9"
                   />
                 </div>
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">{t("discipline")}</Label>
+                <Select value={newAthleteDiscipline} onValueChange={setNewAthleteDiscipline}>
+                  <SelectTrigger className="h-9">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="sparring">{t("sparring")}</SelectItem>
+                    <SelectItem value="poomsae">{t("poomsae")}</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="flex gap-2">
                 <Button onClick={createAthlete} disabled={creating || !newAthleteName.trim() || !newAthleteEmail.trim() || !newAthletePassword.trim()} size="sm">
