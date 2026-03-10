@@ -28,6 +28,8 @@ interface PendingUser {
   email?: string;
   plans?: UserPlan[];
   isCoach?: boolean;
+  coachId?: string | null;
+  coachName?: string;
 }
 
 export default function AdminApproval() {
