@@ -37,6 +37,7 @@ export default function ProfileSetup() {
   const [weight, setWeight] = useState("");
   const [belt, setBelt] = useState("white");
   const [experience, setExperience] = useState("");
+  const [discipline, setDiscipline] = useState("sparring");
   const [goals, setGoals] = useState<string[]>([]);
   const [schedule, setSchedule] = useState<DaySchedule[]>(DEFAULT_SCHEDULE);
   const [programWeeks, setProgramWeeks] = useState(8);
