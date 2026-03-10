@@ -209,6 +209,7 @@ export default function CoachDashboard() {
           age: newAthleteAge ? parseInt(newAthleteAge) : null,
           belt_level: newAthleteBelt,
           experience_years: newAthleteExpYears ? parseInt(newAthleteExpYears) : null,
+          discipline: newAthleteDiscipline,
         },
       });
       if (error) throw error;
