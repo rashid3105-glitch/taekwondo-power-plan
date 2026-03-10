@@ -612,6 +612,14 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
         <h2 className="text-2xl font-extrabold text-foreground">{totalScore}/30</h2>
         <p className="text-sm text-muted-foreground">{getOverallLabel(totalScore)}</p>
 
+        {/* Radar Chart */}
+        <div className="py-2">
+          <MentalRadarChart
+            scores={scores}
+            labels={Object.fromEntries(Object.entries(categoryLabels).map(([k, v]) => [k, v[l]]))}
+          />
+        </div>
+
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-3">
           {Object.entries(scores).map(([cat, score]) => (
             <div key={cat} className="flex flex-col items-center gap-1 p-2 rounded-lg bg-muted/50">
