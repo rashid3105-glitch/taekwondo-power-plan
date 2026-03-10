@@ -66,6 +66,7 @@ export default function CoachDashboard() {
   const [newAthleteBelt, setNewAthleteBelt] = useState("white");
   const [newAthleteExpYears, setNewAthleteExpYears] = useState("");
   const [newAthleteDiscipline, setNewAthleteDiscipline] = useState("sparring");
+  const [creating, setCreating] = useState(false);
   const [selectedAthlete, setSelectedAthlete] = useState<string | null>(null);
   const [coachUserId, setCoachUserId] = useState<string | null>(null);
   const navigate = useNavigate();
