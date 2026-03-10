@@ -84,6 +84,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
   const [beltLevel, setBeltLevel] = useState(athlete.belt_level || "white");
   const [experienceYears, setExperienceYears] = useState<string>(athlete.experience_years?.toString() || "");
   const [weightKg, setWeightKg] = useState<string>(athlete.weight_kg?.toString() || "");
+  const [discipline, setDiscipline] = useState(athlete.discipline || "sparring");
 
   const activePlan = plans.find(p => p.is_active);
   const activeRehab = rehabPlans.find(p => p.is_active);
