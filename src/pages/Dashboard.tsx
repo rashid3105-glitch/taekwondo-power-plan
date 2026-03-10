@@ -228,8 +228,7 @@ export default function Dashboard() {
                 <Shield className="h-4 w-4 mr-1" /> {t("manageUsers")}
               </Button>
             )}
-
-
+          </nav>
         </div>
       </header>
 
