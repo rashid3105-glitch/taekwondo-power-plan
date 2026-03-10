@@ -266,6 +266,18 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
             />
           </div>
         </div>
+        <div className="space-y-1">
+          <Label className="text-xs">{t("discipline")}</Label>
+          <Select value={discipline} onValueChange={setDiscipline}>
+            <SelectTrigger className="h-9">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="sparring">{t("sparring")}</SelectItem>
+              <SelectItem value="poomsae">{t("poomsae")}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       {/* Weekly Schedule */}
       <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">

@@ -444,6 +444,12 @@ const translations = {
     browseApprovedDesc: "Vælg godkendte atleter for at tilføje dem til din liste.",
     noApprovedAthletes: "Ingen godkendte atleter tilgængelige at tilføje.",
     addToRoster: "Tilføj",
+    assignToCoach: "Tildel til træner",
+    reassignCoach: "Skift træner",
+    selectCoach: "Vælg træner",
+    noCoach: "Ingen træner",
+    athleteReassigned: "Atlet omfordelt til ny træner!",
+    currentCoach: "Nuværende træner",
   },
 } as const;
 
