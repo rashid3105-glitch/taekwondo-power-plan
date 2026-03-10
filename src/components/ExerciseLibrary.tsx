@@ -61,6 +61,7 @@ export function ExerciseLibrary() {
   const [filter, setFilter] = useState<ExerciseCategory | "all" | "custom">("all");
   const [showForm, setShowForm] = useState(false);
   const [userExercises, setUserExercises] = useState<(Exercise & { isCustom: true; dbId: string })[]>([]);
+  const [videoOverrides, setVideoOverrides] = useState<Record<string, string>>({});
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { toast } = useToast();
   const { locale } = useLanguage();
@@ -69,6 +70,11 @@ export function ExerciseLibrary() {
 
   useEffect(() => {
     loadUserExercises();
+    // Load video overrides from localStorage
+    const stored = localStorage.getItem("exercise-video-overrides");
+    if (stored) {
+      try { setVideoOverrides(JSON.parse(stored)); } catch {}
+    }
   }, []);
 
   const loadUserExercises = async () => {
@@ -97,7 +103,41 @@ export function ExerciseLibrary() {
     }
   };
 
-  const allExercises = [...allBuiltIn.map((e) => ({ ...e, isCustom: false as const })), ...userExercises];
+  const handleVideoChange = async (exerciseId: string, newVideoId: string) => {
+    // For custom exercises, update in DB
+    const customEx = userExercises.find((e) => e.id === exerciseId);
+    if (customEx) {
+      const videoUrl = newVideoId ? `https://www.youtube.com/watch?v=${newVideoId}` : null;
+      const { error } = await supabase
+        .from("user_exercises")
+        .update({ video_url: videoUrl })
+        .eq("id", customEx.dbId);
+      if (error) {
+        toast({ title: "Failed to update video", variant: "destructive" });
+        return;
+      }
+      setUserExercises((prev) =>
+        prev.map((e) => e.dbId === customEx.dbId ? { ...e, videoId: newVideoId } : e)
+      );
+      toast({ title: "Video updated" });
+    } else {
+      // Built-in exercises: store override in localStorage
+      const updated = { ...videoOverrides, [exerciseId]: newVideoId };
+      setVideoOverrides(updated);
+      localStorage.setItem("exercise-video-overrides", JSON.stringify(updated));
+      toast({ title: "Video updated" });
+    }
+  };
+
+  // Apply video overrides to built-in exercises
+  const allExercises = [
+    ...allBuiltIn.map((e) => ({
+      ...e,
+      videoId: videoOverrides[e.id] ?? e.videoId,
+      isCustom: false as const,
+    })),
+    ...userExercises,
+  ];
 
   const filtered = filter === "all"
     ? allExercises
@@ -159,7 +199,7 @@ export function ExerciseLibrary() {
       <div className="space-y-2">
         {filtered.map((exercise, i) => (
           <div key={exercise.id} className="relative">
-            <ExerciseCard exercise={exercise} index={i + 1} />
+            <ExerciseCard exercise={exercise} index={i + 1} onVideoChange={handleVideoChange} />
             {"isCustom" in exercise && exercise.isCustom && (
               <div className="absolute top-2 right-2 flex items-center gap-1.5 z-10">
                 <span className="text-[9px] bg-primary/15 text-primary px-1.5 py-0.5 rounded-full font-bold uppercase">Custom</span>

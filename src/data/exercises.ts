@@ -623,6 +623,270 @@ const exercisesData: Record<string, ExerciseBase> = {
       ],
     },
   },
+  singleLegRDL: {
+    id: "single-leg-rdl",
+    name: "Single-Leg Romanian Deadlift",
+    category: "strength",
+    muscleGroups: ["hamstrings", "glutes", "core"],
+    sets: 3,
+    reps: "8 each leg",
+    tempo: "3-0-1-0",
+    rest: "90 sec",
+    videoId: "BPGpT3MocNQ",
+    en: {
+      notes: "Hold dumbbell in opposite hand. Hinge at hip, keep back flat. Free leg extends behind you. Control the descent — don't rush.",
+      whyItMatters: "Builds single-leg balance and hamstring strength — essential for stable kicking base and preventing hamstring pulls during high kicks.",
+      alternatives: [
+        { name: "Bodyweight Single-Leg RDL", reason: "No equipment — same balance and hinge pattern" },
+        { name: "Banded Single-Leg RDL", reason: "Loop band under foot for resistance without dumbbells" },
+      ],
+    },
+    da: {
+      notes: "Hold håndvægt i modsatte hånd. Hængsel i hoften, hold ryggen flad. Frit ben strækkes bagud. Kontrollér nedsænkningen — skynd dig ikke.",
+      whyItMatters: "Opbygger ét-bens balance og hamstringstyrke — essentielt for stabil sparkebase og forebyggelse af hamstringskader under høje spark.",
+      alternatives: [
+        { name: "Kropsvægt Ét-bens RDL", reason: "Intet udstyr — samme balance og hængselmønster" },
+        { name: "Elastik Ét-bens RDL", reason: "Loop-elastik under foden for modstand uden håndvægte" },
+      ],
+    },
+  },
+  lateralBoundHold: {
+    id: "lateral-bound-hold",
+    name: "Lateral Bound with Stick",
+    category: "plyometric",
+    muscleGroups: ["glutes", "quads", "calves"],
+    sets: 3,
+    reps: "5 each side",
+    rest: "90 sec",
+    videoId: "dRU1sy4Xyyg",
+    en: {
+      notes: "Leap sideways, land on one leg and STICK the landing for 2 sec. No wobble. Emphasize control and absorption.",
+      whyItMatters: "Develops lateral power and single-leg stability — critical for explosive angle changes and maintaining balance after kicks.",
+      alternatives: [
+        { name: "Lateral Shuffle to Sprint", reason: "Dynamic lateral movement without jump demands" },
+        { name: "Skater Jumps", reason: "Similar lateral plyometric with continuous rhythm" },
+      ],
+    },
+    da: {
+      notes: "Spring sidelæns, land på ét ben og HOLD landingen i 2 sek. Ingen vaklen. Fremhæv kontrol og absorption.",
+      whyItMatters: "Udvikler lateral kraft og ét-bens stabilitet — kritisk for eksplosive vinkelændringer og opretholdelse af balance efter spark.",
+      alternatives: [
+        { name: "Lateral Shuffle til Sprint", reason: "Dynamisk lateral bevægelse uden springkrav" },
+        { name: "Skater Jumps", reason: "Lignende lateral plyometrisk øvelse med kontinuerlig rytme" },
+      ],
+    },
+  },
+  plankShouderTap: {
+    id: "plank-shoulder-tap",
+    name: "Plank Shoulder Tap",
+    category: "strength",
+    muscleGroups: ["core", "shoulders"],
+    sets: 3,
+    reps: "10 each side",
+    rest: "60 sec",
+    videoId: "LEZq7QU9Wew",
+    en: {
+      notes: "From push-up position, tap opposite shoulder without rotating hips. Anti-rotation under bodyweight. Keep feet wider for easier balance.",
+      whyItMatters: "Trains anti-rotation stability under dynamic load — the same demand as throwing a kick while keeping guard up.",
+      alternatives: [
+        { name: "Dead Bug", reason: "Supine anti-rotation core work with less shoulder demand" },
+        { name: "Bear Crawl Hold", reason: "Isometric core + shoulder stability from quadruped" },
+      ],
+    },
+    da: {
+      notes: "Fra armstrækningsposition, tap modsatte skulder uden at rotere hofterne. Anti-rotation under kropsvægt. Hold fødderne bredere for nemmere balance.",
+      whyItMatters: "Træner anti-rotationsstabilitet under dynamisk belastning — samme krav som at sparke mens man holder garden.",
+      alternatives: [
+        { name: "Dead Bug", reason: "Rygleje anti-rotation corearbejde med mindre skulderkrav" },
+        { name: "Bear Crawl Hold", reason: "Isometrisk core + skulderstabilitet fra firbenet stilling" },
+      ],
+    },
+  },
+  calfRaiseEccentric: {
+    id: "eccentric-calf-raise",
+    name: "Eccentric Single-Leg Calf Raise",
+    category: "strength",
+    muscleGroups: ["calves"],
+    sets: 3,
+    reps: "10 each leg",
+    tempo: "1-0-5-0",
+    rest: "60 sec",
+    videoId: "yKFaGDog_oA",
+    en: {
+      notes: "Rise on two legs, lower on one over 5 seconds. Full range — stretch at the bottom. Essential for Achilles tendon health.",
+      whyItMatters: "Bulletproofs the Achilles tendon and develops calf resilience for all the jumping, bouncing, and pivoting in TKD.",
+      alternatives: [
+        { name: "Double-Leg Slow Calf Raise", reason: "Easier regression with same eccentric emphasis" },
+        { name: "Banded Calf Raise", reason: "Add band resistance around forefoot for extra load at home" },
+      ],
+    },
+    da: {
+      notes: "Hæv på to ben, sænk på ét over 5 sekunder. Fuldt bevægelsesomfang — stræk i bunden. Essentielt for akillessenens sundhed.",
+      whyItMatters: "Beskytter akillessenen og udvikler lægmodstandskraft for alle spring, hop og pivotering i TKD.",
+      alternatives: [
+        { name: "To-bens Langsom Hæve", reason: "Lettere regression med samme excentriske fokus" },
+        { name: "Elastik Hævning", reason: "Tilføj elastikmodstand rundt forfoden for ekstra belastning hjemme" },
+      ],
+    },
+  },
+  turkishGetUp: {
+    id: "turkish-get-up",
+    name: "Turkish Get-Up",
+    category: "strength",
+    muscleGroups: ["core", "shoulders", "glutes", "hip-flexors"],
+    sets: 2,
+    reps: "3 each side",
+    rest: "90 sec",
+    videoId: "0bWRPC49-KI",
+    en: {
+      notes: "Slow and deliberate — each phase is a position. Keep eyes on the weight. This is a full-body integration exercise, not a strength grind.",
+      whyItMatters: "Integrates shoulder stability, hip mobility, and core control through multiple planes — mirrors the multi-positional demands of TKD.",
+      alternatives: [
+        { name: "Half Get-Up", reason: "Partial range version — just to the seated position and back down" },
+        { name: "Bodyweight Get-Up", reason: "No weight — practice the pattern before adding load" },
+      ],
+    },
+    da: {
+      notes: "Langsomt og bevidst — hver fase er en position. Hold øjnene på vægten. Dette er en helkropsintegration, ikke en styrkeøvelse.",
+      whyItMatters: "Integrerer skulderstabilitet, hoftemobilitet og corekontrol gennem flere planer — spejler de multi-positionelle krav i TKD.",
+      alternatives: [
+        { name: "Halv Get-Up", reason: "Delvis bevægelse — kun til siddende position og tilbage" },
+        { name: "Kropsvægt Get-Up", reason: "Ingen vægt — øv mønsteret før belastning tilføjes" },
+      ],
+    },
+  },
+  jumpLunge: {
+    id: "jump-lunge",
+    name: "Jump Lunge (Alternating)",
+    category: "plyometric",
+    muscleGroups: ["glutes", "quads", "hip-flexors"],
+    sets: 3,
+    reps: "6 each leg",
+    rest: "90 sec",
+    videoId: "y7Iug7V20lU",
+    en: {
+      notes: "Explode upward from lunge, switch legs mid-air, land softly. Focus on height and control, not speed. Keep torso upright throughout.",
+      whyItMatters: "Develops reactive single-leg power and rapid stance switching — directly transfers to fast footwork transitions in sparring.",
+      alternatives: [
+        { name: "Reverse Lunge to Knee Drive", reason: "Lower impact unilateral plyometric without jumping" },
+        { name: "Split Squat Jump (same leg)", reason: "Focus power on one leg at a time" },
+      ],
+    },
+    da: {
+      notes: "Eksplodér opad fra udfald, skift ben i luften, land blødt. Fokus på højde og kontrol, ikke hastighed. Hold overkroppen oprejst hele vejen.",
+      whyItMatters: "Udvikler reaktiv ét-bens kraft og hurtige stillingsskift — overføres direkte til hurtige fodskift i sparring.",
+      alternatives: [
+        { name: "Reverse Lunge til Knædrivning", reason: "Lavere belastning unilateral plyometrisk uden spring" },
+        { name: "Split Squat Jump (samme ben)", reason: "Fokusér kraft på ét ben ad gangen" },
+      ],
+    },
+  },
+  facePull: {
+    id: "face-pull",
+    name: "Face Pull",
+    category: "mobility",
+    muscleGroups: ["shoulders", "back"],
+    sets: 3,
+    reps: "15-20",
+    rest: "45 sec",
+    videoId: "rep-qVOkqgk",
+    en: {
+      notes: "Cable or band at face height. Pull to face with external rotation at end. Elbows high, squeeze rear delts. Light load, focus on contraction.",
+      whyItMatters: "Corrects forward shoulder posture from guard stance and builds scapular stability for healthy punching and blocking.",
+      alternatives: [
+        { name: "Band Pull-Apart", reason: "Similar rear delt work with simpler setup" },
+        { name: "Prone Y-Raise", reason: "No equipment — lying face-down shoulder retraction drill" },
+      ],
+    },
+    da: {
+      notes: "Kabel eller elastik i ansigtshøjde. Træk til ansigt med udadrotation i slutningen. Albuer højt, klem bagre deltoider. Let belastning, fokus på kontraktion.",
+      whyItMatters: "Korrigerer fremadroteret skulderholdning fra gardstilling og opbygger skapulær stabilitet for sunde slag og blokeringer.",
+      alternatives: [
+        { name: "Elastik Pull-Apart", reason: "Lignende bagre deltoidarbejde med enklere opsætning" },
+        { name: "Liggende Y-Løft", reason: "Intet udstyr — liggende skulderretraktionsøvelse" },
+      ],
+    },
+  },
+  gobletSquat: {
+    id: "goblet-squat",
+    name: "Goblet Squat",
+    category: "strength",
+    muscleGroups: ["quads", "glutes", "core"],
+    sets: 3,
+    reps: "10-12",
+    tempo: "3-1-1-0",
+    rest: "90 sec",
+    videoId: "MeIiIdhvXT4",
+    en: {
+      notes: "Hold KB or DB at chest. Sit deep between heels, elbows inside knees. Pause at bottom. Great for learning squat mechanics and building baseline strength.",
+      whyItMatters: "Builds foundational squat strength with an upright torso — perfect for athletes who need lower body strength without heavy barbell loading.",
+      alternatives: [
+        { name: "Bodyweight Squat", reason: "No equipment — same depth and pattern" },
+        { name: "Banded Squat", reason: "Band resistance for home training without weights" },
+      ],
+    },
+    da: {
+      notes: "Hold KB eller håndvægt ved brystet. Sæt dig dybt mellem hælene, albuer inden for knæene. Pause i bunden. Fantastisk til at lære squat-mekanik og opbygge grundstyrke.",
+      whyItMatters: "Opbygger grundlæggende squat-styrke med oprejst overkrop — perfekt til atleter der har brug for underkropsstyrke uden tung vægtstangsbelastning.",
+      alternatives: [
+        { name: "Kropsvægt Squat", reason: "Intet udstyr — samme dybde og mønster" },
+        { name: "Elastik Squat", reason: "Elastikmodstand til hjemmetræning uden vægte" },
+      ],
+    },
+  },
+  thoracicRotation: {
+    id: "thoracic-rotation",
+    name: "Seated Thoracic Rotation",
+    category: "mobility",
+    muscleGroups: ["core", "back"],
+    sets: 2,
+    reps: "8 each side",
+    rest: "None",
+    videoId: "XGPpKMiMuHo",
+    en: {
+      notes: "Sit cross-legged or on bench. Hands behind head. Rotate upper body to one side, hold 2 sec. Keep hips locked — only thoracic spine moves.",
+      whyItMatters: "Thoracic rotation is the foundation of every rotational kick and punch. Limited t-spine mobility forces compensation from the lower back.",
+      alternatives: [
+        { name: "Open Book Stretch", reason: "Lying rotation for t-spine with less setup" },
+        { name: "Thread the Needle", reason: "Quadruped thoracic rotation with shoulder involvement" },
+      ],
+    },
+    da: {
+      notes: "Sid krydsbenede eller på bænk. Hænder bag hovedet. Rotér overkroppen til én side, hold 2 sek. Hold hofterne låste — kun brysthvirvelsøjlen bevæger sig.",
+      whyItMatters: "Thorakal rotation er fundamentet for hvert rotationsspark og slag. Begrænset t-spine mobilitet tvinger kompensation fra lænden.",
+      alternatives: [
+        { name: "Open Book Stræk", reason: "Liggende rotation for t-spine med mindre opsætning" },
+        { name: "Thread the Needle", reason: "Firbenet thorakal rotation med skulderinvolvering" },
+      ],
+    },
+  },
+  pistolSquatNegative: {
+    id: "pistol-squat-negative",
+    name: "Pistol Squat Negative",
+    category: "strength",
+    muscleGroups: ["quads", "glutes", "core"],
+    sets: 3,
+    reps: "4-5 each leg",
+    tempo: "5 sec eccentric",
+    rest: "90 sec",
+    videoId: "t7Oj8-E3_PY",
+    en: {
+      notes: "Stand on one leg, lower yourself as slowly as possible (5 sec) to seated on a box or bench. Use both legs to stand back up. Progress to full pistols over time.",
+      whyItMatters: "Builds extreme single-leg eccentric strength and control — directly improves kicking leg stability and landing mechanics.",
+      alternatives: [
+        { name: "Assisted Pistol Squat", reason: "Hold a band or post for support through full range" },
+        { name: "Step-Down", reason: "Similar single-leg eccentric from a step or box" },
+      ],
+    },
+    da: {
+      notes: "Stå på ét ben, sænk dig så langsomt som muligt (5 sek) til siddende på boks eller bænk. Brug begge ben til at rejse dig. Progrediér til fulde pistols over tid.",
+      whyItMatters: "Opbygger ekstrem ét-bens excentrisk styrke og kontrol — forbedrer direkte sparkbenets stabilitet og landingsmekanik.",
+      alternatives: [
+        { name: "Assisteret Pistol Squat", reason: "Hold en elastik eller stolpe for støtte gennem fuld range" },
+        { name: "Step-Down", reason: "Lignende ét-bens excentrisk fra et trin eller boks" },
+      ],
+    },
+  },
 };
 
 type Locale = "en" | "da";
