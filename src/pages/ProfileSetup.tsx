@@ -37,6 +37,7 @@ export default function ProfileSetup() {
   const [weight, setWeight] = useState("");
   const [belt, setBelt] = useState("white");
   const [experience, setExperience] = useState("");
+  const [discipline, setDiscipline] = useState("sparring");
   const [goals, setGoals] = useState<string[]>([]);
   const [schedule, setSchedule] = useState<DaySchedule[]>(DEFAULT_SCHEDULE);
   const [programWeeks, setProgramWeeks] = useState(8);
@@ -116,6 +117,7 @@ export default function ProfileSetup() {
         weekly_schedule: schedule as any,
         program_weeks: programWeeks,
         current_injury: currentInjury || null,
+        discipline,
       }).eq("user_id", user.id);
 
       if (error) throw error;
@@ -203,6 +205,27 @@ export default function ProfileSetup() {
             <div>
               <Label htmlFor="exp">{t("yearsOfExperience")}</Label>
               <Input id="exp" type="number" value={experience} onChange={(e) => setExperience(e.target.value)} placeholder="3" />
+            </div>
+          </div>
+
+          {/* Discipline */}
+          <div>
+            <Label>{t("discipline")}</Label>
+            <p className="text-xs text-muted-foreground mb-2">{t("disciplineHint")}</p>
+            <div className="flex gap-2">
+              {(["sparring", "poomsae"] as const).map((d) => (
+                <button
+                  key={d}
+                  type="button"
+                  onClick={() => setDiscipline(d)}
+                  data-active={discipline === d}
+                  className="flex-1 rounded-lg px-4 py-3 text-sm font-semibold border border-border transition-colors cursor-pointer
+                    data-[active=true]:bg-primary data-[active=true]:text-primary-foreground data-[active=true]:border-primary
+                    data-[active=false]:text-muted-foreground hover:text-foreground"
+                >
+                  {t(d as any)}
+                </button>
+              ))}
             </div>
           </div>
 

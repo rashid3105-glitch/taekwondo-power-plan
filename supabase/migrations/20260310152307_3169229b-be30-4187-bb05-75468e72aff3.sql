@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN discipline text NOT NULL DEFAULT 'sparring';

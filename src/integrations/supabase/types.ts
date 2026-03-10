@@ -73,6 +73,7 @@ export type Database = {
           belt_level: string
           created_at: string
           current_injury: string | null
+          discipline: string
           display_name: string
           experience_years: number | null
           goals: string[] | null
@@ -92,6 +93,7 @@ export type Database = {
           belt_level?: string
           created_at?: string
           current_injury?: string | null
+          discipline?: string
           display_name?: string
           experience_years?: number | null
           goals?: string[] | null
@@ -111,6 +113,7 @@ export type Database = {
           belt_level?: string
           created_at?: string
           current_injury?: string | null
+          discipline?: string
           display_name?: string
           experience_years?: number | null
           goals?: string[] | null

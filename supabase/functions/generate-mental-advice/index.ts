@@ -14,19 +14,34 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
+    const discipline = profile?.discipline || 'sparring';
+    const isSparring = discipline === 'sparring';
+
     const systemPrompt = `You are a sports psychologist specializing in combat sports and taekwondo. You provide personalized mental performance advice based on assessment results.
+
+The athlete is a ${isSparring ? 'SPARRING (fighter)' : 'POOMSAE (forms)'} specialist. Tailor all advice accordingly:
+${isSparring
+  ? `- Focus on combat mindset: managing aggression, reading opponents, handling pain/impact
+- Pre-fight mental preparation and adrenaline management
+- Dealing with direct confrontation and physical contact
+- Split-second decision making under pressure`
+  : `- Focus on performance mindset: precision under scrutiny, perfectionism management
+- Pre-performance visualization of form sequences
+- Managing pressure of being judged/scored
+- Flow state and movement meditation
+- Consistency and repetition mindset`}
 
 Your advice should be:
 - Practical and actionable (specific techniques they can use today)
-- Sport-specific to taekwondo/combat sports
+- Sport-specific to taekwondo ${isSparring ? 'sparring' : 'poomsae'}
 - Empathetic and encouraging
 - Evidence-based (CBT, mindfulness, visualization, etc.)
 
 Categories assessed:
 - Mental Toughness: resilience, grit, pushing through adversity
-- Competition Anxiety: managing pre-fight nerves, staying calm under pressure
+- Competition Anxiety: managing pre-${isSparring ? 'fight' : 'performance'} nerves, staying calm under pressure
 - Focus & Concentration: staying present during training and competition
-- Recovery from Loss: bouncing back after losing a fight or bad performance
+- Recovery from Loss: bouncing back after ${isSparring ? 'losing a fight' : 'a poor score'} or bad performance
 - Confidence: self-belief and positive self-talk
 - Motivation: maintaining drive and commitment
 
@@ -46,13 +61,14 @@ Return a JSON object:
       "dailyHabit": "one simple daily habit to build this skill"
     }
   ],
-  "preCompetitionRoutine": "A step-by-step 10-minute pre-fight mental routine personalized to their needs",
+  "preCompetitionRoutine": "A step-by-step 10-minute pre-${isSparring ? 'fight' : 'performance'} mental routine personalized to their needs",
   "affirmations": ["3 personalized affirmations based on their weak areas"]
 }
 
 Return ONLY valid JSON, no markdown fences.`;
 
-    const userPrompt = `Assessment results for a taekwondo athlete:
+    const userPrompt = `Assessment results for a taekwondo ${isSparring ? 'sparring' : 'poomsae'} athlete:
+- Discipline: ${isSparring ? 'Sparring (Fighter)' : 'Poomsae (Forms)'}
 - Belt level: ${profile?.belt_level || "not specified"}
 - Experience: ${profile?.experience_years || "not specified"} years
 - Age: ${profile?.age || "not specified"}
@@ -65,7 +81,7 @@ Total score: ${totalScore}/30
 Detailed answers:
 ${JSON.stringify(answers, null, 2)}
 
-Provide personalized mental performance advice focusing on their weakest areas.`;
+Provide personalized mental performance advice focusing on their weakest areas, tailored to ${isSparring ? 'sparring competition' : 'poomsae performance'}.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
