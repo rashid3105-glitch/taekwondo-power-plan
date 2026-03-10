@@ -34,8 +34,10 @@ interface PendingUser {
 
 export default function AdminApproval() {
   const [users, setUsers] = useState<PendingUser[]>([]);
+  const [coaches, setCoaches] = useState<{ user_id: string; display_name: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [reassigning, setReassigning] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
