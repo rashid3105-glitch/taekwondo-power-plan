@@ -25,6 +25,7 @@ interface AthleteProfile {
   program_weeks: number | null;
   weekly_schedule: any;
   avatar_url: string | null;
+  discipline: string;
 }
 
 interface AthletePlan {
