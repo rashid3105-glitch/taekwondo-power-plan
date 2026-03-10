@@ -20,6 +20,9 @@ const GOAL_OPTIONS = [
   "Injury prevention",
   "Improve flexibility",
   "General fitness",
+  "Improve balance",
+  "Better stance transitions",
+  "Movement flow",
 ];
 
 const DEFAULT_SCHEDULE: DaySchedule[] = [
