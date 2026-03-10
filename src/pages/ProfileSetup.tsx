@@ -117,6 +117,7 @@ export default function ProfileSetup() {
         weekly_schedule: schedule as any,
         program_weeks: programWeeks,
         current_injury: currentInjury || null,
+        discipline,
       }).eq("user_id", user.id);
 
       if (error) throw error;
