@@ -168,22 +168,6 @@ export default function CoachDashboard() {
     }
   };
 
-  const addApprovedAthlete = async (athleteId: string) => {
-    if (!coachUserId) return;
-    setAddingId(athleteId);
-    try {
-      const { error } = await supabase
-        .from("coach_athletes")
-        .insert({ coach_id: coachUserId, athlete_id: athleteId });
-      if (error) throw error;
-      toast({ title: t("athleteAdded") });
-      await loadAthletes();
-    } catch (err: any) {
-      toast({ title: t("error"), description: err.message, variant: "destructive" });
-    } finally {
-      setAddingId(null);
-    }
-  };
 
   const createAthlete = async () => {
     if (!newAthleteName.trim() || !newAthleteEmail.trim() || !newAthletePassword.trim()) return;
