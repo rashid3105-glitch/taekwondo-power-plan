@@ -199,6 +199,11 @@ export default function Dashboard() {
               <Button variant="ghost" size="icon" onClick={() => navigate("/profile-setup")}>
                 <User className="h-4 w-4" />
               </Button>
+              {isCoach && (
+                <Button variant="ghost" size="icon" onClick={() => navigate("/coach")}>
+                  <Users className="h-4 w-4" />
+                </Button>
+              )}
               <Button variant="ghost" size="icon" onClick={handleSignOut}>
                 <LogOut className="h-4 w-4" />
               </Button>
@@ -221,11 +226,6 @@ export default function Dashboard() {
             {isAdmin && (
               <Button variant="ghost" size="sm" onClick={() => navigate("/admin/approval")}>
                 <Shield className="h-4 w-4 mr-1" /> {t("manageUsers")}
-              </Button>
-            )}
-            {isCoach && (
-              <Button variant="ghost" size="sm" onClick={() => navigate("/coach")}>
-                <Users className="h-4 w-4 mr-1" /> {t("coachDashboard")}
               </Button>
             )}
           </nav>
