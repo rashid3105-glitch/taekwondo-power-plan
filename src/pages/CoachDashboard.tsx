@@ -51,7 +51,6 @@ interface RehabPlan {
 
 export default function CoachDashboard() {
   const [athletes, setAthletes] = useState<AthleteProfile[]>([]);
-  const [approvedAthletes, setApprovedAthletes] = useState<AthleteProfile[]>([]);
   const [plans, setPlans] = useState<AthletePlan[]>([]);
   const [rehabPlans, setRehabPlans] = useState<RehabPlan[]>([]);
   const [loading, setLoading] = useState(true);
