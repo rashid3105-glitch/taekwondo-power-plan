@@ -193,7 +193,7 @@ export default function Dashboard() {
               </div>
               <span className="text-sm sm:text-base font-extrabold text-foreground">TKD POWER</span>
             </div>
-            <div className="flex items-center gap-2 sm:hidden">
+            <div className="flex items-center gap-2">
               <LanguageSwitcher />
               <Button variant="ghost" size="icon" onClick={handleSignOut}>
                 <LogOut className="h-4 w-4" />
@@ -202,7 +202,6 @@ export default function Dashboard() {
           </div>
           {/* Menu row – left-aligned, below logo */}
           <nav className="hidden sm:flex items-center gap-1 flex-wrap">
-            <LanguageSwitcher />
             <Button variant="ghost" size="sm" onClick={() => setActiveTab("progress")}>
               <BarChart3 className="h-4 w-4 mr-1" /> {t("progress")}
             </Button>
@@ -228,9 +227,6 @@ export default function Dashboard() {
                 <Users className="h-4 w-4 mr-1" /> {t("coachDashboard")}
               </Button>
             )}
-            <Button variant="ghost" size="sm" onClick={handleSignOut}>
-              <LogOut className="h-4 w-4" />
-            </Button>
           </nav>
         </div>
       </header>
