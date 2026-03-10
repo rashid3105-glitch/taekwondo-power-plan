@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
     });
     if (!hasCoachRole && !isAdmin) throw new Error("Not a coach");
 
-    const { name, email, password, age, belt_level, experience_years } = await req.json();
+    const { name, email, password, age, belt_level, experience_years, discipline } = await req.json();
     if (!name || !email || !password) throw new Error("Missing required fields");
     if (password.length < 6) throw new Error("Password must be at least 6 characters");
 

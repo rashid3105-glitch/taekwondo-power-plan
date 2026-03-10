@@ -336,6 +336,18 @@ export default function CoachDashboard() {
                   />
                 </div>
               </div>
+              <div className="space-y-1">
+                <Label className="text-xs">{t("discipline")}</Label>
+                <Select value={newAthleteDiscipline} onValueChange={setNewAthleteDiscipline}>
+                  <SelectTrigger className="h-9">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="sparring">{t("sparring")}</SelectItem>
+                    <SelectItem value="poomsae">{t("poomsae")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="flex gap-2">
                 <Button onClick={createAthlete} disabled={creating || !newAthleteName.trim() || !newAthleteEmail.trim() || !newAthletePassword.trim()} size="sm">
                   {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <><UserPlus className="h-4 w-4 mr-1" /> {t("createAccount")}</>}
