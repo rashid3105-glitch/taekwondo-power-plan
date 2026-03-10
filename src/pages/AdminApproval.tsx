@@ -233,6 +233,28 @@ export default function AdminApproval() {
     }
   };
 
+  const reassignAthlete = async (athleteId: string, newCoachId: string | null) => {
+    setReassigning(athleteId);
+    try {
+      // Remove existing coach link
+      await supabase.from("coach_athletes").delete().eq("athlete_id", athleteId);
+      // Add new coach link if selected
+      if (newCoachId) {
+        const { error } = await supabase.from("coach_athletes").insert({
+          coach_id: newCoachId,
+          athlete_id: athleteId,
+        });
+        if (error) throw error;
+      }
+      toast({ title: t("athleteReassigned") });
+      await loadUsers();
+    } catch (err: any) {
+      toast({ title: t("error"), description: err.message, variant: "destructive" });
+    } finally {
+      setReassigning(null);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
