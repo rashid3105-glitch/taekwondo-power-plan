@@ -335,6 +335,29 @@ export default function AdminApproval() {
           ))}
         </div>
       )}
+      {/* Coach assignment */}
+      {!u.isCoach && (
+        <div className="flex items-center gap-2 pt-1 border-t border-border mt-2">
+          <Users className="h-3 w-3 text-muted-foreground" />
+          <span className="text-[10px] text-muted-foreground">{t("assignToCoach")}:</span>
+          <Select
+            value={u.coachId || "none"}
+            onValueChange={(val) => reassignAthlete(u.user_id, val === "none" ? null : val)}
+            disabled={reassigning === u.user_id}
+          >
+            <SelectTrigger className="h-7 text-xs flex-1">
+              <SelectValue placeholder={t("selectCoach")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">{t("noCoach")}</SelectItem>
+              {coaches.map((c) => (
+                <SelectItem key={c.user_id} value={c.user_id}>{c.display_name || t("noName")}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {reassigning === u.user_id && <Loader2 className="h-3 w-3 animate-spin" />}
+        </div>
+      )}
       {/* Coach role toggle & delete */}
       <div className="flex items-center gap-2 pt-1 border-t border-border mt-2">
         <Button
