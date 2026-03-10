@@ -61,6 +61,7 @@ export function ExerciseLibrary() {
   const [filter, setFilter] = useState<ExerciseCategory | "all" | "custom">("all");
   const [showForm, setShowForm] = useState(false);
   const [userExercises, setUserExercises] = useState<(Exercise & { isCustom: true; dbId: string })[]>([]);
+  const [videoOverrides, setVideoOverrides] = useState<Record<string, string>>({});
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { toast } = useToast();
   const { locale } = useLanguage();
@@ -69,6 +70,11 @@ export function ExerciseLibrary() {
 
   useEffect(() => {
     loadUserExercises();
+    // Load video overrides from localStorage
+    const stored = localStorage.getItem("exercise-video-overrides");
+    if (stored) {
+      try { setVideoOverrides(JSON.parse(stored)); } catch {}
+    }
   }, []);
 
   const loadUserExercises = async () => {
@@ -94,6 +100,32 @@ export function ExerciseLibrary() {
     } else {
       toast({ title: "Exercise deleted" });
       setUserExercises((prev) => prev.filter((e) => e.dbId !== dbId));
+    }
+  };
+
+  const handleVideoChange = async (exerciseId: string, newVideoId: string) => {
+    // For custom exercises, update in DB
+    const customEx = userExercises.find((e) => e.id === exerciseId);
+    if (customEx) {
+      const videoUrl = newVideoId ? `https://www.youtube.com/watch?v=${newVideoId}` : null;
+      const { error } = await supabase
+        .from("user_exercises")
+        .update({ video_url: videoUrl })
+        .eq("id", customEx.dbId);
+      if (error) {
+        toast({ title: "Failed to update video", variant: "destructive" });
+        return;
+      }
+      setUserExercises((prev) =>
+        prev.map((e) => e.dbId === customEx.dbId ? { ...e, videoId: newVideoId } : e)
+      );
+      toast({ title: "Video updated" });
+    } else {
+      // Built-in exercises: store override in localStorage
+      const updated = { ...videoOverrides, [exerciseId]: newVideoId };
+      setVideoOverrides(updated);
+      localStorage.setItem("exercise-video-overrides", JSON.stringify(updated));
+      toast({ title: "Video updated" });
     }
   };
 
