@@ -402,6 +402,11 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
     addText(`${txt.yourScore}: ${totalScore}/30 — ${getOverallLabel(totalScore)}`, 12, false);
     y += 4;
 
+    // Radar chart in PDF
+    const radarLabels = Object.fromEntries(Object.entries(categoryLabels).map(([k, v]) => [k, v[l]]));
+    drawRadarOnPDF(doc, scores, radarLabels, pageWidth / 2, y + 45, 35, 5);
+    y += 100;
+
     // Category scores
     Object.entries(scores).forEach(([cat, score]) => {
       addText(`${categoryLabels[cat][l]}: ${score}/5`, 11, true);
