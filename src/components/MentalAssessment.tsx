@@ -23,6 +23,7 @@ import {
   Download,
 } from "lucide-react";
 import jsPDF from "jspdf";
+import { MentalRadarChart, drawRadarOnPDF } from "./MentalRadarChart";
 
 interface Profile {
   belt_level: string;
@@ -401,6 +402,11 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
     addText(`${txt.yourScore}: ${totalScore}/30 — ${getOverallLabel(totalScore)}`, 12, false);
     y += 4;
 
+    // Radar chart in PDF
+    const radarLabels = Object.fromEntries(Object.entries(categoryLabels).map(([k, v]) => [k, v[l]]));
+    drawRadarOnPDF(doc, scores, radarLabels, pageWidth / 2, y + 45, 35, 5);
+    y += 100;
+
     // Category scores
     Object.entries(scores).forEach(([cat, score]) => {
       addText(`${categoryLabels[cat][l]}: ${score}/5`, 11, true);
@@ -610,6 +616,14 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
         <Brain className="h-8 w-8 mx-auto text-primary" />
         <h2 className="text-2xl font-extrabold text-foreground">{totalScore}/30</h2>
         <p className="text-sm text-muted-foreground">{getOverallLabel(totalScore)}</p>
+
+        {/* Radar Chart */}
+        <div className="py-2">
+          <MentalRadarChart
+            scores={scores}
+            labels={Object.fromEntries(Object.entries(categoryLabels).map(([k, v]) => [k, v[l]]))}
+          />
+        </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-3">
           {Object.entries(scores).map(([cat, score]) => (
