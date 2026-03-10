@@ -357,6 +357,9 @@ const translations = {
     "Injury prevention": "Skadeforebyggelse",
     "Improve flexibility": "Forbedre fleksibilitet",
     "General fitness": "Generel fitness",
+    "Improve balance": "Forbedre balance",
+    "Better stance transitions": "Bedre standskift",
+    "Movement flow": "Bevægelsesflow",
 
     // Belt levels
     white: "Hvid",
