@@ -228,12 +228,8 @@ export default function Dashboard() {
                 <Shield className="h-4 w-4 mr-1" /> {t("manageUsers")}
               </Button>
             )}
-            {isCoach && (
-              <Button variant="ghost" size="sm" onClick={() => navigate("/coach")}>
-                <Users className="h-4 w-4 mr-1" /> {t("coachDashboard")}
-              </Button>
-            )}
-          </nav>
+
+
         </div>
       </header>
 
