@@ -138,6 +138,9 @@ const translations = {
     "Injury prevention": "Injury prevention",
     "Improve flexibility": "Improve flexibility",
     "General fitness": "General fitness",
+    "Improve balance": "Improve balance",
+    "Better stance transitions": "Better stance transitions",
+    "Movement flow": "Movement flow",
 
     // Belt levels
     white: "White",
