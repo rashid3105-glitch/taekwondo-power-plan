@@ -29,6 +29,7 @@ interface Profile {
   belt_level: string;
   experience_years: number | null;
   age: number | null;
+  discipline?: string;
 }
 
 interface Question {
