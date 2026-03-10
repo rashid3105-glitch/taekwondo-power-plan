@@ -56,7 +56,6 @@ export default function CoachDashboard() {
   const [loading, setLoading] = useState(true);
   const [athleteCode, setAthleteCode] = useState("");
   const [adding, setAdding] = useState(false);
-  const [addingId, setAddingId] = useState<string | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newAthleteName, setNewAthleteName] = useState("");
   const [newAthleteEmail, setNewAthleteEmail] = useState("");
