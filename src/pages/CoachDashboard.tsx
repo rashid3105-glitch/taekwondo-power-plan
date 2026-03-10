@@ -222,7 +222,7 @@ export default function CoachDashboard() {
       setNewAthleteAge("");
       setNewAthleteBelt("white");
       setNewAthleteExpYears("");
-      setShowCreateForm(false);
+      setNewAthleteDiscipline("sparring");
       await loadAthletes();
     } catch (err: any) {
       toast({ title: t("error"), description: err.message, variant: "destructive" });
