@@ -108,7 +108,7 @@ export default function CoachDashboard() {
       const [profilesRes, plansRes, rehabRes] = await Promise.all([
         supabase
           .from("profiles")
-          .select("user_id, display_name, athlete_code, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, current_injury, program_weeks, weekly_schedule, avatar_url")
+          .select("user_id, display_name, athlete_code, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, current_injury, program_weeks, weekly_schedule, avatar_url, discipline")
           .in("user_id", athleteIds),
         supabase
           .from("training_plans")
