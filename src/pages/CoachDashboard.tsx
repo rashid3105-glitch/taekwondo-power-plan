@@ -130,7 +130,7 @@ export default function CoachDashboard() {
     // Fetch approved athletes not yet in roster (exclude coach's own profile)
     const { data: allApproved } = await supabase
       .from("profiles")
-      .select("user_id, display_name, athlete_code, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, current_injury, program_weeks, weekly_schedule, avatar_url")
+      .select("user_id, display_name, athlete_code, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, current_injury, program_weeks, weekly_schedule, avatar_url, discipline")
       .eq("is_approved", true);
 
     const available = (allApproved || []).filter(
