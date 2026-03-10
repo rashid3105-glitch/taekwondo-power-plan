@@ -219,6 +219,12 @@ const translations = {
     browseApprovedDesc: "Select approved athletes to add to your roster.",
     noApprovedAthletes: "No approved athletes available to add.",
     addToRoster: "Add",
+    assignToCoach: "Assign to Coach",
+    reassignCoach: "Reassign Coach",
+    selectCoach: "Select Coach",
+    noCoach: "No Coach",
+    athleteReassigned: "Athlete reassigned to new coach!",
+    currentCoach: "Current Coach",
   },
   da: {
     // Common
