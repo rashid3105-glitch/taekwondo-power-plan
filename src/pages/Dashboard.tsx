@@ -195,6 +195,9 @@ export default function Dashboard() {
             </div>
             <div className="flex items-center gap-2">
               <LanguageSwitcher />
+              <Button variant="ghost" size="icon" onClick={() => navigate("/profile-setup")}>
+                <User className="h-4 w-4" />
+              </Button>
               <Button variant="ghost" size="icon" onClick={handleSignOut}>
                 <LogOut className="h-4 w-4" />
               </Button>
@@ -210,9 +213,6 @@ export default function Dashboard() {
             </Button>
             <Button variant="ghost" size="sm" onClick={() => setActiveTab("mental")}>
               <Brain className="h-4 w-4 mr-1" /> {t("mental")}
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => navigate("/profile-setup")}>
-              <User className="h-4 w-4 mr-1" /> {t("profile")}
             </Button>
             <Button variant="ghost" size="sm" onClick={() => navigate("/library")}>
               <BookOpen className="h-4 w-4 mr-1" /> {t("library")}
