@@ -14,20 +14,48 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const systemPrompt = `You are an expert strength & conditioning coach specializing in taekwondo athletic performance. You create training programs that prioritize SPEED, RATE OF FORCE DEVELOPMENT (RFD), and EXPLOSIVENESS while building lean muscle that enhances — never hinders — martial arts performance.
+    const discipline = profile.discipline || 'sparring';
+    const isSparring = discipline === 'sparring';
+
+    const disciplineContext = isSparring
+      ? `This athlete is a SPARRING (fighter) specialist. Programs must emphasize:
+- Explosive power and speed for kicks, punches, and footwork
+- Rate of force development (RFD) for fast-twitch muscle activation
+- Reaction time and agility drills
+- Combat-specific conditioning (intervals mimicking round structure)
+- Ability to absorb and deliver impact
+- Quick direction changes and lateral movement`
+      : `This athlete is a POOMSAE (forms) specialist. Programs must emphasize:
+- Balance, stability, and proprioception
+- Controlled strength through full range of motion
+- Core stability for stances and transitions
+- Flexibility and mobility for aesthetic technique execution
+- Muscular endurance for sustained performance
+- Precision and body control over raw power
+- Slow-tempo strength work for movement quality`;
+
+    const systemPrompt = `You are an expert strength & conditioning coach specializing in taekwondo athletic performance. You create training programs for ${isSparring ? 'SPARRING (fighter)' : 'POOMSAE (forms)'} athletes.
+
+${disciplineContext}
 
 Your programs must:
 - Be specific with exercises, sets, reps, tempo, and rest periods
 - Fit around the athlete's existing taekwondo schedule
-- Minimize risk of becoming slow or heavy
+${isSparring
+  ? `- Minimize risk of becoming slow or heavy
 - Focus on neural drive over hypertrophy (low reps, explosive intent)
 - Include injury prevention work (hamstrings, hip flexors, adductors)
-- Include mobility work for high kicks
+- Include mobility work for high kicks`
+  : `- Focus on balance and stability exercises
+- Include proprioception and body control drills
+- Emphasize slow, controlled tempos for strength
+- Include extensive flexibility and mobility work
+- Build muscular endurance for sustained poomsae performance`}
 
 For each exercise, include:
 - Name, sets, reps, tempo (if relevant), rest period
 - Brief coaching cue
-- Why it matters for taekwondo specifically
+- Why it matters for ${isSparring ? 'taekwondo sparring' : 'poomsae performance'} specifically
 - A category: "power", "speed", "strength", "plyometric", or "mobility"
 - Two alternative exercises (with name + brief reason) the athlete can do if the primary exercise isn't possible in their gym
 
