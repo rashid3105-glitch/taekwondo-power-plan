@@ -184,14 +184,24 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background pb-16 sm:pb-0">
       {/* Header */}
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container max-w-4xl mx-auto px-3 sm:px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="h-8 w-8 rounded-lg bg-gradient-energy flex items-center justify-center">
-              <Zap className="h-4 w-4 text-primary-foreground" />
+        <div className="container max-w-4xl mx-auto px-3 sm:px-4 py-3 space-y-2">
+          {/* Logo row */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="h-8 w-8 rounded-lg bg-gradient-energy flex items-center justify-center">
+                <Zap className="h-4 w-4 text-primary-foreground" />
+              </div>
+              <span className="text-sm sm:text-base font-extrabold text-foreground">TKD POWER</span>
             </div>
-            <span className="text-sm sm:text-base font-extrabold text-foreground">TKD POWER</span>
+            <div className="flex items-center gap-2 sm:hidden">
+              <LanguageSwitcher />
+              <Button variant="ghost" size="icon" onClick={handleSignOut}>
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
-          <div className="hidden sm:flex items-center gap-2">
+          {/* Menu row – left-aligned, below logo */}
+          <nav className="hidden sm:flex items-center gap-1 flex-wrap">
             <LanguageSwitcher />
             <Button variant="ghost" size="sm" onClick={() => setActiveTab("progress")}>
               <BarChart3 className="h-4 w-4 mr-1" /> {t("progress")}
@@ -221,13 +231,7 @@ export default function Dashboard() {
             <Button variant="ghost" size="sm" onClick={handleSignOut}>
               <LogOut className="h-4 w-4" />
             </Button>
-          </div>
-          <div className="flex items-center gap-2 sm:hidden">
-            <LanguageSwitcher />
-            <Button variant="ghost" size="icon" onClick={handleSignOut}>
-              <LogOut className="h-4 w-4" />
-            </Button>
-          </div>
+          </nav>
         </div>
       </header>
 
