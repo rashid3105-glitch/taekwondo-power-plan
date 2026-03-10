@@ -129,7 +129,15 @@ export function ExerciseLibrary() {
     }
   };
 
-  const allExercises = [...allBuiltIn.map((e) => ({ ...e, isCustom: false as const })), ...userExercises];
+  // Apply video overrides to built-in exercises
+  const allExercises = [
+    ...allBuiltIn.map((e) => ({
+      ...e,
+      videoId: videoOverrides[e.id] ?? e.videoId,
+      isCustom: false as const,
+    })),
+    ...userExercises,
+  ];
 
   const filtered = filter === "all"
     ? allExercises
