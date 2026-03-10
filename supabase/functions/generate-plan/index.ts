@@ -115,7 +115,8 @@ IMPORTANT: ALL text content (planName, labels, focus descriptions, exercise name
       ? `\n\nCRITICAL INJURY CONSIDERATION: The athlete has reported "${profile.current_injury}". You MUST:\n1. AVOID all exercises that could aggravate this injury\n2. Include specific rehab/prehab exercises for this injury on gym days\n3. Add coaching cues about pain-free range of motion\n4. Note in whyItMatters when an exercise specifically helps with the injury recovery\n5. Reduce plyometric intensity if the injury involves lower limbs`
       : '';
 
-    const userPrompt = `Create a personalized taekwondo fitness plan for this athlete:
+    const userPrompt = `Create a personalized taekwondo ${isSparring ? 'SPARRING' : 'POOMSAE'} fitness plan for this athlete:
+- Discipline: ${isSparring ? 'Sparring (Fighter)' : 'Poomsae (Forms)'}
 - Age: ${profile.age || 'not specified'}
 - Weight: ${profile.weight_kg ? profile.weight_kg + ' kg' : 'not specified'}
 - Belt level: ${profile.belt_level || 'not specified'}

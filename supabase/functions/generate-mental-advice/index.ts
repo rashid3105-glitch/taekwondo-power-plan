@@ -67,7 +67,8 @@ Return a JSON object:
 
 Return ONLY valid JSON, no markdown fences.`;
 
-    const userPrompt = `Assessment results for a taekwondo athlete:
+    const userPrompt = `Assessment results for a taekwondo ${isSparring ? 'sparring' : 'poomsae'} athlete:
+- Discipline: ${isSparring ? 'Sparring (Fighter)' : 'Poomsae (Forms)'}
 - Belt level: ${profile?.belt_level || "not specified"}
 - Experience: ${profile?.experience_years || "not specified"} years
 - Age: ${profile?.age || "not specified"}
@@ -80,7 +81,7 @@ Total score: ${totalScore}/30
 Detailed answers:
 ${JSON.stringify(answers, null, 2)}
 
-Provide personalized mental performance advice focusing on their weakest areas.`;
+Provide personalized mental performance advice focusing on their weakest areas, tailored to ${isSparring ? 'sparring competition' : 'poomsae performance'}.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
