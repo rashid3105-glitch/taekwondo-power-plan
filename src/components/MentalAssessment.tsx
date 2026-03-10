@@ -23,6 +23,7 @@ import {
   Download,
 } from "lucide-react";
 import jsPDF from "jspdf";
+import { MentalRadarChart, drawRadarOnPDF } from "./MentalRadarChart";
 
 interface Profile {
   belt_level: string;
