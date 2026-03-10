@@ -199,6 +199,11 @@ export default function Dashboard() {
               <Button variant="ghost" size="icon" onClick={() => navigate("/profile-setup")}>
                 <User className="h-4 w-4" />
               </Button>
+              {isCoach && (
+                <Button variant="ghost" size="icon" onClick={() => navigate("/coach")}>
+                  <Users className="h-4 w-4" />
+                </Button>
+              )}
               <Button variant="ghost" size="icon" onClick={handleSignOut}>
                 <LogOut className="h-4 w-4" />
               </Button>
