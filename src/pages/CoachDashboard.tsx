@@ -351,47 +351,6 @@ export default function CoachDashboard() {
           </div>
         </div>
 
-        {/* Browse approved athletes */}
-        {approvedAthletes.length > 0 && (
-          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
-            <h3 className="font-bold text-foreground flex items-center gap-2">
-              <Users className="h-5 w-5" /> {t("browseApproved")}
-            </h3>
-            <p className="text-xs text-muted-foreground">{t("browseApprovedDesc")}</p>
-            <div className="grid gap-2 max-h-64 overflow-y-auto">
-              {approvedAthletes.map((a) => (
-                <div key={a.user_id} className="flex items-center justify-between rounded-lg border border-border p-3 hover:bg-muted/50 transition-colors">
-                  <div className="flex items-center gap-3">
-                    {a.avatar_url ? (
-                      <img src={a.avatar_url} alt="" className="h-8 w-8 rounded-full object-cover border border-border" />
-                    ) : (
-                      <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center border border-border">
-                        <User className="h-4 w-4 text-muted-foreground" />
-                      </div>
-                    )}
-                    <div>
-                      <p className="text-sm font-medium text-foreground">{a.display_name || t("noName")}</p>
-                      <div className="flex gap-1.5">
-                        {a.belt_level && (
-                          <span className="text-[10px] text-muted-foreground capitalize">{a.belt_level} {t("belt")}</span>
-                        )}
-                        {a.age && <span className="text-[10px] text-muted-foreground">• {a.age}y</span>}
-                      </div>
-                    </div>
-                  </div>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    disabled={addingId === a.user_id}
-                    onClick={() => addApprovedAthlete(a.user_id)}
-                  >
-                    {addingId === a.user_id ? <Loader2 className="h-4 w-4 animate-spin" /> : <><UserPlus className="h-4 w-4 mr-1" /> {t("addToRoster")}</>}
-                  </Button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Athlete list */}
         {athletes.length === 0 ? (
