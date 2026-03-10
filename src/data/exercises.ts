@@ -623,7 +623,6 @@ const exercisesData: Record<string, ExerciseBase> = {
       ],
     },
   },
-  },
   singleLegRDL: {
     id: "single-leg-rdl",
     name: "Single-Leg Romanian Deadlift",
