@@ -67,6 +67,7 @@ export default function CoachDashboard() {
   const [creating, setCreating] = useState(false);
   const [selectedAthlete, setSelectedAthlete] = useState<string | null>(null);
   const [coachUserId, setCoachUserId] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, locale } = useLanguage();
