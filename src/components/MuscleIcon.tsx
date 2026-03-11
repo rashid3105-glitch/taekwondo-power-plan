@@ -40,7 +40,7 @@ interface MuscleIconProps {
   showLabel?: boolean;
 }
 
-export function MuscleIcon({ muscle, size = 24, showLabel = false }: MuscleIconProps) {
+export function MuscleIcon({ muscle, size = 28, showLabel = false }: MuscleIconProps) {
   const src = MUSCLE_IMAGES[muscle];
   const label = MUSCLE_LABELS[muscle];
 
