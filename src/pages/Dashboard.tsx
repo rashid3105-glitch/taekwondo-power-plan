@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain } from "lucide-react";
+import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { AIPlanCard } from "@/components/AIPlanCard";
 import { RehabPlanCard } from "@/components/RehabPlanCard";
@@ -50,6 +50,8 @@ export default function Dashboard() {
   const [plans, setPlans] = useState<TrainingPlan[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isCoach, setIsCoach] = useState(false);
+  const [isDemo, setIsDemo] = useState(false);
+  const [demoDaysLeft, setDemoDaysLeft] = useState<number | null>(null);
   const [generating, setGenerating] = useState(false);
   const [generatingRehab, setGeneratingRehab] = useState(false);
   const [rehabInjury, setRehabInjury] = useState("");
@@ -87,6 +89,15 @@ export default function Dashboard() {
         return;
       }
       setProfile(profileData as Profile);
+      if (profileData.is_demo && profileData.payment_status !== "paid") {
+        setIsDemo(true);
+        const created = new Date(profileData.created_at);
+        const expiry = new Date(created);
+        expiry.setDate(expiry.getDate() + 14);
+        const now = new Date();
+        const diff = Math.ceil((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        setDemoDaysLeft(diff);
+      }
     }
     if (plansRes.data) setPlans(plansRes.data as unknown as TrainingPlan[]);
     if (rehabRes.data) {
@@ -269,6 +280,25 @@ export default function Dashboard() {
       </nav>
 
       <main className="container max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
+        {isDemo && demoDaysLeft !== null && (
+          <div className={`flex items-center gap-3 rounded-xl border p-3 sm:p-4 ${
+            demoDaysLeft <= 3
+              ? "border-destructive/50 bg-destructive/10 text-destructive"
+              : "border-primary/30 bg-primary/5 text-primary"
+          }`}>
+            <Clock className="h-5 w-5 shrink-0" />
+            <div className="flex-1">
+              <span className="text-sm font-bold">{t("demoBannerTitle")}</span>
+              <span className="text-sm ml-2">
+                {demoDaysLeft > 0
+                  ? `${demoDaysLeft} ${t("demoBannerDaysLeft")}`
+                  : demoDaysLeft === 0
+                    ? t("demoBannerExpiresToday")
+                    : t("demoBannerExpired")}
+              </span>
+            </div>
+          </div>
+        )}
         {activeTab === "progress" ? (
           <ProgressDashboard onGoToPlan={() => setActiveTab("plan")} />
         ) : activeTab === "mental" ? (
