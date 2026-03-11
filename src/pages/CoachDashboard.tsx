@@ -361,7 +361,7 @@ export default function CoachDashboard() {
                 placeholder={t("athleteCodePlaceholder")}
                 className="flex-1 uppercase"
               />
-              <Button onClick={addAthlete} disabled={adding || !athleteCode.trim()} size="sm" variant="outline" className="w-full sm:w-auto">
+              <Button onClick={addAthlete} disabled={adding || !athleteCode.trim() || athletes.length >= MAX_ATHLETES} size="sm" variant="outline" className="w-full sm:w-auto">
                 {adding ? <Loader2 className="h-4 w-4 animate-spin" /> : <><UserPlus className="h-4 w-4 mr-1" /> {t("add")}</>}
               </Button>
             </div>
