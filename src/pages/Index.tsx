@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import {
-  Zap, ArrowRight, ClipboardList, BarChart3, Brain, HeartPulse, BookOpen,
+  Zap, ArrowRight, ClipboardList, BarChart3, Brain, HeartPulse, BookOpen, HelpCircle,
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
