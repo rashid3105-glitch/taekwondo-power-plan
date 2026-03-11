@@ -18,6 +18,7 @@ const GOAL_OPTIONS = [
   "Competition prep",
   "Build lean muscle",
   "Injury prevention",
+  "Stronger hips",
   "Improve flexibility",
   "General fitness",
   "Improve balance",
