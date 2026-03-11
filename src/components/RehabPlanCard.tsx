@@ -171,11 +171,13 @@ const PHASE_DOT: Record<number, string> = {
 
 interface RehabPlanCardProps {
   plan: any;
+  onDelete?: () => void;
 }
 
-export function RehabPlanCard({ plan }: RehabPlanCardProps) {
+export function RehabPlanCard({ plan, onDelete }: RehabPlanCardProps) {
   const [openPhase, setOpenPhase] = useState<number | null>(0);
   const [downloading, setDownloading] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
 
   const handleDownload = async () => {
     setDownloading(true);
@@ -185,27 +187,60 @@ export function RehabPlanCard({ plan }: RehabPlanCardProps) {
   if (!plan) return null;
 
   return (
-    <div className="space-y-4">
+    <Collapsible open={!collapsed} onOpenChange={(open) => setCollapsed(!open)}>
       {/* Header */}
       <div className="rounded-xl border border-border bg-card p-4 shadow-card">
         <div className="flex items-start gap-3">
-          <div className="h-10 w-10 rounded-lg bg-destructive/10 flex items-center justify-center flex-shrink-0">
-            <Heart className="h-5 w-5 text-destructive" />
-          </div>
-          <div className="min-w-0">
-            <h2 className="text-base font-bold text-foreground">{plan.rehabPlanName}</h2>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Estimated recovery: ~{plan.estimatedWeeks} weeks
-            </p>
-            {plan.injurySummary && (
-            <p className="text-sm text-muted-foreground mt-2">{plan.injurySummary}</p>
+          <CollapsibleTrigger asChild>
+            <button className="h-10 w-10 rounded-lg bg-destructive/10 flex items-center justify-center flex-shrink-0 cursor-pointer hover:bg-destructive/20 transition-colors">
+              {collapsed ? <ChevronDown className="h-5 w-5 text-destructive" /> : <Heart className="h-5 w-5 text-destructive" />}
+            </button>
+          </CollapsibleTrigger>
+          <div className="min-w-0 flex-1">
+            <CollapsibleTrigger asChild>
+              <button className="text-left cursor-pointer">
+                <h2 className="text-base font-bold text-foreground">{plan.rehabPlanName}</h2>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Estimated recovery: ~{plan.estimatedWeeks} weeks
+                </p>
+              </button>
+            </CollapsibleTrigger>
+            {!collapsed && plan.injurySummary && (
+              <p className="text-sm text-muted-foreground mt-2">{plan.injurySummary}</p>
             )}
           </div>
-          <Button variant="outline" size="sm" onClick={handleDownload} disabled={downloading} className="flex-shrink-0 ml-auto">
-            {downloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Download className="h-4 w-4 mr-1" /> PDF</>}
-          </Button>
+          <div className="flex gap-1 flex-shrink-0 ml-auto">
+            <Button variant="outline" size="sm" onClick={handleDownload} disabled={downloading}>
+              {downloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Download className="h-4 w-4 mr-1" /> PDF</>}
+            </Button>
+            {onDelete && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete Rehab Plan</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to delete this rehab plan? This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={onDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
+          </div>
         </div>
       </div>
+
+      <CollapsibleContent className="space-y-4 mt-4">
 
       {/* Important notes */}
       {plan.importantNotes?.length > 0 && (
