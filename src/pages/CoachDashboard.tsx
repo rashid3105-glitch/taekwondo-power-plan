@@ -179,7 +179,7 @@ export default function CoachDashboard() {
 
   const createAthlete = async () => {
     if (!newAthleteName.trim() || !newAthleteEmail.trim() || !newAthletePassword.trim()) return;
-    if (athletes.length >= MAX_ATHLETES) {
+    if (!isAdmin && athletes.length >= MAX_ATHLETES) {
       toast({ title: t("error"), description: t("maxAthletesReached" as any), variant: "destructive" });
       return;
     }
