@@ -428,6 +428,12 @@ function AIExerciseRow({ exercise, index, log, onToggleComplete, onUpdateSets, o
               </div>
             )}
           </div>
+          {exercise.muscleGroups?.length > 0 && (
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Muscles:</span>
+              <MuscleGroupBadges muscles={exercise.muscleGroups} size={28} showLabels />
+            </div>
+          )}
           <p className="text-xs text-muted-foreground">
             <span className="font-semibold text-foreground">Coaching: </span>
             {exercise.coachingCue}
