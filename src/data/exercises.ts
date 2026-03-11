@@ -974,7 +974,7 @@ const exercisesData: Record<string, ExerciseBase> = {
     },
   },
 
-  singleLegRDL: {
+  singleLegRDLHipControl: {
     id: "single-leg-rdl-hip-control",
     name: "Single-Leg RDL (Hip Control Focus)",
     category: "strength",
