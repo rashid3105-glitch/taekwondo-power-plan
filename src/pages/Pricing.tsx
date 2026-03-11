@@ -88,7 +88,7 @@ export default function Pricing() {
                     <Button variant="outline" className="w-full" asChild>
                       <a href="mailto:info@sportstalent.dk">
                         <Mail className="h-4 w-4 mr-2" />
-                        {t("pricingContactUs")}
+                        {t("pricingContactUs" as any)}
                       </a>
                     </Button>
                   ) : (
