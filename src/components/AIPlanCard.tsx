@@ -362,22 +362,23 @@ function AIExerciseRow({ exercise, index, log, onToggleComplete, onUpdateSets, o
           {exercise.muscleGroups?.length > 0 && (
             <MuscleGroupBadges muscles={exercise.muscleGroups} size={20} />
           )}
-          <a
-            href={`https://www.youtube.com/results?search_query=${encodeURIComponent(exercise.name + ' exercise form')}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="text-muted-foreground hover:text-red-500 transition-colors"
-            title="Watch demo on YouTube"
-          >
-            <Youtube className="h-4 w-4" />
-          </a>
           <span className="text-xs text-muted-foreground mr-2">
             {log?.actual_sets ?? exercise.sets}×{log?.actual_reps ?? exercise.reps}
           </span>
           {completed && <Check className="h-4 w-4 text-primary mr-1" />}
           {open ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
         </button>
+
+        {/* YouTube link - outside button to avoid invalid HTML nesting */}
+        <a
+          href={`https://www.youtube.com/results?search_query=${encodeURIComponent(exercise.name + ' exercise form')}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center px-2 py-3 text-muted-foreground hover:text-destructive transition-colors"
+          title="Watch demo on YouTube"
+        >
+          <Youtube className="h-4 w-4" />
+        </a>
       </div>
 
       {open && (
