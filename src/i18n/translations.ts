@@ -587,6 +587,9 @@ const translations = {
     demoBannerExpired: "Demo udløbet",
     requestDemo: "Anmod om gratis demo",
     requestDemoDesc: "Prøv appen gratis i 14 dage. Ingen betaling krævet.",
+    mobilePayTitle: "Betaling",
+    mobilePayInstruction: "Brug venligst dette MobilePay nummer:",
+    mobilePayMarkWith: "Mærk betalingen med:",
   },
 } as const;
 
