@@ -3,9 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, CheckCircle, XCircle, ArrowLeft, Download, Shield, Trash2, Users } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { Loader2, CheckCircle, XCircle, ArrowLeft, Download, Shield, Trash2, Users, CreditCard, CalendarIcon, FlaskConical } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { format } from "date-fns";
 
 interface UserPlan {
   id: string;
@@ -25,6 +30,9 @@ interface PendingUser {
   experience_years: number | null;
   goals: string[] | null;
   tkd_sessions_per_week: number;
+  payment_status: string;
+  payment_date: string | null;
+  is_demo: boolean;
   email?: string;
   plans?: UserPlan[];
   isCoach?: boolean;
@@ -38,6 +46,8 @@ export default function AdminApproval() {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [reassigning, setReassigning] = useState<string | null>(null);
+  const [downloadingPlan, setDownloadingPlan] = useState<string | null>(null);
+  const [deletingUser, setDeletingUser] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
@@ -58,7 +68,7 @@ export default function AdminApproval() {
     const [profilesRes, emailsRes, plansRes, rolesRes, coachAthletesRes] = await Promise.all([
       supabase
         .from("profiles")
-        .select("user_id, display_name, created_at, is_approved, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week")
+        .select("user_id, display_name, created_at, is_approved, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, payment_status, payment_date, is_demo")
         .order("created_at", { ascending: false }),
       supabase.functions.invoke("get-admin-users"),
       supabase
@@ -77,13 +87,11 @@ export default function AdminApproval() {
 
     const coachSet = new Set(roles.filter(r => r.role === "coach").map(r => r.user_id));
 
-    // Build athlete->coach mapping
     const athleteCoachMap: Record<string, string> = {};
     for (const link of coachAthleteLinks) {
       athleteCoachMap[link.athlete_id] = link.coach_id;
     }
 
-    // Build coach display name map
     const coachProfiles = profiles.filter(p => coachSet.has(p.user_id));
     setCoaches(coachProfiles.map(p => ({ user_id: p.user_id, display_name: p.display_name })));
 
@@ -106,8 +114,6 @@ export default function AdminApproval() {
     })));
     setLoading(false);
   };
-
-  const [downloadingPlan, setDownloadingPlan] = useState<string | null>(null);
 
   const handleDownloadPlan = async (plan: UserPlan) => {
     setDownloadingPlan(plan.id);
@@ -213,8 +219,6 @@ export default function AdminApproval() {
     loadUsers();
   };
 
-  const [deletingUser, setDeletingUser] = useState<string | null>(null);
-
   const deleteUser = async (userId: string, displayName: string) => {
     if (!confirm(`Are you sure you want to permanently delete "${displayName || "this user"}"? This cannot be undone.`)) return;
     setDeletingUser(userId);
@@ -236,9 +240,7 @@ export default function AdminApproval() {
   const reassignAthlete = async (athleteId: string, newCoachId: string | null) => {
     setReassigning(athleteId);
     try {
-      // Remove existing coach link
       await supabase.from("coach_athletes").delete().eq("athlete_id", athleteId);
-      // Add new coach link if selected
       if (newCoachId) {
         const { error } = await supabase.from("coach_athletes").insert({
           coach_id: newCoachId,
@@ -253,6 +255,33 @@ export default function AdminApproval() {
     } finally {
       setReassigning(null);
     }
+  };
+
+  const togglePayment = async (userId: string, currentStatus: string) => {
+    const newStatus = currentStatus === "paid" ? "unpaid" : "paid";
+    const updateData: any = { payment_status: newStatus };
+    if (newStatus === "paid" && !users.find(u => u.user_id === userId)?.payment_date) {
+      updateData.payment_date = new Date().toISOString().split("T")[0];
+    }
+    if (newStatus === "unpaid") {
+      updateData.payment_date = null;
+    }
+    await supabase.from("profiles").update(updateData).eq("user_id", userId);
+    toast({ title: newStatus === "paid" ? t("markedAsPaid" as any) : t("markedAsUnpaid" as any) });
+    loadUsers();
+  };
+
+  const setPaymentDate = async (userId: string, date: Date | undefined) => {
+    if (!date) return;
+    await supabase.from("profiles").update({ payment_date: format(date, "yyyy-MM-dd"), payment_status: "paid" } as any).eq("user_id", userId);
+    toast({ title: t("paymentDateUpdated" as any) });
+    loadUsers();
+  };
+
+  const toggleDemo = async (userId: string, currentlyDemo: boolean) => {
+    await supabase.from("profiles").update({ is_demo: !currentlyDemo } as any).eq("user_id", userId);
+    toast({ title: !currentlyDemo ? t("markedAsDemo" as any) : t("demoRemoved" as any) });
+    loadUsers();
   };
 
   if (loading) {
@@ -272,7 +301,19 @@ export default function AdminApproval() {
     <div className="rounded-lg border border-border bg-card p-4 space-y-2">
       <div className="flex items-center justify-between">
         <div>
-          <p className="font-medium text-sm text-foreground">{u.display_name || t("noName")}</p>
+          <div className="flex items-center gap-2">
+            <p className="font-medium text-sm text-foreground">{u.display_name || t("noName")}</p>
+            {u.payment_status === "paid" && (
+              <Badge variant="default" className="text-[10px] h-5 bg-green-600">
+                <CreditCard className="h-2.5 w-2.5 mr-0.5" /> {t("paid" as any)}
+              </Badge>
+            )}
+            {u.is_demo && (
+              <Badge variant="secondary" className="text-[10px] h-5">
+                <FlaskConical className="h-2.5 w-2.5 mr-0.5" /> {t("demo" as any)}
+              </Badge>
+            )}
+          </div>
           {u.email && <p className="text-xs text-muted-foreground">{u.email}</p>}
         </div>
         {actions}
@@ -314,6 +355,52 @@ export default function AdminApproval() {
       <p className="text-[10px] text-muted-foreground">
         Joined: {new Date(u.created_at).toLocaleDateString()}
       </p>
+
+      {/* Payment & Demo controls */}
+      <div className="flex flex-wrap items-center gap-3 pt-1 border-t border-border mt-2">
+        <div className="flex items-center gap-2">
+          <CreditCard className="h-3 w-3 text-muted-foreground" />
+          <span className="text-[10px] text-muted-foreground">{t("paid" as any)}</span>
+          <Switch
+            checked={u.payment_status === "paid"}
+            onCheckedChange={() => togglePayment(u.user_id, u.payment_status)}
+            className="scale-75"
+          />
+        </div>
+        {u.payment_status === "paid" && (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className="h-6 text-[10px] gap-1">
+                <CalendarIcon className="h-3 w-3" />
+                {u.payment_date ? format(new Date(u.payment_date), "dd/MM/yyyy") : t("setDate" as any)}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={u.payment_date ? new Date(u.payment_date) : undefined}
+                onSelect={(date) => setPaymentDate(u.user_id, date)}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+        )}
+        <div className="flex items-center gap-2">
+          <FlaskConical className="h-3 w-3 text-muted-foreground" />
+          <span className="text-[10px] text-muted-foreground">{t("demo" as any)}</span>
+          <Switch
+            checked={u.is_demo}
+            onCheckedChange={() => toggleDemo(u.user_id, u.is_demo)}
+            className="scale-75"
+          />
+        </div>
+        {u.is_demo && u.payment_status !== "paid" && (
+          <span className="text-[10px] text-destructive font-medium">
+            {t("demoExpires14Days" as any)}
+          </span>
+        )}
+      </div>
+
       {u.plans && u.plans.length > 0 && (
         <div className="flex flex-wrap gap-1.5 pt-1 border-t border-border mt-2">
           {u.plans.map((plan) => (

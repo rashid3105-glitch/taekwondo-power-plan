@@ -35,7 +35,7 @@ export default function AuthPage() {
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: { data: { display_name: displayName, wants_coach: wantsCoach } },
+          options: { data: { display_name: displayName, wants_coach: wantsCoach, wants_demo: wantsDemo } },
         });
         if (error) throw error;
         toast({ title: t("accountCreated"), description: t("youreSignedIn") });
