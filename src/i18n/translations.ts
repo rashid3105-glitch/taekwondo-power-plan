@@ -292,6 +292,9 @@ const translations = {
     demoBannerExpired: "Demo expired",
     requestDemo: "Request a free demo",
     requestDemoDesc: "Try the app free for 14 days. No payment required.",
+    mobilePayTitle: "Payment",
+    mobilePayInstruction: "Please use this MobilePay number:",
+    mobilePayMarkWith: "Mark the transaction with:",
   },
   da: {
     // Common
