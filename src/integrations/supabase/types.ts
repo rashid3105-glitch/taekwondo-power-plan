@@ -79,6 +79,9 @@ export type Database = {
           goals: string[] | null
           id: string
           is_approved: boolean
+          is_demo: boolean
+          payment_date: string | null
+          payment_status: string
           program_weeks: number | null
           tkd_sessions_per_week: number
           updated_at: string
@@ -99,6 +102,9 @@ export type Database = {
           goals?: string[] | null
           id?: string
           is_approved?: boolean
+          is_demo?: boolean
+          payment_date?: string | null
+          payment_status?: string
           program_weeks?: number | null
           tkd_sessions_per_week?: number
           updated_at?: string
@@ -119,6 +125,9 @@ export type Database = {
           goals?: string[] | null
           id?: string
           is_approved?: boolean
+          is_demo?: boolean
+          payment_date?: string | null
+          payment_status?: string
           program_weeks?: number | null
           tkd_sessions_per_week?: number
           updated_at?: string
