@@ -337,7 +337,7 @@ export default function CoachDashboard() {
                 </Select>
               </div>
               <div className="flex gap-2">
-                <Button onClick={createAthlete} disabled={creating || !newAthleteName.trim() || !newAthleteEmail.trim() || !newAthletePassword.trim()} size="sm">
+                <Button onClick={createAthlete} disabled={creating || !newAthleteName.trim() || !newAthleteEmail.trim() || !newAthletePassword.trim() || athletes.length >= MAX_ATHLETES} size="sm">
                   {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <><UserPlus className="h-4 w-4 mr-1" /> {t("createAccount")}</>}
                 </Button>
                 <Button variant="ghost" size="sm" onClick={() => setShowCreateForm(false)}>
@@ -346,7 +346,7 @@ export default function CoachDashboard() {
               </div>
             </div>
           ) : (
-            <Button onClick={() => setShowCreateForm(true)} size="sm" className="w-full sm:w-auto">
+            <Button onClick={() => setShowCreateForm(true)} size="sm" className="w-full sm:w-auto" disabled={athletes.length >= MAX_ATHLETES}>
               <Plus className="h-4 w-4 mr-1" /> {t("createAthlete")}
             </Button>
           )}
