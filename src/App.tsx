@@ -32,6 +32,7 @@ const App = () => (
             <Route path="/pending-approval" element={<PendingApproval />} />
             <Route path="/admin/approval" element={<AdminApproval />} />
             <Route path="/coach" element={<CoachDashboard />} />
+            <Route path="/pricing" element={<Pricing />} />
             <Route path="/profile-setup" element={<ProfileSetup />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/library" element={<Library />} />
