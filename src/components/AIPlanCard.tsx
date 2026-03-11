@@ -242,19 +242,32 @@ export function AIPlanCard({ plan }: AIPlanCardProps) {
             {schedule.map((day: any, i: number) => {
               const config = TYPE_BADGES[day.type] || TYPE_BADGES.gym;
               const Icon = config.icon;
+              const isSelected = selectedDay === i;
               return (
                 <button
                   key={i}
-                  onClick={() => setSelectedDay(selectedDay === i ? null : i)}
-                  className={`flex flex-col items-center gap-1 sm:gap-1.5 rounded-lg border-2 p-2 sm:p-2.5 transition-all cursor-pointer hover:bg-secondary/50 ${
-                    selectedDay === i ? "border-primary bg-secondary" : "border-border bg-card"
+                  onClick={() => setSelectedDay(isSelected ? null : i)}
+                  className={`group flex flex-col items-center gap-1 sm:gap-1.5 rounded-lg border-2 p-2 sm:p-2.5 transition-all cursor-pointer hover:bg-secondary/50 ${
+                    isSelected ? "border-primary bg-secondary shadow-glow" : "border-border bg-card hover:border-primary/50"
                   }`}
                 >
-                  <span className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  <span className={`text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider transition-all ${
+                    isSelected 
+                      ? "text-primary drop-shadow-[0_0_8px_hsl(190_95%_50%)]" 
+                      : "text-muted-foreground group-hover:text-primary group-hover:drop-shadow-[0_0_6px_hsl(190_95%_50%/0.5)]"
+                  }`}>
                     {day.dayOfWeek?.slice(0, 3)}
                   </span>
-                  <Icon className={`h-4 w-4 ${selectedDay === i ? "text-primary" : "text-muted-foreground"}`} />
-                  <span className="text-[8px] sm:text-[9px] font-medium text-foreground text-center leading-tight">
+                  <Icon className={`h-4 w-4 transition-all ${
+                    isSelected 
+                      ? "text-primary drop-shadow-[0_0_8px_hsl(190_95%_50%)]" 
+                      : "text-muted-foreground group-hover:text-primary group-hover:drop-shadow-[0_0_6px_hsl(190_95%_50%/0.5)]"
+                  }`} />
+                  <span className={`text-[8px] sm:text-[9px] font-medium text-center leading-tight transition-all ${
+                    isSelected 
+                      ? "text-primary drop-shadow-[0_0_8px_hsl(190_95%_50%/0.8)]" 
+                      : "text-foreground group-hover:text-primary group-hover:drop-shadow-[0_0_6px_hsl(190_95%_50%/0.5)]"
+                  }`}>
                     {day.label}
                   </span>
                 </button>
