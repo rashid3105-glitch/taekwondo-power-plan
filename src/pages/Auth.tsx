@@ -17,6 +17,7 @@ export default function AuthPage() {
   const [displayName, setDisplayName] = useState("");
   const [loading, setLoading] = useState(false);
   const [wantsCoach, setWantsCoach] = useState(false);
+  const [wantsDemo, setWantsDemo] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
