@@ -14,6 +14,7 @@ import PendingApproval from "./pages/PendingApproval";
 import AdminApproval from "./pages/AdminApproval";
 import CoachDashboard from "./pages/CoachDashboard";
 import Pricing from "./pages/Pricing";
+import Help from "./pages/Help";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
