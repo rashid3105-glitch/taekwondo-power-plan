@@ -67,6 +67,7 @@ export default function CoachDashboard() {
   const [creating, setCreating] = useState(false);
   const [selectedAthlete, setSelectedAthlete] = useState<string | null>(null);
   const [coachUserId, setCoachUserId] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, locale } = useLanguage();
@@ -85,8 +86,10 @@ export default function CoachDashboard() {
       .select("role")
       .eq("user_id", user.id);
 
-    const isCoach = (roles || []).some((r: any) => r.role === "coach" || r.role === "admin");
+    const userRoles = (roles || []).map((r: any) => r.role);
+    const isCoach = userRoles.some((r: string) => r === "coach" || r === "admin");
     if (!isCoach) { navigate("/dashboard"); return; }
+    setIsAdmin(userRoles.includes("admin"));
 
     await loadAthletes();
   };
@@ -132,7 +135,7 @@ export default function CoachDashboard() {
 
   const addAthlete = async () => {
     if (!athleteCode.trim()) return;
-    if (athletes.length >= MAX_ATHLETES) {
+    if (!isAdmin && athletes.length >= MAX_ATHLETES) {
       toast({ title: t("error"), description: t("maxAthletesReached" as any), variant: "destructive" });
       return;
     }
@@ -176,7 +179,7 @@ export default function CoachDashboard() {
 
   const createAthlete = async () => {
     if (!newAthleteName.trim() || !newAthleteEmail.trim() || !newAthletePassword.trim()) return;
-    if (athletes.length >= MAX_ATHLETES) {
+    if (!isAdmin && athletes.length >= MAX_ATHLETES) {
       toast({ title: t("error"), description: t("maxAthletesReached" as any), variant: "destructive" });
       return;
     }
@@ -252,7 +255,7 @@ export default function CoachDashboard() {
 
       <main className="container max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* Athlete limit warning */}
-        {athletes.length >= MAX_ATHLETES && (
+        {!isAdmin && athletes.length >= MAX_ATHLETES && (
           <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 flex flex-col sm:flex-row sm:items-center gap-2">
             <span className="text-sm text-destructive flex-1">{t("maxAthletesReached" as any)}</span>
             <a href="mailto:info@sportstalent.dk?subject=Upgrade%20to%20Enterprise" className="inline-flex items-center justify-center gap-1 rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap">
@@ -264,7 +267,7 @@ export default function CoachDashboard() {
         {/* Create athlete */}
         <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
           <h3 className="font-bold text-foreground flex items-center gap-2">
-            <UserPlus className="h-5 w-5" /> {t("createAthlete")} ({athletes.length}/{MAX_ATHLETES})
+            <UserPlus className="h-5 w-5" /> {t("createAthlete")} {!isAdmin && <>({athletes.length}/{MAX_ATHLETES})</>}
           </h3>
           <p className="text-xs text-muted-foreground">{t("createAthleteDesc")}</p>
 
@@ -340,7 +343,7 @@ export default function CoachDashboard() {
                 </Select>
               </div>
               <div className="flex gap-2">
-                <Button onClick={createAthlete} disabled={creating || !newAthleteName.trim() || !newAthleteEmail.trim() || !newAthletePassword.trim() || athletes.length >= MAX_ATHLETES} size="sm">
+                <Button onClick={createAthlete} disabled={creating || !newAthleteName.trim() || !newAthleteEmail.trim() || !newAthletePassword.trim() || (!isAdmin && athletes.length >= MAX_ATHLETES)} size="sm">
                   {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <><UserPlus className="h-4 w-4 mr-1" /> {t("createAccount")}</>}
                 </Button>
                 <Button variant="ghost" size="sm" onClick={() => setShowCreateForm(false)}>
@@ -349,7 +352,7 @@ export default function CoachDashboard() {
               </div>
             </div>
           ) : (
-            <Button onClick={() => setShowCreateForm(true)} size="sm" className="w-full sm:w-auto" disabled={athletes.length >= MAX_ATHLETES}>
+            <Button onClick={() => setShowCreateForm(true)} size="sm" className="w-full sm:w-auto" disabled={!isAdmin && athletes.length >= MAX_ATHLETES}>
               <Plus className="h-4 w-4 mr-1" /> {t("createAthlete")}
             </Button>
           )}
@@ -364,7 +367,7 @@ export default function CoachDashboard() {
                 placeholder={t("athleteCodePlaceholder")}
                 className="flex-1 uppercase"
               />
-              <Button onClick={addAthlete} disabled={adding || !athleteCode.trim() || athletes.length >= MAX_ATHLETES} size="sm" variant="outline" className="w-full sm:w-auto">
+              <Button onClick={addAthlete} disabled={adding || !athleteCode.trim() || (!isAdmin && athletes.length >= MAX_ATHLETES)} size="sm" variant="outline" className="w-full sm:w-auto">
                 {adding ? <Loader2 className="h-4 w-4 animate-spin" /> : <><UserPlus className="h-4 w-4 mr-1" /> {t("add")}</>}
               </Button>
             </div>
