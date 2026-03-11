@@ -136,6 +136,7 @@ const translations = {
     "Competition prep": "Competition prep",
     "Build lean muscle": "Build lean muscle",
     "Injury prevention": "Injury prevention",
+    "Stronger hips": "Stronger hips",
     "Improve flexibility": "Improve flexibility",
     "General fitness": "General fitness",
     "Improve balance": "Improve balance",
