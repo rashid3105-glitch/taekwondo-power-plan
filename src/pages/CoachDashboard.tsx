@@ -86,8 +86,10 @@ export default function CoachDashboard() {
       .select("role")
       .eq("user_id", user.id);
 
-    const isCoach = (roles || []).some((r: any) => r.role === "coach" || r.role === "admin");
+    const userRoles = (roles || []).map((r: any) => r.role);
+    const isCoach = userRoles.some((r: string) => r === "coach" || r === "admin");
     if (!isCoach) { navigate("/dashboard"); return; }
+    setIsAdmin(userRoles.includes("admin"));
 
     await loadAthletes();
   };
