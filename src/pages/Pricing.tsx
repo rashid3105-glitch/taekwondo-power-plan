@@ -78,7 +78,7 @@ export default function Pricing() {
                     {tier.features.map((featureKey) => (
                       <li key={featureKey} className="flex items-start gap-2 text-sm text-muted-foreground">
                         <Check className="h-4 w-4 mt-0.5 text-primary shrink-0" />
-                        <span>{t(featureKey)}</span>
+                        <span>{t(featureKey as any)}</span>
                       </li>
                     ))}
                   </ul>
