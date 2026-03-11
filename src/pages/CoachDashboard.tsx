@@ -128,8 +128,14 @@ export default function CoachDashboard() {
     setLoading(false);
   };
 
+  const MAX_ATHLETES = 5;
+
   const addAthlete = async () => {
     if (!athleteCode.trim()) return;
+    if (athletes.length >= MAX_ATHLETES) {
+      toast({ title: t("error"), description: t("maxAthletesReached" as any), variant: "destructive" });
+      return;
+    }
     setAdding(true);
     try {
       // Look up athlete by code using the edge function (since coach may not have direct profile access yet)

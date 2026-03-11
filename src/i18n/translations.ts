@@ -588,6 +588,7 @@ const translations = {
     demoBannerDaysLeft: "dage tilbage",
     demoBannerExpiresToday: "Udløber i dag",
     demoBannerExpired: "Demo udløbet",
+    maxAthletesReached: "Du har nået grænsen på 5 atleter på Træner-planen. Opgrader til Enterprise for ubegrænsede atleter.",
     requestDemo: "Anmod om gratis demo",
     requestDemoDesc: "Prøv appen gratis i 14 dage. Ingen betaling krævet.",
     mobilePayTitle: "Betaling",
