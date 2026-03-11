@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useWorkoutLogs, type WorkoutLog } from "@/hooks/useWorkoutLogs";
 import { PeriodizationView } from "@/components/PeriodizationView";
 import { cn } from "@/lib/utils";
+import { MuscleGroupBadges } from "@/components/MuscleIcon";
 
 const CATEGORY_DOT: Record<string, string> = {
   power: "bg-accent",
