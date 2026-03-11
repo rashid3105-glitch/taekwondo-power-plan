@@ -50,6 +50,8 @@ export default function Dashboard() {
   const [plans, setPlans] = useState<TrainingPlan[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isCoach, setIsCoach] = useState(false);
+  const [isDemo, setIsDemo] = useState(false);
+  const [demoDaysLeft, setDemoDaysLeft] = useState<number | null>(null);
   const [generating, setGenerating] = useState(false);
   const [generatingRehab, setGeneratingRehab] = useState(false);
   const [rehabInjury, setRehabInjury] = useState("");
