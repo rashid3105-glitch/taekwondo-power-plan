@@ -253,8 +253,11 @@ export default function CoachDashboard() {
       <main className="container max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* Athlete limit warning */}
         {athletes.length >= MAX_ATHLETES && (
-          <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
-            {t("maxAthletesReached" as any)}
+          <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 flex flex-col sm:flex-row sm:items-center gap-2">
+            <span className="text-sm text-destructive flex-1">{t("maxAthletesReached" as any)}</span>
+            <a href="mailto:info@sportstalent.dk?subject=Upgrade%20to%20Enterprise" className="inline-flex items-center justify-center gap-1 rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap">
+              {t("upgradeEnterprise" as any)}
+            </a>
           </div>
         )}
 
