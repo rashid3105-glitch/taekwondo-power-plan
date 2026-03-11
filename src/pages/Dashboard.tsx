@@ -333,7 +333,16 @@ export default function Dashboard() {
             </div>
 
             {/* Rehab plan result */}
-            {rehabPlan && <RehabPlanCard plan={rehabPlan} />}
+            {rehabPlan && (
+              <RehabPlanCard plan={rehabPlan} onDelete={async () => {
+                const activeRP = rehabPlans.find(r => r.is_active);
+                if (activeRP) {
+                  await supabase.from("rehab_plans").delete().eq("id", activeRP.id);
+                  setRehabPlan(null);
+                  loadData();
+                }
+              }} />
+            )}
 
             {/* Previous rehab plans */}
             {rehabPlans.filter(p => !p.is_active).length > 0 && (
