@@ -887,6 +887,174 @@ const exercisesData: Record<string, ExerciseBase> = {
       ],
     },
   },
+
+  // === CUT KICK / HIP STRENGTH EXERCISES ===
+
+  standingHipAdduction: {
+    id: "standing-hip-adduction",
+    name: "Standing Cable Hip Adduction",
+    category: "strength",
+    muscleGroups: ["hip-flexors", "glutes", "core"],
+    sets: 3,
+    reps: "12-15 each leg",
+    tempo: "2-1-2-0",
+    rest: "60 sec",
+    videoId: "1LjVJfFtZ5A",
+    en: {
+      notes: "Stand tall on the support leg. Drive the working leg across the body with control. Squeeze at the end range. Keep hips square — no leaning.",
+      whyItMatters: "The cut kick (naeryo chagi) requires powerful hip adduction to drive the leg downward through the target. This exercise directly strengthens that pulling motion.",
+      alternatives: [
+        { name: "Side-Lying Hip Adduction", reason: "No cable needed — gravity provides resistance lying on your side" },
+        { name: "Banded Hip Adduction", reason: "Portable alternative using a resistance band anchored low" },
+      ],
+    },
+    da: {
+      notes: "Stå oprejst på støttebenet. Træk arbejdsbenet hen over kroppen med kontrol. Klem i slutpositionen. Hold hofterne lige — ingen hældning.",
+      whyItMatters: "Cut-sparket (naeryo chagi) kræver kraftig hofteadduktion for at drive benet nedad gennem målet. Denne øvelse styrker direkte den trækkende bevægelse.",
+      alternatives: [
+        { name: "Sidelæggende hofteadduktion", reason: "Intet kabel nødvendigt — tyngdekraften giver modstand liggende på siden" },
+        { name: "Elastik hofteadduktion", reason: "Bærbart alternativ med elastik forankret lavt" },
+      ],
+    },
+  },
+
+  weightedHipFlexorRaise: {
+    id: "weighted-hip-flexor-raise",
+    name: "Weighted Standing Knee Drive",
+    category: "strength",
+    muscleGroups: ["hip-flexors", "core", "quads"],
+    sets: 4,
+    reps: "8-10 each leg",
+    tempo: "1-1-2-0",
+    rest: "90 sec",
+    videoId: "L8fvypPrzzs",
+    en: {
+      notes: "Strap ankle weight or use cable. Drive knee up explosively to chest height, then lower with a slow 2-second eccentric. Stand tall — no trunk lean.",
+      whyItMatters: "The initial lift of the cut kick demands explosive hip flexion strength. Heavy knee drives build the raw force to raise the leg high before the downward cut.",
+      alternatives: [
+        { name: "Banded Marching", reason: "Lighter resistance — good for warm-up or high reps" },
+        { name: "Hanging Knee Raise", reason: "Trains hip flexors with core engagement in a suspended position" },
+      ],
+    },
+    da: {
+      notes: "Brug ankelvægt eller kabel. Driv knæet eksplosivt op til brysthøjde, sænk derefter med langsom 2-sekunders excentrisk. Stå oprejst — ingen overkropshældning.",
+      whyItMatters: "Det indledende løft af cut-sparket kræver eksplosiv hoftefleksionsstyrke. Tunge knæløft opbygger rå kraft til at løfte benet højt før det nedadgående snit.",
+      alternatives: [
+        { name: "Elastik march", reason: "Lettere modstand — god til opvarmning eller mange gentagelser" },
+        { name: "Hængende knæløft", reason: "Træner hoftefleksorer med core-engagement i hængende position" },
+      ],
+    },
+  },
+
+  lateralLungeWithPause: {
+    id: "lateral-lunge-with-pause",
+    name: "Lateral Lunge with 2s Pause",
+    category: "strength",
+    muscleGroups: ["glutes", "quads", "hip-flexors", "hamstrings"],
+    sets: 3,
+    reps: "6-8 each side",
+    tempo: "2-2-1-0",
+    rest: "90 sec",
+    videoId: "gwWv7aPcD88",
+    en: {
+      notes: "Step wide laterally, sit deep into the hip with a 2-second pause at the bottom. Push back explosively. Keep the trailing leg straight. Chest up.",
+      whyItMatters: "The cut kick requires lateral hip stability and adductor strength to control the leg in the frontal plane. Lateral lunges build both under load.",
+      alternatives: [
+        { name: "Cossack Squat", reason: "Deeper lateral hip mobility with similar adductor loading" },
+        { name: "Slider Lateral Lunge", reason: "Adds instability for greater hip stabilizer recruitment" },
+      ],
+    },
+    da: {
+      notes: "Træd bredt til siden, sæt dig dybt ned i hoften med 2-sekunders pause i bunden. Skub eksplosivt tilbage. Hold det bageste ben strakt. Bryst op.",
+      whyItMatters: "Cut-sparket kræver lateral hoftestabilitet og adduktorstyrke for at kontrollere benet i frontalplanet. Laterale lunges opbygger begge dele under belastning.",
+      alternatives: [
+        { name: "Cossack Squat", reason: "Dybere lateral hoftemobilitet med lignende adduktorbelastning" },
+        { name: "Slider lateral lunge", reason: "Tilføjer ustabilitet for større hoftestabilisator-rekruttering" },
+      ],
+    },
+  },
+
+  singleLegRDLHipControl: {
+    id: "single-leg-rdl-hip-control",
+    name: "Single-Leg RDL (Hip Control Focus)",
+    category: "strength",
+    muscleGroups: ["hamstrings", "glutes", "core", "hip-flexors"],
+    sets: 3,
+    reps: "8-10 each leg",
+    tempo: "3-1-1-0",
+    rest: "90 sec",
+    videoId: "59i0MtDQxss",
+    en: {
+      notes: "Hinge at the hip on one leg with a slow 3-second eccentric. Keep hips level — no rotation. Squeeze the glute at the top. Use dumbbell or kettlebell.",
+      whyItMatters: "Single-leg hip hinge control translates directly to the standing leg stability needed during the cut kick. The slow eccentric builds resilient hamstrings and hip control.",
+      alternatives: [
+        { name: "Kickstand RDL", reason: "Partially supported — good stepping stone to full single-leg" },
+        { name: "Band-Assisted Single-Leg RDL", reason: "Provides balance assistance while building the pattern" },
+      ],
+    },
+    da: {
+      notes: "Hængsel i hoften på ét ben med langsom 3-sekunders excentrisk. Hold hofterne i niveau — ingen rotation. Klem balderne i toppen. Brug håndvægt eller kettlebell.",
+      whyItMatters: "Ét-bens hoftehængsel-kontrol oversættes direkte til standbenstabiliteten der er nødvendig under cut-sparket. Den langsomme excentriske fase opbygger modstandsdygtige hamstrings og hoftekontrol.",
+      alternatives: [
+        { name: "Kickstand RDL", reason: "Delvist støttet — godt trin mod fuld ét-bens" },
+        { name: "Elastik-assisteret ét-bens RDL", reason: "Giver balancestøtte mens mønsteret opbygges" },
+      ],
+    },
+  },
+
+  hipAirplanes: {
+    id: "hip-airplanes",
+    name: "Hip Airplanes",
+    category: "mobility",
+    muscleGroups: ["glutes", "hip-flexors", "core"],
+    sets: 3,
+    reps: "6-8 each side",
+    rest: "60 sec",
+    videoId: "yB-AxXUFl_Q",
+    en: {
+      notes: "Stand on one leg, hinge forward slightly. Rotate the pelvis open (external rotation) then closed (internal rotation) in a controlled manner. Keep the standing knee slightly bent.",
+      whyItMatters: "Cut kicks require full rotational control of the hip joint. Hip airplanes build dynamic stability through the entire range of hip internal and external rotation under load.",
+      alternatives: [
+        { name: "Standing Hip CARs", reason: "Similar rotational hip mobility in a standing position" },
+        { name: "90/90 Hip Switches", reason: "Floor-based hip rotation drill for similar range of motion" },
+      ],
+    },
+    da: {
+      notes: "Stå på ét ben, hængsel let fremad. Rotér bækkenet åbent (ekstern rotation) derefter lukket (intern rotation) kontrolleret. Hold standknæet let bøjet.",
+      whyItMatters: "Cut-spark kræver fuld rotationskontrol af hofteleddet. Hip airplanes opbygger dynamisk stabilitet gennem hele rækken af hoftens interne og eksterne rotation under belastning.",
+      alternatives: [
+        { name: "Stående hofte-CARs", reason: "Lignende roterende hoftemobilitet i stående position" },
+        { name: "90/90 hofte-skift", reason: "Gulvbaseret hofterotationsøvelse for lignende bevægelsesomfang" },
+      ],
+    },
+  },
+
+  isometricCutKickHold: {
+    id: "isometric-cut-kick-hold",
+    name: "Isometric Cut Kick Hold",
+    category: "strength",
+    muscleGroups: ["hip-flexors", "quads", "core", "glutes"],
+    sets: 4,
+    reps: "20-30 sec each leg",
+    rest: "60 sec",
+    videoId: "bUy3dSDBkOQ",
+    en: {
+      notes: "Raise the leg to full cut kick height (above head if possible). Hold the position with control — no swinging. Use a wall for light balance support initially. Focus on hip flexor engagement.",
+      whyItMatters: "Isometric holds at end-range build the specific strength and endurance to maintain the leg at peak height during the cut kick. This is the most sport-specific exercise for naeryo chagi.",
+      alternatives: [
+        { name: "Wall-Assisted Leg Hold", reason: "Use a wall to help hold the leg at height while building strength" },
+        { name: "Banded Leg Raise & Hold", reason: "Band assists the hold while still training hip flexor endurance" },
+      ],
+    },
+    da: {
+      notes: "Løft benet til fuld cut-spark højde (over hovedet hvis muligt). Hold positionen med kontrol — ingen svingning. Brug en væg til let balancestøtte i starten. Fokusér på hoftefleksor-engagement.",
+      whyItMatters: "Isometriske holds i slutposition opbygger den specifikke styrke og udholdenhed til at holde benet i tophøjde under cut-sparket. Dette er den mest sportsspecifikke øvelse for naeryo chagi.",
+      alternatives: [
+        { name: "Vægstøttet benhold", reason: "Brug en væg til at hjælpe med at holde benet i højden mens styrken opbygges" },
+        { name: "Elastik benløft & hold", reason: "Elastikken assisterer holdet mens hoftefleksor-udholdenhed stadig trænes" },
+      ],
+    },
+  },
 };
 
 type Locale = "en" | "da";
