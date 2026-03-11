@@ -251,10 +251,17 @@ export default function CoachDashboard() {
       </header>
 
       <main className="container max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
+        {/* Athlete limit warning */}
+        {athletes.length >= MAX_ATHLETES && (
+          <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
+            {t("maxAthletesReached" as any)}
+          </div>
+        )}
+
         {/* Create athlete */}
         <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
           <h3 className="font-bold text-foreground flex items-center gap-2">
-            <UserPlus className="h-5 w-5" /> {t("createAthlete")}
+            <UserPlus className="h-5 w-5" /> {t("createAthlete")} ({athletes.length}/{MAX_ATHLETES})
           </h3>
           <p className="text-xs text-muted-foreground">{t("createAthleteDesc")}</p>
 
