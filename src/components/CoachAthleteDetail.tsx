@@ -155,8 +155,9 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
   const generatePlan = async () => {
     setGeneratingPlan(true);
     try {
+      const profileWithGoals = { ...athlete, weekly_schedule: schedule, goals: selectedGoals };
       const { data, error } = await supabase.functions.invoke("generate-plan", {
-        body: { profile: { ...athlete, weekly_schedule: schedule }, language: locale },
+        body: { profile: profileWithGoals, language: locale },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
