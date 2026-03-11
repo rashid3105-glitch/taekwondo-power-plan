@@ -531,6 +531,23 @@ const translations = {
     pricingFeatureUnlimitedAthletes: "Ubegrænsede atleter",
     pricingFeatureCustom: "Tilpasset onboarding og support",
     viewPricing: "Se priser",
+
+    // Help
+    helpTitle: "Sådan bruger du TKD POWER",
+    helpSubtitle: "Trin-for-trin guides til at få mest ud af appen",
+    helpProfileTitle: "Opret din profil",
+    helpProfileSteps: "1. Tilmeld dig med din e-mail og adgangskode\n2. Du sendes til profilopsætningssiden\n3. Udfyld alder, vægt, bælteniveau og års erfaring\n4. Vælg din disciplin (Sparring eller Poomsae)\n5. Indstil din ugeplan ved at trykke på hver dag for at skifte mellem TKD, Gym og Hvile\n6. Vælg dine træningsmål\n7. Tilføj eventuelt et profilbillede\n8. Klik på \"Gem profil & fortsæt\"",
+    helpTrainingPlanTitle: "Opret en træningsplan",
+    helpTrainingPlanSteps: "1. Gå til Dashboard → Plan-fanen\n2. Klik på \"Generer plan\" øverst\n3. AI'en opretter et periodiseret træningsprogram baseret på din profil\n4. Hver dag viser øvelser med sæt, gentagelser, tempo og hviletider\n5. Klik på en øvelse for at se detaljer, alternativer og YouTube-tutorial\n6. Markér øvelser som gennemført for at følge din fremgang\n7. Du kan generere en ny plan når som helst",
+    helpRehabPlanTitle: "Opret en genoptræningsplan",
+    helpRehabPlanSteps: "1. Gå til Dashboard → Genoptræning-fanen\n2. Beskriv din skade i tekstfeltet (f.eks. \"Grad 1 hamstringskade\")\n3. Klik på \"Generer genoptræningsplan\"\n4. AI'en opretter et faseopdelt genoptræningsprogram med smertevejledning\n5. Hver fase har progressive øvelser og sikkerhedsprotokoller\n6. Tidligere genoptræningsplaner gemmes og kan gennemses når som helst",
+    helpMentalPlanTitle: "Mental præstationsvurdering",
+    helpMentalPlanSteps: "1. Gå til Dashboard → Mental-fanen\n2. Besvar spørgeskemaet om fokus, selvtillid, konkurrenceangst og mere\n3. Indsend din vurdering for at blive scoret på flere dimensioner\n4. Se dine resultater på et radardiagram der viser styrker og forbedringsområder\n5. Modtag personlig AI-genereret sportspsykologisk rådgivning\n6. Følg din mentale præstation over tid med flere vurderinger",
+    helpAddStudentsTitle: "Tilføj elever (Trænere)",
+    helpAddStudentsSteps: "1. Tilmeld dig og markér \"Jeg er træner\" under registrering\n2. Vent på administratorgodkendelse af din trænerrolle\n3. Når du er godkendt, tilgå Træner Dashboard fra headeren\n4. For at oprette en ny atlet: klik \"Opret atlet\" og udfyld deres oplysninger\n5. For at tilføje en eksisterende atlet: indtast deres unikke TKD-kode (vist på deres profil)\n6. Oprettede atleter skal godkendes af admin, før de kan logge ind\n7. Du kan administrere atletprofiler, sætte deres skemaer og generere planer for dem",
+    helpStudentProgressTitle: "Følg elevernes fremgang (Trænere)",
+    helpStudentProgressSteps: "1. Åbn Træner Dashboard\n2. Klik på en atlet i din liste\n3. Se deres aktive træningsplan og gennemførelsesstatus\n4. Tjek deres træningslogfiler, træningsvolumen og konsistens\n5. Gennemgå deres mentale præstationsvurderinger og scores\n6. Overvåg genoptræningsplanens fremgang hvis relevant\n7. Generer nye planer eller juster skemaer efter behov",
+    help: "Hjælp",
   },
 } as const;
 
