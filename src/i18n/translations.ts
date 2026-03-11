@@ -362,6 +362,7 @@ const translations = {
     "Competition prep": "Konkurrenceforberedelse",
     "Build lean muscle": "Byg mager muskelmasse",
     "Injury prevention": "Skadeforebyggelse",
+    "Stronger hips": "Stærkere hofter",
     "Improve flexibility": "Forbedre fleksibilitet",
     "General fitness": "Generel fitness",
     "Improve balance": "Forbedre balance",
