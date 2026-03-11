@@ -99,6 +99,13 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
   const [experienceYears, setExperienceYears] = useState<string>(athlete.experience_years?.toString() || "");
   const [weightKg, setWeightKg] = useState<string>(athlete.weight_kg?.toString() || "");
   const [discipline, setDiscipline] = useState(athlete.discipline || "sparring");
+  const [selectedGoals, setSelectedGoals] = useState<string[]>(athlete.goals || []);
+
+  const toggleGoal = (goal: string) => {
+    setSelectedGoals((prev) =>
+      prev.includes(goal) ? prev.filter((g) => g !== goal) : [...prev, goal]
+    );
+  };
 
   const activePlan = plans.find(p => p.is_active);
   const activeRehab = rehabPlans.find(p => p.is_active);
