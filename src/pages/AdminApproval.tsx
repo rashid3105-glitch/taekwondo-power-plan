@@ -415,24 +415,49 @@ export default function AdminApproval() {
           </div>
 
           {u.plans && u.plans.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 pt-1 border-t border-border mt-2">
-              {u.plans.map((plan) => (
-                <Button
-                  key={plan.id}
-                  variant="outline"
-                  size="sm"
-                  className="h-7 text-xs"
-                  disabled={downloadingPlan === plan.id}
-                  onClick={() => handleDownloadPlan(plan)}
-                >
-                  {downloadingPlan === plan.id ? (
-                    <Loader2 className="h-3 w-3 animate-spin mr-1" />
-                  ) : (
-                    <Download className="h-3 w-3 mr-1" />
-                  )}
-                  {plan.name}
-                </Button>
-              ))}
+            <div className="space-y-1 pt-1 border-t border-border mt-2">
+              <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">Plans ({u.plans.length})</p>
+              <div className="flex flex-wrap gap-1.5">
+                {u.plans.map((plan) => (
+                  <div key={plan.id} className="flex items-center gap-0.5">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 text-xs"
+                      disabled={downloadingPlan === plan.id}
+                      onClick={() => handleDownloadPlan(plan)}
+                    >
+                      {downloadingPlan === plan.id ? (
+                        <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                      ) : (
+                        <Download className="h-3 w-3 mr-1" />
+                      )}
+                      {plan.name}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 w-7 p-0 text-destructive hover:text-destructive"
+                      disabled={deletingPlan === plan.id}
+                      onClick={async () => {
+                        if (!confirm(`Delete plan "${plan.name}"?`)) return;
+                        setDeletingPlan(plan.id);
+                        try {
+                          await supabase.from("training_plans").delete().eq("id", plan.id);
+                          toast({ title: "Plan deleted" });
+                          loadUsers();
+                        } catch {
+                          toast({ title: "Failed to delete", variant: "destructive" });
+                        } finally {
+                          setDeletingPlan(null);
+                        }
+                      }}
+                    >
+                      {deletingPlan === plan.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3 w-3" />}
+                    </Button>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
           {/* Coach assignment */}
