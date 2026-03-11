@@ -274,6 +274,20 @@ const translations = {
     helpStudentProgressTitle: "Follow Student Progress (Coaches)",
     helpStudentProgressSteps: "1. Open the Coach Dashboard\n2. Click on any athlete in your roster\n3. View their active training plan and completion status\n4. Check their workout logs, training volume, and consistency\n5. Review their mental performance assessments and scores\n6. Monitor rehab plan progress if applicable\n7. Generate new plans or adjust schedules as needed",
     help: "Help",
+
+    // Payment & Demo
+    paid: "Paid",
+    unpaid: "Unpaid",
+    demo: "Demo",
+    markedAsPaid: "Marked as paid",
+    markedAsUnpaid: "Marked as unpaid",
+    paymentDateUpdated: "Payment date updated",
+    markedAsDemo: "Marked as demo",
+    demoRemoved: "Demo status removed",
+    setDate: "Set date",
+    demoExpires14Days: "Expires 14 days after signup if unpaid",
+    requestDemo: "Request a free demo",
+    requestDemoDesc: "Try the app free for 14 days. No payment required.",
   },
   da: {
     // Common
