@@ -49,6 +49,7 @@ export function ExerciseCard({ exercise, index, onVideoChange }: ExerciseCardPro
         <span className="mono text-xs text-muted-foreground w-5">{String(index).padStart(2, "0")}</span>
         <span className={cn("h-2 w-2 rounded-full flex-shrink-0", CATEGORY_DOT[exercise.category])} />
         <span className="font-semibold text-sm text-foreground flex-1 text-left">{exercise.name}</span>
+        <MuscleGroupBadges muscles={exercise.muscleGroups} size={20} />
         <span className="text-xs text-muted-foreground mr-2">
           {exercise.sets}×{exercise.reps}
         </span>
