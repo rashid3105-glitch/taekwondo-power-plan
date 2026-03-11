@@ -13,6 +13,7 @@ import ResetPassword from "./pages/ResetPassword";
 import PendingApproval from "./pages/PendingApproval";
 import AdminApproval from "./pages/AdminApproval";
 import CoachDashboard from "./pages/CoachDashboard";
+import Pricing from "./pages/Pricing";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/pending-approval" element={<PendingApproval />} />
             <Route path="/admin/approval" element={<AdminApproval />} />
             <Route path="/coach" element={<CoachDashboard />} />
+            <Route path="/pricing" element={<Pricing />} />
             <Route path="/profile-setup" element={<ProfileSetup />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/library" element={<Library />} />
