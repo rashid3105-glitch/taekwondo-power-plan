@@ -348,6 +348,24 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
         </div>
       </div>
 
+      {/* Program Length */}
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
+        <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+          <Calendar className="h-4 w-4" /> {t("programLength")}
+        </h4>
+        <div className="flex items-center gap-4">
+          <Slider
+            value={[programWeeks]}
+            onValueChange={([v]) => setProgramWeeks(v)}
+            min={4}
+            max={12}
+            step={1}
+            className="flex-1"
+          />
+          <span className="text-sm font-bold text-foreground min-w-[60px] text-right">{programWeeks} {t("weeks")}</span>
+        </div>
+      </div>
+
       {/* Training Plan */}
       <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
         <div className="flex items-center justify-between">
