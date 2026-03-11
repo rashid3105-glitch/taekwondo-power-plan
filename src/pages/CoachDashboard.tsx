@@ -267,7 +267,7 @@ export default function CoachDashboard() {
         {/* Create athlete */}
         <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
           <h3 className="font-bold text-foreground flex items-center gap-2">
-            <UserPlus className="h-5 w-5" /> {t("createAthlete")} ({athletes.length}/{MAX_ATHLETES})
+            <UserPlus className="h-5 w-5" /> {t("createAthlete")} {!isAdmin && <>({athletes.length}/{MAX_ATHLETES})</>}
           </h3>
           <p className="text-xs text-muted-foreground">{t("createAthleteDesc")}</p>
 
