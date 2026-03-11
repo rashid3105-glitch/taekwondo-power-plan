@@ -138,6 +138,9 @@ const Index = () => {
               <Button onClick={() => navigate("/auth")} size="lg" className="px-8 font-semibold">
                 {t("getStarted")} <ArrowRight className="h-4 w-4 ml-1.5" />
               </Button>
+              <Button onClick={() => navigate("/pricing")} size="lg" variant="outline" className="px-8 font-semibold">
+                {t("viewPricing" as any)}
+              </Button>
             </div>
           </div>
         </section>

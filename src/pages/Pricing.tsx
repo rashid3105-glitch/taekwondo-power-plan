@@ -111,8 +111,8 @@ export default function Pricing() {
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary">
               <span className="text-lg font-bold text-primary">MP</span>
             </div>
-            <h3 className="font-bold text-foreground">{t("pricingPaymentTitle")}</h3>
-            <p className="text-sm text-muted-foreground max-w-md">{t("pricingPaymentDesc")}</p>
+            <h3 className="font-bold text-foreground">{t("pricingPaymentTitle" as any)}</h3>
+            <p className="text-sm text-muted-foreground max-w-md">{t("pricingPaymentDesc" as any)}</p>
           </CardContent>
         </Card>
       </div>
