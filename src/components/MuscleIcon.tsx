@@ -40,7 +40,7 @@ interface MuscleIconProps {
   showLabel?: boolean;
 }
 
-export function MuscleIcon({ muscle, size = 24, showLabel = false }: MuscleIconProps) {
+export function MuscleIcon({ muscle, size = 28, showLabel = false }: MuscleIconProps) {
   const src = MUSCLE_IMAGES[muscle];
   const label = MUSCLE_LABELS[muscle];
 
@@ -69,7 +69,7 @@ interface MuscleGroupBadgesProps {
   showLabels?: boolean;
 }
 
-export function MuscleGroupBadges({ muscles, size = 22, showLabels = false }: MuscleGroupBadgesProps) {
+export function MuscleGroupBadges({ muscles, size = 26, showLabels = false }: MuscleGroupBadgesProps) {
   if (!muscles || muscles.length === 0) return null;
 
   return (

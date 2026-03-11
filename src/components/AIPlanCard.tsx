@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useWorkoutLogs, type WorkoutLog } from "@/hooks/useWorkoutLogs";
 import { PeriodizationView } from "@/components/PeriodizationView";
 import { cn } from "@/lib/utils";
+import { MuscleGroupBadges } from "@/components/MuscleIcon";
 
 const CATEGORY_DOT: Record<string, string> = {
   power: "bg-accent",
@@ -358,6 +359,9 @@ function AIExerciseRow({ exercise, index, log, onToggleComplete, onUpdateSets, o
           )}>
             {exercise.name}
           </span>
+          {exercise.muscleGroups?.length > 0 && (
+            <MuscleGroupBadges muscles={exercise.muscleGroups} size={20} />
+          )}
           <span className="text-xs text-muted-foreground mr-2">
             {log?.actual_sets ?? exercise.sets}×{log?.actual_reps ?? exercise.reps}
           </span>
@@ -424,6 +428,12 @@ function AIExerciseRow({ exercise, index, log, onToggleComplete, onUpdateSets, o
               </div>
             )}
           </div>
+          {exercise.muscleGroups?.length > 0 && (
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Muscles:</span>
+              <MuscleGroupBadges muscles={exercise.muscleGroups} size={28} showLabels />
+            </div>
+          )}
           <p className="text-xs text-muted-foreground">
             <span className="font-semibold text-foreground">Coaching: </span>
             {exercise.coachingCue}
