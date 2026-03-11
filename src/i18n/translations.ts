@@ -257,6 +257,23 @@ const translations = {
     pricingFeatureUnlimitedAthletes: "Unlimited athletes",
     pricingFeatureCustom: "Custom onboarding & support",
     viewPricing: "View Pricing",
+
+    // Help
+    helpTitle: "How to Use TKD POWER",
+    helpSubtitle: "Step-by-step guides to get the most out of the app",
+    helpProfileTitle: "Create Your Profile",
+    helpProfileSteps: "1. Sign up with your email and password\n2. You'll be taken to the Profile Setup page\n3. Fill in your age, weight, belt level, and years of experience\n4. Choose your discipline (Sparring or Poomsae)\n5. Set your weekly schedule by tapping each day to cycle between TKD, Gym, and Rest\n6. Select your training goals\n7. Optionally add a profile photo\n8. Click \"Save Profile & Continue\"",
+    helpTrainingPlanTitle: "Create a Training Plan",
+    helpTrainingPlanSteps: "1. Go to the Dashboard → Plan tab\n2. Click \"Generate Plan\" at the top\n3. The AI will create a periodized training program based on your profile\n4. Each day shows exercises with sets, reps, tempo, and rest times\n5. Click any exercise to see details, alternatives, and a YouTube tutorial link\n6. Mark exercises as completed to track your progress\n7. You can generate a new plan at any time",
+    helpRehabPlanTitle: "Create a Rehab Plan",
+    helpRehabPlanSteps: "1. Go to the Dashboard → Rehab tab\n2. Describe your injury in the text field (e.g. \"Grade 1 hamstring tear\")\n3. Click \"Generate Rehab Plan\"\n4. The AI creates a phased rehabilitation program with pain guidelines\n5. Each phase has progressive exercises and safety protocols\n6. Previous rehab plans are saved and can be reviewed anytime",
+    helpMentalPlanTitle: "Mental Performance Assessment",
+    helpMentalPlanSteps: "1. Go to the Dashboard → Mental tab\n2. Answer the questionnaire about focus, confidence, competition anxiety, and more\n3. Submit your assessment to get scored across multiple dimensions\n4. View your results on a radar chart showing strengths and areas to improve\n5. Receive personalized AI-generated sports psychology advice\n6. Track your mental performance over time with multiple assessments",
+    helpAddStudentsTitle: "Add Students (Coaches)",
+    helpAddStudentsSteps: "1. Sign up and check the \"I am a coach\" box during registration\n2. Wait for admin approval of your coach role\n3. Once approved, access the Coach Dashboard from the header\n4. To create a new athlete: click \"Create Athlete\" and fill in their details\n5. To add an existing athlete: enter their unique TKD code (shown on their profile)\n6. Created athletes need admin approval before they can log in\n7. You can manage athlete profiles, set their schedules, and generate plans for them",
+    helpStudentProgressTitle: "Follow Student Progress (Coaches)",
+    helpStudentProgressSteps: "1. Open the Coach Dashboard\n2. Click on any athlete in your roster\n3. View their active training plan and completion status\n4. Check their workout logs, training volume, and consistency\n5. Review their mental performance assessments and scores\n6. Monitor rehab plan progress if applicable\n7. Generate new plans or adjust schedules as needed",
+    help: "Help",
   },
   da: {
     // Common
