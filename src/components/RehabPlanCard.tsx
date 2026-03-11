@@ -298,7 +298,8 @@ export function RehabPlanCard({ plan, onDelete }: RehabPlanCardProps) {
           </div>
         ))}
       </div>
-    </div>
+      </CollapsibleContent>
+    </Collapsible>
   );
 }
 
