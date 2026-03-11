@@ -89,6 +89,15 @@ export default function Dashboard() {
         return;
       }
       setProfile(profileData as Profile);
+      if (profileData.is_demo && profileData.payment_status !== "paid") {
+        setIsDemo(true);
+        const created = new Date(profileData.created_at);
+        const expiry = new Date(created);
+        expiry.setDate(expiry.getDate() + 14);
+        const now = new Date();
+        const diff = Math.ceil((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        setDemoDaysLeft(diff);
+      }
     }
     if (plansRes.data) setPlans(plansRes.data as unknown as TrainingPlan[]);
     if (rehabRes.data) {
