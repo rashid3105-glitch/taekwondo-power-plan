@@ -135,7 +135,7 @@ export default function CoachDashboard() {
 
   const addAthlete = async () => {
     if (!athleteCode.trim()) return;
-    if (athletes.length >= MAX_ATHLETES) {
+    if (!isAdmin && athletes.length >= MAX_ATHLETES) {
       toast({ title: t("error"), description: t("maxAthletesReached" as any), variant: "destructive" });
       return;
     }
