@@ -343,7 +343,7 @@ export default function CoachDashboard() {
                 </Select>
               </div>
               <div className="flex gap-2">
-                <Button onClick={createAthlete} disabled={creating || !newAthleteName.trim() || !newAthleteEmail.trim() || !newAthletePassword.trim() || athletes.length >= MAX_ATHLETES} size="sm">
+                <Button onClick={createAthlete} disabled={creating || !newAthleteName.trim() || !newAthleteEmail.trim() || !newAthletePassword.trim() || (!isAdmin && athletes.length >= MAX_ATHLETES)} size="sm">
                   {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <><UserPlus className="h-4 w-4 mr-1" /> {t("createAccount")}</>}
                 </Button>
                 <Button variant="ghost" size="sm" onClick={() => setShowCreateForm(false)}>
