@@ -102,6 +102,9 @@ const Index = () => {
         </div>
         <div className="flex items-center gap-3">
           <LanguageSwitcher />
+          <Button variant="ghost" size="sm" onClick={() => navigate("/help")} className="text-xs">
+            <HelpCircle className="h-4 w-4 mr-1" /> {t("help" as any)}
+          </Button>
           <Button variant="ghost" size="sm" onClick={() => navigate("/auth")} className="text-xs">
             {t("signIn")}
           </Button>
