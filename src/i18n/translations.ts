@@ -292,6 +292,7 @@ const translations = {
     demoBannerExpiresToday: "Expires today",
     demoBannerExpired: "Demo expired",
     maxAthletesReached: "You have reached the maximum of 5 athletes on the Coach plan. Upgrade to Enterprise for unlimited athletes.",
+    upgradeEnterprise: "Upgrade to Enterprise",
     requestDemo: "Request a free demo",
     requestDemoDesc: "Try the app free for 14 days. No payment required.",
     mobilePayTitle: "Payment",
