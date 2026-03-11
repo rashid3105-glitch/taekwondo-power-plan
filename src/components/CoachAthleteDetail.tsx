@@ -9,7 +9,21 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { AIPlanCard } from "@/components/AIPlanCard";
 import { RehabPlanCard } from "@/components/RehabPlanCard";
 import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekSchedulePicker";
-import { Loader2, Plus, Zap, Heart, Save, Calendar, UserCog } from "lucide-react";
+import { Loader2, Plus, Zap, Heart, Save, Calendar, UserCog, Target } from "lucide-react";
+
+const GOAL_OPTIONS = [
+  "Faster kicks",
+  "More explosive footwork",
+  "Competition prep",
+  "Build lean muscle",
+  "Injury prevention",
+  "Stronger hips",
+  "Improve flexibility",
+  "General fitness",
+  "Improve balance",
+  "Better stance transitions",
+  "Movement flow",
+];
 
 interface AthleteProfile {
   user_id: string;
@@ -85,6 +99,13 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
   const [experienceYears, setExperienceYears] = useState<string>(athlete.experience_years?.toString() || "");
   const [weightKg, setWeightKg] = useState<string>(athlete.weight_kg?.toString() || "");
   const [discipline, setDiscipline] = useState(athlete.discipline || "sparring");
+  const [selectedGoals, setSelectedGoals] = useState<string[]>(athlete.goals || []);
+
+  const toggleGoal = (goal: string) => {
+    setSelectedGoals((prev) =>
+      prev.includes(goal) ? prev.filter((g) => g !== goal) : [...prev, goal]
+    );
+  };
 
   const activePlan = plans.find(p => p.is_active);
   const activeRehab = rehabPlans.find(p => p.is_active);
@@ -95,6 +116,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
       const updates: Record<string, any> = {
         belt_level: beltLevel,
         discipline,
+        goals: selectedGoals,
       };
       if (age) updates.age = Math.min(Math.max(parseInt(age), 5), 99);
       if (experienceYears) updates.experience_years = Math.min(Math.max(parseInt(experienceYears), 0), 50);
@@ -134,8 +156,9 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
   const generatePlan = async () => {
     setGeneratingPlan(true);
     try {
+      const profileWithGoals = { ...athlete, weekly_schedule: schedule, goals: selectedGoals };
       const { data, error } = await supabase.functions.invoke("generate-plan", {
-        body: { profile: { ...athlete, weekly_schedule: schedule }, language: locale },
+        body: { profile: profileWithGoals, language: locale },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
@@ -296,6 +319,31 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
         </div>
         <p className="text-xs text-muted-foreground">{t("weeklyScheduleHint")}</p>
         <WeekSchedulePicker schedule={schedule} onChange={setSchedule} />
+      </div>
+
+      {/* Training Goals & Plan */}
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
+        <div className="flex items-center justify-between">
+          <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+            <Target className="h-4 w-4" /> {t("trainingGoals")}
+          </h4>
+        </div>
+        <p className="text-xs text-muted-foreground">{t("selectAllThatApply")}</p>
+        <div className="flex flex-wrap gap-2">
+          {GOAL_OPTIONS.map((goal) => (
+            <button
+              key={goal}
+              type="button"
+              onClick={() => toggleGoal(goal)}
+              data-active={selectedGoals.includes(goal)}
+              className="rounded-full px-3 py-1.5 text-xs font-medium border border-border transition-colors cursor-pointer
+                data-[active=true]:bg-primary data-[active=true]:text-primary-foreground
+                data-[active=false]:text-muted-foreground hover:text-foreground"
+            >
+              {t(goal as any)}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Training Plan */}
