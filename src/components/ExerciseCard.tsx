@@ -66,6 +66,13 @@ export function ExerciseCard({ exercise, index, onVideoChange }: ExerciseCardPro
       {/* Expanded content */}
       {expanded && (
         <div className="px-4 pb-4 pt-1 space-y-4 animate-slide-up">
+          {/* Muscle groups */}
+          {exercise.muscleGroups?.length > 0 && (
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Muscles:</span>
+              <MuscleGroupBadges muscles={exercise.muscleGroups} size={28} showLabels />
+            </div>
+          )}
           {/* Video embed */}
           <div className="space-y-2">
             <div className="relative rounded-lg overflow-hidden aspect-video bg-muted">
