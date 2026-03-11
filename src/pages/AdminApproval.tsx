@@ -76,7 +76,7 @@ export default function AdminApproval() {
       supabase
         .from("training_plans")
         .select("id, name, plan_data, created_at, user_id, is_active")
-        .eq("is_active", true),
+        .order("created_at", { ascending: false }),
       supabase.from("user_roles").select("user_id, role"),
       supabase.from("coach_athletes").select("coach_id, athlete_id"),
     ]);
