@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Zap, Users, Building2, Check, Mail, ArrowLeft } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Zap, Users, Building2, Check, Mail, ArrowLeft, FlaskConical } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
@@ -29,6 +31,7 @@ const tiers = [
 export default function Pricing() {
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const [showDialog, setShowDialog] = useState(false);
 
   return (
     <div className="min-h-screen bg-background px-4 py-8">
@@ -95,7 +98,7 @@ export default function Pricing() {
                     <Button
                       className="w-full"
                       variant={isCoach ? "default" : "outline"}
-                      onClick={() => navigate("/auth")}
+                      onClick={() => setShowDialog(true)}
                     >
                       {t("getStarted")}
                     </Button>
@@ -116,6 +119,59 @@ export default function Pricing() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Get Started Dialog */}
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t("getStarted")}</DialogTitle>
+            <DialogDescription>{t("pricingDialogDesc" as any)}</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            {/* Request Demo */}
+            <Button
+              variant="outline"
+              className="w-full justify-start gap-3 h-auto py-3"
+              onClick={() => {
+                setShowDialog(false);
+                navigate("/auth?mode=signup&demo=true");
+              }}
+            >
+              <FlaskConical className="h-5 w-5 text-primary shrink-0" />
+              <div className="text-left">
+                <p className="font-semibold text-sm">{t("requestDemo" as any)}</p>
+                <p className="text-xs text-muted-foreground">{t("requestDemoDesc" as any)}</p>
+              </div>
+            </Button>
+
+            {/* MobilePay instructions */}
+            <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary shrink-0">
+                  <span className="text-xs font-bold text-primary-foreground">MP</span>
+                </div>
+                <p className="text-sm font-semibold text-foreground">{t("mobilePayTitle")}</p>
+              </div>
+              <p className="text-xs text-muted-foreground">{t("mobilePayInstruction")}</p>
+              <p className="text-lg font-bold text-primary font-mono">53856564</p>
+              <p className="text-xs text-muted-foreground">
+                {t("mobilePayMarkWith")} <strong>TKD POWER</strong>
+              </p>
+            </div>
+
+            {/* Sign up button */}
+            <Button
+              className="w-full"
+              onClick={() => {
+                setShowDialog(false);
+                navigate("/auth");
+              }}
+            >
+              {t("createAccount")}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
