@@ -352,7 +352,7 @@ export default function CoachDashboard() {
               </div>
             </div>
           ) : (
-            <Button onClick={() => setShowCreateForm(true)} size="sm" className="w-full sm:w-auto" disabled={athletes.length >= MAX_ATHLETES}>
+            <Button onClick={() => setShowCreateForm(true)} size="sm" className="w-full sm:w-auto" disabled={!isAdmin && athletes.length >= MAX_ATHLETES}>
               <Plus className="h-4 w-4 mr-1" /> {t("createAthlete")}
             </Button>
           )}
