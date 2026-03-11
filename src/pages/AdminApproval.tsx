@@ -7,7 +7,8 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { Loader2, CheckCircle, XCircle, ArrowLeft, Download, Shield, Trash2, Users, CreditCard, CalendarIcon, FlaskConical } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Loader2, CheckCircle, XCircle, ArrowLeft, Download, Shield, Trash2, Users, CreditCard, CalendarIcon, FlaskConical, ChevronDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { format } from "date-fns";
@@ -298,184 +299,192 @@ export default function AdminApproval() {
   const approved = users.filter(u => u.is_approved);
 
   const UserCard = ({ u, actions }: { u: PendingUser; actions: React.ReactNode }) => (
-    <div className="rounded-lg border border-border bg-card p-4 space-y-2">
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-2">
-            <p className="font-medium text-sm text-foreground">{u.display_name || t("noName")}</p>
-            {u.payment_status === "paid" && (
-              <Badge variant="default" className="text-[10px] h-5 bg-green-600">
-                <CreditCard className="h-2.5 w-2.5 mr-0.5" /> {t("paid" as any)}
-              </Badge>
+    <Collapsible>
+      <div className="rounded-lg border border-border bg-card p-4 space-y-2">
+        <div className="flex items-center justify-between">
+          <CollapsibleTrigger className="flex items-center gap-2 cursor-pointer group flex-1 min-w-0">
+            <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <p className="font-medium text-sm text-foreground">{u.display_name || t("noName")}</p>
+                {u.payment_status === "paid" && (
+                  <Badge variant="default" className="text-[10px] h-5 bg-green-600">
+                    <CreditCard className="h-2.5 w-2.5 mr-0.5" /> {t("paid" as any)}
+                  </Badge>
+                )}
+                {u.is_demo && (
+                  <Badge variant="secondary" className="text-[10px] h-5">
+                    <FlaskConical className="h-2.5 w-2.5 mr-0.5" /> {t("demo" as any)}
+                  </Badge>
+                )}
+                {u.isCoach && (
+                  <Badge variant="outline" className="text-[10px] h-5">
+                    <Shield className="h-2.5 w-2.5 mr-0.5" /> {t("coach")}
+                  </Badge>
+                )}
+              </div>
+              {u.email && <p className="text-xs text-muted-foreground text-left">{u.email}</p>}
+            </div>
+          </CollapsibleTrigger>
+          {actions}
+        </div>
+
+        <CollapsibleContent className="space-y-2">
+          <div className="flex flex-wrap gap-1.5 pt-1">
+            {u.belt_level && (
+              <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full capitalize">
+                {u.belt_level} {t("belt")}
+              </span>
             )}
-            {u.is_demo && (
-              <Badge variant="secondary" className="text-[10px] h-5">
-                <FlaskConical className="h-2.5 w-2.5 mr-0.5" /> {t("demo" as any)}
-              </Badge>
+            {u.age && (
+              <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
+                {u.age}y
+              </span>
+            )}
+            {u.weight_kg && (
+              <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
+                {u.weight_kg}kg
+              </span>
+            )}
+            {u.experience_years != null && u.experience_years > 0 && (
+              <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
+                {u.experience_years}yr exp
+              </span>
+            )}
+            <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
+              {u.tkd_sessions_per_week}x {t("tkdPerWeek")}
+            </span>
+          </div>
+          {u.goals && u.goals.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {u.goals.map((g) => (
+                <span key={g} className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                  {t(g as any) || g}
+                </span>
+              ))}
+            </div>
+          )}
+          <p className="text-[10px] text-muted-foreground">
+            Joined: {new Date(u.created_at).toLocaleDateString()}
+          </p>
+
+          {/* Payment & Demo controls */}
+          <div className="flex flex-wrap items-center gap-3 pt-1 border-t border-border mt-2">
+            <div className="flex items-center gap-2">
+              <CreditCard className="h-3 w-3 text-muted-foreground" />
+              <span className="text-[10px] text-muted-foreground">{t("paid" as any)}</span>
+              <Switch
+                checked={u.payment_status === "paid"}
+                onCheckedChange={() => togglePayment(u.user_id, u.payment_status)}
+                className="scale-75"
+              />
+            </div>
+            {u.payment_status === "paid" && (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-6 text-[10px] gap-1">
+                    <CalendarIcon className="h-3 w-3" />
+                    {u.payment_date ? format(new Date(u.payment_date), "dd/MM/yyyy") : t("setDate" as any)}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={u.payment_date ? new Date(u.payment_date) : undefined}
+                    onSelect={(date) => setPaymentDate(u.user_id, date)}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            )}
+            <div className="flex items-center gap-2">
+              <FlaskConical className="h-3 w-3 text-muted-foreground" />
+              <span className="text-[10px] text-muted-foreground">{t("demo" as any)}</span>
+              <Switch
+                checked={u.is_demo}
+                onCheckedChange={() => toggleDemo(u.user_id, u.is_demo)}
+                className="scale-75"
+              />
+            </div>
+            {u.is_demo && u.payment_status !== "paid" && (
+              <span className="text-[10px] text-destructive font-medium">
+                {t("demoExpires14Days" as any)}
+              </span>
             )}
           </div>
-          {u.email && <p className="text-xs text-muted-foreground">{u.email}</p>}
-        </div>
-        {actions}
-      </div>
-      <div className="flex flex-wrap gap-1.5">
-        {u.belt_level && (
-          <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full capitalize">
-            {u.belt_level} {t("belt")}
-          </span>
-        )}
-        {u.age && (
-          <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
-            {u.age}y
-          </span>
-        )}
-        {u.weight_kg && (
-          <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
-            {u.weight_kg}kg
-          </span>
-        )}
-        {u.experience_years != null && u.experience_years > 0 && (
-          <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
-            {u.experience_years}yr exp
-          </span>
-        )}
-        <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
-          {u.tkd_sessions_per_week}x {t("tkdPerWeek")}
-        </span>
-      </div>
-      {u.goals && u.goals.length > 0 && (
-        <div className="flex flex-wrap gap-1">
-          {u.goals.map((g) => (
-            <span key={g} className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-              {t(g as any) || g}
-            </span>
-          ))}
-        </div>
-      )}
-      <p className="text-[10px] text-muted-foreground">
-        Joined: {new Date(u.created_at).toLocaleDateString()}
-      </p>
 
-      {/* Payment & Demo controls */}
-      <div className="flex flex-wrap items-center gap-3 pt-1 border-t border-border mt-2">
-        <div className="flex items-center gap-2">
-          <CreditCard className="h-3 w-3 text-muted-foreground" />
-          <span className="text-[10px] text-muted-foreground">{t("paid" as any)}</span>
-          <Switch
-            checked={u.payment_status === "paid"}
-            onCheckedChange={() => togglePayment(u.user_id, u.payment_status)}
-            className="scale-75"
-          />
-        </div>
-        {u.payment_status === "paid" && (
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className="h-6 text-[10px] gap-1">
-                <CalendarIcon className="h-3 w-3" />
-                {u.payment_date ? format(new Date(u.payment_date), "dd/MM/yyyy") : t("setDate" as any)}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={u.payment_date ? new Date(u.payment_date) : undefined}
-                onSelect={(date) => setPaymentDate(u.user_id, date)}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
-        )}
-        <div className="flex items-center gap-2">
-          <FlaskConical className="h-3 w-3 text-muted-foreground" />
-          <span className="text-[10px] text-muted-foreground">{t("demo" as any)}</span>
-          <Switch
-            checked={u.is_demo}
-            onCheckedChange={() => toggleDemo(u.user_id, u.is_demo)}
-            className="scale-75"
-          />
-        </div>
-        {u.is_demo && u.payment_status !== "paid" && (
-          <span className="text-[10px] text-destructive font-medium">
-            {t("demoExpires14Days" as any)}
-          </span>
-        )}
-      </div>
-
-      {u.plans && u.plans.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 pt-1 border-t border-border mt-2">
-          {u.plans.map((plan) => (
+          {u.plans && u.plans.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 pt-1 border-t border-border mt-2">
+              {u.plans.map((plan) => (
+                <Button
+                  key={plan.id}
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-xs"
+                  disabled={downloadingPlan === plan.id}
+                  onClick={() => handleDownloadPlan(plan)}
+                >
+                  {downloadingPlan === plan.id ? (
+                    <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                  ) : (
+                    <Download className="h-3 w-3 mr-1" />
+                  )}
+                  {plan.name}
+                </Button>
+              ))}
+            </div>
+          )}
+          {/* Coach assignment */}
+          {!u.isCoach && (
+            <div className="flex items-center gap-2 pt-1 border-t border-border mt-2">
+              <Users className="h-3 w-3 text-muted-foreground" />
+              <span className="text-[10px] text-muted-foreground">{t("assignToCoach")}:</span>
+              <Select
+                value={u.coachId || "none"}
+                onValueChange={(val) => reassignAthlete(u.user_id, val === "none" ? null : val)}
+                disabled={reassigning === u.user_id}
+              >
+                <SelectTrigger className="h-7 text-xs flex-1">
+                  <SelectValue placeholder={t("selectCoach")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">{t("noCoach")}</SelectItem>
+                  {coaches.map((c) => (
+                    <SelectItem key={c.user_id} value={c.user_id}>{c.display_name || t("noName")}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {reassigning === u.user_id && <Loader2 className="h-3 w-3 animate-spin" />}
+            </div>
+          )}
+          {/* Coach role toggle & delete */}
+          <div className="flex items-center gap-2 pt-1 border-t border-border mt-2">
             <Button
-              key={plan.id}
-              variant="outline"
+              variant={u.isCoach ? "destructive" : "outline"}
               size="sm"
               className="h-7 text-xs"
-              disabled={downloadingPlan === plan.id}
-              onClick={() => handleDownloadPlan(plan)}
+              onClick={() => toggleCoachRole(u.user_id, !!u.isCoach)}
             >
-              {downloadingPlan === plan.id ? (
-                <Loader2 className="h-3 w-3 animate-spin mr-1" />
-              ) : (
-                <Download className="h-3 w-3 mr-1" />
-              )}
-              {plan.name}
+              <Shield className="h-3 w-3 mr-1" />
+              {u.isCoach ? t("removeCoach") : t("makeCoach")}
             </Button>
-          ))}
-        </div>
-      )}
-      {/* Coach assignment */}
-      {!u.isCoach && (
-        <div className="flex items-center gap-2 pt-1 border-t border-border mt-2">
-          <Users className="h-3 w-3 text-muted-foreground" />
-          <span className="text-[10px] text-muted-foreground">{t("assignToCoach")}:</span>
-          <Select
-            value={u.coachId || "none"}
-            onValueChange={(val) => reassignAthlete(u.user_id, val === "none" ? null : val)}
-            disabled={reassigning === u.user_id}
-          >
-            <SelectTrigger className="h-7 text-xs flex-1">
-              <SelectValue placeholder={t("selectCoach")} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">{t("noCoach")}</SelectItem>
-              {coaches.map((c) => (
-                <SelectItem key={c.user_id} value={c.user_id}>{c.display_name || t("noName")}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {reassigning === u.user_id && <Loader2 className="h-3 w-3 animate-spin" />}
-        </div>
-      )}
-      {/* Coach role toggle & delete */}
-      <div className="flex items-center gap-2 pt-1 border-t border-border mt-2">
-        <Button
-          variant={u.isCoach ? "destructive" : "outline"}
-          size="sm"
-          className="h-7 text-xs"
-          onClick={() => toggleCoachRole(u.user_id, !!u.isCoach)}
-        >
-          <Shield className="h-3 w-3 mr-1" />
-          {u.isCoach ? t("removeCoach") : t("makeCoach")}
-        </Button>
-        {u.isCoach && (
-          <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-semibold">
-            {t("coach")}
-          </span>
-        )}
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-7 text-xs text-destructive ml-auto"
-          disabled={deletingUser === u.user_id}
-          onClick={() => deleteUser(u.user_id, u.display_name)}
-        >
-          {deletingUser === u.user_id ? (
-            <Loader2 className="h-3 w-3 animate-spin" />
-          ) : (
-            <><Trash2 className="h-3 w-3 mr-1" /> Delete</>
-          )}
-        </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 text-xs text-destructive ml-auto"
+              disabled={deletingUser === u.user_id}
+              onClick={() => deleteUser(u.user_id, u.display_name)}
+            >
+              {deletingUser === u.user_id ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                <><Trash2 className="h-3 w-3 mr-1" /> Delete</>
+              )}
+            </Button>
+          </div>
+        </CollapsibleContent>
       </div>
-    </div>
+    </Collapsible>
   );
 
   return (
