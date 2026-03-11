@@ -130,6 +130,17 @@ export default function AuthPage() {
                   <p className="text-[11px] text-muted-foreground leading-tight">{t("requestDemoDesc" as any)}</p>
                 </div>
               </div>
+              <div className="flex items-start gap-3 rounded-lg border border-primary/30 bg-primary/5 p-3">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary shrink-0 mt-0.5">
+                  <span className="text-xs font-bold text-primary-foreground">MP</span>
+                </div>
+                <div className="space-y-0.5">
+                  <p className="text-sm font-medium text-foreground">{t("mobilePayTitle")}</p>
+                  <p className="text-[11px] text-muted-foreground leading-tight">{t("mobilePayInstruction")}</p>
+                  <p className="text-sm font-bold text-primary font-mono">53856564</p>
+                  <p className="text-[11px] text-muted-foreground leading-tight">{t("mobilePayMarkWith")} <strong>TKD POWER</strong></p>
+                </div>
+              </div>
             </>
           )}
           <Button type="submit" className="w-full" disabled={loading}>
