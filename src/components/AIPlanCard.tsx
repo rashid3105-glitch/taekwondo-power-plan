@@ -359,6 +359,9 @@ function AIExerciseRow({ exercise, index, log, onToggleComplete, onUpdateSets, o
           )}>
             {exercise.name}
           </span>
+          {exercise.muscleGroups?.length > 0 && (
+            <MuscleGroupBadges muscles={exercise.muscleGroups} size={20} />
+          )}
           <span className="text-xs text-muted-foreground mr-2">
             {log?.actual_sets ?? exercise.sets}×{log?.actual_reps ?? exercise.reps}
           </span>

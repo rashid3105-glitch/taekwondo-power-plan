@@ -69,7 +69,7 @@ interface MuscleGroupBadgesProps {
   showLabels?: boolean;
 }
 
-export function MuscleGroupBadges({ muscles, size = 22, showLabels = false }: MuscleGroupBadgesProps) {
+export function MuscleGroupBadges({ muscles, size = 26, showLabels = false }: MuscleGroupBadgesProps) {
   if (!muscles || muscles.length === 0) return null;
 
   return (
