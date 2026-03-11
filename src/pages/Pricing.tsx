@@ -41,8 +41,8 @@ export default function Pricing() {
         </div>
 
         <div className="text-center space-y-2">
-          <h1 className="text-3xl font-extrabold text-foreground">{t("pricingTitle")}</h1>
-          <p className="text-muted-foreground max-w-lg mx-auto">{t("pricingSubtitle")}</p>
+          <h1 className="text-3xl font-extrabold text-foreground">{t("pricingTitle" as any)}</h1>
+          <p className="text-muted-foreground max-w-lg mx-auto">{t("pricingSubtitle" as any)}</p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-3">
