@@ -562,6 +562,20 @@ const translations = {
     helpStudentProgressTitle: "Følg elevernes fremgang (Trænere)",
     helpStudentProgressSteps: "1. Åbn Træner Dashboard\n2. Klik på en atlet i din liste\n3. Se deres aktive træningsplan og gennemførelsesstatus\n4. Tjek deres træningslogfiler, træningsvolumen og konsistens\n5. Gennemgå deres mentale præstationsvurderinger og scores\n6. Overvåg genoptræningsplanens fremgang hvis relevant\n7. Generer nye planer eller juster skemaer efter behov",
     help: "Hjælp",
+
+    // Payment & Demo
+    paid: "Betalt",
+    unpaid: "Ikke betalt",
+    demo: "Demo",
+    markedAsPaid: "Markeret som betalt",
+    markedAsUnpaid: "Markeret som ikke betalt",
+    paymentDateUpdated: "Betalingsdato opdateret",
+    markedAsDemo: "Markeret som demo",
+    demoRemoved: "Demo-status fjernet",
+    setDate: "Sæt dato",
+    demoExpires14Days: "Udløber 14 dage efter oprettelse hvis ikke betalt",
+    requestDemo: "Anmod om gratis demo",
+    requestDemoDesc: "Prøv appen gratis i 14 dage. Ingen betaling krævet.",
   },
 } as const;
 

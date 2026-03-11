@@ -115,6 +115,20 @@ export default function AuthPage() {
                 <p className="text-[11px] text-muted-foreground leading-tight">{t("iAmACoachDesc")}</p>
               </div>
             </div>
+            <div className="flex items-start gap-3 rounded-lg border border-border bg-card p-3">
+              <Checkbox
+                id="demo"
+                checked={wantsDemo}
+                onCheckedChange={(checked) => setWantsDemo(checked === true)}
+                className="mt-0.5"
+              />
+              <div className="space-y-0.5">
+                <label htmlFor="demo" className="text-sm font-medium text-foreground flex items-center gap-1.5 cursor-pointer">
+                  <FlaskConical className="h-4 w-4" /> {t("requestDemo" as any)}
+                </label>
+                <p className="text-[11px] text-muted-foreground leading-tight">{t("requestDemoDesc" as any)}</p>
+              </div>
+            </div>
           )}
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? t("pleaseWait") : isLogin ? t("signIn") : t("createAccount")}
