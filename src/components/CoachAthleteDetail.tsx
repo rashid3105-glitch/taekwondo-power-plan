@@ -9,7 +9,21 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { AIPlanCard } from "@/components/AIPlanCard";
 import { RehabPlanCard } from "@/components/RehabPlanCard";
 import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekSchedulePicker";
-import { Loader2, Plus, Zap, Heart, Save, Calendar, UserCog } from "lucide-react";
+import { Loader2, Plus, Zap, Heart, Save, Calendar, UserCog, Target } from "lucide-react";
+
+const GOAL_OPTIONS = [
+  "Faster kicks",
+  "More explosive footwork",
+  "Competition prep",
+  "Build lean muscle",
+  "Injury prevention",
+  "Stronger hips",
+  "Improve flexibility",
+  "General fitness",
+  "Improve balance",
+  "Better stance transitions",
+  "Movement flow",
+];
 
 interface AthleteProfile {
   user_id: string;
