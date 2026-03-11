@@ -116,6 +116,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
       const updates: Record<string, any> = {
         belt_level: beltLevel,
         discipline,
+        goals: selectedGoals,
       };
       if (age) updates.age = Math.min(Math.max(parseInt(age), 5), 99);
       if (experienceYears) updates.experience_years = Math.min(Math.max(parseInt(experienceYears), 0), 50);
