@@ -58,7 +58,7 @@ export default function Pricing() {
               >
                 {isCoach && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-0.5 text-xs font-bold text-primary-foreground">
-                    {t("pricingPopular")}
+                    {t("pricingPopular" as any)}
                   </div>
                 )}
                 <CardHeader className="text-center pb-2">
