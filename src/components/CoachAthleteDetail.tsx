@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -100,6 +101,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
   const [weightKg, setWeightKg] = useState<string>(athlete.weight_kg?.toString() || "");
   const [discipline, setDiscipline] = useState(athlete.discipline || "sparring");
   const [selectedGoals, setSelectedGoals] = useState<string[]>(athlete.goals || []);
+  const [programWeeks, setProgramWeeks] = useState(athlete.program_weeks || 8);
 
   const toggleGoal = (goal: string) => {
     setSelectedGoals((prev) =>
@@ -156,7 +158,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
   const generatePlan = async () => {
     setGeneratingPlan(true);
     try {
-      const profileWithGoals = { ...athlete, weekly_schedule: schedule, goals: selectedGoals };
+      const profileWithGoals = { ...athlete, weekly_schedule: schedule, goals: selectedGoals, program_weeks: programWeeks };
       const { data, error } = await supabase.functions.invoke("generate-plan", {
         body: { profile: profileWithGoals, language: locale },
       });
@@ -343,6 +345,24 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
               {t(goal as any)}
             </button>
           ))}
+        </div>
+      </div>
+
+      {/* Program Length */}
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
+        <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+          <Calendar className="h-4 w-4" /> {t("programLength")}
+        </h4>
+        <div className="flex items-center gap-4">
+          <Slider
+            value={[programWeeks]}
+            onValueChange={([v]) => setProgramWeeks(v)}
+            min={4}
+            max={12}
+            step={1}
+            className="flex-1"
+          />
+          <span className="text-sm font-bold text-foreground min-w-[60px] text-right">{programWeeks} {t("weeks")}</span>
         </div>
       </div>
 
