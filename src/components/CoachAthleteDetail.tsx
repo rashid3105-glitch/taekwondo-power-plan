@@ -320,6 +320,31 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
         <WeekSchedulePicker schedule={schedule} onChange={setSchedule} />
       </div>
 
+      {/* Training Goals & Plan */}
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
+        <div className="flex items-center justify-between">
+          <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+            <Target className="h-4 w-4" /> {t("trainingGoals")}
+          </h4>
+        </div>
+        <p className="text-xs text-muted-foreground">{t("selectAllThatApply")}</p>
+        <div className="flex flex-wrap gap-2">
+          {GOAL_OPTIONS.map((goal) => (
+            <button
+              key={goal}
+              type="button"
+              onClick={() => toggleGoal(goal)}
+              data-active={selectedGoals.includes(goal)}
+              className="rounded-full px-3 py-1.5 text-xs font-medium border border-border transition-colors cursor-pointer
+                data-[active=true]:bg-primary data-[active=true]:text-primary-foreground
+                data-[active=false]:text-muted-foreground hover:text-foreground"
+            >
+              {t(goal as any)}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Training Plan */}
       <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
         <div className="flex items-center justify-between">
