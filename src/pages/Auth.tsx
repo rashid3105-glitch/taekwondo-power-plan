@@ -101,34 +101,36 @@ export default function AuthPage() {
           />
           </div>
           {!isLogin && (
-            <div className="flex items-start gap-3 rounded-lg border border-border bg-card p-3">
-              <Checkbox
-                id="coach"
-                checked={wantsCoach}
-                onCheckedChange={(checked) => setWantsCoach(checked === true)}
-                className="mt-0.5"
-              />
-              <div className="space-y-0.5">
-                <label htmlFor="coach" className="text-sm font-medium text-foreground flex items-center gap-1.5 cursor-pointer">
-                  <Users className="h-4 w-4" /> {t("iAmACoach")}
-                </label>
-                <p className="text-[11px] text-muted-foreground leading-tight">{t("iAmACoachDesc")}</p>
+            <>
+              <div className="flex items-start gap-3 rounded-lg border border-border bg-card p-3">
+                <Checkbox
+                  id="coach"
+                  checked={wantsCoach}
+                  onCheckedChange={(checked) => setWantsCoach(checked === true)}
+                  className="mt-0.5"
+                />
+                <div className="space-y-0.5">
+                  <label htmlFor="coach" className="text-sm font-medium text-foreground flex items-center gap-1.5 cursor-pointer">
+                    <Users className="h-4 w-4" /> {t("iAmACoach")}
+                  </label>
+                  <p className="text-[11px] text-muted-foreground leading-tight">{t("iAmACoachDesc")}</p>
+                </div>
               </div>
-            </div>
-            <div className="flex items-start gap-3 rounded-lg border border-border bg-card p-3">
-              <Checkbox
-                id="demo"
-                checked={wantsDemo}
-                onCheckedChange={(checked) => setWantsDemo(checked === true)}
-                className="mt-0.5"
-              />
-              <div className="space-y-0.5">
-                <label htmlFor="demo" className="text-sm font-medium text-foreground flex items-center gap-1.5 cursor-pointer">
-                  <FlaskConical className="h-4 w-4" /> {t("requestDemo" as any)}
-                </label>
-                <p className="text-[11px] text-muted-foreground leading-tight">{t("requestDemoDesc" as any)}</p>
+              <div className="flex items-start gap-3 rounded-lg border border-border bg-card p-3">
+                <Checkbox
+                  id="demo"
+                  checked={wantsDemo}
+                  onCheckedChange={(checked) => setWantsDemo(checked === true)}
+                  className="mt-0.5"
+                />
+                <div className="space-y-0.5">
+                  <label htmlFor="demo" className="text-sm font-medium text-foreground flex items-center gap-1.5 cursor-pointer">
+                    <FlaskConical className="h-4 w-4" /> {t("requestDemo" as any)}
+                  </label>
+                  <p className="text-[11px] text-muted-foreground leading-tight">{t("requestDemoDesc" as any)}</p>
+                </div>
               </div>
-            </div>
+            </>
           )}
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? t("pleaseWait") : isLogin ? t("signIn") : t("createAccount")}
