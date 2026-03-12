@@ -172,6 +172,7 @@ export function AIPlanCard({ plan }: AIPlanCardProps) {
   const schedule = plan.plan_data?.weeklySchedule || [];
   const periodization = plan.plan_data?.periodization || [];
   const { toast } = useToast();
+  const { t } = useLanguage();
   const { upsertLog, getLog, today } = useWorkoutLogs(plan.id, selectedDay);
 
   const handleDownload = async () => {
@@ -188,7 +189,6 @@ export function AIPlanCard({ plan }: AIPlanCardProps) {
 
   // Count completed exercises for each day
   const completedCounts = schedule.map((_: any, i: number) => {
-    // We only have logs for the selected day, so show a checkmark logic in the day cards
     return null;
   });
 
@@ -201,7 +201,9 @@ export function AIPlanCard({ plan }: AIPlanCardProps) {
             Generated {new Date(plan.created_at).toLocaleDateString()} · Logging for {new Date(today).toLocaleDateString()}
           </p>
         </div>
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-1.5 flex-shrink-0 flex-wrap justify-end">
+          <TrainingReminder planId={plan.id} schedule={schedule} />
+          <CalendarDropdown plan={plan} />
           <Button variant="outline" size="sm" onClick={handleDownload} disabled={exporting}>
             {exporting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
             <span className="hidden sm:inline ml-1">PDF</span>
