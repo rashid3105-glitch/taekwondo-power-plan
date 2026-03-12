@@ -298,6 +298,24 @@ const translations = {
     mobilePayTitle: "Payment",
     mobilePayInstruction: "Please use this MobilePay number:",
     mobilePayMarkWith: "Mark the transaction with:",
+
+    // Calendar
+    addToCalendar: "Add to Calendar",
+    addAllToCalendar: "Add All Sessions",
+    downloadICS: "Download .ics",
+    openInGoogleCalendar: "Google Calendar",
+    calendarExported: "Calendar file downloaded!",
+    addDayToCalendar: "Add this session to calendar",
+
+    // Notifications
+    trainingReminders: "Training Reminders",
+    enableReminders: "Enable Reminders",
+    reminderTime: "Reminder Time",
+    remindersBefore: "before session",
+    remindersEnabled: "Reminders enabled",
+    remindersDisabled: "Reminders disabled",
+    notificationsNotSupported: "Notifications are not supported in this browser",
+    notificationPermissionDenied: "Notification permission denied",
   },
   da: {
     // Common
