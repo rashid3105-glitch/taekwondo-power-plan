@@ -614,6 +614,24 @@ const translations = {
     mobilePayTitle: "Betaling",
     mobilePayInstruction: "Brug venligst dette MobilePay nummer:",
     mobilePayMarkWith: "Mærk betalingen med:",
+
+    // Calendar
+    addToCalendar: "Tilføj til kalender",
+    addAllToCalendar: "Tilføj alle sessioner",
+    downloadICS: "Download .ics",
+    openInGoogleCalendar: "Google Kalender",
+    calendarExported: "Kalenderfil downloadet!",
+    addDayToCalendar: "Tilføj denne session til kalender",
+
+    // Notifications
+    trainingReminders: "Træningspåmindelser",
+    enableReminders: "Aktiver påmindelser",
+    reminderTime: "Påmindelsestid",
+    remindersBefore: "før session",
+    remindersEnabled: "Påmindelser aktiveret",
+    remindersDisabled: "Påmindelser deaktiveret",
+    notificationsNotSupported: "Notifikationer understøttes ikke i denne browser",
+    notificationPermissionDenied: "Notifikationstilladelse nægtet",
   },
 } as const;
 
