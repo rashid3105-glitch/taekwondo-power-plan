@@ -284,11 +284,14 @@ export function AIPlanCard({ plan }: AIPlanCardProps) {
           {/* Day detail */}
           {selectedDay !== null && schedule[selectedDay] && (
             <div className="animate-slide-up rounded-xl border border-border bg-card p-3 sm:p-5 shadow-card">
-              <div className="mb-4">
-                <h3 className="font-bold text-foreground">{schedule[selectedDay].dayOfWeek} — {schedule[selectedDay].label}</h3>
-                {schedule[selectedDay].focus && (
-                  <p className="text-sm text-muted-foreground">{schedule[selectedDay].focus}</p>
-                )}
+              <div className="mb-4 flex items-center justify-between">
+                <div>
+                  <h3 className="font-bold text-foreground">{schedule[selectedDay].dayOfWeek} — {schedule[selectedDay].label}</h3>
+                  {schedule[selectedDay].focus && (
+                    <p className="text-sm text-muted-foreground">{schedule[selectedDay].focus}</p>
+                  )}
+                </div>
+                <CalendarDropdown plan={plan} dayIndex={selectedDay} />
               </div>
 
               {schedule[selectedDay].exercises?.length > 0 ? (
