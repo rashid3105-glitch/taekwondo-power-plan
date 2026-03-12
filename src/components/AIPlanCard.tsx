@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Shield, Dumbbell, Battery, Download, Loader2, Check, Layers, Youtube } from "lucide-react";
+import { ChevronDown, ChevronUp, Shield, Dumbbell, Battery, Download, Loader2, Check, Layers, Youtube, CalendarPlus, Bell, BellOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,9 @@ import { useWorkoutLogs, type WorkoutLog } from "@/hooks/useWorkoutLogs";
 import { PeriodizationView } from "@/components/PeriodizationView";
 import { cn } from "@/lib/utils";
 import { MuscleGroupBadges } from "@/components/MuscleIcon";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { CalendarDropdown } from "@/components/CalendarDropdown";
+import { TrainingReminder } from "@/components/TrainingReminder";
 
 const CATEGORY_DOT: Record<string, string> = {
   power: "bg-accent",
