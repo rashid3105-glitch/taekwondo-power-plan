@@ -11,6 +11,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { MentalAssessment } from "@/components/MentalAssessment";
 import { ProgressDashboard } from "@/components/ProgressDashboard";
+import { NutritionPlan } from "@/components/NutritionPlan";
 
 interface Profile {
   display_name: string;
