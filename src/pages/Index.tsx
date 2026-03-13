@@ -14,12 +14,14 @@ function SectionPreview({
   description,
   gradient,
   delay,
+  iconColor,
 }: {
   icon: typeof Zap;
   title: string;
   description: string;
   gradient: string;
   delay: string;
+  iconColor: string;
 }) {
   return (
     <div
@@ -32,7 +34,7 @@ function SectionPreview({
       />
       <div className="flex items-start gap-4">
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary">
-          <Icon className="h-5 w-5 text-primary" />
+          <Icon className={`h-5 w-5 ${iconColor}`} />
         </div>
         <div className="space-y-1.5">
           <h3 className="text-sm font-bold text-foreground tracking-tight">{title}</h3>
