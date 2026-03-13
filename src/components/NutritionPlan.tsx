@@ -246,47 +246,49 @@ export function NutritionPlan({ profile, readOnly = false }: NutritionPlanProps)
       </div>
 
       {/* Goal Selection */}
-      <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
-        <div className="flex items-center gap-2">
-          <Apple className="h-5 w-5 text-tab-nutrition" />
-          <h3 className="font-bold text-foreground">{t("nutritionGoals")}</h3>
-        </div>
-        <p className="text-xs text-muted-foreground">{t("selectNutritionGoals")}</p>
-        <div className="flex flex-wrap gap-2">
-          {NUTRITION_GOALS.map((goal) => (
-            <button
-              key={goal}
-              type="button"
-              onClick={() => toggleGoal(goal)}
-              data-active={selectedGoals.includes(goal)}
-              className="rounded-full px-3 py-1.5 text-xs font-medium border border-border transition-colors cursor-pointer
-                data-[active=true]:bg-primary data-[active=true]:text-primary-foreground
-                data-[active=false]:text-muted-foreground hover:text-foreground"
-            >
-              {t(goal as any) || goal}
-            </button>
-          ))}
-        </div>
-
-        {/* Weight Loss Warning */}
-        {hasWeightLossGoal && (
-          <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 flex gap-2">
-            <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
-            <div>
-              <p className="text-xs font-bold text-destructive">{t("weightLossWarningTitle")}</p>
-              <p className="text-xs text-muted-foreground mt-1">{t("weightLossWarningDesc")}</p>
-            </div>
+      {!readOnly && (
+        <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
+          <div className="flex items-center gap-2">
+            <Apple className="h-5 w-5 text-tab-nutrition" />
+            <h3 className="font-bold text-foreground">{t("nutritionGoals")}</h3>
           </div>
-        )}
+          <p className="text-xs text-muted-foreground">{t("selectNutritionGoals")}</p>
+          <div className="flex flex-wrap gap-2">
+            {NUTRITION_GOALS.map((goal) => (
+              <button
+                key={goal}
+                type="button"
+                onClick={() => toggleGoal(goal)}
+                data-active={selectedGoals.includes(goal)}
+                className="rounded-full px-3 py-1.5 text-xs font-medium border border-border transition-colors cursor-pointer
+                  data-[active=true]:bg-primary data-[active=true]:text-primary-foreground
+                  data-[active=false]:text-muted-foreground hover:text-foreground"
+              >
+                {t(goal as any) || goal}
+              </button>
+            ))}
+          </div>
 
-        <Button onClick={generatePlan} disabled={generating || selectedGoals.length === 0} size="sm" className="w-full sm:w-auto">
-          {generating ? (
-            <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
-          ) : (
-            <><Apple className="h-4 w-4 mr-1" /> {t("generateNutritionPlan")}</>
+          {/* Weight Loss Warning */}
+          {hasWeightLossGoal && (
+            <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 flex gap-2">
+              <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
+              <div>
+                <p className="text-xs font-bold text-destructive">{t("weightLossWarningTitle")}</p>
+                <p className="text-xs text-muted-foreground mt-1">{t("weightLossWarningDesc")}</p>
+              </div>
+            </div>
           )}
-        </Button>
-      </div>
+
+          <Button onClick={generatePlan} disabled={generating || selectedGoals.length === 0} size="sm" className="w-full sm:w-auto">
+            {generating ? (
+              <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
+            ) : (
+              <><Apple className="h-4 w-4 mr-1" /> {t("generateNutritionPlan")}</>
+            )}
+          </Button>
+        </div>
+      )}
 
       {/* Generated Plan */}
       {plan && (
