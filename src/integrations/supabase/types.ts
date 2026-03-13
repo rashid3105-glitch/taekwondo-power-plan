@@ -35,6 +35,42 @@ export type Database = {
         }
         Relationships: []
       }
+      diary_entries: {
+        Row: {
+          content: string
+          created_at: string
+          energy: number
+          entry_date: string
+          id: string
+          mood: number
+          tags: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content?: string
+          created_at?: string
+          energy?: number
+          entry_date?: string
+          id?: string
+          mood?: number
+          tags?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          energy?: number
+          entry_date?: string
+          id?: string
+          mood?: number
+          tags?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       mental_assessments: {
         Row: {
           ai_advice: string | null
