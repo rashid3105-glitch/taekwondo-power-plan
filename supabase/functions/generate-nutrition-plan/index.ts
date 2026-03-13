@@ -71,7 +71,7 @@ Return a valid JSON object with this exact structure:
 }
 
 IMPORTANT: Return ONLY the JSON object, no markdown, no code fences.
-IMPORTANT: ALL text content MUST be written in ${lang}.`;
+CRITICAL LANGUAGE REQUIREMENT: You MUST write ALL text content — including plan names, meal names, food descriptions, timing labels, principles, warnings, supplement info, and all explanations — entirely in ${lang}. Do NOT mix languages. Every single string value in the JSON must be in ${lang}.`;
 
     const goalsText = goals?.length ? goals.join(", ") : "general athletic performance";
 
