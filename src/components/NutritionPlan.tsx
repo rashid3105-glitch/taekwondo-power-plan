@@ -27,6 +27,7 @@ interface NutritionPlanProps {
     experience_years: number | null;
     current_injury: string | null;
   } | null;
+  readOnly?: boolean;
 }
 
 export function NutritionPlan({ profile }: NutritionPlanProps) {
