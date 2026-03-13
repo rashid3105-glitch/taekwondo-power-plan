@@ -78,6 +78,10 @@ export default function Dashboard() {
     const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", user.id);
     if (roles?.some((r: any) => r.role === "coach")) setIsCoach(true);
 
+    // Check if user has a coach assigned
+    const { data: coachLink } = await supabase.from("coach_athletes").select("id").eq("athlete_id", user.id).limit(1);
+    if (coachLink && coachLink.length > 0) setHasCoach(true);
+
     const [profileRes, plansRes, rehabRes] = await Promise.all([
       supabase.from("profiles").select("*").eq("user_id", user.id).single(),
       supabase.from("training_plans").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
