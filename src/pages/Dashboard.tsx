@@ -264,7 +264,7 @@ export default function Dashboard() {
             <Zap className="h-5 w-5" />
             <span className="text-[10px] font-semibold">{t("plan")}</span>
           </button>
-          <button onClick={() => setActiveTab("progress")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "progress" ? "text-primary" : "text-muted-foreground"}`}>
+          <button onClick={() => setActiveTab("progress")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "progress" ? "text-tab-progress" : "text-muted-foreground"}`}>
             <BarChart3 className="h-5 w-5" />
             <span className="text-[10px] font-semibold">{t("progress")}</span>
           </button>
