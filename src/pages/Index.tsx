@@ -95,6 +95,13 @@ const Index = () => {
       gradient: "radial-gradient(circle at 30% 50%, hsl(142 70% 45% / 0.08), transparent 70%)",
       iconColor: "text-tab-nutrition",
     },
+    {
+      icon: UtensilsCrossed,
+      titleKey: "sectionNutritionTitle" as const,
+      descKey: "sectionNutritionDesc" as const,
+      gradient: "radial-gradient(circle at 30% 50%, hsl(25 90% 55% / 0.08), transparent 70%)",
+      iconColor: "text-orange-400",
+    },
   ];
 
   return (

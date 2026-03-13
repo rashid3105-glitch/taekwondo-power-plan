@@ -405,6 +405,8 @@ const translations = {
     sectionRehabDesc: "Kommer du dig efter en skade? Generer faseopdelte genoptræningsprogrammer med smertevejledning og sikkerhedsprotokoller.",
     sectionLibraryTitle: "Øvelsesbibliotek",
     sectionLibraryDesc: "Udforsk en kurateret samling af TKD-specifikke øvelser med alternativer, tempoguider og muskelgruppefokus.",
+    sectionNutritionTitle: "Ernæring",
+    sectionNutritionDesc: "Opdag atletvenlige opskrifter og AI-genererede kostplaner tilpasset din træningsbelastning og dine mål.",
     footerText: "Bygget til taekwondo-atleter. Træn hurtigt, forbliv hurtig.",
 
     // Auth
