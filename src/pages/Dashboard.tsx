@@ -226,13 +226,13 @@ export default function Dashboard() {
             <Button variant="ghost" size="sm" onClick={() => setActiveTab("progress")}>
               <BarChart3 className="h-4 w-4 mr-1" /> {t("progress")}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => setActiveTab("rehab")}>
+            <Button variant="ghost" size="sm" onClick={() => setActiveTab("rehab")} className="text-tab-rehab">
               <Heart className="h-4 w-4 mr-1" /> {t("injuryRehabPlan")}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => setActiveTab("nutrition")}>
+            <Button variant="ghost" size="sm" onClick={() => setActiveTab("nutrition")} className="text-tab-nutrition">
               <Apple className="h-4 w-4 mr-1" /> {t("nutrition")}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => setActiveTab("mental")}>
+            <Button variant="ghost" size="sm" onClick={() => setActiveTab("mental")} className="text-tab-mental">
               <Brain className="h-4 w-4 mr-1" /> {t("mental")}
             </Button>
             <Button variant="ghost" size="sm" onClick={() => navigate("/library")}>
