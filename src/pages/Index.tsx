@@ -63,30 +63,35 @@ const Index = () => {
       titleKey: "sectionPlanTitle" as const,
       descKey: "sectionPlanDesc" as const,
       gradient: "radial-gradient(circle at 30% 50%, hsl(190 95% 50% / 0.08), transparent 70%)",
+      iconColor: "text-tab-plan",
     },
     {
       icon: BarChart3,
       titleKey: "sectionProgressTitle" as const,
       descKey: "sectionProgressDesc" as const,
       gradient: "radial-gradient(circle at 30% 50%, hsl(160 80% 45% / 0.08), transparent 70%)",
+      iconColor: "text-primary",
     },
     {
       icon: Brain,
       titleKey: "sectionMentalTitle" as const,
       descKey: "sectionMentalDesc" as const,
-      gradient: "radial-gradient(circle at 30% 50%, hsl(35 100% 55% / 0.08), transparent 70%)",
+      gradient: "radial-gradient(circle at 30% 50%, hsl(330 60% 72% / 0.08), transparent 70%)",
+      iconColor: "text-tab-mental",
     },
     {
       icon: HeartPulse,
       titleKey: "sectionRehabTitle" as const,
       descKey: "sectionRehabDesc" as const,
-      gradient: "radial-gradient(circle at 30% 50%, hsl(350 85% 55% / 0.08), transparent 70%)",
+      gradient: "radial-gradient(circle at 30% 50%, hsl(0 72% 51% / 0.08), transparent 70%)",
+      iconColor: "text-tab-rehab",
     },
     {
       icon: BookOpen,
       titleKey: "sectionLibraryTitle" as const,
       descKey: "sectionLibraryDesc" as const,
       gradient: "radial-gradient(circle at 30% 50%, hsl(270 70% 55% / 0.08), transparent 70%)",
+      iconColor: "text-primary",
     },
   ];
 
