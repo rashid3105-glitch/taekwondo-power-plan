@@ -293,6 +293,10 @@ export default function Dashboard() {
             <Brain className="h-5 w-5" />
             <span className="text-[10px] font-semibold">{t("mental")}</span>
           </button>
+          <button onClick={() => navigate("/diary")} className="flex flex-col items-center gap-0.5 px-2 py-1 text-muted-foreground">
+            <NotebookPen className="h-5 w-5" />
+            <span className="text-[10px] font-semibold">{t("diary" as any)}</span>
+          </button>
           {isAdmin && (
             <button onClick={() => navigate("/admin/approval")} className="flex flex-col items-center gap-0.5 px-2 py-1 text-muted-foreground">
               <Shield className="h-5 w-5" />
