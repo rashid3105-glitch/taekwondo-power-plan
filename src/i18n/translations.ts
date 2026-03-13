@@ -710,7 +710,7 @@ const translations = {
     "General healthy eating": "Generel sund kost",
     "Reduce inflammation": "Reducér inflammation",
     // Hub
-    hubWelcome: "Velkommen tilbage",
+    hubWelcome: "Hjem",
     hubChooseSection: "Hvad vil du arbejde med i dag?",
     hubTrainingTitle: "Træningsplan",
     hubTrainingDesc: "Generer og administrer AI-drevne periodiserede træningsprogrammer tilpasset dit bælteniveau, mål og skema.",
