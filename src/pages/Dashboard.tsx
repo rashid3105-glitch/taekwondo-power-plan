@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain, Clock } from "lucide-react";
+import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain, Clock, Apple } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { AIPlanCard } from "@/components/AIPlanCard";
 import { RehabPlanCard } from "@/components/RehabPlanCard";
@@ -11,6 +11,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { MentalAssessment } from "@/components/MentalAssessment";
 import { ProgressDashboard } from "@/components/ProgressDashboard";
+import { NutritionPlan } from "@/components/NutritionPlan";
 
 interface Profile {
   display_name: string;
@@ -58,7 +59,7 @@ export default function Dashboard() {
   const [rehabPlan, setRehabPlan] = useState<any>(null);
   const [rehabPlans, setRehabPlans] = useState<RehabPlanRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"plan" | "rehab" | "mental" | "progress">("plan");
+  const [activeTab, setActiveTab] = useState<"plan" | "rehab" | "mental" | "progress" | "nutrition">("plan");
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, locale } = useLanguage();
@@ -228,6 +229,9 @@ export default function Dashboard() {
             <Button variant="ghost" size="sm" onClick={() => setActiveTab("rehab")}>
               <Heart className="h-4 w-4 mr-1" /> {t("injuryRehabPlan")}
             </Button>
+            <Button variant="ghost" size="sm" onClick={() => setActiveTab("nutrition")}>
+              <Apple className="h-4 w-4 mr-1" /> {t("nutrition")}
+            </Button>
             <Button variant="ghost" size="sm" onClick={() => setActiveTab("mental")}>
               <Brain className="h-4 w-4 mr-1" /> {t("mental")}
             </Button>
@@ -253,6 +257,10 @@ export default function Dashboard() {
           <button onClick={() => setActiveTab("rehab")} className={`flex flex-col items-center gap-0.5 px-3 py-1 ${activeTab === "rehab" ? "text-primary" : "text-muted-foreground"}`}>
             <Heart className="h-5 w-5" />
             <span className="text-[10px] font-semibold">{t("rehab")}</span>
+          </button>
+          <button onClick={() => setActiveTab("nutrition")} className={`flex flex-col items-center gap-0.5 px-3 py-1 ${activeTab === "nutrition" ? "text-primary" : "text-muted-foreground"}`}>
+            <Apple className="h-5 w-5" />
+            <span className="text-[10px] font-semibold">{t("nutrition")}</span>
           </button>
           <button onClick={() => setActiveTab("mental")} className={`flex flex-col items-center gap-0.5 px-3 py-1 ${activeTab === "mental" ? "text-primary" : "text-muted-foreground"}`}>
             <Brain className="h-5 w-5" />
@@ -301,6 +309,8 @@ export default function Dashboard() {
         )}
         {activeTab === "progress" ? (
           <ProgressDashboard onGoToPlan={() => setActiveTab("plan")} />
+        ) : activeTab === "nutrition" ? (
+          <NutritionPlan profile={profile} />
         ) : activeTab === "mental" ? (
           <MentalAssessment profile={profile} />
         ) : activeTab === "rehab" ? (
