@@ -431,23 +431,25 @@ export default function Dashboard() {
                         <p className="font-medium text-sm text-foreground">{rp.name}</p>
                         <p className="text-xs text-muted-foreground">{rp.injury_description} · {new Date(rp.created_at).toLocaleDateString()}</p>
                       </div>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm" onClick={async () => {
-                          const { data: { user } } = await supabase.auth.getUser();
-                          if (!user) return;
-                          await supabase.from("rehab_plans").update({ is_active: false } as any).eq("user_id", user.id);
-                          await supabase.from("rehab_plans").update({ is_active: true } as any).eq("id", rp.id);
-                          loadData();
-                        }}>
-                          {t("activate")}
-                        </Button>
-                        <Button variant="ghost" size="sm" className="text-destructive" onClick={async () => {
-                          await supabase.from("rehab_plans").delete().eq("id", rp.id);
-                          loadData();
-                        }}>
-                          {t("delete")}
-                        </Button>
-                      </div>
+                      {!hasCoach && (
+                        <div className="flex gap-2">
+                          <Button variant="outline" size="sm" onClick={async () => {
+                            const { data: { user } } = await supabase.auth.getUser();
+                            if (!user) return;
+                            await supabase.from("rehab_plans").update({ is_active: false } as any).eq("user_id", user.id);
+                            await supabase.from("rehab_plans").update({ is_active: true } as any).eq("id", rp.id);
+                            loadData();
+                          }}>
+                            {t("activate")}
+                          </Button>
+                          <Button variant="ghost" size="sm" className="text-destructive" onClick={async () => {
+                            await supabase.from("rehab_plans").delete().eq("id", rp.id);
+                            loadData();
+                          }}>
+                            {t("delete")}
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
