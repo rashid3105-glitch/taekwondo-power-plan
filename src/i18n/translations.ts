@@ -733,6 +733,7 @@ const translations = {
     coachManagedBanner: "Dine programmer administreres af din træner. Du kan se og downloade dine planer.",
     coachManagedBannerNamed: "Dine programmer administreres af {{coach}}. Du kan se og downloade dine planer.",
     coachManagedAction: "Trænerstyret — kun visning",
+    coachManagedActionNamed: "Styret af {{coach}} — kun visning",
     hubLibraryTitle: "Bibliotek",
     hubLibraryDesc: "Udforsk hele samlingen af øvelser, opskrifter og mentale træningsteknikker for at udvide din viden.",
   },
