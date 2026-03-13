@@ -753,6 +753,19 @@ const translations = {
     coachManagedActionNamed: "Styret af {{coach}} — kun visning",
     hubLibraryTitle: "Bibliotek",
     hubLibraryDesc: "Udforsk hele samlingen af øvelser, opskrifter og mentale træningsteknikker for at udvide din viden.",
+    // Diary
+    diary: "Dagbog",
+    diaryNewEntry: "Ny indgang",
+    diaryEditEntry: "Rediger indgang",
+    diaryPlaceholder: "Hvordan var din træning i dag? Skriv dine tanker...",
+    diaryMood: "Humør",
+    diaryEnergy: "Energi",
+    diaryTags: "Tags",
+    diaryContentRequired: "Skriv venligst noget før du gemmer.",
+    diarySaved: "Indgang gemt",
+    diaryDeleted: "Indgang slettet",
+    diaryEmpty: "Ingen dagbogsindgange endnu",
+    diaryEmptyDesc: "Begynd at skrive for at holde styr på dine tanker, humør og energiniveauer.",
   },
 } as const;
 
