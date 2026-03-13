@@ -309,7 +309,58 @@ export default function Dashboard() {
             </div>
           </div>
         )}
-        {activeTab === "progress" ? (
+        {activeTab === "hub" ? (
+          <div className="space-y-6">
+            <div className="text-center space-y-1">
+              <h2 className="text-2xl font-extrabold text-foreground">
+                {t("hubWelcome" as any)}{profile ? `, ${profile.display_name}` : ""} 👋
+              </h2>
+              <p className="text-sm text-muted-foreground">{t("hubChooseSection" as any)}</p>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {([
+                { tab: "plan" as const, icon: Zap, titleKey: "hubTrainingTitle", descKey: "hubTrainingDesc", color: "text-tab-plan", gradient: "radial-gradient(circle at 30% 50%, hsl(190 95% 50% / 0.08), transparent 70%)" },
+                { tab: "progress" as const, icon: BarChart3, titleKey: "hubProgressTitle", descKey: "hubProgressDesc", color: "text-primary", gradient: "radial-gradient(circle at 30% 50%, hsl(160 80% 45% / 0.08), transparent 70%)" },
+                { tab: "nutrition" as const, icon: Apple, titleKey: "hubNutritionTitle", descKey: "hubNutritionDesc", color: "text-tab-nutrition", gradient: "radial-gradient(circle at 30% 50%, hsl(120 60% 45% / 0.08), transparent 70%)" },
+                { tab: "rehab" as const, icon: Heart, titleKey: "hubRehabTitle", descKey: "hubRehabDesc", color: "text-tab-rehab", gradient: "radial-gradient(circle at 30% 50%, hsl(0 72% 51% / 0.08), transparent 70%)" },
+                { tab: "mental" as const, icon: Brain, titleKey: "hubMentalTitle", descKey: "hubMentalDesc", color: "text-tab-mental", gradient: "radial-gradient(circle at 30% 50%, hsl(330 60% 72% / 0.08), transparent 70%)" },
+              ]).map((section) => {
+                const Icon = section.icon;
+                return (
+                  <button
+                    key={section.tab}
+                    onClick={() => setActiveTab(section.tab)}
+                    className="group relative rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-5 shadow-card hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 text-left cursor-pointer"
+                  >
+                    <div
+                      className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                      style={{ background: section.gradient, filter: "blur(40px)", zIndex: -1 }}
+                    />
+                    <div className="flex items-start gap-4">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary">
+                        <Icon className={`h-5 w-5 ${section.color}`} />
+                      </div>
+                      <div className="space-y-1.5">
+                        <h3 className="text-sm font-bold text-foreground tracking-tight">{t(section.titleKey as any)}</h3>
+                        <p className="text-xs leading-relaxed text-muted-foreground">{t(section.descKey as any)}</p>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Quick links */}
+            <div className="flex justify-center gap-3">
+              <Button variant="outline" size="sm" onClick={() => navigate("/library")}>
+                <BookOpen className="h-4 w-4 mr-1" /> {t("library")}
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => navigate("/profile-setup")}>
+                <User className="h-4 w-4 mr-1" /> {t("profile")}
+              </Button>
+            </div>
+          </div>
+        ) : activeTab === "progress" ? (
           <ProgressDashboard onGoToPlan={() => setActiveTab("plan")} />
         ) : activeTab === "nutrition" ? (
           <NutritionPlan profile={profile} />
