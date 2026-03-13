@@ -2,11 +2,13 @@ import { useNavigate } from "react-router-dom";
 import { WeeklyPlan } from "@/components/WeeklyPlan";
 import { ExerciseLibrary } from "@/components/ExerciseLibrary";
 import { useState } from "react";
-import { Zap, BookOpen, ArrowLeft } from "lucide-react";
+import { Dumbbell, Brain, UtensilsCrossed, ArrowLeft, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+type LibraryTab = "exercise" | "mental" | "nutrition";
+
 export default function Library() {
-  const [tab, setTab] = useState<"plan" | "library">("library");
+  const [tab, setTab] = useState<LibraryTab>("exercise");
   const navigate = useNavigate();
 
   return (
@@ -18,7 +20,7 @@ export default function Library() {
           </Button>
           <div className="flex items-center gap-2">
             <BookOpen className="h-5 w-5 text-primary" />
-            <span className="text-base font-extrabold text-foreground">Exercise Library</span>
+            <span className="text-base font-extrabold text-foreground">Library</span>
           </div>
         </div>
       </header>
@@ -26,28 +28,52 @@ export default function Library() {
       <main className="container max-w-4xl mx-auto px-4 py-6 space-y-6">
         <div className="flex gap-1 bg-muted rounded-lg p-1">
           <button
-            onClick={() => setTab("library")}
-            data-active={tab === "library"}
+            onClick={() => setTab("exercise")}
+            data-active={tab === "exercise"}
             className="flex-1 flex items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-semibold transition-all cursor-pointer
-              data-[active=true]:bg-card data-[active=true]:text-foreground data-[active=true]:shadow-sm
+              data-[active=true]:bg-card data-[active=true]:text-tab-plan data-[active=true]:shadow-sm
               data-[active=false]:text-muted-foreground"
           >
-            <BookOpen className="h-4 w-4" />
-            Exercise Library
+            <Dumbbell className="h-4 w-4" />
+            Exercises
           </button>
           <button
-            onClick={() => setTab("plan")}
-            data-active={tab === "plan"}
+            onClick={() => setTab("mental")}
+            data-active={tab === "mental"}
             className="flex-1 flex items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-semibold transition-all cursor-pointer
-              data-[active=true]:bg-card data-[active=true]:text-foreground data-[active=true]:shadow-sm
+              data-[active=true]:bg-card data-[active=true]:text-tab-mental data-[active=true]:shadow-sm
               data-[active=false]:text-muted-foreground"
           >
-            <Zap className="h-4 w-4" />
-            Sample Plan
+            <Brain className="h-4 w-4" />
+            Mental
+          </button>
+          <button
+            onClick={() => setTab("nutrition")}
+            data-active={tab === "nutrition"}
+            className="flex-1 flex items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-semibold transition-all cursor-pointer
+              data-[active=true]:bg-card data-[active=true]:text-tab-nutrition data-[active=true]:shadow-sm
+              data-[active=false]:text-muted-foreground"
+          >
+            <UtensilsCrossed className="h-4 w-4" />
+            Nutrition
           </button>
         </div>
 
-        {tab === "library" ? <ExerciseLibrary /> : <WeeklyPlan />}
+        {tab === "exercise" && <ExerciseLibrary />}
+        {tab === "mental" && (
+          <div className="text-center py-12 text-muted-foreground">
+            <Brain className="h-12 w-12 mx-auto mb-3 text-tab-mental" />
+            <p className="font-semibold">Mental Library</p>
+            <p className="text-sm mt-1">Coming soon — mental training resources, visualization guides, and focus techniques.</p>
+          </div>
+        )}
+        {tab === "nutrition" && (
+          <div className="text-center py-12 text-muted-foreground">
+            <UtensilsCrossed className="h-12 w-12 mx-auto mb-3 text-tab-nutrition" />
+            <p className="font-semibold">Nutrition & Recipes</p>
+            <p className="text-sm mt-1">Coming soon — meal plans, recipes, and nutrition guides for athletes.</p>
+          </div>
+        )}
       </main>
     </div>
   );
