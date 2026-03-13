@@ -363,6 +363,7 @@ const translations = {
     hubMentalDesc: "Assess your mental toughness, focus, and competition readiness. Get AI-powered sports psychology advice.",
     // Coach-managed
     coachManagedBanner: "Your programs are managed by your coach. You can view and download your plans.",
+    coachManagedBannerNamed: "Your programs are managed by {{coach}}. You can view and download your plans.",
     coachManagedAction: "Coach-managed — view only",
     hubLibraryTitle: "Library",
     hubLibraryDesc: "Browse the full collection of exercises, recipes, and mental training techniques to expand your knowledge.",
