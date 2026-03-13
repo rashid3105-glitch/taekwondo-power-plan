@@ -361,6 +361,9 @@ const translations = {
     hubRehabDesc: "Recovering from an injury? Generate phased rehab programs with pain guidelines and return-to-sport protocols.",
     hubMentalTitle: "Mental Performance",
     hubMentalDesc: "Assess your mental toughness, focus, and competition readiness. Get AI-powered sports psychology advice.",
+    // Coach-managed
+    coachManagedBanner: "Your programs are managed by your coach. You can view and download your plans.",
+    coachManagedAction: "Coach-managed — view only",
   },
   da: {
     // Common
