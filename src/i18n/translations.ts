@@ -730,6 +730,8 @@ const translations = {
     // Coach-managed
     coachManagedBanner: "Dine programmer administreres af din træner. Du kan se og downloade dine planer.",
     coachManagedAction: "Trænerstyret — kun visning",
+    hubLibraryTitle: "Bibliotek",
+    hubLibraryDesc: "Udforsk hele samlingen af øvelser, opskrifter og mentale træningsteknikker for at udvide din viden.",
   },
 } as const;
 
