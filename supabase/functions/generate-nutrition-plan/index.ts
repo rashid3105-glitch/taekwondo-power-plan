@@ -24,6 +24,7 @@ CRITICAL HEALTH GUIDELINES:
 - Focus on PERFORMANCE NUTRITION, not just aesthetics
 - Emphasize nutrient timing around training sessions
 - Account for the athlete's training intensity and recovery needs
+- NEVER include pork or any pig-derived products (bacon, ham, pork chops, lard, gelatin from pork, etc.). Use chicken, turkey, beef, lamb, fish, or plant-based protein alternatives instead.
 
 For each meal, include:
 - Meal name and timing relative to training
