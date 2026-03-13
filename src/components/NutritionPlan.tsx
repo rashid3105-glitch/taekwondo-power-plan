@@ -30,7 +30,7 @@ interface NutritionPlanProps {
   readOnly?: boolean;
 }
 
-export function NutritionPlan({ profile }: NutritionPlanProps) {
+export function NutritionPlan({ profile, readOnly = false }: NutritionPlanProps) {
   const { toast } = useToast();
   const { t, locale } = useLanguage();
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
