@@ -35,6 +35,8 @@ const translations = {
     sectionRehabDesc: "Recovering from an injury? Generate phased rehab programs with pain guidelines and safety protocols built in.",
     sectionLibraryTitle: "Exercise Library",
     sectionLibraryDesc: "Browse a curated collection of TKD-specific exercises with alternatives, tempo guides, and muscle group targeting.",
+    sectionNutritionTitle: "Nutrition",
+    sectionNutritionDesc: "Discover athlete-friendly recipes and AI-generated meal plans tailored to your training load and goals.",
     footerText: "Built for taekwondo athletes. Train fast, stay fast.",
 
     // Auth
@@ -403,6 +405,8 @@ const translations = {
     sectionRehabDesc: "Kommer du dig efter en skade? Generer faseopdelte genoptræningsprogrammer med smertevejledning og sikkerhedsprotokoller.",
     sectionLibraryTitle: "Øvelsesbibliotek",
     sectionLibraryDesc: "Udforsk en kurateret samling af TKD-specifikke øvelser med alternativer, tempoguider og muskelgruppefokus.",
+    sectionNutritionTitle: "Ernæring",
+    sectionNutritionDesc: "Opdag atletvenlige opskrifter og AI-genererede kostplaner tilpasset din træningsbelastning og dine mål.",
     footerText: "Bygget til taekwondo-atleter. Træn hurtigt, forbliv hurtig.",
 
     // Auth
