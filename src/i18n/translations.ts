@@ -348,6 +348,19 @@ const translations = {
     "Competition prep (weight class)": "Competition prep (weight class)",
     "General healthy eating": "General healthy eating",
     "Reduce inflammation": "Reduce inflammation",
+    // Hub
+    hubWelcome: "Welcome back",
+    hubChooseSection: "What would you like to work on today?",
+    hubTrainingTitle: "Training Plan",
+    hubTrainingDesc: "Generate and manage AI-powered periodized training programs tailored to your belt level, goals, and schedule.",
+    hubProgressTitle: "Progression",
+    hubProgressDesc: "Track your training volume, completion rates, and consistency streaks to see how you improve over time.",
+    hubNutritionTitle: "Nutrition",
+    hubNutritionDesc: "Get a personalized meal plan with macro targets, meal timing, and hydration guidelines for peak performance.",
+    hubRehabTitle: "Injury Rehab",
+    hubRehabDesc: "Recovering from an injury? Generate phased rehab programs with pain guidelines and return-to-sport protocols.",
+    hubMentalTitle: "Mental Performance",
+    hubMentalDesc: "Assess your mental toughness, focus, and competition readiness. Get AI-powered sports psychology advice.",
   },
   da: {
     // Common
