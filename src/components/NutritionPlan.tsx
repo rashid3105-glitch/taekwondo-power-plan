@@ -254,7 +254,7 @@ export function NutritionPlan({ profile }: NutritionPlanProps) {
                     <p className="text-xs text-muted-foreground">{s.dosage} · {s.timing}</p>
                     <p className="text-xs text-muted-foreground">{s.reason}</p>
                     {s.warning && (
-                      <p className="text-xs text-amber-500 flex items-center gap-1">
+                      <p className="text-xs text-yellow-600 dark:text-yellow-400 flex items-center gap-1">
                         <AlertTriangle className="h-3 w-3" /> {s.warning}
                       </p>
                     )}
