@@ -258,6 +258,10 @@ export default function Dashboard() {
             <Heart className="h-5 w-5" />
             <span className="text-[10px] font-semibold">{t("rehab")}</span>
           </button>
+          <button onClick={() => setActiveTab("nutrition")} className={`flex flex-col items-center gap-0.5 px-3 py-1 ${activeTab === "nutrition" ? "text-primary" : "text-muted-foreground"}`}>
+            <Apple className="h-5 w-5" />
+            <span className="text-[10px] font-semibold">{t("nutrition")}</span>
+          </button>
           <button onClick={() => setActiveTab("mental")} className={`flex flex-col items-center gap-0.5 px-3 py-1 ${activeTab === "mental" ? "text-primary" : "text-muted-foreground"}`}>
             <Brain className="h-5 w-5" />
             <span className="text-[10px] font-semibold">{t("mental")}</span>
