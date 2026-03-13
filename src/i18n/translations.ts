@@ -370,6 +370,19 @@ const translations = {
     coachManagedActionNamed: "Managed by {{coach}} — view only",
     hubLibraryTitle: "Library",
     hubLibraryDesc: "Browse the full collection of exercises, recipes, and mental training techniques to expand your knowledge.",
+    // Diary
+    diary: "Diary",
+    diaryNewEntry: "New Entry",
+    diaryEditEntry: "Edit Entry",
+    diaryPlaceholder: "How was your training today? Write your thoughts...",
+    diaryMood: "Mood",
+    diaryEnergy: "Energy",
+    diaryTags: "Tags",
+    diaryContentRequired: "Please write something before saving.",
+    diarySaved: "Entry saved",
+    diaryDeleted: "Entry deleted",
+    diaryEmpty: "No diary entries yet",
+    diaryEmptyDesc: "Start writing to track your thoughts, mood, and energy levels.",
   },
   da: {
     // Common
@@ -740,6 +753,19 @@ const translations = {
     coachManagedActionNamed: "Styret af {{coach}} — kun visning",
     hubLibraryTitle: "Bibliotek",
     hubLibraryDesc: "Udforsk hele samlingen af øvelser, opskrifter og mentale træningsteknikker for at udvide din viden.",
+    // Diary
+    diary: "Dagbog",
+    diaryNewEntry: "Ny indgang",
+    diaryEditEntry: "Rediger indgang",
+    diaryPlaceholder: "Hvordan var din træning i dag? Skriv dine tanker...",
+    diaryMood: "Humør",
+    diaryEnergy: "Energi",
+    diaryTags: "Tags",
+    diaryContentRequired: "Skriv venligst noget før du gemmer.",
+    diarySaved: "Indgang gemt",
+    diaryDeleted: "Indgang slettet",
+    diaryEmpty: "Ingen dagbogsindgange endnu",
+    diaryEmptyDesc: "Begynd at skrive for at holde styr på dine tanker, humør og energiniveauer.",
   },
 } as const;
 

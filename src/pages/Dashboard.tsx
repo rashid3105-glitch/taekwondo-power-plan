@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain, Clock, Apple, Home, Lock } from "lucide-react";
+import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain, Clock, Apple, Home, Lock, NotebookPen } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { AIPlanCard } from "@/components/AIPlanCard";
 import { RehabPlanCard } from "@/components/RehabPlanCard";
@@ -254,6 +254,9 @@ export default function Dashboard() {
             <Button variant="ghost" size="sm" onClick={() => navigate("/library")}>
               <BookOpen className="h-4 w-4 mr-1" /> {t("library")}
             </Button>
+            <Button variant="ghost" size="sm" onClick={() => navigate("/diary")}>
+              <NotebookPen className="h-4 w-4 mr-1" /> {t("diary" as any)}
+            </Button>
             {isAdmin && (
               <Button variant="ghost" size="sm" onClick={() => navigate("/admin/approval")}>
                 <Shield className="h-4 w-4 mr-1" /> {t("manageUsers")}
@@ -289,6 +292,10 @@ export default function Dashboard() {
           <button onClick={() => setActiveTab("mental")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "mental" ? "text-tab-mental" : "text-muted-foreground"}`}>
             <Brain className="h-5 w-5" />
             <span className="text-[10px] font-semibold">{t("mental")}</span>
+          </button>
+          <button onClick={() => navigate("/diary")} className="flex flex-col items-center gap-0.5 px-2 py-1 text-muted-foreground">
+            <NotebookPen className="h-5 w-5" />
+            <span className="text-[10px] font-semibold">{t("diary" as any)}</span>
           </button>
           {isAdmin && (
             <button onClick={() => navigate("/admin/approval")} className="flex flex-col items-center gap-0.5 px-2 py-1 text-muted-foreground">

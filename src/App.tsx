@@ -15,6 +15,7 @@ import AdminApproval from "./pages/AdminApproval";
 import CoachDashboard from "./pages/CoachDashboard";
 import Pricing from "./pages/Pricing";
 import Help from "./pages/Help";
+import Diary from "./pages/Diary";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -39,6 +40,7 @@ const App = () => (
             <Route path="/profile-setup" element={<ProfileSetup />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/library" element={<Library />} />
+            <Route path="/diary" element={<Diary />} />
             <Route path="/progress" element={<Navigate to="/dashboard" replace />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
