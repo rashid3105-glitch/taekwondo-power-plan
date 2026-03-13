@@ -51,6 +51,10 @@ export default {
         power: "hsl(var(--power))",
         speed: "hsl(var(--speed))",
         explosive: "hsl(var(--explosive))",
+        "tab-plan": "hsl(var(--tab-plan))",
+        "tab-rehab": "hsl(var(--tab-rehab))",
+        "tab-nutrition": "hsl(var(--tab-nutrition))",
+        "tab-mental": "hsl(var(--tab-mental))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
