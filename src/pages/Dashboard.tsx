@@ -309,6 +309,8 @@ export default function Dashboard() {
         )}
         {activeTab === "progress" ? (
           <ProgressDashboard onGoToPlan={() => setActiveTab("plan")} />
+        ) : activeTab === "nutrition" ? (
+          <NutritionPlan profile={profile} />
         ) : activeTab === "mental" ? (
           <MentalAssessment profile={profile} />
         ) : activeTab === "rehab" ? (
