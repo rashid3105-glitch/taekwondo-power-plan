@@ -320,7 +320,7 @@ export default function Dashboard() {
             <div className="grid gap-3 sm:grid-cols-2">
               {([
                 { tab: "plan" as const, icon: Zap, titleKey: "hubTrainingTitle", descKey: "hubTrainingDesc", color: "text-tab-plan", gradient: "radial-gradient(circle at 30% 50%, hsl(190 95% 50% / 0.08), transparent 70%)" },
-                { tab: "progress" as const, icon: BarChart3, titleKey: "hubProgressTitle", descKey: "hubProgressDesc", color: "text-primary", gradient: "radial-gradient(circle at 30% 50%, hsl(160 80% 45% / 0.08), transparent 70%)" },
+                { tab: "progress" as const, icon: BarChart3, titleKey: "hubProgressTitle", descKey: "hubProgressDesc", color: "text-tab-progress", gradient: "radial-gradient(circle at 30% 50%, hsl(45 90% 55% / 0.08), transparent 70%)" },
                 { tab: "nutrition" as const, icon: Apple, titleKey: "hubNutritionTitle", descKey: "hubNutritionDesc", color: "text-tab-nutrition", gradient: "radial-gradient(circle at 30% 50%, hsl(120 60% 45% / 0.08), transparent 70%)" },
                 { tab: "rehab" as const, icon: Heart, titleKey: "hubRehabTitle", descKey: "hubRehabDesc", color: "text-tab-rehab", gradient: "radial-gradient(circle at 30% 50%, hsl(0 72% 51% / 0.08), transparent 70%)" },
                 { tab: "mental" as const, icon: Brain, titleKey: "hubMentalTitle", descKey: "hubMentalDesc", color: "text-tab-mental", gradient: "radial-gradient(circle at 30% 50%, hsl(330 60% 72% / 0.08), transparent 70%)" },
