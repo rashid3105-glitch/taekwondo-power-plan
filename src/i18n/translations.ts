@@ -349,7 +349,7 @@ const translations = {
     "General healthy eating": "General healthy eating",
     "Reduce inflammation": "Reduce inflammation",
     // Hub
-    hubWelcome: "Welcome back",
+    hubWelcome: "Home",
     hubChooseSection: "What would you like to work on today?",
     hubTrainingTitle: "Training Plan",
     hubTrainingDesc: "Generate and manage AI-powered periodized training programs tailored to your belt level, goals, and schedule.",
@@ -710,7 +710,7 @@ const translations = {
     "General healthy eating": "Generel sund kost",
     "Reduce inflammation": "Reducér inflammation",
     // Hub
-    hubWelcome: "Velkommen tilbage",
+    hubWelcome: "Hjem",
     hubChooseSection: "Hvad vil du arbejde med i dag?",
     hubTrainingTitle: "Træningsplan",
     hubTrainingDesc: "Generer og administrer AI-drevne periodiserede træningsprogrammer tilpasset dit bælteniveau, mål og skema.",

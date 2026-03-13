@@ -313,7 +313,7 @@ export default function Dashboard() {
           <div className="space-y-6">
             <div className="text-center space-y-1">
               <h2 className="text-2xl font-extrabold text-foreground">
-                {t("hubWelcome" as any)}{profile ? `, ${profile.display_name}` : ""} 👋
+                {t("hubWelcome" as any)}
               </h2>
               <p className="text-sm text-muted-foreground">{t("hubChooseSection" as any)}</p>
             </div>
