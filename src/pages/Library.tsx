@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { WeeklyPlan } from "@/components/WeeklyPlan";
 import { ExerciseLibrary } from "@/components/ExerciseLibrary";
+import { MentalLibrary } from "@/components/MentalLibrary";
 import { useState } from "react";
 import { Dumbbell, Brain, UtensilsCrossed, ArrowLeft, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -60,13 +60,7 @@ export default function Library() {
         </div>
 
         {tab === "exercise" && <ExerciseLibrary />}
-        {tab === "mental" && (
-          <div className="text-center py-12 text-muted-foreground">
-            <Brain className="h-12 w-12 mx-auto mb-3 text-tab-mental" />
-            <p className="font-semibold">Mental Library</p>
-            <p className="text-sm mt-1">Coming soon — mental training resources, visualization guides, and focus techniques.</p>
-          </div>
-        )}
+        {tab === "mental" && <MentalLibrary />}
         {tab === "nutrition" && (
           <div className="text-center py-12 text-muted-foreground">
             <UtensilsCrossed className="h-12 w-12 mx-auto mb-3 text-tab-nutrition" />
