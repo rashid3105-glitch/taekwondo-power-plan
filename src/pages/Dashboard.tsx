@@ -274,10 +274,6 @@ export default function Dashboard() {
             <BookOpen className="h-5 w-5" />
             <span className="text-[10px] font-semibold">{t("library")}</span>
           </button>
-          <button onClick={() => navigate("/profile-setup")} className="flex flex-col items-center gap-0.5 px-3 py-1 text-muted-foreground">
-            <User className="h-5 w-5" />
-            <span className="text-[10px] font-semibold">{t("profile")}</span>
-          </button>
           {isAdmin && (
             <button onClick={() => navigate("/admin/approval")} className="flex flex-col items-center gap-0.5 px-3 py-1 text-muted-foreground">
               <Shield className="h-5 w-5" />
