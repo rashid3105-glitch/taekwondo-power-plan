@@ -229,7 +229,7 @@ export default function Dashboard() {
             <Button variant="ghost" size="sm" onClick={() => setActiveTab("plan")} className={activeTab === "plan" ? "text-tab-plan" : ""}>
               <Zap className="h-4 w-4 mr-1" /> {t("plan")}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => setActiveTab("progress")} className={activeTab === "progress" ? "text-primary" : ""}>
+            <Button variant="ghost" size="sm" onClick={() => setActiveTab("progress")} className={activeTab === "progress" ? "text-tab-progress" : ""}>
               <BarChart3 className="h-4 w-4 mr-1" /> {t("progress")}
             </Button>
             <Button variant="ghost" size="sm" onClick={() => setActiveTab("nutrition")} className={activeTab === "nutrition" ? "text-tab-nutrition" : ""}>
