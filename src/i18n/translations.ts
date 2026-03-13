@@ -348,6 +348,19 @@ const translations = {
     "Competition prep (weight class)": "Competition prep (weight class)",
     "General healthy eating": "General healthy eating",
     "Reduce inflammation": "Reduce inflammation",
+    // Hub
+    hubWelcome: "Welcome back",
+    hubChooseSection: "What would you like to work on today?",
+    hubTrainingTitle: "Training Plan",
+    hubTrainingDesc: "Generate and manage AI-powered periodized training programs tailored to your belt level, goals, and schedule.",
+    hubProgressTitle: "Progression",
+    hubProgressDesc: "Track your training volume, completion rates, and consistency streaks to see how you improve over time.",
+    hubNutritionTitle: "Nutrition",
+    hubNutritionDesc: "Get a personalized meal plan with macro targets, meal timing, and hydration guidelines for peak performance.",
+    hubRehabTitle: "Injury Rehab",
+    hubRehabDesc: "Recovering from an injury? Generate phased rehab programs with pain guidelines and return-to-sport protocols.",
+    hubMentalTitle: "Mental Performance",
+    hubMentalDesc: "Assess your mental toughness, focus, and competition readiness. Get AI-powered sports psychology advice.",
   },
   da: {
     // Common
@@ -696,6 +709,19 @@ const translations = {
     "Competition prep (weight class)": "Konkurrenceforberedelse (vægtklasse)",
     "General healthy eating": "Generel sund kost",
     "Reduce inflammation": "Reducér inflammation",
+    // Hub
+    hubWelcome: "Velkommen tilbage",
+    hubChooseSection: "Hvad vil du arbejde med i dag?",
+    hubTrainingTitle: "Træningsplan",
+    hubTrainingDesc: "Generer og administrer AI-drevne periodiserede træningsprogrammer tilpasset dit bælteniveau, mål og skema.",
+    hubProgressTitle: "Fremgang",
+    hubProgressDesc: "Følg din træningsvolumen, gennemførelsesrater og konsistens-streaks for at se, hvordan du forbedrer dig over tid.",
+    hubNutritionTitle: "Ernæring",
+    hubNutritionDesc: "Få en personlig kostplan med makromål, måltidstiming og hydrering til toppræstation.",
+    hubRehabTitle: "Skade-genoptræning",
+    hubRehabDesc: "Kommer du dig efter en skade? Generer faseopdelte genoptræningsprogrammer med smertevejledning og sikkerhedsprotokoller.",
+    hubMentalTitle: "Mental præstation",
+    hubMentalDesc: "Vurder din mentale styrke, fokus og konkurrenceparathed. Få AI-drevet sportspsykologisk rådgivning.",
   },
 } as const;
 

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain, Clock, Apple } from "lucide-react";
+import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain, Clock, Apple, Home } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { AIPlanCard } from "@/components/AIPlanCard";
 import { RehabPlanCard } from "@/components/RehabPlanCard";
@@ -59,7 +59,7 @@ export default function Dashboard() {
   const [rehabPlan, setRehabPlan] = useState<any>(null);
   const [rehabPlans, setRehabPlans] = useState<RehabPlanRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"plan" | "rehab" | "mental" | "progress" | "nutrition">("plan");
+  const [activeTab, setActiveTab] = useState<"hub" | "plan" | "rehab" | "mental" | "progress" | "nutrition">("hub");
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, locale } = useLanguage();
@@ -223,16 +223,22 @@ export default function Dashboard() {
           </div>
           {/* Menu row – left-aligned, below logo */}
           <nav className="hidden sm:flex items-center gap-1 flex-wrap">
-            <Button variant="ghost" size="sm" onClick={() => setActiveTab("progress")}>
+            <Button variant="ghost" size="sm" onClick={() => setActiveTab("hub")} className={activeTab === "hub" ? "text-primary" : ""}>
+              <Home className="h-4 w-4 mr-1" /> {t("hubWelcome" as any)}
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => setActiveTab("plan")} className={activeTab === "plan" ? "text-tab-plan" : ""}>
+              <Zap className="h-4 w-4 mr-1" /> {t("plan")}
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => setActiveTab("progress")} className={activeTab === "progress" ? "text-primary" : ""}>
               <BarChart3 className="h-4 w-4 mr-1" /> {t("progress")}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => setActiveTab("rehab")} className="text-tab-rehab">
-              <Heart className="h-4 w-4 mr-1" /> {t("injuryRehabPlan")}
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => setActiveTab("nutrition")} className="text-tab-nutrition">
+            <Button variant="ghost" size="sm" onClick={() => setActiveTab("nutrition")} className={activeTab === "nutrition" ? "text-tab-nutrition" : ""}>
               <Apple className="h-4 w-4 mr-1" /> {t("nutrition")}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => setActiveTab("mental")} className="text-tab-mental">
+            <Button variant="ghost" size="sm" onClick={() => setActiveTab("rehab")} className={activeTab === "rehab" ? "text-tab-rehab" : ""}>
+              <Heart className="h-4 w-4 mr-1" /> {t("injuryRehabPlan")}
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => setActiveTab("mental")} className={activeTab === "mental" ? "text-tab-mental" : ""}>
               <Brain className="h-4 w-4 mr-1" /> {t("mental")}
             </Button>
             <Button variant="ghost" size="sm" onClick={() => navigate("/library")}>
@@ -250,32 +256,32 @@ export default function Dashboard() {
       {/* Mobile bottom nav */}
       <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-card/95 backdrop-blur-sm sm:hidden">
         <div className="flex items-center justify-around py-2">
-          <button onClick={() => setActiveTab("plan")} className={`flex flex-col items-center gap-0.5 px-3 py-1 ${activeTab === "plan" ? "text-tab-plan" : "text-muted-foreground"}`}>
+          <button onClick={() => setActiveTab("hub")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "hub" ? "text-primary" : "text-muted-foreground"}`}>
+            <Home className="h-5 w-5" />
+            <span className="text-[10px] font-semibold">Home</span>
+          </button>
+          <button onClick={() => setActiveTab("plan")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "plan" ? "text-tab-plan" : "text-muted-foreground"}`}>
             <Zap className="h-5 w-5" />
             <span className="text-[10px] font-semibold">{t("plan")}</span>
           </button>
-          <button onClick={() => setActiveTab("rehab")} className={`flex flex-col items-center gap-0.5 px-3 py-1 ${activeTab === "rehab" ? "text-tab-rehab" : "text-muted-foreground"}`}>
-            <Heart className="h-5 w-5" />
-            <span className="text-[10px] font-semibold">{t("rehab")}</span>
-          </button>
-          <button onClick={() => setActiveTab("nutrition")} className={`flex flex-col items-center gap-0.5 px-3 py-1 ${activeTab === "nutrition" ? "text-tab-nutrition" : "text-muted-foreground"}`}>
-            <Apple className="h-5 w-5" />
-            <span className="text-[10px] font-semibold">{t("nutrition")}</span>
-          </button>
-          <button onClick={() => setActiveTab("mental")} className={`flex flex-col items-center gap-0.5 px-3 py-1 ${activeTab === "mental" ? "text-tab-mental" : "text-muted-foreground"}`}>
-            <Brain className="h-5 w-5" />
-            <span className="text-[10px] font-semibold">{t("mental")}</span>
-          </button>
-          <button onClick={() => setActiveTab("progress")} className={`flex flex-col items-center gap-0.5 px-3 py-1 ${activeTab === "progress" ? "text-primary" : "text-muted-foreground"}`}>
+          <button onClick={() => setActiveTab("progress")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "progress" ? "text-primary" : "text-muted-foreground"}`}>
             <BarChart3 className="h-5 w-5" />
             <span className="text-[10px] font-semibold">{t("progress")}</span>
           </button>
-          <button onClick={() => navigate("/library")} className="flex flex-col items-center gap-0.5 px-3 py-1 text-muted-foreground">
-            <BookOpen className="h-5 w-5" />
-            <span className="text-[10px] font-semibold">{t("library")}</span>
+          <button onClick={() => setActiveTab("nutrition")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "nutrition" ? "text-tab-nutrition" : "text-muted-foreground"}`}>
+            <Apple className="h-5 w-5" />
+            <span className="text-[10px] font-semibold">{t("nutrition")}</span>
+          </button>
+          <button onClick={() => setActiveTab("rehab")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "rehab" ? "text-tab-rehab" : "text-muted-foreground"}`}>
+            <Heart className="h-5 w-5" />
+            <span className="text-[10px] font-semibold">{t("rehab")}</span>
+          </button>
+          <button onClick={() => setActiveTab("mental")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "mental" ? "text-tab-mental" : "text-muted-foreground"}`}>
+            <Brain className="h-5 w-5" />
+            <span className="text-[10px] font-semibold">{t("mental")}</span>
           </button>
           {isAdmin && (
-            <button onClick={() => navigate("/admin/approval")} className="flex flex-col items-center gap-0.5 px-3 py-1 text-muted-foreground">
+            <button onClick={() => navigate("/admin/approval")} className="flex flex-col items-center gap-0.5 px-2 py-1 text-muted-foreground">
               <Shield className="h-5 w-5" />
               <span className="text-[10px] font-semibold">{t("admin")}</span>
             </button>
@@ -303,7 +309,58 @@ export default function Dashboard() {
             </div>
           </div>
         )}
-        {activeTab === "progress" ? (
+        {activeTab === "hub" ? (
+          <div className="space-y-6">
+            <div className="text-center space-y-1">
+              <h2 className="text-2xl font-extrabold text-foreground">
+                {t("hubWelcome" as any)}{profile ? `, ${profile.display_name}` : ""} 👋
+              </h2>
+              <p className="text-sm text-muted-foreground">{t("hubChooseSection" as any)}</p>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {([
+                { tab: "plan" as const, icon: Zap, titleKey: "hubTrainingTitle", descKey: "hubTrainingDesc", color: "text-tab-plan", gradient: "radial-gradient(circle at 30% 50%, hsl(190 95% 50% / 0.08), transparent 70%)" },
+                { tab: "progress" as const, icon: BarChart3, titleKey: "hubProgressTitle", descKey: "hubProgressDesc", color: "text-primary", gradient: "radial-gradient(circle at 30% 50%, hsl(160 80% 45% / 0.08), transparent 70%)" },
+                { tab: "nutrition" as const, icon: Apple, titleKey: "hubNutritionTitle", descKey: "hubNutritionDesc", color: "text-tab-nutrition", gradient: "radial-gradient(circle at 30% 50%, hsl(120 60% 45% / 0.08), transparent 70%)" },
+                { tab: "rehab" as const, icon: Heart, titleKey: "hubRehabTitle", descKey: "hubRehabDesc", color: "text-tab-rehab", gradient: "radial-gradient(circle at 30% 50%, hsl(0 72% 51% / 0.08), transparent 70%)" },
+                { tab: "mental" as const, icon: Brain, titleKey: "hubMentalTitle", descKey: "hubMentalDesc", color: "text-tab-mental", gradient: "radial-gradient(circle at 30% 50%, hsl(330 60% 72% / 0.08), transparent 70%)" },
+              ]).map((section) => {
+                const Icon = section.icon;
+                return (
+                  <button
+                    key={section.tab}
+                    onClick={() => setActiveTab(section.tab)}
+                    className="group relative rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-5 shadow-card hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 text-left cursor-pointer"
+                  >
+                    <div
+                      className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                      style={{ background: section.gradient, filter: "blur(40px)", zIndex: -1 }}
+                    />
+                    <div className="flex items-start gap-4">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary">
+                        <Icon className={`h-5 w-5 ${section.color}`} />
+                      </div>
+                      <div className="space-y-1.5">
+                        <h3 className="text-sm font-bold text-foreground tracking-tight">{t(section.titleKey as any)}</h3>
+                        <p className="text-xs leading-relaxed text-muted-foreground">{t(section.descKey as any)}</p>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Quick links */}
+            <div className="flex justify-center gap-3">
+              <Button variant="outline" size="sm" onClick={() => navigate("/library")}>
+                <BookOpen className="h-4 w-4 mr-1" /> {t("library")}
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => navigate("/profile-setup")}>
+                <User className="h-4 w-4 mr-1" /> {t("profile")}
+              </Button>
+            </div>
+          </div>
+        ) : activeTab === "progress" ? (
           <ProgressDashboard onGoToPlan={() => setActiveTab("plan")} />
         ) : activeTab === "nutrition" ? (
           <NutritionPlan profile={profile} />
