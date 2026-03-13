@@ -247,7 +247,7 @@ export function NutritionPlan({ profile }: NutritionPlanProps) {
       {/* Goal Selection */}
       <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
         <div className="flex items-center gap-2">
-          <Apple className="h-5 w-5 text-primary" />
+          <Apple className="h-5 w-5 text-tab-nutrition" />
           <h3 className="font-bold text-foreground">{t("nutritionGoals")}</h3>
         </div>
         <p className="text-xs text-muted-foreground">{t("selectNutritionGoals")}</p>
@@ -349,7 +349,7 @@ export function NutritionPlan({ profile }: NutritionPlanProps) {
           {plan.meals?.length > 0 && (
             <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
               <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
-                <Utensils className="h-4 w-4" /> {t("dailyMeals")}
+                <Utensils className="h-4 w-4 text-tab-nutrition" /> {t("dailyMeals")}
               </h4>
               <div className="space-y-2">
                 {plan.meals.map((meal: any, i: number) => (
