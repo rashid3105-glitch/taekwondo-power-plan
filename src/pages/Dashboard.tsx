@@ -546,15 +546,17 @@ export default function Dashboard() {
                         <p className="font-medium text-sm text-foreground">{plan.name}</p>
                         <p className="text-xs text-muted-foreground">{new Date(plan.created_at).toLocaleDateString()}</p>
                       </div>
-                      <Button variant="outline" size="sm" onClick={async () => {
-                        const { data: { user } } = await supabase.auth.getUser();
-                        if (!user) return;
-                        await supabase.from("training_plans").update({ is_active: false }).eq("user_id", user.id);
-                        await supabase.from("training_plans").update({ is_active: true }).eq("id", plan.id);
-                        loadData();
-                      }}>
-                        {t("activate")}
-                      </Button>
+                      {!hasCoach && (
+                        <Button variant="outline" size="sm" onClick={async () => {
+                          const { data: { user } } = await supabase.auth.getUser();
+                          if (!user) return;
+                          await supabase.from("training_plans").update({ is_active: false }).eq("user_id", user.id);
+                          await supabase.from("training_plans").update({ is_active: true }).eq("id", plan.id);
+                          loadData();
+                        }}>
+                          {t("activate")}
+                        </Button>
+                      )}
                     </div>
                   ))}
                 </div>
