@@ -95,7 +95,7 @@ CRITICAL: The athlete has selected weight loss as a goal. You MUST:
 6. Warn about the risks of rapid weight loss on athletic performance, bone density, and hormonal health
 ` : ""}
 
-Design the plan to support their training schedule and performance goals.`;
+CRITICAL: Write ALL text in ${lang}. Every value in the JSON response must be in ${lang}.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
