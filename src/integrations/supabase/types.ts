@@ -254,6 +254,57 @@ export type Database = {
         }
         Relationships: []
       }
+      user_recipes: {
+        Row: {
+          calories: number
+          carbs: number
+          category: string
+          created_at: string
+          fat: number
+          id: string
+          ingredients: string[]
+          name: string
+          prep_time: string
+          protein: number
+          steps: string[]
+          tip: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          calories?: number
+          carbs?: number
+          category?: string
+          created_at?: string
+          fat?: number
+          id?: string
+          ingredients?: string[]
+          name: string
+          prep_time?: string
+          protein?: number
+          steps?: string[]
+          tip?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          calories?: number
+          carbs?: number
+          category?: string
+          created_at?: string
+          fat?: number
+          id?: string
+          ingredients?: string[]
+          name?: string
+          prep_time?: string
+          protein?: number
+          steps?: string[]
+          tip?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
