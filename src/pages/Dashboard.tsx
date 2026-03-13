@@ -52,6 +52,7 @@ export default function Dashboard() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isCoach, setIsCoach] = useState(false);
   const [hasCoach, setHasCoach] = useState(false);
+  const [coachName, setCoachName] = useState<string>("");
   const [isDemo, setIsDemo] = useState(false);
   const [demoDaysLeft, setDemoDaysLeft] = useState<number | null>(null);
   const [generating, setGenerating] = useState(false);
@@ -79,8 +80,12 @@ export default function Dashboard() {
     if (roles?.some((r: any) => r.role === "coach")) setIsCoach(true);
 
     // Check if user has a coach assigned
-    const { data: coachLink } = await supabase.from("coach_athletes").select("id").eq("athlete_id", user.id).limit(1);
-    if (coachLink && coachLink.length > 0) setHasCoach(true);
+    const { data: coachLink } = await supabase.from("coach_athletes").select("coach_id").eq("athlete_id", user.id).limit(1);
+    if (coachLink && coachLink.length > 0) {
+      setHasCoach(true);
+      const { data: coachProfile } = await supabase.from("profiles").select("display_name").eq("user_id", coachLink[0].coach_id).single();
+      if (coachProfile?.display_name) setCoachName(coachProfile.display_name);
+    }
 
     const [profileRes, plansRes, rehabRes] = await Promise.all([
       supabase.from("profiles").select("*").eq("user_id", user.id).single(),
@@ -317,7 +322,11 @@ export default function Dashboard() {
         {hasCoach && (
           <div className="flex items-center gap-3 rounded-xl border border-accent/30 bg-accent/5 p-3 sm:p-4">
             <Lock className="h-5 w-5 text-accent shrink-0" />
-            <p className="text-sm text-foreground">{t("coachManagedBanner" as any)}</p>
+            <p className="text-sm text-foreground">
+              {coachName
+                ? (t("coachManagedBannerNamed" as any) || "").replace("{{coach}}", coachName)
+                : t("coachManagedBanner" as any)}
+            </p>
           </div>
         )}
         {activeTab === "hub" ? (
