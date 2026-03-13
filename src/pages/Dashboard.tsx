@@ -229,6 +229,9 @@ export default function Dashboard() {
             <Button variant="ghost" size="sm" onClick={() => setActiveTab("rehab")}>
               <Heart className="h-4 w-4 mr-1" /> {t("injuryRehabPlan")}
             </Button>
+            <Button variant="ghost" size="sm" onClick={() => setActiveTab("nutrition")}>
+              <Apple className="h-4 w-4 mr-1" /> {t("nutrition")}
+            </Button>
             <Button variant="ghost" size="sm" onClick={() => setActiveTab("mental")}>
               <Brain className="h-4 w-4 mr-1" /> {t("mental")}
             </Button>
