@@ -532,7 +532,9 @@ export default function Dashboard() {
                   </div>
                   {hasCoach ? (
                     <span className="text-xs text-accent font-semibold flex items-center gap-1">
-                      <Lock className="h-3.5 w-3.5" /> {t("coachManagedAction" as any)}
+                      <Lock className="h-3.5 w-3.5" /> {coachName
+                        ? (t("coachManagedActionNamed" as any) || "").replace("{{coach}}", coachName)
+                        : t("coachManagedAction" as any)}
                     </span>
                   ) : (
                     <Button onClick={generatePlan} disabled={generating} size="sm" className="w-full sm:w-auto">
