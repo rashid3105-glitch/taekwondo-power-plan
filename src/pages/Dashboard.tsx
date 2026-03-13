@@ -335,7 +335,7 @@ export default function Dashboard() {
                 { tab: "nutrition" as const, icon: Apple, titleKey: "hubNutritionTitle", descKey: "hubNutritionDesc", color: "text-tab-nutrition", gradient: "radial-gradient(circle at 30% 50%, hsl(120 60% 45% / 0.08), transparent 70%)" },
                 { tab: "rehab" as const, icon: Heart, titleKey: "hubRehabTitle", descKey: "hubRehabDesc", color: "text-tab-rehab", gradient: "radial-gradient(circle at 30% 50%, hsl(0 72% 51% / 0.08), transparent 70%)" },
                 { tab: "mental" as const, icon: Brain, titleKey: "hubMentalTitle", descKey: "hubMentalDesc", color: "text-tab-mental", gradient: "radial-gradient(circle at 30% 50%, hsl(330 60% 72% / 0.08), transparent 70%)" },
-              ]).map((section) => {
+              ] as const).map((section) => {
                 const Icon = section.icon;
                 return (
                   <button
@@ -359,6 +359,25 @@ export default function Dashboard() {
                   </button>
                 );
               })}
+              {/* Library card */}
+              <button
+                onClick={() => navigate("/library")}
+                className="group relative rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-5 shadow-card hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 text-left cursor-pointer"
+              >
+                <div
+                  className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                  style={{ background: "radial-gradient(circle at 30% 50%, hsl(270 70% 55% / 0.08), transparent 70%)", filter: "blur(40px)", zIndex: -1 }}
+                />
+                <div className="flex items-start gap-4">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary">
+                    <BookOpen className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <h3 className="text-sm font-bold text-foreground tracking-tight">{t("hubLibraryTitle" as any)}</h3>
+                    <p className="text-xs leading-relaxed text-muted-foreground">{t("hubLibraryDesc" as any)}</p>
+                  </div>
+                </div>
+              </button>
             </div>
 
             {/* Quick links */}
