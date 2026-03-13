@@ -370,6 +370,19 @@ const translations = {
     coachManagedActionNamed: "Managed by {{coach}} — view only",
     hubLibraryTitle: "Library",
     hubLibraryDesc: "Browse the full collection of exercises, recipes, and mental training techniques to expand your knowledge.",
+    // Diary
+    diary: "Diary",
+    diaryNewEntry: "New Entry",
+    diaryEditEntry: "Edit Entry",
+    diaryPlaceholder: "How was your training today? Write your thoughts...",
+    diaryMood: "Mood",
+    diaryEnergy: "Energy",
+    diaryTags: "Tags",
+    diaryContentRequired: "Please write something before saving.",
+    diarySaved: "Entry saved",
+    diaryDeleted: "Entry deleted",
+    diaryEmpty: "No diary entries yet",
+    diaryEmptyDesc: "Start writing to track your thoughts, mood, and energy levels.",
   },
   da: {
     // Common
