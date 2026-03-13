@@ -380,11 +380,8 @@ export default function Dashboard() {
               </button>
             </div>
 
-            {/* Quick links */}
-            <div className="flex justify-center gap-3">
-              <Button variant="outline" size="sm" onClick={() => navigate("/library")}>
-                <BookOpen className="h-4 w-4 mr-1" /> {t("library")}
-              </Button>
+            {/* Quick link */}
+            <div className="flex justify-center">
               <Button variant="outline" size="sm" onClick={() => navigate("/profile-setup")}>
                 <User className="h-4 w-4 mr-1" /> {t("profile")}
               </Button>
