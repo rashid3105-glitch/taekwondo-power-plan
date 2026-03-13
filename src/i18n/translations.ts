@@ -361,6 +361,9 @@ const translations = {
     hubRehabDesc: "Recovering from an injury? Generate phased rehab programs with pain guidelines and return-to-sport protocols.",
     hubMentalTitle: "Mental Performance",
     hubMentalDesc: "Assess your mental toughness, focus, and competition readiness. Get AI-powered sports psychology advice.",
+    // Coach-managed
+    coachManagedBanner: "Your programs are managed by your coach. You can view and download your plans.",
+    coachManagedAction: "Coach-managed — view only",
   },
   da: {
     // Common
@@ -722,6 +725,9 @@ const translations = {
     hubRehabDesc: "Kommer du dig efter en skade? Generer faseopdelte genoptræningsprogrammer med smertevejledning og sikkerhedsprotokoller.",
     hubMentalTitle: "Mental præstation",
     hubMentalDesc: "Vurder din mentale styrke, fokus og konkurrenceparathed. Få AI-drevet sportspsykologisk rådgivning.",
+    // Coach-managed
+    coachManagedBanner: "Dine programmer administreres af din træner. Du kan se og downloade dine planer.",
+    coachManagedAction: "Trænerstyret — kun visning",
   },
 } as const;
 

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain, Clock, Apple, Home } from "lucide-react";
+import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain, Clock, Apple, Home, Lock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { AIPlanCard } from "@/components/AIPlanCard";
 import { RehabPlanCard } from "@/components/RehabPlanCard";
@@ -51,6 +51,7 @@ export default function Dashboard() {
   const [plans, setPlans] = useState<TrainingPlan[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isCoach, setIsCoach] = useState(false);
+  const [hasCoach, setHasCoach] = useState(false);
   const [isDemo, setIsDemo] = useState(false);
   const [demoDaysLeft, setDemoDaysLeft] = useState<number | null>(null);
   const [generating, setGenerating] = useState(false);
@@ -76,6 +77,10 @@ export default function Dashboard() {
     // Check coach role
     const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", user.id);
     if (roles?.some((r: any) => r.role === "coach")) setIsCoach(true);
+
+    // Check if user has a coach assigned
+    const { data: coachLink } = await supabase.from("coach_athletes").select("id").eq("athlete_id", user.id).limit(1);
+    if (coachLink && coachLink.length > 0) setHasCoach(true);
 
     const [profileRes, plansRes, rehabRes] = await Promise.all([
       supabase.from("profiles").select("*").eq("user_id", user.id).single(),
@@ -309,6 +314,12 @@ export default function Dashboard() {
             </div>
           </div>
         )}
+        {hasCoach && (
+          <div className="flex items-center gap-3 rounded-xl border border-accent/30 bg-accent/5 p-3 sm:p-4">
+            <Lock className="h-5 w-5 text-accent shrink-0" />
+            <p className="text-sm text-foreground">{t("coachManagedBanner" as any)}</p>
+          </div>
+        )}
         {activeTab === "hub" ? (
           <div className="space-y-6">
             <div className="text-center space-y-1">
@@ -363,41 +374,43 @@ export default function Dashboard() {
         ) : activeTab === "progress" ? (
           <ProgressDashboard onGoToPlan={() => setActiveTab("plan")} />
         ) : activeTab === "nutrition" ? (
-          <NutritionPlan profile={profile} />
+          <NutritionPlan profile={profile} readOnly={hasCoach} />
         ) : activeTab === "mental" ? (
           <MentalAssessment profile={profile} />
         ) : activeTab === "rehab" ? (
           <>
             {/* Rehab Plan Generator */}
-            <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
-              <div className="flex items-center gap-2">
-                <Heart className="h-5 w-5 text-destructive" />
-                <h3 className="font-bold text-foreground">{t("injuryRehabPlan")}</h3>
+            {!hasCoach && (
+              <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
+                <div className="flex items-center gap-2">
+                  <Heart className="h-5 w-5 text-destructive" />
+                  <h3 className="font-bold text-foreground">{t("injuryRehabPlan")}</h3>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {t("rehabDescription")}
+                </p>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Input
+                    value={rehabInjury}
+                    onChange={(e) => setRehabInjury(e.target.value)}
+                    placeholder={t("rehabPlaceholder")}
+                    maxLength={200}
+                    className="flex-1"
+                  />
+                  <Button onClick={generateRehabPlan} disabled={generatingRehab || !rehabInjury.trim()} size="sm" className="w-full sm:w-auto">
+                    {generatingRehab ? (
+                      <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
+                    ) : (
+                      <><Heart className="h-4 w-4 mr-1" /> {t("generateRehabPlan")}</>
+                    )}
+                  </Button>
+                </div>
               </div>
-              <p className="text-xs text-muted-foreground">
-                {t("rehabDescription")}
-              </p>
-              <div className="flex flex-col sm:flex-row gap-2">
-                <Input
-                  value={rehabInjury}
-                  onChange={(e) => setRehabInjury(e.target.value)}
-                  placeholder={t("rehabPlaceholder")}
-                  maxLength={200}
-                  className="flex-1"
-                />
-                <Button onClick={generateRehabPlan} disabled={generatingRehab || !rehabInjury.trim()} size="sm" className="w-full sm:w-auto">
-                  {generatingRehab ? (
-                    <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
-                  ) : (
-                    <><Heart className="h-4 w-4 mr-1" /> {t("generateRehabPlan")}</>
-                  )}
-                </Button>
-              </div>
-            </div>
+            )}
 
             {/* Rehab plan result */}
             {rehabPlan && (
-              <RehabPlanCard plan={rehabPlan} onDelete={async () => {
+              <RehabPlanCard plan={rehabPlan} onDelete={hasCoach ? undefined : async () => {
                 const activeRP = rehabPlans.find(r => r.is_active);
                 if (activeRP) {
                   await supabase.from("rehab_plans").delete().eq("id", activeRP.id);
@@ -418,23 +431,25 @@ export default function Dashboard() {
                         <p className="font-medium text-sm text-foreground">{rp.name}</p>
                         <p className="text-xs text-muted-foreground">{rp.injury_description} · {new Date(rp.created_at).toLocaleDateString()}</p>
                       </div>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm" onClick={async () => {
-                          const { data: { user } } = await supabase.auth.getUser();
-                          if (!user) return;
-                          await supabase.from("rehab_plans").update({ is_active: false } as any).eq("user_id", user.id);
-                          await supabase.from("rehab_plans").update({ is_active: true } as any).eq("id", rp.id);
-                          loadData();
-                        }}>
-                          {t("activate")}
-                        </Button>
-                        <Button variant="ghost" size="sm" className="text-destructive" onClick={async () => {
-                          await supabase.from("rehab_plans").delete().eq("id", rp.id);
-                          loadData();
-                        }}>
-                          {t("delete")}
-                        </Button>
-                      </div>
+                      {!hasCoach && (
+                        <div className="flex gap-2">
+                          <Button variant="outline" size="sm" onClick={async () => {
+                            const { data: { user } } = await supabase.auth.getUser();
+                            if (!user) return;
+                            await supabase.from("rehab_plans").update({ is_active: false } as any).eq("user_id", user.id);
+                            await supabase.from("rehab_plans").update({ is_active: true } as any).eq("id", rp.id);
+                            loadData();
+                          }}>
+                            {t("activate")}
+                          </Button>
+                          <Button variant="ghost" size="sm" className="text-destructive" onClick={async () => {
+                            await supabase.from("rehab_plans").delete().eq("id", rp.id);
+                            loadData();
+                          }}>
+                            {t("delete")}
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -490,13 +505,19 @@ export default function Dashboard() {
                       )}
                     </div>
                   </div>
-                  <Button onClick={generatePlan} disabled={generating} size="sm" className="w-full sm:w-auto">
-                    {generating ? (
-                      <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
-                    ) : (
-                      <><Plus className="h-4 w-4 mr-1" /> {t("generatePlan")}</>
-                    )}
-                  </Button>
+                  {hasCoach ? (
+                    <span className="text-xs text-accent font-semibold flex items-center gap-1">
+                      <Lock className="h-3.5 w-3.5" /> {t("coachManagedAction" as any)}
+                    </span>
+                  ) : (
+                    <Button onClick={generatePlan} disabled={generating} size="sm" className="w-full sm:w-auto">
+                      {generating ? (
+                        <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
+                      ) : (
+                        <><Plus className="h-4 w-4 mr-1" /> {t("generatePlan")}</>
+                      )}
+                    </Button>
+                  )}
                 </div>
               </div>
             )}
@@ -525,15 +546,17 @@ export default function Dashboard() {
                         <p className="font-medium text-sm text-foreground">{plan.name}</p>
                         <p className="text-xs text-muted-foreground">{new Date(plan.created_at).toLocaleDateString()}</p>
                       </div>
-                      <Button variant="outline" size="sm" onClick={async () => {
-                        const { data: { user } } = await supabase.auth.getUser();
-                        if (!user) return;
-                        await supabase.from("training_plans").update({ is_active: false }).eq("user_id", user.id);
-                        await supabase.from("training_plans").update({ is_active: true }).eq("id", plan.id);
-                        loadData();
-                      }}>
-                        {t("activate")}
-                      </Button>
+                      {!hasCoach && (
+                        <Button variant="outline" size="sm" onClick={async () => {
+                          const { data: { user } } = await supabase.auth.getUser();
+                          if (!user) return;
+                          await supabase.from("training_plans").update({ is_active: false }).eq("user_id", user.id);
+                          await supabase.from("training_plans").update({ is_active: true }).eq("id", plan.id);
+                          loadData();
+                        }}>
+                          {t("activate")}
+                        </Button>
+                      )}
                     </div>
                   ))}
                 </div>
