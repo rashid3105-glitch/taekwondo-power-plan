@@ -52,6 +52,7 @@ export default {
         speed: "hsl(var(--speed))",
         explosive: "hsl(var(--explosive))",
         "tab-plan": "hsl(var(--tab-plan))",
+        "tab-progress": "hsl(var(--tab-progress))",
         "tab-rehab": "hsl(var(--tab-rehab))",
         "tab-nutrition": "hsl(var(--tab-nutrition))",
         "tab-mental": "hsl(var(--tab-mental))",
