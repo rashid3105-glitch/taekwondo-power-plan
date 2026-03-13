@@ -166,6 +166,7 @@ const Index = () => {
                 description={t(s.descKey)}
                 gradient={s.gradient}
                 delay={`${i * 80}ms`}
+                iconColor={s.iconColor}
               />
             ))}
           </div>

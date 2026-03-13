@@ -322,7 +322,7 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
       {/* Mental Performance Section */}
       <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
         <div className="flex items-center gap-2 mb-4">
-          <Brain className="h-5 w-5 text-primary" />
+          <Brain className="h-5 w-5 text-tab-mental" />
           <h3 className="text-sm font-bold text-foreground">{t("mentalPerformance")}</h3>
         </div>
         {mentalStats ? (
