@@ -725,6 +725,9 @@ const translations = {
     hubRehabDesc: "Kommer du dig efter en skade? Generer faseopdelte genoptræningsprogrammer med smertevejledning og sikkerhedsprotokoller.",
     hubMentalTitle: "Mental præstation",
     hubMentalDesc: "Vurder din mentale styrke, fokus og konkurrenceparathed. Få AI-drevet sportspsykologisk rådgivning.",
+    // Coach-managed
+    coachManagedBanner: "Dine programmer administreres af din træner. Du kan se og downloade dine planer.",
+    coachManagedAction: "Trænerstyret — kun visning",
   },
 } as const;
 
