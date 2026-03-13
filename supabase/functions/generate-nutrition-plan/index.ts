@@ -71,7 +71,7 @@ Return a valid JSON object with this exact structure:
 }
 
 IMPORTANT: Return ONLY the JSON object, no markdown, no code fences.
-IMPORTANT: ALL text content MUST be written in ${lang}.`;
+CRITICAL LANGUAGE REQUIREMENT: You MUST write ALL text content — including plan names, meal names, food descriptions, timing labels, principles, warnings, supplement info, and all explanations — entirely in ${lang}. Do NOT mix languages. Every single string value in the JSON must be in ${lang}.`;
 
     const goalsText = goals?.length ? goals.join(", ") : "general athletic performance";
 
@@ -95,7 +95,7 @@ CRITICAL: The athlete has selected weight loss as a goal. You MUST:
 6. Warn about the risks of rapid weight loss on athletic performance, bone density, and hormonal health
 ` : ""}
 
-Design the plan to support their training schedule and performance goals.`;
+CRITICAL: Write ALL text in ${lang}. Every value in the JSON response must be in ${lang}.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
