@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { ExerciseLibrary } from "@/components/ExerciseLibrary";
 import { MentalLibrary } from "@/components/MentalLibrary";
+import { NutritionLibrary } from "@/components/NutritionLibrary";
 import { useState } from "react";
 import { Dumbbell, Brain, UtensilsCrossed, ArrowLeft, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
