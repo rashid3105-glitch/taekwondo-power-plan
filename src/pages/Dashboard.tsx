@@ -322,7 +322,11 @@ export default function Dashboard() {
         {hasCoach && (
           <div className="flex items-center gap-3 rounded-xl border border-accent/30 bg-accent/5 p-3 sm:p-4">
             <Lock className="h-5 w-5 text-accent shrink-0" />
-            <p className="text-sm text-foreground">{t("coachManagedBanner" as any)}</p>
+            <p className="text-sm text-foreground">
+              {coachName
+                ? (t("coachManagedBannerNamed" as any) || "").replace("{{coach}}", coachName)
+                : t("coachManagedBanner" as any)}
+            </p>
           </div>
         )}
         {activeTab === "hub" ? (
