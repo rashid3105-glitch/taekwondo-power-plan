@@ -730,6 +730,7 @@ const translations = {
     hubMentalDesc: "Vurder din mentale styrke, fokus og konkurrenceparathed. Få AI-drevet sportspsykologisk rådgivning.",
     // Coach-managed
     coachManagedBanner: "Dine programmer administreres af din træner. Du kan se og downloade dine planer.",
+    coachManagedBannerNamed: "Dine programmer administreres af {{coach}}. Du kan se og downloade dine planer.",
     coachManagedAction: "Trænerstyret — kun visning",
     hubLibraryTitle: "Bibliotek",
     hubLibraryDesc: "Udforsk hele samlingen af øvelser, opskrifter og mentale træningsteknikker for at udvide din viden.",
