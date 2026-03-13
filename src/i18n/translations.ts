@@ -709,6 +709,19 @@ const translations = {
     "Competition prep (weight class)": "Konkurrenceforberedelse (vægtklasse)",
     "General healthy eating": "Generel sund kost",
     "Reduce inflammation": "Reducér inflammation",
+    // Hub
+    hubWelcome: "Velkommen tilbage",
+    hubChooseSection: "Hvad vil du arbejde med i dag?",
+    hubTrainingTitle: "Træningsplan",
+    hubTrainingDesc: "Generer og administrer AI-drevne periodiserede træningsprogrammer tilpasset dit bælteniveau, mål og skema.",
+    hubProgressTitle: "Fremgang",
+    hubProgressDesc: "Følg din træningsvolumen, gennemførelsesrater og konsistens-streaks for at se, hvordan du forbedrer dig over tid.",
+    hubNutritionTitle: "Ernæring",
+    hubNutritionDesc: "Få en personlig kostplan med makromål, måltidstiming og hydrering til toppræstation.",
+    hubRehabTitle: "Skade-genoptræning",
+    hubRehabDesc: "Kommer du dig efter en skade? Generer faseopdelte genoptræningsprogrammer med smertevejledning og sikkerhedsprotokoller.",
+    hubMentalTitle: "Mental præstation",
+    hubMentalDesc: "Vurder din mentale styrke, fokus og konkurrenceparathed. Få AI-drevet sportspsykologisk rådgivning.",
   },
 } as const;
 
