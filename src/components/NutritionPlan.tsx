@@ -3,7 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { Loader2, Apple, AlertTriangle, Droplets, Pill, Utensils, Flame, ChevronDown, ChevronUp } from "lucide-react";
+import { Loader2, Apple, AlertTriangle, Droplets, Pill, Utensils, Flame, ChevronDown, ChevronUp, Download } from "lucide-react";
+import jsPDF from "jspdf";
 
 const NUTRITION_GOALS = [
   "Improve performance",
