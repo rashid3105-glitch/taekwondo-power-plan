@@ -254,6 +254,9 @@ export default function Dashboard() {
             <Button variant="ghost" size="sm" onClick={() => navigate("/library")}>
               <BookOpen className="h-4 w-4 mr-1" /> {t("library")}
             </Button>
+            <Button variant="ghost" size="sm" onClick={() => navigate("/diary")}>
+              <NotebookPen className="h-4 w-4 mr-1" /> {t("diary" as any)}
+            </Button>
             {isAdmin && (
               <Button variant="ghost" size="sm" onClick={() => navigate("/admin/approval")}>
                 <Shield className="h-4 w-4 mr-1" /> {t("manageUsers")}
