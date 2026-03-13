@@ -410,7 +410,7 @@ export default function Dashboard() {
 
             {/* Rehab plan result */}
             {rehabPlan && (
-              <RehabPlanCard plan={rehabPlan} onDelete={async () => {
+              <RehabPlanCard plan={rehabPlan} onDelete={hasCoach ? undefined : async () => {
                 const activeRP = rehabPlans.find(r => r.is_active);
                 if (activeRP) {
                   await supabase.from("rehab_plans").delete().eq("id", activeRP.id);
