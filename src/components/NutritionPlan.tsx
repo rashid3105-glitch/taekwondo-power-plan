@@ -3,7 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { Loader2, Apple, AlertTriangle, Droplets, Pill, Utensils, Flame, ChevronDown, ChevronUp } from "lucide-react";
+import { Loader2, Apple, AlertTriangle, Droplets, Pill, Utensils, Flame, ChevronDown, ChevronUp, Download } from "lucide-react";
+import jsPDF from "jspdf";
 
 const NUTRITION_GOALS = [
   "Improve performance",
@@ -66,6 +67,170 @@ export function NutritionPlan({ profile }: NutritionPlanProps) {
     } finally {
       setGenerating(false);
     }
+  };
+
+  const downloadPDF = () => {
+    if (!plan) return;
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const margin = 15;
+    const maxWidth = pageWidth - margin * 2;
+    let y = 20;
+
+    const checkPage = (needed: number) => {
+      if (y + needed > doc.internal.pageSize.getHeight() - 15) {
+        doc.addPage();
+        y = 20;
+      }
+    };
+
+    // Title
+    doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
+    doc.text(plan.planName || t("nutrition"), margin, y);
+    y += 10;
+
+    // Health warning
+    if (plan.healthWarning) {
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(180, 0, 0);
+      const warnLines = doc.splitTextToSize(`⚠ ${plan.healthWarning}`, maxWidth);
+      checkPage(warnLines.length * 4 + 4);
+      doc.text(warnLines, margin, y);
+      y += warnLines.length * 4 + 6;
+      doc.setTextColor(0, 0, 0);
+    }
+
+    // Macros overview
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "bold");
+    checkPage(12);
+    doc.text(`${t("calories")}: ${plan.dailyCalorieEstimate || "—"}`, margin, y);
+    y += 6;
+    if (plan.macroSplit) {
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.text(`${t("protein")}: ${plan.macroSplit.protein}  |  ${t("carbs")}: ${plan.macroSplit.carbs}  |  ${t("fats")}: ${plan.macroSplit.fats}`, margin, y);
+      y += 8;
+    }
+
+    // Key principles
+    if (plan.keyPrinciples?.length) {
+      doc.setFontSize(12);
+      doc.setFont("helvetica", "bold");
+      checkPage(10);
+      doc.text(t("keyPrinciples"), margin, y);
+      y += 6;
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "normal");
+      for (const p of plan.keyPrinciples) {
+        const lines = doc.splitTextToSize(`• ${p}`, maxWidth);
+        checkPage(lines.length * 4 + 2);
+        doc.text(lines, margin, y);
+        y += lines.length * 4 + 2;
+      }
+      y += 4;
+    }
+
+    // Meals
+    if (plan.meals?.length) {
+      doc.setFontSize(12);
+      doc.setFont("helvetica", "bold");
+      checkPage(10);
+      doc.text(t("dailyMeals"), margin, y);
+      y += 7;
+      for (const meal of plan.meals) {
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        checkPage(16);
+        doc.text(`${meal.name} — ${meal.timing}`, margin, y);
+        y += 5;
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        if (meal.foods) {
+          for (const food of meal.foods) {
+            const lines = doc.splitTextToSize(`  • ${food}`, maxWidth);
+            checkPage(lines.length * 4);
+            doc.text(lines, margin, y);
+            y += lines.length * 4;
+          }
+        }
+        if (meal.macroFocus) {
+          checkPage(5);
+          doc.setFont("helvetica", "italic");
+          doc.text(meal.macroFocus, margin, y);
+          y += 4;
+          doc.setFont("helvetica", "normal");
+        }
+        if (meal.whyItMatters) {
+          const lines = doc.splitTextToSize(meal.whyItMatters, maxWidth);
+          checkPage(lines.length * 4);
+          doc.text(lines, margin, y);
+          y += lines.length * 4 + 2;
+        }
+        y += 3;
+      }
+    }
+
+    // Hydration
+    if (plan.hydration) {
+      doc.setFontSize(12);
+      doc.setFont("helvetica", "bold");
+      checkPage(10);
+      doc.text(t("hydration"), margin, y);
+      y += 6;
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "normal");
+      const h = plan.hydration;
+      const hydLines = [
+        `${t("daily")}: ${h.daily}`,
+        `${t("preTraining")}: ${h.preTrain}`,
+        `${t("duringTraining")}: ${h.duringTrain}`,
+        `${t("postTraining")}: ${h.postTrain}`,
+      ];
+      for (const line of hydLines) {
+        checkPage(5);
+        doc.text(line, margin, y);
+        y += 5;
+      }
+      y += 4;
+    }
+
+    // Supplements
+    if (plan.supplements?.length) {
+      doc.setFontSize(12);
+      doc.setFont("helvetica", "bold");
+      checkPage(10);
+      doc.text(t("supplements"), margin, y);
+      y += 6;
+      for (const s of plan.supplements) {
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        checkPage(12);
+        doc.text(s.name, margin, y);
+        y += 5;
+        doc.setFontSize(9);
+        doc.setFont("helvetica", "normal");
+        doc.text(`${s.dosage} · ${s.timing}`, margin, y);
+        y += 4;
+        const rLines = doc.splitTextToSize(s.reason, maxWidth);
+        checkPage(rLines.length * 4);
+        doc.text(rLines, margin, y);
+        y += rLines.length * 4;
+        if (s.warning) {
+          doc.setTextColor(180, 100, 0);
+          const wLines = doc.splitTextToSize(`⚠ ${s.warning}`, maxWidth);
+          checkPage(wLines.length * 4);
+          doc.text(wLines, margin, y);
+          y += wLines.length * 4;
+          doc.setTextColor(0, 0, 0);
+        }
+        y += 3;
+      }
+    }
+
+    doc.save(`${plan.planName || "nutrition-plan"}.pdf`);
   };
 
   return (
@@ -135,7 +300,12 @@ export function NutritionPlan({ profile }: NutritionPlanProps) {
 
           {/* Overview */}
           <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
-            <h3 className="font-bold text-foreground">{plan.planName}</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-foreground">{plan.planName}</h3>
+              <Button variant="outline" size="sm" onClick={downloadPDF}>
+                <Download className="h-4 w-4 mr-1" /> PDF
+              </Button>
+            </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="rounded-lg bg-muted/50 p-3 text-center">
                 <Flame className="h-4 w-4 mx-auto text-primary mb-1" />
