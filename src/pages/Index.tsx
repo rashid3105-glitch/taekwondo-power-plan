@@ -64,15 +64,15 @@ const Index = () => {
       icon: ClipboardList,
       titleKey: "sectionPlanTitle" as const,
       descKey: "sectionPlanDesc" as const,
-      gradient: "radial-gradient(circle at 30% 50%, hsl(190 95% 50% / 0.08), transparent 70%)",
+      gradient: "radial-gradient(circle at 30% 50%, hsl(210 90% 56% / 0.08), transparent 70%)",
       iconColor: "text-tab-plan",
     },
     {
       icon: BarChart3,
       titleKey: "sectionProgressTitle" as const,
       descKey: "sectionProgressDesc" as const,
-      gradient: "radial-gradient(circle at 30% 50%, hsl(160 80% 45% / 0.08), transparent 70%)",
-      iconColor: "text-primary",
+      gradient: "radial-gradient(circle at 30% 50%, hsl(45 90% 55% / 0.08), transparent 70%)",
+      iconColor: "text-tab-progress",
     },
     {
       icon: Brain,
@@ -92,8 +92,8 @@ const Index = () => {
       icon: BookOpen,
       titleKey: "sectionLibraryTitle" as const,
       descKey: "sectionLibraryDesc" as const,
-      gradient: "radial-gradient(circle at 30% 50%, hsl(270 70% 55% / 0.08), transparent 70%)",
-      iconColor: "text-primary",
+      gradient: "radial-gradient(circle at 30% 50%, hsl(142 70% 45% / 0.08), transparent 70%)",
+      iconColor: "text-tab-nutrition",
     },
   ];
 

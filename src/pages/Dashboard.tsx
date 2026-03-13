@@ -229,7 +229,7 @@ export default function Dashboard() {
             <Button variant="ghost" size="sm" onClick={() => setActiveTab("plan")} className={activeTab === "plan" ? "text-tab-plan" : ""}>
               <Zap className="h-4 w-4 mr-1" /> {t("plan")}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => setActiveTab("progress")} className={activeTab === "progress" ? "text-primary" : ""}>
+            <Button variant="ghost" size="sm" onClick={() => setActiveTab("progress")} className={activeTab === "progress" ? "text-tab-progress" : ""}>
               <BarChart3 className="h-4 w-4 mr-1" /> {t("progress")}
             </Button>
             <Button variant="ghost" size="sm" onClick={() => setActiveTab("nutrition")} className={activeTab === "nutrition" ? "text-tab-nutrition" : ""}>
@@ -264,7 +264,7 @@ export default function Dashboard() {
             <Zap className="h-5 w-5" />
             <span className="text-[10px] font-semibold">{t("plan")}</span>
           </button>
-          <button onClick={() => setActiveTab("progress")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "progress" ? "text-primary" : "text-muted-foreground"}`}>
+          <button onClick={() => setActiveTab("progress")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "progress" ? "text-tab-progress" : "text-muted-foreground"}`}>
             <BarChart3 className="h-5 w-5" />
             <span className="text-[10px] font-semibold">{t("progress")}</span>
           </button>
@@ -320,7 +320,7 @@ export default function Dashboard() {
             <div className="grid gap-3 sm:grid-cols-2">
               {([
                 { tab: "plan" as const, icon: Zap, titleKey: "hubTrainingTitle", descKey: "hubTrainingDesc", color: "text-tab-plan", gradient: "radial-gradient(circle at 30% 50%, hsl(190 95% 50% / 0.08), transparent 70%)" },
-                { tab: "progress" as const, icon: BarChart3, titleKey: "hubProgressTitle", descKey: "hubProgressDesc", color: "text-primary", gradient: "radial-gradient(circle at 30% 50%, hsl(160 80% 45% / 0.08), transparent 70%)" },
+                { tab: "progress" as const, icon: BarChart3, titleKey: "hubProgressTitle", descKey: "hubProgressDesc", color: "text-tab-progress", gradient: "radial-gradient(circle at 30% 50%, hsl(45 90% 55% / 0.08), transparent 70%)" },
                 { tab: "nutrition" as const, icon: Apple, titleKey: "hubNutritionTitle", descKey: "hubNutritionDesc", color: "text-tab-nutrition", gradient: "radial-gradient(circle at 30% 50%, hsl(120 60% 45% / 0.08), transparent 70%)" },
                 { tab: "rehab" as const, icon: Heart, titleKey: "hubRehabTitle", descKey: "hubRehabDesc", color: "text-tab-rehab", gradient: "radial-gradient(circle at 30% 50%, hsl(0 72% 51% / 0.08), transparent 70%)" },
                 { tab: "mental" as const, icon: Brain, titleKey: "hubMentalTitle", descKey: "hubMentalDesc", color: "text-tab-mental", gradient: "radial-gradient(circle at 30% 50%, hsl(330 60% 72% / 0.08), transparent 70%)" },
