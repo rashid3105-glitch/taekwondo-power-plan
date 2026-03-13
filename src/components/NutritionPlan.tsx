@@ -71,8 +71,8 @@ export function NutritionPlan({ profile }: NutritionPlanProps) {
   return (
     <div className="space-y-4">
       {/* Health Warning Banner - Always visible */}
-      <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 flex gap-3">
-        <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+      <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-4 flex gap-3">
+        <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 shrink-0 mt-0.5" />
         <div>
           <p className="text-sm font-bold text-foreground">{t("nutritionDisclaimer")}</p>
           <p className="text-xs text-muted-foreground mt-1">{t("nutritionDisclaimerDesc")}</p>
