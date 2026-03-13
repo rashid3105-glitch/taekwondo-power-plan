@@ -62,13 +62,7 @@ export default function Library() {
 
         {tab === "exercise" && <ExerciseLibrary />}
         {tab === "mental" && <MentalLibrary />}
-        {tab === "nutrition" && (
-          <div className="text-center py-12 text-muted-foreground">
-            <UtensilsCrossed className="h-12 w-12 mx-auto mb-3 text-tab-nutrition" />
-            <p className="font-semibold">Nutrition & Recipes</p>
-            <p className="text-sm mt-1">Coming soon — meal plans, recipes, and nutrition guides for athletes.</p>
-          </div>
-        )}
+        {tab === "nutrition" && <NutritionLibrary />}
       </main>
     </div>
   );
