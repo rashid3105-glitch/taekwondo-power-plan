@@ -9,6 +9,7 @@ import Auth from "./pages/Auth";
 import ProfileSetup from "./pages/ProfileSetup";
 import Dashboard from "./pages/Dashboard";
 import Library from "./pages/Library";
+import LibraryChooser from "./pages/LibraryChooser";
 import ResetPassword from "./pages/ResetPassword";
 import PendingApproval from "./pages/PendingApproval";
 import AdminApproval from "./pages/AdminApproval";
@@ -39,7 +40,8 @@ const App = () => (
             <Route path="/help" element={<Help />} />
             <Route path="/profile-setup" element={<ProfileSetup />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/library" element={<Library />} />
+            <Route path="/library" element={<LibraryChooser />} />
+            <Route path="/library/:section" element={<Library />} />
             <Route path="/diary" element={<Diary />} />
             <Route path="/progress" element={<Navigate to="/dashboard" replace />} />
             <Route path="*" element={<NotFound />} />
