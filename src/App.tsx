@@ -9,6 +9,7 @@ import Auth from "./pages/Auth";
 import ProfileSetup from "./pages/ProfileSetup";
 import Dashboard from "./pages/Dashboard";
 import Library from "./pages/Library";
+import LibraryChooser from "./pages/LibraryChooser";
 import ResetPassword from "./pages/ResetPassword";
 import PendingApproval from "./pages/PendingApproval";
 import AdminApproval from "./pages/AdminApproval";
