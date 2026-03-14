@@ -455,6 +455,15 @@ export default function CoachDashboard() {
                         <Button
                           variant="ghost"
                           size="icon"
+                          className="h-8 w-8"
+                          title={t("diary" as any)}
+                          onClick={(e) => { e.stopPropagation(); openDiary(a.user_id, a.display_name); }}
+                        >
+                          <NotebookPen className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           className="h-8 w-8 text-destructive"
                           onClick={(e) => { e.stopPropagation(); removeAthlete(a.user_id); }}
                         >
