@@ -9,8 +9,11 @@ import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { CoachAthleteDetail } from "@/components/CoachAthleteDetail";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 import {
-  ArrowLeft, Loader2, UserPlus, Trash2, Zap, Plus, User, Users,
+  ArrowLeft, Loader2, UserPlus, Trash2, Zap, Plus, User, Users, NotebookPen,
+  Frown, Meh, Smile, Laugh, BatteryLow, BatteryMedium, BatteryFull,
 } from "lucide-react";
 
 interface AthleteProfile {
