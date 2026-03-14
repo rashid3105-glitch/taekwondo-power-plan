@@ -517,6 +517,56 @@ export default function CoachDashboard() {
             onRefresh={loadAthletes}
           />
         )}
+
+        {/* Diary Modal */}
+        <Dialog open={!!diaryAthleteId} onOpenChange={(open) => { if (!open) setDiaryAthleteId(null); }}>
+          <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <NotebookPen className="h-5 w-5" /> {diaryAthleteName} — {t("diary" as any)}
+              </DialogTitle>
+            </DialogHeader>
+            {diaryLoading ? (
+              <div className="flex justify-center py-8">
+                <Loader2 className="h-5 w-5 animate-spin text-primary" />
+              </div>
+            ) : diaryEntries.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-8">{t("diaryEmpty" as any)}</p>
+            ) : (
+              <div className="space-y-3">
+                {diaryEntries.map((entry) => {
+                  const EntryMood = MOOD_ICONS[(entry.mood || 3) - 1] || Meh;
+                  const EntryEnergy = ENERGY_ICONS[(entry.energy || 3) - 1] || BatteryMedium;
+                  return (
+                    <div key={entry.id} className="rounded-lg border border-border bg-muted/30 p-3 space-y-1.5">
+                      <div className="flex items-center gap-3">
+                        <span className="text-xs font-bold text-muted-foreground">
+                          {new Date(entry.entry_date + "T00:00:00").toLocaleDateString(undefined, {
+                            weekday: "short", day: "numeric", month: "short",
+                          })}
+                        </span>
+                        <span className={MOOD_COLORS[(entry.mood || 3) - 1]} title={MOOD_LABELS[(entry.mood || 3) - 1]}>
+                          <EntryMood className="h-4 w-4" />
+                        </span>
+                        <span className="text-primary" title={ENERGY_LABELS[(entry.energy || 3) - 1]}>
+                          <EntryEnergy className="h-4 w-4" />
+                        </span>
+                      </div>
+                      <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">{entry.content}</p>
+                      {entry.tags && entry.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                          {entry.tags.map((tag) => (
+                            <Badge key={tag} variant="secondary" className="text-[10px]">{tag}</Badge>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
   );
