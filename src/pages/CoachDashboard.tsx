@@ -246,6 +246,20 @@ export default function CoachDashboard() {
     await loadAthletes();
   };
 
+  const openDiary = async (athleteId: string, athleteName: string) => {
+    setDiaryAthleteId(athleteId);
+    setDiaryAthleteName(athleteName);
+    setDiaryLoading(true);
+    setDiaryEntries([]);
+    const { data } = await supabase
+      .from("diary_entries")
+      .select("id, entry_date, content, mood, energy, tags")
+      .eq("user_id", athleteId)
+      .order("entry_date", { ascending: false });
+    setDiaryEntries((data as DiaryEntry[]) || []);
+    setDiaryLoading(false);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
