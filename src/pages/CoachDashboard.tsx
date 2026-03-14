@@ -52,6 +52,21 @@ interface RehabPlan {
   injury_description: string;
 }
 
+const MOOD_ICONS = [Frown, Frown, Meh, Smile, Laugh];
+const MOOD_LABELS = ["Very low", "Low", "Okay", "Good", "Great"];
+const MOOD_COLORS = ["text-destructive", "text-orange-400", "text-yellow-400", "text-emerald-400", "text-emerald-500"];
+const ENERGY_ICONS = [BatteryLow, BatteryLow, BatteryMedium, BatteryFull, BatteryFull];
+const ENERGY_LABELS = ["Drained", "Low", "Moderate", "High", "Peak"];
+
+interface DiaryEntry {
+  id: string;
+  entry_date: string;
+  content: string;
+  mood: number;
+  energy: number;
+  tags: string[];
+}
+
 export default function CoachDashboard() {
   const [athletes, setAthletes] = useState<AthleteProfile[]>([]);
   const [plans, setPlans] = useState<AthletePlan[]>([]);
@@ -71,6 +86,10 @@ export default function CoachDashboard() {
   const [selectedAthlete, setSelectedAthlete] = useState<string | null>(null);
   const [coachUserId, setCoachUserId] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [diaryAthleteId, setDiaryAthleteId] = useState<string | null>(null);
+  const [diaryAthleteName, setDiaryAthleteName] = useState("");
+  const [diaryEntries, setDiaryEntries] = useState<DiaryEntry[]>([]);
+  const [diaryLoading, setDiaryLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, locale } = useLanguage();
