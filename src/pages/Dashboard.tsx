@@ -302,12 +302,6 @@ export default function Dashboard() {
             <NotebookPen className="h-5 w-5" />
             <span className="text-[10px] font-semibold">{t("diary" as any)}</span>
           </button>
-          {isAdmin && (
-            <button onClick={() => navigate("/admin/approval")} className="flex flex-col items-center gap-0.5 px-2 py-1 text-muted-foreground">
-              <Shield className="h-5 w-5" />
-              <span className="text-[10px] font-semibold">{t("admin")}</span>
-            </button>
-          )}
         </div>
       </nav>
 
