@@ -226,6 +226,11 @@ export default function Dashboard() {
                   <Users className="h-4 w-4" />
                 </Button>
               )}
+              {isAdmin && (
+                <Button variant="ghost" size="icon" onClick={() => navigate("/admin/approval")}>
+                  <Shield className="h-4 w-4" />
+                </Button>
+              )}
               <Button variant="ghost" size="icon" onClick={handleSignOut}>
                 <LogOut className="h-4 w-4" />
               </Button>
@@ -297,12 +302,6 @@ export default function Dashboard() {
             <NotebookPen className="h-5 w-5" />
             <span className="text-[10px] font-semibold">{t("diary" as any)}</span>
           </button>
-          {isAdmin && (
-            <button onClick={() => navigate("/admin/approval")} className="flex flex-col items-center gap-0.5 px-2 py-1 text-muted-foreground">
-              <Shield className="h-5 w-5" />
-              <span className="text-[10px] font-semibold">{t("admin")}</span>
-            </button>
-          )}
         </div>
       </nav>
 
