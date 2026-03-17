@@ -442,12 +442,13 @@ export default function Dashboard() {
             </div>
           </div>
         ) : activeTab === "progress" ? (
-          <ProgressDashboard onGoToPlan={() => setActiveTab("plan")} />
+          isDemo ? renderDemoLockedState("progress") : <ProgressDashboard onGoToPlan={() => handleTabChange("plan")} />
         ) : activeTab === "nutrition" ? (
-          <NutritionPlan profile={profile} readOnly={hasCoach} />
+          isDemo ? renderDemoLockedState("nutrition") : <NutritionPlan profile={profile} readOnly={hasCoach} />
         ) : activeTab === "mental" ? (
-          <MentalAssessment profile={profile} />
+          isDemo ? renderDemoLockedState("mental") : <MentalAssessment profile={profile} />
         ) : activeTab === "rehab" ? (
+          isDemo ? renderDemoLockedState("injuryRehabPlan") : (
           <>
             {/* Rehab Plan Generator */}
             {!hasCoach && (
@@ -526,6 +527,7 @@ export default function Dashboard() {
               </div>
             )}
           </>
+          )
         ) : (
           <>
             {/* Profile summary */}
