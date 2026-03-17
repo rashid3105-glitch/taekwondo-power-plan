@@ -176,7 +176,6 @@ export default function CoachDashboard() {
     }
     setAdding(true);
     try {
-      // Look up athlete by code using the edge function (since coach may not have direct profile access yet)
       const { data: profile } = await supabase
         .from("profiles")
         .select("user_id")
@@ -196,6 +195,8 @@ export default function CoachDashboard() {
       if (error) {
         if (error.code === "23505") {
           toast({ title: t("error"), description: t("athleteAlreadyAdded"), variant: "destructive" });
+        } else if (error.message?.toLowerCase().includes("row-level security")) {
+          toast({ title: t("error"), description: t("sameClubRequired"), variant: "destructive" });
         } else {
           throw error;
         }
