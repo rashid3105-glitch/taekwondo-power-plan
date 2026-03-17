@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      clubs: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
       coach_athletes: {
         Row: {
           athlete_id: string
@@ -107,6 +128,7 @@ export type Database = {
           athlete_code: string | null
           avatar_url: string | null
           belt_level: string
+          club_id: string | null
           created_at: string
           current_injury: string | null
           discipline: string
@@ -130,6 +152,7 @@ export type Database = {
           athlete_code?: string | null
           avatar_url?: string | null
           belt_level?: string
+          club_id?: string | null
           created_at?: string
           current_injury?: string | null
           discipline?: string
@@ -153,6 +176,7 @@ export type Database = {
           athlete_code?: string | null
           avatar_url?: string | null
           belt_level?: string
+          club_id?: string | null
           created_at?: string
           current_injury?: string | null
           discipline?: string
@@ -171,7 +195,15 @@ export type Database = {
           weekly_schedule?: Json | null
           weight_kg?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       rehab_plans: {
         Row: {
