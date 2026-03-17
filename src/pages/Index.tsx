@@ -44,7 +44,7 @@ function SectionPreview({
           <p className="text-xs leading-relaxed text-muted-foreground">{description}</p>
         </div>
       </div>
-    </div>
+    </button>
   );
 }
 
