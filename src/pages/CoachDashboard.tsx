@@ -31,6 +31,8 @@ interface AthleteProfile {
   weekly_schedule: any;
   avatar_url: string | null;
   discipline: string;
+  club_id?: string | null;
+  club_name?: string | null;
 }
 
 interface AthletePlan {

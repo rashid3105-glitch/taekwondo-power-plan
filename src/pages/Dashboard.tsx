@@ -54,6 +54,7 @@ export default function Dashboard() {
   const [isCoach, setIsCoach] = useState(false);
   const [hasCoach, setHasCoach] = useState(false);
   const [coachName, setCoachName] = useState<string>("");
+  const [clubName, setClubName] = useState<string>("");
   const [isDemo, setIsDemo] = useState(false);
   const [demoDaysLeft, setDemoDaysLeft] = useState<number | null>(null);
   const [generating, setGenerating] = useState(false);
