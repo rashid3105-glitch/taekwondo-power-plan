@@ -100,6 +100,10 @@ export default function Dashboard() {
         navigate("/pending-approval");
         return;
       }
+      if (!profileData.club_id) {
+        navigate("/profile-setup");
+        return;
+      }
       setProfile(profileData as Profile);
       if (profileData.is_demo && profileData.payment_status !== "paid") {
         setIsDemo(true);

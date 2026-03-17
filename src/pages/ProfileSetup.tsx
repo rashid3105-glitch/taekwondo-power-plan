@@ -83,7 +83,7 @@ export default function ProfileSetup() {
         if (clubsRes.error) throw clubsRes.error;
         if (profileRes.error) throw profileRes.error;
 
-        setClubs(((clubsRes.data || []) as ClubOption[]));
+        setClubs((clubsRes.data ?? []) as unknown as ClubOption[]);
 
         const profileData = profileRes.data as any;
         if (profileData) {
