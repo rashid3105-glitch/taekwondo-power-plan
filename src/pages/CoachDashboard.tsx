@@ -245,7 +245,8 @@ export default function CoachDashboard() {
       setNewAthleteDiscipline("sparring");
       await loadAthletes();
     } catch (err: any) {
-      toast({ title: t("error"), description: err.message, variant: "destructive" });
+      const description = err.message === "COACH_CLUB_REQUIRED" ? t("completeClubBeforeCoach") : err.message;
+      toast({ title: t("error"), description, variant: "destructive" });
     } finally {
       setCreating(false);
     }
