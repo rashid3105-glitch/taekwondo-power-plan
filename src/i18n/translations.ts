@@ -299,6 +299,8 @@ const translations = {
     demoBannerDaysLeft: "days remaining",
     demoBannerExpiresToday: "Expires today",
     demoBannerExpired: "Demo expired",
+    demoLockedFeatureDesc: "This feature is not included in the demo account.",
+    demoUpgradePrompt: "Buy the full version to unlock all tools, tracking, rehab, nutrition, and mental performance features.",
     maxAthletesReached: "You have reached the maximum of 5 athletes on the Coach plan. Upgrade to Enterprise for unlimited athletes.",
     upgradeEnterprise: "Upgrade to Enterprise",
     requestDemo: "Request a free demo",
