@@ -69,10 +69,10 @@ export default function AdminApproval() {
   };
 
   const loadUsers = async () => {
-    const [profilesRes, emailsRes, plansRes, rolesRes, coachAthletesRes] = await Promise.all([
+    const [profilesRes, emailsRes, plansRes, rolesRes, coachAthletesRes, clubsRes] = await Promise.all([
       supabase
         .from("profiles")
-        .select("user_id, display_name, created_at, is_approved, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, payment_status, payment_date, is_demo")
+        .select("user_id, display_name, created_at, is_approved, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, payment_status, payment_date, is_demo, club_id")
         .order("created_at", { ascending: false }),
       supabase.functions.invoke("get-admin-users"),
       supabase
@@ -81,6 +81,7 @@ export default function AdminApproval() {
         .order("created_at", { ascending: false }),
       supabase.from("user_roles").select("user_id, role"),
       supabase.from("coach_athletes").select("coach_id, athlete_id"),
+      supabase.from("clubs" as any).select("id, name"),
     ]);
 
     const profiles = (profilesRes.data || []) as PendingUser[];
@@ -88,6 +89,9 @@ export default function AdminApproval() {
     const plans = (plansRes.data || []) as (UserPlan & { user_id: string })[];
     const roles = (rolesRes.data || []) as { user_id: string; role: string }[];
     const coachAthleteLinks = (coachAthletesRes.data || []) as { coach_id: string; athlete_id: string }[];
+    const clubMap = new Map<string, string>(
+      (((clubsRes.data as { id: string; name: string }[] | null) ?? [])).map((club) => [club.id, club.name])
+    );
 
     const coachSet = new Set(roles.filter(r => r.role === "coach").map(r => r.user_id));
 
@@ -110,6 +114,7 @@ export default function AdminApproval() {
 
     setUsers(profiles.map(p => ({
       ...p,
+      club_name: p.club_id ? clubMap.get(p.club_id) || "" : "",
       email: emailMap[p.user_id] || "",
       plans: plansByUser[p.user_id] || [],
       isCoach: coachSet.has(p.user_id),
