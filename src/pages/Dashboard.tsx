@@ -272,25 +272,25 @@ export default function Dashboard() {
           </div>
           {/* Menu row – left-aligned, below logo */}
           <nav className="hidden sm:flex items-center gap-1 flex-wrap">
-            <Button variant="ghost" size="sm" onClick={() => setActiveTab("hub")} className={activeTab === "hub" ? "text-primary" : ""}>
+            <Button variant="ghost" size="sm" onClick={() => handleTabChange("hub")} className={activeTab === "hub" ? "text-primary" : ""}>
               <Home className="h-4 w-4 mr-1" /> {t("hubWelcome" as any)}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => setActiveTab("plan")} className={activeTab === "plan" ? "text-tab-plan" : ""}>
+            <Button variant="ghost" size="sm" onClick={() => handleTabChange("plan")} className={activeTab === "plan" ? "text-tab-plan" : ""}>
               <Zap className="h-4 w-4 mr-1" /> {t("plan")}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => setActiveTab("progress")} className={activeTab === "progress" ? "text-tab-progress" : ""}>
+            <Button variant="ghost" size="sm" onClick={() => handleTabChange("progress")} disabled={isDemoLockedTab("progress")} className={activeTab === "progress" ? "text-tab-progress" : ""}>
               <BarChart3 className="h-4 w-4 mr-1" /> {t("progress")}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => setActiveTab("nutrition")} className={activeTab === "nutrition" ? "text-tab-nutrition" : ""}>
+            <Button variant="ghost" size="sm" onClick={() => handleTabChange("nutrition")} disabled={isDemoLockedTab("nutrition")} className={activeTab === "nutrition" ? "text-tab-nutrition" : ""}>
               <Apple className="h-4 w-4 mr-1" /> {t("nutrition")}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => setActiveTab("rehab")} className={activeTab === "rehab" ? "text-tab-rehab" : ""}>
+            <Button variant="ghost" size="sm" onClick={() => handleTabChange("rehab")} disabled={isDemoLockedTab("rehab")} className={activeTab === "rehab" ? "text-tab-rehab" : ""}>
               <Heart className="h-4 w-4 mr-1" /> {t("injuryRehabPlan")}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => setActiveTab("mental")} className={activeTab === "mental" ? "text-tab-mental" : ""}>
+            <Button variant="ghost" size="sm" onClick={() => handleTabChange("mental")} disabled={isDemoLockedTab("mental")} className={activeTab === "mental" ? "text-tab-mental" : ""}>
               <Brain className="h-4 w-4 mr-1" /> {t("mental")}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => navigate("/library")}>
+            <Button variant="ghost" size="sm" onClick={() => navigate("/library")} disabled={isDemo}>
               <BookOpen className="h-4 w-4 mr-1" /> {t("library")}
             </Button>
             <Button variant="ghost" size="sm" onClick={() => navigate("/diary")}>
