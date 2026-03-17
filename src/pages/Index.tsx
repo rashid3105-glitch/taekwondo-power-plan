@@ -15,6 +15,7 @@ function SectionPreview({
   gradient,
   delay,
   iconColor,
+  onClick,
 }: {
   icon: typeof Zap;
   title: string;
@@ -22,10 +23,12 @@ function SectionPreview({
   gradient: string;
   delay: string;
   iconColor: string;
+  onClick?: () => void;
 }) {
   return (
-    <div
-      className="group relative rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-6 shadow-card hover:border-primary/30 transition-all duration-500 hover:-translate-y-1"
+    <button
+      onClick={onClick}
+      className="group relative rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-6 shadow-card hover:border-primary/30 transition-all duration-500 hover:-translate-y-1 text-left cursor-pointer"
       style={{ animationDelay: delay }}
     >
       <div
@@ -41,7 +44,7 @@ function SectionPreview({
           <p className="text-xs leading-relaxed text-muted-foreground">{description}</p>
         </div>
       </div>
-    </div>
+    </button>
   );
 }
 
@@ -66,6 +69,7 @@ const Index = () => {
       descKey: "sectionPlanDesc" as const,
       gradient: "radial-gradient(circle at 30% 50%, hsl(210 90% 56% / 0.08), transparent 70%)",
       iconColor: "text-tab-plan",
+      slug: "plan",
     },
     {
       icon: BarChart3,
@@ -73,6 +77,7 @@ const Index = () => {
       descKey: "sectionProgressDesc" as const,
       gradient: "radial-gradient(circle at 30% 50%, hsl(45 90% 55% / 0.08), transparent 70%)",
       iconColor: "text-tab-progress",
+      slug: "progress",
     },
     {
       icon: Brain,
@@ -80,6 +85,7 @@ const Index = () => {
       descKey: "sectionMentalDesc" as const,
       gradient: "radial-gradient(circle at 30% 50%, hsl(330 60% 72% / 0.08), transparent 70%)",
       iconColor: "text-tab-mental",
+      slug: "mental",
     },
     {
       icon: HeartPulse,
@@ -87,6 +93,7 @@ const Index = () => {
       descKey: "sectionRehabDesc" as const,
       gradient: "radial-gradient(circle at 30% 50%, hsl(0 72% 51% / 0.08), transparent 70%)",
       iconColor: "text-tab-rehab",
+      slug: "rehab",
     },
     {
       icon: UtensilsCrossed,
@@ -94,6 +101,7 @@ const Index = () => {
       descKey: "sectionNutritionDesc" as const,
       gradient: "radial-gradient(circle at 30% 50%, hsl(25 90% 55% / 0.08), transparent 70%)",
       iconColor: "text-orange-400",
+      slug: "nutrition",
     },
     {
       icon: BookOpen,
@@ -101,6 +109,7 @@ const Index = () => {
       descKey: "sectionLibraryDesc" as const,
       gradient: "radial-gradient(circle at 30% 50%, hsl(142 70% 45% / 0.08), transparent 70%)",
       iconColor: "text-tab-nutrition",
+      slug: "library",
     },
   ];
 
@@ -174,6 +183,7 @@ const Index = () => {
                 gradient={s.gradient}
                 delay={`${i * 80}ms`}
                 iconColor={s.iconColor}
+                onClick={() => navigate(`/features/${s.slug}`)}
               />
             ))}
           </div>
