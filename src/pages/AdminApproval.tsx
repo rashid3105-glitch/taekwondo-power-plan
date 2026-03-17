@@ -332,7 +332,7 @@ export default function AdminApproval() {
                 )}
               </div>
               {u.email && <p className="text-xs text-muted-foreground text-left">{u.email}</p>}
-            </div>
+              {u.club_name && <p className="text-[11px] text-muted-foreground text-left">{t("club")}: {u.club_name}</p>}
           </CollapsibleTrigger>
           {actions}
         </div>
