@@ -339,6 +339,11 @@ export default function AdminApproval() {
 
         <CollapsibleContent className="space-y-2">
           <div className="flex flex-wrap gap-1.5 pt-1">
+            {u.club_name && (
+              <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
+                {t("club")}: {u.club_name}
+              </span>
+            )}
             {u.belt_level && (
               <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full capitalize">
                 {u.belt_level} {t("belt")}

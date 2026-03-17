@@ -517,6 +517,9 @@ export default function Dashboard() {
                       {profile.athlete_code && (
                         <p className="text-[10px] text-muted-foreground font-mono">{t("yourAthleteCode")}: {profile.athlete_code}</p>
                       )}
+                      {clubName && (
+                        <p className="text-xs text-muted-foreground mt-1">{t("club")}: <span className="text-foreground font-medium">{clubName}</span></p>
+                      )}
                       <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-2">
                         {profile.belt_level && (
                           <span className="text-[10px] sm:text-xs bg-muted text-muted-foreground px-2 py-0.5 sm:py-1 rounded-full capitalize">
