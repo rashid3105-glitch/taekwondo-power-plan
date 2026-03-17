@@ -15,6 +15,7 @@ function SectionPreview({
   gradient,
   delay,
   iconColor,
+  onClick,
 }: {
   icon: typeof Zap;
   title: string;
@@ -22,10 +23,12 @@ function SectionPreview({
   gradient: string;
   delay: string;
   iconColor: string;
+  onClick?: () => void;
 }) {
   return (
-    <div
-      className="group relative rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-6 shadow-card hover:border-primary/30 transition-all duration-500 hover:-translate-y-1"
+    <button
+      onClick={onClick}
+      className="group relative rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-6 shadow-card hover:border-primary/30 transition-all duration-500 hover:-translate-y-1 text-left cursor-pointer"
       style={{ animationDelay: delay }}
     >
       <div
