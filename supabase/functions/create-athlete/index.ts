@@ -48,6 +48,15 @@ Deno.serve(async (req) => {
       }
     }
 
+    const { data: coachProfile, error: coachProfileError } = await adminClient
+      .from("profiles")
+      .select("club_id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (coachProfileError) throw coachProfileError;
+    if (!coachProfile?.club_id) throw new Error("COACH_CLUB_REQUIRED");
+
     const { name, email, password, age, belt_level, experience_years, discipline } = await req.json();
     if (!name || !email || !password) throw new Error("Missing required fields");
     if (password.length < 6) throw new Error("Password must be at least 6 characters");
@@ -79,16 +88,16 @@ Deno.serve(async (req) => {
     }
 
     // Update profile with additional fields if provided
-    const profileUpdates: Record<string, any> = {};
+    const profileUpdates: Record<string, any> = {
+      club_id: coachProfile.club_id,
+    };
     if (age != null && typeof age === "number" && age >= 5 && age <= 99) profileUpdates.age = age;
     if (belt_level && typeof belt_level === "string") profileUpdates.belt_level = belt_level;
     if (experience_years != null && typeof experience_years === "number" && experience_years >= 0 && experience_years <= 50) profileUpdates.experience_years = experience_years;
     if (discipline && (discipline === "sparring" || discipline === "poomsae")) profileUpdates.discipline = discipline;
 
-    if (Object.keys(profileUpdates).length > 0) {
-      const { error: updateError } = await adminClient.from("profiles").update(profileUpdates).eq("user_id", newUser.user!.id);
-      if (updateError) console.error("Profile update error:", updateError);
-    }
+    const { error: updateError } = await adminClient.from("profiles").update(profileUpdates).eq("user_id", newUser.user!.id);
+    if (updateError) console.error("Profile update error:", updateError);
 
     // Link athlete to coach
     await adminClient.from("coach_athletes").insert({

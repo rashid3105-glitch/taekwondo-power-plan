@@ -321,6 +321,7 @@ export default function CoachDashboard() {
             <UserPlus className="h-5 w-5" /> {t("createAthlete")} {!isAdmin && <>({athletes.length}/{MAX_ATHLETES})</>}
           </h3>
           <p className="text-xs text-muted-foreground">{t("createAthleteDesc")}</p>
+          <p className="text-xs text-muted-foreground">{t("athleteInheritsCoachClub")}</p>
 
           {showCreateForm ? (
             <div className="space-y-3">

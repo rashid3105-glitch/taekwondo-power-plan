@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -36,6 +36,11 @@ const DEFAULT_SCHEDULE: DaySchedule[] = [
   { day: "Sunday", type: "rest" },
 ];
 
+interface ClubOption {
+  id: string;
+  name: string;
+}
+
 export default function ProfileSetup() {
   const [age, setAge] = useState("");
   const [weight, setWeight] = useState("");
@@ -47,12 +52,62 @@ export default function ProfileSetup() {
   const [programWeeks, setProgramWeeks] = useState(8);
   const [currentInjury, setCurrentInjury] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [clubs, setClubs] = useState<ClubOption[]>([]);
+  const [clubId, setClubId] = useState("");
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
+
+  useEffect(() => {
+    const loadProfileSetupData = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          navigate("/auth");
+          return;
+        }
+
+        const [clubsRes, profileRes] = await Promise.all([
+          supabase.from("clubs" as any).select("id, name").order("name"),
+          supabase
+            .from("profiles")
+            .select("age, weight_kg, belt_level, experience_years, discipline, goals, weekly_schedule, program_weeks, current_injury, avatar_url, club_id")
+            .eq("user_id", user.id)
+            .maybeSingle(),
+        ]);
+
+        if (clubsRes.error) throw clubsRes.error;
+        if (profileRes.error) throw profileRes.error;
+
+        setClubs(((clubsRes.data || []) as ClubOption[]));
+
+        const profileData = profileRes.data as any;
+        if (profileData) {
+          setAge(profileData.age?.toString() || "");
+          setWeight(profileData.weight_kg?.toString() || "");
+          setBelt(profileData.belt_level || "white");
+          setExperience(profileData.experience_years?.toString() || "");
+          setDiscipline(profileData.discipline || "sparring");
+          setGoals(profileData.goals || []);
+          setSchedule((profileData.weekly_schedule as DaySchedule[]) || DEFAULT_SCHEDULE);
+          setProgramWeeks(profileData.program_weeks || 8);
+          setCurrentInjury(profileData.current_injury || "");
+          setAvatarUrl(profileData.avatar_url || null);
+          setClubId(profileData.club_id || "");
+        }
+      } catch (err: any) {
+        toast({ title: t("error"), description: err.message, variant: "destructive" });
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+
+    loadProfileSetupData();
+  }, [navigate, t, toast]);
 
   const toggleGoal = (goal: string) => {
     setGoals((prev) =>
@@ -105,6 +160,12 @@ export default function ProfileSetup() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!clubId) {
+      toast({ title: t("clubRequired"), variant: "destructive" });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -122,7 +183,8 @@ export default function ProfileSetup() {
         program_weeks: programWeeks,
         current_injury: currentInjury || null,
         discipline,
-      }).eq("user_id", user.id);
+        club_id: clubId,
+      } as any).eq("user_id", user.id);
 
       if (error) throw error;
       toast({ title: t("profileSaved") });
@@ -133,6 +195,14 @@ export default function ProfileSetup() {
       setLoading(false);
     }
   };
+
+  if (initialLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -149,7 +219,6 @@ export default function ProfileSetup() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Avatar upload */}
           <div className="flex justify-center">
             <button
               type="button"
@@ -179,6 +248,22 @@ export default function ProfileSetup() {
               className="hidden"
               onChange={handleAvatarUpload}
             />
+          </div>
+
+          <div>
+            <Label htmlFor="club">{t("club")}</Label>
+            <select
+              id="club"
+              value={clubId}
+              onChange={(e) => setClubId(e.target.value)}
+              className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              required
+            >
+              <option value="">{t("chooseClub")}</option>
+              {clubs.map((club) => (
+                <option key={club.id} value={club.id}>{club.name}</option>
+              ))}
+            </select>
           </div>
 
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
@@ -212,7 +297,6 @@ export default function ProfileSetup() {
             </div>
           </div>
 
-          {/* Discipline */}
           <div>
             <Label>{t("discipline")}</Label>
             <p className="text-xs text-muted-foreground mb-2">{t("disciplineHint")}</p>
@@ -233,7 +317,6 @@ export default function ProfileSetup() {
             </div>
           </div>
 
-          {/* Program Length */}
           <div>
             <Label>{t("programLength")}</Label>
             <p className="text-xs text-muted-foreground mb-3">
@@ -253,7 +336,6 @@ export default function ProfileSetup() {
             </div>
           </div>
 
-          {/* Weekly Schedule */}
           <div>
             <Label>{t("weeklySchedule")}</Label>
             <p className="text-xs text-muted-foreground mb-2">{t("weeklyScheduleHint")}</p>
@@ -280,7 +362,6 @@ export default function ProfileSetup() {
             </div>
           </div>
 
-          {/* Current Injury */}
           <div>
             <Label htmlFor="injury">{t("currentInjury")}</Label>
             <p className="text-xs text-muted-foreground mb-2">

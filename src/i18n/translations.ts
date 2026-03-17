@@ -443,6 +443,12 @@ const translations = {
     alreadyHaveAccount: "Har du allerede en konto?",
     accountCreated: "Konto oprettet!",
     youreSignedIn: "Du er nu logget ind.",
+    club: "Klub",
+    chooseClub: "Vælg din klub",
+    clubRequired: "Vælg venligst en klub",
+    sameClubRequired: "Trænere kan kun tilføje atleter fra samme klub.",
+    completeClubBeforeCoach: "Vælg din klub før du administrerer atleter.",
+    athleteInheritsCoachClub: "Nye atleter bliver automatisk tilknyttet din klub.",
 
     // Profile Setup
     athleteProfile: "Atletprofil",
