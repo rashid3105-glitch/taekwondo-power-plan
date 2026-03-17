@@ -162,7 +162,7 @@ export default function CoachDashboard() {
       ]);
 
       const clubMap = new Map<string, string>(
-        (((clubsRes.data as { id: string; name: string }[] | null) ?? [])).map((club) => [club.id, club.name])
+        ((((clubsRes.data as unknown as { id: string; name: string }[] | null) ?? [])).map((club) => [club.id, club.name]))
       );
 
       setAthletes(

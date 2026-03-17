@@ -316,7 +316,7 @@ export default function AdminApproval() {
               <div className="flex items-center gap-2 flex-wrap">
                 <p className="font-medium text-sm text-foreground">{u.display_name || t("noName")}</p>
                 {u.payment_status === "paid" && (
-                  <Badge variant="default" className="text-[10px] h-5 bg-green-600">
+                  <Badge variant="default" className="text-[10px] h-5">
                     <CreditCard className="h-2.5 w-2.5 mr-0.5" /> {t("paid" as any)}
                   </Badge>
                 )}
