@@ -27,6 +27,7 @@ interface Profile {
   current_injury: string | null;
   athlete_code: string | null;
   discipline: string;
+  club_id: string | null;
 }
 
 interface TrainingPlan {

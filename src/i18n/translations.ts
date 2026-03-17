@@ -54,6 +54,12 @@ const translations = {
     alreadyHaveAccount: "Already have an account?",
     accountCreated: "Account created!",
     youreSignedIn: "You're now signed in.",
+    club: "Club",
+    chooseClub: "Choose your club",
+    clubRequired: "Please choose a club",
+    sameClubRequired: "Coaches can only add athletes from the same club.",
+    completeClubBeforeCoach: "Choose your club before managing athletes.",
+    athleteInheritsCoachClub: "New athletes are automatically assigned to your club.",
 
     // Profile Setup
     athleteProfile: "Athlete Profile",
