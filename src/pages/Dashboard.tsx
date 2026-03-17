@@ -106,6 +106,12 @@ export default function Dashboard() {
         return;
       }
       setProfile(profileData as Profile);
+      const { data: clubData } = await supabase
+        .from("clubs" as any)
+        .select("name")
+        .eq("id", profileData.club_id)
+        .maybeSingle();
+      setClubName((clubData as { name?: string } | null)?.name || "");
       if (profileData.is_demo && profileData.payment_status !== "paid") {
         setIsDemo(true);
         const created = new Date(profileData.created_at);
