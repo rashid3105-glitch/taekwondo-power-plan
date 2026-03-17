@@ -67,6 +67,28 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, locale } = useLanguage();
+  const isDemoLockedTab = (tab: typeof activeTab) => isDemo && !["hub", "plan"].includes(tab);
+  const handleTabChange = (tab: typeof activeTab) => {
+    if (isDemoLockedTab(tab)) return;
+    setActiveTab(tab);
+  };
+  const renderDemoLockedState = (featureKey: string) => (
+    <div className="rounded-xl border border-border bg-card p-8 sm:p-10 text-center shadow-card space-y-4">
+      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-secondary">
+        <Lock className="h-5 w-5 text-muted-foreground" />
+      </div>
+      <div className="space-y-2">
+        <h3 className="font-bold text-foreground">{t(featureKey as any)}</h3>
+        <p className="text-sm text-muted-foreground">{t("demoLockedFeatureDesc" as any)}</p>
+        <p className="text-sm text-foreground">{t("demoUpgradePrompt" as any)}</p>
+      </div>
+      <div className="flex justify-center">
+        <Button variant="outline" size="sm" onClick={() => navigate("/pricing")}>
+          {t("viewPricing")}
+        </Button>
+      </div>
+    </div>
+  );
 
   useEffect(() => {
     loadData();
