@@ -34,6 +34,8 @@ interface PendingUser {
   payment_status: string;
   payment_date: string | null;
   is_demo: boolean;
+  club_id?: string | null;
+  club_name?: string | null;
   email?: string;
   plans?: UserPlan[];
   isCoach?: boolean;
@@ -67,10 +69,10 @@ export default function AdminApproval() {
   };
 
   const loadUsers = async () => {
-    const [profilesRes, emailsRes, plansRes, rolesRes, coachAthletesRes] = await Promise.all([
+    const [profilesRes, emailsRes, plansRes, rolesRes, coachAthletesRes, clubsRes] = await Promise.all([
       supabase
         .from("profiles")
-        .select("user_id, display_name, created_at, is_approved, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, payment_status, payment_date, is_demo")
+        .select("user_id, display_name, created_at, is_approved, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, payment_status, payment_date, is_demo, club_id")
         .order("created_at", { ascending: false }),
       supabase.functions.invoke("get-admin-users"),
       supabase
@@ -79,6 +81,7 @@ export default function AdminApproval() {
         .order("created_at", { ascending: false }),
       supabase.from("user_roles").select("user_id, role"),
       supabase.from("coach_athletes").select("coach_id, athlete_id"),
+      supabase.from("clubs" as any).select("id, name"),
     ]);
 
     const profiles = (profilesRes.data || []) as PendingUser[];
@@ -86,6 +89,9 @@ export default function AdminApproval() {
     const plans = (plansRes.data || []) as (UserPlan & { user_id: string })[];
     const roles = (rolesRes.data || []) as { user_id: string; role: string }[];
     const coachAthleteLinks = (coachAthletesRes.data || []) as { coach_id: string; athlete_id: string }[];
+    const clubMap = new Map<string, string>(
+      ((((clubsRes.data as unknown as { id: string; name: string }[] | null) ?? [])).map((club) => [club.id, club.name]))
+    );
 
     const coachSet = new Set(roles.filter(r => r.role === "coach").map(r => r.user_id));
 
@@ -108,6 +114,7 @@ export default function AdminApproval() {
 
     setUsers(profiles.map(p => ({
       ...p,
+      club_name: p.club_id ? clubMap.get(p.club_id) || "" : "",
       email: emailMap[p.user_id] || "",
       plans: plansByUser[p.user_id] || [],
       isCoach: coachSet.has(p.user_id),
@@ -309,7 +316,7 @@ export default function AdminApproval() {
               <div className="flex items-center gap-2 flex-wrap">
                 <p className="font-medium text-sm text-foreground">{u.display_name || t("noName")}</p>
                 {u.payment_status === "paid" && (
-                  <Badge variant="default" className="text-[10px] h-5 bg-green-600">
+                  <Badge variant="default" className="text-[10px] h-5">
                     <CreditCard className="h-2.5 w-2.5 mr-0.5" /> {t("paid" as any)}
                   </Badge>
                 )}
@@ -325,6 +332,7 @@ export default function AdminApproval() {
                 )}
               </div>
               {u.email && <p className="text-xs text-muted-foreground text-left">{u.email}</p>}
+              {u.club_name && <p className="text-[11px] text-muted-foreground text-left">{t("club")}: {u.club_name}</p>}
             </div>
           </CollapsibleTrigger>
           {actions}
@@ -332,6 +340,11 @@ export default function AdminApproval() {
 
         <CollapsibleContent className="space-y-2">
           <div className="flex flex-wrap gap-1.5 pt-1">
+            {u.club_name && (
+              <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
+                {t("club")}: {u.club_name}
+              </span>
+            )}
             {u.belt_level && (
               <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full capitalize">
                 {u.belt_level} {t("belt")}

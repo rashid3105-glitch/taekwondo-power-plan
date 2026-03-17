@@ -31,6 +31,8 @@ interface AthleteProfile {
   weekly_schedule: any;
   avatar_url: string | null;
   discipline: string;
+  club_id?: string | null;
+  club_name?: string | null;
 }
 
 interface AthletePlan {
@@ -141,10 +143,10 @@ export default function CoachDashboard() {
       setPlans([]);
       setRehabPlans([]);
     } else {
-      const [profilesRes, plansRes, rehabRes] = await Promise.all([
+      const [profilesRes, plansRes, rehabRes, clubsRes] = await Promise.all([
         supabase
           .from("profiles")
-          .select("user_id, display_name, athlete_code, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, current_injury, program_weeks, weekly_schedule, avatar_url, discipline")
+          .select("user_id, display_name, athlete_code, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, current_injury, program_weeks, weekly_schedule, avatar_url, discipline, club_id")
           .in("user_id", athleteIds),
         supabase
           .from("training_plans")
@@ -156,9 +158,19 @@ export default function CoachDashboard() {
           .select("id, name, plan_data, is_active, created_at, user_id, injury_description")
           .in("user_id", athleteIds)
           .order("created_at", { ascending: false }),
+        supabase.from("clubs" as any).select("id, name"),
       ]);
 
-      setAthletes((profilesRes.data || []) as unknown as AthleteProfile[]);
+      const clubMap = new Map<string, string>(
+        ((((clubsRes.data as unknown as { id: string; name: string }[] | null) ?? [])).map((club) => [club.id, club.name]))
+      );
+
+      setAthletes(
+        (((profilesRes.data || []) as any[]).map((athlete) => ({
+          ...athlete,
+          club_name: athlete.club_id ? clubMap.get(athlete.club_id) || null : null,
+        })) as AthleteProfile[])
+      );
       setPlans((plansRes.data || []) as unknown as AthletePlan[]);
       setRehabPlans((rehabRes.data || []) as unknown as RehabPlan[]);
     }
@@ -461,6 +473,7 @@ export default function CoachDashboard() {
                         )}
                         <div>
                           <p className="font-medium text-sm text-foreground">{a.display_name || t("noName")}</p>
+                          {a.club_name && <p className="text-[10px] text-muted-foreground">{t("club")}: {a.club_name}</p>}
                           <p className="text-[10px] text-muted-foreground">{a.athlete_code}</p>
                         </div>
                       </div>

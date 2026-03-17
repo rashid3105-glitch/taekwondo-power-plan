@@ -54,6 +54,7 @@ export default function Dashboard() {
   const [isCoach, setIsCoach] = useState(false);
   const [hasCoach, setHasCoach] = useState(false);
   const [coachName, setCoachName] = useState<string>("");
+  const [clubName, setClubName] = useState<string>("");
   const [isDemo, setIsDemo] = useState(false);
   const [demoDaysLeft, setDemoDaysLeft] = useState<number | null>(null);
   const [generating, setGenerating] = useState(false);
@@ -105,6 +106,12 @@ export default function Dashboard() {
         return;
       }
       setProfile(profileData as Profile);
+      const { data: clubData } = await supabase
+        .from("clubs" as any)
+        .select("name")
+        .eq("id", profileData.club_id)
+        .maybeSingle();
+      setClubName((clubData as { name?: string } | null)?.name || "");
       if (profileData.is_demo && profileData.payment_status !== "paid") {
         setIsDemo(true);
         const created = new Date(profileData.created_at);
@@ -509,6 +516,9 @@ export default function Dashboard() {
                     <div>
                       {profile.athlete_code && (
                         <p className="text-[10px] text-muted-foreground font-mono">{t("yourAthleteCode")}: {profile.athlete_code}</p>
+                      )}
+                      {clubName && (
+                        <p className="text-xs text-muted-foreground mt-1">{t("club")}: <span className="text-foreground font-medium">{clubName}</span></p>
                       )}
                       <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-2">
                         {profile.belt_level && (
