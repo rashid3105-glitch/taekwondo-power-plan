@@ -67,6 +67,28 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, locale } = useLanguage();
+  const isDemoLockedTab = (tab: typeof activeTab) => isDemo && !["hub", "plan"].includes(tab);
+  const handleTabChange = (tab: typeof activeTab) => {
+    if (isDemoLockedTab(tab)) return;
+    setActiveTab(tab);
+  };
+  const renderDemoLockedState = (featureKey: string) => (
+    <div className="rounded-xl border border-border bg-card p-8 sm:p-10 text-center shadow-card space-y-4">
+      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-secondary">
+        <Lock className="h-5 w-5 text-muted-foreground" />
+      </div>
+      <div className="space-y-2">
+        <h3 className="font-bold text-foreground">{t(featureKey as any)}</h3>
+        <p className="text-sm text-muted-foreground">{t("demoLockedFeatureDesc" as any)}</p>
+        <p className="text-sm text-foreground">{t("demoUpgradePrompt" as any)}</p>
+      </div>
+      <div className="flex justify-center">
+        <Button variant="outline" size="sm" onClick={() => navigate("/pricing")}>
+          {t("viewPricing")}
+        </Button>
+      </div>
+    </div>
+  );
 
   useEffect(() => {
     loadData();
@@ -250,25 +272,25 @@ export default function Dashboard() {
           </div>
           {/* Menu row – left-aligned, below logo */}
           <nav className="hidden sm:flex items-center gap-1 flex-wrap">
-            <Button variant="ghost" size="sm" onClick={() => setActiveTab("hub")} className={activeTab === "hub" ? "text-primary" : ""}>
+            <Button variant="ghost" size="sm" onClick={() => handleTabChange("hub")} className={activeTab === "hub" ? "text-primary" : ""}>
               <Home className="h-4 w-4 mr-1" /> {t("hubWelcome" as any)}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => setActiveTab("plan")} className={activeTab === "plan" ? "text-tab-plan" : ""}>
+            <Button variant="ghost" size="sm" onClick={() => handleTabChange("plan")} className={activeTab === "plan" ? "text-tab-plan" : ""}>
               <Zap className="h-4 w-4 mr-1" /> {t("plan")}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => setActiveTab("progress")} className={activeTab === "progress" ? "text-tab-progress" : ""}>
+            <Button variant="ghost" size="sm" onClick={() => handleTabChange("progress")} disabled={isDemoLockedTab("progress")} className={activeTab === "progress" ? "text-tab-progress" : ""}>
               <BarChart3 className="h-4 w-4 mr-1" /> {t("progress")}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => setActiveTab("nutrition")} className={activeTab === "nutrition" ? "text-tab-nutrition" : ""}>
+            <Button variant="ghost" size="sm" onClick={() => handleTabChange("nutrition")} disabled={isDemoLockedTab("nutrition")} className={activeTab === "nutrition" ? "text-tab-nutrition" : ""}>
               <Apple className="h-4 w-4 mr-1" /> {t("nutrition")}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => setActiveTab("rehab")} className={activeTab === "rehab" ? "text-tab-rehab" : ""}>
+            <Button variant="ghost" size="sm" onClick={() => handleTabChange("rehab")} disabled={isDemoLockedTab("rehab")} className={activeTab === "rehab" ? "text-tab-rehab" : ""}>
               <Heart className="h-4 w-4 mr-1" /> {t("injuryRehabPlan")}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => setActiveTab("mental")} className={activeTab === "mental" ? "text-tab-mental" : ""}>
+            <Button variant="ghost" size="sm" onClick={() => handleTabChange("mental")} disabled={isDemoLockedTab("mental")} className={activeTab === "mental" ? "text-tab-mental" : ""}>
               <Brain className="h-4 w-4 mr-1" /> {t("mental")}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => navigate("/library")}>
+            <Button variant="ghost" size="sm" onClick={() => navigate("/library")} disabled={isDemo}>
               <BookOpen className="h-4 w-4 mr-1" /> {t("library")}
             </Button>
             <Button variant="ghost" size="sm" onClick={() => navigate("/diary")}>
@@ -286,27 +308,27 @@ export default function Dashboard() {
       {/* Mobile bottom nav */}
       <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-card/95 backdrop-blur-sm sm:hidden">
         <div className="flex items-center justify-around py-2">
-          <button onClick={() => setActiveTab("hub")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "hub" ? "text-primary" : "text-muted-foreground"}`}>
+          <button onClick={() => handleTabChange("hub")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "hub" ? "text-primary" : "text-muted-foreground"}`}>
             <Home className="h-5 w-5" />
             <span className="text-[10px] font-semibold">Home</span>
           </button>
-          <button onClick={() => setActiveTab("plan")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "plan" ? "text-tab-plan" : "text-muted-foreground"}`}>
+          <button onClick={() => handleTabChange("plan")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "plan" ? "text-tab-plan" : "text-muted-foreground"}`}>
             <Zap className="h-5 w-5" />
             <span className="text-[10px] font-semibold">{t("plan")}</span>
           </button>
-          <button onClick={() => setActiveTab("progress")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "progress" ? "text-tab-progress" : "text-muted-foreground"}`}>
+          <button onClick={() => handleTabChange("progress")} disabled={isDemoLockedTab("progress")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "progress" ? "text-tab-progress" : "text-muted-foreground"} ${isDemoLockedTab("progress") ? "opacity-50" : ""}`}>
             <BarChart3 className="h-5 w-5" />
             <span className="text-[10px] font-semibold">{t("progress")}</span>
           </button>
-          <button onClick={() => setActiveTab("nutrition")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "nutrition" ? "text-tab-nutrition" : "text-muted-foreground"}`}>
+          <button onClick={() => handleTabChange("nutrition")} disabled={isDemoLockedTab("nutrition")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "nutrition" ? "text-tab-nutrition" : "text-muted-foreground"} ${isDemoLockedTab("nutrition") ? "opacity-50" : ""}`}>
             <Apple className="h-5 w-5" />
             <span className="text-[10px] font-semibold">{t("nutrition")}</span>
           </button>
-          <button onClick={() => setActiveTab("rehab")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "rehab" ? "text-tab-rehab" : "text-muted-foreground"}`}>
+          <button onClick={() => handleTabChange("rehab")} disabled={isDemoLockedTab("rehab")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "rehab" ? "text-tab-rehab" : "text-muted-foreground"} ${isDemoLockedTab("rehab") ? "opacity-50" : ""}`}>
             <Heart className="h-5 w-5" />
             <span className="text-[10px] font-semibold">{t("rehab")}</span>
           </button>
-          <button onClick={() => setActiveTab("mental")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "mental" ? "text-tab-mental" : "text-muted-foreground"}`}>
+          <button onClick={() => handleTabChange("mental")} disabled={isDemoLockedTab("mental")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "mental" ? "text-tab-mental" : "text-muted-foreground"} ${isDemoLockedTab("mental") ? "opacity-50" : ""}`}>
             <Brain className="h-5 w-5" />
             <span className="text-[10px] font-semibold">{t("mental")}</span>
           </button>
@@ -358,50 +380,55 @@ export default function Dashboard() {
             <div className="grid gap-3 sm:grid-cols-2">
               {([
                 { tab: "plan" as const, icon: Zap, titleKey: "hubTrainingTitle", descKey: "hubTrainingDesc", color: "text-tab-plan", gradient: "radial-gradient(circle at 30% 50%, hsl(190 95% 50% / 0.08), transparent 70%)" },
-                { tab: "progress" as const, icon: BarChart3, titleKey: "hubProgressTitle", descKey: "hubProgressDesc", color: "text-tab-progress", gradient: "radial-gradient(circle at 30% 50%, hsl(45 90% 55% / 0.08), transparent 70%)" },
-                { tab: "nutrition" as const, icon: Apple, titleKey: "hubNutritionTitle", descKey: "hubNutritionDesc", color: "text-tab-nutrition", gradient: "radial-gradient(circle at 30% 50%, hsl(120 60% 45% / 0.08), transparent 70%)" },
-                { tab: "rehab" as const, icon: Heart, titleKey: "hubRehabTitle", descKey: "hubRehabDesc", color: "text-tab-rehab", gradient: "radial-gradient(circle at 30% 50%, hsl(0 72% 51% / 0.08), transparent 70%)" },
-                { tab: "mental" as const, icon: Brain, titleKey: "hubMentalTitle", descKey: "hubMentalDesc", color: "text-tab-mental", gradient: "radial-gradient(circle at 30% 50%, hsl(330 60% 72% / 0.08), transparent 70%)" },
+                { tab: "progress" as const, icon: BarChart3, titleKey: "hubProgressTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubProgressDesc", color: "text-tab-progress", gradient: "radial-gradient(circle at 30% 50%, hsl(45 90% 55% / 0.08), transparent 70%)", locked: isDemo },
+                { tab: "nutrition" as const, icon: Apple, titleKey: "hubNutritionTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubNutritionDesc", color: "text-tab-nutrition", gradient: "radial-gradient(circle at 30% 50%, hsl(120 60% 45% / 0.08), transparent 70%)", locked: isDemo },
+                { tab: "rehab" as const, icon: Heart, titleKey: "hubRehabTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubRehabDesc", color: "text-tab-rehab", gradient: "radial-gradient(circle at 30% 50%, hsl(0 72% 51% / 0.08), transparent 70%)", locked: isDemo },
+                { tab: "mental" as const, icon: Brain, titleKey: "hubMentalTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubMentalDesc", color: "text-tab-mental", gradient: "radial-gradient(circle at 30% 50%, hsl(330 60% 72% / 0.08), transparent 70%)", locked: isDemo },
               ] as const).map((section) => {
                 const Icon = section.icon;
                 return (
                   <button
                     key={section.tab}
-                    onClick={() => setActiveTab(section.tab)}
-                    className="group relative rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-5 shadow-card hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 text-left cursor-pointer"
+                    onClick={() => handleTabChange(section.tab)}
+                    disabled={Boolean(section.locked)}
+                    className={`group relative rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-5 shadow-card text-left transition-all duration-300 ${section.locked ? "cursor-not-allowed opacity-80" : "cursor-pointer hover:border-primary/30 hover:-translate-y-1"}`}
                   >
                     <div
                       className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                       style={{ background: section.gradient, filter: "blur(40px)", zIndex: -1 }}
                     />
                     <div className="flex items-start gap-4">
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary relative">
                         <Icon className={`h-5 w-5 ${section.color}`} />
+                        {section.locked && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
                       </div>
                       <div className="space-y-1.5">
                         <h3 className="text-sm font-bold text-foreground tracking-tight">{t(section.titleKey as any)}</h3>
                         <p className="text-xs leading-relaxed text-muted-foreground">{t(section.descKey as any)}</p>
+                        {section.locked && <p className="text-xs font-medium text-foreground">{t("demoUpgradePrompt" as any)}</p>}
                       </div>
                     </div>
                   </button>
                 );
               })}
-              {/* Library card */}
               <button
-                onClick={() => navigate("/library")}
-                className="group relative rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-5 shadow-card hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 text-left cursor-pointer"
+                onClick={() => !isDemo && navigate("/library")}
+                disabled={isDemo}
+                className={`group relative rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-5 shadow-card text-left transition-all duration-300 ${isDemo ? "cursor-not-allowed opacity-80" : "cursor-pointer hover:border-primary/30 hover:-translate-y-1"}`}
               >
                 <div
                   className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                   style={{ background: "radial-gradient(circle at 30% 50%, hsl(270 70% 55% / 0.08), transparent 70%)", filter: "blur(40px)", zIndex: -1 }}
                 />
                 <div className="flex items-start gap-4">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary relative">
                     <BookOpen className="h-5 w-5 text-primary" />
+                    {isDemo && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
                   </div>
                   <div className="space-y-1.5">
                     <h3 className="text-sm font-bold text-foreground tracking-tight">{t("hubLibraryTitle" as any)}</h3>
-                    <p className="text-xs leading-relaxed text-muted-foreground">{t("hubLibraryDesc" as any)}</p>
+                    <p className="text-xs leading-relaxed text-muted-foreground">{t((isDemo ? "demoLockedFeatureDesc" : "hubLibraryDesc") as any)}</p>
+                    {isDemo && <p className="text-xs font-medium text-foreground">{t("demoUpgradePrompt" as any)}</p>}
                   </div>
                 </div>
               </button>
@@ -415,12 +442,13 @@ export default function Dashboard() {
             </div>
           </div>
         ) : activeTab === "progress" ? (
-          <ProgressDashboard onGoToPlan={() => setActiveTab("plan")} />
+          isDemo ? renderDemoLockedState("progress") : <ProgressDashboard onGoToPlan={() => handleTabChange("plan")} />
         ) : activeTab === "nutrition" ? (
-          <NutritionPlan profile={profile} readOnly={hasCoach} />
+          isDemo ? renderDemoLockedState("nutrition") : <NutritionPlan profile={profile} readOnly={hasCoach} />
         ) : activeTab === "mental" ? (
-          <MentalAssessment profile={profile} />
+          isDemo ? renderDemoLockedState("mental") : <MentalAssessment profile={profile} />
         ) : activeTab === "rehab" ? (
+          isDemo ? renderDemoLockedState("injuryRehabPlan") : (
           <>
             {/* Rehab Plan Generator */}
             {!hasCoach && (
@@ -499,6 +527,7 @@ export default function Dashboard() {
               </div>
             )}
           </>
+          )
         ) : (
           <>
             {/* Profile summary */}
