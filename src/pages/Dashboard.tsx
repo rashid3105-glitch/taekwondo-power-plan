@@ -308,27 +308,27 @@ export default function Dashboard() {
       {/* Mobile bottom nav */}
       <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-card/95 backdrop-blur-sm sm:hidden">
         <div className="flex items-center justify-around py-2">
-          <button onClick={() => setActiveTab("hub")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "hub" ? "text-primary" : "text-muted-foreground"}`}>
+          <button onClick={() => handleTabChange("hub")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "hub" ? "text-primary" : "text-muted-foreground"}`}>
             <Home className="h-5 w-5" />
             <span className="text-[10px] font-semibold">Home</span>
           </button>
-          <button onClick={() => setActiveTab("plan")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "plan" ? "text-tab-plan" : "text-muted-foreground"}`}>
+          <button onClick={() => handleTabChange("plan")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "plan" ? "text-tab-plan" : "text-muted-foreground"}`}>
             <Zap className="h-5 w-5" />
             <span className="text-[10px] font-semibold">{t("plan")}</span>
           </button>
-          <button onClick={() => setActiveTab("progress")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "progress" ? "text-tab-progress" : "text-muted-foreground"}`}>
+          <button onClick={() => handleTabChange("progress")} disabled={isDemoLockedTab("progress")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "progress" ? "text-tab-progress" : "text-muted-foreground"} ${isDemoLockedTab("progress") ? "opacity-50" : ""}`}>
             <BarChart3 className="h-5 w-5" />
             <span className="text-[10px] font-semibold">{t("progress")}</span>
           </button>
-          <button onClick={() => setActiveTab("nutrition")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "nutrition" ? "text-tab-nutrition" : "text-muted-foreground"}`}>
+          <button onClick={() => handleTabChange("nutrition")} disabled={isDemoLockedTab("nutrition")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "nutrition" ? "text-tab-nutrition" : "text-muted-foreground"} ${isDemoLockedTab("nutrition") ? "opacity-50" : ""}`}>
             <Apple className="h-5 w-5" />
             <span className="text-[10px] font-semibold">{t("nutrition")}</span>
           </button>
-          <button onClick={() => setActiveTab("rehab")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "rehab" ? "text-tab-rehab" : "text-muted-foreground"}`}>
+          <button onClick={() => handleTabChange("rehab")} disabled={isDemoLockedTab("rehab")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "rehab" ? "text-tab-rehab" : "text-muted-foreground"} ${isDemoLockedTab("rehab") ? "opacity-50" : ""}`}>
             <Heart className="h-5 w-5" />
             <span className="text-[10px] font-semibold">{t("rehab")}</span>
           </button>
-          <button onClick={() => setActiveTab("mental")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "mental" ? "text-tab-mental" : "text-muted-foreground"}`}>
+          <button onClick={() => handleTabChange("mental")} disabled={isDemoLockedTab("mental")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "mental" ? "text-tab-mental" : "text-muted-foreground"} ${isDemoLockedTab("mental") ? "opacity-50" : ""}`}>
             <Brain className="h-5 w-5" />
             <span className="text-[10px] font-semibold">{t("mental")}</span>
           </button>

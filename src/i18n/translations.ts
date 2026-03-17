@@ -690,6 +690,8 @@ const translations = {
     demoBannerDaysLeft: "dage tilbage",
     demoBannerExpiresToday: "Udløber i dag",
     demoBannerExpired: "Demo udløbet",
+    demoLockedFeatureDesc: "Denne funktion er ikke inkluderet i demokontoen.",
+    demoUpgradePrompt: "Køb den fulde version for at låse op for alle værktøjer, tracking, genoptræning, ernæring og mentale performance-funktioner.",
     maxAthletesReached: "Du har nået grænsen på 5 atleter på Træner-planen. Opgrader til Enterprise for ubegrænsede atleter.",
     upgradeEnterprise: "Opgrader til Enterprise",
     requestDemo: "Anmod om gratis demo",
