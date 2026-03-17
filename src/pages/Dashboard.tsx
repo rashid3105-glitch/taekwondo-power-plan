@@ -380,50 +380,55 @@ export default function Dashboard() {
             <div className="grid gap-3 sm:grid-cols-2">
               {([
                 { tab: "plan" as const, icon: Zap, titleKey: "hubTrainingTitle", descKey: "hubTrainingDesc", color: "text-tab-plan", gradient: "radial-gradient(circle at 30% 50%, hsl(190 95% 50% / 0.08), transparent 70%)" },
-                { tab: "progress" as const, icon: BarChart3, titleKey: "hubProgressTitle", descKey: "hubProgressDesc", color: "text-tab-progress", gradient: "radial-gradient(circle at 30% 50%, hsl(45 90% 55% / 0.08), transparent 70%)" },
-                { tab: "nutrition" as const, icon: Apple, titleKey: "hubNutritionTitle", descKey: "hubNutritionDesc", color: "text-tab-nutrition", gradient: "radial-gradient(circle at 30% 50%, hsl(120 60% 45% / 0.08), transparent 70%)" },
-                { tab: "rehab" as const, icon: Heart, titleKey: "hubRehabTitle", descKey: "hubRehabDesc", color: "text-tab-rehab", gradient: "radial-gradient(circle at 30% 50%, hsl(0 72% 51% / 0.08), transparent 70%)" },
-                { tab: "mental" as const, icon: Brain, titleKey: "hubMentalTitle", descKey: "hubMentalDesc", color: "text-tab-mental", gradient: "radial-gradient(circle at 30% 50%, hsl(330 60% 72% / 0.08), transparent 70%)" },
+                { tab: "progress" as const, icon: BarChart3, titleKey: "hubProgressTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubProgressDesc", color: "text-tab-progress", gradient: "radial-gradient(circle at 30% 50%, hsl(45 90% 55% / 0.08), transparent 70%)", locked: isDemo },
+                { tab: "nutrition" as const, icon: Apple, titleKey: "hubNutritionTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubNutritionDesc", color: "text-tab-nutrition", gradient: "radial-gradient(circle at 30% 50%, hsl(120 60% 45% / 0.08), transparent 70%)", locked: isDemo },
+                { tab: "rehab" as const, icon: Heart, titleKey: "hubRehabTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubRehabDesc", color: "text-tab-rehab", gradient: "radial-gradient(circle at 30% 50%, hsl(0 72% 51% / 0.08), transparent 70%)", locked: isDemo },
+                { tab: "mental" as const, icon: Brain, titleKey: "hubMentalTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubMentalDesc", color: "text-tab-mental", gradient: "radial-gradient(circle at 30% 50%, hsl(330 60% 72% / 0.08), transparent 70%)", locked: isDemo },
               ] as const).map((section) => {
                 const Icon = section.icon;
                 return (
                   <button
                     key={section.tab}
-                    onClick={() => setActiveTab(section.tab)}
-                    className="group relative rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-5 shadow-card hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 text-left cursor-pointer"
+                    onClick={() => handleTabChange(section.tab)}
+                    disabled={Boolean(section.locked)}
+                    className={`group relative rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-5 shadow-card text-left transition-all duration-300 ${section.locked ? "cursor-not-allowed opacity-80" : "cursor-pointer hover:border-primary/30 hover:-translate-y-1"}`}
                   >
                     <div
                       className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                       style={{ background: section.gradient, filter: "blur(40px)", zIndex: -1 }}
                     />
                     <div className="flex items-start gap-4">
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary relative">
                         <Icon className={`h-5 w-5 ${section.color}`} />
+                        {section.locked && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
                       </div>
                       <div className="space-y-1.5">
                         <h3 className="text-sm font-bold text-foreground tracking-tight">{t(section.titleKey as any)}</h3>
                         <p className="text-xs leading-relaxed text-muted-foreground">{t(section.descKey as any)}</p>
+                        {section.locked && <p className="text-xs font-medium text-foreground">{t("demoUpgradePrompt" as any)}</p>}
                       </div>
                     </div>
                   </button>
                 );
               })}
-              {/* Library card */}
               <button
-                onClick={() => navigate("/library")}
-                className="group relative rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-5 shadow-card hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 text-left cursor-pointer"
+                onClick={() => !isDemo && navigate("/library")}
+                disabled={isDemo}
+                className={`group relative rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-5 shadow-card text-left transition-all duration-300 ${isDemo ? "cursor-not-allowed opacity-80" : "cursor-pointer hover:border-primary/30 hover:-translate-y-1"}`}
               >
                 <div
                   className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                   style={{ background: "radial-gradient(circle at 30% 50%, hsl(270 70% 55% / 0.08), transparent 70%)", filter: "blur(40px)", zIndex: -1 }}
                 />
                 <div className="flex items-start gap-4">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary relative">
                     <BookOpen className="h-5 w-5 text-primary" />
+                    {isDemo && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
                   </div>
                   <div className="space-y-1.5">
                     <h3 className="text-sm font-bold text-foreground tracking-tight">{t("hubLibraryTitle" as any)}</h3>
-                    <p className="text-xs leading-relaxed text-muted-foreground">{t("hubLibraryDesc" as any)}</p>
+                    <p className="text-xs leading-relaxed text-muted-foreground">{t((isDemo ? "demoLockedFeatureDesc" : "hubLibraryDesc") as any)}</p>
+                    {isDemo && <p className="text-xs font-medium text-foreground">{t("demoUpgradePrompt" as any)}</p>}
                   </div>
                 </div>
               </button>
