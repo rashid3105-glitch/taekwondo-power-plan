@@ -69,6 +69,7 @@ const Index = () => {
       descKey: "sectionPlanDesc" as const,
       gradient: "radial-gradient(circle at 30% 50%, hsl(210 90% 56% / 0.08), transparent 70%)",
       iconColor: "text-tab-plan",
+      slug: "plan",
     },
     {
       icon: BarChart3,
@@ -76,6 +77,7 @@ const Index = () => {
       descKey: "sectionProgressDesc" as const,
       gradient: "radial-gradient(circle at 30% 50%, hsl(45 90% 55% / 0.08), transparent 70%)",
       iconColor: "text-tab-progress",
+      slug: "progress",
     },
     {
       icon: Brain,
@@ -83,6 +85,7 @@ const Index = () => {
       descKey: "sectionMentalDesc" as const,
       gradient: "radial-gradient(circle at 30% 50%, hsl(330 60% 72% / 0.08), transparent 70%)",
       iconColor: "text-tab-mental",
+      slug: "mental",
     },
     {
       icon: HeartPulse,
@@ -90,6 +93,7 @@ const Index = () => {
       descKey: "sectionRehabDesc" as const,
       gradient: "radial-gradient(circle at 30% 50%, hsl(0 72% 51% / 0.08), transparent 70%)",
       iconColor: "text-tab-rehab",
+      slug: "rehab",
     },
     {
       icon: UtensilsCrossed,
@@ -97,6 +101,7 @@ const Index = () => {
       descKey: "sectionNutritionDesc" as const,
       gradient: "radial-gradient(circle at 30% 50%, hsl(25 90% 55% / 0.08), transparent 70%)",
       iconColor: "text-orange-400",
+      slug: "nutrition",
     },
     {
       icon: BookOpen,
@@ -104,6 +109,7 @@ const Index = () => {
       descKey: "sectionLibraryDesc" as const,
       gradient: "radial-gradient(circle at 30% 50%, hsl(142 70% 45% / 0.08), transparent 70%)",
       iconColor: "text-tab-nutrition",
+      slug: "library",
     },
   ];
 
