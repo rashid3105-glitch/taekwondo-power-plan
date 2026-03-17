@@ -1,0 +1,131 @@
+-- Create clubs table from uploaded list and link users to a club
+CREATE TABLE IF NOT EXISTS public.clubs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL UNIQUE,
+  slug TEXT NOT NULL UNIQUE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+ALTER TABLE public.clubs ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Authenticated users can view clubs"
+ON public.clubs
+FOR SELECT
+TO authenticated
+USING (true);
+
+-- Each profile belongs to one club
+ALTER TABLE public.profiles
+ADD COLUMN IF NOT EXISTS club_id UUID REFERENCES public.clubs(id);
+
+CREATE INDEX IF NOT EXISTS idx_profiles_club_id ON public.profiles(club_id);
+CREATE INDEX IF NOT EXISTS idx_clubs_slug ON public.clubs(slug);
+
+-- Seed clubs from uploaded spreadsheet
+INSERT INTO public.clubs (name, slug)
+VALUES
+  ('Albertslund taekwondo klub', 'albertslund-taekwondo-klub'),
+  ('Arirang Herlev Taekwondo Academy', 'arirang-herlev-taekwondo-academy'),
+  ('Arirang Taekwondo Klub, Horsens', 'arirang-taekwondo-klub-horsens'),
+  ('Bagsværd Taekwondo Klub', 'bagsvaerd-taekwondo-klub'),
+  ('Ballerup Kampsport Center', 'ballerup-kampsport-center'),
+  ('Bornholm Taekwondo Klub - HAE SUNG', 'bornholm-taekwondo-klub-hae-sung'),
+  ('Brande Taekwondo Klub', 'brande-taekwondo-klub'),
+  ('Copenhagen City Taekwondo klub', 'copenhagen-city-taekwondo-klub'),
+  ('Dan Jeon Taekwondo Klub Vejle', 'dan-jeon-taekwondo-klub-vejle'),
+  ('Dansk Taekwondo Forbund - Talenthold Teknik', 'dansk-taekwondo-forbund-talenthold-teknik'),
+  ('Dansk Taekwondo Forbund - Teknik', 'dansk-taekwondo-forbund-teknik'),
+  ('Elite Vest', 'elite-vest'),
+  ('Esbjerg City Taekwondo Klub', 'esbjerg-city-taekwondo-klub'),
+  ('Esbjerg Taekwondo Klub', 'esbjerg-taekwondo-klub'),
+  ('Fredericia Taekwondo Klub', 'fredericia-taekwondo-klub'),
+  ('Frederikssund Taekwondo Klub', 'frederikssund-taekwondo-klub'),
+  ('Furesø Taekwondo Klub', 'furesoe-taekwondo-klub'),
+  ('Fåborg Taekwondo Klub', 'faaborg-taekwondo-klub'),
+  ('Gangnam Sportstaekwondo', 'gangnam-sportstaekwondo'),
+  ('Gentofte Taekwondo Klub', 'gentofte-taekwondo-klub'),
+  ('Gilleleje Simjang Taekwondo Klub', 'gilleleje-simjang-taekwondo-klub'),
+  ('Gladsaxe Taekwondo Klub', 'gladsaxe-taekwondo-klub'),
+  ('Grindsted Taekwondo Klub', 'grindsted-taekwondo-klub'),
+  ('Haderslev Taekwondo YEO MYEONG', 'haderslev-taekwondo-yeo-myeong'),
+  ('HADERSLEV TKD KLUB Chon-Ji', 'haderslev-tkd-klub-chon-ji'),
+  ('Han Kuk Taekwondo Dojang - Ribe', 'han-kuk-taekwondo-dojang-ribe'),
+  ('Haneul Jeongwon Taekwondo Klub Copenhagen', 'haneul-jeongwon-taekwondo-klub-copenhagen'),
+  ('Haslev Taekwondo', 'haslev-taekwondo'),
+  ('Helsinge Taekwondo Klub', 'helsinge-taekwondo-klub'),
+  ('Herlev Taekwondo Klub', 'herlev-taekwondo-klub'),
+  ('Herning Taekwondo Klub', 'herning-taekwondo-klub'),
+  ('Hillerød Taekwondo Klub', 'hillerod-taekwondo-klub'),
+  ('Hinnerup Taekwondo Klub', 'hinnerup-taekwondo-klub'),
+  ('Holbæk Musool Taekwondo Klub', 'holbaek-musool-taekwondo-klub'),
+  ('Holbæk Taekwondo Klub', 'holbaek-taekwondo-klub'),
+  ('Hvalsø Taekwondo Klub - Kwan Chang', 'hvalsoe-taekwondo-klub-kwan-chang'),
+  ('Hvidovre Taekwondo Klub - Simjang Ilyeo', 'hvidovre-taekwondo-klub-simjang-ilyeo'),
+  ('Hwa Rang Do - Holstebro Taekwondo Klub', 'hwa-rang-do-holstebro-taekwondo-klub'),
+  ('Hwarang Rødovre Taekwondo Klub', 'hwarang-roedovre-taekwondo-klub'),
+  ('HWARANG TIGERS', 'hwarang-tigers'),
+  ('Ikast Taekwondo Klub', 'ikast-taekwondo-klub'),
+  ('Ishøj Taekwondo Klub', 'ishoj-taekwondo-klub'),
+  ('Islev Taekwondo Klub', 'islev-taekwondo-klub'),
+  ('Kolding Huma Taekwondo Klub', 'kolding-huma-taekwondo-klub'),
+  ('Kolding Taekwondo Klub - Sil''la', 'kolding-taekwondo-klub-silla'),
+  ('Kongsvang Taekwondo Klub', 'kongsvang-taekwondo-klub'),
+  ('Kwan Chang - Bramsnæs Taekwondo Klub', 'kwan-chang-bramsnaes-taekwondo-klub'),
+  ('Kyun Hyeong - Sydfyns Taekwondo Klub', 'kyun-hyeong-sydfyns-taekwondo-klub'),
+  ('Køge Taekwondo Klub', 'koege-taekwondo-klub'),
+  ('Lyngby Taekwondo Klub', 'lyngby-taekwondo-klub'),
+  ('Lyseng Taekwondo Klub', 'lyseng-taekwondo-klub'),
+  ('Midtdjurs Taekwondo Klub', 'midtdjurs-taekwondo-klub'),
+  ('Munkebo Taekwondo Klub', 'munkebo-taekwondo-klub'),
+  ('Nordborg Taekwondo Klub', 'nordborg-taekwondo-klub'),
+  ('Nyborg Taekwondo Klub', 'nyborg-taekwondo-klub'),
+  ('Nykøbing Mors Taekwondo Klub', 'nykobing-mors-taekwondo-klub'),
+  ('Næstved Taekwondo Klub', 'naestved-taekwondo-klub'),
+  ('Nørre Nebel Taekwondo Klub', 'norre-nebel-taekwondo-klub'),
+  ('Nørrebro Taekwondo Klub', 'norrebro-taekwondo-klub'),
+  ('Odder Taekwondo Klub', 'odder-taekwondo-klub'),
+  ('Odense Taekwondo Klub', 'odense-taekwondo-klub'),
+  ('Randers Taekwondo Klub', 'randers-taekwondo-klub'),
+  ('Rebild Hwa Rang Taekwondo', 'rebild-hwa-rang-taekwondo'),
+  ('Ringsted Taekwondo Klub', 'ringsted-taekwondo-klub'),
+  ('Risskov Taekwondo Klub', 'risskov-taekwondo-klub'),
+  ('Roskilde Taekwondo Klub', 'roskilde-taekwondo-klub'),
+  ('Ryomgaard Taekwondo', 'ryomgaard-taekwondo'),
+  ('Silkeborg Taekwondo Klub', 'silkeborg-taekwondo-klub'),
+  ('Skanderborg Taekwondo Klub - DTaF', 'skanderborg-taekwondo-klub-dtaf'),
+  ('Skive Taekwondo Klub', 'skive-taekwondo-klub'),
+  ('Skjern Taekwondo Klub', 'skjern-taekwondo-klub'),
+  ('Skovby Galten Taekwondo Klub', 'skovby-galten-taekwondo-klub'),
+  ('Slagelse City Taekwondo Klub', 'slagelse-city-taekwondo-klub'),
+  ('Slagelse Taekwondo Klub', 'slagelse-taekwondo-klub'),
+  ('Solrød Taekwondo Klub', 'solrod-taekwondo-klub'),
+  ('SOO-BAK Tommerup Taekwondo', 'soo-bak-tommerup-taekwondo'),
+  ('Stepping Taekwondo Klub', 'stepping-taekwondo-klub'),
+  ('Struer Taekwondo klub, KUK SUL', 'struer-taekwondo-klub-kuk-sul'),
+  ('Sundby Taekwondo Klub', 'sundby-taekwondo-klub'),
+  ('Svendborg Taekwondo-klub Se-Jong', 'svendborg-taekwondo-klub-se-jong'),
+  ('Sædding-Gjesing Taekwondo Klub', 'saedding-gjesing-taekwondo-klub'),
+  ('Taekwondo Klub Do', 'taekwondo-klub-do'),
+  ('Taekwondo klubben Chung Un', 'taekwondo-klubben-chung-un'),
+  ('Taekwondo Team Horsens', 'taekwondo-team-horsens'),
+  ('Taekwondo Team Kolding', 'taekwondo-team-kolding'),
+  ('Taeyang Bramming Taekwondo Klub', 'taeyang-bramming-taekwondo-klub'),
+  ('Tan Gun Sae Sim - Københavns Taekwondo Klub', 'tan-gun-sae-sim-koebenhavns-taekwondo-klub'),
+  ('Team Odense Taekwondo', 'team-odense-taekwondo'),
+  ('Thisted Taekwondo Dojang SUN-DO', 'thisted-taekwondo-dojang-sun-do'),
+  ('Taastrup City Taekwondo Klub', 'taastrup-city-taekwondo-klub'),
+  ('Varde Taekwondo Klub Dong Woo', 'varde-taekwondo-klub-dong-woo'),
+  ('Vejle Taekwondo Klub', 'vejle-taekwondo-klub'),
+  ('Viborg Taekwondo Klub', 'viborg-taekwondo-klub'),
+  ('Vojens Taekwondo klub', 'vojens-taekwondo-klub'),
+  ('Vollsmose Taekwondo Odense', 'vollsmose-taekwondo-odense'),
+  ('Vordingborg Taekwondo Klub', 'vordingborg-taekwondo-klub'),
+  ('Yong Do Kwan Taekwondo Klub Hjørring', 'yong-do-kwan-taekwondo-klub-hjorring'),
+  ('Ølstykke Hwa Rang Taekwondo', 'olstykke-hwa-rang-taekwondo'),
+  ('Østerbro Taekwondo Klub', 'osterbro-taekwondo-klub'),
+  ('Aabenraa Taekwondo Klub', 'aabenraa-taekwondo-klub'),
+  ('Aalborg Taekwondo', 'aalborg-taekwondo'),
+  ('Aarhus Syd Taekwondo Klub - Tang Soo Do', 'aarhus-syd-taekwondo-klub-tang-soo-do'),
+  ('Århus Taekwondo Klub', 'arhus-taekwondo-klub'),
+  ('Århus Vest Taekwondo Klub', 'arhus-vest-taekwondo-klub')
+ON CONFLICT (name) DO NOTHING;

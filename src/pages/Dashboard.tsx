@@ -27,6 +27,7 @@ interface Profile {
   current_injury: string | null;
   athlete_code: string | null;
   discipline: string;
+  club_id: string | null;
 }
 
 interface TrainingPlan {
@@ -97,6 +98,10 @@ export default function Dashboard() {
       const profileData = profileRes.data as any;
       if (!profileData.is_approved) {
         navigate("/pending-approval");
+        return;
+      }
+      if (!profileData.club_id) {
+        navigate("/profile-setup");
         return;
       }
       setProfile(profileData as Profile);

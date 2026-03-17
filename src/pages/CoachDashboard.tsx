@@ -103,15 +103,28 @@ export default function CoachDashboard() {
     if (!user) { navigate("/auth"); return; }
     setCoachUserId(user.id);
 
-    const { data: roles } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", user.id);
+    const [rolesRes, profileRes] = await Promise.all([
+      supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id),
+      supabase
+        .from("profiles")
+        .select("club_id")
+        .eq("user_id", user.id)
+        .maybeSingle(),
+    ]);
 
-    const userRoles = (roles || []).map((r: any) => r.role);
+    const userRoles = (rolesRes.data || []).map((r: any) => r.role);
     const isCoach = userRoles.some((r: string) => r === "coach" || r === "admin");
     if (!isCoach) { navigate("/dashboard"); return; }
     setIsAdmin(userRoles.includes("admin"));
+
+    if (!(profileRes.data as any)?.club_id) {
+      toast({ title: t("completeClubBeforeCoach"), variant: "destructive" });
+      navigate("/profile-setup");
+      return;
+    }
 
     await loadAthletes();
   };
@@ -163,7 +176,6 @@ export default function CoachDashboard() {
     }
     setAdding(true);
     try {
-      // Look up athlete by code using the edge function (since coach may not have direct profile access yet)
       const { data: profile } = await supabase
         .from("profiles")
         .select("user_id")
@@ -183,6 +195,8 @@ export default function CoachDashboard() {
       if (error) {
         if (error.code === "23505") {
           toast({ title: t("error"), description: t("athleteAlreadyAdded"), variant: "destructive" });
+        } else if (error.message?.toLowerCase().includes("row-level security")) {
+          toast({ title: t("error"), description: t("sameClubRequired"), variant: "destructive" });
         } else {
           throw error;
         }
@@ -231,7 +245,8 @@ export default function CoachDashboard() {
       setNewAthleteDiscipline("sparring");
       await loadAthletes();
     } catch (err: any) {
-      toast({ title: t("error"), description: err.message, variant: "destructive" });
+      const description = err.message === "COACH_CLUB_REQUIRED" ? t("completeClubBeforeCoach") : err.message;
+      toast({ title: t("error"), description, variant: "destructive" });
     } finally {
       setCreating(false);
     }
@@ -306,6 +321,7 @@ export default function CoachDashboard() {
             <UserPlus className="h-5 w-5" /> {t("createAthlete")} {!isAdmin && <>({athletes.length}/{MAX_ATHLETES})</>}
           </h3>
           <p className="text-xs text-muted-foreground">{t("createAthleteDesc")}</p>
+          <p className="text-xs text-muted-foreground">{t("athleteInheritsCoachClub")}</p>
 
           {showCreateForm ? (
             <div className="space-y-3">
