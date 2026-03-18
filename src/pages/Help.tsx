@@ -4,6 +4,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { ArrowLeft, UserCircle, ClipboardList, HeartPulse, Brain, Users, BarChart3 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { Watermark } from "@/components/Watermark";
 
 const helpSections = [
   { key: "helpProfile", icon: UserCircle },
