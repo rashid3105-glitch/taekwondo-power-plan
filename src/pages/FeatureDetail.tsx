@@ -1,8 +1,9 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, Check, Zap } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import logo from "@/assets/logo.png";
 
 import trainingImg from "@/assets/features/training-plan.jpg";
 import progressImg from "@/assets/features/progress.jpg";
