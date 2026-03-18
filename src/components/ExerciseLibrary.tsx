@@ -194,7 +194,7 @@ export function ExerciseLibrary() {
               data-[active=true]:bg-primary data-[active=true]:text-primary-foreground
               data-[active=false]:text-muted-foreground hover:text-foreground cursor-pointer"
           >
-            My Exercises ({userExercises.length})
+            {t("myExercises")} ({userExercises.length})
           </button>
         )}
       </div>
