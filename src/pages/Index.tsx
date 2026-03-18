@@ -8,6 +8,7 @@ import {
 import logo from "@/assets/logo.png";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { AppFooter } from "@/components/AppFooter";
 
 function SectionPreview({
   icon: Icon,
