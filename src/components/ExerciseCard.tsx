@@ -13,32 +13,13 @@ const CATEGORY_DOT: Record<string, string> = {
   plyometric: "bg-explosive",
 };
 
-function extractYouTubeId(url: string): string {
-  const match = url.match(/(?:v=|\/embed\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-  return match?.[1] || "";
-}
-
 interface ExerciseCardProps {
   exercise: Exercise;
   index: number;
-  onVideoChange?: (exerciseId: string, newVideoId: string) => void;
 }
 
-export function ExerciseCard({ exercise, index, onVideoChange }: ExerciseCardProps) {
+export function ExerciseCard({ exercise, index }: ExerciseCardProps) {
   const [expanded, setExpanded] = useState(false);
-  const [editingVideo, setEditingVideo] = useState(false);
-  const [videoUrl, setVideoUrl] = useState("");
-
-  const handleEditVideo = () => {
-    setVideoUrl(exercise.videoId ? `https://www.youtube.com/watch?v=${exercise.videoId}` : "");
-    setEditingVideo(true);
-  };
-
-  const handleSaveVideo = () => {
-    const newId = extractYouTubeId(videoUrl) || videoUrl.trim();
-    onVideoChange?.(exercise.id, newId);
-    setEditingVideo(false);
-  };
 
   return (
     <div className="rounded-lg border border-border bg-secondary/30 overflow-hidden transition-all">
