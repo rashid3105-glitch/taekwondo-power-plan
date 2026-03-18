@@ -202,7 +202,7 @@ export function ExerciseLibrary() {
       {/* Add button */}
       {isLoggedIn && !showForm && (
         <Button variant="outline" size="sm" onClick={() => setShowForm(true)}>
-          <Plus className="h-4 w-4 mr-1" /> Add Custom Exercise
+          <Plus className="h-4 w-4 mr-1" /> {t("addCustomExercise")}
         </Button>
       )}
 
