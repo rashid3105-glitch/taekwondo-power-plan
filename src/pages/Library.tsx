@@ -1,4 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
+import { AppFooter } from "@/components/AppFooter";
 import { ExerciseLibrary } from "@/components/ExerciseLibrary";
 import { MentalLibrary } from "@/components/MentalLibrary";
 import { NutritionLibrary } from "@/components/NutritionLibrary";
@@ -53,6 +54,7 @@ export default function Library() {
         {section === "mental" && <MentalLibrary />}
         {section === "nutrition" && <NutritionLibrary />}
       </main>
+      <AppFooter />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import logo from "@/assets/logo.png";
+import { AppFooter } from "@/components/AppFooter";
 
 import trainingImg from "@/assets/features/training-plan.jpg";
 import progressImg from "@/assets/features/progress.jpg";
@@ -233,14 +234,7 @@ const FeatureDetail = () => {
         </section>
       </main>
 
-      <footer className="border-t border-border/50 py-5 space-y-1">
-        <p className="text-center text-[11px] text-muted-foreground tracking-wide">
-          {t("footerText")}
-        </p>
-        <p className="text-center text-[10px] text-muted-foreground/60">
-          © F. Rashid
-        </p>
-      </footer>
+      <AppFooter />
     </div>
   );
 };
