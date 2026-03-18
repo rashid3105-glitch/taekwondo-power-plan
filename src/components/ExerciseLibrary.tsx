@@ -199,7 +199,7 @@ export function ExerciseLibrary() {
       <div className="space-y-2">
         {filtered.map((exercise, i) => (
           <div key={exercise.id} className="relative">
-            <ExerciseCard exercise={exercise} index={i + 1} onVideoChange={handleVideoChange} />
+            <ExerciseCard exercise={exercise} index={i + 1} />
             {"isCustom" in exercise && exercise.isCustom && (
               <div className="absolute top-2 right-2 flex items-center gap-1.5 z-10">
                 <span className="text-[9px] bg-primary/15 text-primary px-1.5 py-0.5 rounded-full font-bold uppercase">Custom</span>
