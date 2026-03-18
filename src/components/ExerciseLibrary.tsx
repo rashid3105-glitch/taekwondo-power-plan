@@ -222,7 +222,7 @@ export function ExerciseLibrary() {
                 <button
                   onClick={() => deleteCustomExercise(exercise.dbId)}
                   className="h-6 w-6 rounded-full bg-destructive/15 text-destructive flex items-center justify-center hover:bg-destructive/25 transition-colors"
-                  title="Delete exercise"
+                  title={t("deleteExercise")}
                 >
                   <Trash2 className="h-3 w-3" />
                 </button>

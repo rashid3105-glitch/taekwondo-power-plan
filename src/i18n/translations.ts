@@ -790,6 +790,14 @@ const translations = {
     diaryDeleted: "Indgang slettet",
     diaryEmpty: "Ingen dagbogsindgange endnu",
     diaryEmptyDesc: "Begynd at skrive for at holde styr på dine tanker, humør og energiniveauer.",
+    // Exercise Library
+    exerciseDisclaimer: "💡 Tip: Søg efter enhver øvelse ved navn på YouTube for videodemoer, eller spørg din træner om vejledning.",
+    allFilter: "Alle",
+    myExercises: "Mine øvelser",
+    addCustomExercise: "Tilføj brugerdefineret øvelse",
+    customLabel: "Brugerdefineret",
+    deleteExercise: "Slet øvelse",
+    exercises: "Øvelser",
   },
 } as const;
 
