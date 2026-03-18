@@ -322,6 +322,7 @@ export default function Diary() {
           })
         )}
       </main>
+      <AppFooter />
     </div>
   );
 }

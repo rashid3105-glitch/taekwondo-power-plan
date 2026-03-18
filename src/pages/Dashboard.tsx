@@ -13,6 +13,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { MentalAssessment } from "@/components/MentalAssessment";
 import { ProgressDashboard } from "@/components/ProgressDashboard";
 import { NutritionPlan } from "@/components/NutritionPlan";
+import { AppFooter } from "@/components/AppFooter";
 
 interface Profile {
   display_name: string;

@@ -597,6 +597,7 @@ export default function CoachDashboard() {
           </DialogContent>
         </Dialog>
       </main>
+      <AppFooter />
     </div>
   );
 }

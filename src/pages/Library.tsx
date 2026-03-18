@@ -53,6 +53,7 @@ export default function Library() {
         {section === "mental" && <MentalLibrary />}
         {section === "nutrition" && <NutritionLibrary />}
       </main>
+      <AppFooter />
     </div>
   );
 }

@@ -80,6 +80,7 @@ export default function LibraryChooser() {
           ))}
         </div>
       </main>
+      <AppFooter />
     </div>
   );
 }
