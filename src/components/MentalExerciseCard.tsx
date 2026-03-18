@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { type MentalExercise, MENTAL_CATEGORY_LABELS, MENTAL_CATEGORY_ICONS } from "@/data/mentalExercises";
+import { type MentalExercise, MENTAL_CATEGORY_LABELS, MENTAL_CATEGORY_ICONS, MENTAL_DIFFICULTY_LABELS } from "@/data/mentalExercises";
 import { ChevronDown, ChevronUp, Clock, BarChart3 } from "lucide-react";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const DIFFICULTY_STYLES = {
   beginner: "bg-tab-nutrition/15 text-tab-nutrition",
@@ -10,6 +11,9 @@ const DIFFICULTY_STYLES = {
 
 export function MentalExerciseCard({ exercise, index }: { exercise: MentalExercise; index: number }) {
   const [expanded, setExpanded] = useState(false);
+  const { language, t } = useLanguage();
+  const catLabels = MENTAL_CATEGORY_LABELS[language];
+  const diffLabels = MENTAL_DIFFICULTY_LABELS[language];
 
   return (
     <div className="rounded-lg border border-border bg-secondary/30 overflow-hidden transition-all">
@@ -21,7 +25,7 @@ export function MentalExerciseCard({ exercise, index }: { exercise: MentalExerci
         <span className="text-base">{MENTAL_CATEGORY_ICONS[exercise.category]}</span>
         <span className="font-semibold text-sm text-foreground flex-1 text-left">{exercise.name}</span>
         <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${DIFFICULTY_STYLES[exercise.difficulty]}`}>
-          {exercise.difficulty}
+          {diffLabels[exercise.difficulty]}
         </span>
         {expanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
       </button>
@@ -30,13 +34,13 @@ export function MentalExerciseCard({ exercise, index }: { exercise: MentalExerci
         <div className="px-4 pb-4 pt-1 space-y-4 animate-slide-up">
           <div className="flex items-center gap-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> {exercise.duration}</span>
-            <span className="flex items-center gap-1"><BarChart3 className="h-3.5 w-3.5" /> {MENTAL_CATEGORY_LABELS[exercise.category]}</span>
+            <span className="flex items-center gap-1"><BarChart3 className="h-3.5 w-3.5" /> {catLabels[exercise.category]}</span>
           </div>
 
           <p className="text-sm text-foreground/80 leading-relaxed">{exercise.description}</p>
 
           <div className="space-y-2">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Steps</p>
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{t("mentalSteps")}</p>
             <ol className="space-y-1.5">
               {exercise.steps.map((step, i) => (
                 <li key={i} className="flex gap-2 text-xs text-foreground/90">
@@ -48,7 +52,7 @@ export function MentalExerciseCard({ exercise, index }: { exercise: MentalExerci
           </div>
 
           <p className="text-xs leading-relaxed text-tab-mental/80">
-            <span className="font-semibold text-tab-mental">Why it matters: </span>
+            <span className="font-semibold text-tab-mental">{t("mentalWhyItMatters")} </span>
             {exercise.whyItMatters}
           </p>
         </div>
