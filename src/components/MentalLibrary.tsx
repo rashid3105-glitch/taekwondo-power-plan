@@ -1,14 +1,17 @@
 import { useState } from "react";
 import { getMentalExercises, MENTAL_CATEGORY_LABELS, MENTAL_CATEGORY_ICONS, type MentalCategory } from "@/data/mentalExercises";
 import { MentalExerciseCard } from "./MentalExerciseCard";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const CATEGORIES: MentalCategory[] = ["focus", "visualization", "breathing", "confidence", "recovery", "toughness"];
 
 export function MentalLibrary() {
   const [filter, setFilter] = useState<MentalCategory | "all">("all");
-  const exercises = getMentalExercises();
+  const { locale, t } = useLanguage();
+  const exercises = getMentalExercises(locale);
 
   const filtered = filter === "all" ? exercises : exercises.filter((e) => e.category === filter);
+  const catLabels = MENTAL_CATEGORY_LABELS[locale];
 
   return (
     <div className="space-y-4">
@@ -20,7 +23,7 @@ export function MentalLibrary() {
             data-[active=true]:bg-foreground data-[active=true]:text-background
             data-[active=false]:text-muted-foreground hover:text-foreground"
         >
-          All ({exercises.length})
+          {t("allFilter")} ({exercises.length})
         </button>
         {CATEGORIES.map((cat) => (
           <button
@@ -31,7 +34,7 @@ export function MentalLibrary() {
               data-[active=true]:bg-tab-mental data-[active=true]:text-foreground
               data-[active=false]:text-muted-foreground hover:text-foreground"
           >
-            {MENTAL_CATEGORY_ICONS[cat]} {MENTAL_CATEGORY_LABELS[cat]} ({exercises.filter((e) => e.category === cat).length})
+            {MENTAL_CATEGORY_ICONS[cat]} {catLabels[cat]} ({exercises.filter((e) => e.category === cat).length})
           </button>
         ))}
       </div>

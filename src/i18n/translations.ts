@@ -399,6 +399,8 @@ const translations = {
     customLabel: "Custom",
     deleteExercise: "Delete exercise",
     exercisesTitle: "Exercises",
+    mentalSteps: "Steps",
+    mentalWhyItMatters: "Why it matters:",
     // Library Chooser
     chooseLibrary: "Choose a Library",
     chooseLibraryDesc: "Browse exercises, mental training drills, or nutrition recipes.",
@@ -807,6 +809,8 @@ const translations = {
     customLabel: "Brugerdefineret",
     deleteExercise: "Slet øvelse",
     exercisesTitle: "Øvelser",
+    mentalSteps: "Trin",
+    mentalWhyItMatters: "Hvorfor det er vigtigt:",
     // Library Chooser
     chooseLibrary: "Vælg et bibliotek",
     chooseLibraryDesc: "Udforsk øvelser, mentale træningsøvelser eller ernæringsopskrifter.",
