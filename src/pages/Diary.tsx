@@ -12,6 +12,7 @@ import {
   Frown, Meh, Smile, Laugh, Battery, BatteryLow, BatteryMedium, BatteryFull,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Watermark } from "@/components/Watermark";
 
 interface DiaryEntry {
   id: string;
