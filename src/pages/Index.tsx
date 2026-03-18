@@ -9,6 +9,7 @@ import logo from "@/assets/logo.png";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { AppFooter } from "@/components/AppFooter";
+import { Watermark } from "@/components/Watermark";
 
 function SectionPreview({
   icon: Icon,
