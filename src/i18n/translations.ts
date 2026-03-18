@@ -399,6 +399,15 @@ const translations = {
     customLabel: "Custom",
     deleteExercise: "Delete exercise",
     exercisesTitle: "Exercises",
+    // Library Chooser
+    chooseLibrary: "Choose a Library",
+    chooseLibraryDesc: "Browse exercises, mental training drills, or nutrition recipes.",
+    libExerciseLabel: "Exercises",
+    libExerciseDesc: "Taekwondo-focused exercises with visual demos",
+    libMentalLabel: "Mental Training",
+    libMentalDesc: "Focus, visualization & mental toughness drills",
+    libNutritionLabel: "Nutrition & Recipes",
+    libNutritionDesc: "Athlete-focused meals and meal planning",
   },
   da: {
     // Common
