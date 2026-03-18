@@ -398,7 +398,7 @@ const translations = {
     addCustomExercise: "Add Custom Exercise",
     customLabel: "Custom",
     deleteExercise: "Delete exercise",
-    exercises: "Exercises",
+    exercisesTitle: "Exercises",
   },
   da: {
     // Common
