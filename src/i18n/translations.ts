@@ -391,6 +391,14 @@ const translations = {
     diaryDeleted: "Entry deleted",
     diaryEmpty: "No diary entries yet",
     diaryEmptyDesc: "Start writing to track your thoughts, mood, and energy levels.",
+    // Exercise Library
+    exerciseDisclaimer: "💡 Tip: Search for any exercise by name on YouTube for video demos, or ask your coach for guidance.",
+    allFilter: "All",
+    myExercises: "My Exercises",
+    addCustomExercise: "Add Custom Exercise",
+    customLabel: "Custom",
+    deleteExercise: "Delete exercise",
+    exercises: "Exercises",
   },
   da: {
     // Common
