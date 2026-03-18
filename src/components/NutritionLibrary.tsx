@@ -58,9 +58,8 @@ export function NutritionLibrary() {
   const [userRecipes, setUserRecipes] = useState<(Recipe & { isCustom: true; dbId: string })[]>([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { toast } = useToast();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
 
-  const { locale } = useLanguage();
   const builtIn = getRecipes(locale);
 
   useEffect(() => {
