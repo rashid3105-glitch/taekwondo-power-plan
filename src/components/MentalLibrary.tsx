@@ -11,7 +11,7 @@ export function MentalLibrary() {
   const exercises = getMentalExercises(locale);
 
   const filtered = filter === "all" ? exercises : exercises.filter((e) => e.category === filter);
-  const catLabels = MENTAL_CATEGORY_LABELS[language];
+  const catLabels = MENTAL_CATEGORY_LABELS[locale];
 
   return (
     <div className="space-y-4">

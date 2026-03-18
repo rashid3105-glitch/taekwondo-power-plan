@@ -11,9 +11,9 @@ const DIFFICULTY_STYLES = {
 
 export function MentalExerciseCard({ exercise, index }: { exercise: MentalExercise; index: number }) {
   const [expanded, setExpanded] = useState(false);
-  const { language, t } = useLanguage();
-  const catLabels = MENTAL_CATEGORY_LABELS[language];
-  const diffLabels = MENTAL_DIFFICULTY_LABELS[language];
+  const { locale, t } = useLanguage();
+  const catLabels = MENTAL_CATEGORY_LABELS[locale];
+  const diffLabels = MENTAL_DIFFICULTY_LABELS[locale];
 
   return (
     <div className="rounded-lg border border-border bg-secondary/30 overflow-hidden transition-all">
