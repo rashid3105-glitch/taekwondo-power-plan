@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { AppFooter } from "@/components/AppFooter";
+import { Watermark } from "@/components/Watermark";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";

@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import logo from "@/assets/logo.png";
 import { AppFooter } from "@/components/AppFooter";
+import { Watermark } from "@/components/Watermark";
 
 import trainingImg from "@/assets/features/training-plan.jpg";
 import progressImg from "@/assets/features/progress.jpg";

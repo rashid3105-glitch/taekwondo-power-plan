@@ -1,5 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { AppFooter } from "@/components/AppFooter";
+import { Watermark } from "@/components/Watermark";
 import { ExerciseLibrary } from "@/components/ExerciseLibrary";
 import { MentalLibrary } from "@/components/MentalLibrary";
 import { NutritionLibrary } from "@/components/NutritionLibrary";

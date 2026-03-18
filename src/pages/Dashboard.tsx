@@ -241,7 +241,8 @@ export default function Dashboard() {
   const activePlan = plans.find((p) => p.is_active);
 
   return (
-    <div className="min-h-screen bg-background pb-16 sm:pb-0">
+    <div className="min-h-screen bg-background pb-16 sm:pb-0 relative">
+      <Watermark />
       {/* Header */}
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container max-w-4xl mx-auto px-3 sm:px-4 py-3 space-y-2">
