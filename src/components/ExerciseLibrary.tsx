@@ -66,7 +66,8 @@ export function ExerciseLibrary() {
   const [videoOverrides, setVideoOverrides] = useState<Record<string, string>>({});
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { toast } = useToast();
-  const { locale } = useLanguage();
+  const { locale, t } = useLanguage();
+  const navigate = useNavigate();
   setExerciseLocale(locale);
   const allBuiltIn = getAllExercises();
 
