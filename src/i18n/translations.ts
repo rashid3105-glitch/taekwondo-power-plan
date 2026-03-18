@@ -399,6 +399,15 @@ const translations = {
     customLabel: "Custom",
     deleteExercise: "Delete exercise",
     exercisesTitle: "Exercises",
+    // Library Chooser
+    chooseLibrary: "Choose a Library",
+    chooseLibraryDesc: "Browse exercises, mental training drills, or nutrition recipes.",
+    libExerciseLabel: "Exercises",
+    libExerciseDesc: "Taekwondo-focused exercises with visual demos",
+    libMentalLabel: "Mental Training",
+    libMentalDesc: "Focus, visualization & mental toughness drills",
+    libNutritionLabel: "Nutrition & Recipes",
+    libNutritionDesc: "Athlete-focused meals and meal planning",
   },
   da: {
     // Common
@@ -798,6 +807,15 @@ const translations = {
     customLabel: "Brugerdefineret",
     deleteExercise: "Slet øvelse",
     exercisesTitle: "Øvelser",
+    // Library Chooser
+    chooseLibrary: "Vælg et bibliotek",
+    chooseLibraryDesc: "Udforsk øvelser, mentale træningsøvelser eller ernæringsopskrifter.",
+    libExerciseLabel: "Øvelser",
+    libExerciseDesc: "Taekwondo-fokuserede øvelser med visuelle demoer",
+    libMentalLabel: "Mental træning",
+    libMentalDesc: "Fokus, visualisering og mental styrketræning",
+    libNutritionLabel: "Ernæring & opskrifter",
+    libNutritionDesc: "Atletfokuserede måltider og madplanlægning",
   },
 } as const;
 
