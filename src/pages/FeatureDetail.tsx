@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import logo from "@/assets/logo.png";
+import { AppFooter } from "@/components/AppFooter";
 
 import trainingImg from "@/assets/features/training-plan.jpg";
 import progressImg from "@/assets/features/progress.jpg";
