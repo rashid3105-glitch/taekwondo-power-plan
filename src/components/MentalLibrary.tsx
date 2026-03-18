@@ -8,7 +8,7 @@ const CATEGORIES: MentalCategory[] = ["focus", "visualization", "breathing", "co
 export function MentalLibrary() {
   const [filter, setFilter] = useState<MentalCategory | "all">("all");
   const { locale, t } = useLanguage();
-  const exercises = getMentalExercises(language);
+  const exercises = getMentalExercises(locale);
 
   const filtered = filter === "all" ? exercises : exercises.filter((e) => e.category === filter);
   const catLabels = MENTAL_CATEGORY_LABELS[language];
