@@ -807,6 +807,15 @@ const translations = {
     customLabel: "Brugerdefineret",
     deleteExercise: "Slet øvelse",
     exercisesTitle: "Øvelser",
+    // Library Chooser
+    chooseLibrary: "Vælg et bibliotek",
+    chooseLibraryDesc: "Udforsk øvelser, mentale træningsøvelser eller ernæringsopskrifter.",
+    libExerciseLabel: "Øvelser",
+    libExerciseDesc: "Taekwondo-fokuserede øvelser med visuelle demoer",
+    libMentalLabel: "Mental træning",
+    libMentalDesc: "Fokus, visualisering og mental styrketræning",
+    libNutritionLabel: "Ernæring & opskrifter",
+    libNutritionDesc: "Atletfokuserede måltider og madplanlægning",
   },
 } as const;
 
