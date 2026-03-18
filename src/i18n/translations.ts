@@ -797,7 +797,7 @@ const translations = {
     addCustomExercise: "Tilføj brugerdefineret øvelse",
     customLabel: "Brugerdefineret",
     deleteExercise: "Slet øvelse",
-    exercises: "Øvelser",
+    exercisesTitle: "Øvelser",
   },
 } as const;
 
