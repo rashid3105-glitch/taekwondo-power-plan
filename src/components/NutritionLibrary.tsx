@@ -1,13 +1,24 @@
 import { useState, useEffect } from "react";
-import { getRecipes, RECIPE_CATEGORY_LABELS, RECIPE_CATEGORY_ICONS, type RecipeCategory, type Recipe } from "@/data/recipes";
+import { getRecipes, RECIPE_CATEGORY_ICONS, type RecipeCategory, type Recipe } from "@/data/recipes";
 import { RecipeCard } from "./RecipeCard";
 import { AddRecipeForm } from "./AddRecipeForm";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/i18n/LanguageContext";
+import type { TranslationKey } from "@/i18n/translations";
 
 const CATEGORIES: RecipeCategory[] = ["breakfast", "lunch", "dinner", "snack", "pre-workout", "post-workout"];
+
+const CATEGORY_KEYS: Record<RecipeCategory, TranslationKey> = {
+  breakfast: "catBreakfast",
+  lunch: "catLunch",
+  dinner: "catDinner",
+  snack: "catSnack",
+  "pre-workout": "catPreWorkout",
+  "post-workout": "catPostWorkout",
+};
 
 interface UserRecipeRow {
   id: string;
@@ -47,6 +58,7 @@ export function NutritionLibrary() {
   const [userRecipes, setUserRecipes] = useState<(Recipe & { isCustom: true; dbId: string })[]>([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const builtIn = getRecipes();
 
@@ -73,9 +85,9 @@ export function NutritionLibrary() {
   const deleteCustomRecipe = async (dbId: string) => {
     const { error } = await supabase.from("user_recipes").delete().eq("id", dbId);
     if (error) {
-      toast({ title: "Failed to delete", variant: "destructive" });
+      toast({ title: t("recipeDeleteFailed"), variant: "destructive" });
     } else {
-      toast({ title: "Recipe deleted" });
+      toast({ title: t("recipeDeleted") });
       setUserRecipes((prev) => prev.filter((r) => r.dbId !== dbId));
     }
   };
@@ -101,7 +113,7 @@ export function NutritionLibrary() {
             data-[active=true]:bg-foreground data-[active=true]:text-background
             data-[active=false]:text-muted-foreground hover:text-foreground"
         >
-          All ({allRecipes.length})
+          {t("allFilter")} ({allRecipes.length})
         </button>
         {CATEGORIES.map((cat) => (
           <button
@@ -112,7 +124,7 @@ export function NutritionLibrary() {
               data-[active=true]:bg-tab-nutrition data-[active=true]:text-foreground
               data-[active=false]:text-muted-foreground hover:text-foreground"
           >
-            {RECIPE_CATEGORY_ICONS[cat]} {RECIPE_CATEGORY_LABELS[cat]} ({allRecipes.filter((r) => r.category === cat).length})
+            {RECIPE_CATEGORY_ICONS[cat]} {t(CATEGORY_KEYS[cat])} ({allRecipes.filter((r) => r.category === cat).length})
           </button>
         ))}
         {userRecipes.length > 0 && (
@@ -123,14 +135,14 @@ export function NutritionLibrary() {
               data-[active=true]:bg-tab-nutrition data-[active=true]:text-foreground
               data-[active=false]:text-muted-foreground hover:text-foreground"
           >
-            My Recipes ({userRecipes.length})
+            {t("recipeMyRecipes")} ({userRecipes.length})
           </button>
         )}
       </div>
 
       {isLoggedIn && !showForm && (
         <Button variant="outline" size="sm" onClick={() => setShowForm(true)}>
-          <Plus className="h-4 w-4 mr-1" /> Add Custom Recipe
+          <Plus className="h-4 w-4 mr-1" /> {t("recipeAddCustom")}
         </Button>
       )}
 
@@ -144,11 +156,11 @@ export function NutritionLibrary() {
             <RecipeCard recipe={recipe} index={i + 1} />
             {"isCustom" in recipe && recipe.isCustom && (
               <div className="absolute top-2 right-2 flex items-center gap-1.5 z-10">
-                <span className="text-[9px] bg-tab-nutrition/15 text-tab-nutrition px-1.5 py-0.5 rounded-full font-bold uppercase">Custom</span>
+                <span className="text-[9px] bg-tab-nutrition/15 text-tab-nutrition px-1.5 py-0.5 rounded-full font-bold uppercase">{t("customLabel")}</span>
                 <button
                   onClick={() => deleteCustomRecipe(recipe.dbId)}
                   className="h-6 w-6 rounded-full bg-destructive/15 text-destructive flex items-center justify-center hover:bg-destructive/25 transition-colors"
-                  title="Delete recipe"
+                  title={t("delete")}
                 >
                   <Trash2 className="h-3 w-3" />
                 </button>

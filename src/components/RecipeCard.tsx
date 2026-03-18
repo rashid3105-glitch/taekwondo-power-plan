@@ -1,9 +1,20 @@
 import { useState } from "react";
-import { type Recipe, RECIPE_CATEGORY_LABELS, RECIPE_CATEGORY_ICONS } from "@/data/recipes";
+import { type Recipe, RECIPE_CATEGORY_ICONS } from "@/data/recipes";
 import { ChevronDown, ChevronUp, Clock, Flame } from "lucide-react";
+import { useLanguage } from "@/i18n/LanguageContext";
+
+const CATEGORY_KEYS: Record<string, string> = {
+  breakfast: "catBreakfast",
+  lunch: "catLunch",
+  dinner: "catDinner",
+  snack: "catSnack",
+  "pre-workout": "catPreWorkout",
+  "post-workout": "catPostWorkout",
+};
 
 export function RecipeCard({ recipe, index }: { recipe: Recipe; index: number }) {
   const [expanded, setExpanded] = useState(false);
+  const { t } = useLanguage();
 
   return (
     <div className="rounded-lg border border-border bg-secondary/30 overflow-hidden transition-all">
@@ -25,16 +36,16 @@ export function RecipeCard({ recipe, index }: { recipe: Recipe; index: number })
           {/* Meta */}
           <div className="flex items-center gap-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> {recipe.prepTime}</span>
-            <span>{RECIPE_CATEGORY_LABELS[recipe.category]}</span>
+            <span>{t(CATEGORY_KEYS[recipe.category] as any)}</span>
           </div>
 
           {/* Macros */}
           <div className="grid grid-cols-4 gap-2">
             {[
-              { label: "Calories", value: `${recipe.calories}`, unit: "kcal" },
-              { label: "Protein", value: `${recipe.protein}`, unit: "g" },
-              { label: "Carbs", value: `${recipe.carbs}`, unit: "g" },
-              { label: "Fat", value: `${recipe.fat}`, unit: "g" },
+              { label: t("calories"), value: `${recipe.calories}`, unit: "kcal" },
+              { label: t("protein"), value: `${recipe.protein}`, unit: "g" },
+              { label: t("carbs"), value: `${recipe.carbs}`, unit: "g" },
+              { label: t("recipeFat"), value: `${recipe.fat}`, unit: "g" },
             ].map((m) => (
               <div key={m.label} className="rounded-md bg-muted p-2 text-center">
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{m.label}</p>
@@ -45,7 +56,7 @@ export function RecipeCard({ recipe, index }: { recipe: Recipe; index: number })
 
           {/* Ingredients */}
           <div className="space-y-1.5">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Ingredients</p>
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{t("recipeIngredients")}</p>
             <ul className="grid grid-cols-2 gap-1">
               {recipe.ingredients.map((ing, i) => (
                 <li key={i} className="text-xs text-foreground/90 flex items-start gap-1.5">
@@ -57,7 +68,7 @@ export function RecipeCard({ recipe, index }: { recipe: Recipe; index: number })
 
           {/* Steps */}
           <div className="space-y-1.5">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Steps</p>
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{t("recipeSteps")}</p>
             <ol className="space-y-1">
               {recipe.steps.map((step, i) => (
                 <li key={i} className="flex gap-2 text-xs text-foreground/90">
@@ -70,7 +81,7 @@ export function RecipeCard({ recipe, index }: { recipe: Recipe; index: number })
 
           {/* Tip */}
           <p className="text-xs leading-relaxed text-tab-nutrition/80">
-            <span className="font-semibold text-tab-nutrition">💡 Athlete tip: </span>
+            <span className="font-semibold text-tab-nutrition">{t("recipeAthleteTip")} </span>
             {recipe.tip}
           </p>
         </div>
