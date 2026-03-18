@@ -399,6 +399,8 @@ const translations = {
     customLabel: "Custom",
     deleteExercise: "Delete exercise",
     exercisesTitle: "Exercises",
+    mentalSteps: "Steps",
+    mentalWhyItMatters: "Why it matters:",
     // Library Chooser
     chooseLibrary: "Choose a Library",
     chooseLibraryDesc: "Browse exercises, mental training drills, or nutrition recipes.",
