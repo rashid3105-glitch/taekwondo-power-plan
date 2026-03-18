@@ -60,7 +60,8 @@ export function NutritionLibrary() {
   const { toast } = useToast();
   const { t } = useLanguage();
 
-  const builtIn = getRecipes();
+  const { locale } = useLanguage();
+  const builtIn = getRecipes(locale);
 
   useEffect(() => {
     loadUserRecipes();
