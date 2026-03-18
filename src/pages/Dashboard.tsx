@@ -641,6 +641,7 @@ export default function Dashboard() {
           </>
         )}
       </main>
+      <AppFooter />
     </div>
   );
 }
