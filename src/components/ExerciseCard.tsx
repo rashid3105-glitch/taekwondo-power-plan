@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { type Exercise, CATEGORY_LABELS } from "@/data/exercises";
 import { cn } from "@/lib/utils";
-import { ChevronDown, ChevronUp, Pencil, Check, X } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { MuscleGroupBadges } from "./MuscleIcon";
+import { ExerciseIllustration } from "./ExerciseIllustration";
 
 const CATEGORY_DOT: Record<string, string> = {
   power: "bg-accent",
