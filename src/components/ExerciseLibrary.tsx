@@ -150,6 +150,19 @@ export function ExerciseLibrary() {
 
   return (
     <div className="space-y-4">
+      {/* Disclaimer */}
+      <Alert className="border-primary/30 bg-primary/5">
+        <div className="flex items-start gap-2">
+          <div className="flex items-center gap-1.5 shrink-0 mt-0.5">
+            <Search className="h-4 w-4 text-primary" />
+            <MessageCircle className="h-4 w-4 text-primary" />
+          </div>
+          <AlertDescription className="text-sm text-muted-foreground">
+            {t("exerciseDisclaimer")}
+          </AlertDescription>
+        </div>
+      </Alert>
+
       {/* Filters */}
       <div className="flex flex-wrap gap-2">
         <button
@@ -159,7 +172,7 @@ export function ExerciseLibrary() {
             data-[active=true]:bg-foreground data-[active=true]:text-background
             data-[active=false]:text-muted-foreground hover:text-foreground cursor-pointer"
         >
-          All ({allExercises.length})
+          {t("allFilter")} ({allExercises.length})
         </button>
         {CATEGORIES.map((cat) => (
           <button
