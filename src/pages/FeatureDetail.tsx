@@ -1,8 +1,9 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, Check, Zap } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import logo from "@/assets/logo.png";
 
 import trainingImg from "@/assets/features/training-plan.jpg";
 import progressImg from "@/assets/features/progress.jpg";
@@ -144,9 +145,7 @@ const FeatureDetail = () => {
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4 border-b border-border/50">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-energy">
-            <Zap className="h-4 w-4 text-primary-foreground" />
-          </div>
+          <img src={logo} alt="TKD Power" className="h-9 w-9 rounded-lg object-contain" />
           <span className="text-sm font-bold tracking-tight text-foreground">TKD POWER</span>
         </div>
         <div className="flex items-center gap-3">

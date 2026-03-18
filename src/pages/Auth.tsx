@@ -4,7 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Zap, Users, FlaskConical } from "lucide-react";
+import { Users, FlaskConical } from "lucide-react";
+import logo from "@/assets/logo.png";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -55,9 +56,7 @@ export default function AuthPage() {
           <LanguageSwitcher />
         </div>
         <div className="text-center">
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-energy mb-4">
-            <Zap className="h-6 w-6 text-primary-foreground" />
-          </div>
+          <img src={logo} alt="TKD Power" className="h-14 w-14 rounded-xl object-contain mx-auto mb-4" />
           <h1 className="text-2xl font-extrabold text-foreground">TKD POWER</h1>
           <p className="text-sm text-muted-foreground mt-1">
             {isLogin ? t("signInToAccount") : t("createAthleteAccount")}

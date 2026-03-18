@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import {
-  Zap, ArrowRight, ClipboardList, BarChart3, Brain, HeartPulse, BookOpen, UtensilsCrossed, HelpCircle,
+  ArrowRight, ClipboardList, BarChart3, Brain, HeartPulse, BookOpen, UtensilsCrossed, HelpCircle,
 } from "lucide-react";
+import logo from "@/assets/logo.png";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
@@ -17,7 +18,7 @@ function SectionPreview({
   iconColor,
   onClick,
 }: {
-  icon: typeof Zap;
+  icon: typeof ArrowRight;
   title: string;
   description: string;
   gradient: string;
@@ -118,9 +119,7 @@ const Index = () => {
       {/* Top bar */}
       <header className="flex items-center justify-between px-6 py-4 border-b border-border/50">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-energy">
-            <Zap className="h-4 w-4 text-primary-foreground" />
-          </div>
+          <img src={logo} alt="TKD Power" className="h-9 w-9 rounded-lg object-contain" />
           <span className="text-sm font-bold tracking-tight text-foreground">TKD POWER</span>
         </div>
         <div className="flex items-center gap-3">

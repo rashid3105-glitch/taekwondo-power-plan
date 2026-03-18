@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain, Clock, Apple, Home, Lock, NotebookPen } from "lucide-react";
+import logo from "@/assets/logo.png";
 import { useToast } from "@/hooks/use-toast";
 import { AIPlanCard } from "@/components/AIPlanCard";
 import { RehabPlanCard } from "@/components/RehabPlanCard";
@@ -245,9 +246,7 @@ export default function Dashboard() {
           {/* Logo row */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 sm:gap-3">
-              <div className="h-8 w-8 rounded-lg bg-gradient-energy flex items-center justify-center">
-                <Zap className="h-4 w-4 text-primary-foreground" />
-              </div>
+              <img src={logo} alt="TKD Power" className="h-9 w-9 rounded-lg object-contain" />
               <span className="text-sm sm:text-base font-extrabold text-foreground">TKD POWER</span>
             </div>
             <div className="flex items-center gap-2">
