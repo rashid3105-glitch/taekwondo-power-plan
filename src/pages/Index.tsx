@@ -18,7 +18,7 @@ function SectionPreview({
   iconColor,
   onClick,
 }: {
-  icon: typeof Zap;
+  icon: typeof ArrowRight;
   title: string;
   description: string;
   gradient: string;
