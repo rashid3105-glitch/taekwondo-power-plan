@@ -35,7 +35,8 @@ export default function Pricing() {
   const [showDialog, setShowDialog] = useState(false);
 
   return (
-    <div className="min-h-screen bg-background px-4 py-8">
+    <div className="min-h-screen bg-background px-4 py-8 relative">
+      <Watermark />
       <div className="mx-auto max-w-4xl space-y-8">
         <div className="flex items-center justify-between">
           <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
