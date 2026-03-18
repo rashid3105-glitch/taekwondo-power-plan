@@ -5,8 +5,10 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { AddExerciseForm } from "./AddExerciseForm";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2 } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Plus, Trash2, ArrowLeft, Search, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const CATEGORIES: ExerciseCategory[] = ["power", "plyometric", "speed", "strength", "mobility"];
 
@@ -64,7 +66,8 @@ export function ExerciseLibrary() {
   const [videoOverrides, setVideoOverrides] = useState<Record<string, string>>({});
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { toast } = useToast();
-  const { locale } = useLanguage();
+  const { locale, t } = useLanguage();
+  const navigate = useNavigate();
   setExerciseLocale(locale);
   const allBuiltIn = getAllExercises();
 
@@ -147,6 +150,19 @@ export function ExerciseLibrary() {
 
   return (
     <div className="space-y-4">
+      {/* Disclaimer */}
+      <Alert className="border-primary/30 bg-primary/5">
+        <div className="flex items-start gap-2">
+          <div className="flex items-center gap-1.5 shrink-0 mt-0.5">
+            <Search className="h-4 w-4 text-primary" />
+            <MessageCircle className="h-4 w-4 text-primary" />
+          </div>
+          <AlertDescription className="text-sm text-muted-foreground">
+            {t("exerciseDisclaimer")}
+          </AlertDescription>
+        </div>
+      </Alert>
+
       {/* Filters */}
       <div className="flex flex-wrap gap-2">
         <button
@@ -156,7 +172,7 @@ export function ExerciseLibrary() {
             data-[active=true]:bg-foreground data-[active=true]:text-background
             data-[active=false]:text-muted-foreground hover:text-foreground cursor-pointer"
         >
-          All ({allExercises.length})
+          {t("allFilter")} ({allExercises.length})
         </button>
         {CATEGORIES.map((cat) => (
           <button
@@ -178,7 +194,7 @@ export function ExerciseLibrary() {
               data-[active=true]:bg-primary data-[active=true]:text-primary-foreground
               data-[active=false]:text-muted-foreground hover:text-foreground cursor-pointer"
           >
-            My Exercises ({userExercises.length})
+            {t("myExercises")} ({userExercises.length})
           </button>
         )}
       </div>
@@ -186,7 +202,7 @@ export function ExerciseLibrary() {
       {/* Add button */}
       {isLoggedIn && !showForm && (
         <Button variant="outline" size="sm" onClick={() => setShowForm(true)}>
-          <Plus className="h-4 w-4 mr-1" /> Add Custom Exercise
+          <Plus className="h-4 w-4 mr-1" /> {t("addCustomExercise")}
         </Button>
       )}
 
@@ -202,11 +218,11 @@ export function ExerciseLibrary() {
             <ExerciseCard exercise={exercise} index={i + 1} />
             {"isCustom" in exercise && exercise.isCustom && (
               <div className="absolute top-2 right-2 flex items-center gap-1.5 z-10">
-                <span className="text-[9px] bg-primary/15 text-primary px-1.5 py-0.5 rounded-full font-bold uppercase">Custom</span>
+                <span className="text-[9px] bg-primary/15 text-primary px-1.5 py-0.5 rounded-full font-bold uppercase">{t("customLabel")}</span>
                 <button
                   onClick={() => deleteCustomExercise(exercise.dbId)}
                   className="h-6 w-6 rounded-full bg-destructive/15 text-destructive flex items-center justify-center hover:bg-destructive/25 transition-colors"
-                  title="Delete exercise"
+                  title={t("deleteExercise")}
                 >
                   <Trash2 className="h-3 w-3" />
                 </button>

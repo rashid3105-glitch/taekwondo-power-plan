@@ -4,11 +4,13 @@ import { MentalLibrary } from "@/components/MentalLibrary";
 import { NutritionLibrary } from "@/components/NutritionLibrary";
 import { Dumbbell, Brain, UtensilsCrossed, ArrowLeft, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/i18n/LanguageContext";
+import type { TranslationKey } from "@/i18n/translations";
 
-const TITLES: Record<string, string> = {
-  exercise: "Exercises",
-  mental: "Mental Training",
-  nutrition: "Nutrition & Recipes",
+const TITLE_KEYS: Record<string, TranslationKey> = {
+  exercise: "exercisesTitle",
+  mental: "hubMentalTitle",
+  nutrition: "hubNutritionTitle",
 };
 
 const ICONS: Record<string, typeof Dumbbell> = {
@@ -26,7 +28,9 @@ const COLORS: Record<string, string> = {
 export default function Library() {
   const { section } = useParams<{ section: string }>();
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const Icon = ICONS[section || ""] || BookOpen;
+  const titleKey = TITLE_KEYS[section || ""];
 
   return (
     <div className="min-h-screen bg-background">
@@ -37,7 +41,9 @@ export default function Library() {
           </Button>
           <div className="flex items-center gap-2">
             <Icon className={`h-5 w-5 ${COLORS[section || ""] || "text-primary"}`} />
-            <span className="text-base font-extrabold text-foreground">{TITLES[section || ""] || "Library"}</span>
+            <span className="text-base font-extrabold text-foreground">
+              {titleKey ? t(titleKey) : t("library")}
+            </span>
           </div>
         </div>
       </header>

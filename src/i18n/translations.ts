@@ -391,6 +391,14 @@ const translations = {
     diaryDeleted: "Entry deleted",
     diaryEmpty: "No diary entries yet",
     diaryEmptyDesc: "Start writing to track your thoughts, mood, and energy levels.",
+    // Exercise Library
+    exerciseDisclaimer: "💡 Tip: Search for any exercise by name on YouTube for video demos, or ask your coach for guidance.",
+    allFilter: "All",
+    myExercises: "My Exercises",
+    addCustomExercise: "Add Custom Exercise",
+    customLabel: "Custom",
+    deleteExercise: "Delete exercise",
+    exercisesTitle: "Exercises",
   },
   da: {
     // Common
@@ -782,6 +790,14 @@ const translations = {
     diaryDeleted: "Indgang slettet",
     diaryEmpty: "Ingen dagbogsindgange endnu",
     diaryEmptyDesc: "Begynd at skrive for at holde styr på dine tanker, humør og energiniveauer.",
+    // Exercise Library
+    exerciseDisclaimer: "💡 Tip: Søg efter enhver øvelse ved navn på YouTube for videodemoer, eller spørg din træner om vejledning.",
+    allFilter: "Alle",
+    myExercises: "Mine øvelser",
+    addCustomExercise: "Tilføj brugerdefineret øvelse",
+    customLabel: "Brugerdefineret",
+    deleteExercise: "Slet øvelse",
+    exercisesTitle: "Øvelser",
   },
 } as const;
 
