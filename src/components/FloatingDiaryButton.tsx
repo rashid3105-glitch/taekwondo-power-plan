@@ -30,7 +30,7 @@ export const FloatingDiaryButton = () => {
   return (
     <button
       onClick={() => navigate("/diary")}
-      className="fixed bottom-24 right-6 z-50 h-14 w-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 flex items-center justify-center sm:bottom-8 sm:right-8 cursor-pointer"
+      className="fixed bottom-24 right-6 z-50 h-14 w-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 flex items-center justify-center sm:bottom-8 sm:right-8 cursor-pointer animate-slide-up animate-pulse-glow"
       aria-label="Open Diary"
     >
       <NotebookPen className="h-6 w-6" />
