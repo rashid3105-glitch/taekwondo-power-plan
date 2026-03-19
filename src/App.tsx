@@ -50,7 +50,6 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
           <FloatingDiaryButton />
-          </Routes>
         </BrowserRouter>
       </TooltipProvider>
     </LanguageProvider>
