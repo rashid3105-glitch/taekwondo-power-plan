@@ -295,9 +295,6 @@ export default function Dashboard() {
             <Button variant="ghost" size="sm" onClick={() => navigate("/library")} disabled={isDemo}>
               <BookOpen className="h-4 w-4 mr-1" /> {t("library")}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => navigate("/diary")}>
-              <NotebookPen className="h-4 w-4 mr-1" /> {t("diary" as any)}
-            </Button>
             {isAdmin && (
               <Button variant="ghost" size="sm" onClick={() => navigate("/admin/approval")}>
                 <Shield className="h-4 w-4 mr-1" /> {t("manageUsers")}
@@ -333,10 +330,6 @@ export default function Dashboard() {
           <button onClick={() => handleTabChange("mental")} disabled={isDemoLockedTab("mental")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "mental" ? "text-tab-mental" : "text-muted-foreground"} ${isDemoLockedTab("mental") ? "opacity-50" : ""}`}>
             <Brain className="h-5 w-5" />
             <span className="text-[10px] font-semibold">{t("mental")}</span>
-          </button>
-          <button onClick={() => navigate("/diary")} className="flex flex-col items-center gap-0.5 px-2 py-1 text-muted-foreground">
-            <NotebookPen className="h-5 w-5" />
-            <span className="text-[10px] font-semibold">{t("diary" as any)}</span>
           </button>
         </div>
       </nav>
