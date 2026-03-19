@@ -49,6 +49,8 @@ const App = () => (
             <Route path="/progress" element={<Navigate to="/dashboard" replace />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <FloatingDiaryButton />
+          </Routes>
         </BrowserRouter>
       </TooltipProvider>
     </LanguageProvider>
