@@ -770,9 +770,9 @@ const translations = {
     upgradeEnterprise: "Opgrader til Enterprise",
     requestDemo: "Anmod om gratis demo",
     requestDemoDesc: "Prøv appen gratis i 14 dage. Ingen betaling krævet.",
-    mobilePayTitle: "Betaling",
-    mobilePayInstruction: "Brug venligst dette MobilePay nummer:",
-    mobilePayMarkWith: "Mærk betalingen med:",
+    paypalTitle: "Betaling",
+    paypalInstruction: "Send betaling via PayPal til:",
+    paypalReference: "Inkluder din e-mail som reference",
 
     // Calendar
     addToCalendar: "Tilføj til kalender",
