@@ -145,10 +145,10 @@ const FeatureDetail = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col relative">
+      <PageMeta title={t(feature.titleKey as any)} description={feature.longDesc[locale]} />
       <Watermark />
       {/* Header */}
-      <header className="flex items-center justify-between px-6 py-4 border-b border-border/50">
-        <div className="flex items-center gap-2">
+      <header className="sticky top-0 z-40 flex items-center justify-between px-5 py-3 border-b border-border/40 bg-background/80 backdrop-blur-xl">
           <img src={logo} alt="TKD Power" className="h-9 w-9 rounded-lg object-contain" />
           <span className="text-sm font-bold tracking-tight text-foreground">TKD POWER</span>
         </div>
