@@ -464,7 +464,7 @@ export default function CoachDashboard() {
                     key={a.user_id}
                     className="rounded-lg border bg-card p-3 sm:p-4 transition-colors border-border hover:border-muted-foreground/30 overflow-hidden"
                   >
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between gap-2 min-w-0">
                       <div className="flex items-center gap-3">
                         {a.avatar_url ? (
                           <img src={a.avatar_url} alt="" className="h-10 w-10 rounded-full object-cover border-2 border-border" />
