@@ -479,7 +479,7 @@ export default function CoachDashboard() {
                           <p className="text-[10px] text-muted-foreground">{a.athlete_code}</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1 flex-shrink-0">
                         <Button
                           variant="ghost"
                           size="icon"
