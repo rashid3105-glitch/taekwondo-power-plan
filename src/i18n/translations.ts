@@ -316,9 +316,6 @@ const translations = {
     upgradeEnterprise: "Upgrade to Enterprise",
     requestDemo: "Request a free demo",
     requestDemoDesc: "Try the app free for 14 days. No payment required.",
-    paypalTitle: "Payment",
-    paypalInstruction: "Send payment via PayPal to:",
-    paypalReference: "Include your email as reference",
 
     // Calendar
     addToCalendar: "Add to Calendar",
