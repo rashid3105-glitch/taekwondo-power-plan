@@ -37,16 +37,16 @@ Deno.serve(async (req) => {
 
     const adminClient = createClient(supabaseUrl, serviceRoleKey);
 
-    // Find demo users who are unpaid and created more than 14 days ago
-    const fourteenDaysAgo = new Date();
-    fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
+    // Delete demo users who are unpaid and created more than 21 days ago
+    const twentyOneDaysAgo = new Date();
+    twentyOneDaysAgo.setDate(twentyOneDaysAgo.getDate() - 21);
 
     const { data: expiredDemos, error: fetchError } = await adminClient
       .from("profiles")
       .select("user_id, display_name")
       .eq("is_demo", true)
       .neq("payment_status", "paid")
-      .lt("created_at", fourteenDaysAgo.toISOString());
+      .lt("created_at", twentyOneDaysAgo.toISOString());
 
     if (fetchError) throw fetchError;
 

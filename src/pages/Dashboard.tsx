@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain, Clock, Apple, Home, Lock, NotebookPen } from "lucide-react";
+import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain, Clock, Apple, Home, Lock, NotebookPen, AlertTriangle } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { useToast } from "@/hooks/use-toast";
 import { AIPlanCard } from "@/components/AIPlanCard";
@@ -60,6 +60,7 @@ export default function Dashboard() {
   const [clubName, setClubName] = useState<string>("");
   const [isDemo, setIsDemo] = useState(false);
   const [demoDaysLeft, setDemoDaysLeft] = useState<number | null>(null);
+  const [demoDaysUntilDeletion, setDemoDaysUntilDeletion] = useState<number | null>(null);
   const [generating, setGenerating] = useState(false);
   const [generatingRehab, setGeneratingRehab] = useState(false);
   const [rehabInjury, setRehabInjury] = useState("");
@@ -141,11 +142,15 @@ export default function Dashboard() {
       if (profileData.is_demo && profileData.payment_status !== "paid") {
         setIsDemo(true);
         const created = new Date(profileData.created_at);
-        const expiry = new Date(created);
-        expiry.setDate(expiry.getDate() + 14);
+        const demoExpiry = new Date(created);
+        demoExpiry.setDate(demoExpiry.getDate() + 14);
+        const deletionDate = new Date(created);
+        deletionDate.setDate(deletionDate.getDate() + 21);
         const now = new Date();
-        const diff = Math.ceil((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-        setDemoDaysLeft(diff);
+        const daysLeftDemo = Math.ceil((demoExpiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        const daysUntilDeletion = Math.ceil((deletionDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        setDemoDaysLeft(daysLeftDemo);
+        setDemoDaysUntilDeletion(daysUntilDeletion);
       }
     }
     if (plansRes.data) setPlans(plansRes.data as unknown as TrainingPlan[]);
@@ -336,7 +341,39 @@ export default function Dashboard() {
       </nav>
 
       <main className="container max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
-        {isDemo && demoDaysLeft !== null && (
+        {isDemo && demoDaysLeft !== null && demoDaysLeft <= 0 ? (
+          <div className="rounded-xl border-2 border-destructive bg-destructive/10 p-5 sm:p-6 space-y-4">
+            <div className="flex items-center gap-3">
+              <AlertTriangle className="h-6 w-6 text-destructive shrink-0" />
+              <span className="text-lg font-bold text-destructive">{t("demoBannerExpired")}</span>
+            </div>
+            <p className="text-sm text-foreground">{t("demoExpiredMessage" as any)}</p>
+            {demoDaysUntilDeletion !== null && demoDaysUntilDeletion > 0 && (
+              <div className="flex items-center gap-2 rounded-lg bg-destructive/20 p-3">
+                <Clock className="h-4 w-4 text-destructive shrink-0" />
+                <span className="text-sm font-bold text-destructive">
+                  {demoDaysUntilDeletion} {t("demoExpiredDaysUntilDeletion" as any)}
+                </span>
+              </div>
+            )}
+            {demoDaysUntilDeletion !== null && demoDaysUntilDeletion <= 0 && (
+              <div className="flex items-center gap-2 rounded-lg bg-destructive/30 p-3">
+                <AlertTriangle className="h-4 w-4 text-destructive shrink-0" />
+                <span className="text-sm font-bold text-destructive">{t("demoDeletionImminent" as any)}</span>
+              </div>
+            )}
+            <div className="rounded-lg border border-border bg-card p-4 space-y-2">
+              <p className="text-sm font-semibold text-foreground">{t("mobilePayTitle" as any)}</p>
+              <p className="text-sm text-muted-foreground">{t("mobilePayInstruction" as any)}</p>
+              <p className="text-lg font-bold text-primary">53856564</p>
+              <p className="text-sm text-muted-foreground">{t("mobilePayMarkWith" as any)}</p>
+              <p className="text-sm font-bold text-foreground">TKD POWER</p>
+            </div>
+            <Button onClick={() => navigate("/pricing")} className="w-full sm:w-auto">
+              {t("viewPricing")}
+            </Button>
+          </div>
+        ) : isDemo && demoDaysLeft !== null && (
           <div className={`flex items-center gap-3 rounded-xl border p-3 sm:p-4 ${
             demoDaysLeft <= 3
               ? "border-destructive/50 bg-destructive/10 text-destructive"
@@ -348,9 +385,7 @@ export default function Dashboard() {
               <span className="text-sm ml-2">
                 {demoDaysLeft > 0
                   ? `${demoDaysLeft} ${t("demoBannerDaysLeft")}`
-                  : demoDaysLeft === 0
-                    ? t("demoBannerExpiresToday")
-                    : t("demoBannerExpired")}
+                  : t("demoBannerExpiresToday")}
               </span>
             </div>
           </div>
