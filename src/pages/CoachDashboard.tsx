@@ -95,6 +95,7 @@ export default function CoachDashboard() {
   const [diaryAthleteName, setDiaryAthleteName] = useState("");
   const [diaryEntries, setDiaryEntries] = useState<DiaryEntry[]>([]);
   const [diaryLoading, setDiaryLoading] = useState(false);
+  const [viewPlan, setViewPlan] = useState<AthletePlan | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, locale } = useLanguage();
