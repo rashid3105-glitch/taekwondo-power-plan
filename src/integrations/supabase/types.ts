@@ -457,6 +457,7 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      lookup_athlete_by_code: { Args: { _code: string }; Returns: string }
       users_share_club: {
         Args: { _first_user_id: string; _second_user_id: string }
         Returns: boolean
