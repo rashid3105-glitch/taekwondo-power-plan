@@ -46,7 +46,6 @@ Deno.serve(async (req) => {
     }
 
     // Use service role to list auth users and get emails
-    const adminClient = createClient(supabaseUrl, serviceRoleKey);
     const { data: authUsers } = await adminClient.auth.admin.listUsers({ perPage: 1000 });
 
     const emailMap: Record<string, string> = {};
