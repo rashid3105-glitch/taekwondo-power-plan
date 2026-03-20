@@ -141,11 +141,15 @@ export default function Dashboard() {
       if (profileData.is_demo && profileData.payment_status !== "paid") {
         setIsDemo(true);
         const created = new Date(profileData.created_at);
-        const expiry = new Date(created);
-        expiry.setDate(expiry.getDate() + 14);
+        const demoExpiry = new Date(created);
+        demoExpiry.setDate(demoExpiry.getDate() + 14);
+        const deletionDate = new Date(created);
+        deletionDate.setDate(deletionDate.getDate() + 21);
         const now = new Date();
-        const diff = Math.ceil((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-        setDemoDaysLeft(diff);
+        const daysLeftDemo = Math.ceil((demoExpiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        const daysUntilDeletion = Math.ceil((deletionDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        setDemoDaysLeft(daysLeftDemo);
+        setDemoDaysUntilDeletion(daysUntilDeletion);
       }
     }
     if (plansRes.data) setPlans(plansRes.data as unknown as TrainingPlan[]);
