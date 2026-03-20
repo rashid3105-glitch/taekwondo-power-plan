@@ -16,9 +16,10 @@ import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { PlanViewDialog } from "@/components/PlanViewDialog";
 import {
-  ArrowLeft, Loader2, UserPlus, Trash2, Zap, Plus, User, Users, NotebookPen, Eye,
+  ArrowLeft, Loader2, UserPlus, Trash2, Zap, Plus, User, Users, NotebookPen, Eye, Heart,
   Frown, Meh, Smile, Laugh, BatteryLow, BatteryMedium, BatteryFull,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface AthleteProfile {
   user_id: string;
