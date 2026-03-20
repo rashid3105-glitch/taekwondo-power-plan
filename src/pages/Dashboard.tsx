@@ -60,6 +60,7 @@ export default function Dashboard() {
   const [clubName, setClubName] = useState<string>("");
   const [isDemo, setIsDemo] = useState(false);
   const [demoDaysLeft, setDemoDaysLeft] = useState<number | null>(null);
+  const [demoDaysUntilDeletion, setDemoDaysUntilDeletion] = useState<number | null>(null);
   const [generating, setGenerating] = useState(false);
   const [generatingRehab, setGeneratingRehab] = useState(false);
   const [rehabInjury, setRehabInjury] = useState("");
