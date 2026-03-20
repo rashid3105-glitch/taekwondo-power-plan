@@ -149,13 +149,13 @@ export default function AuthPage() {
               </div>
               <div className="flex items-start gap-3 rounded-xl border border-primary/20 bg-primary/5 backdrop-blur-sm p-3">
                 <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary shrink-0 mt-0.5">
-                  <span className="text-[9px] font-bold text-primary-foreground">MP</span>
+                  <span className="text-[9px] font-bold text-primary-foreground">PP</span>
                 </div>
                 <div className="space-y-0.5">
-                  <p className="text-xs font-semibold text-foreground">{t("mobilePayTitle")}</p>
-                  <p className="text-[10px] text-muted-foreground leading-tight">{t("mobilePayInstruction")}</p>
-                  <p className="text-sm font-bold text-primary font-mono tracking-wide">53856564</p>
-                  <p className="text-[10px] text-muted-foreground leading-tight">{t("mobilePayMarkWith")} <strong>TKD POWER</strong></p>
+                  <p className="text-xs font-semibold text-foreground">{t("paypalTitle")}</p>
+                  <p className="text-[10px] text-muted-foreground leading-tight">{t("paypalInstruction")}</p>
+                  <p className="text-sm font-bold text-primary font-mono tracking-wide">rashid3105@gmail.com</p>
+                  <p className="text-[10px] text-muted-foreground leading-tight">{t("paypalReference")}</p>
                 </div>
               </div>
             </div>

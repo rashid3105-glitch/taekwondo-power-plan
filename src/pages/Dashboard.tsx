@@ -363,11 +363,10 @@ export default function Dashboard() {
               </div>
             )}
             <div className="rounded-lg border border-border bg-card p-4 space-y-2">
-              <p className="text-sm font-semibold text-foreground">{t("mobilePayTitle" as any)}</p>
-              <p className="text-sm text-muted-foreground">{t("mobilePayInstruction" as any)}</p>
-              <p className="text-lg font-bold text-primary">53856564</p>
-              <p className="text-sm text-muted-foreground">{t("mobilePayMarkWith" as any)}</p>
-              <p className="text-sm font-bold text-foreground">TKD POWER</p>
+              <p className="text-sm font-semibold text-foreground">{t("paypalTitle" as any)}</p>
+              <p className="text-sm text-muted-foreground">{t("paypalInstruction" as any)}</p>
+              <p className="text-lg font-bold text-primary font-mono">rashid3105@gmail.com</p>
+              <p className="text-sm text-muted-foreground">{t("paypalReference" as any)}</p>
             </div>
             <Button onClick={() => navigate("/pricing")} className="w-full sm:w-auto">
               {t("viewPricing")}

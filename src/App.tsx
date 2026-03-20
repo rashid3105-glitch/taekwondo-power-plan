@@ -19,6 +19,7 @@ import CoachDashboard from "./pages/CoachDashboard";
 import Pricing from "./pages/Pricing";
 import Help from "./pages/Help";
 import Diary from "./pages/Diary";
+import AdminPayments from "./pages/AdminPayments";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/pending-approval" element={<PendingApproval />} />
             <Route path="/admin/approval" element={<AdminApproval />} />
+            <Route path="/admin/payments" element={<AdminPayments />} />
             <Route path="/coach" element={<CoachDashboard />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/help" element={<Help />} />
