@@ -625,6 +625,13 @@ export default function CoachDashboard() {
             )}
           </DialogContent>
         </Dialog>
+
+        {/* Plan View Dialog */}
+        <PlanViewDialog
+          open={!!viewPlan}
+          onOpenChange={(open) => { if (!open) setViewPlan(null); }}
+          plan={viewPlan}
+        />
       </main>
       <AppFooter />
     </div>
