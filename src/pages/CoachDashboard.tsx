@@ -274,7 +274,7 @@ export default function CoachDashboard() {
     if (!user) return;
     await supabase.from("coach_athletes").delete().eq("coach_id", user.id).eq("athlete_id", athleteId);
     toast({ title: t("athleteRemoved") });
-    if (selectedAthlete === athleteId) setSelectedAthlete(null);
+    
     await loadAthletes();
   };
 
