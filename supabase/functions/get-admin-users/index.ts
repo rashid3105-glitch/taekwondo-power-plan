@@ -29,7 +29,16 @@ Deno.serve(async (req) => {
       global: { headers: { Authorization: authHeader } },
     });
     const { data: { user } } = await userClient.auth.getUser();
-    if (!user || user.email !== "rashid3105@gmail.com") {
+    if (!user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const adminClient = createClient(supabaseUrl, serviceRoleKey);
+    const { data: isAdmin } = await adminClient.rpc("is_admin", { _user_id: user.id });
+    if (!isAdmin) {
       return new Response(JSON.stringify({ error: "Forbidden" }), {
         status: 403,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -37,7 +46,6 @@ Deno.serve(async (req) => {
     }
 
     // Use service role to list auth users and get emails
-    const adminClient = createClient(supabaseUrl, serviceRoleKey);
     const { data: authUsers } = await adminClient.auth.admin.listUsers({ perPage: 1000 });
 
     const emailMap: Record<string, string> = {};
