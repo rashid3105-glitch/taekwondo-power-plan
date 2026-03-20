@@ -5,6 +5,7 @@ import { PageMeta } from "@/components/PageMeta";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 import { Zap, Users, Building2, Check, Mail, ArrowLeft, FlaskConical } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -13,19 +14,22 @@ const tiers = [
   {
     key: "personal" as const,
     icon: Zap,
-    priceKey: "pricingPersonalPrice" as const,
+    monthlyPriceKey: "pricingPersonalPrice" as const,
+    yearlyPriceKey: "pricingPersonalYearlyPrice" as const,
     features: ["pricingFeatureAiPlans", "pricingFeatureProgress", "pricingFeatureMental", "pricingFeatureRehab", "pricingFeatureLibrary"] as const,
   },
   {
     key: "coach" as const,
     icon: Users,
-    priceKey: "pricingCoachPrice" as const,
+    monthlyPriceKey: "pricingCoachPrice" as const,
+    yearlyPriceKey: "pricingCoachYearlyPrice" as const,
     features: ["pricingFeatureAllPersonal", "pricingFeature5Athletes", "pricingFeatureAthleteManagement", "pricingFeatureCoachDashboard"] as const,
   },
   {
     key: "enterprise" as const,
     icon: Building2,
-    priceKey: "pricingEnterprisePrice" as const,
+    monthlyPriceKey: "pricingEnterprisePrice" as const,
+    yearlyPriceKey: "pricingEnterprisePrice" as const,
     features: ["pricingFeatureAllCoach", "pricingFeatureUnlimitedAthletes", "pricingFeatureCustom"] as const,
   },
 ];
@@ -34,6 +38,7 @@ export default function Pricing() {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const [showDialog, setShowDialog] = useState(false);
+  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly");
 
   return (
     <div className="min-h-screen bg-background px-4 py-8 relative">
@@ -52,11 +57,39 @@ export default function Pricing() {
           <p className="text-muted-foreground max-w-lg mx-auto">{t("pricingSubtitle" as any)}</p>
         </div>
 
+        {/* Billing cycle toggle */}
+        <div className="flex items-center justify-center gap-2">
+          <button
+            className={`px-4 py-2 rounded-l-lg text-sm font-medium transition-colors ${
+              billingCycle === "monthly"
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground hover:text-foreground"
+            }`}
+            onClick={() => setBillingCycle("monthly")}
+          >
+            {t("pricingMonthly" as any)}
+          </button>
+          <button
+            className={`px-4 py-2 rounded-r-lg text-sm font-medium transition-colors relative ${
+              billingCycle === "yearly"
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground hover:text-foreground"
+            }`}
+            onClick={() => setBillingCycle("yearly")}
+          >
+            {t("pricingYearly" as any)}
+            <Badge variant="secondary" className="absolute -top-2.5 -right-3 text-[9px] px-1.5 py-0 bg-emerald-500 text-white border-0">
+              {t("pricingYearlySave" as any)}
+            </Badge>
+          </button>
+        </div>
+
         <div className="grid gap-6 md:grid-cols-3">
           {tiers.map((tier) => {
             const isEnterprise = tier.key === "enterprise";
             const isCoach = tier.key === "coach";
             const Icon = tier.icon;
+            const priceKey = billingCycle === "yearly" ? tier.yearlyPriceKey : tier.monthlyPriceKey;
 
             return (
               <Card
@@ -79,7 +112,7 @@ export default function Pricing() {
                 </CardHeader>
                 <CardContent className="flex-1 space-y-4">
                   <div className="text-center">
-                    <span className="text-3xl font-extrabold text-foreground">{t(tier.priceKey as any)}</span>
+                    <span className="text-3xl font-extrabold text-foreground">{t(priceKey as any)}</span>
                   </div>
                   <ul className="space-y-2">
                     {tier.features.map((featureKey) => (
@@ -116,7 +149,7 @@ export default function Pricing() {
         <Card className="border-dashed">
           <CardContent className="flex flex-col items-center gap-3 py-6 text-center">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary">
-              <span className="text-lg font-bold text-primary">MP</span>
+              <span className="text-lg font-bold text-primary">PP</span>
             </div>
             <h3 className="font-bold text-foreground">{t("pricingPaymentTitle" as any)}</h3>
             <p className="text-sm text-muted-foreground max-w-md">{t("pricingPaymentDesc" as any)}</p>
@@ -148,19 +181,17 @@ export default function Pricing() {
               </div>
             </Button>
 
-            {/* MobilePay instructions */}
+            {/* PayPal instructions */}
             <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 space-y-2">
               <div className="flex items-center gap-2">
                 <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary shrink-0">
-                  <span className="text-xs font-bold text-primary-foreground">MP</span>
+                  <span className="text-xs font-bold text-primary-foreground">PP</span>
                 </div>
-                <p className="text-sm font-semibold text-foreground">{t("mobilePayTitle")}</p>
+                <p className="text-sm font-semibold text-foreground">{t("paypalTitle")}</p>
               </div>
-              <p className="text-xs text-muted-foreground">{t("mobilePayInstruction")}</p>
-              <p className="text-lg font-bold text-primary font-mono">53856564</p>
-              <p className="text-xs text-muted-foreground">
-                {t("mobilePayMarkWith")} <strong>TKD POWER</strong>
-              </p>
+              <p className="text-xs text-muted-foreground">{t("paypalInstruction")}</p>
+              <p className="text-lg font-bold text-primary font-mono">rashid3105@gmail.com</p>
+              <p className="text-xs text-muted-foreground">{t("paypalReference")}</p>
             </div>
 
             {/* Sign up button */}
