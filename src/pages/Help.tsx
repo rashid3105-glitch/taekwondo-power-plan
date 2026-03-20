@@ -22,6 +22,7 @@ export default function Help() {
 
   return (
     <div className="min-h-screen bg-background px-4 py-8 relative">
+      <PageMeta title="Help Center" description="Get help with TKD Power features and training tools." />
       <Watermark />
       <div className="mx-auto max-w-2xl space-y-8">
         <div className="flex items-center justify-between">
