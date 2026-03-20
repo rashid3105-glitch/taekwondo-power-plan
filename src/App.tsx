@@ -19,6 +19,7 @@ import CoachDashboard from "./pages/CoachDashboard";
 import Pricing from "./pages/Pricing";
 import Help from "./pages/Help";
 import Diary from "./pages/Diary";
+import AdminPayments from "./pages/AdminPayments";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
