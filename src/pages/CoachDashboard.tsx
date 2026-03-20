@@ -460,6 +460,7 @@ export default function CoachDashboard() {
             <div className="grid gap-3">
               {athletes.map((a) => {
                 const athletePlans = plans.filter(p => p.user_id === a.user_id);
+                const athleteRehabs = rehabPlans.filter(r => r.user_id === a.user_id);
                 return (
                   <div
                     key={a.user_id}
