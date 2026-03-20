@@ -300,9 +300,8 @@ export default function CoachDashboard() {
     );
   }
 
-  const selectedAthleteProfile = athletes.find(a => a.user_id === selectedAthlete);
-  const selectedAthletePlans = plans.filter(p => p.user_id === selectedAthlete);
-  const selectedAthleteRehabs = rehabPlans.filter(p => p.user_id === selectedAthlete);
+
+
 
   return (
     <div className="min-h-screen bg-background relative">
