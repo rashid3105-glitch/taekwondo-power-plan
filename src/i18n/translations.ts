@@ -729,6 +729,7 @@ const translations = {
     paypalTitle: "PayPal-betaling",
     paypalInstruction: "Send betaling via PayPal til:",
     paypalReference: "Inkluder din e-mail som reference",
+    adminPayments: "Betalinger",
 
     // Help
     helpTitle: "Sådan bruger du TKD POWER",
