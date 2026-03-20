@@ -13,8 +13,9 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { CoachAthleteDetail } from "@/components/CoachAthleteDetail";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { PlanViewDialog } from "@/components/PlanViewDialog";
 import {
-  ArrowLeft, Loader2, UserPlus, Trash2, Zap, Plus, User, Users, NotebookPen,
+  ArrowLeft, Loader2, UserPlus, Trash2, Zap, Plus, User, Users, NotebookPen, Eye,
   Frown, Meh, Smile, Laugh, BatteryLow, BatteryMedium, BatteryFull,
 } from "lucide-react";
 
@@ -94,6 +95,7 @@ export default function CoachDashboard() {
   const [diaryAthleteName, setDiaryAthleteName] = useState("");
   const [diaryEntries, setDiaryEntries] = useState<DiaryEntry[]>([]);
   const [diaryLoading, setDiaryLoading] = useState(false);
+  const [viewPlan, setViewPlan] = useState<AthletePlan | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, locale } = useLanguage();
@@ -456,7 +458,7 @@ export default function CoachDashboard() {
             </h3>
             <div className="grid gap-3">
               {athletes.map((a) => {
-                const hasActivePlan = plans.some(p => p.user_id === a.user_id && p.is_active);
+                const athletePlans = plans.filter(p => p.user_id === a.user_id);
                 return (
                   <div
                     key={a.user_id}
@@ -481,9 +483,6 @@ export default function CoachDashboard() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        {hasActivePlan && (
-                          <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">{t("hasPlan")}</span>
-                        )}
                         <Button
                           variant="ghost"
                           size="icon"
@@ -530,6 +529,33 @@ export default function CoachDashboard() {
                           <span key={g} className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">
                             {t(g as any) || g}
                           </span>
+                        ))}
+                      </div>
+                    )}
+                    {/* Plan rows with eye button */}
+                    {athletePlans.length > 0 && (
+                      <div className="mt-2.5 space-y-1 border-t border-border pt-2">
+                        {athletePlans.map((p) => (
+                          <div key={p.id} className="flex items-center gap-2 text-xs">
+                            <Zap className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                            <span className="flex-1 truncate text-muted-foreground">
+                              {p.name}
+                            </span>
+                            {p.is_active && (
+                              <span className="text-[9px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-medium">
+                                Active
+                              </span>
+                            )}
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 flex-shrink-0"
+                              title="View full plan"
+                              onClick={(e) => { e.stopPropagation(); setViewPlan(p); }}
+                            >
+                              <Eye className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
                         ))}
                       </div>
                     )}
@@ -599,6 +625,13 @@ export default function CoachDashboard() {
             )}
           </DialogContent>
         </Dialog>
+
+        {/* Plan View Dialog */}
+        <PlanViewDialog
+          open={!!viewPlan}
+          onOpenChange={(open) => { if (!open) setViewPlan(null); }}
+          plan={viewPlan}
+        />
       </main>
       <AppFooter />
     </div>
