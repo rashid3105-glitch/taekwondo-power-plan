@@ -473,7 +473,7 @@ export default function CoachDashboard() {
                             <User className="h-5 w-5 text-muted-foreground" />
                           </div>
                         )}
-                        <div>
+                        <div className="min-w-0 flex-1">
                           <p className="font-medium text-sm text-foreground">{a.display_name || t("noName")}</p>
                           {a.club_name && <p className="text-[10px] text-muted-foreground">{t("club")}: {a.club_name}</p>}
                           <p className="text-[10px] text-muted-foreground">{a.athlete_code}</p>
