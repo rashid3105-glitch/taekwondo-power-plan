@@ -304,7 +304,7 @@ export default function CoachDashboard() {
 
 
   return (
-    <div className="min-h-screen bg-background relative">
+    <div className="min-h-screen bg-background relative overflow-x-hidden">
       <Watermark />
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container max-w-4xl mx-auto px-3 sm:px-4 py-3 flex items-center justify-between">
@@ -462,10 +462,10 @@ export default function CoachDashboard() {
                 return (
                   <div
                     key={a.user_id}
-                    className="rounded-lg border bg-card p-4 transition-colors border-border hover:border-muted-foreground/30"
+                    className="rounded-lg border bg-card p-3 sm:p-4 transition-colors border-border hover:border-muted-foreground/30 overflow-hidden"
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-between gap-2 min-w-0">
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
                         {a.avatar_url ? (
                           <img src={a.avatar_url} alt="" className="h-10 w-10 rounded-full object-cover border-2 border-border" />
                         ) : (
@@ -473,13 +473,13 @@ export default function CoachDashboard() {
                             <User className="h-5 w-5 text-muted-foreground" />
                           </div>
                         )}
-                        <div>
-                          <p className="font-medium text-sm text-foreground">{a.display_name || t("noName")}</p>
+                        <div className="min-w-0 flex-1">
+                          <p className="font-medium text-sm text-foreground truncate">{a.display_name || t("noName")}</p>
                           {a.club_name && <p className="text-[10px] text-muted-foreground">{t("club")}: {a.club_name}</p>}
                           <p className="text-[10px] text-muted-foreground">{a.athlete_code}</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1 flex-shrink-0">
                         <Button
                           variant="ghost"
                           size="icon"
