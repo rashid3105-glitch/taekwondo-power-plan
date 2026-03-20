@@ -6,6 +6,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import logo from "@/assets/logo.png";
 import { AppFooter } from "@/components/AppFooter";
 import { Watermark } from "@/components/Watermark";
+import { PageMeta } from "@/components/PageMeta";
 
 import trainingImg from "@/assets/features/training-plan.jpg";
 import progressImg from "@/assets/features/progress.jpg";
@@ -144,12 +145,13 @@ const FeatureDetail = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col relative">
+      <PageMeta title={t(feature.titleKey as any)} description={feature.longDesc[locale]} />
       <Watermark />
       {/* Header */}
-      <header className="flex items-center justify-between px-6 py-4 border-b border-border/50">
+      <header className="sticky top-0 z-40 flex items-center justify-between px-5 py-3 border-b border-border/40 bg-background/80 backdrop-blur-xl">
         <div className="flex items-center gap-2">
-          <img src={logo} alt="TKD Power" className="h-9 w-9 rounded-lg object-contain" />
-          <span className="text-sm font-bold tracking-tight text-foreground">TKD POWER</span>
+          <img src={logo} alt="TKD Power" className="h-8 w-8 rounded-lg object-contain" />
+          <span className="text-sm font-extrabold tracking-tight text-foreground">TKD POWER</span>
         </div>
         <div className="flex items-center gap-3">
           <LanguageSwitcher />

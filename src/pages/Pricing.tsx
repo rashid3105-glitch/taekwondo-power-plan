@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Watermark } from "@/components/Watermark";
+import { PageMeta } from "@/components/PageMeta";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -36,6 +37,7 @@ export default function Pricing() {
 
   return (
     <div className="min-h-screen bg-background px-4 py-8 relative">
+      <PageMeta title="Pricing" description="Choose the right TKD Power plan for athletes, coaches, and teams." />
       <Watermark />
       <div className="mx-auto max-w-4xl space-y-8">
         <div className="flex items-center justify-between">

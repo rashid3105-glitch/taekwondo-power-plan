@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { PageMeta } from "@/components/PageMeta";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -50,34 +51,48 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4">
-      <div className="w-full max-w-sm space-y-6">
+    <div className="min-h-screen bg-background flex items-center justify-center px-4 relative">
+      <PageMeta
+        title={isLogin ? "Sign In" : "Create Account"}
+        description="Sign in or create your TKD Power account to access AI-powered training plans."
+      />
+
+      {/* Subtle background glow */}
+      <div
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[350px] opacity-10 pointer-events-none"
+        style={{ background: "radial-gradient(ellipse, hsl(190 95% 50% / 0.4), transparent 70%)" }}
+        aria-hidden="true"
+      />
+
+      <div className="w-full max-w-sm space-y-6 relative z-10">
         <div className="flex justify-end">
           <LanguageSwitcher />
         </div>
+
         <div className="text-center">
-          <img src={logo} alt="TKD Power" className="h-14 w-14 rounded-xl object-contain mx-auto mb-4" />
-          <h1 className="text-2xl font-extrabold text-foreground">TKD POWER</h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <img src={logo} alt="TKD Power" className="h-12 w-12 rounded-xl object-contain mx-auto mb-3 shadow-lg" />
+          <h1 className="text-xl font-black tracking-tight text-foreground">TKD POWER</h1>
+          <p className="text-xs text-muted-foreground mt-1">
             {isLogin ? t("signInToAccount") : t("createAthleteAccount")}
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3.5">
           {!isLogin && (
-            <div>
-              <Label htmlFor="name">{t("displayName")}</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="name" className="text-xs font-medium">{t("displayName")}</Label>
               <Input
                 id="name"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder={t("yourName")}
                 required={!isLogin}
+                className="h-10"
               />
             </div>
           )}
-          <div>
-            <Label htmlFor="email">{t("email")}</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="email" className="text-xs font-medium">{t("email")}</Label>
             <Input
               id="email"
               type="email"
@@ -85,10 +100,11 @@ export default function AuthPage() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="athlete@example.com"
               required
+              className="h-10"
             />
           </div>
-          <div>
-            <Label htmlFor="password">{t("password")}</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="password" className="text-xs font-medium">{t("password")}</Label>
             <Input
               id="password"
               type="password"
@@ -96,12 +112,14 @@ export default function AuthPage() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
-            minLength={6}
-          />
+              minLength={6}
+              className="h-10"
+            />
           </div>
+
           {!isLogin && (
-            <>
-              <div className="flex items-start gap-3 rounded-lg border border-border bg-card p-3">
+            <div className="space-y-2.5 pt-1">
+              <div className="flex items-start gap-3 rounded-xl border border-border/60 bg-card/50 backdrop-blur-sm p-3">
                 <Checkbox
                   id="coach"
                   checked={wantsCoach}
@@ -109,13 +127,13 @@ export default function AuthPage() {
                   className="mt-0.5"
                 />
                 <div className="space-y-0.5">
-                  <label htmlFor="coach" className="text-sm font-medium text-foreground flex items-center gap-1.5 cursor-pointer">
-                    <Users className="h-4 w-4" /> {t("iAmACoach")}
+                  <label htmlFor="coach" className="text-xs font-semibold text-foreground flex items-center gap-1.5 cursor-pointer">
+                    <Users className="h-3.5 w-3.5" /> {t("iAmACoach")}
                   </label>
-                  <p className="text-[11px] text-muted-foreground leading-tight">{t("iAmACoachDesc")}</p>
+                  <p className="text-[10px] text-muted-foreground leading-tight">{t("iAmACoachDesc")}</p>
                 </div>
               </div>
-              <div className="flex items-start gap-3 rounded-lg border border-border bg-card p-3">
+              <div className="flex items-start gap-3 rounded-xl border border-border/60 bg-card/50 backdrop-blur-sm p-3">
                 <Checkbox
                   id="demo"
                   checked={wantsDemo}
@@ -123,26 +141,27 @@ export default function AuthPage() {
                   className="mt-0.5"
                 />
                 <div className="space-y-0.5">
-                  <label htmlFor="demo" className="text-sm font-medium text-foreground flex items-center gap-1.5 cursor-pointer">
-                    <FlaskConical className="h-4 w-4" /> {t("requestDemo" as any)}
+                  <label htmlFor="demo" className="text-xs font-semibold text-foreground flex items-center gap-1.5 cursor-pointer">
+                    <FlaskConical className="h-3.5 w-3.5" /> {t("requestDemo" as any)}
                   </label>
-                  <p className="text-[11px] text-muted-foreground leading-tight">{t("requestDemoDesc" as any)}</p>
+                  <p className="text-[10px] text-muted-foreground leading-tight">{t("requestDemoDesc" as any)}</p>
                 </div>
               </div>
-              <div className="flex items-start gap-3 rounded-lg border border-primary/30 bg-primary/5 p-3">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary shrink-0 mt-0.5">
-                  <span className="text-xs font-bold text-primary-foreground">MP</span>
+              <div className="flex items-start gap-3 rounded-xl border border-primary/20 bg-primary/5 backdrop-blur-sm p-3">
+                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary shrink-0 mt-0.5">
+                  <span className="text-[9px] font-bold text-primary-foreground">MP</span>
                 </div>
                 <div className="space-y-0.5">
-                  <p className="text-sm font-medium text-foreground">{t("mobilePayTitle")}</p>
-                  <p className="text-[11px] text-muted-foreground leading-tight">{t("mobilePayInstruction")}</p>
-                  <p className="text-sm font-bold text-primary font-mono">53856564</p>
-                  <p className="text-[11px] text-muted-foreground leading-tight">{t("mobilePayMarkWith")} <strong>TKD POWER</strong></p>
+                  <p className="text-xs font-semibold text-foreground">{t("mobilePayTitle")}</p>
+                  <p className="text-[10px] text-muted-foreground leading-tight">{t("mobilePayInstruction")}</p>
+                  <p className="text-sm font-bold text-primary font-mono tracking-wide">53856564</p>
+                  <p className="text-[10px] text-muted-foreground leading-tight">{t("mobilePayMarkWith")} <strong>TKD POWER</strong></p>
                 </div>
               </div>
-            </>
+            </div>
           )}
-          <Button type="submit" className="w-full" disabled={loading}>
+
+          <Button type="submit" className="w-full h-10 font-bold text-sm shadow-glow" disabled={loading}>
             {loading ? t("pleaseWait") : isLogin ? t("signIn") : t("createAccount")}
           </Button>
         </form>
@@ -166,18 +185,18 @@ export default function AuthPage() {
                   toast({ title: t("error"), description: err.message, variant: "destructive" });
                 }
               }}
-              className="text-sm text-muted-foreground hover:text-primary underline underline-offset-2 cursor-pointer"
+              className="text-xs text-muted-foreground hover:text-primary transition-colors underline underline-offset-4 cursor-pointer"
             >
               {t("forgotPassword")}
             </button>
           </div>
         )}
 
-        <p className="text-center text-sm text-muted-foreground">
+        <p className="text-center text-xs text-muted-foreground">
           {isLogin ? t("dontHaveAccount") : t("alreadyHaveAccount")}{" "}
           <button
             onClick={() => setIsLogin(!isLogin)}
-            className="text-primary underline underline-offset-2 cursor-pointer"
+            className="text-primary font-semibold underline underline-offset-4 cursor-pointer hover:text-primary/80 transition-colors"
           >
             {isLogin ? t("signUp") : t("signIn")}
           </button>
