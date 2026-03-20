@@ -274,6 +274,7 @@ const translations = {
     paypalTitle: "PayPal Payment",
     paypalInstruction: "Send payment via PayPal to:",
     paypalReference: "Include your email as reference",
+    adminPayments: "Payments",
 
     // Help
     helpTitle: "How to Use TKD POWER",
