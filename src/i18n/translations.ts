@@ -770,9 +770,6 @@ const translations = {
     upgradeEnterprise: "Opgrader til Enterprise",
     requestDemo: "Anmod om gratis demo",
     requestDemoDesc: "Prøv appen gratis i 14 dage. Ingen betaling krævet.",
-    paypalTitle: "Betaling",
-    paypalInstruction: "Send betaling via PayPal til:",
-    paypalReference: "Inkluder din e-mail som reference",
 
     // Calendar
     addToCalendar: "Tilføj til kalender",
