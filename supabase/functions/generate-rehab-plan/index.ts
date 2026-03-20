@@ -24,13 +24,23 @@ serve(async (req) => {
       return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    const { injury, profile, language } = await req.json();
+    const body = await req.text();
+    if (body.length > 10000) {
+      return new Response(JSON.stringify({ error: "Request too large" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    const { injury, profile, language } = JSON.parse(body);
     const lang = language === "da" ? "Danish" : "English";
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
     if (!injury || typeof injury !== "string" || injury.trim().length === 0) {
       return new Response(JSON.stringify({ error: "Please describe your injury" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (injury.length > 1000) {
+      return new Response(JSON.stringify({ error: "Injury description too long (max 1000 characters)" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
