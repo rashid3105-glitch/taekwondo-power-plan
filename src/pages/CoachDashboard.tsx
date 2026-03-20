@@ -543,15 +543,19 @@ export default function CoachDashboard() {
                                 Active
                               </span>
                             )}
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-6 w-6 flex-shrink-0"
-                              title="View full plan"
-                              onClick={(e) => { e.stopPropagation(); setViewPlan(p); }}
-                            >
-                              <Eye className="h-3.5 w-3.5" />
-                            </Button>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 flex-shrink-0 hover:bg-primary/10 hover:text-primary"
+                                  onClick={(e) => { e.stopPropagation(); setViewPlan(p); }}
+                                >
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent side="left">View full plan</TooltipContent>
+                            </Tooltip>
                           </div>
                         ))}
                       </div>
