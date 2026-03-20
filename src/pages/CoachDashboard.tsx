@@ -193,17 +193,16 @@ export default function CoachDashboard() {
     }
     setAdding(true);
     try {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("user_id")
-        .eq("athlete_code", athleteCode.trim().toUpperCase())
-        .maybeSingle();
+      const { data: userId, error: lookupError } = await supabase
+        .rpc("lookup_athlete_by_code", { _code: athleteCode.trim() });
 
-      if (!profile) {
+      if (lookupError || !userId) {
         toast({ title: t("error"), description: t("athleteNotFound"), variant: "destructive" });
         setAdding(false);
         return;
       }
+
+      const profile = { user_id: userId };
 
       const { error } = await supabase
         .from("coach_athletes")
