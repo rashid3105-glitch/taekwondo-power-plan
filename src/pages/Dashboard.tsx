@@ -341,7 +341,39 @@ export default function Dashboard() {
       </nav>
 
       <main className="container max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
-        {isDemo && demoDaysLeft !== null && (
+        {isDemo && demoDaysLeft !== null && demoDaysLeft <= 0 ? (
+          <div className="rounded-xl border-2 border-destructive bg-destructive/10 p-5 sm:p-6 space-y-4">
+            <div className="flex items-center gap-3">
+              <AlertTriangle className="h-6 w-6 text-destructive shrink-0" />
+              <span className="text-lg font-bold text-destructive">{t("demoBannerExpired")}</span>
+            </div>
+            <p className="text-sm text-foreground">{t("demoExpiredMessage" as any)}</p>
+            {demoDaysUntilDeletion !== null && demoDaysUntilDeletion > 0 && (
+              <div className="flex items-center gap-2 rounded-lg bg-destructive/20 p-3">
+                <Clock className="h-4 w-4 text-destructive shrink-0" />
+                <span className="text-sm font-bold text-destructive">
+                  {demoDaysUntilDeletion} {t("demoExpiredDaysUntilDeletion" as any)}
+                </span>
+              </div>
+            )}
+            {demoDaysUntilDeletion !== null && demoDaysUntilDeletion <= 0 && (
+              <div className="flex items-center gap-2 rounded-lg bg-destructive/30 p-3">
+                <AlertTriangle className="h-4 w-4 text-destructive shrink-0" />
+                <span className="text-sm font-bold text-destructive">{t("demoDeletionImminent" as any)}</span>
+              </div>
+            )}
+            <div className="rounded-lg border border-border bg-card p-4 space-y-2">
+              <p className="text-sm font-semibold text-foreground">{t("mobilePayTitle" as any)}</p>
+              <p className="text-sm text-muted-foreground">{t("mobilePayInstruction" as any)}</p>
+              <p className="text-lg font-bold text-primary">53856564</p>
+              <p className="text-sm text-muted-foreground">{t("mobilePayMarkWith" as any)}</p>
+              <p className="text-sm font-bold text-foreground">TKD POWER</p>
+            </div>
+            <Button onClick={() => navigate("/pricing")} className="w-full sm:w-auto">
+              {t("viewPricing")}
+            </Button>
+          </div>
+        ) : isDemo && demoDaysLeft !== null && (
           <div className={`flex items-center gap-3 rounded-xl border p-3 sm:p-4 ${
             demoDaysLeft <= 3
               ? "border-destructive/50 bg-destructive/10 text-destructive"
@@ -353,9 +385,7 @@ export default function Dashboard() {
               <span className="text-sm ml-2">
                 {demoDaysLeft > 0
                   ? `${demoDaysLeft} ${t("demoBannerDaysLeft")}`
-                  : demoDaysLeft === 0
-                    ? t("demoBannerExpiresToday")
-                    : t("demoBannerExpired")}
+                  : t("demoBannerExpiresToday")}
               </span>
             </div>
           </div>
