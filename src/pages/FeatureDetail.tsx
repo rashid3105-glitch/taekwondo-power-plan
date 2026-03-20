@@ -149,8 +149,9 @@ const FeatureDetail = () => {
       <Watermark />
       {/* Header */}
       <header className="sticky top-0 z-40 flex items-center justify-between px-5 py-3 border-b border-border/40 bg-background/80 backdrop-blur-xl">
-          <img src={logo} alt="TKD Power" className="h-9 w-9 rounded-lg object-contain" />
-          <span className="text-sm font-bold tracking-tight text-foreground">TKD POWER</span>
+        <div className="flex items-center gap-2">
+          <img src={logo} alt="TKD Power" className="h-8 w-8 rounded-lg object-contain" />
+          <span className="text-sm font-extrabold tracking-tight text-foreground">TKD POWER</span>
         </div>
         <div className="flex items-center gap-3">
           <LanguageSwitcher />
