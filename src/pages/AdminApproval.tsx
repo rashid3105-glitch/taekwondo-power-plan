@@ -63,7 +63,8 @@ export default function AdminApproval() {
   const checkAdminAndLoad = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { navigate("/auth"); return; }
-    if (user.email !== "rashid3105@gmail.com") { navigate("/dashboard"); return; }
+    const { data: adminCheck } = await supabase.rpc("is_admin", { _user_id: user.id });
+    if (!adminCheck) { navigate("/dashboard"); return; }
     setIsAdmin(true);
     await loadUsers();
   };

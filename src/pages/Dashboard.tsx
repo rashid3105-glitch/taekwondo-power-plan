@@ -100,7 +100,8 @@ export default function Dashboard() {
   const loadData = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { navigate("/auth"); return; }
-    if (user.email === "rashid3105@gmail.com") setIsAdmin(true);
+    const { data: adminCheck } = await supabase.rpc("is_admin", { _user_id: user.id });
+    if (adminCheck) setIsAdmin(true);
 
     // Check coach role
     const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", user.id);
