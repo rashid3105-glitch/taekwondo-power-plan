@@ -567,15 +567,6 @@ export default function CoachDashboard() {
           </div>
         )}
 
-        {/* Selected athlete detail */}
-        {selectedAthleteProfile && (
-          <CoachAthleteDetail
-            athlete={selectedAthleteProfile}
-            plans={selectedAthletePlans}
-            rehabPlans={selectedAthleteRehabs}
-            onRefresh={loadAthletes}
-          />
-        )}
 
         {/* Diary Modal */}
         <Dialog open={!!diaryAthleteId} onOpenChange={(open) => { if (!open) setDiaryAthleteId(null); }}>
