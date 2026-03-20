@@ -462,7 +462,7 @@ export default function CoachDashboard() {
                 return (
                   <div
                     key={a.user_id}
-                    className="rounded-lg border bg-card p-4 transition-colors border-border hover:border-muted-foreground/30"
+                    className="rounded-lg border bg-card p-3 sm:p-4 transition-colors border-border hover:border-muted-foreground/30 overflow-hidden"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
