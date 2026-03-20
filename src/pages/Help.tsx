@@ -5,6 +5,7 @@ import { ArrowLeft, UserCircle, ClipboardList, HeartPulse, Brain, Users, BarChar
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Watermark } from "@/components/Watermark";
+import { PageMeta } from "@/components/PageMeta";
 
 const helpSections = [
   { key: "helpProfile", icon: UserCircle },
