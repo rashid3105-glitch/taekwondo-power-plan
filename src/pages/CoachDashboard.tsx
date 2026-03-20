@@ -10,9 +10,10 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { CoachAthleteDetail } from "@/components/CoachAthleteDetail";
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { PlanViewDialog } from "@/components/PlanViewDialog";
 import {
   ArrowLeft, Loader2, UserPlus, Trash2, Zap, Plus, User, Users, NotebookPen, Eye,
@@ -88,7 +89,7 @@ export default function CoachDashboard() {
   const [newAthleteExpYears, setNewAthleteExpYears] = useState("");
   const [newAthleteDiscipline, setNewAthleteDiscipline] = useState("sparring");
   const [creating, setCreating] = useState(false);
-  const [selectedAthlete, setSelectedAthlete] = useState<string | null>(null);
+  
   const [coachUserId, setCoachUserId] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [diaryAthleteId, setDiaryAthleteId] = useState<string | null>(null);
@@ -273,7 +274,7 @@ export default function CoachDashboard() {
     if (!user) return;
     await supabase.from("coach_athletes").delete().eq("coach_id", user.id).eq("athlete_id", athleteId);
     toast({ title: t("athleteRemoved") });
-    if (selectedAthlete === athleteId) setSelectedAthlete(null);
+    
     await loadAthletes();
   };
 
@@ -299,9 +300,8 @@ export default function CoachDashboard() {
     );
   }
 
-  const selectedAthleteProfile = athletes.find(a => a.user_id === selectedAthlete);
-  const selectedAthletePlans = plans.filter(p => p.user_id === selectedAthlete);
-  const selectedAthleteRehabs = rehabPlans.filter(p => p.user_id === selectedAthlete);
+
+
 
   return (
     <div className="min-h-screen bg-background relative">
@@ -462,10 +462,7 @@ export default function CoachDashboard() {
                 return (
                   <div
                     key={a.user_id}
-                    className={`rounded-lg border bg-card p-4 cursor-pointer transition-colors ${
-                      selectedAthlete === a.user_id ? "border-primary bg-primary/5" : "border-border hover:border-muted-foreground/30"
-                    }`}
-                    onClick={() => setSelectedAthlete(selectedAthlete === a.user_id ? null : a.user_id)}
+                    className="rounded-lg border bg-card p-4 transition-colors border-border hover:border-muted-foreground/30"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
@@ -546,15 +543,19 @@ export default function CoachDashboard() {
                                 Active
                               </span>
                             )}
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-6 w-6 flex-shrink-0"
-                              title="View full plan"
-                              onClick={(e) => { e.stopPropagation(); setViewPlan(p); }}
-                            >
-                              <Eye className="h-3.5 w-3.5" />
-                            </Button>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 flex-shrink-0 hover:bg-primary/10 hover:text-primary"
+                                  onClick={(e) => { e.stopPropagation(); setViewPlan(p); }}
+                                >
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent side="left">View full plan</TooltipContent>
+                            </Tooltip>
                           </div>
                         ))}
                       </div>
@@ -566,15 +567,6 @@ export default function CoachDashboard() {
           </div>
         )}
 
-        {/* Selected athlete detail */}
-        {selectedAthleteProfile && (
-          <CoachAthleteDetail
-            athlete={selectedAthleteProfile}
-            plans={selectedAthletePlans}
-            rehabPlans={selectedAthleteRehabs}
-            onRefresh={loadAthletes}
-          />
-        )}
 
         {/* Diary Modal */}
         <Dialog open={!!diaryAthleteId} onOpenChange={(open) => { if (!open) setDiaryAthleteId(null); }}>
