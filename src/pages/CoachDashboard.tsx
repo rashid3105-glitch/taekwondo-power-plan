@@ -662,9 +662,10 @@ export default function CoachDashboard() {
 
         {/* Plan View Dialog */}
         <PlanViewDialog
-          open={!!viewPlan}
-          onOpenChange={(open) => { if (!open) setViewPlan(null); }}
+          open={!!viewPlan || !!viewRehabPlan}
+          onOpenChange={(open) => { if (!open) { setViewPlan(null); setViewRehabPlan(null); } }}
           plan={viewPlan}
+          rehabPlan={viewRehabPlan}
         />
       </main>
       <AppFooter />
