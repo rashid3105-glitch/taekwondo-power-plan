@@ -64,7 +64,7 @@ Categories assessed:
 - Confidence: self-belief and positive self-talk
 - Motivation: maintaining drive and commitment
 
-Score range per category: 1-5 (1=needs work, 5=excellent)
+Score range per category: 1-5 (1=needs work, 5=excellent). Each category has 3-4 questions averaged.
 
 Write ALL content in ${lang}.
 
