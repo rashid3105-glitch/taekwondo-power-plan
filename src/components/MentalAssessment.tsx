@@ -40,7 +40,7 @@ interface Question {
 }
 
 const questions: Question[] = [
-  // Mental Toughness (2 questions)
+  // Mental Toughness (3 questions + 1 new)
   {
     id: "mt1",
     category: "mentalToughness",
@@ -65,7 +65,19 @@ const questions: Question[] = [
       { value: 5, label: { en: "Get more determined — being behind fuels me", da: "Bliver mere beslutsom — at være bagud driver mig" } },
     ],
   },
-  // Competition Anxiety (2 questions)
+  {
+    id: "mt3",
+    category: "mentalToughness",
+    text: { en: "When I experience pain or discomfort during training, I...", da: "Når jeg oplever smerte eller ubehag under træning, så..." },
+    options: [
+      { value: 1, label: { en: "Stop immediately and avoid the exercise", da: "Stopper med det samme og undgår øvelsen" } },
+      { value: 2, label: { en: "Reduce intensity significantly and feel defeated", da: "Reducerer intensiteten markant og føler mig besejret" } },
+      { value: 3, label: { en: "Modify and continue but feel distracted by it", da: "Tilpasser og fortsætter, men er distraheret af det" } },
+      { value: 4, label: { en: "Assess if it's safe, then push through with control", da: "Vurderer om det er sikkert, og presser derefter igennem med kontrol" } },
+      { value: 5, label: { en: "Embrace it — I know pain is part of growth", da: "Omfavner det — jeg ved smerte er en del af vækst" } },
+    ],
+  },
+  // Competition Anxiety (3 questions + 1 new)
   {
     id: "ca1",
     category: "competitionAnxiety",
@@ -90,7 +102,19 @@ const questions: Question[] = [
       { value: 5, label: { en: "I feel energized and physically ready to compete", da: "Jeg føler mig energisk og fysisk klar til at konkurrere" } },
     ],
   },
-  // Focus & Concentration (2 questions)
+  {
+    id: "ca3",
+    category: "competitionAnxiety",
+    text: { en: "The night before a competition, my sleep is...", da: "Natten før en konkurrence er min søvn..." },
+    options: [
+      { value: 1, label: { en: "Terrible — I barely sleep, mind races all night", da: "Forfærdelig — jeg sover næsten ikke, tankerne kører hele natten" } },
+      { value: 2, label: { en: "Restless, I wake up multiple times", da: "Urolig, jeg vågner flere gange" } },
+      { value: 3, label: { en: "Okay but not great, some difficulty falling asleep", da: "Okay men ikke fantastisk, lidt svært at falde i søvn" } },
+      { value: 4, label: { en: "Good — I have a routine that helps me relax", da: "God — jeg har en rutine der hjælper mig med at slappe af" } },
+      { value: 5, label: { en: "Great — I sleep well knowing I'm prepared", da: "Fantastisk — jeg sover godt og ved jeg er forberedt" } },
+    ],
+  },
+  // Focus & Concentration (3 questions + 1 new)
   {
     id: "fc1",
     category: "focusConcentration",
@@ -115,7 +139,19 @@ const questions: Question[] = [
       { value: 5, label: { en: "Use it as fuel — external noise sharpens me", da: "Bruger det som brændstof — ekstern støj skærper mig" } },
     ],
   },
-  // Recovery from Loss (2 questions)
+  {
+    id: "fc3",
+    category: "focusConcentration",
+    text: { en: "Between rounds or during breaks, my mind...", da: "Mellem runder eller i pauser er mit sind..." },
+    options: [
+      { value: 1, label: { en: "Replays mistakes obsessively, I can't let go", da: "Genafspiller fejl tvangsmæssigt, jeg kan ikke slippe" } },
+      { value: 2, label: { en: "Wanders to unrelated thoughts, hard to reset", da: "Vandrer til urelaterede tanker, svært at nulstille" } },
+      { value: 3, label: { en: "Somewhat focused, but I lose my game plan", da: "Noget fokuseret, men mister min kampplan" } },
+      { value: 4, label: { en: "I use breaks to breathe, reset and refocus", da: "Jeg bruger pauser til at trække vejret, nulstille og genfokusere" } },
+      { value: 5, label: { en: "I have a clear mental routine for every break", da: "Jeg har en klar mental rutine for hver pause" } },
+    ],
+  },
+  // Recovery from Loss (3 questions + 1 new)
   {
     id: "rl1",
     category: "recoveryFromLoss",
@@ -140,7 +176,19 @@ const questions: Question[] = [
       { value: 5, label: { en: "Love reviewing — I build a detailed improvement plan", da: "Elsker at gennemgå — jeg laver en detaljeret forbedringsplan" } },
     ],
   },
-  // Confidence (2 questions)
+  {
+    id: "rl3",
+    category: "recoveryFromLoss",
+    text: { en: "When a teammate beats me in training, I...", da: "Når en holdkammerat slår mig i træning, så..." },
+    options: [
+      { value: 1, label: { en: "Feel embarrassed and avoid sparring them again", da: "Føler mig flov og undgår at spar med dem igen" } },
+      { value: 2, label: { en: "Get annoyed and it ruins the rest of my session", da: "Bliver irriteret og det ødelægger resten af min træning" } },
+      { value: 3, label: { en: "Accept it but don't learn much from it", da: "Accepterer det, men lærer ikke meget af det" } },
+      { value: 4, label: { en: "Ask them what they did and learn from it", da: "Spørger dem hvad de gjorde og lærer af det" } },
+      { value: 5, label: { en: "Welcome it — training with better athletes makes me grow", da: "Velkomner det — at træne med bedre atleter får mig til at vokse" } },
+    ],
+  },
+  // Confidence (4 questions, 2 new)
   {
     id: "cf1",
     category: "confidence",
@@ -165,7 +213,19 @@ const questions: Question[] = [
       { value: 5, label: { en: "Love the challenge — I compete harder against top fighters", da: "Elsker udfordringen — jeg kæmper hårdere mod topkæmpere" } },
     ],
   },
-  // Motivation (2 questions)
+  {
+    id: "cf3",
+    category: "confidence",
+    text: { en: "When I learn a new technique, I...", da: "Når jeg lærer en ny teknik, så..." },
+    options: [
+      { value: 1, label: { en: "Feel overwhelmed and doubt I'll ever master it", da: "Føler mig overvældet og tvivler på at jeg nogensinde mestrer den" } },
+      { value: 2, label: { en: "Try it a few times but give up quickly if it's hard", da: "Prøver det et par gange, men giver hurtigt op hvis det er svært" } },
+      { value: 3, label: { en: "Practice it but feel unsure about using it in sparring", da: "Øver den, men føler mig usikker på at bruge den i sparring" } },
+      { value: 4, label: { en: "Commit to drilling it until it feels natural", da: "Forpligter mig til at drilbe den indtil den føles naturlig" } },
+      { value: 5, label: { en: "Get excited — new techniques are opportunities to evolve", da: "Bliver begejstret — nye teknikker er muligheder for at udvikle mig" } },
+    ],
+  },
+  // Motivation (4 questions, 2 new)
   {
     id: "mo1",
     category: "motivation",
@@ -188,6 +248,30 @@ const questions: Question[] = [
       { value: 3, label: { en: "Keep going but feel frustrated", da: "Fortsætter, men føler mig frustreret" } },
       { value: 4, label: { en: "Trust the process and stay consistent", da: "Stoler på processen og forbliver konsekvent" } },
       { value: 5, label: { en: "Get creative — try new approaches and seek coaching", da: "Bliver kreativ — prøver nye tilgange og søger coaching" } },
+    ],
+  },
+  {
+    id: "mo3",
+    category: "motivation",
+    text: { en: "When I see others progressing faster than me, I...", da: "Når jeg ser andre gøre hurtigere fremskridt end mig, så..." },
+    options: [
+      { value: 1, label: { en: "Feel hopeless and want to quit", da: "Føler mig håbløs og vil stoppe" } },
+      { value: 2, label: { en: "Get jealous and it kills my motivation", da: "Bliver misundelig og det dræber min motivation" } },
+      { value: 3, label: { en: "Feel a bit envious but keep training", da: "Føler mig lidt misundelig, men fortsætter med at træne" } },
+      { value: 4, label: { en: "Use it as inspiration to train harder", da: "Bruger det som inspiration til at træne hårdere" } },
+      { value: 5, label: { en: "Celebrate their success and focus on my own journey", da: "Fejrer deres succes og fokuserer på min egen rejse" } },
+    ],
+  },
+  {
+    id: "mo4",
+    category: "motivation",
+    text: { en: "My ability to set and follow through on training goals is...", da: "Min evne til at sætte og følge op på træningsmål er..." },
+    options: [
+      { value: 1, label: { en: "I don't set goals — I just show up when I feel like it", da: "Jeg sætter ikke mål — jeg dukker bare op når jeg har lyst" } },
+      { value: 2, label: { en: "I set goals but rarely follow through", da: "Jeg sætter mål, men følger sjældent op" } },
+      { value: 3, label: { en: "I set goals and sometimes achieve them", da: "Jeg sætter mål og opnår dem nogle gange" } },
+      { value: 4, label: { en: "I set clear goals and track my progress consistently", da: "Jeg sætter klare mål og følger mine fremskridt konsekvent" } },
+      { value: 5, label: { en: "I have a structured plan with short and long-term goals", da: "Jeg har en struktureret plan med kort- og langsigtede mål" } },
     ],
   },
 ];
