@@ -598,6 +598,7 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
     setAdvice(null);
     setScores({});
     setTotalScore(0);
+    setDiarySaved(false);
   };
 
   const getScoreColor = (score: number) => {
