@@ -376,6 +376,9 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
       score: "Score",
       delete: "Slet",
       downloadPlan: "Download plan",
+      saveToDiary: "Gem i dagbog",
+      savedToDiary: "Gemt i dagbog!",
+      diaryNote: "Mental vurdering resumé",
     },
   };
 
