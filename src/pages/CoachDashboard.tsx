@@ -16,9 +16,10 @@ import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { PlanViewDialog } from "@/components/PlanViewDialog";
 import {
-  ArrowLeft, Loader2, UserPlus, Trash2, Zap, Plus, User, Users, NotebookPen, Eye,
+  ArrowLeft, Loader2, UserPlus, Trash2, Zap, Plus, User, Users, NotebookPen, Eye, Heart,
   Frown, Meh, Smile, Laugh, BatteryLow, BatteryMedium, BatteryFull,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface AthleteProfile {
   user_id: string;
@@ -97,6 +98,7 @@ export default function CoachDashboard() {
   const [diaryEntries, setDiaryEntries] = useState<DiaryEntry[]>([]);
   const [diaryLoading, setDiaryLoading] = useState(false);
   const [viewPlan, setViewPlan] = useState<AthletePlan | null>(null);
+  const [viewRehabPlan, setViewRehabPlan] = useState<RehabPlan | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, locale } = useLanguage();
@@ -458,6 +460,7 @@ export default function CoachDashboard() {
             <div className="grid gap-3">
               {athletes.map((a) => {
                 const athletePlans = plans.filter(p => p.user_id === a.user_id);
+                const athleteRehabs = rehabPlans.filter(r => r.user_id === a.user_id);
                 return (
                   <div
                     key={a.user_id}
@@ -548,12 +551,52 @@ export default function CoachDashboard() {
                                   variant="ghost"
                                   size="icon"
                                   className="h-8 w-8 flex-shrink-0 hover:bg-primary/10 hover:text-primary"
-                                  onClick={(e) => { e.stopPropagation(); setViewPlan(p); }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    const athleteActiveRehab = athleteRehabs.find(r => r.is_active);
+                                    setViewPlan(p);
+                                    setViewRehabPlan(athleteActiveRehab || null);
+                                  }}
                                 >
                                   <Eye className="h-4 w-4" />
                                 </Button>
                               </TooltipTrigger>
                               <TooltipContent side="left">View full plan</TooltipContent>
+                            </Tooltip>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {/* Rehab plan rows */}
+                    {athleteRehabs.length > 0 && (
+                      <div className={cn("space-y-1", athletePlans.length === 0 ? "mt-2.5 border-t border-border pt-2" : "")}>
+                        {athleteRehabs.map((r) => (
+                          <div key={r.id} className="flex items-center gap-2 text-xs">
+                            <Heart className="h-3 w-3 text-destructive flex-shrink-0" />
+                            <span className="flex-1 truncate text-muted-foreground">
+                              {r.name}
+                            </span>
+                            {r.is_active && (
+                              <span className="text-[9px] bg-destructive/10 text-destructive px-1.5 py-0.5 rounded-full font-medium">
+                                Active
+                              </span>
+                            )}
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 flex-shrink-0 hover:bg-destructive/10 hover:text-destructive"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setViewPlan(null);
+                                    setViewRehabPlan(r);
+                                  }}
+                                >
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent side="left">View rehab plan</TooltipContent>
                             </Tooltip>
                           </div>
                         ))}
@@ -619,9 +662,10 @@ export default function CoachDashboard() {
 
         {/* Plan View Dialog */}
         <PlanViewDialog
-          open={!!viewPlan}
-          onOpenChange={(open) => { if (!open) setViewPlan(null); }}
+          open={!!viewPlan || !!viewRehabPlan}
+          onOpenChange={(open) => { if (!open) { setViewPlan(null); setViewRehabPlan(null); } }}
           plan={viewPlan}
+          rehabPlan={viewRehabPlan}
         />
       </main>
       <AppFooter />
