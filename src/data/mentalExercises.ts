@@ -32,6 +32,14 @@ export const MENTAL_CATEGORY_LABELS: Record<Locale, Record<MentalCategory, strin
     recovery: "Restitution",
     toughness: "Mental styrke",
   },
+  sv: {
+    focus: "Fokus",
+    visualization: "Visualisering",
+    breathing: "Andning",
+    confidence: "Självförtroende",
+    recovery: "Återhämtning",
+    toughness: "Mental styrka",
+  },
 };
 
 export const MENTAL_CATEGORY_ICONS: Record<MentalCategory, string> = {
