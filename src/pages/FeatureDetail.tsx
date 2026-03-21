@@ -3,7 +3,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/logo.webp";
 import { AppFooter } from "@/components/AppFooter";
 import { Watermark } from "@/components/Watermark";
 import { PageMeta } from "@/components/PageMeta";
