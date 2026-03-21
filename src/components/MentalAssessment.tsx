@@ -458,6 +458,51 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
     }
   };
 
+  const saveToDiary = async () => {
+    setSavingDiary(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const scoreLines = Object.entries(scores)
+        .map(([cat, score]) => `${categoryLabels[cat][l]}: ${score}/5`)
+        .join("\n");
+
+      const content = [
+        `🧠 ${txt.diaryNote}`,
+        `${txt.yourScore}: ${totalScore}/30 — ${getOverallLabel(totalScore)}`,
+        "",
+        scoreLines,
+        "",
+        advice?.summary || "",
+        "",
+        advice?.strengths?.length > 0
+          ? `${txt.strengths}: ${advice.strengths.join(", ")}`
+          : "",
+        "",
+        advice?.affirmations?.length > 0
+          ? `${txt.affirmations}: ${advice.affirmations.map((a: string) => `"${a}"`).join(", ")}`
+          : "",
+      ].filter(Boolean).join("\n");
+
+      const { error } = await supabase.from("diary_entries").insert({
+        user_id: user.id,
+        content,
+        mood: Math.round(totalScore / 6),
+        energy: Math.round(totalScore / 6),
+        tags: ["mental-assessment"],
+      });
+
+      if (error) throw error;
+      setDiarySaved(true);
+      toast({ title: txt.savedToDiary });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    } finally {
+      setSavingDiary(false);
+    }
+  };
+
   const deleteAssessment = async (id: string) => {
     await supabase.from("mental_assessments").delete().eq("id", id);
     loadHistory();
