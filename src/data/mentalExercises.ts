@@ -32,6 +32,14 @@ export const MENTAL_CATEGORY_LABELS: Record<Locale, Record<MentalCategory, strin
     recovery: "Restitution",
     toughness: "Mental styrke",
   },
+  sv: {
+    focus: "Fokus",
+    visualization: "Visualisering",
+    breathing: "Andning",
+    confidence: "Självförtroende",
+    recovery: "Återhämtning",
+    toughness: "Mental styrka",
+  },
 };
 
 export const MENTAL_CATEGORY_ICONS: Record<MentalCategory, string> = {
@@ -46,6 +54,7 @@ export const MENTAL_CATEGORY_ICONS: Record<MentalCategory, string> = {
 export const MENTAL_DIFFICULTY_LABELS: Record<Locale, Record<MentalDifficulty, string>> = {
   en: { beginner: "Beginner", intermediate: "Intermediate", advanced: "Advanced" },
   da: { beginner: "Begynder", intermediate: "Mellem", advanced: "Avanceret" },
+  sv: { beginner: "Nybörjare", intermediate: "Medel", advanced: "Avancerad" },
 };
 
 interface MentalExerciseData {
@@ -300,14 +309,15 @@ const mentalExercisesData: MentalExerciseData[] = [
 ];
 
 export function getMentalExercises(locale: Locale = "en"): MentalExercise[] {
+  const effectiveLocale = (locale === "sv" ? "en" : locale) as "en" | "da";
   return mentalExercisesData.map((ex) => ({
     id: ex.id,
     category: ex.category,
     difficulty: ex.difficulty,
-    name: ex[locale].name,
-    duration: ex[locale].duration,
-    description: ex[locale].description,
-    steps: ex[locale].steps,
-    whyItMatters: ex[locale].whyItMatters,
+    name: ex[effectiveLocale].name,
+    duration: ex[effectiveLocale].duration,
+    description: ex[effectiveLocale].description,
+    steps: ex[effectiveLocale].steps,
+    whyItMatters: ex[effectiveLocale].whyItMatters,
   }));
 }

@@ -1057,10 +1057,11 @@ const exercisesData: Record<string, ExerciseBase> = {
   },
 };
 
-type Locale = "en" | "da";
+type Locale = "en" | "da" | "sv";
 
 function resolveExercise(base: ExerciseBase, locale: Locale): Exercise {
-  const localized = base[locale] || base.en;
+  const effectiveLocale = (locale === "sv" ? "en" : locale) as "en" | "da";
+  const localized = base[effectiveLocale] || base.en;
   return {
     id: base.id,
     name: base.name,
@@ -1111,16 +1112,18 @@ export function getWeeklyPlan(locale: Locale = currentLocale): TrainingDay[] {
   const ex = getExercises();
   const dayLabels = locale === "da" 
     ? { monday: "Mandag", tuesday: "Tirsdag", wednesday: "Onsdag", thursday: "Torsdag", friday: "Fredag", saturday: "Lørdag", sunday: "Søndag" }
+    : locale === "sv"
+    ? { monday: "Måndag", tuesday: "Tisdag", wednesday: "Onsdag", thursday: "Torsdag", friday: "Fredag", saturday: "Lördag", sunday: "Söndag" }
     : { monday: "Monday", tuesday: "Tuesday", wednesday: "Wednesday", thursday: "Thursday", friday: "Friday", saturday: "Saturday", sunday: "Sunday" };
 
   return [
-    { id: "monday", dayOfWeek: dayLabels.monday, label: locale === "da" ? "TKD Teknik" : "TKD Technical", type: "tkd", focus: locale === "da" ? "Poomsae / Teknisk træning" : "Poomsae / Technical Drilling", exercises: [] },
-    { id: "tuesday", dayOfWeek: dayLabels.tuesday, label: locale === "da" ? "Kraft & Eksplosivitet" : "Power & Explosiveness", type: "gym", focus: locale === "da" ? "Underkroppskraft + Plyometrik" : "Lower Body Power + Plyometrics", exercises: [ex.worldsGreatestStretch, ex.hipCARs, ex.hangCleanPull, ex.trapBarDeadlift, ex.boxJumps, ex.medicBallRotationalThrow, ex.ankleHops] },
-    { id: "wednesday", dayOfWeek: dayLabels.wednesday, label: locale === "da" ? "TKD Sparring" : "TKD Sparring", type: "tkd", focus: locale === "da" ? "Sparring / Taktisk arbejde" : "Sparring / Tactical Work", exercises: [] },
-    { id: "thursday", dayOfWeek: dayLabels.thursday, label: locale === "da" ? "Styrke & Modstandskraft" : "Strength & Resilience", type: "gym", focus: locale === "da" ? "Unilateral styrke + Skadeforebyggelse" : "Unilateral Strength + Injury Prevention", exercises: [ex.worldsGreatestStretch, ex.hipCARs, ex.splitSquat, ex.nordicCurl, ex.copenhagenPlank, ex.halfKneelingPallofPress, ex.bandedHipFlexorDrive] },
-    { id: "friday", dayOfWeek: dayLabels.friday, label: locale === "da" ? "TKD Sparring" : "TKD Sparring", type: "tkd", focus: locale === "da" ? "Hård sparring / Konkurrenceforberedelse" : "Heavy Sparring / Competition Prep", exercises: [] },
-    { id: "saturday", dayOfWeek: dayLabels.saturday, label: locale === "da" ? "Hastighed & Reaktiv" : "Speed & Reactive", type: "gym", focus: locale === "da" ? "RFD + Reaktiv plyometrik (let session)" : "RFD + Reactive Plyometrics (Light Session)", exercises: [ex.hipCARs, ex.depthJumpToSprint, ex.bandedHipFlexorDrive, ex.medicBallRotationalThrow, ex.ankleHops] },
-    { id: "sunday", dayOfWeek: dayLabels.sunday, label: locale === "da" ? "Restitution" : "Recovery", type: "recovery", focus: locale === "da" ? "Aktiv restitution / Mobilitet" : "Active Recovery / Mobility", exercises: [ex.hipCARs, ex.worldsGreatestStretch] },
+    { id: "monday", dayOfWeek: dayLabels.monday, label: locale === "da" ? "TKD Teknik" : locale === "sv" ? "TKD Teknik" : "TKD Technical", type: "tkd", focus: locale === "da" ? "Poomsae / Teknisk træning" : locale === "sv" ? "Poomsae / Teknisk träning" : "Poomsae / Technical Drilling", exercises: [] },
+    { id: "tuesday", dayOfWeek: dayLabels.tuesday, label: locale === "da" ? "Kraft & Eksplosivitet" : locale === "sv" ? "Kraft & Explosivitet" : "Power & Explosiveness", type: "gym", focus: locale === "da" ? "Underkroppskraft + Plyometrik" : locale === "sv" ? "Underkroppskraft + Plyometrik" : "Lower Body Power + Plyometrics", exercises: [ex.worldsGreatestStretch, ex.hipCARs, ex.hangCleanPull, ex.trapBarDeadlift, ex.boxJumps, ex.medicBallRotationalThrow, ex.ankleHops] },
+    { id: "wednesday", dayOfWeek: dayLabels.wednesday, label: locale === "da" ? "TKD Sparring" : "TKD Sparring", type: "tkd", focus: locale === "da" ? "Sparring / Taktisk arbejde" : locale === "sv" ? "Sparring / Taktiskt arbete" : "Sparring / Tactical Work", exercises: [] },
+    { id: "thursday", dayOfWeek: dayLabels.thursday, label: locale === "da" ? "Styrke & Modstandskraft" : locale === "sv" ? "Styrka & Motståndskraft" : "Strength & Resilience", type: "gym", focus: locale === "da" ? "Unilateral styrke + Skadeforebyggelse" : locale === "sv" ? "Unilateral styrka + Skadeförebyggande" : "Unilateral Strength + Injury Prevention", exercises: [ex.worldsGreatestStretch, ex.hipCARs, ex.splitSquat, ex.nordicCurl, ex.copenhagenPlank, ex.halfKneelingPallofPress, ex.bandedHipFlexorDrive] },
+    { id: "friday", dayOfWeek: dayLabels.friday, label: locale === "da" ? "TKD Sparring" : "TKD Sparring", type: "tkd", focus: locale === "da" ? "Hård sparring / Konkurrenceforberedelse" : locale === "sv" ? "Hård sparring / Tävlingsförberedelse" : "Heavy Sparring / Competition Prep", exercises: [] },
+    { id: "saturday", dayOfWeek: dayLabels.saturday, label: locale === "da" ? "Hastighed & Reaktiv" : locale === "sv" ? "Hastighet & Reaktiv" : "Speed & Reactive", type: "gym", focus: locale === "da" ? "RFD + Reaktiv plyometrik (let session)" : locale === "sv" ? "RFD + Reaktiv plyometrik (lätt pass)" : "RFD + Reactive Plyometrics (Light Session)", exercises: [ex.hipCARs, ex.depthJumpToSprint, ex.bandedHipFlexorDrive, ex.medicBallRotationalThrow, ex.ankleHops] },
+    { id: "sunday", dayOfWeek: dayLabels.sunday, label: locale === "da" ? "Restitution" : locale === "sv" ? "Återhämtning" : "Recovery", type: "recovery", focus: locale === "da" ? "Aktiv restitution / Mobilitet" : locale === "sv" ? "Aktiv återhämtning / Mobilitet" : "Active Recovery / Mobility", exercises: [ex.hipCARs, ex.worldsGreatestStretch] },
   ];
 }
 
