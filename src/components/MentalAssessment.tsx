@@ -313,6 +313,8 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
   const [totalScore, setTotalScore] = useState(0);
   const [history, setHistory] = useState<Assessment[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
+  const [savingDiary, setSavingDiary] = useState(false);
+  const [diarySaved, setDiarySaved] = useState(false);
   const { toast } = useToast();
   const { locale } = useLanguage();
   const l = locale as "en" | "da";
