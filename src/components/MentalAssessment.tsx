@@ -346,6 +346,9 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
       score: "Score",
       delete: "Delete",
       downloadPlan: "Download Plan",
+      saveToDiary: "Save to Diary",
+      savedToDiary: "Saved to diary!",
+      diaryNote: "Mental Assessment Summary",
     },
     da: {
       title: "Mental præstation",
