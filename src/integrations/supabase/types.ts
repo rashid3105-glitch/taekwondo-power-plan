@@ -129,6 +129,7 @@ export type Database = {
           avatar_url: string | null
           belt_level: string
           club_id: string | null
+          country: string | null
           created_at: string
           current_injury: string | null
           discipline: string
@@ -153,6 +154,7 @@ export type Database = {
           avatar_url?: string | null
           belt_level?: string
           club_id?: string | null
+          country?: string | null
           created_at?: string
           current_injury?: string | null
           discipline?: string
@@ -177,6 +179,7 @@ export type Database = {
           avatar_url?: string | null
           belt_level?: string
           club_id?: string | null
+          country?: string | null
           created_at?: string
           current_injury?: string | null
           discipline?: string
