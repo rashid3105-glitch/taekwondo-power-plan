@@ -54,6 +54,7 @@ export const MENTAL_CATEGORY_ICONS: Record<MentalCategory, string> = {
 export const MENTAL_DIFFICULTY_LABELS: Record<Locale, Record<MentalDifficulty, string>> = {
   en: { beginner: "Beginner", intermediate: "Intermediate", advanced: "Advanced" },
   da: { beginner: "Begynder", intermediate: "Mellem", advanced: "Avanceret" },
+  sv: { beginner: "Nybörjare", intermediate: "Medel", advanced: "Avancerad" },
 };
 
 interface MentalExerciseData {
