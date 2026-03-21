@@ -1060,7 +1060,8 @@ const exercisesData: Record<string, ExerciseBase> = {
 type Locale = "en" | "da" | "sv";
 
 function resolveExercise(base: ExerciseBase, locale: Locale): Exercise {
-  const localized = base[locale] || base.en;
+  const effectiveLocale = (locale === "sv" ? "en" : locale) as "en" | "da";
+  const localized = base[effectiveLocale] || base.en;
   return {
     id: base.id,
     name: base.name,
