@@ -855,6 +855,30 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
         </>
       ) : null}
 
+      {/* Save to diary prompt */}
+      {advice && !diarySaved && (
+        <Card className="p-4 space-y-2 border-primary/30 bg-primary/5">
+          <h3 className="font-bold text-foreground text-sm flex items-center gap-2">
+            <NotebookPen className="h-4 w-4 text-primary" /> {txt.saveToDiary}
+          </h3>
+          <p className="text-xs text-muted-foreground">
+            {l === "da"
+              ? "Vil du gemme denne vurdering som en note i din dagbog?"
+              : "Would you like to save this assessment summary as a note in your diary?"}
+          </p>
+          <Button onClick={saveToDiary} disabled={savingDiary} size="sm" className="w-full">
+            {savingDiary ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <NotebookPen className="h-4 w-4 mr-2" />}
+            {txt.saveToDiary}
+          </Button>
+        </Card>
+      )}
+
+      {diarySaved && (
+        <Card className="p-3 border-green-500/30 bg-green-500/10 text-center">
+          <p className="text-sm text-foreground font-medium">✓ {txt.savedToDiary}</p>
+        </Card>
+      )}
+
       <div className="flex gap-2">
         {advice && (
           <Button onClick={downloadPDF} className="flex-1">
