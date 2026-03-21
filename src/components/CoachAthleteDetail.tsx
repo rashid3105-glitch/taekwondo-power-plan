@@ -12,6 +12,24 @@ import { RehabPlanCard } from "@/components/RehabPlanCard";
 import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekSchedulePicker";
 import { Loader2, Plus, Zap, Heart, Save, Calendar, UserCog, Target } from "lucide-react";
 
+const COUNTRIES = [
+  "Afghanistan","Albania","Algeria","Andorra","Angola","Argentina","Armenia","Australia","Austria","Azerbaijan",
+  "Bahrain","Bangladesh","Belarus","Belgium","Bhutan","Bolivia","Bosnia and Herzegovina","Brazil","Brunei","Bulgaria",
+  "Cambodia","Cameroon","Canada","Chad","Chile","China","Colombia","Costa Rica","Croatia","Cuba","Cyprus","Czech Republic",
+  "Denmark","Dominican Republic","Ecuador","Egypt","El Salvador","Estonia","Ethiopia",
+  "Finland","France","Georgia","Germany","Ghana","Greece","Guatemala","Honduras","Hungary",
+  "Iceland","India","Indonesia","Iran","Iraq","Ireland","Israel","Italy","Jamaica","Japan","Jordan",
+  "Kazakhstan","Kenya","Kuwait","Kyrgyzstan","Laos","Latvia","Lebanon","Libya","Lithuania","Luxembourg",
+  "Malaysia","Maldives","Mali","Malta","Mexico","Moldova","Monaco","Mongolia","Montenegro","Morocco","Myanmar",
+  "Nepal","Netherlands","New Zealand","Nigeria","North Korea","North Macedonia","Norway",
+  "Oman","Pakistan","Palestine","Panama","Paraguay","Peru","Philippines","Poland","Portugal",
+  "Qatar","Romania","Russia","Rwanda","Saudi Arabia","Senegal","Serbia","Singapore","Slovakia","Slovenia",
+  "Somalia","South Africa","South Korea","Spain","Sri Lanka","Sudan","Sweden","Switzerland","Syria",
+  "Taiwan","Tajikistan","Tanzania","Thailand","Tunisia","Turkey","Turkmenistan",
+  "Uganda","Ukraine","United Arab Emirates","United Kingdom","United States","Uruguay","Uzbekistan",
+  "Venezuela","Vietnam","Yemen","Zambia","Zimbabwe"
+];
+
 const GOAL_OPTIONS = [
   "Faster kicks",
   "More explosive footwork",
@@ -41,6 +59,7 @@ interface AthleteProfile {
   weekly_schedule: any;
   avatar_url: string | null;
   discipline: string;
+  country: string | null;
 }
 
 interface AthletePlan {
@@ -102,6 +121,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
   const [discipline, setDiscipline] = useState(athlete.discipline || "sparring");
   const [selectedGoals, setSelectedGoals] = useState<string[]>(athlete.goals || []);
   const [programWeeks, setProgramWeeks] = useState(athlete.program_weeks || 8);
+  const [country, setCountry] = useState(athlete.country || "");
 
   const toggleGoal = (goal: string) => {
     setSelectedGoals((prev) =>
@@ -119,6 +139,8 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
         belt_level: beltLevel,
         discipline,
         goals: selectedGoals,
+        program_weeks: programWeeks,
+        country: country || null,
       };
       if (age) updates.age = Math.min(Math.max(parseInt(age), 5), 99);
       if (experienceYears) updates.experience_years = Math.min(Math.max(parseInt(experienceYears), 0), 50);
@@ -300,6 +322,19 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
             <SelectContent>
               <SelectItem value="sparring">{t("sparring")}</SelectItem>
               <SelectItem value="poomsae">{t("poomsae")}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1">
+          <Label className="text-xs">{t("country")}</Label>
+          <Select value={country} onValueChange={setCountry}>
+            <SelectTrigger className="h-9">
+              <SelectValue placeholder={t("chooseCountry")} />
+            </SelectTrigger>
+            <SelectContent>
+              {COUNTRIES.map((c) => (
+                <SelectItem key={c} value={c}>{c}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
