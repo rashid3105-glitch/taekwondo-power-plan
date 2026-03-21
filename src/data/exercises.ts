@@ -99,6 +99,15 @@ const exercisesData: Record<string, ExerciseBase> = {
         { name: "Pistol Squat Negatives", reason: "Intet udstyr nødvendigt — træner ét-bens hofteekstension med kropsvægt" },
       ],
     },
+    sv: {
+      notes: "Fokusera på maximal kraft ner i golvet. Res dig explosivt. Inga malande reps — avbryt setet om stånghastigheten sjunker.",
+      whyItMatters: "Bygger helkropps-kraftproduktion utan den ryggbelastning som knäböj ger. Den upprätta bålen efterliknar sparkpositionen.",
+      alternatives: [
+        { name: "Barbell Deadlift", reason: "Samma rörelsemönster om det inte finns en trap bar tillgänglig" },
+        { name: "Goblet Squat", reason: "Lättare alternativ som fortfarande tränar höftextension med upprätt bål" },
+        { name: "Pistol Squat Negatives", reason: "Ingen utrustning behövs — tränar enbens höftextension med kroppsvikt" },
+      ],
+    },
   },
   boxJumps: {
     id: "box-jumps",
@@ -123,6 +132,14 @@ const exercisesData: Record<string, ExerciseBase> = {
       alternatives: [
         { name: "Squat Jumps", reason: "Ingen boks nødvendig, træner stadig eksplosiv hofteekstension" },
         { name: "Broad Jumps", reason: "Horisontal plyometrisk øvelse der opbygger lignende kraft" },
+      ],
+    },
+    sv: {
+      notes: "Maximal höjdintention. Kliv ner (hoppa inte ner) för att skydda lederna. Full höftextension i toppen.",
+      whyItMatters: "Utvecklar explosiv höftextension — motorn bakom rundsparkar och snurrteknik.",
+      alternatives: [
+        { name: "Squat Jumps", reason: "Ingen box behövs, tränar fortfarande explosiv höftextension" },
+        { name: "Broad Jumps", reason: "Horisontell plyometrisk övning som bygger liknande kraft" },
       ],
     },
   },
@@ -154,6 +171,15 @@ const exercisesData: Record<string, ExerciseBase> = {
         { name: "Eksplosivt Længdespring", reason: "Intet udstyr — træner fuld trippelekstension med kropsvægt" },
       ],
     },
+    sv: {
+      notes: "Driv genom golvet, ryck hårt i toppen. Inget fång behövs — fokusera på draget. Använd remmar om greppet begränsar lasten.",
+      whyItMatters: "Tränar kraftutvecklingshastighet (RFD) och trippelextension — vrister, knän, höfter — exakt den kedja som används i explosiva sparkar.",
+      alternatives: [
+        { name: "Dumbbell High Pull", reason: "Liknande trippelextensionsmönster med hantlar" },
+        { name: "Kettlebell Swing", reason: "Tränar höftgångjärns-explosivitet med enklare teknik" },
+        { name: "Explosivt Längdhopp", reason: "Ingen utrustning — tränar full trippelextension med kroppsvikt" },
+      ],
+    },
   },
   splitSquat: {
     id: "bulgarian-split-squat",
@@ -183,6 +209,15 @@ const exercisesData: Record<string, ExerciseBase> = {
         { name: "Kropsvægt Split Squat", reason: "Intet udstyr — samme mønster kun med kropsvægt" },
       ],
     },
+    sv: {
+      notes: "Kontrollera den excentriska fasen (3 sek ner). Driv upp kraftfullt. Håll bålen upprätt. Adresserar obalanser på ett ben, kritiskt för sparkar.",
+      whyItMatters: "Taekwondo är en enbens-sport. Denna övning bygger unilateral styrka och höftstabilitet för kraftfulla sparkar från båda benen.",
+      alternatives: [
+        { name: "Reverse Lunge", reason: "Liknande unilateralt mönster utan bänk" },
+        { name: "Step-Up", reason: "Enbens-styrka med mindre balanskrav" },
+        { name: "Kroppsvikt Split Squat", reason: "Ingen utrustning — samma mönster med enbart kroppsvikt" },
+      ],
+    },
   },
   nordicCurl: {
     id: "nordic-curl",
@@ -208,6 +243,14 @@ const exercisesData: Record<string, ExerciseBase> = {
       alternatives: [
         { name: "Slider Leg Curl", reason: "Excentrisk hamstringarbejde med sliders eller håndklæde på glat gulv" },
         { name: "Romanian Deadlift", reason: "Træner hamstringforlængelse under belastning" },
+      ],
+    },
+    sv: {
+      notes: "Kontrollera nedsänkningen så långsamt som möjligt. Tryck ifrån golvet för att hjälpa den koncentriska fasen vid behov. Avgörande för att förebygga hamstringsskador.",
+      whyItMatters: "Förebygger hamstringsskador från höga sparkar. Excentrisk hamstringsstyrka är den främsta prediktorn för skademotståndskraft hos sparkande idrottare.",
+      alternatives: [
+        { name: "Slider Leg Curl", reason: "Excentriskt hamstringsarbete med sliders eller handduk på slät yta" },
+        { name: "Romanian Deadlift", reason: "Tränar hamstringsförlängning under belastning" },
       ],
     },
   },
@@ -238,6 +281,15 @@ const exercisesData: Record<string, ExerciseBase> = {
         { name: "Stående Rotationskast (uden bold)", reason: "Intet udstyr — efterlign kastbevægelsen eksplosivt med foldede hænder" },
       ],
     },
+    sv: {
+      notes: "Initiera från höfterna, inte armarna. Släpp med maximal intention. Använd en 3–5 kg boll. Tänk 'rundspark'-rotation.",
+      whyItMatters: "Efterliknar direkt det roterande kraftmönstret i rundsparkar och krokavsparkar. Utvecklar core-RFD.",
+      alternatives: [
+        { name: "Cable Woodchop", reason: "Samma rotationsmönster med justerbart motstånd" },
+        { name: "Landmine Rotation", reason: "Rotationskraft med skivstång i en landmine" },
+        { name: "Stående Rotationskast (utan boll)", reason: "Ingen utrustning — efterlikna kaströrelsen explosivt med knäppta händer" },
+      ],
+    },
   },
   bandedHipFlexorDrive: {
     id: "banded-hip-flexor-drive",
@@ -266,6 +318,15 @@ const exercisesData: Record<string, ExerciseBase> = {
         { name: "Stående Hurtige Knædrivninger", reason: "Intet udstyr — eksplosive knædrivninger fra stående position" },
       ],
     },
+    sv: {
+      notes: "Fäst bandet lågt bakom dig. Driv knäet explosivt uppåt mot motstånd. Efterlikna upphämtningen av en frontspark. Hastighet framför belastning.",
+      whyItMatters: "Stärker höftflexorerna med hastighet — den muskelgrupp som hämtar upp varje spark. Svaga höftflexorer = långsamma sparkar.",
+      alternatives: [
+        { name: "Cable Knee Drive", reason: "Samma rörelse med kabeldrag för jämnt motstånd" },
+        { name: "Hanging Knee Raise (snabbt)", reason: "Tränar höftflexorhastighet med kroppsvikt" },
+        { name: "Stående Snabba Knädrivningar", reason: "Ingen utrustning — explosiva knädrivningar från stående" },
+      ],
+    },
   },
   depthJumpToSprint: {
     id: "depth-jump-sprint",
@@ -290,6 +351,14 @@ const exercisesData: Record<string, ExerciseBase> = {
       alternatives: [
         { name: "Drop Jump (vertikal)", reason: "Samme reaktive koncept uden behov for sprintplads" },
         { name: "Hurdle Hops", reason: "Reaktiv plyometrisk øvelse med lave hække i række" },
+      ],
+    },
+    sv: {
+      notes: "Kliv av en 30–40 cm box, landa och explodera omedelbart framåt i en 5 m sprint. Minimal markkontakttid. AVANCERAT — bemästra box jumps först.",
+      whyItMatters: "Tränar reaktiv styrka och amortiseringsfasen — förmågan att absorbera och omdirigera kraft omedelbart, som ett snabbt inkliv till attack.",
+      alternatives: [
+        { name: "Drop Jump (vertikal)", reason: "Samma reaktiva koncept utan behov av sprintutrymme" },
+        { name: "Hurdle Hops", reason: "Reaktiv plyometrisk övning med låga häckar i rad" },
       ],
     },
   },
@@ -318,6 +387,14 @@ const exercisesData: Record<string, ExerciseBase> = {
         { name: "Sumo Squat Hold", reason: "Isometrisk adduktor- og lyskestyrkelse" },
       ],
     },
+    sv: {
+      notes: "Översta benet på bänken, underbenet svävande. Rak linje från huvud till tå. Brutal på adduktorer och sneda magmuskler — kritisk för sidosparkar.",
+      whyItMatters: "Skyddar ljumsken/adduktorerna mot skador från sidosparkar och breda ställningar. Bygger även anti-lateral flexion core-styrka.",
+      alternatives: [
+        { name: "Sidoplanka med Adduktion", reason: "Liknande adduktor- + core-arbete med enklare uppställning" },
+        { name: "Sumo Squat Hold", reason: "Isometrisk adduktor- och ljumskstärkning" },
+      ],
+    },
   },
   ankleHops: {
     id: "ankle-hops",
@@ -342,6 +419,14 @@ const exercisesData: Record<string, ExerciseBase> = {
       alternatives: [
         { name: "Calf Raises (hurtigt)", reason: "Opbygger lægstyrke når plyometrik ikke er egnet" },
         { name: "Sjippetov", reason: "Lignende ankelstivhedstræning med rytme" },
+      ],
+    },
+    sv: {
+      notes: "Stela vrister, minimal knäböjning. Studsa från golvet med enbart vriststyvhet. Tänk 'glödande kol.' Utvecklar fothastighet och reaktiv styvhet.",
+      whyItMatters: "Utvecklar vriststyvhet för studsande fotarbete. Snabba fighters har styva, reaktiva vrister som låter dem byta riktning direkt.",
+      alternatives: [
+        { name: "Calf Raises (snabbt)", reason: "Bygger vadstyrka när plyometrik inte passar" },
+        { name: "Hopprep", reason: "Liknande vriststyvhetsträning med rytm" },
       ],
     },
   },
@@ -372,6 +457,15 @@ const exercisesData: Record<string, ExerciseBase> = {
         { name: "Bird Dog med Pause", reason: "Intet udstyr — anti-rotations corestabilitet fra alle fire" },
       ],
     },
+    sv: {
+      notes: "Pressa kabel/band bort från bröstet samtidigt som du motstår rotation. Halvknäställning tvingar höftstabilitet. Långsamt och kontrollerat.",
+      whyItMatters: "Anti-rotations core-styrka förhindrar energiförluster under sparkar. Om din core kollapsar mitt i en spark förloras kraften.",
+      alternatives: [
+        { name: "Band Anti-Rotationshåll", reason: "Enklare uppställning med band runt en stolpe" },
+        { name: "Dead Bug", reason: "Anti-extensions core-arbete utan kabelutrustning" },
+        { name: "Bird Dog med Paus", reason: "Ingen utrustning — anti-rotations core-stabilitet från alla fyra" },
+      ],
+    },
   },
   hipCARs: {
     id: "hip-cars",
@@ -396,6 +490,14 @@ const exercisesData: Record<string, ExerciseBase> = {
       alternatives: [
         { name: "Bensving (front/side)", reason: "Dynamisk hoftemobilitet med enklere udførelse" },
         { name: "90/90 Hofteskift", reason: "Siddende hofterotationsøvelse for indad/udadrotation" },
+      ],
+    },
+    sv: {
+      notes: "Långsamma, kontrollerade cirklar genom fullt höftomfång. Håll bäckenet stabilt — bara lårbenet rör sig. Gör dessa dagligen, inte bara på gymdagar.",
+      whyItMatters: "Bevarar och utökar höftens rörelseomfång under kontroll. Höga sparkar kräver både flexibilitet OCH styrka i ytterpositionen.",
+      alternatives: [
+        { name: "Bensvingar (fram/sida)", reason: "Dynamisk höftmobilitet med enklare utförande" },
+        { name: "90/90 Höftväxlingar", reason: "Sittande höftrotationsövning för inåt-/utåtrotation" },
       ],
     },
   },
@@ -424,6 +526,14 @@ const exercisesData: Record<string, ExerciseBase> = {
         { name: "Inchworm til Udfald", reason: "Helkropsopvarmningsflow uden rotationskomponent" },
       ],
     },
+    sv: {
+      notes: "Utfallssteg, placera handen, rotera bröstryggen mot taket. Håll varje position 2–3 sek. Perfekt uppvärmningsflöde.",
+      whyItMatters: "Öppnar varje kedja som används i TKD — höfter, bröstrygg, vrister. Den bästa enskilda uppvärmningsrörelsen för kampsportare.",
+      alternatives: [
+        { name: "Spiderman Lunge med Räckning", reason: "Liknande multi-ledsträck med rotation" },
+        { name: "Inchworm till Utfall", reason: "Helkropps uppvärmningsflöde utan rotationskomponent" },
+      ],
+    },
   },
   kettlebellSwing: {
     id: "kettlebell-swing",
@@ -450,6 +560,15 @@ const exercisesData: Record<string, ExerciseBase> = {
         { name: "Elastik Hofte-Pull-Through", reason: "Samme hoftesnap-mønster med elastik forankret lavt bag dig" },
         { name: "Håndvægt Swing", reason: "Identisk bevægelse hvis ingen kettlebell er tilgængelig" },
         { name: "Længdespring", reason: "Intet udstyr — træner eksplosiv hofteekstension med kropsvægt" },
+      ],
+    },
+    sv: {
+      notes: "Gångjärn i höfterna, snäpp framåt explosivt. Armarna är bara krokar — all kraft kommer från höftsnäppen. Håll lats aktiverade och core spänd.",
+      whyItMatters: "Utvecklar explosiv höftextension och posterior kedja-kraft — samma snäpp som driver rundsparkar och baksparkar.",
+      alternatives: [
+        { name: "Band Höft-Pull-Through", reason: "Samma höftsnäpp-mönster med band förankrat lågt bakom" },
+        { name: "Hantelsvingar", reason: "Identisk rörelse om ingen kettlebell finns" },
+        { name: "Längdhopp", reason: "Ingen utrustning — tränar explosiv höftextension med kroppsvikt" },
       ],
     },
   },
@@ -481,6 +600,15 @@ const exercisesData: Record<string, ExerciseBase> = {
         { name: "Kropsvægt Box Squat", reason: "Intet udstyr — samme pause-og-eksplodér mønster med kropsvægt" },
       ],
     },
+    sv: {
+      notes: "Sätt dig bak mot boxen med kontroll, kort paus, driv sedan explosivt uppåt. Boxhöjd vid eller strax under parallell. Lär korrekt gångjärndjup.",
+      whyItMatters: "Bygger koncentrisk-dominant kraft från dödstart — efterliknar explosion från låg ställning till spark eller inkliv.",
+      alternatives: [
+        { name: "Band Box Squat", reason: "Lägg till loop-band runt knäna för ökad gluteal-aktivering" },
+        { name: "Goblet Squat till Box", reason: "Lättare belastningsvariant med hantel eller kettlebell" },
+        { name: "Kroppsvikt Box Squat", reason: "Ingen utrustning — samma paus-och-explodera-mönster med kroppsvikt" },
+      ],
+    },
   },
   barbellHipThrust: {
     id: "barbell-hip-thrust",
@@ -508,6 +636,15 @@ const exercisesData: Record<string, ExerciseBase> = {
         { name: "Elastik Hip Thrust", reason: "Loop-elastik over knæene tilføjer abduktionskrav — perfekt til hjemmetræning uden vægtstang" },
         { name: "Ét-bens Hip Thrust", reason: "Unilateral variation der adresserer ubalancer mellem spark- og standbenet" },
         { name: "Glutebro (gulv)", reason: "Ingen bænk nødvendig — samme hofteekstension fra gulvet" },
+      ],
+    },
+    sv: {
+      notes: "Övre ryggen på bänk, driv höfterna till full extension. Kläm gluteerna hårt i toppen i 1 sek. Hakan in, revben ner. Överextendra inte ländryggen.",
+      whyItMatters: "Isolerar gluteus maximus — den primära motorn för kraftfulla sparkar, explosiva ställningsbyten och höftextension i hopp.",
+      alternatives: [
+        { name: "Band Hip Thrust", reason: "Loop-band ovanför knäna tillför abduktionskrav — utmärkt för hemmaträning utan skivstång" },
+        { name: "Enbens Hip Thrust", reason: "Unilateral variation som adresserar obalanser mellan spark- och ståbenet" },
+        { name: "Glutebro (golv)", reason: "Ingen bänk behövs — samma höftextension från golvet" },
       ],
     },
   },
@@ -538,6 +675,15 @@ const exercisesData: Record<string, ExerciseBase> = {
         { name: "Lateralt Udfald", reason: "Dynamisk lateral bevægelse uden elastikudstyr" },
       ],
     },
+    sv: {
+      notes: "Miniband ovanför knäna eller vristerna. Stå lågt i kvartssquat. Pressa knäna ut mot bandspänningen. Kontrollerade steg — låt inte fötterna slå ihop.",
+      whyItMatters: "Aktiverar gluteus medius för lateral stabilitet — kritiskt för att hålla balansen på ståbenet under sparkar.",
+      alternatives: [
+        { name: "Band Clamshell", reason: "Enklare regression som tränar samma gluteus medius på sidan" },
+        { name: "Sidoliggande Höftabduktion", reason: "Inget band behövs — tränar gluteus medius med kroppsvikt" },
+        { name: "Lateralt Utfall", reason: "Dynamisk lateral rörelse utan bandutrustning" },
+      ],
+    },
   },
   bandedPullApart: {
     id: "banded-pull-apart",
@@ -564,6 +710,15 @@ const exercisesData: Record<string, ExerciseBase> = {
         { name: "Face Pull (kabel)", reason: "Samme posteriore skulder- og skapulaarbejde med kabelmaskine" },
         { name: "Liggende Y-T-W Løft", reason: "Ingen elastik nødvendig — liggende på maven, løft armene i Y, T og W mønstre" },
         { name: "Elastik Dislocates", reason: "Fuld skuldermobilitet med let elastik over hovedet" },
+      ],
+    },
+    sv: {
+      notes: "Håll bandet i axelbredd, armarna raka. Dra isär tills bandet vidrör bröstet. Kläm ihop skulderbladen. Lätt motstånd, höga reps.",
+      whyItMatters: "Motverkar framåtroterad hållning från gardställning. Friska axlar ger fullt rörelseomfång i slag och blockeringar utan impingement.",
+      alternatives: [
+        { name: "Face Pull (kabel)", reason: "Samma bakre deltoid- och skulderbladsarbete med kabelmaskin" },
+        { name: "Liggande Y-T-W Lyft", reason: "Inget band behövs — ligg på magen, lyft armarna i Y, T och W" },
+        { name: "Band Dislocates", reason: "Full axelmobilitet med lätt band över huvudet" },
       ],
     },
   },
@@ -595,6 +750,15 @@ const exercisesData: Record<string, ExerciseBase> = {
         { name: "Ét-bens RDL", reason: "Unilateralt hoftehængsel for balance og hamstringstyrke" },
       ],
     },
+    sv: {
+      notes: "Stå på bandet, loop bakom nacken. Gångjärn framåt med mjuka knän tills hamstrings sträcks, driv sedan höfterna fram. Håll ryggen neutral hela tiden.",
+      whyItMatters: "Stärker den posteriora kedjan genom ett höftgångjärn — bygger hamstringsmotstånds kraft för höga sparkar och skyddar mot sträckningar.",
+      alternatives: [
+        { name: "Romanian Deadlift", reason: "Tyngre höftgångjärnsvariation med skivstång eller hantlar" },
+        { name: "Kroppsvikt Good Morning", reason: "Inget band — händer bakom huvudet, samma gångjärnsmönster" },
+        { name: "Enbens RDL", reason: "Unilateralt höftgångjärn för balans och hamstringsstyrka" },
+      ],
+    },
   },
   bandedSquat: {
     id: "banded-squat",
@@ -621,6 +785,15 @@ const exercisesData: Record<string, ExerciseBase> = {
         { name: "Goblet Squat", reason: "Lignende mønster med håndvægt eller kettlebell i stedet for elastik" },
         { name: "Kropsvægt Squat", reason: "Intet udstyr nødvendigt — mange gentagelser for udholdenhed" },
         { name: "Elastik Squat med Puls", reason: "Tilføj 3 pulse i bunden for ekstra tid under spænding" },
+      ],
+    },
+    sv: {
+      notes: "Stå på bandet, håll vid axlarna. Pressa knäna ut över tårna. Fullt djup med upprätt bål. Bandet ökar motståndet i toppen där lockout är viktig.",
+      whyItMatters: "Ackommoderande motstånd från bandet tränar lockout-kraft — samma top-range kraft som används vid uppdriv från låg ställning till spark.",
+      alternatives: [
+        { name: "Goblet Squat", reason: "Liknande mönster med hantel eller kettlebell istället för band" },
+        { name: "Kroppsvikt Squat", reason: "Ingen utrustning behövs — höga reps för uthållighet" },
+        { name: "Band Squat med Puls", reason: "Lägg till 3 pulser i botten för extra tid under spänning" },
       ],
     },
   },
@@ -650,6 +823,14 @@ const exercisesData: Record<string, ExerciseBase> = {
         { name: "Elastik Ét-bens RDL", reason: "Loop-elastik under foden for modstand uden håndvægte" },
       ],
     },
+    sv: {
+      notes: "Håll hantel i motsatta handen. Gångjärn i höften, håll ryggen platt. Fria benet sträcks bakåt. Kontrollera nedsänkningen — stressa inte.",
+      whyItMatters: "Bygger enbens-balans och hamstringsstyrka — essentiellt för stabil sparkbas och för att förebygga hamstringsskador vid höga sparkar.",
+      alternatives: [
+        { name: "Kroppsvikt Enbens RDL", reason: "Ingen utrustning — samma balans- och gångjärnsmönster" },
+        { name: "Band Enbens RDL", reason: "Loop-band under foten för motstånd utan hantlar" },
+      ],
+    },
   },
   lateralBoundHold: {
     id: "lateral-bound-hold",
@@ -676,6 +857,14 @@ const exercisesData: Record<string, ExerciseBase> = {
         { name: "Skater Jumps", reason: "Lignende lateral plyometrisk øvelse med kontinuerlig rytme" },
       ],
     },
+    sv: {
+      notes: "Hoppa åt sidan, landa på ett ben och HÅLL landningen i 2 sek. Ingen vackling. Betona kontroll och absorption.",
+      whyItMatters: "Utvecklar lateral kraft och enbens-stabilitet — kritiskt för explosiva vinkeländringar och att hålla balansen efter sparkar.",
+      alternatives: [
+        { name: "Lateral Shuffle till Sprint", reason: "Dynamisk lateral rörelse utan hoppkrav" },
+        { name: "Skater Jumps", reason: "Liknande lateral plyometrisk övning med kontinuerlig rytm" },
+      ],
+    },
   },
   plankShouderTap: {
     id: "plank-shoulder-tap",
@@ -700,6 +889,14 @@ const exercisesData: Record<string, ExerciseBase> = {
       alternatives: [
         { name: "Dead Bug", reason: "Rygleje anti-rotation corearbejde med mindre skulderkrav" },
         { name: "Bear Crawl Hold", reason: "Isometrisk core + skulderstabilitet fra firbenet stilling" },
+      ],
+    },
+    sv: {
+      notes: "Från armhävningsposition, slå på motsatta axeln utan att rotera höfterna. Anti-rotation under kroppsvikt. Håll fötterna bredare för enklare balans.",
+      whyItMatters: "Tränar anti-rotationsstabilitet under dynamisk belastning — samma krav som att sparka medan man håller garden uppe.",
+      alternatives: [
+        { name: "Dead Bug", reason: "Ryggläge anti-rotations core-arbete med mindre axelkrav" },
+        { name: "Bear Crawl Hold", reason: "Isometrisk core- + axelstabilitet från fyrfotsställning" },
       ],
     },
   },
@@ -729,6 +926,14 @@ const exercisesData: Record<string, ExerciseBase> = {
         { name: "Elastik Hævning", reason: "Tilføj elastikmodstand rundt forfoden for ekstra belastning hjemme" },
       ],
     },
+    sv: {
+      notes: "Höj på två ben, sänk på ett under 5 sekunder. Fullt omfång — sträck i botten. Essentiellt för hälsenans hälsa.",
+      whyItMatters: "Skyddar hälsenan och utvecklar vadmotstånds kraft för alla hopp, studs och pivoteringar i TKD.",
+      alternatives: [
+        { name: "Tvåbens Långsam Vadhöjning", reason: "Enklare regression med samma excentriska fokus" },
+        { name: "Band Vadhöjning", reason: "Lägg till bandmotstånd runt framfoten för extra belastning hemma" },
+      ],
+    },
   },
   turkishGetUp: {
     id: "turkish-get-up",
@@ -753,6 +958,14 @@ const exercisesData: Record<string, ExerciseBase> = {
       alternatives: [
         { name: "Halv Get-Up", reason: "Delvis bevægelse — kun til siddende position og tilbage" },
         { name: "Kropsvægt Get-Up", reason: "Ingen vægt — øv mønsteret før belastning tilføjes" },
+      ],
+    },
+    sv: {
+      notes: "Långsamt och medvetet — varje fas är en position. Håll blicken på vikten. Detta är en helkroppsintegration, inte ett styrkepass.",
+      whyItMatters: "Integrerar axelstabilitet, höftmobilitet och core-kontroll genom flera plan — speglar de multipositionella kraven i TKD.",
+      alternatives: [
+        { name: "Halv Get-Up", reason: "Delvis rörelse — bara till sittande position och tillbaka" },
+        { name: "Kroppsvikt Get-Up", reason: "Ingen vikt — öva mönstret innan belastning läggs till" },
       ],
     },
   },
@@ -781,6 +994,14 @@ const exercisesData: Record<string, ExerciseBase> = {
         { name: "Split Squat Jump (samme ben)", reason: "Fokusér kraft på ét ben ad gangen" },
       ],
     },
+    sv: {
+      notes: "Explodera uppåt från utfall, byt ben i luften, landa mjukt. Fokus på höjd och kontroll, inte hastighet. Håll bålen upprätt hela tiden.",
+      whyItMatters: "Utvecklar reaktiv enbens-kraft och snabba ställningsbyten — överförs direkt till snabba fotarbetsövergångar i sparring.",
+      alternatives: [
+        { name: "Reverse Lunge till Knädrivning", reason: "Lägre belastning, unilateral plyometrisk utan hopp" },
+        { name: "Split Squat Jump (samma ben)", reason: "Fokusera kraften på ett ben i taget" },
+      ],
+    },
   },
   facePull: {
     id: "face-pull",
@@ -805,6 +1026,14 @@ const exercisesData: Record<string, ExerciseBase> = {
       alternatives: [
         { name: "Elastik Pull-Apart", reason: "Lignende bagre deltoidarbejde med enklere opsætning" },
         { name: "Liggende Y-Løft", reason: "Intet udstyr — liggende skulderretraktionsøvelse" },
+      ],
+    },
+    sv: {
+      notes: "Kabel eller band i ansiktshöjd. Dra till ansiktet med utåtrotation i slutet. Armbågarna högt, kläm bakre deltoider. Lätt belastning, fokus på kontraktion.",
+      whyItMatters: "Korrigerar framåtroterad axelhållning från gardställning och bygger skulderblads-stabilitet för sunda slag och blockeringar.",
+      alternatives: [
+        { name: "Band Pull-Apart", reason: "Liknande bakre deltoidarbete med enklare uppställning" },
+        { name: "Liggande Y-Lyft", reason: "Ingen utrustning — liggande skulderretraktionsövning" },
       ],
     },
   },
@@ -834,6 +1063,14 @@ const exercisesData: Record<string, ExerciseBase> = {
         { name: "Elastik Squat", reason: "Elastikmodstand til hjemmetræning uden vægte" },
       ],
     },
+    sv: {
+      notes: "Håll KB eller hantel vid bröstet. Sätt dig djupt mellan hälarna, armbågar innanför knäna. Pausa i botten. Utmärkt för att lära squat-mekanik och bygga grundstyrka.",
+      whyItMatters: "Bygger grundläggande squat-styrka med upprätt bål — perfekt för idrottare som behöver underkroppsstyrka utan tung skivstångsbelastning.",
+      alternatives: [
+        { name: "Kroppsvikt Squat", reason: "Ingen utrustning — samma djup och mönster" },
+        { name: "Band Squat", reason: "Bandmotstånd för hemmaträning utan vikter" },
+      ],
+    },
   },
   thoracicRotation: {
     id: "thoracic-rotation",
@@ -858,6 +1095,14 @@ const exercisesData: Record<string, ExerciseBase> = {
       alternatives: [
         { name: "Open Book Stræk", reason: "Liggende rotation for t-spine med mindre opsætning" },
         { name: "Thread the Needle", reason: "Firbenet thorakal rotation med skulderinvolvering" },
+      ],
+    },
+    sv: {
+      notes: "Sitt med korslagda ben eller på bänk. Händer bakom huvudet. Rotera överkroppen åt en sida, håll 2 sek. Håll höfterna låsta — bara bröstryggen rör sig.",
+      whyItMatters: "Bröstryggrotation är grunden för varje rotationsspark och slag. Begränsad t-spine-mobilitet tvingar kompensation från ländryggen.",
+      alternatives: [
+        { name: "Open Book Stretch", reason: "Liggande rotation för t-spine med enklare uppställning" },
+        { name: "Thread the Needle", reason: "Fyrfotsställning bröstryggrotation med axelinblandning" },
       ],
     },
   },
@@ -885,6 +1130,14 @@ const exercisesData: Record<string, ExerciseBase> = {
       alternatives: [
         { name: "Assisteret Pistol Squat", reason: "Hold en elastik eller stolpe for støtte gennem fuld range" },
         { name: "Step-Down", reason: "Lignende ét-bens excentrisk fra et trin eller boks" },
+      ],
+    },
+    sv: {
+      notes: "Stå på ett ben, sänk dig så långsamt som möjligt (5 sek) till sittande på box eller bänk. Använd båda benen för att resa dig. Progredirera till fulla pistols över tid.",
+      whyItMatters: "Bygger extrem enbens excentrisk styrka och kontroll — förbättrar direkt sparkbenets stabilitet och landningsmekanik.",
+      alternatives: [
+        { name: "Assisterad Pistol Squat", reason: "Håll ett band eller stolpe för stöd genom fullt omfång" },
+        { name: "Step-Down", reason: "Liknande enbens excentrik från ett steg eller box" },
       ],
     },
   },
@@ -917,6 +1170,14 @@ const exercisesData: Record<string, ExerciseBase> = {
         { name: "Elastik hofteadduktion", reason: "Bærbart alternativ med elastik forankret lavt" },
       ],
     },
+    sv: {
+      notes: "Stå upprätt på stödbenet. Driv arbetsbenet tvärs över kroppen med kontroll. Kläm i ytterläget. Håll höfterna raka — ingen lutning.",
+      whyItMatters: "Cut-sparken (naeryo chagi) kräver kraftig höftadduktion för att driva benet nedåt genom målet. Denna övning stärker direkt den dragande rörelsen.",
+      alternatives: [
+        { name: "Sidoliggande höftadduktion", reason: "Ingen kabel behövs — tyngdkraften ger motstånd liggande på sidan" },
+        { name: "Band höftadduktion", reason: "Portabelt alternativ med band förankrat lågt" },
+      ],
+    },
   },
 
   weightedHipFlexorRaise: {
@@ -943,6 +1204,14 @@ const exercisesData: Record<string, ExerciseBase> = {
       alternatives: [
         { name: "Elastik march", reason: "Lettere modstand — god til opvarmning eller mange gentagelser" },
         { name: "Hængende knæløft", reason: "Træner hoftefleksorer med core-engagement i hængende position" },
+      ],
+    },
+    sv: {
+      notes: "Använd ankelvikt eller kabel. Driv knäet explosivt upp till brösthöjd, sänk sedan med långsam 2-sekunders excentrik. Stå upprätt — ingen bållutning.",
+      whyItMatters: "Det inledande lyftet i cut-sparken kräver explosiv höftflexionsstyrka. Tunga knälyft bygger rå kraft att lyfta benet högt före det nedåtgående snittet.",
+      alternatives: [
+        { name: "Band Marsch", reason: "Lättare motstånd — bra för uppvärmning eller höga reps" },
+        { name: "Hängande Knälyft", reason: "Tränar höftflexorer med core-engagemang i hängande position" },
       ],
     },
   },
@@ -973,6 +1242,14 @@ const exercisesData: Record<string, ExerciseBase> = {
         { name: "Slider lateral lunge", reason: "Tilføjer ustabilitet for større hoftestabilisator-rekruttering" },
       ],
     },
+    sv: {
+      notes: "Kliv brett åt sidan, sjunk djupt ner i höften med 2-sekunders paus i botten. Tryck tillbaka explosivt. Håll det bakre benet rakt. Bröst upp.",
+      whyItMatters: "Cut-sparken kräver lateral höftstabilitet och adduktorstyrka för att kontrollera benet i frontalplanet. Laterala utfall bygger båda under belastning.",
+      alternatives: [
+        { name: "Cossack Squat", reason: "Djupare lateral höftmobilitet med liknande adduktorbelastning" },
+        { name: "Slider Lateralt Utfall", reason: "Tillför instabilitet för större höftstabilisator-rekrytering" },
+      ],
+    },
   },
 
   singleLegRDLHipControl: {
@@ -999,6 +1276,14 @@ const exercisesData: Record<string, ExerciseBase> = {
       alternatives: [
         { name: "Kickstand RDL", reason: "Delvist støttet — godt trin mod fuld ét-bens" },
         { name: "Elastik-assisteret ét-bens RDL", reason: "Giver balancestøtte mens mønsteret opbygges" },
+      ],
+    },
+    sv: {
+      notes: "Gångjärn i höften på ett ben med långsam 3-sekunders excentrik. Håll höfterna i nivå — ingen rotation. Kläm gluteus i toppen. Använd hantel eller kettlebell.",
+      whyItMatters: "Enbens höftgångjärnskontroll överförs direkt till ståbensstabiliteten som behövs under cut-sparken. Den långsamma excentriska fasen bygger motståndskraftiga hamstrings och höftkontroll.",
+      alternatives: [
+        { name: "Kickstand RDL", reason: "Delvis stödd — bra mellansteg mot full enbens-övning" },
+        { name: "Bandassisterad Enbens RDL", reason: "Ger balansstöd medan mönstret byggs upp" },
       ],
     },
   },
@@ -1028,6 +1313,14 @@ const exercisesData: Record<string, ExerciseBase> = {
         { name: "90/90 hofte-skift", reason: "Gulvbaseret hofterotationsøvelse for lignende bevægelsesomfang" },
       ],
     },
+    sv: {
+      notes: "Stå på ett ben, gångjärn lätt framåt. Rotera bäckenet öppet (extern rotation) sedan stängt (intern rotation) kontrollerat. Håll ståknäet lätt böjt.",
+      whyItMatters: "Cut-sparkar kräver full rotationskontroll av höftleden. Hip airplanes bygger dynamisk stabilitet genom hela omfånget av höftens interna och externa rotation under belastning.",
+      alternatives: [
+        { name: "Stående Höft-CARs", reason: "Liknande roterande höftmobilitet i stående position" },
+        { name: "90/90 Höftväxlingar", reason: "Golvbaserad höftrotationsövning för liknande rörelseomfång" },
+      ],
+    },
   },
 
   isometricCutKickHold: {
@@ -1053,6 +1346,14 @@ const exercisesData: Record<string, ExerciseBase> = {
       alternatives: [
         { name: "Vægstøttet benhold", reason: "Brug en væg til at hjælpe med at holde benet i højden mens styrken opbygges" },
         { name: "Elastik benløft & hold", reason: "Elastikken assisterer holdet mens hoftefleksor-udholdenhed stadig trænes" },
+      ],
+    },
+    sv: {
+      notes: "Lyft benet till full cut-spark-höjd (ovanför huvudet om möjligt). Håll positionen med kontroll — ingen svängning. Använd en vägg för lätt balansstöd initialt. Fokusera på höftflexorengagemang.",
+      whyItMatters: "Isometriska håll i ytterposition bygger den specifika styrkan och uthålligheten att hålla benet på tophöjd under cut-sparken. Detta är den mest sportspecifika övningen för naeryo chagi.",
+      alternatives: [
+        { name: "Väggassisterat Benhåll", reason: "Använd en vägg för att hålla benet i höjd medan styrkan byggs" },
+        { name: "Band Benlyft & Håll", reason: "Bandet assisterar hållet medan höftflexor-uthållighet fortfarande tränas" },
       ],
     },
   },
