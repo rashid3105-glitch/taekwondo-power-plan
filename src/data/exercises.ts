@@ -1112,6 +1112,8 @@ export function getWeeklyPlan(locale: Locale = currentLocale): TrainingDay[] {
   const ex = getExercises();
   const dayLabels = locale === "da" 
     ? { monday: "Mandag", tuesday: "Tirsdag", wednesday: "Onsdag", thursday: "Torsdag", friday: "Fredag", saturday: "Lørdag", sunday: "Søndag" }
+    : locale === "sv"
+    ? { monday: "Måndag", tuesday: "Tisdag", wednesday: "Onsdag", thursday: "Torsdag", friday: "Fredag", saturday: "Lördag", sunday: "Söndag" }
     : { monday: "Monday", tuesday: "Tuesday", wednesday: "Wednesday", thursday: "Thursday", friday: "Friday", saturday: "Saturday", sunday: "Sunday" };
 
   return [
