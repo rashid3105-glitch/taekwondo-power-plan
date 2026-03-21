@@ -48,16 +48,22 @@ export function MuscleIcon({ muscle, size = 28, showLabel = false }: MuscleIconP
 
   return (
     <div className="flex flex-col items-center gap-0.5" title={label}>
-      <img
-        src={src}
-        alt={label}
-        width={size}
-        height={size}
-        className="rounded-sm object-contain"
-        loading="lazy"
-      />
+      <div
+        className="rounded-md bg-secondary/80 border border-destructive/30 p-0.5 flex items-center justify-center"
+        style={{ width: size + 6, height: size + 6 }}
+      >
+        <img
+          src={src}
+          alt={label}
+          width={size}
+          height={size}
+          className="rounded-sm object-contain brightness-125 contrast-110"
+          style={{ filter: "brightness(1.3) contrast(1.1) saturate(0.3) sepia(0.4) hue-rotate(-30deg)" }}
+          loading="lazy"
+        />
+      </div>
       {showLabel && (
-        <span className="text-[8px] text-muted-foreground font-medium leading-none">{label}</span>
+        <span className="text-[9px] text-foreground/70 font-semibold leading-none">{label}</span>
       )}
     </div>
   );
