@@ -67,6 +67,7 @@ interface ExerciseBase {
   videoId: string;
   en: ExerciseLocalized;
   da: ExerciseLocalized;
+  sv: ExerciseLocalized;
 }
 
 const exercisesData: Record<string, ExerciseBase> = {
