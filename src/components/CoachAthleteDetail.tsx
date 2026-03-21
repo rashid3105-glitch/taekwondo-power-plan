@@ -120,6 +120,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
   const [discipline, setDiscipline] = useState(athlete.discipline || "sparring");
   const [selectedGoals, setSelectedGoals] = useState<string[]>(athlete.goals || []);
   const [programWeeks, setProgramWeeks] = useState(athlete.program_weeks || 8);
+  const [country, setCountry] = useState(athlete.country || "");
 
   const toggleGoal = (goal: string) => {
     setSelectedGoals((prev) =>
