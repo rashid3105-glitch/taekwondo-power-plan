@@ -21,6 +21,7 @@ import {
   History,
   Trash2,
   Download,
+  NotebookPen,
 } from "lucide-react";
 import jsPDF from "jspdf";
 import { MentalRadarChart, drawRadarOnPDF } from "./MentalRadarChart";
