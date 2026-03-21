@@ -324,6 +324,19 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
             </SelectContent>
           </Select>
         </div>
+        <div className="space-y-1">
+          <Label className="text-xs">{t("country")}</Label>
+          <Select value={country} onValueChange={setCountry}>
+            <SelectTrigger className="h-9">
+              <SelectValue placeholder={t("chooseCountry")} />
+            </SelectTrigger>
+            <SelectContent>
+              {COUNTRIES.map((c) => (
+                <SelectItem key={c} value={c}>{c}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       {/* Weekly Schedule */}
       <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
