@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import {
   ArrowRight, ClipboardList, BarChart3, Brain, HeartPulse, BookOpen, UtensilsCrossed, HelpCircle,
 } from "lucide-react";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/logo.webp";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { AppFooter } from "@/components/AppFooter";

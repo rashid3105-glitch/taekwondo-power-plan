@@ -1,8 +1,8 @@
-import watermark from "@/assets/watermark.png";
+import watermark from "@/assets/watermark.webp";
 
 export const Watermark = () => (
   <div
-    className="absolute inset-0 pointer-events-none z-0 overflow-hidden opacity-[0.04]"
+    className="absolute inset-0 pointer-events-none z-0 overflow-hidden opacity-[0.07]"
     aria-hidden="true"
     style={{
       backgroundImage: `url(${watermark})`,
