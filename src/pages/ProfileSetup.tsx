@@ -11,6 +11,24 @@ import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekScheduleP
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
+const COUNTRIES = [
+  "Afghanistan","Albania","Algeria","Andorra","Angola","Argentina","Armenia","Australia","Austria","Azerbaijan",
+  "Bahrain","Bangladesh","Belarus","Belgium","Bhutan","Bolivia","Bosnia and Herzegovina","Brazil","Brunei","Bulgaria",
+  "Cambodia","Cameroon","Canada","Chad","Chile","China","Colombia","Costa Rica","Croatia","Cuba","Cyprus","Czech Republic",
+  "Denmark","Dominican Republic","Ecuador","Egypt","El Salvador","Estonia","Ethiopia",
+  "Finland","France","Georgia","Germany","Ghana","Greece","Guatemala","Honduras","Hungary",
+  "Iceland","India","Indonesia","Iran","Iraq","Ireland","Israel","Italy","Jamaica","Japan","Jordan",
+  "Kazakhstan","Kenya","Kuwait","Kyrgyzstan","Laos","Latvia","Lebanon","Libya","Lithuania","Luxembourg",
+  "Malaysia","Maldives","Mali","Malta","Mexico","Moldova","Monaco","Mongolia","Montenegro","Morocco","Myanmar",
+  "Nepal","Netherlands","New Zealand","Nigeria","North Korea","North Macedonia","Norway",
+  "Oman","Pakistan","Palestine","Panama","Paraguay","Peru","Philippines","Poland","Portugal",
+  "Qatar","Romania","Russia","Rwanda","Saudi Arabia","Senegal","Serbia","Singapore","Slovakia","Slovenia",
+  "Somalia","South Africa","South Korea","Spain","Sri Lanka","Sudan","Sweden","Switzerland","Syria",
+  "Taiwan","Tajikistan","Tanzania","Thailand","Tunisia","Turkey","Turkmenistan",
+  "Uganda","Ukraine","United Arab Emirates","United Kingdom","United States","Uruguay","Uzbekistan",
+  "Venezuela","Vietnam","Yemen","Zambia","Zimbabwe"
+];
+
 const BELT_LEVELS = ["white", "yellow", "green", "blue", "red", "black"];
 const GOAL_OPTIONS = [
   "Faster kicks",
@@ -54,6 +72,7 @@ export default function ProfileSetup() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [clubs, setClubs] = useState<ClubOption[]>([]);
   const [clubId, setClubId] = useState("");
+  const [country, setCountry] = useState("");
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -98,6 +117,7 @@ export default function ProfileSetup() {
           setCurrentInjury(profileData.current_injury || "");
           setAvatarUrl(profileData.avatar_url || null);
           setClubId(profileData.club_id || "");
+          setCountry(profileData.country || "");
         }
       } catch (err: any) {
         toast({ title: t("error"), description: err.message, variant: "destructive" });
@@ -161,11 +181,6 @@ export default function ProfileSetup() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!clubId) {
-      toast({ title: t("clubRequired"), variant: "destructive" });
-      return;
-    }
-
     setLoading(true);
 
     try {
@@ -184,6 +199,7 @@ export default function ProfileSetup() {
         current_injury: currentInjury || null,
         discipline,
         club_id: clubId,
+        country: country || null,
       } as any).eq("user_id", user.id);
 
       if (error) throw error;
@@ -251,13 +267,27 @@ export default function ProfileSetup() {
           </div>
 
           <div>
+            <Label htmlFor="country">{t("country") || "Country"}</Label>
+            <select
+              id="country"
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+              className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <option value="">{t("chooseCountry") || "Choose country"}</option>
+              {COUNTRIES.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
             <Label htmlFor="club">{t("club")}</Label>
             <select
               id="club"
               value={clubId}
               onChange={(e) => setClubId(e.target.value)}
               className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              required
             >
               <option value="">{t("chooseClub")}</option>
               {clubs.map((club) => (
