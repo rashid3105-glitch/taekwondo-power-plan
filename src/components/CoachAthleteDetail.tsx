@@ -138,6 +138,8 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
         belt_level: beltLevel,
         discipline,
         goals: selectedGoals,
+        program_weeks: programWeeks,
+        country: country || null,
       };
       if (age) updates.age = Math.min(Math.max(parseInt(age), 5), 99);
       if (experienceYears) updates.experience_years = Math.min(Math.max(parseInt(experienceYears), 0), 50);
