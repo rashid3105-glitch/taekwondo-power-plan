@@ -1,4 +1,4 @@
-import watermark from "@/assets/watermark.png";
+import watermark from "@/assets/watermark.webp";
 
 export const Watermark = () => (
   <div
