@@ -309,14 +309,15 @@ const mentalExercisesData: MentalExerciseData[] = [
 ];
 
 export function getMentalExercises(locale: Locale = "en"): MentalExercise[] {
+  const effectiveLocale = (locale === "sv" ? "en" : locale) as "en" | "da";
   return mentalExercisesData.map((ex) => ({
     id: ex.id,
     category: ex.category,
     difficulty: ex.difficulty,
-    name: ex[locale].name,
-    duration: ex[locale].duration,
-    description: ex[locale].description,
-    steps: ex[locale].steps,
-    whyItMatters: ex[locale].whyItMatters,
+    name: ex[effectiveLocale].name,
+    duration: ex[effectiveLocale].duration,
+    description: ex[effectiveLocale].description,
+    steps: ex[effectiveLocale].steps,
+    whyItMatters: ex[effectiveLocale].whyItMatters,
   }));
 }
