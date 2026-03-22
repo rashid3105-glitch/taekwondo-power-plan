@@ -67,13 +67,13 @@ const features: Record<FeatureKey, FeatureData> = {
     image: mentalImg,
     gradient: "from-[hsl(330,60%,72%)] to-[hsl(280,60%,65%)]",
     longDesc: {
-      en: "Mental strength separates good athletes from great ones. Assess your psychological readiness with our sports psychology framework, then receive personalized AI advice covering focus, visualization, competition anxiety, and more.",
-      da: "Mental styrke adskiller gode atleter fra de bedste. Vurder din psykologiske parathed med vores sportspsykologiske rammeværk, og modtag derefter personlig AI-rådgivning om fokus, visualisering, konkurrenceangst og mere.",
+      en: "Mental strength separates good athletes from great ones. Assess your psychological readiness with our sports psychology framework, then receive personalized advice covering focus, visualization, competition anxiety, and more — built on the same principles used in elite combat sports.",
+      da: "Mental styrke adskiller gode atleter fra de bedste. Vurder din psykologiske parathed med vores sportspsykologiske rammeværk, og modtag derefter personlig rådgivning om fokus, visualisering, konkurrenceangst og mere — bygget på de samme principper brugt i elite-kampsport.",
     },
     benefits: [
       { en: "Sports psychology assessments", da: "Sportspsykologiske vurderinger" },
       { en: "Radar chart for mental dimensions", da: "Radardiagram for mentale dimensioner" },
-      { en: "AI-powered personalized advice", da: "AI-drevet personlig rådgivning" },
+      { en: "Personalized performance advice", da: "Personlig præstationsrådgivning" },
       { en: "Focus and visualization exercises", da: "Fokus- og visualiseringsøvelser" },
       { en: "Competition anxiety management", da: "Håndtering af konkurrenceangst" },
     ],
