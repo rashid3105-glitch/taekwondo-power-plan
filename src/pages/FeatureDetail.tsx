@@ -172,7 +172,7 @@ const FeatureDetail = () => {
         <div className="max-w-4xl mx-auto px-6 pt-6">
           <Button variant="ghost" size="sm" onClick={() => navigate("/")} className="text-muted-foreground hover:text-foreground -ml-2">
             <ArrowLeft className="h-4 w-4 mr-1" />
-            {locale === "da" ? "Tilbage" : "Back"}
+            {locale === "da" ? "Tilbage" : locale === "sv" ? "Tillbaka" : "Back"}
           </Button>
         </div>
 
