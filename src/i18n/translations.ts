@@ -1168,7 +1168,7 @@ const translations = {
     pricingPaymentTitle: "Hur man betalar",
     pricingPaymentDesc: "Skicka din betalning via PayPal till vårt konto. Inkludera din e-post i meddelandet. När vi bekräftar din betalning godkänns ditt konto inom 24 timmar.",
     pricingDialogDesc: "Välj hur du vill komma igång med TKD Power.",
-    pricingFeatureAiPlans: "AI-genererade träningsplaner",
+    pricingFeatureAiPlans: "Periodiserade träningsplaner",
     pricingFeatureProgress: "Framstegsövervakning och analys",
     pricingFeatureMental: "Mental prestationsbedömning",
     pricingFeatureRehab: "Skaderehabiliteringsprogram",
