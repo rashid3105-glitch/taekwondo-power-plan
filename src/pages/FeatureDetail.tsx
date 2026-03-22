@@ -33,15 +33,15 @@ const features: Record<FeatureKey, FeatureData> = {
     image: trainingImg,
     gradient: "from-[hsl(190,95%,50%)] to-[hsl(210,90%,56%)]",
     longDesc: {
-      en: "Our AI analyzes your belt level, weekly schedule, training goals, and current injuries to generate a fully periodized strength & conditioning program. Each session is designed to complement your taekwondo training — not compete with it.",
-      da: "Vores AI analyserer dit bælteniveau, ugentlige skema, træningsmål og nuværende skader for at generere et fuldt periodiseret styrke- og konditionsprogram. Hver session er designet til at supplere din taekwondo-træning — ikke konkurrere med den.",
+      en: "Our programs are rooted in proven periodization science — the same methodology used by elite coaches worldwide. Based on your belt level, weekly schedule, training goals, and current injuries, we build a fully periodized strength & conditioning program. Each session is designed to complement your taekwondo training — not compete with it.",
+      da: "Vores programmer er baseret på gennemprøvet periodiseringsvidenskab — den samme metodik brugt af elitetrænere verden over. Baseret på dit bælteniveau, ugentlige skema, træningsmål og nuværende skader bygger vi et fuldt periodiseret styrke- og konditionsprogram. Hver session er designet til at supplere din taekwondo-træning — ikke konkurrere med den.",
     },
     benefits: [
-      { en: "AI-generated periodized programs", da: "AI-genererede periodiserede programmer" },
+      { en: "Evidence-based periodized programs", da: "Evidensbaserede periodiserede programmer" },
       { en: "Tailored to your belt level and goals", da: "Skræddersyet til dit bælteniveau og mål" },
       { en: "Weekly schedule optimization", da: "Ugentlig skemaoptimering" },
       { en: "Exercise alternatives for every movement", da: "Øvelsesalternativer for hver bevægelse" },
-      { en: "Automatic injury-aware adjustments", da: "Automatiske skadestilpassede justeringer" },
+      { en: "Injury-aware adjustments built in", da: "Indbyggede skadestilpassede justeringer" },
     ],
   },
   progress: {
@@ -50,8 +50,8 @@ const features: Record<FeatureKey, FeatureData> = {
     image: progressImg,
     gradient: "from-[hsl(45,90%,55%)] to-[hsl(35,90%,50%)]",
     longDesc: {
-      en: "Track every workout, visualize your training volume over time, and build consistency streaks. Our progress dashboard gives you clear insights into completion rates, muscle group balance, and performance trends.",
-      da: "Spor hver træning, visualiser dit træningsvolumen over tid, og opbyg konsistensstreaks. Vores fremskridts-dashboard giver dig klare indsigter i fuldførelsesrater, muskelgruppebalance og præstationstendenser.",
+      en: "Track every workout, visualize your training volume over time, and build consistency streaks. Our progress dashboard gives you clear insights into completion rates, muscle group balance, and performance trends — so you and your coach always know what's working.",
+      da: "Spor hver træning, visualiser dit træningsvolumen over tid, og opbyg konsistensstreaks. Vores fremskridts-dashboard giver dig klare indsigter i fuldførelsesrater, muskelgruppebalance og præstationstendenser — så du og din træner altid ved, hvad der virker.",
     },
     benefits: [
       { en: "Visual training volume charts", da: "Visuelle træningsvolumendiagrammer" },
@@ -67,13 +67,13 @@ const features: Record<FeatureKey, FeatureData> = {
     image: mentalImg,
     gradient: "from-[hsl(330,60%,72%)] to-[hsl(280,60%,65%)]",
     longDesc: {
-      en: "Mental strength separates good athletes from great ones. Assess your psychological readiness with our sports psychology framework, then receive personalized AI advice covering focus, visualization, competition anxiety, and more.",
-      da: "Mental styrke adskiller gode atleter fra de bedste. Vurder din psykologiske parathed med vores sportspsykologiske rammeværk, og modtag derefter personlig AI-rådgivning om fokus, visualisering, konkurrenceangst og mere.",
+      en: "Mental strength separates good athletes from great ones. Assess your psychological readiness with our sports psychology framework, then receive personalized advice covering focus, visualization, competition anxiety, and more — built on the same principles used in elite combat sports.",
+      da: "Mental styrke adskiller gode atleter fra de bedste. Vurder din psykologiske parathed med vores sportspsykologiske rammeværk, og modtag derefter personlig rådgivning om fokus, visualisering, konkurrenceangst og mere — bygget på de samme principper brugt i elite-kampsport.",
     },
     benefits: [
       { en: "Sports psychology assessments", da: "Sportspsykologiske vurderinger" },
       { en: "Radar chart for mental dimensions", da: "Radardiagram for mentale dimensioner" },
-      { en: "AI-powered personalized advice", da: "AI-drevet personlig rådgivning" },
+      { en: "Personalized performance advice", da: "Personlig præstationsrådgivning" },
       { en: "Focus and visualization exercises", da: "Fokus- og visualiseringsøvelser" },
       { en: "Competition anxiety management", da: "Håndtering af konkurrenceangst" },
     ],
@@ -84,8 +84,8 @@ const features: Record<FeatureKey, FeatureData> = {
     image: rehabImg,
     gradient: "from-[hsl(0,72%,51%)] to-[hsl(15,80%,50%)]",
     longDesc: {
-      en: "Injuries don't have to derail your training. Describe your injury and our AI builds a phased rehabilitation program with clear pain guidelines, progression milestones, and safety protocols — so you come back stronger.",
-      da: "Skader behøver ikke at afspore din træning. Beskriv din skade, og vores AI bygger et fasebaseret rehabiliteringsprogram med klare smerteretningslinjer, progressionsmilepæle og sikkerhedsprotokoller — så du kommer stærkere tilbage.",
+      en: "Injuries don't have to derail your training. Describe your injury and receive a phased rehabilitation program with clear pain guidelines, progression milestones, and safety protocols — designed specifically for taekwondo athletes returning to the mat.",
+      da: "Skader behøver ikke at afspore din træning. Beskriv din skade og modtag et fasebaseret rehabiliteringsprogram med klare smerteretningslinjer, progressionsmilepæle og sikkerhedsprotokoller — designet specifikt til taekwondo-atleter der vender tilbage til måtten.",
     },
     benefits: [
       { en: "Phased rehab program generation", da: "Generering af fasebaserede genoptræningsprogrammer" },
@@ -101,11 +101,11 @@ const features: Record<FeatureKey, FeatureData> = {
     image: nutritionImg,
     gradient: "from-[hsl(25,90%,55%)] to-[hsl(15,85%,50%)]",
     longDesc: {
-      en: "Fuel your performance with athlete-friendly nutrition. Browse curated recipes with full macro breakdowns, or let AI generate a complete meal plan tailored to your weight, training load, and competition schedule.",
-      da: "Fuel din præstation med atletvenlig ernæring. Gennemse kuraterede opskrifter med fuld makronedbrydning, eller lad AI generere en komplet kostplan skræddersyet til din vægt, træningsmængde og konkurrencekalender.",
+      en: "Fuel your performance with athlete-friendly nutrition. Browse curated recipes with full macro breakdowns, or generate a complete meal plan tailored to your weight, training load, and competition schedule — based on sports nutrition principles for combat athletes.",
+      da: "Fuel din præstation med atletvenlig ernæring. Gennemse kuraterede opskrifter med fuld makronedbrydning, eller generer en komplet kostplan skræddersyet til din vægt, træningsmængde og konkurrencekalender — baseret på sportsernæringsprincipper for kampsportsatleter.",
     },
     benefits: [
-      { en: "AI-generated meal plans", da: "AI-genererede kostplaner" },
+      { en: "Personalized meal plans", da: "Personlige kostplaner" },
       { en: "Full macro breakdowns per recipe", da: "Fuld makronedbrydning per opskrift" },
       { en: "Training-load adjusted nutrition", da: "Træningsbelastningstilpasset ernæring" },
       { en: "Athlete-friendly recipe library", da: "Atletvenligt opskriftsbibliotek" },
@@ -118,8 +118,8 @@ const features: Record<FeatureKey, FeatureData> = {
     image: libraryImg,
     gradient: "from-[hsl(142,70%,45%)] to-[hsl(160,60%,40%)]",
     longDesc: {
-      en: "Access a curated collection of TKD-specific exercises, each with detailed instructions, muscle group targeting, tempo guides, and video references. Add your own custom exercises to build a personalized training toolkit.",
-      da: "Få adgang til en kurateret samling af TKD-specifikke øvelser, hver med detaljerede instruktioner, muskelgruppemålretning, tempoguider og videoreferencer. Tilføj dine egne øvelser for at opbygge et personligt træningsværktøj.",
+      en: "Access a curated collection of TKD-specific exercises, each with detailed instructions, muscle group targeting, tempo guides, and video references. Every exercise is selected for its relevance to taekwondo performance — from explosive hip power to rotational core stability.",
+      da: "Få adgang til en kurateret samling af TKD-specifikke øvelser, hver med detaljerede instruktioner, muskelgruppemålretning, tempoguider og videoreferencer. Hver øvelse er udvalgt for sin relevans for taekwondo-præstation — fra eksplosiv hoftekraft til rotationel core-stabilitet.",
     },
     benefits: [
       { en: "Curated TKD-specific exercises", da: "Kuraterede TKD-specifikke øvelser" },
