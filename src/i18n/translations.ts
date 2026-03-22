@@ -828,7 +828,7 @@ const translations = {
     hubWelcome: "Hjem",
     hubChooseSection: "Hvad vil du arbejde med i dag?",
     hubTrainingTitle: "Træningsplan",
-    hubTrainingDesc: "Generer og administrer AI-drevne periodiserede træningsprogrammer tilpasset dit bælteniveau, mål og skema.",
+    hubTrainingDesc: "Generer og administrer periodiserede træningsprogrammer tilpasset dit bælteniveau, mål og skema — baseret på TKD-sportsvidenskab.",
     hubProgressTitle: "Fremgang",
     hubProgressDesc: "Følg din træningsvolumen, gennemførelsesrater og konsistens-streaks for at se, hvordan du forbedrer dig over tid.",
     hubNutritionTitle: "Ernæring",
