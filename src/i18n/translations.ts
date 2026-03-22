@@ -29,7 +29,7 @@ const translations = {
     sectionProgressTitle: "Track Your Progress",
     sectionProgressDesc: "Visualize training volume, completion rates, and consistency streaks. Know exactly where you stand week by week.",
     sectionMentalTitle: "Mental Performance",
-    sectionMentalDesc: "Assess your mental toughness, focus, and competition anxiety. Get personalized sports psychology advice from AI.",
+    sectionMentalDesc: "Assess your mental toughness, focus, and competition anxiety using sports psychology frameworks. Receive personalized advice to sharpen your competitive edge.",
     sectionRehabTitle: "Injury Rehab",
     sectionRehabDesc: "Recovering from an injury? Generate phased rehab programs with pain guidelines and safety protocols built in.",
     sectionLibraryTitle: "Exercise Library",
