@@ -101,11 +101,11 @@ const features: Record<FeatureKey, FeatureData> = {
     image: nutritionImg,
     gradient: "from-[hsl(25,90%,55%)] to-[hsl(15,85%,50%)]",
     longDesc: {
-      en: "Fuel your performance with athlete-friendly nutrition. Browse curated recipes with full macro breakdowns, or let AI generate a complete meal plan tailored to your weight, training load, and competition schedule.",
-      da: "Fuel din præstation med atletvenlig ernæring. Gennemse kuraterede opskrifter med fuld makronedbrydning, eller lad AI generere en komplet kostplan skræddersyet til din vægt, træningsmængde og konkurrencekalender.",
+      en: "Fuel your performance with athlete-friendly nutrition. Browse curated recipes with full macro breakdowns, or generate a complete meal plan tailored to your weight, training load, and competition schedule — based on sports nutrition principles for combat athletes.",
+      da: "Fuel din præstation med atletvenlig ernæring. Gennemse kuraterede opskrifter med fuld makronedbrydning, eller generer en komplet kostplan skræddersyet til din vægt, træningsmængde og konkurrencekalender — baseret på sportsernæringsprincipper for kampsportsatleter.",
     },
     benefits: [
-      { en: "AI-generated meal plans", da: "AI-genererede kostplaner" },
+      { en: "Personalized meal plans", da: "Personlige kostplaner" },
       { en: "Full macro breakdowns per recipe", da: "Fuld makronedbrydning per opskrift" },
       { en: "Training-load adjusted nutrition", da: "Træningsbelastningstilpasset ernæring" },
       { en: "Athlete-friendly recipe library", da: "Atletvenligt opskriftsbibliotek" },
