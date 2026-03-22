@@ -1012,7 +1012,7 @@ const translations = {
     rehabPlaceholder: "t.ex. Grad 1 hamstringskada, vänster knä seninflammation...",
     generateRehabPlan: "Generera rehabplan",
     planGenerated: "Plan genererad!",
-    planGeneratedDesc: "Din AI-drivna träningsplan är klar.",
+    planGeneratedDesc: "Din personliga träningsplan är klar.",
     rehabGenerated: "Rehabplan genererad och sparad!",
     describeInjury: "Beskriv din skada",
     previousPlans: "Tidigare planer",
