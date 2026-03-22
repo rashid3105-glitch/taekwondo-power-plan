@@ -712,7 +712,7 @@ const translations = {
     pricingPaymentTitle: "Sådan betaler du",
     pricingPaymentDesc: "Send din betaling via MobilePay til vores konto. Inkluder din e-mail i beskeden. Når vi bekræfter din betaling, godkendes din konto inden for 24 timer.",
     pricingDialogDesc: "Vælg hvordan du vil komme i gang med TKD Power.",
-    pricingFeatureAiPlans: "AI-genererede træningsplaner",
+    pricingFeatureAiPlans: "Periodiserede træningsplaner",
     pricingFeatureProgress: "Fremgangsovervågning og analyse",
     pricingFeatureMental: "Mental præstationsvurdering",
     pricingFeatureRehab: "Skade-genoptræningsprogrammer",
