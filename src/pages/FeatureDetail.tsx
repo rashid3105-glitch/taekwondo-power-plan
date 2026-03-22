@@ -204,7 +204,7 @@ const FeatureDetail = () => {
         {/* Benefits */}
         <section className="max-w-4xl mx-auto px-6 pb-16">
           <h2 className="text-xl font-bold text-foreground mb-6">
-            {locale === "da" ? "Fordele" : "Key Benefits"}
+            {locale === "da" ? "Fordele" : locale === "sv" ? "Fördelar" : "Key Benefits"}
           </h2>
           <div className="grid gap-3 sm:grid-cols-2">
             {feature.benefits.map((benefit, i) => (
