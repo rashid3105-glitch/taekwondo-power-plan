@@ -256,7 +256,7 @@ const translations = {
     pricingPaymentTitle: "How to Pay",
     pricingPaymentDesc: "Send your payment via PayPal to our account. Include your email in the message. Once we confirm your payment, your account will be approved within 24 hours.",
     pricingDialogDesc: "Choose how you'd like to get started with TKD Power.",
-    pricingFeatureAiPlans: "AI-generated training plans",
+    pricingFeatureAiPlans: "Periodized training plans",
     pricingFeatureProgress: "Progress tracking & analytics",
     pricingFeatureMental: "Mental performance assessment",
     pricingFeatureRehab: "Injury rehab programs",
