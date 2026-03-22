@@ -118,8 +118,8 @@ const features: Record<FeatureKey, FeatureData> = {
     image: libraryImg,
     gradient: "from-[hsl(142,70%,45%)] to-[hsl(160,60%,40%)]",
     longDesc: {
-      en: "Access a curated collection of TKD-specific exercises, each with detailed instructions, muscle group targeting, tempo guides, and video references. Add your own custom exercises to build a personalized training toolkit.",
-      da: "Få adgang til en kurateret samling af TKD-specifikke øvelser, hver med detaljerede instruktioner, muskelgruppemålretning, tempoguider og videoreferencer. Tilføj dine egne øvelser for at opbygge et personligt træningsværktøj.",
+      en: "Access a curated collection of TKD-specific exercises, each with detailed instructions, muscle group targeting, tempo guides, and video references. Every exercise is selected for its relevance to taekwondo performance — from explosive hip power to rotational core stability.",
+      da: "Få adgang til en kurateret samling af TKD-specifikke øvelser, hver med detaljerede instruktioner, muskelgruppemålretning, tempoguider og videoreferencer. Hver øvelse er udvalgt for sin relevans for taekwondo-præstation — fra eksplosiv hoftekraft til rotationel core-stabilitet.",
     },
     benefits: [
       { en: "Curated TKD-specific exercises", da: "Kuraterede TKD-specifikke øvelser" },
