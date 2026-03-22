@@ -94,7 +94,7 @@ const translations = {
     // Dashboard
     generatePlan: "Generate Plan",
     noTrainingPlanYet: "No Training Plan Yet",
-    noTrainingPlanDesc: "Click \"Generate Plan\" above to create an AI-powered training plan tailored to your profile.",
+    noTrainingPlanDesc: "Click \"Generate Plan\" above to create a periodized training plan tailored to your profile.",
     injuryRehabPlan: "Injury Rehab Plan",
     rehabDescription: "Describe your injury to generate a personalized rehabilitation program with progressive return-to-sport protocols.",
     rehabPlaceholder: "e.g. Grade 1 hamstring tear, left knee tendinitis...",
