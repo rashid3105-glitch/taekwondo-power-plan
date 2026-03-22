@@ -380,7 +380,7 @@ const translations = {
     hubRehabTitle: "Injury Rehab",
     hubRehabDesc: "Recovering from an injury? Generate phased rehab programs with pain guidelines and return-to-sport protocols.",
     hubMentalTitle: "Mental Performance",
-    hubMentalDesc: "Assess your mental toughness, focus, and competition readiness. Get AI-powered sports psychology advice.",
+    hubMentalDesc: "Assess your mental toughness, focus, and competition readiness using sports psychology frameworks.",
     // Coach-managed
     coachManagedBanner: "Your programs are managed by your coach. You can view and download your plans.",
     coachManagedBannerNamed: "Your programs are managed by {{coach}}. You can view and download your plans.",
