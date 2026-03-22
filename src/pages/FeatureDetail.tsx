@@ -107,13 +107,14 @@ const features: Record<FeatureKey, FeatureData> = {
     longDesc: {
       en: "Fuel your performance with athlete-friendly nutrition. Browse curated recipes with full macro breakdowns, or generate a complete meal plan tailored to your weight, training load, and competition schedule — based on sports nutrition principles for combat athletes.",
       da: "Fuel din præstation med atletvenlig ernæring. Gennemse kuraterede opskrifter med fuld makronedbrydning, eller generer en komplet kostplan skræddersyet til din vægt, træningsmængde og konkurrencekalender — baseret på sportsernæringsprincipper for kampsportsatleter.",
+      sv: "Driva din prestation med atletvänlig näring. Bläddra bland kurerade recept med full makronedbrytning, eller generera en komplett kostplan anpassad till din vikt, träningsbelastning och tävlingsschema — baserad på idrottsnäringsprinciper för kampsportsatleter.",
     },
     benefits: [
-      { en: "Personalized meal plans", da: "Personlige kostplaner" },
-      { en: "Full macro breakdowns per recipe", da: "Fuld makronedbrydning per opskrift" },
-      { en: "Training-load adjusted nutrition", da: "Træningsbelastningstilpasset ernæring" },
-      { en: "Athlete-friendly recipe library", da: "Atletvenligt opskriftsbibliotek" },
-      { en: "Custom recipe creation", da: "Oprettelse af tilpassede opskrifter" },
+      { en: "Personalized meal plans", da: "Personlige kostplaner", sv: "Personliga kostplaner" },
+      { en: "Full macro breakdowns per recipe", da: "Fuld makronedbrydning per opskrift", sv: "Full makronedbrytning per recept" },
+      { en: "Training-load adjusted nutrition", da: "Træningsbelastningstilpasset ernæring", sv: "Träningsbelastningsanpassad näring" },
+      { en: "Athlete-friendly recipe library", da: "Atletvenligt opskriftsbibliotek", sv: "Atletvänligt receptbibliotek" },
+      { en: "Custom recipe creation", da: "Oprettelse af tilpassede opskrifter", sv: "Skapa egna recept" },
     ],
   },
   library: {
