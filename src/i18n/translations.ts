@@ -31,11 +31,11 @@ const translations = {
     sectionMentalTitle: "Mental Performance",
     sectionMentalDesc: "Assess your mental toughness, focus, and competition anxiety using sports psychology frameworks. Receive personalized advice to sharpen your competitive edge.",
     sectionRehabTitle: "Injury Rehab",
-    sectionRehabDesc: "Recovering from an injury? Generate phased rehab programs with pain guidelines and safety protocols built in.",
+    sectionRehabDesc: "Recovering from an injury? Get phased rehab programs with pain guidelines and safety protocols — designed around TKD movement patterns.",
     sectionLibraryTitle: "Exercise Library",
-    sectionLibraryDesc: "Browse a curated collection of TKD-specific exercises with alternatives, tempo guides, and muscle group targeting.",
+    sectionLibraryDesc: "A curated collection of TKD-specific exercises with alternatives, tempo guides, and muscle group targeting — built for martial artists.",
     sectionNutritionTitle: "Nutrition",
-    sectionNutritionDesc: "Discover athlete-friendly recipes and AI-generated meal plans tailored to your training load and goals.",
+    sectionNutritionDesc: "Athlete-friendly recipes and meal plans tailored to your training load, weight class, and competition goals.",
     footerText: "Built for taekwondo athletes. Train fast, stay fast.",
 
     // Auth
