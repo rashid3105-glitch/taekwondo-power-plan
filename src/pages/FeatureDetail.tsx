@@ -71,13 +71,14 @@ const features: Record<FeatureKey, FeatureData> = {
     longDesc: {
       en: "Mental strength separates good athletes from great ones. Assess your psychological readiness with our sports psychology framework, then receive personalized advice covering focus, visualization, competition anxiety, and more — built on the same principles used in elite combat sports.",
       da: "Mental styrke adskiller gode atleter fra de bedste. Vurder din psykologiske parathed med vores sportspsykologiske rammeværk, og modtag derefter personlig rådgivning om fokus, visualisering, konkurrenceangst og mere — bygget på de samme principper brugt i elite-kampsport.",
+      sv: "Mental styrka skiljer bra atleter från de bästa. Bedöm din psykologiska beredskap med vårt idrottspsykologiska ramverk och få personlig rådgivning om fokus, visualisering, tävlingsångest och mer — byggt på samma principer som används inom elit-kampsport.",
     },
     benefits: [
-      { en: "Sports psychology assessments", da: "Sportspsykologiske vurderinger" },
-      { en: "Radar chart for mental dimensions", da: "Radardiagram for mentale dimensioner" },
-      { en: "Personalized performance advice", da: "Personlig præstationsrådgivning" },
-      { en: "Focus and visualization exercises", da: "Fokus- og visualiseringsøvelser" },
-      { en: "Competition anxiety management", da: "Håndtering af konkurrenceangst" },
+      { en: "Sports psychology assessments", da: "Sportspsykologiske vurderinger", sv: "Idrottspsykologiska bedömningar" },
+      { en: "Radar chart for mental dimensions", da: "Radardiagram for mentale dimensioner", sv: "Radardiagram för mentala dimensioner" },
+      { en: "Personalized performance advice", da: "Personlig præstationsrådgivning", sv: "Personlig prestationsrådgivning" },
+      { en: "Focus and visualization exercises", da: "Fokus- og visualiseringsøvelser", sv: "Fokus- och visualiseringsövningar" },
+      { en: "Competition anxiety management", da: "Håndtering af konkurrenceangst", sv: "Hantering av tävlingsångest" },
     ],
   },
   rehab: {
