@@ -1284,7 +1284,7 @@ const translations = {
     hubWelcome: "Hem",
     hubChooseSection: "Vad vill du jobba med idag?",
     hubTrainingTitle: "Träningsplan",
-    hubTrainingDesc: "Generera och hantera AI-drivna periodiserade träningsprogram anpassade till ditt bältnivå, mål och schema.",
+    hubTrainingDesc: "Generera och hantera periodiserade träningsprogram anpassade till ditt bältnivå, mål och schema — grundat i TKD-idrottsvetenskap.",
     hubProgressTitle: "Framsteg",
     hubProgressDesc: "Följ din träningsvolym, genomförandegrad och konsistens för att se hur du förbättras över tid.",
     hubNutritionTitle: "Näring",
