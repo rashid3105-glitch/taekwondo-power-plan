@@ -22,8 +22,8 @@ interface FeatureData {
   descKey: string;
   image: string;
   gradient: string;
-  benefits: { en: string; da: string }[];
-  longDesc: { en: string; da: string };
+  benefits: { en: string; da: string; sv: string }[];
+  longDesc: { en: string; da: string; sv: string };
 }
 
 const features: Record<FeatureKey, FeatureData> = {
