@@ -1292,7 +1292,7 @@ const translations = {
     hubRehabTitle: "Skaderehabilitering",
     hubRehabDesc: "Återhämtar du dig från en skada? Generera fasindelade rehabprogram med smärtriktlinjer och säkerhetsprotokoll.",
     hubMentalTitle: "Mental prestation",
-    hubMentalDesc: "Bedöm din mentala styrka, fokus och tävlingsberedskap. Få AI-driven idrottspsykologisk rådgivning.",
+    hubMentalDesc: "Bedöm din mentala styrka, fokus och tävlingsberedskap med idrottspsykologiska ramverk.",
     // Coach-managed
     coachManagedBanner: "Dina program hanteras av din tränare. Du kan visa och ladda ner dina planer.",
     coachManagedBannerNamed: "Dina program hanteras av {{coach}}. Du kan visa och ladda ner dina planer.",
