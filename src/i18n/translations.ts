@@ -550,7 +550,7 @@ const translations = {
     // Dashboard
     generatePlan: "Generer plan",
     noTrainingPlanYet: "Ingen træningsplan endnu",
-    noTrainingPlanDesc: "Klik på \"Generer plan\" ovenfor for at oprette en AI-drevet træningsplan tilpasset din profil.",
+    noTrainingPlanDesc: "Klik på \"Generer plan\" ovenfor for at oprette en periodiseret træningsplan tilpasset din profil.",
     injuryRehabPlan: "Skade-genoptræningsplan",
     rehabDescription: "Beskriv din skade for at generere et personligt genoptræningsprogram med progressive protokoller.",
     rehabPlaceholder: "f.eks. Grad 1 hamstringskade, venstre knæ senebetændelse...",
