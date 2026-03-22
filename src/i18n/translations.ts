@@ -694,7 +694,7 @@ const translations = {
 
     // Pricing
     pricingTitle: "Vælg din plan",
-    pricingSubtitle: "Træn smartere med AI-drevne programmer skræddersyet til taekwondo. Betal via MobilePay — adgang gives når betaling er bekræftet.",
+    pricingSubtitle: "Træn smartere med programmer baseret på taekwondo-sportsvidenskab. Periodiserede planer, mental coaching, genoptræning og ernæring — alt i én platform.",
     pricingPopular: "Mest populær",
     pricingTierPersonal: "Personlig",
     pricingTierPersonalDesc: "For individuelle atleter",
