@@ -89,13 +89,14 @@ const features: Record<FeatureKey, FeatureData> = {
     longDesc: {
       en: "Injuries don't have to derail your training. Describe your injury and receive a phased rehabilitation program with clear pain guidelines, progression milestones, and safety protocols — designed specifically for taekwondo athletes returning to the mat.",
       da: "Skader behøver ikke at afspore din træning. Beskriv din skade og modtag et fasebaseret rehabiliteringsprogram med klare smerteretningslinjer, progressionsmilepæle og sikkerhedsprotokoller — designet specifikt til taekwondo-atleter der vender tilbage til måtten.",
+      sv: "Skador behöver inte spåra ur din träning. Beskriv din skada och få ett fasindelat rehabiliteringsprogram med tydliga smärtriktlinjer, progressionsmilstolpar och säkerhetsprotokoll — designat specifikt för taekwondo-atleter som återvänder till mattan.",
     },
     benefits: [
-      { en: "Phased rehab program generation", da: "Generering af fasebaserede genoptræningsprogrammer" },
-      { en: "Pain level guidelines", da: "Retningslinjer for smerteniveau" },
-      { en: "Safe progression milestones", da: "Sikre progressionsmilepæle" },
-      { en: "TKD-specific recovery protocols", da: "TKD-specifikke genoptræningsprotokoller" },
-      { en: "Return-to-training planning", da: "Planlægning af tilbagevenden til træning" },
+      { en: "Phased rehab program generation", da: "Generering af fasebaserede genoptræningsprogrammer", sv: "Generering av fasindelade rehabprogram" },
+      { en: "Pain level guidelines", da: "Retningslinjer for smerteniveau", sv: "Riktlinjer för smärtnivå" },
+      { en: "Safe progression milestones", da: "Sikre progressionsmilepæle", sv: "Säkra progressionsmilstolpar" },
+      { en: "TKD-specific recovery protocols", da: "TKD-specifikke genoptræningsprotokoller", sv: "TKD-specifika återhämtningsprotokoll" },
+      { en: "Return-to-training planning", da: "Planlægning af tilbagevenden til træning", sv: "Planering av återgång till träning" },
     ],
   },
   nutrition: {
