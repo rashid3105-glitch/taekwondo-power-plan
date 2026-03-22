@@ -84,8 +84,8 @@ const features: Record<FeatureKey, FeatureData> = {
     image: rehabImg,
     gradient: "from-[hsl(0,72%,51%)] to-[hsl(15,80%,50%)]",
     longDesc: {
-      en: "Injuries don't have to derail your training. Describe your injury and our AI builds a phased rehabilitation program with clear pain guidelines, progression milestones, and safety protocols — so you come back stronger.",
-      da: "Skader behøver ikke at afspore din træning. Beskriv din skade, og vores AI bygger et fasebaseret rehabiliteringsprogram med klare smerteretningslinjer, progressionsmilepæle og sikkerhedsprotokoller — så du kommer stærkere tilbage.",
+      en: "Injuries don't have to derail your training. Describe your injury and receive a phased rehabilitation program with clear pain guidelines, progression milestones, and safety protocols — designed specifically for taekwondo athletes returning to the mat.",
+      da: "Skader behøver ikke at afspore din træning. Beskriv din skade og modtag et fasebaseret rehabiliteringsprogram med klare smerteretningslinjer, progressionsmilepæle og sikkerhedsprotokoller — designet specifikt til taekwondo-atleter der vender tilbage til måtten.",
     },
     benefits: [
       { en: "Phased rehab program generation", da: "Generering af fasebaserede genoptræningsprogrammer" },
