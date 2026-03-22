@@ -125,13 +125,14 @@ const features: Record<FeatureKey, FeatureData> = {
     longDesc: {
       en: "Access a curated collection of TKD-specific exercises, each with detailed instructions, muscle group targeting, tempo guides, and video references. Every exercise is selected for its relevance to taekwondo performance — from explosive hip power to rotational core stability.",
       da: "Få adgang til en kurateret samling af TKD-specifikke øvelser, hver med detaljerede instruktioner, muskelgruppemålretning, tempoguider og videoreferencer. Hver øvelse er udvalgt for sin relevans for taekwondo-præstation — fra eksplosiv hoftekraft til rotationel core-stabilitet.",
+      sv: "Få tillgång till en kurerad samling TKD-specifika övningar, var och en med detaljerade instruktioner, muskelgruppsmålning, tempoguider och videoreferenser. Varje övning är utvald för sin relevans för taekwondo-prestation — från explosiv höftkraft till rotationell core-stabilitet.",
     },
     benefits: [
-      { en: "Curated TKD-specific exercises", da: "Kuraterede TKD-specifikke øvelser" },
-      { en: "Muscle group targeting info", da: "Information om muskelgruppemålretning" },
-      { en: "Video references and demos", da: "Videoreferencer og demonstrationer" },
-      { en: "Custom exercise creation", da: "Oprettelse af tilpassede øvelser" },
-      { en: "Alternative exercise suggestions", da: "Forslag til alternative øvelser" },
+      { en: "Curated TKD-specific exercises", da: "Kuraterede TKD-specifikke øvelser", sv: "Kurerade TKD-specifika övningar" },
+      { en: "Muscle group targeting info", da: "Information om muskelgruppemålretning", sv: "Information om muskelgruppsmålning" },
+      { en: "Video references and demos", da: "Videoreferencer og demonstrationer", sv: "Videoreferenser och demos" },
+      { en: "Custom exercise creation", da: "Oprettelse af tilpassede øvelser", sv: "Skapa egna övningar" },
+      { en: "Alternative exercise suggestions", da: "Forslag til alternative øvelser", sv: "Förslag på alternativa övningar" },
     ],
   },
 };
