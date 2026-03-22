@@ -238,7 +238,7 @@ const translations = {
 
     // Pricing
     pricingTitle: "Choose Your Plan",
-    pricingSubtitle: "Train smarter with AI-powered programs tailored for taekwondo. Pay via PayPal — access is granted once payment is confirmed.",
+    pricingSubtitle: "Train smarter with programs rooted in taekwondo sport science. Periodized plans, mental coaching, rehab, and nutrition — all in one platform.",
     pricingPopular: "Most Popular",
     pricingTierPersonal: "Personal",
     pricingTierPersonalDesc: "For individual athletes",
