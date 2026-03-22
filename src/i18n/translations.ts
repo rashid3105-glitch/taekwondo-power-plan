@@ -1006,7 +1006,7 @@ const translations = {
     // Dashboard
     generatePlan: "Generera plan",
     noTrainingPlanYet: "Ingen träningsplan ännu",
-    noTrainingPlanDesc: "Klicka på \"Generera plan\" ovan för att skapa en AI-driven träningsplan anpassad till din profil.",
+    noTrainingPlanDesc: "Klicka på \"Generera plan\" ovan för att skapa en periodiserad träningsplan anpassad till din profil.",
     injuryRehabPlan: "Skaderehabiliteringsplan",
     rehabDescription: "Beskriv din skada för att generera ett personligt rehabiliteringsprogram med progressiva protokoll.",
     rehabPlaceholder: "t.ex. Grad 1 hamstringskada, vänster knä seninflammation...",
