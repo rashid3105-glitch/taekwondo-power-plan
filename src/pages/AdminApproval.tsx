@@ -498,8 +498,8 @@ export default function AdminApproval() {
               {reassigning === u.user_id && <Loader2 className="h-3 w-3 animate-spin" />}
             </div>
           )}
-          {/* Coach role toggle & delete */}
-          <div className="flex items-center gap-2 pt-1 border-t border-border mt-2">
+          {/* Coach role toggle, reset password & delete */}
+          <div className="flex items-center gap-2 pt-1 border-t border-border mt-2 flex-wrap">
             <Button
               variant={u.isCoach ? "destructive" : "outline"}
               size="sm"
@@ -509,6 +509,35 @@ export default function AdminApproval() {
               <Shield className="h-3 w-3 mr-1" />
               {u.isCoach ? t("removeCoach") : t("makeCoach")}
             </Button>
+            {u.email && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7 text-xs"
+                disabled={resettingPassword === u.user_id}
+                onClick={async () => {
+                  setResettingPassword(u.user_id);
+                  try {
+                    const { error } = await supabase.auth.resetPasswordForEmail(u.email!, {
+                      redirectTo: `${window.location.origin}/reset-password`,
+                    });
+                    if (error) throw error;
+                    toast({ title: t("resetPasswordSent" as any) || "Password reset email sent", description: u.email });
+                  } catch (err: any) {
+                    toast({ title: t("error"), description: err.message, variant: "destructive" });
+                  } finally {
+                    setResettingPassword(null);
+                  }
+                }}
+              >
+                {resettingPassword === u.user_id ? (
+                  <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                ) : (
+                  <KeyRound className="h-3 w-3 mr-1" />
+                )}
+                {t("resetPassword" as any) || "Reset Password"}
+              </Button>
+            )}
             <Button
               variant="ghost"
               size="sm"
