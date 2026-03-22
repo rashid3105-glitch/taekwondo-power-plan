@@ -372,7 +372,7 @@ const translations = {
     hubWelcome: "Home",
     hubChooseSection: "What would you like to work on today?",
     hubTrainingTitle: "Training Plan",
-    hubTrainingDesc: "Generate and manage AI-powered periodized training programs tailored to your belt level, goals, and schedule.",
+    hubTrainingDesc: "Generate and manage periodized training programs tailored to your belt level, goals, and schedule — grounded in TKD sport science.",
     hubProgressTitle: "Progression",
     hubProgressDesc: "Track your training volume, completion rates, and consistency streaks to see how you improve over time.",
     hubNutritionTitle: "Nutrition",
