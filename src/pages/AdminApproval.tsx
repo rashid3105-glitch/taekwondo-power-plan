@@ -52,6 +52,7 @@ export default function AdminApproval() {
   const [downloadingPlan, setDownloadingPlan] = useState<string | null>(null);
   const [deletingUser, setDeletingUser] = useState<string | null>(null);
   const [deletingPlan, setDeletingPlan] = useState<string | null>(null);
+  const [resettingPassword, setResettingPassword] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
