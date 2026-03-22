@@ -225,11 +225,13 @@ const FeatureDetail = () => {
         <section className="max-w-4xl mx-auto px-6 pb-20 text-center">
           <div className="rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-8 sm:p-12 space-y-4">
             <h2 className="text-2xl font-bold text-foreground">
-              {locale === "da" ? "Klar til at komme i gang?" : "Ready to get started?"}
+              {locale === "da" ? "Klar til at komme i gang?" : locale === "sv" ? "Redo att komma igång?" : "Ready to get started?"}
             </h2>
             <p className="text-sm text-muted-foreground max-w-md mx-auto">
               {locale === "da"
                 ? "Opret din konto og få adgang til alle funktioner med det samme."
+                : locale === "sv"
+                ? "Skapa ditt konto och få tillgång till alla funktioner direkt."
                 : "Create your account and get access to all features right away."}
             </p>
             <div className="flex justify-center gap-3 pt-2">
