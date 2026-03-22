@@ -100,7 +100,7 @@ const translations = {
     rehabPlaceholder: "e.g. Grade 1 hamstring tear, left knee tendinitis...",
     generateRehabPlan: "Generate Rehab Plan",
     planGenerated: "Plan generated!",
-    planGeneratedDesc: "Your AI-powered training plan is ready.",
+    planGeneratedDesc: "Your personalized training plan is ready.",
     rehabGenerated: "Rehab plan generated and saved!",
     describeInjury: "Please describe your injury",
     previousPlans: "Previous Plans",
