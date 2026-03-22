@@ -50,8 +50,8 @@ const features: Record<FeatureKey, FeatureData> = {
     image: progressImg,
     gradient: "from-[hsl(45,90%,55%)] to-[hsl(35,90%,50%)]",
     longDesc: {
-      en: "Track every workout, visualize your training volume over time, and build consistency streaks. Our progress dashboard gives you clear insights into completion rates, muscle group balance, and performance trends.",
-      da: "Spor hver træning, visualiser dit træningsvolumen over tid, og opbyg konsistensstreaks. Vores fremskridts-dashboard giver dig klare indsigter i fuldførelsesrater, muskelgruppebalance og præstationstendenser.",
+      en: "Track every workout, visualize your training volume over time, and build consistency streaks. Our progress dashboard gives you clear insights into completion rates, muscle group balance, and performance trends — so you and your coach always know what's working.",
+      da: "Spor hver træning, visualiser dit træningsvolumen over tid, og opbyg konsistensstreaks. Vores fremskridts-dashboard giver dig klare indsigter i fuldførelsesrater, muskelgruppebalance og præstationstendenser — så du og din træner altid ved, hvad der virker.",
     },
     benefits: [
       { en: "Visual training volume charts", da: "Visuelle træningsvolumendiagrammer" },
