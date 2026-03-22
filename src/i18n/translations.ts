@@ -1150,7 +1150,7 @@ const translations = {
 
     // Pricing
     pricingTitle: "Välj din plan",
-    pricingSubtitle: "Träna smartare med AI-drivna program anpassade för taekwondo. Betala via PayPal — åtkomst ges när betalning har bekräftats.",
+    pricingSubtitle: "Träna smartare med program grundade i taekwondo-idrottsvetenskap. Periodiserade planer, mental coaching, rehab och näring — allt på en plattform.",
     pricingPopular: "Mest populär",
     pricingTierPersonal: "Personlig",
     pricingTierPersonalDesc: "För enskilda atleter",
