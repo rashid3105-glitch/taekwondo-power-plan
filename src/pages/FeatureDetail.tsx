@@ -33,15 +33,15 @@ const features: Record<FeatureKey, FeatureData> = {
     image: trainingImg,
     gradient: "from-[hsl(190,95%,50%)] to-[hsl(210,90%,56%)]",
     longDesc: {
-      en: "Our AI analyzes your belt level, weekly schedule, training goals, and current injuries to generate a fully periodized strength & conditioning program. Each session is designed to complement your taekwondo training — not compete with it.",
-      da: "Vores AI analyserer dit bælteniveau, ugentlige skema, træningsmål og nuværende skader for at generere et fuldt periodiseret styrke- og konditionsprogram. Hver session er designet til at supplere din taekwondo-træning — ikke konkurrere med den.",
+      en: "Our programs are rooted in proven periodization science — the same methodology used by elite coaches worldwide. Based on your belt level, weekly schedule, training goals, and current injuries, we build a fully periodized strength & conditioning program. Each session is designed to complement your taekwondo training — not compete with it.",
+      da: "Vores programmer er baseret på gennemprøvet periodiseringsvidenskab — den samme metodik brugt af elitetrænere verden over. Baseret på dit bælteniveau, ugentlige skema, træningsmål og nuværende skader bygger vi et fuldt periodiseret styrke- og konditionsprogram. Hver session er designet til at supplere din taekwondo-træning — ikke konkurrere med den.",
     },
     benefits: [
-      { en: "AI-generated periodized programs", da: "AI-genererede periodiserede programmer" },
+      { en: "Evidence-based periodized programs", da: "Evidensbaserede periodiserede programmer" },
       { en: "Tailored to your belt level and goals", da: "Skræddersyet til dit bælteniveau og mål" },
       { en: "Weekly schedule optimization", da: "Ugentlig skemaoptimering" },
       { en: "Exercise alternatives for every movement", da: "Øvelsesalternativer for hver bevægelse" },
-      { en: "Automatic injury-aware adjustments", da: "Automatiske skadestilpassede justeringer" },
+      { en: "Injury-aware adjustments built in", da: "Indbyggede skadestilpassede justeringer" },
     ],
   },
   progress: {
