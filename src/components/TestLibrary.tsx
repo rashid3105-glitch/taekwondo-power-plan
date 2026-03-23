@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { Zap, Wind, Dumbbell, Timer, ClipboardList, Users, User, ChevronDown, ChevronUp } from "lucide-react";
+import { Zap, Wind, Dumbbell, Timer, ClipboardList, Users, User, ChevronDown, ChevronUp, Youtube } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface TestDefinition {
@@ -145,6 +145,16 @@ export function TestLibrary() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2 shrink-0 ml-2">
+                        <a
+                          href={`https://www.youtube.com/results?search_query=${encodeURIComponent(test.name + " physical test")}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="p-1 rounded-md hover:bg-destructive/10 transition-colors"
+                          title={`Search "${test.name}" on YouTube`}
+                        >
+                          <Youtube className="h-4 w-4 text-destructive" />
+                        </a>
                         <Badge variant="outline" className="text-[10px]">
                           {test.type === "both" ? t("ptFilterAll" as any) :
                            test.type === "coach" ? t("ptCoachTest" as any) : t("ptIndividualTest" as any)}
