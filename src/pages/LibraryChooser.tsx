@@ -38,6 +38,14 @@ const libraries: {
     color: "text-tab-nutrition",
     bgClass: "bg-tab-nutrition/10 border-tab-nutrition/20 hover:border-tab-nutrition/40",
   },
+  {
+    id: "testing",
+    labelKey: "libTestingLabel",
+    descKey: "libTestingDesc",
+    icon: ClipboardList,
+    color: "text-primary",
+    bgClass: "bg-primary/10 border-primary/20 hover:border-primary/40",
+  },
 ];
 
 export default function LibraryChooser() {
