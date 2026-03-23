@@ -118,6 +118,24 @@ const features: Record<FeatureKey, FeatureData> = {
       { en: "Custom recipe creation", da: "Oprettelse af tilpassede opskrifter", sv: "Skapa egna recept" },
     ],
   },
+  testing: {
+    titleKey: "sectionTestingTitle",
+    descKey: "sectionTestingDesc",
+    image: testingImg,
+    gradient: "from-[hsl(190,85%,50%)] to-[hsl(210,80%,55%)]",
+    longDesc: {
+      en: "Physical testing is the cornerstone of evidence-based training. Without objective data, you're guessing. Our testing module answers three critical questions: WHAT to test (13 standardized protocols across speed, endurance, strength, and agility), HOW to test (video demonstrations with proper form and timing), and WHY it matters (each test targets a specific athletic quality essential for taekwondo — from explosive first-step speed to sustained round endurance). Track your results over time with gradient charts and trend analysis, compare coach-led vs. individual tests, and pinpoint exactly where your performance is improving or stalling.",
+      da: "Fysisk testning er hjørnestenen i evidensbaseret træning. Uden objektive data gætter du bare. Vores testmodul besvarer tre kritiske spørgsmål: HVAD skal testes (13 standardiserede protokoller inden for hastighed, udholdenhed, styrke og smidighed), HVORDAN testes (videodemonstration med korrekt form og timing), og HVORFOR det er vigtigt (hver test målretter en specifik atletisk kvalitet essentiel for taekwondo — fra eksplosiv første-skridt hastighed til vedvarende runde-udholdenhed). Spor dine resultater over tid med gradientdiagrammer og trendanalyse, sammenlign trænerstyrede vs. individuelle tests, og find præcist ud af, hvor din præstation forbedres eller stagnerer.",
+      sv: "Fysisk testning är hörnstenen i evidensbaserad träning. Utan objektiva data gissar du bara. Vår testmodul besvarar tre kritiska frågor: VAD ska testas (13 standardiserade protokoll inom hastighet, uthållighet, styrka och smidighet), HUR testar man (videodemonstration med korrekt form och timing), och VARFÖR det spelar roll (varje test riktar sig mot en specifik atletisk kvalitet som är avgörande för taekwondo — från explosiv första-stegs-hastighet till uthållig rond-uthållighet). Spåra dina resultat över tid med gradientdiagram och trendanalys, jämför tränarledda vs. individuella tester, och hitta exakt var din prestation förbättras eller stagnerar.",
+    },
+    benefits: [
+      { en: "13 standardized test protocols (sprint, agility, strength, endurance)", da: "13 standardiserede testprotokoller (sprint, smidighed, styrke, udholdenhed)", sv: "13 standardiserade testprotokoll (sprint, smidighet, styrka, uthållighet)" },
+      { en: "Video demonstrations showing proper execution", da: "Videodemonstration der viser korrekt udførelse", sv: "Videodemonstration som visar korrekt utförande" },
+      { en: "Trend charts with gradient fills and average reference lines", da: "Trenddiagrammer med gradientfyld og gennemsnitlige referencelinjer", sv: "Trenddiagram med gradientfyllning och genomsnittliga referenslinjer" },
+      { en: "Coach-led vs. individual test comparison", da: "Sammenligning af trænerstyrede vs. individuelle tests", sv: "Jämförelse av tränarledda vs. individuella tester" },
+      { en: "Know exactly what, how, and why you're testing", da: "Ved præcist hvad, hvordan og hvorfor du tester", sv: "Vet exakt vad, hur och varför du testar" },
+    ],
+  },
   library: {
     titleKey: "sectionLibraryTitle",
     descKey: "sectionLibraryDesc",

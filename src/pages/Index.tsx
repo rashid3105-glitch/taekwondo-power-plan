@@ -108,6 +108,14 @@ const Index = () => {
       slug: "nutrition",
     },
     {
+      icon: Activity,
+      titleKey: "sectionTestingTitle" as const,
+      descKey: "sectionTestingDesc" as const,
+      gradient: "radial-gradient(circle at 30% 50%, hsl(190 85% 50% / 0.08), transparent 70%)",
+      iconColor: "text-cyan-400",
+      slug: "testing",
+    },
+    {
       icon: BookOpen,
       titleKey: "sectionLibraryTitle" as const,
       descKey: "sectionLibraryDesc" as const,
