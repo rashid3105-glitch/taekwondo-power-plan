@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain, Clock, Apple, Home, Lock, NotebookPen, AlertTriangle } from "lucide-react";
+import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain, Clock, Apple, Home, Lock, NotebookPen, AlertTriangle, ClipboardList } from "lucide-react";
 import logo from "@/assets/logo.webp";
 import { useToast } from "@/hooks/use-toast";
 import { AIPlanCard } from "@/components/AIPlanCard";
@@ -15,6 +15,7 @@ import { ProgressDashboard } from "@/components/ProgressDashboard";
 import { NutritionPlan } from "@/components/NutritionPlan";
 import { AppFooter } from "@/components/AppFooter";
 import { Watermark } from "@/components/Watermark";
+import { PhysicalTesting } from "@/components/PhysicalTesting";
 
 interface Profile {
   display_name: string;
@@ -67,7 +68,7 @@ export default function Dashboard() {
   const [rehabPlan, setRehabPlan] = useState<any>(null);
   const [rehabPlans, setRehabPlans] = useState<RehabPlanRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"hub" | "plan" | "rehab" | "mental" | "progress" | "nutrition">("hub");
+  const [activeTab, setActiveTab] = useState<"hub" | "plan" | "rehab" | "mental" | "progress" | "nutrition" | "testing">("hub");
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, locale } = useLanguage();
@@ -298,6 +299,9 @@ export default function Dashboard() {
             <Button variant="ghost" size="sm" onClick={() => handleTabChange("mental")} disabled={isDemoLockedTab("mental")} className={activeTab === "mental" ? "text-tab-mental" : ""}>
               <Brain className="h-4 w-4 mr-1" /> {t("mental")}
             </Button>
+            <Button variant="ghost" size="sm" onClick={() => handleTabChange("testing")} disabled={isDemoLockedTab("testing")} className={activeTab === "testing" ? "text-primary" : ""}>
+              <ClipboardList className="h-4 w-4 mr-1" /> {t("testing")}
+            </Button>
             <Button variant="ghost" size="sm" onClick={() => navigate("/library")} disabled={isDemo}>
               <BookOpen className="h-4 w-4 mr-1" /> {t("library")}
             </Button>
@@ -414,6 +418,7 @@ export default function Dashboard() {
                 { tab: "nutrition" as const, icon: Apple, titleKey: "hubNutritionTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubNutritionDesc", color: "text-tab-nutrition", gradient: "radial-gradient(circle at 30% 50%, hsl(120 60% 45% / 0.08), transparent 70%)", locked: isDemo },
                 { tab: "rehab" as const, icon: Heart, titleKey: "hubRehabTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubRehabDesc", color: "text-tab-rehab", gradient: "radial-gradient(circle at 30% 50%, hsl(0 72% 51% / 0.08), transparent 70%)", locked: isDemo },
                 { tab: "mental" as const, icon: Brain, titleKey: "hubMentalTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubMentalDesc", color: "text-tab-mental", gradient: "radial-gradient(circle at 30% 50%, hsl(330 60% 72% / 0.08), transparent 70%)", locked: isDemo },
+                { tab: "testing" as const, icon: ClipboardList, titleKey: "hubTestingTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubTestingDesc", color: "text-primary", gradient: "radial-gradient(circle at 30% 50%, hsl(210 80% 55% / 0.08), transparent 70%)", locked: isDemo },
               ]).map((section) => {
                 const Icon = section.icon;
                 return (
@@ -477,6 +482,8 @@ export default function Dashboard() {
           isDemo ? renderDemoLockedState("nutrition") : <NutritionPlan profile={profile} readOnly={hasCoach} />
         ) : activeTab === "mental" ? (
           isDemo ? renderDemoLockedState("mental") : <MentalAssessment profile={profile} />
+        ) : activeTab === "testing" ? (
+          isDemo ? renderDemoLockedState("testing") : <PhysicalTesting mode="individual" />
         ) : activeTab === "rehab" ? (
           isDemo ? renderDemoLockedState("injuryRehabPlan") : (
           <>

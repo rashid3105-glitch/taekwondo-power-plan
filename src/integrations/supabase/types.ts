@@ -122,6 +122,48 @@ export type Database = {
         }
         Relationships: []
       }
+      physical_test_results: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          notes: string | null
+          test_date: string
+          test_name: string
+          test_type: string
+          tested_by: string | null
+          unit: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          test_date?: string
+          test_name: string
+          test_type?: string
+          tested_by?: string | null
+          unit?: string
+          user_id: string
+          value: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          test_date?: string
+          test_name?: string
+          test_type?: string
+          tested_by?: string | null
+          unit?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           age: number | null
