@@ -418,6 +418,7 @@ export default function Dashboard() {
                 { tab: "nutrition" as const, icon: Apple, titleKey: "hubNutritionTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubNutritionDesc", color: "text-tab-nutrition", gradient: "radial-gradient(circle at 30% 50%, hsl(120 60% 45% / 0.08), transparent 70%)", locked: isDemo },
                 { tab: "rehab" as const, icon: Heart, titleKey: "hubRehabTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubRehabDesc", color: "text-tab-rehab", gradient: "radial-gradient(circle at 30% 50%, hsl(0 72% 51% / 0.08), transparent 70%)", locked: isDemo },
                 { tab: "mental" as const, icon: Brain, titleKey: "hubMentalTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubMentalDesc", color: "text-tab-mental", gradient: "radial-gradient(circle at 30% 50%, hsl(330 60% 72% / 0.08), transparent 70%)", locked: isDemo },
+                { tab: "testing" as const, icon: ClipboardList, titleKey: "hubTestingTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubTestingDesc", color: "text-primary", gradient: "radial-gradient(circle at 30% 50%, hsl(210 80% 55% / 0.08), transparent 70%)", locked: isDemo },
               ]).map((section) => {
                 const Icon = section.icon;
                 return (
