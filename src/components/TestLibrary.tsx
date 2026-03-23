@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { Zap, Wind, Dumbbell, Timer, ClipboardList, Users, User, ChevronDown, ChevronUp } from "lucide-react";
+import { Zap, Wind, Dumbbell, Timer, ClipboardList, Users, User, ChevronDown, ChevronUp, Youtube } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface TestDefinition {
