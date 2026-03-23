@@ -533,6 +533,7 @@ const translations = {
     ptLatest: "Latest",
     ptPrevious: "Previous",
     ptTrend: "Trend",
+    ptRangeAll: "All",
     testing: "Testing",
     hubTestingTitle: "Physical Testing",
     hubTestingDesc: "Log and track speed, endurance, strength, and agility tests. Compare results over time.",
