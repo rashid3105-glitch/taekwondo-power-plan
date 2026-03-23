@@ -1124,6 +1124,8 @@ const translations = {
     sectionMentalDesc: "Bedöm din mentala styrka, fokus och tävlingsångest med idrottspsykologiska ramverk. Få personlig rådgivning för att skärpa din tävlingsförmåga.",
     sectionRehabTitle: "Skaderehabilitering",
     sectionRehabDesc: "Återhämtar du dig från en skada? Få fasindelade rehabprogram med smärtriktlinjer och säkerhetsprotokoll — designade för TKD-rörelsemönster.",
+    sectionTestingTitle: "Fysisk testning",
+    sectionTestingDesc: "Vet vad du ska testa, hur du testar och varför det spelar roll. 13 standardiserade protokoll inom hastighet, styrka, uthållighet och smidighet — med videodemos och trendspårning.",
     sectionLibraryTitle: "Övningsbibliotek",
     sectionLibraryDesc: "En kurerad samling TKD-specifika övningar med alternativ, tempoguider och muskelgruppsfokus — byggt för kampsportsatleter.",
     sectionNutritionTitle: "Näring",
