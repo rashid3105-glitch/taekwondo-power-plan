@@ -293,6 +293,12 @@ const translations = {
     helpStudentProgressTitle: "Follow Student Progress (Coaches)",
     helpStudentProgressSteps: "1. Open the Coach Dashboard\n2. Click on any athlete in your roster\n3. View their active training plan and completion status\n4. Check their workout logs, training volume, and consistency\n5. Review their mental performance assessments and scores\n6. Monitor rehab plan progress if applicable\n7. Generate new plans or adjust schedules as needed",
     help: "Help",
+    changelogTitle: "Changelog",
+    changelog_2026_03_23: "March 23, 2026",
+    changelogEntry1: "Physical Testing module with Speed, Endurance, Strength & Agility categories",
+    changelogEntry2: "Performance trend line charts in Progress dashboard",
+    changelogEntry3: "Physical Test Library with 13 standardized tests and YouTube links",
+    changelogEntry4: "Help card added to dashboard hub",
 
     // Payment & Demo
     paid: "Paid",
