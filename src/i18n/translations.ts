@@ -32,6 +32,8 @@ const translations = {
     sectionMentalDesc: "Assess your mental toughness, focus, and competition anxiety using sports psychology frameworks. Receive personalized advice to sharpen your competitive edge.",
     sectionRehabTitle: "Injury Rehab",
     sectionRehabDesc: "Recovering from an injury? Get phased rehab programs with pain guidelines and safety protocols — designed around TKD movement patterns.",
+    sectionTestingTitle: "Physical Testing",
+    sectionTestingDesc: "Know what to test, how to test it, and why it matters. 13 standardized protocols across speed, strength, endurance and agility — with video demos and trend tracking.",
     sectionLibraryTitle: "Exercise Library",
     sectionLibraryDesc: "A curated collection of TKD-specific exercises with alternatives, tempo guides, and muscle group targeting — built for martial artists.",
     sectionNutritionTitle: "Nutrition",
@@ -302,6 +304,7 @@ const translations = {
     changelogEntry5: "Enhanced charts with gradient fills, date range filters, and detailed tooltips",
     changelogEntry6: "Mental radar chart with previous assessment comparison overlay",
     changelogEntry7: "Progress dashboard with time range filtering and average stats",
+    changelogEntry8: "Physical Testing feature card added to landing page with detail page",
 
     // Payment & Demo
     paid: "Paid",
@@ -576,6 +579,8 @@ const translations = {
     sectionMentalDesc: "Vurder din mentale styrke, fokus og konkurrenceangst med sportspsykologiske rammer. Modtag personlig rådgivning for at skærpe din konkurrenceevne.",
     sectionRehabTitle: "Skade-genoptræning",
     sectionRehabDesc: "Kommer du dig efter en skade? Få faseopdelte genoptræningsprogrammer med smertevejledning og sikkerhedsprotokoller — designet til TKD-bevægelsesmønstre.",
+    sectionTestingTitle: "Fysisk testning",
+    sectionTestingDesc: "Ved hvad du skal teste, hvordan du tester, og hvorfor det er vigtigt. 13 standardiserede protokoller inden for hastighed, styrke, udholdenhed og smidighed — med videodemoer og trendsporing.",
     sectionLibraryTitle: "Øvelsesbibliotek",
     sectionLibraryDesc: "En kurateret samling af TKD-specifikke øvelser med alternativer, tempoguider og muskelgruppefokus — bygget til kampsportsatleter.",
     sectionNutritionTitle: "Ernæring",
@@ -846,6 +851,7 @@ const translations = {
     changelogEntry5: "Forbedrede diagrammer med gradientfyld, datofiltre og detaljerede tooltips",
     changelogEntry6: "Mentalt radardiagram med sammenligning af tidligere vurdering",
     changelogEntry7: "Fremgangs-dashboard med tidsfiltrering og gennemsnitsstatistikker",
+    changelogEntry8: "Fysisk testning-funktionskort tilføjet til forsiden med detaljeside",
 
     // Payment & Demo
     paid: "Betalt",
@@ -1120,6 +1126,8 @@ const translations = {
     sectionMentalDesc: "Bedöm din mentala styrka, fokus och tävlingsångest med idrottspsykologiska ramverk. Få personlig rådgivning för att skärpa din tävlingsförmåga.",
     sectionRehabTitle: "Skaderehabilitering",
     sectionRehabDesc: "Återhämtar du dig från en skada? Få fasindelade rehabprogram med smärtriktlinjer och säkerhetsprotokoll — designade för TKD-rörelsemönster.",
+    sectionTestingTitle: "Fysisk testning",
+    sectionTestingDesc: "Vet vad du ska testa, hur du testar och varför det spelar roll. 13 standardiserade protokoll inom hastighet, styrka, uthållighet och smidighet — med videodemos och trendspårning.",
     sectionLibraryTitle: "Övningsbibliotek",
     sectionLibraryDesc: "En kurerad samling TKD-specifika övningar med alternativ, tempoguider och muskelgruppsfokus — byggt för kampsportsatleter.",
     sectionNutritionTitle: "Näring",
@@ -1390,6 +1398,7 @@ const translations = {
     changelogEntry5: "Förbättrade diagram med gradientfyllning, datumfilter och detaljerade tooltips",
     changelogEntry6: "Mentalt radardiagram med jämförelse av tidigare bedömning",
     changelogEntry7: "Framsteg-dashboard med tidsfiltrering och genomsnittsstatistik",
+    changelogEntry8: "Fysisk testning-funktionskort tillagt på startsidan med detaljsida",
 
     // Payment & Demo
     paid: "Betald",

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import {
-  ArrowRight, ClipboardList, BarChart3, Brain, HeartPulse, BookOpen, UtensilsCrossed, HelpCircle,
+  ArrowRight, ClipboardList, BarChart3, Brain, HeartPulse, BookOpen, UtensilsCrossed, HelpCircle, Activity,
 } from "lucide-react";
 import logo from "@/assets/logo.webp";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -106,6 +106,14 @@ const Index = () => {
       gradient: "radial-gradient(circle at 30% 50%, hsl(25 90% 55% / 0.08), transparent 70%)",
       iconColor: "text-orange-400",
       slug: "nutrition",
+    },
+    {
+      icon: Activity,
+      titleKey: "sectionTestingTitle" as const,
+      descKey: "sectionTestingDesc" as const,
+      gradient: "radial-gradient(circle at 30% 50%, hsl(190 85% 50% / 0.08), transparent 70%)",
+      iconColor: "text-cyan-400",
+      slug: "testing",
     },
     {
       icon: BookOpen,
