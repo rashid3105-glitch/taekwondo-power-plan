@@ -538,6 +538,16 @@ export default function AdminApproval() {
                 {t("resetPassword" as any) || "Reset Password"}
               </Button>
             )}
+            {showRevoke && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 text-xs text-destructive"
+                onClick={() => revokeUser(u.user_id)}
+              >
+                <XCircle className="h-3 w-3 mr-1" /> {t("revoke")}
+              </Button>
+            )}
             <Button
               variant="ghost"
               size="sm"
