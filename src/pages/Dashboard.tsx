@@ -15,6 +15,7 @@ import { ProgressDashboard } from "@/components/ProgressDashboard";
 import { NutritionPlan } from "@/components/NutritionPlan";
 import { AppFooter } from "@/components/AppFooter";
 import { Watermark } from "@/components/Watermark";
+import { PhysicalTesting } from "@/components/PhysicalTesting";
 
 interface Profile {
   display_name: string;
