@@ -612,11 +612,7 @@ export default function AdminApproval() {
             </h2>
             <div className="space-y-3">
               {approved.map(u => (
-                <UserCard key={u.user_id} u={u} actions={
-                  <Button variant="ghost" size="sm" className="text-destructive" onClick={() => revokeUser(u.user_id)}>
-                    <XCircle className="h-4 w-4 mr-1" /> {t("revoke")}
-                  </Button>
-                } />
+                <UserCard key={u.user_id} u={u} showRevoke actions={null} />
               ))}
             </div>
           </div>
