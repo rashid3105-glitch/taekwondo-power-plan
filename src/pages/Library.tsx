@@ -14,12 +14,14 @@ const TITLE_KEYS: Record<string, TranslationKey> = {
   exercise: "exercisesTitle",
   mental: "hubMentalTitle",
   nutrition: "hubNutritionTitle",
+  testing: "libTestingLabel",
 };
 
 const ICONS: Record<string, typeof Dumbbell> = {
   exercise: Dumbbell,
   mental: Brain,
   nutrition: UtensilsCrossed,
+  testing: ClipboardList,
 };
 
 const COLORS: Record<string, string> = {
