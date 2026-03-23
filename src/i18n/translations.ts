@@ -1373,6 +1373,12 @@ const translations = {
     helpStudentProgressTitle: "Följ elevers framsteg (Tränare)",
     helpStudentProgressSteps: "1. Öppna Tränare Dashboard\n2. Klicka på valfri atlet i din lista\n3. Se deras aktiva träningsplan och genomförandestatus\n4. Kontrollera deras träningsloggar, volym och konsistens\n5. Granska deras mentala prestationsbedömningar och poäng\n6. Övervaka rehabplanens framsteg vid behov\n7. Generera nya planer eller justera scheman efter behov",
     help: "Hjälp",
+    changelogTitle: "Ändringslogg",
+    changelog_2026_03_23: "23 mars 2026",
+    changelogEntry1: "Fysisk testmodul med Hastighet, Uthållighet, Styrka & Smidighet",
+    changelogEntry2: "Trend-linjediagram i Framsteg-dashboarden",
+    changelogEntry3: "Fysiskt testbibliotek med 13 standardiserade tester och YouTube-länkar",
+    changelogEntry4: "Hjälp-kort tillagt på dashboard-hubben",
 
     // Payment & Demo
     paid: "Betald",
