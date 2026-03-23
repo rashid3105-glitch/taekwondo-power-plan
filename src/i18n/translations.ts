@@ -299,6 +299,9 @@ const translations = {
     changelogEntry2: "Performance trend line charts in Progress dashboard",
     changelogEntry3: "Physical Test Library with 13 standardized tests and YouTube links",
     changelogEntry4: "Help card added to dashboard hub",
+    changelogEntry5: "Enhanced charts with gradient fills, date range filters, and detailed tooltips",
+    changelogEntry6: "Mental radar chart with previous assessment comparison overlay",
+    changelogEntry7: "Progress dashboard with time range filtering and average stats",
 
     // Payment & Demo
     paid: "Paid",
