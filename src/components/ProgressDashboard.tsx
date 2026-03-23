@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Loader2, BarChart3, TrendingUp, Target, Calendar, Zap, Brain, ClipboardList } from "lucide-react";
+import { PhysicalTestProgress } from "@/components/PhysicalTestProgress";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   AreaChart, Area,
