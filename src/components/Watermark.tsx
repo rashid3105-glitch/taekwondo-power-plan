@@ -9,6 +9,7 @@ export const Watermark = () => (
       backgroundRepeat: "repeat",
       backgroundSize: "280px auto",
       backgroundPosition: "center",
+      filter: "grayscale(1) brightness(0.8)",
     }}
   />
 );
