@@ -42,7 +42,7 @@ export default function Pricing() {
 
   return (
     <div className="min-h-screen bg-background px-4 py-8 relative">
-      <PageMeta title="Pricing" description="Choose the right TKD Power plan for athletes, coaches, and teams." />
+      <PageMeta title="Pricing" description="Choose the right Sportstalent plan for athletes, coaches, and teams." />
       <Watermark />
       <div className="mx-auto max-w-4xl space-y-8">
         <div className="flex items-center justify-between">
