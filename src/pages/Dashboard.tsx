@@ -482,6 +482,8 @@ export default function Dashboard() {
           isDemo ? renderDemoLockedState("nutrition") : <NutritionPlan profile={profile} readOnly={hasCoach} />
         ) : activeTab === "mental" ? (
           isDemo ? renderDemoLockedState("mental") : <MentalAssessment profile={profile} />
+        ) : activeTab === "testing" ? (
+          isDemo ? renderDemoLockedState("testing") : <PhysicalTesting mode="individual" />
         ) : activeTab === "rehab" ? (
           isDemo ? renderDemoLockedState("injuryRehabPlan") : (
           <>
