@@ -316,7 +316,7 @@ export default function AdminApproval() {
             <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 transition-transform duration-200 group-data-[state=open]:rotate-180" />
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <p className="font-medium text-sm text-foreground">{u.display_name || t("noName")}</p>
+                <p className={`font-medium text-sm ${u.is_approved ? 'text-foreground' : 'text-yellow-400'}`}>{u.display_name || t("noName")}</p>
                 {u.payment_status === "paid" && (
                   <Badge variant="default" className="text-[10px] h-5">
                     <CreditCard className="h-2.5 w-2.5 mr-0.5" /> {t("paid" as any)}
