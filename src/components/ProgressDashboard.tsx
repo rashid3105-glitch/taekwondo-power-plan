@@ -1,11 +1,11 @@
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Loader2, BarChart3, TrendingUp, Target, Calendar, Zap, Brain, ClipboardList } from "lucide-react";
+import { Loader2, BarChart3, TrendingUp, Target, Calendar, Zap, Brain, ClipboardList, Filter } from "lucide-react";
 import { PhysicalTestProgress } from "@/components/PhysicalTestProgress";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  AreaChart, Area,
+  AreaChart, Area, Legend, Cell,
 } from "recharts";
 import { useLanguage } from "@/i18n/LanguageContext";
 
@@ -25,23 +25,52 @@ interface PlanData {
   plan_data: any;
 }
 
-function StatCard({ icon: Icon, label, value }: { icon: typeof Target; label: string; value: string }) {
+function StatCard({ icon: Icon, label, value, sublabel }: { icon: typeof Target; label: string; value: string; sublabel?: string }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-3 sm:p-4 shadow-card">
+    <div className="rounded-xl border border-border bg-card p-3 sm:p-4 shadow-card relative overflow-hidden group">
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-primary/5 to-transparent" />
       <div className="flex items-center gap-2 mb-1">
         <Icon className="h-4 w-4 text-primary" />
         <span className="text-[10px] sm:text-xs uppercase tracking-wider text-muted-foreground font-semibold">{label}</span>
       </div>
       <p className="text-xl sm:text-2xl font-extrabold text-foreground">{value}</p>
+      {sublabel && <p className="text-[10px] text-muted-foreground mt-0.5">{sublabel}</p>}
     </div>
   );
 }
+
+const CHART_COLORS = {
+  volume: "hsl(190, 95%, 50%)",
+  exercises: "hsl(35, 100%, 55%)",
+  completion: "hsl(160, 80%, 45%)",
+  day: "hsl(190, 95%, 50%)",
+};
+
+type TimeRange = "all" | "4w" | "8w" | "12w";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="rounded-lg border border-border bg-card/95 backdrop-blur-sm px-3 py-2 shadow-lg text-xs">
+      <p className="font-bold text-foreground mb-1">{label}</p>
+      {payload.map((entry: any, i: number) => (
+        <div key={i} className="flex items-center gap-2">
+          <div className="h-2 w-2 rounded-full" style={{ backgroundColor: entry.color }} />
+          <span className="text-muted-foreground">{entry.name}:</span>
+          <span className="font-bold text-foreground">{entry.value}{entry.unit || ""}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
 
 export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
   const [logs, setLogs] = useState<WorkoutLog[]>([]);
   const [plan, setPlan] = useState<PlanData | null>(null);
   const [mentalAssessments, setMentalAssessments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [timeRange, setTimeRange] = useState<TimeRange>("all");
   const { t } = useLanguage();
 
   useEffect(() => {
@@ -64,16 +93,25 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
     setLoading(false);
   };
 
-  const stats = useMemo(() => {
-    if (!logs.length) return null;
+  const filteredLogs = useMemo(() => {
+    if (timeRange === "all") return logs;
+    const now = new Date();
+    const cutoff = new Date();
+    const weeks = timeRange === "4w" ? 4 : timeRange === "8w" ? 8 : 12;
+    cutoff.setDate(now.getDate() - weeks * 7);
+    return logs.filter(l => new Date(l.logged_date) >= cutoff);
+  }, [logs, timeRange]);
 
-    const completedLogs = logs.filter((l) => l.completed);
-    const completionRate = Math.round((completedLogs.length / logs.length) * 100);
+  const stats = useMemo(() => {
+    if (!filteredLogs.length) return null;
+
+    const completedLogs = filteredLogs.filter((l) => l.completed);
+    const completionRate = Math.round((completedLogs.length / filteredLogs.length) * 100);
     const totalSets = completedLogs.reduce((sum, l) => sum + (l.actual_sets ?? 0), 0);
     const uniqueDays = new Set(completedLogs.map((l) => l.logged_date)).size;
 
     const weeklyMap = new Map<string, { completed: number; total: number; volume: number }>();
-    for (const log of logs) {
+    for (const log of filteredLogs) {
       const d = new Date(log.logged_date);
       const weekStart = new Date(d);
       weekStart.setDate(d.getDate() - d.getDay() + 1);
@@ -96,8 +134,12 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
         exercises: data.completed,
       }));
 
+    // Calculate averages
+    const avgVolume = weeklyData.length ? Math.round(weeklyData.reduce((s, w) => s + w.volume, 0) / weeklyData.length) : 0;
+    const avgCompletion = weeklyData.length ? Math.round(weeklyData.reduce((s, w) => s + w.completionRate, 0) / weeklyData.length) : 0;
+
     const today = new Date();
-    const consistencyData: { day: string; logged: number }[] = [];
+    const consistencyData: { day: string; logged: number; date: string }[] = [];
     for (let i = 27; i >= 0; i--) {
       const d = new Date(today);
       d.setDate(today.getDate() - i);
@@ -106,17 +148,18 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
       consistencyData.push({
         day: d.toLocaleDateString(undefined, { weekday: "narrow" }),
         logged: dayLogs.length,
+        date: d.toLocaleDateString(undefined, { month: "short", day: "numeric" }),
       });
     }
 
     const schedule = plan?.plan_data?.weeklySchedule || [];
     const dayCompletionData = schedule.map((day: any, i: number) => {
-      const dayLogs = logs.filter((l) => l.day_index === i);
+      const dayLogs = filteredLogs.filter((l) => l.day_index === i);
       const dayCompleted = dayLogs.filter((l) => l.completed);
+      const rate = dayLogs.length > 0 ? Math.round((dayCompleted.length / dayLogs.length) * 100) : 0;
       return {
         name: day.dayOfWeek?.slice(0, 3) || `Day ${i + 1}`,
-        rate: dayLogs.length > 0 ? Math.round((dayCompleted.length / dayLogs.length) * 100) : 0,
-        fill: `hsl(190, 95%, ${50 + i * 5}%)`,
+        rate,
       };
     }).filter((d: any) => d.rate > 0);
 
@@ -134,8 +177,8 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
       }
     }
 
-    return { completionRate, totalSets, uniqueDays, weeklyData, consistencyData, dayCompletionData, streak, totalExercises: completedLogs.length };
-  }, [logs, plan]);
+    return { completionRate, totalSets, uniqueDays, weeklyData, consistencyData, dayCompletionData, streak, totalExercises: completedLogs.length, avgVolume, avgCompletion };
+  }, [filteredLogs, plan]);
 
   const mentalStats = useMemo(() => {
     if (!mentalAssessments.length) return null;
@@ -144,7 +187,8 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
     const categories = Object.entries(scores);
     const best = categories.reduce((a, b) => (b[1] > a[1] ? b : a));
     const worst = categories.reduce((a, b) => (b[1] < a[1] ? b : a));
-    return { latest, total: mentalAssessments.length, best, worst };
+    const previous = mentalAssessments[1] || null;
+    return { latest, previous, total: mentalAssessments.length, best, worst };
   }, [mentalAssessments]);
 
   const categoryLabel = (key: string) => {
@@ -160,7 +204,6 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
     return map[key]?.[lang] || key;
   };
 
-  // Training plan progress
   const planProgress = useMemo(() => {
     if (!plan?.plan_data) return null;
     const schedule = plan.plan_data?.weeklySchedule || [];
@@ -187,7 +230,7 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
     );
   }
 
-  const hasWorkoutData = stats && logs.length > 0;
+  const hasWorkoutData = stats && filteredLogs.length > 0;
   const hasMentalData = mentalAssessments.length > 0;
 
   if (!hasWorkoutData && !hasMentalData && !planProgress) {
@@ -203,16 +246,40 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
     );
   }
 
+  const timeRanges: { key: TimeRange; label: string }[] = [
+    { key: "all", label: t("ptRangeAll" as any) || "All" },
+    { key: "4w", label: "4w" },
+    { key: "8w", label: "8w" },
+    { key: "12w", label: "12w" },
+  ];
+
   return (
     <div className="space-y-4 sm:space-y-6">
-      <h2 className="text-xl sm:text-2xl font-extrabold text-foreground">{t("progressDashboard")}</h2>
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <h2 className="text-xl sm:text-2xl font-extrabold text-foreground">{t("progressDashboard")}</h2>
+        {/* Time range filter */}
+        <div className="flex items-center gap-1.5">
+          <Filter className="h-3.5 w-3.5 text-muted-foreground" />
+          {timeRanges.map(r => (
+            <Button
+              key={r.key}
+              variant={timeRange === r.key ? "default" : "outline"}
+              size="sm"
+              className="h-7 px-2.5 text-xs"
+              onClick={() => setTimeRange(r.key)}
+            >
+              {r.label}
+            </Button>
+          ))}
+        </div>
+      </div>
 
       {/* Workout stat cards */}
       {hasWorkoutData && (
         <>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-            <StatCard icon={Target} label={t("completion")} value={`${stats.completionRate}%`} />
-            <StatCard icon={TrendingUp} label={t("totalSets")} value={String(stats.totalSets)} />
+            <StatCard icon={Target} label={t("completion")} value={`${stats.completionRate}%`} sublabel={`avg ${stats.avgCompletion}%`} />
+            <StatCard icon={TrendingUp} label={t("totalSets")} value={String(stats.totalSets)} sublabel={`~${stats.avgVolume}/wk`} />
             <StatCard icon={Calendar} label={t("daysTrained")} value={String(stats.uniqueDays)} />
             <StatCard icon={Zap} label={t("streak")} value={`${stats.streak}d`} />
           </div>
@@ -220,18 +287,29 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
           {/* Weekly volume chart */}
           <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
             <h3 className="text-sm font-bold text-foreground mb-4">{t("weeklyTrainingVolume")}</h3>
-            <div className="h-48 sm:h-56">
+            <div className="h-52 sm:h-64">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={stats.weeklyData}>
+                <BarChart data={stats.weeklyData} barGap={2}>
+                  <defs>
+                    <linearGradient id="volGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={CHART_COLORS.volume} stopOpacity={0.9} />
+                      <stop offset="100%" stopColor={CHART_COLORS.volume} stopOpacity={0.4} />
+                    </linearGradient>
+                    <linearGradient id="exGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={CHART_COLORS.exercises} stopOpacity={0.9} />
+                      <stop offset="100%" stopColor={CHART_COLORS.exercises} stopOpacity={0.4} />
+                    </linearGradient>
+                  </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(220, 15%, 18%)" />
                   <XAxis dataKey="week" tick={{ fontSize: 11, fill: "hsl(215, 15%, 55%)" }} />
                   <YAxis tick={{ fontSize: 11, fill: "hsl(215, 15%, 55%)" }} />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: "hsl(220, 18%, 10%)", border: "1px solid hsl(220, 15%, 18%)", borderRadius: 8, fontSize: 12 }}
-                    labelStyle={{ color: "hsl(210, 20%, 95%)" }}
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend
+                    wrapperStyle={{ fontSize: 11, paddingTop: 8 }}
+                    formatter={(value: string) => <span className="text-muted-foreground text-xs">{value}</span>}
                   />
-                  <Bar dataKey="volume" name={t("totalSets")} fill="hsl(190, 95%, 50%)" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="exercises" name={t("completion")} fill="hsl(35, 100%, 55%)" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="volume" name={t("totalSets")} fill="url(#volGrad)" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="exercises" name={t("completion")} fill="url(#exGrad)" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -240,24 +318,29 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
           {/* Completion rate over time */}
           <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
             <h3 className="text-sm font-bold text-foreground mb-4">{t("weeklyCompletionRate")}</h3>
-            <div className="h-48 sm:h-56">
+            <div className="h-52 sm:h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={stats.weeklyData}>
+                  <defs>
+                    <linearGradient id="compGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor={CHART_COLORS.completion} stopOpacity={0.25} />
+                      <stop offset="95%" stopColor={CHART_COLORS.completion} stopOpacity={0.02} />
+                    </linearGradient>
+                  </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(220, 15%, 18%)" />
                   <XAxis dataKey="week" tick={{ fontSize: 11, fill: "hsl(215, 15%, 55%)" }} />
                   <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: "hsl(215, 15%, 55%)" }} unit="%" />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: "hsl(220, 18%, 10%)", border: "1px solid hsl(220, 15%, 18%)", borderRadius: 8, fontSize: 12 }}
-                    labelStyle={{ color: "hsl(210, 20%, 95%)" }}
-                    formatter={(value: number) => [`${value}%`, t("completion")]}
-                  />
+                  <Tooltip content={<CustomTooltip />} />
                   <Area
                     type="monotone"
                     dataKey="completionRate"
-                    stroke="hsl(160, 80%, 45%)"
-                    fill="hsl(160, 80%, 45%)"
-                    fillOpacity={0.15}
-                    strokeWidth={2}
+                    name={t("completion")}
+                    stroke={CHART_COLORS.completion}
+                    fill="url(#compGrad)"
+                    strokeWidth={2.5}
+                    dot={{ r: 4, fill: CHART_COLORS.completion, strokeWidth: 2, stroke: "hsl(220, 18%, 10%)" }}
+                    activeDot={{ r: 6, fill: CHART_COLORS.completion, stroke: "hsl(220, 18%, 10%)", strokeWidth: 2 }}
+                    unit="%"
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -269,9 +352,9 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
             <h3 className="text-sm font-bold text-foreground mb-4">{t("last28DaysConsistency")}</h3>
             <div className="grid grid-cols-7 gap-1.5">
               {stats.consistencyData.map((d, i) => (
-                <div key={i} className="flex flex-col items-center gap-1">
+                <div key={i} className="flex flex-col items-center gap-1 group/cell" title={`${d.date}: ${d.logged} exercises`}>
                   <div
-                    className="w-full aspect-square rounded-md border border-border transition-colors"
+                    className="w-full aspect-square rounded-md border border-border transition-all group-hover/cell:scale-110 group-hover/cell:ring-1 group-hover/cell:ring-primary/30"
                     style={{
                       backgroundColor: d.logged > 0
                         ? `hsl(190, 95%, ${Math.min(30 + d.logged * 15, 55)}%)`
@@ -301,17 +384,18 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
           {stats.dayCompletionData.length > 0 && (
             <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
               <h3 className="text-sm font-bold text-foreground mb-4">{t("completionByDay")}</h3>
-              <div className="h-48 sm:h-56">
+              <div className="h-52 sm:h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={stats.dayCompletionData} layout="vertical">
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(220, 15%, 18%)" />
                     <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 11, fill: "hsl(215, 15%, 55%)" }} unit="%" />
                     <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: "hsl(215, 15%, 55%)" }} width={40} />
-                    <Tooltip
-                      contentStyle={{ backgroundColor: "hsl(220, 18%, 10%)", border: "1px solid hsl(220, 15%, 18%)", borderRadius: 8, fontSize: 12 }}
-                      formatter={(value: number) => [`${value}%`, t("completion")]}
-                    />
-                    <Bar dataKey="rate" fill="hsl(190, 95%, 50%)" radius={[0, 4, 4, 0]} />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Bar dataKey="rate" name={t("completion")} radius={[0, 6, 6, 0]} unit="%">
+                      {stats.dayCompletionData.map((_: any, i: number) => (
+                        <Cell key={i} fill={`hsl(190, 95%, ${45 + i * 4}%)`} />
+                      ))}
+                    </Bar>
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -334,23 +418,44 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
               <StatCard icon={TrendingUp} label={t("topStrength")} value={categoryLabel(mentalStats.best[0])} />
               <StatCard icon={Zap} label={t("needsWork")} value={categoryLabel(mentalStats.worst[0])} />
             </div>
-            {/* Category breakdown bar */}
+            {/* Category breakdown bars */}
             <div className="space-y-2 mt-3">
-              {Object.entries(mentalStats.latest.scores as Record<string, number>).map(([cat, score]) => (
-                <div key={cat} className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground w-24 truncate">{categoryLabel(cat)}</span>
-                  <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all"
-                      style={{
-                        width: `${(score / 5) * 100}%`,
-                        backgroundColor: score >= 4 ? "hsl(160, 80%, 45%)" : score >= 3 ? "hsl(35, 100%, 55%)" : "hsl(0, 70%, 55%)",
-                      }}
-                    />
+              {Object.entries(mentalStats.latest.scores as Record<string, number>).map(([cat, score]) => {
+                const prevScore = mentalStats.previous?.scores?.[cat];
+                const diff = prevScore !== undefined ? score - prevScore : null;
+                return (
+                  <div key={cat} className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground w-24 truncate">{categoryLabel(cat)}</span>
+                    <div className="flex-1 h-2.5 rounded-full bg-muted overflow-hidden relative">
+                      {/* Previous score indicator */}
+                      {prevScore !== undefined && (
+                        <div
+                          className="absolute top-0 h-full w-0.5 bg-foreground/30 z-10"
+                          style={{ left: `${(prevScore / 5) * 100}%` }}
+                          title={`Previous: ${prevScore}/5`}
+                        />
+                      )}
+                      <div
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{
+                          width: `${(score / 5) * 100}%`,
+                          background: score >= 4
+                            ? "linear-gradient(90deg, hsl(160, 80%, 45%), hsl(160, 80%, 55%))"
+                            : score >= 3
+                            ? "linear-gradient(90deg, hsl(35, 100%, 50%), hsl(35, 100%, 60%))"
+                            : "linear-gradient(90deg, hsl(0, 70%, 50%), hsl(0, 70%, 60%))",
+                        }}
+                      />
+                    </div>
+                    <span className="text-xs font-semibold text-foreground w-8 text-right">{score}/5</span>
+                    {diff !== null && diff !== 0 && (
+                      <span className={`text-[10px] font-bold w-6 ${diff > 0 ? "text-green-500" : "text-red-500"}`}>
+                        {diff > 0 ? "+" : ""}{diff}
+                      </span>
+                    )}
                   </div>
-                  <span className="text-xs font-semibold text-foreground w-6 text-right">{score}/5</span>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         ) : (
