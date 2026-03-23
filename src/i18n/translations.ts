@@ -1615,6 +1615,7 @@ const translations = {
     ptLatest: "Senaste",
     ptPrevious: "Föregående",
     ptTrend: "Trend",
+    ptRangeAll: "Alla",
     testing: "Test",
     hubTestingTitle: "Fysisk Testning",
     hubTestingDesc: "Logga och följ snabbhets-, uthållighets-, styrka- och agility-tester. Jämför resultat över tid.",
