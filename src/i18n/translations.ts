@@ -255,7 +255,7 @@ const translations = {
     pricingContactUs: "Contact Us",
     pricingPaymentTitle: "How to Pay",
     pricingPaymentDesc: "Send your payment via PayPal to our account. Include your email in the message. Once we confirm your payment, your account will be approved within 24 hours.",
-    pricingDialogDesc: "Choose how you'd like to get started with TKD Power.",
+    pricingDialogDesc: "Choose how you'd like to get started with Sportstalent.",
     pricingFeatureAiPlans: "Periodized training plans",
     pricingFeatureProgress: "Progress tracking & analytics",
     pricingFeatureMental: "Mental performance assessment",
