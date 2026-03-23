@@ -530,6 +530,10 @@ const translations = {
     testing: "Testing",
     hubTestingTitle: "Physical Testing",
     hubTestingDesc: "Log and track speed, endurance, strength, and agility tests. Compare results over time.",
+    libTestingLabel: "Physical Tests",
+    libTestingDesc: "Browse standard tests for speed, endurance, strength, and agility with protocols and instructions.",
+    ptFilterAll: "All Tests",
+    ptProtocol: "Protocol",
   },
   da: {
     // Common
