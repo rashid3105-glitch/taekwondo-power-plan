@@ -1064,6 +1064,10 @@ const translations = {
     testing: "Test",
     hubTestingTitle: "Fysisk Testning",
     hubTestingDesc: "Log og følg hurtigheds-, udholdenhed-, styrke- og agility-tests. Sammenlign resultater over tid.",
+    libTestingLabel: "Fysiske Tests",
+    libTestingDesc: "Gennemse standardtests for hurtighed, udholdenhed, styrke og agility med protokoller og vejledninger.",
+    ptFilterAll: "Alle Tests",
+    ptProtocol: "Protokol",
   },
   sv: {
     // Common
