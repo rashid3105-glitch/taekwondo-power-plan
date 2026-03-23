@@ -304,6 +304,7 @@ const translations = {
     changelogEntry5: "Enhanced charts with gradient fills, date range filters, and detailed tooltips",
     changelogEntry6: "Mental radar chart with previous assessment comparison overlay",
     changelogEntry7: "Progress dashboard with time range filtering and average stats",
+    changelogEntry8: "Physical Testing feature card added to landing page with detail page",
 
     // Payment & Demo
     paid: "Paid",
