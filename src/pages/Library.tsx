@@ -28,6 +28,7 @@ const COLORS: Record<string, string> = {
   exercise: "text-primary",
   mental: "text-tab-mental",
   nutrition: "text-tab-nutrition",
+  testing: "text-primary",
 };
 
 export default function Library() {
