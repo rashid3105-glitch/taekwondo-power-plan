@@ -383,6 +383,9 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
           <p className="text-sm text-muted-foreground">{t("noPlanData")}</p>
         )}
       </div>
+
+      {/* Physical Test Progress */}
+      <PhysicalTestProgress />
     </div>
   );
 }
