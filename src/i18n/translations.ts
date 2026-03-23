@@ -16,8 +16,8 @@ const translations = {
     error: "Error",
 
     // Index
-    heroTitle: "TKD",
-    heroHighlight: "POWER",
+    heroTitle: "SPORTS",
+    heroHighlight: "TALENT",
     heroDescription: "Strength & conditioning built on taekwondo sport science. Periodized programs designed for explosive power, speed, and resilience — without getting slow.",
     personalized: "Personalized",
     aiGenerated: "Sport Science",
