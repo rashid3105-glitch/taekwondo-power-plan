@@ -1,0 +1,1 @@
+DROP POLICY "Coaches can view athlete diary entries" ON public.diary_entries;
