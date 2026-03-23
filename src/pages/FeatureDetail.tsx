@@ -14,8 +14,9 @@ import mentalImg from "@/assets/features/mental.jpg";
 import rehabImg from "@/assets/features/rehab.jpg";
 import nutritionImg from "@/assets/features/nutrition.jpg";
 import libraryImg from "@/assets/features/library.jpg";
+import testingImg from "@/assets/features/testing.jpg";
 
-type FeatureKey = "plan" | "progress" | "mental" | "rehab" | "nutrition" | "library";
+type FeatureKey = "plan" | "progress" | "mental" | "rehab" | "nutrition" | "library" | "testing";
 
 interface FeatureData {
   titleKey: string;
