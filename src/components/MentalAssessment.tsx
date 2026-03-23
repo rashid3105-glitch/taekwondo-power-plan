@@ -762,6 +762,7 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
           <MentalRadarChart
             scores={scores}
             labels={Object.fromEntries(Object.entries(categoryLabels).map(([k, v]) => [k, v[l]]))}
+            previousScores={history.length > 0 ? (history[0].scores as Record<string, number>) : undefined}
           />
         </div>
 
