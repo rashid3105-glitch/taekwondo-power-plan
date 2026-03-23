@@ -79,6 +79,9 @@ export default function Help() {
               <li>{t("changelogEntry2" as any)}</li>
               <li>{t("changelogEntry3" as any)}</li>
               <li>{t("changelogEntry4" as any)}</li>
+              <li>{t("changelogEntry5" as any)}</li>
+              <li>{t("changelogEntry6" as any)}</li>
+              <li>{t("changelogEntry7" as any)}</li>
             </ul>
           </div>
         </div>
