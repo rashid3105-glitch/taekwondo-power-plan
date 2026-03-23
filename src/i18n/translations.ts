@@ -16,8 +16,8 @@ const translations = {
     error: "Error",
 
     // Index
-    heroTitle: "TKD",
-    heroHighlight: "POWER",
+    heroTitle: "SPORTS",
+    heroHighlight: "TALENT",
     heroDescription: "Strength & conditioning built on taekwondo sport science. Periodized programs designed for explosive power, speed, and resilience — without getting slow.",
     personalized: "Personalized",
     aiGenerated: "Sport Science",
@@ -563,8 +563,8 @@ const translations = {
     error: "Fejl",
 
     // Index
-    heroTitle: "TKD",
-    heroHighlight: "POWER",
+    heroTitle: "SPORTS",
+    heroHighlight: "TALENT",
     heroDescription: "Styrke- og konditionstræning bygget på taekwondo-sportsvidenskab. Periodiserede programmer designet til eksplosiv kraft, hastighed og modstandsdygtighed — uden at blive langsom.",
     personalized: "Personlig",
     aiGenerated: "Sportsvidenskab",
@@ -1110,8 +1110,8 @@ const translations = {
     error: "Fel",
 
     // Index
-    heroTitle: "TKD",
-    heroHighlight: "POWER",
+    heroTitle: "SPORTS",
+    heroHighlight: "TALENT",
     heroDescription: "Styrke- och konditionsträning byggd på taekwondo-idrottsvetenskap. Periodiserade program designade för explosiv kraft, snabbhet och motståndskraft — utan att bli långsam.",
     personalized: "Personlig",
     aiGenerated: "Idrottsvetenskap",
