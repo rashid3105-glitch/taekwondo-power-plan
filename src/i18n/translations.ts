@@ -1398,6 +1398,7 @@ const translations = {
     changelogEntry5: "Förbättrade diagram med gradientfyllning, datumfilter och detaljerade tooltips",
     changelogEntry6: "Mentalt radardiagram med jämförelse av tidigare bedömning",
     changelogEntry7: "Framsteg-dashboard med tidsfiltrering och genomsnittsstatistik",
+    changelogEntry8: "Fysisk testning-funktionskort tillagt på startsidan med detaljsida",
 
     // Payment & Demo
     paid: "Betald",
