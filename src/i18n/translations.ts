@@ -1074,6 +1074,7 @@ const translations = {
     ptLatest: "Seneste",
     ptPrevious: "Forrige",
     ptTrend: "Tendens",
+    ptRangeAll: "Alle",
     testing: "Test",
     hubTestingTitle: "Fysisk Testning",
     hubTestingDesc: "Log og følg hurtigheds-, udholdenhed-, styrke- og agility-tests. Sammenlign resultater over tid.",
