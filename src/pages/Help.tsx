@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowLeft, UserCircle, ClipboardList, HeartPulse, Brain, Users, BarChart3, Clock } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ArrowLeft, UserCircle, ClipboardList, HeartPulse, Brain, Users, BarChart3, Clock, ChevronDown } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Watermark } from "@/components/Watermark";
@@ -67,25 +68,28 @@ export default function Help() {
         </Accordion>
 
         {/* Changelog */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-2">
+        <Collapsible>
+          <CollapsibleTrigger className="flex items-center gap-2 w-full group cursor-pointer">
             <Clock className="h-5 w-5 text-primary" />
             <h2 className="text-xl font-extrabold text-foreground">{t("changelogTitle" as any)}</h2>
-          </div>
-          <div className="rounded-lg border border-border bg-card px-5 py-4 space-y-3">
-            <h3 className="text-sm font-bold text-foreground">{t("changelog_2026_03_23" as any)}</h3>
-            <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-5">
-              <li>{t("changelogEntry1" as any)}</li>
-              <li>{t("changelogEntry2" as any)}</li>
-              <li>{t("changelogEntry3" as any)}</li>
-              <li>{t("changelogEntry4" as any)}</li>
-              <li>{t("changelogEntry5" as any)}</li>
-              <li>{t("changelogEntry6" as any)}</li>
-              <li>{t("changelogEntry7" as any)}</li>
-              <li>{t("changelogEntry8" as any)}</li>
-            </ul>
-          </div>
-        </div>
+            <ChevronDown className="h-4 w-4 text-muted-foreground ml-auto transition-transform duration-200 group-data-[state=open]:rotate-180" />
+          </CollapsibleTrigger>
+          <CollapsibleContent className="mt-4">
+            <div className="rounded-lg border border-border bg-card px-5 py-4 space-y-3">
+              <h3 className="text-sm font-bold text-foreground">{t("changelog_2026_03_23" as any)}</h3>
+              <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-5">
+                <li>{t("changelogEntry1" as any)}</li>
+                <li>{t("changelogEntry2" as any)}</li>
+                <li>{t("changelogEntry3" as any)}</li>
+                <li>{t("changelogEntry4" as any)}</li>
+                <li>{t("changelogEntry5" as any)}</li>
+                <li>{t("changelogEntry6" as any)}</li>
+                <li>{t("changelogEntry7" as any)}</li>
+                <li>{t("changelogEntry8" as any)}</li>
+              </ul>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
       </div>
     </div>
   );
