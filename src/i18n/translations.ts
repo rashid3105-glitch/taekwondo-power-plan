@@ -563,8 +563,8 @@ const translations = {
     error: "Fejl",
 
     // Index
-    heroTitle: "TKD",
-    heroHighlight: "POWER",
+    heroTitle: "SPORTS",
+    heroHighlight: "TALENT",
     heroDescription: "Styrke- og konditionstræning bygget på taekwondo-sportsvidenskab. Periodiserede programmer designet til eksplosiv kraft, hastighed og modstandsdygtighed — uden at blive langsom.",
     personalized: "Personlig",
     aiGenerated: "Sportsvidenskab",
