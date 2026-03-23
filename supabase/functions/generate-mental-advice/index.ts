@@ -29,6 +29,22 @@ serve(async (req) => {
       return new Response(JSON.stringify({ error: "Request too large" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
     const { answers, scores, totalScore, profile, language } = JSON.parse(body);
+
+    // Validate answers structure and length
+    if (answers != null) {
+      if (typeof answers !== "object" || Array.isArray(answers)) {
+        return new Response(JSON.stringify({ error: "Invalid answers format" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+      if (Object.keys(answers).length > 30) {
+        return new Response(JSON.stringify({ error: "Too many answers (max 30)" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+      for (const val of Object.values(answers)) {
+        if (typeof val === "string" && val.length > 200) {
+          return new Response(JSON.stringify({ error: "Answer too long (max 200 characters)" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        }
+      }
+    }
+
     const lang = language === "da" ? "Danish" : "English";
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
