@@ -299,6 +299,9 @@ export default function Dashboard() {
             <Button variant="ghost" size="sm" onClick={() => handleTabChange("mental")} disabled={isDemoLockedTab("mental")} className={activeTab === "mental" ? "text-tab-mental" : ""}>
               <Brain className="h-4 w-4 mr-1" /> {t("mental")}
             </Button>
+            <Button variant="ghost" size="sm" onClick={() => handleTabChange("testing")} disabled={isDemoLockedTab("testing")} className={activeTab === "testing" ? "text-primary" : ""}>
+              <ClipboardList className="h-4 w-4 mr-1" /> {t("testing")}
+            </Button>
             <Button variant="ghost" size="sm" onClick={() => navigate("/library")} disabled={isDemo}>
               <BookOpen className="h-4 w-4 mr-1" /> {t("library")}
             </Button>
