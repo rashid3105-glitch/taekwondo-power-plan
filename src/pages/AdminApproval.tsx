@@ -308,7 +308,7 @@ export default function AdminApproval() {
   const pending = users.filter(u => !u.is_approved);
   const approved = users.filter(u => u.is_approved);
 
-  const UserCard = ({ u, actions }: { u: PendingUser; actions: React.ReactNode }) => (
+  const UserCard = ({ u, actions, showRevoke }: { u: PendingUser; actions: React.ReactNode; showRevoke?: boolean }) => (
     <Collapsible>
       <div className="rounded-lg border border-border bg-card p-4 space-y-2">
         <div className="flex items-center justify-between">
@@ -316,7 +316,7 @@ export default function AdminApproval() {
             <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 transition-transform duration-200 group-data-[state=open]:rotate-180" />
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <p className="font-medium text-sm text-foreground">{u.display_name || t("noName")}</p>
+                <p className={`font-medium text-sm ${u.is_approved ? 'text-foreground' : 'text-yellow-400'}`}>{u.display_name || t("noName")}</p>
                 {u.payment_status === "paid" && (
                   <Badge variant="default" className="text-[10px] h-5">
                     <CreditCard className="h-2.5 w-2.5 mr-0.5" /> {t("paid" as any)}
@@ -538,6 +538,16 @@ export default function AdminApproval() {
                 {t("resetPassword" as any) || "Reset Password"}
               </Button>
             )}
+            {showRevoke && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 text-xs text-destructive"
+                onClick={() => revokeUser(u.user_id)}
+              >
+                <XCircle className="h-3 w-3 mr-1" /> {t("revoke")}
+              </Button>
+            )}
             <Button
               variant="ghost"
               size="sm"
@@ -602,11 +612,7 @@ export default function AdminApproval() {
             </h2>
             <div className="space-y-3">
               {approved.map(u => (
-                <UserCard key={u.user_id} u={u} actions={
-                  <Button variant="ghost" size="sm" className="text-destructive" onClick={() => revokeUser(u.user_id)}>
-                    <XCircle className="h-4 w-4 mr-1" /> {t("revoke")}
-                  </Button>
-                } />
+                <UserCard key={u.user_id} u={u} showRevoke actions={null} />
               ))}
             </div>
           </div>
