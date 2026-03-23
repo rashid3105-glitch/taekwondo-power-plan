@@ -255,8 +255,8 @@ export default function Dashboard() {
           {/* Logo row */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 sm:gap-3">
-              <img src={logo} alt="TKD Power" className="h-9 w-9 rounded-lg object-contain" />
-              <span className="text-sm sm:text-base font-extrabold text-foreground">TKD POWER</span>
+              <img src={logo} alt="Sportstalent" className="h-9 w-9 rounded-lg object-contain" />
+              <span className="text-sm sm:text-base font-extrabold text-foreground">SPORTSTALENT</span>
             </div>
             <div className="flex items-center gap-2">
               <LanguageSwitcher />

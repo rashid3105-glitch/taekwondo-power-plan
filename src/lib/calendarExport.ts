@@ -25,7 +25,7 @@ export function generateICSFile(events: CalendarEvent[], filename: string): void
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//TKD Power//Training Plan//EN",
+    "PRODID:-//Sportstalent//Training Plan//EN",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
   ];

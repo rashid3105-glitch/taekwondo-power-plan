@@ -54,7 +54,7 @@ export default function AuthPage() {
     <div className="min-h-screen bg-background flex items-center justify-center px-4 relative">
       <PageMeta
         title={isLogin ? "Sign In" : "Create Account"}
-        description="Sign in or create your TKD Power account to access AI-powered training plans."
+        description="Sign in or create your Sportstalent account to access periodized training plans."
       />
 
       {/* Subtle background glow */}
@@ -70,8 +70,8 @@ export default function AuthPage() {
         </div>
 
         <div className="text-center">
-          <img src={logo} alt="TKD Power" className="h-12 w-12 rounded-xl object-contain mx-auto mb-3 shadow-lg" />
-          <h1 className="text-xl font-black tracking-tight text-foreground">TKD POWER</h1>
+          <img src={logo} alt="Sportstalent" className="h-12 w-12 rounded-xl object-contain mx-auto mb-3 shadow-lg" />
+          <h1 className="text-xl font-black tracking-tight text-foreground">SPORTSTALENT</h1>
           <p className="text-xs text-muted-foreground mt-1">
             {isLogin ? t("signInToAccount") : t("createAthleteAccount")}
           </p>

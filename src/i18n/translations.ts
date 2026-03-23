@@ -255,7 +255,7 @@ const translations = {
     pricingContactUs: "Contact Us",
     pricingPaymentTitle: "How to Pay",
     pricingPaymentDesc: "Send your payment via PayPal to our account. Include your email in the message. Once we confirm your payment, your account will be approved within 24 hours.",
-    pricingDialogDesc: "Choose how you'd like to get started with TKD Power.",
+    pricingDialogDesc: "Choose how you'd like to get started with Sportstalent.",
     pricingFeatureAiPlans: "Periodized training plans",
     pricingFeatureProgress: "Progress tracking & analytics",
     pricingFeatureMental: "Mental performance assessment",
@@ -278,7 +278,7 @@ const translations = {
     adminPayments: "Payments",
 
     // Help
-    helpTitle: "How to Use TKD POWER",
+    helpTitle: "How to Use SPORTSTALENT",
     helpSubtitle: "Step-by-step guides to get the most out of the app",
     helpProfileTitle: "Create Your Profile",
     helpProfileSteps: "1. Sign up with your email and password\n2. You'll be taken to the Profile Setup page\n3. Fill in your age, weight, belt level, and years of experience\n4. Choose your discipline (Sparring or Poomsae)\n5. Set your weekly schedule by tapping each day to cycle between TKD, Gym, and Rest\n6. Select your training goals\n7. Optionally add a profile photo\n8. Click \"Save Profile & Continue\"",
@@ -711,7 +711,7 @@ const translations = {
     pricingContactUs: "Kontakt os",
     pricingPaymentTitle: "Sådan betaler du",
     pricingPaymentDesc: "Send din betaling via MobilePay til vores konto. Inkluder din e-mail i beskeden. Når vi bekræfter din betaling, godkendes din konto inden for 24 timer.",
-    pricingDialogDesc: "Vælg hvordan du vil komme i gang med TKD Power.",
+    pricingDialogDesc: "Vælg hvordan du vil komme i gang med Sportstalent.",
     pricingFeatureAiPlans: "Periodiserede træningsplaner",
     pricingFeatureProgress: "Fremgangsovervågning og analyse",
     pricingFeatureMental: "Mental præstationsvurdering",
@@ -734,7 +734,7 @@ const translations = {
     adminPayments: "Betalinger",
 
     // Help
-    helpTitle: "Sådan bruger du TKD POWER",
+    helpTitle: "Sådan bruger du SPORTSTALENT",
     helpSubtitle: "Trin-for-trin guides til at få mest ud af appen",
     helpProfileTitle: "Opret din profil",
     helpProfileSteps: "1. Tilmeld dig med din e-mail og adgangskode\n2. Du sendes til profilopsætningssiden\n3. Udfyld alder, vægt, bælteniveau og års erfaring\n4. Vælg din disciplin (Sparring eller Poomsae)\n5. Indstil din ugeplan ved at trykke på hver dag for at skifte mellem TKD, Gym og Hvile\n6. Vælg dine træningsmål\n7. Tilføj eventuelt et profilbillede\n8. Klik på \"Gem profil & fortsæt\"",
@@ -1167,7 +1167,7 @@ const translations = {
     pricingContactUs: "Kontakta oss",
     pricingPaymentTitle: "Hur man betalar",
     pricingPaymentDesc: "Skicka din betalning via PayPal till vårt konto. Inkludera din e-post i meddelandet. När vi bekräftar din betalning godkänns ditt konto inom 24 timmar.",
-    pricingDialogDesc: "Välj hur du vill komma igång med TKD Power.",
+    pricingDialogDesc: "Välj hur du vill komma igång med Sportstalent.",
     pricingFeatureAiPlans: "Periodiserade träningsplaner",
     pricingFeatureProgress: "Framstegsövervakning och analys",
     pricingFeatureMental: "Mental prestationsbedömning",
@@ -1190,7 +1190,7 @@ const translations = {
     adminPayments: "Betalningar",
 
     // Help
-    helpTitle: "Hur man använder TKD POWER",
+    helpTitle: "Hur man använder SPORTSTALENT",
     helpSubtitle: "Steg-för-steg-guider för att få ut det mesta av appen",
     helpProfileTitle: "Skapa din profil",
     helpProfileSteps: "1. Registrera dig med din e-post och lösenord\n2. Du skickas till profilinställningssidan\n3. Fyll i ålder, vikt, bältnivå och års erfarenhet\n4. Välj din disciplin (Sparring eller Poomsae)\n5. Ställ in ditt veckoschema genom att trycka på varje dag för att växla mellan TKD, Gym och Vila\n6. Välj dina träningsmål\n7. Lägg eventuellt till ett profilfoto\n8. Klicka på \"Spara profil & fortsätt\"",

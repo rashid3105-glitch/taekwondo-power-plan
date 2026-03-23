@@ -7,7 +7,7 @@ interface PageMetaProps {
 
 export const PageMeta = ({ title, description }: PageMetaProps) => {
   useEffect(() => {
-    const suffix = "TKD Power";
+    const suffix = "Sportstalent";
     document.title = title === suffix ? title : `${title} | ${suffix}`;
 
     if (description) {

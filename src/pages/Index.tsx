@@ -120,7 +120,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col relative">
       <PageMeta
-        title="TKD Power — Sport Science Training for Taekwondo Athletes"
+        title="Sportstalent — Sport Science Training for Taekwondo Athletes"
         description="Strength & conditioning built on taekwondo sport science. Periodized programs for explosive power, speed, and resilience."
       />
       <Watermark />
@@ -128,8 +128,8 @@ const Index = () => {
       {/* Header */}
       <header className="sticky top-0 z-40 flex items-center justify-between px-5 py-3 border-b border-border/40 bg-background/80 backdrop-blur-xl">
         <div className="flex items-center gap-2.5">
-          <img src={logo} alt="TKD Power" className="h-8 w-8 rounded-lg object-contain" />
-          <span className="text-sm font-extrabold tracking-tight text-foreground">TKD POWER</span>
+          <img src={logo} alt="Sportstalent" className="h-8 w-8 rounded-lg object-contain" />
+          <span className="text-sm font-extrabold tracking-tight text-foreground">SPORTSTALENT</span>
         </div>
         <nav className="flex items-center gap-2">
           <LanguageSwitcher />
