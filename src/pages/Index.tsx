@@ -120,7 +120,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col relative">
       <PageMeta
-        title="TKD Power — Sport Science Training for Taekwondo Athletes"
+        title="Sportstalent — Sport Science Training for Taekwondo Athletes"
         description="Strength & conditioning built on taekwondo sport science. Periodized programs for explosive power, speed, and resilience."
       />
       <Watermark />
