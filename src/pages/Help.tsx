@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowLeft, UserCircle, ClipboardList, HeartPulse, Brain, Users, BarChart3, Clock } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ArrowLeft, UserCircle, ClipboardList, HeartPulse, Brain, Users, BarChart3, Clock, ChevronDown } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Watermark } from "@/components/Watermark";
