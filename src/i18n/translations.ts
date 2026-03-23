@@ -1110,8 +1110,8 @@ const translations = {
     error: "Fel",
 
     // Index
-    heroTitle: "TKD",
-    heroHighlight: "POWER",
+    heroTitle: "SPORTS",
+    heroHighlight: "TALENT",
     heroDescription: "Styrke- och konditionsträning byggd på taekwondo-idrottsvetenskap. Periodiserade program designade för explosiv kraft, snabbhet och motståndskraft — utan att bli långsam.",
     personalized: "Personlig",
     aiGenerated: "Idrottsvetenskap",
