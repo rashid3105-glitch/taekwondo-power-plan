@@ -137,7 +137,7 @@ const Index = () => {
       <header className="sticky top-0 z-40 flex items-center justify-between px-5 py-3 border-b border-border/40 bg-background/80 backdrop-blur-xl">
         <div className="flex items-center gap-2.5">
           <img src={logo} alt="Sportstalent" className="h-8 w-8 rounded-lg object-contain" />
-          <span className="text-sm font-extrabold tracking-tight text-foreground">SPORTSTALENT</span>
+          <span className="text-sm font-extrabold tracking-tight text-foreground">SPORTS TALENT</span>
         </div>
         <nav className="flex items-center gap-2">
           <LanguageSwitcher />
