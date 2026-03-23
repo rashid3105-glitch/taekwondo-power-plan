@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { AppFooter } from "@/components/AppFooter";
 import { Watermark } from "@/components/Watermark";
-import { Dumbbell, Brain, UtensilsCrossed, ArrowLeft, BookOpen } from "lucide-react";
+import { Dumbbell, Brain, UtensilsCrossed, ClipboardList, ArrowLeft, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { TranslationKey } from "@/i18n/translations";
