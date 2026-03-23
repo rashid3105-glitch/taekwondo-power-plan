@@ -843,6 +843,9 @@ const translations = {
     changelogEntry2: "Trend-linjediagrammer i Fremgang-dashboardet",
     changelogEntry3: "Fysisk testbibliotek med 13 standardiserede tests og YouTube-links",
     changelogEntry4: "Hjælp-kort tilføjet til dashboard-hub",
+    changelogEntry5: "Forbedrede diagrammer med gradientfyld, datofiltre og detaljerede tooltips",
+    changelogEntry6: "Mentalt radardiagram med sammenligning af tidligere vurdering",
+    changelogEntry7: "Fremgangs-dashboard med tidsfiltrering og gennemsnitsstatistikker",
 
     // Payment & Demo
     paid: "Betalt",
