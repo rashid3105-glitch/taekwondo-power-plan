@@ -308,7 +308,7 @@ export default function AdminApproval() {
   const pending = users.filter(u => !u.is_approved);
   const approved = users.filter(u => u.is_approved);
 
-  const UserCard = ({ u, actions }: { u: PendingUser; actions: React.ReactNode }) => (
+  const UserCard = ({ u, actions, showRevoke }: { u: PendingUser; actions: React.ReactNode; showRevoke?: boolean }) => (
     <Collapsible>
       <div className="rounded-lg border border-border bg-card p-4 space-y-2">
         <div className="flex items-center justify-between">
