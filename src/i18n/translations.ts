@@ -578,6 +578,8 @@ const translations = {
     sectionMentalDesc: "Vurder din mentale styrke, fokus og konkurrenceangst med sportspsykologiske rammer. Modtag personlig rådgivning for at skærpe din konkurrenceevne.",
     sectionRehabTitle: "Skade-genoptræning",
     sectionRehabDesc: "Kommer du dig efter en skade? Få faseopdelte genoptræningsprogrammer med smertevejledning og sikkerhedsprotokoller — designet til TKD-bevægelsesmønstre.",
+    sectionTestingTitle: "Fysisk testning",
+    sectionTestingDesc: "Ved hvad du skal teste, hvordan du tester, og hvorfor det er vigtigt. 13 standardiserede protokoller inden for hastighed, styrke, udholdenhed og smidighed — med videodemoer og trendsporing.",
     sectionLibraryTitle: "Øvelsesbibliotek",
     sectionLibraryDesc: "En kurateret samling af TKD-specifikke øvelser med alternativer, tempoguider og muskelgruppefokus — bygget til kampsportsatleter.",
     sectionNutritionTitle: "Ernæring",
