@@ -1167,7 +1167,7 @@ const translations = {
     pricingContactUs: "Kontakta oss",
     pricingPaymentTitle: "Hur man betalar",
     pricingPaymentDesc: "Skicka din betalning via PayPal till vårt konto. Inkludera din e-post i meddelandet. När vi bekräftar din betalning godkänns ditt konto inom 24 timmar.",
-    pricingDialogDesc: "Välj hur du vill komma igång med TKD Power.",
+    pricingDialogDesc: "Välj hur du vill komma igång med Sportstalent.",
     pricingFeatureAiPlans: "Periodiserade träningsplaner",
     pricingFeatureProgress: "Framstegsövervakning och analys",
     pricingFeatureMental: "Mental prestationsbedömning",
