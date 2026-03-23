@@ -1598,6 +1598,10 @@ const translations = {
     testing: "Test",
     hubTestingTitle: "Fysisk Testning",
     hubTestingDesc: "Logga och följ snabbhets-, uthållighets-, styrka- och agility-tester. Jämför resultat över tid.",
+    libTestingLabel: "Fysiska Tester",
+    libTestingDesc: "Bläddra bland standardtester för snabbhet, uthållighet, styrka och agility med protokoll och instruktioner.",
+    ptFilterAll: "Alla Tester",
+    ptProtocol: "Protokoll",
   },
 } as const;
 
