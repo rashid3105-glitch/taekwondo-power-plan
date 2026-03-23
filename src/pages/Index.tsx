@@ -168,11 +168,14 @@ const Index = () => {
               {t("heroDescription")}
             </p>
 
-            <div className="mt-7 flex justify-center gap-3">
+            <div className="mt-7 flex flex-col sm:flex-row justify-center gap-3">
               <Button onClick={() => navigate("/auth")} size="lg" className="px-7 font-bold text-sm shadow-glow">
                 {t("getStarted")} <ArrowRight className="h-4 w-4 ml-1.5" />
               </Button>
-              <Button onClick={() => navigate("/pricing")} size="lg" variant="outline" className="px-7 font-semibold text-sm border-border/60">
+              <Button onClick={() => navigate("/methodology")} size="lg" variant="outline" className="px-7 font-semibold text-sm border-border/60">
+                {t("methCta" as any)}
+              </Button>
+              <Button onClick={() => navigate("/pricing")} size="lg" variant="ghost" className="px-7 font-semibold text-sm text-muted-foreground">
                 {t("viewPricing" as any)}
               </Button>
             </div>
