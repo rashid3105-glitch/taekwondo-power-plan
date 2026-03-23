@@ -1190,7 +1190,7 @@ const translations = {
     adminPayments: "Betalningar",
 
     // Help
-    helpTitle: "Hur man använder TKD POWER",
+    helpTitle: "Hur man använder SPORTSTALENT",
     helpSubtitle: "Steg-för-steg-guider för att få ut det mesta av appen",
     helpProfileTitle: "Skapa din profil",
     helpProfileSteps: "1. Registrera dig med din e-post och lösenord\n2. Du skickas till profilinställningssidan\n3. Fyll i ålder, vikt, bältnivå och års erfarenhet\n4. Välj din disciplin (Sparring eller Poomsae)\n5. Ställ in ditt veckoschema genom att trycka på varje dag för att växla mellan TKD, Gym och Vila\n6. Välj dina träningsmål\n7. Lägg eventuellt till ett profilfoto\n8. Klicka på \"Spara profil & fortsätt\"",
