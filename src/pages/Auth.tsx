@@ -54,7 +54,7 @@ export default function AuthPage() {
     <div className="min-h-screen bg-background flex items-center justify-center px-4 relative">
       <PageMeta
         title={isLogin ? "Sign In" : "Create Account"}
-        description="Sign in or create your TKD Power account to access AI-powered training plans."
+        description="Sign in or create your Sportstalent account to access periodized training plans."
       />
 
       {/* Subtle background glow */}
