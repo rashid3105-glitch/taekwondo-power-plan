@@ -4,7 +4,8 @@ import { Watermark } from "@/components/Watermark";
 import { ExerciseLibrary } from "@/components/ExerciseLibrary";
 import { MentalLibrary } from "@/components/MentalLibrary";
 import { NutritionLibrary } from "@/components/NutritionLibrary";
-import { Dumbbell, Brain, UtensilsCrossed, ArrowLeft, BookOpen } from "lucide-react";
+import { TestLibrary } from "@/components/TestLibrary";
+import { Dumbbell, Brain, UtensilsCrossed, ClipboardList, ArrowLeft, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { TranslationKey } from "@/i18n/translations";
@@ -13,18 +14,21 @@ const TITLE_KEYS: Record<string, TranslationKey> = {
   exercise: "exercisesTitle",
   mental: "hubMentalTitle",
   nutrition: "hubNutritionTitle",
+  testing: "libTestingLabel",
 };
 
 const ICONS: Record<string, typeof Dumbbell> = {
   exercise: Dumbbell,
   mental: Brain,
   nutrition: UtensilsCrossed,
+  testing: ClipboardList,
 };
 
 const COLORS: Record<string, string> = {
   exercise: "text-primary",
   mental: "text-tab-mental",
   nutrition: "text-tab-nutrition",
+  testing: "text-primary",
 };
 
 export default function Library() {
@@ -55,6 +59,7 @@ export default function Library() {
         {section === "exercise" && <ExerciseLibrary />}
         {section === "mental" && <MentalLibrary />}
         {section === "nutrition" && <NutritionLibrary />}
+        {section === "testing" && <TestLibrary />}
       </main>
       <AppFooter />
     </div>

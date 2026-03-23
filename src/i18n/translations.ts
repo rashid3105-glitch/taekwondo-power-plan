@@ -530,6 +530,10 @@ const translations = {
     testing: "Testing",
     hubTestingTitle: "Physical Testing",
     hubTestingDesc: "Log and track speed, endurance, strength, and agility tests. Compare results over time.",
+    libTestingLabel: "Physical Tests",
+    libTestingDesc: "Browse standard tests for speed, endurance, strength, and agility with protocols and instructions.",
+    ptFilterAll: "All Tests",
+    ptProtocol: "Protocol",
   },
   da: {
     // Common
@@ -1060,6 +1064,10 @@ const translations = {
     testing: "Test",
     hubTestingTitle: "Fysisk Testning",
     hubTestingDesc: "Log og følg hurtigheds-, udholdenhed-, styrke- og agility-tests. Sammenlign resultater over tid.",
+    libTestingLabel: "Fysiske Tests",
+    libTestingDesc: "Gennemse standardtests for hurtighed, udholdenhed, styrke og agility med protokoller og vejledninger.",
+    ptFilterAll: "Alle Tests",
+    ptProtocol: "Protokol",
   },
   sv: {
     // Common
@@ -1590,6 +1598,10 @@ const translations = {
     testing: "Test",
     hubTestingTitle: "Fysisk Testning",
     hubTestingDesc: "Logga och följ snabbhets-, uthållighets-, styrka- och agility-tester. Jämför resultat över tid.",
+    libTestingLabel: "Fysiska Tester",
+    libTestingDesc: "Bläddra bland standardtester för snabbhet, uthållighet, styrka och agility med protokoll och instruktioner.",
+    ptFilterAll: "Alla Tester",
+    ptProtocol: "Protokoll",
   },
 } as const;
 
