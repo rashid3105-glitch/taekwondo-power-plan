@@ -278,7 +278,7 @@ const translations = {
     adminPayments: "Payments",
 
     // Help
-    helpTitle: "How to Use TKD POWER",
+    helpTitle: "How to Use SPORTSTALENT",
     helpSubtitle: "Step-by-step guides to get the most out of the app",
     helpProfileTitle: "Create Your Profile",
     helpProfileSteps: "1. Sign up with your email and password\n2. You'll be taken to the Profile Setup page\n3. Fill in your age, weight, belt level, and years of experience\n4. Choose your discipline (Sparring or Poomsae)\n5. Set your weekly schedule by tapping each day to cycle between TKD, Gym, and Rest\n6. Select your training goals\n7. Optionally add a profile photo\n8. Click \"Save Profile & Continue\"",
