@@ -32,6 +32,8 @@ const translations = {
     sectionMentalDesc: "Assess your mental toughness, focus, and competition anxiety using sports psychology frameworks. Receive personalized advice to sharpen your competitive edge.",
     sectionRehabTitle: "Injury Rehab",
     sectionRehabDesc: "Recovering from an injury? Get phased rehab programs with pain guidelines and safety protocols — designed around TKD movement patterns.",
+    sectionTestingTitle: "Physical Testing",
+    sectionTestingDesc: "Know what to test, how to test it, and why it matters. 13 standardized protocols across speed, strength, endurance and agility — with video demos and trend tracking.",
     sectionLibraryTitle: "Exercise Library",
     sectionLibraryDesc: "A curated collection of TKD-specific exercises with alternatives, tempo guides, and muscle group targeting — built for martial artists.",
     sectionNutritionTitle: "Nutrition",
