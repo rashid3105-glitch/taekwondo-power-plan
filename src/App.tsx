@@ -21,6 +21,7 @@ import Help from "./pages/Help";
 import Diary from "./pages/Diary";
 import AdminPayments from "./pages/AdminPayments";
 import NotFound from "./pages/NotFound";
+import Methodology from "./pages/Methodology";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/methodology" element={<Methodology />} />
             <Route path="/features/:section" element={<FeatureDetail />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/reset-password" element={<ResetPassword />} />
