@@ -467,6 +467,24 @@ export default function Dashboard() {
                   </div>
                 </div>
               </button>
+              <button
+                onClick={() => navigate("/help")}
+                className="group relative rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-5 shadow-card text-left transition-all duration-300 cursor-pointer hover:border-primary/30 hover:-translate-y-1"
+              >
+                <div
+                  className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                  style={{ background: "radial-gradient(circle at 30% 50%, hsl(200 70% 50% / 0.08), transparent 70%)", filter: "blur(40px)", zIndex: -1 }}
+                />
+                <div className="flex items-start gap-4">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary">
+                    <HelpCircle className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <h3 className="text-sm font-bold text-foreground tracking-tight">{t("helpTitle" as any)}</h3>
+                    <p className="text-xs leading-relaxed text-muted-foreground">{t("helpSubtitle" as any)}</p>
+                  </div>
+                </div>
+              </button>
             </div>
 
             {/* Quick link */}
