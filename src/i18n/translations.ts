@@ -833,6 +833,12 @@ const translations = {
     helpStudentProgressTitle: "Følg elevernes fremgang (Trænere)",
     helpStudentProgressSteps: "1. Åbn Træner Dashboard\n2. Klik på en atlet i din liste\n3. Se deres aktive træningsplan og gennemførelsesstatus\n4. Tjek deres træningslogfiler, træningsvolumen og konsistens\n5. Gennemgå deres mentale præstationsvurderinger og scores\n6. Overvåg genoptræningsplanens fremgang hvis relevant\n7. Generer nye planer eller juster skemaer efter behov",
     help: "Hjælp",
+    changelogTitle: "Ændringslog",
+    changelog_2026_03_23: "23. marts 2026",
+    changelogEntry1: "Fysisk testmodul med Hastighed, Udholdenhed, Styrke & Smidighed",
+    changelogEntry2: "Trend-linjediagrammer i Fremgang-dashboardet",
+    changelogEntry3: "Fysisk testbibliotek med 13 standardiserede tests og YouTube-links",
+    changelogEntry4: "Hjælp-kort tilføjet til dashboard-hub",
 
     // Payment & Demo
     paid: "Betalt",
