@@ -293,6 +293,12 @@ const translations = {
     helpStudentProgressTitle: "Follow Student Progress (Coaches)",
     helpStudentProgressSteps: "1. Open the Coach Dashboard\n2. Click on any athlete in your roster\n3. View their active training plan and completion status\n4. Check their workout logs, training volume, and consistency\n5. Review their mental performance assessments and scores\n6. Monitor rehab plan progress if applicable\n7. Generate new plans or adjust schedules as needed",
     help: "Help",
+    changelogTitle: "Changelog",
+    changelog_2026_03_23: "March 23, 2026",
+    changelogEntry1: "Physical Testing module with Speed, Endurance, Strength & Agility categories",
+    changelogEntry2: "Performance trend line charts in Progress dashboard",
+    changelogEntry3: "Physical Test Library with 13 standardized tests and YouTube links",
+    changelogEntry4: "Help card added to dashboard hub",
 
     // Payment & Demo
     paid: "Paid",
@@ -827,6 +833,12 @@ const translations = {
     helpStudentProgressTitle: "Følg elevernes fremgang (Trænere)",
     helpStudentProgressSteps: "1. Åbn Træner Dashboard\n2. Klik på en atlet i din liste\n3. Se deres aktive træningsplan og gennemførelsesstatus\n4. Tjek deres træningslogfiler, træningsvolumen og konsistens\n5. Gennemgå deres mentale præstationsvurderinger og scores\n6. Overvåg genoptræningsplanens fremgang hvis relevant\n7. Generer nye planer eller juster skemaer efter behov",
     help: "Hjælp",
+    changelogTitle: "Ændringslog",
+    changelog_2026_03_23: "23. marts 2026",
+    changelogEntry1: "Fysisk testmodul med Hastighed, Udholdenhed, Styrke & Smidighed",
+    changelogEntry2: "Trend-linjediagrammer i Fremgang-dashboardet",
+    changelogEntry3: "Fysisk testbibliotek med 13 standardiserede tests og YouTube-links",
+    changelogEntry4: "Hjælp-kort tilføjet til dashboard-hub",
 
     // Payment & Demo
     paid: "Betalt",
@@ -1361,6 +1373,12 @@ const translations = {
     helpStudentProgressTitle: "Följ elevers framsteg (Tränare)",
     helpStudentProgressSteps: "1. Öppna Tränare Dashboard\n2. Klicka på valfri atlet i din lista\n3. Se deras aktiva träningsplan och genomförandestatus\n4. Kontrollera deras träningsloggar, volym och konsistens\n5. Granska deras mentala prestationsbedömningar och poäng\n6. Övervaka rehabplanens framsteg vid behov\n7. Generera nya planer eller justera scheman efter behov",
     help: "Hjälp",
+    changelogTitle: "Ändringslogg",
+    changelog_2026_03_23: "23 mars 2026",
+    changelogEntry1: "Fysisk testmodul med Hastighet, Uthållighet, Styrka & Smidighet",
+    changelogEntry2: "Trend-linjediagram i Framsteg-dashboarden",
+    changelogEntry3: "Fysiskt testbibliotek med 13 standardiserade tester och YouTube-länkar",
+    changelogEntry4: "Hjälp-kort tillagt på dashboard-hubben",
 
     // Payment & Demo
     paid: "Betald",
