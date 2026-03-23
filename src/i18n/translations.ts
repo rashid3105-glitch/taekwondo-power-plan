@@ -299,6 +299,9 @@ const translations = {
     changelogEntry2: "Performance trend line charts in Progress dashboard",
     changelogEntry3: "Physical Test Library with 13 standardized tests and YouTube links",
     changelogEntry4: "Help card added to dashboard hub",
+    changelogEntry5: "Enhanced charts with gradient fills, date range filters, and detailed tooltips",
+    changelogEntry6: "Mental radar chart with previous assessment comparison overlay",
+    changelogEntry7: "Progress dashboard with time range filtering and average stats",
 
     // Payment & Demo
     paid: "Paid",
@@ -840,6 +843,9 @@ const translations = {
     changelogEntry2: "Trend-linjediagrammer i Fremgang-dashboardet",
     changelogEntry3: "Fysisk testbibliotek med 13 standardiserede tests og YouTube-links",
     changelogEntry4: "Hjælp-kort tilføjet til dashboard-hub",
+    changelogEntry5: "Forbedrede diagrammer med gradientfyld, datofiltre og detaljerede tooltips",
+    changelogEntry6: "Mentalt radardiagram med sammenligning af tidligere vurdering",
+    changelogEntry7: "Fremgangs-dashboard med tidsfiltrering og gennemsnitsstatistikker",
 
     // Payment & Demo
     paid: "Betalt",
@@ -1381,6 +1387,9 @@ const translations = {
     changelogEntry2: "Trend-linjediagram i Framsteg-dashboarden",
     changelogEntry3: "Fysiskt testbibliotek med 13 standardiserade tester och YouTube-länkar",
     changelogEntry4: "Hjälp-kort tillagt på dashboard-hubben",
+    changelogEntry5: "Förbättrade diagram med gradientfyllning, datumfilter och detaljerade tooltips",
+    changelogEntry6: "Mentalt radardiagram med jämförelse av tidigare bedömning",
+    changelogEntry7: "Framsteg-dashboard med tidsfiltrering och genomsnittsstatistik",
 
     // Payment & Demo
     paid: "Betald",
