@@ -151,7 +151,6 @@ Deno.serve(async (req) => {
       }
     }
   }
-  }
 
   // Create Supabase client with service role (bypasses RLS)
   const supabase = createClient(supabaseUrl, supabaseServiceKey)
