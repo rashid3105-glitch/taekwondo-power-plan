@@ -286,10 +286,10 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
       {mode === "coach" && !athleteId && (
         <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
           <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-            <Users className="h-4 w-4 text-primary" /> {t("ptSelectAthlete" as any) || "Select Athlete"}
+            <Users className="h-4 w-4 text-primary" /> {t("ptSelectAthlete" as any)}
           </h3>
           {athletes.length === 0 ? (
-            <p className="text-sm text-muted-foreground">{t("ptNoAthletes" as any) || "No athletes connected to you."}</p>
+            <p className="text-sm text-muted-foreground">{t("ptNoAthletes" as any)}</p>
           ) : (
             <Select value={selectedAthleteId} onValueChange={(v) => {
               setSelectedAthleteId(v);
@@ -297,7 +297,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
               setSelectedAthleteName(ath?.display_name || "");
             }}>
               <SelectTrigger>
-                <SelectValue placeholder={t("ptSelectAthlete" as any) || "Select an athlete..."} />
+                <SelectValue placeholder={t("ptSelectAthlete" as any)} />
               </SelectTrigger>
               <SelectContent>
                 {athletes.map(a => (
