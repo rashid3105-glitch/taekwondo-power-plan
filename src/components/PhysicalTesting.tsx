@@ -433,7 +433,8 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
                           return (
                             <tr key={r.id} className="border-b border-border/50 last:border-0">
                               <td className="py-2 text-foreground">{new Date(r.test_date).toLocaleDateString()}</td>
-                              <td className="py-2 text-right font-mono font-bold text-foreground">{r.value} {r.unit}</td>
+                              <td className="py-2 text-right font-mono font-bold text-foreground">{r.value}</td>
+                              <td className="py-2 text-left text-muted-foreground">{r.unit}</td>
                               <td className="py-2 text-right">{changeEl || "—"}</td>
                               <td className="py-2">
                                 <span className={`text-xs px-2 py-0.5 rounded-full ${r.test_type === "coach" ? "bg-accent/20 text-accent" : "bg-primary/10 text-primary"}`}>
