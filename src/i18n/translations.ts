@@ -882,6 +882,8 @@ const translations = {
     markedAsPaid: "Markeret som betalt",
     markedAsUnpaid: "Markeret som ikke betalt",
     paymentDateUpdated: "Betalingsdato opdateret",
+    grant14Days: "14 dage",
+    granted14DaysAccess: "14 dages betalt adgang givet",
     markedAsDemo: "Markeret som demo",
     demoRemoved: "Demo-status fjernet",
     setDate: "Sæt dato",
