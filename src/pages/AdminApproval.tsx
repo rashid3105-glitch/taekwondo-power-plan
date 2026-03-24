@@ -88,7 +88,7 @@ export default function AdminApproval() {
     const [profilesRes, emailsRes, plansRes, rolesRes, coachAthletesRes, clubsRes] = await Promise.all([
       supabase
         .from("profiles")
-        .select("user_id, display_name, created_at, is_approved, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, payment_status, payment_date, is_demo, club_id, discipline, country, current_injury")
+        .select("user_id, display_name, created_at, is_approved, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, payment_status, payment_date, is_demo, demo_full_access, club_id, discipline, country, current_injury")
         .order("created_at", { ascending: false }),
       supabase.functions.invoke("get-admin-users"),
       supabase
