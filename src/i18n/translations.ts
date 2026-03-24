@@ -537,6 +537,8 @@ const translations = {
     ptType: "Type",
     ptCoachTest: "Coach",
     ptIndividualTest: "Individual",
+    ptSelectAthlete: "Select Athlete",
+    ptNoAthletes: "No athletes connected to you.",
     ptProgressTitle: "Physical Test Progress",
     ptTestName: "Test",
     ptLatest: "Latest",
