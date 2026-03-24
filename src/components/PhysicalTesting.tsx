@@ -297,7 +297,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
               setSelectedAthleteName(ath?.display_name || "");
             }}>
               <SelectTrigger>
-                <SelectValue placeholder={t("ptSelectAthlete" as any) || "Select an athlete..."} />
+                <SelectValue placeholder={t("ptSelectAthlete" as any)} />
               </SelectTrigger>
               <SelectContent>
                 {athletes.map(a => (
