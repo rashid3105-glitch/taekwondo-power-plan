@@ -69,6 +69,12 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
   const { toast } = useToast();
   const { t } = useLanguage();
 
+  // Coach athlete selection (when no athleteId is provided but mode is coach)
+  const [athletes, setAthletes] = useState<CoachAthlete[]>([]);
+  const [selectedAthleteId, setSelectedAthleteId] = useState<string>(athleteId || "");
+  const [selectedAthleteName, setSelectedAthleteName] = useState<string>(athleteName || "");
+  const [loadingAthletes, setLoadingAthletes] = useState(mode === "coach" && !athleteId);
+
   // Form state
   const [selectedTest, setSelectedTest] = useState("");
   const [customTestName, setCustomTestName] = useState("");
@@ -77,14 +83,53 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
   const [testDate, setTestDate] = useState(new Date().toISOString().split("T")[0]);
   const [testNotes, setTestNotes] = useState("");
 
+  // Load coach's athletes if in coach mode without a pre-selected athlete
   useEffect(() => {
-    loadResults();
-  }, [athleteId]);
+    if (mode === "coach" && !athleteId) {
+      loadAthletes();
+    }
+  }, [mode, athleteId]);
 
-  const loadResults = async () => {
+  useEffect(() => {
+    const targetId = athleteId || selectedAthleteId;
+    if (mode === "coach" && !targetId) {
+      setResults([]);
+      setLoading(false);
+      return;
+    }
+    loadResults();
+  }, [athleteId, selectedAthleteId]);
+
+  const loadAthletes = async () => {
+    setLoadingAthletes(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-    const targetId = mode === "coach" && athleteId ? athleteId : user.id;
+
+    const { data: links } = await supabase
+      .from("coach_athletes")
+      .select("athlete_id")
+      .eq("coach_id", user.id);
+
+    if (links && links.length > 0) {
+      const athleteIds = links.map(l => l.athlete_id);
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("user_id, display_name")
+        .in("user_id", athleteIds);
+
+      if (profiles) {
+        setAthletes(profiles.map(p => ({ athlete_id: p.user_id, display_name: p.display_name })));
+      }
+    }
+    setLoadingAthletes(false);
+  };
+
+  const loadResults = async () => {
+    setLoading(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const targetId = mode === "coach" ? (athleteId || selectedAthleteId) : user.id;
+    if (!targetId) { setLoading(false); return; }
 
     const { data } = await supabase
       .from("physical_test_results" as any)
