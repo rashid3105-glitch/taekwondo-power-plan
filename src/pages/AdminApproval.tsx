@@ -15,6 +15,7 @@ import { Loader2, CheckCircle, XCircle, ArrowLeft, Download, Shield, Trash2, Use
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { format } from "date-fns";
+import { COUNTRIES } from "@/data/countries";
 
 interface UserPlan {
   id: string;
