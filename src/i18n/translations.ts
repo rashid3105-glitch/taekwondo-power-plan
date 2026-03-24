@@ -1424,6 +1424,12 @@ const translations = {
     changelog_2026_03_24: "24 mars 2026",
     changelogEntry9: "Admin e-postmeddelande vid ny användarregistrering",
     changelogEntry10: "E-postinfrastruktur med transaktionell e-postsupport",
+    changelogEntry11: "Tränare kan ange fysiska testresultat för kopplade atleter",
+    changelogEntry12: "Förbättrad formulärvalidering med separata felmeddelanden och komma-decimalstöd",
+    changelogEntry13: "Säkerhetsförbättringar: profilfält skyddade, RLS-policyer fixade, dagboksintegritet",
+    changelogEntry14: "Admin användarhantering med sökning, filter och profilredigering",
+    changelogEntry15: "Landsfält konverterat till dropdown i admin och profiluppsättning",
+    changelogEntry16: "Hopfällbar ändringslogg på Hjälp-sidan",
 
     // Payment & Demo
     paid: "Betald",
