@@ -322,6 +322,8 @@ const translations = {
     markedAsPaid: "Marked as paid",
     markedAsUnpaid: "Marked as unpaid",
     paymentDateUpdated: "Payment date updated",
+    grant14Days: "14 days",
+    granted14DaysAccess: "Granted 14 days paid access",
     markedAsDemo: "Marked as demo",
     demoRemoved: "Demo status removed",
     setDate: "Set date",
