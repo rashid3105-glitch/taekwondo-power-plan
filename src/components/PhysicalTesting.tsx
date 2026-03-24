@@ -411,6 +411,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
                           <th className="text-right py-2 text-xs text-muted-foreground font-semibold">{t("ptResult" as any)}</th>
                           <th className="text-right py-2 text-xs text-muted-foreground font-semibold">{t("ptChange" as any)}</th>
                           <th className="text-left py-2 text-xs text-muted-foreground font-semibold">{t("ptType" as any)}</th>
+                          <th className="text-left py-2 text-xs text-muted-foreground font-semibold">{t("ptNotes" as any)}</th>
                           <th className="py-2"></th>
                         </tr>
                       </thead>
