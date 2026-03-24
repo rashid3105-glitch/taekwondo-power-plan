@@ -133,6 +133,26 @@ Deno.serve(async (req) => {
     )
   }
 
+  // Security: if template has no fixed `to`, restrict non-admin callers
+  // to only send emails to their own address.
+  if (!template.to && recipientEmail) {
+    const callerEmail = claimsData.claims.email as string | undefined
+    if (callerEmail?.toLowerCase() !== recipientEmail.toLowerCase()) {
+      // Check if caller is admin
+      const { data: isAdmin } = await userClient.rpc('is_admin', { _user_id: claimsData.claims.sub })
+      if (!isAdmin) {
+        return new Response(
+          JSON.stringify({ error: 'You can only send emails to your own address' }),
+          {
+            status: 403,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
+        )
+      }
+    }
+  }
+  }
+
   // Create Supabase client with service role (bypasses RLS)
   const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
