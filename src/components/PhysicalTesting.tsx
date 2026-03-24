@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { Loader2, Plus, Trash2, Timer, Dumbbell, Wind, Zap, ClipboardList } from "lucide-react";
+import { Loader2, Plus, Trash2, Timer, Dumbbell, Wind, Zap, ClipboardList, Users } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 interface TestResult {
@@ -17,6 +17,11 @@ interface TestResult {
   test_type: string;
   test_date: string;
   notes: string;
+}
+
+interface CoachAthlete {
+  athlete_id: string;
+  display_name: string;
 }
 
 const STANDARD_TESTS: Record<string, { name: string; unit: string; category: string }[]> = {
@@ -64,6 +69,12 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
   const { toast } = useToast();
   const { t } = useLanguage();
 
+  // Coach athlete selection (when no athleteId is provided but mode is coach)
+  const [athletes, setAthletes] = useState<CoachAthlete[]>([]);
+  const [selectedAthleteId, setSelectedAthleteId] = useState<string>(athleteId || "");
+  const [selectedAthleteName, setSelectedAthleteName] = useState<string>(athleteName || "");
+  const [loadingAthletes, setLoadingAthletes] = useState(mode === "coach" && !athleteId);
+
   // Form state
   const [selectedTest, setSelectedTest] = useState("");
   const [customTestName, setCustomTestName] = useState("");
@@ -72,14 +83,53 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
   const [testDate, setTestDate] = useState(new Date().toISOString().split("T")[0]);
   const [testNotes, setTestNotes] = useState("");
 
+  // Load coach's athletes if in coach mode without a pre-selected athlete
   useEffect(() => {
-    loadResults();
-  }, [athleteId]);
+    if (mode === "coach" && !athleteId) {
+      loadAthletes();
+    }
+  }, [mode, athleteId]);
 
-  const loadResults = async () => {
+  useEffect(() => {
+    const targetId = athleteId || selectedAthleteId;
+    if (mode === "coach" && !targetId) {
+      setResults([]);
+      setLoading(false);
+      return;
+    }
+    loadResults();
+  }, [athleteId, selectedAthleteId]);
+
+  const loadAthletes = async () => {
+    setLoadingAthletes(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-    const targetId = mode === "coach" && athleteId ? athleteId : user.id;
+
+    const { data: links } = await supabase
+      .from("coach_athletes")
+      .select("athlete_id")
+      .eq("coach_id", user.id);
+
+    if (links && links.length > 0) {
+      const athleteIds = links.map(l => l.athlete_id);
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("user_id, display_name")
+        .in("user_id", athleteIds);
+
+      if (profiles) {
+        setAthletes(profiles.map(p => ({ athlete_id: p.user_id, display_name: p.display_name })));
+      }
+    }
+    setLoadingAthletes(false);
+  };
+
+  const loadResults = async () => {
+    setLoading(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const targetId = mode === "coach" ? (athleteId || selectedAthleteId) : user.id;
+    if (!targetId) { setLoading(false); return; }
 
     const { data } = await supabase
       .from("physical_test_results" as any)
@@ -102,7 +152,8 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const targetId = mode === "coach" && athleteId ? athleteId : user.id;
+    const targetId = mode === "coach" ? (athleteId || selectedAthleteId) : user.id;
+    if (!targetId) return;
     const standardTest = Object.values(STANDARD_TESTS).flat().find(t => t.name === finalName);
     const unit = testUnit || standardTest?.unit || "";
 
@@ -146,7 +197,15 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
     return acc;
   }, {} as Record<string, TestResult[]>);
 
-  if (loading) {
+  if (loadingAthletes) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (loading && (mode !== "coach" || selectedAthleteId || athleteId)) {
     return (
       <div className="flex items-center justify-center py-12">
         <Loader2 className="h-6 w-6 animate-spin text-primary" />
@@ -155,6 +214,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
   }
 
   const CategoryIcon = CATEGORY_ICONS[activeCategory] || ClipboardList;
+  const currentAthleteName = athleteName || selectedAthleteName;
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -162,11 +222,38 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
         <ClipboardList className="h-5 w-5 text-primary" />
         <h2 className="text-xl sm:text-2xl font-extrabold text-foreground">
           {t("ptTitle" as any)}
-          {mode === "coach" && athleteName && (
-            <span className="text-muted-foreground font-normal text-base ml-2">— {athleteName}</span>
+          {mode === "coach" && currentAthleteName && (
+            <span className="text-muted-foreground font-normal text-base ml-2">— {currentAthleteName}</span>
           )}
         </h2>
       </div>
+
+      {/* Coach athlete selector */}
+      {mode === "coach" && !athleteId && (
+        <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
+          <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+            <Users className="h-4 w-4 text-primary" /> {t("ptSelectAthlete" as any) || "Select Athlete"}
+          </h3>
+          {athletes.length === 0 ? (
+            <p className="text-sm text-muted-foreground">{t("ptNoAthletes" as any) || "No athletes connected to you."}</p>
+          ) : (
+            <Select value={selectedAthleteId} onValueChange={(v) => {
+              setSelectedAthleteId(v);
+              const ath = athletes.find(a => a.athlete_id === v);
+              setSelectedAthleteName(ath?.display_name || "");
+            }}>
+              <SelectTrigger>
+                <SelectValue placeholder={t("ptSelectAthlete" as any) || "Select an athlete..."} />
+              </SelectTrigger>
+              <SelectContent>
+                {athletes.map(a => (
+                  <SelectItem key={a.athlete_id} value={a.athlete_id}>{a.display_name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        </div>
+      )}
 
       {/* Category tabs */}
       <Tabs value={activeCategory} onValueChange={setActiveCategory}>
