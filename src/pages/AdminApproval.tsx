@@ -840,7 +840,15 @@ export default function AdminApproval() {
             </div>
             <div className="space-y-2">
               <Label>Country</Label>
-              <Input value={editForm.country || ""} onChange={(e) => setEditForm(f => ({ ...f, country: e.target.value }))} />
+              <Select value={editForm.country || "none"} onValueChange={(v) => setEditForm(f => ({ ...f, country: v === "none" ? "" : v }))}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No country</SelectItem>
+                  {COUNTRIES.map(c => (
+                    <SelectItem key={c} value={c}>{c}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-2">
               <Label>Current Injury</Label>
