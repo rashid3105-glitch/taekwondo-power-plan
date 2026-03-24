@@ -11,7 +11,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Loader2, CheckCircle, XCircle, ArrowLeft, Download, Shield, Trash2, Users, CreditCard, CalendarIcon, FlaskConical, ChevronDown, KeyRound, Search, Pencil, UserCheck, UserX, Crown } from "lucide-react";
+import { Loader2, CheckCircle, XCircle, ArrowLeft, Download, Shield, Trash2, Users, CreditCard, CalendarIcon, FlaskConical, ChevronDown, KeyRound, Search, Pencil, UserCheck, UserX, Crown, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { format } from "date-fns";
@@ -308,6 +308,17 @@ export default function AdminApproval() {
     loadUsers();
   };
 
+  const grant14DaysAccess = async (userId: string) => {
+    const today = new Date().toISOString().split("T")[0];
+    await supabase.from("profiles").update({
+      payment_status: "paid",
+      payment_date: today,
+      is_approved: true,
+    } as any).eq("user_id", userId);
+    toast({ title: t("granted14DaysAccess" as any) });
+    loadUsers();
+  };
+
   const openEditDialog = (u: PendingUser) => {
     setEditForm({
       display_name: u.display_name || "",
@@ -535,6 +546,27 @@ export default function AdminApproval() {
                 {t("demoExpires14Days" as any)}
               </span>
             )}
+            {u.payment_status !== "paid" && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-6 text-[10px] gap-1"
+                onClick={() => grant14DaysAccess(u.user_id)}
+              >
+                <Clock className="h-3 w-3" />
+                {t("grant14Days" as any)}
+              </Button>
+            )}
+            {u.payment_status === "paid" && u.payment_date && (() => {
+              const payDate = new Date(u.payment_date);
+              const now = new Date();
+              const diffDays = Math.ceil((payDate.getTime() + 14 * 86400000 - now.getTime()) / 86400000);
+              return diffDays > 0 && diffDays <= 14 ? (
+                <span className="text-[10px] text-amber-500 font-medium">
+                  {diffDays} {t("demoBannerDaysLeft" as any)}
+                </span>
+              ) : null;
+            })()}
           </div>
 
           {u.plans && u.plans.length > 0 && (
