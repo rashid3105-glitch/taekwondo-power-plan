@@ -2,13 +2,16 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Loader2, CheckCircle, XCircle, ArrowLeft, Download, Shield, Trash2, Users, CreditCard, CalendarIcon, FlaskConical, ChevronDown, KeyRound } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Loader2, CheckCircle, XCircle, ArrowLeft, Download, Shield, Trash2, Users, CreditCard, CalendarIcon, FlaskConical, ChevronDown, KeyRound, Search, Pencil, UserCheck, UserX, Crown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { format } from "date-fns";
@@ -41,11 +44,15 @@ interface PendingUser {
   isCoach?: boolean;
   coachId?: string | null;
   coachName?: string;
+  discipline?: string;
+  country?: string | null;
+  current_injury?: string | null;
 }
 
 export default function AdminApproval() {
   const [users, setUsers] = useState<PendingUser[]>([]);
   const [coaches, setCoaches] = useState<{ user_id: string; display_name: string }[]>([]);
+  const [clubs, setClubs] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [reassigning, setReassigning] = useState<string | null>(null);
@@ -53,6 +60,11 @@ export default function AdminApproval() {
   const [deletingUser, setDeletingUser] = useState<string | null>(null);
   const [deletingPlan, setDeletingPlan] = useState<string | null>(null);
   const [resettingPassword, setResettingPassword] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterStatus, setFilterStatus] = useState<"all" | "pending" | "approved" | "paid" | "demo" | "coach">("all");
+  const [editingUser, setEditingUser] = useState<PendingUser | null>(null);
+  const [editForm, setEditForm] = useState<Record<string, any>>({});
+  const [saving, setSaving] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
@@ -74,7 +86,7 @@ export default function AdminApproval() {
     const [profilesRes, emailsRes, plansRes, rolesRes, coachAthletesRes, clubsRes] = await Promise.all([
       supabase
         .from("profiles")
-        .select("user_id, display_name, created_at, is_approved, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, payment_status, payment_date, is_demo, club_id")
+        .select("user_id, display_name, created_at, is_approved, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, payment_status, payment_date, is_demo, club_id, discipline, country, current_injury")
         .order("created_at", { ascending: false }),
       supabase.functions.invoke("get-admin-users"),
       supabase
@@ -91,9 +103,9 @@ export default function AdminApproval() {
     const plans = (plansRes.data || []) as (UserPlan & { user_id: string })[];
     const roles = (rolesRes.data || []) as { user_id: string; role: string }[];
     const coachAthleteLinks = (coachAthletesRes.data || []) as { coach_id: string; athlete_id: string }[];
-    const clubMap = new Map<string, string>(
-      ((((clubsRes.data as unknown as { id: string; name: string }[] | null) ?? [])).map((club) => [club.id, club.name]))
-    );
+    const clubsList = ((clubsRes.data as unknown as { id: string; name: string }[] | null) ?? []);
+    setClubs(clubsList);
+    const clubMap = new Map<string, string>(clubsList.map((club) => [club.id, club.name]));
 
     const coachSet = new Set(roles.filter(r => r.role === "coach").map(r => r.user_id));
 
@@ -295,6 +307,50 @@ export default function AdminApproval() {
     loadUsers();
   };
 
+  const openEditDialog = (u: PendingUser) => {
+    setEditForm({
+      display_name: u.display_name || "",
+      age: u.age ?? "",
+      weight_kg: u.weight_kg ?? "",
+      belt_level: u.belt_level || "white",
+      experience_years: u.experience_years ?? "",
+      tkd_sessions_per_week: u.tkd_sessions_per_week || 3,
+      discipline: u.discipline || "sparring",
+      country: u.country || "",
+      current_injury: u.current_injury || "",
+      club_id: u.club_id || "",
+    });
+    setEditingUser(u);
+  };
+
+  const saveEditUser = async () => {
+    if (!editingUser) return;
+    setSaving(true);
+    try {
+      const updateData: any = {
+        display_name: editForm.display_name,
+        belt_level: editForm.belt_level,
+        discipline: editForm.discipline,
+        tkd_sessions_per_week: Number(editForm.tkd_sessions_per_week) || 3,
+        age: editForm.age ? Number(editForm.age) : null,
+        weight_kg: editForm.weight_kg ? Number(editForm.weight_kg) : null,
+        experience_years: editForm.experience_years ? Number(editForm.experience_years) : null,
+        country: editForm.country || null,
+        current_injury: editForm.current_injury || null,
+        club_id: editForm.club_id || null,
+      };
+      const { error } = await supabase.from("profiles").update(updateData).eq("user_id", editingUser.user_id);
+      if (error) throw error;
+      toast({ title: "User updated" });
+      setEditingUser(null);
+      loadUsers();
+    } catch (err: any) {
+      toast({ title: t("error"), description: err.message, variant: "destructive" });
+    } finally {
+      setSaving(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -305,8 +361,35 @@ export default function AdminApproval() {
 
   if (!isAdmin) return null;
 
-  const pending = users.filter(u => !u.is_approved);
-  const approved = users.filter(u => u.is_approved);
+  // Stats
+  const totalUsers = users.length;
+  const pendingCount = users.filter(u => !u.is_approved).length;
+  const paidCount = users.filter(u => u.payment_status === "paid").length;
+  const demoCount = users.filter(u => u.is_demo).length;
+  const coachCount = users.filter(u => u.isCoach).length;
+
+  // Filter & search
+  const filteredUsers = users.filter(u => {
+    const q = searchQuery.toLowerCase();
+    const matchesSearch = !q || 
+      (u.display_name || "").toLowerCase().includes(q) || 
+      (u.email || "").toLowerCase().includes(q) ||
+      (u.club_name || "").toLowerCase().includes(q);
+    
+    if (!matchesSearch) return false;
+
+    switch (filterStatus) {
+      case "pending": return !u.is_approved;
+      case "approved": return u.is_approved;
+      case "paid": return u.payment_status === "paid";
+      case "demo": return u.is_demo;
+      case "coach": return u.isCoach;
+      default: return true;
+    }
+  });
+
+  const pending = filteredUsers.filter(u => !u.is_approved);
+  const approved = filteredUsers.filter(u => u.is_approved);
 
   const UserCard = ({ u, actions, showRevoke }: { u: PendingUser; actions: React.ReactNode; showRevoke?: boolean }) => (
     <Collapsible>
@@ -333,11 +416,20 @@ export default function AdminApproval() {
                   </Badge>
                 )}
               </div>
-              {u.email && <p className="text-xs text-muted-foreground text-left">{u.email}</p>}
-              {u.club_name && <p className="text-[11px] text-muted-foreground text-left">{t("club")}: {u.club_name}</p>}
+              <div className="flex items-center gap-2 flex-wrap mt-0.5">
+                {u.email && <p className="text-xs text-muted-foreground text-left">{u.email}</p>}
+                {u.club_name && <span className="text-[10px] text-muted-foreground">• {u.club_name}</span>}
+                {u.belt_level && <span className="text-[10px] text-muted-foreground capitalize">• {u.belt_level}</span>}
+                {u.age && <span className="text-[10px] text-muted-foreground">• {u.age}y</span>}
+              </div>
             </div>
           </CollapsibleTrigger>
-          {actions}
+          <div className="flex items-center gap-1 shrink-0">
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEditDialog(u)}>
+              <Pencil className="h-3.5 w-3.5" />
+            </Button>
+            {actions}
+          </div>
         </div>
 
         <CollapsibleContent className="space-y-2">
@@ -370,6 +462,21 @@ export default function AdminApproval() {
             <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
               {u.tkd_sessions_per_week}x {t("tkdPerWeek")}
             </span>
+            {u.discipline && (
+              <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full capitalize">
+                {u.discipline}
+              </span>
+            )}
+            {u.country && (
+              <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
+                {u.country}
+              </span>
+            )}
+            {u.current_injury && (
+              <span className="text-[10px] bg-destructive/10 text-destructive px-2 py-0.5 rounded-full">
+                Injury: {u.current_injury}
+              </span>
+            )}
           </div>
           {u.goals && u.goals.length > 0 && (
             <div className="flex flex-wrap gap-1">
@@ -569,8 +676,9 @@ export default function AdminApproval() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container max-w-lg mx-auto px-4 py-6">
-        <div className="flex flex-wrap gap-2 mb-4">
+      <div className="container max-w-3xl mx-auto px-4 py-6 space-y-6">
+        {/* Top nav */}
+        <div className="flex flex-wrap gap-2">
           <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")}>
             <ArrowLeft className="h-4 w-4 mr-1" /> {t("backToDashboard")}
           </Button>
@@ -582,10 +690,57 @@ export default function AdminApproval() {
           </Button>
         </div>
 
-        <h1 className="text-xl font-extrabold text-foreground mb-6">{t("userApproval")}</h1>
+        <h1 className="text-xl font-extrabold text-foreground">{t("userApproval")}</h1>
 
+        {/* Stats overview */}
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+          {[
+            { label: "Total", value: totalUsers, icon: Users, color: "text-foreground" },
+            { label: "Pending", value: pendingCount, icon: UserX, color: "text-yellow-400" },
+            { label: "Paid", value: paidCount, icon: CreditCard, color: "text-green-400" },
+            { label: "Demo", value: demoCount, icon: FlaskConical, color: "text-blue-400" },
+            { label: "Coaches", value: coachCount, icon: Crown, color: "text-purple-400" },
+          ].map(stat => {
+            const Icon = stat.icon;
+            return (
+              <div key={stat.label} className="rounded-xl border border-border bg-card p-3 text-center space-y-1">
+                <Icon className={`h-4 w-4 mx-auto ${stat.color}`} />
+                <p className="text-2xl font-bold text-foreground">{stat.value}</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{stat.label}</p>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Search & filter */}
+        <div className="flex flex-col sm:flex-row gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search by name, email, or club..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+          <Select value={filterStatus} onValueChange={(v) => setFilterStatus(v as any)}>
+            <SelectTrigger className="w-full sm:w-40">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Users</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="approved">Approved</SelectItem>
+              <SelectItem value="paid">Paid</SelectItem>
+              <SelectItem value="demo">Demo</SelectItem>
+              <SelectItem value="coach">Coaches</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Pending users */}
         {pending.length > 0 && (
-          <div className="mb-6">
+          <div>
             <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
               {t("pendingUsers")} ({pending.length})
             </h2>
@@ -601,10 +756,11 @@ export default function AdminApproval() {
           </div>
         )}
 
-        {pending.length === 0 && (
-          <p className="text-sm text-muted-foreground mb-6">{t("noPendingUsers")}</p>
+        {pending.length === 0 && filterStatus !== "approved" && (
+          <p className="text-sm text-muted-foreground">{t("noPendingUsers")}</p>
         )}
 
+        {/* Approved users */}
         {approved.length > 0 && (
           <div>
             <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
@@ -617,7 +773,101 @@ export default function AdminApproval() {
             </div>
           </div>
         )}
+
+        {filteredUsers.length === 0 && (
+          <div className="text-center py-8">
+            <p className="text-sm text-muted-foreground">No users match your search.</p>
+          </div>
+        )}
       </div>
+
+      {/* Edit User Dialog */}
+      <Dialog open={!!editingUser} onOpenChange={(open) => !open && setEditingUser(null)}>
+        <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Pencil className="h-4 w-4" /> Edit User: {editingUser?.display_name}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label>Display Name</Label>
+              <Input value={editForm.display_name || ""} onChange={(e) => setEditForm(f => ({ ...f, display_name: e.target.value }))} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label>Age</Label>
+                <Input type="number" value={editForm.age || ""} onChange={(e) => setEditForm(f => ({ ...f, age: e.target.value }))} />
+              </div>
+              <div className="space-y-2">
+                <Label>Weight (kg)</Label>
+                <Input type="number" value={editForm.weight_kg || ""} onChange={(e) => setEditForm(f => ({ ...f, weight_kg: e.target.value }))} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label>Belt Level</Label>
+                <Select value={editForm.belt_level || "white"} onValueChange={(v) => setEditForm(f => ({ ...f, belt_level: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {["white", "yellow", "green", "blue", "red", "black", "1st dan", "2nd dan", "3rd dan", "4th dan", "5th dan"].map(b => (
+                      <SelectItem key={b} value={b} className="capitalize">{b}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Experience (years)</Label>
+                <Input type="number" value={editForm.experience_years || ""} onChange={(e) => setEditForm(f => ({ ...f, experience_years: e.target.value }))} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label>Sessions/week</Label>
+                <Input type="number" value={editForm.tkd_sessions_per_week || 3} onChange={(e) => setEditForm(f => ({ ...f, tkd_sessions_per_week: e.target.value }))} />
+              </div>
+              <div className="space-y-2">
+                <Label>Discipline</Label>
+                <Select value={editForm.discipline || "sparring"} onValueChange={(v) => setEditForm(f => ({ ...f, discipline: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {["sparring", "poomsae", "both"].map(d => (
+                      <SelectItem key={d} value={d} className="capitalize">{d}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Country</Label>
+              <Input value={editForm.country || ""} onChange={(e) => setEditForm(f => ({ ...f, country: e.target.value }))} />
+            </div>
+            <div className="space-y-2">
+              <Label>Current Injury</Label>
+              <Input value={editForm.current_injury || ""} onChange={(e) => setEditForm(f => ({ ...f, current_injury: e.target.value }))} />
+            </div>
+            <div className="space-y-2">
+              <Label>Club</Label>
+              <Select value={editForm.club_id || "none"} onValueChange={(v) => setEditForm(f => ({ ...f, club_id: v === "none" ? "" : v }))}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No club</SelectItem>
+                  {clubs.map(c => (
+                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditingUser(null)}>Cancel</Button>
+            <Button onClick={saveEditUser} disabled={saving}>
+              {saving ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : null}
+              Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
