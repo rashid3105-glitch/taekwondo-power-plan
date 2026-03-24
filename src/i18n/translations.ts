@@ -1405,6 +1405,9 @@ const translations = {
     changelogEntry6: "Mentalt radardiagram med jämförelse av tidigare bedömning",
     changelogEntry7: "Framsteg-dashboard med tidsfiltrering och genomsnittsstatistik",
     changelogEntry8: "Fysisk testning-funktionskort tillagt på startsidan med detaljsida",
+    changelog_2026_03_24: "24 mars 2026",
+    changelogEntry9: "Admin e-postmeddelande vid ny användarregistrering",
+    changelogEntry10: "E-postinfrastruktur med transaktionell e-postsupport",
 
     // Payment & Demo
     paid: "Betald",
