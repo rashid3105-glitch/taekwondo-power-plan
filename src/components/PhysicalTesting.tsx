@@ -169,18 +169,18 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
   const handleSubmit = async () => {
     const finalName = selectedTest === "__custom" ? customTestName.trim() : selectedTest;
     if (!finalName) {
-      toast({ title: t("error"), description: t("ptSelectTestError" as any), variant: "destructive" });
+      toast({ title: t("error"), description: validationMessage("selectTest"), variant: "destructive" });
       return;
     }
 
     const rawValue = testValue.trim();
     if (!rawValue) {
-      toast({ title: t("error"), description: t("ptEnterValueError" as any), variant: "destructive" });
+      toast({ title: t("error"), description: validationMessage("enterValue"), variant: "destructive" });
       return;
     }
 
     if (mode === "coach" && !(athleteId || selectedAthleteId)) {
-      toast({ title: t("error"), description: t("ptSelectAthleteError" as any), variant: "destructive" });
+      toast({ title: t("error"), description: validationMessage("selectAthlete"), variant: "destructive" });
       return;
     }
 
@@ -191,7 +191,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
     const parsedValue = Number(normalizedValue);
 
     if (!Number.isFinite(parsedValue)) {
-      toast({ title: t("error"), description: t("ptInvalidValueError" as any), variant: "destructive" });
+      toast({ title: t("error"), description: validationMessage("invalidValue"), variant: "destructive" });
       return;
     }
 
