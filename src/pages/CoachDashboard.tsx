@@ -165,7 +165,7 @@ export default function CoachDashboard() {
           .select("id, name, plan_data, is_active, created_at, user_id, injury_description")
           .in("user_id", athleteIds)
           .order("created_at", { ascending: false }),
-        supabase.from("clubs" as any).select("id, name"),
+        supabase.from("clubs" as any).select("id, name").order("name"),
       ]);
 
       const clubMap = new Map<string, string>(
