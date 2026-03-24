@@ -6,10 +6,10 @@ export const AppFooter = () => {
   return (
     <footer className="border-t border-border/50 py-5 space-y-1">
       <p className="text-center text-[11px] text-muted-foreground tracking-wide">
-        {t("footerText")}
+        Made for More. Built to Perform.
       </p>
       <p className="text-center text-[10px] text-muted-foreground/60">
-        © F. Rashid
+        sportstalent.dk © F. Rashid
       </p>
     </footer>
   );
