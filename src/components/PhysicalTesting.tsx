@@ -67,7 +67,32 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
   const [saving, setSaving] = useState(false);
   const [activeCategory, setActiveCategory] = useState("speed");
   const { toast } = useToast();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
+
+  const validationMessage = (type: "selectTest" | "enterValue" | "invalidValue" | "selectAthlete") => {
+    const messages = {
+      da: {
+        selectTest: "Vælg venligst en test",
+        enterValue: "Indtast venligst en værdi",
+        invalidValue: "Indtast et gyldigt tal (fx 10,5)",
+        selectAthlete: "Vælg venligst en atlet",
+      },
+      sv: {
+        selectTest: "Välj ett test",
+        enterValue: "Ange ett värde",
+        invalidValue: "Ange ett giltigt tal (t.ex. 10,5)",
+        selectAthlete: "Välj en atlet",
+      },
+      en: {
+        selectTest: "Please select a test",
+        enterValue: "Please enter a value",
+        invalidValue: "Please enter a valid number (e.g. 10.5)",
+        selectAthlete: "Please select an athlete",
+      },
+    } as const;
+
+    return messages[locale]?.[type] ?? messages.en[type];
+  };
 
   // Coach athlete selection (when no athleteId is provided but mode is coach)
   const [athletes, setAthletes] = useState<CoachAthlete[]>([]);
@@ -144,24 +169,45 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
   const handleSubmit = async () => {
     const finalName = selectedTest === "__custom" ? customTestName.trim() : selectedTest;
     if (!finalName) {
-      toast({ title: t("error"), description: t("ptSelectTestError" as any) || "Vælg venligst en test", variant: "destructive" });
+      toast({ title: t("error"), description: validationMessage("selectTest"), variant: "destructive" });
       return;
     }
-    if (!testValue) {
-      toast({ title: t("error"), description: t("ptEnterValueError" as any) || "Indtast venligst en værdi", variant: "destructive" });
+
+    const rawValue = testValue.trim();
+    if (!rawValue) {
+      toast({ title: t("error"), description: validationMessage("enterValue"), variant: "destructive" });
       return;
     }
+
     if (mode === "coach" && !(athleteId || selectedAthleteId)) {
-      toast({ title: t("error"), description: t("ptSelectAthleteError" as any) || "Vælg venligst en atlet", variant: "destructive" });
+      toast({ title: t("error"), description: validationMessage("selectAthlete"), variant: "destructive" });
+      return;
+    }
+
+    const normalizedValue = rawValue
+      .replace(/\s+/g, "")
+      .replace(/,/g, ".")
+      .replace(/^(\d+)-(\d+)$/, "$1.$2");
+    const parsedValue = Number(normalizedValue);
+
+    if (!Number.isFinite(parsedValue)) {
+      toast({ title: t("error"), description: validationMessage("invalidValue"), variant: "destructive" });
       return;
     }
 
     setSaving(true);
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) {
+      setSaving(false);
+      return;
+    }
 
     const targetId = mode === "coach" ? (athleteId || selectedAthleteId) : user.id;
-    if (!targetId) return;
+    if (!targetId) {
+      setSaving(false);
+      return;
+    }
+
     const standardTest = Object.values(STANDARD_TESTS).flat().find(t => t.name === finalName);
     const unit = testUnit || standardTest?.unit || "";
 
@@ -169,7 +215,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
       user_id: targetId,
       test_name: finalName,
       category: activeCategory,
-      value: parseFloat(testValue),
+      value: parsedValue,
       unit,
       test_type: mode === "coach" ? "coach" : "individual",
       tested_by: mode === "coach" ? user.id : null,
@@ -314,8 +360,8 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
                 </div>
                 <div className="flex gap-2">
                   <Input
-                    type="number"
-                    step="any"
+                    type="text"
+                    inputMode="decimal"
                     placeholder={t("ptValue" as any)}
                     value={testValue}
                     onChange={(e) => setTestValue(e.target.value)}
