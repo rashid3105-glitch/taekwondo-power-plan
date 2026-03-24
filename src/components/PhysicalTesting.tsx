@@ -335,8 +335,8 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
                 </div>
                 <div className="flex gap-2">
                   <Input
-                    type="number"
-                    step="any"
+                    type="text"
+                    inputMode="decimal"
                     placeholder={t("ptValue" as any)}
                     value={testValue}
                     onChange={(e) => setTestValue(e.target.value)}
