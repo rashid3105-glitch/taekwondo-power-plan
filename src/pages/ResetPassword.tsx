@@ -22,6 +22,13 @@ export default function ResetPassword() {
       setIsRecovery(true);
     }
 
+    // Check if session already exists with recovery type (hash already consumed)
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        setIsRecovery(true);
+      }
+    });
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === "PASSWORD_RECOVERY") {
         setIsRecovery(true);
