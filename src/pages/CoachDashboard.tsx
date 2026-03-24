@@ -176,7 +176,7 @@ export default function CoachDashboard() {
         (((profilesRes.data || []) as any[]).map((athlete) => ({
           ...athlete,
           club_name: athlete.club_id ? clubMap.get(athlete.club_id) || null : null,
-        })) as AthleteProfile[])
+        })) as AthleteProfile[]).sort((a, b) => a.display_name.localeCompare(b.display_name))
       );
       setPlans((plansRes.data || []) as unknown as AthletePlan[]);
       setRehabPlans((rehabRes.data || []) as unknown as RehabPlan[]);
