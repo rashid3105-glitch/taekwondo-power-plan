@@ -143,8 +143,16 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
 
   const handleSubmit = async () => {
     const finalName = selectedTest === "__custom" ? customTestName.trim() : selectedTest;
-    if (!finalName || !testValue) {
-      toast({ title: t("error"), description: t("ptFillFields" as any), variant: "destructive" });
+    if (!finalName) {
+      toast({ title: t("error"), description: t("ptSelectTestError" as any) || "Vælg venligst en test", variant: "destructive" });
+      return;
+    }
+    if (!testValue) {
+      toast({ title: t("error"), description: t("ptEnterValueError" as any) || "Indtast venligst en værdi", variant: "destructive" });
+      return;
+    }
+    if (mode === "coach" && !(athleteId || selectedAthleteId)) {
+      toast({ title: t("error"), description: t("ptSelectAthleteError" as any) || "Vælg venligst en atlet", variant: "destructive" });
       return;
     }
 
