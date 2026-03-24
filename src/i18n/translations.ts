@@ -1089,6 +1089,8 @@ const translations = {
     ptType: "Type",
     ptCoachTest: "Træner",
     ptIndividualTest: "Individuel",
+    ptSelectAthlete: "Vælg atlet",
+    ptNoAthletes: "Ingen atleter er tilknyttet dig.",
     ptProgressTitle: "Fysisk Test Fremskridt",
     ptTestName: "Test",
     ptLatest: "Seneste",
