@@ -34,12 +34,31 @@ export default function AuthPage() {
         if (error) throw error;
         navigate("/dashboard");
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { data: signUpData, error } = await supabase.auth.signUp({
           email,
           password,
           options: { data: { display_name: displayName, wants_coach: wantsCoach, wants_demo: wantsDemo } },
         });
         if (error) throw error;
+        
+        // Notify admin about new user signup
+        try {
+          await supabase.functions.invoke('send-transactional-email', {
+            body: {
+              templateName: 'new-user-notification',
+              recipientEmail: 'rashid3105@gmail.com',
+              idempotencyKey: `new-user-${signUpData.user?.id || Date.now()}`,
+              templateData: {
+                userName: displayName,
+                userEmail: email,
+                isDemo: wantsDemo,
+              },
+            },
+          });
+        } catch (emailErr) {
+          console.error('Failed to send admin notification email', emailErr);
+        }
+        
         toast({ title: t("accountCreated"), description: t("youreSignedIn") });
         navigate("/profile-setup");
       }
