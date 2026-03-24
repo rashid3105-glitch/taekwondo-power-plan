@@ -144,24 +144,45 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
   const handleSubmit = async () => {
     const finalName = selectedTest === "__custom" ? customTestName.trim() : selectedTest;
     if (!finalName) {
-      toast({ title: t("error"), description: t("ptSelectTestError" as any) || "Vælg venligst en test", variant: "destructive" });
+      toast({ title: t("error"), description: t("ptSelectTestError" as any), variant: "destructive" });
       return;
     }
-    if (!testValue) {
-      toast({ title: t("error"), description: t("ptEnterValueError" as any) || "Indtast venligst en værdi", variant: "destructive" });
+
+    const rawValue = testValue.trim();
+    if (!rawValue) {
+      toast({ title: t("error"), description: t("ptEnterValueError" as any), variant: "destructive" });
       return;
     }
+
     if (mode === "coach" && !(athleteId || selectedAthleteId)) {
-      toast({ title: t("error"), description: t("ptSelectAthleteError" as any) || "Vælg venligst en atlet", variant: "destructive" });
+      toast({ title: t("error"), description: t("ptSelectAthleteError" as any), variant: "destructive" });
+      return;
+    }
+
+    const normalizedValue = rawValue
+      .replace(/\s+/g, "")
+      .replace(/,/g, ".")
+      .replace(/^(\d+)-(\d+)$/, "$1.$2");
+    const parsedValue = Number(normalizedValue);
+
+    if (!Number.isFinite(parsedValue)) {
+      toast({ title: t("error"), description: t("ptInvalidValueError" as any), variant: "destructive" });
       return;
     }
 
     setSaving(true);
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) {
+      setSaving(false);
+      return;
+    }
 
     const targetId = mode === "coach" ? (athleteId || selectedAthleteId) : user.id;
-    if (!targetId) return;
+    if (!targetId) {
+      setSaving(false);
+      return;
+    }
+
     const standardTest = Object.values(STANDARD_TESTS).flat().find(t => t.name === finalName);
     const unit = testUnit || standardTest?.unit || "";
 
@@ -169,7 +190,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
       user_id: targetId,
       test_name: finalName,
       category: activeCategory,
-      value: parseFloat(testValue),
+      value: parsedValue,
       unit,
       test_type: mode === "coach" ? "coach" : "individual",
       tested_by: mode === "coach" ? user.id : null,
