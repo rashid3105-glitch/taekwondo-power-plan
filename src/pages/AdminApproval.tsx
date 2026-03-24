@@ -537,6 +537,21 @@ export default function AdminApproval() {
                 className="scale-75"
               />
             </div>
+            {u.is_demo && (
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-muted-foreground">Fuld adgang</span>
+                <Switch
+                  checked={!!u.demo_full_access}
+                  onCheckedChange={() => toggleDemoFullAccess(u.user_id, !!u.demo_full_access)}
+                  className="scale-75"
+                />
+              </div>
+            )}
+            {u.is_demo && !u.demo_full_access && (
+              <span className="text-[10px] text-amber-500 font-medium">
+                Kun træningsplanlægning
+              </span>
+            )}
             {u.is_demo && u.payment_status !== "paid" && (
               <span className="text-[10px] text-destructive font-medium">
                 {t("demoExpires14Days" as any)}
