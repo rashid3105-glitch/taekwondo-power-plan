@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { Loader2, Plus, Trash2, Timer, Dumbbell, Wind, Zap, ClipboardList } from "lucide-react";
+import { Loader2, Plus, Trash2, Timer, Dumbbell, Wind, Zap, ClipboardList, Users } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 interface TestResult {
@@ -17,6 +17,11 @@ interface TestResult {
   test_type: string;
   test_date: string;
   notes: string;
+}
+
+interface CoachAthlete {
+  athlete_id: string;
+  display_name: string;
 }
 
 const STANDARD_TESTS: Record<string, { name: string; unit: string; category: string }[]> = {
