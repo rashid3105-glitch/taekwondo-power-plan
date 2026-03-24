@@ -80,6 +80,12 @@ export default function Help() {
               <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-5">
                 <li>{t("changelogEntry9" as any)}</li>
                 <li>{t("changelogEntry10" as any)}</li>
+                <li>{t("changelogEntry11" as any)}</li>
+                <li>{t("changelogEntry12" as any)}</li>
+                <li>{t("changelogEntry13" as any)}</li>
+                <li>{t("changelogEntry14" as any)}</li>
+                <li>{t("changelogEntry15" as any)}</li>
+                <li>{t("changelogEntry16" as any)}</li>
               </ul>
             </div>
             <div className="rounded-lg border border-border bg-card px-5 py-4 space-y-3 mt-3">
