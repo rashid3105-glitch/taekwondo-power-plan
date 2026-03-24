@@ -411,6 +411,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
                           <th className="text-right py-2 text-xs text-muted-foreground font-semibold">{t("ptResult" as any)}</th>
                           <th className="text-right py-2 text-xs text-muted-foreground font-semibold">{t("ptChange" as any)}</th>
                           <th className="text-left py-2 text-xs text-muted-foreground font-semibold">{t("ptType" as any)}</th>
+                          <th className="text-left py-2 text-xs text-muted-foreground font-semibold">{t("ptNotes" as any)}</th>
                           <th className="py-2"></th>
                         </tr>
                       </thead>
@@ -437,6 +438,9 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
                                 <span className={`text-xs px-2 py-0.5 rounded-full ${r.test_type === "coach" ? "bg-accent/20 text-accent" : "bg-primary/10 text-primary"}`}>
                                   {r.test_type === "coach" ? t("ptCoachTest" as any) : t("ptIndividualTest" as any)}
                                 </span>
+                              </td>
+                              <td className="py-2 text-xs text-muted-foreground max-w-[120px] truncate" title={r.notes || ""}>
+                                {r.notes || "—"}
                               </td>
                               <td className="py-2 text-right">
                                 <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDelete(r.id)}>
