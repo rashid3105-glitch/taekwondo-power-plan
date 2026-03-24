@@ -308,6 +308,12 @@ const translations = {
     changelog_2026_03_24: "March 24, 2026",
     changelogEntry9: "Admin email notification on new user signup",
     changelogEntry10: "Email infrastructure with transactional email support",
+    changelogEntry11: "Coach can enter physical test results for connected athletes",
+    changelogEntry12: "Improved form validation with separate error messages and comma decimal support",
+    changelogEntry13: "Security hardening: profile field protection, RLS policy fixes, diary privacy",
+    changelogEntry14: "Admin user management with search, filters, and profile editing",
+    changelogEntry15: "Country field converted to dropdown across admin and profile setup",
+    changelogEntry16: "Collapsible changelog on Help page",
 
     // Payment & Demo
     paid: "Paid",
