@@ -22,6 +22,7 @@ import Diary from "./pages/Diary";
 import AdminPayments from "./pages/AdminPayments";
 import NotFound from "./pages/NotFound";
 import Methodology from "./pages/Methodology";
+import Unsubscribe from "./pages/Unsubscribe";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ const App = () => (
             <Route path="/library" element={<LibraryChooser />} />
             <Route path="/library/:section" element={<Library />} />
             <Route path="/diary" element={<Diary />} />
+            <Route path="/unsubscribe" element={<Unsubscribe />} />
             <Route path="/progress" element={<Navigate to="/dashboard" replace />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

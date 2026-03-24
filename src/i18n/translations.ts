@@ -305,6 +305,9 @@ const translations = {
     changelogEntry6: "Mental radar chart with previous assessment comparison overlay",
     changelogEntry7: "Progress dashboard with time range filtering and average stats",
     changelogEntry8: "Physical Testing feature card added to landing page with detail page",
+    changelog_2026_03_24: "March 24, 2026",
+    changelogEntry9: "Admin email notification on new user signup",
+    changelogEntry10: "Email infrastructure with transactional email support",
 
     // Payment & Demo
     paid: "Paid",
@@ -852,6 +855,9 @@ const translations = {
     changelogEntry6: "Mentalt radardiagram med sammenligning af tidligere vurdering",
     changelogEntry7: "Fremgangs-dashboard med tidsfiltrering og gennemsnitsstatistikker",
     changelogEntry8: "Fysisk testning-funktionskort tilføjet til forsiden med detaljeside",
+    changelog_2026_03_24: "24. marts 2026",
+    changelogEntry9: "Admin e-mail notifikation ved ny bruger tilmelding",
+    changelogEntry10: "E-mail infrastruktur med transaktions-e-mail support",
 
     // Payment & Demo
     paid: "Betalt",
@@ -1399,6 +1405,9 @@ const translations = {
     changelogEntry6: "Mentalt radardiagram med jämförelse av tidigare bedömning",
     changelogEntry7: "Framsteg-dashboard med tidsfiltrering och genomsnittsstatistik",
     changelogEntry8: "Fysisk testning-funktionskort tillagt på startsidan med detaljsida",
+    changelog_2026_03_24: "24 mars 2026",
+    changelogEntry9: "Admin e-postmeddelande vid ny användarregistrering",
+    changelogEntry10: "E-postinfrastruktur med transaktionell e-postsupport",
 
     // Payment & Demo
     paid: "Betald",
