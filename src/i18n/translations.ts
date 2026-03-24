@@ -308,6 +308,12 @@ const translations = {
     changelog_2026_03_24: "March 24, 2026",
     changelogEntry9: "Admin email notification on new user signup",
     changelogEntry10: "Email infrastructure with transactional email support",
+    changelogEntry11: "Coach can enter physical test results for connected athletes",
+    changelogEntry12: "Improved form validation with separate error messages and comma decimal support",
+    changelogEntry13: "Security hardening: profile field protection, RLS policy fixes, diary privacy",
+    changelogEntry14: "Admin user management with search, filters, and profile editing",
+    changelogEntry15: "Country field converted to dropdown across admin and profile setup",
+    changelogEntry16: "Collapsible changelog on Help page",
 
     // Payment & Demo
     paid: "Paid",
@@ -860,6 +866,12 @@ const translations = {
     changelog_2026_03_24: "24. marts 2026",
     changelogEntry9: "Admin e-mail notifikation ved ny bruger tilmelding",
     changelogEntry10: "E-mail infrastruktur med transaktions-e-mail support",
+    changelogEntry11: "Trænere kan indtaste fysiske testresultater for tilknyttede atleter",
+    changelogEntry12: "Forbedret formularvalidering med separate fejlbeskeder og komma-decimalunderstøttelse",
+    changelogEntry13: "Sikkerhedsforbedringer: profilfelter beskyttet, RLS-politikker rettet, dagbogsprivatliv",
+    changelogEntry14: "Admin brugeradministration med søgning, filtre og profilredigering",
+    changelogEntry15: "Landefelt konverteret til dropdown i admin og profilopsætning",
+    changelogEntry16: "Sammenklappelig ændringslog på Hjælp-siden",
 
     // Payment & Demo
     paid: "Betalt",
@@ -1412,6 +1424,12 @@ const translations = {
     changelog_2026_03_24: "24 mars 2026",
     changelogEntry9: "Admin e-postmeddelande vid ny användarregistrering",
     changelogEntry10: "E-postinfrastruktur med transaktionell e-postsupport",
+    changelogEntry11: "Tränare kan ange fysiska testresultat för kopplade atleter",
+    changelogEntry12: "Förbättrad formulärvalidering med separata felmeddelanden och komma-decimalstöd",
+    changelogEntry13: "Säkerhetsförbättringar: profilfält skyddade, RLS-policyer fixade, dagboksintegritet",
+    changelogEntry14: "Admin användarhantering med sökning, filter och profilredigering",
+    changelogEntry15: "Landsfält konverterat till dropdown i admin och profiluppsättning",
+    changelogEntry16: "Hopfällbar ändringslogg på Hjälp-sidan",
 
     // Payment & Demo
     paid: "Betald",
