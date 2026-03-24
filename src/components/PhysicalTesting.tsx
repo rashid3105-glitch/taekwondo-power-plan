@@ -197,7 +197,15 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
     return acc;
   }, {} as Record<string, TestResult[]>);
 
-  if (loading) {
+  if (loadingAthletes) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (loading && (mode !== "coach" || selectedAthleteId || athleteId)) {
     return (
       <div className="flex items-center justify-center py-12">
         <Loader2 className="h-6 w-6 animate-spin text-primary" />
@@ -206,6 +214,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
   }
 
   const CategoryIcon = CATEGORY_ICONS[activeCategory] || ClipboardList;
+  const currentAthleteName = athleteName || selectedAthleteName;
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -213,11 +222,38 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
         <ClipboardList className="h-5 w-5 text-primary" />
         <h2 className="text-xl sm:text-2xl font-extrabold text-foreground">
           {t("ptTitle" as any)}
-          {mode === "coach" && athleteName && (
-            <span className="text-muted-foreground font-normal text-base ml-2">— {athleteName}</span>
+          {mode === "coach" && currentAthleteName && (
+            <span className="text-muted-foreground font-normal text-base ml-2">— {currentAthleteName}</span>
           )}
         </h2>
       </div>
+
+      {/* Coach athlete selector */}
+      {mode === "coach" && !athleteId && (
+        <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
+          <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+            <Users className="h-4 w-4 text-primary" /> {t("ptSelectAthlete" as any) || "Select Athlete"}
+          </h3>
+          {athletes.length === 0 ? (
+            <p className="text-sm text-muted-foreground">{t("ptNoAthletes" as any) || "No athletes connected to you."}</p>
+          ) : (
+            <Select value={selectedAthleteId} onValueChange={(v) => {
+              setSelectedAthleteId(v);
+              const ath = athletes.find(a => a.athlete_id === v);
+              setSelectedAthleteName(ath?.display_name || "");
+            }}>
+              <SelectTrigger>
+                <SelectValue placeholder={t("ptSelectAthlete" as any) || "Select an athlete..."} />
+              </SelectTrigger>
+              <SelectContent>
+                {athletes.map(a => (
+                  <SelectItem key={a.athlete_id} value={a.athlete_id}>{a.display_name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        </div>
+      )}
 
       {/* Category tabs */}
       <Tabs value={activeCategory} onValueChange={setActiveCategory}>
