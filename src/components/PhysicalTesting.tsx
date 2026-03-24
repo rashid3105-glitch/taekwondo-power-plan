@@ -152,7 +152,8 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const targetId = mode === "coach" && athleteId ? athleteId : user.id;
+    const targetId = mode === "coach" ? (athleteId || selectedAthleteId) : user.id;
+    if (!targetId) return;
     const standardTest = Object.values(STANDARD_TESTS).flat().find(t => t.name === finalName);
     const unit = testUnit || standardTest?.unit || "";
 
