@@ -67,7 +67,32 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
   const [saving, setSaving] = useState(false);
   const [activeCategory, setActiveCategory] = useState("speed");
   const { toast } = useToast();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
+
+  const validationMessage = (type: "selectTest" | "enterValue" | "invalidValue" | "selectAthlete") => {
+    const messages = {
+      da: {
+        selectTest: "Vælg venligst en test",
+        enterValue: "Indtast venligst en værdi",
+        invalidValue: "Indtast et gyldigt tal (fx 10,5)",
+        selectAthlete: "Vælg venligst en atlet",
+      },
+      sv: {
+        selectTest: "Välj ett test",
+        enterValue: "Ange ett värde",
+        invalidValue: "Ange ett giltigt tal (t.ex. 10,5)",
+        selectAthlete: "Välj en atlet",
+      },
+      en: {
+        selectTest: "Please select a test",
+        enterValue: "Please enter a value",
+        invalidValue: "Please enter a valid number (e.g. 10.5)",
+        selectAthlete: "Please select an athlete",
+      },
+    } as const;
+
+    return messages[locale]?.[type] ?? messages.en[type];
+  };
 
   // Coach athlete selection (when no athleteId is provided but mode is coach)
   const [athletes, setAthletes] = useState<CoachAthlete[]>([]);
