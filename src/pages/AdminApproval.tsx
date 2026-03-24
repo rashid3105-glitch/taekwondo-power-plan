@@ -38,6 +38,7 @@ interface PendingUser {
   payment_status: string;
   payment_date: string | null;
   is_demo: boolean;
+  demo_full_access?: boolean;
   club_id?: string | null;
   club_name?: string | null;
   email?: string;
@@ -87,7 +88,7 @@ export default function AdminApproval() {
     const [profilesRes, emailsRes, plansRes, rolesRes, coachAthletesRes, clubsRes] = await Promise.all([
       supabase
         .from("profiles")
-        .select("user_id, display_name, created_at, is_approved, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, payment_status, payment_date, is_demo, club_id, discipline, country, current_injury")
+        .select("user_id, display_name, created_at, is_approved, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, payment_status, payment_date, is_demo, demo_full_access, club_id, discipline, country, current_injury")
         .order("created_at", { ascending: false }),
       supabase.functions.invoke("get-admin-users"),
       supabase
@@ -305,6 +306,12 @@ export default function AdminApproval() {
   const toggleDemo = async (userId: string, currentlyDemo: boolean) => {
     await supabase.from("profiles").update({ is_demo: !currentlyDemo } as any).eq("user_id", userId);
     toast({ title: !currentlyDemo ? t("markedAsDemo" as any) : t("demoRemoved" as any) });
+    loadUsers();
+  };
+
+  const toggleDemoFullAccess = async (userId: string, currentValue: boolean) => {
+    await supabase.from("profiles").update({ demo_full_access: !currentValue } as any).eq("user_id", userId);
+    toast({ title: !currentValue ? "Fuld demo-adgang aktiveret" : "Fuld demo-adgang deaktiveret" });
     loadUsers();
   };
 
@@ -530,6 +537,21 @@ export default function AdminApproval() {
                 className="scale-75"
               />
             </div>
+            {u.is_demo && (
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-muted-foreground">Fuld adgang</span>
+                <Switch
+                  checked={!!u.demo_full_access}
+                  onCheckedChange={() => toggleDemoFullAccess(u.user_id, !!u.demo_full_access)}
+                  className="scale-75"
+                />
+              </div>
+            )}
+            {u.is_demo && !u.demo_full_access && (
+              <span className="text-[10px] text-amber-500 font-medium">
+                Kun træningsplanlægning
+              </span>
+            )}
             {u.is_demo && u.payment_status !== "paid" && (
               <span className="text-[10px] text-destructive font-medium">
                 {t("demoExpires14Days" as any)}
