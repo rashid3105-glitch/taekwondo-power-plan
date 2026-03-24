@@ -309,6 +309,12 @@ export default function AdminApproval() {
     loadUsers();
   };
 
+  const toggleDemoFullAccess = async (userId: string, currentValue: boolean) => {
+    await supabase.from("profiles").update({ demo_full_access: !currentValue } as any).eq("user_id", userId);
+    toast({ title: !currentValue ? "Fuld demo-adgang aktiveret" : "Fuld demo-adgang deaktiveret" });
+    loadUsers();
+  };
+
   const openEditDialog = (u: PendingUser) => {
     setEditForm({
       display_name: u.display_name || "",
