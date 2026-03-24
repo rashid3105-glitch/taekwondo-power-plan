@@ -305,6 +305,9 @@ const translations = {
     changelogEntry6: "Mental radar chart with previous assessment comparison overlay",
     changelogEntry7: "Progress dashboard with time range filtering and average stats",
     changelogEntry8: "Physical Testing feature card added to landing page with detail page",
+    changelog_2026_03_24: "March 24, 2026",
+    changelogEntry9: "Admin email notification on new user signup",
+    changelogEntry10: "Email infrastructure with transactional email support",
 
     // Payment & Demo
     paid: "Paid",
