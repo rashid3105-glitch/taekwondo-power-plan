@@ -546,6 +546,27 @@ export default function AdminApproval() {
                 {t("demoExpires14Days" as any)}
               </span>
             )}
+            {u.payment_status !== "paid" && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-6 text-[10px] gap-1"
+                onClick={() => grant14DaysAccess(u.user_id)}
+              >
+                <Clock className="h-3 w-3" />
+                {t("grant14Days" as any)}
+              </Button>
+            )}
+            {u.payment_status === "paid" && u.payment_date && (() => {
+              const payDate = new Date(u.payment_date);
+              const now = new Date();
+              const diffDays = Math.ceil((payDate.getTime() + 14 * 86400000 - now.getTime()) / 86400000);
+              return diffDays > 0 && diffDays <= 14 ? (
+                <span className="text-[10px] text-amber-500 font-medium">
+                  {diffDays} {t("demoBannerDaysLeft" as any)}
+                </span>
+              ) : null;
+            })()}
           </div>
 
           {u.plans && u.plans.length > 0 && (
