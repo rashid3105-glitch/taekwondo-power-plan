@@ -47,6 +47,7 @@ export const template = {
   component: NewUserNotificationEmail,
   subject: (data: Record<string, any>) => `New user signup: ${data.userName || data.userEmail || 'Unknown'}`,
   displayName: 'New user admin notification',
+  to: Deno.env.get('ADMIN_NOTIFICATION_EMAIL') || 'rashid3105@gmail.com',
   previewData: { userName: 'John Doe', userEmail: 'john@example.com', isDemo: false },
 } satisfies TemplateEntry
 
