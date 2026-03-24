@@ -308,6 +308,17 @@ export default function AdminApproval() {
     loadUsers();
   };
 
+  const grant14DaysAccess = async (userId: string) => {
+    const today = new Date().toISOString().split("T")[0];
+    await supabase.from("profiles").update({
+      payment_status: "paid",
+      payment_date: today,
+      is_approved: true,
+    } as any).eq("user_id", userId);
+    toast({ title: t("granted14DaysAccess" as any) });
+    loadUsers();
+  };
+
   const openEditDialog = (u: PendingUser) => {
     setEditForm({
       display_name: u.display_name || "",
