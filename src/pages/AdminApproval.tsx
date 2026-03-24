@@ -96,7 +96,7 @@ export default function AdminApproval() {
         .order("created_at", { ascending: false }),
       supabase.from("user_roles").select("user_id, role"),
       supabase.from("coach_athletes").select("coach_id, athlete_id"),
-      supabase.from("clubs" as any).select("id, name"),
+      supabase.from("clubs" as any).select("id, name").order("name"),
     ]);
 
     const profiles = (profilesRes.data || []) as PendingUser[];
