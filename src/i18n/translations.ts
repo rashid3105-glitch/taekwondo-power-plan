@@ -1442,6 +1442,8 @@ const translations = {
     markedAsPaid: "Markerad som betald",
     markedAsUnpaid: "Markerad som obetald",
     paymentDateUpdated: "Betalningsdatum uppdaterat",
+    grant14Days: "14 dagar",
+    granted14DaysAccess: "14 dagars betald åtkomst beviljad",
     markedAsDemo: "Markerad som demo",
     demoRemoved: "Demo-status borttagen",
     setDate: "Ange datum",
