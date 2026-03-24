@@ -165,7 +165,7 @@ export default function CoachDashboard() {
           .select("id, name, plan_data, is_active, created_at, user_id, injury_description")
           .in("user_id", athleteIds)
           .order("created_at", { ascending: false }),
-        supabase.from("clubs" as any).select("id, name"),
+        supabase.from("clubs" as any).select("id, name").order("name"),
       ]);
 
       const clubMap = new Map<string, string>(
@@ -176,7 +176,7 @@ export default function CoachDashboard() {
         (((profilesRes.data || []) as any[]).map((athlete) => ({
           ...athlete,
           club_name: athlete.club_id ? clubMap.get(athlete.club_id) || null : null,
-        })) as AthleteProfile[])
+        })) as AthleteProfile[]).sort((a, b) => a.display_name.localeCompare(b.display_name))
       );
       setPlans((plansRes.data || []) as unknown as AthletePlan[]);
       setRehabPlans((rehabRes.data || []) as unknown as RehabPlan[]);

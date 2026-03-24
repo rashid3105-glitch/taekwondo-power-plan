@@ -143,7 +143,11 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
         .in("user_id", athleteIds);
 
       if (profiles) {
-        setAthletes(profiles.map(p => ({ athlete_id: p.user_id, display_name: p.display_name })));
+        setAthletes(
+          profiles
+            .map(p => ({ athlete_id: p.user_id, display_name: p.display_name }))
+            .sort((a, b) => a.display_name.localeCompare(b.display_name))
+        );
       }
     }
     setLoadingAthletes(false);
