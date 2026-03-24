@@ -22,6 +22,7 @@ import Diary from "./pages/Diary";
 import AdminPayments from "./pages/AdminPayments";
 import NotFound from "./pages/NotFound";
 import Methodology from "./pages/Methodology";
+import Unsubscribe from "./pages/Unsubscribe";
 
 const queryClient = new QueryClient();
 
