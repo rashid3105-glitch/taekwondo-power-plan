@@ -8,6 +8,7 @@ import { AppFooter } from "@/components/AppFooter";
 import { Watermark } from "@/components/Watermark";
 import { PageMeta } from "@/components/PageMeta";
 
+import { FeatureDiagram } from "@/components/FeatureDiagram";
 import trainingImg from "@/assets/features/training-plan.jpg";
 import progressImg from "@/assets/features/progress.jpg";
 import mentalImg from "@/assets/features/mental.jpg";
