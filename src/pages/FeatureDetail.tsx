@@ -196,15 +196,20 @@ const FeatureDetail = () => {
           </Button>
         </div>
 
-        {/* Hero */}
+        {/* Hero + Diagram side by side */}
         <section className="max-w-4xl mx-auto px-6 pt-6 pb-10">
-          <div className="space-y-4">
-            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
-              {t(feature.titleKey as any)}
-            </h1>
-            <p className="text-base sm:text-lg text-muted-foreground max-w-2xl leading-relaxed">
-              {feature.longDesc[locale]}
-            </p>
+          <div className="flex flex-col md:flex-row md:items-start gap-6 md:gap-10">
+            <div className="space-y-4 flex-1 min-w-0">
+              <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
+                {t(feature.titleKey as any)}
+              </h1>
+              <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
+                {feature.longDesc[locale]}
+              </p>
+            </div>
+            <div className="w-full md:w-[320px] shrink-0">
+              <FeatureDiagram feature={section as string} />
+            </div>
           </div>
         </section>
 
@@ -219,11 +224,6 @@ const FeatureDetail = () => {
               loading="lazy"
             />
           </div>
-        </section>
-
-        {/* Animated Diagram */}
-        <section className="max-w-4xl mx-auto px-6 pb-12">
-          <FeatureDiagram feature={section as string} />
         </section>
 
         {/* Benefits */}
