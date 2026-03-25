@@ -948,9 +948,17 @@ const translations = {
     changelogEntry14: "Admin brugeradministration med søgning, filtre og profilredigering",
     changelogEntry15: "Landefelt konverteret til dropdown i admin og profilopsætning",
     changelogEntry16: "Sammenklappelig ændringslog på Hjælp-siden",
+    changelog_2026_03_25: "25. marts 2026",
+    changelogEntry17: "GDPR-overholdelse: Privatlivspolitik-side med fuld i18n (EN/DA/SV)",
+    changelogEntry18: "Selvbetjent kontosletning med bekræftelsesbeskyttelse",
+    changelogEntry19: "Personlig dataeksport (JSON) til GDPR art. 20 portabilitet",
+    changelogEntry20: "Farezone-sektion tilføjet til profilopsætning",
+    changelogEntry21: "Rettighedseskalering rettet: user_roles RLS-politik hærdet",
+    changelogEntry22: "E-mail afmelding med token-baseret opt-out",
+    changelogEntry23: "Privatlivspolitik-link tilføjet i app footer",
+    changelogEntry24: "Udvidet Hjælp-side med Fysisk Test, Ernæring, Fremgang, Bibliotek & Dagbog sektioner",
 
     // Payment & Demo
-    paid: "Betalt",
     unpaid: "Ikke betalt",
     demo: "Demo",
     markedAsPaid: "Markeret som betalt",
