@@ -206,6 +206,7 @@ const Index = () => {
                 gradient={s.gradient}
                 delay={`${i * 60}ms`}
                 iconColor={s.iconColor}
+                slug={s.slug}
                 onClick={() => navigate(`/features/${s.slug}`)}
               />
             ))}
