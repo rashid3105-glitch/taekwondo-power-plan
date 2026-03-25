@@ -961,6 +961,10 @@ const translations = {
     changelogEntry22: "E-mail afmelding med token-baseret opt-out",
     changelogEntry23: "Privatlivspolitik-link tilføjet i app footer",
     changelogEntry24: "Udvidet Hjælp-side med Fysisk Test, Ernæring, Fremgang, Bibliotek & Dagbog sektioner",
+    changelogEntry25: "Animerede SVG-diagrammer på Metodologi og alle funktionsdetaljesider",
+    changelogEntry26: "Interaktive tooltips på funktionsdiagrammer med kontekstuelle detaljer (hover/tap)",
+    changelogEntry27: "Genoptræningsdiagram opdateret med Poomsae-specifikke restitutionsmilepæle",
+    changelogEntry28: "Responsivt side-om-side layout til funktionsside hero + diagram",
 
     // Payment & Demo
     unpaid: "Ikke betalt",
