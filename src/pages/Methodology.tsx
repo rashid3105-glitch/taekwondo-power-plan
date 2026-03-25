@@ -7,6 +7,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { AppFooter } from "@/components/AppFooter";
 import { Watermark } from "@/components/Watermark";
 import { PageMeta } from "@/components/PageMeta";
+import { PeriodizationDiagram } from "@/components/PeriodizationDiagram";
 
 type TranslationKey =
   | "methPageTitle"
@@ -171,6 +172,11 @@ export default function Methodology() {
               {tt("methHeroSubtitle")}
             </p>
           </div>
+        </section>
+
+        {/* Periodization diagram */}
+        <section className="max-w-2xl mx-auto px-5">
+          <PeriodizationDiagram />
         </section>
 
         {/* Content sections */}
