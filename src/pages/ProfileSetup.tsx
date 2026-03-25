@@ -395,6 +395,8 @@ export default function ProfileSetup() {
             {loading ? t("saving") : t("saveProfileContinue")}
           </Button>
         </form>
+
+        <AccountDangerZone />
       </div>
     </div>
   );
