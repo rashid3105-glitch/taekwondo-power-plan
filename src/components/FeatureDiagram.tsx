@@ -27,7 +27,7 @@ function PlanDiagram() {
   const intPts = pt(phases.map(p => p.int));
 
   return (
-    <svg viewBox={`0 0 ${W} ${H + 30}`} className="w-full max-w-md mx-auto">
+    <svg viewBox={`0 0 ${W} ${H + 30}`} className="w-full max-w-[280px] sm:max-w-xs mx-auto">
       <defs>
         <linearGradient id="fd-vol" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="hsl(var(--energy))" stopOpacity="0.2" />
