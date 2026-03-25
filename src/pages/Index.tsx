@@ -51,6 +51,7 @@ function SectionPreview({
           <p className="text-[11px] leading-relaxed text-muted-foreground line-clamp-2">{description}</p>
         </div>
       </div>
+      <SectionMiniDiagram slug={slug} />
     </button>
   );
 }
