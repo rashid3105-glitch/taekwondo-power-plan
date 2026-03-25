@@ -190,7 +190,7 @@ function NutritionDiagram() {
   });
 
   return (
-    <svg viewBox="0 0 200 190" className="w-full max-w-[200px] mx-auto">
+    <svg viewBox="0 0 200 190" className="w-full max-w-[160px] sm:max-w-[180px] mx-auto">
       {arcs.map((a, i) => (
         <g key={a.label}>
           <motion.path d={a.d} fill={a.color} fillOpacity="0.7" stroke="hsl(var(--background))" strokeWidth="1.5" initial={{ scale: 0, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.15 }} style={{ transformOrigin: `${cx}px ${cy}px` }} />
