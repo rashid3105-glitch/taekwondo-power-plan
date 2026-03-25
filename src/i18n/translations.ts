@@ -1571,9 +1571,17 @@ const translations = {
     changelogEntry14: "Admin användarhantering med sökning, filter och profilredigering",
     changelogEntry15: "Landsfält konverterat till dropdown i admin och profiluppsättning",
     changelogEntry16: "Hopfällbar ändringslogg på Hjälp-sidan",
+    changelog_2026_03_25: "25 mars 2026",
+    changelogEntry17: "GDPR-efterlevnad: Integritetspolicy-sida med full i18n (EN/DA/SV)",
+    changelogEntry18: "Självbetjäning kontoradering med bekräftelseskydd",
+    changelogEntry19: "Personlig dataexport (JSON) för GDPR art. 20 portabilitet",
+    changelogEntry20: "Farozon-sektion tillagd i profiluppsättning",
+    changelogEntry21: "Privilegieeskaleringsfix: user_roles RLS-policy härdad",
+    changelogEntry22: "E-postavprenumeration med tokenbaserad opt-out",
+    changelogEntry23: "Integritetspolicy-länk tillagd i app-footer",
+    changelogEntry24: "Utökad Hjälp-sida med Fysisk Test, Näring, Framsteg, Bibliotek & Dagbok sektioner",
 
     // Payment & Demo
-    paid: "Betald",
     unpaid: "Obetald",
     demo: "Demo",
     markedAsPaid: "Markerad som betald",
