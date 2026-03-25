@@ -68,7 +68,7 @@ function ProgressDiagram() {
   const barW = 30, gap = (W - PX * 2 - bars.length * barW) / (bars.length - 1);
 
   return (
-    <svg viewBox={`0 0 ${W} ${H + 20}`} className="w-full max-w-sm mx-auto">
+    <svg viewBox={`0 0 ${W} ${H + 20}`} className="w-full max-w-[240px] sm:max-w-[280px] mx-auto">
       <line x1={PX} y1={H - PY} x2={W - PX} y2={H - PY} stroke="hsl(var(--border))" strokeWidth="0.5" />
       {bars.map((b, i) => {
         const x = PX + i * (barW + gap);
