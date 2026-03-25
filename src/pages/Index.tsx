@@ -11,6 +11,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { AppFooter } from "@/components/AppFooter";
 import { Watermark } from "@/components/Watermark";
 import { PageMeta } from "@/components/PageMeta";
+import { SectionMiniDiagram } from "@/components/SectionMiniDiagram";
 
 function SectionPreview({
   icon: Icon,
