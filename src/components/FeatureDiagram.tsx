@@ -27,7 +27,7 @@ function PlanDiagram() {
   const intPts = pt(phases.map(p => p.int));
 
   return (
-    <svg viewBox={`0 0 ${W} ${H + 30}`} className="w-full max-w-md mx-auto">
+    <svg viewBox={`0 0 ${W} ${H + 30}`} className="w-full max-w-[280px] sm:max-w-xs mx-auto">
       <defs>
         <linearGradient id="fd-vol" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="hsl(var(--energy))" stopOpacity="0.2" />
@@ -68,7 +68,7 @@ function ProgressDiagram() {
   const barW = 30, gap = (W - PX * 2 - bars.length * barW) / (bars.length - 1);
 
   return (
-    <svg viewBox={`0 0 ${W} ${H + 20}`} className="w-full max-w-sm mx-auto">
+    <svg viewBox={`0 0 ${W} ${H + 20}`} className="w-full max-w-[240px] sm:max-w-[280px] mx-auto">
       <line x1={PX} y1={H - PY} x2={W - PX} y2={H - PY} stroke="hsl(var(--border))" strokeWidth="0.5" />
       {bars.map((b, i) => {
         const x = PX + i * (barW + gap);
@@ -103,7 +103,7 @@ function MentalDiagram() {
   }).join(" ");
 
   return (
-    <svg viewBox="0 0 280 210" className="w-full max-w-xs mx-auto">
+    <svg viewBox="0 0 280 210" className="w-full max-w-[200px] sm:max-w-[240px] mx-auto">
       {[0.33, 0.66, 1].map(s => (
         <polygon key={s} points={dims.map((_, i) => {
           const a = -Math.PI / 2 + i * angleStep;
@@ -140,7 +140,7 @@ function RehabDiagram() {
   const W = 380, H = 60;
 
   return (
-    <svg viewBox={`0 0 ${W} ${H + 10}`} className="w-full max-w-sm mx-auto">
+    <svg viewBox={`0 0 ${W} ${H + 10}`} className="w-full max-w-[260px] sm:max-w-[300px] mx-auto">
       <line x1="30" y1="25" x2={W - 30} y2="25" stroke="hsl(var(--border))" strokeWidth="2" strokeLinecap="round" />
       {phases.map((p, i) => {
         const x = 30 + (i / (phases.length - 1)) * (W - 60);
@@ -190,7 +190,7 @@ function NutritionDiagram() {
   });
 
   return (
-    <svg viewBox="0 0 200 190" className="w-full max-w-[200px] mx-auto">
+    <svg viewBox="0 0 200 190" className="w-full max-w-[160px] sm:max-w-[180px] mx-auto">
       {arcs.map((a, i) => (
         <g key={a.label}>
           <motion.path d={a.d} fill={a.color} fillOpacity="0.7" stroke="hsl(var(--background))" strokeWidth="1.5" initial={{ scale: 0, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.15 }} style={{ transformOrigin: `${cx}px ${cy}px` }} />
@@ -214,7 +214,7 @@ function TestingDiagram() {
   const W = 360, barH = 10, gap = 28, PX = 60;
 
   return (
-    <svg viewBox={`0 0 ${W} ${tests.length * gap + 10}`} className="w-full max-w-sm mx-auto">
+    <svg viewBox={`0 0 ${W} ${tests.length * gap + 10}`} className="w-full max-w-[240px] sm:max-w-[280px] mx-auto">
       {tests.map((t, i) => {
         const y = 12 + i * gap;
         const barW = W - PX - 40;
@@ -244,7 +244,7 @@ function LibraryDiagram() {
   const cols = 3, cellW = 90, cellH = 50, gap = 8, PX = 20;
 
   return (
-    <svg viewBox={`0 0 ${PX * 2 + cols * cellW + (cols - 1) * gap} ${PX + 2 * cellH + gap + 10}`} className="w-full max-w-xs mx-auto">
+    <svg viewBox={`0 0 ${PX * 2 + cols * cellW + (cols - 1) * gap} ${PX + 2 * cellH + gap + 10}`} className="w-full max-w-[220px] sm:max-w-[260px] mx-auto">
       {cats.map((c, i) => {
         const col = i % cols, row = Math.floor(i / cols);
         const x = PX + col * (cellW + gap);
@@ -280,7 +280,7 @@ export function FeatureDiagram({ feature }: { feature: string }) {
     <motion.div
       {...fadeUp}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className="rounded-2xl border border-border/60 bg-card/40 backdrop-blur-md p-6 sm:p-8 shadow-card"
+      className="rounded-2xl border border-border/60 bg-card/40 backdrop-blur-md p-4 sm:p-6 shadow-card max-w-md mx-auto"
     >
       <Diagram />
     </motion.div>
