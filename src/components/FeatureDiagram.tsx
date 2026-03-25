@@ -214,7 +214,7 @@ function TestingDiagram() {
   const W = 360, barH = 10, gap = 28, PX = 60;
 
   return (
-    <svg viewBox={`0 0 ${W} ${tests.length * gap + 10}`} className="w-full max-w-sm mx-auto">
+    <svg viewBox={`0 0 ${W} ${tests.length * gap + 10}`} className="w-full max-w-[240px] sm:max-w-[280px] mx-auto">
       {tests.map((t, i) => {
         const y = 12 + i * gap;
         const barW = W - PX - 40;
