@@ -23,6 +23,7 @@ import AdminPayments from "./pages/AdminPayments";
 import NotFound from "./pages/NotFound";
 import Methodology from "./pages/Methodology";
 import Unsubscribe from "./pages/Unsubscribe";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +53,7 @@ const App = () => (
             <Route path="/library/:section" element={<Library />} />
             <Route path="/diary" element={<Diary />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/progress" element={<Navigate to="/dashboard" replace />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
