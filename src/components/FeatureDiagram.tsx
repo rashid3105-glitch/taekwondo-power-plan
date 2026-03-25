@@ -244,7 +244,7 @@ function LibraryDiagram() {
   const cols = 3, cellW = 90, cellH = 50, gap = 8, PX = 20;
 
   return (
-    <svg viewBox={`0 0 ${PX * 2 + cols * cellW + (cols - 1) * gap} ${PX + 2 * cellH + gap + 10}`} className="w-full max-w-xs mx-auto">
+    <svg viewBox={`0 0 ${PX * 2 + cols * cellW + (cols - 1) * gap} ${PX + 2 * cellH + gap + 10}`} className="w-full max-w-[220px] sm:max-w-[260px] mx-auto">
       {cats.map((c, i) => {
         const col = i % cols, row = Math.floor(i / cols);
         const x = PX + col * (cellW + gap);
