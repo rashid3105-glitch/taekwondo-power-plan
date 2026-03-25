@@ -103,7 +103,7 @@ function MentalDiagram() {
   }).join(" ");
 
   return (
-    <svg viewBox="0 0 280 210" className="w-full max-w-xs mx-auto">
+    <svg viewBox="0 0 280 210" className="w-full max-w-[200px] sm:max-w-[240px] mx-auto">
       {[0.33, 0.66, 1].map(s => (
         <polygon key={s} points={dims.map((_, i) => {
           const a = -Math.PI / 2 + i * angleStep;
