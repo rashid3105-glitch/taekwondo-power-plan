@@ -333,6 +333,10 @@ const translations = {
     changelogEntry22: "Email unsubscribe flow with token-based opt-out",
     changelogEntry23: "Privacy Policy link added to app footer",
     changelogEntry24: "Expanded Help page with Physical Testing, Nutrition, Progress, Library & Diary sections",
+    changelogEntry25: "Animated SVG diagrams on Methodology and all feature detail pages",
+    changelogEntry26: "Interactive tooltips on feature diagrams with contextual details (hover/tap)",
+    changelogEntry27: "Rehab diagram updated with Poomse-specific recovery milestones",
+    changelogEntry28: "Responsive side-by-side layout for feature page hero + diagram",
 
     // Payment & Demo
     paid: "Paid",
