@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekSchedulePicker";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { AccountDangerZone } from "@/components/AccountDangerZone";
 
 import { COUNTRIES } from "@/data/countries";
 
@@ -394,6 +395,8 @@ export default function ProfileSetup() {
             {loading ? t("saving") : t("saveProfileContinue")}
           </Button>
         </form>
+
+        <AccountDangerZone />
       </div>
     </div>
   );
