@@ -11,7 +11,6 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { AppFooter } from "@/components/AppFooter";
 import { Watermark } from "@/components/Watermark";
 import { PageMeta } from "@/components/PageMeta";
-import { SectionMiniDiagram } from "@/components/SectionMiniDiagram";
 
 function SectionPreview({
   icon: Icon,
@@ -20,7 +19,6 @@ function SectionPreview({
   gradient,
   delay,
   iconColor,
-  slug,
   onClick,
 }: {
   icon: typeof ArrowRight;
@@ -29,7 +27,6 @@ function SectionPreview({
   gradient: string;
   delay: string;
   iconColor: string;
-  slug: string;
   onClick?: () => void;
 }) {
   return (
@@ -51,7 +48,6 @@ function SectionPreview({
           <p className="text-[11px] leading-relaxed text-muted-foreground line-clamp-2">{description}</p>
         </div>
       </div>
-      <SectionMiniDiagram slug={slug} />
     </button>
   );
 }
@@ -206,7 +202,6 @@ const Index = () => {
                 gradient={s.gradient}
                 delay={`${i * 60}ms`}
                 iconColor={s.iconColor}
-                slug={s.slug}
                 onClick={() => navigate(`/features/${s.slug}`)}
               />
             ))}
