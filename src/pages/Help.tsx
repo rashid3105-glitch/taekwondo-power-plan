@@ -26,7 +26,7 @@ const helpSections = [
 export default function Help() {
   const navigate = useNavigate();
   const { t } = useLanguage();
-
+  const [activeSection, setActiveSection] = useState<string | null>(null);
   return (
     <div className="min-h-screen bg-background px-4 py-8 relative">
       <PageMeta title="Help Center" description="Get help with Sportstalent features and training tools." />
