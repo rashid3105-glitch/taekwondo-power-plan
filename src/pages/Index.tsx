@@ -20,6 +20,7 @@ function SectionPreview({
   gradient,
   delay,
   iconColor,
+  slug,
   onClick,
 }: {
   icon: typeof ArrowRight;
@@ -28,6 +29,7 @@ function SectionPreview({
   gradient: string;
   delay: string;
   iconColor: string;
+  slug: string;
   onClick?: () => void;
 }) {
   return (
