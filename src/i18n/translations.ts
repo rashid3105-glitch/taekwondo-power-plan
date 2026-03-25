@@ -324,6 +324,15 @@ const translations = {
     changelogEntry14: "Admin user management with search, filters, and profile editing",
     changelogEntry15: "Country field converted to dropdown across admin and profile setup",
     changelogEntry16: "Collapsible changelog on Help page",
+    changelog_2026_03_25: "March 25, 2026",
+    changelogEntry17: "GDPR compliance: Privacy Policy page with full i18n (EN/DA/SV)",
+    changelogEntry18: "Self-service account deletion with confirmation safeguard",
+    changelogEntry19: "Personal data export (JSON) for GDPR Art. 20 portability",
+    changelogEntry20: "Danger Zone section added to Profile Setup",
+    changelogEntry21: "Privilege escalation fix: user_roles RLS policy hardened",
+    changelogEntry22: "Email unsubscribe flow with token-based opt-out",
+    changelogEntry23: "Privacy Policy link added to app footer",
+    changelogEntry24: "Expanded Help page with Physical Testing, Nutrition, Progress, Library & Diary sections",
 
     // Payment & Demo
     paid: "Paid",
