@@ -140,7 +140,7 @@ function RehabDiagram() {
   const W = 380, H = 60;
 
   return (
-    <svg viewBox={`0 0 ${W} ${H + 10}`} className="w-full max-w-sm mx-auto">
+    <svg viewBox={`0 0 ${W} ${H + 10}`} className="w-full max-w-[260px] sm:max-w-[300px] mx-auto">
       <line x1="30" y1="25" x2={W - 30} y2="25" stroke="hsl(var(--border))" strokeWidth="2" strokeLinecap="round" />
       {phases.map((p, i) => {
         const x = 30 + (i / (phases.length - 1)) * (W - 60);
