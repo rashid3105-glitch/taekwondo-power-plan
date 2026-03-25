@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ArrowLeft, UserCircle, ClipboardList, HeartPulse, Brain, Users, BarChart3, Clock, ChevronDown } from "lucide-react";
+import { ArrowLeft, UserCircle, ClipboardList, HeartPulse, Brain, Users, BarChart3, Clock, ChevronDown, Activity, Apple, TrendingUp, BookOpen, BookHeart } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Watermark } from "@/components/Watermark";
@@ -11,8 +11,13 @@ import { PageMeta } from "@/components/PageMeta";
 const helpSections = [
   { key: "helpProfile", icon: UserCircle },
   { key: "helpTrainingPlan", icon: ClipboardList },
+  { key: "helpPhysicalTesting", icon: Activity },
+  { key: "helpProgress", icon: TrendingUp },
+  { key: "helpNutrition", icon: Apple },
   { key: "helpRehabPlan", icon: HeartPulse },
   { key: "helpMentalPlan", icon: Brain },
+  { key: "helpLibrary", icon: BookOpen },
+  { key: "helpDiary", icon: BookHeart },
   { key: "helpAddStudents", icon: Users },
   { key: "helpStudentProgress", icon: BarChart3 },
 ] as const;
