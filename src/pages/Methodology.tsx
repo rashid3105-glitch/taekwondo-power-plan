@@ -174,6 +174,11 @@ export default function Methodology() {
           </div>
         </section>
 
+        {/* Periodization diagram */}
+        <section className="max-w-2xl mx-auto px-5">
+          <PeriodizationDiagram />
+        </section>
+
         {/* Content sections */}
         <section className="max-w-2xl mx-auto px-5 pb-16 sm:pb-24 space-y-8">
           {sections.map((s) => (
