@@ -333,6 +333,10 @@ const translations = {
     changelogEntry22: "Email unsubscribe flow with token-based opt-out",
     changelogEntry23: "Privacy Policy link added to app footer",
     changelogEntry24: "Expanded Help page with Physical Testing, Nutrition, Progress, Library & Diary sections",
+    changelogEntry25: "Animated SVG diagrams on Methodology and all feature detail pages",
+    changelogEntry26: "Interactive tooltips on feature diagrams with contextual details (hover/tap)",
+    changelogEntry27: "Rehab diagram updated with Poomse-specific recovery milestones",
+    changelogEntry28: "Responsive side-by-side layout for feature page hero + diagram",
 
     // Payment & Demo
     paid: "Paid",
@@ -957,6 +961,10 @@ const translations = {
     changelogEntry22: "E-mail afmelding med token-baseret opt-out",
     changelogEntry23: "Privatlivspolitik-link tilføjet i app footer",
     changelogEntry24: "Udvidet Hjælp-side med Fysisk Test, Ernæring, Fremgang, Bibliotek & Dagbog sektioner",
+    changelogEntry25: "Animerede SVG-diagrammer på Metodologi og alle funktionsdetaljesider",
+    changelogEntry26: "Interaktive tooltips på funktionsdiagrammer med kontekstuelle detaljer (hover/tap)",
+    changelogEntry27: "Genoptræningsdiagram opdateret med Poomsae-specifikke restitutionsmilepæle",
+    changelogEntry28: "Responsivt side-om-side layout til funktionsside hero + diagram",
 
     // Payment & Demo
     unpaid: "Ikke betalt",
@@ -1580,6 +1588,10 @@ const translations = {
     changelogEntry22: "E-postavprenumeration med tokenbaserad opt-out",
     changelogEntry23: "Integritetspolicy-länk tillagd i app-footer",
     changelogEntry24: "Utökad Hjälp-sida med Fysisk Test, Näring, Framsteg, Bibliotek & Dagbok sektioner",
+    changelogEntry25: "Animerade SVG-diagram på Metodologi och alla funktionsdetaljsidor",
+    changelogEntry26: "Interaktiva tooltips på funktionsdiagram med kontextuella detaljer (hover/tap)",
+    changelogEntry27: "Rehab-diagram uppdaterat med Poomsae-specifika återhämtningsmilstolpar",
+    changelogEntry28: "Responsiv sida-vid-sida layout för funktionssida hero + diagram",
 
     // Payment & Demo
     unpaid: "Obetald",
