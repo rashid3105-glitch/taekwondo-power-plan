@@ -221,6 +221,11 @@ const FeatureDetail = () => {
           </div>
         </section>
 
+        {/* Animated Diagram */}
+        <section className="max-w-4xl mx-auto px-6 pb-12">
+          <FeatureDiagram feature={section as string} />
+        </section>
+
         {/* Benefits */}
         <section className="max-w-4xl mx-auto px-6 pb-16">
           <h2 className="text-xl font-bold text-foreground mb-6">
