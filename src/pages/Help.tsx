@@ -43,34 +43,44 @@ export default function Help() {
           <p className="text-muted-foreground">{t("helpSubtitle" as any)}</p>
         </div>
 
-        <Accordion type="multiple" className="space-y-3">
+        {/* Topic buttons grid */}
+        <div className="grid grid-cols-2 gap-3">
           {helpSections.map((section) => {
             const Icon = section.icon;
+            const isActive = activeSection === section.key;
             return (
-              <AccordionItem
+              <button
                 key={section.key}
-                value={section.key}
-                className="rounded-lg border border-border bg-card px-4"
+                onClick={() => setActiveSection(isActive ? null : section.key)}
+                className={cn(
+                  "flex items-center gap-3 rounded-lg border px-4 py-3 text-left transition-colors",
+                  isActive
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-card text-foreground hover:bg-accent"
+                )}
               >
-                <AccordionTrigger className="hover:no-underline gap-3">
-                  <div className="flex items-center gap-3 text-left">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-secondary">
-                      <Icon className="h-4 w-4 text-primary" />
-                    </div>
-                    <span className="font-semibold text-foreground text-sm">
-                      {t(`${section.key}Title` as any)}
-                    </span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="pb-4 pt-1 pl-12">
-                  <div className="space-y-2 text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-                    {t(`${section.key}Steps` as any)}
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
+                <div className={cn(
+                  "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg",
+                  isActive ? "bg-primary-foreground/20" : "bg-secondary"
+                )}>
+                  <Icon className={cn("h-4 w-4", isActive ? "text-primary-foreground" : "text-primary")} />
+                </div>
+                <span className="font-semibold text-sm">
+                  {t(`${section.key}Title` as any)}
+                </span>
+              </button>
             );
           })}
-        </Accordion>
+        </div>
+
+        {/* Expanded content for active section */}
+        {activeSection && (
+          <div className="rounded-lg border border-primary/30 bg-card px-5 py-4 animate-in fade-in-0 slide-in-from-top-2">
+            <div className="space-y-2 text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+              {t(`${activeSection}Steps` as any)}
+            </div>
+          </div>
+        )}
 
         {/* Changelog */}
         <Collapsible>
