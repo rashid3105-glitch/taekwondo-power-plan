@@ -8,6 +8,7 @@ import { AppFooter } from "@/components/AppFooter";
 import { Watermark } from "@/components/Watermark";
 import { PageMeta } from "@/components/PageMeta";
 
+import { FeatureDiagram } from "@/components/FeatureDiagram";
 import trainingImg from "@/assets/features/training-plan.jpg";
 import progressImg from "@/assets/features/progress.jpg";
 import mentalImg from "@/assets/features/mental.jpg";
@@ -218,6 +219,11 @@ const FeatureDetail = () => {
               loading="lazy"
             />
           </div>
+        </section>
+
+        {/* Animated Diagram */}
+        <section className="max-w-4xl mx-auto px-6 pb-12">
+          <FeatureDiagram feature={section as string} />
         </section>
 
         {/* Benefits */}
