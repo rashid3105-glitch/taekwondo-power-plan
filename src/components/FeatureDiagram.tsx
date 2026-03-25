@@ -280,7 +280,7 @@ export function FeatureDiagram({ feature }: { feature: string }) {
     <motion.div
       {...fadeUp}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className="rounded-2xl border border-border/60 bg-card/40 backdrop-blur-md p-6 sm:p-8 shadow-card"
+      className="rounded-2xl border border-border/60 bg-card/40 backdrop-blur-md p-4 sm:p-6 shadow-card max-w-md mx-auto"
     >
       <Diagram />
     </motion.div>
