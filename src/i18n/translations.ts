@@ -1588,6 +1588,10 @@ const translations = {
     changelogEntry22: "E-postavprenumeration med tokenbaserad opt-out",
     changelogEntry23: "Integritetspolicy-länk tillagd i app-footer",
     changelogEntry24: "Utökad Hjälp-sida med Fysisk Test, Näring, Framsteg, Bibliotek & Dagbok sektioner",
+    changelogEntry25: "Animerade SVG-diagram på Metodologi och alla funktionsdetaljsidor",
+    changelogEntry26: "Interaktiva tooltips på funktionsdiagram med kontextuella detaljer (hover/tap)",
+    changelogEntry27: "Rehab-diagram uppdaterat med Poomsae-specifika återhämtningsmilstolpar",
+    changelogEntry28: "Responsiv sida-vid-sida layout för funktionssida hero + diagram",
 
     // Payment & Demo
     unpaid: "Obetald",
