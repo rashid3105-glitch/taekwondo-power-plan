@@ -102,9 +102,11 @@ export default function CoachDashboard() {
   const [diaryLoading, setDiaryLoading] = useState(false);
   const [viewPlan, setViewPlan] = useState<AthletePlan | null>(null);
   const [viewRehabPlan, setViewRehabPlan] = useState<RehabPlan | null>(null);
+  const [manageAthleteId, setManageAthleteId] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, locale } = useLanguage();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     checkRoleAndLoad();
