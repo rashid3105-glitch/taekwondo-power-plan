@@ -183,13 +183,12 @@ export default function ProfileSetup() {
         program_weeks: programWeeks,
         current_injury: currentInjury || null,
         discipline,
-        club_id: clubId,
+        club_id: clubId || null,
         country: country || null,
       } as any).eq("user_id", user.id);
 
       if (error) throw error;
       toast({ title: t("profileSaved") });
-      navigate("/dashboard");
     } catch (err: any) {
       toast({ title: t("error"), description: err.message, variant: "destructive" });
     } finally {
