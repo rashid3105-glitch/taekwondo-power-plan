@@ -88,14 +88,19 @@ Return a valid JSON object with this exact structure:
 IMPORTANT: Return ONLY the JSON object, no markdown, no code fences.
 IMPORTANT: ALL text content (rehabPlanName, injurySummary, importantNotes, phase names, goals, criteria, exercise names where appropriate, coachingCues, whyItMatters, progressionTips, painGuidelines) MUST be written in ${lang}.`;
 
-    const userPrompt = `Create a rehabilitation plan for a taekwondo athlete with the following injury:
+    const discipline = profile?.discipline || 'sparring';
+    const isSparring = discipline === 'sparring';
+
+    const userPrompt = `Create a rehabilitation plan for a taekwondo ${isSparring ? 'SPARRING' : 'POOMSAE'} athlete with the following injury:
 
 Injury: ${injury}
 ${profile?.age ? `Age: ${profile.age}` : ''}
 ${profile?.belt_level ? `Belt level: ${profile.belt_level}` : ''}
 ${profile?.experience_years ? `Years of experience: ${profile.experience_years}` : ''}
 
-Focus on muscle/tendon tear rehabilitation with progressive return-to-sport protocols specific to taekwondo demands (kicking, footwork, explosive movements).`;
+${isSparring
+  ? `Focus on muscle/tendon tear rehabilitation with progressive return-to-sport protocols specific to taekwondo sparring demands (kicking, footwork, explosive movements, impact absorption).`
+  : `Focus on muscle/tendon tear rehabilitation with progressive return-to-sport protocols specific to taekwondo poomsae demands (balance, controlled stances, smooth transitions, flexibility, sustained form sequences).`}`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
