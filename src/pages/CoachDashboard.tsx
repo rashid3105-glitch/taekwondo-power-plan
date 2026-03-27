@@ -10,13 +10,16 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { CoachAthleteDetail } from "@/components/CoachAthleteDetail";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { PlanViewDialog } from "@/components/PlanViewDialog";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
-  ArrowLeft, Loader2, UserPlus, Trash2, Zap, Plus, User, Users, NotebookPen, Eye, Heart,
+  ArrowLeft, Loader2, UserPlus, Trash2, Zap, Plus, User, Users, NotebookPen, Eye, Heart, UserCog,
   Frown, Meh, Smile, Laugh, BatteryLow, BatteryMedium, BatteryFull,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -36,6 +39,7 @@ interface AthleteProfile {
   weekly_schedule: any;
   avatar_url: string | null;
   discipline: string;
+  country: string | null;
   club_id?: string | null;
   club_name?: string | null;
 }
@@ -99,9 +103,11 @@ export default function CoachDashboard() {
   const [diaryLoading, setDiaryLoading] = useState(false);
   const [viewPlan, setViewPlan] = useState<AthletePlan | null>(null);
   const [viewRehabPlan, setViewRehabPlan] = useState<RehabPlan | null>(null);
+  const [manageAthleteId, setManageAthleteId] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, locale } = useLanguage();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     checkRoleAndLoad();
@@ -153,7 +159,7 @@ export default function CoachDashboard() {
       const [profilesRes, plansRes, rehabRes, clubsRes] = await Promise.all([
         supabase
           .from("profiles")
-          .select("user_id, display_name, athlete_code, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, current_injury, program_weeks, weekly_schedule, avatar_url, discipline, club_id")
+          .select("user_id, display_name, athlete_code, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, current_injury, program_weeks, weekly_schedule, avatar_url, discipline, club_id, country")
           .in("user_id", athleteIds),
         supabase
           .from("training_plans")
@@ -482,6 +488,19 @@ export default function CoachDashboard() {
                         </div>
                       </div>
                       <div className="flex items-center gap-1 flex-shrink-0">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 hover:bg-primary/10 hover:text-primary"
+                              onClick={(e) => { e.stopPropagation(); setManageAthleteId(a.user_id); }}
+                            >
+                              <UserCog className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent side="left">{t("manageAthlete" as any)}</TooltipContent>
+                        </Tooltip>
                         <Button
                           variant="ghost"
                           size="icon"
@@ -667,6 +686,54 @@ export default function CoachDashboard() {
           plan={viewPlan}
           rehabPlan={viewRehabPlan}
         />
+
+        {/* Manage Athlete Dialog/Drawer */}
+        {(() => {
+          const managedAthlete = manageAthleteId ? athletes.find(a => a.user_id === manageAthleteId) : null;
+          const athletePlans = managedAthlete ? plans.filter(p => p.user_id === managedAthlete.user_id) : [];
+          const athleteRehabs = managedAthlete ? rehabPlans.filter(r => r.user_id === managedAthlete.user_id) : [];
+          const isOpen = !!managedAthlete;
+          const onClose = () => setManageAthleteId(null);
+
+          const content = managedAthlete ? (
+            <CoachAthleteDetail
+              athlete={managedAthlete as any}
+              plans={athletePlans}
+              rehabPlans={athleteRehabs}
+              onRefresh={async () => { await loadAthletes(); }}
+            />
+          ) : null;
+
+          if (isMobile) {
+            return (
+              <Drawer open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
+                <DrawerContent className="max-h-[90vh]">
+                  <DrawerHeader>
+                    <DrawerTitle className="flex items-center gap-2">
+                      <UserCog className="h-5 w-5" /> {managedAthlete?.display_name}
+                    </DrawerTitle>
+                  </DrawerHeader>
+                  <div className="px-4 pb-6 overflow-y-auto max-h-[75vh]">
+                    {content}
+                  </div>
+                </DrawerContent>
+              </Drawer>
+            );
+          }
+
+          return (
+            <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
+              <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <UserCog className="h-5 w-5" /> {managedAthlete?.display_name}
+                  </DialogTitle>
+                </DialogHeader>
+                {content}
+              </DialogContent>
+            </Dialog>
+          );
+        })()}
       </main>
       <AppFooter />
     </div>
