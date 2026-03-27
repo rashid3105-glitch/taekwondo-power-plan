@@ -1462,6 +1462,7 @@ const translations = {
     athleteAlreadyAdded: "Denna atlet finns redan i din lista.",
     athleteAdded: "Atlet tillagd!",
     athleteRemoved: "Atlet borttagen.",
+    manageAthlete: "Hantera atlet",
     noAthletes: "Inga atleter ännu",
     noAthletesDesc: "Lägg till atleter med deras unika TKD-kod för att börja skapa planer åt dem.",
     myAthletes: "Mina atleter",
