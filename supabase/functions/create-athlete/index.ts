@@ -61,12 +61,12 @@ Deno.serve(async (req) => {
     if (!name || !email || !password) throw new Error("Missing required fields");
     if (password.length < 6) throw new Error("Password must be at least 6 characters");
 
-    // Create the user account (email confirmed, but is_approved = false by default)
+    // Create the user account (email confirmed, marked as demo via metadata)
     const { data: newUser, error: createError } = await adminClient.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
-      user_metadata: { display_name: name },
+      user_metadata: { display_name: name, wants_demo: true },
     });
 
     if (createError) throw createError;
