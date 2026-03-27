@@ -487,6 +487,19 @@ export default function CoachDashboard() {
                         </div>
                       </div>
                       <div className="flex items-center gap-1 flex-shrink-0">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 hover:bg-primary/10 hover:text-primary"
+                              onClick={(e) => { e.stopPropagation(); setManageAthleteId(a.user_id); }}
+                            >
+                              <UserCog className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent side="left">{t("manageAthlete" as any)}</TooltipContent>
+                        </Tooltip>
                         <Button
                           variant="ghost"
                           size="icon"
