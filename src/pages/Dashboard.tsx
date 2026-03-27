@@ -178,6 +178,12 @@ export default function Dashboard() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
+      // Deactivate existing plans before inserting new one
+      await supabase
+        .from("training_plans")
+        .update({ is_active: false })
+        .eq("user_id", user.id);
+
       const { error: insertError } = await supabase.from("training_plans").insert({
         user_id: user.id,
         name: data.plan.planName || "AI Generated Plan",
