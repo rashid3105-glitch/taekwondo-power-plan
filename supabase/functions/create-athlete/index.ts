@@ -90,6 +90,7 @@ Deno.serve(async (req) => {
     // Update profile with additional fields if provided
     const profileUpdates: Record<string, any> = {
       club_id: coachProfile.club_id,
+      is_approved: true,
     };
     if (age != null && typeof age === "number" && age >= 5 && age <= 99) profileUpdates.age = age;
     if (belt_level && typeof belt_level === "string") profileUpdates.belt_level = belt_level;
