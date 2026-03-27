@@ -45,7 +45,7 @@ serve(async (req) => {
       }
     }
 
-    const lang = language === "da" ? "Danish" : "English";
+    const lang = language === "da" ? "Danish" : language === "sv" ? "Swedish" : "English";
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 

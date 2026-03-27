@@ -54,12 +54,16 @@ Deno.serve(async (req) => {
     for (const profile of expiredDemos || []) {
       // Delete all associated data
       await Promise.all([
+        adminClient.from("diary_entries").delete().eq("user_id", profile.user_id),
+        adminClient.from("physical_test_results").delete().eq("user_id", profile.user_id),
+        adminClient.from("user_recipes").delete().eq("user_id", profile.user_id),
         adminClient.from("training_plans").delete().eq("user_id", profile.user_id),
         adminClient.from("rehab_plans").delete().eq("user_id", profile.user_id),
         adminClient.from("mental_assessments").delete().eq("user_id", profile.user_id),
         adminClient.from("workout_logs").delete().eq("user_id", profile.user_id),
         adminClient.from("user_exercises").delete().eq("user_id", profile.user_id),
         adminClient.from("coach_athletes").delete().eq("athlete_id", profile.user_id),
+        adminClient.from("coach_athletes").delete().eq("coach_id", profile.user_id),
         adminClient.from("user_roles").delete().eq("user_id", profile.user_id),
       ]);
       await adminClient.from("profiles").delete().eq("user_id", profile.user_id);
