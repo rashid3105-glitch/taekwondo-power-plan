@@ -205,6 +205,7 @@ const translations = {
     athleteAlreadyAdded: "This athlete is already in your roster.",
     athleteAdded: "Athlete added!",
     athleteRemoved: "Athlete removed.",
+    manageAthlete: "Manage athlete",
     noAthletes: "No Athletes Yet",
     noAthletesDesc: "Add athletes using their unique TKD code to start creating plans for them.",
     myAthletes: "My Athletes",
