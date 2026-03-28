@@ -12,6 +12,7 @@ import { AIPlanCard } from "@/components/AIPlanCard";
 import { RehabPlanCard } from "@/components/RehabPlanCard";
 import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekSchedulePicker";
 import { Loader2, Plus, Zap, Heart, Save, Calendar, UserCog, Target } from "lucide-react";
+import { SendReminderDialog } from "@/components/SendReminderDialog";
 
 const COUNTRIES = [
   "Afghanistan","Albania","Algeria","Andorra","Angola","Argentina","Armenia","Australia","Austria","Azerbaijan",
@@ -250,7 +251,10 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
 
   return (
     <div className="space-y-4">
-      <h3 className="font-bold text-foreground">{athlete.display_name}</h3>
+      <div className="flex items-center justify-between">
+        <h3 className="font-bold text-foreground">{athlete.display_name}</h3>
+        <SendReminderDialog athleteId={athlete.user_id} athleteName={athlete.display_name} />
+      </div>
 
       {/* Athlete Profile */}
       <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">

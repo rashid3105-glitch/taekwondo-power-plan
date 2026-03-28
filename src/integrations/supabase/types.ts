@@ -179,6 +179,39 @@ export type Database = {
         }
         Relationships: []
       }
+      event_reminders: {
+        Row: {
+          athlete_id: string
+          coach_id: string
+          created_at: string
+          event_date: string
+          id: string
+          is_read: boolean
+          message: string
+          title: string
+        }
+        Insert: {
+          athlete_id: string
+          coach_id: string
+          created_at?: string
+          event_date: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          title: string
+        }
+        Update: {
+          athlete_id?: string
+          coach_id?: string
+          created_at?: string
+          event_date?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          title?: string
+        }
+        Relationships: []
+      }
       mental_assessments: {
         Row: {
           ai_advice: string | null

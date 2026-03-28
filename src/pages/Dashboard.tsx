@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain, Clock, Apple, Home, Lock, NotebookPen, AlertTriangle, ClipboardList, HelpCircle } from "lucide-react";
+import { EventRemindersDropdown } from "@/components/EventRemindersDropdown";
 import logo from "@/assets/logo.webp";
 import { useToast } from "@/hooks/use-toast";
 import { AIPlanCard } from "@/components/AIPlanCard";
@@ -267,6 +268,7 @@ export default function Dashboard() {
             </div>
             <div className="flex items-center gap-2">
               <LanguageSwitcher />
+              <EventRemindersDropdown />
               <Button variant="ghost" size="icon" onClick={() => navigate("/profile-setup")}>
                 <User className="h-4 w-4" />
               </Button>
