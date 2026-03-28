@@ -345,6 +345,9 @@ const translations = {
     changelogEntry32: "Swedish language support in all AI plan generators",
     changelogEntry33: "Poomsae-specific rehabilitation plans with stance and balance focus",
     changelogEntry34: "Coach-created athletes auto-approved as demo users with 14-day trial",
+    reminderHistory: "Reminder History",
+    reminderRead: "Read",
+    reminderUnread: "Unread",
 
     // Payment & Demo
     paid: "Paid",
@@ -993,6 +996,9 @@ const translations = {
     changelogEntry32: "Svensk sprogunderstøttelse i alle AI-plangeneratorer",
     changelogEntry33: "Poomsae-specifikke genoptræningsplaner med fokus på stilling og balance",
     changelogEntry34: "Coach-oprettede atleter auto-godkendt som demobrugere med 14-dages prøveperiode",
+    reminderHistory: "Påmindelseshistorik",
+    reminderRead: "Læst",
+    reminderUnread: "Ulæst",
 
     // Payment & Demo
     unpaid: "Ikke betalt",
@@ -1640,6 +1646,9 @@ const translations = {
     changelogEntry32: "Svenskt språkstöd i alla AI-plangeneratorer",
     changelogEntry33: "Poomsae-specifika rehabiliteringsplaner med fokus på ställning och balans",
     changelogEntry34: "Tränareskapade atleter automatiskt godkända som demoanvändare med 14-dagars provperiod",
+    reminderHistory: "Påminnelsehistorik",
+    reminderRead: "Läst",
+    reminderUnread: "Oläst",
 
     // Payment & Demo
     unpaid: "Obetald",
