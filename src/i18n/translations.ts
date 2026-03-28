@@ -553,6 +553,14 @@ const translations = {
     methResultsList6: "Greater likelihood of peaking for fights and competitions",
     methResultsOutro: "It doesn't just create a stronger athlete in the gym. It creates an athlete better prepared to perform on the mat.",
     methCta: "Our Methodology",
+    howItWorksTitle: "How It Works",
+    howItWorksStep1Title: "Create Your Profile",
+    howItWorksStep1Desc: "Set your belt level, weight, goals, and weekly schedule in under 2 minutes.",
+    howItWorksStep2Title: "Get Your Plan",
+    howItWorksStep2Desc: "AI generates a periodized program tailored to your sport science profile.",
+    howItWorksStep3Title: "Train Smarter",
+    howItWorksStep3Desc: "Track progress, log workouts, and adapt your training as you evolve.",
+    ctaSubtext: "Free to try · No credit card required",
 
     // Physical Testing
     ptTitle: "Physical Testing",
