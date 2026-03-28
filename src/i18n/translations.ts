@@ -1646,6 +1646,9 @@ const translations = {
     changelogEntry32: "Svenskt språkstöd i alla AI-plangeneratorer",
     changelogEntry33: "Poomsae-specifika rehabiliteringsplaner med fokus på ställning och balans",
     changelogEntry34: "Tränareskapade atleter automatiskt godkända som demoanvändare med 14-dagars provperiod",
+    reminderHistory: "Påminnelsehistorik",
+    reminderRead: "Läst",
+    reminderUnread: "Oläst",
 
     // Payment & Demo
     unpaid: "Obetald",

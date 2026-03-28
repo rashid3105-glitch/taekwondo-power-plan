@@ -465,6 +465,9 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
         )}
       </div>
 
+      {/* Reminder History */}
+      <ReminderHistory athleteId={athlete.user_id} />
+
       {/* Physical Testing - Coach Mode */}
       <PhysicalTesting mode="coach" athleteId={athlete.user_id} athleteName={athlete.display_name} />
     </div>
