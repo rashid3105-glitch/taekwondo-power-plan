@@ -92,6 +92,17 @@ export default function Help() {
           </CollapsibleTrigger>
           <CollapsibleContent className="mt-4">
             <div className="rounded-lg border border-border bg-card px-5 py-4 space-y-3">
+              <h3 className="text-sm font-bold text-foreground">{t("changelog_2026_03_28" as any)}</h3>
+              <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-5">
+                <li>{t("changelogEntry29" as any)}</li>
+                <li>{t("changelogEntry30" as any)}</li>
+                <li>{t("changelogEntry31" as any)}</li>
+                <li>{t("changelogEntry32" as any)}</li>
+                <li>{t("changelogEntry33" as any)}</li>
+                <li>{t("changelogEntry34" as any)}</li>
+              </ul>
+            </div>
+            <div className="space-y-2">
               <h3 className="text-sm font-bold text-foreground">{t("changelog_2026_03_25" as any)}</h3>
               <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-5">
                 <li>{t("changelogEntry17" as any)}</li>
