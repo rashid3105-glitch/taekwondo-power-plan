@@ -345,6 +345,9 @@ const translations = {
     changelogEntry32: "Swedish language support in all AI plan generators",
     changelogEntry33: "Poomsae-specific rehabilitation plans with stance and balance focus",
     changelogEntry34: "Coach-created athletes auto-approved as demo users with 14-day trial",
+    reminderHistory: "Reminder History",
+    reminderRead: "Read",
+    reminderUnread: "Unread",
 
     // Payment & Demo
     paid: "Paid",
