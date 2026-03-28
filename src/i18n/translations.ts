@@ -1211,6 +1211,14 @@ const translations = {
     methResultsList6: "Større sandsynlighed for at ramme topniveau op til kamp og stævner",
     methResultsOutro: "Det giver ikke bare en stærkere atlet i fitnesscentret. Det giver en atlet, der er bedre forberedt til at præstere på måtten.",
     methCta: "Vores metode",
+    howItWorksTitle: "Sådan virker det",
+    howItWorksStep1Title: "Opret din profil",
+    howItWorksStep1Desc: "Angiv bæltegrad, vægt, mål og ugentlig plan på under 2 minutter.",
+    howItWorksStep2Title: "Få din plan",
+    howItWorksStep2Desc: "AI genererer et periodiseret program skræddersyet til din sportsvidenskabelige profil.",
+    howItWorksStep3Title: "Træn smartere",
+    howItWorksStep3Desc: "Følg din fremgang, log træninger, og tilpas din træning løbende.",
+    ctaSubtext: "Gratis at prøve · Intet kreditkort påkrævet",
 
     // Physical Testing
     ptTitle: "Fysisk Testning",
