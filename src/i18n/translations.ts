@@ -1909,6 +1909,18 @@ const translations = {
     privacyCookiesDesc: "Vi använder endast nödvändiga cookies för autentisering och sessionshantering. Vi använder inte analys-, reklam- eller tredjepartsspårningscookies.",
     privacyContact: "9. Kontakt",
     privacyContactDesc: "För frågor om dina data eller för att utöva dina rättigheter, kontakta oss på:",
+    sendReminder: "Skicka Påminnelse",
+    sendReminderTo: "Skicka påminnelse till",
+    reminderTitle: "Händelse",
+    reminderTitlePlaceholder: "t.ex. Nordic Open, Träningsläger...",
+    reminderTitleRequired: "Ange en titel",
+    reminderDateRequired: "Välj ett datum",
+    eventDate: "Datum",
+    reminderMessage: "Meddelande (valfritt)",
+    reminderMessagePlaceholder: "Kom ihåg att notera vad som gick bra och vad som kan förbättras...",
+    reminderSent: "Påminnelse skickad!",
+    eventReminders: "Påminnelser",
+    writeInDiary: "Skriv i Dagbok",
   },
 } as const;
 
