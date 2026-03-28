@@ -1633,6 +1633,13 @@ const translations = {
     changelogEntry26: "Interaktiva tooltips på funktionsdiagram med kontextuella detaljer (hover/tap)",
     changelogEntry27: "Rehab-diagram uppdaterat med Poomsae-specifika återhämtningsmilstolpar",
     changelogEntry28: "Responsiv sida-vid-sida layout för funktionssida hero + diagram",
+    changelog_2026_03_28: "28 mars 2026",
+    changelogEntry29: "Eventpåminnelser: tränare kan skicka dagbokspåminnelser till atleter för tävlingar & läger",
+    changelogEntry30: "In-app notifikationsklocka med oläst-badge på atlet-dashboard",
+    changelogEntry31: "E-postnotifikation skickad till atlet med eventdetaljer och dagbokslänk",
+    changelogEntry32: "Svenskt språkstöd i alla AI-plangeneratorer",
+    changelogEntry33: "Poomsae-specifika rehabiliteringsplaner med fokus på ställning och balans",
+    changelogEntry34: "Tränareskapade atleter automatiskt godkända som demoanvändare med 14-dagars provperiod",
 
     // Payment & Demo
     unpaid: "Obetald",
