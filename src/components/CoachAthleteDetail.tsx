@@ -13,6 +13,7 @@ import { RehabPlanCard } from "@/components/RehabPlanCard";
 import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekSchedulePicker";
 import { Loader2, Plus, Zap, Heart, Save, Calendar, UserCog, Target } from "lucide-react";
 import { SendReminderDialog } from "@/components/SendReminderDialog";
+import { ReminderHistory } from "@/components/ReminderHistory";
 
 const COUNTRIES = [
   "Afghanistan","Albania","Algeria","Andorra","Angola","Argentina","Armenia","Australia","Austria","Azerbaijan",
