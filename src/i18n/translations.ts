@@ -553,6 +553,14 @@ const translations = {
     methResultsList6: "Greater likelihood of peaking for fights and competitions",
     methResultsOutro: "It doesn't just create a stronger athlete in the gym. It creates an athlete better prepared to perform on the mat.",
     methCta: "Our Methodology",
+    howItWorksTitle: "How It Works",
+    howItWorksStep1Title: "Create Your Profile",
+    howItWorksStep1Desc: "Set your belt level, weight, goals, and weekly schedule in under 2 minutes.",
+    howItWorksStep2Title: "Get Your Plan",
+    howItWorksStep2Desc: "AI generates a periodized program tailored to your sport science profile.",
+    howItWorksStep3Title: "Train Smarter",
+    howItWorksStep3Desc: "Track progress, log workouts, and adapt your training as you evolve.",
+    ctaSubtext: "Free to try · No credit card required",
 
     // Physical Testing
     ptTitle: "Physical Testing",
@@ -1203,6 +1211,14 @@ const translations = {
     methResultsList6: "Større sandsynlighed for at ramme topniveau op til kamp og stævner",
     methResultsOutro: "Det giver ikke bare en stærkere atlet i fitnesscentret. Det giver en atlet, der er bedre forberedt til at præstere på måtten.",
     methCta: "Vores metode",
+    howItWorksTitle: "Sådan virker det",
+    howItWorksStep1Title: "Opret din profil",
+    howItWorksStep1Desc: "Angiv bæltegrad, vægt, mål og ugentlig plan på under 2 minutter.",
+    howItWorksStep2Title: "Få din plan",
+    howItWorksStep2Desc: "AI genererer et periodiseret program skræddersyet til din sportsvidenskabelige profil.",
+    howItWorksStep3Title: "Træn smartere",
+    howItWorksStep3Desc: "Følg din fremgang, log træninger, og tilpas din træning løbende.",
+    ctaSubtext: "Gratis at prøve · Intet kreditkort påkrævet",
 
     // Physical Testing
     ptTitle: "Fysisk Testning",
@@ -1853,6 +1869,14 @@ const translations = {
     methResultsList6: "Större sannolikhet att toppa inför matcher och tävlingar",
     methResultsOutro: "Det skapar inte bara en starkare atlet i gymmet. Det skapar en atlet som är bättre förberedd att prestera på mattan.",
     methCta: "Vår metod",
+    howItWorksTitle: "Så fungerar det",
+    howItWorksStep1Title: "Skapa din profil",
+    howItWorksStep1Desc: "Ange bältesgrad, vikt, mål och veckoschema på under 2 minuter.",
+    howItWorksStep2Title: "Få din plan",
+    howItWorksStep2Desc: "AI genererar ett periodiserat program skräddarsytt för din idrottsvetenskapliga profil.",
+    howItWorksStep3Title: "Träna smartare",
+    howItWorksStep3Desc: "Följ dina framsteg, logga träningspass och anpassa din träning löpande.",
+    ctaSubtext: "Gratis att prova · Inget kreditkort krävs",
 
     // Physical Testing
     ptTitle: "Fysisk Testning",
