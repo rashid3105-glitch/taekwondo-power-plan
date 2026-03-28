@@ -251,7 +251,10 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
 
   return (
     <div className="space-y-4">
-      <h3 className="font-bold text-foreground">{athlete.display_name}</h3>
+      <div className="flex items-center justify-between">
+        <h3 className="font-bold text-foreground">{athlete.display_name}</h3>
+        <SendReminderDialog athleteId={athlete.user_id} athleteName={athlete.display_name} />
+      </div>
 
       {/* Athlete Profile */}
       <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
