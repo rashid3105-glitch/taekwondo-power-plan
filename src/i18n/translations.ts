@@ -1269,6 +1269,18 @@ const translations = {
     privacyCookiesDesc: "Vi bruger kun nødvendige cookies til godkendelse og sessionsstyring. Vi bruger ikke analyse-, reklame- eller tredjepartssporingscookies.",
     privacyContact: "9. Kontakt",
     privacyContactDesc: "For spørgsmål om dine data eller for at udøve dine rettigheder, kontakt os på:",
+    sendReminder: "Send Påmindelse",
+    sendReminderTo: "Send påmindelse til",
+    reminderTitle: "Begivenhed",
+    reminderTitlePlaceholder: "f.eks. Nordic Open, Træningslejr...",
+    reminderTitleRequired: "Indtast venligst en titel",
+    reminderDateRequired: "Vælg venligst en dato",
+    eventDate: "Dato",
+    reminderMessage: "Besked (valgfri)",
+    reminderMessagePlaceholder: "Husk at notere hvad der gik godt og hvad der kan forbedres...",
+    reminderSent: "Påmindelse sendt!",
+    eventReminders: "Påmindelser",
+    writeInDiary: "Skriv i Dagbog",
   },
   sv: {
     // Common
