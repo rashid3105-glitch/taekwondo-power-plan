@@ -629,6 +629,18 @@ const translations = {
     privacyCookiesDesc: "We use only essential cookies required for authentication and session management. We do not use analytics, advertising, or third-party tracking cookies.",
     privacyContact: "9. Contact",
     privacyContactDesc: "For any questions about your data or to exercise your rights, contact us at:",
+    sendReminder: "Send Reminder",
+    sendReminderTo: "Send reminder to",
+    reminderTitle: "Event Title",
+    reminderTitlePlaceholder: "e.g. Nordic Open, Training Camp...",
+    reminderTitleRequired: "Please enter an event title",
+    reminderDateRequired: "Please select an event date",
+    eventDate: "Event Date",
+    reminderMessage: "Message (optional)",
+    reminderMessagePlaceholder: "Remember to note what went well and what to improve...",
+    reminderSent: "Reminder sent!",
+    eventReminders: "Event Reminders",
+    writeInDiary: "Write in Diary",
   },
   da: {
     // Common
