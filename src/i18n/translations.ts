@@ -1869,6 +1869,14 @@ const translations = {
     methResultsList6: "Större sannolikhet att toppa inför matcher och tävlingar",
     methResultsOutro: "Det skapar inte bara en starkare atlet i gymmet. Det skapar en atlet som är bättre förberedd att prestera på mattan.",
     methCta: "Vår metod",
+    howItWorksTitle: "Så fungerar det",
+    howItWorksStep1Title: "Skapa din profil",
+    howItWorksStep1Desc: "Ange bältesgrad, vikt, mål och veckoschema på under 2 minuter.",
+    howItWorksStep2Title: "Få din plan",
+    howItWorksStep2Desc: "AI genererar ett periodiserat program skräddarsytt för din idrottsvetenskapliga profil.",
+    howItWorksStep3Title: "Träna smartare",
+    howItWorksStep3Desc: "Följ dina framsteg, logga träningspass och anpassa din träning löpande.",
+    ctaSubtext: "Gratis att prova · Inget kreditkort krävs",
 
     // Physical Testing
     ptTitle: "Fysisk Testning",
