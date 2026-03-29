@@ -80,6 +80,7 @@ interface DiaryEntry {
 
 export default function CoachDashboard() {
   const [athletes, setAthletes] = useState<AthleteProfile[]>([]);
+  const [clubAthletes, setClubAthletes] = useState<AthleteProfile[]>([]);
   const [plans, setPlans] = useState<AthletePlan[]>([]);
   const [rehabPlans, setRehabPlans] = useState<RehabPlan[]>([]);
   const [loading, setLoading] = useState(true);
@@ -135,28 +136,35 @@ export default function CoachDashboard() {
     if (!isCoach) { navigate("/dashboard"); return; }
     setIsAdmin(userRoles.includes("admin"));
 
-    if (!(profileRes.data as any)?.club_id) {
+    const coachClubId = (profileRes.data as any)?.club_id;
+    if (!coachClubId) {
       toast({ title: t("completeClubBeforeCoach"), variant: "destructive" });
       navigate("/profile-setup");
       return;
     }
 
-    await loadAthletes();
+    await loadAthletes(user.id, coachClubId);
   };
 
-  const loadAthletes = async () => {
+  const loadAthletes = async (currentUserId?: string, coachClubId?: string) => {
+    const userId = currentUserId || coachUserId;
     const { data: links } = await supabase
       .from("coach_athletes")
       .select("athlete_id");
 
     const athleteIds = (links || []).map((l: any) => l.athlete_id);
 
+    const clubsRes = await supabase.from("clubs" as any).select("id, name").order("name");
+    const clubMap = new Map<string, string>(
+      ((clubsRes.data as unknown as { id: string; name: string }[] | null) ?? []).map((club) => [club.id, club.name])
+    );
+
     if (athleteIds.length === 0) {
       setAthletes([]);
       setPlans([]);
       setRehabPlans([]);
     } else {
-      const [profilesRes, plansRes, rehabRes, clubsRes] = await Promise.all([
+      const [profilesRes, plansRes, rehabRes] = await Promise.all([
         supabase
           .from("profiles")
           .select("user_id, display_name, athlete_code, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, current_injury, program_weeks, weekly_schedule, avatar_url, discipline, club_id, country")
@@ -171,12 +179,7 @@ export default function CoachDashboard() {
           .select("id, name, plan_data, is_active, created_at, user_id, injury_description")
           .in("user_id", athleteIds)
           .order("created_at", { ascending: false }),
-        supabase.from("clubs" as any).select("id, name").order("name"),
       ]);
-
-      const clubMap = new Map<string, string>(
-        ((((clubsRes.data as unknown as { id: string; name: string }[] | null) ?? [])).map((club) => [club.id, club.name]))
-      );
 
       setAthletes(
         (((profilesRes.data || []) as any[]).map((athlete) => ({
@@ -186,6 +189,24 @@ export default function CoachDashboard() {
       );
       setPlans((plansRes.data || []) as unknown as AthletePlan[]);
       setRehabPlans((rehabRes.data || []) as unknown as RehabPlan[]);
+    }
+
+    // Load club athletes (all profiles in same club, excluding managed athletes and self)
+    if (coachClubId && userId) {
+      const { data: clubProfiles } = await supabase
+        .from("profiles")
+        .select("user_id, display_name, athlete_code, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, current_injury, program_weeks, weekly_schedule, avatar_url, discipline, club_id, country")
+        .eq("club_id", coachClubId)
+        .neq("user_id", userId);
+
+      const clubOnly = ((clubProfiles || []) as any[])
+        .filter((p) => !athleteIds.includes(p.user_id))
+        .map((athlete) => ({
+          ...athlete,
+          club_name: athlete.club_id ? clubMap.get(athlete.club_id) || null : null,
+        })) as AthleteProfile[];
+
+      setClubAthletes(clubOnly.sort((a, b) => a.display_name.localeCompare(b.display_name)));
     }
 
     setLoading(false);
@@ -629,7 +650,75 @@ export default function CoachDashboard() {
         )}
 
 
-        {/* Diary Modal */}
+        {/* Club Athletes (read-only) */}
+        {clubAthletes.length > 0 && (
+          <div className="space-y-3">
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+              <Users className="h-4 w-4" /> {t("clubAthletes" as any)} ({clubAthletes.length})
+            </h3>
+            <p className="text-xs text-muted-foreground">{t("clubAthletesDesc" as any)}</p>
+            <div className="grid gap-3">
+              {clubAthletes.map((a) => (
+                <div
+                  key={a.user_id}
+                  className="rounded-lg border bg-card p-3 sm:p-4 border-border/50 overflow-hidden opacity-90"
+                >
+                  <div className="flex items-center justify-between gap-2 min-w-0">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      {a.avatar_url ? (
+                        <img src={a.avatar_url} alt="" className="h-10 w-10 rounded-full object-cover border-2 border-border" />
+                      ) : (
+                        <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center border-2 border-border">
+                          <User className="h-5 w-5 text-muted-foreground" />
+                        </div>
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <p className="font-medium text-sm text-foreground truncate">{a.display_name || t("noName")}</p>
+                        <p className="text-[10px] text-muted-foreground">{a.athlete_code}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      <Badge variant="secondary" className="text-[10px]">{t("readOnly" as any)}</Badge>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        title={t("diary" as any)}
+                        onClick={() => openDiary(a.user_id, a.display_name)}
+                      >
+                        <NotebookPen className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {a.belt_level && (
+                      <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full capitalize">
+                        {a.belt_level} {t("belt")}
+                      </span>
+                    )}
+                    {a.age && (
+                      <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">{a.age}y</span>
+                    )}
+                    {a.weight_kg && (
+                      <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">{a.weight_kg}kg</span>
+                    )}
+                  </div>
+                  {a.goals && a.goals.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-1.5">
+                      {a.goals.map((g) => (
+                        <span key={g} className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                          {t(g as any) || g}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+
         <Dialog open={!!diaryAthleteId} onOpenChange={(open) => { if (!open) setDiaryAthleteId(null); }}>
           <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
             <DialogHeader>
