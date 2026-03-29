@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Zap, Camera, Loader2 } from "lucide-react";
+import { Zap, Camera, Loader2, Home } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekSchedulePicker";
 import { useLanguage } from "@/i18n/LanguageContext";
