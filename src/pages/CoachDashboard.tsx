@@ -146,19 +146,25 @@ export default function CoachDashboard() {
     await loadAthletes(user.id, coachClubId);
   };
 
-  const loadAthletes = async () => {
+  const loadAthletes = async (currentUserId?: string, coachClubId?: string) => {
+    const userId = currentUserId || coachUserId;
     const { data: links } = await supabase
       .from("coach_athletes")
       .select("athlete_id");
 
     const athleteIds = (links || []).map((l: any) => l.athlete_id);
 
+    const clubsRes = await supabase.from("clubs" as any).select("id, name").order("name");
+    const clubMap = new Map<string, string>(
+      ((clubsRes.data as unknown as { id: string; name: string }[] | null) ?? []).map((club) => [club.id, club.name])
+    );
+
     if (athleteIds.length === 0) {
       setAthletes([]);
       setPlans([]);
       setRehabPlans([]);
     } else {
-      const [profilesRes, plansRes, rehabRes, clubsRes] = await Promise.all([
+      const [profilesRes, plansRes, rehabRes] = await Promise.all([
         supabase
           .from("profiles")
           .select("user_id, display_name, athlete_code, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, current_injury, program_weeks, weekly_schedule, avatar_url, discipline, club_id, country")
@@ -173,12 +179,7 @@ export default function CoachDashboard() {
           .select("id, name, plan_data, is_active, created_at, user_id, injury_description")
           .in("user_id", athleteIds)
           .order("created_at", { ascending: false }),
-        supabase.from("clubs" as any).select("id, name").order("name"),
       ]);
-
-      const clubMap = new Map<string, string>(
-        ((((clubsRes.data as unknown as { id: string; name: string }[] | null) ?? [])).map((club) => [club.id, club.name]))
-      );
 
       setAthletes(
         (((profilesRes.data || []) as any[]).map((athlete) => ({
@@ -188,6 +189,24 @@ export default function CoachDashboard() {
       );
       setPlans((plansRes.data || []) as unknown as AthletePlan[]);
       setRehabPlans((rehabRes.data || []) as unknown as RehabPlan[]);
+    }
+
+    // Load club athletes (all profiles in same club, excluding managed athletes and self)
+    if (coachClubId && userId) {
+      const { data: clubProfiles } = await supabase
+        .from("profiles")
+        .select("user_id, display_name, athlete_code, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, current_injury, program_weeks, weekly_schedule, avatar_url, discipline, club_id, country")
+        .eq("club_id", coachClubId)
+        .neq("user_id", userId);
+
+      const clubOnly = ((clubProfiles || []) as any[])
+        .filter((p) => !athleteIds.includes(p.user_id))
+        .map((athlete) => ({
+          ...athlete,
+          club_name: athlete.club_id ? clubMap.get(athlete.club_id) || null : null,
+        })) as AthleteProfile[];
+
+      setClubAthletes(clubOnly.sort((a, b) => a.display_name.localeCompare(b.display_name)));
     }
 
     setLoading(false);
