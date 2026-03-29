@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Zap, Camera, Loader2, Home } from "lucide-react";
+import { Zap, Camera, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekSchedulePicker";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -207,11 +207,8 @@ export default function ProfileSetup() {
   return (
     <div className="min-h-screen bg-background">
       <div className="container max-w-lg mx-auto px-4 py-6 sm:py-8">
-        <div className="flex justify-end items-center gap-2 mb-4">
+        <div className="flex justify-end mb-4">
           <LanguageSwitcher />
-          <Button variant="ghost" size="icon" onClick={() => navigate("/")} title={t("home" as any)}>
-            <Home className="h-4 w-4" />
-          </Button>
         </div>
         <div className="text-center mb-6">
           <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-energy mb-3">
