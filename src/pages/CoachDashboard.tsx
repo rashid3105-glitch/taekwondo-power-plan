@@ -136,13 +136,14 @@ export default function CoachDashboard() {
     if (!isCoach) { navigate("/dashboard"); return; }
     setIsAdmin(userRoles.includes("admin"));
 
-    if (!(profileRes.data as any)?.club_id) {
+    const coachClubId = (profileRes.data as any)?.club_id;
+    if (!coachClubId) {
       toast({ title: t("completeClubBeforeCoach"), variant: "destructive" });
       navigate("/profile-setup");
       return;
     }
 
-    await loadAthletes();
+    await loadAthletes(user.id, coachClubId);
   };
 
   const loadAthletes = async () => {
