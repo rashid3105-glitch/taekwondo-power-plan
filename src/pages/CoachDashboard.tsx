@@ -650,7 +650,75 @@ export default function CoachDashboard() {
         )}
 
 
-        {/* Diary Modal */}
+        {/* Club Athletes (read-only) */}
+        {clubAthletes.length > 0 && (
+          <div className="space-y-3">
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+              <Users className="h-4 w-4" /> {t("clubAthletes" as any)} ({clubAthletes.length})
+            </h3>
+            <p className="text-xs text-muted-foreground">{t("clubAthletesDesc" as any)}</p>
+            <div className="grid gap-3">
+              {clubAthletes.map((a) => (
+                <div
+                  key={a.user_id}
+                  className="rounded-lg border bg-card p-3 sm:p-4 border-border/50 overflow-hidden opacity-90"
+                >
+                  <div className="flex items-center justify-between gap-2 min-w-0">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      {a.avatar_url ? (
+                        <img src={a.avatar_url} alt="" className="h-10 w-10 rounded-full object-cover border-2 border-border" />
+                      ) : (
+                        <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center border-2 border-border">
+                          <User className="h-5 w-5 text-muted-foreground" />
+                        </div>
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <p className="font-medium text-sm text-foreground truncate">{a.display_name || t("noName")}</p>
+                        <p className="text-[10px] text-muted-foreground">{a.athlete_code}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      <Badge variant="secondary" className="text-[10px]">{t("readOnly" as any)}</Badge>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        title={t("diary" as any)}
+                        onClick={() => openDiary(a.user_id, a.display_name)}
+                      >
+                        <NotebookPen className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {a.belt_level && (
+                      <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full capitalize">
+                        {a.belt_level} {t("belt")}
+                      </span>
+                    )}
+                    {a.age && (
+                      <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">{a.age}y</span>
+                    )}
+                    {a.weight_kg && (
+                      <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">{a.weight_kg}kg</span>
+                    )}
+                  </div>
+                  {a.goals && a.goals.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-1.5">
+                      {a.goals.map((g) => (
+                        <span key={g} className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                          {t(g as any) || g}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+
         <Dialog open={!!diaryAthleteId} onOpenChange={(open) => { if (!open) setDiaryAthleteId(null); }}>
           <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
             <DialogHeader>
