@@ -35,6 +35,7 @@ interface AIPlanCardProps {
     plan_data: any;
     created_at: string;
   };
+  onPlanUpdated?: () => void;
 }
 
 async function generatePDF(plan: AIPlanCardProps["plan"]) {
