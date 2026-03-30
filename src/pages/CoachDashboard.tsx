@@ -17,6 +17,7 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/u
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { PlanViewDialog } from "@/components/PlanViewDialog";
+import { DiaryComments } from "@/components/DiaryComments";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   ArrowLeft, Loader2, UserPlus, Trash2, Zap, Plus, User, Users, NotebookPen, Eye, Heart, UserCog,
