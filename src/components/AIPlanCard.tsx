@@ -461,7 +461,22 @@ interface AIExerciseRowProps {
   onRemove: () => void;
 }
 
-function AIExerciseRow({ exercise, index, log, onToggleComplete, onUpdateSets, onUpdateReps, onUpdateNotes, onSwap, onRemove }: AIExerciseRowProps) {
+function SortableExerciseRow(props: AIExerciseRowProps & { id: string }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: props.id });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 10 : undefined,
+  };
+  return (
+    <div ref={setNodeRef} style={style}>
+      <AIExerciseRow {...props} dragHandleProps={{ ...attributes, ...listeners }} />
+    </div>
+  );
+}
+
+function AIExerciseRow({ exercise, index, log, onToggleComplete, onUpdateSets, onUpdateReps, onUpdateNotes, onSwap, onRemove, dragHandleProps }: AIExerciseRowProps & { dragHandleProps?: any }) {
   const [open, setOpen] = useState(false);
   const completed = log?.completed ?? false;
 
@@ -471,6 +486,14 @@ function AIExerciseRow({ exercise, index, log, onToggleComplete, onUpdateSets, o
       completed ? "border-primary/40 bg-primary/5" : "border-border bg-secondary/30"
     )}>
       <div className="flex items-center">
+        {/* Drag handle */}
+        <div
+          {...dragHandleProps}
+          className="flex items-center justify-center px-1.5 py-3 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground touch-none"
+        >
+          <GripVertical className="h-4 w-4" />
+        </div>
+
         {/* Checkbox */}
         <div
           className="flex items-center justify-center px-3 py-3 cursor-pointer"
