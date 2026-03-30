@@ -168,20 +168,81 @@ async function generatePDF(plan: AIPlanCardProps["plan"]) {
   doc.save(`${plan.name.replace(/\s+/g, "_")}.pdf`);
 }
 
-export function AIPlanCard({ plan }: AIPlanCardProps) {
+export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [exporting, setExporting] = useState(false);
   const [activeTab, setActiveTab] = useState<"schedule" | "periodization">("schedule");
-  const schedule = plan.plan_data?.weeklySchedule || [];
-  const periodization = plan.plan_data?.periodization || [];
+  const [pickerMode, setPickerMode] = useState<{ dayIndex: number; exerciseIndex?: number } | null>(null);
+  const [localPlanData, setLocalPlanData] = useState(plan.plan_data);
+  const schedule = localPlanData?.weeklySchedule || [];
+  const periodization = localPlanData?.periodization || [];
   const { toast } = useToast();
   const { t } = useLanguage();
   const { upsertLog, getLog, today } = useWorkoutLogs(plan.id, selectedDay);
 
+  const savePlanData = useCallback(async (newPlanData: any) => {
+    setLocalPlanData(newPlanData);
+    const { error } = await supabase
+      .from("training_plans")
+      .update({ plan_data: newPlanData })
+      .eq("id", plan.id);
+    if (error) {
+      toast({ title: "Failed to save changes", variant: "destructive" });
+    } else {
+      toast({ title: "Plan updated!" });
+      onPlanUpdated?.();
+    }
+  }, [plan.id, toast, onPlanUpdated]);
+
+  const handleRemoveExercise = useCallback((dayIndex: number, exerciseIndex: number) => {
+    const newData = JSON.parse(JSON.stringify(localPlanData));
+    newData.weeklySchedule[dayIndex].exercises.splice(exerciseIndex, 1);
+    savePlanData(newData);
+  }, [localPlanData, savePlanData]);
+
+  const handleSwapExercise = useCallback((dayIndex: number, exerciseIndex: number, picked: any) => {
+    const newData = JSON.parse(JSON.stringify(localPlanData));
+    const existing = newData.weeklySchedule[dayIndex].exercises[exerciseIndex];
+    newData.weeklySchedule[dayIndex].exercises[exerciseIndex] = {
+      ...existing,
+      name: picked.name,
+      category: picked.category,
+      muscleGroups: picked.muscleGroups,
+      sets: picked.sets,
+      reps: picked.reps,
+      tempo: picked.tempo,
+      rest: picked.rest,
+      coachingCue: picked.coachingCue || existing.coachingCue,
+      whyItMatters: picked.whyItMatters || existing.whyItMatters,
+      alternatives: picked.alternatives || [],
+    };
+    savePlanData(newData);
+  }, [localPlanData, savePlanData]);
+
+  const handleAddExercise = useCallback((dayIndex: number, picked: any) => {
+    const newData = JSON.parse(JSON.stringify(localPlanData));
+    if (!newData.weeklySchedule[dayIndex].exercises) {
+      newData.weeklySchedule[dayIndex].exercises = [];
+    }
+    newData.weeklySchedule[dayIndex].exercises.push({
+      name: picked.name,
+      category: picked.category,
+      muscleGroups: picked.muscleGroups,
+      sets: picked.sets,
+      reps: picked.reps,
+      tempo: picked.tempo,
+      rest: picked.rest,
+      coachingCue: picked.coachingCue || "",
+      whyItMatters: picked.whyItMatters || "",
+      alternatives: picked.alternatives || [],
+    });
+    savePlanData(newData);
+  }, [localPlanData, savePlanData]);
+
   const handleDownload = async () => {
     setExporting(true);
     try {
-      await generatePDF(plan);
+      await generatePDF({ ...plan, plan_data: localPlanData });
       toast({ title: "PDF downloaded!" });
     } catch {
       toast({ title: "PDF export failed", variant: "destructive" });
