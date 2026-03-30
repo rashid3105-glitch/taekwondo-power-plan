@@ -397,8 +397,36 @@ export default function AdminApproval() {
     }
   });
 
-  const pending = filteredUsers.filter(u => !u.is_approved);
-  const approved = filteredUsers.filter(u => u.is_approved);
+  const sortedFiltered = sortBy === "club"
+    ? [...filteredUsers].sort((a, b) => {
+        const clubA = (a.club_name || "zzz").toLowerCase();
+        const clubB = (b.club_name || "zzz").toLowerCase();
+        if (clubA !== clubB) return clubA.localeCompare(clubB);
+        return (a.display_name || "").localeCompare(b.display_name || "");
+      })
+    : filteredUsers;
+
+  const pending = sortedFiltered.filter(u => !u.is_approved);
+  const approved = sortedFiltered.filter(u => u.is_approved);
+
+  // Group by club for club sort mode
+  const groupByClub = (list: PendingUser[]) => {
+    const groups: { clubName: string; users: PendingUser[] }[] = [];
+    const map = new Map<string, PendingUser[]>();
+    for (const u of list) {
+      const key = u.club_name || "No club";
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(u);
+    }
+    for (const [clubName, users] of map) {
+      groups.push({ clubName, users });
+    }
+    return groups.sort((a, b) => {
+      if (a.clubName === "No club") return 1;
+      if (b.clubName === "No club") return -1;
+      return a.clubName.localeCompare(b.clubName);
+    });
+  };
 
   const UserCard = ({ u, actions, showRevoke }: { u: PendingUser; actions: React.ReactNode; showRevoke?: boolean }) => (
     <Collapsible>
