@@ -827,11 +827,28 @@ export default function AdminApproval() {
             <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
               {t("approvedUsers")} ({approved.length})
             </h2>
-            <div className="space-y-3">
-              {approved.map(u => (
-                <UserCard key={u.user_id} u={u} showRevoke actions={null} />
-              ))}
-            </div>
+            {sortBy === "club" ? (
+              <div className="space-y-5">
+                {groupByClub(approved).map(group => (
+                  <div key={group.clubName}>
+                    <h3 className="text-xs font-semibold text-primary uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                      <Users className="h-3 w-3" /> {group.clubName} ({group.users.length})
+                    </h3>
+                    <div className="space-y-3">
+                      {group.users.map(u => (
+                        <UserCard key={u.user_id} u={u} showRevoke actions={null} />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {approved.map(u => (
+                  <UserCard key={u.user_id} u={u} showRevoke actions={null} />
+                ))}
+              </div>
+            )}
           </div>
         )}
 
