@@ -761,6 +761,7 @@ export default function CoachDashboard() {
                           ))}
                         </div>
                       )}
+                      <DiaryComments entryId={entry.id} canComment={true} />
                     </div>
                   );
                 })}

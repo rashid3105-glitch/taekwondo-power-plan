@@ -321,6 +321,7 @@ export default function Diary() {
                     ))}
                   </div>
                 )}
+                <DiaryComments entryId={entry.id} />
               </div>
             );
           })
