@@ -103,6 +103,14 @@ export default function Help() {
               </ul>
             </div>
             <div className="space-y-2">
+              <h3 className="text-sm font-bold text-foreground">{t("changelog_2026_03_30" as any)}</h3>
+              <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-5">
+                <li>{t("changelogEntry35" as any)}</li>
+                <li>{t("changelogEntry36" as any)}</li>
+                <li>{t("changelogEntry37" as any)}</li>
+              </ul>
+            </div>
+            <div className="space-y-2">
               <h3 className="text-sm font-bold text-foreground">{t("changelog_2026_03_25" as any)}</h3>
               <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-5">
                 <li>{t("changelogEntry17" as any)}</li>
