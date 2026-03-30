@@ -91,68 +91,68 @@ export default function Help() {
             <ChevronDown className="h-4 w-4 text-muted-foreground ml-auto transition-transform duration-200 group-data-[state=open]:rotate-180" />
           </CollapsibleTrigger>
           <CollapsibleContent className="mt-4">
-            <div className="rounded-lg border border-border bg-card px-5 py-4 space-y-3">
-              <h3 className="text-sm font-bold text-foreground">{t("changelog_2026_03_28" as any)}</h3>
-              <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-5">
-                <li>{t("changelogEntry29" as any)}</li>
-                <li>{t("changelogEntry30" as any)}</li>
-                <li>{t("changelogEntry31" as any)}</li>
-                <li>{t("changelogEntry32" as any)}</li>
-                <li>{t("changelogEntry33" as any)}</li>
-                <li>{t("changelogEntry34" as any)}</li>
-              </ul>
-            </div>
-            <div className="space-y-2">
-              <h3 className="text-sm font-bold text-foreground">{t("changelog_2026_03_30" as any)}</h3>
-              <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-5">
-                <li>{t("changelogEntry35" as any)}</li>
-                <li>{t("changelogEntry36" as any)}</li>
-                <li>{t("changelogEntry37" as any)}</li>
-              </ul>
-            </div>
-            <div className="space-y-2">
-              <h3 className="text-sm font-bold text-foreground">{t("changelog_2026_03_25" as any)}</h3>
-              <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-5">
-                <li>{t("changelogEntry17" as any)}</li>
-                <li>{t("changelogEntry18" as any)}</li>
-                <li>{t("changelogEntry19" as any)}</li>
-                <li>{t("changelogEntry20" as any)}</li>
-                <li>{t("changelogEntry21" as any)}</li>
-                <li>{t("changelogEntry22" as any)}</li>
-                <li>{t("changelogEntry23" as any)}</li>
-                <li>{t("changelogEntry24" as any)}</li>
-                <li>{t("changelogEntry25" as any)}</li>
-                <li>{t("changelogEntry26" as any)}</li>
-                <li>{t("changelogEntry27" as any)}</li>
-                <li>{t("changelogEntry28" as any)}</li>
-              </ul>
-            </div>
-            <div className="rounded-lg border border-border bg-card px-5 py-4 space-y-3 mt-3">
-              <h3 className="text-sm font-bold text-foreground">{t("changelog_2026_03_24" as any)}</h3>
-              <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-5">
-                <li>{t("changelogEntry9" as any)}</li>
-                <li>{t("changelogEntry10" as any)}</li>
-                <li>{t("changelogEntry11" as any)}</li>
-                <li>{t("changelogEntry12" as any)}</li>
-                <li>{t("changelogEntry13" as any)}</li>
-                <li>{t("changelogEntry14" as any)}</li>
-                <li>{t("changelogEntry15" as any)}</li>
-                <li>{t("changelogEntry16" as any)}</li>
-              </ul>
-            </div>
-            <div className="rounded-lg border border-border bg-card px-5 py-4 space-y-3 mt-3">
-              <h3 className="text-sm font-bold text-foreground">{t("changelog_2026_03_23" as any)}</h3>
-              <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-5">
-                <li>{t("changelogEntry1" as any)}</li>
-                <li>{t("changelogEntry2" as any)}</li>
-                <li>{t("changelogEntry3" as any)}</li>
-                <li>{t("changelogEntry4" as any)}</li>
-                <li>{t("changelogEntry5" as any)}</li>
-                <li>{t("changelogEntry6" as any)}</li>
-                <li>{t("changelogEntry7" as any)}</li>
-                <li>{t("changelogEntry8" as any)}</li>
-              </ul>
-            </div>
+              <div className="rounded-lg border border-border bg-card px-5 py-4 space-y-3">
+                <h3 className="text-sm font-bold text-foreground">{t("changelog_2026_03_30" as any)}</h3>
+                <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-5">
+                  <li>{t("changelogEntry35" as any)}</li>
+                  <li>{t("changelogEntry36" as any)}</li>
+                  <li>{t("changelogEntry37" as any)}</li>
+                </ul>
+              </div>
+              <div className="rounded-lg border border-border bg-card px-5 py-4 space-y-3">
+                <h3 className="text-sm font-bold text-foreground">{t("changelog_2026_03_28" as any)}</h3>
+                <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-5">
+                  <li>{t("changelogEntry29" as any)}</li>
+                  <li>{t("changelogEntry30" as any)}</li>
+                  <li>{t("changelogEntry31" as any)}</li>
+                  <li>{t("changelogEntry32" as any)}</li>
+                  <li>{t("changelogEntry33" as any)}</li>
+                  <li>{t("changelogEntry34" as any)}</li>
+                </ul>
+              </div>
+              <div className="rounded-lg border border-border bg-card px-5 py-4 space-y-3">
+                <h3 className="text-sm font-bold text-foreground">{t("changelog_2026_03_25" as any)}</h3>
+                <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-5">
+                  <li>{t("changelogEntry17" as any)}</li>
+                  <li>{t("changelogEntry18" as any)}</li>
+                  <li>{t("changelogEntry19" as any)}</li>
+                  <li>{t("changelogEntry20" as any)}</li>
+                  <li>{t("changelogEntry21" as any)}</li>
+                  <li>{t("changelogEntry22" as any)}</li>
+                  <li>{t("changelogEntry23" as any)}</li>
+                  <li>{t("changelogEntry24" as any)}</li>
+                  <li>{t("changelogEntry25" as any)}</li>
+                  <li>{t("changelogEntry26" as any)}</li>
+                  <li>{t("changelogEntry27" as any)}</li>
+                  <li>{t("changelogEntry28" as any)}</li>
+                </ul>
+              </div>
+              <div className="rounded-lg border border-border bg-card px-5 py-4 space-y-3">
+                <h3 className="text-sm font-bold text-foreground">{t("changelog_2026_03_24" as any)}</h3>
+                <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-5">
+                  <li>{t("changelogEntry9" as any)}</li>
+                  <li>{t("changelogEntry10" as any)}</li>
+                  <li>{t("changelogEntry11" as any)}</li>
+                  <li>{t("changelogEntry12" as any)}</li>
+                  <li>{t("changelogEntry13" as any)}</li>
+                  <li>{t("changelogEntry14" as any)}</li>
+                  <li>{t("changelogEntry15" as any)}</li>
+                  <li>{t("changelogEntry16" as any)}</li>
+                </ul>
+              </div>
+              <div className="rounded-lg border border-border bg-card px-5 py-4 space-y-3">
+                <h3 className="text-sm font-bold text-foreground">{t("changelog_2026_03_23" as any)}</h3>
+                <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-5">
+                  <li>{t("changelogEntry1" as any)}</li>
+                  <li>{t("changelogEntry2" as any)}</li>
+                  <li>{t("changelogEntry3" as any)}</li>
+                  <li>{t("changelogEntry4" as any)}</li>
+                  <li>{t("changelogEntry5" as any)}</li>
+                  <li>{t("changelogEntry6" as any)}</li>
+                  <li>{t("changelogEntry7" as any)}</li>
+                  <li>{t("changelogEntry8" as any)}</li>
+                </ul>
+              </div>
           </CollapsibleContent>
         </Collapsible>
       </div>
