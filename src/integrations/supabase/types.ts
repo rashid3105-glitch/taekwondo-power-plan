@@ -56,6 +56,41 @@ export type Database = {
         }
         Relationships: []
       }
+      diary_comments: {
+        Row: {
+          coach_id: string
+          content: string
+          created_at: string
+          diary_entry_id: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          coach_id: string
+          content?: string
+          created_at?: string
+          diary_entry_id: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          coach_id?: string
+          content?: string
+          created_at?: string
+          diary_entry_id?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diary_comments_diary_entry_id_fkey"
+            columns: ["diary_entry_id"]
+            isOneToOne: false
+            referencedRelation: "diary_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       diary_entries: {
         Row: {
           content: string
