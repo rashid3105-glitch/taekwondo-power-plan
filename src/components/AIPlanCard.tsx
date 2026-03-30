@@ -370,6 +370,8 @@ export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
                       onUpdateSets={(actual_sets) => upsertLog(j, { actual_sets })}
                       onUpdateReps={(actual_reps) => upsertLog(j, { actual_reps })}
                       onUpdateNotes={(notes) => upsertLog(j, { notes })}
+                      onSwap={() => setPickerMode({ dayIndex: selectedDay, exerciseIndex: j })}
+                      onRemove={() => handleRemoveExercise(selectedDay, j)}
                     />
                   ))}
                 </div>
@@ -378,8 +380,32 @@ export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
                   Follow your dojang's programming for this session.
                 </p>
               )}
+
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full mt-3"
+                onClick={() => setPickerMode({ dayIndex: selectedDay })}
+              >
+                <Plus className="h-3.5 w-3.5 mr-1" /> Add Exercise
+              </Button>
             </div>
           )}
+
+          {/* Exercise Picker */}
+          <ExercisePicker
+            open={!!pickerMode}
+            onClose={() => setPickerMode(null)}
+            title={pickerMode?.exerciseIndex !== undefined ? "Swap Exercise" : "Add Exercise"}
+            onSelect={(picked) => {
+              if (!pickerMode) return;
+              if (pickerMode.exerciseIndex !== undefined) {
+                handleSwapExercise(pickerMode.dayIndex, pickerMode.exerciseIndex, picked);
+              } else {
+                handleAddExercise(pickerMode.dayIndex, picked);
+              }
+            }}
+          />
         </>
       )}
     </div>
