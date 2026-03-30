@@ -1,5 +1,8 @@
-import { useState, useCallback } from "react";
-import { ChevronDown, ChevronUp, Shield, Dumbbell, Battery, Download, Loader2, Check, Layers, Youtube, CalendarPlus, Bell, BellOff, ArrowLeftRight, Trash2, Plus } from "lucide-react";
+import { useState, useCallback, useMemo } from "react";
+import { ChevronDown, ChevronUp, Shield, Dumbbell, Battery, Download, Loader2, Check, Layers, Youtube, CalendarPlus, Bell, BellOff, ArrowLeftRight, Trash2, Plus, GripVertical } from "lucide-react";
+import { DndContext, closestCenter, PointerSensor, TouchSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
+import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { supabase } from "@/integrations/supabase/client";
 import { ExercisePicker } from "@/components/ExercisePicker";
 import { Button } from "@/components/ui/button";
@@ -251,6 +254,21 @@ export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
     }
   };
 
+  const handleReorderExercises = useCallback((dayIndex: number, oldIndex: number, newIndex: number) => {
+    const newData = JSON.parse(JSON.stringify(localPlanData));
+    newData.weeklySchedule[dayIndex].exercises = arrayMove(
+      newData.weeklySchedule[dayIndex].exercises,
+      oldIndex,
+      newIndex
+    );
+    savePlanData(newData);
+  }, [localPlanData, savePlanData]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 5 } })
+  );
+
   // Count completed exercises for each day
   const completedCounts = schedule.map((_: any, i: number) => {
     return null;
@@ -359,22 +377,41 @@ export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
               </div>
 
               {schedule[selectedDay].exercises?.length > 0 ? (
-                <div className="space-y-2">
-                  {schedule[selectedDay].exercises.map((ex: any, j: number) => (
-                    <AIExerciseRow
-                      key={j}
-                      exercise={ex}
-                      index={j + 1}
-                      log={getLog(j)}
-                      onToggleComplete={(completed) => upsertLog(j, { completed })}
-                      onUpdateSets={(actual_sets) => upsertLog(j, { actual_sets })}
-                      onUpdateReps={(actual_reps) => upsertLog(j, { actual_reps })}
-                      onUpdateNotes={(notes) => upsertLog(j, { notes })}
-                      onSwap={() => setPickerMode({ dayIndex: selectedDay, exerciseIndex: j })}
-                      onRemove={() => handleRemoveExercise(selectedDay, j)}
-                    />
-                  ))}
-                </div>
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={(event: DragEndEvent) => {
+                    const { active, over } = event;
+                    if (over && active.id !== over.id) {
+                      const oldIndex = Number(String(active.id).split("-").pop());
+                      const newIndex = Number(String(over.id).split("-").pop());
+                      handleReorderExercises(selectedDay, oldIndex, newIndex);
+                    }
+                  }}
+                >
+                  <SortableContext
+                    items={schedule[selectedDay].exercises.map((_: any, j: number) => `ex-${j}`)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    <div className="space-y-2">
+                      {schedule[selectedDay].exercises.map((ex: any, j: number) => (
+                        <SortableExerciseRow
+                          key={`ex-${j}`}
+                          id={`ex-${j}`}
+                          exercise={ex}
+                          index={j + 1}
+                          log={getLog(j)}
+                          onToggleComplete={(completed) => upsertLog(j, { completed })}
+                          onUpdateSets={(actual_sets) => upsertLog(j, { actual_sets })}
+                          onUpdateReps={(actual_reps) => upsertLog(j, { actual_reps })}
+                          onUpdateNotes={(notes) => upsertLog(j, { notes })}
+                          onSwap={() => setPickerMode({ dayIndex: selectedDay, exerciseIndex: j })}
+                          onRemove={() => handleRemoveExercise(selectedDay, j)}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
+                </DndContext>
               ) : (
                 <p className="text-sm text-muted-foreground text-center py-4">
                   Follow your dojang's programming for this session.
@@ -424,7 +461,22 @@ interface AIExerciseRowProps {
   onRemove: () => void;
 }
 
-function AIExerciseRow({ exercise, index, log, onToggleComplete, onUpdateSets, onUpdateReps, onUpdateNotes, onSwap, onRemove }: AIExerciseRowProps) {
+function SortableExerciseRow(props: AIExerciseRowProps & { id: string }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: props.id });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 10 : undefined,
+  };
+  return (
+    <div ref={setNodeRef} style={style}>
+      <AIExerciseRow {...props} dragHandleProps={{ ...attributes, ...listeners }} />
+    </div>
+  );
+}
+
+function AIExerciseRow({ exercise, index, log, onToggleComplete, onUpdateSets, onUpdateReps, onUpdateNotes, onSwap, onRemove, dragHandleProps }: AIExerciseRowProps & { dragHandleProps?: any }) {
   const [open, setOpen] = useState(false);
   const completed = log?.completed ?? false;
 
@@ -434,6 +486,14 @@ function AIExerciseRow({ exercise, index, log, onToggleComplete, onUpdateSets, o
       completed ? "border-primary/40 bg-primary/5" : "border-border bg-secondary/30"
     )}>
       <div className="flex items-center">
+        {/* Drag handle */}
+        <div
+          {...dragHandleProps}
+          className="flex items-center justify-center px-1.5 py-3 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground touch-none"
+        >
+          <GripVertical className="h-4 w-4" />
+        </div>
+
         {/* Checkbox */}
         <div
           className="flex items-center justify-center px-3 py-3 cursor-pointer"
