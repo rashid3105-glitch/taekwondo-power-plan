@@ -64,6 +64,7 @@ export default function AdminApproval() {
   const [resettingPassword, setResettingPassword] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState<"all" | "pending" | "approved" | "paid" | "demo" | "coach">("all");
+  const [sortBy, setSortBy] = useState<"name" | "club">("name");
   const [editingUser, setEditingUser] = useState<PendingUser | null>(null);
   const [editForm, setEditForm] = useState<Record<string, any>>({});
   const [saving, setSaving] = useState(false);
