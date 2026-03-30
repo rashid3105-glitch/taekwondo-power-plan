@@ -64,6 +64,7 @@ export default function AdminApproval() {
   const [resettingPassword, setResettingPassword] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState<"all" | "pending" | "approved" | "paid" | "demo" | "coach">("all");
+  const [sortBy, setSortBy] = useState<"name" | "club">("name");
   const [editingUser, setEditingUser] = useState<PendingUser | null>(null);
   const [editForm, setEditForm] = useState<Record<string, any>>({});
   const [saving, setSaving] = useState(false);
@@ -396,8 +397,36 @@ export default function AdminApproval() {
     }
   });
 
-  const pending = filteredUsers.filter(u => !u.is_approved);
-  const approved = filteredUsers.filter(u => u.is_approved);
+  const sortedFiltered = sortBy === "club"
+    ? [...filteredUsers].sort((a, b) => {
+        const clubA = (a.club_name || "zzz").toLowerCase();
+        const clubB = (b.club_name || "zzz").toLowerCase();
+        if (clubA !== clubB) return clubA.localeCompare(clubB);
+        return (a.display_name || "").localeCompare(b.display_name || "");
+      })
+    : filteredUsers;
+
+  const pending = sortedFiltered.filter(u => !u.is_approved);
+  const approved = sortedFiltered.filter(u => u.is_approved);
+
+  // Group by club for club sort mode
+  const groupByClub = (list: PendingUser[]) => {
+    const groups: { clubName: string; users: PendingUser[] }[] = [];
+    const map = new Map<string, PendingUser[]>();
+    for (const u of list) {
+      const key = u.club_name || "No club";
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(u);
+    }
+    for (const [clubName, users] of map) {
+      groups.push({ clubName, users });
+    }
+    return groups.sort((a, b) => {
+      if (a.clubName === "No club") return 1;
+      if (b.clubName === "No club") return -1;
+      return a.clubName.localeCompare(b.clubName);
+    });
+  };
 
   const UserCard = ({ u, actions, showRevoke }: { u: PendingUser; actions: React.ReactNode; showRevoke?: boolean }) => (
     <Collapsible>
@@ -759,6 +788,15 @@ export default function AdminApproval() {
               <SelectItem value="coach">Coaches</SelectItem>
             </SelectContent>
           </Select>
+          <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
+            <SelectTrigger className="w-full sm:w-36">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="name">Sort: A-Z</SelectItem>
+              <SelectItem value="club">Sort: Club</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Pending users */}
@@ -789,11 +827,28 @@ export default function AdminApproval() {
             <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
               {t("approvedUsers")} ({approved.length})
             </h2>
-            <div className="space-y-3">
-              {approved.map(u => (
-                <UserCard key={u.user_id} u={u} showRevoke actions={null} />
-              ))}
-            </div>
+            {sortBy === "club" ? (
+              <div className="space-y-5">
+                {groupByClub(approved).map(group => (
+                  <div key={group.clubName}>
+                    <h3 className="text-xs font-semibold text-primary uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                      <Users className="h-3 w-3" /> {group.clubName} ({group.users.length})
+                    </h3>
+                    <div className="space-y-3">
+                      {group.users.map(u => (
+                        <UserCard key={u.user_id} u={u} showRevoke actions={null} />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {approved.map(u => (
+                  <UserCard key={u.user_id} u={u} showRevoke actions={null} />
+                ))}
+              </div>
+            )}
           </div>
         )}
 
