@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Watermark } from "@/components/Watermark";
+import { DiaryComments } from "@/components/DiaryComments";
 
 interface DiaryEntry {
   id: string;
@@ -320,6 +321,7 @@ export default function Diary() {
                     ))}
                   </div>
                 )}
+                <DiaryComments entryId={entry.id} />
               </div>
             );
           })
