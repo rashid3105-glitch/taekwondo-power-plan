@@ -420,6 +420,8 @@ interface AIExerciseRowProps {
   onUpdateSets: (sets: number | null) => void;
   onUpdateReps: (reps: string | null) => void;
   onUpdateNotes: (notes: string | null) => void;
+  onSwap: () => void;
+  onRemove: () => void;
 }
 
 function AIExerciseRow({ exercise, index, log, onToggleComplete, onUpdateSets, onUpdateReps, onUpdateNotes }: AIExerciseRowProps) {
