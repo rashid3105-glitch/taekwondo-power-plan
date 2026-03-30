@@ -377,22 +377,41 @@ export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
               </div>
 
               {schedule[selectedDay].exercises?.length > 0 ? (
-                <div className="space-y-2">
-                  {schedule[selectedDay].exercises.map((ex: any, j: number) => (
-                    <AIExerciseRow
-                      key={j}
-                      exercise={ex}
-                      index={j + 1}
-                      log={getLog(j)}
-                      onToggleComplete={(completed) => upsertLog(j, { completed })}
-                      onUpdateSets={(actual_sets) => upsertLog(j, { actual_sets })}
-                      onUpdateReps={(actual_reps) => upsertLog(j, { actual_reps })}
-                      onUpdateNotes={(notes) => upsertLog(j, { notes })}
-                      onSwap={() => setPickerMode({ dayIndex: selectedDay, exerciseIndex: j })}
-                      onRemove={() => handleRemoveExercise(selectedDay, j)}
-                    />
-                  ))}
-                </div>
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={(event: DragEndEvent) => {
+                    const { active, over } = event;
+                    if (over && active.id !== over.id) {
+                      const oldIndex = Number(String(active.id).split("-").pop());
+                      const newIndex = Number(String(over.id).split("-").pop());
+                      handleReorderExercises(selectedDay, oldIndex, newIndex);
+                    }
+                  }}
+                >
+                  <SortableContext
+                    items={schedule[selectedDay].exercises.map((_: any, j: number) => `ex-${j}`)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    <div className="space-y-2">
+                      {schedule[selectedDay].exercises.map((ex: any, j: number) => (
+                        <SortableExerciseRow
+                          key={`ex-${j}`}
+                          id={`ex-${j}`}
+                          exercise={ex}
+                          index={j + 1}
+                          log={getLog(j)}
+                          onToggleComplete={(completed) => upsertLog(j, { completed })}
+                          onUpdateSets={(actual_sets) => upsertLog(j, { actual_sets })}
+                          onUpdateReps={(actual_reps) => upsertLog(j, { actual_reps })}
+                          onUpdateNotes={(notes) => upsertLog(j, { notes })}
+                          onSwap={() => setPickerMode({ dayIndex: selectedDay, exerciseIndex: j })}
+                          onRemove={() => handleRemoveExercise(selectedDay, j)}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
+                </DndContext>
               ) : (
                 <p className="text-sm text-muted-foreground text-center py-4">
                   Follow your dojang's programming for this session.
