@@ -760,6 +760,15 @@ export default function AdminApproval() {
               <SelectItem value="coach">Coaches</SelectItem>
             </SelectContent>
           </Select>
+          <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
+            <SelectTrigger className="w-full sm:w-36">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="name">Sort: A-Z</SelectItem>
+              <SelectItem value="club">Sort: Club</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Pending users */}
