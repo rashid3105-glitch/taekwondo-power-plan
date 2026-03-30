@@ -1,5 +1,7 @@
-import { useState } from "react";
-import { ChevronDown, ChevronUp, Shield, Dumbbell, Battery, Download, Loader2, Check, Layers, Youtube, CalendarPlus, Bell, BellOff } from "lucide-react";
+import { useState, useCallback } from "react";
+import { ChevronDown, ChevronUp, Shield, Dumbbell, Battery, Download, Loader2, Check, Layers, Youtube, CalendarPlus, Bell, BellOff, ArrowLeftRight, Trash2, Plus } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { ExercisePicker } from "@/components/ExercisePicker";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -33,6 +35,7 @@ interface AIPlanCardProps {
     plan_data: any;
     created_at: string;
   };
+  onPlanUpdated?: () => void;
 }
 
 async function generatePDF(plan: AIPlanCardProps["plan"]) {
@@ -165,20 +168,81 @@ async function generatePDF(plan: AIPlanCardProps["plan"]) {
   doc.save(`${plan.name.replace(/\s+/g, "_")}.pdf`);
 }
 
-export function AIPlanCard({ plan }: AIPlanCardProps) {
+export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [exporting, setExporting] = useState(false);
   const [activeTab, setActiveTab] = useState<"schedule" | "periodization">("schedule");
-  const schedule = plan.plan_data?.weeklySchedule || [];
-  const periodization = plan.plan_data?.periodization || [];
+  const [pickerMode, setPickerMode] = useState<{ dayIndex: number; exerciseIndex?: number } | null>(null);
+  const [localPlanData, setLocalPlanData] = useState(plan.plan_data);
+  const schedule = localPlanData?.weeklySchedule || [];
+  const periodization = localPlanData?.periodization || [];
   const { toast } = useToast();
   const { t } = useLanguage();
   const { upsertLog, getLog, today } = useWorkoutLogs(plan.id, selectedDay);
 
+  const savePlanData = useCallback(async (newPlanData: any) => {
+    setLocalPlanData(newPlanData);
+    const { error } = await supabase
+      .from("training_plans")
+      .update({ plan_data: newPlanData })
+      .eq("id", plan.id);
+    if (error) {
+      toast({ title: "Failed to save changes", variant: "destructive" });
+    } else {
+      toast({ title: "Plan updated!" });
+      onPlanUpdated?.();
+    }
+  }, [plan.id, toast, onPlanUpdated]);
+
+  const handleRemoveExercise = useCallback((dayIndex: number, exerciseIndex: number) => {
+    const newData = JSON.parse(JSON.stringify(localPlanData));
+    newData.weeklySchedule[dayIndex].exercises.splice(exerciseIndex, 1);
+    savePlanData(newData);
+  }, [localPlanData, savePlanData]);
+
+  const handleSwapExercise = useCallback((dayIndex: number, exerciseIndex: number, picked: any) => {
+    const newData = JSON.parse(JSON.stringify(localPlanData));
+    const existing = newData.weeklySchedule[dayIndex].exercises[exerciseIndex];
+    newData.weeklySchedule[dayIndex].exercises[exerciseIndex] = {
+      ...existing,
+      name: picked.name,
+      category: picked.category,
+      muscleGroups: picked.muscleGroups,
+      sets: picked.sets,
+      reps: picked.reps,
+      tempo: picked.tempo,
+      rest: picked.rest,
+      coachingCue: picked.coachingCue || existing.coachingCue,
+      whyItMatters: picked.whyItMatters || existing.whyItMatters,
+      alternatives: picked.alternatives || [],
+    };
+    savePlanData(newData);
+  }, [localPlanData, savePlanData]);
+
+  const handleAddExercise = useCallback((dayIndex: number, picked: any) => {
+    const newData = JSON.parse(JSON.stringify(localPlanData));
+    if (!newData.weeklySchedule[dayIndex].exercises) {
+      newData.weeklySchedule[dayIndex].exercises = [];
+    }
+    newData.weeklySchedule[dayIndex].exercises.push({
+      name: picked.name,
+      category: picked.category,
+      muscleGroups: picked.muscleGroups,
+      sets: picked.sets,
+      reps: picked.reps,
+      tempo: picked.tempo,
+      rest: picked.rest,
+      coachingCue: picked.coachingCue || "",
+      whyItMatters: picked.whyItMatters || "",
+      alternatives: picked.alternatives || [],
+    });
+    savePlanData(newData);
+  }, [localPlanData, savePlanData]);
+
   const handleDownload = async () => {
     setExporting(true);
     try {
-      await generatePDF(plan);
+      await generatePDF({ ...plan, plan_data: localPlanData });
       toast({ title: "PDF downloaded!" });
     } catch {
       toast({ title: "PDF export failed", variant: "destructive" });
@@ -306,6 +370,8 @@ export function AIPlanCard({ plan }: AIPlanCardProps) {
                       onUpdateSets={(actual_sets) => upsertLog(j, { actual_sets })}
                       onUpdateReps={(actual_reps) => upsertLog(j, { actual_reps })}
                       onUpdateNotes={(notes) => upsertLog(j, { notes })}
+                      onSwap={() => setPickerMode({ dayIndex: selectedDay, exerciseIndex: j })}
+                      onRemove={() => handleRemoveExercise(selectedDay, j)}
                     />
                   ))}
                 </div>
@@ -314,8 +380,32 @@ export function AIPlanCard({ plan }: AIPlanCardProps) {
                   Follow your dojang's programming for this session.
                 </p>
               )}
+
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full mt-3"
+                onClick={() => setPickerMode({ dayIndex: selectedDay })}
+              >
+                <Plus className="h-3.5 w-3.5 mr-1" /> Add Exercise
+              </Button>
             </div>
           )}
+
+          {/* Exercise Picker */}
+          <ExercisePicker
+            open={!!pickerMode}
+            onClose={() => setPickerMode(null)}
+            title={pickerMode?.exerciseIndex !== undefined ? "Swap Exercise" : "Add Exercise"}
+            onSelect={(picked) => {
+              if (!pickerMode) return;
+              if (pickerMode.exerciseIndex !== undefined) {
+                handleSwapExercise(pickerMode.dayIndex, pickerMode.exerciseIndex, picked);
+              } else {
+                handleAddExercise(pickerMode.dayIndex, picked);
+              }
+            }}
+          />
         </>
       )}
     </div>
@@ -330,9 +420,11 @@ interface AIExerciseRowProps {
   onUpdateSets: (sets: number | null) => void;
   onUpdateReps: (reps: string | null) => void;
   onUpdateNotes: (notes: string | null) => void;
+  onSwap: () => void;
+  onRemove: () => void;
 }
 
-function AIExerciseRow({ exercise, index, log, onToggleComplete, onUpdateSets, onUpdateReps, onUpdateNotes }: AIExerciseRowProps) {
+function AIExerciseRow({ exercise, index, log, onToggleComplete, onUpdateSets, onUpdateReps, onUpdateNotes, onSwap, onRemove }: AIExerciseRowProps) {
   const [open, setOpen] = useState(false);
   const completed = log?.completed ?? false;
 
@@ -377,16 +469,34 @@ function AIExerciseRow({ exercise, index, log, onToggleComplete, onUpdateSets, o
           {open ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
         </button>
 
-        {/* YouTube link - outside button to avoid invalid HTML nesting */}
+        {/* YouTube link */}
         <a
           href={`https://www.youtube.com/results?search_query=${encodeURIComponent(exercise.name + ' exercise form')}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-center px-2 py-3 text-muted-foreground hover:text-destructive transition-colors"
+          className="flex items-center justify-center px-1.5 py-3 text-muted-foreground hover:text-destructive transition-colors"
           title="Watch demo on YouTube"
         >
           <Youtube className="h-4 w-4" />
         </a>
+
+        {/* Swap button */}
+        <button
+          onClick={onSwap}
+          className="flex items-center justify-center px-1.5 py-3 text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+          title="Swap exercise"
+        >
+          <ArrowLeftRight className="h-3.5 w-3.5" />
+        </button>
+
+        {/* Remove button */}
+        <button
+          onClick={onRemove}
+          className="flex items-center justify-center px-1.5 py-3 text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
+          title="Remove exercise"
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+        </button>
       </div>
 
       {open && (
