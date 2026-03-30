@@ -469,16 +469,34 @@ function AIExerciseRow({ exercise, index, log, onToggleComplete, onUpdateSets, o
           {open ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
         </button>
 
-        {/* YouTube link - outside button to avoid invalid HTML nesting */}
+        {/* YouTube link */}
         <a
           href={`https://www.youtube.com/results?search_query=${encodeURIComponent(exercise.name + ' exercise form')}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-center px-2 py-3 text-muted-foreground hover:text-destructive transition-colors"
+          className="flex items-center justify-center px-1.5 py-3 text-muted-foreground hover:text-destructive transition-colors"
           title="Watch demo on YouTube"
         >
           <Youtube className="h-4 w-4" />
         </a>
+
+        {/* Swap button */}
+        <button
+          onClick={onSwap}
+          className="flex items-center justify-center px-1.5 py-3 text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+          title="Swap exercise"
+        >
+          <ArrowLeftRight className="h-3.5 w-3.5" />
+        </button>
+
+        {/* Remove button */}
+        <button
+          onClick={onRemove}
+          className="flex items-center justify-center px-1.5 py-3 text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
+          title="Remove exercise"
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+        </button>
       </div>
 
       {open && (
