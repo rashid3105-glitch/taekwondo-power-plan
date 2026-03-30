@@ -424,7 +424,7 @@ interface AIExerciseRowProps {
   onRemove: () => void;
 }
 
-function AIExerciseRow({ exercise, index, log, onToggleComplete, onUpdateSets, onUpdateReps, onUpdateNotes }: AIExerciseRowProps) {
+function AIExerciseRow({ exercise, index, log, onToggleComplete, onUpdateSets, onUpdateReps, onUpdateNotes, onSwap, onRemove }: AIExerciseRowProps) {
   const [open, setOpen] = useState(false);
   const completed = log?.completed ?? false;
 
