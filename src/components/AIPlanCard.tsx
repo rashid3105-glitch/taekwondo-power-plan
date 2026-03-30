@@ -485,74 +485,68 @@ function AIExerciseRow({ exercise, index, log, onToggleComplete, onUpdateSets, o
       "rounded-lg border overflow-hidden transition-all",
       completed ? "border-primary/40 bg-primary/5" : "border-border bg-secondary/30"
     )}>
-      <div className="flex items-center">
-        {/* Drag handle */}
+      {/* Row 1: drag handle, checkbox, name */}
+      <div className="flex items-center gap-1 px-2 pt-2 pb-1">
         <div
           {...dragHandleProps}
-          className="flex items-center justify-center px-1.5 py-3 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground touch-none"
+          className="flex items-center justify-center cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground touch-none"
         >
           <GripVertical className="h-4 w-4" />
         </div>
-
-        {/* Checkbox */}
-        <div
-          className="flex items-center justify-center px-3 py-3 cursor-pointer"
-          onClick={(e) => e.stopPropagation()}
-        >
+        <div onClick={(e) => e.stopPropagation()} className="flex items-center">
           <Checkbox
             checked={completed}
             onCheckedChange={(checked) => onToggleComplete(!!checked)}
             className="h-5 w-5"
           />
         </div>
-
-        {/* Header button */}
+        <span className="mono text-xs text-muted-foreground w-5 text-center">{String(index).padStart(2, "0")}</span>
+        <span className={`h-2 w-2 rounded-full flex-shrink-0 ${CATEGORY_DOT[exercise.category] || "bg-muted"}`} />
         <button
           onClick={() => setOpen(!open)}
-          className="flex-1 flex items-center gap-3 px-1 py-3 hover:bg-secondary/60 transition-colors cursor-pointer"
+          className="flex-1 min-w-0 text-left cursor-pointer"
         >
-          <span className="mono text-xs text-muted-foreground w-5">{String(index).padStart(2, "0")}</span>
-          <span className={`h-2 w-2 rounded-full flex-shrink-0 ${CATEGORY_DOT[exercise.category] || "bg-muted"}`} />
           <span className={cn(
-            "font-semibold text-sm flex-1 text-left",
+            "font-semibold text-sm block truncate",
             completed ? "text-muted-foreground line-through" : "text-foreground"
           )}>
             {exercise.name}
           </span>
-          {exercise.muscleGroups?.length > 0 && (
-            <MuscleGroupBadges muscles={exercise.muscleGroups} size={20} />
-          )}
-          <span className="text-xs text-muted-foreground mr-2">
-            {log?.actual_sets ?? exercise.sets}×{log?.actual_reps ?? exercise.reps}
-          </span>
-          {completed && <Check className="h-4 w-4 text-primary mr-1" />}
-          {open ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
         </button>
+        {completed && <Check className="h-4 w-4 text-primary flex-shrink-0" />}
+      </div>
 
-        {/* YouTube link */}
+      {/* Row 2: sets×reps + action icons */}
+      <div className="flex items-center gap-2 px-2 pb-2 pl-[4.5rem]">
+        <span className="text-xs text-muted-foreground font-medium">
+          {log?.actual_sets ?? exercise.sets}×{log?.actual_reps ?? exercise.reps}
+        </span>
+        <button
+          onClick={() => setOpen(!open)}
+          className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+        >
+          {open ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+        </button>
+        <div className="flex-1" />
         <a
           href={`https://www.youtube.com/results?search_query=${encodeURIComponent(exercise.name + ' exercise form')}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-center px-1.5 py-3 text-muted-foreground hover:text-destructive transition-colors"
+          className="p-1 text-muted-foreground hover:text-destructive transition-colors"
           title="Watch demo on YouTube"
         >
           <Youtube className="h-4 w-4" />
         </a>
-
-        {/* Swap button */}
         <button
           onClick={onSwap}
-          className="flex items-center justify-center px-1.5 py-3 text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+          className="p-1 text-muted-foreground hover:text-primary transition-colors cursor-pointer"
           title="Swap exercise"
         >
           <ArrowLeftRight className="h-3.5 w-3.5" />
         </button>
-
-        {/* Remove button */}
         <button
           onClick={onRemove}
-          className="flex items-center justify-center px-1.5 py-3 text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
+          className="p-1 text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
           title="Remove exercise"
         >
           <Trash2 className="h-3.5 w-3.5" />
