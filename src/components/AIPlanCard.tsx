@@ -254,6 +254,21 @@ export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
     }
   };
 
+  const handleReorderExercises = useCallback((dayIndex: number, oldIndex: number, newIndex: number) => {
+    const newData = JSON.parse(JSON.stringify(localPlanData));
+    newData.weeklySchedule[dayIndex].exercises = arrayMove(
+      newData.weeklySchedule[dayIndex].exercises,
+      oldIndex,
+      newIndex
+    );
+    savePlanData(newData);
+  }, [localPlanData, savePlanData]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 5 } })
+  );
+
   // Count completed exercises for each day
   const completedCounts = schedule.map((_: any, i: number) => {
     return null;
