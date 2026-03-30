@@ -63,6 +63,7 @@ export type Database = {
           created_at: string
           diary_entry_id: string
           id: string
+          is_read: boolean
           updated_at: string
         }
         Insert: {
@@ -71,6 +72,7 @@ export type Database = {
           created_at?: string
           diary_entry_id: string
           id?: string
+          is_read?: boolean
           updated_at?: string
         }
         Update: {
@@ -79,6 +81,7 @@ export type Database = {
           created_at?: string
           diary_entry_id?: string
           id?: string
+          is_read?: boolean
           updated_at?: string
         }
         Relationships: [

@@ -58,10 +58,22 @@ export function DiaryComments({ entryId, canComment = false }: DiaryCommentsProp
         }
       }
 
-      setComments((data as any[]).map((c: any) => ({
+      const mappedComments = (data as any[]).map((c: any) => ({
         ...c,
         coach_name: coachNames[c.coach_id] || t("coach" as any),
-      })));
+      }));
+      setComments(mappedComments);
+
+      // Mark unread comments as read if viewer is not the coach (i.e., athlete viewing)
+      if (!canComment && user) {
+        const unreadIds = (data as any[]).filter((c: any) => !c.is_read).map((c: any) => c.id);
+        if (unreadIds.length > 0) {
+          await supabase
+            .from("diary_comments" as any)
+            .update({ is_read: true } as any)
+            .in("id", unreadIds);
+        }
+      }
     }
     setLoading(false);
   };
