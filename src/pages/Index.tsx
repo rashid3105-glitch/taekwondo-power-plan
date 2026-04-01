@@ -59,6 +59,7 @@ const Index = () => {
         <HeroSection />
         <HowItWorks />
         <CaseStudy />
+        <SampleWeekPlan />
         <FeatureGrid />
       </main>
 
