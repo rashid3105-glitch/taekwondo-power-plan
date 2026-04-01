@@ -24,6 +24,7 @@ import NotFound from "./pages/NotFound";
 import Methodology from "./pages/Methodology";
 import Unsubscribe from "./pages/Unsubscribe";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import SeoLanding from "./pages/SeoLanding";
 
 
 const queryClient = new QueryClient();
