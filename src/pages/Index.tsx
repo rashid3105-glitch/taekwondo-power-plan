@@ -107,9 +107,7 @@ const Index = () => {
               transition={{ duration: 0.6, delay: 0.25 }}
               className="mt-5 text-base sm:text-lg text-muted-foreground leading-relaxed max-w-2xl"
             >
-              Sportstalent builds periodized strength and conditioning programs designed specifically for taekwondo.
-              Every exercise, every set, every recovery day is built around your kick performance, competition schedule,
-              and injury history — not generic gym programming.
+               {t("landingHeroDesc")}
             </motion.p>
 
             <motion.div
