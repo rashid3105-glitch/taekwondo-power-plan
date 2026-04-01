@@ -171,8 +171,8 @@ const Index = () => {
               <p>
                 The platform generates individualized weekly training plans based on your athlete profile: belt level,
                 weight class, competition calendar, training frequency, injury history, and specific goals. Whether you're
-                preparing for a national championship or building a general strength foundation as a color belt, the AI
-                adapts the program to your exact situation.
+                 preparing for a national championship or building a general strength foundation as a color belt, the
+                 program adapts to your exact situation.
               </p>
               <p>
                 Each plan follows established periodization principles — moving through anatomical adaptation, maximum strength,
