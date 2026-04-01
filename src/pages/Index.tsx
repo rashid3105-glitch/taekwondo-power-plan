@@ -62,6 +62,7 @@ const Index = () => {
         <CaseStudy />
         <SampleWeekPlan />
         <FeatureGrid />
+        <FAQSection />
       </main>
 
       <AppFooter />
