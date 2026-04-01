@@ -1,12 +1,12 @@
 import { motion } from "framer-motion";
-import { TrendingUp, TrendingDown, Zap, Target, Clock, Activity, Quote } from "lucide-react";
+import { TrendingUp, TrendingDown, Zap, Target, Clock, Activity, Quote, Timer } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 const metrics = [
-  { label: "caseMetricJump", before: "38 cm", after: "44.5 cm", change: "+17%", icon: TrendingUp, positive: true },
+  { label: "caseMetricJump", before: "38 cm", after: "42 cm", change: "+10.5%", icon: TrendingUp, positive: true },
   { label: "caseMetricFatigue", before: "7/10", after: "3/10", change: "−57%", icon: TrendingDown, positive: true },
   { label: "caseMetricPain", before: "6/10", after: "1/10", change: "−83%", icon: Activity, positive: true },
-  { label: "caseMetricRFD", before: "Baseline", after: "+22%", change: "+22%", icon: Zap, positive: true },
+  { label: "caseMetricKick", before: "Baseline", after: "−14%", change: "−14% faster", icon: Timer, positive: true },
 ];
 
 export const CaseStudy = () => {
@@ -54,12 +54,13 @@ export const CaseStudy = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
           {[
             { label: t("caseProfileAge" as any), value: "19" },
             { label: t("caseProfileLevel" as any), value: t("caseProfileLevelVal" as any) },
             { label: t("caseProfileFreq" as any), value: t("caseProfileFreqVal" as any) },
             { label: t("caseProfileWeeks" as any), value: "7" },
+            { label: t("caseProfilePrevSC" as any), value: t("caseProfilePrevSCVal" as any) },
           ].map((item) => (
             <div key={item.label} className="rounded-lg bg-secondary/60 border border-border/40 p-3 text-center">
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1">{item.label}</p>
@@ -67,6 +68,10 @@ export const CaseStudy = () => {
             </div>
           ))}
         </div>
+
+        <p className="mt-3 text-[10px] text-muted-foreground/60 italic text-right">
+          {t("caseNameNote" as any)}
+        </p>
       </motion.div>
 
       {/* Problems before */}
@@ -117,25 +122,30 @@ export const CaseStudy = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-30px" }}
         transition={{ duration: 0.5, delay: 0.25 }}
-        className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6"
+        className="mb-6"
       >
-        {metrics.map((m, i) => (
-          <motion.div
-            key={m.label}
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: 0.3 + i * 0.08 }}
-            className="rounded-xl border border-speed/20 bg-card p-4 text-center"
-          >
-            <m.icon className="h-4 w-4 text-speed mx-auto mb-2" />
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1">
-              {t(m.label as any)}
-            </p>
-            <p className="text-lg font-black text-foreground">{m.after}</p>
-            <p className="text-[10px] text-speed font-bold">{m.change}</p>
-          </motion.div>
-        ))}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {metrics.map((m, i) => (
+            <motion.div
+              key={m.label}
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0.3 + i * 0.08 }}
+              className="rounded-xl border border-speed/20 bg-card p-4 text-center"
+            >
+              <m.icon className="h-4 w-4 text-speed mx-auto mb-2" />
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1">
+                {t(m.label as any)}
+              </p>
+              <p className="text-lg font-black text-foreground">{m.after}</p>
+              <p className="text-[10px] text-speed font-bold">{m.change}</p>
+            </motion.div>
+          ))}
+        </div>
+        <p className="mt-2 text-[9px] text-muted-foreground/50 text-center italic">
+          {t("caseMethodNote" as any)}
+        </p>
       </motion.div>
 
       {/* Quote */}
