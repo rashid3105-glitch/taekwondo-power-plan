@@ -50,8 +50,8 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col relative">
       <PageMeta
-        title="AI Training Plans for Taekwondo Athletes — Strength & Conditioning | Sportstalent"
-        description="Periodized strength and conditioning programs built specifically for taekwondo athletes. AI-generated weekly training plans with sport-specific exercises for explosive power, speed, and kick performance."
+        title="Strength & Conditioning for Taekwondo Athletes — Periodized Training Plans | Sportstalent"
+        description="Periodized strength and conditioning programs built specifically for taekwondo athletes. Sport science-based weekly training plans with TKD-specific exercises for explosive power, speed, and kick performance."
       />
       <Watermark />
 
@@ -100,7 +100,7 @@ const Index = () => {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter text-foreground leading-[1.05]"
             >
-              AI Training Plans for{" "}
+              Strength & Conditioning for{" "}
               <span className="text-gradient-energy">Taekwondo Athletes</span>
             </motion.h1>
 
@@ -163,7 +163,7 @@ const Index = () => {
             </h2>
             <div className="prose prose-sm max-w-none text-muted-foreground space-y-4">
               <p>
-                Sportstalent is an AI-powered strength and conditioning platform built exclusively for taekwondo athletes.
+                Sportstalent is a strength and conditioning platform built exclusively for taekwondo athletes.
                 Unlike generic fitness apps, every training plan is rooted in taekwondo sport science — periodized programming
                 that develops explosive power, rotational speed, and reactive agility without compromising flexibility or
                 adding unnecessary muscle mass.
@@ -171,8 +171,8 @@ const Index = () => {
               <p>
                 The platform generates individualized weekly training plans based on your athlete profile: belt level,
                 weight class, competition calendar, training frequency, injury history, and specific goals. Whether you're
-                preparing for a national championship or building a general strength foundation as a color belt, the AI
-                adapts the program to your exact situation.
+                 preparing for a national championship or building a general strength foundation as a color belt, the
+                 program adapts to your exact situation.
               </p>
               <p>
                 Each plan follows established periodization principles — moving through anatomical adaptation, maximum strength,
@@ -354,10 +354,10 @@ const Index = () => {
             </h2>
             <div className="prose prose-sm max-w-none text-muted-foreground space-y-4">
               <p>
-                Getting started takes less than 5 minutes. You create an athlete profile with your age, belt level,
-                weight class, training frequency, competition dates, and any current injuries. The AI analyzes your
-                profile and generates a complete periodized training plan — typically spanning 4 to 12 weeks depending
-                on your competition timeline.
+                 Getting started takes less than 5 minutes. You create an athlete profile with your age, belt level,
+                 weight class, training frequency, competition dates, and any current injuries. The system analyzes your
+                 profile and generates a complete periodized training plan — typically spanning 4 to 12 weeks depending
+                 on your competition timeline.
               </p>
               <p>
                 Each session includes specific exercises with sets, reps, tempo prescriptions, and rest periods.
@@ -367,8 +367,8 @@ const Index = () => {
               </p>
               <p>
                 As you train, you log completed sessions. The platform tracks your volume, consistency, and progression.
-                If you miss sessions or report fatigue, the AI adjusts upcoming weeks to keep you on track without
-                overtraining. Before competition, the system automatically tapers intensity and volume so you peak
+                 If you miss sessions or report fatigue, upcoming weeks are adjusted to keep you on track without
+                 overtraining. Before competition, the system automatically tapers intensity and volume so you peak
                 on fight day — not in the gym three weeks before.
               </p>
             </div>
@@ -397,8 +397,8 @@ const Index = () => {
               Start Training Smarter
             </h2>
             <p className="text-sm text-muted-foreground mb-5 max-w-md mx-auto">
-              Create your athlete profile and get your first AI-generated training plan in under 5 minutes.
-              Free to try — no credit card required.
+               Create your athlete profile and get your first periodized training plan in under 5 minutes.
+               Free to try — no credit card required.
             </p>
             <Button
               onClick={() => navigate("/auth")}
