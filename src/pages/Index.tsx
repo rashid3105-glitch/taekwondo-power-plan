@@ -354,10 +354,10 @@ const Index = () => {
             </h2>
             <div className="prose prose-sm max-w-none text-muted-foreground space-y-4">
               <p>
-                Getting started takes less than 5 minutes. You create an athlete profile with your age, belt level,
-                weight class, training frequency, competition dates, and any current injuries. The AI analyzes your
-                profile and generates a complete periodized training plan — typically spanning 4 to 12 weeks depending
-                on your competition timeline.
+                 Getting started takes less than 5 minutes. You create an athlete profile with your age, belt level,
+                 weight class, training frequency, competition dates, and any current injuries. The system analyzes your
+                 profile and generates a complete periodized training plan — typically spanning 4 to 12 weeks depending
+                 on your competition timeline.
               </p>
               <p>
                 Each session includes specific exercises with sets, reps, tempo prescriptions, and rest periods.
