@@ -14,6 +14,7 @@ import { HowItWorks } from "@/components/landing/HowItWorks";
 import { FeatureGrid } from "@/components/landing/FeatureGrid";
 import { CaseStudy } from "@/components/landing/CaseStudy";
 import { SampleWeekPlan } from "@/components/landing/SampleWeekPlan";
+import { FAQSection } from "@/components/landing/FAQSection";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -61,6 +62,7 @@ const Index = () => {
         <CaseStudy />
         <SampleWeekPlan />
         <FeatureGrid />
+        <FAQSection />
       </main>
 
       <AppFooter />

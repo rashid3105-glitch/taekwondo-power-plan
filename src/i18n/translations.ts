@@ -736,6 +736,19 @@ const translations = {
     weekExSun: "Foam roll · Mobility · Sleep",
     samplePlanCTA: "See full program",
     samplePlanTitle: "Sample Training Program",
+
+    // FAQ
+    faqHeadline: "Common Questions",
+    faq1Q: "What is Sportstalent?",
+    faq1A: "Sportstalent is a sport science strength & conditioning platform built specifically for taekwondo athletes. It generates periodized training programs based on your belt level, competition goals, and weekly TKD schedule.",
+    faq2Q: "Do I need gym experience?",
+    faq2A: "No. Programs are adapted to your experience level. Each exercise includes coaching cues, tempo guidelines, and video demonstrations. The system adjusts intensity and volume whether you're a beginner or advanced athlete.",
+    faq3Q: "Will strength training make me slower?",
+    faq3A: "No — the opposite. Our programs use sport science principles (rate of force development, plyometrics, velocity-based training) designed to increase speed and explosiveness, not bulk. Every exercise is selected for its transfer to kicking speed and agility.",
+    faq4Q: "How does it fit with my TKD training?",
+    faq4A: "You tell us how many TKD sessions you train per week, and the system schedules S&C sessions around them — managing intensity so you're never overtrained before sparring or competition days.",
+    faq5Q: "Can my coach see my plan?",
+    faq5A: "Yes. Sportstalent includes a coach dashboard where coaches can view athlete plans, track progress, write diary comments, and send event reminders — all in one place.",
   },
   da: {
     // Common
@@ -1471,6 +1484,19 @@ const translations = {
     weekExSun: "Foam roll · Mobilitet · Søvn",
     samplePlanCTA: "Se fuldt program",
     samplePlanTitle: "Eksempel Træningsprogram",
+
+    // FAQ
+    faqHeadline: "Ofte stillede spørgsmål",
+    faq1Q: "Hvad er Sportstalent?",
+    faq1A: "Sportstalent er en sportsvidenskabelig styrke- og konditionsplatform bygget specifikt til taekwondo-atleter. Den genererer periodiserede træningsprogrammer baseret på dit bælteniveau, konkurrencemål og ugentlige TKD-skema.",
+    faq2Q: "Skal jeg have erfaring med styrketræning?",
+    faq2A: "Nej. Programmerne tilpasses dit erfaringsniveau. Hver øvelse inkluderer coaching cues, tempo-retningslinjer og videodemonstrationer. Systemet justerer intensitet og volumen uanset om du er nybegynder eller erfaren.",
+    faq3Q: "Bliver jeg langsommere af styrketræning?",
+    faq3A: "Nej — tværtimod. Vores programmer bruger sportsvidenskabelige principper (rate of force development, plyometri, hastighedsbaseret træning) designet til at øge hastighed og eksplosivitet, ikke muskelmasse. Hver øvelse er valgt for dens overførsel til sparkhastighed.",
+    faq4Q: "Hvordan passer det med min TKD-træning?",
+    faq4A: "Du angiver hvor mange TKD-sessioner du træner om ugen, og systemet planlægger S&C-sessioner omkring dem — med styring af intensitet så du aldrig er overtrænet før sparring eller konkurrencedage.",
+    faq5Q: "Kan min træner se min plan?",
+    faq5A: "Ja. Sportstalent inkluderer et trænerdashboard hvor trænere kan se atleters planer, følge fremgang, skrive dagbogskommentarer og sende eventpåmindelser.",
   },
   sv: {
     // Common
@@ -2206,6 +2232,19 @@ const translations = {
     weekExSun: "Foam roll · Mobilitet · Sömn",
     samplePlanCTA: "Se hela programmet",
     samplePlanTitle: "Exempel Träningsprogram",
+
+    // FAQ
+    faqHeadline: "Vanliga frågor",
+    faq1Q: "Vad är Sportstalent?",
+    faq1A: "Sportstalent är en idrottsvetenskaplig styrke- och konditionsplattform byggd specifikt för taekwondo-utövare. Den genererar periodiserade träningsprogram baserat på din bältnivå, tävlingsmål och veckovis TKD-schema.",
+    faq2Q: "Behöver jag gymvana?",
+    faq2A: "Nej. Programmen anpassas till din erfarenhetsnivå. Varje övning inkluderar coachingtips, temporiktlinjer och videodemonstrationer. Systemet justerar intensitet och volym oavsett om du är nybörjare eller erfaren.",
+    faq3Q: "Blir jag långsammare av styrketräning?",
+    faq3A: "Nej — tvärtom. Våra program använder idrottsvetenskapliga principer (rate of force development, plyometri, hastighetsbaserad träning) designade för att öka snabbhet och explosivitet, inte muskelmassa. Varje övning är vald för sin överföring till sparkhastighet.",
+    faq4Q: "Hur passar det med min TKD-träning?",
+    faq4A: "Du anger hur många TKD-sessioner du tränar per vecka och systemet schemalägger S&C-sessioner runt dem — med intensitetsstyrning så du aldrig är övertränad före sparring eller tävlingsdagar.",
+    faq5Q: "Kan min tränare se min plan?",
+    faq5A: "Ja. Sportstalent inkluderar en tränardashboard där tränare kan se atleters planer, följa framsteg, skriva dagbokskommentarer och skicka eventpåminnelser.",
   },
 } as const;
 
