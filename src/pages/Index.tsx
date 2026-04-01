@@ -86,7 +86,7 @@ const Index = () => {
             >
               <span className="h-1.5 w-1.5 rounded-full bg-speed animate-pulse" />
               <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
-                Sport Science · TKD Specific
+                {t("landingBadge")}
               </span>
             </motion.div>
 
