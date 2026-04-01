@@ -61,7 +61,7 @@ const Index = () => {
         <nav className="flex items-center gap-2">
           <LanguageSwitcher />
           <Button variant="ghost" size="sm" onClick={() => navigate("/help")} className="text-xs text-muted-foreground hover:text-foreground">
-            <HelpCircle className="h-3.5 w-3.5 mr-1" /> {t("help" as any)}
+            <HelpCircle className="h-3.5 w-3.5 mr-1" /> {t("help")}
           </Button>
           <Button variant="outline" size="sm" onClick={() => navigate("/auth")} className="text-xs font-semibold">
             {t("signIn")}
