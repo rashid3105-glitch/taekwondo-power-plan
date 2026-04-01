@@ -163,7 +163,7 @@ const Index = () => {
             </h2>
             <div className="prose prose-sm max-w-none text-muted-foreground space-y-4">
               <p>
-                Sportstalent is an AI-powered strength and conditioning platform built exclusively for taekwondo athletes.
+                Sportstalent is a strength and conditioning platform built exclusively for taekwondo athletes.
                 Unlike generic fitness apps, every training plan is rooted in taekwondo sport science — periodized programming
                 that develops explosive power, rotational speed, and reactive agility without compromising flexibility or
                 adding unnecessary muscle mass.
