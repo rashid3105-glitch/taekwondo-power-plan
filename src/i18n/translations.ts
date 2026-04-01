@@ -736,6 +736,19 @@ const translations = {
     weekExSun: "Foam roll · Mobility · Sleep",
     samplePlanCTA: "See full program",
     samplePlanTitle: "Sample Training Program",
+
+    // FAQ
+    faqHeadline: "Common Questions",
+    faq1Q: "What is Sportstalent?",
+    faq1A: "Sportstalent is a sport science strength & conditioning platform built specifically for taekwondo athletes. It generates periodized training programs based on your belt level, competition goals, and weekly TKD schedule.",
+    faq2Q: "Do I need gym experience?",
+    faq2A: "No. Programs are adapted to your experience level. Each exercise includes coaching cues, tempo guidelines, and video demonstrations. The system adjusts intensity and volume whether you're a beginner or advanced athlete.",
+    faq3Q: "Will strength training make me slower?",
+    faq3A: "No — the opposite. Our programs use sport science principles (rate of force development, plyometrics, velocity-based training) designed to increase speed and explosiveness, not bulk. Every exercise is selected for its transfer to kicking speed and agility.",
+    faq4Q: "How does it fit with my TKD training?",
+    faq4A: "You tell us how many TKD sessions you train per week, and the system schedules S&C sessions around them — managing intensity so you're never overtrained before sparring or competition days.",
+    faq5Q: "Can my coach see my plan?",
+    faq5A: "Yes. Sportstalent includes a coach dashboard where coaches can view athlete plans, track progress, write diary comments, and send event reminders — all in one place.",
   },
   da: {
     // Common
