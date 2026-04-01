@@ -50,8 +50,8 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col relative">
       <PageMeta
-        title="AI Training Plans for Taekwondo Athletes — Strength & Conditioning | Sportstalent"
-        description="Periodized strength and conditioning programs built specifically for taekwondo athletes. AI-generated weekly training plans with sport-specific exercises for explosive power, speed, and kick performance."
+        title="Strength & Conditioning for Taekwondo Athletes — Periodized Training Plans | Sportstalent"
+        description="Periodized strength and conditioning programs built specifically for taekwondo athletes. Sport science-based weekly training plans with TKD-specific exercises for explosive power, speed, and kick performance."
       />
       <Watermark />
 
