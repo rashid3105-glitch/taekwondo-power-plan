@@ -130,7 +130,7 @@ const Index = () => {
                 {t("methCta")}
               </Button>
               <Button onClick={() => navigate("/pricing")} size="lg" variant="ghost" className="px-7 font-semibold text-sm text-muted-foreground">
-                {t("viewPricing" as any)}
+                {t("viewPricing")}
               </Button>
             </motion.div>
 
