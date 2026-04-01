@@ -55,7 +55,7 @@ const App = () => (
             <Route path="/diary" element={<Diary />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
-            <Route path="/taekwondo-training-program" element={<TrainingProgram />} />
+            <Route path="/taekwondo-training-program" element={<Navigate to="/" replace />} />
             <Route path="/progress" element={<Navigate to="/dashboard" replace />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
