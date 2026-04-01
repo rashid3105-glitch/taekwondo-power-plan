@@ -154,27 +154,12 @@ const Index = () => {
             transition={{ duration: 0.5 }}
           >
             <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground mb-4">
-              What Is Sportstalent?
+              {t("landingWhatTitle")}
             </h2>
             <div className="prose prose-sm max-w-none text-muted-foreground space-y-4">
-              <p>
-                Sportstalent is a strength and conditioning platform built exclusively for taekwondo athletes.
-                Unlike generic fitness apps, every training plan is rooted in taekwondo sport science — periodized programming
-                that develops explosive power, rotational speed, and reactive agility without compromising flexibility or
-                adding unnecessary muscle mass.
-              </p>
-              <p>
-                The platform generates individualized weekly training plans based on your athlete profile: belt level,
-                weight class, competition calendar, training frequency, injury history, and specific goals. Whether you're
-                 preparing for a national championship or building a general strength foundation as a color belt, the
-                 program adapts to your exact situation.
-              </p>
-              <p>
-                Each plan follows established periodization principles — moving through anatomical adaptation, maximum strength,
-                power conversion, and competition peaking phases. This isn't random exercise selection. It's structured
-                programming designed by sport scientists who understand the biomechanical demands of turning kicks,
-                spinning techniques, and 3-round sparring matches.
-              </p>
+              <p>{t("landingWhatP1")}</p>
+              <p>{t("landingWhatP2")}</p>
+              <p>{t("landingWhatP3")}</p>
             </div>
           </motion.div>
         </section>
@@ -188,24 +173,15 @@ const Index = () => {
             transition={{ duration: 0.5 }}
           >
             <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground mb-4">
-              Who Is It For?
+              {t("landingWhoTitle")}
             </h2>
             <div className="prose prose-sm max-w-none text-muted-foreground space-y-4">
-              <p>
-                Sportstalent is designed for competitive taekwondo athletes training 4–6 times per week who need
-                structured strength and conditioning work alongside their dojang sessions. The platform serves:
-              </p>
+              <p>{t("landingWhoIntro")}</p>
               <ul className="space-y-2 list-none pl-0">
-                {[
-                  "Competitive sparring athletes (cadet to senior) preparing for national and international tournaments",
-                  "Poomsae athletes who need precision, balance, and controlled power output",
-                  "Coaches managing multiple athletes who need individualized S&C programs at scale",
-                  "Junior athletes (U15–U21) building foundational strength without inappropriate loading",
-                  "Athletes returning from injury who need progressive, sport-specific rehabilitation programming",
-                ].map((item, i) => (
+                {whoItemKeys.map((key, i) => (
                   <li key={i} className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-energy flex-shrink-0 mt-0.5" />
-                    <span>{item}</span>
+                    <span>{t(key)}</span>
                   </li>
                 ))}
               </ul>
@@ -222,10 +198,10 @@ const Index = () => {
             transition={{ duration: 0.5 }}
           >
             <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground mb-4">
-              What You Get
+              {t("landingWhatYouGetTitle")}
             </h2>
             <div className="grid gap-2.5">
-              {benefits.map((benefit, i) => (
+              {benefitKeys.map((key, i) => (
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, x: -12 }}
@@ -237,7 +213,7 @@ const Index = () => {
                   <div className="h-7 w-7 rounded-lg bg-energy/10 border border-energy/20 flex items-center justify-center flex-shrink-0">
                     <ChevronRight className="h-3.5 w-3.5 text-energy" />
                   </div>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{benefit}</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{t(key)}</p>
                 </motion.div>
               ))}
             </div>
@@ -256,16 +232,14 @@ const Index = () => {
             <span className="inline-flex items-center gap-1.5 rounded-full border border-energy/30 bg-energy/10 px-3 py-1 mb-4">
               <Calendar className="h-3 w-3 text-energy" />
               <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-energy">
-                Weekly Training Plan Example
+                {t("landingWeekBadge")}
               </span>
             </span>
             <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground mb-2">
-              Strength Training for Taekwondo Athletes — Sample Week
+              {t("landingWeekTitle")}
             </h2>
             <p className="text-sm text-muted-foreground">
-              A realistic weekly training plan generated by Sportstalent for a competitive sparring athlete
-              in the preparation phase. This plan integrates with 3 weekly TKD sessions and includes
-              sport-specific strength work designed for kick power and competition readiness.
+              {t("landingWeekDesc")}
             </p>
           </motion.div>
 
@@ -277,18 +251,18 @@ const Index = () => {
             transition={{ duration: 0.4, delay: 0.1 }}
             className="flex items-center gap-2 mb-5"
           >
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Phase</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{t("landingPhase")}</span>
             <span className="rounded-full bg-energy/15 border border-energy/30 px-2.5 py-0.5 text-[11px] font-bold text-energy">
-              Preparation — Max Strength
+              {t("landingPhaseValue")}
             </span>
-            <span className="text-[10px] text-muted-foreground">· Week 3 of 4</span>
+            <span className="text-[10px] text-muted-foreground">· {t("landingPhaseWeek")}</span>
           </motion.div>
 
           {/* Day cards */}
           <div className="grid gap-2.5">
             {weekPlan.map((day, i) => (
               <motion.div
-                key={day.day}
+                key={i}
                 initial={{ opacity: 0, x: -16 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
@@ -301,12 +275,12 @@ const Index = () => {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2 mb-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-foreground">{day.day}</span>
-                      <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{day.type}</span>
+                      <span className="text-xs font-bold text-foreground">{t(dayKeys[day.dayKey])}</span>
+                      <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{t(typeKeys[day.typeKey])}</span>
                     </div>
                     {day.intensity > 20 && (
                       <span className={`text-[10px] font-bold ${day.color}`}>
-                        {day.intensity >= 80 ? "High" : day.intensity >= 50 ? "Moderate" : "Low"}
+                        {day.intensity >= 80 ? t("landingIntensityHigh") : day.intensity >= 50 ? t("landingIntensityModerate") : t("landingIntensityLow")}
                       </span>
                     )}
                   </div>
@@ -345,27 +319,12 @@ const Index = () => {
             transition={{ duration: 0.5 }}
           >
             <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground mb-4">
-              How It Works
+              {t("landingHowTitle")}
             </h2>
             <div className="prose prose-sm max-w-none text-muted-foreground space-y-4">
-              <p>
-                 Getting started takes less than 5 minutes. You create an athlete profile with your age, belt level,
-                 weight class, training frequency, competition dates, and any current injuries. The system analyzes your
-                 profile and generates a complete periodized training plan — typically spanning 4 to 12 weeks depending
-                 on your competition timeline.
-              </p>
-              <p>
-                Each session includes specific exercises with sets, reps, tempo prescriptions, and rest periods.
-                Every exercise comes with a coaching cue and a "Why for TKD" explanation — so you understand exactly
-                how a trap bar deadlift translates to more powerful turning kicks, or why anti-rotation core work
-                matters for spinning techniques.
-              </p>
-              <p>
-                As you train, you log completed sessions. The platform tracks your volume, consistency, and progression.
-                 If you miss sessions or report fatigue, upcoming weeks are adjusted to keep you on track without
-                 overtraining. Before competition, the system automatically tapers intensity and volume so you peak
-                on fight day — not in the gym three weeks before.
-              </p>
+              <p>{t("landingHowP1")}</p>
+              <p>{t("landingHowP2")}</p>
+              <p>{t("landingHowP3")}</p>
             </div>
           </motion.div>
         </section>
@@ -389,11 +348,10 @@ const Index = () => {
             className="rounded-2xl border border-energy/20 bg-energy/5 p-6 sm:p-8 text-center"
           >
             <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground mb-2">
-              Start Training Smarter
+              {t("landingCtaTitle")}
             </h2>
             <p className="text-sm text-muted-foreground mb-5 max-w-md mx-auto">
-               Create your athlete profile and get your first periodized training plan in under 5 minutes.
-               Free to try — no credit card required.
+              {t("landingCtaDesc")}
             </p>
             <Button
               onClick={() => navigate("/auth")}
@@ -402,11 +360,11 @@ const Index = () => {
             >
               <span className="absolute inset-0 bg-gradient-to-r from-energy/20 to-speed/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <span className="relative flex items-center gap-1.5">
-                Get Your Training Plan <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+                {t("landingCtaButton")} <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
               </span>
             </Button>
             <p className="mt-3 text-[11px] text-muted-foreground/60">
-              {t("ctaSubtext" as any)}
+              {t("ctaSubtext")}
             </p>
           </motion.div>
         </section>
