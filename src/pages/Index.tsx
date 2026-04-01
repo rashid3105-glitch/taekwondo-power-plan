@@ -100,7 +100,7 @@ const Index = () => {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter text-foreground leading-[1.05]"
             >
-              AI Training Plans for{" "}
+              Strength & Conditioning for{" "}
               <span className="text-gradient-energy">Taekwondo Athletes</span>
             </motion.h1>
 
