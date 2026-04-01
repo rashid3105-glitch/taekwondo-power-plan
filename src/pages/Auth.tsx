@@ -4,13 +4,21 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Users, FlaskConical } from "lucide-react";
+import { Users, FlaskConical, Zap, Shield, BarChart3, Brain, ArrowLeft, ChevronRight } from "lucide-react";
 import logo from "@/assets/logo.webp";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { PageMeta } from "@/components/PageMeta";
+import { motion } from "framer-motion";
+
+const features = [
+  { icon: Zap, labelKey: "pricingFeatureAiPlans" as const },
+  { icon: BarChart3, labelKey: "pricingFeatureProgress" as const },
+  { icon: Brain, labelKey: "pricingFeatureMental" as const },
+  { icon: Shield, labelKey: "pricingFeatureRehab" as const },
+];
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -40,8 +48,7 @@ export default function AuthPage() {
           options: { data: { display_name: displayName, wants_coach: wantsCoach, wants_demo: wantsDemo } },
         });
         if (error) throw error;
-        
-        // Notify admin about new user signup
+
         try {
           await supabase.functions.invoke('send-transactional-email', {
             body: {
@@ -58,7 +65,7 @@ export default function AuthPage() {
         } catch (emailErr) {
           console.error('Failed to send admin notification email', emailErr);
         }
-        
+
         toast({ title: t("accountCreated"), description: t("youreSignedIn") });
         navigate("/profile-setup");
       }
@@ -70,156 +77,262 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4 relative">
+    <div className="min-h-screen bg-background flex relative">
       <PageMeta
         title={isLogin ? "Sign In" : "Create Account"}
         description="Sign in or create your Sportstalent account to access periodized training plans."
       />
 
-      {/* Subtle background glow */}
-      <div
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[350px] opacity-10 pointer-events-none"
-        style={{ background: "radial-gradient(ellipse, hsl(190 95% 50% / 0.4), transparent 70%)" }}
-        aria-hidden="true"
-      />
+      {/* Left branded panel — hidden on mobile */}
+      <div className="hidden lg:flex lg:w-[45%] relative overflow-hidden flex-col justify-between p-10">
+        {/* Background effects */}
+        <div
+          className="absolute inset-0 opacity-20 pointer-events-none"
+          style={{ background: "radial-gradient(ellipse at 30% 30%, hsl(190 95% 50% / 0.4), transparent 60%), radial-gradient(ellipse at 70% 80%, hsl(160 80% 45% / 0.25), transparent 60%)" }}
+          aria-hidden="true"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/30 to-background/60 pointer-events-none" />
 
-      <div className="w-full max-w-sm space-y-6 relative z-10">
-        <div className="flex justify-end">
-          <LanguageSwitcher />
+        {/* Top — Logo & back */}
+        <div className="relative z-10">
+          <button
+            onClick={() => navigate("/")}
+            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mb-12 cursor-pointer"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            {t("backToSignIn" as any).includes("Sign In") ? "Back to Home" : t("backToSignIn" as any)}
+          </button>
+
+          <div className="flex items-center gap-3 mb-8">
+            <img src={logo} alt="Sportstalent" className="h-10 w-10 rounded-xl object-contain shadow-lg" />
+            <span className="text-lg font-black tracking-tight text-foreground">SPORTSTALENT</span>
+          </div>
+
+          <motion.h2
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-2xl font-black tracking-tight text-foreground leading-tight mb-3"
+          >
+            {t("landingHeroTitle" as any)}{" "}
+            <span className="text-gradient-energy">{t("landingHeroHighlight" as any)}</span>
+          </motion.h2>
+
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-sm text-muted-foreground leading-relaxed max-w-sm"
+          >
+            {t("heroDescription")}
+          </motion.p>
         </div>
 
-        <div className="text-center">
-          <img src={logo} alt="Sportstalent" className="h-12 w-12 rounded-xl object-contain mx-auto mb-3 shadow-lg" />
-          <h1 className="text-xl font-black tracking-tight text-foreground">SPORTSTALENT</h1>
-          <p className="text-xs text-muted-foreground mt-1">
-            {isLogin ? t("signInToAccount") : t("createAthleteAccount")}
-          </p>
-        </div>
+        {/* Feature list */}
+        <div className="relative z-10 space-y-3">
+          {features.map((f, i) => (
+            <motion.div
+              key={f.labelKey}
+              initial={{ opacity: 0, x: -16 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.35, delay: 0.3 + i * 0.08 }}
+              className="flex items-center gap-3 rounded-xl border border-border/40 bg-card/30 backdrop-blur-sm p-3"
+            >
+              <div className="h-8 w-8 rounded-lg bg-energy/10 border border-energy/20 flex items-center justify-center flex-shrink-0">
+                <f.icon className="h-4 w-4 text-energy" />
+              </div>
+              <span className="text-sm font-medium text-foreground/90">{t(f.labelKey)}</span>
+            </motion.div>
+          ))}
 
-        <form onSubmit={handleSubmit} className="space-y-3.5">
-          {!isLogin && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.7 }}
+            className="text-[10px] text-muted-foreground/50 pt-2"
+          >
+            {t("ctaSubtext")}
+          </motion.p>
+        </div>
+      </div>
+
+      {/* Right form panel */}
+      <div className="flex-1 flex items-center justify-center px-5 py-10 relative">
+        {/* Mobile background glow */}
+        <div
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[350px] opacity-10 pointer-events-none lg:hidden"
+          style={{ background: "radial-gradient(ellipse, hsl(190 95% 50% / 0.4), transparent 70%)" }}
+          aria-hidden="true"
+        />
+
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full max-w-sm space-y-6 relative z-10"
+        >
+          {/* Mobile header */}
+          <div className="flex items-center justify-between lg:hidden">
+            <button
+              onClick={() => navigate("/")}
+              className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" />
+            </button>
+            <LanguageSwitcher />
+          </div>
+
+          {/* Desktop language switcher */}
+          <div className="hidden lg:flex justify-end">
+            <LanguageSwitcher />
+          </div>
+
+          {/* Logo & title */}
+          <div className="text-center">
+            <div className="lg:hidden">
+              <img src={logo} alt="Sportstalent" className="h-12 w-12 rounded-xl object-contain mx-auto mb-3 shadow-lg" />
+            </div>
+            <h1 className="text-xl font-black tracking-tight text-foreground">
+              {isLogin ? t("signInToAccount") : t("createAthleteAccount")}
+            </h1>
+            <p className="text-xs text-muted-foreground mt-1.5">
+              {isLogin ? t("dontHaveAccount") : t("alreadyHaveAccount")}{" "}
+              <button
+                onClick={() => setIsLogin(!isLogin)}
+                className="text-primary font-semibold underline underline-offset-4 cursor-pointer hover:text-primary/80 transition-colors"
+              >
+                {isLogin ? t("signUp") : t("signIn")}
+              </button>
+            </p>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {!isLogin && (
+              <div className="space-y-1.5">
+                <Label htmlFor="name" className="text-xs font-medium">{t("displayName")}</Label>
+                <Input
+                  id="name"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  placeholder={t("yourName")}
+                  required={!isLogin}
+                  className="h-11 rounded-xl bg-secondary/40 border-border/60 focus:border-primary/50 transition-colors"
+                />
+              </div>
+            )}
             <div className="space-y-1.5">
-              <Label htmlFor="name" className="text-xs font-medium">{t("displayName")}</Label>
+              <Label htmlFor="email" className="text-xs font-medium">{t("email")}</Label>
               <Input
-                id="name"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                placeholder={t("yourName")}
-                required={!isLogin}
-                className="h-10"
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="athlete@example.com"
+                required
+                className="h-11 rounded-xl bg-secondary/40 border-border/60 focus:border-primary/50 transition-colors"
               />
             </div>
-          )}
-          <div className="space-y-1.5">
-            <Label htmlFor="email" className="text-xs font-medium">{t("email")}</Label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="athlete@example.com"
-              required
-              className="h-10"
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="password" className="text-xs font-medium">{t("password")}</Label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-              minLength={6}
-              className="h-10"
-            />
-          </div>
-
-          {!isLogin && (
-            <div className="space-y-2.5 pt-1">
-              <div className="flex items-start gap-3 rounded-xl border border-border/60 bg-card/50 backdrop-blur-sm p-3">
-                <Checkbox
-                  id="coach"
-                  checked={wantsCoach}
-                  onCheckedChange={(checked) => setWantsCoach(checked === true)}
-                  className="mt-0.5"
-                />
-                <div className="space-y-0.5">
-                  <label htmlFor="coach" className="text-xs font-semibold text-foreground flex items-center gap-1.5 cursor-pointer">
-                    <Users className="h-3.5 w-3.5" /> {t("iAmACoach")}
-                  </label>
-                  <p className="text-[10px] text-muted-foreground leading-tight">{t("iAmACoachDesc")}</p>
-                </div>
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password" className="text-xs font-medium">{t("password")}</Label>
+                {isLogin && (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      if (!email) {
+                        toast({ title: t("error"), description: t("email"), variant: "destructive" });
+                        return;
+                      }
+                      try {
+                        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                          redirectTo: `${window.location.origin}/reset-password`,
+                        });
+                        if (error) throw error;
+                        toast({ title: t("resetLinkSent"), description: t("resetLinkSentDesc") });
+                      } catch (err: any) {
+                        toast({ title: t("error"), description: err.message, variant: "destructive" });
+                      }
+                    }}
+                    className="text-[11px] text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+                  >
+                    {t("forgotPassword")}
+                  </button>
+                )}
               </div>
-              <div className="flex items-start gap-3 rounded-xl border border-border/60 bg-card/50 backdrop-blur-sm p-3">
-                <Checkbox
-                  id="demo"
-                  checked={wantsDemo}
-                  onCheckedChange={(checked) => setWantsDemo(checked === true)}
-                  className="mt-0.5"
-                />
-                <div className="space-y-0.5">
-                  <label htmlFor="demo" className="text-xs font-semibold text-foreground flex items-center gap-1.5 cursor-pointer">
-                    <FlaskConical className="h-3.5 w-3.5" /> {t("requestDemo" as any)}
-                  </label>
-                  <p className="text-[10px] text-muted-foreground leading-tight">{t("requestDemoDesc" as any)}</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 rounded-xl border border-primary/20 bg-primary/5 backdrop-blur-sm p-3">
-                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary shrink-0 mt-0.5">
-                  <span className="text-[9px] font-bold text-primary-foreground">PP</span>
-                </div>
-                <div className="space-y-0.5">
-                  <p className="text-xs font-semibold text-foreground">{t("paypalTitle")}</p>
-                  <p className="text-[10px] text-muted-foreground leading-tight">{t("paypalInstruction")}</p>
-                  <p className="text-sm font-bold text-primary font-mono tracking-wide">rashid3105@gmail.com</p>
-                  <p className="text-[10px] text-muted-foreground leading-tight">{t("paypalReference")}</p>
-                </div>
-              </div>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+                minLength={6}
+                className="h-11 rounded-xl bg-secondary/40 border-border/60 focus:border-primary/50 transition-colors"
+              />
             </div>
-          )}
 
-          <Button type="submit" className="w-full h-10 font-bold text-sm shadow-glow" disabled={loading}>
-            {loading ? t("pleaseWait") : isLogin ? t("signIn") : t("createAccount")}
-          </Button>
-        </form>
+            {!isLogin && (
+              <div className="space-y-2.5 pt-1">
+                <div className="flex items-start gap-3 rounded-xl border border-border/40 bg-card/30 backdrop-blur-sm p-3.5 hover:border-border/60 transition-colors">
+                  <Checkbox
+                    id="coach"
+                    checked={wantsCoach}
+                    onCheckedChange={(checked) => setWantsCoach(checked === true)}
+                    className="mt-0.5"
+                  />
+                  <div className="space-y-0.5">
+                    <label htmlFor="coach" className="text-xs font-semibold text-foreground flex items-center gap-1.5 cursor-pointer">
+                      <Users className="h-3.5 w-3.5 text-energy" /> {t("iAmACoach")}
+                    </label>
+                    <p className="text-[10px] text-muted-foreground leading-tight">{t("iAmACoachDesc")}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 rounded-xl border border-border/40 bg-card/30 backdrop-blur-sm p-3.5 hover:border-border/60 transition-colors">
+                  <Checkbox
+                    id="demo"
+                    checked={wantsDemo}
+                    onCheckedChange={(checked) => setWantsDemo(checked === true)}
+                    className="mt-0.5"
+                  />
+                  <div className="space-y-0.5">
+                    <label htmlFor="demo" className="text-xs font-semibold text-foreground flex items-center gap-1.5 cursor-pointer">
+                      <FlaskConical className="h-3.5 w-3.5 text-speed" /> {t("requestDemo" as any)}
+                    </label>
+                    <p className="text-[10px] text-muted-foreground leading-tight">{t("requestDemoDesc" as any)}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 rounded-xl border border-primary/20 bg-primary/5 backdrop-blur-sm p-3.5">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary shrink-0 mt-0.5">
+                    <span className="text-[8px] font-bold text-primary-foreground">PP</span>
+                  </div>
+                  <div className="space-y-0.5">
+                    <p className="text-xs font-semibold text-foreground">{t("paypalTitle")}</p>
+                    <p className="text-[10px] text-muted-foreground leading-tight">{t("paypalInstruction")}</p>
+                    <p className="text-sm font-bold text-primary font-mono tracking-wide">rashid3105@gmail.com</p>
+                    <p className="text-[10px] text-muted-foreground leading-tight">{t("paypalReference")}</p>
+                  </div>
+                </div>
+              </div>
+            )}
 
-        {isLogin && (
-          <div className="text-center">
-            <button
-              type="button"
-              onClick={async () => {
-                if (!email) {
-                  toast({ title: t("error"), description: t("email"), variant: "destructive" });
-                  return;
-                }
-                try {
-                  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                    redirectTo: `${window.location.origin}/reset-password`,
-                  });
-                  if (error) throw error;
-                  toast({ title: t("resetLinkSent"), description: t("resetLinkSentDesc") });
-                } catch (err: any) {
-                  toast({ title: t("error"), description: err.message, variant: "destructive" });
-                }
-              }}
-              className="text-xs text-muted-foreground hover:text-primary transition-colors underline underline-offset-4 cursor-pointer"
+            <Button
+              type="submit"
+              className="w-full h-11 font-bold text-sm shadow-glow rounded-xl relative overflow-hidden group"
+              disabled={loading}
             >
-              {t("forgotPassword")}
-            </button>
-          </div>
-        )}
+              <span className="absolute inset-0 bg-gradient-to-r from-energy/20 to-speed/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <span className="relative flex items-center justify-center gap-1.5">
+                {loading ? t("pleaseWait") : isLogin ? t("signIn") : t("createAccount")}
+                {!loading && <ChevronRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />}
+              </span>
+            </Button>
+          </form>
 
-        <p className="text-center text-xs text-muted-foreground">
-          {isLogin ? t("dontHaveAccount") : t("alreadyHaveAccount")}{" "}
-          <button
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-primary font-semibold underline underline-offset-4 cursor-pointer hover:text-primary/80 transition-colors"
-          >
-            {isLogin ? t("signUp") : t("signIn")}
-          </button>
-        </p>
+          <p className="text-center text-[10px] text-muted-foreground/50 pt-2">
+            {t("ctaSubtext")}
+          </p>
+        </motion.div>
       </div>
     </div>
   );
