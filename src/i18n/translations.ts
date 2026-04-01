@@ -1436,7 +1436,7 @@ const translations = {
     caseNameNote: "Navn anonymiseret af hensyn til privatlivets fred",
     weekBadge: "Eksempel uge",
     weekHeadline: "Din uge, struktureret til præstation",
-    weekSubheadline: "AI-genereret plan tilpasset din TKD-kalender, niveau og mål",
+    weekSubheadline: "Personlig plan tilpasset din TKD-kalender, niveau og mål",
     weekPhaseLabel: "Fase",
     weekPhaseValue: "Akkumulation",
     weekPhaseWeek: "Uge 3 af 7",
