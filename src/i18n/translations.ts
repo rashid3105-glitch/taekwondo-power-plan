@@ -696,7 +696,7 @@ const translations = {
     caseMetricFatigue: "Avg. Fatigue",
     caseMetricPain: "Knee Pain",
     caseMetricRFD: "RFD Output",
-    caseQuote: "I stopped guessing in the gym. The program fit around my TKD schedule and my knee stopped hurting after week 3. My coach noticed my back kicks had more snap before I even checked my jump numbers.",
+    caseQuote: "Before Sportstalent I just copied random gym programs and hoped for the best. Now every session has a clear purpose that fits my sparring days. After 7 weeks my vertical jump is up, my knee pain is basically gone, and I actually know why I'm doing each exercise.",
   },
   da: {
     // Common
@@ -1392,7 +1392,7 @@ const translations = {
     caseMetricFatigue: "Gns. Træthed",
     caseMetricPain: "Knæsmerter",
     caseMetricRFD: "RFD Output",
-    caseQuote: "Jeg stoppede med at gætte i fitnesscentret. Programmet passede omkring min TKD-plan og mine knæ holdt op med at gøre ondt efter uge 3. Min træner bemærkede at mine bagspark havde mere snap før jeg selv tjekkede mine springtal.",
+    caseQuote: "Før Sportstalent kopierede jeg bare tilfældige træningsprogrammer og håbede på det bedste. Nu har hver session et klart formål der passer til mine sparringsdage. Efter 7 uger er mit vertikale spring steget, mine knæsmerter er stort set væk, og jeg forstår faktisk hvorfor jeg laver hver øvelse.",
   },
   sv: {
     // Common
@@ -2088,7 +2088,7 @@ const translations = {
     caseMetricFatigue: "Snitt Trötthet",
     caseMetricPain: "Knäsmärta",
     caseMetricRFD: "RFD Output",
-    caseQuote: "Jag slutade gissa på gymmet. Programmet passade runt mitt TKD-schema och mina knän slutade göra ont efter vecka 3. Min tränare märkte att mina baksparkar hade mer snap innan jag ens kollade mina hoppvärden.",
+    caseQuote: "Innan Sportstalent kopierade jag slumpmässiga gymprogram och hoppades på det bästa. Nu har varje pass ett tydligt syfte som passar mina sparringdagar. Efter 7 veckor har mitt vertikalhopp ökat, min knäsmärta är i princip borta, och jag förstår faktiskt varför jag gör varje övning.",
   },
 } as const;
 
