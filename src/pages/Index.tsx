@@ -57,6 +57,7 @@ const Index = () => {
       <main className="flex-1">
         <HeroSection />
         <HowItWorks />
+        <CaseStudy />
         <FeatureGrid />
       </main>
 
