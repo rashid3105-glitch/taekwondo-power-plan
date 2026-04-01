@@ -24,6 +24,7 @@ import NotFound from "./pages/NotFound";
 import Methodology from "./pages/Methodology";
 import Unsubscribe from "./pages/Unsubscribe";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import SeoLanding from "./pages/SeoLanding";
 
 
 const queryClient = new QueryClient();
@@ -55,7 +56,7 @@ const App = () => (
             <Route path="/diary" element={<Diary />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
-            <Route path="/taekwondo-training-program" element={<Navigate to="/" replace />} />
+            <Route path="/taekwondo-training-program" element={<SeoLanding />} />
             <Route path="/progress" element={<Navigate to="/dashboard" replace />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
