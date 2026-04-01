@@ -2169,7 +2169,7 @@ const translations = {
     caseNameNote: "Namn anonymiserat av integritetsskäl",
     weekBadge: "Exempelvecka",
     weekHeadline: "Din vecka, strukturerad för prestation",
-    weekSubheadline: "AI-genererad plan anpassad till ditt TKD-schema, nivå och mål",
+    weekSubheadline: "Personlig plan anpassad till ditt TKD-schema, nivå och mål",
     weekPhaseLabel: "Fas",
     weekPhaseValue: "Ackumulation",
     weekPhaseWeek: "Vecka 3 av 7",
