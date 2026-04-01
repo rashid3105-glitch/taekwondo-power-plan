@@ -2204,6 +2204,8 @@ const translations = {
     weekExSat2: "Single-leg RDL 3×8",
     weekExSat3: "Lateral bound 3×6",
     weekExSun: "Foam roll · Mobilitet · Sömn",
+    samplePlanCTA: "Se hela programmet",
+    samplePlanTitle: "Exempel Träningsprogram",
   },
 } as const;
 

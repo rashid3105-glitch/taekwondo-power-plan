@@ -58,6 +58,17 @@ export const SampleWeekPlan = () => {
         </span>
       </motion.div>
 
+      {/* CTA */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.4, delay: 0.15 }}
+        className="flex justify-center mb-5"
+      >
+        <SamplePlanPreview />
+      </motion.div>
+
       {/* Day cards */}
       <div className="grid gap-2.5">
         {days.map((day, i) => (
