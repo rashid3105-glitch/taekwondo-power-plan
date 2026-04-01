@@ -14,24 +14,21 @@ import { FeatureGrid } from "@/components/landing/FeatureGrid";
 import { FAQSection } from "@/components/landing/FAQSection";
 import logo from "@/assets/logo.webp";
 
+const dayKeys = ["landingDayMon", "landingDayTue", "landingDayWed", "landingDayThu", "landingDayFri", "landingDaySat", "landingDaySun"] as const;
+const typeKeys = ["landingTypeTechnical", "landingTypeStrength", "landingTypeTechnical", "landingTypePowerSpeed", "landingTypeCompetition", "landingTypeConditioning", "landingTypeRecovery"] as const;
+
 const weekPlan = [
-  { day: "Monday", type: "Technical TKD", icon: Shield, exercises: ["Sparring drills", "Roundhouse combos", "Footwork patterns"], intensity: 85, color: "text-destructive" },
-  { day: "Tuesday", type: "Strength & Power", icon: Dumbbell, exercises: ["Trap bar deadlift 4×4", "Bulgarian split squat 3×6", "Weighted pull-ups 3×5"], intensity: 70, color: "text-energy" },
-  { day: "Wednesday", type: "Technical TKD", icon: Shield, exercises: ["Poomsae refinement", "Reaction drills", "Light sparring"], intensity: 55, color: "text-energy" },
-  { day: "Thursday", type: "Power & Speed", icon: Flame, exercises: ["Hang clean 4×3", "Box jumps 4×5", "Band-resisted kicks 3×8"], intensity: 75, color: "text-speed" },
-  { day: "Friday", type: "Competition TKD", icon: Shield, exercises: ["Full sparring rounds", "Tactical drills", "Match simulation"], intensity: 90, color: "text-destructive" },
-  { day: "Saturday", type: "Conditioning", icon: Zap, exercises: ["Prowler sprints 6×20m", "Kettlebell complexes", "Core anti-rotation work"], intensity: 65, color: "text-energy" },
-  { day: "Sunday", type: "Recovery", icon: Moon, exercises: ["Foam rolling", "Hip mobility flow", "Active recovery walk"], intensity: 15, color: "text-muted-foreground" },
+  { dayKey: 0, typeKey: 0, icon: Shield, exercises: ["Sparring drills", "Roundhouse combos", "Footwork patterns"], intensity: 85, color: "text-destructive" },
+  { dayKey: 1, typeKey: 1, icon: Dumbbell, exercises: ["Trap bar deadlift 4×4", "Bulgarian split squat 3×6", "Weighted pull-ups 3×5"], intensity: 70, color: "text-energy" },
+  { dayKey: 2, typeKey: 2, icon: Shield, exercises: ["Poomsae refinement", "Reaction drills", "Light sparring"], intensity: 55, color: "text-energy" },
+  { dayKey: 3, typeKey: 3, icon: Flame, exercises: ["Hang clean 4×3", "Box jumps 4×5", "Band-resisted kicks 3×8"], intensity: 75, color: "text-speed" },
+  { dayKey: 4, typeKey: 4, icon: Shield, exercises: ["Full sparring rounds", "Tactical drills", "Match simulation"], intensity: 90, color: "text-destructive" },
+  { dayKey: 5, typeKey: 5, icon: Zap, exercises: ["Prowler sprints 6×20m", "Kettlebell complexes", "Core anti-rotation work"], intensity: 65, color: "text-energy" },
+  { dayKey: 6, typeKey: 6, icon: Moon, exercises: ["Foam rolling", "Hip mobility flow", "Active recovery walk"], intensity: 15, color: "text-muted-foreground" },
 ];
 
-const benefits = [
-  "Programs auto-adjust to your belt level, weight class, and competition calendar",
-  "Every exercise includes a 'Why for TKD' explanation — no generic gym work",
-  "Periodized across preparation, competition, and transition phases",
-  "Tracks volume, intensity, and fatigue to prevent overtraining",
-  "Integrates with your dojang schedule — never conflicts with TKD sessions",
-  "Includes injury prevention protocols for ankles, knees, and hips",
-];
+const benefitKeys = ["landingBenefit1", "landingBenefit2", "landingBenefit3", "landingBenefit4", "landingBenefit5", "landingBenefit6"] as const;
+const whoItemKeys = ["landingWhoItem1", "landingWhoItem2", "landingWhoItem3", "landingWhoItem4", "landingWhoItem5"] as const;
 
 const Index = () => {
   const navigate = useNavigate();
