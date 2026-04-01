@@ -140,7 +140,7 @@ const Index = () => {
               transition={{ duration: 0.5, delay: 0.6 }}
               className="mt-3 text-[11px] text-muted-foreground/60"
             >
-              {t("ctaSubtext" as any)}
+              {t("ctaSubtext")}
             </motion.p>
           </div>
         </section>
