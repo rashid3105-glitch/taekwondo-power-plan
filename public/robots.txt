@@ -12,3 +12,5 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+Sitemap: https://taekwondo-power-plan.lovable.app/sitemap.xml
