@@ -2232,6 +2232,19 @@ const translations = {
     weekExSun: "Foam roll · Mobilitet · Sömn",
     samplePlanCTA: "Se hela programmet",
     samplePlanTitle: "Exempel Träningsprogram",
+
+    // FAQ
+    faqHeadline: "Vanliga frågor",
+    faq1Q: "Vad är Sportstalent?",
+    faq1A: "Sportstalent är en idrottsvetenskaplig styrke- och konditionsplattform byggd specifikt för taekwondo-utövare. Den genererar periodiserade träningsprogram baserat på din bältnivå, tävlingsmål och veckovis TKD-schema.",
+    faq2Q: "Behöver jag gymvana?",
+    faq2A: "Nej. Programmen anpassas till din erfarenhetsnivå. Varje övning inkluderar coachingtips, temporiktlinjer och videodemonstrationer. Systemet justerar intensitet och volym oavsett om du är nybörjare eller erfaren.",
+    faq3Q: "Blir jag långsammare av styrketräning?",
+    faq3A: "Nej — tvärtom. Våra program använder idrottsvetenskapliga principer (rate of force development, plyometri, hastighetsbaserad träning) designade för att öka snabbhet och explosivitet, inte muskelmassa. Varje övning är vald för sin överföring till sparkhastighet.",
+    faq4Q: "Hur passar det med min TKD-träning?",
+    faq4A: "Du anger hur många TKD-sessioner du tränar per vecka och systemet schemalägger S&C-sessioner runt dem — med intensitetsstyrning så du aldrig är övertränad före sparring eller tävlingsdagar.",
+    faq5Q: "Kan min tränare se min plan?",
+    faq5A: "Ja. Sportstalent inkluderar en tränardashboard där tränare kan se atleters planer, följa framsteg, skriva dagbokskommentarer och skicka eventpåminnelser.",
   },
 } as const;
 
