@@ -703,7 +703,7 @@ const translations = {
     caseNameNote: "Name anonymized for privacy",
     weekBadge: "Sample Week",
     weekHeadline: "Your week, structured for performance",
-    weekSubheadline: "AI-generated plan adapted to your TKD schedule, level, and goals",
+    weekSubheadline: "Personalized plan adapted to your TKD schedule, level, and goals",
     weekPhaseLabel: "Phase",
     weekPhaseValue: "Accumulation",
     weekPhaseWeek: "Week 3 of 7",
