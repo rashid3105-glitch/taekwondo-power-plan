@@ -2088,7 +2088,7 @@ const translations = {
     caseMetricFatigue: "Snitt Trötthet",
     caseMetricPain: "Knäsmärta",
     caseMetricRFD: "RFD Output",
-    caseQuote: "Jag slutade gissa på gymmet. Programmet passade runt mitt TKD-schema och mina knän slutade göra ont efter vecka 3. Min tränare märkte att mina baksparkar hade mer snap innan jag ens kollade mina hoppvärden.",
+    caseQuote: "Innan Sportstalent kopierade jag slumpmässiga gymprogram och hoppades på det bästa. Nu har varje pass ett tydligt syfte som passar mina sparringdagar. Efter 7 veckor har mitt vertikalhopp ökat, min knäsmärta är i princip borta, och jag förstår faktiskt varför jag gör varje övning.",
   },
 } as const;
 
