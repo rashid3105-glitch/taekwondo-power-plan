@@ -696,7 +696,7 @@ const translations = {
     caseMetricFatigue: "Avg. Fatigue",
     caseMetricPain: "Knee Pain",
     caseMetricRFD: "RFD Output",
-    caseQuote: "I stopped guessing in the gym. The program fit around my TKD schedule and my knee stopped hurting after week 3. My coach noticed my back kicks had more snap before I even checked my jump numbers.",
+    caseQuote: "Before Sportstalent I just copied random gym programs and hoped for the best. Now every session has a clear purpose that fits my sparring days. After 7 weeks my vertical jump is up, my knee pain is basically gone, and I actually know why I'm doing each exercise.",
   },
   da: {
     // Common
