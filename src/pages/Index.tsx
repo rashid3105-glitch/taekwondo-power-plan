@@ -12,6 +12,7 @@ import { PageMeta } from "@/components/PageMeta";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { FeatureGrid } from "@/components/landing/FeatureGrid";
+import { CaseStudy } from "@/components/landing/CaseStudy";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -56,6 +57,7 @@ const Index = () => {
       <main className="flex-1">
         <HeroSection />
         <HowItWorks />
+        <CaseStudy />
         <FeatureGrid />
       </main>
 
