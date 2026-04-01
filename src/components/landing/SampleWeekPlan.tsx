@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Dumbbell, Shield, Flame, Moon, Calendar } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { SamplePlanPreview } from "./SamplePlanPreview";
 
 const days = [
   { dayKey: "weekMon", typeKey: "weekTypeTKD", icon: Shield, exercises: ["weekExMon"], intensityKey: "weekIntHigh", intensity: 85, color: "text-destructive" },
