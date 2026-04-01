@@ -127,7 +127,7 @@ const Index = () => {
                 </span>
               </Button>
               <Button onClick={() => navigate("/methodology")} size="lg" variant="outline" className="px-7 font-semibold text-sm border-border/60">
-                {t("methCta" as any)}
+                {t("methCta")}
               </Button>
               <Button onClick={() => navigate("/pricing")} size="lg" variant="ghost" className="px-7 font-semibold text-sm text-muted-foreground">
                 {t("viewPricing" as any)}
