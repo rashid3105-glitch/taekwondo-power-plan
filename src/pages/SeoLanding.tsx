@@ -357,6 +357,7 @@ const SeoLanding = () => {
           <p className="mt-4 text-sm text-muted-foreground italic">
             This is not random — it is structured to support performance and recovery.
           </p>
+          <SampleProgramDialog />
         </section>
 
         {/* ───── SECTION 6: Problem vs solution ───── */}
