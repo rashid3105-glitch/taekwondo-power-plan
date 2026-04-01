@@ -734,6 +734,8 @@ const translations = {
     weekExSat2: "Single-leg RDL 3×8",
     weekExSat3: "Lateral bound 3×6",
     weekExSun: "Foam roll · Mobility · Sleep",
+    samplePlanCTA: "See full program",
+    samplePlanTitle: "Sample Training Program",
   },
   da: {
     // Common
@@ -1467,6 +1469,8 @@ const translations = {
     weekExSat2: "Single-leg RDL 3×8",
     weekExSat3: "Lateral bound 3×6",
     weekExSun: "Foam roll · Mobilitet · Søvn",
+    samplePlanCTA: "Se fuldt program",
+    samplePlanTitle: "Eksempel Træningsprogram",
   },
   sv: {
     // Common
@@ -2200,6 +2204,8 @@ const translations = {
     weekExSat2: "Single-leg RDL 3×8",
     weekExSat3: "Lateral bound 3×6",
     weekExSun: "Foam roll · Mobilitet · Sömn",
+    samplePlanCTA: "Se hela programmet",
+    samplePlanTitle: "Exempel Träningsprogram",
   },
 } as const;
 

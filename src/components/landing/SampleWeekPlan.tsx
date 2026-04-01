@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Dumbbell, Shield, Flame, Moon, Calendar } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { SamplePlanPreview } from "./SamplePlanPreview";
 
 const days = [
   { dayKey: "weekMon", typeKey: "weekTypeTKD", icon: Shield, exercises: ["weekExMon"], intensityKey: "weekIntHigh", intensity: 85, color: "text-destructive" },
@@ -55,6 +56,17 @@ export const SampleWeekPlan = () => {
         <span className="text-[10px] text-muted-foreground">
           · {t("weekPhaseWeek" as any)}
         </span>
+      </motion.div>
+
+      {/* CTA */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.4, delay: 0.15 }}
+        className="flex justify-center mb-5"
+      >
+        <SamplePlanPreview />
       </motion.div>
 
       {/* Day cards */}
