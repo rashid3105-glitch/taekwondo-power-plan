@@ -13,6 +13,7 @@ import { HeroSection } from "@/components/landing/HeroSection";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { FeatureGrid } from "@/components/landing/FeatureGrid";
 import { CaseStudy } from "@/components/landing/CaseStudy";
+import { SampleWeekPlan } from "@/components/landing/SampleWeekPlan";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -58,6 +59,7 @@ const Index = () => {
         <HeroSection />
         <HowItWorks />
         <CaseStudy />
+        <SampleWeekPlan />
         <FeatureGrid />
       </main>
 
