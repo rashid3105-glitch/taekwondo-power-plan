@@ -46,7 +46,7 @@ export const CaseStudy = () => {
       >
         <div className="flex items-center gap-2 mb-4">
           <div className="h-8 w-8 rounded-lg bg-energy/15 flex items-center justify-center">
-            <span className="text-sm font-black text-energy">JK</span>
+            <Shield className="h-4 w-4 text-energy" />
           </div>
           <div>
             <p className="text-sm font-bold text-foreground">{t("caseAthleteName" as any)}</p>
