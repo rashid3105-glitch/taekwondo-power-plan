@@ -148,35 +148,100 @@ const SeoLanding = () => {
           </div>
         </section>
 
-        {/* ───── SECTION 1: What this actually is ───── */}
+        {/* ───── SECTION 1: Strength & conditioning for taekwondo ───── */}
         <section className="max-w-3xl mx-auto px-5 pb-14">
           <motion.div {...fade}>
-            <SectionHeading>A structured training system — not random workouts</SectionHeading>
-            <div className="prose prose-sm max-w-none text-muted-foreground space-y-4">
-              <p>
-                Most taekwondo athletes train hard, but without a clear structure in their physical training.
-              </p>
-              <p>Strength sessions are often:</p>
-              <ul className="space-y-1.5 list-none pl-0">
-                <li className="flex items-start gap-2.5">
-                  <AlertTriangle className="h-4 w-4 text-destructive flex-shrink-0 mt-0.5" />
-                  <span>Unplanned</span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <AlertTriangle className="h-4 w-4 text-destructive flex-shrink-0 mt-0.5" />
-                  <span>Disconnected from technical training</span>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <AlertTriangle className="h-4 w-4 text-destructive flex-shrink-0 mt-0.5" />
-                  <span>Too much or too little</span>
-                </li>
-              </ul>
-              <p>
-                Sportstalent solves this by generating a structured weekly plan based on your actual training reality.
-              </p>
-              <p>
-                You get a program that fits <strong>around</strong> your taekwondo sessions — not against them.
-              </p>
+            <SectionHeading>Strength and conditioning for taekwondo</SectionHeading>
+            <div className="prose prose-sm max-w-none text-muted-foreground space-y-6">
+
+              {/* Sub-topic 1: Why general strength training doesn't work */}
+              <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-5 space-y-3">
+                <p className="text-xs font-bold uppercase tracking-wider text-destructive flex items-center gap-2">
+                  <AlertTriangle className="h-3.5 w-3.5" />
+                  Why general strength training doesn't work
+                </p>
+                <p>
+                  Most gym programs are built for bodybuilding or general fitness — slow, bilateral movements with high volume and long rest periods. For a taekwondo athlete, this creates problems:
+                </p>
+                <ul className="space-y-2 list-none pl-0">
+                  <li className="flex items-start gap-2.5">
+                    <AlertTriangle className="h-4 w-4 text-destructive flex-shrink-0 mt-0.5" />
+                    <span><strong>Too much muscle fatigue</strong> before technical training — heavy squats on Monday means poor kicks on Tuesday</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <AlertTriangle className="h-4 w-4 text-destructive flex-shrink-0 mt-0.5" />
+                    <span><strong>Wrong movement patterns</strong> — bench press and bicep curls don't develop rotational power or hip speed</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <AlertTriangle className="h-4 w-4 text-destructive flex-shrink-0 mt-0.5" />
+                    <span><strong>No periodization</strong> — generic programs don't account for competition cycles, sparring load, or recovery needs</span>
+                  </li>
+                </ul>
+                <p>
+                  The result? Athletes get sore, not better. Strength work competes with sport training instead of supporting it.
+                </p>
+              </div>
+
+              {/* Sub-topic 2: What is specific to taekwondo */}
+              <div className="rounded-xl border border-primary/20 bg-primary/5 p-5 space-y-3">
+                <p className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
+                  <Zap className="h-3.5 w-3.5" />
+                  What makes taekwondo different
+                </p>
+                <p>
+                  Taekwondo demands a very specific physical profile. It's not about max strength — it's about <strong>rate of force development</strong>, reactive agility, and the ability to repeat explosive efforts over 3×2-minute rounds.
+                </p>
+                <ul className="space-y-2 list-none pl-0">
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span><strong>Unilateral power</strong> — every kick is a single-leg movement requiring hip extension, rotation, and balance simultaneously</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span><strong>Elastic energy and fast-twitch dominance</strong> — roundhouse kicks rely on stretch-shortening cycles, not slow grinding force</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span><strong>High injury exposure</strong> — ankles, knees, and hips absorb massive impact; prehab must be built into every session</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span><strong>Recovery constraints</strong> — athletes train 5–6× per week; strength work must enhance, not drain</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Sub-topic 3: How Sportstalent is different */}
+              <div className="rounded-xl border border-accent/20 bg-accent/5 p-5 space-y-3">
+                <p className="text-xs font-bold uppercase tracking-wider text-accent-foreground flex items-center gap-2">
+                  <Target className="h-3.5 w-3.5" />
+                  How Sportstalent solves this
+                </p>
+                <p>
+                  Sportstalent doesn't give you a generic program and call it "sport-specific." Every plan is generated based on combat sport science and your actual training week:
+                </p>
+                <ul className="space-y-2 list-none pl-0">
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span><strong>Sessions are placed around your taekwondo schedule</strong> — not on top of it. Heavy loads never fall before technical or sparring days</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span><strong>Exercises target fight-relevant qualities</strong> — single-leg power, rotational stability, hip mobility, and reactive strength</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span><strong>Injury history shapes the plan</strong> — if you have a knee issue, your program adjusts loading, adds prehab, and avoids aggravating patterns</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                    <span><strong>Built-in periodization</strong> — volume and intensity progress across weeks to peak for competition, not burn you out</span>
+                  </li>
+                </ul>
+                <p className="text-sm font-semibold text-foreground">
+                  You get a program that fits <strong>around</strong> your taekwondo — not against it.
+                </p>
+              </div>
             </div>
           </motion.div>
         </section>
