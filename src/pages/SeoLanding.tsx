@@ -19,6 +19,7 @@ import { AppFooter } from "@/components/AppFooter";
 import { Watermark } from "@/components/Watermark";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import logo from "@/assets/logo.webp";
+import { SampleProgramDialog } from "@/components/SampleProgramDialog";
 
 const fade = { initial: { opacity: 0, y: 16 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: "-40px" as const }, transition: { duration: 0.5 } };
 
@@ -356,6 +357,7 @@ const SeoLanding = () => {
           <p className="mt-4 text-sm text-muted-foreground italic">
             This is not random — it is structured to support performance and recovery.
           </p>
+          <SampleProgramDialog />
         </section>
 
         {/* ───── SECTION 6: Problem vs solution ───── */}
