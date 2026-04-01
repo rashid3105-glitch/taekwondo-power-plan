@@ -1469,6 +1469,8 @@ const translations = {
     weekExSat2: "Single-leg RDL 3×8",
     weekExSat3: "Lateral bound 3×6",
     weekExSun: "Foam roll · Mobilitet · Søvn",
+    samplePlanCTA: "Se fuldt program",
+    samplePlanTitle: "Eksempel Træningsprogram",
   },
   sv: {
     // Common
