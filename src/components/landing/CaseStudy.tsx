@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { TrendingUp, TrendingDown, Zap, Target, Clock, Activity, Quote, Timer } from "lucide-react";
+import { TrendingUp, TrendingDown, Zap, Target, Clock, Activity, Quote, Timer, Shield } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 const metrics = [
