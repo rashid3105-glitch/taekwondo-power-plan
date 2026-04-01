@@ -367,8 +367,8 @@ const Index = () => {
               </p>
               <p>
                 As you train, you log completed sessions. The platform tracks your volume, consistency, and progression.
-                If you miss sessions or report fatigue, the AI adjusts upcoming weeks to keep you on track without
-                overtraining. Before competition, the system automatically tapers intensity and volume so you peak
+                 If you miss sessions or report fatigue, upcoming weeks are adjusted to keep you on track without
+                 overtraining. Before competition, the system automatically tapers intensity and volume so you peak
                 on fight day — not in the gym three weeks before.
               </p>
             </div>
