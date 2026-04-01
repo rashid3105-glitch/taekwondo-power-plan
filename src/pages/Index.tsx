@@ -397,8 +397,8 @@ const Index = () => {
               Start Training Smarter
             </h2>
             <p className="text-sm text-muted-foreground mb-5 max-w-md mx-auto">
-              Create your athlete profile and get your first AI-generated training plan in under 5 minutes.
-              Free to try — no credit card required.
+               Create your athlete profile and get your first periodized training plan in under 5 minutes.
+               Free to try — no credit card required.
             </p>
             <Button
               onClick={() => navigate("/auth")}
