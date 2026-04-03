@@ -49,6 +49,7 @@ const Index = () => {
       <PageMeta
         title="Strength & Conditioning for Taekwondo Athletes — Periodized Training Plans | Sportstalent"
         description="Periodized strength and conditioning programs built specifically for taekwondo athletes. Sport science-based weekly training plans with TKD-specific exercises for explosive power, speed, and kick performance."
+        canonical="https://sportstalent.dk/"
       />
       <Watermark />
 

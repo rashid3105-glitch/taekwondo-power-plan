@@ -64,6 +64,7 @@ const SeoLanding = () => {
       <PageMeta
         title="Smart Training Program for Taekwondo Athletes | Sportstalent"
         description="Get a structured strength and conditioning program tailored to your taekwondo training. Improve performance, reduce injuries, and train smarter with Sportstalent."
+        canonical="https://sportstalent.dk/taekwondo-training-program"
       />
       <Watermark />
 

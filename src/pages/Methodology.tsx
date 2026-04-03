@@ -129,6 +129,7 @@ export default function Methodology() {
       <PageMeta
         title={tt("methPageTitle")}
         description={tt("methPageDesc")}
+        canonical="https://sportstalent.dk/methodology"
       />
       <Watermark />
 

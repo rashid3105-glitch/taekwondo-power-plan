@@ -81,6 +81,7 @@ export default function AuthPage() {
       <PageMeta
         title={isLogin ? "Sign In" : "Create Account"}
         description="Sign in or create your Sportstalent account to access periodized training plans."
+        noindex
       />
 
       {/* Left branded panel — hidden on mobile */}
