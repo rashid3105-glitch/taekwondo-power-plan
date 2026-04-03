@@ -68,10 +68,11 @@ export function DiaryComments({ entryId, canComment = false }: DiaryCommentsProp
       if (!canComment && user) {
         const unreadIds = (data as any[]).filter((c: any) => !c.is_read).map((c: any) => c.id);
         if (unreadIds.length > 0) {
-          await supabase
-            .from("diary_comments" as any)
-            .update({ is_read: true } as any)
-            .in("id", unreadIds);
+          await Promise.all(
+            unreadIds.map((id: string) =>
+              supabase.rpc("mark_comment_read", { _comment_id: id })
+            )
+          );
         }
       }
     }
