@@ -29,7 +29,7 @@ export default function Help() {
   const [activeSection, setActiveSection] = useState<string | null>(null);
   return (
     <div className="min-h-screen bg-background px-4 py-8 relative">
-      <PageMeta title="Help Center" description="Get help with Sportstalent features and training tools." />
+      <PageMeta title="Help Center" description="Get help with Sportstalent features and training tools." canonical="https://sportstalent.dk/help" />
       <Watermark />
       <div className="mx-auto max-w-2xl space-y-8">
         <div className="flex items-center justify-between">

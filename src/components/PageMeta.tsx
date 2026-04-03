@@ -3,9 +3,11 @@ import { useEffect } from "react";
 interface PageMetaProps {
   title: string;
   description?: string;
+  canonical?: string;
+  noindex?: boolean;
 }
 
-export const PageMeta = ({ title, description }: PageMetaProps) => {
+export const PageMeta = ({ title, description, canonical, noindex }: PageMetaProps) => {
   useEffect(() => {
     const suffix = "Sportstalent";
     document.title = title === suffix ? title : `${title} | ${suffix}`;
@@ -16,7 +18,48 @@ export const PageMeta = ({ title, description }: PageMetaProps) => {
         meta.setAttribute("content", description);
       }
     }
-  }, [title, description]);
+
+    // Update canonical link
+    const canonicalEl = document.querySelector('link[rel="canonical"]');
+    if (canonical && canonicalEl) {
+      canonicalEl.setAttribute("href", canonical);
+    } else if (canonicalEl) {
+      canonicalEl.setAttribute("href", "https://sportstalent.dk/");
+    }
+
+    // Update og:url
+    const ogUrl = document.querySelector('meta[property="og:url"]');
+    if (canonical && ogUrl) {
+      ogUrl.setAttribute("content", canonical);
+    }
+
+    // Update og:title and twitter:title
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) ogTitle.setAttribute("content", document.title);
+    const twTitle = document.querySelector('meta[name="twitter:title"]');
+    if (twTitle) twTitle.setAttribute("content", document.title);
+
+    // Update og:description and twitter:description
+    if (description) {
+      const ogDesc = document.querySelector('meta[property="og:description"]');
+      if (ogDesc) ogDesc.setAttribute("content", description);
+      const twDesc = document.querySelector('meta[name="twitter:description"]');
+      if (twDesc) twDesc.setAttribute("content", description);
+    }
+
+    // Handle noindex
+    const robotsMeta = document.querySelector('meta[name="robots"]');
+    if (robotsMeta) {
+      robotsMeta.setAttribute("content", noindex ? "noindex, nofollow" : "index, follow");
+    }
+
+    return () => {
+      // Reset robots on unmount
+      if (noindex && robotsMeta) {
+        robotsMeta.setAttribute("content", "index, follow");
+      }
+    };
+  }, [title, description, canonical, noindex]);
 
   return null;
 };
