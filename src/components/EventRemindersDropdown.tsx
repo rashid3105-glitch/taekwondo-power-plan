@@ -46,10 +46,7 @@ export function EventRemindersDropdown() {
   const unreadCount = reminders.filter((r) => !r.is_read).length;
 
   const markAsRead = async (id: string) => {
-    await supabase
-      .from("event_reminders" as any)
-      .update({ is_read: true })
-      .eq("id", id);
+    await supabase.rpc("mark_reminder_read", { _reminder_id: id });
     setReminders((prev) =>
       prev.map((r) => (r.id === id ? { ...r, is_read: true } : r))
     );
