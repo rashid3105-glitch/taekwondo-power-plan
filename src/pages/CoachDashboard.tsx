@@ -201,16 +201,13 @@ export default function CoachDashboard() {
       setRehabPlans((rehabRes.data || []) as unknown as RehabPlan[]);
     }
 
-    // Load club athletes (all profiles in same club, excluding managed athletes and self)
+    // Load club athletes via secure RPC (excludes sensitive financial fields)
     if (coachClubId && userId) {
       const { data: clubProfiles } = await supabase
-        .from("profiles")
-        .select("user_id, display_name, athlete_code, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, current_injury, program_weeks, weekly_schedule, avatar_url, discipline, club_id, country")
-        .eq("club_id", coachClubId)
-        .neq("user_id", userId);
+        .rpc("get_club_member_profiles", { _club_id: coachClubId });
 
       const clubOnly = ((clubProfiles || []) as any[])
-        .filter((p) => !athleteIds.includes(p.user_id))
+        .filter((p) => p.user_id !== userId && !athleteIds.includes(p.user_id))
         .map((athlete) => ({
           ...athlete,
           club_name: athlete.club_id ? clubMap.get(athlete.club_id) || null : null,
