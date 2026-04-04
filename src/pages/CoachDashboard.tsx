@@ -222,7 +222,7 @@ export default function CoachDashboard() {
     setLoading(false);
   };
 
-  const MAX_ATHLETES = 5;
+  const MAX_ATHLETES = maxAthletes;
 
   const addAthlete = async () => {
     if (!athleteCode.trim()) return;
