@@ -690,6 +690,27 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
+      get_club_member_profiles: {
+        Args: { _club_id: string }
+        Returns: {
+          age: number
+          athlete_code: string
+          avatar_url: string
+          belt_level: string
+          club_id: string
+          country: string
+          current_injury: string
+          discipline: string
+          display_name: string
+          experience_years: number
+          goals: string[]
+          program_weeks: number
+          tkd_sessions_per_week: number
+          user_id: string
+          weekly_schedule: Json
+          weight_kg: number
+        }[]
+      }
       get_profile_protected_fields: {
         Args: { _user_id: string }
         Returns: {
