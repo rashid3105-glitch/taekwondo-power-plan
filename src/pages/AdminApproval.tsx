@@ -360,17 +360,6 @@ export default function AdminApproval() {
     }
   };
 
-  const updateClubMaxAthletes = async (clubId: string, newMax: number) => {
-    try {
-      const { error } = await supabase.from("clubs" as any).update({ max_athletes: newMax } as any).eq("id", clubId);
-      if (error) throw error;
-      setClubs(prev => prev.map(c => c.id === clubId ? { ...c, max_athletes: newMax } : c));
-      toast({ title: t("clubUpdated" as any) });
-    } catch (err: any) {
-      toast({ title: t("error"), description: err.message, variant: "destructive" });
-    }
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
