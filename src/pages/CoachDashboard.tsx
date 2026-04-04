@@ -97,6 +97,7 @@ export default function CoachDashboard() {
   const [newAthleteDiscipline, setNewAthleteDiscipline] = useState("sparring");
   const [creating, setCreating] = useState(false);
   
+  const [maxAthletes, setMaxAthletes] = useState(5);
   const [coachUserId, setCoachUserId] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [diaryAthleteId, setDiaryAthleteId] = useState<string | null>(null);
@@ -143,6 +144,14 @@ export default function CoachDashboard() {
       navigate("/profile-setup");
       return;
     }
+
+    // Fetch club's max_athletes limit
+    const { data: clubData } = await supabase
+      .from("clubs")
+      .select("max_athletes")
+      .eq("id", coachClubId)
+      .single();
+    if (clubData?.max_athletes) setMaxAthletes(clubData.max_athletes);
 
     await loadAthletes(user.id, coachClubId);
   };
@@ -213,7 +222,7 @@ export default function CoachDashboard() {
     setLoading(false);
   };
 
-  const MAX_ATHLETES = 5;
+  const MAX_ATHLETES = maxAthletes;
 
   const addAthlete = async () => {
     if (!athleteCode.trim()) return;
