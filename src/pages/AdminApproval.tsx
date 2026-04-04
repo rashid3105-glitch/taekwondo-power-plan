@@ -54,7 +54,7 @@ interface PendingUser {
 export default function AdminApproval() {
   const [users, setUsers] = useState<PendingUser[]>([]);
   const [coaches, setCoaches] = useState<{ user_id: string; display_name: string }[]>([]);
-  const [clubs, setClubs] = useState<{ id: string; name: string }[]>([]);
+  const [clubs, setClubs] = useState<{ id: string; name: string; max_athletes: number }[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [reassigning, setReassigning] = useState<string | null>(null);
