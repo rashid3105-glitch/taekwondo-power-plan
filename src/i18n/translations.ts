@@ -390,6 +390,9 @@ const translations = {
     upgradeEnterprise: "Upgrade to Enterprise",
     requestDemo: "Request a free demo",
     requestDemoDesc: "Try the app free for 14 days. No payment required.",
+    clubManagement: "Club Management",
+    maxAthletes: "Max Athletes",
+    clubUpdated: "Club updated",
 
     // Calendar
     addToCalendar: "Add to Calendar",
@@ -1198,6 +1201,9 @@ const translations = {
     upgradeEnterprise: "Opgrader til Enterprise",
     requestDemo: "Anmod om gratis demo",
     requestDemoDesc: "Prøv appen gratis i 14 dage. Ingen betaling krævet.",
+    clubManagement: "Klubstyring",
+    maxAthletes: "Max atleter",
+    clubUpdated: "Klub opdateret",
 
     // Calendar
     addToCalendar: "Tilføj til kalender",
@@ -2006,6 +2012,9 @@ const translations = {
     upgradeEnterprise: "Uppgradera till Enterprise",
     requestDemo: "Begär en gratis demo",
     requestDemoDesc: "Prova appen gratis i 14 dagar. Ingen betalning krävs.",
+    clubManagement: "Klubbhantering",
+    maxAthletes: "Max atleter",
+    clubUpdated: "Klubb uppdaterad",
 
     // Calendar
     addToCalendar: "Lägg till i kalender",

@@ -11,7 +11,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Loader2, CheckCircle, XCircle, ArrowLeft, Download, Shield, Trash2, Users, CreditCard, CalendarIcon, FlaskConical, ChevronDown, KeyRound, Search, Pencil, UserCheck, UserX, Crown } from "lucide-react";
+import { Loader2, CheckCircle, XCircle, ArrowLeft, Download, Shield, Trash2, Users, CreditCard, CalendarIcon, FlaskConical, ChevronDown, KeyRound, Search, Pencil, UserCheck, UserX, Crown, Building } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { format } from "date-fns";
@@ -54,7 +54,7 @@ interface PendingUser {
 export default function AdminApproval() {
   const [users, setUsers] = useState<PendingUser[]>([]);
   const [coaches, setCoaches] = useState<{ user_id: string; display_name: string }[]>([]);
-  const [clubs, setClubs] = useState<{ id: string; name: string }[]>([]);
+  const [clubs, setClubs] = useState<{ id: string; name: string; max_athletes: number }[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [reassigning, setReassigning] = useState<string | null>(null);
@@ -98,7 +98,7 @@ export default function AdminApproval() {
         .order("created_at", { ascending: false }),
       supabase.from("user_roles").select("user_id, role"),
       supabase.from("coach_athletes").select("coach_id, athlete_id"),
-      supabase.from("clubs" as any).select("id, name").order("name"),
+      supabase.from("clubs" as any).select("id, name, max_athletes").order("name"),
     ]);
 
     const profiles = (profilesRes.data || []) as PendingUser[];
@@ -106,7 +106,7 @@ export default function AdminApproval() {
     const plans = (plansRes.data || []) as (UserPlan & { user_id: string })[];
     const roles = (rolesRes.data || []) as { user_id: string; role: string }[];
     const coachAthleteLinks = (coachAthletesRes.data || []) as { coach_id: string; athlete_id: string }[];
-    const clubsList = ((clubsRes.data as unknown as { id: string; name: string }[] | null) ?? []);
+    const clubsList = ((clubsRes.data as unknown as { id: string; name: string; max_athletes: number }[] | null) ?? []);
     setClubs(clubsList);
     const clubMap = new Map<string, string>(clubsList.map((club) => [club.id, club.name]));
 
@@ -357,6 +357,17 @@ export default function AdminApproval() {
       toast({ title: t("error"), description: err.message, variant: "destructive" });
     } finally {
       setSaving(false);
+    }
+  };
+
+  const updateClubMaxAthletes = async (clubId: string, newMax: number) => {
+    try {
+      const { error } = await supabase.from("clubs" as any).update({ max_athletes: newMax } as any).eq("id", clubId);
+      if (error) throw error;
+      setClubs(prev => prev.map(c => c.id === clubId ? { ...c, max_athletes: newMax } : c));
+      toast({ title: t("clubUpdated" as any) });
+    } catch (err: any) {
+      toast({ title: t("error"), description: err.message, variant: "destructive" });
     }
   };
 
@@ -798,6 +809,39 @@ export default function AdminApproval() {
             </SelectContent>
           </Select>
         </div>
+
+        {/* Club Management */}
+        {clubs.length > 0 && (
+          <div>
+            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-1.5">
+              <Building className="h-3.5 w-3.5" /> {t("clubManagement" as any)} ({clubs.length})
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {clubs.map(club => (
+                <div key={club.id} className="rounded-lg border border-border bg-card p-3 flex items-center justify-between gap-3">
+                  <span className="text-sm font-medium text-foreground truncate">{club.name}</span>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-[10px] text-muted-foreground whitespace-nowrap">{t("maxAthletes" as any)}:</span>
+                    <Input
+                      type="number"
+                      min={1}
+                      max={100}
+                      value={club.max_athletes}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value);
+                        if (!isNaN(val) && val >= 1) {
+                          setClubs(prev => prev.map(c => c.id === club.id ? { ...c, max_athletes: val } : c));
+                        }
+                      }}
+                      onBlur={() => updateClubMaxAthletes(club.id, club.max_athletes)}
+                      className="w-16 h-7 text-xs text-center"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Pending users */}
         {pending.length > 0 && (
