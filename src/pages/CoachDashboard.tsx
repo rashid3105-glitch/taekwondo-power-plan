@@ -207,7 +207,7 @@ export default function CoachDashboard() {
         .rpc("get_club_member_profiles", { _club_id: coachClubId });
 
       const clubOnly = ((clubProfiles || []) as any[])
-        .filter((p) => !athleteIds.includes(p.user_id))
+        .filter((p) => p.user_id !== userId && !athleteIds.includes(p.user_id))
         .map((athlete) => ({
           ...athlete,
           club_name: athlete.club_id ? clubMap.get(athlete.club_id) || null : null,
