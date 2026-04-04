@@ -20,6 +20,7 @@ import Pricing from "./pages/Pricing";
 import Help from "./pages/Help";
 import Diary from "./pages/Diary";
 import AdminPayments from "./pages/AdminPayments";
+import AdminClubs from "./pages/AdminClubs";
 import NotFound from "./pages/NotFound";
 import Methodology from "./pages/Methodology";
 import Unsubscribe from "./pages/Unsubscribe";
@@ -46,6 +47,7 @@ const App = () => (
             <Route path="/pending-approval" element={<PendingApproval />} />
             <Route path="/admin/approval" element={<AdminApproval />} />
             <Route path="/admin/payments" element={<AdminPayments />} />
+            <Route path="/admin/clubs" element={<AdminClubs />} />
             <Route path="/coach" element={<CoachDashboard />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/help" element={<Help />} />
