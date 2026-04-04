@@ -2012,6 +2012,9 @@ const translations = {
     upgradeEnterprise: "Uppgradera till Enterprise",
     requestDemo: "Begär en gratis demo",
     requestDemoDesc: "Prova appen gratis i 14 dagar. Ingen betalning krävs.",
+    clubManagement: "Klubbhantering",
+    maxAthletes: "Max atleter",
+    clubUpdated: "Klubb uppdaterad",
 
     // Calendar
     addToCalendar: "Lägg till i kalender",
