@@ -37,17 +37,6 @@ Deno.serve(async (req) => {
     });
     if (!hasCoachRole && !isAdmin) throw new Error("Not a coach");
 
-    // Enforce 5-athlete limit for non-admin coaches
-    if (!isAdmin) {
-      const { count } = await adminClient
-        .from("coach_athletes")
-        .select("id", { count: "exact", head: true })
-        .eq("coach_id", user.id);
-      if ((count ?? 0) >= 5) {
-        throw new Error("MAX_ATHLETES_REACHED");
-      }
-    }
-
     const { data: coachProfile, error: coachProfileError } = await adminClient
       .from("profiles")
       .select("club_id")
@@ -56,6 +45,24 @@ Deno.serve(async (req) => {
 
     if (coachProfileError) throw coachProfileError;
     if (!coachProfile?.club_id) throw new Error("COACH_CLUB_REQUIRED");
+
+    // Enforce configurable athlete limit from club settings (admins exempt)
+    if (!isAdmin) {
+      const { data: club } = await adminClient
+        .from("clubs")
+        .select("max_athletes")
+        .eq("id", coachProfile.club_id)
+        .single();
+      const limit = club?.max_athletes ?? 5;
+
+      const { count } = await adminClient
+        .from("coach_athletes")
+        .select("id", { count: "exact", head: true })
+        .eq("coach_id", user.id);
+      if ((count ?? 0) >= limit) {
+        throw new Error("MAX_ATHLETES_REACHED");
+      }
+    }
 
     const { name, email, password, age, belt_level, experience_years, discipline } = await req.json();
     if (!name || !email || !password) throw new Error("Missing required fields");
