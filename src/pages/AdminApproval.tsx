@@ -397,17 +397,8 @@ export default function AdminApproval() {
     }
   });
 
-  const sortedFiltered = sortBy === "club"
-    ? [...filteredUsers].sort((a, b) => {
-        const clubA = (a.club_name || "zzz").toLowerCase();
-        const clubB = (b.club_name || "zzz").toLowerCase();
-        if (clubA !== clubB) return clubA.localeCompare(clubB);
-        return (a.display_name || "").localeCompare(b.display_name || "");
-      })
-    : filteredUsers;
-
-  const pending = sortedFiltered.filter(u => !u.is_approved);
-  const approved = sortedFiltered.filter(u => u.is_approved);
+  const pending = filteredUsers.filter(u => !u.is_approved);
+  const approved = filteredUsers.filter(u => u.is_approved);
 
   // Group by club for club sort mode
   const groupByClub = (list: PendingUser[]) => {
