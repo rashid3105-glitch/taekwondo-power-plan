@@ -1,0 +1,1 @@
+ALTER TABLE public.clubs ADD COLUMN max_athletes integer NOT NULL DEFAULT 5;
