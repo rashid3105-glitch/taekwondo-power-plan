@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, ArrowLeft, Building } from "lucide-react";
+import { Loader2, ArrowLeft, Building, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 
@@ -17,6 +17,9 @@ export default function AdminClubs() {
   const [clubs, setClubs] = useState<Club[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [newClubName, setNewClubName] = useState("");
+  const [newClubMax, setNewClubMax] = useState(5);
+  const [creating, setCreating] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
@@ -28,21 +31,24 @@ export default function AdminClubs() {
       const { data: adminCheck } = await supabase.rpc("is_admin", { _user_id: user.id });
       if (!adminCheck) { navigate("/dashboard"); return; }
       setIsAdmin(true);
-
-      const { data, error } = await supabase
-        .from("clubs" as any)
-        .select("id, name, max_athletes")
-        .order("name");
-
-      if (error) {
-        toast({ title: t("error"), description: error.message, variant: "destructive" });
-      } else {
-        setClubs((data as unknown as Club[]) ?? []);
-      }
-      setLoading(false);
+      await loadClubs();
     };
     init();
   }, [navigate, t, toast]);
+
+  const loadClubs = async () => {
+    const { data, error } = await supabase
+      .from("clubs" as any)
+      .select("id, name, max_athletes")
+      .order("name");
+
+    if (error) {
+      toast({ title: t("error"), description: error.message, variant: "destructive" });
+    } else {
+      setClubs((data as unknown as Club[]) ?? []);
+    }
+    setLoading(false);
+  };
 
   const updateClubMaxAthletes = async (clubId: string, newMax: number) => {
     try {
@@ -51,6 +57,25 @@ export default function AdminClubs() {
       toast({ title: t("clubUpdated" as any) });
     } catch (err: any) {
       toast({ title: t("error"), description: err.message, variant: "destructive" });
+    }
+  };
+
+  const createClub = async () => {
+    const name = newClubName.trim();
+    if (!name) return;
+    setCreating(true);
+    try {
+      const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      const { error } = await supabase.from("clubs" as any).insert({ name, slug, max_athletes: newClubMax } as any);
+      if (error) throw error;
+      toast({ title: t("clubCreated" as any) || "Club created" });
+      setNewClubName("");
+      setNewClubMax(5);
+      await loadClubs();
+    } catch (err: any) {
+      toast({ title: t("error"), description: err.message, variant: "destructive" });
+    } finally {
+      setCreating(false);
     }
   };
 
@@ -76,6 +101,35 @@ export default function AdminClubs() {
         <h1 className="text-xl font-extrabold text-foreground flex items-center gap-2">
           <Building className="h-5 w-5" /> {t("clubManagement" as any)}
         </h1>
+
+        {/* Create new club */}
+        <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
+          <h2 className="text-sm font-semibold text-foreground">{t("addClub" as any) || "Add new club"}</h2>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Input
+              placeholder={t("clubName" as any) || "Club name"}
+              value={newClubName}
+              onChange={(e) => setNewClubName(e.target.value)}
+              className="flex-1"
+              onKeyDown={(e) => e.key === "Enter" && createClub()}
+            />
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground whitespace-nowrap">{t("maxAthletes" as any)}:</span>
+              <Input
+                type="number"
+                min={1}
+                max={100}
+                value={newClubMax}
+                onChange={(e) => setNewClubMax(parseInt(e.target.value) || 5)}
+                className="w-16 h-10 text-xs text-center"
+              />
+              <Button size="sm" onClick={createClub} disabled={creating || !newClubName.trim()}>
+                {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4 mr-1" />}
+                {t("add" as any) || "Add"}
+              </Button>
+            </div>
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {clubs.map(club => (
