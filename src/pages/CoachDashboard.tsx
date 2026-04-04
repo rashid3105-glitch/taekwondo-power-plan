@@ -97,6 +97,7 @@ export default function CoachDashboard() {
   const [newAthleteDiscipline, setNewAthleteDiscipline] = useState("sparring");
   const [creating, setCreating] = useState(false);
   
+  const [maxAthletes, setMaxAthletes] = useState(5);
   const [coachUserId, setCoachUserId] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [diaryAthleteId, setDiaryAthleteId] = useState<string | null>(null);
