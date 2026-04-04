@@ -390,6 +390,9 @@ const translations = {
     upgradeEnterprise: "Upgrade to Enterprise",
     requestDemo: "Request a free demo",
     requestDemoDesc: "Try the app free for 14 days. No payment required.",
+    clubManagement: "Club Management",
+    maxAthletes: "Max Athletes",
+    clubUpdated: "Club updated",
 
     // Calendar
     addToCalendar: "Add to Calendar",
