@@ -810,6 +810,39 @@ export default function AdminApproval() {
           </Select>
         </div>
 
+        {/* Club Management */}
+        {clubs.length > 0 && (
+          <div>
+            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-1.5">
+              <Building className="h-3.5 w-3.5" /> {t("clubManagement" as any)} ({clubs.length})
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {clubs.map(club => (
+                <div key={club.id} className="rounded-lg border border-border bg-card p-3 flex items-center justify-between gap-3">
+                  <span className="text-sm font-medium text-foreground truncate">{club.name}</span>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-[10px] text-muted-foreground whitespace-nowrap">{t("maxAthletes" as any)}:</span>
+                    <Input
+                      type="number"
+                      min={1}
+                      max={100}
+                      value={club.max_athletes}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value);
+                        if (!isNaN(val) && val >= 1) {
+                          setClubs(prev => prev.map(c => c.id === club.id ? { ...c, max_athletes: val } : c));
+                        }
+                      }}
+                      onBlur={() => updateClubMaxAthletes(club.id, club.max_athletes)}
+                      className="w-16 h-7 text-xs text-center"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Pending users */}
         {pending.length > 0 && (
           <div>
