@@ -106,7 +106,7 @@ export default function AdminApproval() {
     const plans = (plansRes.data || []) as (UserPlan & { user_id: string })[];
     const roles = (rolesRes.data || []) as { user_id: string; role: string }[];
     const coachAthleteLinks = (coachAthletesRes.data || []) as { coach_id: string; athlete_id: string }[];
-    const clubsList = ((clubsRes.data as unknown as { id: string; name: string }[] | null) ?? []);
+    const clubsList = ((clubsRes.data as unknown as { id: string; name: string; max_athletes: number }[] | null) ?? []);
     setClubs(clubsList);
     const clubMap = new Map<string, string>(clubsList.map((club) => [club.id, club.name]));
 
