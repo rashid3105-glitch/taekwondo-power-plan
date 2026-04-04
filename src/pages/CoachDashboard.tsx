@@ -145,6 +145,14 @@ export default function CoachDashboard() {
       return;
     }
 
+    // Fetch club's max_athletes limit
+    const { data: clubData } = await supabase
+      .from("clubs")
+      .select("max_athletes")
+      .eq("id", coachClubId)
+      .single();
+    if (clubData?.max_athletes) setMaxAthletes(clubData.max_athletes);
+
     await loadAthletes(user.id, coachClubId);
   };
 
