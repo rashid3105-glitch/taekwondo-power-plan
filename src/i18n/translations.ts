@@ -1201,6 +1201,9 @@ const translations = {
     upgradeEnterprise: "Opgrader til Enterprise",
     requestDemo: "Anmod om gratis demo",
     requestDemoDesc: "Prøv appen gratis i 14 dage. Ingen betaling krævet.",
+    clubManagement: "Klubstyring",
+    maxAthletes: "Max atleter",
+    clubUpdated: "Klub opdateret",
 
     // Calendar
     addToCalendar: "Tilføj til kalender",
