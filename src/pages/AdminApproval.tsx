@@ -64,7 +64,7 @@ export default function AdminApproval() {
   const [resettingPassword, setResettingPassword] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState<"all" | "pending" | "approved" | "paid" | "demo" | "coach">("all");
-  const [sortBy, setSortBy] = useState<"name" | "club">("name");
+  
   const [editingUser, setEditingUser] = useState<PendingUser | null>(null);
   const [editForm, setEditForm] = useState<Record<string, any>>({});
   const [saving, setSaving] = useState(false);
@@ -397,17 +397,8 @@ export default function AdminApproval() {
     }
   });
 
-  const sortedFiltered = sortBy === "club"
-    ? [...filteredUsers].sort((a, b) => {
-        const clubA = (a.club_name || "zzz").toLowerCase();
-        const clubB = (b.club_name || "zzz").toLowerCase();
-        if (clubA !== clubB) return clubA.localeCompare(clubB);
-        return (a.display_name || "").localeCompare(b.display_name || "");
-      })
-    : filteredUsers;
-
-  const pending = sortedFiltered.filter(u => !u.is_approved);
-  const approved = sortedFiltered.filter(u => u.is_approved);
+  const pending = filteredUsers.filter(u => !u.is_approved);
+  const approved = filteredUsers.filter(u => u.is_approved);
 
   // Group by club for club sort mode
   const groupByClub = (list: PendingUser[]) => {
@@ -791,15 +782,6 @@ export default function AdminApproval() {
               <SelectItem value="coach">Coaches</SelectItem>
             </SelectContent>
           </Select>
-          <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
-            <SelectTrigger className="w-full sm:w-36">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="name">Sort: A-Z</SelectItem>
-              <SelectItem value="club">Sort: Club</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
 
 
@@ -833,28 +815,31 @@ export default function AdminApproval() {
             <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
               {t("approvedUsers")} ({approved.length})
             </h2>
-            {sortBy === "club" ? (
-              <div className="space-y-5">
-                {groupByClub(approved).map(group => (
-                  <div key={group.clubName}>
-                    <h3 className="text-xs font-semibold text-primary uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                      <Users className="h-3 w-3" /> {group.clubName} ({group.users.length})
-                    </h3>
+            <div className="space-y-4">
+              {groupByClub(approved).map(group => {
+                const club = clubs.find(c => c.name === group.clubName);
+                const isNoClub = group.clubName === "No club";
+                const atCapacity = club ? group.users.length >= club.max_athletes : false;
+                return (
+                  <div key={group.clubName} className={`rounded-lg border p-4 ${isNoClub ? 'border-yellow-500/30 bg-yellow-500/5' : 'border-primary/20 bg-primary/5'}`}>
+                    <div className={`flex items-center justify-between mb-3 pb-2 border-b ${isNoClub ? 'border-yellow-500/20' : 'border-primary/10'}`}>
+                      <h3 className={`text-sm font-bold flex items-center gap-2 ${isNoClub ? 'text-yellow-500' : 'text-primary'}`}>
+                        <Building className="h-4 w-4" />
+                        {group.clubName}
+                      </h3>
+                      <Badge variant={isNoClub ? "outline" : atCapacity ? "destructive" : "secondary"} className="text-[10px]">
+                        {group.users.length}{club ? ` / ${club.max_athletes}` : ""} {t("athletes" as any) || "athletes"}
+                      </Badge>
+                    </div>
                     <div className="space-y-3">
                       {group.users.map(u => (
                         <UserCard key={u.user_id} u={u} showRevoke actions={null} />
                       ))}
                     </div>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {approved.map(u => (
-                  <UserCard key={u.user_id} u={u} showRevoke actions={null} />
-                ))}
-              </div>
-            )}
+                );
+              })}
+            </div>
           </div>
         )}
 
