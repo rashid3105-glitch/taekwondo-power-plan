@@ -2,7 +2,11 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain, Clock, Apple, Home, Lock, NotebookPen, AlertTriangle, ClipboardList, HelpCircle } from "lucide-react";
+import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain, Clock, Apple, Home, Lock, NotebookPen, AlertTriangle, ClipboardList, HelpCircle, Trash2 } from "lucide-react";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { EventRemindersDropdown } from "@/components/EventRemindersDropdown";
 import logo from "@/assets/logo.webp";
 import { useToast } from "@/hooks/use-toast";
@@ -648,7 +652,7 @@ export default function Dashboard() {
                       )}
                     </div>
                   </div>
-                  {hasCoach ? (
+                  {hasCoach && !isPaid ? (
                     <span className="text-xs text-accent font-semibold flex items-center gap-1">
                       <Lock className="h-3.5 w-3.5" /> {coachName
                         ? (t("coachManagedActionNamed" as any) || "").replace("{{coach}}", coachName)
@@ -669,7 +673,37 @@ export default function Dashboard() {
 
             {/* Active plan */}
             {activePlan ? (
-              <AIPlanCard plan={activePlan} />
+              <div className="space-y-2">
+                <AIPlanCard plan={activePlan} />
+                {(!hasCoach || isPaid) && (
+                  <div className="flex justify-end">
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
+                          <Trash2 className="h-4 w-4 mr-1" /> {t("delete" as any) || "Delete"}
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>{t("deleteTrainingPlan" as any) || "Delete Training Plan"}</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            {t("deleteTrainingPlanConfirm" as any) || "Are you sure you want to delete this training plan? This action cannot be undone."}
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>{t("cancel" as any) || "Cancel"}</AlertDialogCancel>
+                          <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={async () => {
+                            await supabase.from("training_plans").delete().eq("id", activePlan.id);
+                            loadData();
+                          }}>
+                            {t("delete" as any) || "Delete"}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                )}
+              </div>
             ) : (
               <div className="rounded-xl border border-border bg-card p-12 text-center shadow-card">
                 <Zap className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
@@ -691,16 +725,42 @@ export default function Dashboard() {
                         <p className="font-medium text-sm text-foreground">{plan.name}</p>
                         <p className="text-xs text-muted-foreground">{new Date(plan.created_at).toLocaleDateString()}</p>
                       </div>
-                      {!hasCoach && (
-                        <Button variant="outline" size="sm" onClick={async () => {
-                          const { data: { user } } = await supabase.auth.getUser();
-                          if (!user) return;
-                          await supabase.from("training_plans").update({ is_active: false }).eq("user_id", user.id);
-                          await supabase.from("training_plans").update({ is_active: true }).eq("id", plan.id);
-                          loadData();
-                        }}>
-                          {t("activate")}
-                        </Button>
+                      {(!hasCoach || isPaid) && (
+                        <div className="flex items-center gap-1">
+                          <Button variant="outline" size="sm" onClick={async () => {
+                            const { data: { user } } = await supabase.auth.getUser();
+                            if (!user) return;
+                            await supabase.from("training_plans").update({ is_active: false }).eq("user_id", user.id);
+                            await supabase.from("training_plans").update({ is_active: true }).eq("id", plan.id);
+                            loadData();
+                          }}>
+                            {t("activate")}
+                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>{t("deleteTrainingPlan" as any) || "Delete Training Plan"}</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  {t("deleteTrainingPlanConfirm" as any) || "Are you sure you want to delete this training plan? This action cannot be undone."}
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>{t("cancel" as any) || "Cancel"}</AlertDialogCancel>
+                                <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={async () => {
+                                  await supabase.from("training_plans").delete().eq("id", plan.id);
+                                  loadData();
+                                }}>
+                                  {t("delete" as any) || "Delete"}
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
                       )}
                     </div>
                   ))}
