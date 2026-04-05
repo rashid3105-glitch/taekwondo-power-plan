@@ -108,6 +108,8 @@ export default function Dashboard() {
   const loadData = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { navigate("/auth"); return; }
+    // Update last_seen_at for online tracking
+    supabase.from("profiles").update({ last_seen_at: new Date().toISOString() } as any).eq("user_id", user.id).then(() => {});
     const { data: adminCheck } = await supabase.rpc("is_admin", { _user_id: user.id });
     if (adminCheck) setIsAdmin(true);
 

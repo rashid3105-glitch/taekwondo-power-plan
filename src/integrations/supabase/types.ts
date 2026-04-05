@@ -343,6 +343,7 @@ export type Database = {
           id: string
           is_approved: boolean
           is_demo: boolean
+          last_seen_at: string | null
           payment_date: string | null
           payment_status: string
           program_weeks: number | null
@@ -369,6 +370,7 @@ export type Database = {
           id?: string
           is_approved?: boolean
           is_demo?: boolean
+          last_seen_at?: string | null
           payment_date?: string | null
           payment_status?: string
           program_weeks?: number | null
@@ -395,6 +397,7 @@ export type Database = {
           id?: string
           is_approved?: boolean
           is_demo?: boolean
+          last_seen_at?: string | null
           payment_date?: string | null
           payment_status?: string
           program_weeks?: number | null
