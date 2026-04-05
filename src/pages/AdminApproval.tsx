@@ -49,6 +49,7 @@ interface PendingUser {
   discipline?: string;
   country?: string | null;
   current_injury?: string | null;
+  last_seen_at?: string | null;
 }
 
 export default function AdminApproval() {
@@ -89,7 +90,7 @@ export default function AdminApproval() {
     const [profilesRes, emailsRes, plansRes, rolesRes, coachAthletesRes, clubsRes] = await Promise.all([
       supabase
         .from("profiles")
-        .select("user_id, display_name, created_at, is_approved, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, payment_status, payment_date, is_demo, demo_full_access, club_id, discipline, country, current_injury")
+        .select("user_id, display_name, created_at, is_approved, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, payment_status, payment_date, is_demo, demo_full_access, club_id, discipline, country, current_injury, last_seen_at")
         .order("created_at", { ascending: false }),
       supabase.functions.invoke("get-admin-users"),
       supabase
@@ -427,6 +428,12 @@ export default function AdminApproval() {
             <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 transition-transform duration-200 group-data-[state=open]:rotate-180" />
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
+                {(() => {
+                  const isOnline = u.last_seen_at && (Date.now() - new Date(u.last_seen_at).getTime()) < 5 * 60 * 1000;
+                  return (
+                    <span className={`inline-block h-2 w-2 rounded-full shrink-0 ${isOnline ? 'bg-green-500 shadow-[0_0_4px_rgba(34,197,94,0.6)]' : 'bg-muted-foreground/30'}`} title={isOnline ? 'Online' : u.last_seen_at ? `Last seen ${new Date(u.last_seen_at).toLocaleString()}` : 'Never'} />
+                  );
+                })()}
                 <p className={`font-medium text-sm ${u.is_approved ? 'text-foreground' : 'text-yellow-400'}`}>{u.display_name || t("noName")}</p>
                 {u.payment_status === "paid" && (
                   <Badge variant="default" className="text-[10px] h-5">
