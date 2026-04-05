@@ -61,6 +61,7 @@ export default function Dashboard() {
   const [coachName, setCoachName] = useState<string>("");
   const [clubName, setClubName] = useState<string>("");
   const [isDemo, setIsDemo] = useState(false);
+  const [isPaid, setIsPaid] = useState(false);
   const [demoDaysLeft, setDemoDaysLeft] = useState<number | null>(null);
   const [demoDaysUntilDeletion, setDemoDaysUntilDeletion] = useState<number | null>(null);
   const [generating, setGenerating] = useState(false);
@@ -141,6 +142,7 @@ export default function Dashboard() {
         .eq("id", profileData.club_id)
         .maybeSingle();
       setClubName((clubData as { name?: string } | null)?.name || "");
+      setIsPaid(profileData.payment_status === "paid");
       if (profileData.is_demo && profileData.payment_status !== "paid") {
         setIsDemo(true);
         const created = new Date(profileData.created_at);
@@ -508,7 +510,7 @@ export default function Dashboard() {
         ) : activeTab === "progress" ? (
           isDemo ? renderDemoLockedState("progress") : <ProgressDashboard onGoToPlan={() => handleTabChange("plan")} />
         ) : activeTab === "nutrition" ? (
-          isDemo ? renderDemoLockedState("nutrition") : <NutritionPlan profile={profile} readOnly={hasCoach} />
+          isDemo ? renderDemoLockedState("nutrition") : <NutritionPlan profile={profile} readOnly={hasCoach && !isPaid} />
         ) : activeTab === "mental" ? (
           isDemo ? renderDemoLockedState("mental") : <MentalAssessment profile={profile} />
         ) : activeTab === "testing" ? (
