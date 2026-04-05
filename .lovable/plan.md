@@ -1,29 +1,32 @@
 
 
-## Plan: Club-grouped approved users & visual improvements
+## Plan: Allow athletes to delete training plans and generate new ones
 
-### Changes to `src/pages/AdminApproval.tsx`
+Currently, athletes without a coach can generate plans and reactivate old ones, but cannot delete them. Athletes with a coach see the plan as read-only with no generate button. The fix unlocks paid athletes (same pattern as nutrition) and adds delete functionality.
 
-1. **Remove the sort dropdown** (lines 794-802) — no longer needed since approved users are always club-grouped and pending stays flat.
+### Changes
 
-2. **Remove `sortBy` state** (line 67) and the `sortedFiltered` logic (lines 400-407) — just use `filteredUsers` directly.
+**1. Add delete button for training plans** (`src/pages/Dashboard.tsx`)
 
-3. **Approved section: always use `groupByClub`** (lines 836-857) — remove the conditional, always render club-grouped view. Enhance the club group headers visually:
-   - Add a colored left border or background to each club group
-   - Show athlete count vs. `max_athletes` from the clubs array (e.g. "3 / 5 athletes")
-   - Use `Building` icon instead of `Users` in club headers
+- Add a delete button next to each previous (inactive) plan in the "Previous Plans" list (lines 688-706). Include a confirmation dialog (AlertDialog) before deleting.
+- Add a delete option for the active plan as well -- either a small trash icon in the profile summary bar or below the active plan card. Deleting the active plan removes it and shows the empty state.
+- Delete via `supabase.from("training_plans").delete().eq("id", plan.id)` then `loadData()`.
+- Show delete for athletes who own the plan (`!hasCoach || isPaid`), matching the same logic used for nutrition.
 
-4. **Pending section stays flat** — no changes to the pending list (lines 809-823).
+**2. Allow paid athletes with a coach to generate new plans** (`src/pages/Dashboard.tsx`)
 
-5. **Visual enhancements for club groups**:
-   - Each club group gets a subtle card wrapper with a left accent border
-   - Club header shows club name prominently with member count badge
-   - "No club" group styled differently (muted/warning style)
+- Change the generate button condition from `!hasCoach` (line 657) to `!hasCoach || isPaid`, so paid athletes can generate their own plans even when coached.
+- Same logic for the "Activate" button on previous plans (line 694).
 
-### Technical details
+**3. Import AlertDialog components** (`src/pages/Dashboard.tsx`)
 
-- Remove `sortBy` state and its `Select` component
-- Replace the conditional render block (lines 836-857) with always-on `groupByClub(approved)` rendering
-- Look up `max_athletes` from `clubs` state by matching club name to show capacity
-- Add `groupByClub` enhancement to include `clubId` for capacity lookup
+- Import `AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger` and `Trash2` icon.
+
+### Summary of access rules
+
+| Action | No coach | Has coach (unpaid) | Has coach (paid) |
+|--------|----------|-------------------|-----------------|
+| Generate plan | Yes | No | Yes |
+| Activate old plan | Yes | No | Yes |
+| Delete plan | Yes | No | Yes |
 
