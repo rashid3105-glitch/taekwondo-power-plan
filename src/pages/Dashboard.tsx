@@ -142,6 +142,7 @@ export default function Dashboard() {
         .eq("id", profileData.club_id)
         .maybeSingle();
       setClubName((clubData as { name?: string } | null)?.name || "");
+      setIsPaid(profileData.payment_status === "paid");
       if (profileData.is_demo && profileData.payment_status !== "paid") {
         setIsDemo(true);
         const created = new Date(profileData.created_at);
