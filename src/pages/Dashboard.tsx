@@ -523,7 +523,7 @@ export default function Dashboard() {
           isDemo ? renderDemoLockedState("injuryRehabPlan") : (
           <>
             {/* Rehab Plan Generator */}
-            {!hasCoach && (
+            {(!hasCoach || isPaid) && (
               <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
                 <div className="flex items-center gap-2">
                   <Heart className="h-5 w-5 text-destructive" />
@@ -553,7 +553,7 @@ export default function Dashboard() {
 
             {/* Rehab plan result */}
             {rehabPlan && (
-              <RehabPlanCard plan={rehabPlan} onDelete={hasCoach ? undefined : async () => {
+              <RehabPlanCard plan={rehabPlan} onDelete={hasCoach && !isPaid ? undefined : async () => {
                 const activeRP = rehabPlans.find(r => r.is_active);
                 if (activeRP) {
                   await supabase.from("rehab_plans").delete().eq("id", activeRP.id);
@@ -574,7 +574,7 @@ export default function Dashboard() {
                         <p className="font-medium text-sm text-foreground">{rp.name}</p>
                         <p className="text-xs text-muted-foreground">{rp.injury_description} · {new Date(rp.created_at).toLocaleDateString()}</p>
                       </div>
-                      {!hasCoach && (
+                      {(!hasCoach || isPaid) && (
                         <div className="flex gap-2">
                           <Button variant="outline" size="sm" onClick={async () => {
                             const { data: { user } } = await supabase.auth.getUser();
