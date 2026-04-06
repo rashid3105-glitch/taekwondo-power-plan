@@ -1,32 +1,19 @@
 
 
-## Plan: Allow athletes to delete training plans and generate new ones
+## Plan: Allow coaches to set up their profile while pending approval
 
-Currently, athletes without a coach can generate plans and reactivate old ones, but cannot delete them. Athletes with a coach see the plan as read-only with no generate button. The fix unlocks paid athletes (same pattern as nutrition) and adds delete functionality.
+### Problem
+When a coach signs up, they're redirected to `/pending-approval` from the Dashboard because `is_approved` is `false`. The PendingApproval page has no link to ProfileSetup, so they can't fill in their profile while waiting. The profile update itself works fine via RLS (protected fields are preserved), it's purely a navigation issue.
 
 ### Changes
 
-**1. Add delete button for training plans** (`src/pages/Dashboard.tsx`)
+**1. Add "Set up profile" button to PendingApproval page** (`src/pages/PendingApproval.tsx`)
+- Add a Button linking to `/profile-setup` so coaches (and all pending users) can fill in their athlete/coach profile while awaiting approval.
+- Use a secondary/outline style with a User icon, placed above the sign-out button.
 
-- Add a delete button next to each previous (inactive) plan in the "Previous Plans" list (lines 688-706). Include a confirmation dialog (AlertDialog) before deleting.
-- Add a delete option for the active plan as well -- either a small trash icon in the profile summary bar or below the active plan card. Deleting the active plan removes it and shows the empty state.
-- Delete via `supabase.from("training_plans").delete().eq("id", plan.id)` then `loadData()`.
-- Show delete for athletes who own the plan (`!hasCoach || isPaid`), matching the same logic used for nutrition.
+**2. No database or RLS changes needed**
+- The existing "Users can update their own profile" RLS policy already allows unapproved users to update non-protected fields (age, belt, goals, etc.). The `is_approved` field is protected and stays unchanged. Profile saving will work correctly.
 
-**2. Allow paid athletes with a coach to generate new plans** (`src/pages/Dashboard.tsx`)
-
-- Change the generate button condition from `!hasCoach` (line 657) to `!hasCoach || isPaid`, so paid athletes can generate their own plans even when coached.
-- Same logic for the "Activate" button on previous plans (line 694).
-
-**3. Import AlertDialog components** (`src/pages/Dashboard.tsx`)
-
-- Import `AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger` and `Trash2` icon.
-
-### Summary of access rules
-
-| Action | No coach | Has coach (unpaid) | Has coach (paid) |
-|--------|----------|-------------------|-----------------|
-| Generate plan | Yes | No | Yes |
-| Activate old plan | Yes | No | Yes |
-| Delete plan | Yes | No | Yes |
+### Technical details
+- Single file change: `src/pages/PendingApproval.tsx` — add a `<Button>` with `onClick={() => navigate("/profile-setup")}`.
 
