@@ -1991,6 +1991,7 @@ const translations = {
     reminderUnread: "Oläst",
 
     // Payment & Demo
+    paid: "Betald",
     unpaid: "Obetald",
     demo: "Demo",
     markedAsPaid: "Markerad som betald",
