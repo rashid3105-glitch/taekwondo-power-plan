@@ -145,14 +145,11 @@ export default function ProfileSetup() {
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from("avatars")
-        .getPublicUrl(filePath);
-
-      setAvatarUrl(publicUrl + "?t=" + Date.now());
+      // Store the path (not public URL) since bucket is private
+      setAvatarUrl(filePath + "?t=" + Date.now());
 
       await supabase.from("profiles").update({
-        avatar_url: publicUrl,
+        avatar_url: filePath,
       }).eq("user_id", user.id);
 
       toast({ title: t("photoUploaded") });
