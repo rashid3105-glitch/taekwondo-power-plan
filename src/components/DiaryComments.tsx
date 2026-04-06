@@ -60,7 +60,7 @@ export function DiaryComments({ entryId, canComment = false }: DiaryCommentsProp
 
       const mappedComments = (data as any[]).map((c: any) => ({
         ...c,
-        coach_name: coachNames[c.coach_id] || t("coach" as any),
+        coach_name: coachNames[c.coach_id] || t("coach"),
       }));
       setComments(mappedComments);
 
@@ -154,7 +154,7 @@ export function DiaryComments({ entryId, canComment = false }: DiaryCommentsProp
           <Textarea
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            placeholder={t("coachCommentPlaceholder" as any) || "Write a comment..."}
+            placeholder={t("coachCommentPlaceholder") || "Write a comment..."}
             rows={1}
             maxLength={2000}
             className="resize-none text-xs min-h-[36px] py-2"

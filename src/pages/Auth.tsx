@@ -101,7 +101,7 @@ export default function AuthPage() {
             className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mb-12 cursor-pointer"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
-            {t("backToSignIn" as any).includes("Sign In") ? "Back to Home" : t("backToSignIn" as any)}
+            {t("backToSignIn").includes("Sign In") ? "Back to Home" : t("backToSignIn")}
           </button>
 
           <div className="flex items-center gap-3 mb-8">
@@ -115,8 +115,8 @@ export default function AuthPage() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="text-2xl font-black tracking-tight text-foreground leading-tight mb-3"
           >
-            {t("landingHeroTitle" as any)}{" "}
-            <span className="text-gradient-energy">{t("landingHeroHighlight" as any)}</span>
+            {t("landingHeroTitle")}{" "}
+            <span className="text-gradient-energy">{t("landingHeroHighlight")}</span>
           </motion.h2>
 
           <motion.p
@@ -298,9 +298,9 @@ export default function AuthPage() {
                   />
                   <div className="space-y-0.5">
                     <label htmlFor="demo" className="text-xs font-semibold text-foreground flex items-center gap-1.5 cursor-pointer">
-                      <FlaskConical className="h-3.5 w-3.5 text-speed" /> {t("requestDemo" as any)}
+                      <FlaskConical className="h-3.5 w-3.5 text-speed" /> {t("requestDemo")}
                     </label>
-                    <p className="text-[10px] text-muted-foreground leading-tight">{t("requestDemoDesc" as any)}</p>
+                    <p className="text-[10px] text-muted-foreground leading-tight">{t("requestDemoDesc")}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3 rounded-xl border border-primary/20 bg-primary/5 backdrop-blur-sm p-3.5">

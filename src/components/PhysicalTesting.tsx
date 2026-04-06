@@ -230,7 +230,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
     if (error) {
       toast({ title: t("error"), description: error.message, variant: "destructive" });
     } else {
-      toast({ title: t("ptResultSaved" as any) });
+      toast({ title: t("ptResultSaved") });
       setSelectedTest("");
       setCustomTestName("");
       setTestValue("");
@@ -279,7 +279,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
       <div className="flex items-center gap-2">
         <ClipboardList className="h-5 w-5 text-primary" />
         <h2 className="text-xl sm:text-2xl font-extrabold text-foreground">
-          {t("ptTitle" as any)}
+          {t("ptTitle")}
           {mode === "coach" && currentAthleteName && (
             <span className="text-muted-foreground font-normal text-base ml-2">— {currentAthleteName}</span>
           )}
@@ -290,10 +290,10 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
       {mode === "coach" && !athleteId && (
         <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
           <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-            <Users className="h-4 w-4 text-primary" /> {t("ptSelectAthlete" as any)}
+            <Users className="h-4 w-4 text-primary" /> {t("ptSelectAthlete")}
           </h3>
           {athletes.length === 0 ? (
-            <p className="text-sm text-muted-foreground">{t("ptNoAthletes" as any)}</p>
+            <p className="text-sm text-muted-foreground">{t("ptNoAthletes")}</p>
           ) : (
             <Select value={selectedAthleteId} onValueChange={(v) => {
               setSelectedAthleteId(v);
@@ -301,7 +301,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
               setSelectedAthleteName(ath?.display_name || "");
             }}>
               <SelectTrigger>
-                <SelectValue placeholder={t("ptSelectAthlete" as any)} />
+                <SelectValue placeholder={t("ptSelectAthlete")} />
               </SelectTrigger>
               <SelectContent>
                 {athletes.map(a => (
@@ -321,7 +321,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
             return (
               <TabsTrigger key={cat} value={cat} className="flex items-center gap-1 text-xs sm:text-sm">
                 <Icon className="h-3.5 w-3.5" />
-                {t(`ptCat_${cat}` as any)}
+                {t(`ptCat_${cat}`)}
               </TabsTrigger>
             );
           })}
@@ -332,7 +332,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
             {/* Add test form */}
             <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
               <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                <Plus className="h-4 w-4" /> {t("ptAddResult" as any)}
+                <Plus className="h-4 w-4" /> {t("ptAddResult")}
               </h3>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
@@ -344,19 +344,19 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
                     }
                   }}>
                     <SelectTrigger>
-                      <SelectValue placeholder={t("ptSelectTest" as any)} />
+                      <SelectValue placeholder={t("ptSelectTest")} />
                     </SelectTrigger>
                     <SelectContent>
                       {STANDARD_TESTS[cat].map(test => (
                         <SelectItem key={test.name} value={test.name}>{test.name}</SelectItem>
                       ))}
-                      <SelectItem value="__custom">{t("ptCustomTest" as any)}</SelectItem>
+                      <SelectItem value="__custom">{t("ptCustomTest")}</SelectItem>
                     </SelectContent>
                   </Select>
                   {selectedTest === "__custom" && (
                     <Input
                       className="mt-2"
-                      placeholder={t("ptCustomTestName" as any)}
+                      placeholder={t("ptCustomTestName")}
                       value={customTestName}
                       onChange={(e) => setCustomTestName(e.target.value)}
                     />
@@ -366,13 +366,13 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
                   <Input
                     type="text"
                     inputMode="decimal"
-                    placeholder={t("ptValue" as any)}
+                    placeholder={t("ptValue")}
                     value={testValue}
                     onChange={(e) => setTestValue(e.target.value)}
                     className="flex-1"
                   />
                   <Input
-                    placeholder={t("ptUnit" as any)}
+                    placeholder={t("ptUnit")}
                     value={testUnit}
                     onChange={(e) => setTestUnit(e.target.value)}
                     className="w-20"
@@ -384,14 +384,14 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
                   onChange={(e) => setTestDate(e.target.value)}
                 />
                 <Input
-                  placeholder={t("ptNotes" as any)}
+                  placeholder={t("ptNotes")}
                   value={testNotes}
                   onChange={(e) => setTestNotes(e.target.value)}
                 />
               </div>
               <Button onClick={handleSubmit} disabled={saving} size="sm">
                 {saving ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : <Plus className="h-4 w-4 mr-1" />}
-                {t("ptSaveResult" as any)}
+                {t("ptSaveResult")}
               </Button>
             </div>
 
@@ -407,12 +407,12 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="border-b border-border">
-                          <th className="text-left py-2 text-xs text-muted-foreground font-semibold">{t("ptDate" as any)}</th>
-                          <th className="text-right py-2 text-xs text-muted-foreground font-semibold">{t("ptResult" as any)}</th>
-                          <th className="text-left py-2 text-xs text-muted-foreground font-semibold">{t("ptUnit" as any)}</th>
-                          <th className="text-right py-2 text-xs text-muted-foreground font-semibold">{t("ptChange" as any)}</th>
-                          <th className="text-left py-2 text-xs text-muted-foreground font-semibold">{t("ptType" as any)}</th>
-                          <th className="text-left py-2 text-xs text-muted-foreground font-semibold">{t("ptNotes" as any)}</th>
+                          <th className="text-left py-2 text-xs text-muted-foreground font-semibold">{t("ptDate")}</th>
+                          <th className="text-right py-2 text-xs text-muted-foreground font-semibold">{t("ptResult")}</th>
+                          <th className="text-left py-2 text-xs text-muted-foreground font-semibold">{t("ptUnit")}</th>
+                          <th className="text-right py-2 text-xs text-muted-foreground font-semibold">{t("ptChange")}</th>
+                          <th className="text-left py-2 text-xs text-muted-foreground font-semibold">{t("ptType")}</th>
+                          <th className="text-left py-2 text-xs text-muted-foreground font-semibold">{t("ptNotes")}</th>
                           <th className="py-2"></th>
                         </tr>
                       </thead>
@@ -438,7 +438,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
                               <td className="py-2 text-right">{changeEl || "—"}</td>
                               <td className="py-2">
                                 <span className={`text-xs px-2 py-0.5 rounded-full ${r.test_type === "coach" ? "bg-accent/20 text-accent" : "bg-primary/10 text-primary"}`}>
-                                  {r.test_type === "coach" ? t("ptCoachTest" as any) : t("ptIndividualTest" as any)}
+                                  {r.test_type === "coach" ? t("ptCoachTest") : t("ptIndividualTest")}
                                 </span>
                               </td>
                               <td className="py-2 text-xs text-muted-foreground max-w-[120px] truncate" title={r.notes || ""}>
@@ -460,7 +460,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
             ) : (
               <div className="rounded-xl border border-border bg-card p-8 text-center shadow-card">
                 <CategoryIcon className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
-                <p className="text-sm text-muted-foreground">{t("ptNoResults" as any)}</p>
+                <p className="text-sm text-muted-foreground">{t("ptNoResults")}</p>
               </div>
             )}
           </TabsContent>

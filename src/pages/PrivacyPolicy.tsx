@@ -32,72 +32,72 @@ export default function PrivacyPolicy() {
 
       <main className="container max-w-3xl mx-auto px-4 py-8 space-y-8">
         <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="mb-2">
-          <ArrowLeft className="h-4 w-4 mr-1" /> {t("back" as any)}
+          <ArrowLeft className="h-4 w-4 mr-1" /> {t("back")}
         </Button>
 
-        <h1 className="text-2xl font-extrabold text-foreground">{t("privacyPolicyTitle" as any)}</h1>
-        <p className="text-xs text-muted-foreground">{t("privacyLastUpdated" as any)}: 2026-03-25</p>
+        <h1 className="text-2xl font-extrabold text-foreground">{t("privacyPolicyTitle")}</h1>
+        <p className="text-xs text-muted-foreground">{t("privacyLastUpdated")}: 2026-03-25</p>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-foreground">{t("privacyWhoWeAre" as any)}</h2>
-          <p className="text-sm text-muted-foreground leading-relaxed">{t("privacyWhoWeAreDesc" as any)}</p>
+          <h2 className="text-lg font-bold text-foreground">{t("privacyWhoWeAre")}</h2>
+          <p className="text-sm text-muted-foreground leading-relaxed">{t("privacyWhoWeAreDesc")}</p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-foreground">{t("privacyWhatWeCollect" as any)}</h2>
+          <h2 className="text-lg font-bold text-foreground">{t("privacyWhatWeCollect")}</h2>
           <ul className="text-sm text-muted-foreground leading-relaxed list-disc pl-5 space-y-1">
-            <li>{t("privacyCollect1" as any)}</li>
-            <li>{t("privacyCollect2" as any)}</li>
-            <li>{t("privacyCollect3" as any)}</li>
-            <li>{t("privacyCollect4" as any)}</li>
-            <li>{t("privacyCollect5" as any)}</li>
+            <li>{t("privacyCollect1")}</li>
+            <li>{t("privacyCollect2")}</li>
+            <li>{t("privacyCollect3")}</li>
+            <li>{t("privacyCollect4")}</li>
+            <li>{t("privacyCollect5")}</li>
           </ul>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-foreground">{t("privacyWhyWeCollect" as any)}</h2>
+          <h2 className="text-lg font-bold text-foreground">{t("privacyWhyWeCollect")}</h2>
           <ul className="text-sm text-muted-foreground leading-relaxed list-disc pl-5 space-y-1">
-            <li>{t("privacyPurpose1" as any)}</li>
-            <li>{t("privacyPurpose2" as any)}</li>
-            <li>{t("privacyPurpose3" as any)}</li>
+            <li>{t("privacyPurpose1")}</li>
+            <li>{t("privacyPurpose2")}</li>
+            <li>{t("privacyPurpose3")}</li>
           </ul>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-foreground">{t("privacyLegalBasis" as any)}</h2>
-          <p className="text-sm text-muted-foreground leading-relaxed">{t("privacyLegalBasisDesc" as any)}</p>
+          <h2 className="text-lg font-bold text-foreground">{t("privacyLegalBasis")}</h2>
+          <p className="text-sm text-muted-foreground leading-relaxed">{t("privacyLegalBasisDesc")}</p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-foreground">{t("privacyDataSharing" as any)}</h2>
-          <p className="text-sm text-muted-foreground leading-relaxed">{t("privacyDataSharingDesc" as any)}</p>
+          <h2 className="text-lg font-bold text-foreground">{t("privacyDataSharing")}</h2>
+          <p className="text-sm text-muted-foreground leading-relaxed">{t("privacyDataSharingDesc")}</p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-foreground">{t("privacyRetention" as any)}</h2>
-          <p className="text-sm text-muted-foreground leading-relaxed">{t("privacyRetentionDesc" as any)}</p>
+          <h2 className="text-lg font-bold text-foreground">{t("privacyRetention")}</h2>
+          <p className="text-sm text-muted-foreground leading-relaxed">{t("privacyRetentionDesc")}</p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-foreground">{t("privacyYourRights" as any)}</h2>
+          <h2 className="text-lg font-bold text-foreground">{t("privacyYourRights")}</h2>
           <ul className="text-sm text-muted-foreground leading-relaxed list-disc pl-5 space-y-1">
-            <li>{t("privacyRight1" as any)}</li>
-            <li>{t("privacyRight2" as any)}</li>
-            <li>{t("privacyRight3" as any)}</li>
-            <li>{t("privacyRight4" as any)}</li>
-            <li>{t("privacyRight5" as any)}</li>
+            <li>{t("privacyRight1")}</li>
+            <li>{t("privacyRight2")}</li>
+            <li>{t("privacyRight3")}</li>
+            <li>{t("privacyRight4")}</li>
+            <li>{t("privacyRight5")}</li>
           </ul>
-          <p className="text-sm text-muted-foreground leading-relaxed">{t("privacyRightsHow" as any)}</p>
+          <p className="text-sm text-muted-foreground leading-relaxed">{t("privacyRightsHow")}</p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-foreground">{t("privacyCookies" as any)}</h2>
-          <p className="text-sm text-muted-foreground leading-relaxed">{t("privacyCookiesDesc" as any)}</p>
+          <h2 className="text-lg font-bold text-foreground">{t("privacyCookies")}</h2>
+          <p className="text-sm text-muted-foreground leading-relaxed">{t("privacyCookiesDesc")}</p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-foreground">{t("privacyContact" as any)}</h2>
-          <p className="text-sm text-muted-foreground leading-relaxed">{t("privacyContactDesc" as any)}</p>
+          <h2 className="text-lg font-bold text-foreground">{t("privacyContact")}</h2>
+          <p className="text-sm text-muted-foreground leading-relaxed">{t("privacyContactDesc")}</p>
           <p className="text-sm text-foreground font-medium">rashid3105@gmail.com</p>
         </section>
       </main>

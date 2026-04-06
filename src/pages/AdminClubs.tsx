@@ -54,7 +54,7 @@ export default function AdminClubs() {
     try {
       const { error } = await supabase.from("clubs" as any).update({ max_athletes: newMax } as any).eq("id", clubId);
       if (error) throw error;
-      toast({ title: t("clubUpdated" as any) });
+      toast({ title: t("clubUpdated") });
     } catch (err: any) {
       toast({ title: t("error"), description: err.message, variant: "destructive" });
     }
@@ -68,7 +68,7 @@ export default function AdminClubs() {
       const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
       const { error } = await supabase.from("clubs" as any).insert({ name, slug, max_athletes: newClubMax } as any);
       if (error) throw error;
-      toast({ title: t("clubCreated" as any) || "Club created" });
+      toast({ title: t("clubCreated") || "Club created" });
       setNewClubName("");
       setNewClubMax(5);
       await loadClubs();
@@ -99,22 +99,22 @@ export default function AdminClubs() {
         </div>
 
         <h1 className="text-xl font-extrabold text-foreground flex items-center gap-2">
-          <Building className="h-5 w-5" /> {t("clubManagement" as any)}
+          <Building className="h-5 w-5" /> {t("clubManagement")}
         </h1>
 
         {/* Create new club */}
         <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
-          <h2 className="text-sm font-semibold text-foreground">{t("addClub" as any) || "Add new club"}</h2>
+          <h2 className="text-sm font-semibold text-foreground">{t("addClub") || "Add new club"}</h2>
           <div className="flex flex-col sm:flex-row gap-2">
             <Input
-              placeholder={t("clubName" as any) || "Club name"}
+              placeholder={t("clubName") || "Club name"}
               value={newClubName}
               onChange={(e) => setNewClubName(e.target.value)}
               className="flex-1"
               onKeyDown={(e) => e.key === "Enter" && createClub()}
             />
             <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground whitespace-nowrap">{t("maxAthletes" as any)}:</span>
+              <span className="text-xs text-muted-foreground whitespace-nowrap">{t("maxAthletes")}:</span>
               <Input
                 type="number"
                 min={1}
@@ -125,7 +125,7 @@ export default function AdminClubs() {
               />
               <Button size="sm" onClick={createClub} disabled={creating || !newClubName.trim()}>
                 {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4 mr-1" />}
-                {t("add" as any) || "Add"}
+                {t("add") || "Add"}
               </Button>
             </div>
           </div>
@@ -136,7 +136,7 @@ export default function AdminClubs() {
             <div key={club.id} className="rounded-lg border border-border bg-card p-4 flex items-center justify-between gap-3">
               <span className="text-sm font-medium text-foreground truncate">{club.name}</span>
               <div className="flex items-center gap-2 shrink-0">
-                <span className="text-[10px] text-muted-foreground whitespace-nowrap">{t("maxAthletes" as any)}:</span>
+                <span className="text-[10px] text-muted-foreground whitespace-nowrap">{t("maxAthletes")}:</span>
                 <Input
                   type="number"
                   min={1}

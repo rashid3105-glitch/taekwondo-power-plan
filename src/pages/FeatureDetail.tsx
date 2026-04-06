@@ -264,7 +264,7 @@ const FeatureDetail = () => {
                 {t("getStarted")} <ArrowRight className="h-4 w-4 ml-1.5" />
               </Button>
               <Button onClick={() => navigate("/pricing")} size="lg" variant="outline" className="px-8 font-semibold">
-                {t("viewPricing" as any)}
+                {t("viewPricing")}
               </Button>
             </div>
           </div>

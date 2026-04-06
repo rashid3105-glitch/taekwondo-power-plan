@@ -105,7 +105,7 @@ export function TestLibrary() {
             }`}
           >
             {f === "coach" ? <Users className="h-3.5 w-3.5" /> : f === "individual" ? <User className="h-3.5 w-3.5" /> : <ClipboardList className="h-3.5 w-3.5" />}
-            {f === "all" ? t("ptFilterAll" as any) : f === "individual" ? t("ptIndividualTest" as any) : t("ptCoachTest" as any)}
+            {f === "all" ? t("ptFilterAll") : f === "individual" ? t("ptIndividualTest") : t("ptCoachTest")}
           </button>
         ))}
       </div>
@@ -119,7 +119,7 @@ export function TestLibrary() {
           <div key={cat}>
             <div className="flex items-center gap-2 mb-3">
               <Icon className="h-5 w-5 text-primary" />
-              <h2 className="text-base font-bold text-foreground">{t(`ptCat_${cat}` as any)}</h2>
+              <h2 className="text-base font-bold text-foreground">{t(`ptCat_${cat}`)}</h2>
               <Badge variant="secondary" className="text-[10px]">{catTests.length}</Badge>
             </div>
 
@@ -156,8 +156,8 @@ export function TestLibrary() {
                           <Youtube className="h-4 w-4 text-destructive" />
                         </a>
                         <Badge variant="outline" className="text-[10px]">
-                          {test.type === "both" ? t("ptFilterAll" as any) :
-                           test.type === "coach" ? t("ptCoachTest" as any) : t("ptIndividualTest" as any)}
+                          {test.type === "both" ? t("ptFilterAll") :
+                           test.type === "coach" ? t("ptCoachTest") : t("ptIndividualTest")}
                         </Badge>
                         {isExpanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
                       </div>
@@ -165,11 +165,11 @@ export function TestLibrary() {
                     {isExpanded && (
                       <div className="border-t border-border px-4 pb-4 pt-3 space-y-2">
                         <div>
-                          <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{t("ptUnit" as any)}</span>
+                          <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{t("ptUnit")}</span>
                           <p className="text-sm text-foreground font-mono">{test.unit}</p>
                         </div>
                         <div>
-                          <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{t("ptProtocol" as any)}</span>
+                          <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{t("ptProtocol")}</span>
                           <p className="text-sm text-foreground leading-relaxed">{test.protocol[locale] || test.protocol.en}</p>
                         </div>
                       </div>

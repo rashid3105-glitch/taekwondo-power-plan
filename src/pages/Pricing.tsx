@@ -53,8 +53,8 @@ export default function Pricing() {
         </div>
 
         <div className="text-center space-y-2">
-          <h1 className="text-3xl font-extrabold text-foreground">{t("pricingTitle" as any)}</h1>
-          <p className="text-muted-foreground max-w-lg mx-auto">{t("pricingSubtitle" as any)}</p>
+          <h1 className="text-3xl font-extrabold text-foreground">{t("pricingTitle")}</h1>
+          <p className="text-muted-foreground max-w-lg mx-auto">{t("pricingSubtitle")}</p>
         </div>
 
         {/* Billing cycle toggle */}
@@ -67,7 +67,7 @@ export default function Pricing() {
             }`}
             onClick={() => setBillingCycle("monthly")}
           >
-            {t("pricingMonthly" as any)}
+            {t("pricingMonthly")}
           </button>
           <button
             className={`px-4 py-2 rounded-r-lg text-sm font-medium transition-colors relative ${
@@ -77,9 +77,9 @@ export default function Pricing() {
             }`}
             onClick={() => setBillingCycle("yearly")}
           >
-            {t("pricingYearly" as any)}
+            {t("pricingYearly")}
             <Badge variant="secondary" className="absolute -top-2.5 -right-3 text-[9px] px-1.5 py-0 bg-emerald-500 text-white border-0">
-              {t("pricingYearlySave" as any)}
+              {t("pricingYearlySave")}
             </Badge>
           </button>
         </div>
@@ -98,7 +98,7 @@ export default function Pricing() {
               >
                 {isCoach && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-0.5 text-xs font-bold text-primary-foreground">
-                    {t("pricingPopular" as any)}
+                    {t("pricingPopular")}
                   </div>
                 )}
                 <CardHeader className="text-center pb-2">
@@ -106,9 +106,9 @@ export default function Pricing() {
                     <Icon className="h-6 w-6 text-primary" />
                   </div>
                   <CardTitle className="text-lg">
-                    {t(`pricingTier${tier.key.charAt(0).toUpperCase() + tier.key.slice(1)}` as any)}
+                    {t(`pricingTier${tier.key.charAt(0).toUpperCase() + tier.key.slice(1)}`)}
                   </CardTitle>
-                  <CardDescription>{t(`pricingTier${tier.key.charAt(0).toUpperCase() + tier.key.slice(1)}Desc` as any)}</CardDescription>
+                  <CardDescription>{t(`pricingTier${tier.key.charAt(0).toUpperCase() + tier.key.slice(1)}Desc`)}</CardDescription>
                 </CardHeader>
                 <CardContent className="flex-1 space-y-4">
                   <div className="text-center">
@@ -128,7 +128,7 @@ export default function Pricing() {
                     <Button variant="outline" className="w-full" asChild>
                       <a href="mailto:info@sportstalent.dk">
                         <Mail className="h-4 w-4 mr-2" />
-                        {t("pricingContactUs" as any)}
+                        {t("pricingContactUs")}
                       </a>
                     </Button>
                   ) : (
@@ -151,8 +151,8 @@ export default function Pricing() {
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary">
               <span className="text-lg font-bold text-primary">PP</span>
             </div>
-            <h3 className="font-bold text-foreground">{t("pricingPaymentTitle" as any)}</h3>
-            <p className="text-sm text-muted-foreground max-w-md">{t("pricingPaymentDesc" as any)}</p>
+            <h3 className="font-bold text-foreground">{t("pricingPaymentTitle")}</h3>
+            <p className="text-sm text-muted-foreground max-w-md">{t("pricingPaymentDesc")}</p>
           </CardContent>
         </Card>
       </div>
@@ -162,7 +162,7 @@ export default function Pricing() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>{t("getStarted")}</DialogTitle>
-            <DialogDescription>{t("pricingDialogDesc" as any)}</DialogDescription>
+            <DialogDescription>{t("pricingDialogDesc")}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 pt-2">
             {/* Request Demo */}
@@ -176,8 +176,8 @@ export default function Pricing() {
             >
               <FlaskConical className="h-5 w-5 text-primary shrink-0" />
               <div className="text-left">
-                <p className="font-semibold text-sm">{t("requestDemo" as any)}</p>
-                <p className="text-xs text-muted-foreground">{t("requestDemoDesc" as any)}</p>
+                <p className="font-semibold text-sm">{t("requestDemo")}</p>
+                <p className="text-xs text-muted-foreground">{t("requestDemoDesc")}</p>
               </div>
             </Button>
 

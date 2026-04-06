@@ -294,20 +294,20 @@ export default function AdminApproval() {
       updateData.payment_date = null;
     }
     await supabase.from("profiles").update(updateData).eq("user_id", userId);
-    toast({ title: newStatus === "paid" ? t("markedAsPaid" as any) : t("markedAsUnpaid" as any) });
+    toast({ title: newStatus === "paid" ? t("markedAsPaid") : t("markedAsUnpaid") });
     loadUsers();
   };
 
   const setPaymentDate = async (userId: string, date: Date | undefined) => {
     if (!date) return;
     await supabase.from("profiles").update({ payment_date: format(date, "yyyy-MM-dd"), payment_status: "paid" } as any).eq("user_id", userId);
-    toast({ title: t("paymentDateUpdated" as any) });
+    toast({ title: t("paymentDateUpdated") });
     loadUsers();
   };
 
   const toggleDemo = async (userId: string, currentlyDemo: boolean) => {
     await supabase.from("profiles").update({ is_demo: !currentlyDemo } as any).eq("user_id", userId);
-    toast({ title: !currentlyDemo ? t("markedAsDemo" as any) : t("demoRemoved" as any) });
+    toast({ title: !currentlyDemo ? t("markedAsDemo") : t("demoRemoved") });
     loadUsers();
   };
 
@@ -437,12 +437,12 @@ export default function AdminApproval() {
                 <p className={`font-medium text-sm ${u.is_approved ? 'text-foreground' : 'text-yellow-400'}`}>{u.display_name || t("noName")}</p>
                 {u.payment_status === "paid" && (
                   <Badge variant="default" className="text-[10px] h-5">
-                    <CreditCard className="h-2.5 w-2.5 mr-0.5" /> {t("paid" as any)}
+                    <CreditCard className="h-2.5 w-2.5 mr-0.5" /> {t("paid")}
                   </Badge>
                 )}
                 {u.is_demo && (
                   <Badge variant="secondary" className="text-[10px] h-5">
-                    <FlaskConical className="h-2.5 w-2.5 mr-0.5" /> {t("demo" as any)}
+                    <FlaskConical className="h-2.5 w-2.5 mr-0.5" /> {t("demo")}
                   </Badge>
                 )}
                 {u.isCoach && (
@@ -530,7 +530,7 @@ export default function AdminApproval() {
           <div className="flex flex-wrap items-center gap-3 pt-1 border-t border-border mt-2">
             <div className="flex items-center gap-2">
               <CreditCard className="h-3 w-3 text-muted-foreground" />
-              <span className="text-[10px] text-muted-foreground">{t("paid" as any)}</span>
+              <span className="text-[10px] text-muted-foreground">{t("paid")}</span>
               <Switch
                 checked={u.payment_status === "paid"}
                 onCheckedChange={() => togglePayment(u.user_id, u.payment_status)}
@@ -542,7 +542,7 @@ export default function AdminApproval() {
                 <PopoverTrigger asChild>
                   <Button variant="outline" size="sm" className="h-6 text-[10px] gap-1">
                     <CalendarIcon className="h-3 w-3" />
-                    {u.payment_date ? format(new Date(u.payment_date), "dd/MM/yyyy") : t("setDate" as any)}
+                    {u.payment_date ? format(new Date(u.payment_date), "dd/MM/yyyy") : t("setDate")}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -557,7 +557,7 @@ export default function AdminApproval() {
             )}
             <div className="flex items-center gap-2">
               <FlaskConical className="h-3 w-3 text-muted-foreground" />
-              <span className="text-[10px] text-muted-foreground">{t("demo" as any)}</span>
+              <span className="text-[10px] text-muted-foreground">{t("demo")}</span>
               <Switch
                 checked={u.is_demo}
                 onCheckedChange={() => toggleDemo(u.user_id, u.is_demo)}
@@ -581,7 +581,7 @@ export default function AdminApproval() {
             )}
             {u.is_demo && u.payment_status !== "paid" && (
               <span className="text-[10px] text-destructive font-medium">
-                {t("demoExpires14Days" as any)}
+                {t("demoExpires14Days")}
               </span>
             )}
           </div>
@@ -679,7 +679,7 @@ export default function AdminApproval() {
                       redirectTo: `${window.location.origin}/reset-password`,
                     });
                     if (error) throw error;
-                    toast({ title: t("resetPasswordSent" as any) || "Password reset email sent", description: u.email });
+                    toast({ title: t("resetPasswordSent") || "Password reset email sent", description: u.email });
                   } catch (err: any) {
                     toast({ title: t("error"), description: err.message, variant: "destructive" });
                   } finally {
@@ -692,7 +692,7 @@ export default function AdminApproval() {
                 ) : (
                   <KeyRound className="h-3 w-3 mr-1" />
                 )}
-                {t("resetPassword" as any) || "Reset Password"}
+                {t("resetPassword") || "Reset Password"}
               </Button>
             )}
             {showRevoke && (
@@ -736,10 +736,10 @@ export default function AdminApproval() {
             <Shield className="h-4 w-4 mr-1" /> {t("coachDashboard")}
           </Button>
           <Button variant="outline" size="sm" onClick={() => navigate("/admin/payments")}>
-            <CreditCard className="h-4 w-4 mr-1" /> {t("adminPayments" as any) || "Payments"}
+            <CreditCard className="h-4 w-4 mr-1" /> {t("adminPayments") || "Payments"}
           </Button>
           <Button variant="outline" size="sm" onClick={() => navigate("/admin/clubs")}>
-            <Building className="h-4 w-4 mr-1" /> {t("clubManagement" as any)}
+            <Building className="h-4 w-4 mr-1" /> {t("clubManagement")}
           </Button>
         </div>
 
@@ -835,7 +835,7 @@ export default function AdminApproval() {
                         {group.clubName}
                       </h3>
                       <Badge variant={isNoClub ? "outline" : atCapacity ? "destructive" : "secondary"} className="text-[10px]">
-                        {group.users.length}{club ? ` / ${club.max_athletes}` : ""} {t("athletes" as any) || "athletes"}
+                        {group.users.length}{club ? ` / ${club.max_athletes}` : ""} {t("athletes") || "athletes"}
                       </Badge>
                     </div>
                     <div className="space-y-3">

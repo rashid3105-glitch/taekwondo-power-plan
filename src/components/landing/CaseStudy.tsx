@@ -25,14 +25,14 @@ export const CaseStudy = () => {
         <span className="inline-flex items-center gap-1.5 rounded-full border border-speed/30 bg-speed/10 px-3 py-1 mb-4">
           <Target className="h-3 w-3 text-speed" />
           <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-speed">
-            {t("caseStudyBadge" as any)}
+            {t("caseStudyBadge")}
           </span>
         </span>
         <h2 className="text-2xl sm:text-3xl font-black tracking-tighter text-foreground leading-tight">
-          {t("caseHeadline" as any)}
+          {t("caseHeadline")}
         </h2>
         <p className="mt-2 text-sm text-muted-foreground max-w-lg mx-auto">
-          {t("caseSubheadline" as any)}
+          {t("caseSubheadline")}
         </p>
       </motion.div>
 
@@ -49,18 +49,18 @@ export const CaseStudy = () => {
             <Shield className="h-4 w-4 text-energy" />
           </div>
           <div>
-            <p className="text-sm font-bold text-foreground">{t("caseAthleteName" as any)}</p>
-            <p className="text-[11px] text-muted-foreground">{t("caseAthleteInfo" as any)}</p>
+            <p className="text-sm font-bold text-foreground">{t("caseAthleteName")}</p>
+            <p className="text-[11px] text-muted-foreground">{t("caseAthleteInfo")}</p>
           </div>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
           {[
-            { label: t("caseProfileAge" as any), value: "19" },
-            { label: t("caseProfileLevel" as any), value: t("caseProfileLevelVal" as any) },
-            { label: t("caseProfileFreq" as any), value: t("caseProfileFreqVal" as any) },
-            { label: t("caseProfileWeeks" as any), value: "7" },
-            { label: t("caseProfilePrevSC" as any), value: t("caseProfilePrevSCVal" as any) },
+            { label: t("caseProfileAge"), value: "19" },
+            { label: t("caseProfileLevel"), value: t("caseProfileLevelVal") },
+            { label: t("caseProfileFreq"), value: t("caseProfileFreqVal") },
+            { label: t("caseProfileWeeks"), value: "7" },
+            { label: t("caseProfilePrevSC"), value: t("caseProfilePrevSCVal") },
           ].map((item) => (
             <div key={item.label} className="rounded-lg bg-secondary/60 border border-border/40 p-3 text-center">
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1">{item.label}</p>
@@ -70,7 +70,7 @@ export const CaseStudy = () => {
         </div>
 
         <p className="mt-3 text-[10px] text-muted-foreground/60 italic text-right">
-          {t("caseNameNote" as any)}
+          {t("caseNameNote")}
         </p>
       </motion.div>
 
@@ -83,7 +83,7 @@ export const CaseStudy = () => {
         className="rounded-xl border border-destructive/20 bg-destructive/5 p-5 sm:p-6 mb-6"
       >
         <h3 className="text-xs font-bold uppercase tracking-wider text-destructive mb-3 flex items-center gap-1.5">
-          <Clock className="h-3.5 w-3.5" /> {t("caseBefore" as any)}
+          <Clock className="h-3.5 w-3.5" /> {t("caseBefore")}
         </h3>
         <ul className="space-y-2">
           {["caseProblem1", "caseProblem2", "caseProblem3", "caseProblem4"].map((key) => (
@@ -104,7 +104,7 @@ export const CaseStudy = () => {
         className="rounded-xl border border-energy/20 bg-energy/5 p-5 sm:p-6 mb-6"
       >
         <h3 className="text-xs font-bold uppercase tracking-wider text-energy mb-3 flex items-center gap-1.5">
-          <Zap className="h-3.5 w-3.5" /> {t("caseIntervention" as any)}
+          <Zap className="h-3.5 w-3.5" /> {t("caseIntervention")}
         </h3>
         <ul className="space-y-2">
           {["caseChange1", "caseChange2", "caseChange3", "caseChange4"].map((key) => (
@@ -144,7 +144,7 @@ export const CaseStudy = () => {
           ))}
         </div>
         <p className="mt-2 text-[9px] text-muted-foreground/50 text-center italic">
-          {t("caseMethodNote" as any)}
+          {t("caseMethodNote")}
         </p>
       </motion.div>
 
@@ -158,10 +158,10 @@ export const CaseStudy = () => {
       >
         <Quote className="h-6 w-6 text-energy/30 absolute top-4 right-4" />
         <p className="text-sm text-foreground/90 italic leading-relaxed pr-8">
-          "{t("caseQuote" as any)}"
+          "{t("caseQuote")}"
         </p>
         <p className="mt-3 text-[11px] text-muted-foreground font-semibold">
-          — {t("caseAthleteName" as any)}, {t("caseAthleteInfo" as any)}
+          — {t("caseAthleteName")}, {t("caseAthleteInfo")}
         </p>
       </motion.div>
     </section>

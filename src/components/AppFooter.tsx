@@ -14,7 +14,7 @@ export const AppFooter = () => {
       </p>
       <p className="text-center">
         <Link to="/privacy" className="text-[10px] text-muted-foreground/50 hover:text-muted-foreground underline">
-          {t("privacyPolicy" as any)}
+          {t("privacyPolicy")}
         </Link>
       </p>
     </footer>

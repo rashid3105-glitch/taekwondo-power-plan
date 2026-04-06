@@ -78,14 +78,14 @@ export default function AdminPayments() {
       updateData.payment_date = null;
     }
     await supabase.from("profiles").update(updateData).eq("user_id", userId);
-    toast({ title: newStatus === "paid" ? t("markedAsPaid" as any) : t("markedAsUnpaid" as any) });
+    toast({ title: newStatus === "paid" ? t("markedAsPaid") : t("markedAsUnpaid") });
     loadUsers();
   };
 
   const setPaymentDate = async (userId: string, date: Date | undefined) => {
     if (!date) return;
     await supabase.from("profiles").update({ payment_date: format(date, "yyyy-MM-dd"), payment_status: "paid" } as any).eq("user_id", userId);
-    toast({ title: t("paymentDateUpdated" as any) });
+    toast({ title: t("paymentDateUpdated") });
     loadUsers();
   };
 
@@ -126,7 +126,7 @@ export default function AdminPayments() {
             </Button>
             <CreditCard className="h-5 w-5 text-primary" />
             <span className="text-sm sm:text-base font-extrabold text-foreground">
-              {t("adminPayments" as any) || "Payment Management"}
+              {t("adminPayments") || "Payment Management"}
             </span>
           </div>
         </div>
@@ -136,10 +136,10 @@ export default function AdminPayments() {
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { label: t("total" as any) || "Total", value: stats.total, color: "text-foreground" },
-            { label: t("paid" as any), value: stats.paid, color: "text-emerald-500" },
-            { label: t("unpaid" as any), value: stats.unpaid, color: "text-destructive" },
-            { label: t("demo" as any), value: stats.demo, color: "text-primary" },
+            { label: t("total") || "Total", value: stats.total, color: "text-foreground" },
+            { label: t("paid"), value: stats.paid, color: "text-emerald-500" },
+            { label: t("unpaid"), value: stats.unpaid, color: "text-destructive" },
+            { label: t("demo"), value: stats.demo, color: "text-primary" },
           ].map((s) => (
             <div key={s.label} className="rounded-lg border border-border bg-card p-3 text-center">
               <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
@@ -155,7 +155,7 @@ export default function AdminPayments() {
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder={t("searchUsers" as any) || "Search by name or email..."}
+              placeholder={t("searchUsers") || "Search by name or email..."}
               className="pl-9"
             />
           </div>
@@ -164,10 +164,10 @@ export default function AdminPayments() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{t("all" as any) || "All"}</SelectItem>
-              <SelectItem value="paid">{t("paid" as any)}</SelectItem>
-              <SelectItem value="unpaid">{t("unpaid" as any)}</SelectItem>
-              <SelectItem value="demo">{t("demo" as any)}</SelectItem>
+              <SelectItem value="all">{t("all") || "All"}</SelectItem>
+              <SelectItem value="paid">{t("paid")}</SelectItem>
+              <SelectItem value="unpaid">{t("unpaid")}</SelectItem>
+              <SelectItem value="demo">{t("demo")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -177,7 +177,7 @@ export default function AdminPayments() {
           {filtered.length === 0 ? (
             <div className="rounded-lg border border-border bg-card p-8 text-center">
               <Users className="h-6 w-6 text-muted-foreground mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground">{t("noResults" as any) || "No users found"}</p>
+              <p className="text-sm text-muted-foreground">{t("noResults") || "No users found"}</p>
             </div>
           ) : (
             filtered.map((u) => (
@@ -188,7 +188,7 @@ export default function AdminPayments() {
                       <p className="font-medium text-sm text-foreground truncate">{u.display_name || "—"}</p>
                       {u.payment_status === "paid" && (
                         <Badge variant="default" className="text-[10px] h-5 bg-emerald-500">
-                          <CreditCard className="h-2.5 w-2.5 mr-0.5" /> {t("paid" as any)}
+                          <CreditCard className="h-2.5 w-2.5 mr-0.5" /> {t("paid")}
                         </Badge>
                       )}
                       {u.is_demo && u.payment_status !== "paid" && (
@@ -204,7 +204,7 @@ export default function AdminPayments() {
                   <div className="flex items-center gap-3 flex-shrink-0">
                     {/* Payment toggle */}
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] text-muted-foreground">{t("paid" as any)}</span>
+                      <span className="text-[10px] text-muted-foreground">{t("paid")}</span>
                       <Switch
                         checked={u.payment_status === "paid"}
                         onCheckedChange={() => togglePayment(u.user_id, u.payment_status)}
@@ -218,7 +218,7 @@ export default function AdminPayments() {
                         <PopoverTrigger asChild>
                           <Button variant="outline" size="sm" className="h-7 text-[10px] gap-1">
                             <CalendarIcon className="h-3 w-3" />
-                            {u.payment_date ? format(new Date(u.payment_date), "dd/MM/yy") : t("setDate" as any)}
+                            {u.payment_date ? format(new Date(u.payment_date), "dd/MM/yy") : t("setDate")}
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="end">
