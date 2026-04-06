@@ -188,6 +188,27 @@ export default function ProfileSetup() {
 
       if (error) throw error;
       toast({ title: t("profileSaved") });
+
+      // Notify admin if user is pending approval
+      try {
+        const { data: protectedFields } = await supabase.rpc("get_profile_protected_fields", { _user_id: user.id });
+        const pf = Array.isArray(protectedFields) ? protectedFields[0] : protectedFields;
+        if (pf && !pf.is_approved) {
+          await supabase.functions.invoke("send-transactional-email", {
+            body: {
+              templateName: "coach-profile-ready",
+              templateData: {
+                userName: user.user_metadata?.display_name || user.email,
+                userEmail: user.email,
+                belt,
+                discipline,
+              },
+            },
+          });
+        }
+      } catch {
+        // Non-critical — don't block the user
+      }
     } catch (err: any) {
       toast({ title: t("error"), description: err.message, variant: "destructive" });
     } finally {
