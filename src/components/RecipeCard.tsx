@@ -36,7 +36,7 @@ export function RecipeCard({ recipe, index }: { recipe: Recipe; index: number })
           {/* Meta */}
           <div className="flex items-center gap-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> {recipe.prepTime}</span>
-            <span>{t(CATEGORY_KEYS[recipe.category] as any)}</span>
+            <span>{t(CATEGORY_KEYS[recipe.category])}</span>
           </div>
 
           {/* Macros */}

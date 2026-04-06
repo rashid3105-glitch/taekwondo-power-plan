@@ -417,7 +417,7 @@ export default function CoachDashboard() {
                     </SelectTrigger>
                     <SelectContent>
                       {["white", "yellow", "green", "blue", "red", "black"].map((b) => (
-                        <SelectItem key={b} value={b}>{t(b as any)}</SelectItem>
+                        <SelectItem key={b} value={b}>{t(b)}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -568,7 +568,7 @@ export default function CoachDashboard() {
                       <div className="flex flex-wrap gap-1 mt-1.5">
                         {a.goals.map((g) => (
                           <span key={g} className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                            {t(g as any) || g}
+                            {t(g) || g}
                           </span>
                         ))}
                       </div>
@@ -703,7 +703,7 @@ export default function CoachDashboard() {
                     <div className="flex flex-wrap gap-1 mt-1.5">
                       {a.goals.map((g) => (
                         <span key={g} className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                          {t(g as any) || g}
+                          {t(g) || g}
                         </span>
                       ))}
                     </div>

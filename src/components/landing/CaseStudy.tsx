@@ -89,7 +89,7 @@ export const CaseStudy = () => {
           {["caseProblem1", "caseProblem2", "caseProblem3", "caseProblem4"].map((key) => (
             <li key={key} className="flex items-start gap-2 text-xs text-muted-foreground leading-relaxed">
               <span className="mt-1 h-1.5 w-1.5 rounded-full bg-destructive/60 flex-shrink-0" />
-              {t(key as any)}
+              {t(key)}
             </li>
           ))}
         </ul>
@@ -110,7 +110,7 @@ export const CaseStudy = () => {
           {["caseChange1", "caseChange2", "caseChange3", "caseChange4"].map((key) => (
             <li key={key} className="flex items-start gap-2 text-xs text-foreground/80 leading-relaxed">
               <span className="mt-1 h-1.5 w-1.5 rounded-full bg-energy/60 flex-shrink-0" />
-              {t(key as any)}
+              {t(key)}
             </li>
           ))}
         </ul>
@@ -136,7 +136,7 @@ export const CaseStudy = () => {
             >
               <m.icon className="h-4 w-4 text-speed mx-auto mb-2" />
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1">
-                {t(m.label as any)}
+                {t(m.label)}
               </p>
               <p className="text-lg font-black text-foreground">{m.after}</p>
               <p className="text-[10px] text-speed font-bold">{m.change}</p>

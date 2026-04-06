@@ -112,13 +112,13 @@ export default function Pricing() {
                 </CardHeader>
                 <CardContent className="flex-1 space-y-4">
                   <div className="text-center">
-                    <span className="text-3xl font-extrabold text-foreground">{t(priceKey as any)}</span>
+                    <span className="text-3xl font-extrabold text-foreground">{t(priceKey)}</span>
                   </div>
                   <ul className="space-y-2">
                     {tier.features.map((featureKey) => (
                       <li key={featureKey} className="flex items-start gap-2 text-sm text-muted-foreground">
                         <Check className="h-4 w-4 mt-0.5 text-primary shrink-0" />
-                        <span>{t(featureKey as any)}</span>
+                        <span>{t(featureKey)}</span>
                       </li>
                     ))}
                   </ul>

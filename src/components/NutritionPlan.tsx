@@ -264,7 +264,7 @@ export function NutritionPlan({ profile, readOnly = false }: NutritionPlanProps)
                   data-[active=true]:bg-primary data-[active=true]:text-primary-foreground
                   data-[active=false]:text-muted-foreground hover:text-foreground"
               >
-                {t(goal as any) || goal}
+                {t(goal) || goal}
               </button>
             ))}
           </div>

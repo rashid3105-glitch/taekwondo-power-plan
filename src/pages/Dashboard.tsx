@@ -90,7 +90,7 @@ export default function Dashboard() {
         <Lock className="h-5 w-5 text-muted-foreground" />
       </div>
       <div className="space-y-2">
-        <h3 className="font-bold text-foreground">{t(featureKey as any)}</h3>
+        <h3 className="font-bold text-foreground">{t(featureKey)}</h3>
         <p className="text-sm text-muted-foreground">{t("demoLockedFeatureDesc")}</p>
         <p className="text-sm text-foreground">{t("demoUpgradePrompt")}</p>
       </div>
@@ -458,8 +458,8 @@ export default function Dashboard() {
                         {section.locked && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
                       </div>
                       <div className="space-y-1.5">
-                        <h3 className="text-sm font-bold text-foreground tracking-tight">{t(section.titleKey as any)}</h3>
-                        <p className="text-xs leading-relaxed text-muted-foreground">{t(section.descKey as any)}</p>
+                        <h3 className="text-sm font-bold text-foreground tracking-tight">{t(section.titleKey)}</h3>
+                        <p className="text-xs leading-relaxed text-muted-foreground">{t(section.descKey)}</p>
                         {section.locked && <p className="text-xs font-medium text-foreground">{t("demoUpgradePrompt")}</p>}
                       </div>
                     </div>
@@ -648,7 +648,7 @@ export default function Dashboard() {
                         <div className="flex flex-wrap gap-1 mt-2">
                           {profile.goals.map((g) => (
                             <span key={g} className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                              {t(g as any) || g}
+                              {t(g) || g}
                             </span>
                           ))}
                         </div>

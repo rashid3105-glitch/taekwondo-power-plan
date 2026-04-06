@@ -517,7 +517,7 @@ export default function AdminApproval() {
             <div className="flex flex-wrap gap-1">
               {u.goals.map((g) => (
                 <span key={g} className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                  {t(g as any) || g}
+                  {t(g) || g}
                 </span>
               ))}
             </div>

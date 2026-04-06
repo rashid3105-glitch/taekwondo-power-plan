@@ -323,7 +323,7 @@ export default function ProfileSetup() {
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {BELT_LEVELS.map((b) => (
-                  <option key={b} value={b}>{t(b as any)} {t("belt")}</option>
+                  <option key={b} value={b}>{t(b)} {t("belt")}</option>
                 ))}
               </select>
             </div>
@@ -347,7 +347,7 @@ export default function ProfileSetup() {
                     data-[active=true]:bg-primary data-[active=true]:text-primary-foreground data-[active=true]:border-primary
                     data-[active=false]:text-muted-foreground hover:text-foreground"
                 >
-                  {t(d as any)}
+                  {t(d)}
                 </button>
               ))}
             </div>
@@ -392,7 +392,7 @@ export default function ProfileSetup() {
                     data-[active=true]:bg-primary data-[active=true]:text-primary-foreground
                     data-[active=false]:text-muted-foreground hover:text-foreground"
                 >
-                  {t(goal as any)}
+                  {t(goal)}
                 </button>
               ))}
             </div>

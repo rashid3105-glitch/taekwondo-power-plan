@@ -122,7 +122,7 @@ export default function Methodology() {
   const navigate = useNavigate();
   const { t, locale } = useLanguage();
 
-  const tt = (key: TranslationKey) => t(key as any);
+  const tt = (key: TranslationKey) => t(key);
 
   return (
     <div className="min-h-screen bg-background flex flex-col relative">
