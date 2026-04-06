@@ -1,4 +1,4 @@
-export type Locale = "en" | "da" | "sv";
+export type Locale = "en" | "da" | "sv" | "de";
 
 const translations = {
   en: {
