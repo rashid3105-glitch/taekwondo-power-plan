@@ -248,8 +248,8 @@ export default function ProfileSetup() {
               className="relative group cursor-pointer"
             >
               <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full border-2 border-border bg-muted overflow-hidden flex items-center justify-center transition-all group-hover:border-primary">
-                {avatarUrl ? (
-                  <img src={avatarUrl} alt="Profile" className="h-full w-full object-cover" />
+                {avatarDisplayUrl ? (
+                  <img src={avatarDisplayUrl} alt="Profile" className="h-full w-full object-cover" />
                 ) : (
                   <Camera className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
                 )}
