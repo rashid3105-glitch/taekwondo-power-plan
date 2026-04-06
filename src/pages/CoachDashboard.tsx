@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { CoachAthleteDetail } from "@/components/CoachAthleteDetail";
+import { AvatarImg } from "@/components/AvatarImg";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
@@ -502,13 +503,7 @@ export default function CoachDashboard() {
                   >
                     <div className="flex items-center justify-between gap-2 min-w-0">
                         <div className="flex items-center gap-3 min-w-0 flex-1">
-                        {a.avatar_url ? (
-                          <img src={a.avatar_url} alt="" className="h-10 w-10 rounded-full object-cover border-2 border-border" />
-                        ) : (
-                          <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center border-2 border-border">
-                            <User className="h-5 w-5 text-muted-foreground" />
-                          </div>
-                        )}
+                        <AvatarImg avatarUrl={a.avatar_url} />
                         <div className="min-w-0 flex-1">
                           <p className="font-medium text-sm text-foreground truncate">{a.display_name || t("noName")}</p>
                           {a.club_name && <p className="text-[10px] text-muted-foreground">{t("club")}: {a.club_name}</p>}
@@ -672,13 +667,7 @@ export default function CoachDashboard() {
                 >
                   <div className="flex items-center justify-between gap-2 min-w-0">
                     <div className="flex items-center gap-3 min-w-0 flex-1">
-                      {a.avatar_url ? (
-                        <img src={a.avatar_url} alt="" className="h-10 w-10 rounded-full object-cover border-2 border-border" />
-                      ) : (
-                        <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center border-2 border-border">
-                          <User className="h-5 w-5 text-muted-foreground" />
-                        </div>
-                      )}
+                      <AvatarImg avatarUrl={a.avatar_url} />
                       <div className="min-w-0 flex-1">
                         <p className="font-medium text-sm text-foreground truncate">{a.display_name || t("noName")}</p>
                         <p className="text-[10px] text-muted-foreground">{a.athlete_code}</p>
