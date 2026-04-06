@@ -1179,6 +1179,7 @@ const translations = {
     reminderUnread: "Ulæst",
 
     // Payment & Demo
+    paid: "Betalt",
     unpaid: "Ikke betalt",
     demo: "Demo",
     markedAsPaid: "Markeret som betalt",

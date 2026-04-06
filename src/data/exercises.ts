@@ -1359,7 +1359,7 @@ const exercisesData: Record<string, ExerciseBase> = {
   },
 };
 
-type Locale = "en" | "da" | "sv";
+type Locale = "en" | "da" | "sv" | "de";
 
 function resolveExercise(base: ExerciseBase, locale: Locale): Exercise {
   const effectiveLocale = (locale === "sv" ? "en" : locale) as "en" | "da";

@@ -40,6 +40,14 @@ export const MENTAL_CATEGORY_LABELS: Record<Locale, Record<MentalCategory, strin
     recovery: "Återhämtning",
     toughness: "Mental styrka",
   },
+  de: {
+    focus: "Fokus",
+    visualization: "Visualisierung",
+    breathing: "Atmung",
+    confidence: "Selbstvertrauen",
+    recovery: "Erholung",
+    toughness: "Mentale Stärke",
+  },
 };
 
 export const MENTAL_CATEGORY_ICONS: Record<MentalCategory, string> = {
@@ -55,6 +63,7 @@ export const MENTAL_DIFFICULTY_LABELS: Record<Locale, Record<MentalDifficulty, s
   en: { beginner: "Beginner", intermediate: "Intermediate", advanced: "Advanced" },
   da: { beginner: "Begynder", intermediate: "Mellem", advanced: "Avanceret" },
   sv: { beginner: "Nybörjare", intermediate: "Medel", advanced: "Avancerad" },
+  de: { beginner: "Anfänger", intermediate: "Fortgeschritten", advanced: "Profi" },
 };
 
 interface MentalExerciseData {
