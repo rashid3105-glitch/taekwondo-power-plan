@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Clock, LogOut } from "lucide-react";
+import { Clock, LogOut, User } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
@@ -25,7 +25,10 @@ export default function PendingApproval() {
         </div>
         <h1 className="text-xl font-extrabold text-foreground">{t("pendingApproval")}</h1>
         <p className="text-sm text-muted-foreground">{t("pendingApprovalDesc")}</p>
-        <Button variant="outline" onClick={handleSignOut} className="w-full">
+        <Button variant="outline" onClick={() => navigate("/profile-setup")} className="w-full">
+          <User className="h-4 w-4 mr-2" /> {t("athleteProfile")}
+        </Button>
+        <Button variant="ghost" onClick={handleSignOut} className="w-full">
           <LogOut className="h-4 w-4 mr-2" /> {t("signOut")}
         </Button>
       </div>
