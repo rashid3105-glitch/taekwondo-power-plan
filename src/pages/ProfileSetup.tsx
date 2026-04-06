@@ -56,6 +56,7 @@ export default function ProfileSetup() {
   const [programWeeks, setProgramWeeks] = useState(8);
   const [currentInjury, setCurrentInjury] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const avatarDisplayUrl = useAvatarUrl(avatarUrl);
   const [clubs, setClubs] = useState<ClubOption[]>([]);
   const [clubId, setClubId] = useState("");
   const [country, setCountry] = useState("");
