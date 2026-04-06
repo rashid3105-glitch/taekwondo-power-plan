@@ -482,7 +482,7 @@ export default function Dashboard() {
                   </div>
                   <div className="space-y-1.5">
                     <h3 className="text-sm font-bold text-foreground tracking-tight">{t("hubLibraryTitle")}</h3>
-                    <p className="text-xs leading-relaxed text-muted-foreground">{t((isDemo ? "demoLockedFeatureDesc" : "hubLibraryDesc") as any)}</p>
+                    <p className="text-xs leading-relaxed text-muted-foreground">{t(isDemo ? "demoLockedFeatureDesc" : "hubLibraryDesc")}</p>
                     {isDemo && <p className="text-xs font-medium text-foreground">{t("demoUpgradePrompt")}</p>}
                   </div>
                 </div>
