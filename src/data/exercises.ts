@@ -1359,10 +1359,10 @@ const exercisesData: Record<string, ExerciseBase> = {
   },
 };
 
-type Locale = "en" | "da" | "sv";
+type Locale = "en" | "da" | "sv" | "de";
 
 function resolveExercise(base: ExerciseBase, locale: Locale): Exercise {
-  const effectiveLocale = (locale === "sv" ? "en" : locale) as "en" | "da";
+  const effectiveLocale = (locale === "sv" || locale === "de" ? "en" : locale) as "en" | "da";
   const localized = base[effectiveLocale] || base.en;
   return {
     id: base.id,
@@ -1416,6 +1416,8 @@ export function getWeeklyPlan(locale: Locale = currentLocale): TrainingDay[] {
     ? { monday: "Mandag", tuesday: "Tirsdag", wednesday: "Onsdag", thursday: "Torsdag", friday: "Fredag", saturday: "Lørdag", sunday: "Søndag" }
     : locale === "sv"
     ? { monday: "Måndag", tuesday: "Tisdag", wednesday: "Onsdag", thursday: "Torsdag", friday: "Fredag", saturday: "Lördag", sunday: "Söndag" }
+    : locale === "de"
+    ? { monday: "Montag", tuesday: "Dienstag", wednesday: "Mittwoch", thursday: "Donnerstag", friday: "Freitag", saturday: "Samstag", sunday: "Sonntag" }
     : { monday: "Monday", tuesday: "Tuesday", wednesday: "Wednesday", thursday: "Thursday", friday: "Friday", saturday: "Saturday", sunday: "Sunday" };
 
   return [
