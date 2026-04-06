@@ -305,7 +305,7 @@ export function SamplePlanPreview() {
       className="gap-1.5 text-xs font-semibold"
     >
       <Eye className="h-3.5 w-3.5" />
-      {t("samplePlanCTA" as any)}
+      {t("samplePlanCTA")}
     </Button>
   );
 
@@ -316,7 +316,7 @@ export function SamplePlanPreview() {
         <Drawer open={open} onOpenChange={setOpen}>
           <DrawerContent className="max-h-[90vh]">
             <DrawerHeader>
-              <DrawerTitle>{t("samplePlanTitle" as any)}</DrawerTitle>
+              <DrawerTitle>{t("samplePlanTitle")}</DrawerTitle>
             </DrawerHeader>
             <div className="overflow-y-auto px-4 pb-6">{content}</div>
           </DrawerContent>
@@ -331,7 +331,7 @@ export function SamplePlanPreview() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{t("samplePlanTitle" as any)}</DialogTitle>
+            <DialogTitle>{t("samplePlanTitle")}</DialogTitle>
           </DialogHeader>
           {content}
         </DialogContent>

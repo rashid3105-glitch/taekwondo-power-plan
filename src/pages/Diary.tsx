@@ -96,7 +96,7 @@ export default function Diary() {
 
   const handleSave = async () => {
     if (!content.trim()) {
-      toast({ title: t("error"), description: t("diaryContentRequired" as any), variant: "destructive" });
+      toast({ title: t("error"), description: t("diaryContentRequired"), variant: "destructive" });
       return;
     }
     const { data: { user } } = await supabase.auth.getUser();
@@ -114,11 +114,11 @@ export default function Diary() {
     if (editingId) {
       const { error } = await supabase.from("diary_entries" as any).update(payload as any).eq("id", editingId);
       if (error) { toast({ title: t("error"), description: error.message, variant: "destructive" }); return; }
-      toast({ title: t("diarySaved" as any) });
+      toast({ title: t("diarySaved") });
     } else {
       const { error } = await supabase.from("diary_entries" as any).insert(payload as any);
       if (error) { toast({ title: t("error"), description: error.message, variant: "destructive" }); return; }
-      toast({ title: t("diarySaved" as any) });
+      toast({ title: t("diarySaved") });
     }
 
     resetForm();
@@ -130,7 +130,7 @@ export default function Diary() {
     if (error) {
       toast({ title: t("error"), description: error.message, variant: "destructive" });
     } else {
-      toast({ title: t("diaryDeleted" as any) });
+      toast({ title: t("diaryDeleted") });
       setEntries((prev) => prev.filter((e) => e.id !== id));
     }
   };
@@ -163,11 +163,11 @@ export default function Diary() {
             <div className="h-8 w-8 rounded-lg bg-gradient-energy flex items-center justify-center">
               <Zap className="h-4 w-4 text-primary-foreground" />
             </div>
-            <h1 className="text-sm font-extrabold text-foreground">{t("diary" as any)}</h1>
+            <h1 className="text-sm font-extrabold text-foreground">{t("diary")}</h1>
           </div>
           {!showForm && (
             <Button size="sm" className="ml-auto" onClick={() => setShowForm(true)}>
-              <Plus className="h-4 w-4 mr-1" /> {t("diaryNewEntry" as any)}
+              <Plus className="h-4 w-4 mr-1" /> {t("diaryNewEntry")}
             </Button>
           )}
         </div>
@@ -179,7 +179,7 @@ export default function Diary() {
           <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="font-bold text-foreground text-sm">
-                {editingId ? t("diaryEditEntry" as any) : t("diaryNewEntry" as any)}
+                {editingId ? t("diaryEditEntry") : t("diaryNewEntry")}
               </h2>
               <Button variant="ghost" size="icon" onClick={resetForm}>
                 <X className="h-4 w-4" />
@@ -191,7 +191,7 @@ export default function Diary() {
             <Textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder={t("diaryPlaceholder" as any)}
+              placeholder={t("diaryPlaceholder")}
               rows={4}
               maxLength={5000}
               className="resize-none"
@@ -200,7 +200,7 @@ export default function Diary() {
             {/* Mood */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                {t("diaryMood" as any)} — {MOOD_LABELS[mood - 1]}
+                {t("diaryMood")} — {MOOD_LABELS[mood - 1]}
               </label>
               <div className="flex gap-2">
                 {[1, 2, 3, 4, 5].map((v) => {
@@ -225,7 +225,7 @@ export default function Diary() {
             {/* Energy */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                {t("diaryEnergy" as any)} — {ENERGY_LABELS[energy - 1]}
+                {t("diaryEnergy")} — {ENERGY_LABELS[energy - 1]}
               </label>
               <div className="flex gap-2">
                 {[1, 2, 3, 4, 5].map((v) => {
@@ -250,7 +250,7 @@ export default function Diary() {
             {/* Tags */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                {t("diaryTags" as any)}
+                {t("diaryTags")}
               </label>
               <div className="flex flex-wrap gap-1.5">
                 {PRESET_TAGS.map((tag) => (
@@ -279,8 +279,8 @@ export default function Diary() {
         {entries.length === 0 && !showForm ? (
           <div className="rounded-xl border border-border bg-card p-12 text-center shadow-card">
             <SmilePlus className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
-            <h3 className="font-bold text-foreground mb-1">{t("diaryEmpty" as any)}</h3>
-            <p className="text-sm text-muted-foreground">{t("diaryEmptyDesc" as any)}</p>
+            <h3 className="font-bold text-foreground mb-1">{t("diaryEmpty")}</h3>
+            <p className="text-sm text-muted-foreground">{t("diaryEmptyDesc")}</p>
           </div>
         ) : (
           entries.map((entry) => {

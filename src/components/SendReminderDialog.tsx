@@ -26,11 +26,11 @@ export function SendReminderDialog({ athleteId, athleteName, athleteEmail }: Sen
 
   const handleSend = async () => {
     if (!title.trim()) {
-      toast({ title: t("error"), description: t("reminderTitleRequired" as any), variant: "destructive" });
+      toast({ title: t("error"), description: t("reminderTitleRequired"), variant: "destructive" });
       return;
     }
     if (!eventDate) {
-      toast({ title: t("error"), description: t("reminderDateRequired" as any), variant: "destructive" });
+      toast({ title: t("error"), description: t("reminderDateRequired"), variant: "destructive" });
       return;
     }
     setSending(true);
@@ -77,7 +77,7 @@ export function SendReminderDialog({ athleteId, athleteName, athleteEmail }: Sen
         });
       }
 
-      toast({ title: t("reminderSent" as any) });
+      toast({ title: t("reminderSent") });
       setTitle("");
       setEventDate("");
       setMessage("");
@@ -92,27 +92,27 @@ export function SendReminderDialog({ athleteId, athleteName, athleteEmail }: Sen
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" title={t("sendReminder" as any)}>
+        <Button variant="outline" size="sm" title={t("sendReminder")}>
           <Bell className="h-4 w-4 mr-1" />
-          <span className="hidden sm:inline">{t("sendReminder" as any)}</span>
+          <span className="hidden sm:inline">{t("sendReminder")}</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{t("sendReminderTo" as any)} {athleteName}</DialogTitle>
+          <DialogTitle>{t("sendReminderTo")} {athleteName}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 pt-2">
           <div className="space-y-1">
-            <Label className="text-xs">{t("reminderTitle" as any)}</Label>
+            <Label className="text-xs">{t("reminderTitle")}</Label>
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder={t("reminderTitlePlaceholder" as any)}
+              placeholder={t("reminderTitlePlaceholder")}
               maxLength={100}
             />
           </div>
           <div className="space-y-1">
-            <Label className="text-xs">{t("eventDate" as any)}</Label>
+            <Label className="text-xs">{t("eventDate")}</Label>
             <Input
               type="date"
               value={eventDate}
@@ -120,18 +120,18 @@ export function SendReminderDialog({ athleteId, athleteName, athleteEmail }: Sen
             />
           </div>
           <div className="space-y-1">
-            <Label className="text-xs">{t("reminderMessage" as any)}</Label>
+            <Label className="text-xs">{t("reminderMessage")}</Label>
             <Textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder={t("reminderMessagePlaceholder" as any)}
+              placeholder={t("reminderMessagePlaceholder")}
               rows={3}
               maxLength={500}
             />
           </div>
           <Button onClick={handleSend} disabled={sending} className="w-full">
             {sending ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Bell className="h-4 w-4 mr-1" />}
-            {t("sendReminder" as any)}
+            {t("sendReminder")}
           </Button>
         </div>
       </DialogContent>

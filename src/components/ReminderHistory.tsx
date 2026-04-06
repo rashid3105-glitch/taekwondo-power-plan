@@ -54,7 +54,7 @@ export function ReminderHistory({ athleteId }: ReminderHistoryProps) {
         className="w-full flex items-center justify-between cursor-pointer"
       >
         <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
-          <Bell className="h-4 w-4" /> {t("reminderHistory" as any)} ({reminders.length})
+          <Bell className="h-4 w-4" /> {t("reminderHistory")} ({reminders.length})
         </h4>
         {expanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
       </button>
@@ -72,7 +72,7 @@ export function ReminderHistory({ athleteId }: ReminderHistoryProps) {
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
                   <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${r.is_read ? "bg-secondary text-muted-foreground" : "bg-primary/10 text-primary"}`}>
-                    {r.is_read ? t("reminderRead" as any) : t("reminderUnread" as any)}
+                    {r.is_read ? t("reminderRead") : t("reminderUnread")}
                   </span>
                   <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleDelete(r.id)}>
                     <Trash2 className="h-3 w-3 text-muted-foreground" />

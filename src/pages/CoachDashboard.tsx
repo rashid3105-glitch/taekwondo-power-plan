@@ -225,7 +225,7 @@ export default function CoachDashboard() {
   const addAthlete = async () => {
     if (!athleteCode.trim()) return;
     if (!isAdmin && athletes.length >= MAX_ATHLETES) {
-      toast({ title: t("error"), description: t("maxAthletesReached" as any), variant: "destructive" });
+      toast({ title: t("error"), description: t("maxAthletesReached"), variant: "destructive" });
       return;
     }
     setAdding(true);
@@ -269,7 +269,7 @@ export default function CoachDashboard() {
   const createAthlete = async () => {
     if (!newAthleteName.trim() || !newAthleteEmail.trim() || !newAthletePassword.trim()) return;
     if (!isAdmin && athletes.length >= MAX_ATHLETES) {
-      toast({ title: t("error"), description: t("maxAthletesReached" as any), variant: "destructive" });
+      toast({ title: t("error"), description: t("maxAthletesReached"), variant: "destructive" });
       return;
     }
     setCreating(true);
@@ -361,9 +361,9 @@ export default function CoachDashboard() {
         {/* Athlete limit warning */}
         {!isAdmin && athletes.length >= MAX_ATHLETES && (
           <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 flex flex-col sm:flex-row sm:items-center gap-2">
-            <span className="text-sm text-destructive flex-1">{t("maxAthletesReached" as any)}</span>
+            <span className="text-sm text-destructive flex-1">{t("maxAthletesReached")}</span>
             <a href="mailto:info@sportstalent.dk?subject=Upgrade%20to%20Enterprise" className="inline-flex items-center justify-center gap-1 rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap">
-              {t("upgradeEnterprise" as any)}
+              {t("upgradeEnterprise")}
             </a>
           </div>
         )}
@@ -417,7 +417,7 @@ export default function CoachDashboard() {
                     </SelectTrigger>
                     <SelectContent>
                       {["white", "yellow", "green", "blue", "red", "black"].map((b) => (
-                        <SelectItem key={b} value={b}>{t(b as any)}</SelectItem>
+                        <SelectItem key={b} value={b}>{t(b)}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -522,13 +522,13 @@ export default function CoachDashboard() {
                               <UserCog className="h-4 w-4" />
                             </Button>
                           </TooltipTrigger>
-                          <TooltipContent side="left">{t("manageAthlete" as any)}</TooltipContent>
+                          <TooltipContent side="left">{t("manageAthlete")}</TooltipContent>
                         </Tooltip>
                         <Button
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8"
-                          title={t("diary" as any)}
+                          title={t("diary")}
                           onClick={(e) => { e.stopPropagation(); openDiary(a.user_id, a.display_name); }}
                         >
                           <NotebookPen className="h-4 w-4" />
@@ -568,7 +568,7 @@ export default function CoachDashboard() {
                       <div className="flex flex-wrap gap-1 mt-1.5">
                         {a.goals.map((g) => (
                           <span key={g} className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                            {t(g as any) || g}
+                            {t(g) || g}
                           </span>
                         ))}
                       </div>
@@ -656,9 +656,9 @@ export default function CoachDashboard() {
         {clubAthletes.length > 0 && (
           <div className="space-y-3">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-              <Users className="h-4 w-4" /> {t("clubAthletes" as any)} ({clubAthletes.length})
+              <Users className="h-4 w-4" /> {t("clubAthletes")} ({clubAthletes.length})
             </h3>
-            <p className="text-xs text-muted-foreground">{t("clubAthletesDesc" as any)}</p>
+            <p className="text-xs text-muted-foreground">{t("clubAthletesDesc")}</p>
             <div className="grid gap-3">
               {clubAthletes.map((a) => (
                 <div
@@ -674,12 +674,12 @@ export default function CoachDashboard() {
                       </div>
                     </div>
                     <div className="flex items-center gap-1 flex-shrink-0">
-                      <Badge variant="secondary" className="text-[10px]">{t("readOnly" as any)}</Badge>
+                      <Badge variant="secondary" className="text-[10px]">{t("readOnly")}</Badge>
                       <Button
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8"
-                        title={t("diary" as any)}
+                        title={t("diary")}
                         onClick={() => openDiary(a.user_id, a.display_name)}
                       >
                         <NotebookPen className="h-4 w-4" />
@@ -703,7 +703,7 @@ export default function CoachDashboard() {
                     <div className="flex flex-wrap gap-1 mt-1.5">
                       {a.goals.map((g) => (
                         <span key={g} className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                          {t(g as any) || g}
+                          {t(g) || g}
                         </span>
                       ))}
                     </div>
@@ -719,7 +719,7 @@ export default function CoachDashboard() {
           <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <NotebookPen className="h-5 w-5" /> {diaryAthleteName} — {t("diary" as any)}
+                <NotebookPen className="h-5 w-5" /> {diaryAthleteName} — {t("diary")}
               </DialogTitle>
             </DialogHeader>
             {diaryLoading ? (
@@ -727,7 +727,7 @@ export default function CoachDashboard() {
                 <Loader2 className="h-5 w-5 animate-spin text-primary" />
               </div>
             ) : diaryEntries.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-8">{t("diaryEmpty" as any)}</p>
+              <p className="text-sm text-muted-foreground text-center py-8">{t("diaryEmpty")}</p>
             ) : (
               <div className="space-y-3">
                 {diaryEntries.map((entry) => {

@@ -228,7 +228,7 @@ export default function ProfileSetup() {
       <div className="container max-w-lg mx-auto px-4 py-6 sm:py-8">
         <div className="flex justify-end items-center gap-2 mb-4">
           <LanguageSwitcher />
-          <Button variant="ghost" size="icon" onClick={() => navigate("/")} title={t("home" as any)}>
+          <Button variant="ghost" size="icon" onClick={() => navigate("/")} title={t("home")}>
             <Home className="h-4 w-4" />
           </Button>
         </div>
@@ -323,7 +323,7 @@ export default function ProfileSetup() {
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {BELT_LEVELS.map((b) => (
-                  <option key={b} value={b}>{t(b as any)} {t("belt")}</option>
+                  <option key={b} value={b}>{t(b)} {t("belt")}</option>
                 ))}
               </select>
             </div>
@@ -347,7 +347,7 @@ export default function ProfileSetup() {
                     data-[active=true]:bg-primary data-[active=true]:text-primary-foreground data-[active=true]:border-primary
                     data-[active=false]:text-muted-foreground hover:text-foreground"
                 >
-                  {t(d as any)}
+                  {t(d)}
                 </button>
               ))}
             </div>
@@ -392,7 +392,7 @@ export default function ProfileSetup() {
                     data-[active=true]:bg-primary data-[active=true]:text-primary-foreground
                     data-[active=false]:text-muted-foreground hover:text-foreground"
                 >
-                  {t(goal as any)}
+                  {t(goal)}
                 </button>
               ))}
             </div>

@@ -29,7 +29,7 @@ export const FAQSection = () => {
           </span>
         </span>
         <h2 className="text-2xl sm:text-3xl font-black tracking-tighter text-foreground leading-tight">
-          {t("faqHeadline" as any)}
+          {t("faqHeadline")}
         </h2>
       </motion.div>
 
@@ -47,10 +47,10 @@ export const FAQSection = () => {
               className="rounded-xl border border-border bg-card px-4 data-[state=open]:border-energy/30"
             >
               <AccordionTrigger className="text-sm font-semibold text-foreground hover:no-underline py-4">
-                {t(`${key}Q` as any)}
+                {t(`${key}Q`)}
               </AccordionTrigger>
               <AccordionContent className="text-sm text-muted-foreground leading-relaxed pb-4">
-                {t(`${key}A` as any)}
+                {t(`${key}A`)}
               </AccordionContent>
             </AccordionItem>
           ))}

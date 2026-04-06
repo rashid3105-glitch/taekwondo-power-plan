@@ -90,9 +90,9 @@ export default function Dashboard() {
         <Lock className="h-5 w-5 text-muted-foreground" />
       </div>
       <div className="space-y-2">
-        <h3 className="font-bold text-foreground">{t(featureKey as any)}</h3>
-        <p className="text-sm text-muted-foreground">{t("demoLockedFeatureDesc" as any)}</p>
-        <p className="text-sm text-foreground">{t("demoUpgradePrompt" as any)}</p>
+        <h3 className="font-bold text-foreground">{t(featureKey)}</h3>
+        <p className="text-sm text-muted-foreground">{t("demoLockedFeatureDesc")}</p>
+        <p className="text-sm text-foreground">{t("demoUpgradePrompt")}</p>
       </div>
       <div className="flex justify-center">
         <Button variant="outline" size="sm" onClick={() => navigate("/pricing")}>
@@ -278,7 +278,7 @@ export default function Dashboard() {
             <div className="flex items-center gap-2">
               <LanguageSwitcher />
               <EventRemindersDropdown />
-              <Button variant="ghost" size="icon" onClick={() => navigate("/")} title={t("home" as any)}>
+              <Button variant="ghost" size="icon" onClick={() => navigate("/")} title={t("home")}>
                 <Home className="h-4 w-4" />
               </Button>
               <Button variant="ghost" size="icon" onClick={() => navigate("/profile-setup")}>
@@ -302,7 +302,7 @@ export default function Dashboard() {
           {/* Menu row – left-aligned, below logo */}
           <nav className="hidden sm:flex items-center gap-1 flex-wrap">
             <Button variant="ghost" size="sm" onClick={() => handleTabChange("hub")} className={activeTab === "hub" ? "text-primary" : ""}>
-              <Home className="h-4 w-4 mr-1" /> {t("hubWelcome" as any)}
+              <Home className="h-4 w-4 mr-1" /> {t("hubWelcome")}
             </Button>
             <Button variant="ghost" size="sm" onClick={() => handleTabChange("plan")} className={activeTab === "plan" ? "text-tab-plan" : ""}>
               <Zap className="h-4 w-4 mr-1" /> {t("plan")}
@@ -371,26 +371,26 @@ export default function Dashboard() {
               <AlertTriangle className="h-6 w-6 text-destructive shrink-0" />
               <span className="text-lg font-bold text-destructive">{t("demoBannerExpired")}</span>
             </div>
-            <p className="text-sm text-foreground">{t("demoExpiredMessage" as any)}</p>
+            <p className="text-sm text-foreground">{t("demoExpiredMessage")}</p>
             {demoDaysUntilDeletion !== null && demoDaysUntilDeletion > 0 && (
               <div className="flex items-center gap-2 rounded-lg bg-destructive/20 p-3">
                 <Clock className="h-4 w-4 text-destructive shrink-0" />
                 <span className="text-sm font-bold text-destructive">
-                  {demoDaysUntilDeletion} {t("demoExpiredDaysUntilDeletion" as any)}
+                  {demoDaysUntilDeletion} {t("demoExpiredDaysUntilDeletion")}
                 </span>
               </div>
             )}
             {demoDaysUntilDeletion !== null && demoDaysUntilDeletion <= 0 && (
               <div className="flex items-center gap-2 rounded-lg bg-destructive/30 p-3">
                 <AlertTriangle className="h-4 w-4 text-destructive shrink-0" />
-                <span className="text-sm font-bold text-destructive">{t("demoDeletionImminent" as any)}</span>
+                <span className="text-sm font-bold text-destructive">{t("demoDeletionImminent")}</span>
               </div>
             )}
             <div className="rounded-lg border border-border bg-card p-4 space-y-2">
-              <p className="text-sm font-semibold text-foreground">{t("paypalTitle" as any)}</p>
-              <p className="text-sm text-muted-foreground">{t("paypalInstruction" as any)}</p>
+              <p className="text-sm font-semibold text-foreground">{t("paypalTitle")}</p>
+              <p className="text-sm text-muted-foreground">{t("paypalInstruction")}</p>
               <p className="text-lg font-bold text-primary font-mono">rashid3105@gmail.com</p>
-              <p className="text-sm text-muted-foreground">{t("paypalReference" as any)}</p>
+              <p className="text-sm text-muted-foreground">{t("paypalReference")}</p>
             </div>
             <Button onClick={() => navigate("/pricing")} className="w-full sm:w-auto">
               {t("viewPricing")}
@@ -418,8 +418,8 @@ export default function Dashboard() {
             <Lock className="h-5 w-5 text-accent shrink-0" />
             <p className="text-sm text-foreground">
               {coachName
-                ? (t("coachManagedBannerNamed" as any) || "").replace("{{coach}}", coachName)
-                : t("coachManagedBanner" as any)}
+                ? (t("coachManagedBannerNamed") || "").replace("{{coach}}", coachName)
+                : t("coachManagedBanner")}
             </p>
           </div>
         )}
@@ -427,9 +427,9 @@ export default function Dashboard() {
           <div className="space-y-6">
             <div className="text-center space-y-1">
               <h2 className="text-2xl font-extrabold text-foreground">
-                {t("hubWelcome" as any)}
+                {t("hubWelcome")}
               </h2>
-              <p className="text-sm text-muted-foreground">{t("hubChooseSection" as any)}</p>
+              <p className="text-sm text-muted-foreground">{t("hubChooseSection")}</p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               {([
@@ -458,9 +458,9 @@ export default function Dashboard() {
                         {section.locked && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
                       </div>
                       <div className="space-y-1.5">
-                        <h3 className="text-sm font-bold text-foreground tracking-tight">{t(section.titleKey as any)}</h3>
-                        <p className="text-xs leading-relaxed text-muted-foreground">{t(section.descKey as any)}</p>
-                        {section.locked && <p className="text-xs font-medium text-foreground">{t("demoUpgradePrompt" as any)}</p>}
+                        <h3 className="text-sm font-bold text-foreground tracking-tight">{t(section.titleKey)}</h3>
+                        <p className="text-xs leading-relaxed text-muted-foreground">{t(section.descKey)}</p>
+                        {section.locked && <p className="text-xs font-medium text-foreground">{t("demoUpgradePrompt")}</p>}
                       </div>
                     </div>
                   </button>
@@ -481,9 +481,9 @@ export default function Dashboard() {
                     {isDemo && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
                   </div>
                   <div className="space-y-1.5">
-                    <h3 className="text-sm font-bold text-foreground tracking-tight">{t("hubLibraryTitle" as any)}</h3>
-                    <p className="text-xs leading-relaxed text-muted-foreground">{t((isDemo ? "demoLockedFeatureDesc" : "hubLibraryDesc") as any)}</p>
-                    {isDemo && <p className="text-xs font-medium text-foreground">{t("demoUpgradePrompt" as any)}</p>}
+                    <h3 className="text-sm font-bold text-foreground tracking-tight">{t("hubLibraryTitle")}</h3>
+                    <p className="text-xs leading-relaxed text-muted-foreground">{t(isDemo ? "demoLockedFeatureDesc" : "hubLibraryDesc")}</p>
+                    {isDemo && <p className="text-xs font-medium text-foreground">{t("demoUpgradePrompt")}</p>}
                   </div>
                 </div>
               </button>
@@ -500,8 +500,8 @@ export default function Dashboard() {
                     <HelpCircle className="h-5 w-5 text-primary" />
                   </div>
                   <div className="space-y-1.5">
-                    <h3 className="text-sm font-bold text-foreground tracking-tight">{t("helpTitle" as any)}</h3>
-                    <p className="text-xs leading-relaxed text-muted-foreground">{t("helpSubtitle" as any)}</p>
+                    <h3 className="text-sm font-bold text-foreground tracking-tight">{t("helpTitle")}</h3>
+                    <p className="text-xs leading-relaxed text-muted-foreground">{t("helpSubtitle")}</p>
                   </div>
                 </div>
               </button>
@@ -648,7 +648,7 @@ export default function Dashboard() {
                         <div className="flex flex-wrap gap-1 mt-2">
                           {profile.goals.map((g) => (
                             <span key={g} className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                              {t(g as any) || g}
+                              {t(g) || g}
                             </span>
                           ))}
                         </div>
@@ -658,8 +658,8 @@ export default function Dashboard() {
                   {hasCoach && !isPaid ? (
                     <span className="text-xs text-accent font-semibold flex items-center gap-1">
                       <Lock className="h-3.5 w-3.5" /> {coachName
-                        ? (t("coachManagedActionNamed" as any) || "").replace("{{coach}}", coachName)
-                        : t("coachManagedAction" as any)}
+                        ? (t("coachManagedActionNamed") || "").replace("{{coach}}", coachName)
+                        : t("coachManagedAction")}
                     </span>
                   ) : (
                     <Button onClick={generatePlan} disabled={generating} size="sm" className="w-full sm:w-auto">
@@ -683,23 +683,23 @@ export default function Dashboard() {
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
-                          <Trash2 className="h-4 w-4 mr-1" /> {t("delete" as any) || "Delete"}
+                          <Trash2 className="h-4 w-4 mr-1" /> {t("delete") || "Delete"}
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>{t("deleteTrainingPlan" as any) || "Delete Training Plan"}</AlertDialogTitle>
+                          <AlertDialogTitle>{t("deleteTrainingPlan") || "Delete Training Plan"}</AlertDialogTitle>
                           <AlertDialogDescription>
-                            {t("deleteTrainingPlanConfirm" as any) || "Are you sure you want to delete this training plan? This action cannot be undone."}
+                            {t("deleteTrainingPlanConfirm") || "Are you sure you want to delete this training plan? This action cannot be undone."}
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>{t("cancel" as any) || "Cancel"}</AlertDialogCancel>
+                          <AlertDialogCancel>{t("cancel") || "Cancel"}</AlertDialogCancel>
                           <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={async () => {
                             await supabase.from("training_plans").delete().eq("id", activePlan.id);
                             loadData();
                           }}>
-                            {t("delete" as any) || "Delete"}
+                            {t("delete") || "Delete"}
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
@@ -747,18 +747,18 @@ export default function Dashboard() {
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                               <AlertDialogHeader>
-                                <AlertDialogTitle>{t("deleteTrainingPlan" as any) || "Delete Training Plan"}</AlertDialogTitle>
+                                <AlertDialogTitle>{t("deleteTrainingPlan") || "Delete Training Plan"}</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  {t("deleteTrainingPlanConfirm" as any) || "Are you sure you want to delete this training plan? This action cannot be undone."}
+                                  {t("deleteTrainingPlanConfirm") || "Are you sure you want to delete this training plan? This action cannot be undone."}
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
-                                <AlertDialogCancel>{t("cancel" as any) || "Cancel"}</AlertDialogCancel>
+                                <AlertDialogCancel>{t("cancel") || "Cancel"}</AlertDialogCancel>
                                 <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={async () => {
                                   await supabase.from("training_plans").delete().eq("id", plan.id);
                                   loadData();
                                 }}>
-                                  {t("delete" as any) || "Delete"}
+                                  {t("delete") || "Delete"}
                                 </AlertDialogAction>
                               </AlertDialogFooter>
                             </AlertDialogContent>

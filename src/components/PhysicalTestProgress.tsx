@@ -131,7 +131,7 @@ export function PhysicalTestProgress({ userId }: { userId?: string }) {
   if (loading || summaryByCategory.length === 0) return null;
 
   const dateRanges: { key: DateRange; label: string }[] = [
-    { key: "all", label: t("ptRangeAll" as any) || "All" },
+    { key: "all", label: t("ptRangeAll") || "All" },
     { key: "30d", label: "30d" },
     { key: "90d", label: "90d" },
     { key: "6m", label: "6m" },
@@ -159,7 +159,7 @@ export function PhysicalTestProgress({ userId }: { userId?: string }) {
       <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
         <div className="flex items-center gap-2 mb-4">
           <ClipboardList className="h-5 w-5 text-primary" />
-          <h3 className="text-sm font-bold text-foreground">{t("ptProgressTitle" as any)}</h3>
+          <h3 className="text-sm font-bold text-foreground">{t("ptProgressTitle")}</h3>
         </div>
 
         <div className="space-y-4">
@@ -170,7 +170,7 @@ export function PhysicalTestProgress({ userId }: { userId?: string }) {
                 <div className="flex items-center gap-2 mb-2">
                   <Icon className="h-4 w-4" style={{ color: CATEGORY_COLORS[category] }} />
                   <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                    {t(`ptCat_${category}` as any)}
+                    {t(`ptCat_${category}`)}
                   </span>
                   <span className="text-[10px] text-muted-foreground ml-auto">{tests.reduce((s, t) => s + t.count, 0)} results</span>
                 </div>
@@ -178,12 +178,12 @@ export function PhysicalTestProgress({ userId }: { userId?: string }) {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-border">
-                        <th className="text-left py-1.5 text-xs text-muted-foreground font-semibold">{t("ptTestName" as any)}</th>
-                        <th className="text-right py-1.5 text-xs text-muted-foreground font-semibold">{t("ptLatest" as any)}</th>
-                        <th className="text-right py-1.5 text-xs text-muted-foreground font-semibold">{t("ptPrevious" as any)}</th>
+                        <th className="text-left py-1.5 text-xs text-muted-foreground font-semibold">{t("ptTestName")}</th>
+                        <th className="text-right py-1.5 text-xs text-muted-foreground font-semibold">{t("ptLatest")}</th>
+                        <th className="text-right py-1.5 text-xs text-muted-foreground font-semibold">{t("ptPrevious")}</th>
                         <th className="text-right py-1.5 text-xs text-muted-foreground font-semibold hidden sm:table-cell">Avg</th>
                         <th className="text-right py-1.5 text-xs text-muted-foreground font-semibold hidden sm:table-cell">Best</th>
-                        <th className="text-center py-1.5 text-xs text-muted-foreground font-semibold">{t("ptTrend" as any)}</th>
+                        <th className="text-center py-1.5 text-xs text-muted-foreground font-semibold">{t("ptTrend")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -245,7 +245,7 @@ export function PhysicalTestProgress({ userId }: { userId?: string }) {
             <div className="flex items-center gap-2 mb-3">
               <Icon className="h-4 w-4" style={{ color: catColor }} />
               <h3 className="text-sm font-bold text-foreground">
-                {t(`ptCat_${category}` as any)} — {t("ptTrend" as any)}
+                {t(`ptCat_${category}`)} — {t("ptTrend")}
               </h3>
             </div>
             <div className="h-56 sm:h-64">

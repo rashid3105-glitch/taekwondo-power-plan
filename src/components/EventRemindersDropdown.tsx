@@ -74,7 +74,7 @@ export function EventRemindersDropdown() {
       </PopoverTrigger>
       <PopoverContent className="w-80 p-0" align="end">
         <div className="border-b border-border px-4 py-3">
-          <h4 className="text-sm font-semibold text-foreground">{t("eventReminders" as any)}</h4>
+          <h4 className="text-sm font-semibold text-foreground">{t("eventReminders")}</h4>
         </div>
         <div className="max-h-72 overflow-y-auto divide-y divide-border">
           {reminders.map((r) => (
@@ -103,7 +103,7 @@ export function EventRemindersDropdown() {
                 onClick={() => openDiary(r)}
               >
                 <NotebookPen className="h-3 w-3 mr-1" />
-                {t("writeInDiary" as any)}
+                {t("writeInDiary")}
               </Button>
             </div>
           ))}

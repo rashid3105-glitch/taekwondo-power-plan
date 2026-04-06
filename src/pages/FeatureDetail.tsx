@@ -171,7 +171,7 @@ const FeatureDetail = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col relative">
-      <PageMeta title={t(feature.titleKey as any)} description={feature.longDesc[locale]} />
+      <PageMeta title={t(feature.titleKey)} description={feature.longDesc[locale]} />
       <Watermark />
       {/* Header */}
       <header className="sticky top-0 z-40 flex items-center justify-between px-5 py-3 border-b border-border/40 bg-background/80 backdrop-blur-xl">
@@ -201,7 +201,7 @@ const FeatureDetail = () => {
           <div className="flex flex-col md:flex-row md:items-start gap-6 md:gap-10">
             <div className="space-y-4 flex-1 min-w-0">
               <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
-                {t(feature.titleKey as any)}
+                {t(feature.titleKey)}
               </h1>
               <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
                 {feature.longDesc[locale]}
@@ -219,7 +219,7 @@ const FeatureDetail = () => {
             <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-10`} />
             <img
               src={feature.image}
-              alt={t(feature.titleKey as any)}
+              alt={t(feature.titleKey)}
               className="w-full h-auto relative z-10"
               loading="lazy"
             />
@@ -264,7 +264,7 @@ const FeatureDetail = () => {
                 {t("getStarted")} <ArrowRight className="h-4 w-4 ml-1.5" />
               </Button>
               <Button onClick={() => navigate("/pricing")} size="lg" variant="outline" className="px-8 font-semibold">
-                {t("viewPricing" as any)}
+                {t("viewPricing")}
               </Button>
             </div>
           </div>

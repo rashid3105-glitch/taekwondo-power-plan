@@ -4,7 +4,7 @@ import translations, { type Locale, type TranslationKey } from "./translations";
 interface LanguageContextType {
   locale: Locale;
   setLocale: (locale: Locale) => void;
-  t: (key: TranslationKey) => string;
+  t: (key: TranslationKey | (string & {})) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | null>(null);
@@ -20,8 +20,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("tkd-lang", l);
   }, []);
 
-  const t = useCallback((key: TranslationKey) => {
-    return translations[locale][key] || translations.en[key] || key;
+  const t = useCallback((key: TranslationKey | (string & {})) => {
+    const k = key as TranslationKey;
+    return translations[locale][k] || translations.en[k] || key;
   }, [locale]);
 
   return (

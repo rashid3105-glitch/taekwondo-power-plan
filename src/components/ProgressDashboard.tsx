@@ -247,7 +247,7 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
   }
 
   const timeRanges: { key: TimeRange; label: string }[] = [
-    { key: "all", label: t("ptRangeAll" as any) || "All" },
+    { key: "all", label: t("ptRangeAll") || "All" },
     { key: "4w", label: "4w" },
     { key: "8w", label: "8w" },
     { key: "12w", label: "12w" },

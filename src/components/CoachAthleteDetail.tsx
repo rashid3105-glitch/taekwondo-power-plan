@@ -301,7 +301,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
               </SelectTrigger>
               <SelectContent>
                 {BELT_LEVELS.map((b) => (
-                  <SelectItem key={b} value={b}>{t(b as any)}</SelectItem>
+                  <SelectItem key={b} value={b}>{t(b)}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -383,7 +383,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
                 data-[active=true]:bg-primary data-[active=true]:text-primary-foreground
                 data-[active=false]:text-muted-foreground hover:text-foreground"
             >
-              {t(goal as any)}
+              {t(goal)}
             </button>
           ))}
         </div>
