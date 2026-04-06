@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useAvatarUrl } from "@/hooks/useAvatarUrl";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -55,6 +56,7 @@ export default function ProfileSetup() {
   const [programWeeks, setProgramWeeks] = useState(8);
   const [currentInjury, setCurrentInjury] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const avatarDisplayUrl = useAvatarUrl(avatarUrl);
   const [clubs, setClubs] = useState<ClubOption[]>([]);
   const [clubId, setClubId] = useState("");
   const [country, setCountry] = useState("");
@@ -145,14 +147,11 @@ export default function ProfileSetup() {
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from("avatars")
-        .getPublicUrl(filePath);
-
-      setAvatarUrl(publicUrl + "?t=" + Date.now());
+      // Store the path (not public URL) since bucket is private
+      setAvatarUrl(filePath + "?t=" + Date.now());
 
       await supabase.from("profiles").update({
-        avatar_url: publicUrl,
+        avatar_url: filePath,
       }).eq("user_id", user.id);
 
       toast({ title: t("photoUploaded") });
@@ -249,8 +248,8 @@ export default function ProfileSetup() {
               className="relative group cursor-pointer"
             >
               <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full border-2 border-border bg-muted overflow-hidden flex items-center justify-center transition-all group-hover:border-primary">
-                {avatarUrl ? (
-                  <img src={avatarUrl} alt="Profile" className="h-full w-full object-cover" />
+                {avatarDisplayUrl ? (
+                  <img src={avatarDisplayUrl} alt="Profile" className="h-full w-full object-cover" />
                 ) : (
                   <Camera className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
                 )}

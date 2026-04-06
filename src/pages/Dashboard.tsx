@@ -8,6 +8,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { EventRemindersDropdown } from "@/components/EventRemindersDropdown";
+import { AvatarImg } from "@/components/AvatarImg";
 import logo from "@/assets/logo.webp";
 import { useToast } from "@/hooks/use-toast";
 import { AIPlanCard } from "@/components/AIPlanCard";
@@ -610,7 +611,7 @@ export default function Dashboard() {
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
                   <div className="flex items-center gap-3">
                     {profile.avatar_url ? (
-                      <img src={profile.avatar_url} alt="" className="h-10 w-10 sm:h-12 sm:w-12 rounded-full object-cover border-2 border-border flex-shrink-0" />
+                      <AvatarImg avatarUrl={profile.avatar_url} className="h-10 w-10 sm:h-12 sm:w-12 rounded-full object-cover border-2 border-border flex-shrink-0" fallbackClassName="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-muted flex items-center justify-center border-2 border-border flex-shrink-0" />
                     ) : (
                       <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-muted flex items-center justify-center border-2 border-border flex-shrink-0">
                         <User className="h-5 w-5 text-muted-foreground" />
