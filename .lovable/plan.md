@@ -1,34 +1,42 @@
 
 
-## Plan: Fix translation errors and add German language
+## Plan: Fix profile save reliability and stale build error
 
-### Translation errors found
+### Build error (lines 384-404)
+The reported TS1117 errors are **stale** — the file has no duplicate keys (verified by scanning all 4 locale blocks) and `tsc --noEmit` compiles cleanly. No code changes needed for this; a rebuild will clear it.
 
-1. **Missing `paid` key in DA and SV** — The English locale has `paid: "Paid"` (line 370), but both Danish and Swedish are missing this key. DA should have `paid: "Betalt"`, SV should have `paid: "Betald"`.
+### Profile save issue for user "Ky Tu"
+The most likely cause: **silent RLS rejection**. When Supabase RLS blocks an update, `.update()` returns 0 affected rows but no error. The app shows "Profile saved" even though nothing was written. Two possible root causes:
 
-2. **Pervasive `as any` casts on translation keys** — Over 1,100 instances across 29 files use `t("key" as any)` instead of typed keys. This is a type-safety issue but not a runtime translation error. Many of these keys do exist in all three locales. This is a code-quality issue, not a missing-translation issue, and fixing all 29 files would be a large refactor best handled separately.
+1. **Expired auth session** — the console shows `Invalid Refresh Token: Refresh Token Not Found`. If the session is stale, `auth.uid()` in RLS returns null, and the update silently fails.
+2. **Protected field mismatch** — if any protected field (is_approved, payment_status, etc.) doesn't match its current DB value, RLS rejects the row.
 
-3. **No actual wrong/broken translations detected** — All three locales (EN/DA/SV) have 760+ keys each, and content is consistent across languages. The only missing keys are `paid` (in DA/SV).
+### Changes
 
-### Adding German (de) locale
+**File: `src/pages/ProfileSetup.tsx`** (handleSubmit function)
+- After the update call, check if `data` is empty/null and `error` is null — this indicates a silent RLS rejection
+- Add `.select()` to the update chain to get the returned row count
+- If 0 rows updated, show a descriptive error toast instead of "Profile saved"
+- Before attempting the update, verify the user session is valid; if not, redirect to `/auth`
 
-This requires changes to 3 files:
+```typescript
+// Changed update call:
+const { data, error } = await supabase
+  .from("profiles")
+  .update({ ... })
+  .eq("user_id", user.id)
+  .select();
 
-**1. `src/i18n/translations.ts`**
-- Update `Locale` type: `"en" | "da" | "sv" | "de"`
-- Add missing `paid` key to DA and SV blocks
-- Add complete `de: { ... }` block with all ~760 keys translated to German
-
-**2. `src/i18n/LanguageContext.tsx`**
-- Add `"de"` to the saved locale check on line 13: `saved === "de"`
-
-**3. `src/components/LanguageSwitcher.tsx`**
-- Add German flag entry: `de: { emoji: "🇩🇪", label: "Deutsch" }`
+if (error) throw error;
+if (!data || data.length === 0) {
+  toast({ title: t("error"), description: "Profile could not be saved. Please sign out and sign in again.", variant: "destructive" });
+  return;
+}
+toast({ title: t("profileSaved") });
+```
 
 ### Technical details
-
-- The `de` block will be a full translation of all 761 English keys into German
-- The translations.ts file will grow by roughly 800 lines (from ~2441 to ~3241)
-- All edge functions that generate AI content already read the user's locale, so German plans will work automatically once the locale is available
-- The `as any` casts throughout the codebase are not addressed in this plan — they are a separate code-quality refactor
+- The `.select()` chained after `.update()` makes Supabase return the updated rows, allowing us to detect silent RLS rejections (0 rows returned = blocked)
+- No database or RLS changes needed — the policies are correct; the issue is the client not detecting failures
+- Single file change, ~10 lines modified
 
