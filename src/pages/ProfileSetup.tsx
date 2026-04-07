@@ -169,9 +169,12 @@ export default function ProfileSetup() {
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      if (!user) {
+        navigate("/auth");
+        return;
+      }
 
-      const { error } = await supabase.from("profiles").update({
+      const { data, error } = await supabase.from("profiles").update({
         age: age ? parseInt(age) : null,
         weight_kg: weight ? parseFloat(weight) : null,
         belt_level: belt,
@@ -183,9 +186,15 @@ export default function ProfileSetup() {
         current_injury: currentInjury || null,
         discipline,
         country: country || null,
-      } as any).eq("user_id", user.id);
+      } as any).eq("user_id", user.id).select();
 
       if (error) throw error;
+
+      if (!data || data.length === 0) {
+        toast({ title: t("error"), description: "Profile could not be saved. Please sign out and sign in again.", variant: "destructive" });
+        return;
+      }
+
       toast({ title: t("profileSaved") });
 
       // Notify admin if user is pending approval
