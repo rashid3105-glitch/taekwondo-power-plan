@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Welcome to your Lovable project
 
 ## Project info
@@ -11,7 +10,7 @@ There are several ways of editing your application.
 
 **Use Lovable**
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+Simply visit the [Lovable Project](https://lovable.dev/projects/a65f5c86-1a84-4640-b139-4767189347ea) and start prompting.
 
 Changes made via Lovable will be committed automatically to this repo.
 
@@ -63,7 +62,7 @@ This project is built with:
 
 ## How can I deploy this project?
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+Simply open [Lovable](https://lovable.dev/projects/a65f5c86-1a84-4640-b139-4767189347ea) and click on Share -> Publish.
 
 ## Can I connect a custom domain to my Lovable project?
 
@@ -72,8 +71,3 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
-=======
-# taekwondo-power-plan
-
-Project repository initialized from Codex.
->>>>>>> 755d124 (Initial commit)

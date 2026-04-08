@@ -168,6 +168,10 @@ export default function ProfileSetup() {
     setLoading(true);
 
     try {
+      // Force token refresh before proceeding — prevents silent RLS rejections
+      // when the access token has expired between page load and form submission
+      await supabase.auth.getSession();
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         navigate("/auth");
@@ -191,7 +195,8 @@ export default function ProfileSetup() {
       if (error) throw error;
 
       if (!data || data.length === 0) {
-        toast({ title: t("error"), description: "Profile could not be saved. Please sign out and sign in again.", variant: "destructive" });
+        console.error("Profile update returned 0 rows — likely RLS rejection", { userId: user.id, data, error });
+        toast({ title: t("error"), description: t("profileSaveFailedSession"), variant: "destructive" });
         return;
       }
 
