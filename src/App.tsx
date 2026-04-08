@@ -26,6 +26,7 @@ import Methodology from "./pages/Methodology";
 import Unsubscribe from "./pages/Unsubscribe";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import SeoLanding from "./pages/SeoLanding";
+import PaymentSuccess from "./pages/PaymentSuccess";
 
 
 const queryClient = new QueryClient();
