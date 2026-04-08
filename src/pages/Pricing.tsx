@@ -41,6 +41,7 @@ export default function Pricing() {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly");
   const [loadingTier, setLoadingTier] = useState<string | null>(null);
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const [isPaidOrDemo, setIsPaidOrDemo] = useState(false);
   const [managingPortal, setManagingPortal] = useState(false);
 
   useEffect(() => {
@@ -50,15 +51,40 @@ export default function Pricing() {
   const checkSubscription = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return;
+
+    // Check profile payment_status and demo status
+    try {
+      const { data: protectedFields } = await supabase.rpc("get_profile_protected_fields", {
+        _user_id: session.user.id,
+      });
+      if (protectedFields && protectedFields.length > 0) {
+        const pf = protectedFields[0];
+        if (pf.payment_status === "paid" || pf.is_demo || pf.demo_full_access) {
+          setIsPaidOrDemo(true);
+        }
+      }
+    } catch {
+      // ignore
+    }
+
     try {
       const { data } = await supabase.functions.invoke("check-subscription");
-      if (data?.subscribed) setIsSubscribed(true);
+      if (data?.subscribed) {
+        setIsSubscribed(true);
+        setIsPaidOrDemo(true);
+      }
     } catch {
       // silently ignore
     }
   };
 
   const handleCheckout = async (tierKey: string) => {
+    // If user is already paid or demo, go to dashboard instead
+    if (isPaidOrDemo) {
+      navigate("/dashboard");
+      return;
+    }
+
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
       navigate("/auth?redirect=/pricing");
@@ -187,6 +213,14 @@ export default function Pricing() {
                         <Mail className="h-4 w-4 mr-2" />
                         {t("pricingContactUs")}
                       </a>
+                    </Button>
+                  ) : isPaidOrDemo ? (
+                    <Button
+                      className="w-full"
+                      variant="outline"
+                      onClick={() => navigate("/dashboard")}
+                    >
+                      {t("backToDashboard")}
                     </Button>
                   ) : (
                     <Button
