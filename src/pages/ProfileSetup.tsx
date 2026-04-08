@@ -228,6 +228,8 @@ export default function ProfileSetup() {
       } catch {
         // Non-critical — don't block the user
       }
+
+      navigate(targetRoute);
     } catch (err: any) {
       toast({ title: t("error"), description: err.message, variant: "destructive" });
     } finally {
