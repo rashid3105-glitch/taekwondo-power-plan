@@ -214,6 +214,14 @@ export default function Pricing() {
                         {t("pricingContactUs")}
                       </a>
                     </Button>
+                  ) : isPaidOrDemo ? (
+                    <Button
+                      className="w-full"
+                      variant="outline"
+                      onClick={() => navigate("/dashboard")}
+                    >
+                      {t("backToDashboard")}
+                    </Button>
                   ) : (
                     <Button
                       className="w-full"
