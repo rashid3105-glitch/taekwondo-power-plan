@@ -195,7 +195,8 @@ export default function ProfileSetup() {
       if (error) throw error;
 
       if (!data || data.length === 0) {
-        toast({ title: t("error"), description: "Profile could not be saved. Please sign out and sign in again.", variant: "destructive" });
+        console.error("Profile update returned 0 rows — likely RLS rejection", { userId: user.id, data, error });
+        toast({ title: t("error"), description: t("profileSaveFailedSession"), variant: "destructive" });
         return;
       }
 
