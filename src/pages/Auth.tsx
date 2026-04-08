@@ -70,7 +70,7 @@ export default function AuthPage() {
         }
 
         toast({ title: t("accountCreated"), description: t("youreSignedIn") });
-        navigate("/profile-setup");
+        navigate(redirectTo ? `/profile-setup?redirect=${encodeURIComponent(redirectTo)}` : "/profile-setup");
       }
     } catch (err: any) {
       toast({ title: t("error"), description: err.message, variant: "destructive" });
