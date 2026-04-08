@@ -187,6 +187,7 @@ export default function ProfileSetup() {
         program_weeks: programWeeks,
         current_injury: currentInjury || null,
         discipline,
+        club_id: clubId || null,
         country: country || null,
       };
 
