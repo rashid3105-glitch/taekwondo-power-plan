@@ -204,6 +204,10 @@ export default function ProfileSetup() {
 
       toast({ title: t("profileSaved") });
 
+      // Determine where to navigate after save
+      const redirectAfterSetup = new URLSearchParams(window.location.search).get("redirect");
+      const targetRoute = redirectAfterSetup || "/dashboard";
+
       // Notify admin if user is pending approval
       try {
         const { data: protectedFields } = await supabase.rpc("get_profile_protected_fields", { _user_id: user.id });
