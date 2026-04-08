@@ -23,6 +23,7 @@ const UpdateProfileSchema = z.object({
   program_weeks: z.number().int().min(1).max(52),
   current_injury: z.string().max(500).nullable(),
   discipline: z.string().min(1).max(50),
+  club_id: z.string().uuid().nullable(),
   country: z.string().max(100).nullable(),
 });
 
