@@ -56,6 +56,7 @@ const App = () => (
             <Route path="/library" element={<LibraryChooser />} />
             <Route path="/library/:section" element={<Library />} />
             <Route path="/diary" element={<Diary />} />
+            <Route path="/payment-success" element={<PaymentSuccess />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/taekwondo-training-program" element={<SeoLanding />} />
