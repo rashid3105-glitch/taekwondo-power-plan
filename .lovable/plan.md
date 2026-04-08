@@ -1,31 +1,35 @@
 
 
-## Plan: Fix build errors, merge conflict, and profile save issue
+## Plan: Add personalized welcome section to dashboard hub
 
-### 1. Fix README.md merge conflict
-The file has Git conflict markers (`<<<<<<< HEAD`, `=======`, `>>>>>>>`) that need to be resolved by keeping the Lovable version.
+### What changes
+Replace the generic centered "hubWelcome" text block (lines 428-433) with a personalized welcome card showing the user's avatar, name, belt level, club, and key stats.
 
-### 2. Fix edge function build errors
+### Design
+A horizontal card at the top of the hub with:
+- Left: User avatar (using existing `AvatarImg` component)
+- Center: Greeting with display name, belt badge, club name underneath
+- Right: Quick stats row — experience years, training days/week, program weeks
 
-**`supabase/functions/get-admin-users/index.ts` (line 62)**
-- `err` is of type `unknown` — cast to `Error`: `(err as Error).message`
+The card uses the existing `bg-card/80 backdrop-blur-sm` style to match the hub cards, with a subtle gradient.
 
-**`supabase/functions/process-email-queue/index.ts` (7 errors)**
-- The `createClient` from npm is untyped, causing type mismatches with `.insert()`, `.rpc()`, and function parameters
-- Fix `moveToDlq` parameter type: change `ReturnType<typeof createClient>` to `any`
-- Add explicit types to `.map((msg: any) =>` and `.filter((id: any): id is string =>`
-- Cast `.insert()` and `.rpc()` payloads with `as any` to bypass the untyped client generics
+### File changes
 
-### 3. Investigate and fix profile save for Ky Tu Dang
-The database row exists with valid protected fields. RLS policies and data are consistent. The most likely cause is a **stale auth session** where the access token expires between page load and form submission.
+**`src/pages/Dashboard.tsx`**
+- Replace the `<div className="text-center space-y-1">` block (lines 428-433) with a new welcome section
+- Uses `profile.avatar_url`, `profile.display_name`, `profile.belt_level`, `clubName`, `profile.experience_years`, `profile.tkd_sessions_per_week`, `profile.program_weeks` — all already loaded in state
+- Import `Badge` from `@/components/ui/badge`
 
-**Changes in `src/pages/ProfileSetup.tsx`:**
-- Before calling `getUser()` in `handleSubmit`, call `supabase.auth.getSession()` first to force a token refresh if needed
-- Add `console.error` logging when 0 rows are returned, including the response details, to aid debugging if this happens again
-- Translate the error message (add translation keys for DA/SV/DE)
+**`src/i18n/translations.ts`**
+- Add keys: `welcomeBack`, `yearsExp`, `sessionsWeek`, `weekProgram` in EN, DA, SV, DE
 
-### Technical details
-- Edge function type errors are caused by the untyped Supabase client (`createClient` without generic `<Database>` parameter) used in Deno edge functions — adding `as any` casts is the standard workaround
-- The profile save debugging log will only fire on failure, so no performance impact
-- 4 files modified: `README.md`, 2 edge functions, `ProfileSetup.tsx`, plus translation keys in `translations.ts`
+### Layout sketch
+```text
+┌──────────────────────────────────────────────┐
+│  [Avatar]  Velkommen tilbage, Ky Tu!         │
+│            🟢 Green belt · TKD Club Name     │
+│                                              │
+│   3 års erfaring  ·  5x/uge  ·  8 uger      │
+└──────────────────────────────────────────────┘
+```
 
