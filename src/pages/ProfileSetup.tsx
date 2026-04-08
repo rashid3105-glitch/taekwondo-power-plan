@@ -168,6 +168,10 @@ export default function ProfileSetup() {
     setLoading(true);
 
     try {
+      // Force token refresh before proceeding — prevents silent RLS rejections
+      // when the access token has expired between page load and form submission
+      await supabase.auth.getSession();
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         navigate("/auth");
