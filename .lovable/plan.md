@@ -1,42 +1,31 @@
 
 
-## Plan: Fix profile save reliability and stale build error
+## Plan: Fix build errors, merge conflict, and profile save issue
 
-### Build error (lines 384-404)
-The reported TS1117 errors are **stale** — the file has no duplicate keys (verified by scanning all 4 locale blocks) and `tsc --noEmit` compiles cleanly. No code changes needed for this; a rebuild will clear it.
+### 1. Fix README.md merge conflict
+The file has Git conflict markers (`<<<<<<< HEAD`, `=======`, `>>>>>>>`) that need to be resolved by keeping the Lovable version.
 
-### Profile save issue for user "Ky Tu"
-The most likely cause: **silent RLS rejection**. When Supabase RLS blocks an update, `.update()` returns 0 affected rows but no error. The app shows "Profile saved" even though nothing was written. Two possible root causes:
+### 2. Fix edge function build errors
 
-1. **Expired auth session** — the console shows `Invalid Refresh Token: Refresh Token Not Found`. If the session is stale, `auth.uid()` in RLS returns null, and the update silently fails.
-2. **Protected field mismatch** — if any protected field (is_approved, payment_status, etc.) doesn't match its current DB value, RLS rejects the row.
+**`supabase/functions/get-admin-users/index.ts` (line 62)**
+- `err` is of type `unknown` — cast to `Error`: `(err as Error).message`
 
-### Changes
+**`supabase/functions/process-email-queue/index.ts` (7 errors)**
+- The `createClient` from npm is untyped, causing type mismatches with `.insert()`, `.rpc()`, and function parameters
+- Fix `moveToDlq` parameter type: change `ReturnType<typeof createClient>` to `any`
+- Add explicit types to `.map((msg: any) =>` and `.filter((id: any): id is string =>`
+- Cast `.insert()` and `.rpc()` payloads with `as any` to bypass the untyped client generics
 
-**File: `src/pages/ProfileSetup.tsx`** (handleSubmit function)
-- After the update call, check if `data` is empty/null and `error` is null — this indicates a silent RLS rejection
-- Add `.select()` to the update chain to get the returned row count
-- If 0 rows updated, show a descriptive error toast instead of "Profile saved"
-- Before attempting the update, verify the user session is valid; if not, redirect to `/auth`
+### 3. Investigate and fix profile save for Ky Tu Dang
+The database row exists with valid protected fields. RLS policies and data are consistent. The most likely cause is a **stale auth session** where the access token expires between page load and form submission.
 
-```typescript
-// Changed update call:
-const { data, error } = await supabase
-  .from("profiles")
-  .update({ ... })
-  .eq("user_id", user.id)
-  .select();
-
-if (error) throw error;
-if (!data || data.length === 0) {
-  toast({ title: t("error"), description: "Profile could not be saved. Please sign out and sign in again.", variant: "destructive" });
-  return;
-}
-toast({ title: t("profileSaved") });
-```
+**Changes in `src/pages/ProfileSetup.tsx`:**
+- Before calling `getUser()` in `handleSubmit`, call `supabase.auth.getSession()` first to force a token refresh if needed
+- Add `console.error` logging when 0 rows are returned, including the response details, to aid debugging if this happens again
+- Translate the error message (add translation keys for DA/SV/DE)
 
 ### Technical details
-- The `.select()` chained after `.update()` makes Supabase return the updated rows, allowing us to detect silent RLS rejections (0 rows returned = blocked)
-- No database or RLS changes needed — the policies are correct; the issue is the client not detecting failures
-- Single file change, ~10 lines modified
+- Edge function type errors are caused by the untyped Supabase client (`createClient` without generic `<Database>` parameter) used in Deno edge functions — adding `as any` casts is the standard workaround
+- The profile save debugging log will only fire on failure, so no performance impact
+- 4 files modified: `README.md`, 2 edge functions, `ProfileSetup.tsx`, plus translation keys in `translations.ts`
 
