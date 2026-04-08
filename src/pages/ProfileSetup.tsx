@@ -168,8 +168,6 @@ export default function ProfileSetup() {
     setLoading(true);
 
     try {
-      // Force token refresh before proceeding — prevents silent RLS rejections
-      // when the access token has expired between page load and form submission
       await supabase.auth.getSession();
 
       const { data: { user } } = await supabase.auth.getUser();
@@ -178,24 +176,28 @@ export default function ProfileSetup() {
         return;
       }
 
-      const { data, error } = await supabase.from("profiles").update({
+      const payload = {
         age: age ? parseInt(age) : null,
         weight_kg: weight ? parseFloat(weight) : null,
         belt_level: belt,
         experience_years: experience ? parseInt(experience) : null,
         tkd_sessions_per_week: tkdCount,
         goals,
-        weekly_schedule: schedule as any,
+        weekly_schedule: schedule,
         program_weeks: programWeeks,
         current_injury: currentInjury || null,
         discipline,
         country: country || null,
-      } as any).eq("user_id", user.id).select();
+      };
+
+      const { data, error } = await supabase.functions.invoke("update-my-profile", {
+        body: payload,
+      });
 
       if (error) throw error;
 
-      if (!data || data.length === 0) {
-        console.error("Profile update returned 0 rows — likely RLS rejection", { userId: user.id, data, error });
+      if (!data?.success) {
+        console.error("Profile update function returned unexpected response", { userId: user.id, data });
         toast({ title: t("error"), description: t("profileSaveFailedSession"), variant: "destructive" });
         return;
       }
