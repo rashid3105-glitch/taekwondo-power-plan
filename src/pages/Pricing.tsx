@@ -1,14 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Watermark } from "@/components/Watermark";
 import { PageMeta } from "@/components/PageMeta";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Zap, Users, Building2, Check, Mail, ArrowLeft, FlaskConical } from "lucide-react";
+import { Zap, Users, Building2, Check, Mail, ArrowLeft, FlaskConical, Loader2, Settings } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 const tiers = [
   {
@@ -37,8 +38,63 @@ const tiers = [
 export default function Pricing() {
   const navigate = useNavigate();
   const { t } = useLanguage();
-  const [showDialog, setShowDialog] = useState(false);
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly");
+  const [loadingTier, setLoadingTier] = useState<string | null>(null);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [managingPortal, setManagingPortal] = useState(false);
+
+  useEffect(() => {
+    checkSubscription();
+  }, []);
+
+  const checkSubscription = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    try {
+      const { data } = await supabase.functions.invoke("check-subscription");
+      if (data?.subscribed) setIsSubscribed(true);
+    } catch {
+      // silently ignore
+    }
+  };
+
+  const handleCheckout = async (tierKey: string) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      navigate("/auth");
+      return;
+    }
+
+    setLoadingTier(tierKey);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout-session", {
+        body: { tier: tierKey, billingCycle },
+      });
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      }
+    } catch (err: any) {
+      toast({ title: t("error"), description: err.message || "Checkout failed", variant: "destructive" });
+    } finally {
+      setLoadingTier(null);
+    }
+  };
+
+  const handleManageSubscription = async () => {
+    setManagingPortal(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("customer-portal");
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      }
+    } catch (err: any) {
+      toast({ title: t("error"), description: err.message || "Portal failed", variant: "destructive" });
+    } finally {
+      setManagingPortal(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background px-4 py-8 relative">
@@ -90,6 +146,7 @@ export default function Pricing() {
             const isCoach = tier.key === "coach";
             const Icon = tier.icon;
             const priceKey = billingCycle === "yearly" ? tier.yearlyPriceKey : tier.monthlyPriceKey;
+            const isLoading = loadingTier === tier.key;
 
             return (
               <Card
@@ -135,8 +192,12 @@ export default function Pricing() {
                     <Button
                       className="w-full"
                       variant={isCoach ? "default" : "outline"}
-                      onClick={() => setShowDialog(true)}
+                      disabled={isLoading}
+                      onClick={() => handleCheckout(tier.key)}
                     >
+                      {isLoading ? (
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      ) : null}
                       {t("getStarted")}
                     </Button>
                   )}
@@ -146,67 +207,33 @@ export default function Pricing() {
           })}
         </div>
 
+        {/* Demo request */}
         <Card className="border-dashed">
           <CardContent className="flex flex-col items-center gap-3 py-6 text-center">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary">
-              <span className="text-lg font-bold text-primary">PP</span>
+              <FlaskConical className="h-5 w-5 text-primary" />
             </div>
-            <h3 className="font-bold text-foreground">{t("pricingPaymentTitle")}</h3>
-            <p className="text-sm text-muted-foreground max-w-md">{t("pricingPaymentDesc")}</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Get Started Dialog */}
-      <Dialog open={showDialog} onOpenChange={setShowDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>{t("getStarted")}</DialogTitle>
-            <DialogDescription>{t("pricingDialogDesc")}</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 pt-2">
-            {/* Request Demo */}
+            <h3 className="font-bold text-foreground">{t("requestDemo")}</h3>
+            <p className="text-sm text-muted-foreground max-w-md">{t("requestDemoDesc")}</p>
             <Button
               variant="outline"
-              className="w-full justify-start gap-3 h-auto py-3"
-              onClick={() => {
-                setShowDialog(false);
-                navigate("/auth?mode=signup&demo=true");
-              }}
+              onClick={() => navigate("/auth?mode=signup&demo=true")}
             >
-              <FlaskConical className="h-5 w-5 text-primary shrink-0" />
-              <div className="text-left">
-                <p className="font-semibold text-sm">{t("requestDemo")}</p>
-                <p className="text-xs text-muted-foreground">{t("requestDemoDesc")}</p>
-              </div>
+              {t("requestDemo")}
             </Button>
+          </CardContent>
+        </Card>
 
-            {/* PayPal instructions */}
-            <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 space-y-2">
-              <div className="flex items-center gap-2">
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary shrink-0">
-                  <span className="text-xs font-bold text-primary-foreground">PP</span>
-                </div>
-                <p className="text-sm font-semibold text-foreground">{t("paypalTitle")}</p>
-              </div>
-              <p className="text-xs text-muted-foreground">{t("paypalInstruction")}</p>
-              <p className="text-lg font-bold text-primary font-mono">rashid3105@gmail.com</p>
-              <p className="text-xs text-muted-foreground">{t("paypalReference")}</p>
-            </div>
-
-            {/* Sign up button */}
-            <Button
-              className="w-full"
-              onClick={() => {
-                setShowDialog(false);
-                navigate("/auth");
-              }}
-            >
-              {t("createAccount")}
+        {/* Manage subscription */}
+        {isSubscribed && (
+          <div className="flex justify-center">
+            <Button variant="outline" disabled={managingPortal} onClick={handleManageSubscription}>
+              {managingPortal ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Settings className="h-4 w-4 mr-2" />}
+              {t("manageSubscription")}
             </Button>
           </div>
-        </DialogContent>
-      </Dialog>
+        )}
+      </div>
     </div>
   );
 }
