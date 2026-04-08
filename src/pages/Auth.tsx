@@ -32,6 +32,9 @@ export default function AuthPage() {
   const { toast } = useToast();
   const { t } = useLanguage();
 
+  // Read redirect param so we can send user back after login
+  const redirectTo = new URLSearchParams(window.location.search).get("redirect");
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -40,7 +43,7 @@ export default function AuthPage() {
       if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        navigate("/dashboard");
+        navigate(redirectTo || "/dashboard");
       } else {
         const { data: signUpData, error } = await supabase.auth.signUp({
           email,

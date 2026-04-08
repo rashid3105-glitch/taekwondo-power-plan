@@ -61,7 +61,7 @@ export default function Pricing() {
   const handleCheckout = async (tierKey: string) => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
-      navigate("/auth");
+      navigate("/auth?redirect=/pricing");
       return;
     }
 
