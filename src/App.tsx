@@ -26,6 +26,7 @@ import Methodology from "./pages/Methodology";
 import Unsubscribe from "./pages/Unsubscribe";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import SeoLanding from "./pages/SeoLanding";
+import PaymentSuccess from "./pages/PaymentSuccess";
 
 
 const queryClient = new QueryClient();
@@ -56,6 +57,7 @@ const App = () => (
             <Route path="/library" element={<LibraryChooser />} />
             <Route path="/library/:section" element={<Library />} />
             <Route path="/diary" element={<Diary />} />
+            <Route path="/payment-success" element={<PaymentSuccess />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/taekwondo-training-program" element={<SeoLanding />} />
