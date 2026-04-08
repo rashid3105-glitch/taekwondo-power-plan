@@ -433,12 +433,12 @@ export default function Dashboard() {
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               {([
-                { tab: "plan" as const, icon: Zap, titleKey: "hubTrainingTitle", descKey: "hubTrainingDesc", color: "text-tab-plan", gradient: "radial-gradient(circle at 30% 50%, hsl(190 95% 50% / 0.08), transparent 70%)", locked: false },
-                { tab: "progress" as const, icon: BarChart3, titleKey: "hubProgressTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubProgressDesc", color: "text-tab-progress", gradient: "radial-gradient(circle at 30% 50%, hsl(45 90% 55% / 0.08), transparent 70%)", locked: isDemo },
-                { tab: "nutrition" as const, icon: Apple, titleKey: "hubNutritionTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubNutritionDesc", color: "text-tab-nutrition", gradient: "radial-gradient(circle at 30% 50%, hsl(120 60% 45% / 0.08), transparent 70%)", locked: isDemo },
-                { tab: "rehab" as const, icon: Heart, titleKey: "hubRehabTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubRehabDesc", color: "text-tab-rehab", gradient: "radial-gradient(circle at 30% 50%, hsl(0 72% 51% / 0.08), transparent 70%)", locked: isDemo },
-                { tab: "mental" as const, icon: Brain, titleKey: "hubMentalTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubMentalDesc", color: "text-tab-mental", gradient: "radial-gradient(circle at 30% 50%, hsl(330 60% 72% / 0.08), transparent 70%)", locked: isDemo },
-                { tab: "testing" as const, icon: ClipboardList, titleKey: "hubTestingTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubTestingDesc", color: "text-primary", gradient: "radial-gradient(circle at 30% 50%, hsl(210 80% 55% / 0.08), transparent 70%)", locked: isDemo },
+                { tab: "plan" as const, icon: Zap, titleKey: "hubTrainingTitle", descKey: "hubTrainingDesc", color: "text-tab-plan", iconBg: "bg-tab-plan/15", borderColor: "border-l-tab-plan", gradient: "radial-gradient(ellipse at 20% 50%, hsl(190 95% 50% / 0.15), transparent 60%)", locked: false },
+                { tab: "progress" as const, icon: BarChart3, titleKey: "hubProgressTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubProgressDesc", color: "text-tab-progress", iconBg: "bg-tab-progress/15", borderColor: "border-l-tab-progress", gradient: "radial-gradient(ellipse at 20% 50%, hsl(45 90% 55% / 0.15), transparent 60%)", locked: isDemo },
+                { tab: "nutrition" as const, icon: Apple, titleKey: "hubNutritionTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubNutritionDesc", color: "text-tab-nutrition", iconBg: "bg-tab-nutrition/15", borderColor: "border-l-tab-nutrition", gradient: "radial-gradient(ellipse at 20% 50%, hsl(142 70% 45% / 0.15), transparent 60%)", locked: isDemo },
+                { tab: "rehab" as const, icon: Heart, titleKey: "hubRehabTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubRehabDesc", color: "text-tab-rehab", iconBg: "bg-tab-rehab/15", borderColor: "border-l-tab-rehab", gradient: "radial-gradient(ellipse at 20% 50%, hsl(0 72% 51% / 0.15), transparent 60%)", locked: isDemo },
+                { tab: "mental" as const, icon: Brain, titleKey: "hubMentalTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubMentalDesc", color: "text-tab-mental", iconBg: "bg-tab-mental/15", borderColor: "border-l-tab-mental", gradient: "radial-gradient(ellipse at 20% 50%, hsl(330 60% 72% / 0.15), transparent 60%)", locked: isDemo },
+                { tab: "testing" as const, icon: ClipboardList, titleKey: "hubTestingTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubTestingDesc", color: "text-primary", iconBg: "bg-primary/15", borderColor: "border-l-primary", gradient: "radial-gradient(ellipse at 20% 50%, hsl(210 80% 55% / 0.15), transparent 60%)", locked: isDemo },
               ]).map((section) => {
                 const Icon = section.icon;
                 return (
@@ -446,14 +446,14 @@ export default function Dashboard() {
                     key={section.tab}
                     onClick={() => handleTabChange(section.tab)}
                     disabled={section.locked}
-                    className={`group relative rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-5 shadow-card text-left transition-all duration-300 ${section.locked ? "cursor-not-allowed opacity-80" : "cursor-pointer hover:border-primary/30 hover:-translate-y-1"}`}
+                    className={`group relative overflow-hidden rounded-2xl border border-border border-l-[3px] ${section.borderColor} bg-card/80 backdrop-blur-sm p-5 shadow-card text-left transition-all duration-300 ${section.locked ? "cursor-not-allowed opacity-70" : "cursor-pointer hover:border-primary/30 hover:-translate-y-1 hover:shadow-glow"}`}
                   >
                     <div
-                      className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                      style={{ background: section.gradient, filter: "blur(40px)", zIndex: -1 }}
+                      className="absolute inset-0 rounded-2xl transition-opacity duration-500 opacity-60 group-hover:opacity-100"
+                      style={{ background: section.gradient }}
                     />
-                    <div className="flex items-start gap-4">
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary relative">
+                    <div className="relative flex items-start gap-4">
+                      <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${section.iconBg} relative`}>
                         <Icon className={`h-5 w-5 ${section.color}`} />
                         {section.locked && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
                       </div>
@@ -469,14 +469,14 @@ export default function Dashboard() {
               <button
                 onClick={() => !isDemo && navigate("/library")}
                 disabled={isDemo}
-                className={`group relative rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-5 shadow-card text-left transition-all duration-300 ${isDemo ? "cursor-not-allowed opacity-80" : "cursor-pointer hover:border-primary/30 hover:-translate-y-1"}`}
+                className={`group relative overflow-hidden rounded-2xl border border-border border-l-[3px] border-l-primary bg-card/80 backdrop-blur-sm p-5 shadow-card text-left transition-all duration-300 ${isDemo ? "cursor-not-allowed opacity-70" : "cursor-pointer hover:border-primary/30 hover:-translate-y-1 hover:shadow-glow"}`}
               >
                 <div
-                  className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                  style={{ background: "radial-gradient(circle at 30% 50%, hsl(270 70% 55% / 0.08), transparent 70%)", filter: "blur(40px)", zIndex: -1 }}
+                  className="absolute inset-0 rounded-2xl transition-opacity duration-500 opacity-60 group-hover:opacity-100"
+                  style={{ background: "radial-gradient(ellipse at 20% 50%, hsl(270 70% 55% / 0.15), transparent 60%)" }}
                 />
-                <div className="flex items-start gap-4">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary relative">
+                <div className="relative flex items-start gap-4">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/15 relative">
                     <BookOpen className="h-5 w-5 text-primary" />
                     {isDemo && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
                   </div>
@@ -489,15 +489,15 @@ export default function Dashboard() {
               </button>
               <button
                 onClick={() => navigate("/help")}
-                className="group relative rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-5 shadow-card text-left transition-all duration-300 cursor-pointer hover:border-primary/30 hover:-translate-y-1"
+                className="group relative overflow-hidden rounded-2xl border border-border border-l-[3px] border-l-accent bg-card/80 backdrop-blur-sm p-5 shadow-card text-left transition-all duration-300 cursor-pointer hover:border-primary/30 hover:-translate-y-1 hover:shadow-glow"
               >
                 <div
-                  className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                  style={{ background: "radial-gradient(circle at 30% 50%, hsl(200 70% 50% / 0.08), transparent 70%)", filter: "blur(40px)", zIndex: -1 }}
+                  className="absolute inset-0 rounded-2xl transition-opacity duration-500 opacity-60 group-hover:opacity-100"
+                  style={{ background: "radial-gradient(ellipse at 20% 50%, hsl(200 70% 50% / 0.15), transparent 60%)" }}
                 />
-                <div className="flex items-start gap-4">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary">
-                    <HelpCircle className="h-5 w-5 text-primary" />
+                <div className="relative flex items-start gap-4">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent/15">
+                    <HelpCircle className="h-5 w-5 text-accent" />
                   </div>
                   <div className="space-y-1.5">
                     <h3 className="text-sm font-bold text-foreground tracking-tight">{t("helpTitle")}</h3>
