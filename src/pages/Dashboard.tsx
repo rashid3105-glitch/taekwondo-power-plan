@@ -12,6 +12,7 @@ import { AvatarImg } from "@/components/AvatarImg";
 import logo from "@/assets/logo.webp";
 import { useToast } from "@/hooks/use-toast";
 import { AIPlanCard } from "@/components/AIPlanCard";
+import { Badge } from "@/components/ui/badge";
 import { RehabPlanCard } from "@/components/RehabPlanCard";
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -425,11 +426,42 @@ export default function Dashboard() {
         )}
         {activeTab === "hub" ? (
           <div className="space-y-6">
-            <div className="text-center space-y-1">
-              <h2 className="text-2xl font-extrabold text-foreground">
-                {t("hubWelcome")}
-              </h2>
-              <p className="text-sm text-muted-foreground">{t("hubChooseSection")}</p>
+            <div className="relative overflow-hidden rounded-lg border bg-card/80 backdrop-blur-sm p-4 sm:p-5"
+              style={{ backgroundImage: "radial-gradient(ellipse at 80% 0%, hsl(var(--primary) / 0.10), transparent 60%)" }}>
+              <div className="flex items-center gap-4">
+                <AvatarImg
+                  avatarUrl={profile?.avatar_url}
+                  className="h-14 w-14 rounded-full object-cover border-2 border-primary/30 shrink-0"
+                  fallbackClassName="h-14 w-14 rounded-full bg-muted flex items-center justify-center border-2 border-primary/30 shrink-0"
+                />
+                <div className="flex-1 min-w-0 space-y-1">
+                  <h2 className="text-xl sm:text-2xl font-extrabold text-foreground truncate">
+                    {t("welcomeBack")}, {profile?.display_name || "Athlete"}!
+                  </h2>
+                  <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                    {profile?.belt_level && (
+                      <Badge variant="outline" className="capitalize text-xs">
+                        {profile.belt_level}
+                      </Badge>
+                    )}
+                    {clubName && <span>{clubName}</span>}
+                  </div>
+                </div>
+              </div>
+              {profile && (
+                <div className="flex flex-wrap gap-4 mt-3 pt-3 border-t border-border/40 text-xs sm:text-sm text-muted-foreground">
+                  {profile.experience_years != null && profile.experience_years > 0 && (
+                    <span>{profile.experience_years} {t("yearsExp")}</span>
+                  )}
+                  {profile.tkd_sessions_per_week > 0 && (
+                    <span>{profile.tkd_sessions_per_week}x {t("sessionsWeek")}</span>
+                  )}
+                  {profile.program_weeks != null && profile.program_weeks > 0 && (
+                    <span>{profile.program_weeks} {t("weekProgram")}</span>
+                  )}
+                </div>
+              )}
+              <p className="text-sm text-muted-foreground mt-2">{t("hubChooseSection")}</p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               {([
