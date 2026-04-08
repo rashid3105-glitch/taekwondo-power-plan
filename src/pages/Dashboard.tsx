@@ -469,14 +469,14 @@ export default function Dashboard() {
               <button
                 onClick={() => !isDemo && navigate("/library")}
                 disabled={isDemo}
-                className={`group relative rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-5 shadow-card text-left transition-all duration-300 ${isDemo ? "cursor-not-allowed opacity-80" : "cursor-pointer hover:border-primary/30 hover:-translate-y-1"}`}
+                className={`group relative overflow-hidden rounded-2xl border border-border border-l-[3px] border-l-primary bg-card/80 backdrop-blur-sm p-5 shadow-card text-left transition-all duration-300 ${isDemo ? "cursor-not-allowed opacity-70" : "cursor-pointer hover:border-primary/30 hover:-translate-y-1 hover:shadow-glow"}`}
               >
                 <div
-                  className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                  style={{ background: "radial-gradient(circle at 30% 50%, hsl(270 70% 55% / 0.08), transparent 70%)", filter: "blur(40px)", zIndex: -1 }}
+                  className="absolute inset-0 rounded-2xl transition-opacity duration-500 opacity-60 group-hover:opacity-100"
+                  style={{ background: "radial-gradient(ellipse at 20% 50%, hsl(270 70% 55% / 0.15), transparent 60%)" }}
                 />
-                <div className="flex items-start gap-4">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary relative">
+                <div className="relative flex items-start gap-4">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/15 relative">
                     <BookOpen className="h-5 w-5 text-primary" />
                     {isDemo && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
                   </div>
@@ -489,15 +489,15 @@ export default function Dashboard() {
               </button>
               <button
                 onClick={() => navigate("/help")}
-                className="group relative rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-5 shadow-card text-left transition-all duration-300 cursor-pointer hover:border-primary/30 hover:-translate-y-1"
+                className="group relative overflow-hidden rounded-2xl border border-border border-l-[3px] border-l-accent bg-card/80 backdrop-blur-sm p-5 shadow-card text-left transition-all duration-300 cursor-pointer hover:border-primary/30 hover:-translate-y-1 hover:shadow-glow"
               >
                 <div
-                  className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                  style={{ background: "radial-gradient(circle at 30% 50%, hsl(200 70% 50% / 0.08), transparent 70%)", filter: "blur(40px)", zIndex: -1 }}
+                  className="absolute inset-0 rounded-2xl transition-opacity duration-500 opacity-60 group-hover:opacity-100"
+                  style={{ background: "radial-gradient(ellipse at 20% 50%, hsl(200 70% 50% / 0.15), transparent 60%)" }}
                 />
-                <div className="flex items-start gap-4">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary">
-                    <HelpCircle className="h-5 w-5 text-primary" />
+                <div className="relative flex items-start gap-4">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent/15">
+                    <HelpCircle className="h-5 w-5 text-accent" />
                   </div>
                   <div className="space-y-1.5">
                     <h3 className="text-sm font-bold text-foreground tracking-tight">{t("helpTitle")}</h3>
