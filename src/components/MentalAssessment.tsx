@@ -75,6 +75,7 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
   const { toast } = useToast();
   const { locale } = useLanguage();
   const l = locale as "en" | "da";
+  const questions = getQuestionsForAge(profile?.age);
 
   const t = {
     en: {
