@@ -1,24 +1,67 @@
 
 
-## Plan: Fix pricing page flow after login
+## Plan: Redesign landing page — fewer ord, mere visuelt impact
 
-### Problem
-1. When clicking "Kom i gang" on a pricing tier, unauthenticated users are sent to `/auth` but never redirected back to the pricing page after login — they end up on the dashboard instead.
-2. There is no clear navigation link to the pricing page from the dashboard/navigation after login.
+### Problemet nu
+Siden har 3 lange prosa-sektioner ("What is Sportstalent?", "Who is it for?", "How it works") med 3 afsnit tekst hver. Det føles som en artikel, ikke en salgside. Brugere scanner — de læser ikke 500 ord før de beslutter sig.
 
-### Changes
+### Designprincipper
+- **Scan-venligt**: Erstat lange afsnit med korte one-liners + ikoner/visuelle elementer
+- **Social proof tidligt**: Flyt case study ("10.5% jump increase") op, tættere på hero
+- **Klar værdi-hierarki**: Hero → proof → features → ugeplan → FAQ → CTA
+- **Mere whitespace og visuel rytme**: Veksle mellem mørke og lette sektioner
 
-**1. Redirect back to pricing after login (`src/pages/Pricing.tsx`)**
-- Change `navigate("/auth")` to `navigate("/auth?redirect=/pricing")` so the auth page knows to send users back to pricing after login.
+### Ny sektions-rækkefølge
 
-**2. Handle redirect param in Auth page (`src/pages/Auth.tsx`)**
-- Read `redirect` query param from the URL.
-- After successful login, navigate to the `redirect` URL instead of the default `/dashboard`.
+```text
+1. Hero (forkortet — 1 sætning subtitle i stedet for 3 linjer)
+2. Social proof bar (kort stat-linje: "Used by 50+ athletes · 10.5% avg jump increase")
+3. 3-kolonne "What you get" (ikon + titel + 1 sætning, erstat den lange What is + Who is for)
+4. Weekly plan eksempel (behold — det er stærkt visuelt)
+5. Case study (behold men kompakt)
+6. Feature grid (behold)
+7. FAQ (behold)
+8. CTA (behold)
+```
 
-**3. Add pricing link to dashboard navigation (`src/pages/Dashboard.tsx`)**
-- Ensure the "View Pricing" button is visible in the dashboard header/nav area so logged-in users can easily find it.
+### Konkrete ændringer
 
-### Technical details
-- 2-3 files modified: `Pricing.tsx` (1-line change), `Auth.tsx` (add redirect logic), optionally `Dashboard.tsx` (ensure pricing link visibility)
-- No database changes needed
+**`src/pages/Index.tsx`**
+- Fjern sektionerne "What is Sportstalent?", "Who is it for?", "How it works" (3 lange prose-blokke)
+- Forkort hero subtitle til 1 sætning
+- Tilføj en ny "social proof bar" under hero — 3 stat-badges i en række
+- Omskriv "What you get" sektionen til et 3-kolonne grid med ikon + kort titel + 1 sætning (i stedet for de 6 listeformaterede items)
+- Flyt ugeplanen op (lige efter det nye grid)
+- Behold CaseStudy, FeatureGrid, FAQ og CTA som de er
+
+**`src/i18n/translations.ts`**
+- Tilføj nye korte keys til social proof bar og omskrevne sektioner
+- Fjern ubrugte lange tekst-keys (oprydning)
+
+### Visuelt resultat
+
+```text
+┌─────────────────────────────────────────┐
+│  HERO: Titel + 1 sætning + CTA         │
+├─────────────────────────────────────────┤
+│  ⚡ 50+ athletes  📈 10.5% jump  🏆 U21│  ← social proof
+├─────────────────────────────────────────┤
+│  [Periodized]  [Sport-specific]  [AI]   │  ← 3-col value props
+│   1 sætning     1 sætning      1 sætn. │
+├─────────────────────────────────────────┤
+│  📅 Weekly Plan Example (7 day cards)   │
+├─────────────────────────────────────────┤
+│  Case Study (behold)                    │
+├─────────────────────────────────────────┤
+│  Feature Grid (behold)                  │
+├─────────────────────────────────────────┤
+│  FAQ (behold)                           │
+├─────────────────────────────────────────┤
+│  CTA (behold)                           │
+└─────────────────────────────────────────┘
+```
+
+### Filer der ændres
+- `src/pages/Index.tsx` — primær omstrukturering
+- `src/i18n/translations.ts` — nye korte keys, fjern gamle
 
