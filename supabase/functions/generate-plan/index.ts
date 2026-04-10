@@ -135,7 +135,12 @@ IMPORTANT: ALL text content (planName, labels, focus descriptions, exercise name
 
     const weeklySchedule = profile.weekly_schedule || [];
     const scheduleDescription = weeklySchedule.length > 0
-      ? weeklySchedule.map((d: any) => `${d.day}: ${d.type.toUpperCase()}`).join(', ')
+      ? weeklySchedule.map((d: any) => {
+          if (d.sessions && d.sessions.length > 1) {
+            return `${d.day}: ${d.sessions.map((s: any) => s.type.toUpperCase()).join(' + ')}`;
+          }
+          return `${d.day}: ${d.type.toUpperCase()}`;
+        }).join(', ')
       : 'Not specified';
 
     const injuryInfo = profile.current_injury ? `\n- Current injury: ${profile.current_injury}` : '';
