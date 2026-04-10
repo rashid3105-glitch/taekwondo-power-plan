@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Loader2, Apple, AlertTriangle, Droplets, Pill, Utensils, Flame, ChevronDown, ChevronUp, Download } from "lucide-react";
@@ -149,14 +148,6 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
     }
   };
 
-  const handleCustomCaloriesChange = async (value: string) => {
-    setCustomCalories(value);
-    if (savedPlanId && plan) {
-      const calories = value ? parseInt(value) : null;
-      if (value && isNaN(calories!)) return;
-      await savePlan(plan, selectedGoals, calories, savedPlanId);
-    }
-  };
 
   const downloadPDF = () => {
     if (!plan) return;
