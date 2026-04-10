@@ -2,7 +2,7 @@
  * Calendar export utilities — .ics file download & Google Calendar link generation
  */
 
-interface CalendarEvent {
+import { normalizeDaySessions } from "@/lib/planSessionUtils";
   title: string;
   description: string;
   startDate: Date;
@@ -96,23 +96,28 @@ export function buildTrainingEvents(
     weekStart.setDate(weekStart.getDate() + week * 7);
 
     for (const day of schedule) {
-      if (day.type === "rest") continue;
-
+      const sessions = normalizeDaySessions(day);
       const dayDate = getNextDayOfWeek(day.dayOfWeek, weekStart);
-      const startDate = new Date(dayDate);
-      startDate.setHours(9, 0, 0, 0); // default 9 AM
-      const endDate = new Date(dayDate);
-      endDate.setHours(10, 30, 0, 0); // default 1.5h session
 
-      const exerciseList = day.exercises?.length
-        ? day.exercises.map((ex: any, i: number) => `${i + 1}. ${ex.name} — ${ex.sets}×${ex.reps}`).join("\n")
-        : "Follow dojang programming";
+      sessions.forEach((session: any, si: number) => {
+        if (session.type === "rest" || session.type === "recovery") return;
 
-      events.push({
-        title: `${planName} — ${day.label}`,
-        description: `${day.focus || ""}\n\n${exerciseList}`.trim(),
-        startDate,
-        endDate,
+        const startHour = si === 0 ? 9 : 17; // morning vs evening
+        const startDate = new Date(dayDate);
+        startDate.setHours(startHour, 0, 0, 0);
+        const endDate = new Date(dayDate);
+        endDate.setHours(startHour + 1, 30, 0, 0);
+
+        const exerciseList = session.exercises?.length
+          ? session.exercises.map((ex: any, i: number) => `${i + 1}. ${ex.name} — ${ex.sets}×${ex.reps}`).join("\n")
+          : "Follow dojang programming";
+
+        events.push({
+          title: `${planName} — ${session.label || day.label}`,
+          description: `${session.focus || ""}\n\n${exerciseList}`.trim(),
+          startDate,
+          endDate,
+        });
       });
     }
   }
@@ -124,20 +129,24 @@ export function buildTrainingEvents(
 export function buildDayEvent(
   day: any,
   planName: string,
-  date?: Date
+  date?: Date,
+  sessionIndex: number = 0
 ): CalendarEvent {
+  const sessions = normalizeDaySessions(day);
+  const session = sessions[sessionIndex] || sessions[0];
+  const startHour = sessionIndex === 0 ? 9 : 17;
   const startDate = date ? new Date(date) : getNextDayOfWeek(day.dayOfWeek, new Date());
-  startDate.setHours(9, 0, 0, 0);
+  startDate.setHours(startHour, 0, 0, 0);
   const endDate = new Date(startDate);
-  endDate.setHours(10, 30, 0, 0);
+  endDate.setHours(startHour + 1, 30, 0, 0);
 
-  const exerciseList = day.exercises?.length
-    ? day.exercises.map((ex: any, i: number) => `${i + 1}. ${ex.name} — ${ex.sets}×${ex.reps}`).join("\n")
+  const exerciseList = session.exercises?.length
+    ? session.exercises.map((ex: any, i: number) => `${i + 1}. ${ex.name} — ${ex.sets}×${ex.reps}`).join("\n")
     : "Follow dojang programming";
 
   return {
-    title: `${planName} — ${day.label}`,
-    description: `${day.focus || ""}\n\n${exerciseList}`.trim(),
+    title: `${planName} — ${session.label || day.label}`,
+    description: `${session.focus || ""}\n\n${exerciseList}`.trim(),
     startDate,
     endDate,
   };
