@@ -7,9 +7,14 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const DaySessionSchema = z.object({
+  type: z.enum(["tkd", "gym", "rest"]),
+});
+
 const DayScheduleSchema = z.object({
   day: z.string().min(1).max(20),
   type: z.enum(["tkd", "gym", "rest"]),
+  sessions: z.array(DaySessionSchema).min(1).max(3).optional(),
 });
 
 const UpdateProfileSchema = z.object({
