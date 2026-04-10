@@ -283,6 +283,42 @@ export type Database = {
         }
         Relationships: []
       }
+      nutrition_plans: {
+        Row: {
+          created_at: string
+          custom_calories: number | null
+          goals: string[]
+          id: string
+          is_active: boolean
+          name: string
+          plan_data: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          custom_calories?: number | null
+          goals?: string[]
+          id?: string
+          is_active?: boolean
+          name?: string
+          plan_data?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          custom_calories?: number | null
+          goals?: string[]
+          id?: string
+          is_active?: boolean
+          name?: string
+          plan_data?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       physical_test_results: {
         Row: {
           category: string
