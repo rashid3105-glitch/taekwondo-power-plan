@@ -197,7 +197,7 @@ export default function Dashboard() {
 
       const { error: insertError } = await supabase.from("training_plans").insert({
         user_id: user.id,
-        name: data.plan.planName || "AI Generated Plan",
+        name: data.plan.planName || "Generated Plan",
         plan_data: data.plan,
         is_active: true,
       });
