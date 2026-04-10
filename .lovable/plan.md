@@ -1,67 +1,38 @@
 
 
-## Plan: Redesign landing page — fewer ord, mere visuelt impact
+## Plan: Remove AI references from user-facing pages
 
-### Problemet nu
-Siden har 3 lange prosa-sektioner ("What is Sportstalent?", "Who is it for?", "How it works") med 3 afsnit tekst hver. Det føles som en artikel, ikke en salgside. Brugere scanner — de læser ikke 500 ord før de beslutter sig.
+All "AI" mentions in user-facing text will be reworded to emphasize the system's intelligence without naming it "AI." Internal code comments and variable names stay unchanged.
 
-### Designprincipper
-- **Scan-venligt**: Erstat lange afsnit med korte one-liners + ikoner/visuelle elementer
-- **Social proof tidligt**: Flyt case study ("10.5% jump increase") op, tættere på hero
-- **Klar værdi-hierarki**: Hero → proof → features → ugeplan → FAQ → CTA
-- **Mere whitespace og visuel rytme**: Veksle mellem mørke og lette sektioner
+### Changes
 
-### Ny sektions-rækkefølge
+**`src/i18n/translations.ts`** — Reword these keys across all 4 languages (EN, DA, SV, DE):
 
-```text
-1. Hero (forkortet — 1 sætning subtitle i stedet for 3 linjer)
-2. Social proof bar (kort stat-linje: "Used by 50+ athletes · 10.5% avg jump increase")
-3. 3-kolonne "What you get" (ikon + titel + 1 sætning, erstat den lange What is + Who is for)
-4. Weekly plan eksempel (behold — det er stærkt visuelt)
-5. Case study (behold men kompakt)
-6. Feature grid (behold)
-7. FAQ (behold)
-8. CTA (behold)
-```
+| Key | Current (EN) | New (EN) |
+|-----|------|------|
+| `howItWorksStep2Desc` | "AI generates a periodized program…" | "We generate a periodized program…" |
+| `landingValueAITitle` | "AI-Powered Plans" | "Personalized Plans" |
+| `landingValueAIDesc` | (unchanged content, already no "AI") | (keep as-is) |
+| `nutritionDisclaimerDesc` | "This nutrition plan is AI-generated…" | "This nutrition plan is auto-generated…" |
+| `helpTrainingPlanSteps` | "The AI will create…" | "The system will create…" |
+| `helpRehabPlanSteps` | "The AI creates…" | "The system creates…" |
+| `helpMentalPlanSteps` | "AI-generated sports psychology advice" | "personalized sports psychology advice" |
+| `changelogEntry32` | "Swedish language support in all AI plan generators" | "Swedish language support in all plan generators" |
 
-### Konkrete ændringer
+Same pattern applied to DA, SV, DE translations.
 
-**`src/pages/Index.tsx`**
-- Fjern sektionerne "What is Sportstalent?", "Who is it for?", "How it works" (3 lange prose-blokke)
-- Forkort hero subtitle til 1 sætning
-- Tilføj en ny "social proof bar" under hero — 3 stat-badges i en række
-- Omskriv "What you get" sektionen til et 3-kolonne grid med ikon + kort titel + 1 sætning (i stedet for de 6 listeformaterede items)
-- Flyt ugeplanen op (lige efter det nye grid)
-- Behold CaseStudy, FeatureGrid, FAQ og CTA som de er
+**`src/components/MentalAssessment.tsx`** — Change:
+- EN: "Get My Results & AI Advice" → "Get My Results & Advice"
+- DA: "Få mine resultater & AI-råd" → "Få mine resultater & råd"
 
-**`src/i18n/translations.ts`**
-- Tilføj nye korte keys til social proof bar og omskrevne sektioner
-- Fjern ubrugte lange tekst-keys (oprydning)
+**`src/components/NutritionPlan.tsx`** — Change code comment only (cosmetic, optional).
 
-### Visuelt resultat
+**`src/pages/Dashboard.tsx`** — Change `"AI Generated Plan"` → `"Generated Plan"` (internal plan name).
 
-```text
-┌─────────────────────────────────────────┐
-│  HERO: Titel + 1 sætning + CTA         │
-├─────────────────────────────────────────┤
-│  ⚡ 50+ athletes  📈 10.5% jump  🏆 U21│  ← social proof
-├─────────────────────────────────────────┤
-│  [Periodized]  [Sport-specific]  [AI]   │  ← 3-col value props
-│   1 sætning     1 sætning      1 sætn. │
-├─────────────────────────────────────────┤
-│  📅 Weekly Plan Example (7 day cards)   │
-├─────────────────────────────────────────┤
-│  Case Study (behold)                    │
-├─────────────────────────────────────────┤
-│  Feature Grid (behold)                  │
-├─────────────────────────────────────────┤
-│  FAQ (behold)                           │
-├─────────────────────────────────────────┤
-│  CTA (behold)                           │
-└─────────────────────────────────────────┘
-```
+**`src/pages/Index.tsx`** — The landing page value prop icon/title uses `landingValueAITitle` from translations — already covered above.
 
-### Filer der ændres
-- `src/pages/Index.tsx` — primær omstrukturering
-- `src/i18n/translations.ts` — nye korte keys, fjern gamle
+### Not changed
+- Component file names (`AIPlanCard.tsx`) — internal, not user-facing
+- Edge function names — internal backend code
+- Code comments — not visible to users
 
