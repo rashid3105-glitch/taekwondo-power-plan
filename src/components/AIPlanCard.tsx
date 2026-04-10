@@ -192,6 +192,28 @@ async function generatePDF(plan: AIPlanCardProps["plan"]) {
   doc.save(`${plan.name.replace(/\s+/g, "_")}.pdf`);
 }
 
+// Map any-language day name to a 0-6 index for translation lookup
+const DAY_NAMES_ALL = [
+  ["monday","mandag","måndag","montag","mon","man","mån","mo"],
+  ["tuesday","tirsdag","tisdag","dienstag","tue","tir","tis","di"],
+  ["wednesday","onsdag","onsdag","mittwoch","wed","ons","mi"],
+  ["thursday","torsdag","torsdag","donnerstag","thu","tor","do"],
+  ["friday","fredag","fredag","freitag","fri","fre","fr"],
+  ["saturday","saturday","lørdag","lördag","samstag","sat","lør","lör","sa"],
+  ["sunday","søndag","söndag","sonntag","sun","søn","sön","so"],
+];
+const DAY_SHORT_KEYS = ["monShort","tueShort","wedShort","thuShort","friShort","satShort","sunShort"] as const;
+
+function translateDayShort(dayOfWeek: string, t: (k: string) => string): string {
+  const lower = dayOfWeek?.toLowerCase().trim() || "";
+  for (let i = 0; i < DAY_NAMES_ALL.length; i++) {
+    if (DAY_NAMES_ALL[i].some(n => lower.startsWith(n) || lower === n)) {
+      return t(DAY_SHORT_KEYS[i]);
+    }
+  }
+  return dayOfWeek?.slice(0, 3)?.toUpperCase() || "?";
+}
+
 export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [activeSessionIndex, setActiveSessionIndex] = useState(0);
@@ -387,7 +409,7 @@ export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
                       ? "text-primary drop-shadow-[0_0_8px_hsl(190_95%_50%)]" 
                       : "text-muted-foreground group-hover:text-primary group-hover:drop-shadow-[0_0_6px_hsl(190_95%_50%/0.5)]"
                   }`}>
-                    {day.dayOfWeek?.slice(0, 3)}
+                    {translateDayShort(day.dayOfWeek, t)}
                   </span>
                   <div className="flex items-center gap-0.5">
                     {sessions.map((sess: PlanSession, si: number) => {
@@ -403,7 +425,7 @@ export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
                       ? "text-primary drop-shadow-[0_0_8px_hsl(190_95%_50%/0.8)]" 
                       : "text-foreground group-hover:text-primary group-hover:drop-shadow-[0_0_6px_hsl(190_95%_50%/0.5)]"
                   }`}>
-                    {sessions.length > 1 ? `${sessions.length} sessions` : (day.label || sessions[0]?.label)}
+                    {sessions.length > 1 ? `${sessions.length} ${t("nSessions")}` : (day.label || sessions[0]?.label)}
                   </span>
                 </button>
               );
