@@ -3,6 +3,8 @@
  */
 
 import { normalizeDaySessions } from "@/lib/planSessionUtils";
+
+interface CalendarEvent {
   title: string;
   description: string;
   startDate: Date;
