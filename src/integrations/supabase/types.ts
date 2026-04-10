@@ -639,6 +639,7 @@ export type Database = {
           logged_date: string
           notes: string | null
           plan_id: string
+          session_index: number
           updated_at: string
           user_id: string
         }
@@ -653,6 +654,7 @@ export type Database = {
           logged_date?: string
           notes?: string | null
           plan_id: string
+          session_index?: number
           updated_at?: string
           user_id: string
         }
@@ -667,6 +669,7 @@ export type Database = {
           logged_date?: string
           notes?: string | null
           plan_id?: string
+          session_index?: number
           updated_at?: string
           user_id?: string
         }

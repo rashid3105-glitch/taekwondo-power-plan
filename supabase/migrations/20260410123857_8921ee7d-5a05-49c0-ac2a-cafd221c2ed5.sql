@@ -1,0 +1,1 @@
+ALTER TABLE public.workout_logs ADD COLUMN session_index integer NOT NULL DEFAULT 0;
