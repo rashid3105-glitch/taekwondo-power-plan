@@ -99,28 +99,34 @@ Return a valid JSON object with this exact structure:
   "weeklySchedule": [
     {
       "dayOfWeek": "Monday",
-      "label": "string (e.g. 'TKD Technical' or 'Power & Explosiveness')",
-      "type": "tkd" | "gym" | "recovery",
-      "focus": "string",
-      "exercises": [
+      "sessions": [
         {
-          "name": "string",
-          "category": "power" | "speed" | "strength" | "plyometric" | "mobility",
-          "sets": number,
-          "reps": "string",
-          "tempo": "string or null",
-          "rest": "string",
-          "coachingCue": "string",
-          "whyItMatters": "string",
-          "alternatives": [
-            { "name": "string", "reason": "string" },
-            { "name": "string", "reason": "string" }
+          "type": "tkd" | "gym" | "recovery",
+          "label": "string (e.g. 'Morning Strength' or 'Evening TKD')",
+          "focus": "string",
+          "exercises": [
+            {
+              "name": "string",
+              "category": "power" | "speed" | "strength" | "plyometric" | "mobility",
+              "sets": number,
+              "reps": "string",
+              "tempo": "string or null",
+              "rest": "string",
+              "coachingCue": "string",
+              "whyItMatters": "string",
+              "alternatives": [
+                { "name": "string", "reason": "string" },
+                { "name": "string", "reason": "string" }
+              ]
+            }
           ]
         }
       ]
     }
   ]
 }
+
+IMPORTANT: Each day in weeklySchedule MUST use the "sessions" array format. A day can have ONE or MULTIPLE sessions. For example, a day with both morning gym training and evening TKD would have two session objects in the sessions array. Rest days should have a single session with type "recovery" and an empty exercises array.
 
 The weeklySchedule represents the BASE WEEK template. The periodization array describes how to modify volume/intensity across the entire program duration. Create realistic periodization phases that make sense for the athlete's level and goals.
 
@@ -148,7 +154,7 @@ IMPORTANT: ALL text content (planName, labels, focus descriptions, exercise name
 - Goals: ${profile.goals?.length ? profile.goals.join(', ') : 'general performance improvement'}
 - Weekly schedule: ${scheduleDescription}${injuryInfo}
 
-IMPORTANT: Follow the athlete's chosen weekly schedule EXACTLY. Each day must match the type they selected (TKD, Gym, or Rest). For TKD days, don't list exercises — just label and focus. For Gym days, provide full exercise details. For Rest days, suggest light recovery work only.
+IMPORTANT: Follow the athlete's chosen weekly schedule EXACTLY. Each day's sessions must match the types they selected. If a day has multiple session types (e.g. "Monday: GYM, TKD"), create multiple session objects in the sessions array for that day — for example a morning gym session and an evening TKD session. For TKD sessions, don't list exercises — just label and focus. For Gym sessions, provide full exercise details. For Rest/recovery sessions, suggest light recovery work only.
 Design the program for ${profile.program_weeks || 8} weeks with appropriate periodization.${injuryInstructions}`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
