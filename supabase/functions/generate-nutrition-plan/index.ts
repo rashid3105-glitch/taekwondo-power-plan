@@ -119,38 +119,56 @@ CRITICAL: The athlete has selected weight loss as a goal. You MUST:
 
 CRITICAL: Write ALL text in ${lang}. Every value in the JSON response must be in ${lang}.`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt },
-        ],
-      }),
+    const aiPayload = JSON.stringify({
+      model: "google/gemini-2.5-flash",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
     });
 
-    if (!response.ok) {
-      if (response.status === 429) {
+    let response: Response | null = null;
+    const maxRetries = 3;
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: aiPayload,
+      });
+
+      if (response.ok || response.status === 429 || response.status === 402) break;
+
+      // For 5xx errors, wait and retry
+      if (response.status >= 500 && attempt < maxRetries - 1) {
+        console.warn(`AI gateway returned ${response.status}, retrying (${attempt + 1}/${maxRetries})...`);
+        await response.text(); // consume body
+        await new Promise(r => setTimeout(r, 2000 * (attempt + 1)));
+        continue;
+      }
+      break;
+    }
+
+    if (!response || !response.ok) {
+      const status = response?.status || 500;
+      if (status === 429) {
         return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }), {
           status: 429,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      if (response.status === 402) {
+      if (status === 402) {
         return new Response(JSON.stringify({ error: "AI credits exhausted. Please add credits to continue." }), {
           status: 402,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      const t = await response.text();
-      console.error("AI gateway error:", response.status, t);
-      return new Response(JSON.stringify({ error: "AI service error" }), {
-        status: 500,
+      const t = response ? await response.text() : "no response";
+      console.error("AI gateway error after retries:", status, t);
+      return new Response(JSON.stringify({ error: "AI service is temporarily unavailable. Please try again in a minute." }), {
+        status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
