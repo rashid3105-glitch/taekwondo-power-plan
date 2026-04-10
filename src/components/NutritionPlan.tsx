@@ -434,25 +434,15 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
               )}
             </div>
 
-            {/* Custom Calorie Input */}
-            {!readOnly && (
-              <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-1.5">
-                <label className="text-xs font-medium text-foreground">{t("customCalories")}</label>
-                <div className="flex items-center gap-2">
-                  <Input
-                    type="number"
-                    placeholder={t("yourCalorieIntake")}
-                    value={customCalories}
-                    onChange={(e) => handleCustomCaloriesChange(e.target.value)}
-                    className="h-8 text-sm max-w-[200px]"
-                    min={0}
-                    max={10000}
-                  />
-                  <span className="text-xs text-muted-foreground">{t("kcalPerDay")}</span>
-                </div>
+            {/* Custom Calorie Display (from profile) */}
+            {profile?.custom_calories && (
+              <div className="rounded-lg border border-border bg-muted/30 p-3">
+                <p className="text-xs text-muted-foreground">{t("dailyCalorieTarget")}</p>
+                <p className="text-sm font-bold text-foreground">{profile.custom_calories} {t("kcalPerDay")}</p>
               </div>
             )}
-            {readOnly && customCalories && (
+            {/* Backward compat: show saved custom_calories from plan if no profile value */}
+            {!profile?.custom_calories && customCalories && (
               <div className="rounded-lg border border-border bg-muted/30 p-3">
                 <p className="text-xs text-muted-foreground">{t("customCalories")}</p>
                 <p className="text-sm font-bold text-foreground">{customCalories} {t("kcalPerDay")}</p>
