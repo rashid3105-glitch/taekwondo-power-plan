@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Loader2, Apple, AlertTriangle, Droplets, Pill, Utensils, Flame, ChevronDown, ChevronUp, Download } from "lucide-react";
@@ -27,6 +26,7 @@ interface NutritionPlanProps {
     tkd_sessions_per_week: number;
     experience_years: number | null;
     current_injury: string | null;
+    custom_calories?: number | null;
   } | null;
   readOnly?: boolean;
   userId?: string;
@@ -133,7 +133,7 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
     setGenerating(true);
     try {
       const { data, error } = await supabase.functions.invoke("generate-nutrition-plan", {
-        body: { profile, goals: selectedGoals, language: locale },
+        body: { profile, goals: selectedGoals, language: locale, custom_calories: profile?.custom_calories || null },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
@@ -148,14 +148,6 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
     }
   };
 
-  const handleCustomCaloriesChange = async (value: string) => {
-    setCustomCalories(value);
-    if (savedPlanId && plan) {
-      const calories = value ? parseInt(value) : null;
-      if (value && isNaN(calories!)) return;
-      await savePlan(plan, selectedGoals, calories, savedPlanId);
-    }
-  };
 
   const downloadPDF = () => {
     if (!plan) return;
@@ -433,25 +425,15 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
               )}
             </div>
 
-            {/* Custom Calorie Input */}
-            {!readOnly && (
-              <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-1.5">
-                <label className="text-xs font-medium text-foreground">{t("customCalories")}</label>
-                <div className="flex items-center gap-2">
-                  <Input
-                    type="number"
-                    placeholder={t("yourCalorieIntake")}
-                    value={customCalories}
-                    onChange={(e) => handleCustomCaloriesChange(e.target.value)}
-                    className="h-8 text-sm max-w-[200px]"
-                    min={0}
-                    max={10000}
-                  />
-                  <span className="text-xs text-muted-foreground">{t("kcalPerDay")}</span>
-                </div>
+            {/* Custom Calorie Display (from profile) */}
+            {profile?.custom_calories && (
+              <div className="rounded-lg border border-border bg-muted/30 p-3">
+                <p className="text-xs text-muted-foreground">{t("dailyCalorieTarget")}</p>
+                <p className="text-sm font-bold text-foreground">{profile.custom_calories} {t("kcalPerDay")}</p>
               </div>
             )}
-            {readOnly && customCalories && (
+            {/* Backward compat: show saved custom_calories from plan if no profile value */}
+            {!profile?.custom_calories && customCalories && (
               <div className="rounded-lg border border-border bg-muted/30 p-3">
                 <p className="text-xs text-muted-foreground">{t("customCalories")}</p>
                 <p className="text-sm font-bold text-foreground">{customCalories} {t("kcalPerDay")}</p>

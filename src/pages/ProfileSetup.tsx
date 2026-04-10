@@ -60,6 +60,7 @@ export default function ProfileSetup() {
   const [clubs, setClubs] = useState<ClubOption[]>([]);
   const [clubId, setClubId] = useState("");
   const [country, setCountry] = useState("");
+  const [customCalories, setCustomCalories] = useState("");
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -81,7 +82,7 @@ export default function ProfileSetup() {
           supabase.from("clubs" as any).select("id, name").order("name"),
           supabase
             .from("profiles")
-            .select("age, weight_kg, belt_level, experience_years, discipline, goals, weekly_schedule, program_weeks, current_injury, avatar_url, club_id, country")
+            .select("age, weight_kg, belt_level, experience_years, discipline, goals, weekly_schedule, program_weeks, current_injury, avatar_url, club_id, country, custom_calories")
             .eq("user_id", user.id)
             .maybeSingle(),
         ]);
@@ -105,6 +106,7 @@ export default function ProfileSetup() {
           setAvatarUrl(profileData.avatar_url || null);
           setClubId(profileData.club_id || "");
           setCountry(profileData.country || "");
+          setCustomCalories(profileData.custom_calories?.toString() || "");
         }
       } catch (err: any) {
         toast({ title: t("error"), description: err.message, variant: "destructive" });
@@ -189,6 +191,7 @@ export default function ProfileSetup() {
         discipline,
         club_id: clubId || null,
         country: country || null,
+        custom_calories: customCalories ? parseInt(customCalories) : null,
       };
 
       const { data, error } = await supabase.functions.invoke("update-my-profile", {
@@ -334,6 +337,20 @@ export default function ProfileSetup() {
               <Label htmlFor="weight">{t("weightKg")}</Label>
               <Input id="weight" type="number" step="0.1" value={weight} onChange={(e) => setWeight(e.target.value)} placeholder="70" />
             </div>
+          </div>
+
+          <div>
+            <Label htmlFor="customCalories">{t("dailyCalorieTarget")}</Label>
+            <p className="text-xs text-muted-foreground mb-1">{t("dailyCalorieHint")}</p>
+            <Input
+              id="customCalories"
+              type="number"
+              value={customCalories}
+              onChange={(e) => setCustomCalories(e.target.value)}
+              placeholder="2500"
+              min={500}
+              max={10000}
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-3 sm:gap-4">

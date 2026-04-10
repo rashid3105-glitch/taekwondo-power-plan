@@ -28,7 +28,7 @@ serve(async (req) => {
     if (body.length > 10000) {
       return new Response(JSON.stringify({ error: "Request too large" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
-    const { profile, goals, language } = JSON.parse(body);
+    const { profile, goals, language, custom_calories } = JSON.parse(body);
     if (profile?.current_injury && typeof profile.current_injury === "string" && profile.current_injury.length > 500) {
       return new Response(JSON.stringify({ error: "Injury description too long (max 500 characters)" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
@@ -106,6 +106,7 @@ CRITICAL LANGUAGE REQUIREMENT: You MUST write ALL text content — including pla
 - Years of experience: ${profile.experience_years || "not specified"}
 - Nutrition goals: ${goalsText}
 - Current injury: ${profile.current_injury || "none"}
+- Daily calorie target: ${custom_calories ? custom_calories + " kcal (user-specified, use this as the baseline)" : "estimate based on profile"}
 
 ${goals?.includes("Weight loss") || goals?.includes("Lose weight") ? `
 CRITICAL: The athlete has selected weight loss as a goal. You MUST:

@@ -371,6 +371,7 @@ export type Database = {
           country: string | null
           created_at: string
           current_injury: string | null
+          custom_calories: number | null
           demo_full_access: boolean
           discipline: string
           display_name: string
@@ -398,6 +399,7 @@ export type Database = {
           country?: string | null
           created_at?: string
           current_injury?: string | null
+          custom_calories?: number | null
           demo_full_access?: boolean
           discipline?: string
           display_name?: string
@@ -425,6 +427,7 @@ export type Database = {
           country?: string | null
           created_at?: string
           current_injury?: string | null
+          custom_calories?: number | null
           demo_full_access?: boolean
           discipline?: string
           display_name?: string
