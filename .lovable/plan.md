@@ -1,38 +1,59 @@
 
 
-## Plan: Remove AI references from user-facing pages
+## Plan: Flere træningspas per dag
 
-All "AI" mentions in user-facing text will be reworded to emphasize the system's intelligence without naming it "AI." Internal code comments and variable names stay unchanged.
+### Hvad ændres
+I dag har hver dag i ugeplanen én type (TKD, Gym eller Rest) med én liste øvelser. Vi ændrer strukturen så hver dag kan have flere **sessions** — f.eks. "Styrke (morgen)" og "TKD (aften)" på samme dag.
 
-### Changes
+### Datastruktur
 
-**`src/i18n/translations.ts`** — Reword these keys across all 4 languages (EN, DA, SV, DE):
+Nuværende format per dag:
+```json
+{ "dayOfWeek": "Monday", "type": "gym", "label": "Power", "focus": "...", "exercises": [...] }
+```
 
-| Key | Current (EN) | New (EN) |
-|-----|------|------|
-| `howItWorksStep2Desc` | "AI generates a periodized program…" | "We generate a periodized program…" |
-| `landingValueAITitle` | "AI-Powered Plans" | "Personalized Plans" |
-| `landingValueAIDesc` | (unchanged content, already no "AI") | (keep as-is) |
-| `nutritionDisclaimerDesc` | "This nutrition plan is AI-generated…" | "This nutrition plan is auto-generated…" |
-| `helpTrainingPlanSteps` | "The AI will create…" | "The system will create…" |
-| `helpRehabPlanSteps` | "The AI creates…" | "The system creates…" |
-| `helpMentalPlanSteps` | "AI-generated sports psychology advice" | "personalized sports psychology advice" |
-| `changelogEntry32` | "Swedish language support in all AI plan generators" | "Swedish language support in all plan generators" |
+Nyt format per dag:
+```json
+{
+  "dayOfWeek": "Monday",
+  "sessions": [
+    { "type": "gym", "label": "Styrke (morgen)", "focus": "...", "exercises": [...] },
+    { "type": "tkd", "label": "TKD (aften)", "focus": "...", "exercises": [] }
+  ]
+}
+```
 
-Same pattern applied to DA, SV, DE translations.
+Bagudkompatibilitet: Hvis `sessions` ikke findes, wrappe den eksisterende dag i en enkelt session automatisk — så alle eksisterende planer fortsat virker uden migration.
 
-**`src/components/MentalAssessment.tsx`** — Change:
-- EN: "Get My Results & AI Advice" → "Get My Results & Advice"
-- DA: "Få mine resultater & AI-råd" → "Få mine resultater & råd"
+### Filer der ændres
 
-**`src/components/NutritionPlan.tsx`** — Change code comment only (cosmetic, optional).
+1. **`src/components/WeekSchedulePicker.tsx`** — Udvid så man kan tilføje flere sessionstyper per dag (f.eks. klik "+" for at tilføje en ekstra session, klik "×" for at fjerne). Vis sessions som stablede badges per dag.
 
-**`src/pages/Dashboard.tsx`** — Change `"AI Generated Plan"` → `"Generated Plan"` (internal plan name).
+2. **`src/components/AIPlanCard.tsx`** — Tilpas dagvisningen til at vise sessions som tabs eller collapsible sektioner inden for en valgt dag. Øvelseshåndtering (add/swap/remove/reorder/logs) scopes til den aktive session. PDF-eksport opdateres til at håndtere flere sessions per dag.
 
-**`src/pages/Index.tsx`** — The landing page value prop icon/title uses `landingValueAITitle` from translations — already covered above.
+3. **`supabase/functions/generate-plan/index.ts`** — Opdater AI-prompten til at generere det nye `sessions`-format, så planer med flere daglige pas bliver skabt korrekt.
 
-### Not changed
-- Component file names (`AIPlanCard.tsx`) — internal, not user-facing
-- Edge function names — internal backend code
-- Code comments — not visible to users
+4. **`src/hooks/useWorkoutLogs.ts`** — Tilføj `session_index` parameter så logs kan skelne mellem morgen- og aftensession på samme dag.
+
+5. **`src/components/PlanViewDialog.tsx`** og **`src/pages/AdminApproval.tsx`** — Opdater PDF-generering og planvisning til at håndtere sessions-strukturen.
+
+6. **`src/components/ProgressDashboard.tsx`** — Tilpas progress-beregninger til at tælle øvelser på tværs af sessions.
+
+7. **`src/components/CalendarDropdown.tsx`** og **`src/lib/calendarExport.ts`** — Generer separate kalenderbegivenheder per session (morgen vs. aften med forskellige tidspunkter).
+
+8. **`src/i18n/translations.ts`** — Tilføj keys: "addSession", "removeSession", "morning", "evening", "session" osv.
+
+9. **Database migration** — Tilføj `session_index` kolonne til `workout_logs` tabellen (default 0) for at understøtte logging af flere sessions per dag.
+
+### Kompatibilitetslag
+
+En hjælpefunktion `normalizeDaySessions(day)` bruges overalt:
+```typescript
+function normalizeDaySessions(day: any) {
+  if (day.sessions) return day.sessions;
+  return [{ type: day.type, label: day.label, focus: day.focus, exercises: day.exercises || [] }];
+}
+```
+
+Dette sikrer at eksisterende gemte planer fortsat virker uden at kræve datamigration.
 
