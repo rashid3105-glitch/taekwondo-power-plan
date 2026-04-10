@@ -409,7 +409,7 @@ export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
                       ? "text-primary drop-shadow-[0_0_8px_hsl(190_95%_50%)]" 
                       : "text-muted-foreground group-hover:text-primary group-hover:drop-shadow-[0_0_6px_hsl(190_95%_50%/0.5)]"
                   }`}>
-                    {day.dayOfWeek?.slice(0, 3)}
+                    {translateDayShort(day.dayOfWeek, t)}
                   </span>
                   <div className="flex items-center gap-0.5">
                     {sessions.map((sess: PlanSession, si: number) => {
@@ -425,7 +425,7 @@ export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
                       ? "text-primary drop-shadow-[0_0_8px_hsl(190_95%_50%/0.8)]" 
                       : "text-foreground group-hover:text-primary group-hover:drop-shadow-[0_0_6px_hsl(190_95%_50%/0.5)]"
                   }`}>
-                    {sessions.length > 1 ? `${sessions.length} sessions` : (day.label || sessions[0]?.label)}
+                    {sessions.length > 1 ? `${sessions.length} ${t("nSessions")}` : (day.label || sessions[0]?.label)}
                   </span>
                 </button>
               );
