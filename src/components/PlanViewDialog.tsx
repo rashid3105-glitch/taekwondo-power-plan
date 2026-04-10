@@ -8,6 +8,7 @@ import { PeriodizationView } from "@/components/PeriodizationView";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { normalizeDaySessions, type PlanSession } from "@/lib/planSessionUtils";
 
 const TYPE_BADGES: Record<string, { label: string; className: string; icon: typeof Shield }> = {
   tkd: { label: "Taekwondo", className: "bg-gradient-energy", icon: Shield },
@@ -65,61 +66,74 @@ async function generatePDF(plan: PlanViewDialogProps["plan"]) {
   doc.setTextColor(0);
 
   for (const day of schedule) {
-    checkSpace(30);
-    doc.setFillColor(30, 35, 50);
-    doc.roundedRect(margin, y, pageW, 10, 2, 2, "F");
+    checkSpace(14);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.setTextColor(255);
-    doc.text(`${day.dayOfWeek} — ${day.label}`, margin + 4, y + 7);
-    const typeLabel = TYPE_BADGES[day.type]?.label || day.type;
-    doc.setFontSize(8);
-    doc.text(typeLabel.toUpperCase(), margin + pageW - 4, y + 7, { align: "right" });
+    doc.setFontSize(13);
+    doc.setTextColor(30, 35, 50);
+    doc.text(day.dayOfWeek, margin, y);
     doc.setTextColor(0);
-    y += 14;
+    y += 8;
 
-    if (day.focus) {
-      checkSpace(8);
-      doc.setFont("helvetica", "italic");
-      doc.setFontSize(9);
-      doc.setTextColor(100);
-      doc.text(`Focus: ${day.focus}`, margin + 2, y);
+    const sessions = normalizeDaySessions(day);
+    for (const session of sessions) {
+      const typeLabel = TYPE_BADGES[session.type]?.label || session.type;
+      checkSpace(30);
+      doc.setFillColor(30, 35, 50);
+      doc.roundedRect(margin, y, pageW, 10, 2, 2, "F");
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(11);
+      doc.setTextColor(255);
+      doc.text(session.label || "", margin + 4, y + 7);
+      doc.setFontSize(8);
+      doc.text(typeLabel.toUpperCase(), margin + pageW - 4, y + 7, { align: "right" });
       doc.setTextColor(0);
-      y += 6;
-    }
+      y += 14;
 
-    if (day.exercises?.length > 0) {
-      for (let j = 0; j < day.exercises.length; j++) {
-        const ex = day.exercises[j];
-        checkSpace(20);
-        doc.setFont("helvetica", "bold");
+      if (session.focus) {
+        checkSpace(8);
+        doc.setFont("helvetica", "italic");
         doc.setFontSize(9);
-        doc.text(`${String(j + 1).padStart(2, "0")}. ${ex.name || ""}`, margin + 2, y);
-        doc.setFont("helvetica", "normal");
-        doc.text(`${ex.sets}×${ex.reps}  Rest: ${ex.rest || "—"}`, margin + 90, y);
-        y += 5;
-
-        if (ex.coachingCue) {
-          checkSpace(8);
-          doc.setFontSize(8);
-          doc.setTextColor(80);
-          const cueLines = doc.splitTextToSize(`Coaching: ${ex.coachingCue}`, pageW - 12);
-          doc.text(cueLines, margin + 10, y);
-          y += cueLines.length * 3.5;
-          doc.setTextColor(0);
-        }
-        y += 3;
+        doc.setTextColor(100);
+        doc.text(`Focus: ${session.focus}`, margin + 2, y);
+        doc.setTextColor(0);
+        y += 6;
       }
-    } else {
-      checkSpace(10);
-      doc.setFont("helvetica", "italic");
-      doc.setFontSize(9);
-      doc.setTextColor(120);
-      doc.text("Follow your dojang's programming.", margin + 4, y);
-      doc.setTextColor(0);
-      y += 6;
+
+      const exercises = session.exercises || [];
+      if (exercises.length > 0) {
+        for (let j = 0; j < exercises.length; j++) {
+          const ex = exercises[j];
+          checkSpace(20);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(9);
+          doc.text(`${String(j + 1).padStart(2, "0")}. ${ex.name || ""}`, margin + 2, y);
+          doc.setFont("helvetica", "normal");
+          doc.text(`${ex.sets}×${ex.reps}  Rest: ${ex.rest || "—"}`, margin + 90, y);
+          y += 5;
+
+          if (ex.coachingCue) {
+            checkSpace(8);
+            doc.setFontSize(8);
+            doc.setTextColor(80);
+            const cueLines = doc.splitTextToSize(`Coaching: ${ex.coachingCue}`, pageW - 12);
+            doc.text(cueLines, margin + 10, y);
+            y += cueLines.length * 3.5;
+            doc.setTextColor(0);
+          }
+          y += 3;
+        }
+      } else {
+        checkSpace(10);
+        doc.setFont("helvetica", "italic");
+        doc.setFontSize(9);
+        doc.setTextColor(120);
+        doc.text("Follow your dojang's programming.", margin + 4, y);
+        doc.setTextColor(0);
+        y += 6;
+      }
+      y += 4;
     }
-    y += 6;
+    y += 4;
   }
 
   doc.save(`${plan.name.replace(/\s+/g, "_")}.pdf`);
