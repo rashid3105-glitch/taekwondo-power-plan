@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Loader2, Apple, AlertTriangle, Droplets, Pill, Utensils, Flame, ChevronDown, ChevronUp, Download } from "lucide-react";
@@ -28,15 +29,90 @@ interface NutritionPlanProps {
     current_injury: string | null;
   } | null;
   readOnly?: boolean;
+  userId?: string;
 }
 
-export function NutritionPlan({ profile, readOnly = false }: NutritionPlanProps) {
+export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPlanProps) {
   const { toast } = useToast();
   const { t, locale } = useLanguage();
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
   const [generating, setGenerating] = useState(false);
   const [plan, setPlan] = useState<any>(null);
   const [expandedMeal, setExpandedMeal] = useState<number | null>(null);
+  const [customCalories, setCustomCalories] = useState<string>("");
+  const [savedPlanId, setSavedPlanId] = useState<string | null>(null);
+  const [loadingPlan, setLoadingPlan] = useState(true);
+
+  // Load saved plan on mount
+  useEffect(() => {
+    const loadSavedPlan = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        const targetUserId = userId || user?.id;
+        if (!targetUserId) { setLoadingPlan(false); return; }
+
+        const { data, error } = await supabase
+          .from("nutrition_plans")
+          .select("*")
+          .eq("user_id", targetUserId)
+          .eq("is_active", true)
+          .order("updated_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (error) throw error;
+        if (data) {
+          setPlan(data.plan_data);
+          setSelectedGoals(data.goals || []);
+          setCustomCalories(data.custom_calories?.toString() || "");
+          setSavedPlanId(data.id);
+          toast({ title: t("savedNutritionPlan") });
+        }
+      } catch (err) {
+        console.error("Failed to load nutrition plan:", err);
+      } finally {
+        setLoadingPlan(false);
+      }
+    };
+    loadSavedPlan();
+  }, [userId]);
+
+  const savePlan = useCallback(async (planData: any, goals: string[], calories: number | null, existingId: string | null) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      if (existingId) {
+        await supabase
+          .from("nutrition_plans")
+          .update({
+            plan_data: planData,
+            goals,
+            custom_calories: calories,
+            name: planData?.planName || "Nutrition Plan",
+          })
+          .eq("id", existingId);
+        return existingId;
+      } else {
+        const { data, error } = await supabase
+          .from("nutrition_plans")
+          .insert({
+            user_id: user.id,
+            plan_data: planData,
+            goals,
+            custom_calories: calories,
+            name: planData?.planName || "Nutrition Plan",
+          })
+          .select("id")
+          .single();
+        if (error) throw error;
+        return data?.id || null;
+      }
+    } catch (err) {
+      console.error("Failed to save nutrition plan:", err);
+      return null;
+    }
+  }, []);
 
   const toggleGoal = (goal: string) => {
     setSelectedGoals((prev) =>
@@ -62,11 +138,22 @@ export function NutritionPlan({ profile, readOnly = false }: NutritionPlanProps)
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
       setPlan(data.plan);
+      const id = await savePlan(data.plan, selectedGoals, customCalories ? parseInt(customCalories) : null, savedPlanId);
+      if (id) setSavedPlanId(id);
       toast({ title: t("nutritionPlanGenerated") });
     } catch (err: any) {
       toast({ title: t("error"), description: err.message, variant: "destructive" });
     } finally {
       setGenerating(false);
+    }
+  };
+
+  const handleCustomCaloriesChange = async (value: string) => {
+    setCustomCalories(value);
+    if (savedPlanId && plan) {
+      const calories = value ? parseInt(value) : null;
+      if (value && isNaN(calories!)) return;
+      await savePlan(plan, selectedGoals, calories, savedPlanId);
     }
   };
 
@@ -109,6 +196,11 @@ export function NutritionPlan({ profile, readOnly = false }: NutritionPlanProps)
     checkPage(12);
     doc.text(`${t("calories")}: ${plan.dailyCalorieEstimate || "—"}`, margin, y);
     y += 6;
+    if (customCalories) {
+      doc.setFont("helvetica", "normal");
+      doc.text(`${t("customCalories")}: ${customCalories} ${t("kcalPerDay")}`, margin, y);
+      y += 6;
+    }
     if (plan.macroSplit) {
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
@@ -234,9 +326,17 @@ export function NutritionPlan({ profile, readOnly = false }: NutritionPlanProps)
     doc.save(`${plan.planName || "nutrition-plan"}.pdf`);
   };
 
+  if (loadingPlan) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
-      {/* Health Warning Banner - Always visible */}
+      {/* Health Warning Banner */}
       <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-4 flex gap-3">
         <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 shrink-0 mt-0.5" />
         <div>
@@ -332,6 +432,31 @@ export function NutritionPlan({ profile, readOnly = false }: NutritionPlanProps)
                 </>
               )}
             </div>
+
+            {/* Custom Calorie Input */}
+            {!readOnly && (
+              <div className="rounded-lg border border-border bg-muted/30 p-3 space-y-1.5">
+                <label className="text-xs font-medium text-foreground">{t("customCalories")}</label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="number"
+                    placeholder={t("yourCalorieIntake")}
+                    value={customCalories}
+                    onChange={(e) => handleCustomCaloriesChange(e.target.value)}
+                    className="h-8 text-sm max-w-[200px]"
+                    min={0}
+                    max={10000}
+                  />
+                  <span className="text-xs text-muted-foreground">{t("kcalPerDay")}</span>
+                </div>
+              </div>
+            )}
+            {readOnly && customCalories && (
+              <div className="rounded-lg border border-border bg-muted/30 p-3">
+                <p className="text-xs text-muted-foreground">{t("customCalories")}</p>
+                <p className="text-sm font-bold text-foreground">{customCalories} {t("kcalPerDay")}</p>
+              </div>
+            )}
           </div>
 
           {/* Key Principles */}
