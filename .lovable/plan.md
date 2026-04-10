@@ -1,52 +1,34 @@
 
 
-## Plan: Gem ernæringsplaner + tilføj kalorie-input
+## Plan: Flyt kalorie-indtastning til profilen
 
-### Problem
-1. Ernæringsplaner gemmes kun i React state og forsvinder ved sideskift/genindlæsning.
-2. Brugeren vil gerne kunne indtaste sit eget daglige kalorieforbrug.
+### Ændringer
 
-### Løsning
-
-#### 1. Ny database-tabel: `nutrition_plans`
+#### 1. Database: Tilføj `custom_calories` kolonne til `profiles`
 ```sql
-CREATE TABLE public.nutrition_plans (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id uuid NOT NULL,
-  name text NOT NULL DEFAULT 'Nutrition Plan',
-  plan_data jsonb NOT NULL DEFAULT '{}'::jsonb,
-  goals text[] NOT NULL DEFAULT '{}'::text[],
-  custom_calories integer NULL,
-  is_active boolean NOT NULL DEFAULT true,
-  created_at timestamptz NOT NULL DEFAULT now(),
-  updated_at timestamptz NOT NULL DEFAULT now()
-);
-
-ALTER TABLE public.nutrition_plans ENABLE ROW LEVEL SECURITY;
-
--- Users can CRUD their own
-CREATE POLICY "Users can view own nutrition plans" ON public.nutrition_plans FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users can insert own nutrition plans" ON public.nutrition_plans FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users can update own nutrition plans" ON public.nutrition_plans FOR UPDATE USING (auth.uid() = user_id);
-CREATE POLICY "Users can delete own nutrition plans" ON public.nutrition_plans FOR DELETE USING (auth.uid() = user_id);
-
--- Coaches can view athlete nutrition plans
-CREATE POLICY "Coaches can view athlete nutrition plans" ON public.nutrition_plans FOR SELECT
-  USING (EXISTS (SELECT 1 FROM coach_athletes WHERE coach_id = auth.uid() AND athlete_id = nutrition_plans.user_id));
+ALTER TABLE public.profiles ADD COLUMN custom_calories integer NULL;
 ```
 
-#### 2. `src/components/NutritionPlan.tsx` — Hovedændringer
+#### 2. Edge function: `update-my-profile/index.ts`
+Tilføj `custom_calories: z.number().int().min(500).max(10000).nullable()` til Zod-skemaet, så feltet kan gemmes via profil-opsætningen.
 
-- **Ved mount**: Hent den seneste aktive `nutrition_plans`-række for brugeren. Hvis den findes, vis planen med det samme (ingen genering nødvendig).
-- **Efter generering**: Gem planen i databasen (upsert på `user_id` + `is_active`), så den persisterer.
-- **Kalorie-input**: Tilføj et nummerfelt under makro-oversigten, hvor brugeren kan indtaste sit faktiske daglige kalorieforbrug (`custom_calories`). Værdien gemmes i tabellen og vises ved siden af den anbefalede værdi.
-- **Mål huskes**: `selectedGoals` indlæses fra den gemte plan, så brugeren ikke skal vælge dem igen.
+#### 3. Profil-side: `src/pages/ProfileSetup.tsx`
+Tilføj et valgfrit nummerfelt for dagligt kalorieforbrug (f.eks. "2500") under vægt-feltet. Feltet er ikke obligatorisk. Værdien sendes med i `payload` til `update-my-profile`.
 
-#### 3. Oversættelser i `src/i18n/translations.ts`
-Tilføj keys: `customCalories`, `yourCalorieIntake`, `savedNutritionPlan`, `kcalPerDay` på alle 4 sprog.
+#### 4. Edge function: `generate-nutrition-plan/index.ts`
+Tilføj `custom_calories` fra `profile`-objektet til AI-prompten, så den bruger brugerens angivne kalorier som udgangspunkt i stedet for at estimere frit:
+```
+- Daily calorie target: ${profile.custom_calories ? profile.custom_calories + " kcal (user-specified)" : "estimate based on profile"}
+```
 
-### Teknisk detalje
-- Planen gemmes som JSONB i `plan_data` — samme format som den genererede JSON.
-- `custom_calories` er en separat kolonne for nem forespørgsel.
-- Eksisterende planer uden `custom_calories` viser feltet tomt (nullable).
+#### 5. Klient: `NutritionPlan.tsx`
+Send `custom_calories` fra profilen med i `body` til edge functionen. Fjern det separate kalorie-inputfelt fra ernæringsplan-komponenten (det flyttes til profilen). Behold visningen af `custom_calories` fra den gemte plan for bagudkompatibilitet.
+
+#### 6. Oversættelser: `src/i18n/translations.ts`
+Tilføj keys: `dailyCalorieTarget`, `dailyCalorieHint` på alle 4 sprog.
+
+### Resultat
+- Kalorieforbrug indtastes én gang i profilen
+- Ernæringsplanen bruger automatisk den angivne værdi
+- Feltet er valgfrit — uden det estimerer AI'en selv
 
