@@ -16,6 +16,7 @@ import { MuscleGroupBadges } from "@/components/MuscleIcon";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { CalendarDropdown } from "@/components/CalendarDropdown";
 import { TrainingReminder } from "@/components/TrainingReminder";
+import { normalizeDaySessions, type PlanSession } from "@/lib/planSessionUtils";
 
 const CATEGORY_DOT: Record<string, string> = {
   power: "bg-accent",
@@ -41,6 +42,113 @@ interface AIPlanCardProps {
   onPlanUpdated?: () => void;
 }
 
+function renderSessionExercisesPDF(doc: any, session: PlanSession, margin: number, pageW: number, y: number, checkSpace: (n: number) => void) {
+  const typeLabel = TYPE_BADGES[session.type]?.label || session.type;
+
+  checkSpace(30);
+  doc.setFillColor(30, 35, 50);
+  doc.roundedRect(margin, y, pageW, 10, 2, 2, "F");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(11);
+  doc.setTextColor(255);
+  doc.text(`${session.label}`, margin + 4, y + 7);
+  doc.setFontSize(8);
+  doc.text(typeLabel.toUpperCase(), margin + pageW - 4, y + 7, { align: "right" });
+  doc.setTextColor(0);
+  y += 14;
+
+  if (session.focus) {
+    checkSpace(8);
+    doc.setFont("helvetica", "italic");
+    doc.setFontSize(9);
+    doc.setTextColor(100);
+    doc.text(`Focus: ${session.focus}`, margin + 2, y);
+    doc.setTextColor(0);
+    y += 6;
+  }
+
+  const exercises = session.exercises || [];
+  if (exercises.length > 0) {
+    checkSpace(10);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.setTextColor(100);
+    doc.text("#", margin + 2, y);
+    doc.text("Exercise", margin + 10, y);
+    doc.text("Sets×Reps", margin + 90, y);
+    doc.text("Rest", margin + 120, y);
+    doc.text("Tempo", margin + 145, y);
+    doc.setTextColor(0);
+    y += 2;
+    doc.setDrawColor(200);
+    doc.line(margin, y, margin + pageW, y);
+    y += 4;
+
+    for (let j = 0; j < exercises.length; j++) {
+      const ex = exercises[j];
+      checkSpace(20);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.text(String(j + 1).padStart(2, "0"), margin + 2, y);
+      doc.setFont("helvetica", "bold");
+      doc.text(ex.name || "", margin + 10, y);
+      doc.setFont("helvetica", "normal");
+      doc.text(`${ex.sets}×${ex.reps}`, margin + 90, y);
+      doc.text(ex.rest || "", margin + 120, y);
+      doc.text(ex.tempo || "—", margin + 145, y);
+      y += 5;
+
+      if (ex.coachingCue) {
+        checkSpace(8);
+        doc.setFontSize(8);
+        doc.setTextColor(80);
+        const cueLines = doc.splitTextToSize(`Coaching: ${ex.coachingCue}`, pageW - 12);
+        doc.text(cueLines, margin + 10, y);
+        y += cueLines.length * 3.5;
+        doc.setTextColor(0);
+      }
+
+      if (ex.whyItMatters) {
+        checkSpace(8);
+        doc.setFontSize(8);
+        doc.setTextColor(0, 130, 130);
+        const whyLines = doc.splitTextToSize(`Why for TKD: ${ex.whyItMatters}`, pageW - 12);
+        doc.text(whyLines, margin + 10, y);
+        y += whyLines.length * 3.5;
+        doc.setTextColor(0);
+      }
+
+      if (ex.alternatives?.length > 0) {
+        checkSpace(12);
+        doc.setFontSize(8);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(100);
+        doc.text("Alternatives:", margin + 10, y);
+        y += 3.5;
+        doc.setFont("helvetica", "normal");
+        for (const alt of ex.alternatives) {
+          const altLine = doc.splitTextToSize(`• ${alt.name} — ${alt.reason}`, pageW - 14);
+          doc.text(altLine, margin + 12, y);
+          y += altLine.length * 3.5;
+        }
+        doc.setTextColor(0);
+      }
+
+      y += 3;
+    }
+  } else {
+    checkSpace(10);
+    doc.setFont("helvetica", "italic");
+    doc.setFontSize(9);
+    doc.setTextColor(120);
+    doc.text("Follow your dojang's programming for this session.", margin + 4, y);
+    doc.setTextColor(0);
+    y += 6;
+  }
+
+  return y;
+}
+
 async function generatePDF(plan: AIPlanCardProps["plan"]) {
   const { jsPDF } = await import("jspdf");
   const doc = new jsPDF({ unit: "mm", format: "a4" });
@@ -64,108 +172,21 @@ async function generatePDF(plan: AIPlanCardProps["plan"]) {
   doc.setTextColor(0);
 
   for (const day of schedule) {
-    checkSpace(30);
-    doc.setFillColor(30, 35, 50);
-    doc.roundedRect(margin, y, pageW, 10, 2, 2, "F");
+    // Day header
+    checkSpace(14);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.setTextColor(255);
-    doc.text(`${day.dayOfWeek} — ${day.label}`, margin + 4, y + 7);
-    const typeLabel = TYPE_BADGES[day.type]?.label || day.type;
-    doc.setFontSize(8);
-    doc.text(typeLabel.toUpperCase(), margin + pageW - 4, y + 7, { align: "right" });
+    doc.setFontSize(13);
+    doc.setTextColor(30, 35, 50);
+    doc.text(day.dayOfWeek, margin, y);
     doc.setTextColor(0);
-    y += 14;
+    y += 8;
 
-    if (day.focus) {
-      checkSpace(8);
-      doc.setFont("helvetica", "italic");
-      doc.setFontSize(9);
-      doc.setTextColor(100);
-      doc.text(`Focus: ${day.focus}`, margin + 2, y);
-      doc.setTextColor(0);
-      y += 6;
-    }
-
-    if (day.exercises?.length > 0) {
-      checkSpace(10);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(8);
-      doc.setTextColor(100);
-      doc.text("#", margin + 2, y);
-      doc.text("Exercise", margin + 10, y);
-      doc.text("Sets×Reps", margin + 90, y);
-      doc.text("Rest", margin + 120, y);
-      doc.text("Tempo", margin + 145, y);
-      doc.setTextColor(0);
-      y += 2;
-      doc.setDrawColor(200);
-      doc.line(margin, y, margin + pageW, y);
+    const sessions = normalizeDaySessions(day);
+    for (const session of sessions) {
+      y = renderSessionExercisesPDF(doc, session, margin, pageW, y, checkSpace);
       y += 4;
-
-      for (let j = 0; j < day.exercises.length; j++) {
-        const ex = day.exercises[j];
-        checkSpace(20);
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(9);
-        doc.text(String(j + 1).padStart(2, "0"), margin + 2, y);
-        doc.setFont("helvetica", "bold");
-        doc.text(ex.name || "", margin + 10, y);
-        doc.setFont("helvetica", "normal");
-        doc.text(`${ex.sets}×${ex.reps}`, margin + 90, y);
-        doc.text(ex.rest || "", margin + 120, y);
-        doc.text(ex.tempo || "—", margin + 145, y);
-        y += 5;
-
-        if (ex.coachingCue) {
-          checkSpace(8);
-          doc.setFontSize(8);
-          doc.setTextColor(80);
-          const cueLines = doc.splitTextToSize(`Coaching: ${ex.coachingCue}`, pageW - 12);
-          doc.text(cueLines, margin + 10, y);
-          y += cueLines.length * 3.5;
-          doc.setTextColor(0);
-        }
-
-        if (ex.whyItMatters) {
-          checkSpace(8);
-          doc.setFontSize(8);
-          doc.setTextColor(0, 130, 130);
-          const whyLines = doc.splitTextToSize(`Why for TKD: ${ex.whyItMatters}`, pageW - 12);
-          doc.text(whyLines, margin + 10, y);
-          y += whyLines.length * 3.5;
-          doc.setTextColor(0);
-        }
-
-        if (ex.alternatives?.length > 0) {
-          checkSpace(12);
-          doc.setFontSize(8);
-          doc.setFont("helvetica", "bold");
-          doc.setTextColor(100);
-          doc.text("Alternatives:", margin + 10, y);
-          y += 3.5;
-          doc.setFont("helvetica", "normal");
-          for (const alt of ex.alternatives) {
-            const altLine = doc.splitTextToSize(`• ${alt.name} — ${alt.reason}`, pageW - 14);
-            doc.text(altLine, margin + 12, y);
-            y += altLine.length * 3.5;
-          }
-          doc.setTextColor(0);
-        }
-
-        y += 3;
-      }
-    } else {
-      checkSpace(10);
-      doc.setFont("helvetica", "italic");
-      doc.setFontSize(9);
-      doc.setTextColor(120);
-      doc.text("Follow your dojang's programming for this session.", margin + 4, y);
-      doc.setTextColor(0);
-      y += 6;
     }
-
-    y += 6;
+    y += 4;
   }
 
   doc.save(`${plan.name.replace(/\s+/g, "_")}.pdf`);
@@ -173,15 +194,25 @@ async function generatePDF(plan: AIPlanCardProps["plan"]) {
 
 export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
+  const [activeSessionIndex, setActiveSessionIndex] = useState(0);
   const [exporting, setExporting] = useState(false);
   const [activeTab, setActiveTab] = useState<"schedule" | "periodization">("schedule");
-  const [pickerMode, setPickerMode] = useState<{ dayIndex: number; exerciseIndex?: number } | null>(null);
+  const [pickerMode, setPickerMode] = useState<{ dayIndex: number; sessionIndex: number; exerciseIndex?: number } | null>(null);
   const [localPlanData, setLocalPlanData] = useState(plan.plan_data);
   const schedule = localPlanData?.weeklySchedule || [];
   const periodization = localPlanData?.periodization || [];
   const { toast } = useToast();
   const { t } = useLanguage();
-  const { upsertLog, getLog, today } = useWorkoutLogs(plan.id, selectedDay);
+  const { upsertLog, getLog, today } = useWorkoutLogs(plan.id, selectedDay, activeSessionIndex);
+
+  // Get sessions for currently selected day
+  const currentDaySessions = selectedDay !== null && schedule[selectedDay]
+    ? normalizeDaySessions(schedule[selectedDay])
+    : [];
+
+  // Ensure activeSessionIndex is valid
+  const safeSessionIndex = Math.min(activeSessionIndex, Math.max(0, currentDaySessions.length - 1));
+  const currentSession = currentDaySessions[safeSessionIndex];
 
   const savePlanData = useCallback(async (newPlanData: any) => {
     setLocalPlanData(newPlanData);
@@ -197,16 +228,38 @@ export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
     }
   }, [plan.id, toast, onPlanUpdated]);
 
-  const handleRemoveExercise = useCallback((dayIndex: number, exerciseIndex: number) => {
+  const getSessionExercises = useCallback((dayIndex: number, sessionIdx: number) => {
+    const day = localPlanData?.weeklySchedule?.[dayIndex];
+    if (!day) return [];
+    const sessions = normalizeDaySessions(day);
+    return sessions[sessionIdx]?.exercises || [];
+  }, [localPlanData]);
+
+  const updateSessionExercises = useCallback((dayIndex: number, sessionIdx: number, newExercises: any[]) => {
     const newData = JSON.parse(JSON.stringify(localPlanData));
-    newData.weeklySchedule[dayIndex].exercises.splice(exerciseIndex, 1);
-    savePlanData(newData);
-  }, [localPlanData, savePlanData]);
+    const day = newData.weeklySchedule[dayIndex];
+    const sessions = normalizeDaySessions(day);
+    sessions[sessionIdx] = { ...sessions[sessionIdx], exercises: newExercises };
+    // Always store in sessions format
+    newData.weeklySchedule[dayIndex] = {
+      ...day,
+      sessions,
+      // Also update top-level exercises for single-session backward compat
+      exercises: sessions.length === 1 ? newExercises : day.exercises,
+    };
+    return newData;
+  }, [localPlanData]);
+
+  const handleRemoveExercise = useCallback((dayIndex: number, exerciseIndex: number) => {
+    const exercises = [...getSessionExercises(dayIndex, safeSessionIndex)];
+    exercises.splice(exerciseIndex, 1);
+    savePlanData(updateSessionExercises(dayIndex, safeSessionIndex, exercises));
+  }, [getSessionExercises, safeSessionIndex, savePlanData, updateSessionExercises]);
 
   const handleSwapExercise = useCallback((dayIndex: number, exerciseIndex: number, picked: any) => {
-    const newData = JSON.parse(JSON.stringify(localPlanData));
-    const existing = newData.weeklySchedule[dayIndex].exercises[exerciseIndex];
-    newData.weeklySchedule[dayIndex].exercises[exerciseIndex] = {
+    const exercises = [...getSessionExercises(dayIndex, safeSessionIndex)];
+    const existing = exercises[exerciseIndex];
+    exercises[exerciseIndex] = {
       ...existing,
       name: picked.name,
       category: picked.category,
@@ -219,15 +272,12 @@ export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
       whyItMatters: picked.whyItMatters || existing.whyItMatters,
       alternatives: picked.alternatives || [],
     };
-    savePlanData(newData);
-  }, [localPlanData, savePlanData]);
+    savePlanData(updateSessionExercises(dayIndex, safeSessionIndex, exercises));
+  }, [getSessionExercises, safeSessionIndex, savePlanData, updateSessionExercises]);
 
   const handleAddExercise = useCallback((dayIndex: number, picked: any) => {
-    const newData = JSON.parse(JSON.stringify(localPlanData));
-    if (!newData.weeklySchedule[dayIndex].exercises) {
-      newData.weeklySchedule[dayIndex].exercises = [];
-    }
-    newData.weeklySchedule[dayIndex].exercises.push({
+    const exercises = [...getSessionExercises(dayIndex, safeSessionIndex)];
+    exercises.push({
       name: picked.name,
       category: picked.category,
       muscleGroups: picked.muscleGroups,
@@ -239,8 +289,8 @@ export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
       whyItMatters: picked.whyItMatters || "",
       alternatives: picked.alternatives || [],
     });
-    savePlanData(newData);
-  }, [localPlanData, savePlanData]);
+    savePlanData(updateSessionExercises(dayIndex, safeSessionIndex, exercises));
+  }, [getSessionExercises, safeSessionIndex, savePlanData, updateSessionExercises]);
 
   const handleDownload = async () => {
     setExporting(true);
@@ -255,24 +305,15 @@ export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
   };
 
   const handleReorderExercises = useCallback((dayIndex: number, oldIndex: number, newIndex: number) => {
-    const newData = JSON.parse(JSON.stringify(localPlanData));
-    newData.weeklySchedule[dayIndex].exercises = arrayMove(
-      newData.weeklySchedule[dayIndex].exercises,
-      oldIndex,
-      newIndex
-    );
-    savePlanData(newData);
-  }, [localPlanData, savePlanData]);
+    const exercises = [...getSessionExercises(dayIndex, safeSessionIndex)];
+    const reordered = arrayMove(exercises, oldIndex, newIndex);
+    savePlanData(updateSessionExercises(dayIndex, safeSessionIndex, reordered));
+  }, [getSessionExercises, safeSessionIndex, savePlanData, updateSessionExercises]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 5 } })
   );
-
-  // Count completed exercises for each day
-  const completedCounts = schedule.map((_: any, i: number) => {
-    return null;
-  });
 
   return (
     <div className="space-y-4">
@@ -328,13 +369,15 @@ export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
         <>
           <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5 sm:gap-2">
             {schedule.map((day: any, i: number) => {
-              const config = TYPE_BADGES[day.type] || TYPE_BADGES.gym;
+              const sessions = normalizeDaySessions(day);
+              const primaryType = sessions[0]?.type || "rest";
+              const config = TYPE_BADGES[primaryType] || TYPE_BADGES.gym;
               const Icon = config.icon;
               const isSelected = selectedDay === i;
               return (
                 <button
                   key={i}
-                  onClick={() => setSelectedDay(isSelected ? null : i)}
+                  onClick={() => { setSelectedDay(isSelected ? null : i); setActiveSessionIndex(0); }}
                   className={`group flex flex-col items-center gap-1 sm:gap-1.5 rounded-lg border-2 p-2 sm:p-2.5 transition-all cursor-pointer hover:bg-secondary/50 ${
                     isSelected ? "border-primary bg-secondary shadow-glow" : "border-border bg-card hover:border-primary/50"
                   }`}
@@ -346,17 +389,21 @@ export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
                   }`}>
                     {day.dayOfWeek?.slice(0, 3)}
                   </span>
-                  <Icon className={`h-4 w-4 transition-all ${
-                    isSelected 
-                      ? "text-primary drop-shadow-[0_0_8px_hsl(190_95%_50%)]" 
-                      : "text-muted-foreground group-hover:text-primary group-hover:drop-shadow-[0_0_6px_hsl(190_95%_50%/0.5)]"
-                  }`} />
+                  <div className="flex items-center gap-0.5">
+                    {sessions.map((sess: PlanSession, si: number) => {
+                      const sessConfig = TYPE_BADGES[sess.type] || TYPE_BADGES.gym;
+                      const SessIcon = sessConfig.icon;
+                      return <SessIcon key={si} className={`h-3.5 w-3.5 transition-all ${
+                        isSelected ? "text-primary" : "text-muted-foreground group-hover:text-primary"
+                      }`} />;
+                    })}
+                  </div>
                   <span className={`text-[8px] sm:text-[9px] font-medium text-center leading-tight transition-all ${
                     isSelected 
                       ? "text-primary drop-shadow-[0_0_8px_hsl(190_95%_50%/0.8)]" 
                       : "text-foreground group-hover:text-primary group-hover:drop-shadow-[0_0_6px_hsl(190_95%_50%/0.5)]"
                   }`}>
-                    {day.label}
+                    {sessions.length > 1 ? `${sessions.length} sessions` : (day.label || sessions[0]?.label)}
                   </span>
                 </button>
               );
@@ -368,15 +415,49 @@ export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
             <div className="animate-slide-up rounded-xl border border-border bg-card p-3 sm:p-5 shadow-card">
               <div className="mb-4 flex items-center justify-between">
                 <div>
-                  <h3 className="font-bold text-foreground">{schedule[selectedDay].dayOfWeek} — {schedule[selectedDay].label}</h3>
-                  {schedule[selectedDay].focus && (
-                    <p className="text-sm text-muted-foreground">{schedule[selectedDay].focus}</p>
-                  )}
+                  <h3 className="font-bold text-foreground">{schedule[selectedDay].dayOfWeek}</h3>
                 </div>
                 <CalendarDropdown plan={plan} dayIndex={selectedDay} />
               </div>
 
-              {schedule[selectedDay].exercises?.length > 0 ? (
+              {/* Session tabs if multiple sessions */}
+              {currentDaySessions.length > 1 && (
+                <div className="flex gap-1 mb-4 rounded-lg border border-border bg-secondary/30 p-0.5">
+                  {currentDaySessions.map((sess, si) => {
+                    const sessConfig = TYPE_BADGES[sess.type] || TYPE_BADGES.gym;
+                    const SessIcon = sessConfig.icon;
+                    return (
+                      <button
+                        key={si}
+                        onClick={() => setActiveSessionIndex(si)}
+                        className={cn(
+                          "flex-1 flex items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-semibold transition-all",
+                          safeSessionIndex === si
+                            ? "bg-primary text-primary-foreground"
+                            : "text-muted-foreground hover:text-foreground"
+                        )}
+                      >
+                        <SessIcon className="h-3.5 w-3.5" />
+                        {sess.label || sessConfig.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Current session header */}
+              {currentSession && (
+                <>
+                  {currentDaySessions.length === 1 && (
+                    <p className="text-sm font-semibold text-foreground mb-1">{currentSession.label}</p>
+                  )}
+                  {currentSession.focus && (
+                    <p className="text-sm text-muted-foreground mb-3">{currentSession.focus}</p>
+                  )}
+                </>
+              )}
+
+              {currentSession?.exercises?.length ? (
                 <DndContext
                   sensors={sensors}
                   collisionDetection={closestCenter}
@@ -390,11 +471,11 @@ export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
                   }}
                 >
                   <SortableContext
-                    items={schedule[selectedDay].exercises.map((_: any, j: number) => `ex-${j}`)}
+                    items={currentSession.exercises.map((_: any, j: number) => `ex-${j}`)}
                     strategy={verticalListSortingStrategy}
                   >
                     <div className="space-y-2">
-                      {schedule[selectedDay].exercises.map((ex: any, j: number) => (
+                      {currentSession.exercises.map((ex: any, j: number) => (
                         <SortableExerciseRow
                           key={`ex-${j}`}
                           id={`ex-${j}`}
@@ -405,7 +486,7 @@ export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
                           onUpdateSets={(actual_sets) => upsertLog(j, { actual_sets })}
                           onUpdateReps={(actual_reps) => upsertLog(j, { actual_reps })}
                           onUpdateNotes={(notes) => upsertLog(j, { notes })}
-                          onSwap={() => setPickerMode({ dayIndex: selectedDay, exerciseIndex: j })}
+                          onSwap={() => setPickerMode({ dayIndex: selectedDay, sessionIndex: safeSessionIndex, exerciseIndex: j })}
                           onRemove={() => handleRemoveExercise(selectedDay, j)}
                         />
                       ))}
@@ -422,7 +503,7 @@ export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
                 variant="outline"
                 size="sm"
                 className="w-full mt-3"
-                onClick={() => setPickerMode({ dayIndex: selectedDay })}
+                onClick={() => setPickerMode({ dayIndex: selectedDay, sessionIndex: safeSessionIndex })}
               >
                 <Plus className="h-3.5 w-3.5 mr-1" /> Add Exercise
               </Button>

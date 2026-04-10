@@ -5,6 +5,7 @@ export interface WorkoutLog {
   id?: string;
   plan_id: string;
   day_index: number;
+  session_index: number;
   exercise_index: number;
   completed: boolean;
   actual_sets: number | null;
@@ -13,7 +14,7 @@ export interface WorkoutLog {
   logged_date: string;
 }
 
-export function useWorkoutLogs(planId: string, dayIndex: number | null) {
+export function useWorkoutLogs(planId: string, dayIndex: number | null, sessionIndex: number = 0) {
   const [logs, setLogs] = useState<WorkoutLog[]>([]);
   const [loading, setLoading] = useState(false);
   const today = new Date().toISOString().split("T")[0];
@@ -26,10 +27,11 @@ export function useWorkoutLogs(planId: string, dayIndex: number | null) {
       .select("*")
       .eq("plan_id", planId)
       .eq("day_index", dayIndex)
+      .eq("session_index", sessionIndex)
       .eq("logged_date", today);
     if (data) setLogs(data as unknown as WorkoutLog[]);
     setLoading(false);
-  }, [planId, dayIndex, today]);
+  }, [planId, dayIndex, sessionIndex, today]);
 
   useEffect(() => {
     loadLogs();
@@ -61,6 +63,7 @@ export function useWorkoutLogs(planId: string, dayIndex: number | null) {
             user_id: user.id,
             plan_id: planId,
             day_index: dayIndex!,
+            session_index: sessionIndex,
             exercise_index: exerciseIndex,
             completed: false,
             logged_date: today,
@@ -73,7 +76,7 @@ export function useWorkoutLogs(planId: string, dayIndex: number | null) {
         }
       }
     },
-    [logs, planId, dayIndex, today]
+    [logs, planId, dayIndex, sessionIndex, today]
   );
 
   const getLog = useCallback(
