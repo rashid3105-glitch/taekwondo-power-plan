@@ -8,6 +8,7 @@ import {
   AreaChart, Area, Legend, Cell,
 } from "recharts";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { normalizeDaySessions } from "@/lib/planSessionUtils";
 
 interface WorkoutLog {
   id: string;
@@ -207,7 +208,10 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
   const planProgress = useMemo(() => {
     if (!plan?.plan_data) return null;
     const schedule = plan.plan_data?.weeklySchedule || [];
-    const totalExercises = schedule.reduce((sum: number, day: any) => sum + (day.exercises?.length || 0), 0);
+    const totalExercises = schedule.reduce((sum: number, day: any) => {
+      const sessions = normalizeDaySessions(day);
+      return sum + sessions.reduce((s: number, sess: any) => s + (sess.exercises?.length || 0), 0);
+    }, 0);
     const todayStr = new Date().toISOString().split("T")[0];
     const todayLogs = logs.filter(l => l.plan_id === plan.id && l.logged_date === todayStr && l.completed);
     const allCompleted = logs.filter(l => l.plan_id === plan.id && l.completed);
