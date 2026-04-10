@@ -28,7 +28,7 @@ serve(async (req) => {
     if (body.length > 10000) {
       return new Response(JSON.stringify({ error: "Request too large" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
-    const { profile, goals, language } = JSON.parse(body);
+    const { profile, goals, language, custom_calories } = JSON.parse(body);
     if (profile?.current_injury && typeof profile.current_injury === "string" && profile.current_injury.length > 500) {
       return new Response(JSON.stringify({ error: "Injury description too long (max 500 characters)" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }

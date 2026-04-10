@@ -30,6 +30,7 @@ const UpdateProfileSchema = z.object({
   discipline: z.string().min(1).max(50),
   club_id: z.string().uuid().nullable(),
   country: z.string().max(100).nullable(),
+  custom_calories: z.number().int().min(500).max(10000).nullable(),
 });
 
 Deno.serve(async (req) => {
