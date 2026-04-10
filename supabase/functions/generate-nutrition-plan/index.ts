@@ -106,6 +106,7 @@ CRITICAL LANGUAGE REQUIREMENT: You MUST write ALL text content — including pla
 - Years of experience: ${profile.experience_years || "not specified"}
 - Nutrition goals: ${goalsText}
 - Current injury: ${profile.current_injury || "none"}
+- Daily calorie target: ${custom_calories ? custom_calories + " kcal (user-specified, use this as the baseline)" : "estimate based on profile"}
 
 ${goals?.includes("Weight loss") || goals?.includes("Lose weight") ? `
 CRITICAL: The athlete has selected weight loss as a goal. You MUST:
