@@ -122,15 +122,99 @@
   }
 }
 
-/* RTL layout fixes */
+/* ===== RTL (Arabic) Global Fixes ===== */
+
+/* Flex & grid: auto-reverse row direction */
 [dir="rtl"] {
   direction: rtl;
 }
 
+/* Flip icons that indicate direction (arrows, chevrons) */
+[dir="rtl"] .lucide-arrow-left,
+[dir="rtl"] .lucide-arrow-right,
+[dir="rtl"] .lucide-chevron-right,
+[dir="rtl"] .lucide-chevron-left {
+  transform: scaleX(-1);
+}
+
+/* Search icons positioned with left-* need to flip to right */
+[dir="rtl"] .absolute.left-3 {
+  left: auto;
+  right: 0.75rem;
+}
+[dir="rtl"] .pl-9 {
+  padding-left: unset;
+  padding-inline-start: 2.25rem;
+}
+
+/* list-disc padding */
+[dir="rtl"] .list-disc {
+  padding-left: 0;
+  padding-right: 1.25rem;
+}
+
+/* text-left / text-right should follow content direction */
 [dir="rtl"] .text-left {
   text-align: right;
 }
-
 [dir="rtl"] .text-right {
   text-align: left;
+}
+
+/* Margin utilities: convert physical to logical */
+[dir="rtl"] [class*="mr-"] {
+  --tw-mr: 0;
+}
+[dir="rtl"] [class*="ml-"] {
+  --tw-ml: 0;
+}
+
+/* Common icon margins - convert mr-N to ml-N for RTL */
+[dir="rtl"] .mr-0\.5 { margin-right: 0; margin-left: 0.125rem; }
+[dir="rtl"] .mr-1 { margin-right: 0; margin-left: 0.25rem; }
+[dir="rtl"] .mr-1\.5 { margin-right: 0; margin-left: 0.375rem; }
+[dir="rtl"] .mr-2 { margin-right: 0; margin-left: 0.5rem; }
+[dir="rtl"] .mr-3 { margin-right: 0; margin-left: 0.75rem; }
+[dir="rtl"] .mr-4 { margin-right: 0; margin-left: 1rem; }
+[dir="rtl"] .ml-0\.5 { margin-left: 0; margin-right: 0.125rem; }
+[dir="rtl"] .ml-1 { margin-left: 0; margin-right: 0.25rem; }
+[dir="rtl"] .ml-1\.5 { margin-left: 0; margin-right: 0.375rem; }
+[dir="rtl"] .ml-2 { margin-left: 0; margin-right: 0.5rem; }
+[dir="rtl"] .ml-3 { margin-left: 0; margin-right: 0.75rem; }
+[dir="rtl"] .ml-4 { margin-left: 0; margin-right: 1rem; }
+[dir="rtl"] .ml-auto { margin-left: 0; margin-right: auto; }
+
+/* Padding utilities */
+[dir="rtl"] .pl-5 { padding-left: 0; padding-right: 1.25rem; }
+[dir="rtl"] .pl-4 { padding-left: 0; padding-right: 1rem; }
+[dir="rtl"] .pl-3 { padding-left: 0; padding-right: 0.75rem; }
+[dir="rtl"] .pr-5 { padding-right: 0; padding-left: 1.25rem; }
+[dir="rtl"] .pr-4 { padding-right: 0; padding-left: 1rem; }
+[dir="rtl"] .pr-3 { padding-right: 0; padding-left: 0.75rem; }
+
+/* Border radius */
+[dir="rtl"] .rounded-l-lg { border-radius: 0; border-top-right-radius: var(--radius); border-bottom-right-radius: var(--radius); }
+[dir="rtl"] .rounded-r-lg { border-radius: 0; border-top-left-radius: var(--radius); border-bottom-left-radius: var(--radius); }
+[dir="rtl"] .rounded-l-md { border-radius: 0; border-top-right-radius: calc(var(--radius) - 2px); border-bottom-right-radius: calc(var(--radius) - 2px); }
+[dir="rtl"] .rounded-r-md { border-radius: 0; border-top-left-radius: calc(var(--radius) - 2px); border-bottom-left-radius: calc(var(--radius) - 2px); }
+
+/* Border sides */
+[dir="rtl"] .border-l { border-left: 0; border-right-width: 1px; }
+[dir="rtl"] .border-r { border-right: 0; border-left-width: 1px; }
+[dir="rtl"] .border-l-2 { border-left: 0; border-right-width: 2px; }
+[dir="rtl"] .border-r-2 { border-right: 0; border-left-width: 2px; }
+[dir="rtl"] .border-l-4 { border-left: 0; border-right-width: 4px; }
+
+/* Positional: left/right */
+[dir="rtl"] .left-0 { left: auto; right: 0; }
+[dir="rtl"] .right-0 { right: auto; left: 0; }
+[dir="rtl"] .left-1\/2 { left: auto; right: 50%; }
+[dir="rtl"] .-translate-x-1\/2 { --tw-translate-x: 50%; }
+
+/* Space-x gap direction is already handled by flexbox dir */
+
+/* Translate-x for hover effects */
+[dir="rtl"] .group-hover\:translate-x-0\.5:hover,
+[dir="rtl"] .group:hover .group-hover\:translate-x-0\.5 {
+  --tw-translate-x: -0.125rem;
 }
