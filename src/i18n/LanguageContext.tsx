@@ -18,6 +18,8 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const setLocale = useCallback((l: Locale) => {
     setLocaleState(l);
     localStorage.setItem("tkd-lang", l);
+    document.documentElement.dir = l === "ar" ? "rtl" : "ltr";
+    document.documentElement.lang = l;
   }, []);
 
   const t = useCallback((key: TranslationKey | (string & {})) => {
