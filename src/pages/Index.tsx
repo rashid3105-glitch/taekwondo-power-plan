@@ -39,7 +39,7 @@ const Index = () => {
       <Watermark />
 
       {/* Header */}
-      <header className="sticky top-0 z-40 flex items-center justify-between px-3 sm:px-5 py-3 border-b border-border/40 bg-background/80 backdrop-blur-xl gap-2 overflow-hidden">
+      <header className="sticky top-0 z-40 flex items-center justify-between px-3 sm:px-5 py-3 border-b border-border/40 bg-background/80 backdrop-blur-xl gap-2">
         <div className="flex items-center gap-2 min-w-0 flex-shrink-0">
           <img src={logo} alt="Sportstalent" className="h-8 w-8 rounded-lg object-contain flex-shrink-0" />
           <span className="text-sm font-extrabold tracking-tight text-foreground whitespace-nowrap hidden sm:inline">SPORTSTALENT</span>
