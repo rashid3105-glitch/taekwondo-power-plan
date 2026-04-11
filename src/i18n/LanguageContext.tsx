@@ -12,7 +12,7 @@ const LanguageContext = createContext<LanguageContextType | null>(null);
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(() => {
     const saved = localStorage.getItem("tkd-lang");
-    return (saved === "da" || saved === "en" || saved === "sv" || saved === "de") ? saved : "en";
+    return (saved === "da" || saved === "en" || saved === "sv" || saved === "de" || saved === "ar") ? saved : "en";
   });
 
   const setLocale = useCallback((l: Locale) => {
