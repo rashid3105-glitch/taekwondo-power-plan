@@ -39,15 +39,16 @@ const Index = () => {
       <Watermark />
 
       {/* Header */}
-      <header className="sticky top-0 z-40 flex items-center justify-between px-5 py-3 border-b border-border/40 bg-background/80 backdrop-blur-xl">
-        <div className="flex items-center gap-2.5">
+      <header className="sticky top-0 z-40 flex items-center justify-between px-3 sm:px-5 py-3 border-b border-border/40 bg-background/80 backdrop-blur-xl gap-2 overflow-hidden">
+        <div className="flex items-center gap-2 min-w-0 flex-shrink-0">
           <img src={logo} alt="Sportstalent" className="h-8 w-8 rounded-lg object-contain flex-shrink-0" />
-          <span className="text-sm font-extrabold tracking-tight text-foreground whitespace-nowrap">SPORTSTALENT</span>
+          <span className="text-sm font-extrabold tracking-tight text-foreground whitespace-nowrap hidden sm:inline">SPORTSTALENT</span>
+          <span className="text-xs font-extrabold tracking-tight text-foreground whitespace-nowrap sm:hidden">SPORTSTALENT.DK</span>
         </div>
-        <nav className="flex items-center gap-2 flex-shrink-0">
+        <nav className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
           <LanguageSwitcher />
-          <Button variant="ghost" size="sm" onClick={() => navigate("/help")} className="text-xs text-muted-foreground hover:text-foreground">
-            <HelpCircle className="h-3.5 w-3.5" /> {t("help")}
+          <Button variant="ghost" size="sm" onClick={() => navigate("/help")} className="text-xs text-muted-foreground hover:text-foreground px-2">
+            <HelpCircle className="h-3.5 w-3.5" />
           </Button>
           <Button variant="outline" size="sm" onClick={() => navigate("/auth")} className="text-xs font-semibold">
             {t("signIn")}

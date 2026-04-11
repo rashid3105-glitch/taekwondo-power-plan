@@ -38,7 +38,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-1 z-50 min-w-[140px] rounded-md border border-border bg-popover shadow-md py-1">
+        <div className="absolute end-0 top-full mt-1 z-50 min-w-[140px] rounded-md border border-border bg-popover shadow-md py-1">
           {(Object.keys(FLAGS) as Locale[]).map((l) => (
             <button
               key={l}
