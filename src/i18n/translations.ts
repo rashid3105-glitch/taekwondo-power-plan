@@ -3438,9 +3438,8 @@ const translations = {
     faq4A: "Sie geben an, wie viele TKD-Einheiten Sie pro Woche trainieren, und das System plant S&C-Einheiten drum herum — mit Intensitätssteuerung, damit Sie nie vor Sparring oder Wettkampftagen übertrainiert sind.",
     faq5Q: "Kann mein Trainer meinen Plan sehen?",
     faq5A: "Ja. Sportstalent enthält ein Trainer-Dashboard, in dem Trainer Athletenpläne einsehen, Fortschritte verfolgen, Tagebuchkommentare schreiben und Event-Erinnerungen senden können — alles an einem Ort.",  },
+
   ar: {
-    en: {,
-    // Common
     plan: "الخطة",
     progress: "التقدم",
     library: "المكتبة",
@@ -3465,8 +3464,6 @@ const translations = {
     resetPasswordSent: "تم إرسال رابط إعادة تعيين كلمة المرور. تحقق من بريدك الإلكتروني.",
     searchUsers: "البحث عن المستخدمين...",
     total: "الإجمالي",
-
-    // Index
     heroTitle: "SPORTS",
     heroHighlight: "TALENT",
     heroDescription: "القوة والتكييف مبنيان على علم رياضة التايكوندو. برامج دورية مصممة للقوة المتفجرة والسرعة والمرونة — دون أن تصبح بطيئًا.",
@@ -3494,8 +3491,6 @@ const translations = {
     sectionNutritionTitle: "التغذية",
     sectionNutritionDesc: "وصفات وخطط وجبات صديقة للرياضيين مصممة خصيصًا لحمل تدريبك، وفئة وزنك، وأهداف المنافسة.",
     footerText: "مصمم لرياضيي التايكوندو. تدرب بسرعة، ابق سريعًا.",
-
-    // Auth
     signIn: "تسجيل الدخول",
     signUp: "التسجيل",
     signInToAccount: "تسجيل الدخول إلى حسابك",
@@ -3518,8 +3513,6 @@ const translations = {
     sameClubRequired: "يمكن للمدربين إضافة رياضيين من نفس النادي فقط.",
     completeClubBeforeCoach: "اختر ناديك قبل إدارة الرياضيين.",
     athleteInheritsCoachClub: "يتم تعيين الرياضيين الجدد تلقائيًا إلى ناديك.",
-
-    // Profile Setup
     athleteProfile: "ملف الرياضي",
     profileSubtitle: "أخبرنا عن نفسك حتى نتمكن من بناء خطتك المثالية",
     age: "العمر",
@@ -3551,15 +3544,13 @@ const translations = {
     gymSession: "جلسة النادي الرياضي",
     recovery: "الاستشفاء",
     nSessions: "جلسات",
-    monShort: "الاثنين", tueShort: "TUE", wedShort: "WED", thuShort: "THU", friShort: "FRI", satShort: "SAT", sunShort: "SUN",
+    monShort: "الاثنين",
     profileSaveFailedSession: "تعذر حفظ الملف الشخصي. يرجى تسجيل الخروج وتسجيل الدخول مرة أخرى.",
     changePhoto: "تغيير الصورة",
     addPhoto: "إضافة صورة",
     photoUploaded: "تم تحميل الصورة!",
     uploadFailed: "فشل التحميل",
     selectImageFile: "الرجاء تحديد ملف صورة",
-
-    // Dashboard
     generatePlan: "إنشاء خطة",
     noTrainingPlanYet: "لا توجد خطة تدريب بعد",
     noTrainingPlanDesc: "انقر على \"إنشاء خطة\" أعلاه لإنشاء خطة تدريب دورية مصممة خصيصًا لملفك الشخصي.",
@@ -3575,8 +3566,6 @@ const translations = {
     previousRehabPlans: "خطط إعادة التأهيل السابقة",
     belt: "حزام",
     tkdPerWeek: "تايكوندو/أسبوع",
-
-    // Progress
     progressDashboard: "لوحة تحكم التقدم",
     noWorkoutData: "لا توجد بيانات تمارين بعد",
     noWorkoutDataDesc: "ابدأ بتسجيل التمارين في خطتك التدريبية لرؤية الرسوم البيانية للتقدم هنا.",
@@ -3606,8 +3595,6 @@ const translations = {
     exercises: "تمارين",
     across: "عبر",
     noPlanData: "لا توجد خطة تدريب نشطة بعد.",
-
-    // Goals
     "Faster kicks": "ركلات أسرع",
     "More explosive footwork": "حركة قدم أكثر انفجارية",
     "Competition prep": "التحضير للمنافسة",
@@ -3619,16 +3606,12 @@ const translations = {
     "Improve balance": "تحسين التوازن",
     "Better stance transitions": "انتقالات وقفة أفضل",
     "Movement flow": "تدفق الحركة",
-
-    // Belt levels
     white: "أبيض",
     yellow: "أصفر",
     green: "أخضر",
     blue: "أزرق",
     red: "أحمر",
     black: "أسود",
-
-    // Forgot / Reset password
     forgotPassword: "هل نسيت كلمة المرور؟",
     resetPasswordTitle: "إعادة تعيين كلمة المرور",
     resetPasswordDesc: "أدخل بريدك الإلكتروني وسنرسل لك رابط إعادة تعيين.",
@@ -3643,8 +3626,6 @@ const translations = {
     passwordUpdatedDesc: "يمكنك الآن تسجيل الدخول بكلمة مرورك الجديدة.",
     invalidResetLink: "رابط إعادة التعيين هذا غير صالح أو انتهت صلاحيته.",
     backToSignIn: "العودة إلى تسجيل الدخول",
-
-    // Approval
     pendingApproval: "الحساب قيد الموافقة",
     pendingApprovalDesc: "تم إنشاء حسابك ولكنه يتطلب موافقة المسؤول قبل أن تتمكن من الوصول إلى التطبيق. يرجى التحقق مرة أخرى لاحقًا.",
     signOut: "تسجيل الخروج",
@@ -3660,8 +3641,6 @@ const translations = {
     backToDashboard: "العودة إلى لوحة التحكم",
     manageUsers: "إدارة المستخدمين",
     admin: "المسؤول",
-
-    // Coach
     coachDashboard: "لوحة تحكم المدرب",
     addAthlete: "إضافة رياضي",
     addAthleteDesc: "أدخل الرمز الفريد للرياضي (الموضح في ملفه الشخصي) لربطه بحساب التدريب الخاص بك.",
@@ -3707,8 +3686,6 @@ const translations = {
     noCoach: "لا يوجد مدرب",
     athleteReassigned: "تمت إعادة تعيين الرياضي لمدرب جديد!",
     currentCoach: "المدرب الحالي",
-
-    // Pricing
     pricingTitle: "اختر خطتك",
     pricingSubtitle: "تدرب بذكاء أكبر مع برامج متجذرة في علوم رياضة التايكوندو. خطط دورية، تدريب عقلي، إعادة تأهيل، وتغذية - كل ذلك في منصة واحدة.",
     pricingPopular: "الأكثر شعبية",
@@ -3748,8 +3725,6 @@ const translations = {
     paypalInstruction: "أرسل الدفع عبر PayPal إلى:",
     paypalReference: "قم بتضمين بريدك الإلكتروني كمرجع",
     adminPayments: "المدفوعات",
-
-    // Help
     helpTitle: "كيفية استخدام SPORTSTALENT",
     helpSubtitle: "أدلة خطوة بخطوة لتحقيق أقصى استفادة من التطبيق",
     helpProfileTitle: "إنشاء ملفك الشخصي",
@@ -3879,8 +3854,6 @@ const translations = {
     reminderHistory: "سجل التذكيرات",
     reminderRead: "مقروء",
     reminderUnread: "غير مقروء",
-
-    // Payment & Demo
     paid: "مدفوع",
     unpaid: "غير مدفوع",
     demo: "تجريبي",
@@ -3907,16 +3880,12 @@ const translations = {
     clubManagement: "إدارة النادي",
     maxAthletes: "الحد الأقصى للرياضيين",
     clubUpdated: "تم تحديث النادي",
-
-    // Calendar
     addToCalendar: "إضافة إلى التقويم",
     addAllToCalendar: "إضافة جميع الجلسات",
     downloadICS: "تنزيل .ics",
     openInGoogleCalendar: "تقويم Google",
     calendarExported: "تم تنزيل ملف التقويم!",
     addDayToCalendar: "أضف هذه الجلسة إلى التقويم",
-
-    // Notifications
     trainingReminders: "تذكيرات التدريب",
     enableReminders: "تفعيل التذكيرات",
     reminderTime: "وقت التذكير",
@@ -3925,8 +3894,6 @@ const translations = {
     remindersDisabled: "تم تعطيل التذكيرات",
     notificationsNotSupported: "الإشعارات غير مدعومة في هذا المتصفح",
     notificationPermissionDenied: "تم رفض إذن الإشعارات",
-
-    // Nutrition
     nutrition: "التغذية",
     nutritionGoals: "أهداف التغذية",
     selectNutritionGoals: "اختر أهدافك الغذائية",
@@ -3963,7 +3930,6 @@ const translations = {
     "Competition prep (weight class)": "التحضير للمنافسات (فئة الوزن)",
     "General healthy eating": "الأكل الصحي العام",
     "Reduce inflammation": "تقليل الالتهاب",
-    // Hub
     hubWelcome: "الرئيسية",
     welcomeBack: "مرحبًا بعودتك",
     yearsExp: "سنوات خبرة",
@@ -3980,14 +3946,12 @@ const translations = {
     hubRehabDesc: "هل تتعافى من إصابة؟ أنشئ برامج إعادة تأهيل مرحلية مع إرشادات الألم وبروتوكولات العودة إلى الرياضة.",
     hubMentalTitle: "الأداء العقلي",
     hubMentalDesc: "قيّم صلابتك الذهنية، وتركيزك، وجاهزيتك للمنافسة باستخدام أطر علم النفس الرياضي.",
-    // Coach-managed
     coachManagedBanner: "تتم إدارة برامجك بواسطة مدربك. يمكنك عرض خططك وتنزيلها.",
     coachManagedBannerNamed: "تتم إدارة برامجك بواسطة {{coach}}. يمكنك عرض خططك وتنزيلها.",
     coachManagedAction: "بإدارة المدرب — عرض فقط",
     coachManagedActionNamed: "بإدارة {{coach}} — عرض فقط",
     hubLibraryTitle: "المكتبة",
     hubLibraryDesc: "تصفح المجموعة الكاملة من التمارين، والوصفات، وتقنيات التدريب العقلي لتوسيع معرفتك.",
-    // Diary
     diary: "المفكرة",
     diaryNewEntry: "إدخال جديد",
     diaryEditEntry: "تعديل إدخال",
@@ -4000,7 +3964,6 @@ const translations = {
     diaryDeleted: "تم حذف الإدخال",
     diaryEmpty: "لا توجد إدخالات في المفكرة بعد",
     diaryEmptyDesc: "ابدأ بالكتابة لتتبع أفكارك، ومزاجك، ومستويات طاقتك.",
-    // Exercise Library
     exerciseDisclaimer: "💡 نصيحة: ابحث عن أي تمرين بالاسم على YouTube لمشاهدة عروض الفيديو، أو اطلب التوجيه من مدربك.",
     allFilter: "الكل",
     myExercises: "تماريني",
@@ -4010,7 +3973,6 @@ const translations = {
     exercisesTitle: "التمارين",
     mentalSteps: "الخطوات",
     mentalWhyItMatters: "لماذا يهم:",
-    // Library Chooser
     chooseLibrary: "اختر مكتبة",
     chooseLibraryDesc: "تصفح التمارين، تدريبات التدريب العقلي، أو وصفات التغذية.",
     libExerciseLabel: "تمارين",
@@ -4019,7 +3981,6 @@ const translations = {
     libMentalDesc: "تدريبات التركيز والتخيل والصلابة الذهنية",
     libNutritionLabel: "التغذية والوصفات",
     libNutritionDesc: "وجبات وخطط وجبات تركز على الرياضيين",
-    // Recipe Library
     recipeIngredients: "المكونات",
     recipeSteps: "الخطوات",
     recipeAthleteTip: "💡 نصيحة الرياضي:",
@@ -4048,15 +4009,12 @@ const translations = {
     recipeLoginRequired: "يجب أن تكون مسجلاً للدخول",
     recipeSaveFailed: "فشل حفظ الوصفة",
     recipeAdded: "تمت إضافة الوصفة!",
-    // Recipe categories
     catBreakfast: "الإفطار",
     catLunch: "الغداء",
     catDinner: "العشاء",
     catSnack: "وجبة خفيفة",
     catPreWorkout: "قبل التمرين",
     catPostWorkout: "بعد التمرين",
-
-    // Methodology
     methPageTitle: "منهجيتنا",
     methPageDesc: "لماذا تنتج منطق تدريب التايكوندو الخاص بنا رياضيين أفضل من البرامج العامة.",
     methHeroTitle: "لماذا منطق التايكوندو الخاص بنا أفضل",
@@ -4105,8 +4063,6 @@ const translations = {
     howItWorksStep3Title: "تدرب بذكاء أكبر",
     howItWorksStep3Desc: "تتبع التقدم، سجل التدريبات، وكيّف تدريبك مع تطورك.",
     ctaSubtext: "تجربة مجانية · لا يلزم بطاقة ائتمان",
-
-    // Landing page content
     landingBadge: "علوم الرياضة · خاص بالتايكوندو",
     landingHeroTitle: "القوة والتكييف لـ",
     landingHeroHighlight: "رياضيي التايكوندو",
@@ -4167,8 +4123,6 @@ const translations = {
     landingCtaTitle: "ابدأ التدريب بذكاء أكبر",
     landingCtaDesc: "أنشئ ملفك الشخصي كرياضي واحصل على خطة تدريبك المجدولة الأولى في أقل من 5 دقائق. مجاني للتجربة — لا يلزم وجود بطاقة ائتمان.",
     landingCtaButton: "احصل على خطة تدريبك",
-
-    // Physical Testing
     ptTitle: "الاختبار البدني",
     ptCat_speed: "السرعة",
     ptCat_endurance: "التحمل",
@@ -4265,8 +4219,6 @@ const translations = {
     reminderSent: "تم إرسال التذكير!",
     eventReminders: "تذكيرات الأحداث",
     writeInDiary: "اكتب في اليوميات",
-
-    // Case Study
     caseStudyBadge: "نتائج حقيقية",
     caseHeadline: "زيادة في القفز بنسبة 10.5% في 7 أسابيع",
     caseSubheadline: "رياضي يبلغ من العمر 19 عامًا مؤهل لبطولة الدنمارك تحت 21 عامًا يعاني من اعتلال الأوتار الرضفية، قلل من آلام الركبة وحسّن القوة الانفجارية باستخدام برنامج S&C دوري من Sportstalent.",
@@ -4332,8 +4284,6 @@ const translations = {
     weekExSun: "تدليك بالأسطوانة الرغوية · مرونة · نوم",
     samplePlanCTA: "اطلع على البرنامج الكامل",
     samplePlanTitle: "نموذج برنامج تدريبي",
-
-    // FAQ
     faqHeadline: "أسئلة شائعة",
     faq1Q: "ما هو Sportstalent؟",
     faq1A: "Sportstalent هي منصة لعلوم الرياضة للقوة والتكييف البدني، مصممة خصيصًا لرياضيي التايكوندو. تقوم بإنشاء برامج تدريب دورية بناءً على مستوى حزامك، أهداف المنافسة، وجدول التايكوندو الأسبوعي الخاص بك.",
