@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
 import translations, { type Locale, type TranslationKey } from "./translations";
 
 interface LanguageContextType {
@@ -21,6 +21,12 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     document.documentElement.dir = l === "ar" ? "rtl" : "ltr";
     document.documentElement.lang = l;
   }, []);
+
+  // Set initial dir and lang on mount
+  useEffect(() => {
+    document.documentElement.dir = locale === "ar" ? "rtl" : "ltr";
+    document.documentElement.lang = locale;
+  }, [locale]);
 
   const t = useCallback((key: TranslationKey | (string & {})) => {
     const k = key as TranslationKey;
