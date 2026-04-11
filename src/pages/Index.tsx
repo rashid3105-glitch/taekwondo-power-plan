@@ -41,13 +41,13 @@ const Index = () => {
       {/* Header */}
       <header className="sticky top-0 z-40 flex items-center justify-between px-5 py-3 border-b border-border/40 bg-background/80 backdrop-blur-xl">
         <div className="flex items-center gap-2.5">
-          <img src={logo} alt="Sportstalent" className="h-8 w-8 rounded-lg object-contain" />
-          <span className="text-sm font-extrabold tracking-tight text-foreground">SPORTSTALENT</span>
+          <img src={logo} alt="Sportstalent" className="h-8 w-8 rounded-lg object-contain flex-shrink-0" />
+          <span className="text-sm font-extrabold tracking-tight text-foreground whitespace-nowrap">SPORTSTALENT</span>
         </div>
-        <nav className="flex items-center gap-2">
+        <nav className="flex items-center gap-2 flex-shrink-0">
           <LanguageSwitcher />
           <Button variant="ghost" size="sm" onClick={() => navigate("/help")} className="text-xs text-muted-foreground hover:text-foreground">
-            <HelpCircle className="h-3.5 w-3.5 mr-1" /> {t("help")}
+            <HelpCircle className="h-3.5 w-3.5" /> {t("help")}
           </Button>
           <Button variant="outline" size="sm" onClick={() => navigate("/auth")} className="text-xs font-semibold">
             {t("signIn")}
@@ -59,7 +59,7 @@ const Index = () => {
         {/* Hero */}
         <section className="relative overflow-hidden" aria-labelledby="hero-heading">
           <div
-            className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[450px] opacity-15 pointer-events-none"
+            className="absolute top-0 inset-x-0 mx-auto w-[700px] h-[450px] opacity-15 pointer-events-none"
             style={{ background: "radial-gradient(ellipse, hsl(190 95% 50% / 0.35), transparent 70%)" }}
             aria-hidden="true"
           />
