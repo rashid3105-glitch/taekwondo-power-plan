@@ -32,7 +32,7 @@ serve(async (req) => {
     if (profile?.current_injury && typeof profile.current_injury === "string" && profile.current_injury.length > 500) {
       return new Response(JSON.stringify({ error: "Injury description too long (max 500 characters)" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
-    const lang = language === "da" ? "Danish" : language === "sv" ? "Swedish" : "English";
+    const lang = language === "da" ? "Danish" : language === "sv" ? "Swedish" : language === "de" ? "German" : language === "ar" ? "Arabic" : "English";
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 

@@ -48,6 +48,14 @@ export const MENTAL_CATEGORY_LABELS: Record<Locale, Record<MentalCategory, strin
     recovery: "Erholung",
     toughness: "Mentale Stärke",
   },
+  ar: {
+    focus: "تركيز",
+    visualization: "تصوّر ذهني",
+    breathing: "تنفّس",
+    confidence: "ثقة بالنفس",
+    recovery: "استشفاء",
+    toughness: "صلابة ذهنية",
+  },
 };
 
 export const MENTAL_CATEGORY_ICONS: Record<MentalCategory, string> = {
@@ -64,6 +72,7 @@ export const MENTAL_DIFFICULTY_LABELS: Record<Locale, Record<MentalDifficulty, s
   da: { beginner: "Begynder", intermediate: "Mellem", advanced: "Avanceret" },
   sv: { beginner: "Nybörjare", intermediate: "Medel", advanced: "Avancerad" },
   de: { beginner: "Anfänger", intermediate: "Fortgeschritten", advanced: "Profi" },
+  ar: { beginner: "مبتدئ", intermediate: "متوسط", advanced: "متقدم" },
 };
 
 interface MentalExerciseData {
@@ -318,7 +327,7 @@ const mentalExercisesData: MentalExerciseData[] = [
 ];
 
 export function getMentalExercises(locale: Locale = "en"): MentalExercise[] {
-  const effectiveLocale = (locale === "sv" ? "en" : locale) as "en" | "da";
+  const effectiveLocale = (locale === "da" ? "da" : "en") as "en" | "da";
   return mentalExercisesData.map((ex) => ({
     id: ex.id,
     category: ex.category,

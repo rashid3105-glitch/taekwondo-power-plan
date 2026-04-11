@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
 import translations, { type Locale, type TranslationKey } from "./translations";
 
 interface LanguageContextType {
@@ -12,13 +12,21 @@ const LanguageContext = createContext<LanguageContextType | null>(null);
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(() => {
     const saved = localStorage.getItem("tkd-lang");
-    return (saved === "da" || saved === "en" || saved === "sv" || saved === "de") ? saved : "en";
+    return (saved === "da" || saved === "en" || saved === "sv" || saved === "de" || saved === "ar") ? saved : "en";
   });
 
   const setLocale = useCallback((l: Locale) => {
     setLocaleState(l);
     localStorage.setItem("tkd-lang", l);
+    document.documentElement.dir = l === "ar" ? "rtl" : "ltr";
+    document.documentElement.lang = l;
   }, []);
+
+  // Set initial dir and lang on mount
+  useEffect(() => {
+    document.documentElement.dir = locale === "ar" ? "rtl" : "ltr";
+    document.documentElement.lang = locale;
+  }, [locale]);
 
   const t = useCallback((key: TranslationKey | (string & {})) => {
     const k = key as TranslationKey;
