@@ -1,20 +1,38 @@
-import { motion } from "framer-motion";
-import { TrendingUp, TrendingDown, Zap, Target, Clock, Activity, Quote, Timer, Shield } from "lucide-react";
+import { useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { TrendingDown, Zap, Target, Clock, Activity, Quote, Shield, ChevronLeft, ChevronRight, Users } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { caseStudies, type Locale } from "@/data/caseStudies";
 
-const metrics = [
-  { label: "caseMetricJump", before: "38 cm", after: "42 cm", change: "+10.5%", icon: TrendingUp, positive: true },
-  { label: "caseMetricFatigue", before: "7/10", after: "3/10", change: "−57%", icon: TrendingDown, positive: true },
-  { label: "caseMetricPain", before: "6/10", after: "1/10", change: "−83%", icon: Activity, positive: true },
-  { label: "caseMetricKick", before: "Baseline", after: "−14%", change: "−14% faster", icon: Timer, positive: true },
-];
+const lt = (obj: Record<Locale, string>, locale: string) => obj[locale as Locale] || obj.en;
 
 export const CaseStudy = () => {
-  const { t } = useLanguage();
+  const { locale, t } = useLanguage();
+
+  const dailyIndex = useMemo(() => Math.floor(Date.now() / 86400000) % caseStudies.length, []);
+  const [index, setIndex] = useState(dailyIndex);
+  const story = caseStudies[index];
+  const isCoach = story.type === "coach";
+
+  const accent = isCoach ? "primary" : "speed";
+  const accentBg = isCoach ? "bg-primary/10" : "bg-speed/10";
+  const accentBorder = isCoach ? "border-primary/30" : "border-speed/30";
+  const accentText = isCoach ? "text-primary" : "text-speed";
+  const accentDot = isCoach ? "bg-primary" : "bg-speed";
+
+  const prev = () => setIndex((i) => (i - 1 + caseStudies.length) % caseStudies.length);
+  const next = () => setIndex((i) => (i + 1) % caseStudies.length);
+
+  const typeBadge = isCoach
+    ? { en: "Coach Story", da: "Trænerhistorie", sv: "Tränarberättelse", de: "Trainergeschichte", ar: "قصة مدرب" }
+    : { en: "Athlete Story", da: "Atlethistorie", sv: "Atletberättelse", de: "Athletengeschichte", ar: "قصة رياضي" };
+
+  const beforeLabel = t("caseBefore");
+  const interventionLabel = t("caseIntervention");
 
   return (
     <section className="max-w-3xl mx-auto px-5 pb-16 sm:pb-20" aria-label="Case study">
-      {/* Section header */}
+      {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -22,148 +40,162 @@ export const CaseStudy = () => {
         transition={{ duration: 0.5 }}
         className="text-center mb-10"
       >
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-speed/30 bg-speed/10 px-3 py-1 mb-4">
-          <Target className="h-3 w-3 text-speed" />
-          <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-speed">
-            {t("caseStudyBadge")}
+        <div className="flex items-center justify-center gap-2 mb-4 flex-wrap">
+          <span className={`inline-flex items-center gap-1.5 rounded-full border ${accentBorder} ${accentBg} px-3 py-1`}>
+            <Target className={`h-3 w-3 ${accentText}`} />
+            <span className={`text-[10px] font-bold uppercase tracking-[0.15em] ${accentText}`}>
+              {lt(story.badge, locale)}
+            </span>
           </span>
-        </span>
-        <h2 className="text-2xl sm:text-3xl font-black tracking-tighter text-foreground leading-tight">
-          {t("caseHeadline")}
-        </h2>
-        <p className="mt-2 text-sm text-muted-foreground max-w-lg mx-auto">
-          {t("caseSubheadline")}
-        </p>
+          <span className={`inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-secondary/40 px-3 py-1`}>
+            {isCoach ? <Users className="h-3 w-3 text-muted-foreground" /> : <Shield className="h-3 w-3 text-muted-foreground" />}
+            <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+              {lt(typeBadge, locale)}
+            </span>
+          </span>
+        </div>
       </motion.div>
 
-      {/* Athlete profile card */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-30px" }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-        className="rounded-xl border border-border bg-card p-5 sm:p-6 mb-6"
-      >
-        <div className="flex items-center gap-2 mb-4">
-          <div className="h-8 w-8 rounded-lg bg-energy/15 flex items-center justify-center">
-            <Shield className="h-4 w-4 text-energy" />
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={story.id}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -12 }}
+          transition={{ duration: 0.35 }}
+        >
+          {/* Headline */}
+          <div className="text-center mb-8">
+            <h2 className="text-2xl sm:text-3xl font-black tracking-tighter text-foreground leading-tight">
+              {lt(story.headline, locale)}
+            </h2>
+            <p className="mt-2 text-sm text-muted-foreground max-w-lg mx-auto">
+              {lt(story.subheadline, locale)}
+            </p>
           </div>
-          <div>
-            <p className="text-sm font-bold text-foreground">{t("caseAthleteName")}</p>
-            <p className="text-[11px] text-muted-foreground">{t("caseAthleteInfo")}</p>
-          </div>
-        </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-          {[
-            { label: t("caseProfileAge"), value: "19" },
-            { label: t("caseProfileLevel"), value: t("caseProfileLevelVal") },
-            { label: t("caseProfileFreq"), value: t("caseProfileFreqVal") },
-            { label: t("caseProfileWeeks"), value: "7" },
-            { label: t("caseProfilePrevSC"), value: t("caseProfilePrevSCVal") },
-          ].map((item) => (
-            <div key={item.label} className="rounded-lg bg-secondary/60 border border-border/40 p-3 text-center">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1">{item.label}</p>
-              <p className="text-sm font-bold text-foreground">{item.value}</p>
+          {/* Profile card */}
+          <div className="rounded-xl border border-border bg-card p-5 sm:p-6 mb-6">
+            <div className="flex items-center gap-2 mb-4">
+              <div className={`h-8 w-8 rounded-lg ${isCoach ? "bg-primary/15" : "bg-energy/15"} flex items-center justify-center`}>
+                {isCoach
+                  ? <Users className={`h-4 w-4 ${isCoach ? "text-primary" : "text-energy"}`} />
+                  : <Shield className="h-4 w-4 text-energy" />}
+              </div>
+              <div>
+                <p className="text-sm font-bold text-foreground">{lt(story.name, locale)}</p>
+                <p className="text-[11px] text-muted-foreground">{lt(story.info, locale)}</p>
+              </div>
             </div>
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+              {story.profileStats.map((s) => (
+                <div key={lt(s.label, locale)} className="rounded-lg bg-secondary/60 border border-border/40 p-3 text-center">
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1">{lt(s.label, locale)}</p>
+                  <p className="text-sm font-bold text-foreground">{lt(s.value, locale)}</p>
+                </div>
+              ))}
+            </div>
+            <p className="mt-3 text-[10px] text-muted-foreground/60 italic text-right">
+              {lt(story.nameNote, locale)}
+            </p>
+          </div>
+
+          {/* Problems */}
+          <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-5 sm:p-6 mb-6">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-destructive mb-3 flex items-center gap-1.5">
+              <Clock className="h-3.5 w-3.5" /> {beforeLabel}
+            </h3>
+            <ul className="space-y-2">
+              {story.problems.map((p, i) => (
+                <li key={i} className="flex items-start gap-2 text-xs text-muted-foreground leading-relaxed">
+                  <span className="mt-1 h-1.5 w-1.5 rounded-full bg-destructive/60 flex-shrink-0" />
+                  {lt(p, locale)}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Intervention */}
+          <div className={`rounded-xl border ${isCoach ? "border-primary/20 bg-primary/5" : "border-energy/20 bg-energy/5"} p-5 sm:p-6 mb-6`}>
+            <h3 className={`text-xs font-bold uppercase tracking-wider ${isCoach ? "text-primary" : "text-energy"} mb-3 flex items-center gap-1.5`}>
+              <Zap className="h-3.5 w-3.5" /> {interventionLabel}
+            </h3>
+            <ul className="space-y-2">
+              {story.changes.map((c, i) => (
+                <li key={i} className="flex items-start gap-2 text-xs text-foreground/80 leading-relaxed">
+                  <span className={`mt-1 h-1.5 w-1.5 rounded-full ${isCoach ? "bg-primary/60" : "bg-energy/60"} flex-shrink-0`} />
+                  {lt(c, locale)}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Metrics */}
+          <div className="mb-6">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {story.metrics.map((m, i) => (
+                <div
+                  key={i}
+                  className={`rounded-xl border ${accentBorder.replace("/30", "/20")} bg-card p-4 text-center`}
+                >
+                  <m.icon className={`h-4 w-4 ${accentText} mx-auto mb-2`} />
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1">
+                    {lt(m.label, locale)}
+                  </p>
+                  <p className="text-lg font-black text-foreground">{m.after}</p>
+                  <p className={`text-[10px] ${accentText} font-bold`}>{m.change}</p>
+                </div>
+              ))}
+            </div>
+            <p className="mt-2 text-[9px] text-muted-foreground/50 text-center italic">
+              {lt(story.methodNote, locale)}
+            </p>
+          </div>
+
+          {/* Quote */}
+          <div className="rounded-xl border border-border bg-secondary/30 p-5 sm:p-6 relative">
+            <Quote className={`h-6 w-6 ${isCoach ? "text-primary/30" : "text-energy/30"} absolute top-4 right-4`} />
+            <p className="text-sm text-foreground/90 italic leading-relaxed pr-8">
+              "{lt(story.quote, locale)}"
+            </p>
+            <p className="mt-3 text-[11px] text-muted-foreground font-semibold">
+              — {lt(story.name, locale)}, {lt(story.info, locale)}
+            </p>
+          </div>
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Navigation */}
+      <div className="flex items-center justify-center gap-3 mt-6">
+        <button
+          onClick={prev}
+          className="h-8 w-8 rounded-full border border-border bg-card flex items-center justify-center hover:bg-secondary transition-colors"
+          aria-label="Previous story"
+        >
+          <ChevronLeft className="h-4 w-4 text-muted-foreground" />
+        </button>
+        <div className="flex gap-1.5">
+          {caseStudies.map((s, i) => (
+            <button
+              key={s.id}
+              onClick={() => setIndex(i)}
+              className={`h-2 rounded-full transition-all ${
+                i === index
+                  ? `w-6 ${accentDot}`
+                  : "w-2 bg-border hover:bg-muted-foreground/40"
+              }`}
+              aria-label={`Story ${i + 1}`}
+            />
           ))}
         </div>
-
-        <p className="mt-3 text-[10px] text-muted-foreground/60 italic text-right">
-          {t("caseNameNote")}
-        </p>
-      </motion.div>
-
-      {/* Problems before */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-30px" }}
-        transition={{ duration: 0.5, delay: 0.15 }}
-        className="rounded-xl border border-destructive/20 bg-destructive/5 p-5 sm:p-6 mb-6"
-      >
-        <h3 className="text-xs font-bold uppercase tracking-wider text-destructive mb-3 flex items-center gap-1.5">
-          <Clock className="h-3.5 w-3.5" /> {t("caseBefore")}
-        </h3>
-        <ul className="space-y-2">
-          {["caseProblem1", "caseProblem2", "caseProblem3", "caseProblem4"].map((key) => (
-            <li key={key} className="flex items-start gap-2 text-xs text-muted-foreground leading-relaxed">
-              <span className="mt-1 h-1.5 w-1.5 rounded-full bg-destructive/60 flex-shrink-0" />
-              {t(key)}
-            </li>
-          ))}
-        </ul>
-      </motion.div>
-
-      {/* Intervention */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-30px" }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        className="rounded-xl border border-energy/20 bg-energy/5 p-5 sm:p-6 mb-6"
-      >
-        <h3 className="text-xs font-bold uppercase tracking-wider text-energy mb-3 flex items-center gap-1.5">
-          <Zap className="h-3.5 w-3.5" /> {t("caseIntervention")}
-        </h3>
-        <ul className="space-y-2">
-          {["caseChange1", "caseChange2", "caseChange3", "caseChange4"].map((key) => (
-            <li key={key} className="flex items-start gap-2 text-xs text-foreground/80 leading-relaxed">
-              <span className="mt-1 h-1.5 w-1.5 rounded-full bg-energy/60 flex-shrink-0" />
-              {t(key)}
-            </li>
-          ))}
-        </ul>
-      </motion.div>
-
-      {/* Results metrics */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-30px" }}
-        transition={{ duration: 0.5, delay: 0.25 }}
-        className="mb-6"
-      >
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {metrics.map((m, i) => (
-            <motion.div
-              key={m.label}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: 0.3 + i * 0.08 }}
-              className="rounded-xl border border-speed/20 bg-card p-4 text-center"
-            >
-              <m.icon className="h-4 w-4 text-speed mx-auto mb-2" />
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1">
-                {t(m.label)}
-              </p>
-              <p className="text-lg font-black text-foreground">{m.after}</p>
-              <p className="text-[10px] text-speed font-bold">{m.change}</p>
-            </motion.div>
-          ))}
-        </div>
-        <p className="mt-2 text-[9px] text-muted-foreground/50 text-center italic">
-          {t("caseMethodNote")}
-        </p>
-      </motion.div>
-
-      {/* Quote */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-30px" }}
-        transition={{ duration: 0.5, delay: 0.35 }}
-        className="rounded-xl border border-border bg-secondary/30 p-5 sm:p-6 relative"
-      >
-        <Quote className="h-6 w-6 text-energy/30 absolute top-4 right-4" />
-        <p className="text-sm text-foreground/90 italic leading-relaxed pr-8">
-          "{t("caseQuote")}"
-        </p>
-        <p className="mt-3 text-[11px] text-muted-foreground font-semibold">
-          — {t("caseAthleteName")}, {t("caseAthleteInfo")}
-        </p>
-      </motion.div>
+        <button
+          onClick={next}
+          className="h-8 w-8 rounded-full border border-border bg-card flex items-center justify-center hover:bg-secondary transition-colors"
+          aria-label="Next story"
+        >
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+        </button>
+      </div>
     </section>
   );
 };
