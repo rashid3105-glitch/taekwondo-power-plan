@@ -34,6 +34,8 @@ interface Profile {
   discipline?: string;
 }
 
+type SupportedLocale = "en" | "da" | "sv" | "de" | "ar";
+
 const categoryIcons: Record<string, React.ReactNode> = {
   mentalToughness: <Shield className="h-4 w-4" />,
   competitionAnxiety: <Target className="h-4 w-4" />,
@@ -43,13 +45,13 @@ const categoryIcons: Record<string, React.ReactNode> = {
   motivation: <Trophy className="h-4 w-4" />,
 };
 
-const categoryLabels: Record<string, { en: string; da: string }> = {
-  mentalToughness: { en: "Mental Toughness", da: "Mental styrke" },
-  competitionAnxiety: { en: "Competition Anxiety", da: "Konkurrenceangst" },
-  focusConcentration: { en: "Focus & Concentration", da: "Fokus & koncentration" },
-  recoveryFromLoss: { en: "Recovery from Loss", da: "Håndtering af nederlag" },
-  confidence: { en: "Confidence", da: "Selvtillid" },
-  motivation: { en: "Motivation", da: "Motivation" },
+const categoryLabels: Record<string, Record<SupportedLocale, string>> = {
+  mentalToughness: { en: "Mental Toughness", da: "Mental styrke", sv: "Mental styrka", de: "Mentale Stärke", ar: "القوة الذهنية" },
+  competitionAnxiety: { en: "Competition Anxiety", da: "Konkurrenceangst", sv: "Tävlingsångest", de: "Wettkampfangst", ar: "قلق المنافسة" },
+  focusConcentration: { en: "Focus & Concentration", da: "Fokus & koncentration", sv: "Fokus & koncentration", de: "Fokus & Konzentration", ar: "التركيز والانتباه" },
+  recoveryFromLoss: { en: "Recovery from Loss", da: "Håndtering af nederlag", sv: "Återhämtning efter förlust", de: "Erholung nach Niederlagen", ar: "التعافي من الخسارة" },
+  confidence: { en: "Confidence", da: "Selvtillid", sv: "Självförtroende", de: "Selbstvertrauen", ar: "الثقة بالنفس" },
+  motivation: { en: "Motivation", da: "Motivation", sv: "Motivation", de: "Motivation", ar: "التحفيز" },
 };
 
 interface Assessment {
@@ -59,6 +61,184 @@ interface Assessment {
   ai_advice: any;
   created_at: string;
 }
+
+const translations: Record<SupportedLocale, Record<string, string>> = {
+  en: {
+    title: "Mental Performance",
+    subtitle: "Assess your mental readiness and get personalized coping strategies",
+    startAssessment: "Start Assessment",
+    viewHistory: "View History",
+    question: "Question",
+    of: "of",
+    next: "Next",
+    back: "Back",
+    getResults: "Get My Results & Advice",
+    yourScore: "Your Mental Score",
+    outOf: "out of 30",
+    generating: "Generating personalized advice...",
+    strengths: "Your Strengths",
+    areasToImprove: "Areas to Improve",
+    techniques: "Techniques",
+    dailyHabit: "Daily Habit",
+    preCompRoutine: "Pre-Competition Routine",
+    affirmations: "Personal Affirmations",
+    retake: "Retake Assessment",
+    backToIntro: "Back",
+    history: "Assessment History",
+    noHistory: "No previous assessments yet.",
+    score: "Score",
+    delete: "Delete",
+    downloadPlan: "Download Plan",
+    saveToDiary: "Save to Diary",
+    savedToDiary: "Saved to diary!",
+    diaryNote: "Mental Assessment Summary",
+    saveToDiaryPrompt: "Would you like to save this assessment summary as a note in your diary?",
+    overallExcellent: "Excellent mental readiness!",
+    overallGood: "Good mental strength",
+    overallAverage: "Average — room for growth",
+    overallNeedsWork: "Needs work — let's build it up!",
+  },
+  da: {
+    title: "Mental præstation",
+    subtitle: "Vurder din mentale parathed og få personlige copingstrategier",
+    startAssessment: "Start vurdering",
+    viewHistory: "Se historik",
+    question: "Spørgsmål",
+    of: "af",
+    next: "Næste",
+    back: "Tilbage",
+    getResults: "Få mine resultater & råd",
+    yourScore: "Din mentale score",
+    outOf: "ud af 30",
+    generating: "Genererer personlige råd...",
+    strengths: "Dine styrker",
+    areasToImprove: "Områder til forbedring",
+    techniques: "Teknikker",
+    dailyHabit: "Daglig vane",
+    preCompRoutine: "Før-konkurrence rutine",
+    affirmations: "Personlige bekræftelser",
+    retake: "Tag vurdering igen",
+    backToIntro: "Tilbage",
+    history: "Vurderingshistorik",
+    noHistory: "Ingen tidligere vurderinger endnu.",
+    score: "Score",
+    delete: "Slet",
+    downloadPlan: "Download plan",
+    saveToDiary: "Gem i dagbog",
+    savedToDiary: "Gemt i dagbog!",
+    diaryNote: "Mental vurdering resumé",
+    saveToDiaryPrompt: "Vil du gemme denne vurdering som en note i din dagbog?",
+    overallExcellent: "Fremragende mental parathed!",
+    overallGood: "God mental styrke",
+    overallAverage: "Gennemsnitlig — plads til vækst",
+    overallNeedsWork: "Har brug for arbejde — lad os bygge det op!",
+  },
+  sv: {
+    title: "Mental prestation",
+    subtitle: "Utvärdera din mentala beredskap och få personliga copingstrategier",
+    startAssessment: "Starta utvärdering",
+    viewHistory: "Visa historik",
+    question: "Fråga",
+    of: "av",
+    next: "Nästa",
+    back: "Tillbaka",
+    getResults: "Få mina resultat & råd",
+    yourScore: "Din mentala poäng",
+    outOf: "av 30",
+    generating: "Genererar personliga råd...",
+    strengths: "Dina styrkor",
+    areasToImprove: "Förbättringsområden",
+    techniques: "Tekniker",
+    dailyHabit: "Daglig vana",
+    preCompRoutine: "Förtävlingsrutin",
+    affirmations: "Personliga affirmationer",
+    retake: "Gör om utvärderingen",
+    backToIntro: "Tillbaka",
+    history: "Utvärderingshistorik",
+    noHistory: "Inga tidigare utvärderingar ännu.",
+    score: "Poäng",
+    delete: "Radera",
+    downloadPlan: "Ladda ner plan",
+    saveToDiary: "Spara i dagbok",
+    savedToDiary: "Sparad i dagboken!",
+    diaryNote: "Mental utvärdering sammanfattning",
+    saveToDiaryPrompt: "Vill du spara denna utvärdering som en anteckning i din dagbok?",
+    overallExcellent: "Utmärkt mental beredskap!",
+    overallGood: "Bra mental styrka",
+    overallAverage: "Genomsnittlig — utrymme för tillväxt",
+    overallNeedsWork: "Behöver arbete — låt oss bygga upp det!",
+  },
+  de: {
+    title: "Mentale Leistung",
+    subtitle: "Bewerte deine mentale Bereitschaft und erhalte personalisierte Bewältigungsstrategien",
+    startAssessment: "Bewertung starten",
+    viewHistory: "Verlauf anzeigen",
+    question: "Frage",
+    of: "von",
+    next: "Weiter",
+    back: "Zurück",
+    getResults: "Meine Ergebnisse & Ratschläge",
+    yourScore: "Dein mentaler Score",
+    outOf: "von 30",
+    generating: "Generiere personalisierte Ratschläge...",
+    strengths: "Deine Stärken",
+    areasToImprove: "Verbesserungsbereiche",
+    techniques: "Techniken",
+    dailyHabit: "Tägliche Gewohnheit",
+    preCompRoutine: "Vor-Wettkampf-Routine",
+    affirmations: "Persönliche Affirmationen",
+    retake: "Bewertung wiederholen",
+    backToIntro: "Zurück",
+    history: "Bewertungsverlauf",
+    noHistory: "Noch keine früheren Bewertungen.",
+    score: "Score",
+    delete: "Löschen",
+    downloadPlan: "Plan herunterladen",
+    saveToDiary: "Im Tagebuch speichern",
+    savedToDiary: "Im Tagebuch gespeichert!",
+    diaryNote: "Mentale Bewertung Zusammenfassung",
+    saveToDiaryPrompt: "Möchtest du diese Bewertung als Notiz in deinem Tagebuch speichern?",
+    overallExcellent: "Ausgezeichnete mentale Bereitschaft!",
+    overallGood: "Gute mentale Stärke",
+    overallAverage: "Durchschnittlich — Raum für Wachstum",
+    overallNeedsWork: "Braucht Arbeit — lass es uns aufbauen!",
+  },
+  ar: {
+    title: "الأداء الذهني",
+    subtitle: "قيّم استعدادك الذهني واحصل على استراتيجيات تأقلم مخصصة",
+    startAssessment: "ابدأ التقييم",
+    viewHistory: "عرض السجل",
+    question: "سؤال",
+    of: "من",
+    next: "التالي",
+    back: "رجوع",
+    getResults: "احصل على نتائجي ونصائحي",
+    yourScore: "نتيجتك الذهنية",
+    outOf: "من 30",
+    generating: "جارٍ إنشاء نصائح مخصصة...",
+    strengths: "نقاط قوتك",
+    areasToImprove: "مجالات التحسين",
+    techniques: "التقنيات",
+    dailyHabit: "العادة اليومية",
+    preCompRoutine: "روتين ما قبل المنافسة",
+    affirmations: "التأكيدات الشخصية",
+    retake: "إعادة التقييم",
+    backToIntro: "رجوع",
+    history: "سجل التقييمات",
+    noHistory: "لا توجد تقييمات سابقة بعد.",
+    score: "النتيجة",
+    delete: "حذف",
+    downloadPlan: "تحميل الخطة",
+    saveToDiary: "حفظ في المذكرات",
+    savedToDiary: "تم الحفظ في المذكرات!",
+    diaryNote: "ملخص التقييم الذهني",
+    saveToDiaryPrompt: "هل تريد حفظ ملخص هذا التقييم كملاحظة في مذكراتك؟",
+    overallExcellent: "استعداد ذهني ممتاز!",
+    overallGood: "قوة ذهنية جيدة",
+    overallAverage: "متوسط — مجال للنمو",
+    overallNeedsWork: "يحتاج عملاً — لنبنيه!",
+  },
+};
 
 export function MentalAssessment({ profile }: { profile: Profile | null }) {
   const [step, setStep] = useState<"intro" | "quiz" | "results" | "history">("intro");
@@ -74,73 +254,18 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
   const [diarySaved, setDiarySaved] = useState(false);
   const { toast } = useToast();
   const { locale } = useLanguage();
-  const l = locale as "en" | "da";
+  
+  // Map locale to supported locale with fallback
+  const l: SupportedLocale = (["en", "da", "sv", "de", "ar"].includes(locale) ? locale : "en") as SupportedLocale;
   const questions = getQuestionsForAge(profile?.age);
+  const txt = translations[l];
 
-  const t = {
-    en: {
-      title: "Mental Performance",
-      subtitle: "Assess your mental readiness and get personalized coping strategies",
-      startAssessment: "Start Assessment",
-      viewHistory: "View History",
-      question: "Question",
-      of: "of",
-      next: "Next",
-      back: "Back",
-      getResults: "Get My Results & Advice",
-      yourScore: "Your Mental Score",
-      outOf: "out of 30",
-      generating: "Generating personalized advice...",
-      strengths: "Your Strengths",
-      areasToImprove: "Areas to Improve",
-      techniques: "Techniques",
-      dailyHabit: "Daily Habit",
-      preCompRoutine: "Pre-Competition Routine",
-      affirmations: "Personal Affirmations",
-      retake: "Retake Assessment",
-      backToIntro: "Back",
-      history: "Assessment History",
-      noHistory: "No previous assessments yet.",
-      score: "Score",
-      delete: "Delete",
-      downloadPlan: "Download Plan",
-      saveToDiary: "Save to Diary",
-      savedToDiary: "Saved to diary!",
-      diaryNote: "Mental Assessment Summary",
-    },
-    da: {
-      title: "Mental præstation",
-      subtitle: "Vurder din mentale parathed og få personlige copingstrategier",
-      startAssessment: "Start vurdering",
-      viewHistory: "Se historik",
-      question: "Spørgsmål",
-      of: "af",
-      next: "Næste",
-      back: "Tilbage",
-      getResults: "Få mine resultater & råd",
-      yourScore: "Din mentale score",
-      outOf: "ud af 30",
-      generating: "Genererer personlige råd...",
-      strengths: "Dine styrker",
-      areasToImprove: "Områder til forbedring",
-      techniques: "Teknikker",
-      dailyHabit: "Daglig vane",
-      preCompRoutine: "Før-konkurrence rutine",
-      affirmations: "Personlige bekræftelser",
-      retake: "Tag vurdering igen",
-      backToIntro: "Tilbage",
-      history: "Vurderingshistorik",
-      noHistory: "Ingen tidligere vurderinger endnu.",
-      score: "Score",
-      delete: "Slet",
-      downloadPlan: "Download plan",
-      saveToDiary: "Gem i dagbog",
-      savedToDiary: "Gemt i dagbog!",
-      diaryNote: "Mental vurdering resumé",
-    },
+  const getOverallLabel = (score: number) => {
+    if (score >= 25) return txt.overallExcellent;
+    if (score >= 20) return txt.overallGood;
+    if (score >= 15) return txt.overallAverage;
+    return txt.overallNeedsWork;
   };
-
-  const txt = t[l];
 
   const loadHistory = async () => {
     setLoadingHistory(true);
@@ -197,7 +322,6 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
 
       setAdvice(data.advice);
 
-      // Save to DB
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         await supabase.from("mental_assessments").insert({
@@ -299,31 +423,26 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
     addText(`${txt.yourScore}: ${totalScore}/30 — ${getOverallLabel(totalScore)}`, 12, false);
     y += 4;
 
-    // Radar chart in PDF
     const radarLabels = Object.fromEntries(Object.entries(categoryLabels).map(([k, v]) => [k, v[l]]));
     drawRadarOnPDF(doc, scores, radarLabels, pageWidth / 2, y + 45, 35, 5);
     y += 100;
 
-    // Category scores
     Object.entries(scores).forEach(([cat, score]) => {
       addText(`${categoryLabels[cat][l]}: ${score}/5`, 11, true);
     });
     y += 4;
 
-    // Summary
     if (advice.summary) {
       addText(advice.summary, 10);
       y += 2;
     }
 
-    // Strengths
     if (advice.strengths?.length > 0) {
       addText(txt.strengths, 13, true, [34, 139, 34]);
       advice.strengths.forEach((s: string) => addText(`✓ ${s}`, 10));
       y += 2;
     }
 
-    // Improvement areas
     advice.improvementAreas?.forEach((area: any) => {
       addText(`${area.area} (${area.score}/5)`, 13, true, [30, 64, 175]);
       area.techniques?.forEach((tech: string) => addText(`• ${tech}`, 10));
@@ -333,14 +452,12 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
       y += 2;
     });
 
-    // Pre-competition routine
     if (advice.preCompetitionRoutine) {
       addText(txt.preCompRoutine, 13, true, [30, 64, 175]);
       addText(advice.preCompetitionRoutine, 10);
       y += 2;
     }
 
-    // Affirmations
     if (advice.affirmations?.length > 0) {
       addText(txt.affirmations, 13, true, [180, 140, 0]);
       advice.affirmations.forEach((a: string) => addText(`"${a}"`, 10, false, [80, 80, 80]));
@@ -363,19 +480,6 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
     if (score >= 4) return "text-green-500";
     if (score >= 3) return "text-yellow-500";
     return "text-destructive";
-  };
-
-  const getOverallLabel = (score: number) => {
-    if (l === "da") {
-      if (score >= 25) return "Fremragende mental parathed!";
-      if (score >= 20) return "God mental styrke";
-      if (score >= 15) return "Gennemsnitlig — plads til vækst";
-      return "Har brug for arbejde — lad os bygge det op!";
-    }
-    if (score >= 25) return "Excellent mental readiness!";
-    if (score >= 20) return "Good mental strength";
-    if (score >= 15) return "Average — room for growth";
-    return "Needs work — let's build it up!";
   };
 
   // INTRO
@@ -509,13 +613,11 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
         </Button>
       </div>
 
-      {/* Score overview */}
       <Card className="p-4 sm:p-6 text-center space-y-3">
         <Brain className="h-8 w-8 mx-auto text-primary" />
         <h2 className="text-2xl font-extrabold text-foreground">{totalScore}/30</h2>
         <p className="text-sm text-muted-foreground">{getOverallLabel(totalScore)}</p>
 
-        {/* Radar Chart */}
         <div className="py-2">
           <MentalRadarChart
             scores={scores}
@@ -542,12 +644,10 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
         </Card>
       ) : advice ? (
         <>
-          {/* Summary */}
           <Card className="p-4 space-y-2">
             <p className="text-sm text-foreground">{advice.summary}</p>
           </Card>
 
-          {/* Strengths */}
           {advice.strengths?.length > 0 && (
             <Card className="p-4 space-y-2">
               <h3 className="font-bold text-foreground text-sm flex items-center gap-2">
@@ -563,7 +663,6 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
             </Card>
           )}
 
-          {/* Areas to improve */}
           {advice.improvementAreas?.map((area: any, i: number) => (
             <Card key={i} className="p-4 space-y-2">
               <h3 className="font-bold text-foreground text-sm flex items-center gap-2">
@@ -587,7 +686,6 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
             </Card>
           ))}
 
-          {/* Pre-competition routine */}
           {advice.preCompetitionRoutine && (
             <Card className="p-4 space-y-2">
               <h3 className="font-bold text-foreground text-sm flex items-center gap-2">
@@ -597,7 +695,6 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
             </Card>
           )}
 
-          {/* Affirmations */}
           {advice.affirmations?.length > 0 && (
             <Card className="p-4 space-y-2">
               <h3 className="font-bold text-foreground text-sm flex items-center gap-2">
@@ -615,17 +712,12 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
         </>
       ) : null}
 
-      {/* Save to diary prompt */}
       {advice && !diarySaved && (
         <Card className="p-4 space-y-2 border-primary/30 bg-primary/5">
           <h3 className="font-bold text-foreground text-sm flex items-center gap-2">
             <NotebookPen className="h-4 w-4 text-primary" /> {txt.saveToDiary}
           </h3>
-          <p className="text-xs text-muted-foreground">
-            {l === "da"
-              ? "Vil du gemme denne vurdering som en note i din dagbog?"
-              : "Would you like to save this assessment summary as a note in your diary?"}
-          </p>
+          <p className="text-xs text-muted-foreground">{txt.saveToDiaryPrompt}</p>
           <Button onClick={saveToDiary} disabled={savingDiary} size="sm" className="w-full">
             {savingDiary ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <NotebookPen className="h-4 w-4 mr-2" />}
             {txt.saveToDiary}
