@@ -394,7 +394,8 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
     const catScores = assessment.scores as Record<string, number>;
     setScores(catScores);
     setTotalScore(assessment.total_score);
-    setAdvice(assessment.ai_advice);
+    const rawAdvice = assessment.ai_advice;
+    setAdvice(typeof rawAdvice === "string" ? JSON.parse(rawAdvice) : rawAdvice);
     setStep("results");
   };
 
