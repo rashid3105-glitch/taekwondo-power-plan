@@ -63,7 +63,32 @@
     --tab-rehab: 0 72% 51%;
     --tab-nutrition: 142 70% 45%;
     --tab-mental: 330 60% 72%;
+    /* Light section tokens */
+    --light-bg: 210 20% 97%;
+    --light-card: 0 0% 100%;
+    --light-card-foreground: 220 20% 15%;
+    --light-border: 220 10% 88%;
+    --light-muted: 220 10% 94%;
+    --light-muted-foreground: 220 10% 40%;
   }
+}
+
+/* Light content sections — override semantic tokens locally */
+.theme-light-section {
+  --background: var(--light-bg);
+  --card: var(--light-card);
+  --card-foreground: var(--light-card-foreground);
+  --border: var(--light-border);
+  --muted: var(--light-muted);
+  --muted-foreground: var(--light-muted-foreground);
+  --foreground: 220 20% 12%;
+  --popover: var(--light-card);
+  --popover-foreground: var(--light-card-foreground);
+  --secondary: 220 10% 92%;
+  --secondary-foreground: 220 15% 25%;
+  --input: var(--light-border);
+  color: hsl(220 20% 12%);
+  background-color: hsl(var(--light-bg));
 }
 
 @layer base {
