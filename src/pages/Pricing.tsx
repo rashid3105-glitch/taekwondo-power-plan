@@ -123,9 +123,12 @@ export default function Pricing() {
   };
 
   return (
-    <div className="min-h-screen bg-background px-4 py-8 relative">
+    <div className="min-h-screen bg-background relative">
       <PageMeta title="Pricing" description="Choose the right Sportstalent plan for athletes, coaches, and teams." canonical="https://sportstalent.dk/pricing" />
       <Watermark />
+
+      {/* Dark header area */}
+      <div className="px-4 py-8">
       <div className="mx-auto max-w-4xl space-y-8">
         <div className="flex items-center justify-between">
           <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
@@ -138,6 +141,14 @@ export default function Pricing() {
           <h1 className="text-3xl font-extrabold text-foreground">{t("pricingTitle")}</h1>
           <p className="text-muted-foreground max-w-lg mx-auto">{t("pricingSubtitle")}</p>
         </div>
+      </div>
+      </div>
+
+      {/* Gradient transition */}
+      <div className="h-16 bg-gradient-to-b from-background to-[hsl(210,20%,97%)]" aria-hidden="true" />
+
+      <div className="theme-light-section px-4 pb-12">
+      <div className="mx-auto max-w-4xl space-y-8">
 
         {/* Billing cycle toggle */}
         <div className="flex items-center justify-center gap-2">
@@ -177,7 +188,7 @@ export default function Pricing() {
             return (
               <Card
                 key={tier.key}
-                className={`relative flex flex-col ${isCoach ? "border-primary shadow-lg ring-2 ring-primary/20" : ""}`}
+                className={`relative flex flex-col bg-card shadow-sm ${isCoach ? "border-primary shadow-lg ring-2 ring-primary/20" : "border-border"}`}
               >
                 {isCoach && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-0.5 text-xs font-bold text-primary-foreground">
@@ -242,7 +253,7 @@ export default function Pricing() {
         </div>
 
         {/* Demo request */}
-        <Card className="border-dashed">
+        <Card className="border-dashed border-border bg-card shadow-sm">
           <CardContent className="flex flex-col items-center gap-3 py-6 text-center">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary">
               <FlaskConical className="h-5 w-5 text-primary" />
@@ -268,6 +279,6 @@ export default function Pricing() {
           </div>
         )}
       </div>
+      </div>
     </div>
-  );
 }

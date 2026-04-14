@@ -28,9 +28,12 @@ export default function Help() {
   const { t } = useLanguage();
   const [activeSection, setActiveSection] = useState<string | null>(null);
   return (
-    <div className="min-h-screen bg-background px-4 py-8 relative">
+    <div className="min-h-screen bg-background relative">
       <PageMeta title="Help Center" description="Get help with Sportstalent features and training tools." canonical="https://sportstalent.dk/help" />
       <Watermark />
+
+      {/* Dark header */}
+      <div className="px-4 py-8">
       <div className="mx-auto max-w-2xl space-y-8">
         <div className="flex items-center justify-between">
           <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
@@ -43,6 +46,14 @@ export default function Help() {
           <h1 className="text-3xl font-extrabold text-foreground">{t("helpTitle")}</h1>
           <p className="text-muted-foreground">{t("helpSubtitle")}</p>
         </div>
+      </div>
+      </div>
+
+      {/* Gradient transition */}
+      <div className="h-16 bg-gradient-to-b from-background to-[hsl(210,20%,97%)]" aria-hidden="true" />
+
+      <div className="theme-light-section px-4 pb-8">
+      <div className="mx-auto max-w-2xl space-y-8">
 
         {/* Topic buttons grid */}
         <div className="grid grid-cols-2 gap-3">
@@ -55,9 +66,9 @@ export default function Help() {
                 onClick={() => setActiveSection(isActive ? null : section.key)}
                 className={cn(
                   "flex items-center gap-3 rounded-lg border px-4 py-3 text-left transition-colors",
-                  isActive
+                    isActive
                     ? "border-primary bg-primary text-primary-foreground"
-                    : "border-border bg-card text-foreground hover:bg-accent"
+                    : "border-border bg-card text-foreground hover:bg-muted shadow-sm"
                 )}
               >
                 <div className={cn(
@@ -76,7 +87,7 @@ export default function Help() {
 
         {/* Expanded content for active section */}
         {activeSection && (
-          <div className="rounded-lg border border-primary/30 bg-card px-5 py-4 animate-in fade-in-0 slide-in-from-top-2">
+          <div className="rounded-lg border border-primary/30 bg-card px-5 py-4 animate-in fade-in-0 slide-in-from-top-2 shadow-sm">
             <div className="space-y-2 text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
               {t(`${activeSection}Steps`)}
             </div>
@@ -189,6 +200,7 @@ export default function Help() {
               </div>
           </CollapsibleContent>
         </Collapsible>
+      </div>
       </div>
     </div>
   );

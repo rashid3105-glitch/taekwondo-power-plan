@@ -175,6 +175,10 @@ export default function Methodology() {
           </div>
         </section>
 
+        {/* Gradient transition */}
+        <div className="h-20 bg-gradient-to-b from-background to-[hsl(210,20%,97%)]" aria-hidden="true" />
+
+        <div className="theme-light-section">
         {/* Periodization diagram */}
         <section className="max-w-2xl mx-auto px-5">
           <PeriodizationDiagram />
@@ -185,7 +189,7 @@ export default function Methodology() {
           {sections.map((s) => (
             <article
               key={s.titleKey}
-              className="rounded-2xl border border-border/60 bg-card/40 backdrop-blur-md p-5 sm:p-7 shadow-card"
+              className="rounded-2xl border border-border bg-card p-5 sm:p-7 shadow-sm"
             >
               <div className="flex items-start gap-3 mb-4">
                 <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${s.bgColor} border border-border/40`}>
@@ -241,7 +245,15 @@ export default function Methodology() {
             </Button>
           </div>
         </section>
-      </main>
+        </div>
+
+        {/* CTA — back to dark */}
+        <div className="bg-gradient-to-b from-[hsl(210,20%,97%)] to-background h-12" aria-hidden="true" />
+        <div className="text-center pb-12">
+          <Button onClick={() => navigate("/auth")} size="lg" className="px-7 font-bold text-sm shadow-glow">
+            {t("getStarted")} <ArrowRight className="h-4 w-4 ml-1.5" />
+          </Button>
+        </div>
 
       <AppFooter />
     </div>
