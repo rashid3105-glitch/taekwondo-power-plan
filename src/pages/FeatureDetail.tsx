@@ -2,8 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import logo from "@/assets/logo.webp";
+import { PublicNav } from "@/components/PublicNav";
 import { AppFooter } from "@/components/AppFooter";
 import { Watermark } from "@/components/Watermark";
 import { PageMeta } from "@/components/PageMeta";
@@ -202,19 +201,7 @@ const FeatureDetail = () => {
     <div className="min-h-screen bg-background flex flex-col relative">
       <PageMeta title={t(feature.titleKey)} description={feature.longDesc[lang]} />
       <Watermark />
-      {/* Header */}
-      <header className="sticky top-0 z-40 flex items-center justify-between px-5 py-3 border-b border-border/40 bg-background/80 backdrop-blur-xl">
-        <div className="flex items-center gap-2">
-          <img src={logo} alt="Sportstalent" className="h-8 w-8 rounded-lg object-contain" />
-          <span className="text-sm font-extrabold tracking-tight text-foreground">SPORTSTALENT</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <LanguageSwitcher />
-          <Button variant="ghost" size="sm" onClick={() => navigate("/auth")} className="text-xs">
-            {t("signIn")}
-          </Button>
-        </div>
-      </header>
+      <PublicNav />
 
       <main className="flex-1">
         {/* Back button */}

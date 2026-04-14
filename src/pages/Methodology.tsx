@@ -1,9 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Zap, Shield, Brain, Target, TrendingUp, RefreshCw } from "lucide-react";
-import logo from "@/assets/logo.webp";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { PublicNav } from "@/components/PublicNav";
 import { AppFooter } from "@/components/AppFooter";
 import { Watermark } from "@/components/Watermark";
 import { PageMeta } from "@/components/PageMeta";
@@ -133,19 +132,7 @@ export default function Methodology() {
       />
       <Watermark />
 
-      {/* Header */}
-      <header className="sticky top-0 z-40 flex items-center justify-between px-5 py-3 border-b border-border/40 bg-background/80 backdrop-blur-xl">
-        <div className="flex items-center gap-2.5">
-          <img src={logo} alt="Sportstalent" className="h-8 w-8 rounded-lg object-contain" />
-          <span className="text-sm font-extrabold tracking-tight text-foreground">SPORTSTALENT</span>
-        </div>
-        <nav className="flex items-center gap-2">
-          <LanguageSwitcher />
-          <Button variant="outline" size="sm" onClick={() => navigate("/auth")} className="text-xs font-semibold">
-            {t("signIn")}
-          </Button>
-        </nav>
-      </header>
+      <PublicNav />
 
       <main className="flex-1">
         {/* Hero */}

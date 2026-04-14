@@ -1,19 +1,18 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, HelpCircle, Users, TrendingUp, Award, Calendar, Zap, Target } from "lucide-react";
+import { ArrowRight, Users, TrendingUp, Award, Calendar, Zap, Target } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { PageMeta } from "@/components/PageMeta";
 import { AppFooter } from "@/components/AppFooter";
 import { Watermark } from "@/components/Watermark";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { CaseStudy } from "@/components/landing/CaseStudy";
 import { FeatureGrid } from "@/components/landing/FeatureGrid";
 import { FAQSection } from "@/components/landing/FAQSection";
 import { WeekPlanPreview } from "@/components/landing/WeekPlanPreview";
-import logo from "@/assets/logo.webp";
+import { PublicNav } from "@/components/PublicNav";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -38,23 +37,7 @@ const Index = () => {
       />
       <Watermark />
 
-      {/* Header */}
-      <header className="sticky top-0 z-40 flex items-center justify-between px-3 sm:px-5 py-3 border-b border-border/40 bg-background/80 backdrop-blur-xl gap-2">
-        <div className="flex items-center gap-2 min-w-0 flex-shrink-0">
-          <img src={logo} alt="Sportstalent" className="h-8 w-8 rounded-lg object-contain flex-shrink-0" />
-          <span className="text-sm font-extrabold tracking-tight text-foreground whitespace-nowrap hidden sm:inline">SPORTSTALENT</span>
-          <span className="text-xs font-extrabold tracking-tight text-foreground whitespace-nowrap sm:hidden">SPORTSTALENT.DK</span>
-        </div>
-        <nav className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-          <LanguageSwitcher />
-          <Button variant="ghost" size="sm" onClick={() => navigate("/help")} className="text-xs text-muted-foreground hover:text-foreground px-2">
-            <HelpCircle className="h-3.5 w-3.5" />
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => navigate("/auth")} className="text-xs font-semibold">
-            {t("signIn")}
-          </Button>
-        </nav>
-      </header>
+      <PublicNav />
 
       <main className="flex-1">
         {/* Hero */}
