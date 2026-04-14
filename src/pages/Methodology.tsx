@@ -238,12 +238,7 @@ export default function Methodology() {
             </article>
           ))}
 
-          {/* CTA */}
-          <div className="text-center pt-4">
-            <Button onClick={() => navigate("/auth")} size="lg" className="px-7 font-bold text-sm shadow-glow">
-              {t("getStarted")} <ArrowRight className="h-4 w-4 ml-1.5" />
-            </Button>
-          </div>
+          {/* Remove duplicate CTA inside light section */}
         </section>
         </div>
 
@@ -254,6 +249,7 @@ export default function Methodology() {
             {t("getStarted")} <ArrowRight className="h-4 w-4 ml-1.5" />
           </Button>
         </div>
+      </main>
 
       <AppFooter />
     </div>
