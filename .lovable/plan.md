@@ -1,87 +1,66 @@
 
 
-## Plan: Dark-to-Light Hybrid Theme
+## Plan: Add Top-Level Navigation & New Pages
 
-### Concept
-Keep the dramatic dark hero section at the top of pages, then transition to a light background for content sections. This creates visual depth and a premium feel while improving readability.
+### Overview
+Restructure the public site navigation based on the proposed sitemap, adding a persistent top nav bar and 3 new page groups.
 
-### Scope
-This affects **public-facing pages only** (landing, methodology, features, pricing, auth, help). The **Dashboard** and other authenticated pages stay dark — athletes/coaches expect a dark "cockpit" UI.
+### New Pages
 
-### Changes
+**1. About (`/about`)**
+- Hero with mission statement
+- Sub-sections: "Vores Team" and "Mission & Vision"
+- Can be a single page with anchor sections or two sub-routes (`/about/team`, `/about/mission`)
+- Recommend: single page with smooth scroll sections for simplicity
 
-#### 1. CSS Variables — Add Light Mode Tokens (`src/index.css`)
-Add a new set of CSS variables for the "light content" sections:
-```
---light-bg: 0 0% 98%;
---light-card: 0 0% 100%;
---light-card-foreground: 220 20% 15%;
---light-border: 220 10% 90%;
---light-muted: 220 10% 95%;
---light-muted-foreground: 220 10% 40%;
-```
+**2. Training Programs (`/programs`)**
+- Public-facing page showcasing available training program types
+- Shows 2-3 sample program cards (e.g., "Competition Prep", "General S&C")
+- Each card links to a detail view with sample week preview
+- CTA to sign up / log in to access full programs
+- No auth required to browse
 
-Add a utility class `.theme-light-section` that applies these as local overrides, so cards/text inside it automatically use the light palette.
+**3. Contact (`/contact`)**
+- Contact form (name, email, message)
+- Backend function to send the email via the email infrastructure already in place
+- Success confirmation after submission
+- Database table to store contact submissions
 
-#### 2. Landing Page (`src/pages/Index.tsx`)
-- Hero section stays dark (current styling)
-- Add a gradient transition div after the hero: dark → light (using the hybrid pattern you chose)
-- Social proof bar, value props, week plan preview, case study, features, FAQ, and CTA sections get wrapped in the light theme class
-- CTA section at bottom transitions back to dark for contrast
-- Footer stays dark
+### Navigation Changes
 
-#### 3. Methodology Page (`src/pages/Methodology.tsx`)
-- Hero/header stays dark
-- Content sections transition to light background
+**Header Nav Bar (public pages)**
+- Replace the minimal header with a proper navigation bar
+- Links: Om Sportstalent | Træningsprogrammer | Priser | Kontakt | [Language] | Log ind
+- Mobile: hamburger menu with the same links
+- Sticky header with backdrop blur (consistent with current style)
+- Reusable `PublicNav` component used across all public pages
 
-#### 4. Feature Detail Pages (`src/pages/FeatureDetail.tsx`)
-- Hero with gradient stays dark
-- Benefits list and long description sections use light background
+**Auth section**
+- "Login/Profil" maps to existing `/auth` route — just needs a prominent nav link
+- "Opret profil" is the signup tab on the auth page — no new page needed
 
-#### 5. Pricing Page (`src/pages/Pricing.tsx`)
-- Header stays dark
-- Pricing cards use light background with subtle shadows
+### Files to Create
+- `src/components/PublicNav.tsx` — shared navigation component
+- `src/pages/About.tsx` — about page with team + mission sections
+- `src/pages/Programs.tsx` — public training programs showcase
+- `src/pages/Contact.tsx` — contact form page
 
-#### 6. Auth Page (`src/pages/Auth.tsx`)
-- Left panel/hero stays dark
-- Form area uses light background for better form readability
+### Files to Modify
+- `src/App.tsx` — add 3 new routes
+- `src/pages/Index.tsx` — use `PublicNav` instead of inline header
+- `src/pages/Methodology.tsx` — use `PublicNav`
+- `src/pages/Pricing.tsx` — use `PublicNav`
+- `src/pages/Help.tsx` — use `PublicNav`
+- `src/pages/FeatureDetail.tsx` — use `PublicNav`
+- `src/pages/Auth.tsx` — use `PublicNav`
+- `src/i18n/translations.ts` — add translations for new nav items and page content
 
-#### 7. Help Page (`src/pages/Help.tsx`)
-- Header stays dark
-- FAQ/collapsible content uses light background
+### Database
+- New `contact_submissions` table (id, name, email, message, created_at) with open INSERT RLS policy (no auth needed to submit)
+- Edge function or existing email infra to notify admin of new submissions
 
-#### 8. Footer (`src/components/AppFooter.tsx`)
-- Stays dark for visual grounding
-
-#### 9. Component Adjustments
-- Cards in light sections: white background, subtle border, light shadow
-- Text colors: dark text (slate-900/slate-600) in light sections
-- Badges/pills: adapted border and background colors
-- Buttons: primary gradient stays the same (works on both backgrounds)
-
-### Technical Approach
-- Use a CSS class-based approach (`.light-section`) rather than changing global CSS variables, so dark sections (Dashboard, authenticated pages) are unaffected
-- The transition gradient is a simple `div` with `bg-gradient-to-b from-background to-white` placed between hero and content
-- Tailwind's `dark:` prefix is not used — we control themes via explicit section classes
-
-### Files Modified
-- `src/index.css` — light section utility classes
-- `src/pages/Index.tsx` — hero dark, content light
-- `src/pages/Methodology.tsx` — same pattern
-- `src/pages/FeatureDetail.tsx` — same pattern
-- `src/pages/Pricing.tsx` — same pattern
-- `src/pages/Auth.tsx` — form area light
-- `src/pages/Help.tsx` — content light
-- `src/components/AppFooter.tsx` — minor border color adjustment
-- `src/components/landing/CaseStudy.tsx` — adapt card colors for light bg
-- `src/components/landing/FeatureGrid.tsx` — adapt for light bg
-- `src/components/landing/FAQSection.tsx` — adapt for light bg
-- `src/components/landing/WeekPlanPreview.tsx` — adapt for light bg
-
-### What Stays Dark
-- Dashboard (athlete/coach)
-- All authenticated app pages
-- Diary, Library, Admin pages
-- Hero sections on public pages
-- Footer
+### Design
+- All new pages follow the dark-to-light hybrid pattern
+- Nav bar: dark background matching the hero, with light text
+- Mobile: slide-out or dropdown menu
 
