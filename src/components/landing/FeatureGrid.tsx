@@ -81,7 +81,7 @@ export const FeatureGrid = () => {
             whileHover={{ y: -3, scale: 1.01 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => navigate(`/features/${s.slug}`)}
-            className="group relative rounded-2xl border border-border/60 bg-card/40 backdrop-blur-md p-6 shadow-card hover:border-primary/40 hover:bg-card/70 transition-colors duration-300 text-left cursor-pointer"
+            className="group relative rounded-2xl border border-border bg-card p-6 shadow-sm hover:shadow-md hover:border-primary/40 transition-all duration-300 text-left cursor-pointer"
           >
             <div
               className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"

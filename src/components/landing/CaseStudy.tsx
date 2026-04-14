@@ -75,7 +75,7 @@ export const CaseStudy = () => {
           </div>
 
           {/* Profile card */}
-          <div className="rounded-xl border border-border bg-card p-5 sm:p-6 mb-6">
+          <div className="rounded-xl border border-border bg-card p-5 sm:p-6 mb-6 shadow-sm">
             <div className="flex items-center gap-2 mb-4">
               <div className={`h-8 w-8 rounded-lg ${isCoach ? "bg-primary/15" : "bg-energy/15"} flex items-center justify-center`}>
                 {isCoach

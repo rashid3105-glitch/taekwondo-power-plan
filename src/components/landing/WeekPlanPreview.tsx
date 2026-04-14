@@ -63,7 +63,7 @@ export const WeekPlanPreview = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.35, delay: 0.1 + i * 0.05 }}
-            className="rounded-xl border border-border bg-card p-3.5 sm:p-4 flex items-start gap-3"
+            className="rounded-xl border border-border bg-card p-3.5 sm:p-4 flex items-start gap-3 shadow-sm"
           >
             <div className={`h-9 w-9 rounded-lg bg-secondary/80 border border-border/40 flex items-center justify-center flex-shrink-0 ${day.color}`}>
               <day.icon className="h-4 w-4" />

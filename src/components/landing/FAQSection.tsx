@@ -44,7 +44,7 @@ export const FAQSection = () => {
             <AccordionItem
               key={key}
               value={key}
-              className="rounded-xl border border-border bg-card px-4 data-[state=open]:border-energy/30"
+              className="rounded-xl border border-border bg-card px-4 shadow-sm data-[state=open]:border-energy/30"
             >
               <AccordionTrigger className="text-sm font-semibold text-foreground hover:no-underline py-4">
                 {t(`${key}Q`)}

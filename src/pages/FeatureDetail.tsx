@@ -242,9 +242,13 @@ const FeatureDetail = () => {
           </div>
         </section>
 
+        {/* Gradient transition */}
+        <div className="h-20 bg-gradient-to-b from-background to-[hsl(210,20%,97%)]" aria-hidden="true" />
+
+        <div className="theme-light-section">
         {/* Screenshot */}
-        <section className="max-w-4xl mx-auto px-6 pb-12">
-          <div className="relative rounded-2xl overflow-hidden border border-border shadow-2xl">
+        <section className="max-w-4xl mx-auto px-6 pb-12 pt-4">
+          <div className="relative rounded-2xl overflow-hidden border border-border shadow-lg">
             <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-10`} />
             <img
               src={feature.image}
@@ -264,7 +268,7 @@ const FeatureDetail = () => {
             {feature.benefits.map((benefit, i) => (
               <div
                 key={i}
-                className="flex items-start gap-3 rounded-xl border border-border bg-card/60 backdrop-blur-sm p-4"
+                className="flex items-start gap-3 rounded-xl border border-border bg-card p-4 shadow-sm"
               >
                 <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br ${feature.gradient}`}>
                   <Check className="h-3.5 w-3.5 text-primary-foreground" />
@@ -274,10 +278,12 @@ const FeatureDetail = () => {
             ))}
           </div>
         </section>
+        </div>
 
-        {/* CTA */}
+        {/* CTA — back to dark */}
+        <div className="bg-gradient-to-b from-[hsl(210,20%,97%)] to-background h-12" aria-hidden="true" />
         <section className="max-w-4xl mx-auto px-6 pb-20 text-center">
-          <div className="rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-8 sm:p-12 space-y-4">
+          <div className="rounded-2xl border border-energy/20 bg-energy/5 p-8 sm:p-12 space-y-4">
             <h2 className="text-2xl font-bold text-foreground">
               {ctaTitle[lang]}
             </h2>
@@ -285,7 +291,7 @@ const FeatureDetail = () => {
               {ctaDesc[lang]}
             </p>
             <div className="flex justify-center gap-3 pt-2">
-              <Button onClick={() => navigate("/auth")} size="lg" className="px-8 font-semibold">
+              <Button onClick={() => navigate("/auth")} size="lg" className="px-8 font-semibold shadow-glow">
                 {t("getStarted")} <ArrowRight className="h-4 w-4 ml-1.5" />
               </Button>
               <Button onClick={() => navigate("/pricing")} size="lg" variant="outline" className="px-8 font-semibold">

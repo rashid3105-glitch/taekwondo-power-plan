@@ -132,67 +132,74 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Social Proof Bar */}
-        <section className="max-w-3xl mx-auto px-5 pb-10">
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="flex flex-wrap items-center justify-center gap-4 sm:gap-6"
-          >
-            {[
-              { icon: Users, text: "landingProofAthletes" as const },
-              { icon: TrendingUp, text: "landingProofJump" as const },
-              { icon: Award, text: "landingProofLevel" as const },
-            ].map((item, i) => (
-              <div key={i} className="flex items-center gap-2 rounded-full border border-border/50 bg-secondary/30 px-4 py-2">
-                <item.icon className="h-4 w-4 text-energy" />
-                <span className="text-xs font-bold text-foreground">{t(item.text)}</span>
-              </div>
-            ))}
-          </motion.div>
-        </section>
+        {/* Gradient transition: dark → light */}
+        <div className="h-24 bg-gradient-to-b from-background to-[hsl(210,20%,97%)]" aria-hidden="true" />
 
-        {/* 3-Column Value Props */}
-        <section className="max-w-3xl mx-auto px-5 pb-14">
-          <div className="grid gap-4 sm:grid-cols-3">
-            {([
-              { icon: Calendar, titleKey: "landingValuePeriodizedTitle" as const, descKey: "landingValuePeriodizedDesc" as const },
-              { icon: Target, titleKey: "landingValueSportTitle" as const, descKey: "landingValueSportDesc" as const },
-              { icon: Zap, titleKey: "landingValueAITitle" as const, descKey: "landingValueAIDesc" as const },
-            ]).map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.1 }}
-                className="rounded-xl border border-border bg-card/50 p-5 text-center"
-              >
-                <div className="mx-auto mb-3 h-10 w-10 rounded-lg bg-energy/10 border border-energy/20 flex items-center justify-center">
-                  <item.icon className="h-5 w-5 text-energy" />
+        {/* ── Light content sections ── */}
+        <div className="theme-light-section">
+          {/* Social Proof Bar */}
+          <section className="max-w-3xl mx-auto px-5 pb-10 pt-2">
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="flex flex-wrap items-center justify-center gap-4 sm:gap-6"
+            >
+              {[
+                { icon: Users, text: "landingProofAthletes" as const },
+                { icon: TrendingUp, text: "landingProofJump" as const },
+                { icon: Award, text: "landingProofLevel" as const },
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 shadow-sm">
+                  <item.icon className="h-4 w-4 text-energy" />
+                  <span className="text-xs font-bold text-foreground">{t(item.text)}</span>
                 </div>
-                <h3 className="text-sm font-bold text-foreground mb-1.5">{t(item.titleKey)}</h3>
-                <p className="text-[11px] text-muted-foreground leading-relaxed">{t(item.descKey)}</p>
-              </motion.div>
-            ))}
-          </div>
-        </section>
+              ))}
+            </motion.div>
+          </section>
 
-        {/* Weekly Training Plan Example */}
-        <WeekPlanPreview />
+          {/* 3-Column Value Props */}
+          <section className="max-w-3xl mx-auto px-5 pb-14">
+            <div className="grid gap-4 sm:grid-cols-3">
+              {([
+                { icon: Calendar, titleKey: "landingValuePeriodizedTitle" as const, descKey: "landingValuePeriodizedDesc" as const },
+                { icon: Target, titleKey: "landingValueSportTitle" as const, descKey: "landingValueSportDesc" as const },
+                { icon: Zap, titleKey: "landingValueAITitle" as const, descKey: "landingValueAIDesc" as const },
+              ]).map((item, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: i * 0.1 }}
+                  className="rounded-xl border border-border bg-card p-5 text-center shadow-sm"
+                >
+                  <div className="mx-auto mb-3 h-10 w-10 rounded-lg bg-energy/10 border border-energy/20 flex items-center justify-center">
+                    <item.icon className="h-5 w-5 text-energy" />
+                  </div>
+                  <h3 className="text-sm font-bold text-foreground mb-1.5">{t(item.titleKey)}</h3>
+                  <p className="text-[11px] text-muted-foreground leading-relaxed">{t(item.descKey)}</p>
+                </motion.div>
+              ))}
+            </div>
+          </section>
 
-        {/* Case Study */}
-        <CaseStudy />
+          {/* Weekly Training Plan Example */}
+          <WeekPlanPreview />
 
-        {/* Features */}
-        <FeatureGrid />
+          {/* Case Study */}
+          <CaseStudy />
 
-        {/* FAQ */}
-        <FAQSection />
+          {/* Features */}
+          <FeatureGrid />
 
-        {/* CTA */}
+          {/* FAQ */}
+          <FAQSection />
+        </div>
+
+        {/* CTA — back to dark */}
+        <div className="bg-gradient-to-b from-[hsl(210,20%,97%)] to-background h-16" aria-hidden="true" />
         <section className="max-w-3xl mx-auto px-5 pb-16 sm:pb-20">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
