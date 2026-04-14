@@ -2,9 +2,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ArrowLeft, UserCircle, ClipboardList, HeartPulse, Brain, Users, BarChart3, Clock, ChevronDown, Activity, Apple, TrendingUp, BookOpen, BookHeart } from "lucide-react";
+import { UserCircle, ClipboardList, HeartPulse, Brain, Users, BarChart3, Clock, ChevronDown, Activity, Apple, TrendingUp, BookOpen, BookHeart } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { PublicNav } from "@/components/PublicNav";
 import { Watermark } from "@/components/Watermark";
 import { PageMeta } from "@/components/PageMeta";
 import { cn } from "@/lib/utils";
@@ -32,16 +32,11 @@ export default function Help() {
       <PageMeta title="Help Center" description="Get help with Sportstalent features and training tools." canonical="https://sportstalent.dk/help" />
       <Watermark />
 
-      {/* Dark header */}
+      <PublicNav />
+
+      {/* Header */}
       <div className="px-4 py-8">
       <div className="mx-auto max-w-2xl space-y-8">
-        <div className="flex items-center justify-between">
-          <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
-            <ArrowLeft className="h-4 w-4 mr-1" /> {t("backToDashboard")}
-          </Button>
-          <LanguageSwitcher />
-        </div>
-
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-extrabold text-foreground">{t("helpTitle")}</h1>
           <p className="text-muted-foreground">{t("helpSubtitle")}</p>

@@ -27,6 +27,9 @@ import Unsubscribe from "./pages/Unsubscribe";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import SeoLanding from "./pages/SeoLanding";
 import PaymentSuccess from "./pages/PaymentSuccess";
+import About from "./pages/About";
+import Programs from "./pages/Programs";
+import Contact from "./pages/Contact";
 
 
 const queryClient = new QueryClient();
@@ -42,6 +45,9 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/methodology" element={<Methodology />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/programs" element={<Programs />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="/features/:section" element={<FeatureDetail />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/reset-password" element={<ResetPassword />} />

@@ -5,9 +5,9 @@ import { PageMeta } from "@/components/PageMeta";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Zap, Users, Building2, Check, Mail, ArrowLeft, FlaskConical, Loader2, Settings } from "lucide-react";
+import { Zap, Users, Building2, Check, Mail, FlaskConical, Loader2, Settings } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { PublicNav } from "@/components/PublicNav";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
@@ -127,16 +127,11 @@ export default function Pricing() {
       <PageMeta title="Pricing" description="Choose the right Sportstalent plan for athletes, coaches, and teams." canonical="https://sportstalent.dk/pricing" />
       <Watermark />
 
-      {/* Dark header area */}
+      <PublicNav />
+
+      {/* Header area */}
       <div className="px-4 py-8">
       <div className="mx-auto max-w-4xl space-y-8">
-        <div className="flex items-center justify-between">
-          <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
-            <ArrowLeft className="h-4 w-4 mr-1" /> {t("backToDashboard")}
-          </Button>
-          <LanguageSwitcher />
-        </div>
-
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-extrabold text-foreground">{t("pricingTitle")}</h1>
           <p className="text-muted-foreground max-w-lg mx-auto">{t("pricingSubtitle")}</p>
