@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain, Clock, Apple, Home, Lock, NotebookPen, AlertTriangle, ClipboardList, HelpCircle, Trash2 } from "lucide-react";
+import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain, Clock, Apple, Home, Lock, NotebookPen, AlertTriangle, ClipboardList, HelpCircle, Trash2, Menu } from "lucide-react";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { EventRemindersDropdown } from "@/components/EventRemindersDropdown";
 import { AvatarImg } from "@/components/AvatarImg";
 import logo from "@/assets/logo.webp";
@@ -23,6 +24,7 @@ import { NutritionPlan } from "@/components/NutritionPlan";
 import { AppFooter } from "@/components/AppFooter";
 import { Watermark } from "@/components/Watermark";
 import { PhysicalTesting } from "@/components/PhysicalTesting";
+import { Separator } from "@/components/ui/separator";
 
 interface Profile {
   display_name: string;
@@ -77,6 +79,7 @@ export default function Dashboard() {
   const [rehabPlans, setRehabPlans] = useState<RehabPlanRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"hub" | "plan" | "rehab" | "mental" | "progress" | "nutrition" | "testing">("hub");
+  const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, locale } = useLanguage();
@@ -84,6 +87,7 @@ export default function Dashboard() {
   const handleTabChange = (tab: typeof activeTab) => {
     if (isDemoLockedTab(tab)) return;
     setActiveTab(tab);
+    setMenuOpen(false);
   };
   const renderDemoLockedState = (featureKey: string) => (
     <div className="rounded-xl border border-border bg-card p-8 sm:p-10 text-center shadow-card space-y-4">
@@ -102,6 +106,16 @@ export default function Dashboard() {
       </div>
     </div>
   );
+
+  const NAV_ITEMS: { tab: typeof activeTab; icon: typeof Home; labelKey: string; color: string }[] = [
+    { tab: "hub", icon: Home, labelKey: "hubWelcome", color: "text-primary" },
+    { tab: "plan", icon: Zap, labelKey: "plan", color: "text-tab-plan" },
+    { tab: "progress", icon: BarChart3, labelKey: "progress", color: "text-tab-progress" },
+    { tab: "nutrition", icon: Apple, labelKey: "nutrition", color: "text-tab-nutrition" },
+    { tab: "rehab", icon: Heart, labelKey: "injuryRehabPlan", color: "text-tab-rehab" },
+    { tab: "mental", icon: Brain, labelKey: "mental", color: "text-tab-mental" },
+    { tab: "testing", icon: ClipboardList, labelKey: "testing", color: "text-primary" },
+  ];
 
   useEffect(() => {
     loadData();
@@ -269,71 +283,115 @@ export default function Dashboard() {
       <Watermark />
       {/* Header */}
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container max-w-4xl mx-auto px-3 sm:px-4 py-3 space-y-2">
-          {/* Logo row */}
+        <div className="container max-w-4xl mx-auto px-3 sm:px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 sm:gap-3">
               <img src={logo} alt="Sportstalent" className="h-9 w-9 rounded-lg object-contain" />
               <span className="text-sm sm:text-base font-extrabold text-foreground">SPORTSTALENT</span>
             </div>
             <div className="flex items-center gap-2">
-              <LanguageSwitcher />
               <EventRemindersDropdown />
-              <Button variant="ghost" size="icon" onClick={() => navigate("/")} title={t("home")}>
-                <Home className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon" onClick={() => navigate("/profile-setup")}>
-                <User className="h-4 w-4" />
-              </Button>
-              {isCoach && (
-                <Button variant="ghost" size="icon" onClick={() => navigate("/coach")}>
-                  <Users className="h-4 w-4" />
-                </Button>
-              )}
-              {isAdmin && (
-                <Button variant="ghost" size="icon" onClick={() => navigate("/admin/approval")}>
-                  <Shield className="h-4 w-4" />
-                </Button>
-              )}
-              <Button variant="ghost" size="icon" onClick={handleSignOut}>
-                <LogOut className="h-4 w-4" />
+              <Button variant="ghost" size="icon" onClick={() => setMenuOpen(true)}>
+                <Menu className="h-5 w-5" />
               </Button>
             </div>
           </div>
-          {/* Menu row – left-aligned, below logo */}
-          <nav className="hidden sm:flex items-center gap-1 flex-wrap">
-            <Button variant="ghost" size="sm" onClick={() => handleTabChange("hub")} className={activeTab === "hub" ? "text-primary" : ""}>
-              <Home className="h-4 w-4 mr-1" /> {t("hubWelcome")}
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => handleTabChange("plan")} className={activeTab === "plan" ? "text-tab-plan" : ""}>
-              <Zap className="h-4 w-4 mr-1" /> {t("plan")}
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => handleTabChange("progress")} disabled={isDemoLockedTab("progress")} className={activeTab === "progress" ? "text-tab-progress" : ""}>
-              <BarChart3 className="h-4 w-4 mr-1" /> {t("progress")}
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => handleTabChange("nutrition")} disabled={isDemoLockedTab("nutrition")} className={activeTab === "nutrition" ? "text-tab-nutrition" : ""}>
-              <Apple className="h-4 w-4 mr-1" /> {t("nutrition")}
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => handleTabChange("rehab")} disabled={isDemoLockedTab("rehab")} className={activeTab === "rehab" ? "text-tab-rehab" : ""}>
-              <Heart className="h-4 w-4 mr-1" /> {t("injuryRehabPlan")}
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => handleTabChange("mental")} disabled={isDemoLockedTab("mental")} className={activeTab === "mental" ? "text-tab-mental" : ""}>
-              <Brain className="h-4 w-4 mr-1" /> {t("mental")}
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => handleTabChange("testing")} disabled={isDemoLockedTab("testing")} className={activeTab === "testing" ? "text-primary" : ""}>
-              <ClipboardList className="h-4 w-4 mr-1" /> {t("testing")}
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => navigate("/library")} disabled={isDemo}>
-              <BookOpen className="h-4 w-4 mr-1" /> {t("library")}
-            </Button>
-            {isAdmin && (
-              <Button variant="ghost" size="sm" onClick={() => navigate("/admin/approval")}>
-                <Shield className="h-4 w-4 mr-1" /> {t("manageUsers")}
-              </Button>
-            )}
-          </nav>
         </div>
       </header>
+
+      {/* Side Menu Sheet */}
+      <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+        <SheetContent side="right" className="w-72 bg-card border-border p-0 flex flex-col">
+          <SheetHeader className="px-5 pt-5 pb-3">
+            <SheetTitle className="sr-only">{t("menu") || "Menu"}</SheetTitle>
+            <div className="flex items-center gap-3">
+              <AvatarImg
+                avatarUrl={profile?.avatar_url}
+                className="h-11 w-11 rounded-full object-cover border-2 border-primary/30 shrink-0"
+                fallbackClassName="h-11 w-11 rounded-full bg-muted flex items-center justify-center border-2 border-primary/30 shrink-0"
+              />
+              <div className="min-w-0">
+                <p className="text-sm font-bold text-foreground truncate">{profile?.display_name || "Athlete"}</p>
+                {clubName && <p className="text-xs text-muted-foreground truncate">{clubName}</p>}
+                {profile?.belt_level && (
+                  <Badge variant="outline" className="capitalize text-[10px] mt-1">{profile.belt_level}</Badge>
+                )}
+              </div>
+            </div>
+          </SheetHeader>
+
+          <Separator />
+
+          {/* Navigation */}
+          <nav className="flex-1 overflow-y-auto py-2 px-2">
+            {NAV_ITEMS.map(({ tab, icon: Icon, labelKey, color }) => {
+              const locked = isDemoLockedTab(tab);
+              const active = activeTab === tab;
+              return (
+                <button
+                  key={tab}
+                  onClick={() => handleTabChange(tab)}
+                  disabled={locked}
+                  className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
+                    active ? `${color} bg-accent font-semibold` : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                  } ${locked ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+                >
+                  <Icon className="h-4 w-4 shrink-0" />
+                  <span className="truncate">{t(labelKey)}</span>
+                  {locked && <Lock className="h-3 w-3 ms-auto shrink-0" />}
+                </button>
+              );
+            })}
+            <button
+              onClick={() => { setMenuOpen(false); navigate("/library"); }}
+              disabled={isDemo}
+              className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors text-muted-foreground hover:bg-accent hover:text-foreground ${isDemo ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+            >
+              <BookOpen className="h-4 w-4 shrink-0" />
+              <span className="truncate">{t("library")}</span>
+              {isDemo && <Lock className="h-3 w-3 ms-auto shrink-0" />}
+            </button>
+
+            <Separator className="my-2" />
+
+            {/* Utilities */}
+            <button onClick={() => { setMenuOpen(false); navigate("/profile-setup"); }} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer">
+              <User className="h-4 w-4 shrink-0" />
+              <span>{t("profile")}</span>
+            </button>
+            {isCoach && (
+              <button onClick={() => { setMenuOpen(false); navigate("/coach"); }} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer">
+                <Users className="h-4 w-4 shrink-0" />
+                <span>{t("coachDashboard") || "Coach"}</span>
+              </button>
+            )}
+            {isAdmin && (
+              <button onClick={() => { setMenuOpen(false); navigate("/admin/approval"); }} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer">
+                <Shield className="h-4 w-4 shrink-0" />
+                <span>{t("manageUsers")}</span>
+              </button>
+            )}
+            <button onClick={() => { setMenuOpen(false); navigate("/help"); }} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer">
+              <HelpCircle className="h-4 w-4 shrink-0" />
+              <span>{t("helpTitle")}</span>
+            </button>
+
+            <Separator className="my-2" />
+
+            <div className="px-3 py-2">
+              <LanguageSwitcher />
+            </div>
+          </nav>
+
+          {/* Sign out */}
+          <div className="border-t border-border p-3">
+            <button onClick={handleSignOut} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-destructive hover:bg-destructive/10 cursor-pointer">
+              <LogOut className="h-4 w-4 shrink-0" />
+              <span>{t("signOut") || "Sign Out"}</span>
+            </button>
+          </div>
+        </SheetContent>
+      </Sheet>
 
       {/* Mobile bottom nav */}
       <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-card/95 backdrop-blur-sm sm:hidden">
