@@ -5361,5 +5361,8 @@ const translations = {
     contactSendButton: "Send Melding",
     contactSuccessTitle: "Melding Sendt!",
     contactSuccessDesc: "Tak fordi du skrev til oss. Vi vender tilbake raskst muligt.",
-  }
+  },
 } as const;
+
+export type TranslationKey = keyof typeof translations.en;
+export default translations;
