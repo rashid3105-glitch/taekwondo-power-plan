@@ -1,21 +1,29 @@
 
 
-## Plan: Add 20 More Recipes to the Nutrition Library
+## Plan: Replace Dashboard Header with Sheet Side Menu
 
-### What
-Add 20 new athlete-focused recipes (no pork) to `src/data/recipes.ts`, continuing from `r21` to `r40`. Each recipe includes full English and Danish translations.
+### What Changes
+Replace the two-row sticky header (logo + nav tabs) with a slim single-row header and a slide-in Sheet panel from the right. Mobile bottom nav stays unchanged.
 
-### Recipe Distribution (balanced across categories)
-- **Breakfast** (4): Overnight Protein Oats, Scrambled Egg & Avocado Wrap, Banana Protein Pancakes, Bircher Muesli
-- **Lunch** (4): Turkey & Quinoa Bowl, Tuna Nicoise Salad, Chicken Caesar Wrap, Black Bean & Sweet Potato Bowl
-- **Dinner** (4): Grilled Salmon with Asparagus, Beef Stir-Fry with Broccoli, Chicken Tikka with Rice, Shrimp Pasta Primavera
-- **Snack** (3): Cottage Cheese & Fruit Cup, Trail Mix Energy Bites, Hummus & Veggie Sticks
-- **Pre-Workout** (3): Rice Cakes with Almond Butter, Banana & Date Smoothie, Oat & Honey Energy Bar
-- **Post-Workout** (2): Tuna & Rice Recovery Bowl, Berry Protein Smoothie Bowl
+### New Header (single row)
+- Left: Logo + "SPORTSTALENT"
+- Right: `EventRemindersDropdown` + hamburger menu button (Menu icon)
 
-### File Changed
-- `src/data/recipes.ts` — append 20 new `RecipeData` entries (r21–r40) with `en` and `da` localized text, macro values, and athlete tips
+### Sheet Side Panel (slides from right, `w-72`)
+- **User section**: Avatar, display name, club, belt badge
+- **Navigation**: Hub, Plan, Progress, Nutrition, Rehab, Mental, Testing, Library — each with icon + label, color-coded active state, demo-locked items shown disabled
+- **Divider**
+- **Utilities**: Profile, Coach Dashboard (if coach), Admin (if admin), Help
+- **Divider**
+- **Language switcher**
+- **Sign Out** button at bottom
 
-### No other changes needed
-The `getRecipes()` function and `NutritionLibrary` component already dynamically render all entries from the array.
+### Files Modified
+- `src/pages/Dashboard.tsx` — remove nav row from header, add Sheet import and side menu component, keep mobile bottom nav as-is
+
+### Design
+- Dark cockpit theme preserved
+- Same tab color tokens (text-tab-plan, text-tab-rehab, etc.)
+- Sheet closes on nav item click
+- Uses existing `Sheet` component from `src/components/ui/sheet.tsx`
 
