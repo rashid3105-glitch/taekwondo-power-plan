@@ -4967,8 +4967,8 @@ const translations = {
     hubMentalTitle: "Mental prestasjon",
     hubMentalDesc: "Vurder din mentale styrke, fokus og konkurranseparathed med idrettspsykologiske rammer.",
     // Coach-managed
-    coachManagedBanner: "Dine programmer administreres av din trener. Du kan se og last nede dine planer.",
-    coachManagedBannerNamed: "Dine programmer administreres av {{coach}}. Du kan se og last nede dine planer.",
+    coachManagedBanner: "Dine programmer administreres av din trener. Du kan se og laste ned dine planer.",
+    coachManagedBannerNamed: "Dine programmer administreres av {{coach}}. Du kan se og laste ned dine planer.",
     coachManagedAction: "Trenerstyret — bare visning",
     coachManagedActionNamed: "Styret av {{coach}} — bare visning",
     hubLibraryTitle: "Bibliotek",
