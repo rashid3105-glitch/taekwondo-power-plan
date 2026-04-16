@@ -4566,11 +4566,11 @@ const translations = {
     recovery: "Restitusjon",
     nØkts: "pas",
     monShort: "MAN", tueShort: "TIR", wedShort: "ONS", thuShort: "TOR", friShort: "FRE", satShort: "LØR", sunShort: "SØN",
-    profileSaveFailedØkt: "Profilen kunne ikke gemmes. Logg vennligst ud og ind igjen.",
+    profileSaveFailedSession: "Profilen kunne ikke gemmes. Logg vennligst ud og ind igjen.",
     changePhoto: "Bytt foto",
     addPhoto: "Legg til foto",
-    photoLast opped: "Foto last oppet!",
-    last oppFailed: "Last opp fejlede",
+    photoUploaded: "Foto lastet opp!",
+    uploadFailed: "Opplasting feilet",
     selectImageFile: "Velg vennligst en bildefil",
 
     // Dashboard
@@ -4897,9 +4897,9 @@ const translations = {
     // Calendar
     addToCalendar: "Legg til til kalender",
     addAllToCalendar: "Legg til alle økter",
-    last nedICS: "Last ned .ics",
+    downloadICS: "Last ned .ics",
     openInGoogleCalendar: "Google Kalender",
-    calendarExported: "Kalenderfil last nedet!",
+    calendarExported: "Kalenderfil lastet ned!",
     addDayToCalendar: "Legg til denne økt til kalender",
 
     // Notifications
@@ -5361,8 +5361,5 @@ const translations = {
     contactSendButton: "Send Melding",
     contactSuccessTitle: "Melding Sendt!",
     contactSuccessDesc: "Tak fordi du skrev til oss. Vi vender tilbake raskst muligt.",
-  },,
+  }
 } as const;
-
-export type TranslationKey = keyof typeof translations.en;
-export default translations;
