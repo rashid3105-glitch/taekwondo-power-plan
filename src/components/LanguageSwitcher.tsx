@@ -7,6 +7,7 @@ const FLAGS: Record<Locale, { emoji: string; label: string }> = {
   en: { emoji: "🇬🇧", label: "English" },
   da: { emoji: "🇩🇰", label: "Dansk" },
   sv: { emoji: "🇸🇪", label: "Svenska" },
+  no: { emoji: "🇳🇴", label: "Norsk" },
   de: { emoji: "🇩🇪", label: "Deutsch" },
   ar: { emoji: "🇸🇦", label: "العربية" },
 };

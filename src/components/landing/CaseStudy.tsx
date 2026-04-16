@@ -4,7 +4,7 @@ import { TrendingDown, Zap, Target, Clock, Activity, Quote, Shield, ChevronLeft,
 import { useLanguage } from "@/i18n/LanguageContext";
 import { caseStudies, type Locale } from "@/data/caseStudies";
 
-const lt = (obj: Record<Locale, string>, locale: string) => obj[locale as Locale] || obj.en;
+const lt = (obj: Partial<Record<Locale, string>> & { en: string }, locale: string) => obj[locale as Locale] || obj.en;
 
 export const CaseStudy = () => {
   const { locale, t } = useLanguage();
@@ -24,8 +24,8 @@ export const CaseStudy = () => {
   const next = () => setIndex((i) => (i + 1) % caseStudies.length);
 
   const typeBadge = isCoach
-    ? { en: "Coach Story", da: "Trænerhistorie", sv: "Tränarberättelse", de: "Trainergeschichte", ar: "قصة مدرب" }
-    : { en: "Athlete Story", da: "Atlethistorie", sv: "Atletberättelse", de: "Athletengeschichte", ar: "قصة رياضي" };
+    ? { en: "Coach Story", da: "Trænerhistorie", sv: "Tränarberättelse", de: "Trainergeschichte", ar: "قصة مدرب", no: "Trenerhistorie" }
+    : { en: "Athlete Story", da: "Atlethistorie", sv: "Atletberättelse", de: "Athletengeschichte", ar: "قصة رياضي", no: "Utøverhistorie" };
 
   const beforeLabel = t("caseBefore");
   const interventionLabel = t("caseIntervention");
