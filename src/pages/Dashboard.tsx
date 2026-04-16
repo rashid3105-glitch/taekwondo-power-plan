@@ -290,6 +290,7 @@ export default function Dashboard() {
               <span className="text-sm sm:text-base font-extrabold text-foreground">SPORTSTALENT</span>
             </div>
             <div className="flex items-center gap-2">
+              <LanguageSwitcher />
               <EventRemindersDropdown />
               <Button variant="ghost" size="icon" onClick={() => setMenuOpen(true)}>
                 <Menu className="h-5 w-5" />
@@ -376,11 +377,6 @@ export default function Dashboard() {
               <span>{t("helpTitle")}</span>
             </button>
 
-            <Separator className="my-2" />
-
-            <div className="px-3 py-2">
-              <LanguageSwitcher />
-            </div>
           </nav>
 
           {/* Sign out */}
