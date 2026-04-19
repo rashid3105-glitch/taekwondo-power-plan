@@ -17,6 +17,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { CalendarDropdown } from "@/components/CalendarDropdown";
 import { TrainingReminder } from "@/components/TrainingReminder";
 import { normalizeDaySessions, type PlanSession } from "@/lib/planSessionUtils";
+import { localizeDayOfWeek, localizeExerciseName } from "@/lib/planTranslation";
 
 const CATEGORY_DOT: Record<string, string> = {
   power: "bg-accent",
@@ -224,7 +225,7 @@ export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
   const schedule = localPlanData?.weeklySchedule || [];
   const periodization = localPlanData?.periodization || [];
   const { toast } = useToast();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const { upsertLog, getLog, today } = useWorkoutLogs(plan.id, selectedDay, activeSessionIndex);
 
   // Get sessions for currently selected day
