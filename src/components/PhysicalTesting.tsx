@@ -48,6 +48,31 @@ const STANDARD_TESTS: Record<string, { name: string; unit: string; category: str
   ],
 };
 
+// Maps canonical EN test name (stored in DB) to translation key for display.
+const TEST_NAME_KEYS: Record<string, string> = {
+  "30m Sprint": "ptTest_30mSprint",
+  "10m Sprint": "ptTest_10mSprint",
+  "5-10-5 Shuttle": "ptTest_5_10_5Shuttle",
+  "Beep Test": "ptTest_BeepTest",
+  "Cooper Test": "ptTest_CooperTest",
+  "3 min Step Test": "ptTest_3MinStepTest",
+  "1RM Back Squat": "ptTest_1RMBackSquat",
+  "1RM Deadlift": "ptTest_1RMDeadlift",
+  "Max Push-ups (1 min)": "ptTest_MaxPushups1Min",
+  "Grip Strength": "ptTest_GripStrength",
+  "T-Test": "ptTest_TTest",
+  "Illinois Agility": "ptTest_IllinoisAgility",
+  "Hexagonal Agility": "ptTest_HexagonalAgility",
+};
+
+export const getLocalizedTestName = (
+  englishName: string,
+  t: (key: string) => string
+): string => {
+  const key = TEST_NAME_KEYS[englishName];
+  return key ? t(key) : englishName;
+};
+
 const CATEGORY_ICONS: Record<string, typeof Timer> = {
   speed: Zap,
   endurance: Wind,
@@ -348,7 +373,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
                     </SelectTrigger>
                     <SelectContent>
                       {STANDARD_TESTS[cat].map(test => (
-                        <SelectItem key={test.name} value={test.name}>{test.name}</SelectItem>
+                        <SelectItem key={test.name} value={test.name}>{getLocalizedTestName(test.name, t)}</SelectItem>
                       ))}
                       <SelectItem value="__custom">{t("ptCustomTest")}</SelectItem>
                     </SelectContent>
@@ -401,7 +426,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
                 <div key={testName} className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
                   <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
                     <CategoryIcon className="h-4 w-4 text-primary" />
-                    {testName}
+                    {getLocalizedTestName(testName, t)}
                   </h3>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
