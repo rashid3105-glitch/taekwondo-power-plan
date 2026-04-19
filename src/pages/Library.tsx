@@ -41,7 +41,7 @@ export default function Library() {
   return (
     <div className="min-h-screen bg-background relative">
       <Watermark />
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
+      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10 pt-safe">
         <div className="container max-w-4xl mx-auto px-4 py-3 flex items-center gap-3">
           <Button variant="ghost" size="sm" onClick={() => navigate("/library")}>
             <ArrowLeft className="h-4 w-4" />
