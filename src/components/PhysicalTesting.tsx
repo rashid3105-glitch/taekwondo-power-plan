@@ -426,7 +426,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
                 <div key={testName} className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
                   <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
                     <CategoryIcon className="h-4 w-4 text-primary" />
-                    {testName}
+                    {getLocalizedTestName(testName, t)}
                   </h3>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
