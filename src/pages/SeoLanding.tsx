@@ -75,7 +75,7 @@ const SeoLanding = () => {
       />
 
       {/* Header */}
-      <header className="sticky top-0 z-40 flex items-center justify-between px-5 py-3 border-b border-border/40 bg-background/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-40 flex items-center justify-between px-5 py-3 border-b border-border/40 bg-background/80 backdrop-blur-xl pt-[calc(env(safe-area-inset-top)+0.75rem)]">
         <a href="/" onClick={(e) => { e.preventDefault(); navigate("/"); }} className="flex items-center gap-2.5 cursor-pointer">
           <img src={logo} alt="Sportstalent" className="h-8 w-8 rounded-lg object-contain" />
           <span className="text-sm font-extrabold tracking-tight text-foreground">SPORTSTALENT</span>

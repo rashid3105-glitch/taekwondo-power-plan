@@ -23,7 +23,7 @@ export function PublicNav() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/40 bg-background/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 border-b border-border/40 bg-background/80 backdrop-blur-xl pt-safe">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
         {/* Logo */}
         <button
