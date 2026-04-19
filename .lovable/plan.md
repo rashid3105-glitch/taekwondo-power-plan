@@ -1,66 +1,36 @@
 
 
-## Plan: Full App-Friendly Polish (Option B)
+## Plan: Fix Mixed-Up Norwegian Translations
 
-Make Sportstalent feel like a native app via PWA installability + native-feel UX polish. PWA features only activate in the published site, not the editor preview.
+### Problem confirmed
 
-### What I'll build
+The Norwegian (`no`) section in `src/i18n/translations.ts` is a half-finished derivation from Danish:
 
-**1. Installable PWA**
-- `vite-plugin-pwa` with `devOptions.enabled: false` and iframe/preview-host guard so it never runs in the Lovable editor
-- `public/manifest.json` — name, theme color (`#0F172A`), icons (192, 512, maskable), `display: "standalone"`
-- Generate PWA icons from existing logo (192px, 512px, maskable 512px)
-- iOS meta tags in `index.html`: `apple-touch-icon`, `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style`, `theme-color`
-- Service worker with `navigateFallbackDenylist: [/^\/~oauth/, /^\/api/]` and skip-cache for Supabase calls
+- **852 keys vs 859** in other languages → 8 missing (`session`, `sessions`, `sessionsWeek`, `addSession`, `removeSession`, `gymSession`, `nSessions`, `latestMentalScore`) plus 1 mistranslated key name (`latestMentalPoengsum` should be `latestMentalScore`).
+- **~230+ entries are still pure Danish** (e.g. `weeklySchedule: "Ugeplan"` → should be `"Ukeplan"`, `sparring: "Sparring (Kæmper)"` → `"(Kjemper)"`, `tkdPerWeek: "TKD/uge"` → `"TKD/uke"`).
+- **Many half-translated entries with Danish leftovers** mixed into Bokmål sentences: words like `for at` (NB: `for å`), `kræver` (NB: `krever`), `mellem` (NB: `mellom`), `undgår` (NB: `unngår`), `fundet` (NB: `funnet`), `gemmes/gem` (NB: `lagres/lagre`), `kunne ikke` (NB: `kunne ikke` — same, but combined with Danish verbs around it), `ind/ud` (NB: `inn/ut`), `klik/klikk`, `vælg`, `bytte mellem`, `på/at` confusion.
+- **Typos introduced during partial translation**: `tilbakestillling` (3 l's), `passordn`, `opprettte`, `godkjennelse` (should be `godkjenning`).
 
-**2. Install page (`/install`)**
-- Platform-aware instructions (iOS Safari → Share → Add to Home Screen; Android → install prompt via `beforeinstallprompt`)
-- Translated to all 6 languages
-- Linked from Help page
+### Fix
 
-**3. Native-feel mobile UX**
-- **Safe area insets**: bottom nav respects iPhone home indicator (`pb-[env(safe-area-inset-bottom)]`)
-- **Disable overscroll bounce**: `overscroll-behavior: contain` on body
-- **Prevent input zoom on iOS**: ensure inputs have `font-size: 16px` minimum
-- **Tap polish**: `-webkit-tap-highlight-color: transparent`, `user-select: none` on buttons, `touch-action: manipulation`
-- **Status bar color**: matches dark theme via `theme-color` meta
-- **Splash/loading screen**: replace `if (checking) return null` blank screens with a proper splash (logo + spinner) in Dashboard, Auth, ProfileSetup
+Rewrite the entire `no: { ... }` section (lines ~4567–5499) of `src/i18n/translations.ts` so that:
 
-**4. Page transitions**
-- Wrap routes in `AnimatePresence` (framer-motion already used) — subtle fade between pages
-- Respects `prefers-reduced-motion`
+1. **All 859 keys present** — match the `en` keyset exactly. Add the 8 missing keys, rename `latestMentalPoengsum` → `latestMentalScore`.
+2. **Every value is proper Norwegian Bokmål** — systematic pass replacing Danish forms:
+   - `uge → uke`, `kæmper → kjemper`, `gemme/gemt → lagre/lagret`, `kræver → krever`, `mellem → mellom`, `undgår → unngår`, `fundet → funnet`, `tilbage → tilbake` (already mostly done), `ind/ud → inn/ut`, `for at → for å`, `at + infinitive → å + infinitive`, `nogen/noget → noen/noe`, `hvad → hva`, `nu → nå`, `igen → igjen`, `også → også` (same), `meget → mye`, `bliver/blev → blir/ble`, `give/giver → gi/gir`, `sådan → slik/sånn`, `sammen med → sammen med` (same), `tjek → sjekk`, `opret → opprett`, `gemmes → lagres`, `valgt → valgt` (same), `tilføj → legg til`, `fjern → fjern` (same), `klik → klikk`, `vælg → velg`, `spørgsmål → spørsmål`, `mål → mål` (same).
+3. **Fix all typos** (`tilbakestillling`, `passordn`, `opprettte`, `kjennelse`).
+4. **Keep proper-name values intact** (Sportstalent, Stripe, etc.) and keep ICU placeholders (`{name}`, `{count}`) untouched.
+5. **Order keys identically to the `da` section** so future diffs stay clean.
 
-**5. Offline resilience (light)**
-- Service worker caches app shell (HTML, CSS, JS, fonts, logo)
-- Network-first for Supabase calls (never serve stale auth/data)
-- "You're offline" banner component shown when `navigator.onLine === false`
+### Approach
 
-### Files
+Programmatic rewrite: read the `da` section as the structural template (since Norwegian Bokmål is closest to Danish), apply a deterministic Danish→Bokmål substitution table to every value, then overwrite the `no` block. Manually QA ~30 high-visibility strings (hero, nav, dashboard, auth, errors).
 
-**New**
-- `public/manifest.json`
-- `public/icon-192.png`, `public/icon-512.png`, `public/icon-maskable-512.png`
-- `src/pages/Install.tsx`
-- `src/components/SplashScreen.tsx`
-- `src/components/OfflineBanner.tsx`
+### Files modified
 
-**Modified**
-- `vite.config.ts` — add VitePWA plugin
-- `index.html` — Apple meta tags, theme-color, manifest link
-- `src/main.tsx` — SW registration guarded against iframe + preview hosts
-- `src/index.css` — safe-area utilities, overscroll-behavior, tap-highlight, body bg
-- `src/App.tsx` — add `/install` route, wrap Routes in AnimatePresence, add OfflineBanner
-- `src/pages/Dashboard.tsx` — bottom nav `pb-[env(safe-area-inset-bottom)]`, replace blank loading with SplashScreen
-- `src/pages/Auth.tsx`, `src/pages/ProfileSetup.tsx` — use SplashScreen during checks
-- `src/i18n/translations.ts` — install page strings (6 languages)
-- `src/pages/Help.tsx` — link to `/install`
+- `src/i18n/translations.ts` — rewrite the `no: { ... }` block only. No other files touched.
 
-### Important caveats I'll flag to you
-- PWA install prompt only works on the **published** sportstalent.dk site — not in the Lovable preview iframe
-- iOS doesn't support `beforeinstallprompt`; users must use Safari → Share → Add to Home Screen
-- Push notifications are NOT included (would need Capacitor for reliable iOS support — separate decision)
-- Page transitions kept subtle (200ms fade) to avoid feeling laggy
+### Verification after implementation
 
-### After implementation
-You'll need to click **Publish → Update** to push the PWA to sportstalent.dk, then test "Add to Home Screen" on a real phone.
+I'll re-run the keycount check (must show 859/859/859/859/859/**859**) and the Danish-marker scan (target: near-zero hits, allowing legitimate shared words like `og`, `til`, `din`, `samme`, `med`).
 
