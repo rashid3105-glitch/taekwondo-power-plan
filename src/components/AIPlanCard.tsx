@@ -17,6 +17,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { CalendarDropdown } from "@/components/CalendarDropdown";
 import { TrainingReminder } from "@/components/TrainingReminder";
 import { normalizeDaySessions, type PlanSession } from "@/lib/planSessionUtils";
+import { localizeDayOfWeek, localizeExerciseName } from "@/lib/planTranslation";
 
 const CATEGORY_DOT: Record<string, string> = {
   power: "bg-accent",
@@ -224,7 +225,7 @@ export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
   const schedule = localPlanData?.weeklySchedule || [];
   const periodization = localPlanData?.periodization || [];
   const { toast } = useToast();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const { upsertLog, getLog, today } = useWorkoutLogs(plan.id, selectedDay, activeSessionIndex);
 
   // Get sessions for currently selected day
@@ -437,7 +438,7 @@ export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
             <div className="animate-slide-up rounded-xl border border-border bg-card p-3 sm:p-5 shadow-card">
               <div className="mb-4 flex items-center justify-between">
                 <div>
-                  <h3 className="font-bold text-foreground">{schedule[selectedDay].dayOfWeek}</h3>
+                  <h3 className="font-bold text-foreground">{localizeDayOfWeek(schedule[selectedDay].dayOfWeek, locale)}</h3>
                 </div>
                 <CalendarDropdown plan={plan} dayIndex={selectedDay} />
               </div>
@@ -581,7 +582,9 @@ function SortableExerciseRow(props: AIExerciseRowProps & { id: string }) {
 
 function AIExerciseRow({ exercise, index, log, onToggleComplete, onUpdateSets, onUpdateReps, onUpdateNotes, onSwap, onRemove, dragHandleProps }: AIExerciseRowProps & { dragHandleProps?: any }) {
   const [open, setOpen] = useState(false);
+  const { locale } = useLanguage();
   const completed = log?.completed ?? false;
+  const displayName = localizeExerciseName(exercise.name, locale);
 
   return (
     <div className={cn(
@@ -613,7 +616,7 @@ function AIExerciseRow({ exercise, index, log, onToggleComplete, onUpdateSets, o
             "font-semibold text-sm block truncate",
             completed ? "text-muted-foreground line-through" : "text-foreground"
           )}>
-            {exercise.name}
+            {displayName}
           </span>
         </button>
         {completed && <Check className="h-4 w-4 text-primary flex-shrink-0" />}
@@ -632,7 +635,7 @@ function AIExerciseRow({ exercise, index, log, onToggleComplete, onUpdateSets, o
         </button>
         <div className="flex-1" />
         <a
-          href={`https://www.youtube.com/results?search_query=${encodeURIComponent(exercise.name + ' exercise form')}`}
+          href={`https://www.youtube.com/results?search_query=${encodeURIComponent(displayName + ' exercise form')}`}
           target="_blank"
           rel="noopener noreferrer"
           className="p-1 text-muted-foreground hover:text-destructive transition-colors"
@@ -733,7 +736,7 @@ function AIExerciseRow({ exercise, index, log, onToggleComplete, onUpdateSets, o
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Alternatives</p>
               {exercise.alternatives.map((alt: any, k: number) => (
                 <p key={k} className="text-xs text-foreground">
-                  <span className="font-semibold">{alt.name}</span>
+                  <span className="font-semibold">{localizeExerciseName(alt.name, locale)}</span>
                   <span className="text-muted-foreground"> — {alt.reason}</span>
                 </p>
               ))}
