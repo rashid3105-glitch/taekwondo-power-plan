@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { UserCircle, ClipboardList, HeartPulse, Brain, Users, BarChart3, Clock, ChevronDown, Activity, Apple, TrendingUp, BookOpen, BookHeart } from "lucide-react";
+import { UserCircle, ClipboardList, HeartPulse, Brain, Users, BarChart3, Clock, ChevronDown, Activity, Apple, TrendingUp, BookOpen, BookHeart, Download } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PublicNav } from "@/components/PublicNav";
 import { Watermark } from "@/components/Watermark";
@@ -88,6 +88,20 @@ export default function Help() {
             </div>
           </div>
         )}
+
+        {/* Install as app */}
+        <button
+          onClick={() => navigate("/install")}
+          className="w-full flex items-center gap-3 rounded-lg border border-primary/30 bg-primary/5 hover:bg-primary/10 px-4 py-3 text-left transition-colors shadow-sm"
+        >
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+            <Download className="h-5 w-5" />
+          </div>
+          <div className="flex-1">
+            <div className="font-semibold text-sm text-foreground">{t("installLink")}</div>
+            <div className="text-xs text-muted-foreground">{t("installSubtitle")}</div>
+          </div>
+        </button>
 
         {/* Changelog */}
         <Collapsible>
