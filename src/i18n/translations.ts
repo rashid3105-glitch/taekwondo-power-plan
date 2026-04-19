@@ -938,7 +938,6 @@ const translations = {
     installBenefit3: "Faster loading and easier access",
     installLink: "Install as app",
     offlineBanner: "You're offline — some features may be unavailable",
-    back: "Back",
   },
   da: {
     // Common
@@ -1870,7 +1869,6 @@ const translations = {
     installBenefit3: "Hurtigere indlæsning og nem adgang",
     installLink: "Installer som app",
     offlineBanner: "Du er offline — nogle funktioner er muligvis ikke tilgængelige",
-    back: "Tilbage",
   },
   sv: {
     // Common
@@ -2802,7 +2800,6 @@ const translations = {
     installBenefit3: "Snabbare laddning och enkel åtkomst",
     installLink: "Installera som app",
     offlineBanner: "Du är offline — vissa funktioner kanske inte är tillgängliga",
-    back: "Tillbaka",
   },
   de: {
     plan: "Plan",
@@ -3684,7 +3681,6 @@ const translations = {
     installBenefit3: "Schnelleres Laden und einfacher Zugriff",
     installLink: "Als App installieren",
     offlineBanner: "Du bist offline — einige Funktionen sind möglicherweise nicht verfügbar",
-    back: "Zurück",
   },
 
   ar: {
@@ -5476,7 +5472,6 @@ const translations = {
     installBenefit3: "Raskere lasting og lett tilgang",
     installLink: "Installer som app",
     offlineBanner: "Du er offline — noen funksjoner kan være utilgjengelige",
-    back: "Tilbake",
   },
 } as const;
 
