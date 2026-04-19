@@ -3,7 +3,7 @@
 // no translation is known (so AI-generated freeform text like session focus
 // or coaching cues passes through unchanged).
 
-import exercisesDataModule from "@/data/exercises";
+// (no default-export import needed)
 
 type Locale = "en" | "da" | "sv" | "de" | "ar" | "no";
 
@@ -55,9 +55,7 @@ import {
   type Exercise,
 } from "@/data/exercises";
 
-// Suppress unused-module-import warning while still tree-shaking-safe.
-void exercisesDataModule;
-
+// (no extra suppression needed)
 // Map: lowercased exercise name (in any locale) → canonical exercise id
 // e.g. "trap bar deadlift" → "trap-bar-deadlift", "trap bar dødløft" → "trap-bar-deadlift"
 const nameToCanonicalId: Map<string, string> = new Map();
