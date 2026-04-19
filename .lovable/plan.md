@@ -1,36 +1,73 @@
 
 
-## Plan: Fix Mixed-Up Norwegian Translations
+## Plan: Localize Exercise (and other library) Names
 
-### Problem confirmed
+### Problem found
 
-The Norwegian (`no`) section in `src/i18n/translations.ts` is a half-finished derivation from Danish:
+Looking at `src/data/exercises.ts`, the `Exercise` data structure has localized `notes`, `whyItMatters`, and `alternatives` for `en/da/sv` only — but **the exercise `name` itself has only ONE value**, stored once at the top level (e.g. `name: "Trap Bar Deadlift"`, `name: "Box Jumps (Step Down)"`, `name: "Hang Clean Pull"`).
 
-- **852 keys vs 859** in other languages → 8 missing (`session`, `sessions`, `sessionsWeek`, `addSession`, `removeSession`, `gymSession`, `nSessions`, `latestMentalScore`) plus 1 mistranslated key name (`latestMentalPoengsum` should be `latestMentalScore`).
-- **~230+ entries are still pure Danish** (e.g. `weeklySchedule: "Ugeplan"` → should be `"Ukeplan"`, `sparring: "Sparring (Kæmper)"` → `"(Kjemper)"`, `tkdPerWeek: "TKD/uge"` → `"TKD/uke"`).
-- **Many half-translated entries with Danish leftovers** mixed into Bokmål sentences: words like `for at` (NB: `for å`), `kræver` (NB: `krever`), `mellem` (NB: `mellom`), `undgår` (NB: `unngår`), `fundet` (NB: `funnet`), `gemmes/gem` (NB: `lagres/lagre`), `kunne ikke` (NB: `kunne ikke` — same, but combined with Danish verbs around it), `ind/ud` (NB: `inn/ut`), `klik/klikk`, `vælg`, `bytte mellem`, `på/at` confusion.
-- **Typos introduced during partial translation**: `tilbakestillling` (3 l's), `passordn`, `opprettte`, `godkjennelse` (should be `godkjenning`).
+So no matter what language the user picks, the names always render in **English**, while the surrounding UI (filters, headers, day labels, "Why it matters") is translated. That's the "mixed up" you're seeing.
+
+Same issue affects:
+- **Alternative exercise names** inside each locale block — e.g. Danish has `"Eksplosivt Længdespring"` but Swedish has the proper Swedish version, while the parent exercise name above is still English. Inconsistent.
+- **`resolveExercise`** (line 1365) hard-falls back to English for `sv`, `de`, `ar`, `no` — so Swedish/German/Arabic/Norwegian users see fully English notes + alternatives too, even though Swedish translations already exist in the file. This is a separate bug.
+- **Day labels** in `getWeeklyPlan` have no Norwegian or Arabic branch — falls through to English.
+- **Recipes** (`src/data/recipes.ts`) have only `en` + `da` localized names.
+- **Physical tests** (`STANDARD_TESTS` in `PhysicalTesting.tsx`) are hardcoded English strings.
+- **Mental exercises** ARE properly localized for all 6 languages already — no fix needed.
 
 ### Fix
 
-Rewrite the entire `no: { ... }` section (lines ~4567–5499) of `src/i18n/translations.ts` so that:
+**1. Add localized `name` to every exercise (and clean up alternatives)**
 
-1. **All 859 keys present** — match the `en` keyset exactly. Add the 8 missing keys, rename `latestMentalPoengsum` → `latestMentalScore`.
-2. **Every value is proper Norwegian Bokmål** — systematic pass replacing Danish forms:
-   - `uge → uke`, `kæmper → kjemper`, `gemme/gemt → lagre/lagret`, `kræver → krever`, `mellem → mellom`, `undgår → unngår`, `fundet → funnet`, `tilbage → tilbake` (already mostly done), `ind/ud → inn/ut`, `for at → for å`, `at + infinitive → å + infinitive`, `nogen/noget → noen/noe`, `hvad → hva`, `nu → nå`, `igen → igjen`, `også → også` (same), `meget → mye`, `bliver/blev → blir/ble`, `give/giver → gi/gir`, `sådan → slik/sånn`, `sammen med → sammen med` (same), `tjek → sjekk`, `opret → opprett`, `gemmes → lagres`, `valgt → valgt` (same), `tilføj → legg til`, `fjern → fjern` (same), `klik → klikk`, `vælg → velg`, `spørgsmål → spørsmål`, `mål → mål` (same).
-3. **Fix all typos** (`tilbakestillling`, `passordn`, `opprettte`, `kjennelse`).
-4. **Keep proper-name values intact** (Sportstalent, Stripe, etc.) and keep ICU placeholders (`{name}`, `{count}`) untouched.
-5. **Order keys identically to the `da` section** so future diffs stay clean.
+Move `name` from the top-level `ExerciseBase` into each locale block. Extend `ExerciseLocalized` to:
+```ts
+interface ExerciseLocalized {
+  name: string;
+  notes: string;
+  whyItMatters: string;
+  alternatives?: { name: string; reason: string }[];
+}
+```
+
+Add `de`, `ar`, `no` locale blocks (currently only `en/da/sv` exist) for all ~30 exercises, including localized:
+- main exercise name
+- notes
+- whyItMatters
+- alternatives (name + reason)
+
+**2. Fix `resolveExercise` fallback chain**
+
+Replace the brittle "everything not en/da becomes en" with proper per-locale lookup that falls back gracefully: `base[locale] ?? base.en`.
+
+**3. Localize weekly-plan day labels and focus strings**
+
+Extend `getWeeklyPlan` with `de`, `ar`, `no` branches for day names, labels, and focus text (currently only en/da/sv/de — `no` and `ar` missing).
+
+**4. Localize recipe names**
+
+Add `sv`, `de`, `ar`, `no` blocks to every recipe in `src/data/recipes.ts` (name, ingredients, steps).
+
+**5. Localize physical test names**
+
+Replace `STANDARD_TESTS` hardcoded English with a `Record<Locale, …>` lookup, or use translation keys via `t()`. Same approach for unit labels ("sec", "kg", "reps", "level", "m", "bpm") which are already universal abbreviations and can stay.
 
 ### Approach
 
-Programmatic rewrite: read the `da` section as the structural template (since Norwegian Bokmål is closest to Danish), apply a deterministic Danish→Bokmål substitution table to every value, then overwrite the `no` block. Manually QA ~30 high-visibility strings (hero, nav, dashboard, auth, errors).
+Programmatic, locale-by-locale. I'll build a translation table per exercise (DA already exists for notes/why, so I'll derive `de/ar/no` from the EN canonical and use existing DA/SV as references for tone). Norwegian Bokmål will use the same Danish→Bokmål substitution rules we just applied to `translations.ts`.
+
+For physical tests I'll wire each test's `name` to a `TranslationKey` and add the strings to `src/i18n/translations.ts`.
 
 ### Files modified
 
-- `src/i18n/translations.ts` — rewrite the `no: { ... }` block only. No other files touched.
+- `src/data/exercises.ts` — restructure `ExerciseBase`, add `name` to localized blocks, add `de/ar/no` blocks to all ~30 exercises, fix `resolveExercise` fallback, extend `getWeeklyPlan` for `no` and `ar`
+- `src/data/recipes.ts` — add `sv/de/ar/no` localized blocks for every recipe
+- `src/components/PhysicalTesting.tsx` & `src/components/TestLibrary.tsx` — replace hardcoded English test names with `t()` lookups
+- `src/i18n/translations.ts` — add ~13 physical-test name keys × 6 languages
 
-### Verification after implementation
+### Caveats
 
-I'll re-run the keycount check (must show 859/859/859/859/859/**859**) and the Danish-marker scan (target: near-zero hits, allowing legitimate shared words like `og`, `til`, `din`, `samme`, `med`).
+- This is a large data-entry pass (~30 exercises × 3 new languages × 4 fields ≈ 360 strings, plus recipes and tests). I'll keep technical TKD terminology (poomsae, naeryo chagi, dollyo, etc.) untranslated as they're proper Korean nouns.
+- Exercise names that are universal English gym terms ("Trap Bar Deadlift", "Box Jumps", "Bulgarian Split Squat") will get sensible localized forms where natural (e.g. DE: "Bulgarische Ausfallschritte") but kept in English where the English term is the universally-used name in that locale's gym culture (e.g. "Box Jumps" stays "Box Jumps" in DE/SV — that's how gyms there speak).
+- After the change, `WEEKLY_PLAN` (the eager EN export at line 1435) stays for backward compat.
 
