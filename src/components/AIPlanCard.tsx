@@ -582,7 +582,9 @@ function SortableExerciseRow(props: AIExerciseRowProps & { id: string }) {
 
 function AIExerciseRow({ exercise, index, log, onToggleComplete, onUpdateSets, onUpdateReps, onUpdateNotes, onSwap, onRemove, dragHandleProps }: AIExerciseRowProps & { dragHandleProps?: any }) {
   const [open, setOpen] = useState(false);
+  const { locale } = useLanguage();
   const completed = log?.completed ?? false;
+  const displayName = localizeExerciseName(exercise.name, locale);
 
   return (
     <div className={cn(
@@ -614,7 +616,7 @@ function AIExerciseRow({ exercise, index, log, onToggleComplete, onUpdateSets, o
             "font-semibold text-sm block truncate",
             completed ? "text-muted-foreground line-through" : "text-foreground"
           )}>
-            {exercise.name}
+            {displayName}
           </span>
         </button>
         {completed && <Check className="h-4 w-4 text-primary flex-shrink-0" />}
