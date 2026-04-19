@@ -6,7 +6,7 @@ import { PageMeta } from "@/components/PageMeta";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import logo from "@/assets/logo.webp";
+import logo from "@/assets/logo.png";
 
 export default function PrivacyPolicy() {
   const { t } = useLanguage();

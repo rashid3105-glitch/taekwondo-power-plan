@@ -18,7 +18,7 @@ import { PageMeta } from "@/components/PageMeta";
 import { AppFooter } from "@/components/AppFooter";
 import { Watermark } from "@/components/Watermark";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import logo from "@/assets/logo.webp";
+import logo from "@/assets/logo.png";
 import { SampleProgramDialog } from "@/components/SampleProgramDialog";
 
 const fade = { initial: { opacity: 0, y: 16 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: "-40px" as const }, transition: { duration: 0.5 } };

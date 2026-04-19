@@ -1,4 +1,4 @@
-import logo from "@/assets/logo.webp";
+import logo from "@/assets/logo.png";
 import { Loader2 } from "lucide-react";
 
 export const SplashScreen = ({ message }: { message?: string }) => (
