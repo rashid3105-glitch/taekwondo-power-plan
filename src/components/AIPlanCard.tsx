@@ -635,7 +635,7 @@ function AIExerciseRow({ exercise, index, log, onToggleComplete, onUpdateSets, o
         </button>
         <div className="flex-1" />
         <a
-          href={`https://www.youtube.com/results?search_query=${encodeURIComponent(exercise.name + ' exercise form')}`}
+          href={`https://www.youtube.com/results?search_query=${encodeURIComponent(displayName + ' exercise form')}`}
           target="_blank"
           rel="noopener noreferrer"
           className="p-1 text-muted-foreground hover:text-destructive transition-colors"
@@ -736,7 +736,7 @@ function AIExerciseRow({ exercise, index, log, onToggleComplete, onUpdateSets, o
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Alternatives</p>
               {exercise.alternatives.map((alt: any, k: number) => (
                 <p key={k} className="text-xs text-foreground">
-                  <span className="font-semibold">{alt.name}</span>
+                  <span className="font-semibold">{localizeExerciseName(alt.name, locale)}</span>
                   <span className="text-muted-foreground"> — {alt.reason}</span>
                 </p>
               ))}
