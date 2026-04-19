@@ -9,6 +9,8 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { normalizeDaySessions, type PlanSession } from "@/lib/planSessionUtils";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { localizeExerciseName } from "@/lib/planTranslation";
 
 const TYPE_BADGES: Record<string, { label: string; className: string; icon: typeof Shield }> = {
   tkd: { label: "Taekwondo", className: "bg-gradient-energy", icon: Shield },
@@ -255,7 +257,7 @@ function TrainingPlanContent({ plan }: { plan: NonNullable<PlanViewDialogProps["
                               <div className="flex items-center gap-2">
                                 <span className="text-[10px] text-muted-foreground font-mono w-5">{String(j + 1).padStart(2, "0")}</span>
                                 <span className={`h-2 w-2 rounded-full flex-shrink-0 ${CATEGORY_DOT[ex.category] || "bg-muted"}`} />
-                                <span className="text-sm font-semibold text-foreground flex-1 truncate">{ex.name}</span>
+                                <span className="text-sm font-semibold text-foreground flex-1 truncate">{localizeExerciseName(ex.name, locale)}</span>
                                 {ex.muscleGroups?.length > 0 && (
                                   <MuscleGroupBadges muscles={ex.muscleGroups} size={18} />
                                 )}
@@ -278,7 +280,7 @@ function TrainingPlanContent({ plan }: { plan: NonNullable<PlanViewDialogProps["
                               {ex.alternatives?.length > 0 && (
                                 <div className="text-xs text-muted-foreground">
                                   <span className="font-semibold">Alternatives:</span>{" "}
-                                  {ex.alternatives.map((alt: any) => alt.name).join(", ")}
+                                  {ex.alternatives.map((alt: any) => localizeExerciseName(alt.name, locale)).join(", ")}
                                 </div>
                               )}
                             </div>
