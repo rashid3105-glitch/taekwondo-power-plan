@@ -96,9 +96,38 @@
     @apply border-border;
   }
 
+  html, body {
+    /* Prevent iOS rubber-band overscroll affecting parent */
+    overscroll-behavior-y: contain;
+  }
+
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Inter', system-ui, sans-serif;
+    /* Native-feel tap polish */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Buttons & interactive elements get native-feel tap behavior */
+  button, a, [role="button"] {
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* But keep text selectable in inputs/textareas */
+  input, textarea, [contenteditable="true"] {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
+  /* Prevent iOS auto-zoom on focus: inputs must be ≥16px */
+  @supports (-webkit-touch-callout: none) {
+    input, select, textarea {
+      font-size: 16px;
+    }
   }
 
   h1, h2, h3, h4 {
