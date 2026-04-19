@@ -25,6 +25,7 @@ import { AppFooter } from "@/components/AppFooter";
 import { Watermark } from "@/components/Watermark";
 import { PhysicalTesting } from "@/components/PhysicalTesting";
 import { Separator } from "@/components/ui/separator";
+import { SplashScreen } from "@/components/SplashScreen";
 
 interface Profile {
   display_name: string;
@@ -269,11 +270,7 @@ export default function Dashboard() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-primary" />
-      </div>
-    );
+    return <SplashScreen />;
   }
 
   const activePlan = plans.find((p) => p.is_active);
@@ -390,7 +387,7 @@ export default function Dashboard() {
       </Sheet>
 
       {/* Mobile bottom nav */}
-      <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-card/95 backdrop-blur-sm sm:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-card/95 backdrop-blur-sm sm:hidden pb-safe">
         <div className="flex items-center justify-around py-2">
           <button onClick={() => handleTabChange("hub")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "hub" ? "text-primary" : "text-muted-foreground"}`}>
             <Home className="h-5 w-5" />
