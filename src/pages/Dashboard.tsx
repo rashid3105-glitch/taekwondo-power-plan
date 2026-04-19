@@ -10,7 +10,7 @@ import {
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { EventRemindersDropdown } from "@/components/EventRemindersDropdown";
 import { AvatarImg } from "@/components/AvatarImg";
-import logo from "@/assets/logo.webp";
+import logo from "@/assets/logo.png";
 import { useToast } from "@/hooks/use-toast";
 import { AIPlanCard } from "@/components/AIPlanCard";
 import { Badge } from "@/components/ui/badge";

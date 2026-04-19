@@ -5,7 +5,7 @@ import { ArrowLeft, Download, Share, Plus, Smartphone, MonitorSmartphone, CheckC
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PageMeta } from "@/components/PageMeta";
 import { Watermark } from "@/components/Watermark";
-import logo from "@/assets/logo.webp";
+import logo from "@/assets/logo.png";
 
 type Platform = "ios" | "android" | "desktop";
 

@@ -4,7 +4,7 @@ import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useLanguage } from "@/i18n/LanguageContext";
-import logo from "@/assets/logo.webp";
+import logo from "@/assets/logo.png";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
