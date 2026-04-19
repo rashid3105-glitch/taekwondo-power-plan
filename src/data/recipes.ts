@@ -31,6 +31,8 @@ interface RecipeData {
   fat: number;
   en: LocalizedRecipeText;
   da: LocalizedRecipeText;
+  no: LocalizedRecipeText;
+  sv: LocalizedRecipeText;
 }
 
 export const RECIPE_CATEGORY_LABELS: Record<RecipeCategory, string> = {
@@ -71,6 +73,20 @@ const recipesData: RecipeData[] = [
       steps: ["Hæld græsk yoghurt i en skål.", "Skær bananen i skiver og læg ovenpå.", "Drys havregryn og mandler over.", "Dryp honning over og tilsæt blåbær."],
       tip: "Brug fedtrig yoghurt for vedvarende energi på hårde træningsdage.",
     },
+    no: {
+      name: "gresk yoghurt power-bolle",
+      prepTime: "5 min",
+      ingredients: ["250g gresk yoghurt", "1 banan", "30g havregryn", "15g honning", "20g mandler", "En håndfuld blåbær"],
+      steps: ["hell gresk yoghurt i en bolle.", "skjær bananen i skiver og legg ovenpå.", "drys havregryn og mandler over.", "drypp honning over og tilsett blåbær."],
+      tip: "Brug fettrik yoghurt for vedvarende energi på harde treningsdager.",
+    },
+    sv: {
+      name: "grekisk yoghurt power-skål",
+      prepTime: "5 min",
+      ingredients: ["250g grekisk yoghurt", "1 banan", "30g havregryn", "15g honung", "20g mandlar", "En håndfuld blåbär"],
+      steps: ["häll grekisk yoghurt i en skål.", "skär bananen i skivor och lägg ovenpå.", "strö havregryn och mandlar över.", "ringla honung över och tillsätt blåbär."],
+      tip: "Brug fetrik yoghurt for vedvarende energi på hårde träningsdagar.",
+    },
   },
   {
     id: "r2",
@@ -89,6 +105,20 @@ const recipesData: RecipeData[] = [
       ingredients: ["200g kyllingebryst", "150g brune ris (kogt)", "100g broccoli", "1 spsk olivenolie", "Salt, peber, hvidløgspulver"],
       steps: ["Krydre kyllingen med hvidløgspulver, salt og peber.", "Gril eller steg kyllingen 6-7 min pr. side.", "Damp broccoli i 4 minutter.", "Server over kogte brune ris med lidt olivenolie."],
       tip: "Forbered 4-5 bokse om søndagen til hele træningsugen.",
+    },
+    no: {
+      name: "kylling & ris meal prep-boks",
+      prepTime: "25 min",
+      ingredients: ["200g kyllingebryst", "150g brun ris (kokt)", "100g broccoli", "1 ss olivenolje", "Salt, pepper, hvidløkspulver"],
+      steps: ["krydre kyllingen med hvidløkspulver, salt og pepper.", "Gril eller stek kyllingen 6-7 min pr. side.", "damp broccoli 4 minutter.", "server over kokte brun ris med lidt olivenolje."],
+      tip: "Forbered 4-5 bokse om søndagern til hele treningsugen.",
+    },
+    sv: {
+      name: "kyckling & ris meal prep-boks",
+      prepTime: "25 min",
+      ingredients: ["200g kycklingebryst", "150g brunt ris (kokt)", "100g broccoli", "1 msk olivolja", "Salt, peppar, hvidlökspulver"],
+      steps: ["krydda kycklingen med hvidlökspulver, salt och peppar.", "Gril eller stek kycklingen 6-7 min pr. side.", "ånga broccoli i 4 minuter.", "servera över kokte brunt ris med lidt olivolja."],
+      tip: "Forbered 4-5 bokse om søndagarn till hele träningsugen.",
     },
   },
   {
@@ -109,6 +139,20 @@ const recipesData: RecipeData[] = [
       steps: ["Forvarm ovnen til 200°C.", "Skær sød kartoffel i tern, vend i olivenolie, rist i 20 min.", "Krydre laksen med citron, dild og salt. Bag i 12-15 min.", "Damp asparges 3-4 min. Server sammen."],
       tip: "Laks giver omega-3 fedtsyrer, som er afgørende for ledrestitution og betændelseskontrol.",
     },
+    no: {
+      name: "laks & søtpotet-tallerken",
+      prepTime: "30 min",
+      ingredients: ["180g laksefilett", "1 mellom søtpotet", "100g asparges", "1 ss olivenolje", "sitronsaft", "dill"],
+      steps: ["Forvarm ovnen til 200°C.", "skjær søtpotet i tern, vend i olivenolje, rist i 20 min.", "krydre laksen med sitron, dill og salt. bak i 12-15 min.", "damp asparges 3-4 min. server sammen."],
+      tip: "laks gier omega-3 fedtsyrer, som er afgørende for ledrestitusjon og betændelseskontrol.",
+    },
+    sv: {
+      name: "lax & sötpotatis-tallerken",
+      prepTime: "30 min",
+      ingredients: ["180g laxefilätt", "1 mellan sötpotatis", "100g asparges", "1 msk olivolja", "citronsaft", "dill"],
+      steps: ["Forvärm ovnen till 200°C.", "skär sötpotatis i tern, vend i olivolja, rist i 20 min.", "krydda laxen med citron, dill och salt. baka i 12-15 min.", "ånga asparges 3-4 min. servera tillsammans."],
+      tip: "lax geer omega-3 fedtsyrer, som er afgørende for ledåterhämtning och betændelseskontrol.",
+    },
   },
   {
     id: "r4",
@@ -127,6 +171,20 @@ const recipesData: RecipeData[] = [
       ingredients: ["2 modne bananer", "150g havregryn", "2 spsk peanutbutter", "1 spsk honning", "30g mørke chokoladestykker"],
       steps: ["Mos bananerne i en skål.", "Rør havregryn, peanutbutter, honning og chokolade i.", "Rul til små kugler (ca. 12 stk.).", "Sæt i køleskabet 30 min inden servering."],
       tip: "Perfekt hurtig energi 1 time før træning.",
+    },
+    no: {
+      name: "banan-havre energikugler",
+      prepTime: "10 min",
+      ingredients: ["2 modne bananer", "150g havregryn", "2 ss peanøttsmør", "1 ss honning", "30g mørke sjokoladebiter"],
+      steps: ["Mos bananerne i en bolle.", "rør havregryn, peanøttsmør, honning og sjokolade i.", "Rul til små kugler (ca. 12 stk.).", "sett i kjøleskapet 30 min innen servering."],
+      tip: "perfekt hurtig energi 1 time før trening.",
+    },
+    sv: {
+      name: "banan-havre energikugler",
+      prepTime: "10 min",
+      ingredients: ["2 modne bananer", "150g havregryn", "2 msk jordnötssmör", "1 msk honung", "30g mørke chokladbitar"],
+      steps: ["Mos bananerne i en skål.", "rör havregryn, jordnötssmör, honung och choklad i.", "Rul till små kugler (ca. 12 stk.).", "sätt i kylskåpet 30 min innan serveraing."],
+      tip: "perfekt hurtig energi 1 timme före träning.",
     },
   },
   {
@@ -147,6 +205,20 @@ const recipesData: RecipeData[] = [
       steps: ["Rist brødet let.", "Smør mandelbutter på begge skiver.", "Skær banan i skiver ovenpå.", "Dryp honning over og drys kanel."],
       tip: "Spis 60-90 minutter før træning for optimal energi uden tyngde.",
     },
+    no: {
+      name: "før-trening toast",
+      prepTime: "5 min",
+      ingredients: ["2 skiver fullkornsbrød", "1 ss mandelbutter", "1 banan", "Lidt honning", "Et drys kanel"],
+      steps: ["Rist brødet lett.", "smør mandelbutter på begge skiver.", "skjær banan i skiver ovenpå.", "drypp honning over og drys kanel."],
+      tip: "Spis 60-90 minutter før trening for optimal energi uten tyngde.",
+    },
+    sv: {
+      name: "före-träning toast",
+      prepTime: "5 min",
+      ingredients: ["2 skivor fullkornsbröd", "1 msk mandelbutter", "1 banan", "Lidt honung", "Et strö kanel"],
+      steps: ["Rist brödet lätt.", "smör mandelbutter på begge skivor.", "skär banan i skivor ovenpå.", "ringla honung över och strö kanel."],
+      tip: "Spis 60-90 minuter före träning for optimal energi utan tyngde.",
+    },
   },
   {
     id: "r6",
@@ -165,6 +237,20 @@ const recipesData: RecipeData[] = [
       ingredients: ["1 scoop valleprotein", "1 banan", "200ml mælk", "1 spsk havregryn", "1 spsk peanutbutter", "Isterninger"],
       steps: ["Tilsæt alle ingredienser i en blender.", "Blend til det er glat (30 sekunder).", "Drik inden for 30 minutter efter træning."],
       tip: "2:1 kulhydrat-til-protein forholdet er optimalt for restitution efter intense sessioner.",
+    },
+    no: {
+      name: "protein-shake etter trening",
+      prepTime: "3 min",
+      ingredients: ["1 scoop valleprotein", "1 banan", "200ml melk", "1 ss havregryn", "1 ss peanøttsmør", "Isterninger"],
+      steps: ["tilsett alle ingredienser i en mikser.", "miks til det er glat (30 sekunder).", "Drik innen for 30 minutter etter trening."],
+      tip: "2:1 karbohydrat-til-protein forholdet er optimalt for restitusjon etter intense sessioner.",
+    },
+    sv: {
+      name: "protein-shake efter träning",
+      prepTime: "3 min",
+      ingredients: ["1 scoop valleprotein", "1 banan", "200ml mjölk", "1 msk havregryn", "1 msk jordnötssmör", "Isterninger"],
+      steps: ["tillsätt alle ingredienser i en mixer.", "mixa till det er glat (30 sekunder).", "Drik innan for 30 minuter efter träning."],
+      tip: "2:1 kolhydrat-till-protein forholdet er optimalt for återhämtning efter intense sessioner.",
     },
   },
   {
@@ -185,6 +271,20 @@ const recipesData: RecipeData[] = [
       steps: ["Bland kalkun, æg, rasp og krydderurter. Form kødboller.", "Steg kødboller i olivenolie til de er gyldne (8-10 min).", "Kog pasta efter anvisning.", "Lad kødboller simre i tomatsauce 5 min. Server over pasta."],
       tip: "Kalkun er et magert proteinalternativ, der er lettere at fordøje inden aftenhvile.",
     },
+    no: {
+      name: "kalkun-kødbolle pasta",
+      prepTime: "25 min",
+      ingredients: ["200g hakket kalkun", "150g fullkornspasta", "100ml tomatsauce", "1 egg", "30g rasp", "Hvidløk, basilikum, oregano"],
+      steps: ["bland kalkun, egg, rasp og krydderurter. Form kødboller.", "stek kødboller i olivenolje til de er gyldne (8-10 min).", "Kog pasta etter anvisning.", "Lad kødboller simre i tomatsauce 5 min. server over pasta."],
+      tip: "kalkun er et magert proteinalternativ, der er lettere at fordøje innen kveldhvile.",
+    },
+    sv: {
+      name: "kalkon-kødbolle pasta",
+      prepTime: "25 min",
+      ingredients: ["200g hakket kalkon", "150g fullkornspasta", "100ml tomatsauce", "1 ägg", "30g rasp", "Hvidlök, basilika, oregano"],
+      steps: ["blanda kalkon, ägg, rasp och krydderurter. Form kødboller.", "stek kødboller i olivolja till de er gyldne (8-10 min).", "Koch pasta efter anvisning.", "Lad kødboller simre i tomatsauce 5 min. servera över pasta."],
+      tip: "kalkon er et magert proteinalternativ, der er lättare at fordøje innan kvällhvile.",
+    },
   },
   {
     id: "r8",
@@ -203,6 +303,20 @@ const recipesData: RecipeData[] = [
       ingredients: ["3 æg", "50g spinat", "1/2 peberfrugt", "30g fetaost", "1 tsk olivenolie", "Salt, peber"],
       steps: ["Varm olivenolie i en pande.", "Svits hakket peber og spinat i 2 min.", "Pisk æggene, hæld i panden og rør forsigtigt.", "Top med smuldret feta. Krydre og server."],
       tip: "Æg indeholder alle essentielle aminosyrer — den perfekte proteinkilde for atleter.",
+    },
+    no: {
+      name: "Æg & grønnsaksrøregg",
+      prepTime: "10 min",
+      ingredients: ["3 egg", "50g spinat", "1/2 paprika", "30g fetaost", "1 ts olivenolje", "Salt, pepper"],
+      steps: ["varm olivenolje i en panne.", "Svits hakket pepper og spinat i 2 min.", "pisk egggene, hell i panden og rør forsiktigt.", "topp med smuldret feta. krydre og server."],
+      tip: "Æg indeholder alle essentielle aminosyrer — den perfekte proteinkilde for åleter.",
+    },
+    sv: {
+      name: "ägg & grönsaksrörägg",
+      prepTime: "10 min",
+      ingredients: ["3 ägg", "50g spenat", "1/2 paprika", "30g fetaost", "1 tsk olivolja", "Salt, peppar"],
+      steps: ["värm olivolja i en panna.", "Svits hakket peppar och spenat i 2 min.", "vispa ägggene, häll i panden och rör forsigtigt.", "toppaa med smuldret feta. krydda och servera."],
+      tip: "ägg indeholder alle essentielle aminosyrer — den perfekte proteinkilde för attleter.",
     },
   },
   {
@@ -223,6 +337,20 @@ const recipesData: RecipeData[] = [
       steps: ["Læg ris i en skål.", "Dræn tunen og læg ovenpå.", "Skær avocado i skiver ved siden af.", "Hæld sojasauce over, top med sesamfrø og snittet forårsløg."],
       tip: "Hav altid dåsetun på lager — det er det hurtigste proteinrige måltid du kan lave.",
     },
+    no: {
+      name: "tunfisk & avokado ris-bolle",
+      prepTime: "10 min",
+      ingredients: ["1 boks tunfisk (i vand)", "1/2 avokado", "150g kokte ris", "1 ss soyasaus", "sesamfrø", "Forårsløk"],
+      steps: ["Legg ris i en bolle.", "drener tunen og legg ovenpå.", "skjær avokado i skiver ved siden av.", "hell soyasaus over, topp med sesamfrø og snittet forårsløk."],
+      tip: "Hav alltid bokstunfisk på lager — det er det hurtigste proteinrike måltid du kan lave.",
+    },
+    sv: {
+      name: "tonfisk & avokado ris-skål",
+      prepTime: "10 min",
+      ingredients: ["1 burk tonfisk (i vand)", "1/2 avokado", "150g kokte ris", "1 msk sojasås", "sesamfrön", "Forårslök"],
+      steps: ["Lägg ris i en skål.", "låt rinna av tunen och lägg ovenpå.", "skär avokado i skivor ved siden av.", "häll sojasås över, toppaa med sesamfrön och snittet forårslök."],
+      tip: "Hav alltid burktonfisk på lager — det er det hurtigste proteinrika måltid du kan lave.",
+    },
   },
   {
     id: "r10",
@@ -241,6 +369,20 @@ const recipesData: RecipeData[] = [
       ingredients: ["180g oksemørbrad (skåret i tynde strimler)", "100g broccoli", "1 peberfrugt", "100g sukkererter", "2 spsk sojasauce", "1 spsk sesamolie", "1 fed hvidløg", "Kogte ris eller nudler"],
       steps: ["Varm sesamolie i en wok eller stor pande.", "Steg oksekødsstrimler på høj varme 2-3 min. Sæt til side.", "Tilsæt grøntsager og hvidløg, steg 3-4 min.", "Tilsæt oksekødet igen, hæld sojasauce over, vend sammen.", "Server over ris eller nudler."],
       tip: "Oksekød giver jern og B12 — essentielt for ilttransport under højintens træning.",
+    },
+    no: {
+      name: "biffs wok med grønnsaker",
+      prepTime: "20 min",
+      ingredients: ["180g oksemørbrad (skåret i tynde strimler)", "100g broccoli", "1 paprika", "100g sukkererter", "2 ss soyasaus", "1 ss sesamolje", "1 fed hvidløk", "kokte ris eller nudler"],
+      steps: ["varm sesamolje i en wok eller stor panne.", "stek biffsstrimler på høj varme 2-3 min. sett til side.", "tilsett grønnsaker og hvidløk, stek 3-4 min.", "tilsett biffet igen, hell soyasaus over, vend sammen.", "server over ris eller nudler."],
+      tip: "biff gier jern og B12 — essentielt for ilttransport under højintens trening.",
+    },
+    sv: {
+      name: "nötkötts wok med grönsaker",
+      prepTime: "20 min",
+      ingredients: ["180g oksemørbrad (skuret i tynde strimler)", "100g broccoli", "1 paprika", "100g sukkererter", "2 msk sojasås", "1 msk sesamolja", "1 fed hvidlök", "kokte ris eller nudler"],
+      steps: ["värm sesamolja i en wok eller stor panna.", "stek nötköttsstrimler på høj värme 2-3 min. sätt till side.", "tillsätt grönsaker och hvidlök, stek 3-4 min.", "tillsätt nötköttet igen, häll sojasås över, vend tillsammans.", "servera över ris eller nudler."],
+      tip: "nötkött geer jern och B12 — essentielt for ilttransport under højintens träning.",
     },
   },
   {
@@ -261,6 +403,20 @@ const recipesData: RecipeData[] = [
       steps: ["Bland havregryn, mælk, proteinpulver og chiafrø i et glas.", "Rør godt, læg låg på og stil i køleskabet natten over.", "Om morgenen, top med bær og honning.", "Spis koldt eller varm i mikrobølgeovn 2 min."],
       tip: "Forbered 3-4 glas søndag aften til ubesværede morgenmåltider i hverdagen.",
     },
+    no: {
+      name: "Overnight havregrøt",
+      prepTime: "5 min (+ natten over)",
+      ingredients: ["80g havregryn", "200ml melk", "1 scoop proteinpulver", "1 ss chiafrø", "100g blandesde bær", "1 ts honning"],
+      steps: ["bland havregryn, melk, proteinpulver og chiafrø i et glass.", "rør godt, legg låg på og stil i kjøleskapet natten over.", "Om morgenen, topp med bær og honning.", "Spis koldt eller varm i mikrobølgeovn 2 min."],
+      tip: "Forbered 3-4 glass søndag kveld til ubesværede morgenmåltider i hverdagern.",
+    },
+    sv: {
+      name: "Overnight havregröt",
+      prepTime: "5 min (+ natten över)",
+      ingredients: ["80g havregryn", "200ml mjölk", "1 scoop proteinpulver", "1 msk chiafrön", "100g blandasde bär", "1 tsk honung"],
+      steps: ["blanda havregryn, mjölk, proteinpulver och chiafrön i et glas.", "rör godt, lägg låg på och still i kylskåpet natten över.", "Om morgonen, toppaa med bär och honung.", "Spis koldt eller värm i mikrobølgeugn 2 min."],
+      tip: "Forbered 3-4 glas søndag kväll till ubesværede morgonmåltider i hverdagarn.",
+    },
   },
   {
     id: "r12",
@@ -279,6 +435,20 @@ const recipesData: RecipeData[] = [
       ingredients: ["150g grillet kyllingebryst", "1 stor fuldkornstortilla", "30g romansalat", "2 spsk Caesar dressing (light)", "15g parmesan", "Citronsaft"],
       steps: ["Skær grillet kylling i strimler.", "Læg tortillaen fladt, smør dressing på.", "Tilsæt salat, kylling og parmesan.", "Pres citronsaft over, rul stramt, skær i halve."],
       tip: "Wraps er nemme at spise mellem træningspas, når du har travlt.",
+    },
+    no: {
+      name: "kylling Caesar wrap",
+      prepTime: "10 min",
+      ingredients: ["150g grillett kyllingebryst", "1 stor fuldkornstortilla", "30g romansalat", "2 ss Caesar dressing (light)", "15g parmesan", "sitronsaft"],
+      steps: ["skjær grillett kylling i strimler.", "Legg tortillaen fladt, smør dressing på.", "tilsett salat, kylling og parmesan.", "press sitronsaft over, rul stramt, skjær i halve."],
+      tip: "Wraps er nemme å spise mellom treningspas, når du har travlt.",
+    },
+    sv: {
+      name: "kyckling Caesar wrap",
+      prepTime: "10 min",
+      ingredients: ["150g grillaet kycklingebryst", "1 stor fuldkornstortilla", "30g romansalat", "2 msk Caesar dressing (light)", "15g parmesan", "citronsaft"],
+      steps: ["skär grillaet kyckling i strimler.", "Lägg tortillaen fladt, smör dressing på.", "tillsätt salat, kyckling och parmesan.", "pressa citronsaft över, rul stramt, skär i halve."],
+      tip: "Wraps er nemme att spise mellan träningspas, når du har travlt.",
     },
   },
   {
@@ -299,6 +469,20 @@ const recipesData: RecipeData[] = [
       steps: ["Læg hytteost på en tallerken.", "Tilsæt ananasstykker og valnødder.", "Dryp honning over."],
       tip: "Hytteost er rig på kaseinprotein — ideel til langsom energifrigivelse mellem måltider.",
     },
+    no: {
+      name: "cottage cheese & frugttallerken",
+      prepTime: "3 min",
+      ingredients: ["200g cottage cheese", "100g ananasbiter", "1 ss honning", "10g valnøttder"],
+      steps: ["Legg cottage cheese på en tallerken.", "tilsett ananasbiter og valnøttder.", "drypp honning over."],
+      tip: "cottage cheese er rig på kaseinprotein — ideel til langsom energifrigielse mellom måltider.",
+    },
+    sv: {
+      name: "keso & frugttallerken",
+      prepTime: "3 min",
+      ingredients: ["200g keso", "100g ananasbitar", "1 msk honung", "10g valnötder"],
+      steps: ["Lägg keso på en tallerken.", "tillsätt ananasbitar och valnötder.", "ringla honung över."],
+      tip: "keso er rig på kaseinprotein — ideel till langsom energifrigeelse mellan måltider.",
+    },
   },
   {
     id: "r14",
@@ -317,6 +501,20 @@ const recipesData: RecipeData[] = [
       ingredients: ["1 banan", "150g mangostykker", "200ml appelsinjuice", "1 spsk havregryn", "1 tsk honning"],
       steps: ["Tilsæt alle ingredienser i en blender.", "Blend til det er glat.", "Drik 45-60 minutter før træning."],
       tip: "Hurtigt fordøjelige kulhydrater fra frugt giver hurtig energi uden mavebesvær.",
+    },
+    no: {
+      name: "energi-smoothie før trening",
+      prepTime: "5 min",
+      ingredients: ["1 banan", "150g mangobiter", "200ml appelsinjuice", "1 ss havregryn", "1 ts honning"],
+      steps: ["tilsett alle ingredienser i en mikser.", "miks til det er glat.", "Drik 45-60 minutter før trening."],
+      tip: "Hurtigt fordøjelige karbohydrater fra frugt gier hurtig energi uten mavebesvær.",
+    },
+    sv: {
+      name: "energi-smoothie före träning",
+      prepTime: "5 min",
+      ingredients: ["1 banan", "150g mangobitar", "200ml appelsinjuice", "1 msk havregryn", "1 tsk honung"],
+      steps: ["tillsätt alle ingredienser i en mixer.", "mixa till det er glat.", "Drik 45-60 minuter före träning."],
+      tip: "Hurtigt fordøjelige kolhydrater fra frugt geer hurtig energi utan mavebesvær.",
     },
   },
   {
@@ -337,6 +535,20 @@ const recipesData: RecipeData[] = [
       steps: ["Skær gulerod og selleri i tern. Hak hvidløg.", "Kog kylling i bouillon i 15 min. Tag op og pil i stykker.", "Tilsæt grøntsager til bouillonen, kog 5 min.", "Tilsæt nudler, kog til de er møre. Tilsæt kylling igen.", "Krydre og top med persille."],
       tip: "Varm suppe rehydrerer, genopfylder natrium og leverer protein — det ultimative restitutionsmåltid.",
     },
+    no: {
+      name: "restitusjons-kyllingesuppe",
+      prepTime: "30 min",
+      ingredients: ["200g kyllingebryst", "1 gulerod", "1 bladselleri", "100g egggenudler", "500ml kyllingebouillon", "Hvidløk, salt, pepper, persille"],
+      steps: ["skjær gulerod og selleri tern. Hak hvidløk.", "Kog kylling i bouillon i 15 min. Tag op og pil i biter.", "tilsett grønnsaker til bouillonen, kog 5 min.", "tilsett nudler, kog til de er møre. tilsett kylling igen.", "krydre og topp med persille."],
+      tip: "varm suppe rehydrerer, genopfylder natrium og leverer protein — det ultimative restitusjonsmåltid.",
+    },
+    sv: {
+      name: "återhämtnings-kycklingesuppe",
+      prepTime: "30 min",
+      ingredients: ["200g kycklingebryst", "1 gulerod", "1 bladselleri", "100g ägggenudler", "500ml kycklingebouillon", "Hvidlök, salt, peppar, persilja"],
+      steps: ["skär gulerod och selleri i tern. Hak hvidlök.", "Koch kyckling i bouillon i 15 min. Tag op och pil i bitar.", "tillsätt grönsaker till bouillonen, koch 5 min.", "tillsätt nudler, koch till de er møre. tillsätt kyckling igen.", "krydda och toppaa med persilja."],
+      tip: "värm suppe rehydrerer, genopfylder natrium och leverer protein — det ultimative återhämtningsmåltid.",
+    },
   },
   {
     id: "r16",
@@ -355,6 +567,20 @@ const recipesData: RecipeData[] = [
       ingredients: ["100g hummus", "1 gulerod", "1 agurk", "1 peberfrugt", "2 fuldkornscrackers"],
       steps: ["Skær grøntsagerne i stave.", "Hæld hummus i en lille skål.", "Arranger grøntsager og crackers rundt om hummus.", "Dyp og nyd."],
       tip: "Plantebaserede snacks holder energien stabil uden nedturen fra forarbejdede fødevarer.",
+    },
+    no: {
+      name: "Hummus & grønnsaksstave",
+      prepTime: "5 min",
+      ingredients: ["100g hummus", "1 gulerod", "1 agurk", "1 paprika", "2 fuldkornscrackers"],
+      steps: ["skjær grønnsakerne i stave.", "hell hummus i en lille bolle.", "Arranger grønnsaker og crackers rundt om hummus.", "Dyp og nyd."],
+      tip: "Plantebaserede snacks holder energien stabil uten nedturen fra forarbeidde fødevarer.",
+    },
+    sv: {
+      name: "Hummus & grönsaksstave",
+      prepTime: "5 min",
+      ingredients: ["100g hummus", "1 gulerod", "1 gurka", "1 paprika", "2 fuldkornscrackers"],
+      steps: ["skär grönsakerne i stave.", "häll hummus i en lille skål.", "Arranger grönsaker och crackers rundt om hummus.", "Dyp och nyd."],
+      tip: "Plantebaserede snacks holder energien stabil utan nedturen fra forarbetede fødevarer.",
     },
   },
   {
@@ -375,6 +601,20 @@ const recipesData: RecipeData[] = [
       steps: ["Steg kylling i en pande med teriyakisauce, 5-6 min pr. side.", "Skær kyllingen i strimler.", "Byg skålen: ris i bunden, kylling, edamame, revet gulerod.", "Hæld resten af saucen over, top med sesamfrø."],
       tip: "Jasminris fordøjes hurtigt — perfekt til at genopfylde glykogenlagrene efter morgentræning.",
     },
+    no: {
+      name: "Teriyaki kylling ris-bolle",
+      prepTime: "20 min",
+      ingredients: ["200g kyllingelår (udbenet)", "150g kokte jasminris", "50g edamame", "1 gulerod (revet)", "3 ss teriyakisauce", "sesamfrø"],
+      steps: ["stek kylling i en panne med teriyakisauce, 5-6 min pr. side.", "skjær kyllingen i strimler.", "Byg bolleen: ris i bunden, kylling, edamame, revet gulerod.", "hell resten av saucen over, topp med sesamfrø."],
+      tip: "Jasminris fordøjes hurtigt — perfekt til å genopfylde glykogenlagrene etter morgentrening.",
+    },
+    sv: {
+      name: "Teriyaki kyckling ris-skål",
+      prepTime: "20 min",
+      ingredients: ["200g kycklingelår (udbenet)", "150g kokte jasminris", "50g edamame", "1 gulerod (revet)", "3 msk teriyakisauce", "sesamfrön"],
+      steps: ["stek kyckling i en panna med teriyakisauce, 5-6 min pr. side.", "skär kycklingen i strimler.", "Byg skålarn: ris i bunden, kyckling, edamame, revet gulerod.", "häll resten av saucen över, toppaa med sesamfrön."],
+      tip: "Jasminris fordøjes hurtigt — perfekt till att genopfylde glykogenlagrene efter morgonträning.",
+    },
   },
   {
     id: "r18",
@@ -393,6 +633,20 @@ const recipesData: RecipeData[] = [
       ingredients: ["1 banan", "2 æg", "30g havregryn", "1 scoop proteinpulver", "1 tsk bagepulver", "Bær til topping"],
       steps: ["Blend banan, æg, havregryn, proteinpulver og bagepulver.", "Varm en non-stick pande på medium varme.", "Hæld små cirkler, steg 2 min pr. side.", "Stak pandekagerne og top med friske bær."],
       tip: "En morgenmad på træningsdage, der smager som en dessert men giver energi som et præstationsmåltid.",
+    },
+    no: {
+      name: "protein-pandekager",
+      prepTime: "15 min",
+      ingredients: ["1 banan", "2 egg", "30g havregryn", "1 scoop proteinpulver", "1 ts bakepulver", "bær til topping"],
+      steps: ["miks banan, egg, havregryn, proteinpulver og bakepulver.", "varm en non-stick panne på medium varme.", "hell små cirkler, stek 2 min pr. side.", "Stak pandekagerne og topp med friske bær."],
+      tip: "En lunsj på treningsdager, der smager som en dessert men gier energi som et præstationsmåltid.",
+    },
+    sv: {
+      name: "protein-pandekager",
+      prepTime: "15 min",
+      ingredients: ["1 banan", "2 ägg", "30g havregryn", "1 scoop proteinpulver", "1 tsk bakaepulver", "bär till toppaing"],
+      steps: ["mixa banan, ägg, havregryn, proteinpulver och bakaepulver.", "värm en non-stick panna på medium värme.", "häll små cirkler, stek 2 min pr. side.", "Stak pandekagerne och toppaa med friske bär."],
+      tip: "En frukost på träningsdagar, der smager som en dessert men geer energi som et præstationsmåltid.",
     },
   },
   {
@@ -413,6 +667,20 @@ const recipesData: RecipeData[] = [
       steps: ["Svits hakket løg og hvidløg i olivenolie.", "Tilsæt karrypulver, rør i 1 min.", "Tilsæt linser, tomater og kokosmælk. Lad simre 15-18 min.", "Rør spinat i til det falder sammen.", "Server over ris."],
       tip: "Linser er et kraftcenter — høj protein, høj fiber og fulde af jern til plantebaseret restitution.",
     },
+    no: {
+      name: "Linse- og grønnsakscurry",
+      prepTime: "25 min",
+      ingredients: ["200g røde linser", "1 boks kokosmelk (light)", "200g hakkede tomater", "1 løk", "2 fed hvidløk", "1 ss karrypulver", "100g spinat", "kokte ris"],
+      steps: ["Svits hakket løk og hvidløk i olivenolje.", "tilsett karrypulver, rør i 1 min.", "tilsett linser, tomater og kokosmelk. Lad simre 15-18 min.", "rør spinat i til det falder sammen.", "server over ris."],
+      tip: "linser er et kraftcenter — høj protein, høj fiber og fulde av jern til plantebaseret restitusjon.",
+    },
+    sv: {
+      name: "Linse- och grönsakscurry",
+      prepTime: "25 min",
+      ingredients: ["200g røde linser", "1 burk kokosmjölk (light)", "200g hakkede tomater", "1 lök", "2 fed hvidlök", "1 msk karrypulver", "100g spenat", "kokte ris"],
+      steps: ["Svits hakket lök och hvidlök i olivolja.", "tillsätt karrypulver, rör i 1 min.", "tillsätt linser, tomater och kokosmjölk. Lad simre 15-18 min.", "rör spenat i till det falder tillsammans.", "servera över ris."],
+      tip: "linser er et kraftcenter — høj protein, høj fiber och fulde av jern till plantebaseret återhämtning.",
+    },
   },
   {
     id: "r20",
@@ -431,6 +699,20 @@ const recipesData: RecipeData[] = [
       ingredients: ["400ml sødmælk", "2 spsk kakaopulver", "1 spsk honning", "Et drys salt"],
       steps: ["Varm mælken let (eller brug kold).", "Pisk kakaopulver, honning og salt i.", "Drik inden for 30 minutter efter træning."],
       tip: "Forskning viser, at chokolademælk matcher dyre restitutionsdrikke til genopfyldning af glykogen efter træning.",
+    },
+    no: {
+      name: "sjokolademelk-restitusjon etter trening",
+      prepTime: "2 min",
+      ingredients: ["400ml sødmelk", "2 ss kakaopulver", "1 ss honning", "Et drys salt"],
+      steps: ["varm melken lett (eller brug kold).", "pisk kakaopulver, honning og salt i.", "Drik innen for 30 minutter etter trening."],
+      tip: "Forskning viser, at sjokolademelk matcher dyre restitusjonsdrikke til genopfyldning av glykogen etter trening.",
+    },
+    sv: {
+      name: "chokladmjölk-återhämtning efter träning",
+      prepTime: "2 min",
+      ingredients: ["400ml sødmjölk", "2 msk kakaopulver", "1 msk honung", "Et strö salt"],
+      steps: ["värm mjölken lätt (eller brug kold).", "vispa kakaopulver, honung och salt i.", "Drik innan for 30 minuter efter träning."],
+      tip: "Forskning viser, at chokladmjölk matcher dyre återhämtningsdrikke till genopfyldning av glykogen efter träning.",
     },
   },
   // ─── r21–r40: 20 additional athlete recipes ───
@@ -452,6 +734,20 @@ const recipesData: RecipeData[] = [
       steps: ["Bland havregryn, proteinpulver, mælk og chiafrø i et glas.", "Rør mandelbutter i.", "Stil i køleskabet natten over.", "Top med kanel og spis koldt eller varmt."],
       tip: "Proteinpulver i overnight oats gør en simpel morgenmad til et 28g protein-restitutionsmåltid.",
     },
+    no: {
+      name: "Overnight protein-havregryn",
+      prepTime: "5 min (+ natten over)",
+      ingredients: ["80g havregryn", "1 scoop vanilje proteinpulver", "200ml mandelmelk", "1 ss chiafrø", "1 ss mandelbutter", "kanel"],
+      steps: ["bland havregryn, proteinpulver, melk og chiafrø i et glass.", "rør mandelbutter i.", "Stil i kjøleskapet natten over.", "topp med kanel og spis koldt eller varmt."],
+      tip: "proteinpulver i overnight oats gjør en simpel lunsj til et 28g protein-restitusjonsmåltid.",
+    },
+    sv: {
+      name: "Overnight protein-havregryn",
+      prepTime: "5 min (+ natten över)",
+      ingredients: ["80g havregryn", "1 scoop vanilje proteinpulver", "200ml mandelmjölk", "1 msk chiafrön", "1 msk mandelbutter", "kanel"],
+      steps: ["blanda havregryn, proteinpulver, mjölk och chiafrön i et glas.", "rör mandelbutter i.", "Still i kylskåpet natten över.", "toppaa med kanel och spis koldt eller värmt."],
+      tip: "proteinpulver i overnight oats gör en simpel frukost till et 28g protein-återhämtningsmåltid.",
+    },
   },
   {
     id: "r22",
@@ -470,6 +766,20 @@ const recipesData: RecipeData[] = [
       ingredients: ["3 æg", "1 fuldkornstortilla", "1/2 avocado", "Cherrytomater", "Salt, peber", "Chilisauce (valgfrit)"],
       steps: ["Lav røræg i en non-stick pande.", "Varm tortillaen kort.", "Smør moset avocado på tortillaen.", "Tilsæt æg, halverede tomater og krydre. Rul sammen."],
       tip: "Avocado tilføjer sunde enkeltumættede fedtsyrer, der støtter hormonproduktionen hos atleter.",
+    },
+    no: {
+      name: "røregg & avokado-wrap",
+      prepTime: "8 min",
+      ingredients: ["3 egg", "1 fuldkornstortilla", "1/2 avokado", "Cherrytomater", "Salt, pepper", "Chilisauce (valgfrit)"],
+      steps: ["Lav røregg i en non-stick panne.", "varm tortillaen kort.", "smør moset avokado på tortillaen.", "tilsett egg, halverede tomater og krydre. Rul sammen."],
+      tip: "avokado tilføjer sunne enkeltumættede fedtsyrer, der støtter hormonproduktionen hos utøvere.",
+    },
+    sv: {
+      name: "rörägg & avokado-wrap",
+      prepTime: "8 min",
+      ingredients: ["3 ägg", "1 fuldkornstortilla", "1/2 avokado", "Cherrytomater", "Salt, peppar", "Chilisauce (valgfrit)"],
+      steps: ["Lav rörägg i en non-stick panna.", "värm tortillaen kort.", "smör moset avokado på tortillaen.", "tillsätt ägg, halverede tomater och krydda. Rul tillsammans."],
+      tip: "avokado tilføjer hälsosamma enkeltumættede fedtsyrer, der støtter hormonproduktionen hos atleter.",
     },
   },
   {
@@ -490,6 +800,20 @@ const recipesData: RecipeData[] = [
       steps: ["Forvarm ovnen til 180°C.", "Mos bananerne, pisk æggene i.", "Fold havremel, proteinpulver og bagepulver i.", "Hæld i muffinform (giver 6 stk). Bag 18-20 min."],
       tip: "Bag på hviledage og hav morgenmad klar til hele ugen.",
     },
+    no: {
+      name: "banan protein-muffins",
+      prepTime: "25 min",
+      ingredients: ["2 modne bananer", "2 egg", "60g havremel", "1 scoop proteinpulver", "1 ts bakepulver", "1 ss honning"],
+      steps: ["Forvarm ovnen til 180°C.", "Mos bananerne, pisk egggene i.", "Fold havremel, proteinpulver og bakepulver i.", "hell i muffinform (gier 6 stk). bak 18-20 min."],
+      tip: "bak på hviledager og hav lunsj klar til hele ugen.",
+    },
+    sv: {
+      name: "banan protein-muffins",
+      prepTime: "25 min",
+      ingredients: ["2 modne bananer", "2 ägg", "60g havremel", "1 scoop proteinpulver", "1 tsk bakaepulver", "1 msk honung"],
+      steps: ["Forvärm ovnen till 180°C.", "Mos bananerne, vispa ägggene i.", "Fold havremel, proteinpulver och bakaepulver i.", "häll i muffinform (geer 6 stk). baka 18-20 min."],
+      tip: "baka på hviledagar och hav frukost klar till hele ugen.",
+    },
   },
   {
     id: "r24",
@@ -508,6 +832,20 @@ const recipesData: RecipeData[] = [
       ingredients: ["80g havregryn", "150ml æblejuice", "100g græsk yoghurt", "1 æble (revet)", "20g rosiner", "10g solsikkefrø"],
       steps: ["Bland havregryn med æblejuice i et glas.", "Stil i køleskabet natten over.", "Om morgenen, rør yoghurt og revet æble i.", "Top med rosiner og solsikkefrø."],
       tip: "Den schweiziske atletklassiker — langsom energifrigivelse der holder dig kørende hele morgentræningen.",
+    },
+    no: {
+      name: "Bircher müsli",
+      prepTime: "10 min (+ natten over)",
+      ingredients: ["80g havregryn", "150ml eplejuice", "100g gresk yoghurt", "1 eple (revet)", "20g rosiner", "10g solsikkefrø"],
+      steps: ["bland havregryn med eplejuice i et glass.", "Stil i kjøleskapet natten over.", "Om morgenen, rør yoghurt og revet eple i.", "topp med rosiner og solsikkefrø."],
+      tip: "Den schweiziske atletklassiker — langsom energifrigielse der holder dig kørende hele morgentreningen.",
+    },
+    sv: {
+      name: "Bircher müsli",
+      prepTime: "10 min (+ natten över)",
+      ingredients: ["80g havregryn", "150ml äpplejuice", "100g grekisk yoghurt", "1 äpple (revet)", "20g russin", "10g solsikkefrø"],
+      steps: ["blanda havregryn med äpplejuice i et glas.", "Still i kylskåpet natten över.", "Om morgonen, rör yoghurt och revet äpple i.", "toppaa med russin och solsikkefrø."],
+      tip: "Den schweiziske atletklassiker — langsom energifrigeelse der holder dig kørende hele morgonträningen.",
     },
   },
   {
@@ -528,6 +866,20 @@ const recipesData: RecipeData[] = [
       steps: ["Brun kalkunen med spidskommen og chilipulver.", "Byg skålen: quinoa i bunden, kalkun, sorte bønner, majs.", "Skær avocado i skiver ovenpå.", "Pres lime over det hele."],
       tip: "Quinoa er et komplet protein — kombineret med kalkun leverer denne skål alle essentielle aminosyrer.",
     },
+    no: {
+      name: "kalkun & quinoa power-bolle",
+      prepTime: "20 min",
+      ingredients: ["200g hakket kalkun", "150g kokt quinoa", "100g sorte bønner", "1/2 avokado", "50g majs", "Lime, spidskommen, chilipulver"],
+      steps: ["Brun kalkunen med spidskommen og chilipulver.", "Byg bolleen: quinoa i bunden, kalkun, sorte bønner, majs.", "skjær avokado i skiver ovenpå.", "press lime over det hele."],
+      tip: "quinoa er et komplett protein — kombineret med kalkun leverer denne bolle alle essentielle aminosyrer.",
+    },
+    sv: {
+      name: "kalkon & quinoa power-skål",
+      prepTime: "20 min",
+      ingredients: ["200g hakket kalkon", "150g kokt quinoa", "100g sorte bönor", "1/2 avokado", "50g majs", "Lime, spidskommen, chilipulver"],
+      steps: ["Brun kalkonen med spidskommen och chilipulver.", "Byg skålarn: quinoa i bunden, kalkon, sorte bönor, majs.", "skär avokado i skivor ovenpå.", "pressa lime över det hele."],
+      tip: "quinoa er et komplätt protein — kombineret med kalkon leverer denne skål alle essentielle aminosyrer.",
+    },
   },
   {
     id: "r26",
@@ -546,6 +898,20 @@ const recipesData: RecipeData[] = [
       ingredients: ["1 dåse tun (i olivenolie)", "2 hårdkogte æg", "100g grønne bønner", "8 cherrytomater", "6 oliven", "1 spsk Dijon-vinaigrette"],
       steps: ["Blancher grønne bønner 3 min, afkøl i isvand.", "Arranger tun, halverede æg, bønner, tomater og oliven på en tallerken.", "Hæld vinaigrette over.", "Krydre med salt og peber."],
       tip: "En middelhavs-klassiker fyldt med omega-3, protein og sunde fedtsyrer til vedvarende træningsenergi.",
+    },
+    no: {
+      name: "tunfisk Niçoise-salat",
+      prepTime: "15 min",
+      ingredients: ["1 boks tunfisk (i olivenolje)", "2 hardkokte egg", "100g grønne bønner", "8 cherrytomater", "6 oliven", "1 ss Dijon-vinaigrette"],
+      steps: ["Blancher grønne bønner 3 min, avkjøl isvand.", "Arranger tunfisk, halverede egg, bønner, tomater og oliven på en tallerken.", "hell vinaigrette over.", "krydre med salt og pepper."],
+      tip: "En middelhavs-klassiker fyldt med omega-3, protein og sunne fedtsyrer til vedvarende treningsenergi.",
+    },
+    sv: {
+      name: "tonfisk Niçoise-salat",
+      prepTime: "15 min",
+      ingredients: ["1 burk tonfisk (i olivolja)", "2 hårdkokte ägg", "100g grønne bönor", "8 cherrytomater", "6 oliven", "1 msk Dijon-vinaigrette"],
+      steps: ["Blancher grønne bönor 3 min, kyl i isvand.", "Arranger tonfisk, halverede ägg, bönor, tomater och oliven på en tallerken.", "häll vinaigrette över.", "krydda med salt och peppar."],
+      tip: "En middelhavs-klassiker fyldt med omega-3, protein och hälsosamma fedtsyrer till vedvarende träningsenergi.",
     },
   },
   {
@@ -566,6 +932,20 @@ const recipesData: RecipeData[] = [
       steps: ["Skær sød kartoffel i tern, rist ved 200°C i 20 min.", "Varm sorte bønner.", "Byg skålen: ris, sød kartoffel, bønner.", "Top med salsa, yoghurt, koriander og lime."],
       tip: "Et plantebaseret kraftcenter — sorte bønner og sød kartoffel giver fiber, jern og langsomt forbrændende kulhydrater.",
     },
+    no: {
+      name: "Sorte bønner & søtpotet-bolle",
+      prepTime: "25 min",
+      ingredients: ["1 mellom søtpotet", "150g sorte bønner", "100g kokte ris", "50g salsa", "30g gresk yoghurt", "koriander, lime"],
+      steps: ["skjær søtpotet i tern, rist ved 200°C i 20 min.", "varm sorte bønner.", "Byg bolleen: ris, søtpotet, bønner.", "topp med salsa, yoghurt, koriander og lime."],
+      tip: "Et plantebaseret kraftcenter — sorte bønner og søtpotet gier fiber, jern og langsomt forbrændende karbohydrater.",
+    },
+    sv: {
+      name: "Sorte bönor & sötpotatis-skål",
+      prepTime: "25 min",
+      ingredients: ["1 mellan sötpotatis", "150g sorte bönor", "100g kokte ris", "50g salsa", "30g grekisk yoghurt", "koriander, lime"],
+      steps: ["skär sötpotatis i tern, rist ved 200°C i 20 min.", "värm sorte bönor.", "Byg skålarn: ris, sötpotatis, bönor.", "toppaa med salsa, yoghurt, koriander och lime."],
+      tip: "Et plantebaseret kraftcenter — sorte bönor och sötpotatis geer fiber, jern och langsomt forbrændende kolhydrater.",
+    },
   },
   {
     id: "r28",
@@ -584,6 +964,20 @@ const recipesData: RecipeData[] = [
       ingredients: ["150g grillet kyllingebryst", "120g fuldkorns fusilli (kogt)", "2 spsk pesto", "50g cherrytomater", "30g mozzarella", "Frisk basilikum"],
       steps: ["Skær grillet kylling i skiver.", "Vend pasta med pesto.", "Tilsæt kylling, halverede tomater og revet mozzarella.", "Pynt med frisk basilikum."],
       tip: "Fantastisk kold eller varm — perfekt til meal prep-bokse mellem dobbelte træningspas.",
+    },
+    no: {
+      name: "kylling pesto pasta-salat",
+      prepTime: "15 min",
+      ingredients: ["150g grillett kyllingebryst", "120g fuldkorns fusilli (kokt)", "2 ss pesto", "50g cherrytomater", "30g mozzarella", "Frisk basilikum"],
+      steps: ["skjær grillett kylling i skiver.", "Vend pasta med pesto.", "tilsett kylling, halverede tomater og revet mozzarella.", "Pynt med frisk basilikum."],
+      tip: "Fantastisk kold eller varm — perfekt til meal prep-bokse mellom dobbelte treningspas.",
+    },
+    sv: {
+      name: "kyckling pesto pasta-salat",
+      prepTime: "15 min",
+      ingredients: ["150g grillaet kycklingebryst", "120g fuldkorns fusilli (kokt)", "2 msk pesto", "50g cherrytomater", "30g mozzarella", "Frisk basilika"],
+      steps: ["skär grillaet kyckling i skivor.", "Vend pasta med pesto.", "tillsätt kyckling, halverede tomater och revet mozzarella.", "Pynt med frisk basilika."],
+      tip: "Fantastisk kold eller värm — perfekt till meal prep-bokse mellan dobbelte träningspas.",
     },
   },
   {
@@ -604,6 +998,20 @@ const recipesData: RecipeData[] = [
       steps: ["Forvarm ovnen til 200°C.", "Vend hakkede grøntsager med olivenolie og krydderier, rist 15 min.", "Krydre laksen med salt og peber.", "Tilsæt laks til bradepanden, rist yderligere 12 min."],
       tip: "At riste grøntsager med laks på én plade sparer tid og bevarer næringsstofferne bedst muligt.",
     },
+    no: {
+      name: "grillett laks med ristede grønnsaker",
+      prepTime: "25 min",
+      ingredients: ["180g laksefilett", "1 squash", "1 paprika", "100g cherrytomater", "2 ss olivenolje", "Herbes de Provence"],
+      steps: ["Forvarm ovnen til 200°C.", "Vend hakkede grønnsaker med olivenolje og krydderer, rist 15 min.", "krydre laksen med salt og pepper.", "tilsett laks til langpannen, rist yderligere 12 min."],
+      tip: "At riste grønnsaker med laks på én plade sparer tid og bevarer næringsstofferne bedst muligt.",
+    },
+    sv: {
+      name: "grillaet lax med ristede grönsaker",
+      prepTime: "25 min",
+      ingredients: ["180g laxefilätt", "1 squash", "1 paprika", "100g cherrytomater", "2 msk olivolja", "Herbes de Provence"],
+      steps: ["Forvärm ovnen till 200°C.", "Vend hakkede grönsaker med olivolja och kryddaer, rist 15 min.", "krydda laxen med salt och peppar.", "tillsätt lax till långpannan, rist yderligere 12 min."],
+      tip: "At riste grönsaker med lax på én plade sparer tid och bevarer næringsstofferne bedst muligt.",
+    },
   },
   {
     id: "r30",
@@ -622,6 +1030,20 @@ const recipesData: RecipeData[] = [
       ingredients: ["200g kyllingebryst", "100g græsk yoghurt", "2 spsk tikka-paste", "150g basmatiris", "Citronsaft", "Frisk koriander"],
       steps: ["Mariner kylling i yoghurt og tikka-paste i 10 min.", "Gril eller steg kyllingen 6-7 min pr. side.", "Kog basmatiris.", "Skær kyllingen i skiver, server over ris med citron og koriander."],
       tip: "Yoghurt-baserede marinader mørner kyllingen og tilføjer protein — en dobbelt gevinst for atleter.",
+    },
+    no: {
+      name: "Chicken tikka med basmatiris",
+      prepTime: "30 min",
+      ingredients: ["200g kyllingebryst", "100g gresk yoghurt", "2 ss tikka-paste", "150g basmatiris", "sitronsaft", "Frisk koriander"],
+      steps: ["Mariner kylling i yoghurt og tikka-paste i 10 min.", "Gril eller stek kyllingen 6-7 min pr. side.", "Kog basmatiris.", "skjær kyllingen i skiver, server over ris med sitron og koriander."],
+      tip: "yoghurt-baserede marinader mørner kyllingen og tilføjer protein — en dobbelt gevinst for åleter.",
+    },
+    sv: {
+      name: "Chicken tikka med basmatiris",
+      prepTime: "30 min",
+      ingredients: ["200g kycklingebryst", "100g grekisk yoghurt", "2 msk tikka-paste", "150g basmatiris", "citronsaft", "Frisk koriander"],
+      steps: ["Mariner kyckling i yoghurt och tikka-paste i 10 min.", "Gril eller stek kycklingen 6-7 min pr. side.", "Koch basmatiris.", "skär kycklingen i skivor, servera över ris med citron och koriander."],
+      tip: "yoghurt-baserede marinader mørner kycklingen och tilføjer protein — en dobbelt gevinst för attleter.",
     },
   },
   {
@@ -642,6 +1064,20 @@ const recipesData: RecipeData[] = [
       steps: ["Kog pasta al dente.", "Svits hvidløg i olivenolie, tilsæt rejer, steg 3 min.", "Tilsæt tern af squash og halverede tomater, steg 3 min.", "Vend med pasta. Pynt med persille."],
       tip: "Rejer er en af de magreste proteinkilder — høj protein, minimal fedt, hurtig at tilberede.",
     },
+    no: {
+      name: "Rejepasta primavera",
+      prepTime: "20 min",
+      ingredients: ["150g reker (pillede)", "120g penne pasta", "1 squash", "100g cherrytomater", "2 fed hvidløk", "1 ss olivenolje", "Frisk persille"],
+      steps: ["Kog pasta al dente.", "Svits hvidløk i olivenolje, tilsett reker, stek 3 min.", "tilsett tern av squash og halverede tomater, stek 3 min.", "Vend med pasta. Pynt med persille."],
+      tip: "reker er en av de magreste proteinkilder — høj protein, minimal fett, hurtig å tilberede.",
+    },
+    sv: {
+      name: "Rejepasta primavera",
+      prepTime: "20 min",
+      ingredients: ["150g räkor (pillede)", "120g penne pasta", "1 squash", "100g cherrytomater", "2 fed hvidlök", "1 msk olivolja", "Frisk persilja"],
+      steps: ["Koch pasta al dente.", "Svits hvidlök i olivolja, tillsätt räkor, stek 3 min.", "tillsätt tern av squash och halverede tomater, stek 3 min.", "Vend med pasta. Pynt med persilja."],
+      tip: "räkor er en av de magreste proteinkilder — høj protein, minimal fett, hurtig att tilberede.",
+    },
   },
   {
     id: "r32",
@@ -660,6 +1096,20 @@ const recipesData: RecipeData[] = [
       ingredients: ["200g magert hakket oksekød", "150g fuldkornsspaghetti", "200g knuste tomater", "1 gulerod (i tern)", "1 bladselleri (i tern)", "1 løg", "Hvidløg, oregano, basilikum"],
       steps: ["Svits løg, gulerod, selleri og hvidløg.", "Tilsæt oksekød, brun i 5 min.", "Hæld tomater i, krydre med urter. Lad simre 20 min.", "Kog spaghetti. Server med sauce ovenpå."],
       tip: "Mager bolognese leverer jern, zink og B-vitaminer, der er afgørende for atletisk præstation.",
+    },
+    no: {
+      name: "biffs-bolognese med fuldkornsspaghetti",
+      prepTime: "35 min",
+      ingredients: ["200g magert hakket biff", "150g fuldkornsspaghetti", "200g knuste tomater", "1 gulerod (i tern)", "1 bladselleri (i tern)", "1 løk", "Hvidløk, oregano, basilikum"],
+      steps: ["Svits løk, gulerod, selleri og hvidløk.", "tilsett biff, brun i 5 min.", "hell tomater i, krydre med urter. Lad simre 20 min.", "Kog spaghetti. server med sauce ovenpå."],
+      tip: "Mager bolognese leverer jern, zink og B-vitaminer, der er afgørende for åletisk præstation.",
+    },
+    sv: {
+      name: "nötkötts-bolognese med fuldkornsspaghetti",
+      prepTime: "35 min",
+      ingredients: ["200g magert hakket nötkött", "150g fuldkornsspaghetti", "200g knuste tomater", "1 gulerod (i tern)", "1 bladselleri (i tern)", "1 lök", "Hvidlök, oregano, basilika"],
+      steps: ["Svits lök, gulerod, selleri och hvidlök.", "tillsätt nötkött, brun i 5 min.", "häll tomater i, krydda med urter. Lad simre 20 min.", "Koch spaghetti. servera med sauce ovenpå."],
+      tip: "Mager bolognese leverer jern, zink och B-vitaminer, der er afgørende för attletisk præstation.",
     },
   },
   {
@@ -680,6 +1130,20 @@ const recipesData: RecipeData[] = [
       steps: ["Hæld hytteost i et bæger.", "Tilsæt ananasstykker.", "Dryp honning over og pynt med mynte."],
       tip: "Kasein i hytteost fordøjes langsomt — spis dette før sengetid for at støtte muskelreparation om natten.",
     },
+    no: {
+      name: "cottage cheese & ananas-begger",
+      prepTime: "2 min",
+      ingredients: ["200g fedtfattig cottage cheese", "80g ananasbiter", "1 ts honning", "Mynteblade"],
+      steps: ["hell cottage cheese i et begger.", "tilsett ananasbiter.", "drypp honning over og pynt med mynte."],
+      tip: "Kasein i cottage cheese fordøjes langsomt — spis dette før sengetid for å støtte muskelreparation om natten.",
+    },
+    sv: {
+      name: "keso & ananas-bägger",
+      prepTime: "2 min",
+      ingredients: ["200g fedtfattig keso", "80g ananasbitar", "1 tsk honung", "Mynteblade"],
+      steps: ["häll keso i et bägger.", "tillsätt ananasbitar.", "ringla honung över och pynt med mynte."],
+      tip: "Kasein i keso fordøjes langsomt — spis dette före sengetid för att støtte muskelreparation om natten.",
+    },
   },
   {
     id: "r34",
@@ -698,6 +1162,20 @@ const recipesData: RecipeData[] = [
       ingredients: ["100g havregryn", "60g blandede nødder (knuste)", "40g tørrede tranebær", "2 spsk honning", "2 spsk kokosolie (smeltet)", "1 spsk kakaopulver"],
       steps: ["Bland alle ingredienser i en skål.", "Rul til små kugler (ca. 10 stk.).", "Sæt i køleskabet 30 min.", "Opbevar i en lufttæt beholder op til en uge."],
       tip: "Hav altid en portion i træningstasken — naturlig energi uden nedturen fra forarbejdede energibarer.",
+    },
+    no: {
+      name: "Trail mix energikugler",
+      prepTime: "10 min",
+      ingredients: ["100g havregryn", "60g blandesde nødder (knuste)", "40g tørrede tranebær", "2 ss honning", "2 ss kokosolje (smeltet)", "1 ss kakaopulver"],
+      steps: ["bland alle ingredienser i en bolle.", "Rul til små kugler (ca. 10 stk.).", "sett i kjøleskapet 30 min.", "Opbevar i en lufttæt beholder op til en uke."],
+      tip: "Hav alltid en porsjon i treningstasken — naturlig energi uten nedturen fra forarbeidde energibarer.",
+    },
+    sv: {
+      name: "Trail mix energikugler",
+      prepTime: "10 min",
+      ingredients: ["100g havregryn", "60g blandasde nødder (knuste)", "40g tørrede tranebär", "2 msk honung", "2 msk kokosolja (smeltet)", "1 msk kakaopulver"],
+      steps: ["blanda alle ingredienser i en skål.", "Rul till små kugler (ca. 10 stk.).", "sätt i kylskåpet 30 min.", "Opbevar i en lufttæt beholder op till en vecka."],
+      tip: "Hav alltid en portion i träningstasken — naturlig energi utan nedturen fra forarbetede energibarer.",
     },
   },
   {
@@ -718,6 +1196,20 @@ const recipesData: RecipeData[] = [
       steps: ["Lag yoghurt i et glas.", "Tilsæt granola.", "Top med skivede jordbær og dryp honning over."],
       tip: "Protein-kulhydrat-kombinationen gør dette til en ideel snack 2 timer før konkurrence.",
     },
+    no: {
+      name: "gresk yoghurt & granola-begger",
+      prepTime: "3 min",
+      ingredients: ["150g gresk yoghurt", "30g granola", "1 ss honning", "Friske jordbær"],
+      steps: ["Lag yoghurt i et glass.", "tilsett granola.", "topp med skivede jordbær og drypp honning over."],
+      tip: "protein-karbohydrat-kombinationen gjør dette til en ideel snack 2 timer før konkurrence.",
+    },
+    sv: {
+      name: "grekisk yoghurt & granola-bägger",
+      prepTime: "3 min",
+      ingredients: ["150g grekisk yoghurt", "30g granola", "1 msk honung", "Friske jordgubbar"],
+      steps: ["Lag yoghurt i et glas.", "tillsätt granola.", "toppaa med skivede jordgubbar och ringla honung över."],
+      tip: "protein-kolhydrat-kombinationen gör dette till en ideel snack 2 timmar före konkurrence.",
+    },
   },
   {
     id: "r36",
@@ -736,6 +1228,20 @@ const recipesData: RecipeData[] = [
       ingredients: ["2 riskager", "2 spsk mandelbutter", "1 banan (i skiver)", "Lidt honning"],
       steps: ["Smør mandelbutter på riskagerne.", "Læg bananskiver ovenpå.", "Dryp honning over."],
       tip: "Let, hurtigt fordøjeligt og energitæt — det ideelle brændstof 45 min før sparring.",
+    },
+    no: {
+      name: "Riskager med mandelbutter & banan",
+      prepTime: "3 min",
+      ingredients: ["2 riskager", "2 ss mandelbutter", "1 banan (i skiver)", "Lidt honning"],
+      steps: ["smør mandelbutter på riskagerne.", "Legg bananskiver ovenpå.", "drypp honning over."],
+      tip: "lett, hurtigt fordøjeligt og energitæt — det ideelle brændstof 45 min før sparring.",
+    },
+    sv: {
+      name: "Riskager med mandelbutter & banan",
+      prepTime: "3 min",
+      ingredients: ["2 riskager", "2 msk mandelbutter", "1 banan (i skivor)", "Lidt honung"],
+      steps: ["smör mandelbutter på riskagerne.", "Lägg bananskivor ovenpå.", "ringla honung över."],
+      tip: "lätt, hurtigt fordøjeligt och energitæt — det ideelle brændstof 45 min före sparring.",
     },
   },
   {
@@ -756,6 +1262,20 @@ const recipesData: RecipeData[] = [
       steps: ["Tilsæt alle ingredienser i en blender.", "Blend til det er glat.", "Drik 30-45 min før træning."],
       tip: "Dadler er naturens energigel — koncentrerede naturlige sukkerarter til hurtigt muskelbrændstof.",
     },
+    no: {
+      name: "banan & daddel-smoothie",
+      prepTime: "3 min",
+      ingredients: ["1 banan", "4 Medjool-dadler (udstenet)", "200ml havremelk", "1 ss peanøttsmør", "Et drys kanel"],
+      steps: ["tilsett alle ingredienser i en mikser.", "miks til det er glat.", "Drik 30-45 min før trening."],
+      tip: "dadler er naturens energigel — koncentrerede naturlige sukkerarter til hurtigt muskelbrændstof.",
+    },
+    sv: {
+      name: "banan & daddel-smoothie",
+      prepTime: "3 min",
+      ingredients: ["1 banan", "4 Medjool-dadlar (udstenet)", "200ml havremjölk", "1 msk jordnötssmör", "Et strö kanel"],
+      steps: ["tillsätt alle ingredienser i en mixer.", "mixa till det er glat.", "Drik 30-45 min före träning."],
+      tip: "dadlar er naturens energigel — koncentrerede naturlige sukkerarter till hurtigt muskelbrændstof.",
+    },
   },
   {
     id: "r38",
@@ -774,6 +1294,20 @@ const recipesData: RecipeData[] = [
       ingredients: ["150g havregryn", "60g honning", "40g peanutbutter", "30g tørrede abrikoser (hakkede)", "20g græskarkerner", "Et drys salt"],
       steps: ["Bland havregryn, peanutbutter og honning i en skål.", "Fold abrikoser, græskarkerner og salt i.", "Tryk ned i en foret bradepande.", "Sæt i køleskabet 1 time, skær i 8 barer."],
       tip: "Hjemmelavede barer koster en brøkdel af købte og indeholder nul kunstige ingredienser.",
+    },
+    no: {
+      name: "havre & honning energibarer",
+      prepTime: "20 min (+ avkjøling)",
+      ingredients: ["150g havregryn", "60g honning", "40g peanøttsmør", "30g tørkede aprikoser (hakkede)", "20g greskarkerner", "Et drys salt"],
+      steps: ["bland havregryn, peanøttsmør og honning i en bolle.", "Fold aprikoser, greskarkerner og salt i.", "Tryk ned i en foret langpanne.", "sett i kjøleskapet 1 time, skjær i 8 barer."],
+      tip: "Hjemmelavede barer koster en brøkdel av købte og indeholder nul kunstige ingredienser.",
+    },
+    sv: {
+      name: "havre & honung energibarer",
+      prepTime: "20 min (+ kyling)",
+      ingredients: ["150g havregryn", "60g honung", "40g jordnötssmör", "30g torkade aprikoser (hakkede)", "20g grekiskarkerner", "Et strö salt"],
+      steps: ["blanda havregryn, jordnötssmör och honung i en skål.", "Fold aprikoser, grekiskarkerner och salt i.", "Tryk ned i en klädd långpanna.", "sätt i kylskåpet 1 timme, skär i 8 barer."],
+      tip: "Hjemmelavede barer koster en brøkdel av købte och indeholder nul kunstige ingredienser.",
     },
   },
   {
@@ -794,6 +1328,20 @@ const recipesData: RecipeData[] = [
       steps: ["Læg varme ris i en skål.", "Dræn tunen og pil den i stykker ovenpå.", "Tilsæt edamame.", "Hæld sojasauce og sesamolie over. Top med frø og forårsløg."],
       tip: "Hvide ris efter træning genopfylder glykogen hurtigere end brune ris — gem brune ris til andre måltider.",
     },
+    no: {
+      name: "tunfisk & ris restitusjons-bolle",
+      prepTime: "10 min",
+      ingredients: ["1 boks tunfisk (i vand)", "150g kokte hvit ris", "50g edamame", "1 ss soyasaus", "1 ts sesamolje", "sesamfrø, forårsløk"],
+      steps: ["Legg varme ris i en bolle.", "drener tunen og pil den i biter ovenpå.", "tilsett edamame.", "hell soyasaus og sesamolje over. topp med frø og forårsløk."],
+      tip: "hvit ris etter trening genopfylder glykogen hurtigere end brun ris — gem brun ris til andre måltider.",
+    },
+    sv: {
+      name: "tonfisk & ris återhämtnings-skål",
+      prepTime: "10 min",
+      ingredients: ["1 burk tonfisk (i vand)", "150g kokte vitt ris", "50g edamame", "1 msk sojasås", "1 tsk sesamolja", "sesamfrön, forårslök"],
+      steps: ["Lägg värme ris i en skål.", "låt rinna av tunen och pil den i bitar ovenpå.", "tillsätt edamame.", "häll sojasås och sesamolja över. toppaa med frø och forårslök."],
+      tip: "vitt ris efter träning genopfylder glykogen hurtigere end brunt ris — gem brunt ris till andre måltider.",
+    },
   },
   {
     id: "r40",
@@ -813,13 +1361,32 @@ const recipesData: RecipeData[] = [
       steps: ["Blend proteinpulver, frosne bær, banan og mælk til det er tykt.", "Hæld i en skål.", "Top med granola og kokosflager.", "Spis med en ske — det skal være tykt, ikke flydende."],
       tip: "Frosne bær gør smoothie-skålen tyk og is-agtig — den perfekte belønning efter træning.",
     },
+    no: {
+      name: "bær protein smoothie-bolle",
+      prepTime: "5 min",
+      ingredients: ["1 scoop proteinpulver", "100g frosne blandesde bær", "1 banan", "100ml melk", "30g granola", "1 ss kokosflak"],
+      steps: ["miks proteinpulver, frosne bær, banan og melk til det er tykkt.", "hell i en bolle.", "topp med granola og kokosflak.", "Spis med en ske — det skal være tykkt, ikke flytende."],
+      tip: "Frosne bær gjør smoothie-bolleen tykk og is-agtig — den perfekte belønning etter trening.",
+    },
+    sv: {
+      name: "bär protein smoothie-skål",
+      prepTime: "5 min",
+      ingredients: ["1 scoop proteinpulver", "100g frosne blandasde bär", "1 banan", "100ml mjölk", "30g granola", "1 msk kokosflingor"],
+      steps: ["mixa proteinpulver, frosne bär, banan och mjölk till det er tjockt.", "häll i en skål.", "toppaa med granola och kokosflingor.", "Spis med en ske — det ska vara tjockt, inte flytande."],
+      tip: "Frosne bär gör smoothie-skålarn tjock och is-agtig — den perfekte belønning efter träning.",
+    },
   },
 ];
 
 export function getRecipes(locale: string = "en"): Recipe[] {
-  const lang = locale === "da" ? "da" : "en";
+  // NO falls back to DA, SV uses its own block, DE/AR fall back to EN.
+  const lang: "en" | "da" | "no" | "sv" =
+    locale === "da" ? "da" :
+    locale === "no" ? "no" :
+    locale === "sv" ? "sv" :
+    "en";
   return recipesData.map((r) => {
-    const text = r[lang];
+    const text = r[lang] ?? r.en;
     return {
       id: r.id,
       category: r.category,
