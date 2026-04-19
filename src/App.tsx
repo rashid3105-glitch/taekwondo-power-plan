@@ -2,9 +2,11 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { FloatingDiaryButton } from "@/components/FloatingDiaryButton";
+import { OfflineBanner } from "@/components/OfflineBanner";
 import Index from "./pages/Index";
 import FeatureDetail from "./pages/FeatureDetail";
 import Auth from "./pages/Auth";
@@ -30,10 +32,65 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import About from "./pages/About";
 import Programs from "./pages/Programs";
 import Contact from "./pages/Contact";
-
+import Install from "./pages/Install";
 
 const queryClient = new QueryClient();
 
+const prefersReducedMotion =
+  typeof window !== "undefined" &&
+  window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
+const pageTransition = prefersReducedMotion
+  ? {}
+  : {
+      initial: { opacity: 0 },
+      animate: { opacity: 1 },
+      exit: { opacity: 0 },
+      transition: { duration: 0.18, ease: "easeOut" as const },
+    };
+
+const Page = ({ children }: { children: React.ReactNode }) => (
+  <motion.div {...pageTransition} style={{ minHeight: "100%" }}>
+    {children}
+  </motion.div>
+);
+
+const AnimatedRoutes = () => {
+  const location = useLocation();
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<Page><Index /></Page>} />
+        <Route path="/methodology" element={<Page><Methodology /></Page>} />
+        <Route path="/about" element={<Page><About /></Page>} />
+        <Route path="/programs" element={<Page><Programs /></Page>} />
+        <Route path="/contact" element={<Page><Contact /></Page>} />
+        <Route path="/features/:section" element={<Page><FeatureDetail /></Page>} />
+        <Route path="/auth" element={<Page><Auth /></Page>} />
+        <Route path="/reset-password" element={<Page><ResetPassword /></Page>} />
+        <Route path="/pending-approval" element={<Page><PendingApproval /></Page>} />
+        <Route path="/admin/approval" element={<Page><AdminApproval /></Page>} />
+        <Route path="/admin/payments" element={<Page><AdminPayments /></Page>} />
+        <Route path="/admin/clubs" element={<Page><AdminClubs /></Page>} />
+        <Route path="/coach" element={<Page><CoachDashboard /></Page>} />
+        <Route path="/pricing" element={<Page><Pricing /></Page>} />
+        <Route path="/help" element={<Page><Help /></Page>} />
+        <Route path="/install" element={<Page><Install /></Page>} />
+        <Route path="/profile-setup" element={<Page><ProfileSetup /></Page>} />
+        <Route path="/dashboard" element={<Page><Dashboard /></Page>} />
+        <Route path="/library" element={<Page><LibraryChooser /></Page>} />
+        <Route path="/library/:section" element={<Page><Library /></Page>} />
+        <Route path="/diary" element={<Page><Diary /></Page>} />
+        <Route path="/payment-success" element={<Page><PaymentSuccess /></Page>} />
+        <Route path="/unsubscribe" element={<Page><Unsubscribe /></Page>} />
+        <Route path="/privacy" element={<Page><PrivacyPolicy /></Page>} />
+        <Route path="/taekwondo-training-program" element={<Page><SeoLanding /></Page>} />
+        <Route path="/progress" element={<Navigate to="/dashboard" replace />} />
+        <Route path="*" element={<Page><NotFound /></Page>} />
+      </Routes>
+    </AnimatePresence>
+  );
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -42,34 +99,8 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/methodology" element={<Methodology />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/programs" element={<Programs />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/features/:section" element={<FeatureDetail />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/pending-approval" element={<PendingApproval />} />
-            <Route path="/admin/approval" element={<AdminApproval />} />
-            <Route path="/admin/payments" element={<AdminPayments />} />
-            <Route path="/admin/clubs" element={<AdminClubs />} />
-            <Route path="/coach" element={<CoachDashboard />} />
-            <Route path="/pricing" element={<Pricing />} />
-            <Route path="/help" element={<Help />} />
-            <Route path="/profile-setup" element={<ProfileSetup />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/library" element={<LibraryChooser />} />
-            <Route path="/library/:section" element={<Library />} />
-            <Route path="/diary" element={<Diary />} />
-            <Route path="/payment-success" element={<PaymentSuccess />} />
-            <Route path="/unsubscribe" element={<Unsubscribe />} />
-            <Route path="/privacy" element={<PrivacyPolicy />} />
-            <Route path="/taekwondo-training-program" element={<SeoLanding />} />
-            <Route path="/progress" element={<Navigate to="/dashboard" replace />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <OfflineBanner />
+          <AnimatedRoutes />
           <FloatingDiaryButton />
         </BrowserRouter>
       </TooltipProvider>
