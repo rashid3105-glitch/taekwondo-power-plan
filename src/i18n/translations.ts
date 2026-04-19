@@ -4621,9 +4621,9 @@ const translations = {
     footerText: "Bygget til taekwondo-atleter. Træn hurtigt, forbliv hurtig.",
 
     // Auth
-    signIn: "Log inn",
+    signIn: "Logg inn",
     signUp: "Opprett konto",
-    signInToAccount: "Log inn på din konto",
+    signInToAccount: "Logg inn på din konto",
     createAthleteAccount: "Opprett din atletkonto",
     displayName: "Visningsnavn",
     yourName: "Ditt navn",
@@ -4772,7 +4772,7 @@ const translations = {
     // Approval
     pendingApproval: "Konto afventer godkjenning",
     pendingApprovalDesc: "Din konto er opprettet, men krever administratorgodkendelse, før du kan få adgang til appen. Prøv igjen senere.",
-    signOut: "Log ut",
+    signOut: "Logg ut",
     userApproval: "Brukergodkendelse",
     pendingUsers: "Afventende brukere",
     approvedUsers: "Godkendte brukere",
@@ -5240,7 +5240,7 @@ const translations = {
     landingWeekDesc: "En realistisk ukentlig treningsplan genereret af Sportstalent for en konkurrencesparring-atlet i forberedelsesfasen. Planen integrerer med 3 ukentlige TKD-økter og inkluderer sportsspecifikt styrkearbejde designet til sparkkraft og stævneparathed.",
     landingPhase: "Fase",
     landingPhaseValue: "Forberedelse — Maks styrke",
-    landingPhaseWeek: "Uge 3 af 4",
+    landingPhaseWeek: "Uke 3 av 4",
     landingDayMon: "Mandag",
     landingDayTue: "Tirsdag",
     landingDayWed: "Onsdag",
@@ -5365,7 +5365,7 @@ const translations = {
 
     // Case Study
     caseStudyBadge: "Rigtige Resultater",
-    caseHeadline: "10,5% Højere Spring på 7 Uger",
+    caseHeadline: "10,5% Højere Spring på 7 Uker",
     caseSubheadline: "En 19-årig U21 dansk mesterskabs-kvalificeret TKD-kjemper med patellarsenetendinopati reducerede knæsmerter og forbedrede eksplosiv styrke med et periodiseret S&C-program fra Sportstalent.",
     caseAthleteName: "Anonym Atlet",
     caseAthleteInfo: "U21 DM-kvalificeret · Kyorugi",
@@ -5399,7 +5399,7 @@ const translations = {
     weekSubheadline: "Personlig plan tilpasset din TKD-kalender, niveau og mål",
     weekPhaseLabel: "Fase",
     weekPhaseValue: "Akkumulation",
-    weekPhaseWeek: "Uge 3 af 7",
+    weekPhaseWeek: "Uke 3 av 7",
     weekMon: "Man",
     weekTue: "Tir",
     weekWed: "Ons",
