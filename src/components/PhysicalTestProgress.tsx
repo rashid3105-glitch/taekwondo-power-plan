@@ -7,6 +7,7 @@ import {
   AreaChart, Area, ReferenceLine,
 } from "recharts";
 import { Button } from "@/components/ui/button";
+import { getLocalizedTestName } from "@/components/PhysicalTesting";
 
 interface TestResult {
   id: string;
@@ -190,7 +191,7 @@ export function PhysicalTestProgress({ userId }: { userId?: string }) {
                       {tests.map(test => (
                         <tr key={test.name} className="border-b border-border/50 last:border-0">
                           <td className="py-2 text-foreground font-medium">
-                            {test.name}
+                            {getLocalizedTestName(test.name, t)}
                             <span className="text-[10px] text-muted-foreground ml-1">({test.count}×)</span>
                           </td>
                           <td className="py-2 text-right font-mono font-bold text-foreground">
@@ -324,7 +325,7 @@ export function PhysicalTestProgress({ userId }: { userId?: string }) {
               {testNames.map((name, i) => (
                 <div key={name} className="flex items-center gap-1.5">
                   <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: isSingleTest ? catColor : LINE_COLORS[i % LINE_COLORS.length] }} />
-                  <span className="text-xs text-muted-foreground">{name}</span>
+                  <span className="text-xs text-muted-foreground">{getLocalizedTestName(name, t)}</span>
                   <span className="text-[10px] text-muted-foreground/60">(avg: {avgMap[name]})</span>
                 </div>
               ))}
