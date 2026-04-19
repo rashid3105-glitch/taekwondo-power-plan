@@ -342,7 +342,7 @@ export default function CoachDashboard() {
   return (
     <div className="min-h-screen bg-background relative overflow-x-hidden">
       <Watermark />
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
+      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10 pt-safe">
         <div className="container max-w-4xl mx-auto px-3 sm:px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
