@@ -159,6 +159,7 @@ function TrainingPlanContent({ plan }: { plan: NonNullable<PlanViewDialogProps["
   const [exporting, setExporting] = useState(false);
   const [expandedDays, setExpandedDays] = useState<Set<number>>(new Set());
   const { toast } = useToast();
+  const { locale } = useLanguage();
 
   const schedule = plan.plan_data?.weeklySchedule || [];
   const periodization = plan.plan_data?.periodization || [];
@@ -386,6 +387,8 @@ function RehabPlanContent({ rehabPlan }: { rehabPlan: NonNullable<PlanViewDialog
 
 function RehabExerciseInline({ exercise, index }: { exercise: any; index: number }) {
   const [open, setOpen] = useState(false);
+  const { locale } = useLanguage();
+  const displayName = localizeExerciseName(exercise.name, locale);
 
   return (
     <div className="rounded-lg border border-border bg-card overflow-hidden">
@@ -394,7 +397,7 @@ function RehabExerciseInline({ exercise, index }: { exercise: any; index: number
         className="w-full flex items-center gap-2 sm:gap-3 px-3 py-2.5 hover:bg-secondary/40 transition-colors cursor-pointer"
       >
         <span className="mono text-xs text-muted-foreground w-5">{String(index).padStart(2, "0")}</span>
-        <span className="font-semibold text-sm flex-1 text-left text-foreground truncate">{exercise.name}</span>
+        <span className="font-semibold text-sm flex-1 text-left text-foreground truncate">{displayName}</span>
         <span className="text-xs text-muted-foreground flex-shrink-0">{exercise.sets}×{exercise.reps}</span>
         {open ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
       </button>
