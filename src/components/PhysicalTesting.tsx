@@ -373,7 +373,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
                     </SelectTrigger>
                     <SelectContent>
                       {STANDARD_TESTS[cat].map(test => (
-                        <SelectItem key={test.name} value={test.name}>{test.name}</SelectItem>
+                        <SelectItem key={test.name} value={test.name}>{getLocalizedTestName(test.name, t)}</SelectItem>
                       ))}
                       <SelectItem value="__custom">{t("ptCustomTest")}</SelectItem>
                     </SelectContent>
