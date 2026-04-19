@@ -31,6 +31,8 @@ export default defineConfig(({ mode }) => ({
       ],
       manifest: false, // we ship our own public/manifest.json
       workbox: {
+        // Allow large JS bundles to be precached (the main app chunk is ~2.8MB)
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         // Don't intercept Lovable internal routes or API/auth calls
         navigateFallbackDenylist: [/^\/~oauth/, /^\/api/],
         // Network-first for Supabase (auth + data must be fresh)
