@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Zap, Wind, Dumbbell, Timer, ClipboardList, Users, User, ChevronDown, ChevronUp, Youtube } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { getLocalizedTestName } from "@/components/PhysicalTesting";
 
 interface TestDefinition {
   name: string;
@@ -140,7 +141,7 @@ export function TestLibrary() {
                           <Icon className="h-4 w-4 text-primary" />
                         </div>
                         <div>
-                          <div className="font-semibold text-foreground text-sm">{test.name}</div>
+                          <div className="font-semibold text-foreground text-sm">{getLocalizedTestName(test.name, t)}</div>
                           <div className="text-xs text-muted-foreground mt-0.5">{test.description[locale] || test.description.en}</div>
                         </div>
                       </div>
@@ -151,7 +152,7 @@ export function TestLibrary() {
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}
                           className="p-1 rounded-md hover:bg-destructive/10 transition-colors"
-                          title={`Search "${test.name}" on YouTube`}
+                          title={`Search "${getLocalizedTestName(test.name, t)}" on YouTube`}
                         >
                           <Youtube className="h-4 w-4 text-destructive" />
                         </a>
