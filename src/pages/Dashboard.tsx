@@ -565,8 +565,8 @@ export default function Dashboard() {
                     {isDemo && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
                   </div>
                   <div className="space-y-1.5">
-                    <h3 className="text-sm font-bold text-foreground tracking-tight">Competitions</h3>
-                    <p className="text-xs leading-relaxed text-muted-foreground">Plan peaking, weight cuts and countdown to your next event.</p>
+                    <h3 className="text-sm font-bold text-foreground tracking-tight">{t("hubCompetitionsTitle")}</h3>
+                    <p className="text-xs leading-relaxed text-muted-foreground">{t("hubCompetitionsDesc")}</p>
                   </div>
                 </div>
               </button>

@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  ClipboardList, BarChart3, Brain, HeartPulse, BookOpen, UtensilsCrossed, Activity,
+  ClipboardList, BarChart3, Brain, HeartPulse, BookOpen, UtensilsCrossed, Activity, Trophy,
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 
@@ -53,6 +53,14 @@ const sections = [
     gradient: "radial-gradient(circle at 30% 50%, hsl(190 85% 50% / 0.12), transparent 70%)",
     iconColor: "text-cyan-400",
     slug: "testing",
+  },
+  {
+    icon: Trophy,
+    titleKey: "sectionCompetitionsTitle" as const,
+    descKey: "sectionCompetitionsDesc" as const,
+    gradient: "radial-gradient(circle at 30% 50%, hsl(45 90% 55% / 0.12), transparent 70%)",
+    iconColor: "text-primary",
+    slug: "competitions",
   },
   {
     icon: BookOpen,
