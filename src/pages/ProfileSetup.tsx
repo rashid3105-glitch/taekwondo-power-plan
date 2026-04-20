@@ -178,6 +178,20 @@ export default function ProfileSetup() {
       ext = original.type === "image/png" ? "png" : "jpg";
     }
 
+    // Allowlist: only formats browsers can reliably display
+    const ALLOWED_EXT = ["jpg", "png", "webp", "gif"];
+    if (!ALLOWED_EXT.includes(ext)) {
+      toast({
+        title: t("uploadFailed"),
+        description: `Unsupported image format (.${ext}). Please use JPG, PNG, WEBP or GIF.`,
+        variant: "destructive",
+        duration: 10000,
+      });
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+
     // Size guard (10 MB) — checked after conversion
     if (file.size > 10 * 1024 * 1024) {
       toast({
