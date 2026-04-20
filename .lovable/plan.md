@@ -1,59 +1,62 @@
 
 
-## Diagnosis: Pavlina Dang — profile picture not saved
+## Diagnosis: Why Pavlina still gets an upload error
 
-### What I checked
+### Evidence collected
 
-1. **Database** (`profiles.avatar_url` for user `fb5a2624-...`): **NULL**. Last `updated_at` 2026-04-20 06:00:49.
-2. **Storage** (bucket `avatars`, folder `fb5a2624-.../`): **empty — zero objects**.
-3. **Storage RLS**: INSERT policy correctly requires `foldername[1] = auth.uid()` → fine.
-4. **Upload code** (`src/pages/ProfileSetup.tsx`, `handleAvatarUpload`, lines 129-165).
+1. **Pavlina's `avatar_url` is still NULL** and her storage folder `fb5a2624-.../` is **still empty**. Profile last updated at 06:00:49 UTC today (before our fix was deployed at ~07:00).
+2. **Ky Tu Dang (her account / family member)** successfully uploaded twice today — once a **1.87 MB PNG** at 07:07 and once a **142 KB JPEG** at 07:29. Both files exist in storage.
+3. **Storage RLS** is correct — INSERT requires `foldername[1] = auth.uid()`. Not the cause.
+4. **`update-my-profile` Edge Function** logs show one POST today returning **200 OK** (the successful save). No error responses.
+5. **No storage upload errors in logs** for Pavlina's user_id.
 
-### Conclusion: the upload never succeeded — no file ever reached the bucket
+### Conclusion
 
-Because storage is empty for her user folder, the issue isn't that the URL was lost — the file itself was never saved. There are **three real bugs in `handleAvatarUpload`** that explain why this can silently fail for some users while appearing to work for others:
+Pavlina has not actually retried the upload since our fix was deployed — her last activity was at 06:00, before the fix. **The error she's seeing is most likely from the Edge Function, not from storage.** Specifically:
 
-### Bug 1 — Profile UPDATE bypasses the service-role rule (most likely root cause)
+### Likely root cause: Zod schema rejects the avatar_url value
 
-The avatar handler writes directly to `profiles` from the client:
+The `update-my-profile` schema we added validates `avatar_url` with `z.string().max(500).nullable().optional()`. But the client sends:
+
 ```ts
-await supabase.from("profiles").update({ avatar_url: filePath }).eq("user_id", user.id);
+const cleanAvatarUrl = avatarUrl ? avatarUrl.split("?")[0] : null;
 ```
-But your RLS policy "Users can update their own profile" has a complex `WITH CHECK` that compares `is_approved`, `payment_status`, `payment_date`, `is_demo`, `demo_full_access`, `club_id` against `get_profile_protected_fields(auth.uid())`. **If the in-memory row the client sends back differs in any of those (e.g. `club_id` was just changed by an admin, or the local cached profile is stale), the UPDATE silently fails with an RLS error** — which the code never catches because the `await` has no `.error` check. This is exactly the failure mode your memory `mem://tech/data-update-reliability` warns about: "critical user-profile updates must go through `update-my-profile` Edge Function."
 
-The whole rest of the profile already does this. Avatar is the one place that didn't get migrated.
+`avatarUrl` in state is set to `${filePath}?t=${Date.now()}` after upload. After `.split("?")[0]` it becomes `fb5a2624-404d-43c3-baf5-cd21efe512aa/avatar.jpg` — which passes validation. **BUT** if she had a previously failed half-state where `avatarUrl` was an empty string `""`, the schema accepts it (string passes `.string()`), and then the DB update writes empty-string into `avatar_url` — no visible photo. Or worse, if she initially had a remote URL with multiple query params, the split logic breaks.
 
-### Bug 2 — The storage upload error is silently swallowed in some browsers
+More importantly: **looking at Ky Tu Dang's storage**, she has BOTH `avatar.png` AND `avatar.jpeg` files. The newest is `.jpeg` (note: **5 letters, not 3**). Our code does:
 
-If the upload throws (e.g. iOS Safari with HEIC files, files >5 MB, lost session), the catch shows a toast but the user often misses it. There's no retry, and the avatar field also has no required-validation, so the form continues and "saves" successfully without ever having an avatar.
+```ts
+let ext = (original.name.split(".").pop() || "").toLowerCase();
+// ...
+const filePath = `${user.id}/avatar.${ext}`;
+```
 
-### Bug 3 — File extension assumption
+iPhone JPEG photos often arrive named `IMG_1234.jpeg` (5-letter extension) → file gets stored as `avatar.jpeg`. But `useAvatarUrl` and any display code likely look for `.jpg` / `.png` only — the photo uploads but never displays, making it look like an "error" to the user.
 
-`filePath = ${user.id}/avatar.${ext}` uses the original extension. If iPhone uploads a `.HEIC` (uppercase) or no extension, the `upsert: true` still works — but the later `useAvatarUrl` signed-URL fetch can fail to render in browsers that can't display HEIC. Less likely the cause here (the row is NULL, meaning even the path was never stored), but worth fixing alongside.
+### Plan to finalize the fix
 
-### Likely scenario for Pavlina specifically
+1. **Normalize the extension to a canonical short form** in `handleAvatarUpload`:
+   - `jpeg` / `jpe` → `jpg`
+   - `tif` → `tiff` is fine
+   - Anything else → only allow `jpg`, `png`, `webp`, `gif`; reject otherwise with a clear toast.
 
-Looking at her record: she has no `avatar_url` and her profile was last updated 06:00:49 today. The most plausible sequence:
-1. She picked a photo on iPhone.
-2. Either (a) the upload threw silently (HEIC/size/network) or (b) the upload succeeded but the **subsequent direct `profiles.update` was rejected by RLS** because of the protected-fields check. Storage being empty actually points to **(a)** — the upload itself never landed.
-3. She then submitted the rest of the form, which went through `update-my-profile` correctly, so name/club/etc. all saved — but never an avatar.
+2. **Add server-side defense in `update-my-profile`**: trim `avatar_url`, treat empty string as null, and validate that it matches `^[0-9a-f-]{36}/avatar\.(jpg|png|webp|gif)$` so a malformed path can never land in the DB.
 
-### Plan to fix (when switched to default mode)
+3. **Add an inline "save status" indicator** on the avatar button so the user gets instant visual feedback after upload AND after form save (currently the photo appears optimistically from local state but only persists after clicking "Save Profile" — easy to miss and exit the page early).
 
-1. **Move avatar persistence into the existing `update-my-profile` Edge Function.** Add `avatar_url` to its zod schema (nullable string, max length) and let the service-role client write it. Remove the client-side `profiles.update` call from `handleAvatarUpload`. This eliminates Bug 1 and matches the project rule in `mem://tech/data-update-reliability`.
-2. **Always write `avatar_url` on form submit, not on file pick.** Currently the path is written immediately on upload; if the user uploads a photo then closes the page without hitting "Save", state is half-applied. After the fix, `handleAvatarUpload` only uploads to storage and sets local state; the path is persisted as part of the main `update-my-profile` payload along with everything else.
-3. **Surface upload failures loudly.** Check `uploadError` first, and if storage upload fails, show a destructive toast that doesn't auto-dismiss + log the error to the console with the file size/type so we can diagnose iOS HEIC cases.
-4. **Normalize the file extension.** Lowercase the extension and reject `.heic`/`.heif` with a clear message ("Please use JPG or PNG — iPhone Settings → Camera → Formats → Most Compatible"), or convert in-browser. Simpler: reject + clear instruction.
-5. **Add a one-off remediation for Pavlina.** No DB fix needed — her row is just NULL. After the code fix is deployed, ask her to re-upload the photo. (No migration required.)
+4. **Live test with browser automation** after the fix:
+   - Log in as Pavlina (or test account in same club), upload a JPEG, observe storage row + DB column populate, refresh, confirm photo persists.
 
-### Files to be modified
+5. **Backfill check for Ky Tu Dang**: her storage has `.jpeg` and `.png` but `profiles.avatar_url` for her user (978b9a71) — let me note we should also verify it points to the correct file after the fix.
 
-- `supabase/functions/update-my-profile/index.ts` — add `avatar_url` to schema + update.
-- `src/pages/ProfileSetup.tsx` — `handleAvatarUpload`: upload only, set local state, no direct DB write; `handleSubmit`: include `avatar_url` in payload; reject HEIC; loud error toast.
+### Files to modify
 
-### Verification after the fix
+- `src/pages/ProfileSetup.tsx` — extension normalization + allowlist + clearer post-save feedback.
+- `supabase/functions/update-my-profile/index.ts` — server-side avatar_url regex validation.
+- `src/hooks/useAvatarUrl.ts` — verify it handles `.jpeg` (not just `.jpg`); read first to confirm.
 
-- Upload a JPG → confirm both `storage.objects` row appears AND `profiles.avatar_url` populates.
-- Try uploading a HEIC → confirm clean rejection toast, nothing partially saved.
-- Pretend RLS rejects (temporarily flip a protected field) → confirm the edge function path still works while a direct client write would have failed.
+### What I need from you to complete verification
+
+After approval and deployment, I'll need either Pavlina to retry (and tell me the exact error wording / take a screenshot) or your permission to log in as a test athlete in her club and reproduce the upload flow end-to-end via the browser tool.
 
