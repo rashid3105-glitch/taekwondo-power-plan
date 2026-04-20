@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { isPushSupported, subscribeToPush, unsubscribeFromPush, getCurrentSubscriptionStatus } from "@/lib/pushNotifications";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface Prefs {
   training_reminders: boolean;
@@ -23,6 +24,7 @@ const DEFAULTS: Prefs = {
 
 export function NotificationSettings() {
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [supported] = useState(isPushSupported());
   const [enabled, setEnabled] = useState(false);
   const [prefs, setPrefs] = useState<Prefs>(DEFAULTS);
@@ -47,14 +49,14 @@ export function NotificationSettings() {
       if (enabled) {
         await unsubscribeFromPush();
         setEnabled(false);
-        toast({ title: "Notifications off" });
+        toast({ title: t("notifOff") });
       } else {
         const ok = await subscribeToPush();
         setEnabled(ok);
-        toast({ title: ok ? "Notifications enabled" : "Permission denied", variant: ok ? "default" : "destructive" });
+        toast({ title: ok ? t("notifOn") : t("notifPermDenied"), variant: ok ? "default" : "destructive" });
       }
     } catch (e: any) {
-      toast({ title: "Error", description: e.message, variant: "destructive" });
+      toast({ title: t("error"), description: e.message, variant: "destructive" });
     } finally { setBusy(false); }
   }
 
@@ -68,7 +70,7 @@ export function NotificationSettings() {
   if (!supported) {
     return (
       <Card><CardContent className="pt-4 text-sm text-muted-foreground">
-        Push notifications are not supported in this browser. Install the app from /install for the best experience.
+        {t("notifUnsupported")}
       </CardContent></Card>
     );
   }
@@ -79,27 +81,27 @@ export function NotificationSettings() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
           {enabled ? <Bell className="h-4 w-4 text-primary" /> : <BellOff className="h-4 w-4 text-muted-foreground" />}
-          Push notifications
+          {t("notifPushTitle")}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-sm font-medium">{enabled ? "Enabled" : "Disabled"}</div>
-            <div className="text-xs text-muted-foreground">Get reminders even when the app is closed</div>
+            <div className="text-sm font-medium">{enabled ? t("notifEnabled") : t("notifDisabled")}</div>
+            <div className="text-xs text-muted-foreground">{t("notifDescription")}</div>
           </div>
           <Button size="sm" variant={enabled ? "outline" : "default"} onClick={toggleSubscription} disabled={busy}>
-            {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : enabled ? "Turn off" : "Enable"}
+            {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : enabled ? t("notifTurnOff") : t("notifEnable")}
           </Button>
         </div>
         {enabled && (
           <div className="space-y-3 pt-2 border-t">
             {([
-              ["training_reminders", "Daily training & readiness check-in"],
-              ["diary_comments", "Coach comments on diary"],
-              ["event_reminders", "Event reminders from coach"],
-              ["competition_countdown", "Competition countdown"],
-              ["weight_log_reminders", "Weight-log reminders during cut"],
+              ["training_reminders", t("notifTraining")],
+              ["diary_comments", t("notifDiary")],
+              ["event_reminders", t("notifEvents")],
+              ["competition_countdown", t("notifCompetition")],
+              ["weight_log_reminders", t("notifWeight")],
             ] as Array<[keyof Prefs, string]>).map(([k, label]) => (
               <div key={k} className="flex items-center justify-between">
                 <Label htmlFor={k} className="text-sm">{label}</Label>
