@@ -95,6 +95,15 @@ export function DiaryComments({ entryId, canComment = false }: DiaryCommentsProp
     if (error) {
       toast({ title: t("error"), description: error.message, variant: "destructive" });
     } else {
+      // Fire push notification to athlete (best-effort, non-blocking)
+      try {
+        const { data: entry } = await supabase.from("diary_entries").select("user_id").eq("id", entryId).maybeSingle();
+        if (entry?.user_id && entry.user_id !== user.id) {
+          void supabase.functions.invoke("send-push", {
+            body: { user_ids: [entry.user_id], title: "💬 New coach comment", body: newComment.trim().slice(0, 100), url: "/diary", category: "diary" },
+          });
+        }
+      } catch {}
       setNewComment("");
       await loadComments();
     }
