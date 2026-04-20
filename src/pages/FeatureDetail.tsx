@@ -16,7 +16,7 @@ import nutritionImg from "@/assets/features/nutrition.jpg";
 import libraryImg from "@/assets/features/library.jpg";
 import testingImg from "@/assets/features/testing.jpg";
 
-type FeatureKey = "plan" | "progress" | "mental" | "rehab" | "nutrition" | "library" | "testing";
+type FeatureKey = "plan" | "progress" | "mental" | "rehab" | "nutrition" | "library" | "testing" | "competitions";
 type Lang = "en" | "da" | "sv" | "de" | "ar";
 type LangText = Record<Lang, string>;
 
@@ -168,6 +168,26 @@ const features: Record<FeatureKey, FeatureData> = {
       { en: "Video references and demos", da: "Videoreferencer og demonstrationer", sv: "Videoreferenser och demos", de: "Videoreferenzen und Demos", ar: "مراجع فيديو وعروض توضيحية" },
       { en: "Custom exercise creation", da: "Oprettelse af tilpassede øvelser", sv: "Skapa egna övningar", de: "Eigene Übungen erstellen", ar: "إنشاء تمارين مخصصة" },
       { en: "Alternative exercise suggestions", da: "Forslag til alternative øvelser", sv: "Förslag på alternativa övningar", de: "Alternative Übungsvorschläge", ar: "اقتراحات تمارين بديلة" },
+    ],
+  },
+  competitions: {
+    titleKey: "sectionCompetitionsTitle",
+    descKey: "sectionCompetitionsDesc",
+    image: trainingImg,
+    gradient: "from-[hsl(45,90%,55%)] to-[hsl(35,90%,50%)]",
+    longDesc: {
+      en: "Plan every event in your competition calendar with sport-science-grade peaking and weight-cut protocols. Add upcoming events with weight class, priority, and date — then generate a personalized taper schedule, daily weight-cut plan, nutrition adjustments and a peak-day protocol. Pair with the daily morning readiness check so today's training adapts to how you actually feel.",
+      da: "Planlæg hvert stævne i din konkurrencekalender med peaking- og vægttabsprotokoller på sportsvidenskabeligt niveau. Tilføj kommende stævner med vægtklasse, prioritet og dato — og generér derefter et personligt taperskema, daglig vægttabsplan, ernæringsjusteringer og en konkurrencedag-protokol. Kombinér med det daglige morgen-beredskabstjek, så dagens træning tilpasses hvordan du faktisk har det.",
+      sv: "Planera varje tävling i din kalender med peaking- och viktnedgångsprotokoll på sportvetenskaplig nivå. Lägg till kommande tävlingar med viktklass, prioritet och datum — generera sedan ett personligt taperschema, daglig viktnedgångsplan, kostjusteringar och ett tävlingsdagsprotokoll. Kombinera med den dagliga morgon-beredskapskollen så att dagens träning anpassas till hur du faktiskt mår.",
+      de: "Plane jedes Event deines Wettkampfkalenders mit sportwissenschaftlich fundierten Peaking- und Gewichts-Cut-Protokollen. Füge bevorstehende Wettkämpfe mit Gewichtsklasse, Priorität und Datum hinzu — generiere anschließend einen personalisierten Tapering-Plan, ein tägliches Gewichts-Cut-Schema, Ernährungsanpassungen und ein Wettkampftag-Protokoll. Kombiniere mit dem täglichen Morgen-Bereitschaftscheck, damit sich das heutige Training an deine tatsächliche Verfassung anpasst.",
+      ar: "خطّط لكل حدث في تقويم مسابقاتك ببروتوكولات الذروة وتخفيض الوزن وفق علوم الرياضة. أضف الأحداث القادمة مع فئة الوزن والأولوية والتاريخ — ثم أنشئ جدول تخفيف شخصي وخطة يومية لتخفيض الوزن وتعديلات تغذية وبروتوكول يوم الذروة. اقرنها بفحص الجاهزية الصباحي اليومي ليتكيّف تدريب اليوم مع شعورك الفعلي.",
+    },
+    benefits: [
+      { en: "Add A/B/C-priority events with weight class", da: "Tilføj A/B/C-prioriterede stævner med vægtklasse", sv: "Lägg till A/B/C-prioriterade tävlingar med viktklass", de: "Füge A/B/C-priorisierte Events mit Gewichtsklasse hinzu", ar: "أضف أحداثاً بأولوية A/B/C مع فئة الوزن" },
+      { en: "Auto-generated weekly taper and peaking plan", da: "Auto-genereret ugentlig taper- og peakingplan", sv: "Auto-genererad veckovis taper- och peakingplan", de: "Auto-generierter wöchentlicher Taper- und Peaking-Plan", ar: "خطة تخفيف وذروة أسبوعية مُنشأة تلقائياً" },
+      { en: "Daily weight-cut schedule with calorie & fluid targets", da: "Daglig vægttabsplan med kalorie- og væskemål", sv: "Dagligt viktnedgångsschema med kalori- och vätskemål", de: "Tägliches Gewichts-Cut-Schema mit Kalorien- und Flüssigkeitszielen", ar: "جدول يومي لتخفيض الوزن مع أهداف السعرات والسوائل" },
+      { en: "Quick weight-log card right on the page", da: "Hurtig vægtlogning direkte på siden", sv: "Snabb viktloggning direkt på sidan", de: "Schnelles Gewichts-Log direkt auf der Seite", ar: "بطاقة tسجيل وزن سريعة على الصفحة مباشرة" },
+      { en: "Morning readiness check that adapts today's training", da: "Morgen-beredskabstjek der tilpasser dagens træning", sv: "Morgon-beredskapskoll som anpassar dagens träning", de: "Morgen-Bereitschaftscheck, der das heutige Training anpasst", ar: "فحص الجاهزية الصباحي يكيّف تدريب اليوم" },
     ],
   },
 };
