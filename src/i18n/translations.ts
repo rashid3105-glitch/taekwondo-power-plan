@@ -6184,6 +6184,15 @@ const translations = {
     compPlanCarbCycling: "Karbo-sykling:",
     compPlanHydration: "Hydrering:",
     compPlanPeakDay: "Konkurransedag-protokoll",
+    sectionCompetitionsTitle: "Konkurranser & vektkutt",
+    sectionCompetitionsDesc: "Planlegg peaking, daglige vektkutt-skjemaer og nedtelling til neste stevne — basert på sportsvitenskapelige protokoller.",
+    hubCompetitionsTitle: "Konkurranser",
+    hubCompetitionsDesc: "Planlegg peaking, vektkutt og nedtelling til ditt neste stevne.",
+    changelog_2026_04_20: "20. april 2026",
+    changelogEntry63: "Konkurranseplanlegging — legg til stevner med vektklasse og prioritet, generer peaking- og vektkutt-planer",
+    changelogEntry64: "Morgen-beredskapssjekk — daglig 10-sekunders sjekk som tilpasser dagens treningsvolum",
+    changelogEntry65: "Push-varslinger — tren-, dagbok- og konkurranse-påminnelser direkte til mobilen",
+    changelogEntry66: "Full oversettelse av konkurranser, beredskap og varslinger til alle 6 språk",
   },
 } as const;
 
