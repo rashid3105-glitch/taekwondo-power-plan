@@ -127,31 +127,56 @@ export default function ProfileSetup() {
   const tkdCount = schedule.filter((s) => s.type === "tkd").length;
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const original = e.target.files?.[0];
+    if (!original) return;
 
-    if (!file.type.startsWith("image/")) {
+    if (!original.type.startsWith("image/") && !/\.(heic|heif)$/i.test(original.name)) {
       toast({ title: t("selectImageFile"), variant: "destructive" });
       return;
     }
 
-    // Normalize and validate extension
-    const rawExt = (file.name.split(".").pop() || "").toLowerCase();
-    const ext = rawExt || (file.type === "image/png" ? "png" : "jpg");
+    setUploading(true);
 
-    if (ext === "heic" || ext === "heif" || file.type === "image/heic" || file.type === "image/heif") {
-      console.warn("[avatar] HEIC rejected", { name: file.name, type: file.type, size: file.size });
-      toast({
-        title: t("uploadFailed"),
-        description: "HEIC/HEIF not supported. iPhone: Settings → Camera → Formats → Most Compatible, or use JPG/PNG.",
-        variant: "destructive",
-        duration: 10000,
-      });
-      if (fileInputRef.current) fileInputRef.current.value = "";
-      return;
+    let file: File = original;
+    let ext = (original.name.split(".").pop() || "").toLowerCase();
+
+    // Auto-convert HEIC/HEIF → JPEG in-browser
+    const isHeic =
+      ext === "heic" ||
+      ext === "heif" ||
+      original.type === "image/heic" ||
+      original.type === "image/heif";
+
+    if (isHeic) {
+      try {
+        const heic2any = (await import("heic2any")).default;
+        const converted = await heic2any({
+          blob: original,
+          toType: "image/jpeg",
+          quality: 0.85,
+        });
+        const blob = Array.isArray(converted) ? converted[0] : converted;
+        file = new File([blob], original.name.replace(/\.(heic|heif)$/i, ".jpg"), {
+          type: "image/jpeg",
+        });
+        ext = "jpg";
+      } catch (err: any) {
+        console.error("[avatar] HEIC conversion failed", { name: original.name, type: original.type, size: original.size, err });
+        toast({
+          title: t("uploadFailed"),
+          description: "Could not convert HEIC photo. Please use a JPG or PNG instead.",
+          variant: "destructive",
+          duration: 10000,
+        });
+        setUploading(false);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+        return;
+      }
+    } else if (!ext) {
+      ext = original.type === "image/png" ? "png" : "jpg";
     }
 
-    // Size guard (10 MB)
+    // Size guard (10 MB) — checked after conversion
     if (file.size > 10 * 1024 * 1024) {
       toast({
         title: t("uploadFailed"),
@@ -159,11 +184,11 @@ export default function ProfileSetup() {
         variant: "destructive",
         duration: 10000,
       });
+      setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
 
-    setUploading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
