@@ -182,7 +182,7 @@ export default function Competitions() {
                   </CardHeader>
                   <CardContent className="space-y-3">
                     {targetGap !== null && (
-                      <div className={`text-sm p-2 rounded border ${onTrack ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600" : "border-amber-500/30 bg-amber-500/10 text-amber-600"}`}>
+                      <div className={`text-sm p-2 rounded border ${onTrack ? "border-primary/40 bg-primary/10 text-primary" : "border-destructive/40 bg-destructive/10 text-destructive"}`}>
                         Current {latestWeight} kg → target {c.weight_class_kg} kg ({targetGap > 0 ? `${targetGap.toFixed(1)} kg to cut` : "at or below target"}) · {onTrack ? "on track ✓" : "behind schedule"}
                       </div>
                     )}
