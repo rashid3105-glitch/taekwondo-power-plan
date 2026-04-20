@@ -139,6 +139,8 @@ export default function ProfileSetup() {
 
     let file: File = original;
     let ext = (original.name.split(".").pop() || "").toLowerCase();
+    // Normalize common variants
+    if (ext === "jpeg" || ext === "jpe") ext = "jpg";
 
     // Auto-convert HEIC/HEIF → JPEG in-browser
     const isHeic =
