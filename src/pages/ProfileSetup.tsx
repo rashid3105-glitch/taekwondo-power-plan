@@ -289,6 +289,7 @@ export default function ProfileSetup() {
         return;
       }
 
+      setSavedAvatarUrl(cleanAvatarUrl);
       toast({ title: t("profileSaved") });
 
       // Determine where to navigate after save
