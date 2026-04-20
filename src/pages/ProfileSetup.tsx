@@ -105,6 +105,7 @@ export default function ProfileSetup() {
           setProgramWeeks(profileData.program_weeks || 8);
           setCurrentInjury(profileData.current_injury || "");
           setAvatarUrl(profileData.avatar_url || null);
+          setSavedAvatarUrl(profileData.avatar_url || null);
           setClubId(profileData.club_id || "");
           setCountry(profileData.country || "");
           setCustomCalories(profileData.custom_calories?.toString() || "");
