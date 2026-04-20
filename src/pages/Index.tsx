@@ -13,6 +13,7 @@ import { FeatureGrid } from "@/components/landing/FeatureGrid";
 import { FAQSection } from "@/components/landing/FAQSection";
 import { WeekPlanPreview } from "@/components/landing/WeekPlanPreview";
 import { PublicNav } from "@/components/PublicNav";
+import heroImage from "@/assets/hero-taekwondo-coach.jpg";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -42,6 +43,18 @@ const Index = () => {
       <main className="flex-1">
         {/* Hero */}
         <section className="relative overflow-hidden" aria-labelledby="hero-heading">
+          {/* Hero background image */}
+          <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+            <img
+              src={heroImage}
+              alt=""
+              width={1920}
+              height={1080}
+              className="w-full h-full object-cover object-center opacity-40"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/85 to-background" />
+            <div className="absolute inset-0 bg-gradient-to-r from-background via-background/40 to-background/70" />
+          </div>
           <div
             className="absolute top-0 inset-x-0 mx-auto w-[700px] h-[450px] opacity-15 pointer-events-none"
             style={{ background: "radial-gradient(ellipse, hsl(190 95% 50% / 0.35), transparent 70%)" }}
