@@ -59,6 +59,48 @@ export type Database = {
         }
         Relationships: []
       }
+      competitions: {
+        Row: {
+          created_at: string
+          event_date: string
+          id: string
+          location: string | null
+          name: string
+          notes: string | null
+          plan_data: Json | null
+          priority: string
+          updated_at: string
+          user_id: string
+          weight_class_kg: number | null
+        }
+        Insert: {
+          created_at?: string
+          event_date: string
+          id?: string
+          location?: string | null
+          name: string
+          notes?: string | null
+          plan_data?: Json | null
+          priority?: string
+          updated_at?: string
+          user_id: string
+          weight_class_kg?: number | null
+        }
+        Update: {
+          created_at?: string
+          event_date?: string
+          id?: string
+          location?: string | null
+          name?: string
+          notes?: string | null
+          plan_data?: Json | null
+          priority?: string
+          updated_at?: string
+          user_id?: string
+          weight_class_kg?: number | null
+        }
+        Relationships: []
+      }
       contact_submissions: {
         Row: {
           created_at: string
@@ -307,6 +349,36 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_preferences: {
+        Row: {
+          competition_countdown: boolean
+          diary_comments: boolean
+          event_reminders: boolean
+          training_reminders: boolean
+          updated_at: string
+          user_id: string
+          weight_log_reminders: boolean
+        }
+        Insert: {
+          competition_countdown?: boolean
+          diary_comments?: boolean
+          event_reminders?: boolean
+          training_reminders?: boolean
+          updated_at?: string
+          user_id: string
+          weight_log_reminders?: boolean
+        }
+        Update: {
+          competition_countdown?: boolean
+          diary_comments?: boolean
+          event_reminders?: boolean
+          training_reminders?: boolean
+          updated_at?: string
+          user_id?: string
+          weight_log_reminders?: boolean
+        }
+        Relationships: []
+      }
       nutrition_plans: {
         Row: {
           created_at: string
@@ -479,6 +551,78 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      readiness_checkins: {
+        Row: {
+          checkin_date: string
+          created_at: string
+          id: string
+          is_sick: boolean
+          mood: number
+          motivation: number
+          recommendation: string
+          score: number
+          sleep_hours: number
+          soreness: number
+          user_id: string
+        }
+        Insert: {
+          checkin_date?: string
+          created_at?: string
+          id?: string
+          is_sick?: boolean
+          mood: number
+          motivation: number
+          recommendation: string
+          score: number
+          sleep_hours: number
+          soreness: number
+          user_id: string
+        }
+        Update: {
+          checkin_date?: string
+          created_at?: string
+          id?: string
+          is_sick?: boolean
+          mood?: number
+          motivation?: number
+          recommendation?: string
+          score?: number
+          sleep_hours?: number
+          soreness?: number
+          user_id?: string
+        }
+        Relationships: []
       }
       rehab_plans: {
         Row: {
@@ -687,6 +831,33 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      weight_logs: {
+        Row: {
+          created_at: string
+          id: string
+          log_date: string
+          notes: string | null
+          user_id: string
+          weight_kg: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          log_date?: string
+          notes?: string | null
+          user_id: string
+          weight_kg: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          log_date?: string
+          notes?: string | null
+          user_id?: string
+          weight_kg?: number
         }
         Relationships: []
       }
