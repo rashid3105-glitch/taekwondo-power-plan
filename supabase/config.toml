@@ -32,3 +32,15 @@ verify_jwt = false
 
 [functions.customer-portal]
 verify_jwt = false
+
+[functions.send-push]
+verify_jwt = false
+
+[functions.dispatch-scheduled-pushes]
+verify_jwt = false
+
+[functions.submit-readiness]
+verify_jwt = false
+
+[functions.generate-competition-plan]
+verify_jwt = false

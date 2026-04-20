@@ -26,6 +26,8 @@ import { Watermark } from "@/components/Watermark";
 import { PhysicalTesting } from "@/components/PhysicalTesting";
 import { Separator } from "@/components/ui/separator";
 import { SplashScreen } from "@/components/SplashScreen";
+import { ReadinessCard } from "@/components/ReadinessCard";
+import { Trophy } from "lucide-react";
 
 interface Profile {
   display_name: string;
@@ -514,6 +516,7 @@ export default function Dashboard() {
               )}
               <p className="text-sm text-muted-foreground mt-2">{t("hubChooseSection")}</p>
             </div>
+            {!isDemo && <ReadinessCard />}
             <div className="grid gap-3 sm:grid-cols-2">
               {([
                 { tab: "plan" as const, icon: Zap, titleKey: "hubTrainingTitle", descKey: "hubTrainingDesc", color: "text-tab-plan", iconBg: "bg-tab-plan/15", borderColor: "border-l-tab-plan", gradient: "radial-gradient(ellipse at 20% 50%, hsl(190 95% 50% / 0.15), transparent 60%)", locked: false },
@@ -549,6 +552,24 @@ export default function Dashboard() {
                   </button>
                 );
               })}
+              <button
+                onClick={() => !isDemo && navigate("/competitions")}
+                disabled={isDemo}
+                className={`group relative overflow-hidden rounded-2xl border border-border border-l-[3px] border-l-primary bg-card/80 backdrop-blur-sm p-5 shadow-card text-left transition-all duration-300 ${isDemo ? "cursor-not-allowed opacity-70" : "cursor-pointer hover:border-primary/30 hover:-translate-y-1 hover:shadow-glow"}`}
+              >
+                <div className="absolute inset-0 rounded-2xl opacity-60 group-hover:opacity-100 transition-opacity"
+                     style={{ background: "radial-gradient(ellipse at 20% 50%, hsl(45 90% 55% / 0.15), transparent 60%)" }} />
+                <div className="relative flex items-start gap-4">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/15 relative">
+                    <Trophy className="h-5 w-5 text-primary" />
+                    {isDemo && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
+                  </div>
+                  <div className="space-y-1.5">
+                    <h3 className="text-sm font-bold text-foreground tracking-tight">Competitions</h3>
+                    <p className="text-xs leading-relaxed text-muted-foreground">Plan peaking, weight cuts and countdown to your next event.</p>
+                  </div>
+                </div>
+              </button>
               <button
                 onClick={() => !isDemo && navigate("/library")}
                 disabled={isDemo}

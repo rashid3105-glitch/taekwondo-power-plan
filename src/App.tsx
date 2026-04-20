@@ -33,6 +33,7 @@ import About from "./pages/About";
 import Programs from "./pages/Programs";
 import Contact from "./pages/Contact";
 import Install from "./pages/Install";
+import Competitions from "./pages/Competitions";
 
 const queryClient = new QueryClient();
 
@@ -81,6 +82,7 @@ const AnimatedRoutes = () => {
         <Route path="/library" element={<Page><LibraryChooser /></Page>} />
         <Route path="/library/:section" element={<Page><Library /></Page>} />
         <Route path="/diary" element={<Page><Diary /></Page>} />
+        <Route path="/competitions" element={<Page><Competitions /></Page>} />
         <Route path="/payment-success" element={<Page><PaymentSuccess /></Page>} />
         <Route path="/unsubscribe" element={<Page><Unsubscribe /></Page>} />
         <Route path="/privacy" element={<Page><PrivacyPolicy /></Page>} />
