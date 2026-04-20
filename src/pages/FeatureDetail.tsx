@@ -15,6 +15,7 @@ import rehabImg from "@/assets/features/rehab.jpg";
 import nutritionImg from "@/assets/features/nutrition.jpg";
 import libraryImg from "@/assets/features/library.jpg";
 import testingImg from "@/assets/features/testing.jpg";
+import competitionsImg from "@/assets/feature-competitions-hero.jpg";
 
 type FeatureKey = "plan" | "progress" | "mental" | "rehab" | "nutrition" | "library" | "testing" | "competitions";
 type Lang = "en" | "da" | "sv" | "de" | "ar";
@@ -173,7 +174,7 @@ const features: Record<FeatureKey, FeatureData> = {
   competitions: {
     titleKey: "sectionCompetitionsTitle",
     descKey: "sectionCompetitionsDesc",
-    image: trainingImg,
+    image: competitionsImg,
     gradient: "from-[hsl(45,90%,55%)] to-[hsl(35,90%,50%)]",
     longDesc: {
       en: "Plan every event in your competition calendar with sport-science-grade peaking and weight-cut protocols. Add upcoming events with weight class, priority, and date — then generate a personalized taper schedule, daily weight-cut plan, nutrition adjustments and a peak-day protocol. Pair with the daily morning readiness check so today's training adapts to how you actually feel.",
