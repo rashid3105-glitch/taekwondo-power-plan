@@ -34,7 +34,7 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.send-push]
-verify_jwt = false
+verify_jwt = true
 
 [functions.dispatch-scheduled-pushes]
 verify_jwt = false
