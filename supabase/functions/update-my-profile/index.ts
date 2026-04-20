@@ -31,7 +31,20 @@ const UpdateProfileSchema = z.object({
   club_id: z.string().uuid().nullable(),
   country: z.string().max(100).nullable(),
   custom_calories: z.number().int().min(500).max(10000).nullable(),
-  avatar_url: z.string().max(500).nullable().optional(),
+  avatar_url: z
+    .string()
+    .max(500)
+    .nullable()
+    .optional()
+    .transform((v) => {
+      if (v == null) return null;
+      const trimmed = v.trim();
+      return trimmed === "" ? null : trimmed;
+    })
+    .refine(
+      (v) => v === null || /^[0-9a-f-]{36}\/avatar\.(jpg|png|webp|gif)$/i.test(v),
+      { message: "avatar_url must match {uuid}/avatar.{jpg|png|webp|gif}" }
+    ),
 });
 
 Deno.serve(async (req) => {
