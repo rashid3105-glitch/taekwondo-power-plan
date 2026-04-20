@@ -12,6 +12,7 @@ import { Trophy, Plus, ArrowLeft, Loader2, Scale, AlertTriangle, Calendar } from
 import { useToast } from "@/hooks/use-toast";
 import { Watermark } from "@/components/Watermark";
 import { AppFooter } from "@/components/AppFooter";
+import { CompetitionPlanDialog } from "@/components/CompetitionPlanDialog";
 
 interface Competition {
   id: string;
@@ -32,6 +33,7 @@ export default function Competitions() {
   const [weights, setWeights] = useState<WeightLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState<string | null>(null);
+  const [viewPlan, setViewPlan] = useState<Competition | null>(null);
 
   // create form
   const [name, setName] = useState("");
@@ -196,10 +198,17 @@ export default function Competitions() {
                     {c.plan_data?.taperSummary && (
                       <div className="text-xs text-muted-foreground border-l-2 border-primary/40 pl-2">{c.plan_data.taperSummary}</div>
                     )}
-                    <Button size="sm" variant="outline" className="w-full" onClick={() => generatePlan(c.id)} disabled={generating === c.id}>
-                      {generating === c.id ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : null}
-                      {c.plan_data?.taperSummary ? "Regenerate plan" : "Generate peaking + weight-cut plan"}
-                    </Button>
+                    <div className="flex gap-2">
+                      {c.plan_data?.taperSummary && (
+                        <Button size="sm" variant="default" className="flex-1" onClick={() => setViewPlan(c)}>
+                          View full plan
+                        </Button>
+                      )}
+                      <Button size="sm" variant="outline" className="flex-1" onClick={() => generatePlan(c.id)} disabled={generating === c.id}>
+                        {generating === c.id ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : null}
+                        {c.plan_data?.taperSummary ? "Regenerate" : "Generate plan"}
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               );
@@ -208,6 +217,14 @@ export default function Competitions() {
         )}
       </div>
       <AppFooter />
+      {viewPlan && (
+        <CompetitionPlanDialog
+          open={!!viewPlan}
+          onOpenChange={(o) => !o && setViewPlan(null)}
+          competitionName={viewPlan.name}
+          plan={viewPlan.plan_data}
+        />
+      )}
     </div>
   );
 }
