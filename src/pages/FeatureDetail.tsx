@@ -16,7 +16,7 @@ import nutritionImg from "@/assets/features/nutrition.jpg";
 import libraryImg from "@/assets/features/library.jpg";
 import testingImg from "@/assets/features/testing.jpg";
 
-type FeatureKey = "plan" | "progress" | "mental" | "rehab" | "nutrition" | "library" | "testing";
+type FeatureKey = "plan" | "progress" | "mental" | "rehab" | "nutrition" | "library" | "testing" | "competitions";
 type Lang = "en" | "da" | "sv" | "de" | "ar";
 type LangText = Record<Lang, string>;
 
