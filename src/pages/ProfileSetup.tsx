@@ -375,7 +375,7 @@ export default function ProfileSetup() {
             </button>
             {avatarUrl && avatarUrl.split("?")[0] !== (savedAvatarUrl || "") && !uploading && (
               <div className="absolute mt-28 sm:mt-32 text-[10px] text-destructive font-medium">
-                ⚠ {t("clickSaveToKeepPhoto") || "Click Save to keep this photo"}
+                ⚠ Click Save to keep this photo
               </div>
             )}
             <input
