@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Watermark } from "@/components/Watermark";
 import { AppFooter } from "@/components/AppFooter";
 import { CompetitionPlanDialog } from "@/components/CompetitionPlanDialog";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface Competition {
   id: string;
@@ -29,6 +30,7 @@ interface WeightLog { log_date: string; weight_kg: number; }
 export default function Competitions() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [comps, setComps] = useState<Competition[]>([]);
   const [weights, setWeights] = useState<WeightLog[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,7 +65,7 @@ export default function Competitions() {
   }
 
   async function createComp() {
-    if (!name || !date) { toast({ title: "Name and date required", variant: "destructive" }); return; }
+    if (!name || !date) { toast({ title: t("competitionsNameDateRequired"), variant: "destructive" }); return; }
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
     const { error } = await supabase.from("competitions").insert({
@@ -71,9 +73,9 @@ export default function Competitions() {
       weight_class_kg: weightClass ? parseFloat(weightClass) : null,
       priority, location: location || null,
     });
-    if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
+    if (error) { toast({ title: t("error"), description: error.message, variant: "destructive" }); return; }
     setName(""); setDate(""); setWeightClass(""); setLocation(""); setPriority("A"); setCreateOpen(false);
-    toast({ title: "Competition added" });
+    toast({ title: t("competitionsCreated") });
     void load();
   }
 
@@ -82,28 +84,28 @@ export default function Competitions() {
     try {
       const { data, error } = await supabase.functions.invoke("generate-competition-plan", { body: { competition_id: id } });
       if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
-      toast({ title: "Plan generated" });
+      toast({ title: t("competitionsPlanGenerated") });
       void load();
     } catch (e: any) {
-      toast({ title: "Generation failed", description: e.message, variant: "destructive" });
+      toast({ title: t("competitionsGenerationFailed"), description: e.message, variant: "destructive" });
     } finally { setGenerating(null); }
   }
 
   async function logWeight() {
     const w = parseFloat(todayWeight);
-    if (!(w > 20 && w < 300)) { toast({ title: "Enter a valid weight (20–300 kg)", variant: "destructive" }); return; }
+    if (!(w > 20 && w < 300)) { toast({ title: t("competitionsInvalidWeight"), variant: "destructive" }); return; }
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
     const today = new Date().toISOString().slice(0, 10);
     const { error } = await supabase.from("weight_logs").upsert({ user_id: user.id, log_date: today, weight_kg: w }, { onConflict: "user_id,log_date" });
-    if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
+    if (error) { toast({ title: t("error"), description: error.message, variant: "destructive" }); return; }
     setTodayWeight("");
-    toast({ title: "Weight logged" });
+    toast({ title: t("competitionsWeightLogged") });
     void load();
   }
 
   async function deleteComp(id: string) {
-    if (!confirm("Delete this competition?")) return;
+    if (!confirm(t("competitionsDeleteConfirm"))) return;
     await supabase.from("competitions").delete().eq("id", id);
     void load();
   }
@@ -115,51 +117,51 @@ export default function Competitions() {
       <Watermark />
       <div className="relative z-10 max-w-4xl mx-auto p-4 md:p-6 space-y-6">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")}><ArrowLeft className="h-4 w-4 mr-1" /> Back</Button>
-          <h1 className="text-2xl font-bold flex items-center gap-2"><Trophy className="h-6 w-6 text-primary" /> Competitions</h1>
+          <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")}><ArrowLeft className="h-4 w-4 mr-1" /> {t("competitionsBack")}</Button>
+          <h1 className="text-2xl font-bold flex items-center gap-2"><Trophy className="h-6 w-6 text-primary" /> {t("competitionsTitle")}</h1>
         </div>
 
         {/* Quick weight log */}
         <Card>
-          <CardHeader className="pb-3"><CardTitle className="flex items-center gap-2 text-base"><Scale className="h-4 w-4" /> Today's weight</CardTitle></CardHeader>
+          <CardHeader className="pb-3"><CardTitle className="flex items-center gap-2 text-base"><Scale className="h-4 w-4" /> {t("competitionsTodayWeight")}</CardTitle></CardHeader>
           <CardContent className="flex gap-2 items-end">
             <div className="flex-1">
-              <Label className="text-xs">Weight (kg)</Label>
-              <Input type="number" step="0.1" value={todayWeight} onChange={(e) => setTodayWeight(e.target.value)} placeholder={latestWeight ? `${latestWeight} kg last` : "e.g. 67.4"} />
+              <Label className="text-xs">{t("competitionsWeightKg")}</Label>
+              <Input type="number" step="0.1" value={todayWeight} onChange={(e) => setTodayWeight(e.target.value)} placeholder={latestWeight ? `${latestWeight} ${t("competitionsLastSuffix")}` : t("competitionsWeightPlaceholder")} />
             </div>
-            <Button onClick={logWeight}>Log</Button>
+            <Button onClick={logWeight}>{t("competitionsLog")}</Button>
           </CardContent>
         </Card>
 
         {/* Create new */}
         <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-          <DialogTrigger asChild><Button className="w-full"><Plus className="h-4 w-4 mr-1" /> Add competition</Button></DialogTrigger>
+          <DialogTrigger asChild><Button className="w-full"><Plus className="h-4 w-4 mr-1" /> {t("competitionsAdd")}</Button></DialogTrigger>
           <DialogContent>
-            <DialogHeader><DialogTitle>New competition</DialogTitle></DialogHeader>
+            <DialogHeader><DialogTitle>{t("competitionsNew")}</DialogTitle></DialogHeader>
             <div className="space-y-3">
-              <div><Label>Name *</Label><Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Nordic Open" /></div>
-              <div><Label>Date *</Label><Input type="date" value={date} onChange={(e) => setDate(e.target.value)} /></div>
-              <div><Label>Weight class (kg)</Label><Input type="number" step="0.1" value={weightClass} onChange={(e) => setWeightClass(e.target.value)} placeholder="67.5" /></div>
+              <div><Label>{t("competitionsName")} *</Label><Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Nordic Open" /></div>
+              <div><Label>{t("competitionsDate")} *</Label><Input type="date" value={date} onChange={(e) => setDate(e.target.value)} /></div>
+              <div><Label>{t("competitionsWeightClass")}</Label><Input type="number" step="0.1" value={weightClass} onChange={(e) => setWeightClass(e.target.value)} placeholder="67.5" /></div>
               <div>
-                <Label>Priority</Label>
+                <Label>{t("competitionsPriority")}</Label>
                 <Select value={priority} onValueChange={(v) => setPriority(v as any)}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="A">A — peak event</SelectItem>
-                    <SelectItem value="B">B — important</SelectItem>
-                    <SelectItem value="C">C — training event</SelectItem>
+                    <SelectItem value="A">{t("competitionsPriorityA")}</SelectItem>
+                    <SelectItem value="B">{t("competitionsPriorityB")}</SelectItem>
+                    <SelectItem value="C">{t("competitionsPriorityC")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-              <div><Label>Location</Label><Input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Copenhagen" /></div>
-              <Button onClick={createComp} className="w-full">Create</Button>
+              <div><Label>{t("competitionsLocation")}</Label><Input value={location} onChange={(e) => setLocation(e.target.value)} placeholder={t("competitionsLocationPlaceholder")} /></div>
+              <Button onClick={createComp} className="w-full">{t("competitionsCreate")}</Button>
             </div>
           </DialogContent>
         </Dialog>
 
         {/* List */}
         {loading ? <Loader2 className="h-5 w-5 animate-spin mx-auto" /> : comps.length === 0 ? (
-          <Card><CardContent className="pt-6 text-center text-sm text-muted-foreground">No upcoming competitions. Add one above to generate a peaking + weight-cut plan.</CardContent></Card>
+          <Card><CardContent className="pt-6 text-center text-sm text-muted-foreground">{t("competitionsNoneTitle")}</CardContent></Card>
         ) : (
           <div className="space-y-3">
             {comps.map((c) => {
@@ -173,19 +175,19 @@ export default function Competitions() {
                       <div>
                         <CardTitle className="text-lg">{c.name}</CardTitle>
                         <div className="flex flex-wrap gap-2 mt-1 text-xs">
-                          <Badge variant="secondary"><Calendar className="h-3 w-3 mr-1" />{days} days</Badge>
-                          <Badge variant="outline">Priority {c.priority}</Badge>
+                          <Badge variant="secondary"><Calendar className="h-3 w-3 mr-1" />{days} {t("competitionsDays")}</Badge>
+                          <Badge variant="outline">{t("competitionsPriorityLabel")} {c.priority}</Badge>
                           {c.weight_class_kg && <Badge variant="outline">{c.weight_class_kg} kg</Badge>}
                           {c.location && <Badge variant="outline">{c.location}</Badge>}
                         </div>
                       </div>
-                      <Button variant="ghost" size="sm" onClick={() => deleteComp(c.id)}>Remove</Button>
+                      <Button variant="ghost" size="sm" onClick={() => deleteComp(c.id)}>{t("competitionsRemove")}</Button>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     {targetGap !== null && (
                       <div className={`text-sm p-2 rounded border ${onTrack ? "border-primary/40 bg-primary/10 text-primary" : "border-destructive/40 bg-destructive/10 text-destructive"}`}>
-                        Current {latestWeight} kg → target {c.weight_class_kg} kg ({targetGap > 0 ? `${targetGap.toFixed(1)} kg to cut` : "at or below target"}) · {onTrack ? "on track ✓" : "behind schedule"}
+                        {t("competitionsCurrent")} {latestWeight} kg → {t("competitionsTarget")} {c.weight_class_kg} kg ({targetGap > 0 ? `${targetGap.toFixed(1)} ${t("competitionsToCut")}` : t("competitionsAtTarget")}) · {onTrack ? t("competitionsOnTrack") : t("competitionsBehind")}
                       </div>
                     )}
                     {c.plan_data?.warnings?.length > 0 && (
@@ -201,12 +203,12 @@ export default function Competitions() {
                     <div className="flex gap-2">
                       {c.plan_data?.taperSummary && (
                         <Button size="sm" variant="default" className="flex-1" onClick={() => setViewPlan(c)}>
-                          View full plan
+                          {t("competitionsViewFull")}
                         </Button>
                       )}
                       <Button size="sm" variant="outline" className="flex-1" onClick={() => generatePlan(c.id)} disabled={generating === c.id}>
                         {generating === c.id ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : null}
-                        {c.plan_data?.taperSummary ? "Regenerate" : "Generate plan"}
+                        {c.plan_data?.taperSummary ? t("competitionsRegenerate") : t("competitionsGenerate")}
                       </Button>
                     </div>
                   </CardContent>
