@@ -184,11 +184,11 @@ export default function ProfileSetup() {
         variant: "destructive",
         duration: 10000,
       });
+      setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
 
-    setUploading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
