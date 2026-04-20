@@ -1,12 +1,6 @@
 
-The user generated a competition plan and got "Plan generated" toast but doesn't see the actual plan content on the card. Let me investigate.
+The user is on Danish locale but ReadinessCard shows English. Looking at the code I have, ReadinessCard.tsx uses hardcoded English strings ("Morning readiness check", "How do you feel today?", "Sleep last night", etc.) — no `useLanguage()` / `t()` calls.
 
-Looking at `src/pages/Competitions.tsx`, after generation it only renders:
-- `c.plan_data?.warnings` (array of warning strings)
-- `c.plan_data?.taperSummary` (single string)
+Same likely applies to NotificationSettings, Competitions page, and CompetitionPlanDialog (all created in the same big push — I never added i18n).
 
-But the edge function returns a rich JSON with `weeklyTaper`, `weightCut`, `nutritionAdjustments`, `peakDayProtocol`. None of these are displayed.
-
-From the session replay, the British Open card DOES show warnings ("Cutting 3.0 kg in 5 days...") which means `plan_data` is populated. But there's no taper summary visible and no detail view at all.
-
-Let me check the actual stored plan_data to confirm what AI returns.
+Plan: thread `t()` through all four new surfaces and add the keys to `src/i18n/translations.ts` for all 6 locales (DA, EN, SV, DE, AR, NO).
