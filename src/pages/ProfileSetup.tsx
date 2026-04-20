@@ -135,32 +135,68 @@ export default function ProfileSetup() {
       return;
     }
 
+    // Normalize and validate extension
+    const rawExt = (file.name.split(".").pop() || "").toLowerCase();
+    const ext = rawExt || (file.type === "image/png" ? "png" : "jpg");
+
+    if (ext === "heic" || ext === "heif" || file.type === "image/heic" || file.type === "image/heif") {
+      console.warn("[avatar] HEIC rejected", { name: file.name, type: file.type, size: file.size });
+      toast({
+        title: t("uploadFailed"),
+        description: "HEIC/HEIF not supported. iPhone: Settings → Camera → Formats → Most Compatible, or use JPG/PNG.",
+        variant: "destructive",
+        duration: 10000,
+      });
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+
+    // Size guard (10 MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast({
+        title: t("uploadFailed"),
+        description: "Image too large (max 10 MB).",
+        variant: "destructive",
+        duration: 10000,
+      });
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+
     setUploading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      const ext = file.name.split(".").pop();
       const filePath = `${user.id}/avatar.${ext}`;
 
       const { error: uploadError } = await supabase.storage
         .from("avatars")
-        .upload(filePath, file, { upsert: true });
+        .upload(filePath, file, { upsert: true, contentType: file.type || undefined });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error("[avatar] storage upload failed", {
+          message: uploadError.message,
+          name: file.name,
+          type: file.type,
+          size: file.size,
+        });
+        throw uploadError;
+      }
 
-      // Store the path (not public URL) since bucket is private
+      // Local state only — persisted to DB via update-my-profile on form submit
       setAvatarUrl(filePath + "?t=" + Date.now());
-
-      await supabase.from("profiles").update({
-        avatar_url: filePath,
-      }).eq("user_id", user.id);
-
       toast({ title: t("photoUploaded") });
     } catch (err: any) {
-      toast({ title: t("uploadFailed"), description: err.message, variant: "destructive" });
+      toast({
+        title: t("uploadFailed"),
+        description: err?.message || "Unknown error",
+        variant: "destructive",
+        duration: 10000,
+      });
     } finally {
       setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
@@ -178,6 +214,9 @@ export default function ProfileSetup() {
         return;
       }
 
+      // Strip cache-busting suffix before persisting
+      const cleanAvatarUrl = avatarUrl ? avatarUrl.split("?")[0] : null;
+
       const payload = {
         age: age ? parseInt(age) : null,
         weight_kg: weight ? parseFloat(weight) : null,
@@ -192,6 +231,7 @@ export default function ProfileSetup() {
         club_id: clubId || null,
         country: country || null,
         custom_calories: customCalories ? parseInt(customCalories) : null,
+        avatar_url: cleanAvatarUrl,
       };
 
       const { data, error } = await supabase.functions.invoke("update-my-profile", {
