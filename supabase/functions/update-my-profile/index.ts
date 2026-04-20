@@ -42,8 +42,8 @@ const UpdateProfileSchema = z.object({
       return trimmed === "" ? null : trimmed;
     })
     .refine(
-      (v) => v === null || /^[0-9a-f-]{36}\/avatar\.(jpg|png|webp|gif)$/i.test(v),
-      { message: "avatar_url must match {uuid}/avatar.{jpg|png|webp|gif}" }
+      (v) => v === null || /^[0-9a-f-]{36}\/avatar\.(jpg|jpeg|png|webp|gif)$/i.test(v),
+      { message: "avatar_url must match {uuid}/avatar.{jpg|jpeg|png|webp|gif}" }
     ),
 });
 
