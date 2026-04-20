@@ -56,6 +56,7 @@ export default function ProfileSetup() {
   const [programWeeks, setProgramWeeks] = useState(8);
   const [currentInjury, setCurrentInjury] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [savedAvatarUrl, setSavedAvatarUrl] = useState<string | null>(null);
   const avatarDisplayUrl = useAvatarUrl(avatarUrl);
   const [clubs, setClubs] = useState<ClubOption[]>([]);
   const [clubId, setClubId] = useState("");
@@ -104,6 +105,7 @@ export default function ProfileSetup() {
           setProgramWeeks(profileData.program_weeks || 8);
           setCurrentInjury(profileData.current_injury || "");
           setAvatarUrl(profileData.avatar_url || null);
+          setSavedAvatarUrl(profileData.avatar_url || null);
           setClubId(profileData.club_id || "");
           setCountry(profileData.country || "");
           setCustomCalories(profileData.custom_calories?.toString() || "");
@@ -139,6 +141,8 @@ export default function ProfileSetup() {
 
     let file: File = original;
     let ext = (original.name.split(".").pop() || "").toLowerCase();
+    // Normalize common variants
+    if (ext === "jpeg" || ext === "jpe") ext = "jpg";
 
     // Auto-convert HEIC/HEIF → JPEG in-browser
     const isHeic =
@@ -174,6 +178,20 @@ export default function ProfileSetup() {
       }
     } else if (!ext) {
       ext = original.type === "image/png" ? "png" : "jpg";
+    }
+
+    // Allowlist: only formats browsers can reliably display
+    const ALLOWED_EXT = ["jpg", "png", "webp", "gif"];
+    if (!ALLOWED_EXT.includes(ext)) {
+      toast({
+        title: t("uploadFailed"),
+        description: `Unsupported image format (.${ext}). Please use JPG, PNG, WEBP or GIF.`,
+        variant: "destructive",
+        duration: 10000,
+      });
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
     }
 
     // Size guard (10 MB) — checked after conversion
@@ -271,6 +289,7 @@ export default function ProfileSetup() {
         return;
       }
 
+      setSavedAvatarUrl(cleanAvatarUrl);
       toast({ title: t("profileSaved") });
 
       // Determine where to navigate after save
@@ -354,6 +373,11 @@ export default function ProfileSetup() {
                 {avatarUrl ? t("changePhoto") : t("addPhoto")}
               </span>
             </button>
+            {avatarUrl && avatarUrl.split("?")[0] !== (savedAvatarUrl || "") && !uploading && (
+              <div className="absolute mt-28 sm:mt-32 text-[10px] text-destructive font-medium">
+                ⚠ Click Save to keep this photo
+              </div>
+            )}
             <input
               ref={fileInputRef}
               type="file"
