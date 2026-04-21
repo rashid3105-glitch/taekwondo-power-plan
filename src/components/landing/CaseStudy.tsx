@@ -1,8 +1,9 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { TrendingDown, Zap, Target, Clock, Activity, Quote, Shield, ChevronLeft, ChevronRight, Users } from "lucide-react";
+import { TrendingDown, Zap, Target, Clock, Activity, Quote, Shield, ChevronLeft, ChevronRight, Users, ChevronDown } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { caseStudies, type Locale } from "@/data/caseStudies";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 const lt = (obj: Partial<Record<Locale, string>> & { en: string }, locale: string) => obj[locale as Locale] || obj.en;
 
@@ -11,6 +12,7 @@ export const CaseStudy = () => {
 
   const dailyIndex = useMemo(() => Math.floor(Date.now() / 86400000) % caseStudies.length, []);
   const [index, setIndex] = useState(dailyIndex);
+  const [storyOpen, setStoryOpen] = useState(false);
   const story = caseStudies[index];
   const isCoach = story.type === "coach";
 
@@ -100,38 +102,8 @@ export const CaseStudy = () => {
             </p>
           </div>
 
-          {/* Problems */}
-          <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-5 sm:p-6 mb-6">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-destructive mb-3 flex items-center gap-1.5">
-              <Clock className="h-3.5 w-3.5" /> {beforeLabel}
-            </h3>
-            <ul className="space-y-2">
-              {story.problems.map((p, i) => (
-                <li key={i} className="flex items-start gap-2 text-xs text-muted-foreground leading-relaxed">
-                  <span className="mt-1 h-1.5 w-1.5 rounded-full bg-destructive/60 flex-shrink-0" />
-                  {lt(p, locale)}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Intervention */}
-          <div className={`rounded-xl border ${isCoach ? "border-primary/20 bg-primary/5" : "border-energy/20 bg-energy/5"} p-5 sm:p-6 mb-6`}>
-            <h3 className={`text-xs font-bold uppercase tracking-wider ${isCoach ? "text-primary" : "text-energy"} mb-3 flex items-center gap-1.5`}>
-              <Zap className="h-3.5 w-3.5" /> {interventionLabel}
-            </h3>
-            <ul className="space-y-2">
-              {story.changes.map((c, i) => (
-                <li key={i} className="flex items-start gap-2 text-xs text-foreground/80 leading-relaxed">
-                  <span className={`mt-1 h-1.5 w-1.5 rounded-full ${isCoach ? "bg-primary/60" : "bg-energy/60"} flex-shrink-0`} />
-                  {lt(c, locale)}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Metrics */}
-          <div className="mb-6">
+          {/* Metrics — always visible (the conversion driver) */}
+          <div className="mb-4">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {story.metrics.map((m, i) => (
                 <div
@@ -152,16 +124,58 @@ export const CaseStudy = () => {
             </p>
           </div>
 
-          {/* Quote */}
-          <div className="rounded-xl border border-border bg-secondary/30 p-5 sm:p-6 relative">
-            <Quote className={`h-6 w-6 ${isCoach ? "text-primary/30" : "text-energy/30"} absolute top-4 right-4`} />
-            <p className="text-sm text-foreground/90 italic leading-relaxed pr-8">
-              "{lt(story.quote, locale)}"
-            </p>
-            <p className="mt-3 text-[11px] text-muted-foreground font-semibold">
-              — {lt(story.name, locale)}, {lt(story.info, locale)}
-            </p>
-          </div>
+          {/* Collapsible: full story details */}
+          <Collapsible open={storyOpen} onOpenChange={setStoryOpen}>
+            <div className="flex justify-center mb-4">
+              <CollapsibleTrigger className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-4 py-2 text-xs font-semibold text-foreground hover:bg-secondary transition-colors">
+                {t("landingReadFullStory")}
+                <ChevronDown className={`h-3.5 w-3.5 transition-transform ${storyOpen ? "rotate-180" : ""}`} />
+              </CollapsibleTrigger>
+            </div>
+
+            <CollapsibleContent className="data-[state=open]:animate-slide-up space-y-6">
+              {/* Problems */}
+              <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-5 sm:p-6">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-destructive mb-3 flex items-center gap-1.5">
+                  <Clock className="h-3.5 w-3.5" /> {beforeLabel}
+                </h3>
+                <ul className="space-y-2">
+                  {story.problems.map((p, i) => (
+                    <li key={i} className="flex items-start gap-2 text-xs text-muted-foreground leading-relaxed">
+                      <span className="mt-1 h-1.5 w-1.5 rounded-full bg-destructive/60 flex-shrink-0" />
+                      {lt(p, locale)}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Intervention */}
+              <div className={`rounded-xl border ${isCoach ? "border-primary/20 bg-primary/5" : "border-energy/20 bg-energy/5"} p-5 sm:p-6`}>
+                <h3 className={`text-xs font-bold uppercase tracking-wider ${isCoach ? "text-primary" : "text-energy"} mb-3 flex items-center gap-1.5`}>
+                  <Zap className="h-3.5 w-3.5" /> {interventionLabel}
+                </h3>
+                <ul className="space-y-2">
+                  {story.changes.map((c, i) => (
+                    <li key={i} className="flex items-start gap-2 text-xs text-foreground/80 leading-relaxed">
+                      <span className={`mt-1 h-1.5 w-1.5 rounded-full ${isCoach ? "bg-primary/60" : "bg-energy/60"} flex-shrink-0`} />
+                      {lt(c, locale)}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Quote */}
+              <div className="rounded-xl border border-border bg-secondary/30 p-5 sm:p-6 relative">
+                <Quote className={`h-6 w-6 ${isCoach ? "text-primary/30" : "text-energy/30"} absolute top-4 right-4`} />
+                <p className="text-sm text-foreground/90 italic leading-relaxed pr-8">
+                  "{lt(story.quote, locale)}"
+                </p>
+                <p className="mt-3 text-[11px] text-muted-foreground font-semibold">
+                  — {lt(story.name, locale)}, {lt(story.info, locale)}
+                </p>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
         </motion.div>
       </AnimatePresence>
 

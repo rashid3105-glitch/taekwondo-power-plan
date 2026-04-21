@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { HelpCircle, ChevronDown } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -8,10 +9,13 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-const faqKeys = ["faq1", "faq2", "faq3", "faq4", "faq5"] as const;
+const allFaqKeys = ["faq1", "faq2", "faq3", "faq4", "faq5"] as const;
+const initialFaqKeys = allFaqKeys.slice(0, 3);
 
 export const FAQSection = () => {
   const { t } = useLanguage();
+  const [showAll, setShowAll] = useState(false);
+  const visibleKeys = showAll ? allFaqKeys : initialFaqKeys;
 
   return (
     <section className="max-w-2xl mx-auto px-5 pb-16 sm:pb-20" aria-label="FAQ">
@@ -40,7 +44,7 @@ export const FAQSection = () => {
         transition={{ duration: 0.5, delay: 0.1 }}
       >
         <Accordion type="single" collapsible className="space-y-2">
-          {faqKeys.map((key, i) => (
+          {visibleKeys.map((key) => (
             <AccordionItem
               key={key}
               value={key}
@@ -55,6 +59,18 @@ export const FAQSection = () => {
             </AccordionItem>
           ))}
         </Accordion>
+
+        {!showAll && (
+          <div className="flex justify-center mt-5">
+            <button
+              onClick={() => setShowAll(true)}
+              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-4 py-2 text-xs font-semibold text-foreground hover:bg-secondary transition-colors shadow-sm"
+            >
+              {t("landingShowAllFAQ")}
+              <ChevronDown className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        )}
       </motion.div>
     </section>
   );
