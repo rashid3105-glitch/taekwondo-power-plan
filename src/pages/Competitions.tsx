@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Trophy, Plus, ArrowLeft, Loader2, Scale, AlertTriangle, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Watermark } from "@/components/Watermark";
@@ -202,6 +203,32 @@ export default function Competitions() {
                     {c.plan_data?.taperSummary && (
                       <div className="text-xs text-muted-foreground border-l-2 border-primary/40 pl-2">{c.plan_data.taperSummary}</div>
                     )}
+                    {/* Public profile controls */}
+                    <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-border">
+                      <Input
+                        value={c.result ?? ""}
+                        onChange={async (e) => {
+                          const result = e.target.value.slice(0, 50);
+                          setComps(comps.map(x => x.id === c.id ? { ...x, result } : x));
+                        }}
+                        onBlur={async (e) => {
+                          await supabase.from("competitions").update({ result: e.target.value.slice(0, 50) || null }).eq("id", c.id);
+                        }}
+                        placeholder={t("competitionsResult")}
+                        className="h-8 text-xs flex-1 min-w-[140px]"
+                        maxLength={50}
+                      />
+                      <label className="flex items-center gap-1.5 text-xs text-muted-foreground cursor-pointer">
+                        <Switch
+                          checked={c.is_public}
+                          onCheckedChange={async (v) => {
+                            setComps(comps.map(x => x.id === c.id ? { ...x, is_public: v } : x));
+                            await supabase.from("competitions").update({ is_public: v }).eq("id", c.id);
+                          }}
+                        />
+                        {t("competitionsShowOnPublicProfile")}
+                      </label>
+                    </div>
                     <div className="flex gap-2">
                       {c.plan_data?.taperSummary && (
                         <Button size="sm" variant="default" className="flex-1" onClick={() => setViewPlan(c)}>
