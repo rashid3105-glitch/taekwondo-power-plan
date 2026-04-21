@@ -12,6 +12,7 @@ import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekScheduleP
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { AccountDangerZone } from "@/components/AccountDangerZone";
+import { PublicProfileSettings } from "@/components/profile/PublicProfileSettings";
 
 import { COUNTRIES } from "@/data/countries";
 
@@ -545,6 +546,10 @@ export default function ProfileSetup() {
             {loading ? t("saving") : t("saveProfileContinue")}
           </Button>
         </form>
+
+        <div className="mt-6">
+          <PublicProfileSettings />
+        </div>
 
         <AccountDangerZone />
       </div>

@@ -23,6 +23,8 @@ interface Competition {
   priority: "A" | "B" | "C";
   location: string | null;
   plan_data: any;
+  result: string | null;
+  is_public: boolean;
 }
 
 interface WeightLog { log_date: string; weight_kg: number; }
