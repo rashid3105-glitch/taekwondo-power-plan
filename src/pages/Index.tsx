@@ -55,7 +55,44 @@ const Index = () => {
             <div className="absolute inset-0 bg-gradient-to-b from-background/55 via-background/75 to-background" />
             <div className="absolute inset-0 bg-gradient-to-r from-background/85 via-background/30 to-background/60" />
           </div>
-...
+          <div
+            className="absolute top-0 inset-x-0 mx-auto w-[700px] h-[450px] opacity-15 pointer-events-none"
+            style={{ background: "radial-gradient(ellipse, hsl(190 95% 50% / 0.35), transparent 70%)" }}
+            aria-hidden="true"
+          />
+          <div className="relative max-w-3xl mx-auto px-5 pt-14 pb-8 sm:pt-20 sm:pb-10">
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-secondary/40 backdrop-blur-sm px-3 py-1 mb-5"
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-speed animate-pulse" />
+              <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
+                {t("landingBadge")}
+              </span>
+            </motion.div>
+
+            <motion.h1
+              id="hero-heading"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter text-foreground leading-[1.05]"
+            >
+              {t("landingHeroTitle")}{" "}
+              <span className="text-gradient-energy">{t("landingHeroHighlight")}</span>
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.25 }}
+              className="mt-4 text-base sm:text-lg text-muted-foreground leading-relaxed max-w-xl"
+            >
+              {t("landingHeroDesc")}
+            </motion.p>
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
