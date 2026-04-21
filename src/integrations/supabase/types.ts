@@ -14,6 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
+      athlete_achievements: {
+        Row: {
+          created_at: string
+          id: string
+          medal: string | null
+          sort_order: number
+          title: string
+          updated_at: string
+          user_id: string
+          year: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          medal?: string | null
+          sort_order?: number
+          title: string
+          updated_at?: string
+          user_id: string
+          year?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          medal?: string | null
+          sort_order?: number
+          title?: string
+          updated_at?: string
+          user_id?: string
+          year?: number | null
+        }
+        Relationships: []
+      }
+      athlete_highlight_videos: {
+        Row: {
+          created_at: string
+          id: string
+          sort_order: number
+          title: string | null
+          url: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          sort_order?: number
+          title?: string | null
+          url: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          sort_order?: number
+          title?: string | null
+          url?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       clubs: {
         Row: {
           created_at: string
@@ -64,11 +124,13 @@ export type Database = {
           created_at: string
           event_date: string
           id: string
+          is_public: boolean
           location: string | null
           name: string
           notes: string | null
           plan_data: Json | null
           priority: string
+          result: string | null
           updated_at: string
           user_id: string
           weight_class_kg: number | null
@@ -77,11 +139,13 @@ export type Database = {
           created_at?: string
           event_date: string
           id?: string
+          is_public?: boolean
           location?: string | null
           name: string
           notes?: string | null
           plan_data?: Json | null
           priority?: string
+          result?: string | null
           updated_at?: string
           user_id: string
           weight_class_kg?: number | null
@@ -90,11 +154,13 @@ export type Database = {
           created_at?: string
           event_date?: string
           id?: string
+          is_public?: boolean
           location?: string | null
           name?: string
           notes?: string | null
           plan_data?: Json | null
           priority?: string
+          result?: string | null
           updated_at?: string
           user_id?: string
           weight_class_kg?: number | null
@@ -476,10 +542,15 @@ export type Database = {
           id: string
           is_approved: boolean
           is_demo: boolean
+          is_public: boolean
           last_seen_at: string | null
           payment_date: string | null
           payment_status: string
           program_weeks: number | null
+          public_show_achievements: boolean
+          public_show_competitions: boolean
+          public_show_prs: boolean
+          public_show_videos: boolean
           tkd_sessions_per_week: number
           updated_at: string
           user_id: string
@@ -504,10 +575,15 @@ export type Database = {
           id?: string
           is_approved?: boolean
           is_demo?: boolean
+          is_public?: boolean
           last_seen_at?: string | null
           payment_date?: string | null
           payment_status?: string
           program_weeks?: number | null
+          public_show_achievements?: boolean
+          public_show_competitions?: boolean
+          public_show_prs?: boolean
+          public_show_videos?: boolean
           tkd_sessions_per_week?: number
           updated_at?: string
           user_id: string
@@ -532,10 +608,15 @@ export type Database = {
           id?: string
           is_approved?: boolean
           is_demo?: boolean
+          is_public?: boolean
           last_seen_at?: string | null
           payment_date?: string | null
           payment_status?: string
           program_weeks?: number | null
+          public_show_achievements?: boolean
+          public_show_competitions?: boolean
+          public_show_prs?: boolean
+          public_show_videos?: boolean
           tkd_sessions_per_week?: number
           updated_at?: string
           user_id?: string
@@ -962,6 +1043,7 @@ export type Database = {
           payment_status: string
         }[]
       }
+      get_public_athlete_bundle: { Args: { _code: string }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
