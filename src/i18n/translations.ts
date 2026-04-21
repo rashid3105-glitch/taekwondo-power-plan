@@ -1062,6 +1062,11 @@ const translations = {
     changelogEntry64: "Morning readiness check — daily 10-second check that adapts today's training volume",
     changelogEntry65: "Push notifications — training, diary, and competition reminders straight to your phone",
     changelogEntry66: "Full translation of Competitions, Readiness and Notifications across all 6 languages",
+    landingSeeFullWeek: "See full week",
+    landingReadFullStory: "Read full story",
+    landingShowAllFAQ: "Show all questions",
+    landingValueComboTitle: "Built different. Periodized for taekwondo.",
+    landingValueComboDesc: "Three days from a real 8-week sparring power program — see the full week and all the science behind it.",
   },
   da: {
     // Common
@@ -2117,6 +2122,11 @@ const translations = {
     changelogEntry64: "Morgen-beredskabstjek — daglig 10-sekunders tjek der tilpasser dagens træningsvolumen",
     changelogEntry65: "Push-notifikationer — trænings-, dagbogs- og konkurrencepåmindelser direkte til mobilen",
     changelogEntry66: "Fuld oversættelse af konkurrencer, beredskab og notifikationer til alle 6 sprog",
+    landingSeeFullWeek: "Se hele ugen",
+    landingReadFullStory: "Læs hele historien",
+    landingShowAllFAQ: "Vis alle spørgsmål",
+    landingValueComboTitle: "Bygget anderledes. Periodiseret til taekwondo.",
+    landingValueComboDesc: "Tre dage fra et rigtigt 8-ugers sparring-power program — se hele ugen og videnskaben bag.",
   },
   sv: {
     // Common
@@ -3172,6 +3182,11 @@ const translations = {
     changelogEntry64: "Morgon-beredskapskoll — daglig 10-sekunders koll som anpassar dagens träningsvolym",
     changelogEntry65: "Push-aviseringar — tränings-, dagboks- och tävlingspåminnelser direkt till mobilen",
     changelogEntry66: "Fullständig översättning av tävlingar, beredskap och aviseringar till alla 6 språk",
+    landingSeeFullWeek: "Se hela veckan",
+    landingReadFullStory: "Läs hela berättelsen",
+    landingShowAllFAQ: "Visa alla frågor",
+    landingValueComboTitle: "Byggt annorlunda. Periodiserat för taekwondo.",
+    landingValueComboDesc: "Tre dagar från ett riktigt 8-veckors sparring-power program — se hela veckan och vetenskapen bakom.",
   },
   de: {
     plan: "Plan",
@@ -4177,6 +4192,11 @@ const translations = {
     changelogEntry64: "Morgen-Bereitschaftscheck — tägliche 10-Sekunden-Prüfung, die das heutige Trainingsvolumen anpasst",
     changelogEntry65: "Push-Benachrichtigungen — Trainings-, Tagebuch- und Wettkampf-Erinnerungen direkt aufs Handy",
     changelogEntry66: "Vollständige Übersetzung von Wettkämpfen, Bereitschaft und Benachrichtigungen in alle 6 Sprachen",
+    landingSeeFullWeek: "Ganze Woche ansehen",
+    landingReadFullStory: "Ganze Geschichte lesen",
+    landingShowAllFAQ: "Alle Fragen anzeigen",
+    landingValueComboTitle: "Anders gebaut. Periodisiert für Taekwondo.",
+    landingValueComboDesc: "Drei Tage aus einem echten 8-Wochen-Sparring-Power-Programm — sieh dir die ganze Woche und die Wissenschaft dahinter an.",
   },
 
   ar: {
@@ -5183,6 +5203,11 @@ const translations = {
     changelogEntry64: "فحص الجاهزية الصباحي — فحص يومي مدته 10 ثوانٍ يكيّف حجم تدريب اليوم",
     changelogEntry65: "إشعارات الدفع — تذكيرات التدريب والمذكرة والمسابقات مباشرة إلى هاتفك",
     changelogEntry66: "ترجمة كاملة لميزات المسابقات والجاهزية والإشعارات إلى جميع اللغات الست",
+    landingSeeFullWeek: "اطّلع على الأسبوع كاملاً",
+    landingReadFullStory: "اقرأ القصة كاملة",
+    landingShowAllFAQ: "عرض جميع الأسئلة",
+    landingValueComboTitle: "مبني بشكل مختلف. مُجزّأ للتايكوندو.",
+    landingValueComboDesc: "ثلاثة أيام من برنامج قوة سباري حقيقي مدته 8 أسابيع — اطّلع على الأسبوع الكامل والعلم وراءه.",
   },
   no: {
     // Common
@@ -6238,6 +6263,11 @@ const translations = {
     changelogEntry64: "Morgen-beredskapssjekk — daglig 10-sekunders sjekk som tilpasser dagens treningsvolum",
     changelogEntry65: "Push-varslinger — tren-, dagbok- og konkurranse-påminnelser direkte til mobilen",
     changelogEntry66: "Full oversettelse av konkurranser, beredskap og varslinger til alle 6 språk",
+    landingSeeFullWeek: "Se hele uken",
+    landingReadFullStory: "Les hele historien",
+    landingShowAllFAQ: "Vis alle spørsmål",
+    landingValueComboTitle: "Bygget annerledes. Periodisert for taekwondo.",
+    landingValueComboDesc: "Tre dager fra et ekte 8-ukers sparring-power program — se hele uken og vitenskapen bak.",
   },
 } as const;
 

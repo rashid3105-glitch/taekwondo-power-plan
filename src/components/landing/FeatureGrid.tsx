@@ -77,32 +77,35 @@ export const FeatureGrid = () => {
   const { t } = useLanguage();
 
   return (
-    <section className="max-w-2xl mx-auto px-5 pb-14 sm:pb-20" aria-label="Features">
-      <div className="grid gap-3 sm:grid-cols-2">
+    <section className="max-w-3xl mx-auto px-5 pb-14 sm:pb-20" aria-label="Features">
+      <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
         {sections.map((s, i) => (
           <motion.button
             key={s.titleKey}
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-20px" }}
-            transition={{ duration: 0.4, delay: i * 0.05 }}
-            whileHover={{ y: -3, scale: 1.01 }}
+            transition={{ duration: 0.4, delay: i * 0.04 }}
+            whileHover={{ y: -3, scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => navigate(`/features/${s.slug}`)}
-            className="group relative rounded-2xl border border-border bg-card p-6 shadow-sm hover:shadow-md hover:border-primary/40 transition-all duration-300 text-left cursor-pointer"
+            className="group relative rounded-xl border border-border bg-card p-4 shadow-sm hover:shadow-md hover:border-primary/40 transition-all duration-300 text-left cursor-pointer overflow-hidden"
           >
             <div
-              className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+              className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
               style={{ background: s.gradient, filter: "blur(40px)", zIndex: -1 }}
             />
-            <div className="flex items-start gap-4">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary/80 border border-border/40 group-hover:border-primary/30 transition-colors">
+            <div className="flex flex-col gap-2.5">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-secondary/80 border border-border/40 group-hover:border-primary/30 transition-colors">
                 <s.icon className={`h-5 w-5 ${s.iconColor} transition-transform duration-300 group-hover:scale-110`} />
               </div>
-              <div className="space-y-1.5 min-w-0">
-                <h3 className="text-sm font-bold text-foreground tracking-tight leading-tight">{t(s.titleKey)}</h3>
-                <p className="text-[11px] leading-relaxed text-muted-foreground line-clamp-2">{t(s.descKey)}</p>
-              </div>
+              <h3 className="text-xs sm:text-sm font-bold text-foreground tracking-tight leading-tight">
+                {t(s.titleKey)}
+              </h3>
+              {/* Description: shown on mobile/tablet always, hover-revealed on lg+ */}
+              <p className="text-[10px] leading-relaxed text-muted-foreground line-clamp-2 lg:line-clamp-none lg:max-h-0 lg:opacity-0 lg:group-hover:max-h-20 lg:group-hover:opacity-100 lg:transition-all lg:duration-300">
+                {t(s.descKey)}
+              </p>
             </div>
           </motion.button>
         ))}

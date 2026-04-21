@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, Users, TrendingUp, Award, Calendar, Zap, Target } from "lucide-react";
+import { ArrowRight, Users, TrendingUp, Award } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { PageMeta } from "@/components/PageMeta";
@@ -11,7 +11,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { CaseStudy } from "@/components/landing/CaseStudy";
 import { FeatureGrid } from "@/components/landing/FeatureGrid";
 import { FAQSection } from "@/components/landing/FAQSection";
-import { WeekPlanPreview } from "@/components/landing/WeekPlanPreview";
+import { ValuePlanCombo } from "@/components/landing/ValuePlanCombo";
 import { PublicNav } from "@/components/PublicNav";
 import heroImage from "@/assets/hero-taekwondo-coach.jpg";
 
@@ -43,17 +43,17 @@ const Index = () => {
       <main className="flex-1">
         {/* Hero */}
         <section className="relative overflow-hidden" aria-labelledby="hero-heading">
-          {/* Hero background image */}
+          {/* Hero background image — bumped opacity for stronger presence */}
           <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
             <img
               src={heroImage}
               alt=""
               width={1920}
               height={1080}
-              className="w-full h-full object-cover object-center opacity-40"
+              className="w-full h-full object-cover object-center opacity-65"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/85 to-background" />
-            <div className="absolute inset-0 bg-gradient-to-r from-background via-background/40 to-background/70" />
+            <div className="absolute inset-0 bg-gradient-to-b from-background/55 via-background/75 to-background" />
+            <div className="absolute inset-0 bg-gradient-to-r from-background/85 via-background/30 to-background/60" />
           </div>
           <div
             className="absolute top-0 inset-x-0 mx-auto w-[700px] h-[450px] opacity-15 pointer-events-none"
@@ -80,8 +80,8 @@ const Index = () => {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter text-foreground leading-[1.05]"
             >
-               {t("landingHeroTitle")}{" "}
-               <span className="text-gradient-energy">{t("landingHeroHighlight")}</span>
+              {t("landingHeroTitle")}{" "}
+              <span className="text-gradient-energy">{t("landingHeroHighlight")}</span>
             </motion.h1>
 
             <motion.p
@@ -90,7 +90,7 @@ const Index = () => {
               transition={{ duration: 0.6, delay: 0.25 }}
               className="mt-4 text-base sm:text-lg text-muted-foreground leading-relaxed max-w-xl"
             >
-               {t("landingHeroDesc")}
+              {t("landingHeroDesc")}
             </motion.p>
 
             <motion.div
@@ -112,15 +112,34 @@ const Index = () => {
               <Button onClick={() => navigate("/methodology")} size="lg" variant="outline" className="px-7 font-semibold text-sm border-border/60">
                 {t("methCta")}
               </Button>
-              <Button onClick={() => navigate("/pricing")} size="lg" variant="ghost" className="px-7 font-semibold text-sm text-muted-foreground">
-                {t("viewPricing")}
-              </Button>
+            </motion.div>
+
+            {/* Inline social proof chips */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.55 }}
+              className="mt-5 flex flex-wrap items-center gap-2"
+            >
+              {[
+                { icon: Users, text: "landingProofAthletes" as const },
+                { icon: TrendingUp, text: "landingProofJump" as const },
+                { icon: Award, text: "landingProofLevel" as const },
+              ].map((item, i) => (
+                <div
+                  key={i}
+                  className="flex items-center gap-1.5 rounded-full border border-border/60 bg-secondary/40 backdrop-blur-sm px-2.5 py-1"
+                >
+                  <item.icon className="h-3 w-3 text-energy" />
+                  <span className="text-[11px] font-semibold text-foreground/90">{t(item.text)}</span>
+                </div>
+              ))}
             </motion.div>
 
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
+              transition={{ duration: 0.5, delay: 0.7 }}
               className="mt-3 text-[11px] text-muted-foreground/60"
             >
               {t("ctaSubtext")}
@@ -132,65 +151,17 @@ const Index = () => {
         <div className="h-24 bg-gradient-to-b from-background to-[hsl(210,20%,97%)]" aria-hidden="true" />
 
         {/* ── Light content sections ── */}
-        <div className="theme-light-section">
-          {/* Social Proof Bar */}
-          <section className="max-w-3xl mx-auto px-5 pb-10 pt-2">
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="flex flex-wrap items-center justify-center gap-4 sm:gap-6"
-            >
-              {[
-                { icon: Users, text: "landingProofAthletes" as const },
-                { icon: TrendingUp, text: "landingProofJump" as const },
-                { icon: Award, text: "landingProofLevel" as const },
-              ].map((item, i) => (
-                <div key={i} className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 shadow-sm">
-                  <item.icon className="h-4 w-4 text-energy" />
-                  <span className="text-xs font-bold text-foreground">{t(item.text)}</span>
-                </div>
-              ))}
-            </motion.div>
-          </section>
+        <div className="theme-light-section pt-4">
+          {/* Combined value props + 3-day plan teaser */}
+          <ValuePlanCombo />
 
-          {/* 3-Column Value Props */}
-          <section className="max-w-3xl mx-auto px-5 pb-14">
-            <div className="grid gap-4 sm:grid-cols-3">
-              {([
-                { icon: Calendar, titleKey: "landingValuePeriodizedTitle" as const, descKey: "landingValuePeriodizedDesc" as const },
-                { icon: Target, titleKey: "landingValueSportTitle" as const, descKey: "landingValueSportDesc" as const },
-                { icon: Zap, titleKey: "landingValueAITitle" as const, descKey: "landingValueAIDesc" as const },
-              ]).map((item, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: i * 0.1 }}
-                  className="rounded-xl border border-border bg-card p-5 text-center shadow-sm"
-                >
-                  <div className="mx-auto mb-3 h-10 w-10 rounded-lg bg-energy/10 border border-energy/20 flex items-center justify-center">
-                    <item.icon className="h-5 w-5 text-energy" />
-                  </div>
-                  <h3 className="text-sm font-bold text-foreground mb-1.5">{t(item.titleKey)}</h3>
-                  <p className="text-[11px] text-muted-foreground leading-relaxed">{t(item.descKey)}</p>
-                </motion.div>
-              ))}
-            </div>
-          </section>
-
-          {/* Weekly Training Plan Example */}
-          <WeekPlanPreview />
-
-          {/* Case Study */}
+          {/* Case Study (compact) */}
           <CaseStudy />
 
-          {/* Features */}
+          {/* Features (dense grid) */}
           <FeatureGrid />
 
-          {/* FAQ */}
+          {/* FAQ (top 3) */}
           <FAQSection />
         </div>
 
