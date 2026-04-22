@@ -467,6 +467,12 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
         )}
       </div>
 
+      {/* Private Coach Notes */}
+      <CoachNotes athleteId={athlete.user_id} />
+
+      {/* Compare to club */}
+      <PhysicalTestComparison athleteId={athlete.user_id} />
+
       {/* Reminder History */}
       <ReminderHistory athleteId={athlete.user_id} />
 
