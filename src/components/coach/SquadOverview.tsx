@@ -30,6 +30,7 @@ type SortKey = "attention" | "name" | "belt" | "lastActive";
 interface Props {
   coachId: string;
   onSelectAthlete?: (userId: string) => void;
+  allowedUserIds?: string[];
 }
 
 const BELT_ORDER = ["white", "yellow", "green", "blue", "red", "black"];
