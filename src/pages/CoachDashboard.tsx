@@ -114,10 +114,19 @@ export default function CoachDashboard() {
   const [viewPlan, setViewPlan] = useState<AthletePlan | null>(null);
   const [viewRehabPlan, setViewRehabPlan] = useState<RehabPlan | null>(null);
   const [manageAthleteId, setManageAthleteId] = useState<string | null>(null);
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [singleMessageAthlete, setSingleMessageAthlete] = useState<{ user_id: string; display_name: string } | null>(null);
-  const toggleSelect = (id: string) => {
-    setSelectedIds((prev) => {
+  // Messages tab state
+  const [messageRecipientIds, setMessageRecipientIds] = useState<Set<string>>(new Set());
+  const [messageSearch, setMessageSearch] = useState("");
+  const [messageSubject, setMessageSubject] = useState("");
+  const [messageBody, setMessageBody] = useState("");
+  const [sendingMessage, setSendingMessage] = useState(false);
+  const [reminderOpen, setReminderOpen] = useState(false);
+  const [reminderTitle, setReminderTitle] = useState("");
+  const [reminderDate, setReminderDate] = useState("");
+  const [reminderMessage, setReminderMessage] = useState("");
+  const [sendingReminder, setSendingReminder] = useState(false);
+  const toggleRecipient = (id: string) => {
+    setMessageRecipientIds((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id); else next.add(id);
       return next;
