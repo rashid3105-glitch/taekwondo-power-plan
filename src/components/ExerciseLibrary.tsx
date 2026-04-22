@@ -246,6 +246,50 @@ export function ExerciseLibrary() {
         )}
       </div>
 
+      {/* Goal filters */}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold flex items-center gap-1 mr-1">
+          <Target className="h-3 w-3" /> {t("filterByGoal")}
+        </span>
+        {GOALS.map((g) => {
+          const active = goalFilters.has(g);
+          return (
+            <button
+              key={g}
+              onClick={() => toggleGoal(g)}
+              data-active={active}
+              className="rounded-full px-3 py-1 text-[11px] font-semibold border transition-colors
+                data-[active=true]:bg-primary data-[active=true]:text-primary-foreground data-[active=true]:border-primary
+                data-[active=false]:text-muted-foreground data-[active=false]:border-border hover:text-foreground cursor-pointer"
+            >
+              {t(GOAL_LABEL_KEY[g])}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Risk filters */}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold flex items-center gap-1 mr-1">
+          <ShieldAlert className="h-3 w-3" /> {t("filterByRisk")}
+        </span>
+        {RISKS.map((r) => {
+          const active = riskFilters.has(r);
+          return (
+            <button
+              key={r}
+              onClick={() => toggleRisk(r)}
+              data-active={active}
+              className={`rounded-full px-3 py-1 text-[11px] font-semibold border transition-colors hover:text-foreground cursor-pointer ${
+                active ? RISK_STYLES[r] : "text-muted-foreground border-border"
+              }`}
+            >
+              {t(RISK_LABEL_KEY[r])}
+            </button>
+          );
+        })}
+      </div>
+
       {/* Add button */}
       {isLoggedIn && !showForm && (
         <Button variant="outline" size="sm" onClick={() => setShowForm(true)}>
