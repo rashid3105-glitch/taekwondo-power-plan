@@ -98,6 +98,33 @@ export type Database = {
         }
         Relationships: []
       }
+      coach_athlete_notes: {
+        Row: {
+          athlete_id: string
+          coach_id: string
+          content: string
+          created_at: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          athlete_id: string
+          coach_id: string
+          content?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          athlete_id?: string
+          coach_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       coach_athletes: {
         Row: {
           athlete_id: string
@@ -735,6 +762,42 @@ export type Database = {
           plan_data?: Json
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      session_attendance: {
+        Row: {
+          athlete_id: string
+          coach_id: string
+          created_at: string
+          id: string
+          notes: string
+          rpe: number | null
+          session_date: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          athlete_id: string
+          coach_id: string
+          created_at?: string
+          id?: string
+          notes?: string
+          rpe?: number | null
+          session_date?: string
+          status: string
+          updated_at?: string
+        }
+        Update: {
+          athlete_id?: string
+          coach_id?: string
+          created_at?: string
+          id?: string
+          notes?: string
+          rpe?: number | null
+          session_date?: string
+          status?: string
+          updated_at?: string
         }
         Relationships: []
       }
