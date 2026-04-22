@@ -412,6 +412,140 @@ export type Database = {
         }
         Relationships: []
       }
+      form_curve_weekly: {
+        Row: {
+          composite_score: number
+          computed_at: string
+          load: number
+          output: number
+          overtraining_flag: boolean
+          strain: number
+          user_id: string
+          week_start: string
+        }
+        Insert: {
+          composite_score?: number
+          computed_at?: string
+          load?: number
+          output?: number
+          overtraining_flag?: boolean
+          strain?: number
+          user_id: string
+          week_start: string
+        }
+        Update: {
+          composite_score?: number
+          computed_at?: string
+          load?: number
+          output?: number
+          overtraining_flag?: boolean
+          strain?: number
+          user_id?: string
+          week_start?: string
+        }
+        Relationships: []
+      }
+      match_tags: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          notes: string
+          outcome: string
+          side: string
+          technique: string
+          timestamp_seconds: number
+          video_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          notes?: string
+          outcome?: string
+          side?: string
+          technique: string
+          timestamp_seconds?: number
+          video_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          notes?: string
+          outcome?: string
+          side?: string
+          technique?: string
+          timestamp_seconds?: number
+          video_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_tags_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "match_videos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      match_videos: {
+        Row: {
+          athlete_id: string
+          club_id: string | null
+          coach_id: string
+          created_at: string
+          discipline: string
+          duration_seconds: number | null
+          event_name: string | null
+          id: string
+          match_date: string | null
+          notes: string
+          opponent_name: string | null
+          share_expires_at: string | null
+          share_token: string | null
+          storage_path: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          athlete_id: string
+          club_id?: string | null
+          coach_id: string
+          created_at?: string
+          discipline?: string
+          duration_seconds?: number | null
+          event_name?: string | null
+          id?: string
+          match_date?: string | null
+          notes?: string
+          opponent_name?: string | null
+          share_expires_at?: string | null
+          share_token?: string | null
+          storage_path: string
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          athlete_id?: string
+          club_id?: string | null
+          coach_id?: string
+          created_at?: string
+          discipline?: string
+          duration_seconds?: number | null
+          event_name?: string | null
+          id?: string
+          match_date?: string | null
+          notes?: string
+          opponent_name?: string | null
+          share_expires_at?: string | null
+          share_token?: string | null
+          storage_path?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       mental_assessments: {
         Row: {
           ai_advice: string | null
@@ -450,6 +584,7 @@ export type Database = {
           training_reminders: boolean
           updated_at: string
           user_id: string
+          weekly_digest: boolean
           weight_log_reminders: boolean
         }
         Insert: {
@@ -459,6 +594,7 @@ export type Database = {
           training_reminders?: boolean
           updated_at?: string
           user_id: string
+          weekly_digest?: boolean
           weight_log_reminders?: boolean
         }
         Update: {
@@ -468,6 +604,7 @@ export type Database = {
           training_reminders?: boolean
           updated_at?: string
           user_id?: string
+          weekly_digest?: boolean
           weight_log_reminders?: boolean
         }
         Relationships: []
@@ -1066,6 +1203,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      compute_form_curve: {
+        Args: { _user_id: string; _weeks?: number }
+        Returns: undefined
+      }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
@@ -1108,6 +1249,7 @@ export type Database = {
         }[]
       }
       get_public_athlete_bundle: { Args: { _code: string }; Returns: Json }
+      get_shared_match_video: { Args: { _token: string }; Returns: Json }
       get_squad_overview: { Args: { _coach_id: string }; Returns: Json }
       has_role: {
         Args: {
