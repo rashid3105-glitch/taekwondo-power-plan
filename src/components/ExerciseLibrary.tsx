@@ -80,6 +80,8 @@ function toExercise(ue: UserExercise): Exercise & { isCustom: true; dbId: string
 
 export function ExerciseLibrary() {
   const [filter, setFilter] = useState<ExerciseCategory | "all" | "custom">("all");
+  const [goalFilters, setGoalFilters] = useState<Set<ExerciseGoal>>(new Set());
+  const [riskFilters, setRiskFilters] = useState<Set<RiskLevel>>(new Set());
   const [showForm, setShowForm] = useState(false);
   const [userExercises, setUserExercises] = useState<(Exercise & { isCustom: true; dbId: string })[]>([]);
   const [videoOverrides, setVideoOverrides] = useState<Record<string, string>>({});
@@ -161,11 +163,37 @@ export function ExerciseLibrary() {
     ...userExercises,
   ];
 
-  const filtered = filter === "all"
+  const baseFiltered = filter === "all"
     ? allExercises
     : filter === "custom"
     ? userExercises
     : allExercises.filter((e) => e.category === filter);
+
+  const filtered = baseFiltered.filter((e) => {
+    if (goalFilters.size > 0) {
+      const goals = getExerciseGoals(e);
+      if (!goals.some((g) => goalFilters.has(g))) return false;
+    }
+    if (riskFilters.size > 0) {
+      if (!riskFilters.has(getRiskLevel(e))) return false;
+    }
+    return true;
+  });
+
+  const toggleGoal = (g: ExerciseGoal) => {
+    setGoalFilters((prev) => {
+      const next = new Set(prev);
+      next.has(g) ? next.delete(g) : next.add(g);
+      return next;
+    });
+  };
+  const toggleRisk = (r: RiskLevel) => {
+    setRiskFilters((prev) => {
+      const next = new Set(prev);
+      next.has(r) ? next.delete(r) : next.add(r);
+      return next;
+    });
+  };
 
   return (
     <div className="space-y-4">
