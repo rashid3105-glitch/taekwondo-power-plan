@@ -11,6 +11,7 @@ import { Bell, X, Loader2, Sparkles, FileDown, MessageSquare } from "lucide-reac
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import { normalizeDaySessions } from "@/lib/planSessionUtils";
+import { SendMessageDialog } from "@/components/coach/SendMessageDialog";
 
 interface Athlete {
   user_id: string;
@@ -49,9 +50,6 @@ export function BulkActionsBar({ selected, onClear, onRefresh }: Props) {
   const [generating, setGenerating] = useState(false);
   const [progress, setProgress] = useState({ done: 0, total: 0 });
   const [exporting, setExporting] = useState(false);
-  const [msgSubject, setMsgSubject] = useState("");
-  const [msgBody, setMsgBody] = useState("");
-  const [msgSending, setMsgSending] = useState(false);
 
   if (selected.length === 0) return null;
 
@@ -98,35 +96,6 @@ export function BulkActionsBar({ selected, onClear, onRefresh }: Props) {
       toast({ title: t("error"), description: err.message, variant: "destructive" });
     } finally {
       setSending(false);
-    }
-  };
-
-  const sendBulkMessage = async () => {
-    if (!msgSubject.trim()) {
-      toast({ title: t("error"), description: t("messageSubjectRequired"), variant: "destructive" });
-      return;
-    }
-    setMsgSending(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("send-coach-message", {
-        body: {
-          athleteIds: selected.map((a) => a.user_id),
-          subject: msgSubject.trim(),
-          body: msgBody.trim(),
-        },
-      });
-      if (error || data?.error) throw new Error(error?.message || data?.error);
-      toast({
-        title: t("messageSent"),
-        description: `${data?.inserted || 0} ${t("delivered")} · ${data?.emailed || 0} ${t("emailed")}`,
-      });
-      setMessageOpen(false);
-      setMsgSubject(""); setMsgBody("");
-      onClear();
-    } catch (err: any) {
-      toast({ title: t("error"), description: err.message, variant: "destructive" });
-    } finally {
-      setMsgSending(false);
     }
   };
 
@@ -293,7 +262,8 @@ export function BulkActionsBar({ selected, onClear, onRefresh }: Props) {
 
   return (
     <>
-      <div className="sticky bottom-2 z-20 mx-auto max-w-3xl rounded-xl border border-primary/40 bg-card shadow-lg p-3 flex flex-wrap items-center gap-2">
+      <div className="sticky bottom-2 z-20 mx-auto max-w-3xl rounded-xl border-2 border-primary bg-card shadow-2xl shadow-primary/20 p-3 flex flex-wrap items-center gap-2 animate-fade-in">
+        <span className="inline-flex h-2 w-2 rounded-full bg-primary animate-pulse" aria-hidden="true" />
         <span className="text-xs font-semibold text-foreground">
           {selected.length} {t("selected")}
         </span>
@@ -402,46 +372,12 @@ export function BulkActionsBar({ selected, onClear, onRefresh }: Props) {
         </DialogContent>
       </Dialog>
 
-
-      <Dialog open={messageOpen} onOpenChange={(v) => !msgSending && setMessageOpen(v)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <MessageSquare className="h-5 w-5" /> {t("bulkSendMessage")}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-3">
-            <p className="text-xs text-muted-foreground">
-              {t("sendingTo")} {selected.length} {t("athletes")}
-            </p>
-            <div className="space-y-1">
-              <Label className="text-xs">{t("messageSubjectLabel")}</Label>
-              <Input
-                value={msgSubject}
-                onChange={(e) => setMsgSubject(e.target.value)}
-                maxLength={200}
-                placeholder={t("messageSubjectPlaceholder")}
-              />
-            </div>
-            <div className="space-y-1">
-              <Label className="text-xs">{t("messageBodyLabel")}</Label>
-              <Textarea
-                value={msgBody}
-                onChange={(e) => setMsgBody(e.target.value)}
-                rows={5}
-                maxLength={5000}
-                placeholder={t("messageBodyPlaceholder")}
-              />
-            </div>
-            <Button onClick={sendBulkMessage} disabled={msgSending} className="w-full">
-              {msgSending ? <Loader2 className="h-4 w-4 animate-spin" /> : t("send")}
-            </Button>
-            <p className="text-[10px] text-muted-foreground">
-              {t("messageDeliveryNote")}
-            </p>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <SendMessageDialog
+        open={messageOpen}
+        onOpenChange={setMessageOpen}
+        athletes={selected}
+        onSent={onClear}
+      />
     </>
   );
 }

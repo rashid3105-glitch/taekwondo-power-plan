@@ -24,11 +24,12 @@ import { DiaryComments } from "@/components/DiaryComments";
 import { SquadOverview } from "@/components/coach/SquadOverview";
 import { SessionAttendance } from "@/components/coach/SessionAttendance";
 import { BulkActionsBar } from "@/components/coach/BulkActionsBar";
+import { SendMessageDialog } from "@/components/coach/SendMessageDialog";
 import { WeeklySquadExport } from "@/components/coach/WeeklySquadExport";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   ArrowLeft, Loader2, UserPlus, Trash2, Zap, Plus, User, Users, NotebookPen, Eye, Heart, UserCog,
-  Frown, Meh, Smile, Laugh, BatteryLow, BatteryMedium, BatteryFull,
+  Frown, Meh, Smile, Laugh, BatteryLow, BatteryMedium, BatteryFull, MessageSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -115,6 +116,7 @@ export default function CoachDashboard() {
   const [viewRehabPlan, setViewRehabPlan] = useState<RehabPlan | null>(null);
   const [manageAthleteId, setManageAthleteId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [singleMessageAthlete, setSingleMessageAthlete] = useState<{ user_id: string; display_name: string } | null>(null);
   const toggleSelect = (id: string) => {
     setSelectedIds((prev) => {
       const next = new Set(prev);
@@ -520,9 +522,32 @@ export default function CoachDashboard() {
           </div>
         ) : (
           <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-              {t("myAthletes")} ({athletes.length})
-            </h3>
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                {t("myAthletes")} ({athletes.length})
+              </h3>
+              {athletes.length > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-xs"
+                  onClick={() => {
+                    if (selectedIds.size === athletes.length) {
+                      setSelectedIds(new Set());
+                    } else {
+                      setSelectedIds(new Set(athletes.map((a) => a.user_id)));
+                    }
+                  }}
+                >
+                  {selectedIds.size === athletes.length ? t("clearSelection") : t("selectAll")}
+                </Button>
+              )}
+            </div>
+            {selectedIds.size === 0 && (
+              <p className="text-xs text-muted-foreground bg-muted/40 border border-border rounded-md px-3 py-2">
+                💡 {t("bulkSelectionHint")}
+              </p>
+            )}
             <div className="grid gap-3">
               {athletes.map((a) => {
                 const athletePlans = plans.filter(p => p.user_id === a.user_id);
@@ -560,6 +585,19 @@ export default function CoachDashboard() {
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent side="left">{t("manageAthlete")}</TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 hover:bg-primary/10 hover:text-primary"
+                              onClick={(e) => { e.stopPropagation(); setSingleMessageAthlete({ user_id: a.user_id, display_name: a.display_name }); }}
+                            >
+                              <MessageSquare className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent side="left">{t("messageAthlete")}</TooltipContent>
                         </Tooltip>
                         <Button
                           variant="ghost"
@@ -755,6 +793,11 @@ export default function CoachDashboard() {
               selected={athletes.filter((a) => selectedIds.has(a.user_id)).map((a) => ({ user_id: a.user_id, display_name: a.display_name }))}
               onClear={() => setSelectedIds(new Set())}
               onRefresh={() => { loadAthletes(); }}
+            />
+            <SendMessageDialog
+              open={!!singleMessageAthlete}
+              onOpenChange={(o) => { if (!o) setSingleMessageAthlete(null); }}
+              athletes={singleMessageAthlete ? [singleMessageAthlete] : []}
             />
             </TabsContent>
           </Tabs>
