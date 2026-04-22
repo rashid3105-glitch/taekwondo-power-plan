@@ -183,8 +183,9 @@ export default function CoachDashboard() {
     await loadAthletes(user.id, coachClubId);
   };
 
-  const loadAthletes = async (currentUserId?: string, coachClubId?: string) => {
+  const loadAthletes = async (currentUserId?: string, currentClubId?: string) => {
     const userId = currentUserId || coachUserId;
+    const clubId = currentClubId || coachClubId;
     const { data: links } = await supabase
       .from("coach_athletes")
       .select("athlete_id");
@@ -218,20 +219,25 @@ export default function CoachDashboard() {
           .order("created_at", { ascending: false }),
       ]);
 
-      setAthletes(
-        (((profilesRes.data || []) as any[]).map((athlete) => ({
+      // Restrict managed athletes to those sharing the coach's club
+      const sameClubProfiles = (((profilesRes.data || []) as any[])
+        .filter((athlete) => clubId && athlete.club_id === clubId)
+        .map((athlete) => ({
           ...athlete,
           club_name: athlete.club_id ? clubMap.get(athlete.club_id) || null : null,
-        })) as AthleteProfile[]).sort((a, b) => a.display_name.localeCompare(b.display_name))
-      );
-      setPlans((plansRes.data || []) as unknown as AthletePlan[]);
-      setRehabPlans((rehabRes.data || []) as unknown as RehabPlan[]);
+        })) as AthleteProfile[]).sort((a, b) => a.display_name.localeCompare(b.display_name));
+
+      const sameClubIds = new Set(sameClubProfiles.map((a) => a.user_id));
+
+      setAthletes(sameClubProfiles);
+      setPlans(((plansRes.data || []) as unknown as AthletePlan[]).filter((p) => sameClubIds.has(p.user_id)));
+      setRehabPlans(((rehabRes.data || []) as unknown as RehabPlan[]).filter((r) => sameClubIds.has(r.user_id)));
     }
 
     // Load club athletes via secure RPC (excludes sensitive financial fields)
-    if (coachClubId && userId) {
+    if (clubId && userId) {
       const { data: clubProfiles } = await supabase
-        .rpc("get_club_member_profiles", { _club_id: coachClubId });
+        .rpc("get_club_member_profiles", { _club_id: clubId });
 
       const clubOnly = ((clubProfiles || []) as any[])
         .filter((p) => p.user_id !== userId && !athleteIds.includes(p.user_id))
