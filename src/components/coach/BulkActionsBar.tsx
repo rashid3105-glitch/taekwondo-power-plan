@@ -262,7 +262,8 @@ export function BulkActionsBar({ selected, onClear, onRefresh }: Props) {
 
   return (
     <>
-      <div className="sticky bottom-2 z-20 mx-auto max-w-3xl rounded-xl border border-primary/40 bg-card shadow-lg p-3 flex flex-wrap items-center gap-2">
+      <div className="sticky bottom-2 z-20 mx-auto max-w-3xl rounded-xl border-2 border-primary bg-card shadow-2xl shadow-primary/20 p-3 flex flex-wrap items-center gap-2 animate-fade-in">
+        <span className="inline-flex h-2 w-2 rounded-full bg-primary animate-pulse" aria-hidden="true" />
         <span className="text-xs font-semibold text-foreground">
           {selected.length} {t("selected")}
         </span>
