@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { UserCircle, ClipboardList, HeartPulse, Brain, Users, BarChart3, Clock, ChevronDown, Activity, Apple, TrendingUp, BookOpen, BookHeart, Download } from "lucide-react";
+import { UserCircle, ClipboardList, HeartPulse, Brain, Users, BarChart3, Clock, ChevronDown, Activity, Apple, TrendingUp, BookOpen, BookHeart, Download, Video } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PublicNav } from "@/components/PublicNav";
 import { Watermark } from "@/components/Watermark";
@@ -19,6 +19,7 @@ const helpSections = [
   { key: "helpMentalPlan", icon: Brain },
   { key: "helpLibrary", icon: BookOpen },
   { key: "helpDiary", icon: BookHeart },
+  { key: "helpMatchAnalysis", icon: Video },
   { key: "helpAddStudents", icon: Users },
   { key: "helpStudentProgress", icon: BarChart3 },
 ] as const;
