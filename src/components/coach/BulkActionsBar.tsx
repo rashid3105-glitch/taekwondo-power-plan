@@ -298,6 +298,9 @@ export function BulkActionsBar({ selected, onClear, onRefresh }: Props) {
           {selected.length} {t("selected")}
         </span>
         <div className="flex-1" />
+        <Button size="sm" variant="outline" onClick={() => setMessageOpen(true)}>
+          <MessageSquare className="h-3 w-3 mr-1" /> {t("bulkSendMessage")}
+        </Button>
         <Button size="sm" variant="outline" onClick={() => setReminderOpen(true)}>
           <Bell className="h-3 w-3 mr-1" /> {t("remind")}
         </Button>
@@ -394,6 +397,47 @@ export function BulkActionsBar({ selected, onClear, onRefresh }: Props) {
             </Button>
             <p className="text-[10px] text-muted-foreground">
               {t("bulkPlanWarn")}
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+
+      <Dialog open={messageOpen} onOpenChange={(v) => !msgSending && setMessageOpen(v)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <MessageSquare className="h-5 w-5" /> {t("bulkSendMessage")}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <p className="text-xs text-muted-foreground">
+              {t("sendingTo")} {selected.length} {t("athletes")}
+            </p>
+            <div className="space-y-1">
+              <Label className="text-xs">{t("messageSubjectLabel")}</Label>
+              <Input
+                value={msgSubject}
+                onChange={(e) => setMsgSubject(e.target.value)}
+                maxLength={200}
+                placeholder={t("messageSubjectPlaceholder")}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">{t("messageBodyLabel")}</Label>
+              <Textarea
+                value={msgBody}
+                onChange={(e) => setMsgBody(e.target.value)}
+                rows={5}
+                maxLength={5000}
+                placeholder={t("messageBodyPlaceholder")}
+              />
+            </div>
+            <Button onClick={sendBulkMessage} disabled={msgSending} className="w-full">
+              {msgSending ? <Loader2 className="h-4 w-4 animate-spin" /> : t("send")}
+            </Button>
+            <p className="text-[10px] text-muted-foreground">
+              {t("messageDeliveryNote")}
             </p>
           </div>
         </DialogContent>
