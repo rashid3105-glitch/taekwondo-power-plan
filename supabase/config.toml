@@ -44,3 +44,18 @@ verify_jwt = false
 
 [functions.generate-competition-plan]
 verify_jwt = false
+
+[functions.get-shared-match]
+verify_jwt = false
+
+[functions.recompute-form-curve]
+verify_jwt = false
+
+[functions.send-coach-digest]
+verify_jwt = false
+
+[functions.share-match-video]
+verify_jwt = true
+
+[functions.apply-competition-taper]
+verify_jwt = true
