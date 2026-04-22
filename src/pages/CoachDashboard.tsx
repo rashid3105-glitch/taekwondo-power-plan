@@ -756,19 +756,258 @@ export default function CoachDashboard() {
           </div>
         )}
 
-            <BulkActionsBar
-              selected={athletes.filter((a) => selectedIds.has(a.user_id)).map((a) => ({ user_id: a.user_id, display_name: a.display_name }))}
-              onClear={() => setSelectedIds(new Set())}
-              onRefresh={() => { loadAthletes(); }}
-            />
-            <SendMessageDialog
-              open={!!singleMessageAthlete}
-              onOpenChange={(o) => { if (!o) setSingleMessageAthlete(null); }}
-              athletes={singleMessageAthlete ? [singleMessageAthlete] : []}
-            />
+            </TabsContent>
+
+            <TabsContent value="messages" className="space-y-4">
+              {athletes.length === 0 ? (
+                <div className="rounded-xl border border-border bg-card p-12 text-center shadow-card">
+                  <MessageSquare className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
+                  <h3 className="font-bold text-foreground mb-1">{t("messagesTab")}</h3>
+                  <p className="text-sm text-muted-foreground">{t("messagesNoAthletes")}</p>
+                </div>
+              ) : (
+                <>
+                  {/* Header card */}
+                  <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-1">
+                    <h3 className="font-bold text-foreground flex items-center gap-2">
+                      <MessageSquare className="h-5 w-5 text-primary" /> {t("messagesTab")}
+                    </h3>
+                    <p className="text-xs text-muted-foreground">{t("messagesTabDescription")}</p>
+                  </div>
+
+                  {/* Recipient picker */}
+                  <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <h4 className="text-sm font-semibold text-foreground">{t("recipientsLabel")}</h4>
+                      <span className="text-xs text-muted-foreground">
+                        {t("selectedCount")
+                          .replace("{n}", String(messageRecipientIds.size))
+                          .replace("{total}", String(athletes.length))}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="relative flex-1">
+                        <Search className="h-3.5 w-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                        <Input
+                          value={messageSearch}
+                          onChange={(e) => setMessageSearch(e.target.value)}
+                          placeholder={t("searchAthletes")}
+                          className="pl-8 h-9"
+                        />
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-9 text-xs whitespace-nowrap"
+                        onClick={() => {
+                          if (messageRecipientIds.size === athletes.length) {
+                            setMessageRecipientIds(new Set());
+                          } else {
+                            setMessageRecipientIds(new Set(athletes.map((a) => a.user_id)));
+                          }
+                        }}
+                      >
+                        {messageRecipientIds.size === athletes.length ? t("clearSelection") : t("selectAll")}
+                      </Button>
+                    </div>
+                    <div className="max-h-72 overflow-y-auto rounded-md border border-border divide-y divide-border">
+                      {athletes
+                        .filter((a) =>
+                          !messageSearch.trim()
+                            ? true
+                            : (a.display_name || "").toLowerCase().includes(messageSearch.toLowerCase())
+                        )
+                        .map((a) => {
+                          const checked = messageRecipientIds.has(a.user_id);
+                          return (
+                            <label
+                              key={a.user_id}
+                              className="flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-muted/40 transition-colors"
+                            >
+                              <Checkbox
+                                checked={checked}
+                                onCheckedChange={() => toggleRecipient(a.user_id)}
+                              />
+                              <AvatarImg avatarUrl={a.avatar_url} />
+                              <div className="min-w-0 flex-1">
+                                <p className="text-sm font-medium text-foreground truncate">
+                                  {a.display_name || t("noName")}
+                                </p>
+                                <p className="text-[10px] text-muted-foreground truncate">{a.athlete_code}</p>
+                              </div>
+                            </label>
+                          );
+                        })}
+                    </div>
+                  </div>
+
+                  {/* Composer card */}
+                  {messageRecipientIds.size > 0 && (
+                    <div className="rounded-xl border-2 border-primary/40 bg-card p-4 sm:p-5 shadow-card space-y-3 animate-fade-in">
+                      <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                        <Send className="h-4 w-4 text-primary" /> {t("composerTitle")}
+                      </h4>
+                      <div className="space-y-1">
+                        <Label className="text-xs">{t("messageSubjectLabel")}</Label>
+                        <Input
+                          value={messageSubject}
+                          onChange={(e) => setMessageSubject(e.target.value)}
+                          maxLength={200}
+                          placeholder={t("messageSubjectPlaceholder")}
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">{t("messageBodyLabel")}</Label>
+                        <Textarea
+                          value={messageBody}
+                          onChange={(e) => setMessageBody(e.target.value)}
+                          rows={5}
+                          maxLength={5000}
+                          placeholder={t("messageBodyPlaceholder")}
+                        />
+                      </div>
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <Button
+                          onClick={async () => {
+                            if (!messageSubject.trim()) {
+                              toast({ title: t("error"), description: t("messageSubjectRequired"), variant: "destructive" });
+                              return;
+                            }
+                            const recipients = athletes.filter((a) => messageRecipientIds.has(a.user_id));
+                            if (recipients.length === 0) return;
+                            setSendingMessage(true);
+                            try {
+                              const { data, error } = await supabase.functions.invoke("send-coach-message", {
+                                body: {
+                                  athleteIds: recipients.map((a) => a.user_id),
+                                  subject: messageSubject.trim(),
+                                  body: messageBody.trim(),
+                                },
+                              });
+                              if (error || (data as any)?.error) {
+                                throw new Error(error?.message || (data as any)?.error);
+                              }
+                              toast({
+                                title: t("messageSent"),
+                                description: `${(data as any)?.inserted || 0} ${t("delivered")} · ${(data as any)?.emailed || 0} ${t("emailed")}`,
+                              });
+                              setMessageSubject("");
+                              setMessageBody("");
+                              setMessageRecipientIds(new Set());
+                            } catch (err: any) {
+                              toast({ title: t("error"), description: err.message, variant: "destructive" });
+                            } finally {
+                              setSendingMessage(false);
+                            }
+                          }}
+                          disabled={sendingMessage}
+                          className="flex-1"
+                        >
+                          {sendingMessage ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <>
+                              <Send className="h-4 w-4 mr-1" /> {t("bulkSendMessage")}
+                            </>
+                          )}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => setReminderOpen(true)}
+                          disabled={sendingMessage}
+                          className="flex-1"
+                        >
+                          <Bell className="h-4 w-4 mr-1" /> {t("sendReminderInstead")}
+                        </Button>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground">{t("messageDeliveryNote")}</p>
+                    </div>
+                  )}
+                </>
+              )}
             </TabsContent>
           </Tabs>
         )}
+
+        {/* Reminder dialog (used from Messages tab) */}
+        <Dialog open={reminderOpen} onOpenChange={(v) => !sendingReminder && setReminderOpen(v)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Bell className="h-5 w-5" /> {t("bulkSendReminder")}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3">
+              <p className="text-xs text-muted-foreground">
+                {t("sendingTo")} {messageRecipientIds.size} {t("athletes")}
+              </p>
+              <div className="space-y-1">
+                <Label className="text-xs">{t("reminderTitleLabel")}</Label>
+                <Input value={reminderTitle} onChange={(e) => setReminderTitle(e.target.value)} maxLength={120} />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">{t("eventDateLabel")}</Label>
+                <Input type="date" value={reminderDate} onChange={(e) => setReminderDate(e.target.value)} />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">{t("reminderMessageLabel")}</Label>
+                <Textarea value={reminderMessage} onChange={(e) => setReminderMessage(e.target.value)} rows={3} maxLength={1000} />
+              </div>
+              <Button
+                onClick={async () => {
+                  if (!reminderTitle.trim() || !reminderDate) {
+                    toast({ title: t("error"), description: t("reminderTitleRequired"), variant: "destructive" });
+                    return;
+                  }
+                  const recipients = athletes.filter((a) => messageRecipientIds.has(a.user_id));
+                  if (recipients.length === 0) return;
+                  setSendingReminder(true);
+                  try {
+                    const { data: { user } } = await supabase.auth.getUser();
+                    if (!user) throw new Error("Not authenticated");
+                    const rows = recipients.map((a) => ({
+                      coach_id: user.id,
+                      athlete_id: a.user_id,
+                      title: reminderTitle.trim(),
+                      event_date: reminderDate,
+                      message: reminderMessage.trim(),
+                    }));
+                    const { data: insertedRows, error } = await supabase
+                      .from("event_reminders")
+                      .insert(rows)
+                      .select("id");
+                    if (error) throw error;
+                    const reminderIds = (insertedRows || []).map((r: any) => r.id);
+                    if (reminderIds.length > 0) {
+                      try {
+                        await supabase.functions.invoke("send-coach-message", {
+                          body: { reminderIds },
+                        });
+                      } catch (e) {
+                        console.warn("Email fan-out failed", e);
+                      }
+                    }
+                    toast({ title: t("reminderSent"), description: `${recipients.length} ${t("athletes")}` });
+                    setReminderOpen(false);
+                    setReminderTitle("");
+                    setReminderDate("");
+                    setReminderMessage("");
+                    setMessageRecipientIds(new Set());
+                  } catch (err: any) {
+                    toast({ title: t("error"), description: err.message, variant: "destructive" });
+                  } finally {
+                    setSendingReminder(false);
+                  }
+                }}
+                disabled={sendingReminder}
+                className="w-full"
+              >
+                {sendingReminder ? <Loader2 className="h-4 w-4 animate-spin" /> : t("send")}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
 
 
         <Dialog open={!!diaryAthleteId} onOpenChange={(open) => { if (!open) setDiaryAthleteId(null); }}>
