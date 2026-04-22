@@ -146,6 +146,36 @@ export type Database = {
         }
         Relationships: []
       }
+      coach_messages: {
+        Row: {
+          athlete_id: string
+          body: string
+          coach_id: string
+          created_at: string
+          id: string
+          is_read: boolean
+          subject: string
+        }
+        Insert: {
+          athlete_id: string
+          body?: string
+          coach_id: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          subject: string
+        }
+        Update: {
+          athlete_id?: string
+          body?: string
+          coach_id?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          subject?: string
+        }
+        Relationships: []
+      }
       competitions: {
         Row: {
           created_at: string
@@ -1260,6 +1290,10 @@ export type Database = {
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       lookup_athlete_by_code: { Args: { _code: string }; Returns: string }
+      mark_coach_message_read: {
+        Args: { _message_id: string }
+        Returns: undefined
+      }
       mark_comment_read: { Args: { _comment_id: string }; Returns: undefined }
       mark_reminder_read: { Args: { _reminder_id: string }; Returns: undefined }
       move_to_dlq: {
