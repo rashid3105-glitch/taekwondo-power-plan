@@ -170,6 +170,7 @@ export default function CoachDashboard() {
       navigate("/profile-setup");
       return;
     }
+    setCoachClubId(coachClubId);
 
     // Fetch club's max_athletes limit
     const { data: clubData } = await supabase
