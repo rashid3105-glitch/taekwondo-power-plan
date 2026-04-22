@@ -754,6 +754,7 @@ export default function CoachDashboard() {
             <BulkActionsBar
               selected={athletes.filter((a) => selectedIds.has(a.user_id)).map((a) => ({ user_id: a.user_id, display_name: a.display_name }))}
               onClear={() => setSelectedIds(new Set())}
+              onRefresh={() => { loadAthletes(); }}
             />
             </TabsContent>
           </Tabs>
