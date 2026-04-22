@@ -745,6 +745,14 @@ export default function CoachDashboard() {
           </div>
         )}
 
+            <BulkActionsBar
+              selected={athletes.filter((a) => selectedIds.has(a.user_id)).map((a) => ({ user_id: a.user_id, display_name: a.display_name }))}
+              onClear={() => setSelectedIds(new Set())}
+            />
+            </TabsContent>
+          </Tabs>
+        )}
+
 
         <Dialog open={!!diaryAthleteId} onOpenChange={(open) => { if (!open) setDiaryAthleteId(null); }}>
           <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
