@@ -49,13 +49,40 @@ serve(async (req) => {
     });
 
     const hasActiveSub = subscriptions.data.length > 0;
-    let productId = null;
-    let subscriptionEnd = null;
+    let productId: string | null = null;
+    let subscriptionEnd: string | null = null;
+    let tier: string | null = null;
+    let maxAthletes = 0;
+
+    // Map Stripe product IDs to our internal tier + athlete cap.
+    // New tiers + grandfathered legacy products.
+    const PRODUCT_TIER_MAP: Record<string, { tier: string; maxAthletes: number }> = {
+      // New
+      prod_UNmxepUc1kEm0x: { tier: "athlete", maxAthletes: 1 },
+      prod_UNmxvBF3VPxR8F: { tier: "athlete", maxAthletes: 1 },
+      prod_UNmxLjXYQZjVx8: { tier: "coach_solo", maxAthletes: 0 },
+      prod_UNmx6gu55G7X61: { tier: "coach_solo", maxAthletes: 0 },
+      prod_UNmxNDy5xrs57e: { tier: "team_small", maxAthletes: 5 },
+      prod_UNmxmSA5vcR8YF: { tier: "team_small", maxAthletes: 5 },
+      prod_UNmx2hMlzBk4lQ: { tier: "team_medium", maxAthletes: 15 },
+      prod_UNmxCljnNNwjAE: { tier: "team_medium", maxAthletes: 15 },
+      prod_UNmxTKbskuXAIB: { tier: "team_large", maxAthletes: 25 },
+      prod_UNmxyBA46pSNcK: { tier: "team_large", maxAthletes: 25 },
+    };
 
     if (hasActiveSub) {
       const subscription = subscriptions.data[0];
       subscriptionEnd = new Date(subscription.current_period_end * 1000).toISOString();
-      productId = subscription.items.data[0].price.product;
+      productId = subscription.items.data[0].price.product as string;
+      const mapped = PRODUCT_TIER_MAP[productId];
+      if (mapped) {
+        tier = mapped.tier;
+        maxAthletes = mapped.maxAthletes;
+      } else {
+        // Legacy fallback: assume single-athlete entitlement
+        tier = "athlete";
+        maxAthletes = 1;
+      }
     }
 
     // Sync payment_status in profiles
@@ -68,8 +95,29 @@ serve(async (req) => {
       })
       .eq("user_id", user.id);
 
+    // If a coach is subscribed to a team tier, update their club's max_athletes.
+    if (hasActiveSub && maxAthletes >= 5) {
+      const { data: profile } = await supabaseClient
+        .from("profiles")
+        .select("club_id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (profile?.club_id) {
+        await supabaseClient
+          .from("clubs")
+          .update({ max_athletes: maxAthletes })
+          .eq("id", profile.club_id);
+      }
+    }
+
     return new Response(
-      JSON.stringify({ subscribed: hasActiveSub, product_id: productId, subscription_end: subscriptionEnd }),
+      JSON.stringify({
+        subscribed: hasActiveSub,
+        product_id: productId,
+        subscription_end: subscriptionEnd,
+        tier,
+        max_athletes: maxAthletes,
+      }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
     );
   } catch (error) {
