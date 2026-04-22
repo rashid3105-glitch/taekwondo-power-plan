@@ -17,8 +17,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Checkbox } from "@/components/ui/checkbox";
 import { PlanViewDialog } from "@/components/PlanViewDialog";
 import { DiaryComments } from "@/components/DiaryComments";
+import { SquadOverview } from "@/components/coach/SquadOverview";
+import { SessionAttendance } from "@/components/coach/SessionAttendance";
+import { BulkActionsBar } from "@/components/coach/BulkActionsBar";
+import { WeeklySquadExport } from "@/components/coach/WeeklySquadExport";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   ArrowLeft, Loader2, UserPlus, Trash2, Zap, Plus, User, Users, NotebookPen, Eye, Heart, UserCog,
