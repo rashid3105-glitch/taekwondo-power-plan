@@ -1,87 +1,82 @@
 
 
-## Public athlete profile + highlight reel
+## Strengthen the Coach toolkit
 
-A shareable, SEO-friendly page at `/athlete/:code` (using the existing `athlete_code`, e.g. `TKD-123456`) that any logged-out visitor can view. Athletes control what's exposed via opt-in toggles. Drives organic signups via "Powered by Sportstalent" CTA and gives athletes a link for recruiters/sponsors.
+The Coach Dashboard today lets coaches add/create athletes, view diaries, manage individual profiles/plans, send reminders, and run physical tests. What's missing is the **stuff that makes a coach's day-to-day actually faster**: a single overview to spot who's drifting, the ability to act on multiple athletes at once, private notes, and session attendance. Here's a focused set of additions, ranked by impact.
 
-### What the public page shows
+### 1. Squad Overview dashboard (highest impact)
+
+A new tab/section at the top of the Coach Dashboard that shows the entire roster as a sortable, scannable grid of "athlete tiles":
 
 ```text
-┌─────────────────────────────────────────────────┐
-│  [Avatar]  ALEX HANSEN                          │
-│            Black belt · Sparring · Denmark      │
-│            Aalborg TKD Klub                     │
-│            [Share] [Download as PDF]            │
-├─────────────────────────────────────────────────┤
-│  ACHIEVEMENTS              PERSONAL RECORDS     │
-│  🥇 1st Nordic Cup '25     Vertical jump 62 cm  │
-│  🥈 2nd Danish Open '25    20m sprint   2.9 s   │
-│  🥉 3rd ETU Cadet '24      Sit & reach  +18 cm  │
-├─────────────────────────────────────────────────┤
-│  HIGHLIGHT REEL                                 │
-│  ▶ YouTube embed 1   ▶ YouTube embed 2          │
-├─────────────────────────────────────────────────┤
-│  COMPETITION HISTORY (past, with results)       │
-│  • Nordic Cup       Mar 2025  -68kg  Gold       │
-│  • Danish Open      Feb 2025  -68kg  Silver     │
-├─────────────────────────────────────────────────┤
-│  Powered by Sportstalent — [Train like Alex →]  │
-└─────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│  SQUAD OVERVIEW             [All ▼] [Sort: Needs attention ▼]│
+├──────────────────────────────────────────────────────────────┤
+│  Alex H.   ●●●○○ readiness · Mood 😟 · 0 sessions logged 7d  │
+│            ⚠ Missed 2 of 4 planned · Last seen 6d ago        │
+│  Sara K.   ●●●●● readiness · Mood 😀 · 5 sessions / 6 plan   │
+│  Lina M.   ⚠ Injury logged · No rehab plan yet               │
+└──────────────────────────────────────────────────────────────┘
 ```
 
-If the athlete has not opted in, the page shows a friendly "This profile is private" message with a CTA back to the landing page.
+For each athlete, show pulled from existing tables: latest readiness score, latest diary mood, completion rate (workout_logs vs planned this week), days since last login (`profiles.last_seen_at`), active injury flag, and whether a plan exists. Color the row red/amber/green so a coach scanning the page knows in 5 seconds who to call.
 
-### Athlete-side controls (in profile setup)
+Sort presets: "Needs attention" (red first), "By name", "By belt", "Last active".
 
-A new "Public profile" section in `/profile-setup` with:
-- Toggle: **Make profile publicly shareable** (default OFF)
-- Toggle: Show achievements
-- Toggle: Show personal records (auto-pulled from `physical_test_results`, top 1 per test)
-- Toggle: Show competition history
-- Toggle: Show highlight videos
-- Up to 4 highlight video URLs (YouTube/Vimeo only — validated)
-- Up to 6 free-text achievements (title + year + medal)
-- Copy-to-clipboard share link: `https://sportstalent.dk/athlete/TKD-123456`
+### 2. Coach private notes per athlete
 
-### Routing & SEO
+Tiny but missed feature. A free-text notes panel inside the existing "Manage athlete" drawer (`CoachAthleteDetail.tsx`) — "Bjarne is recovering from ankle sprain — keep volume <60%". Only the coach sees it; not exposed to the athlete or other coaches. New table `coach_athlete_notes` with strict RLS.
 
-- New route `/athlete/:code` in `src/App.tsx` (public, no auth gate).
-- `PageMeta` with athlete name + club for OG/Twitter cards so links unfurl nicely on Instagram/WhatsApp/X.
-- JSON-LD `Person` schema for Google.
-- Sitemap entry generated dynamically? Out of scope — we'll add a single `/athletes` index later if needed. For now `noindex` until athlete opts in, then `index, follow`.
+### 3. Session attendance / RPE tracking
+
+A new "Today's session" view scoped to one date. Coach sees their list of athletes for the day, taps each row to mark **Present / Absent / Late** and optionally enters a perceived-effort score (RPE 1–10). Useful for in-person clubs and feeds the same Squad Overview signals.
+
+Stored in new table `session_attendance (athlete_id, coach_id, session_date, status, rpe, notes)`.
+
+### 4. Bulk actions
+
+In the athlete list, allow selecting multiple athletes and:
+- Send one reminder to all selected (reuses `SendReminderDialog`)
+- Generate plans for all selected with the same parameters (program length, goals)
+- Export a combined PDF of selected athletes' active plans
+
+### 5. Weekly squad export
+
+One click → a PDF that shows the upcoming week for the entire roster (one row per athlete, columns Mon–Sun with session type + key exercise). Useful for printing and bringing to training. Reuses existing PDF export utilities.
+
+### 6. Athlete progress comparison
+
+Inside any athlete's "Manage" drawer, add a small "Compare to club average" widget for physical test results — bar chart showing the athlete vs the median of their club for each test. Pure SQL aggregation, no AI cost.
+
+### What we deliberately keep out (for now)
+
+- Live messaging / chat — large surface area, better as Phase 2.
+- Video upload + technique review — needs storage policy work and would inflate scope.
+- Calendar sync from coach side — `.ics` already exists athlete-side; sufficient for now.
+
+---
 
 ### Technical notes
 
-**Schema changes (one migration):**
-- `profiles`: add `is_public boolean DEFAULT false`, `public_show_achievements boolean DEFAULT true`, `public_show_prs boolean DEFAULT true`, `public_show_competitions boolean DEFAULT true`, `public_show_videos boolean DEFAULT true`.
-- New table `athlete_achievements` (id, user_id, title, year, medal, sort_order, timestamps) — RLS: owner full CRUD; public SELECT only when owner's `profiles.is_public = true`.
-- New table `athlete_highlight_videos` (id, user_id, url, title, sort_order) — same RLS pattern, plus a CHECK that url matches youtube/vimeo.
-- `competitions`: add `result text` and `is_public boolean DEFAULT false` so athletes can mark *which* past competitions to show.
+**New DB migration (one file):**
+- `coach_athlete_notes (id, coach_id, athlete_id, content, created_at, updated_at)` — RLS: only the coach who wrote it can SELECT/INSERT/UPDATE/DELETE. Unique `(coach_id, athlete_id)` so it's one rolling notes doc per pair.
+- `session_attendance (id, coach_id, athlete_id, session_date, status, rpe int CHECK 1..10, notes, created_at)` — RLS: coach can manage rows where `coach_id = auth.uid()` AND athlete is linked via `coach_athletes` or shares club.
+- Add a SECURITY DEFINER function `get_squad_overview(_coach_id uuid)` returning one JSON row per athlete: profile basics + latest_readiness + latest_mood + sessions_logged_7d + planned_sessions_7d + has_active_injury + last_seen_at + has_active_plan. This avoids 6 round-trip queries in the UI.
 
-**Public read access without exposing the whole profiles table:**
-- New SECURITY DEFINER function `public.get_public_athlete_profile(_code text)` that returns only the safe public fields (display_name, belt_level, discipline, country, club name, avatar_url) when `is_public = true`, else returns nothing. Avoids RLS opening on the main profiles table.
-- New SECURITY DEFINER function `public.get_public_athlete_bundle(_code text)` returns one JSON payload with profile + achievements + top PRs + public competitions + videos in a single call.
-- Avatars: the `avatars` bucket is private (per recent security fix). The function returns the storage path; we issue a signed URL via a tiny `get-public-avatar` edge function (no auth) that only signs paths belonging to a user with `is_public = true`.
+**Frontend:**
+- New `src/components/coach/SquadOverview.tsx` — the scannable grid, calls `supabase.rpc("get_squad_overview")` on mount and every 60s.
+- New `src/components/coach/CoachNotes.tsx` — auto-saves on blur; mounted inside `CoachAthleteDetail.tsx`.
+- New `src/components/coach/SessionAttendance.tsx` — date-scoped roster with Present/Absent/Late chips + RPE slider; mounted as a top tab on Coach Dashboard.
+- New `src/components/coach/BulkActionsBar.tsx` — appears when ≥1 athlete checkbox is selected in the athlete list; surfaces "Remind", "Generate plans", "Export PDF".
+- New `src/components/coach/WeeklySquadExport.tsx` — small button in header that builds the combined PDF using existing jsPDF helpers.
+- New `src/components/coach/PhysicalTestComparison.tsx` — bar chart inside `CoachAthleteDetail`.
 
-**Frontend files:**
-- New `src/pages/PublicAthlete.tsx` — fetches the bundle via `supabase.rpc("get_public_athlete_bundle", { _code })`, renders sections conditionally.
-- New `src/components/profile/PublicProfileSettings.tsx` — toggles + achievements editor + video URL list, embedded in `ProfileSetup.tsx`.
-- Update `src/components/CompetitionCard` (inside `Competitions.tsx`) to add a per-competition "show on public profile" toggle and "result" field.
-- Update `src/App.tsx`: add `<Route path="/athlete/:code" element={<Page><PublicAthlete /></Page>} />`.
-- Add ~25 translation keys to `src/i18n/translations.ts` for all 6 locales.
+**Routing/nav:**
+- Re-organize Coach Dashboard into 3 tabs: **Overview** (new), **Athletes** (existing list), **Today** (attendance). Use existing `Tabs` component.
 
-**Sharing affordances:**
-- Native Web Share API where available, fallback to copy-to-clipboard.
-- "Download as PDF" reuses the existing PDF export pattern from training/nutrition exports.
+**Translations:** ~35 new keys in `src/i18n/translations.ts` across all 6 locales.
 
-### Out of scope (can follow later)
-- Sponsor inquiry form on the public page
-- Verified badge / coach endorsement
-- Public `/athletes` directory and search
-- Custom vanity URLs (e.g. `/athlete/alex-hansen`) — would need uniqueness/profanity checks
-
-### Privacy guarantees
-- Default OFF — nothing public until the athlete explicitly opts in.
-- Email, age, weight, injury notes, training plans, diary, mental scores, readiness data are **never** exposed by `get_public_athlete_bundle`.
-- One-click "Make profile private" instantly hides the page (no caching).
+**Privacy:**
+- Coach notes never returned by any public RPC and never visible to athletes (no client-side query path exists for athletes).
+- `get_squad_overview` only returns rows for athletes the calling coach is linked to or shares a club with — matches existing `coach_athletes` + `users_share_club` patterns.
 
