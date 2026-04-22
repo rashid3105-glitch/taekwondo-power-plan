@@ -372,7 +372,24 @@ export default function CoachDashboard() {
       </header>
 
       <main className="container max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
-        {/* Athlete limit warning */}
+        {coachUserId && (
+          <Tabs defaultValue="overview" className="space-y-4">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <TabsList>
+                <TabsTrigger value="overview">{t("overview")}</TabsTrigger>
+                <TabsTrigger value="athletes">{t("athletesTab")}</TabsTrigger>
+                <TabsTrigger value="today">{t("todayTab")}</TabsTrigger>
+              </TabsList>
+              <WeeklySquadExport athletes={athletes as any} />
+            </div>
+            <TabsContent value="overview" className="space-y-4">
+              <SquadOverview coachId={coachUserId} onSelectAthlete={(id) => setManageAthleteId(id)} />
+            </TabsContent>
+            <TabsContent value="today" className="space-y-4">
+              <SessionAttendance coachId={coachUserId} athletes={athletes.map((a) => ({ user_id: a.user_id, display_name: a.display_name, avatar_url: a.avatar_url }))} />
+            </TabsContent>
+            <TabsContent value="athletes" className="space-y-4 sm:space-y-6">
+              {/* Athlete limit warning */}
         {!isAdmin && athletes.length >= MAX_ATHLETES && (
           <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 flex flex-col sm:flex-row sm:items-center gap-2">
             <span className="text-sm text-destructive flex-1">{t("maxAthletesReached")}</span>
