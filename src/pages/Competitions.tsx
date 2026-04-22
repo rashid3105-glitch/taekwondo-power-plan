@@ -79,6 +79,8 @@ export default function Competitions() {
     if (error) { toast({ title: t("error"), description: error.message, variant: "destructive" }); return; }
     setName(""); setDate(""); setWeightClass(""); setLocation(""); setPriority("A"); setCreateOpen(false);
     toast({ title: t("competitionsCreated") });
+    // Apply taper overlay to active training plan (non-blocking)
+    void supabase.functions.invoke("apply-competition-taper", { body: { user_id: user.id } });
     void load();
   }
 

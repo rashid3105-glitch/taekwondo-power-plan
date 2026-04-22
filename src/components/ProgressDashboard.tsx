@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Loader2, BarChart3, TrendingUp, Target, Calendar, Zap, Brain, ClipboardList, Filter } from "lucide-react";
 import { PhysicalTestProgress } from "@/components/PhysicalTestProgress";
+import { FormCurveChart } from "@/components/FormCurveChart";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   AreaChart, Area, Legend, Cell,
@@ -277,6 +278,9 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
           ))}
         </div>
       </div>
+
+      {/* Form curve — combined load/strain/output composite */}
+      <FormCurveChart />
 
       {/* Workout stat cards */}
       {hasWorkoutData && (

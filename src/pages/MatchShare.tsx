@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Video as VideoIcon, AlertTriangle } from "lucide-react";
+// Uses design tokens (text-warning fallback to text-primary). Removed hardcoded amber-500.
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Watermark } from "@/components/Watermark";
 import { AppFooter } from "@/components/AppFooter";
@@ -91,7 +92,7 @@ export default function MatchShare() {
           <Loader2 className="h-6 w-6 animate-spin mx-auto mt-12" />
         ) : error ? (
           <Card><CardContent className="pt-8 pb-8 text-center">
-            <AlertTriangle className="h-10 w-10 mx-auto mb-2 text-amber-500" />
+            <AlertTriangle className="h-10 w-10 mx-auto mb-2 text-muted-foreground" />
             <div className="text-sm text-muted-foreground">{t("matchShareUnavailable")}</div>
             <div className="text-xs text-muted-foreground mt-1">{error}</div>
           </CardContent></Card>
