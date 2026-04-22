@@ -402,7 +402,7 @@ export default function CoachDashboard() {
               <WeeklySquadExport athletes={athletes as any} />
             </div>
             <TabsContent value="overview" className="space-y-4">
-              <SquadOverview coachId={coachUserId} onSelectAthlete={(id) => setManageAthleteId(id)} />
+              <SquadOverview coachId={coachUserId} onSelectAthlete={(id) => setManageAthleteId(id)} allowedUserIds={athletes.map((a) => a.user_id)} />
             </TabsContent>
             <TabsContent value="today" className="space-y-4">
               <SessionAttendance coachId={coachUserId} athletes={athletes.map((a) => ({ user_id: a.user_id, display_name: a.display_name, avatar_url: a.avatar_url }))} />
