@@ -15,11 +15,12 @@ interface Prefs {
   event_reminders: boolean;
   competition_countdown: boolean;
   weight_log_reminders: boolean;
+  weekly_digest: boolean;
 }
 
 const DEFAULTS: Prefs = {
   training_reminders: true, diary_comments: true, event_reminders: true,
-  competition_countdown: true, weight_log_reminders: true,
+  competition_countdown: true, weight_log_reminders: true, weekly_digest: true,
 };
 
 export function NotificationSettings() {
@@ -102,6 +103,7 @@ export function NotificationSettings() {
               ["event_reminders", t("notifEvents")],
               ["competition_countdown", t("notifCompetition")],
               ["weight_log_reminders", t("notifWeight")],
+              ["weekly_digest", t("notifWeeklyDigest")],
             ] as Array<[keyof Prefs, string]>).map(([k, label]) => (
               <div key={k} className="flex items-center justify-between">
                 <Label htmlFor={k} className="text-sm">{label}</Label>
