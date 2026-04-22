@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Bell, X, Loader2, Sparkles, FileDown } from "lucide-react";
+import { Bell, X, Loader2, Sparkles, FileDown, MessageSquare } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import { normalizeDaySessions } from "@/lib/planSessionUtils";
@@ -39,6 +39,7 @@ export function BulkActionsBar({ selected, onClear, onRefresh }: Props) {
   const { toast } = useToast();
   const [reminderOpen, setReminderOpen] = useState(false);
   const [planOpen, setPlanOpen] = useState(false);
+  const [messageOpen, setMessageOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [eventDate, setEventDate] = useState("");
   const [message, setMessage] = useState("");
@@ -48,6 +49,9 @@ export function BulkActionsBar({ selected, onClear, onRefresh }: Props) {
   const [generating, setGenerating] = useState(false);
   const [progress, setProgress] = useState({ done: 0, total: 0 });
   const [exporting, setExporting] = useState(false);
+  const [msgSubject, setMsgSubject] = useState("");
+  const [msgBody, setMsgBody] = useState("");
+  const [msgSending, setMsgSending] = useState(false);
 
   if (selected.length === 0) return null;
 
@@ -67,8 +71,25 @@ export function BulkActionsBar({ selected, onClear, onRefresh }: Props) {
         event_date: eventDate,
         message: message.trim(),
       }));
-      const { error } = await supabase.from("event_reminders").insert(rows);
+      const { data: insertedRows, error } = await supabase
+        .from("event_reminders")
+        .insert(rows)
+        .select("id");
       if (error) throw error;
+
+      // Fan out emails server-side (best-effort, non-blocking on failures)
+      const reminderIds = (insertedRows || []).map((r) => r.id);
+      if (reminderIds.length > 0) {
+        try {
+          await supabase.functions.invoke("send-coach-message", {
+            body: { reminderIds },
+          });
+        } catch (e) {
+          // Reminders are still saved in DB even if email fan-out fails
+          console.warn("Email fan-out failed", e);
+        }
+      }
+
       toast({ title: t("reminderSent"), description: `${selected.length} ${t("athletes")}` });
       setReminderOpen(false);
       setTitle(""); setEventDate(""); setMessage("");
@@ -77,6 +98,35 @@ export function BulkActionsBar({ selected, onClear, onRefresh }: Props) {
       toast({ title: t("error"), description: err.message, variant: "destructive" });
     } finally {
       setSending(false);
+    }
+  };
+
+  const sendBulkMessage = async () => {
+    if (!msgSubject.trim()) {
+      toast({ title: t("error"), description: t("messageSubjectRequired"), variant: "destructive" });
+      return;
+    }
+    setMsgSending(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("send-coach-message", {
+        body: {
+          athleteIds: selected.map((a) => a.user_id),
+          subject: msgSubject.trim(),
+          body: msgBody.trim(),
+        },
+      });
+      if (error || data?.error) throw new Error(error?.message || data?.error);
+      toast({
+        title: t("messageSent"),
+        description: `${data?.inserted || 0} ${t("delivered")} · ${data?.emailed || 0} ${t("emailed")}`,
+      });
+      setMessageOpen(false);
+      setMsgSubject(""); setMsgBody("");
+      onClear();
+    } catch (err: any) {
+      toast({ title: t("error"), description: err.message, variant: "destructive" });
+    } finally {
+      setMsgSending(false);
     }
   };
 
