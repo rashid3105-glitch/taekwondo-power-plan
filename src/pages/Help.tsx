@@ -10,18 +10,18 @@ import { PageMeta } from "@/components/PageMeta";
 import { cn } from "@/lib/utils";
 
 const helpSections = [
-  { key: "helpProfile", icon: UserCircle },
-  { key: "helpTrainingPlan", icon: ClipboardList },
-  { key: "helpPhysicalTesting", icon: Activity },
-  { key: "helpProgress", icon: TrendingUp },
-  { key: "helpNutrition", icon: Apple },
-  { key: "helpRehabPlan", icon: HeartPulse },
-  { key: "helpMentalPlan", icon: Brain },
-  { key: "helpLibrary", icon: BookOpen },
-  { key: "helpDiary", icon: BookHeart },
-  { key: "helpMatchAnalysis", icon: Video },
-  { key: "helpAddStudents", icon: Users },
-  { key: "helpStudentProgress", icon: BarChart3 },
+  { key: "helpProfile", icon: UserCircle, isNew: false },
+  { key: "helpMatchAnalysis", icon: Video, isNew: true },
+  { key: "helpTrainingPlan", icon: ClipboardList, isNew: false },
+  { key: "helpPhysicalTesting", icon: Activity, isNew: false },
+  { key: "helpProgress", icon: TrendingUp, isNew: false },
+  { key: "helpNutrition", icon: Apple, isNew: false },
+  { key: "helpRehabPlan", icon: HeartPulse, isNew: false },
+  { key: "helpMentalPlan", icon: Brain, isNew: false },
+  { key: "helpLibrary", icon: BookOpen, isNew: false },
+  { key: "helpDiary", icon: BookHeart, isNew: false },
+  { key: "helpAddStudents", icon: Users, isNew: false },
+  { key: "helpStudentProgress", icon: BarChart3, isNew: false },
 ] as const;
 
 export default function Help() {
@@ -61,7 +61,7 @@ export default function Help() {
                 key={section.key}
                 onClick={() => setActiveSection(isActive ? null : section.key)}
                 className={cn(
-                  "flex items-center gap-3 rounded-lg border px-4 py-3 text-left transition-colors",
+                  "relative flex items-center gap-3 rounded-lg border px-4 py-3 text-left transition-colors",
                     isActive
                     ? "border-primary bg-primary text-primary-foreground"
                     : "border-border bg-card text-foreground hover:bg-muted shadow-sm"
@@ -76,6 +76,16 @@ export default function Help() {
                 <span className="font-semibold text-sm">
                   {t(`${section.key}Title`)}
                 </span>
+                {section.isNew && (
+                  <span className={cn(
+                    "absolute -top-1.5 -right-1.5 rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide shadow-sm",
+                    isActive
+                      ? "bg-primary-foreground text-primary"
+                      : "bg-primary text-primary-foreground"
+                  )}>
+                    {t("newBadge")}
+                  </span>
+                )}
               </button>
             );
           })}
@@ -120,6 +130,8 @@ export default function Help() {
                   <li>{t("changelogEntry69")}</li>
                   <li>{t("changelogEntry70")}</li>
                   <li>{t("changelogEntry71")}</li>
+                  <li>{t("changelogEntry72")}</li>
+                  <li>{t("changelogEntry73")}</li>
                 </ul>
               </div>
               <div className="rounded-lg border border-border bg-card px-5 py-4 space-y-3">
