@@ -6,9 +6,28 @@ import { AddExerciseForm } from "./AddExerciseForm";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Plus, Trash2, ArrowLeft, Search, MessageCircle } from "lucide-react";
+import { Plus, Trash2, Search, MessageCircle, Target, ShieldAlert } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { getExerciseGoals, getRiskLevel, type ExerciseGoal, type RiskLevel, RISK_STYLES } from "@/lib/exerciseClassification";
+import type { TranslationKey } from "@/i18n/translations";
+
+const GOALS: ExerciseGoal[] = ["speed", "power", "rfd", "mobility", "strength"];
+const RISKS: RiskLevel[] = ["low", "medium", "high"];
+
+const GOAL_LABEL_KEY: Record<ExerciseGoal, TranslationKey> = {
+  speed: "goalSpeed",
+  power: "goalPower",
+  rfd: "goalRfd",
+  mobility: "goalMobility",
+  strength: "goalStrength",
+};
+
+const RISK_LABEL_KEY: Record<RiskLevel, TranslationKey> = {
+  low: "riskLow",
+  medium: "riskMedium",
+  high: "riskHigh",
+};
 
 const CATEGORIES: ExerciseCategory[] = ["power", "plyometric", "speed", "strength", "mobility"];
 
@@ -61,6 +80,8 @@ function toExercise(ue: UserExercise): Exercise & { isCustom: true; dbId: string
 
 export function ExerciseLibrary() {
   const [filter, setFilter] = useState<ExerciseCategory | "all" | "custom">("all");
+  const [goalFilters, setGoalFilters] = useState<Set<ExerciseGoal>>(new Set());
+  const [riskFilters, setRiskFilters] = useState<Set<RiskLevel>>(new Set());
   const [showForm, setShowForm] = useState(false);
   const [userExercises, setUserExercises] = useState<(Exercise & { isCustom: true; dbId: string })[]>([]);
   const [videoOverrides, setVideoOverrides] = useState<Record<string, string>>({});
@@ -142,11 +163,37 @@ export function ExerciseLibrary() {
     ...userExercises,
   ];
 
-  const filtered = filter === "all"
+  const baseFiltered = filter === "all"
     ? allExercises
     : filter === "custom"
     ? userExercises
     : allExercises.filter((e) => e.category === filter);
+
+  const filtered = baseFiltered.filter((e) => {
+    if (goalFilters.size > 0) {
+      const goals = getExerciseGoals(e);
+      if (!goals.some((g) => goalFilters.has(g))) return false;
+    }
+    if (riskFilters.size > 0) {
+      if (!riskFilters.has(getRiskLevel(e))) return false;
+    }
+    return true;
+  });
+
+  const toggleGoal = (g: ExerciseGoal) => {
+    setGoalFilters((prev) => {
+      const next = new Set(prev);
+      next.has(g) ? next.delete(g) : next.add(g);
+      return next;
+    });
+  };
+  const toggleRisk = (r: RiskLevel) => {
+    setRiskFilters((prev) => {
+      const next = new Set(prev);
+      next.has(r) ? next.delete(r) : next.add(r);
+      return next;
+    });
+  };
 
   return (
     <div className="space-y-4">
@@ -197,6 +244,50 @@ export function ExerciseLibrary() {
             {t("myExercises")} ({userExercises.length})
           </button>
         )}
+      </div>
+
+      {/* Goal filters */}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold flex items-center gap-1 mr-1">
+          <Target className="h-3 w-3" /> {t("filterByGoal")}
+        </span>
+        {GOALS.map((g) => {
+          const active = goalFilters.has(g);
+          return (
+            <button
+              key={g}
+              onClick={() => toggleGoal(g)}
+              data-active={active}
+              className="rounded-full px-3 py-1 text-[11px] font-semibold border transition-colors
+                data-[active=true]:bg-primary data-[active=true]:text-primary-foreground data-[active=true]:border-primary
+                data-[active=false]:text-muted-foreground data-[active=false]:border-border hover:text-foreground cursor-pointer"
+            >
+              {t(GOAL_LABEL_KEY[g])}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Risk filters */}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold flex items-center gap-1 mr-1">
+          <ShieldAlert className="h-3 w-3" /> {t("filterByRisk")}
+        </span>
+        {RISKS.map((r) => {
+          const active = riskFilters.has(r);
+          return (
+            <button
+              key={r}
+              onClick={() => toggleRisk(r)}
+              data-active={active}
+              className={`rounded-full px-3 py-1 text-[11px] font-semibold border transition-colors hover:text-foreground cursor-pointer ${
+                active ? RISK_STYLES[r] : "text-muted-foreground border-border"
+              }`}
+            >
+              {t(RISK_LABEL_KEY[r])}
+            </button>
+          );
+        })}
       </div>
 
       {/* Add button */}
