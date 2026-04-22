@@ -11,6 +11,7 @@ import { Bell, X, Loader2, Sparkles, FileDown, MessageSquare } from "lucide-reac
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import { normalizeDaySessions } from "@/lib/planSessionUtils";
+import { SendMessageDialog } from "@/components/coach/SendMessageDialog";
 
 interface Athlete {
   user_id: string;
