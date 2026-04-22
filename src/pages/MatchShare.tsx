@@ -118,7 +118,7 @@ export default function MatchShare() {
                 )}
                 <div>
                   <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-                    {t("matchTagsCount", { count: String(tags.length) })}
+                    {t("matchTagsCount")} ({tags.length})
                   </div>
                   <div className="space-y-1 max-h-64 overflow-auto">
                     {tags.map((tag) => {
