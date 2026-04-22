@@ -6,9 +6,28 @@ import { AddExerciseForm } from "./AddExerciseForm";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Plus, Trash2, ArrowLeft, Search, MessageCircle } from "lucide-react";
+import { Plus, Trash2, Search, MessageCircle, Target, ShieldAlert } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { getExerciseGoals, getRiskLevel, type ExerciseGoal, type RiskLevel, RISK_STYLES } from "@/lib/exerciseClassification";
+import type { TranslationKey } from "@/i18n/translations";
+
+const GOALS: ExerciseGoal[] = ["speed", "power", "rfd", "mobility", "strength"];
+const RISKS: RiskLevel[] = ["low", "medium", "high"];
+
+const GOAL_LABEL_KEY: Record<ExerciseGoal, TranslationKey> = {
+  speed: "goalSpeed",
+  power: "goalPower",
+  rfd: "goalRfd",
+  mobility: "goalMobility",
+  strength: "goalStrength",
+};
+
+const RISK_LABEL_KEY: Record<RiskLevel, TranslationKey> = {
+  low: "riskLow",
+  medium: "riskMedium",
+  high: "riskHigh",
+};
 
 const CATEGORIES: ExerciseCategory[] = ["power", "plyometric", "speed", "strength", "mobility"];
 
