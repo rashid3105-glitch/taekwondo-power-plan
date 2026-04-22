@@ -99,35 +99,6 @@ export function BulkActionsBar({ selected, onClear, onRefresh }: Props) {
     }
   };
 
-  const sendBulkMessage = async () => {
-    if (!msgSubject.trim()) {
-      toast({ title: t("error"), description: t("messageSubjectRequired"), variant: "destructive" });
-      return;
-    }
-    setMsgSending(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("send-coach-message", {
-        body: {
-          athleteIds: selected.map((a) => a.user_id),
-          subject: msgSubject.trim(),
-          body: msgBody.trim(),
-        },
-      });
-      if (error || data?.error) throw new Error(error?.message || data?.error);
-      toast({
-        title: t("messageSent"),
-        description: `${data?.inserted || 0} ${t("delivered")} · ${data?.emailed || 0} ${t("emailed")}`,
-      });
-      setMessageOpen(false);
-      setMsgSubject(""); setMsgBody("");
-      onClear();
-    } catch (err: any) {
-      toast({ title: t("error"), description: err.message, variant: "destructive" });
-    } finally {
-      setMsgSending(false);
-    }
-  };
-
   const toggleGoal = (g: string) =>
     setSelectedGoals((prev) => (prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g]));
 
