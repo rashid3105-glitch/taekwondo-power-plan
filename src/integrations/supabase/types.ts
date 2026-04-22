@@ -98,6 +98,33 @@ export type Database = {
         }
         Relationships: []
       }
+      coach_athlete_notes: {
+        Row: {
+          athlete_id: string
+          coach_id: string
+          content: string
+          created_at: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          athlete_id: string
+          coach_id: string
+          content?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          athlete_id?: string
+          coach_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       coach_athletes: {
         Row: {
           athlete_id: string
@@ -738,6 +765,42 @@ export type Database = {
         }
         Relationships: []
       }
+      session_attendance: {
+        Row: {
+          athlete_id: string
+          coach_id: string
+          created_at: string
+          id: string
+          notes: string
+          rpe: number | null
+          session_date: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          athlete_id: string
+          coach_id: string
+          created_at?: string
+          id?: string
+          notes?: string
+          rpe?: number | null
+          session_date?: string
+          status: string
+          updated_at?: string
+        }
+        Update: {
+          athlete_id?: string
+          coach_id?: string
+          created_at?: string
+          id?: string
+          notes?: string
+          rpe?: number | null
+          session_date?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       suppressed_emails: {
         Row: {
           created_at: string
@@ -1032,6 +1095,7 @@ export type Database = {
           weight_kg: number
         }[]
       }
+      get_club_test_medians: { Args: { _athlete_id: string }; Returns: Json }
       get_profile_protected_fields: {
         Args: { _user_id: string }
         Returns: {
@@ -1044,6 +1108,7 @@ export type Database = {
         }[]
       }
       get_public_athlete_bundle: { Args: { _code: string }; Returns: Json }
+      get_squad_overview: { Args: { _coach_id: string }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
