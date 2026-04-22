@@ -116,6 +116,7 @@ export default function CoachDashboard() {
   const [viewRehabPlan, setViewRehabPlan] = useState<RehabPlan | null>(null);
   const [manageAthleteId, setManageAthleteId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [singleMessageAthlete, setSingleMessageAthlete] = useState<{ user_id: string; display_name: string } | null>(null);
   const toggleSelect = (id: string) => {
     setSelectedIds((prev) => {
       const next = new Set(prev);
