@@ -118,6 +118,7 @@ export default function Help() {
                   <li>{t("changelogEntry68")}</li>
                   <li>{t("changelogEntry69")}</li>
                   <li>{t("changelogEntry70")}</li>
+                  <li>{t("changelogEntry71")}</li>
                 </ul>
               </div>
               <div className="rounded-lg border border-border bg-card px-5 py-4 space-y-3">
