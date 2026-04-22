@@ -24,11 +24,12 @@ import { DiaryComments } from "@/components/DiaryComments";
 import { SquadOverview } from "@/components/coach/SquadOverview";
 import { SessionAttendance } from "@/components/coach/SessionAttendance";
 import { BulkActionsBar } from "@/components/coach/BulkActionsBar";
+import { SendMessageDialog } from "@/components/coach/SendMessageDialog";
 import { WeeklySquadExport } from "@/components/coach/WeeklySquadExport";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   ArrowLeft, Loader2, UserPlus, Trash2, Zap, Plus, User, Users, NotebookPen, Eye, Heart, UserCog,
-  Frown, Meh, Smile, Laugh, BatteryLow, BatteryMedium, BatteryFull,
+  Frown, Meh, Smile, Laugh, BatteryLow, BatteryMedium, BatteryFull, MessageSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
