@@ -50,9 +50,6 @@ export function BulkActionsBar({ selected, onClear, onRefresh }: Props) {
   const [generating, setGenerating] = useState(false);
   const [progress, setProgress] = useState({ done: 0, total: 0 });
   const [exporting, setExporting] = useState(false);
-  const [msgSubject, setMsgSubject] = useState("");
-  const [msgBody, setMsgBody] = useState("");
-  const [msgSending, setMsgSending] = useState(false);
 
   if (selected.length === 0) return null;
 
