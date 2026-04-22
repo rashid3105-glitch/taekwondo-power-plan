@@ -1095,6 +1095,7 @@ export type Database = {
           weight_kg: number
         }[]
       }
+      get_club_test_medians: { Args: { _athlete_id: string }; Returns: Json }
       get_profile_protected_fields: {
         Args: { _user_id: string }
         Returns: {
@@ -1107,6 +1108,7 @@ export type Database = {
         }[]
       }
       get_public_athlete_bundle: { Args: { _code: string }; Returns: Json }
+      get_squad_overview: { Args: { _coach_id: string }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
