@@ -586,6 +586,19 @@ export default function CoachDashboard() {
                           </TooltipTrigger>
                           <TooltipContent side="left">{t("manageAthlete")}</TooltipContent>
                         </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 hover:bg-primary/10 hover:text-primary"
+                              onClick={(e) => { e.stopPropagation(); setSingleMessageAthlete({ user_id: a.user_id, display_name: a.display_name }); }}
+                            >
+                              <MessageSquare className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent side="left">{t("messageAthlete")}</TooltipContent>
+                        </Tooltip>
                         <Button
                           variant="ghost"
                           size="icon"
