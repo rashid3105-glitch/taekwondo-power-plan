@@ -67,7 +67,7 @@ export function CoachSentHistory({ coachId, athleteNames }: Props) {
 
   const fmtDate = (iso: string) => {
     try {
-      return new Date(iso).toLocaleString(language, {
+      return new Date(iso).toLocaleString(locale, {
         dateStyle: "medium",
         timeStyle: "short",
       });
