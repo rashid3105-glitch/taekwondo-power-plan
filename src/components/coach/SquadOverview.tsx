@@ -58,15 +58,23 @@ function rowSeverity(row: SquadRow): { score: number; status: "red" | "amber" | 
   return { score, status };
 }
 
-export function SquadOverview({ coachId, onSelectAthlete }: Props) {
+export function SquadOverview({ coachId, onSelectAthlete, allowedUserIds }: Props) {
   const { t } = useLanguage();
   const [rows, setRows] = useState<SquadRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState<SortKey>("attention");
 
+  const allowedKey = (allowedUserIds || []).slice().sort().join(",");
+
   const load = async () => {
     const { data, error } = await supabase.rpc("get_squad_overview" as any, { _coach_id: coachId });
-    if (!error && data) setRows(data as unknown as SquadRow[]);
+    if (!error && data) {
+      const all = data as unknown as SquadRow[];
+      const filtered = allowedUserIds
+        ? all.filter((r) => allowedUserIds.includes(r.user_id))
+        : all;
+      setRows(filtered);
+    }
     setLoading(false);
   };
 
@@ -75,7 +83,7 @@ export function SquadOverview({ coachId, onSelectAthlete }: Props) {
     const id = setInterval(load, 60_000);
     return () => clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [coachId]);
+  }, [coachId, allowedKey]);
 
   const sorted = [...rows].sort((a, b) => {
     if (sort === "name") return a.display_name.localeCompare(b.display_name);
