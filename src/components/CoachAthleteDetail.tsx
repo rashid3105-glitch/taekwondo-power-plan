@@ -16,6 +16,9 @@ import { SendReminderDialog } from "@/components/SendReminderDialog";
 import { ReminderHistory } from "@/components/ReminderHistory";
 import { CoachNotes } from "@/components/coach/CoachNotes";
 import { PhysicalTestComparison } from "@/components/coach/PhysicalTestComparison";
+import { FormCurveChart } from "@/components/FormCurveChart";
+import { useNavigate } from "react-router-dom";
+import { Video as VideoIcon } from "lucide-react";
 
 const COUNTRIES = [
   "Afghanistan","Albania","Algeria","Andorra","Angola","Argentina","Armenia","Australia","Austria","Azerbaijan",
@@ -109,6 +112,7 @@ const EXPERIENCE_LEVELS = ["beginner", "intermediate", "elite"];
 export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: CoachAthleteDetailProps) {
   const { toast } = useToast();
   const { t, locale } = useLanguage();
+  const navigate = useNavigate();
   const [generatingPlan, setGeneratingPlan] = useState(false);
   const [generatingRehab, setGeneratingRehab] = useState(false);
   const [rehabDescription, setRehabDescription] = useState("");
@@ -466,6 +470,23 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
           }} />
         )}
       </div>
+
+      {/* Form curve */}
+      <FormCurveChart userId={athlete.user_id} />
+
+      {/* Match Analysis entry */}
+      <button
+        onClick={() => navigate(`/match-analysis/${athlete.user_id}`)}
+        className="w-full rounded-xl border border-border bg-card hover:bg-accent/30 transition-colors p-4 sm:p-5 shadow-card text-left flex items-center gap-3"
+      >
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/15">
+          <VideoIcon className="h-5 w-5 text-primary" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="font-semibold text-sm text-foreground">{t("matchAnalysisTitle")}</div>
+          <div className="text-xs text-muted-foreground truncate">{t("matchAnalysisMetaDesc")}</div>
+        </div>
+      </button>
 
       {/* Private Coach Notes */}
       <CoachNotes athleteId={athlete.user_id} />
