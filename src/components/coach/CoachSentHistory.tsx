@@ -32,7 +32,7 @@ interface Props {
 }
 
 export function CoachSentHistory({ coachId, athleteNames }: Props) {
-  const { t, language } = useLanguage();
+  const { t, locale } = useLanguage();
   const { toast } = useToast();
 
   const [messages, setMessages] = useState<SentMessage[]>([]);
