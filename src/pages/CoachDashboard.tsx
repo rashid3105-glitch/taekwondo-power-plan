@@ -545,12 +545,6 @@ export default function CoachDashboard() {
                   >
                     <div className="flex items-center justify-between gap-2 min-w-0">
                         <div className="flex items-center gap-3 min-w-0 flex-1">
-                        <Checkbox
-                          checked={selectedIds.has(a.user_id)}
-                          onCheckedChange={() => toggleSelect(a.user_id)}
-                          onClick={(e) => e.stopPropagation()}
-                          aria-label="select"
-                        />
                         <AvatarImg avatarUrl={a.avatar_url} />
                         <div className="min-w-0 flex-1">
                           <p className="font-medium text-sm text-foreground truncate">{a.display_name || t("noName")}</p>
@@ -571,19 +565,6 @@ export default function CoachDashboard() {
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent side="left">{t("manageAthlete")}</TooltipContent>
-                        </Tooltip>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 hover:bg-primary/10 hover:text-primary"
-                              onClick={(e) => { e.stopPropagation(); setSingleMessageAthlete({ user_id: a.user_id, display_name: a.display_name }); }}
-                            >
-                              <MessageSquare className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent side="left">{t("messageAthlete")}</TooltipContent>
                         </Tooltip>
                         <Button
                           variant="ghost"
