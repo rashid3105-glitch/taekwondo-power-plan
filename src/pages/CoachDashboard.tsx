@@ -389,6 +389,7 @@ export default function CoachDashboard() {
                 <TabsTrigger value="overview">{t("overview")}</TabsTrigger>
                 <TabsTrigger value="athletes">{t("athletesTab")}</TabsTrigger>
                 <TabsTrigger value="today">{t("todayTab")}</TabsTrigger>
+                <TabsTrigger value="messages">{t("messagesTab")}</TabsTrigger>
               </TabsList>
               <WeeklySquadExport athletes={athletes as any} />
             </div>
@@ -530,32 +531,9 @@ export default function CoachDashboard() {
           </div>
         ) : (
           <div className="space-y-3">
-            <div className="flex items-center justify-between gap-2 flex-wrap">
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                {t("myAthletes")} ({athletes.length})
-              </h3>
-              {athletes.length > 0 && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-7 text-xs"
-                  onClick={() => {
-                    if (selectedIds.size === athletes.length) {
-                      setSelectedIds(new Set());
-                    } else {
-                      setSelectedIds(new Set(athletes.map((a) => a.user_id)));
-                    }
-                  }}
-                >
-                  {selectedIds.size === athletes.length ? t("clearSelection") : t("selectAll")}
-                </Button>
-              )}
-            </div>
-            {selectedIds.size === 0 && (
-              <p className="text-xs text-muted-foreground bg-muted/40 border border-border rounded-md px-3 py-2">
-                💡 {t("bulkSelectionHint")}
-              </p>
-            )}
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+              {t("myAthletes")} ({athletes.length})
+            </h3>
             <div className="grid gap-3">
               {athletes.map((a) => {
                 const athletePlans = plans.filter(p => p.user_id === a.user_id);
