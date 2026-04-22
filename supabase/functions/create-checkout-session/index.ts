@@ -9,6 +9,27 @@ const corsHeaders = {
 };
 
 const PRICE_IDS: Record<string, Record<string, string>> = {
+  athlete: {
+    monthly: "price_1TP1NQCrYQiZxdDXC0qFahCe",
+    yearly: "price_1TP1NSCrYQiZxdDXZ1fMEV8B",
+  },
+  coach_solo: {
+    monthly: "price_1TP1NTCrYQiZxdDXevyiuYuU",
+    yearly: "price_1TP1NUCrYQiZxdDX8Ufkrbfv",
+  },
+  team_small: {
+    monthly: "price_1TP1NVCrYQiZxdDXx0zsm2AY",
+    yearly: "price_1TP1NXCrYQiZxdDXQIeYbeGf",
+  },
+  team_medium: {
+    monthly: "price_1TP1NYCrYQiZxdDXk4XJAyS2",
+    yearly: "price_1TP1NZCrYQiZxdDXUJFpqFdF",
+  },
+  team_large: {
+    monthly: "price_1TP1NaCrYQiZxdDXxJ2h33iV",
+    yearly: "price_1TP1NbCrYQiZxdDXiHINFKkv",
+  },
+  // Legacy aliases for grandfathered references
   personal: {
     monthly: "price_1TJuy5CrYQiZxdDX3rAwzI9Q",
     yearly: "price_1TJuyKCrYQiZxdDXbXV54djF",
