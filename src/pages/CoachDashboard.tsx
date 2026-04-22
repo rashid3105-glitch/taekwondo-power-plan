@@ -394,12 +394,14 @@ export default function CoachDashboard() {
         {coachUserId && (
           <Tabs defaultValue="overview" className="space-y-4">
             <div className="flex items-center justify-between gap-2 flex-wrap">
-              <TabsList>
-                <TabsTrigger value="overview">{t("overview")}</TabsTrigger>
-                <TabsTrigger value="athletes">{t("athletesTab")}</TabsTrigger>
-                <TabsTrigger value="today">{t("todayTab")}</TabsTrigger>
-                <TabsTrigger value="messages">{t("messagesTab")}</TabsTrigger>
-              </TabsList>
+              <div className="-mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto scrollbar-none w-full sm:w-auto">
+                <TabsList className="w-max">
+                  <TabsTrigger value="overview">{t("overview")}</TabsTrigger>
+                  <TabsTrigger value="athletes">{t("athletesTab")}</TabsTrigger>
+                  <TabsTrigger value="today">{t("todayTab")}</TabsTrigger>
+                  <TabsTrigger value="messages">{t("messagesTab")}</TabsTrigger>
+                </TabsList>
+              </div>
               <WeeklySquadExport athletes={athletes as any} />
             </div>
             <TabsContent value="overview" className="space-y-4">
