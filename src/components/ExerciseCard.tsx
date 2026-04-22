@@ -1,9 +1,26 @@
 import { useState } from "react";
 import { type Exercise, CATEGORY_LABELS } from "@/data/exercises";
 import { cn } from "@/lib/utils";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, ShieldAlert, Target } from "lucide-react";
 import { MuscleGroupBadges } from "./MuscleIcon";
 import { ExerciseIllustration } from "./ExerciseIllustration";
+import { getExerciseGoals, getRiskLevel, RISK_STYLES } from "@/lib/exerciseClassification";
+import { useLanguage } from "@/i18n/LanguageContext";
+import type { TranslationKey } from "@/i18n/translations";
+
+const GOAL_LABEL_KEY: Record<string, TranslationKey> = {
+  speed: "goalSpeed",
+  power: "goalPower",
+  rfd: "goalRfd",
+  mobility: "goalMobility",
+  strength: "goalStrength",
+};
+
+const RISK_LABEL_KEY: Record<string, TranslationKey> = {
+  low: "riskLow",
+  medium: "riskMedium",
+  high: "riskHigh",
+};
 
 const CATEGORY_DOT: Record<string, string> = {
   power: "bg-accent",
