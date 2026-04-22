@@ -25,6 +25,7 @@ import { DiaryComments } from "@/components/DiaryComments";
 import { SquadOverview } from "@/components/coach/SquadOverview";
 import { SessionAttendance } from "@/components/coach/SessionAttendance";
 import { WeeklySquadExport } from "@/components/coach/WeeklySquadExport";
+import { CoachSentHistory } from "@/components/coach/CoachSentHistory";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   ArrowLeft, Loader2, UserPlus, Trash2, Zap, Plus, User, Users, NotebookPen, Eye, Heart, UserCog,
@@ -931,6 +932,14 @@ export default function CoachDashboard() {
                       <p className="text-[10px] text-muted-foreground">{t("messageDeliveryNote")}</p>
                     </div>
                   )}
+
+                  {/* Sent history (messages + reminders) */}
+                  <CoachSentHistory
+                    coachId={coachUserId}
+                    athleteNames={Object.fromEntries(
+                      [...athletes, ...clubAthletes].map((a) => [a.user_id, a.display_name])
+                    )}
+                  />
                 </>
               )}
             </TabsContent>
