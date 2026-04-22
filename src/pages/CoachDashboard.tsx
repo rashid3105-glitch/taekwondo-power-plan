@@ -794,6 +794,11 @@ export default function CoachDashboard() {
               onClear={() => setSelectedIds(new Set())}
               onRefresh={() => { loadAthletes(); }}
             />
+            <SendMessageDialog
+              open={!!singleMessageAthlete}
+              onOpenChange={(o) => { if (!o) setSingleMessageAthlete(null); }}
+              athletes={singleMessageAthlete ? [singleMessageAthlete] : []}
+            />
             </TabsContent>
           </Tabs>
         )}
