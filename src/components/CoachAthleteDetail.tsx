@@ -14,6 +14,8 @@ import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekScheduleP
 import { Loader2, Plus, Zap, Heart, Save, Calendar, UserCog, Target } from "lucide-react";
 import { SendReminderDialog } from "@/components/SendReminderDialog";
 import { ReminderHistory } from "@/components/ReminderHistory";
+import { CoachNotes } from "@/components/coach/CoachNotes";
+import { PhysicalTestComparison } from "@/components/coach/PhysicalTestComparison";
 
 const COUNTRIES = [
   "Afghanistan","Albania","Algeria","Andorra","Angola","Argentina","Armenia","Australia","Austria","Azerbaijan",
@@ -464,6 +466,12 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
           }} />
         )}
       </div>
+
+      {/* Private Coach Notes */}
+      <CoachNotes athleteId={athlete.user_id} />
+
+      {/* Compare to club */}
+      <PhysicalTestComparison athleteId={athlete.user_id} />
 
       {/* Reminder History */}
       <ReminderHistory athleteId={athlete.user_id} />
