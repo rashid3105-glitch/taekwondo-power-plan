@@ -1,51 +1,53 @@
 
 
-## Stronger password requirements
+## Tighter admin/coach scoping — without per-club pages
 
-Raise the minimum password from 6 → **8 characters** and require some complexity, applied consistently everywhere a password is set.
+Two small, high-value changes instead of duplicating pages per club.
 
-### Rules enforced
+### A. Club label everywhere an athlete name appears (coach + admin UI)
 
-A new password must satisfy **all** of:
-- At least **8 characters**
-- At least one **letter**
-- At least one **number**
+Adds a small muted club chip next to athlete names in coach and admin views, so it's visually impossible to confuse two athletes from different clubs. No DB changes — `club_id` and `club_name` are already loaded in most coach queries (`get_club_member_profiles`, `get_squad_overview`).
 
-(Special characters allowed but not required — keeps it usable on mobile, still a meaningful step up.)
+Touched files (display only):
+- `src/pages/CoachDashboard.tsx` — managed athletes list, club athletes list, message recipient picker, send-reminder picker
+- `src/components/coach/SquadOverview.tsx` — squad rows
+- `src/components/coach/SessionAttendance.tsx` — attendance rows
+- `src/components/coach/CoachSentHistory.tsx` — sent message rows
+- `src/components/coach/PhysicalTestComparison.tsx` — comparison rows
+- `src/pages/AdminApproval.tsx` — admin user rows (chip in addition to existing club grouping)
+- `src/pages/AdminPayments.tsx` — payment user rows
 
-Login (sign-in) is **not** affected — existing users with old 6-char passwords can still sign in. The new rules apply only when a password is being **created or changed**.
+Style: small `text-[10px] text-muted-foreground` chip, `Building` icon prefix, only rendered when `club_name` is present.
 
-### Where it applies
+### B. Single "Club scope" filter on admin pages
 
-1. **Sign up** — `src/pages/Auth.tsx`
-2. **Password reset** — `src/pages/ResetPassword.tsx`
-3. **Coach creating an athlete account** — `src/pages/CoachDashboard.tsx` (the `newAthletePassword` field) + matching server check in `supabase/functions/create-athlete/index.ts` (currently `password.length < 6`).
+A dropdown at the top of `/admin/approval` and `/admin/payments` (data already loaded; just filter client-side):
+- Default: **"All clubs"**
+- Selecting a club narrows the list to that club only
+- Persists in `localStorage` per page so admin returns to the same scope
 
-### Implementation
+This gives you the *practical* benefit of "separate club pages" (focused view, less misclick risk) **without** introducing new routes, duplicated state, or per-club permission logic.
 
-- Add a tiny shared helper `src/lib/passwordValidation.ts` exporting `validatePassword(pw): { ok: boolean; messageKey: TranslationKey }` so all three forms share one rule set.
-- In each form: validate on submit before calling Supabase; if invalid, show a toast with a clear message and stop. Update `minLength` to `8` and add a small inline hint under the password field ("At least 8 characters, with a letter and a number").
-- In `create-athlete` edge function: replace the `password.length < 6` check with the same rule (length ≥ 8 + letter + number) and return a clear error code (`WEAK_PASSWORD`) so the coach UI can show a localized message.
-- **Lovable Cloud Auth setting**: enable **Leaked Password Protection (HIBP)** so passwords found in known breaches are rejected by the auth backend itself. This will be turned on via the auth configuration tool during implementation.
+Touched files:
+- `src/pages/AdminApproval.tsx` — add filter dropdown above the existing club groups
+- `src/pages/AdminPayments.tsx` — add filter dropdown above the user list
 
-### Translations
+### C. Rename "Manage Users" → "Admin"
 
-Add 2 new keys × 6 locales (EN/DA/SV/DE/AR/NO) in `src/i18n/translations.ts`:
-- `passwordRequirementsHint` — "At least 8 characters, with a letter and a number"
-- `passwordTooWeak` — "Password is too weak. Use at least 8 characters with a letter and a number."
+Just a label change in the dashboard side menu. Already have the `admin` translation key in all 6 locales — no new translations needed.
 
-### Files changed
+Touched files:
+- `src/pages/Dashboard.tsx` — change `t("manageUsers")` to `t("admin")` in the side menu admin link
+- *(Optional)* leave the `manageUsers` key in `translations.ts` for now in case it's referenced elsewhere; remove later if unused.
 
-- `src/lib/passwordValidation.ts` (new)
-- `src/pages/Auth.tsx` (signup validation + hint, `minLength={8}`)
-- `src/pages/ResetPassword.tsx` (validation + hint, `minLength={8}`)
-- `src/pages/CoachDashboard.tsx` (athlete creation field + hint, `minLength={8}`)
-- `supabase/functions/create-athlete/index.ts` (server-side rule)
-- `src/i18n/translations.ts` (2 keys × 6 locales)
-- Lovable Cloud auth: enable HIBP leaked-password check
+### What we're explicitly NOT doing (and why)
 
-### Out of scope
+- **No per-club routes (`/admin/club/:id/...`)** — RLS already enforces club isolation at the database. Per-club URLs would be UI-only, add navigation cost, and duplicate logic. Filter + chips deliver the same daily-use benefit.
+- **No new tables, RPCs, or RLS changes** — current security model is sound; this work is purely UI clarity.
+- **No changes to coach pages' data scope** — coaches already see only their own athletes + their club, enforced server-side.
 
-- No forced password reset for existing users with short passwords — they keep working until they change their password.
-- No password strength meter / progress bar — kept minimal per the existing UI style.
+### Out-of-scope follow-ups worth noting
+
+- A short memory note documenting the read-vs-write asymmetry of coach RLS (read = whole club, write = managed athletes only) so future changes don't accidentally widen it.
+- If `manageUsers` translation key is no longer used after the rename, remove it in a cleanup pass.
 
