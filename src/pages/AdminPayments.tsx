@@ -268,7 +268,7 @@ export default function AdminPayments() {
                       />
                     </div>
 
-                    {/* Date picker */}
+                    {/* Payment date picker */}
                     {u.payment_status === "paid" && (
                       <Popover>
                         <PopoverTrigger asChild>
@@ -283,7 +283,43 @@ export default function AdminPayments() {
                             selected={u.payment_date ? new Date(u.payment_date) : undefined}
                             onSelect={(date) => setPaymentDate(u.user_id, date)}
                             initialFocus
+                            className="p-3 pointer-events-auto"
                           />
+                        </PopoverContent>
+                      </Popover>
+                    )}
+
+                    {/* Demo expiry date picker */}
+                    {u.is_demo && u.payment_status !== "paid" && (
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" size="sm" className="h-7 text-[10px] gap-1">
+                            <CalendarIcon className="h-3 w-3" />
+                            {u.demo_expires_at
+                              ? format(new Date(u.demo_expires_at), "dd/MM/yy")
+                              : (t("setDemoExpiry") || "Demo expiry")}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="end">
+                          <Calendar
+                            mode="single"
+                            selected={u.demo_expires_at ? new Date(u.demo_expires_at) : undefined}
+                            onSelect={(date) => setDemoExpiryDate(u.user_id, date)}
+                            initialFocus
+                            className="p-3 pointer-events-auto"
+                          />
+                          {u.demo_expires_at && (
+                            <div className="p-2 border-t border-border">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="w-full h-7 text-[10px] text-destructive"
+                                onClick={() => setDemoExpiryDate(u.user_id, undefined)}
+                              >
+                                {t("clearDate") || "Clear date"}
+                              </Button>
+                            </div>
+                          )}
                         </PopoverContent>
                       </Popover>
                     )}
