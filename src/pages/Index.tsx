@@ -12,6 +12,7 @@ import { CaseStudy } from "@/components/landing/CaseStudy";
 import { FeatureGrid } from "@/components/landing/FeatureGrid";
 import { FAQSection } from "@/components/landing/FAQSection";
 import { ValuePlanCombo } from "@/components/landing/ValuePlanCombo";
+import { ProblemSolution } from "@/components/landing/ProblemSolution";
 import { PublicNav } from "@/components/PublicNav";
 import { WhatsNewInline } from "@/components/landing/WhatsNewInline";
 import heroImage from "@/assets/hero-taekwondo-coach.jpg";
@@ -155,6 +156,9 @@ const Index = () => {
 
         {/* ── Light content sections ── */}
         <div className="theme-light-section pt-4">
+          {/* Who it's for / Problem / Solution */}
+          <ProblemSolution />
+
           {/* Combined value props + 3-day plan teaser */}
           <ValuePlanCombo />
 
