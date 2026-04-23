@@ -66,7 +66,12 @@ Deno.serve(async (req) => {
 
     const { name, email, password, age, belt_level, experience_years, discipline } = await req.json();
     if (!name || !email || !password) throw new Error("Missing required fields");
-    if (password.length < 6) throw new Error("Password must be at least 6 characters");
+    // Strong password rule: 8+ chars, at least one letter, at least one digit
+    const hasLetter = /\p{L}/u.test(password);
+    const hasDigit = /\d/.test(password);
+    if (typeof password !== "string" || password.length < 8 || !hasLetter || !hasDigit) {
+      throw new Error("WEAK_PASSWORD");
+    }
 
     // Create the user account (email confirmed, marked as demo via metadata)
     const { data: newUser, error: createError } = await adminClient.auth.admin.createUser({

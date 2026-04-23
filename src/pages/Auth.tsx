@@ -12,6 +12,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { PageMeta } from "@/components/PageMeta";
 import { motion } from "framer-motion";
+import { validatePassword } from "@/lib/passwordValidation";
 
 const features = [
   { icon: Zap, labelKey: "pricingFeatureAiPlans" as const },
@@ -45,6 +46,12 @@ export default function AuthPage() {
         if (error) throw error;
         navigate(redirectTo || "/dashboard");
       } else {
+        const pwCheck = validatePassword(password);
+        if (!pwCheck.ok) {
+          toast({ title: t("error"), description: t("passwordTooWeak"), variant: "destructive" });
+          setLoading(false);
+          return;
+        }
         const { data: signUpData, error } = await supabase.auth.signUp({
           email,
           password,
@@ -271,9 +278,12 @@ export default function AuthPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
-                minLength={6}
+                minLength={isLogin ? 6 : 8}
                 className="h-11 rounded-xl bg-secondary/40 border-border/60 focus:border-primary/50 transition-colors"
               />
+              {!isLogin && (
+                <p className="text-[10px] text-muted-foreground/70 leading-tight">{t("passwordRequirementsHint")}</p>
+              )}
             </div>
 
             {!isLogin && (

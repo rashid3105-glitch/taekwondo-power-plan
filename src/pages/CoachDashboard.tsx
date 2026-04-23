@@ -12,6 +12,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { CoachAthleteDetail } from "@/components/CoachAthleteDetail";
 import { AvatarImg } from "@/components/AvatarImg";
+import { validatePassword } from "@/lib/passwordValidation";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
@@ -305,6 +306,11 @@ export default function CoachDashboard() {
       toast({ title: t("error"), description: t("maxAthletesReached"), variant: "destructive" });
       return;
     }
+    const pwCheck = validatePassword(newAthletePassword);
+    if (!pwCheck.ok) {
+      toast({ title: t("error"), description: t("passwordTooWeak"), variant: "destructive" });
+      return;
+    }
     setCreating(true);
     try {
       const { data, error } = await supabase.functions.invoke("create-athlete", {
@@ -331,7 +337,9 @@ export default function CoachDashboard() {
       setNewAthleteDiscipline("sparring");
       await loadAthletes();
     } catch (err: any) {
-      const description = err.message === "COACH_CLUB_REQUIRED" ? t("completeClubBeforeCoach") : err.message;
+      let description = err.message;
+      if (err.message === "COACH_CLUB_REQUIRED") description = t("completeClubBeforeCoach");
+      else if (err.message === "WEAK_PASSWORD") description = t("passwordTooWeak");
       toast({ title: t("error"), description, variant: "destructive" });
     } finally {
       setCreating(false);
@@ -447,8 +455,9 @@ export default function CoachDashboard() {
                 value={newAthletePassword}
                 onChange={(e) => setNewAthletePassword(e.target.value)}
                 placeholder={t("athletePassword")}
-                minLength={6}
+                minLength={8}
               />
+              <p className="text-[11px] text-muted-foreground -mt-1">{t("passwordRequirementsHint")}</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 <div className="space-y-1">
                   <Label className="text-xs">{t("age")}</Label>
