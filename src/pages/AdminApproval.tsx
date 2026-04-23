@@ -930,7 +930,11 @@ export default function AdminApproval() {
                 const isNoClub = group.clubName === "No club";
                 const atCapacity = club ? group.users.length >= club.max_athletes : false;
                 return (
-                  <Collapsible key={group.clubName} defaultOpen>
+                  <Collapsible
+                    key={group.clubName}
+                    open={!collapsedClubs[group.clubName]}
+                    onOpenChange={(open) => toggleClubCollapsed(group.clubName, open)}
+                  >
                     <div className={`rounded-lg border p-4 ${isNoClub ? 'border-yellow-500/30 bg-yellow-500/5' : 'border-primary/20 bg-primary/5'}`}>
                       <CollapsibleTrigger className={`group flex items-center justify-between w-full mb-3 pb-2 border-b ${isNoClub ? 'border-yellow-500/20' : 'border-primary/10'}`}>
                         <h3 className={`text-sm font-bold flex items-center gap-2 ${isNoClub ? 'text-yellow-500' : 'text-primary'}`}>
