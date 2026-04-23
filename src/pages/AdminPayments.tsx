@@ -19,6 +19,7 @@ interface PaymentUser {
   payment_status: string;
   payment_date: string | null;
   is_demo: boolean;
+  demo_expires_at: string | null;
   created_at: string;
   email?: string;
   club_id?: string | null;
