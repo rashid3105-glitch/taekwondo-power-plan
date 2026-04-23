@@ -71,6 +71,24 @@ export default function AdminApproval() {
     if (typeof window === "undefined") return "all";
     return localStorage.getItem("admin.approval.clubScope") || "all";
   });
+  const [collapsedClubs, setCollapsedClubs] = useState<Record<string, boolean>>(() => {
+    if (typeof window === "undefined") return {};
+    try {
+      return JSON.parse(localStorage.getItem("admin.approval.collapsedClubs") || "{}");
+    } catch {
+      return {};
+    }
+  });
+
+  const toggleClubCollapsed = (clubName: string, open: boolean) => {
+    setCollapsedClubs(prev => {
+      const next = { ...prev, [clubName]: !open };
+      if (typeof window !== "undefined") {
+        localStorage.setItem("admin.approval.collapsedClubs", JSON.stringify(next));
+      }
+      return next;
+    });
+  };
   
   const [editingUser, setEditingUser] = useState<PendingUser | null>(null);
   const [editForm, setEditForm] = useState<Record<string, any>>({});
