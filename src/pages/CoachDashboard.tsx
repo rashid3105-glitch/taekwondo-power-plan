@@ -868,7 +868,15 @@ export default function CoachDashboard() {
                                 <p className="text-sm font-medium text-foreground truncate">
                                   {a.display_name || t("noName")}
                                 </p>
-                                <p className="text-[10px] text-muted-foreground truncate">{a.athlete_code}</p>
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  {a.club_name && (
+                                    <span className="inline-flex items-center gap-0.5 text-[10px] text-muted-foreground">
+                                      <Building className="h-2.5 w-2.5" />
+                                      {a.club_name}
+                                    </span>
+                                  )}
+                                  <p className="text-[10px] text-muted-foreground truncate">{a.athlete_code}</p>
+                                </div>
                               </div>
                             </label>
                           );
