@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { validatePassword } from "@/lib/passwordValidation";
 
 export default function ResetPassword() {
   const [password, setPassword] = useState("");
@@ -40,6 +41,13 @@ export default function ResetPassword() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const pwCheck = validatePassword(password);
+    if (!pwCheck.ok) {
+      toast({ title: t("error"), description: t("passwordTooWeak"), variant: "destructive" });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -86,8 +94,9 @@ export default function ResetPassword() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
-              minLength={6}
+              minLength={8}
             />
+            <p className="text-[11px] text-muted-foreground mt-1.5">{t("passwordRequirementsHint")}</p>
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? t("pleaseWait") : t("updatePassword")}
