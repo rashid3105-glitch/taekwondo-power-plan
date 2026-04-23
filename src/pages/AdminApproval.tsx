@@ -66,6 +66,10 @@ export default function AdminApproval() {
   const [resettingPassword, setResettingPassword] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState<"all" | "pending" | "approved" | "paid" | "demo" | "coach">("all");
+  const [clubScope, setClubScope] = useState<string>(() => {
+    if (typeof window === "undefined") return "all";
+    return localStorage.getItem("admin.approval.clubScope") || "all";
+  });
   
   const [editingUser, setEditingUser] = useState<PendingUser | null>(null);
   const [editForm, setEditForm] = useState<Record<string, any>>({});
