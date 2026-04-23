@@ -1,53 +1,58 @@
 
 
-## Tighter admin/coach scoping — without per-club pages
+## Add a "Who it's for / Problem / Solution" section to the landing page
 
-Two small, high-value changes instead of duplicating pages per club.
+A new narrative section on the public landing page (`/`) that clearly explains, in three short blocks, **who Sportstalent is for**, **the problem they face**, and **how Sportstalent solves it**. This gives first-time visitors immediate clarity before they scroll into features and social proof.
 
-### A. Club label everywhere an athlete name appears (coach + admin UI)
+### Where it sits
 
-Adds a small muted club chip next to athlete names in coach and admin views, so it's visually impossible to confuse two athletes from different clubs. No DB changes — `club_id` and `club_name` are already loaded in most coach queries (`get_club_member_profiles`, `get_squad_overview`).
+In `src/pages/Index.tsx`, inserted between the hero and the existing `FeatureGrid` / value sections — i.e. the first thing a visitor reads after the headline. Subtle dark-to-light transition consistent with the existing landing aesthetic.
 
-Touched files (display only):
-- `src/pages/CoachDashboard.tsx` — managed athletes list, club athletes list, message recipient picker, send-reminder picker
-- `src/components/coach/SquadOverview.tsx` — squad rows
-- `src/components/coach/SessionAttendance.tsx` — attendance rows
-- `src/components/coach/CoachSentHistory.tsx` — sent message rows
-- `src/components/coach/PhysicalTestComparison.tsx` — comparison rows
-- `src/pages/AdminApproval.tsx` — admin user rows (chip in addition to existing club grouping)
-- `src/pages/AdminPayments.tsx` — payment user rows
+### Content (all 6 locales: EN/DA/SV/DE/AR/NO)
 
-Style: small `text-[10px] text-muted-foreground` chip, `Building` icon prefix, only rendered when `club_name` is present.
+Three columns on desktop, stacked on mobile, each with an icon + short heading + 2–3 line body.
 
-### B. Single "Club scope" filter on admin pages
+**1. Who it's for** — icon: `Target`
+> Taekwondo athletes, coaches, and clubs who take performance seriously — from competitive juniors building their base to seniors chasing podiums.
 
-A dropdown at the top of `/admin/approval` and `/admin/payments` (data already loaded; just filter client-side):
-- Default: **"All clubs"**
-- Selecting a club narrows the list to that club only
-- Persists in `localStorage` per page so admin returns to the same scope
+**2. The problem** — icon: `AlertCircle`
+> Generic training apps don't understand taekwondo. Coaches juggle spreadsheets, athletes guess at periodization, and progress data lives in scattered notebooks.
 
-This gives you the *practical* benefit of "separate club pages" (focused view, less misclick risk) **without** introducing new routes, duplicated state, or per-club permission logic.
+**3. The solution** — icon: `CheckCircle2`
+> One platform built specifically for TKD: periodized training, mental performance, nutrition, rehab, and physical testing — connecting athletes and coaches in one place.
 
-Touched files:
-- `src/pages/AdminApproval.tsx` — add filter dropdown above the existing club groups
-- `src/pages/AdminPayments.tsx` — add filter dropdown above the user list
+A short lead-in line above the three cards: *"Built for the sport. By people who train it."*
 
-### C. Rename "Manage Users" → "Admin"
+### Component & files
 
-Just a label change in the dashboard side menu. Already have the `admin` translation key in all 6 locales — no new translations needed.
+- New component `src/components/landing/ProblemSolution.tsx`
+  - 3-column responsive grid (`grid sm:grid-cols-3 gap-5`)
+  - Each card: icon in colored gradient circle (using existing `tab-color-coding` tokens — Target=blue, Problem=amber/destructive, Solution=emerald), bold heading, muted body
+  - Framer-motion stagger fade-in on scroll (matches existing landing animations)
+  - Pulls all copy from `useLanguage().t(...)` — no hardcoded strings
 
-Touched files:
-- `src/pages/Dashboard.tsx` — change `t("manageUsers")` to `t("admin")` in the side menu admin link
-- *(Optional)* leave the `manageUsers` key in `translations.ts` for now in case it's referenced elsewhere; remove later if unused.
+- Mounted in `src/pages/Index.tsx` immediately after the hero section, before the existing value/feature blocks. Wrapped in the same `theme-light-section` container used by the rest of the light-themed landing content.
 
-### What we're explicitly NOT doing (and why)
+### Translations
 
-- **No per-club routes (`/admin/club/:id/...`)** — RLS already enforces club isolation at the database. Per-club URLs would be UI-only, add navigation cost, and duplicate logic. Filter + chips deliver the same daily-use benefit.
-- **No new tables, RPCs, or RLS changes** — current security model is sound; this work is purely UI clarity.
-- **No changes to coach pages' data scope** — coaches already see only their own athletes + their club, enforced server-side.
+Add 7 keys × 6 locales in `src/i18n/translations.ts`:
+- `psSectionLead` — lead-in line
+- `psWhoTitle`, `psWhoBody`
+- `psProblemTitle`, `psProblemBody`
+- `psSolutionTitle`, `psSolutionBody`
 
-### Out-of-scope follow-ups worth noting
+Keep bodies under ~140 chars each so the cards stay scannable.
 
-- A short memory note documenting the read-vs-write asymmetry of coach RLS (read = whole club, write = managed athletes only) so future changes don't accidentally widen it.
-- If `manageUsers` translation key is no longer used after the rename, remove it in a cleanup pass.
+### Files changed
+
+- `src/components/landing/ProblemSolution.tsx` (new)
+- `src/pages/Index.tsx` (mount the section)
+- `src/i18n/translations.ts` (7 keys × 6 locales)
+
+### Out of scope
+
+- No new images or illustrations — icons only, to keep page weight down and match the minimal landing style.
+- No A/B variants or analytics events for this section.
+- No copy on the `/about` or `/methodology` pages — those already cover the longer story; this section is the short hero-adjacent version.
+- No DB or backend changes.
 
