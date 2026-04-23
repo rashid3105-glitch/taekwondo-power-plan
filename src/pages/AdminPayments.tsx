@@ -62,7 +62,7 @@ export default function AdminPayments() {
     const [profilesRes, emailsRes, clubsRes] = await Promise.all([
       supabase
         .from("profiles")
-        .select("user_id, display_name, payment_status, payment_date, is_demo, created_at, club_id")
+        .select("user_id, display_name, payment_status, payment_date, is_demo, demo_expires_at, created_at, club_id")
         .order("created_at", { ascending: false }),
       supabase.functions.invoke("get-admin-users"),
       supabase.from("clubs" as any).select("id, name").order("name"),
