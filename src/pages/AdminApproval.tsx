@@ -82,6 +82,12 @@ export default function AdminApproval() {
     checkAdminAndLoad();
   }, []);
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("admin.approval.clubScope", clubScope);
+    }
+  }, [clubScope]);
+
   const checkAdminAndLoad = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { navigate("/auth"); return; }
@@ -793,6 +799,19 @@ export default function AdminApproval() {
               className="pl-9"
             />
           </div>
+          <Select value={clubScope} onValueChange={setClubScope}>
+            <SelectTrigger className="w-full sm:w-48">
+              <Building className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
+              <SelectValue placeholder={t("filterByClub")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t("allClubs")}</SelectItem>
+              <SelectItem value="__none__">— {t("noClub") || "No club"} —</SelectItem>
+              {clubs.map((c) => (
+                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Select value={filterStatus} onValueChange={(v) => setFilterStatus(v as any)}>
             <SelectTrigger className="w-full sm:w-40">
               <SelectValue />
