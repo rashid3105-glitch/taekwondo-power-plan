@@ -109,6 +109,17 @@ export default function AdminPayments() {
     loadUsers();
   };
 
+  const setDemoExpiryDate = async (userId: string, date: Date | undefined) => {
+    const value = date ? format(date, "yyyy-MM-dd") : null;
+    const { error } = await supabase.from("profiles").update({ demo_expires_at: value } as any).eq("user_id", userId);
+    if (error) {
+      toast({ title: t("error"), description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: value ? (t("demoExpiryUpdated") || "Demo expiry updated") : (t("demoExpiryCleared") || "Demo expiry cleared") });
+      loadUsers();
+    }
+  };
+
   const filtered = users.filter((u) => {
     const matchesSearch = !search ||
       u.display_name.toLowerCase().includes(search.toLowerCase()) ||
