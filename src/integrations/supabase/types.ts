@@ -475,6 +475,48 @@ export type Database = {
         }
         Relationships: []
       }
+      landing_announcements: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          link_url: string
+          text_ar: string
+          text_da: string
+          text_de: string
+          text_en: string
+          text_no: string
+          text_sv: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          link_url?: string
+          text_ar?: string
+          text_da?: string
+          text_de?: string
+          text_en?: string
+          text_no?: string
+          text_sv?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          link_url?: string
+          text_ar?: string
+          text_da?: string
+          text_de?: string
+          text_en?: string
+          text_no?: string
+          text_sv?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       match_tags: {
         Row: {
           created_at: string
