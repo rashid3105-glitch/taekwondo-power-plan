@@ -611,12 +611,43 @@ export default function AdminApproval() {
                 />
               </div>
             )}
+            {u.is_demo && (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-6 text-[10px] gap-1">
+                    <CalendarIcon className="h-3 w-3" />
+                    {u.demo_expires_at ? format(new Date(u.demo_expires_at), "dd/MM/yyyy") : (t("setDemoExpiry") || "Set expiry")}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={u.demo_expires_at ? new Date(u.demo_expires_at) : undefined}
+                    onSelect={(date) => setDemoExpiryDate(u.user_id, date)}
+                    initialFocus
+                    className="p-3 pointer-events-auto"
+                  />
+                  {u.demo_expires_at && (
+                    <div className="p-2 border-t border-border">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-full h-7 text-[10px] text-destructive"
+                        onClick={() => setDemoExpiryDate(u.user_id, undefined)}
+                      >
+                        {t("clearDate") || "Clear date"}
+                      </Button>
+                    </div>
+                  )}
+                </PopoverContent>
+              </Popover>
+            )}
             {u.is_demo && !u.demo_full_access && (
               <span className="text-[10px] text-amber-500 font-medium">
                 Kun træningsplanlægning
               </span>
             )}
-            {u.is_demo && u.payment_status !== "paid" && (
+            {u.is_demo && u.payment_status !== "paid" && !u.demo_expires_at && (
               <span className="text-[10px] text-destructive font-medium">
                 {t("demoExpires14Days")}
               </span>
