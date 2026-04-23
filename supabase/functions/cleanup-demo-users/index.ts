@@ -37,18 +37,25 @@ Deno.serve(async (req) => {
 
     const adminClient = createClient(supabaseUrl, serviceRoleKey);
 
-    // Delete demo users who are unpaid and created more than 21 days ago
+    // Delete demo users who are unpaid AND either:
+    //  - have a manually-set demo_expires_at in the past, OR
+    //  - were created more than 21 days ago and have no manual expiry set
+    const today = new Date().toISOString().split("T")[0];
     const twentyOneDaysAgo = new Date();
     twentyOneDaysAgo.setDate(twentyOneDaysAgo.getDate() - 21);
 
-    const { data: expiredDemos, error: fetchError } = await adminClient
+    const { data: candidates, error: fetchError } = await adminClient
       .from("profiles")
-      .select("user_id, display_name")
+      .select("user_id, display_name, created_at, demo_expires_at")
       .eq("is_demo", true)
-      .neq("payment_status", "paid")
-      .lt("created_at", twentyOneDaysAgo.toISOString());
+      .neq("payment_status", "paid");
 
     if (fetchError) throw fetchError;
+
+    const expiredDemos = (candidates || []).filter((p: any) => {
+      if (p.demo_expires_at) return p.demo_expires_at < today;
+      return new Date(p.created_at) < twentyOneDaysAgo;
+    });
 
     const deleted: string[] = [];
     for (const profile of expiredDemos || []) {

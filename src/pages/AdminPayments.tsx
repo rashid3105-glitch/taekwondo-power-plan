@@ -19,6 +19,7 @@ interface PaymentUser {
   payment_status: string;
   payment_date: string | null;
   is_demo: boolean;
+  demo_expires_at: string | null;
   created_at: string;
   email?: string;
   club_id?: string | null;
@@ -61,7 +62,7 @@ export default function AdminPayments() {
     const [profilesRes, emailsRes, clubsRes] = await Promise.all([
       supabase
         .from("profiles")
-        .select("user_id, display_name, payment_status, payment_date, is_demo, created_at, club_id")
+        .select("user_id, display_name, payment_status, payment_date, is_demo, demo_expires_at, created_at, club_id")
         .order("created_at", { ascending: false }),
       supabase.functions.invoke("get-admin-users"),
       supabase.from("clubs" as any).select("id, name").order("name"),
@@ -106,6 +107,17 @@ export default function AdminPayments() {
     await supabase.from("profiles").update({ payment_date: format(date, "yyyy-MM-dd"), payment_status: "paid" } as any).eq("user_id", userId);
     toast({ title: t("paymentDateUpdated") });
     loadUsers();
+  };
+
+  const setDemoExpiryDate = async (userId: string, date: Date | undefined) => {
+    const value = date ? format(date, "yyyy-MM-dd") : null;
+    const { error } = await supabase.from("profiles").update({ demo_expires_at: value } as any).eq("user_id", userId);
+    if (error) {
+      toast({ title: t("error"), description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: value ? (t("demoExpiryUpdated") || "Demo expiry updated") : (t("demoExpiryCleared") || "Demo expiry cleared") });
+      loadUsers();
+    }
   };
 
   const filtered = users.filter((u) => {
@@ -256,7 +268,7 @@ export default function AdminPayments() {
                       />
                     </div>
 
-                    {/* Date picker */}
+                    {/* Payment date picker */}
                     {u.payment_status === "paid" && (
                       <Popover>
                         <PopoverTrigger asChild>
@@ -271,7 +283,43 @@ export default function AdminPayments() {
                             selected={u.payment_date ? new Date(u.payment_date) : undefined}
                             onSelect={(date) => setPaymentDate(u.user_id, date)}
                             initialFocus
+                            className="p-3 pointer-events-auto"
                           />
+                        </PopoverContent>
+                      </Popover>
+                    )}
+
+                    {/* Demo expiry date picker */}
+                    {u.is_demo && u.payment_status !== "paid" && (
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" size="sm" className="h-7 text-[10px] gap-1">
+                            <CalendarIcon className="h-3 w-3" />
+                            {u.demo_expires_at
+                              ? format(new Date(u.demo_expires_at), "dd/MM/yy")
+                              : (t("setDemoExpiry") || "Demo expiry")}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="end">
+                          <Calendar
+                            mode="single"
+                            selected={u.demo_expires_at ? new Date(u.demo_expires_at) : undefined}
+                            onSelect={(date) => setDemoExpiryDate(u.user_id, date)}
+                            initialFocus
+                            className="p-3 pointer-events-auto"
+                          />
+                          {u.demo_expires_at && (
+                            <div className="p-2 border-t border-border">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="w-full h-7 text-[10px] text-destructive"
+                                onClick={() => setDemoExpiryDate(u.user_id, undefined)}
+                              >
+                                {t("clearDate") || "Clear date"}
+                              </Button>
+                            </div>
+                          )}
                         </PopoverContent>
                       </Popover>
                     )}

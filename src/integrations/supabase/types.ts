@@ -770,6 +770,7 @@ export type Database = {
           created_at: string
           current_injury: string | null
           custom_calories: number | null
+          demo_expires_at: string | null
           demo_full_access: boolean
           discipline: string
           display_name: string
@@ -803,6 +804,7 @@ export type Database = {
           created_at?: string
           current_injury?: string | null
           custom_calories?: number | null
+          demo_expires_at?: string | null
           demo_full_access?: boolean
           discipline?: string
           display_name?: string
@@ -836,6 +838,7 @@ export type Database = {
           created_at?: string
           current_injury?: string | null
           custom_calories?: number | null
+          demo_expires_at?: string | null
           demo_full_access?: boolean
           discipline?: string
           display_name?: string
@@ -1313,6 +1316,7 @@ export type Database = {
         Args: { _user_id: string }
         Returns: {
           club_id: string
+          demo_expires_at: string
           demo_full_access: boolean
           is_approved: boolean
           is_demo: boolean

@@ -40,6 +40,7 @@ interface PendingUser {
   payment_date: string | null;
   is_demo: boolean;
   demo_full_access?: boolean;
+  demo_expires_at?: string | null;
   club_id?: string | null;
   club_name?: string | null;
   email?: string;
@@ -101,7 +102,7 @@ export default function AdminApproval() {
     const [profilesRes, emailsRes, plansRes, rolesRes, coachAthletesRes, clubsRes] = await Promise.all([
       supabase
         .from("profiles")
-        .select("user_id, display_name, created_at, is_approved, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, payment_status, payment_date, is_demo, demo_full_access, club_id, discipline, country, current_injury, last_seen_at")
+        .select("user_id, display_name, created_at, is_approved, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, payment_status, payment_date, is_demo, demo_full_access, demo_expires_at, club_id, discipline, country, current_injury, last_seen_at")
         .order("created_at", { ascending: false }),
       supabase.functions.invoke("get-admin-users"),
       supabase
@@ -326,6 +327,17 @@ export default function AdminApproval() {
     await supabase.from("profiles").update({ demo_full_access: !currentValue } as any).eq("user_id", userId);
     toast({ title: !currentValue ? "Fuld demo-adgang aktiveret" : "Fuld demo-adgang deaktiveret" });
     loadUsers();
+  };
+
+  const setDemoExpiryDate = async (userId: string, date: Date | undefined) => {
+    const value = date ? format(date, "yyyy-MM-dd") : null;
+    const { error } = await supabase.from("profiles").update({ demo_expires_at: value } as any).eq("user_id", userId);
+    if (error) {
+      toast({ title: t("error"), description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: value ? (t("demoExpiryUpdated") || "Demo expiry updated") : (t("demoExpiryCleared") || "Demo expiry cleared") });
+      loadUsers();
+    }
   };
 
   const openEditDialog = (u: PendingUser) => {
@@ -599,12 +611,43 @@ export default function AdminApproval() {
                 />
               </div>
             )}
+            {u.is_demo && (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-6 text-[10px] gap-1">
+                    <CalendarIcon className="h-3 w-3" />
+                    {u.demo_expires_at ? format(new Date(u.demo_expires_at), "dd/MM/yyyy") : (t("setDemoExpiry") || "Set expiry")}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={u.demo_expires_at ? new Date(u.demo_expires_at) : undefined}
+                    onSelect={(date) => setDemoExpiryDate(u.user_id, date)}
+                    initialFocus
+                    className="p-3 pointer-events-auto"
+                  />
+                  {u.demo_expires_at && (
+                    <div className="p-2 border-t border-border">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-full h-7 text-[10px] text-destructive"
+                        onClick={() => setDemoExpiryDate(u.user_id, undefined)}
+                      >
+                        {t("clearDate") || "Clear date"}
+                      </Button>
+                    </div>
+                  )}
+                </PopoverContent>
+              </Popover>
+            )}
             {u.is_demo && !u.demo_full_access && (
               <span className="text-[10px] text-amber-500 font-medium">
                 Kun træningsplanlægning
               </span>
             )}
-            {u.is_demo && u.payment_status !== "paid" && (
+            {u.is_demo && u.payment_status !== "paid" && !u.demo_expires_at && (
               <span className="text-[10px] text-destructive font-medium">
                 {t("demoExpires14Days")}
               </span>
