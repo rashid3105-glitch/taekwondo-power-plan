@@ -1,58 +1,34 @@
 
 
-## Add a "Who it's for / Problem / Solution" section to the landing page
+## Fix: "Share" on match video returns Edge Function non-2xx error
 
-A new narrative section on the public landing page (`/`) that clearly explains, in three short blocks, **who Sportstalent is for**, **the problem they face**, and **how Sportstalent solves it**. This gives first-time visitors immediate clarity before they scroll into features and social proof.
+### Root cause
 
-### Where it sits
+The `share-match-video` edge function is set to `verify_jwt = true` in `supabase/config.toml`, but every other authenticated function in this project (e.g. `delete-my-account`, `update-my-profile`, `send-coach-message`) is set to `verify_jwt = false` and validates the user in-code via `supabase.auth.getUser()`. With the project's signing-keys auth setup, platform-level JWT verification rejects the request before the function boots — which matches what the logs show (no fresh boots when Share is clicked).
 
-In `src/pages/Index.tsx`, inserted between the hero and the existing `FeatureGrid` / value sections — i.e. the first thing a visitor reads after the headline. Subtle dark-to-light transition consistent with the existing landing aesthetic.
+The companion function `get-shared-match` (used by the public `/match/share/:token` page) is already correctly set to `verify_jwt = false`. The share-creation function just got missed.
 
-### Content (all 6 locales: EN/DA/SV/DE/AR/NO)
+### The fix
 
-Three columns on desktop, stacked on mobile, each with an icon + short heading + 2–3 line body.
+**One line in `supabase/config.toml`:**
 
-**1. Who it's for** — icon: `Target`
-> Taekwondo athletes, coaches, and clubs who take performance seriously — from competitive juniors building their base to seniors chasing podiums.
+```toml
+[functions.share-match-video]
+verify_jwt = false
+```
 
-**2. The problem** — icon: `AlertCircle`
-> Generic training apps don't understand taekwondo. Coaches juggle spreadsheets, athletes guess at periodization, and progress data lives in scattered notebooks.
-
-**3. The solution** — icon: `CheckCircle2`
-> One platform built specifically for TKD: periodized training, mental performance, nutrition, rehab, and physical testing — connecting athletes and coaches in one place.
-
-A short lead-in line above the three cards: *"Built for the sport. By people who train it."*
-
-### Component & files
-
-- New component `src/components/landing/ProblemSolution.tsx`
-  - 3-column responsive grid (`grid sm:grid-cols-3 gap-5`)
-  - Each card: icon in colored gradient circle (using existing `tab-color-coding` tokens — Target=blue, Problem=amber/destructive, Solution=emerald), bold heading, muted body
-  - Framer-motion stagger fade-in on scroll (matches existing landing animations)
-  - Pulls all copy from `useLanguage().t(...)` — no hardcoded strings
-
-- Mounted in `src/pages/Index.tsx` immediately after the hero section, before the existing value/feature blocks. Wrapped in the same `theme-light-section` container used by the rest of the light-themed landing content.
-
-### Translations
-
-Add 7 keys × 6 locales in `src/i18n/translations.ts`:
-- `psSectionLead` — lead-in line
-- `psWhoTitle`, `psWhoBody`
-- `psProblemTitle`, `psProblemBody`
-- `psSolutionTitle`, `psSolutionBody`
-
-Keep bodies under ~140 chars each so the cards stay scannable.
+The function code itself is already correct — it validates the Bearer token in-code (lines 20–25 reject missing/malformed Authorization, then `userClient.auth.getUser()` rejects invalid tokens), and uses an RLS-respecting client so only the owning coach can update their own video.
 
 ### Files changed
 
-- `src/components/landing/ProblemSolution.tsx` (new)
-- `src/pages/Index.tsx` (mount the section)
-- `src/i18n/translations.ts` (7 keys × 6 locales)
+- `supabase/config.toml` — flip `verify_jwt` from `true` to `false` for `share-match-video`
 
 ### Out of scope
 
-- No new images or illustrations — icons only, to keep page weight down and match the minimal landing style.
-- No A/B variants or analytics events for this section.
-- No copy on the `/about` or `/methodology` pages — those already cover the longer story; this section is the short hero-adjacent version.
-- No DB or backend changes.
+- No changes to the function code, RLS, DB schema, or UI — the in-code auth check is already there and correct.
+- Not auditing other functions in the same pass; the symptom is isolated to Share. (If a similar pattern is later observed on `apply-competition-taper` or `send-coach-message`, those would warrant the same one-line change — flag for a follow-up if it appears.)
+
+### How we'll verify
+
+After the change deploys, click **Del** on a match video → expect a green "Link created" toast and the `https://sportstalent.dk/match/share/<token>` URL to appear under the header. Edge function logs should show a fresh boot followed by a 200 response.
 
