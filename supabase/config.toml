@@ -55,7 +55,7 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.share-match-video]
-verify_jwt = true
+verify_jwt = false
 
 [functions.apply-competition-taper]
 verify_jwt = true
