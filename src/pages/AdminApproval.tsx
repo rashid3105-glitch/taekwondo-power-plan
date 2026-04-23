@@ -40,6 +40,7 @@ interface PendingUser {
   payment_date: string | null;
   is_demo: boolean;
   demo_full_access?: boolean;
+  demo_expires_at?: string | null;
   club_id?: string | null;
   club_name?: string | null;
   email?: string;
