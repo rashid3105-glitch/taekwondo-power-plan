@@ -58,12 +58,13 @@ export default function AdminPayments() {
   };
 
   const loadUsers = async () => {
-    const [profilesRes, emailsRes] = await Promise.all([
+    const [profilesRes, emailsRes, clubsRes] = await Promise.all([
       supabase
         .from("profiles")
-        .select("user_id, display_name, payment_status, payment_date, is_demo, created_at")
+        .select("user_id, display_name, payment_status, payment_date, is_demo, created_at, club_id")
         .order("created_at", { ascending: false }),
       supabase.functions.invoke("get-admin-users"),
+      supabase.from("clubs" as any).select("id, name").order("name"),
     ]);
 
     const emailMap: Record<string, string> = {};
@@ -73,10 +74,15 @@ export default function AdminPayments() {
       }
     }
 
+    const clubsList = ((clubsRes.data as unknown as { id: string; name: string }[] | null) ?? []);
+    setClubs(clubsList);
+    const clubMap = new Map<string, string>(clubsList.map((c) => [c.id, c.name]));
+
     setUsers(
       (profilesRes.data || []).map((p: any) => ({
         ...p,
         email: emailMap[p.user_id] || "",
+        club_name: p.club_id ? clubMap.get(p.club_id) || null : null,
       }))
     );
     setLoading(false);
@@ -105,13 +111,19 @@ export default function AdminPayments() {
   const filtered = users.filter((u) => {
     const matchesSearch = !search ||
       u.display_name.toLowerCase().includes(search.toLowerCase()) ||
-      (u.email || "").toLowerCase().includes(search.toLowerCase());
+      (u.email || "").toLowerCase().includes(search.toLowerCase()) ||
+      (u.club_name || "").toLowerCase().includes(search.toLowerCase());
     const matchesFilter =
       filter === "all" ||
       (filter === "paid" && u.payment_status === "paid") ||
       (filter === "unpaid" && u.payment_status !== "paid" && !u.is_demo) ||
       (filter === "demo" && u.is_demo);
-    return matchesSearch && matchesFilter;
+    let matchesClub = true;
+    if (clubScope !== "all") {
+      if (clubScope === "__none__") matchesClub = !u.club_id;
+      else matchesClub = u.club_id === clubScope;
+    }
+    return matchesSearch && matchesFilter && matchesClub;
   });
 
   const stats = {
