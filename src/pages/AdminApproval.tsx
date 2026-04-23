@@ -393,6 +393,15 @@ export default function AdminApproval() {
     
     if (!matchesSearch) return false;
 
+    // Club scope filter
+    if (clubScope !== "all") {
+      if (clubScope === "__none__") {
+        if (u.club_id) return false;
+      } else if (u.club_id !== clubScope) {
+        return false;
+      }
+    }
+
     switch (filterStatus) {
       case "pending": return !u.is_approved;
       case "approved": return u.is_approved;
