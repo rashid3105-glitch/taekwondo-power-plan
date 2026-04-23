@@ -1,80 +1,51 @@
 
 
-## Tiny "What's new" inline link under the hero CTA
+## Stronger password requirements
 
-A single line of text appears just below the hero CTA buttons on the landing page, showing the latest highlighted update. The admin (you) controls exactly what's shown via a small admin-only editor.
+Raise the minimum password from 6 → **8 characters** and require some complexity, applied consistently everywhere a password is set.
 
-```text
-[ Get started → ]  [ Methodology ]
+### Rules enforced
 
-✨ New: Match video analysis — see what's new
-```
+A new password must satisfy **all** of:
+- At least **8 characters**
+- At least one **letter**
+- At least one **number**
 
-Clicking the link goes to `/help#changelog`.
+(Special characters allowed but not required — keeps it usable on mobile, still a meaningful step up.)
 
-## How admin control works
+Login (sign-in) is **not** affected — existing users with old 6-char passwords can still sign in. The new rules apply only when a password is being **created or changed**.
 
-A new tiny database table `landing_announcements` stores the current announcement:
+### Where it applies
 
-| column | purpose |
-|---|---|
-| `id` | uuid |
-| `text_en`, `text_da`, `text_sv`, `text_de`, `text_ar`, `text_no` | localized one-liner (e.g. "Match video analysis") |
-| `link_url` | defaults to `/help#changelog`, editable |
-| `is_active` | only one row active at a time |
-| `updated_at` | timestamp |
+1. **Sign up** — `src/pages/Auth.tsx`
+2. **Password reset** — `src/pages/ResetPassword.tsx`
+3. **Coach creating an athlete account** — `src/pages/CoachDashboard.tsx` (the `newAthletePassword` field) + matching server check in `supabase/functions/create-athlete/index.ts` (currently `password.length < 6`).
 
-**RLS:**
-- Public `SELECT` allowed where `is_active = true` (so logged-out visitors see it)
-- `INSERT` / `UPDATE` / `DELETE` restricted to admins only (via existing `has_role(auth.uid(), 'admin')`)
+### Implementation
 
-Admin edits it from a new small section on the existing **`/admin/approval`** page (or its own `/admin/announcement` route — see question below) with:
-- 6 text inputs (one per language), each max ~60 chars
-- Optional link URL field
-- "Show on landing page" toggle
-- Save button
+- Add a tiny shared helper `src/lib/passwordValidation.ts` exporting `validatePassword(pw): { ok: boolean; messageKey: TranslationKey }` so all three forms share one rule set.
+- In each form: validate on submit before calling Supabase; if invalid, show a toast with a clear message and stop. Update `minLength` to `8` and add a small inline hint under the password field ("At least 8 characters, with a letter and a number").
+- In `create-athlete` edge function: replace the `password.length < 6` check with the same rule (length ≥ 8 + letter + number) and return a clear error code (`WEAK_PASSWORD`) so the coach UI can show a localized message.
+- **Lovable Cloud Auth setting**: enable **Leaked Password Protection (HIBP)** so passwords found in known breaches are rejected by the auth backend itself. This will be turned on via the auth configuration tool during implementation.
 
-If no active announcement exists, the inline link simply doesn't render — landing stays clean.
+### Translations
 
-## Frontend
+Add 2 new keys × 6 locales (EN/DA/SV/DE/AR/NO) in `src/i18n/translations.ts`:
+- `passwordRequirementsHint` — "At least 8 characters, with a letter and a number"
+- `passwordTooWeak` — "Password is too weak. Use at least 8 characters with a letter and a number."
 
-- New component `src/components/landing/WhatsNewInline.tsx`
-  - Fetches the active announcement once on mount (single row, public read)
-  - Picks the text matching current language; falls back to `text_en` if empty
-  - Renders nothing if no row or empty text for both current lang and English
-  - Style: small muted text, `✨` prefix, underlined "see what's new" link, framer-motion fade-in matching the existing hero animation timing (delay ~0.85)
-- Mounted in `src/pages/Index.tsx` directly under the social-proof chips / `ctaSubtext` paragraph in the hero
-- New admin component `src/components/admin/AnnouncementEditor.tsx` mounted on the admin page
+### Files changed
 
-## Translations
+- `src/lib/passwordValidation.ts` (new)
+- `src/pages/Auth.tsx` (signup validation + hint, `minLength={8}`)
+- `src/pages/ResetPassword.tsx` (validation + hint, `minLength={8}`)
+- `src/pages/CoachDashboard.tsx` (athlete creation field + hint, `minLength={8}`)
+- `supabase/functions/create-athlete/index.ts` (server-side rule)
+- `src/i18n/translations.ts` (2 keys × 6 locales)
+- Lovable Cloud auth: enable HIBP leaked-password check
 
-Add 2 keys per locale (EN/DA/SV/DE/AR/NO):
-- `whatsNewPrefix` — "New" / "Nyt" / "Nytt" / "Neu" / "جديد" / "Nytt"
-- `whatsNewLink` — "see what's new" / "se hvad der er nyt" / etc.
+### Out of scope
 
-Admin editor labels reuse existing admin translation patterns.
-
-## Files changed
-
-- `supabase/migrations/<timestamp>_landing_announcements.sql` (new table + RLS)
-- `src/components/landing/WhatsNewInline.tsx` (new)
-- `src/components/admin/AnnouncementEditor.tsx` (new)
-- `src/pages/Index.tsx` (mount inline link in hero)
-- `src/pages/AdminApproval.tsx` (mount editor) — *or new route, see question*
-- `src/i18n/translations.ts` (2 keys × 6 locales + admin editor labels)
-
-## Out of scope
-
-- No automatic pulling from changelog — admin types the headline manually (gives you full control over tone/length)
-- No history of past announcements — only one active row at a time. Old ones can be deactivated and overwritten or kept inactive in DB.
-- No dismiss-per-user — the link is small enough to live permanently; admin removes it by toggling off
-
-## One small decision needed
-
-Where should the admin editor live? Options:
-1. Inside the existing `/admin/approval` page as a collapsible section at the top
-2. Its own route `/admin/announcement` linked from the admin nav
-3. Inside `/admin/clubs` or `/admin/payments` as a tab
-
-I'd default to **option 1** (least navigation, you already visit that page often) unless you prefer otherwise — let me know after approving and I'll wire it up accordingly.
+- No forced password reset for existing users with short passwords — they keep working until they change their password.
+- No password strength meter / progress bar — kept minimal per the existing UI style.
 
