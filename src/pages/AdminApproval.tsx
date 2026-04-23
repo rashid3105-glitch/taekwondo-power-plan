@@ -71,6 +71,24 @@ export default function AdminApproval() {
     if (typeof window === "undefined") return "all";
     return localStorage.getItem("admin.approval.clubScope") || "all";
   });
+  const [collapsedClubs, setCollapsedClubs] = useState<Record<string, boolean>>(() => {
+    if (typeof window === "undefined") return {};
+    try {
+      return JSON.parse(localStorage.getItem("admin.approval.collapsedClubs") || "{}");
+    } catch {
+      return {};
+    }
+  });
+
+  const toggleClubCollapsed = (clubName: string, open: boolean) => {
+    setCollapsedClubs(prev => {
+      const next = { ...prev, [clubName]: !open };
+      if (typeof window !== "undefined") {
+        localStorage.setItem("admin.approval.collapsedClubs", JSON.stringify(next));
+      }
+      return next;
+    });
+  };
   
   const [editingUser, setEditingUser] = useState<PendingUser | null>(null);
   const [editForm, setEditForm] = useState<Record<string, any>>({});
@@ -912,7 +930,11 @@ export default function AdminApproval() {
                 const isNoClub = group.clubName === "No club";
                 const atCapacity = club ? group.users.length >= club.max_athletes : false;
                 return (
-                  <Collapsible key={group.clubName} defaultOpen>
+                  <Collapsible
+                    key={group.clubName}
+                    open={!collapsedClubs[group.clubName]}
+                    onOpenChange={(open) => toggleClubCollapsed(group.clubName, open)}
+                  >
                     <div className={`rounded-lg border p-4 ${isNoClub ? 'border-yellow-500/30 bg-yellow-500/5' : 'border-primary/20 bg-primary/5'}`}>
                       <CollapsibleTrigger className={`group flex items-center justify-between w-full mb-3 pb-2 border-b ${isNoClub ? 'border-yellow-500/20' : 'border-primary/10'}`}>
                         <h3 className={`text-sm font-bold flex items-center gap-2 ${isNoClub ? 'text-yellow-500' : 'text-primary'}`}>
