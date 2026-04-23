@@ -156,6 +156,9 @@ const Index = () => {
 
         {/* ── Light content sections ── */}
         <div className="theme-light-section pt-4">
+          {/* Who it's for / Problem / Solution */}
+          <ProblemSolution />
+
           {/* Combined value props + 3-day plan teaser */}
           <ValuePlanCombo />
 
