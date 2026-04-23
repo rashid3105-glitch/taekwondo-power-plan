@@ -16,6 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { format } from "date-fns";
 import { COUNTRIES } from "@/data/countries";
+import { AnnouncementEditor } from "@/components/admin/AnnouncementEditor";
 
 interface UserPlan {
   id: string;
@@ -744,6 +745,9 @@ export default function AdminApproval() {
         </div>
 
         <h1 className="text-xl font-extrabold text-foreground">{t("userApproval")}</h1>
+
+        {/* Landing announcement editor */}
+        <AnnouncementEditor />
 
         {/* Stats overview */}
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
