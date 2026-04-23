@@ -30,7 +30,7 @@ import { CoachSentHistory } from "@/components/coach/CoachSentHistory";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   ArrowLeft, Loader2, UserPlus, Trash2, Zap, Plus, User, Users, NotebookPen, Eye, Heart, UserCog,
-  Frown, Meh, Smile, Laugh, BatteryLow, BatteryMedium, BatteryFull, MessageSquare, Bell, Search, Send,
+  Frown, Meh, Smile, Laugh, BatteryLow, BatteryMedium, BatteryFull, MessageSquare, Bell, Search, Send, Building,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -568,8 +568,15 @@ export default function CoachDashboard() {
                         <AvatarImg avatarUrl={a.avatar_url} />
                         <div className="min-w-0 flex-1">
                           <p className="font-medium text-sm text-foreground truncate">{a.display_name || t("noName")}</p>
-                          {a.club_name && <p className="text-[10px] text-muted-foreground">{t("club")}: {a.club_name}</p>}
-                          <p className="text-[10px] text-muted-foreground">{a.athlete_code}</p>
+                          <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
+                            {a.club_name && (
+                              <span className="inline-flex items-center gap-0.5 text-[10px] text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded-full">
+                                <Building className="h-2.5 w-2.5" />
+                                {a.club_name}
+                              </span>
+                            )}
+                            <p className="text-[10px] text-muted-foreground">{a.athlete_code}</p>
+                          </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-1 flex-shrink-0">
@@ -732,7 +739,15 @@ export default function CoachDashboard() {
                       <AvatarImg avatarUrl={a.avatar_url} />
                       <div className="min-w-0 flex-1">
                         <p className="font-medium text-sm text-foreground truncate">{a.display_name || t("noName")}</p>
-                        <p className="text-[10px] text-muted-foreground">{a.athlete_code}</p>
+                        <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
+                          {a.club_name && (
+                            <span className="inline-flex items-center gap-0.5 text-[10px] text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded-full">
+                              <Building className="h-2.5 w-2.5" />
+                              {a.club_name}
+                            </span>
+                          )}
+                          <p className="text-[10px] text-muted-foreground">{a.athlete_code}</p>
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-1 flex-shrink-0">
