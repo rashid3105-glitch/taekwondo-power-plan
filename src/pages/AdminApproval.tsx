@@ -66,6 +66,10 @@ export default function AdminApproval() {
   const [resettingPassword, setResettingPassword] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState<"all" | "pending" | "approved" | "paid" | "demo" | "coach">("all");
+  const [clubScope, setClubScope] = useState<string>(() => {
+    if (typeof window === "undefined") return "all";
+    return localStorage.getItem("admin.approval.clubScope") || "all";
+  });
   
   const [editingUser, setEditingUser] = useState<PendingUser | null>(null);
   const [editForm, setEditForm] = useState<Record<string, any>>({});
@@ -77,6 +81,12 @@ export default function AdminApproval() {
   useEffect(() => {
     checkAdminAndLoad();
   }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("admin.approval.clubScope", clubScope);
+    }
+  }, [clubScope]);
 
   const checkAdminAndLoad = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -389,6 +399,15 @@ export default function AdminApproval() {
     
     if (!matchesSearch) return false;
 
+    // Club scope filter
+    if (clubScope !== "all") {
+      if (clubScope === "__none__") {
+        if (u.club_id) return false;
+      } else if (u.club_id !== clubScope) {
+        return false;
+      }
+    }
+
     switch (filterStatus) {
       case "pending": return !u.is_approved;
       case "approved": return u.is_approved;
@@ -454,7 +473,12 @@ export default function AdminApproval() {
               </div>
               <div className="flex items-center gap-2 flex-wrap mt-0.5">
                 {u.email && <p className="text-xs text-muted-foreground text-left">{u.email}</p>}
-                {u.club_name && <span className="text-[10px] text-muted-foreground">• {u.club_name}</span>}
+                {u.club_name && (
+                  <span className="inline-flex items-center gap-0.5 text-[10px] text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded-full">
+                    <Building className="h-2.5 w-2.5" />
+                    {u.club_name}
+                  </span>
+                )}
                 {u.belt_level && <span className="text-[10px] text-muted-foreground capitalize">• {u.belt_level}</span>}
                 {u.age && <span className="text-[10px] text-muted-foreground">• {u.age}y</span>}
               </div>
@@ -780,6 +804,19 @@ export default function AdminApproval() {
               className="pl-9"
             />
           </div>
+          <Select value={clubScope} onValueChange={setClubScope}>
+            <SelectTrigger className="w-full sm:w-48">
+              <Building className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
+              <SelectValue placeholder={t("filterByClub")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t("allClubs")}</SelectItem>
+              <SelectItem value="__none__">— {t("noClub") || "No club"} —</SelectItem>
+              {clubs.map((c) => (
+                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Select value={filterStatus} onValueChange={(v) => setFilterStatus(v as any)}>
             <SelectTrigger className="w-full sm:w-40">
               <SelectValue />

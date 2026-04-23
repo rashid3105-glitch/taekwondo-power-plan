@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { Loader2, ArrowLeft, CreditCard, CalendarIcon, Search, Users } from "lucide-react";
+import { Loader2, ArrowLeft, CreditCard, CalendarIcon, Search, Users, Building } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { format } from "date-fns";
@@ -21,13 +21,20 @@ interface PaymentUser {
   is_demo: boolean;
   created_at: string;
   email?: string;
+  club_id?: string | null;
+  club_name?: string | null;
 }
 
 export default function AdminPayments() {
   const [users, setUsers] = useState<PaymentUser[]>([]);
+  const [clubs, setClubs] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "paid" | "unpaid" | "demo">("all");
+  const [clubScope, setClubScope] = useState<string>(() => {
+    if (typeof window === "undefined") return "all";
+    return localStorage.getItem("admin.payments.clubScope") || "all";
+  });
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
@@ -35,6 +42,12 @@ export default function AdminPayments() {
   useEffect(() => {
     checkAdminAndLoad();
   }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("admin.payments.clubScope", clubScope);
+    }
+  }, [clubScope]);
 
   const checkAdminAndLoad = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -45,12 +58,13 @@ export default function AdminPayments() {
   };
 
   const loadUsers = async () => {
-    const [profilesRes, emailsRes] = await Promise.all([
+    const [profilesRes, emailsRes, clubsRes] = await Promise.all([
       supabase
         .from("profiles")
-        .select("user_id, display_name, payment_status, payment_date, is_demo, created_at")
+        .select("user_id, display_name, payment_status, payment_date, is_demo, created_at, club_id")
         .order("created_at", { ascending: false }),
       supabase.functions.invoke("get-admin-users"),
+      supabase.from("clubs" as any).select("id, name").order("name"),
     ]);
 
     const emailMap: Record<string, string> = {};
@@ -60,10 +74,15 @@ export default function AdminPayments() {
       }
     }
 
+    const clubsList = ((clubsRes.data as unknown as { id: string; name: string }[] | null) ?? []);
+    setClubs(clubsList);
+    const clubMap = new Map<string, string>(clubsList.map((c) => [c.id, c.name]));
+
     setUsers(
       (profilesRes.data || []).map((p: any) => ({
         ...p,
         email: emailMap[p.user_id] || "",
+        club_name: p.club_id ? clubMap.get(p.club_id) || null : null,
       }))
     );
     setLoading(false);
@@ -92,13 +111,19 @@ export default function AdminPayments() {
   const filtered = users.filter((u) => {
     const matchesSearch = !search ||
       u.display_name.toLowerCase().includes(search.toLowerCase()) ||
-      (u.email || "").toLowerCase().includes(search.toLowerCase());
+      (u.email || "").toLowerCase().includes(search.toLowerCase()) ||
+      (u.club_name || "").toLowerCase().includes(search.toLowerCase());
     const matchesFilter =
       filter === "all" ||
       (filter === "paid" && u.payment_status === "paid") ||
       (filter === "unpaid" && u.payment_status !== "paid" && !u.is_demo) ||
       (filter === "demo" && u.is_demo);
-    return matchesSearch && matchesFilter;
+    let matchesClub = true;
+    if (clubScope !== "all") {
+      if (clubScope === "__none__") matchesClub = !u.club_id;
+      else matchesClub = u.club_id === clubScope;
+    }
+    return matchesSearch && matchesFilter && matchesClub;
   });
 
   const stats = {
@@ -155,10 +180,23 @@ export default function AdminPayments() {
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder={t("searchUsers") || "Search by name or email..."}
+              placeholder={t("searchUsers") || "Search by name, email or club..."}
               className="pl-9"
             />
           </div>
+          <Select value={clubScope} onValueChange={setClubScope}>
+            <SelectTrigger className="w-full sm:w-48">
+              <Building className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />
+              <SelectValue placeholder={t("filterByClub")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t("allClubs")}</SelectItem>
+              <SelectItem value="__none__">— {t("noClub") || "No club"} —</SelectItem>
+              {clubs.map((c) => (
+                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Select value={filter} onValueChange={(v) => setFilter(v as any)}>
             <SelectTrigger className="w-full sm:w-40">
               <SelectValue />
@@ -186,6 +224,12 @@ export default function AdminPayments() {
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="font-medium text-sm text-foreground truncate">{u.display_name || "—"}</p>
+                      {u.club_name && (
+                        <span className="inline-flex items-center gap-0.5 text-[10px] text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded-full">
+                          <Building className="h-2.5 w-2.5" />
+                          {u.club_name}
+                        </span>
+                      )}
                       {u.payment_status === "paid" && (
                         <Badge variant="default" className="text-[10px] h-5 bg-emerald-500">
                           <CreditCard className="h-2.5 w-2.5 mr-0.5" /> {t("paid")}

@@ -224,6 +224,8 @@ const translations = {
     backToDashboard: "Back to Dashboard",
     manageUsers: "Manage Users",
     admin: "Admin",
+    allClubs: "All clubs",
+    filterByClub: "Filter by club",
 
     // Coach
     coachDashboard: "Coach Dashboard",
@@ -1538,6 +1540,8 @@ const translations = {
     backToDashboard: "Tilbage til dashboard",
     manageUsers: "Administrer brugere",
     admin: "Admin",
+    allClubs: "Alle klubber",
+    filterByClub: "Filtrer efter klub",
 
     // Coach
     coachDashboard: "Træner Dashboard",
@@ -2842,6 +2846,8 @@ const translations = {
     backToDashboard: "Tillbaka till dashboard",
     manageUsers: "Hantera användare",
     admin: "Admin",
+    allClubs: "Alla klubbar",
+    filterByClub: "Filtrera efter klubb",
 
     // Coach
     coachDashboard: "Tränare Dashboard",
@@ -4126,6 +4132,8 @@ const translations = {
     backToDashboard: "Zurück zum Dashboard",
     manageUsers: "Benutzer verwalten",
     admin: "Admin",
+    allClubs: "Alle Vereine",
+    filterByClub: "Nach Verein filtern",
     coachDashboard: "Trainer-Dashboard",
     addAthlete: "Athlet hinzufügen",
     addAthleteDesc: "Geben Sie den einzigartigen Code Ihres Athleten ein (auf seinem Profil angezeigt), um ihn mit Ihrem Trainerkonto zu verknüpfen.",
@@ -5381,6 +5389,8 @@ const translations = {
     backToDashboard: "العودة إلى لوحة التحكم",
     manageUsers: "إدارة المستخدمين",
     admin: "المسؤول",
+    allClubs: "جميع الأندية",
+    filterByClub: "تصفية حسب النادي",
     coachDashboard: "لوحة تحكم المدرب",
     addAthlete: "إضافة رياضي",
     addAthleteDesc: "أدخل الرمز الفريد للرياضي (الموضح في ملفه الشخصي) لربطه بحساب التدريب الخاص بك.",
@@ -6654,6 +6664,8 @@ const translations = {
     backToDashboard: "Tilbake til dashboard",
     manageUsers: "Administrer brukere",
     admin: "Admin",
+    allClubs: "Alle klubber",
+    filterByClub: "Filtrer etter klubb",
 
     // Coach
     coachDashboard: "Trener Dashboard",

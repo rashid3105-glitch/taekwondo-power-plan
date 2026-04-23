@@ -368,7 +368,7 @@ export default function Dashboard() {
             {isAdmin && (
               <button onClick={() => { setMenuOpen(false); navigate("/admin/approval"); }} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer">
                 <Shield className="h-4 w-4 shrink-0" />
-                <span>{t("manageUsers")}</span>
+                <span>{t("admin")}</span>
               </button>
             )}
             <button onClick={() => { setMenuOpen(false); navigate("/help"); }} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer">
