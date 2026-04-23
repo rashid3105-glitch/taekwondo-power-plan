@@ -13,6 +13,7 @@ import { FeatureGrid } from "@/components/landing/FeatureGrid";
 import { FAQSection } from "@/components/landing/FAQSection";
 import { ValuePlanCombo } from "@/components/landing/ValuePlanCombo";
 import { PublicNav } from "@/components/PublicNav";
+import { WhatsNewInline } from "@/components/landing/WhatsNewInline";
 import heroImage from "@/assets/hero-taekwondo-coach.jpg";
 
 const Index = () => {
@@ -144,6 +145,8 @@ const Index = () => {
             >
               {t("ctaSubtext")}
             </motion.p>
+
+            <WhatsNewInline />
           </div>
         </section>
 
