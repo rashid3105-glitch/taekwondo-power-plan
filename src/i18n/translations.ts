@@ -205,6 +205,8 @@ const translations = {
     passwordUpdatedDesc: "You can now sign in with your new password.",
     invalidResetLink: "This reset link is invalid or has expired.",
     backToSignIn: "Back to Sign In",
+    passwordRequirementsHint: "At least 8 characters, with a letter and a number",
+    passwordTooWeak: "Password is too weak. Use at least 8 characters with a letter and a number.",
 
     // Approval
     pendingApproval: "Account Pending Approval",
@@ -1517,6 +1519,8 @@ const translations = {
     passwordUpdatedDesc: "Du kan nu logge ind med din nye adgangskode.",
     invalidResetLink: "Dette nulstillingslink er ugyldigt eller udløbet.",
     backToSignIn: "Tilbage til login",
+    passwordRequirementsHint: "Mindst 8 tegn, med både et bogstav og et tal",
+    passwordTooWeak: "Adgangskoden er for svag. Brug mindst 8 tegn med et bogstav og et tal.",
 
     // Approval
     pendingApproval: "Konto afventer godkendelse",
@@ -2819,6 +2823,8 @@ const translations = {
     passwordUpdatedDesc: "Du kan nu logga in med ditt nya lösenord.",
     invalidResetLink: "Denna återställningslänk är ogiltig eller har upphört.",
     backToSignIn: "Tillbaka till inloggning",
+    passwordRequirementsHint: "Minst 8 tecken, med en bokstav och en siffra",
+    passwordTooWeak: "Lösenordet är för svagt. Använd minst 8 tecken med en bokstav och en siffra.",
 
     // Approval
     pendingApproval: "Konto väntar på godkännande",
@@ -4103,6 +4109,8 @@ const translations = {
     passwordUpdatedDesc: "Sie können sich jetzt mit Ihrem neuen Passwort anmelden.",
     invalidResetLink: "Dieser Zurücksetzungslink ist ungültig oder abgelaufen.",
     backToSignIn: "Zurück zur Anmeldung",
+    passwordRequirementsHint: "Mindestens 8 Zeichen, mit einem Buchstaben und einer Zahl",
+    passwordTooWeak: "Passwort ist zu schwach. Verwenden Sie mindestens 8 Zeichen mit einem Buchstaben und einer Zahl.",
     pendingApproval: "Konto wartet auf Genehmigung",
     pendingApprovalDesc: "Ihr Konto wurde erstellt, erfordert aber eine Admin-Genehmigung, bevor Sie auf die App zugreifen können. Bitte versuchen Sie es später erneut.",
     signOut: "Abmelden",
@@ -5356,6 +5364,8 @@ const translations = {
     passwordUpdatedDesc: "يمكنك الآن تسجيل الدخول بكلمة مرورك الجديدة.",
     invalidResetLink: "رابط إعادة التعيين هذا غير صالح أو انتهت صلاحيته.",
     backToSignIn: "العودة إلى تسجيل الدخول",
+    passwordRequirementsHint: "8 أحرف على الأقل، مع حرف ورقم",
+    passwordTooWeak: "كلمة المرور ضعيفة جدًا. استخدم 8 أحرف على الأقل مع حرف ورقم.",
     pendingApproval: "الحساب قيد الموافقة",
     pendingApprovalDesc: "تم إنشاء حسابك ولكنه يتطلب موافقة المسؤول قبل أن تتمكن من الوصول إلى التطبيق. يرجى التحقق مرة أخرى لاحقًا.",
     signOut: "تسجيل الخروج",
@@ -6625,6 +6635,8 @@ const translations = {
     passwordUpdatedDesc: "Du kan nu logge inn med din nye passord.",
     invalidResetLink: "Dette tilbakestillingslink er ugyldigt eller udløbet.",
     backToSignIn: "Tilbake til login",
+    passwordRequirementsHint: "Minst 8 tegn, med en bokstav og et tall",
+    passwordTooWeak: "Passordet er for svakt. Bruk minst 8 tegn med en bokstav og et tall.",
 
     // Approval
     pendingApproval: "Konto afventer godkjenning",
