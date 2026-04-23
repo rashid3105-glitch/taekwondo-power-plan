@@ -473,7 +473,12 @@ export default function AdminApproval() {
               </div>
               <div className="flex items-center gap-2 flex-wrap mt-0.5">
                 {u.email && <p className="text-xs text-muted-foreground text-left">{u.email}</p>}
-                {u.club_name && <span className="text-[10px] text-muted-foreground">• {u.club_name}</span>}
+                {u.club_name && (
+                  <span className="inline-flex items-center gap-0.5 text-[10px] text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded-full">
+                    <Building className="h-2.5 w-2.5" />
+                    {u.club_name}
+                  </span>
+                )}
                 {u.belt_level && <span className="text-[10px] text-muted-foreground capitalize">• {u.belt_level}</span>}
                 {u.age && <span className="text-[10px] text-muted-foreground">• {u.age}y</span>}
               </div>
