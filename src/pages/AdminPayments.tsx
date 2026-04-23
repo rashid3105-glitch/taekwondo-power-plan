@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { Loader2, ArrowLeft, CreditCard, CalendarIcon, Search, Users } from "lucide-react";
+import { Loader2, ArrowLeft, CreditCard, CalendarIcon, Search, Users, Building } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { format } from "date-fns";
@@ -21,13 +21,20 @@ interface PaymentUser {
   is_demo: boolean;
   created_at: string;
   email?: string;
+  club_id?: string | null;
+  club_name?: string | null;
 }
 
 export default function AdminPayments() {
   const [users, setUsers] = useState<PaymentUser[]>([]);
+  const [clubs, setClubs] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "paid" | "unpaid" | "demo">("all");
+  const [clubScope, setClubScope] = useState<string>(() => {
+    if (typeof window === "undefined") return "all";
+    return localStorage.getItem("admin.payments.clubScope") || "all";
+  });
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
@@ -35,6 +42,12 @@ export default function AdminPayments() {
   useEffect(() => {
     checkAdminAndLoad();
   }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("admin.payments.clubScope", clubScope);
+    }
+  }, [clubScope]);
 
   const checkAdminAndLoad = async () => {
     const { data: { user } } = await supabase.auth.getUser();
