@@ -424,31 +424,38 @@ export default function Dashboard() {
 
       {/* Mobile bottom nav */}
       <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-card/95 backdrop-blur-sm sm:hidden pb-safe">
-        <div className="flex items-center justify-around py-2">
-          <button onClick={() => handleTabChange("hub")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "hub" ? "text-primary" : "text-muted-foreground"}`}>
-            <Home className="h-5 w-5" />
-            <span className="text-[10px] font-semibold">Home</span>
-          </button>
-          <button onClick={() => handleTabChange("plan")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "plan" ? "text-tab-plan" : "text-muted-foreground"}`}>
-            <Zap className="h-5 w-5" />
-            <span className="text-[10px] font-semibold">{t("plan")}</span>
-          </button>
-          <button onClick={() => handleTabChange("progress")} disabled={isDemoLockedTab("progress")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "progress" ? "text-tab-progress" : "text-muted-foreground"} ${isDemoLockedTab("progress") ? "opacity-50" : ""}`}>
-            <BarChart3 className="h-5 w-5" />
-            <span className="text-[10px] font-semibold">{t("progress")}</span>
-          </button>
-          <button onClick={() => handleTabChange("nutrition")} disabled={isDemoLockedTab("nutrition")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "nutrition" ? "text-tab-nutrition" : "text-muted-foreground"} ${isDemoLockedTab("nutrition") ? "opacity-50" : ""}`}>
-            <Apple className="h-5 w-5" />
-            <span className="text-[10px] font-semibold">{t("nutrition")}</span>
-          </button>
-          <button onClick={() => handleTabChange("rehab")} disabled={isDemoLockedTab("rehab")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "rehab" ? "text-tab-rehab" : "text-muted-foreground"} ${isDemoLockedTab("rehab") ? "opacity-50" : ""}`}>
-            <Heart className="h-5 w-5" />
-            <span className="text-[10px] font-semibold">{t("rehab")}</span>
-          </button>
-          <button onClick={() => handleTabChange("mental")} disabled={isDemoLockedTab("mental")} className={`flex flex-col items-center gap-0.5 px-2 py-1 ${activeTab === "mental" ? "text-tab-mental" : "text-muted-foreground"} ${isDemoLockedTab("mental") ? "opacity-50" : ""}`}>
-            <Brain className="h-5 w-5" />
-            <span className="text-[10px] font-semibold">{t("mental")}</span>
-          </button>
+        <div className="flex items-stretch justify-around px-1 pt-1.5">
+          {[
+            { tab: "hub" as const, icon: Home, label: "Home", color: "text-primary", bg: "bg-primary/10" },
+            { tab: "plan" as const, icon: Zap, label: t("plan"), color: "text-tab-plan", bg: "bg-tab-plan/10" },
+            { tab: "progress" as const, icon: BarChart3, label: t("progress"), color: "text-tab-progress", bg: "bg-tab-progress/10" },
+            { tab: "nutrition" as const, icon: Apple, label: t("nutrition"), color: "text-tab-nutrition", bg: "bg-tab-nutrition/10" },
+            { tab: "rehab" as const, icon: Heart, label: t("rehab"), color: "text-tab-rehab", bg: "bg-tab-rehab/10" },
+            { tab: "mental" as const, icon: Brain, label: t("mental"), color: "text-tab-mental", bg: "bg-tab-mental/10" },
+          ].map(({ tab, icon: Icon, label, color, bg }) => {
+            const locked = isDemoLockedTab(tab);
+            const active = activeTab === tab;
+            return (
+              <button
+                key={tab}
+                onClick={() => {
+                  if (locked) return;
+                  import("@/lib/haptics").then((h) => h.tap()).catch(() => { /* ignore */ });
+                  handleTabChange(tab);
+                }}
+                disabled={locked}
+                aria-current={active ? "page" : undefined}
+                aria-label={label}
+                className={`relative flex flex-1 min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg px-1 py-1.5 transition-colors ${
+                  active ? `${color} ${bg}` : "text-muted-foreground"
+                } ${locked ? "opacity-50" : "active:scale-95"}`}
+                style={{ minHeight: 48 }}
+              >
+                <Icon className="h-5 w-5" />
+                <span className="text-[10px] font-semibold leading-tight truncate max-w-full">{label}</span>
+              </button>
+            );
+          })}
         </div>
       </nav>
 
