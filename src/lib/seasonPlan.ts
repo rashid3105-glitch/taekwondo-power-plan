@@ -30,13 +30,13 @@ export interface SeasonMilestone {
   priority?: "A" | "B" | "C";
 }
 
-export const PHASE_META: Record<PhaseType, { label: string; short: string; colorClass: string; defaults: { volume: number; intensity: number } }> = {
-  general_prep:  { label: "General Prep",  short: "GPP", colorClass: "bg-primary/20 text-primary border-primary/40",       defaults: { volume: 80, intensity: 50 } },
-  specific_prep: { label: "Specific Prep", short: "SPP", colorClass: "bg-accent/20 text-accent border-accent/40",          defaults: { volume: 65, intensity: 70 } },
-  competition:   { label: "Competition",   short: "COMP",colorClass: "bg-explosive/25 text-explosive border-explosive/50", defaults: { volume: 45, intensity: 90 } },
-  peak:          { label: "Peak",          short: "PEAK",colorClass: "bg-explosive/15 text-explosive border-explosive/30", defaults: { volume: 35, intensity: 95 } },
-  deload:        { label: "Deload",        short: "DEL", colorClass: "bg-speed/20 text-speed border-speed/40",             defaults: { volume: 40, intensity: 50 } },
-  transition:    { label: "Transition",    short: "TRN", colorClass: "bg-muted text-muted-foreground border-muted",        defaults: { volume: 30, intensity: 30 } },
+export const PHASE_META: Record<PhaseType, { labelKey: string; short: string; colorClass: string; defaults: { volume: number; intensity: number } }> = {
+  general_prep:  { labelKey: "phaseGeneralPrep",  short: "GPP", colorClass: "bg-primary/20 text-primary border-primary/40",       defaults: { volume: 80, intensity: 50 } },
+  specific_prep: { labelKey: "phaseSpecificPrep", short: "SPP", colorClass: "bg-accent/20 text-accent border-accent/40",          defaults: { volume: 65, intensity: 70 } },
+  competition:   { labelKey: "phaseCompetition",  short: "COMP",colorClass: "bg-explosive/25 text-explosive border-explosive/50", defaults: { volume: 45, intensity: 90 } },
+  peak:          { labelKey: "phasePeak",         short: "PEAK",colorClass: "bg-explosive/15 text-explosive border-explosive/30", defaults: { volume: 35, intensity: 95 } },
+  deload:        { labelKey: "phaseDeload",       short: "DEL", colorClass: "bg-speed/20 text-speed border-speed/40",             defaults: { volume: 40, intensity: 50 } },
+  transition:    { labelKey: "phaseTransition",   short: "TRN", colorClass: "bg-muted text-muted-foreground border-muted",        defaults: { volume: 30, intensity: 30 } },
 };
 
 export const PHASE_TYPES = Object.keys(PHASE_META) as PhaseType[];
