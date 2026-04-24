@@ -10,6 +10,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useOfflineWorkoutLogs, type WorkoutLog } from "@/hooks/useOfflineWorkoutLogs";
+import { useExerciseFeedback, type ExerciseFeedback } from "@/hooks/useExerciseFeedback";
+import { ExerciseFeedbackPanel, ExerciseFeedbackView } from "@/components/coach/ExerciseFeedbackPanel";
 import { Badge } from "@/components/ui/badge";
 import { PeriodizationView } from "@/components/PeriodizationView";
 import { cn } from "@/lib/utils";
@@ -40,8 +42,13 @@ interface AIPlanCardProps {
     name: string;
     plan_data: any;
     created_at: string;
+    user_id?: string;
   };
   onPlanUpdated?: () => void;
+  /** When true, render coach-side feedback editor under each logged exercise */
+  coachMode?: boolean;
+  /** Required when coachMode=true; the athlete this plan belongs to */
+  athleteUserId?: string;
 }
 
 function renderSessionExercisesPDF(doc: any, session: PlanSession, margin: number, pageW: number, y: number, checkSpace: (n: number) => void) {
@@ -216,7 +223,7 @@ function translateDayShort(dayOfWeek: string, t: (k: string) => string): string 
   return dayOfWeek?.slice(0, 3)?.toUpperCase() || "?";
 }
 
-export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
+export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUserId }: AIPlanCardProps) {
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [activeSessionIndex, setActiveSessionIndex] = useState(0);
   const [exporting, setExporting] = useState(false);
@@ -228,6 +235,17 @@ export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
   const { toast } = useToast();
   const { t, locale } = useLanguage();
   const { upsertLog, getLog, today, isPending } = useOfflineWorkoutLogs(plan.id, selectedDay, activeSessionIndex);
+
+  // Feedback: collect ids of logs currently shown so we can fetch their feedback
+  const visibleLogIds = (selectedDay !== null
+    ? (localPlanData?.weeklySchedule?.[selectedDay] ? normalizeDaySessions(localPlanData.weeklySchedule[selectedDay]) : [])
+        .flatMap((_: any, sIdx: number) => {
+          const session = normalizeDaySessions(localPlanData.weeklySchedule[selectedDay])[sIdx];
+          return (session?.exercises || []).map((_: any, eIdx: number) => getLog(eIdx)?.id).filter(Boolean);
+        })
+    : []) as string[];
+  const { byLog: feedbackByLog, refresh: refreshFeedback, markRead } = useExerciseFeedback(visibleLogIds);
+  const effectiveAthleteId = athleteUserId ?? plan.user_id ?? "";
 
   // Get sessions for currently selected day
   const currentDaySessions = selectedDay !== null && schedule[selectedDay]
@@ -499,22 +517,31 @@ export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
                     strategy={verticalListSortingStrategy}
                   >
                     <div className="space-y-2">
-                      {currentSession.exercises.map((ex: any, j: number) => (
-                        <SortableExerciseRow
-                          key={`ex-${j}`}
-                          id={`ex-${j}`}
-                          exercise={ex}
-                          index={j + 1}
-                          log={getLog(j)}
-                          pending={isPending(j)}
-                          onToggleComplete={(completed) => upsertLog(j, { completed })}
-                          onUpdateSets={(actual_sets) => upsertLog(j, { actual_sets })}
-                          onUpdateReps={(actual_reps) => upsertLog(j, { actual_reps })}
-                          onUpdateNotes={(notes) => upsertLog(j, { notes })}
-                          onSwap={() => setPickerMode({ dayIndex: selectedDay, sessionIndex: safeSessionIndex, exerciseIndex: j })}
-                          onRemove={() => handleRemoveExercise(selectedDay, j)}
-                        />
-                      ))}
+                      {currentSession.exercises.map((ex: any, j: number) => {
+                        const log = getLog(j);
+                        const fb = log?.id ? feedbackByLog(log.id) : [];
+                        return (
+                          <SortableExerciseRow
+                            key={`ex-${j}`}
+                            id={`ex-${j}`}
+                            exercise={ex}
+                            index={j + 1}
+                            log={log}
+                            pending={isPending(j)}
+                            onToggleComplete={(completed) => upsertLog(j, { completed })}
+                            onUpdateSets={(actual_sets) => upsertLog(j, { actual_sets })}
+                            onUpdateReps={(actual_reps) => upsertLog(j, { actual_reps })}
+                            onUpdateNotes={(notes) => upsertLog(j, { notes })}
+                            onSwap={() => setPickerMode({ dayIndex: selectedDay, sessionIndex: safeSessionIndex, exerciseIndex: j })}
+                            onRemove={() => handleRemoveExercise(selectedDay, j)}
+                            coachMode={coachMode}
+                            athleteUserId={effectiveAthleteId}
+                            feedback={fb}
+                            onFeedbackChanged={refreshFeedback}
+                            onMarkFeedbackRead={markRead}
+                          />
+                        );
+                      })}
                     </div>
                   </SortableContext>
                 </DndContext>
@@ -566,6 +593,11 @@ interface AIExerciseRowProps {
   onUpdateNotes: (notes: string | null) => void;
   onSwap: () => void;
   onRemove: () => void;
+  coachMode?: boolean;
+  athleteUserId?: string;
+  feedback?: ExerciseFeedback[];
+  onFeedbackChanged?: () => void;
+  onMarkFeedbackRead?: (id: string) => void;
 }
 
 function SortableExerciseRow(props: AIExerciseRowProps & { id: string }) {
@@ -583,7 +615,7 @@ function SortableExerciseRow(props: AIExerciseRowProps & { id: string }) {
   );
 }
 
-function AIExerciseRow({ exercise, index, log, pending, onToggleComplete, onUpdateSets, onUpdateReps, onUpdateNotes, onSwap, onRemove, dragHandleProps }: AIExerciseRowProps & { dragHandleProps?: any }) {
+function AIExerciseRow({ exercise, index, log, pending, onToggleComplete, onUpdateSets, onUpdateReps, onUpdateNotes, onSwap, onRemove, coachMode, athleteUserId, feedback, onFeedbackChanged, onMarkFeedbackRead, dragHandleProps }: AIExerciseRowProps & { dragHandleProps?: any }) {
   const [open, setOpen] = useState(false);
   const { locale, t } = useLanguage();
   const completed = log?.completed ?? false;
@@ -708,6 +740,18 @@ function AIExerciseRow({ exercise, index, log, pending, onToggleComplete, onUpda
               </div>
             </div>
           </div>
+
+          {/* Coach feedback (athlete view) or editor (coach view) */}
+          {coachMode && log?.id && athleteUserId ? (
+            <ExerciseFeedbackPanel
+              workoutLogId={log.id}
+              athleteId={athleteUserId}
+              existing={feedback?.[0]}
+              onSaved={() => onFeedbackChanged?.()}
+            />
+          ) : !coachMode && feedback && feedback.length > 0 ? (
+            <ExerciseFeedbackView feedback={feedback} onMarkRead={onMarkFeedbackRead} />
+          ) : null}
 
           {/* Prescribed details */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">

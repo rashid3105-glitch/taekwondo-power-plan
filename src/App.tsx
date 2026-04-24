@@ -37,6 +37,7 @@ import Competitions from "./pages/Competitions";
 import PublicAthlete from "./pages/PublicAthlete";
 import MatchAnalysis from "./pages/MatchAnalysis";
 import MatchShare from "./pages/MatchShare";
+import SeasonPlan from "./pages/SeasonPlan";
 
 const queryClient = new QueryClient();
 
@@ -86,6 +87,7 @@ const AnimatedRoutes = () => {
         <Route path="/library/:section" element={<Page><Library /></Page>} />
         <Route path="/diary" element={<Page><Diary /></Page>} />
         <Route path="/competitions" element={<Page><Competitions /></Page>} />
+        <Route path="/season" element={<Page><SeasonPlan /></Page>} />
         <Route path="/match-analysis/me" element={<Page><MatchAnalysis /></Page>} />
         <Route path="/match-analysis/:athleteId" element={<Page><MatchAnalysis /></Page>} />
         <Route path="/match/share/:token" element={<Page><MatchShare /></Page>} />
