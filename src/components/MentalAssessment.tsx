@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import {
@@ -22,10 +23,12 @@ import {
   Trash2,
   Download,
   NotebookPen,
+  CloudOff,
 } from "lucide-react";
 import jsPDF from "jspdf";
 import { MentalRadarChart, drawRadarOnPDF } from "./MentalRadarChart";
 import { getQuestionsForAge, type MentalQuestion } from "@/data/mentalQuestions";
+import { useOfflineMentalAssessments } from "@/hooks/useOfflineMentalAssessments";
 
 interface Profile {
   belt_level: string;
