@@ -977,6 +977,45 @@ export type Database = {
         }
         Relationships: []
       }
+      season_plans: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          milestones: Json
+          name: string
+          phases: Json
+          season_end: string
+          season_start: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          milestones?: Json
+          name?: string
+          phases?: Json
+          season_end: string
+          season_start: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          milestones?: Json
+          name?: string
+          phases?: Json
+          season_end?: string
+          season_start?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       session_attendance: {
         Row: {
           athlete_id: string
@@ -1217,6 +1256,50 @@ export type Database = {
         }
         Relationships: []
       }
+      workout_log_feedback: {
+        Row: {
+          athlete_id: string
+          coach_id: string
+          comment: string
+          created_at: string
+          id: string
+          is_read: boolean
+          reaction: string
+          updated_at: string
+          workout_log_id: string
+        }
+        Insert: {
+          athlete_id: string
+          coach_id: string
+          comment?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          reaction?: string
+          updated_at?: string
+          workout_log_id: string
+        }
+        Update: {
+          athlete_id?: string
+          coach_id?: string
+          comment?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          reaction?: string
+          updated_at?: string
+          workout_log_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workout_log_feedback_workout_log_id_fkey"
+            columns: ["workout_log_id"]
+            isOneToOne: false
+            referencedRelation: "workout_logs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       workout_logs: {
         Row: {
           actual_reps: string | null
@@ -1342,6 +1425,10 @@ export type Database = {
       }
       mark_comment_read: { Args: { _comment_id: string }; Returns: undefined }
       mark_reminder_read: { Args: { _reminder_id: string }; Returns: undefined }
+      mark_workout_feedback_read: {
+        Args: { _feedback_id: string }
+        Returns: undefined
+      }
       move_to_dlq: {
         Args: {
           dlq_name: string
