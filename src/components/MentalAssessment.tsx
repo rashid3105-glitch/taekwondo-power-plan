@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import {
@@ -22,10 +23,12 @@ import {
   Trash2,
   Download,
   NotebookPen,
+  CloudOff,
 } from "lucide-react";
 import jsPDF from "jspdf";
 import { MentalRadarChart, drawRadarOnPDF } from "./MentalRadarChart";
 import { getQuestionsForAge, type MentalQuestion } from "@/data/mentalQuestions";
+import { useOfflineMentalAssessments } from "@/hooks/useOfflineMentalAssessments";
 
 interface Profile {
   belt_level: string;
@@ -97,6 +100,8 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     overallGood: "Good mental strength",
     overallAverage: "Average — room for growth",
     overallNeedsWork: "Needs work — let's build it up!",
+    pending: "Pending",
+    adviceWillSyncOnline: "Saved offline. Personalized advice will be generated when you reconnect.",
   },
   da: {
     title: "Mental præstation",
@@ -132,6 +137,8 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     overallGood: "God mental styrke",
     overallAverage: "Gennemsnitlig — plads til vækst",
     overallNeedsWork: "Har brug for arbejde — lad os bygge det op!",
+    pending: "Afventer",
+    adviceWillSyncOnline: "Gemt offline. Personlige råd genereres, når du er online igen.",
   },
   sv: {
     title: "Mental prestation",
@@ -167,6 +174,8 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     overallGood: "Bra mental styrka",
     overallAverage: "Genomsnittlig — utrymme för tillväxt",
     overallNeedsWork: "Behöver arbete — låt oss bygga upp det!",
+    pending: "Väntar",
+    adviceWillSyncOnline: "Sparat offline. Personliga råd genereras när du är online igen.",
   },
   de: {
     title: "Mentale Leistung",
@@ -202,6 +211,8 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     overallGood: "Gute mentale Stärke",
     overallAverage: "Durchschnittlich — Raum für Wachstum",
     overallNeedsWork: "Braucht Arbeit — lass es uns aufbauen!",
+    pending: "Ausstehend",
+    adviceWillSyncOnline: "Offline gespeichert. Personalisierte Ratschläge werden generiert, sobald du wieder online bist.",
   },
   ar: {
     title: "الأداء الذهني",
@@ -237,6 +248,8 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     overallGood: "قوة ذهنية جيدة",
     overallAverage: "متوسط — مجال للنمو",
     overallNeedsWork: "يحتاج عملاً — لنبنيه!",
+    pending: "قيد الانتظار",
+    adviceWillSyncOnline: "تم الحفظ دون اتصال. سيتم إنشاء النصائح المخصصة عند عودة الاتصال.",
   },
 };
 
@@ -248,13 +261,18 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
   const [advice, setAdvice] = useState<any>(null);
   const [scores, setScores] = useState<Record<string, number>>({});
   const [totalScore, setTotalScore] = useState(0);
-  const [history, setHistory] = useState<Assessment[]>([]);
-  const [loadingHistory, setLoadingHistory] = useState(false);
+  const [pendingAdvice, setPendingAdvice] = useState(false);
   const [savingDiary, setSavingDiary] = useState(false);
   const [diarySaved, setDiarySaved] = useState(false);
   const { toast } = useToast();
   const { locale } = useLanguage();
-  
+  const {
+    assessments: history,
+    loading: loadingHistory,
+    submitOffline,
+    removeAssessment,
+  } = useOfflineMentalAssessments();
+
   // Map locale to supported locale with fallback
   const l: SupportedLocale = (["en", "da", "sv", "de", "ar"].includes(locale) ? locale : "en") as SupportedLocale;
   const questions = getQuestionsForAge(profile?.age);
@@ -266,23 +284,6 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
     if (score >= 15) return txt.overallAverage;
     return txt.overallNeedsWork;
   };
-
-  const loadHistory = async () => {
-    setLoadingHistory(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    const { data } = await supabase
-      .from("mental_assessments")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false });
-    if (data) setHistory(data as unknown as Assessment[]);
-    setLoadingHistory(false);
-  };
-
-  useEffect(() => {
-    loadHistory();
-  }, []);
 
   const handleAnswer = (value: number) => {
     const q = questions[currentQ];
@@ -312,26 +313,22 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
     const { catScores, total } = calculateScores();
     setStep("results");
     setGenerating(true);
+    setAdvice(null);
+    setPendingAdvice(false);
 
     try {
-      const { data, error } = await supabase.functions.invoke("generate-mental-advice", {
-        body: { answers, scores: catScores, totalScore: total, profile, language: locale },
+      const result = await submitOffline({
+        total_score: total,
+        scores: catScores,
+        answers,
+        profile,
+        language: locale,
       });
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-
-      setAdvice(data.advice);
-
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        await supabase.from("mental_assessments").insert({
-          user_id: user.id,
-          answers,
-          scores: catScores,
-          total_score: total,
-          ai_advice: data.advice,
-        } as any);
-        loadHistory();
+      if (result?.ai_advice) {
+        setAdvice(result.ai_advice);
+      } else {
+        // Submission queued offline — advice will arrive later via sync.
+        setPendingAdvice(true);
       }
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
@@ -386,8 +383,7 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
   };
 
   const deleteAssessment = async (id: string) => {
-    await supabase.from("mental_assessments").delete().eq("id", id);
-    loadHistory();
+    await removeAssessment(id);
   };
 
   const viewPastResult = (assessment: Assessment) => {
@@ -475,6 +471,7 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
     setScores({});
     setTotalScore(0);
     setDiarySaved(false);
+    setPendingAdvice(false);
   };
 
   const getScoreColor = (score: number) => {
@@ -497,7 +494,7 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
             <Button onClick={() => { setCurrentQ(0); setAnswers({}); setStep("quiz"); }} className="flex-1">
               <Brain className="h-4 w-4 mr-1" /> {txt.startAssessment}
             </Button>
-            <Button variant="outline" onClick={() => { loadHistory(); setStep("history"); }} className="flex-1">
+            <Button variant="outline" onClick={() => setStep("history")} className="flex-1">
               <History className="h-4 w-4 mr-1" /> {txt.viewHistory}
             </Button>
           </div>
@@ -524,10 +521,17 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
           <div className="space-y-2">
             {history.map((h) => (
               <Card key={h.id} className="p-3 flex items-center justify-between">
-                <button onClick={() => viewPastResult(h)} className="flex-1 text-left">
-                  <p className="text-sm font-medium text-foreground">
-                    {txt.score}: {h.total_score}/30
-                  </p>
+                <button onClick={() => viewPastResult(h as any)} className="flex-1 text-left">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium text-foreground">
+                      {txt.score}: {h.total_score}/30
+                    </p>
+                    {h.pending && (
+                      <Badge variant="outline" className="gap-1 text-[10px] py-0 h-5">
+                        <CloudOff className="h-3 w-3" /> {txt.pending}
+                      </Badge>
+                    )}
+                  </div>
                   <p className="text-xs text-muted-foreground">
                     {new Date(h.created_at).toLocaleDateString()}
                   </p>
@@ -711,6 +715,13 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
             </Card>
           )}
         </>
+      ) : pendingAdvice ? (
+        <Card className="p-4 space-y-2 border-primary/30 bg-primary/5">
+          <h3 className="font-bold text-foreground text-sm flex items-center gap-2">
+            <CloudOff className="h-4 w-4 text-primary" /> {txt.pending}
+          </h3>
+          <p className="text-sm text-muted-foreground">{txt.adviceWillSyncOnline}</p>
+        </Card>
       ) : null}
 
       {advice && !diarySaved && (
