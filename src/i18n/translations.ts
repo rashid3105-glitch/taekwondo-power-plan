@@ -1288,6 +1288,8 @@ const translations = {
     changelogEntry76: "Club chips next to athlete names across coach and admin views to prevent cross-club confusion",
     changelogEntry77: "\"Manage Users\" renamed to \"Admin\" in the dashboard side menu",
     changelogEntry78: "New \"Who it's for / Problem / Solution\" section on the landing page",
+    changelogEntry79: "Season Planner — visualize your full season with periodization phases (GPP → SPP → Peak → Transition) auto-built around A-priority competitions",
+    changelogEntry80: "Per-exercise coach feedback — coaches leave quick reactions (👍 🔥 ⚠️ 🔁) and short comments on logged sets; athletes see a pulsing badge until they read it",
     landingSeeFullWeek: "See full week",
     landingReadFullStory: "Read full story",
     landingShowAllFAQ: "Show all questions",
