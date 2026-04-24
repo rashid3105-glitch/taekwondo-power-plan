@@ -227,7 +227,7 @@ export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
   const periodization = localPlanData?.periodization || [];
   const { toast } = useToast();
   const { t, locale } = useLanguage();
-  const { upsertLog, getLog, today } = useWorkoutLogs(plan.id, selectedDay, activeSessionIndex);
+  const { upsertLog, getLog, today, isPending } = useOfflineWorkoutLogs(plan.id, selectedDay, activeSessionIndex);
 
   // Get sessions for currently selected day
   const currentDaySessions = selectedDay !== null && schedule[selectedDay]
