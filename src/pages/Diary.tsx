@@ -14,16 +14,10 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Watermark } from "@/components/Watermark";
 import { DiaryComments } from "@/components/DiaryComments";
+import { useOfflineDiary } from "@/hooks/useOfflineDiary";
+import type { CachedDiaryEntry } from "@/lib/diaryOfflineDB";
 
-interface DiaryEntry {
-  id: string;
-  entry_date: string;
-  content: string;
-  mood: number;
-  energy: number;
-  tags: string[];
-  created_at: string;
-}
+type DiaryEntry = CachedDiaryEntry;
 
 const MOOD_ICONS = [Frown, Frown, Meh, Smile, Laugh];
 const MOOD_LABELS = ["Very low", "Low", "Okay", "Good", "Great"];
@@ -39,8 +33,7 @@ export default function Diary() {
   const { toast } = useToast();
   const { t } = useLanguage();
 
-  const [entries, setEntries] = useState<DiaryEntry[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { entries, loading, createEntry, updateEntry, removeEntry } = useOfflineDiary();
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
@@ -52,26 +45,11 @@ export default function Diary() {
   const [tags, setTags] = useState<string[]>([]);
 
   useEffect(() => {
-    loadEntries();
-  }, []);
-
-  const loadEntries = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { navigate("/auth"); return; }
-
-    const { data, error } = await supabase
-      .from("diary_entries" as any)
-      .select("*")
-      .eq("user_id", user.id)
-      .order("entry_date", { ascending: false });
-
-    if (error) {
-      toast({ title: t("error"), description: error.message, variant: "destructive" });
-    } else {
-      setEntries((data as any) || []);
-    }
-    setLoading(false);
-  };
+    void (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) navigate("/auth");
+    })();
+  }, [navigate]);
 
   const resetForm = () => {
     setDate(new Date().toISOString().slice(0, 10));
