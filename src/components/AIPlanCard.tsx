@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { useWorkoutLogs, type WorkoutLog } from "@/hooks/useWorkoutLogs";
+import { useOfflineWorkoutLogs, type WorkoutLog } from "@/hooks/useOfflineWorkoutLogs";
+import { Badge } from "@/components/ui/badge";
 import { PeriodizationView } from "@/components/PeriodizationView";
 import { cn } from "@/lib/utils";
 import { MuscleGroupBadges } from "@/components/MuscleIcon";
@@ -226,7 +227,7 @@ export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
   const periodization = localPlanData?.periodization || [];
   const { toast } = useToast();
   const { t, locale } = useLanguage();
-  const { upsertLog, getLog, today } = useWorkoutLogs(plan.id, selectedDay, activeSessionIndex);
+  const { upsertLog, getLog, today, isPending } = useOfflineWorkoutLogs(plan.id, selectedDay, activeSessionIndex);
 
   // Get sessions for currently selected day
   const currentDaySessions = selectedDay !== null && schedule[selectedDay]
@@ -505,6 +506,7 @@ export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
                           exercise={ex}
                           index={j + 1}
                           log={getLog(j)}
+                          pending={isPending(j)}
                           onToggleComplete={(completed) => upsertLog(j, { completed })}
                           onUpdateSets={(actual_sets) => upsertLog(j, { actual_sets })}
                           onUpdateReps={(actual_reps) => upsertLog(j, { actual_reps })}
@@ -557,6 +559,7 @@ interface AIExerciseRowProps {
   exercise: any;
   index: number;
   log?: WorkoutLog;
+  pending?: boolean;
   onToggleComplete: (completed: boolean) => void;
   onUpdateSets: (sets: number | null) => void;
   onUpdateReps: (reps: string | null) => void;
@@ -580,9 +583,9 @@ function SortableExerciseRow(props: AIExerciseRowProps & { id: string }) {
   );
 }
 
-function AIExerciseRow({ exercise, index, log, onToggleComplete, onUpdateSets, onUpdateReps, onUpdateNotes, onSwap, onRemove, dragHandleProps }: AIExerciseRowProps & { dragHandleProps?: any }) {
+function AIExerciseRow({ exercise, index, log, pending, onToggleComplete, onUpdateSets, onUpdateReps, onUpdateNotes, onSwap, onRemove, dragHandleProps }: AIExerciseRowProps & { dragHandleProps?: any }) {
   const [open, setOpen] = useState(false);
-  const { locale } = useLanguage();
+  const { locale, t } = useLanguage();
   const completed = log?.completed ?? false;
   const displayName = localizeExerciseName(exercise.name, locale);
 
@@ -619,6 +622,11 @@ function AIExerciseRow({ exercise, index, log, onToggleComplete, onUpdateSets, o
             {displayName}
           </span>
         </button>
+        {pending && (
+          <Badge variant="outline" className="text-[9px] px-1.5 py-0 h-4 border-border text-muted-foreground bg-secondary flex-shrink-0">
+            {t("workoutLogPending")}
+          </Badge>
+        )}
         {completed && <Check className="h-4 w-4 text-primary flex-shrink-0" />}
       </div>
 
