@@ -132,7 +132,7 @@ export default function Competitions() {
           <CardContent className="flex gap-2 items-end">
             <div className="flex-1">
               <Label className="text-xs">{t("competitionsWeightKg")}</Label>
-              <Input type="number" step="0.1" value={todayWeight} onChange={(e) => setTodayWeight(e.target.value)} placeholder={latestWeight ? `${latestWeight} ${t("competitionsLastSuffix")}` : t("competitionsWeightPlaceholder")} />
+              <Input type="number" inputMode="decimal" step="0.1" value={todayWeight} onChange={(e) => setTodayWeight(e.target.value)} placeholder={latestWeight ? `${latestWeight} ${t("competitionsLastSuffix")}` : t("competitionsWeightPlaceholder")} />
             </div>
             <Button onClick={logWeight}>{t("competitionsLog")}</Button>
           </CardContent>
@@ -146,7 +146,7 @@ export default function Competitions() {
             <div className="space-y-3">
               <div><Label>{t("competitionsName")} *</Label><Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Nordic Open" /></div>
               <div><Label>{t("competitionsDate")} *</Label><Input type="date" value={date} onChange={(e) => setDate(e.target.value)} /></div>
-              <div><Label>{t("competitionsWeightClass")}</Label><Input type="number" step="0.1" value={weightClass} onChange={(e) => setWeightClass(e.target.value)} placeholder="67.5" /></div>
+              <div><Label>{t("competitionsWeightClass")}</Label><Input type="number" inputMode="decimal" step="0.1" value={weightClass} onChange={(e) => setWeightClass(e.target.value)} placeholder="67.5" /></div>
               <div>
                 <Label>{t("competitionsPriority")}</Label>
                 <Select value={priority} onValueChange={(v) => setPriority(v as any)}>

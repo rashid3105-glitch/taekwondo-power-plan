@@ -140,19 +140,19 @@ export function AddRecipeForm({ onClose, onAdded }: AddRecipeFormProps) {
           </div>
           <div>
             <Label className="text-xs">{t("recipeCaloriesLabel")}</Label>
-            <Input type="number" min={0} max={5000} value={calories} onChange={(e) => setCalories(e.target.value)} placeholder="400" className="mt-1" />
+            <Input type="number" inputMode="numeric" min={0} max={5000} value={calories} onChange={(e) => setCalories(e.target.value)} placeholder="400" className="mt-1" />
           </div>
           <div>
             <Label className="text-xs">{t("recipeProteinLabel")}</Label>
-            <Input type="number" min={0} max={500} value={protein} onChange={(e) => setProtein(e.target.value)} placeholder="30" className="mt-1" />
+            <Input type="number" inputMode="numeric" min={0} max={500} value={protein} onChange={(e) => setProtein(e.target.value)} placeholder="30" className="mt-1" />
           </div>
           <div>
             <Label className="text-xs">{t("recipeCarbsLabel")}</Label>
-            <Input type="number" min={0} max={500} value={carbs} onChange={(e) => setCarbs(e.target.value)} placeholder="40" className="mt-1" />
+            <Input type="number" inputMode="numeric" min={0} max={500} value={carbs} onChange={(e) => setCarbs(e.target.value)} placeholder="40" className="mt-1" />
           </div>
           <div>
             <Label className="text-xs">{t("recipeFatLabel")}</Label>
-            <Input type="number" min={0} max={500} value={fat} onChange={(e) => setFat(e.target.value)} placeholder="15" className="mt-1" />
+            <Input type="number" inputMode="numeric" min={0} max={500} value={fat} onChange={(e) => setFat(e.target.value)} placeholder="15" className="mt-1" />
           </div>
         </div>
 
