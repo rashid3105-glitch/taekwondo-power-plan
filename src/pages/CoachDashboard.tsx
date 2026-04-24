@@ -96,18 +96,9 @@ export default function CoachDashboard() {
   const [plans, setPlans] = useState<AthletePlan[]>([]);
   const [rehabPlans, setRehabPlans] = useState<RehabPlan[]>([]);
   const [loading, setLoading] = useState(true);
-  const [athleteCode, setAthleteCode] = useState("");
-  const [adding, setAdding] = useState(false);
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [newAthleteName, setNewAthleteName] = useState("");
-  const [newAthleteEmail, setNewAthleteEmail] = useState("");
-  const [newAthletePassword, setNewAthletePassword] = useState("");
-  const [newAthleteAge, setNewAthleteAge] = useState("");
-  const [newAthleteBelt, setNewAthleteBelt] = useState("white");
-  const [newAthleteExpYears, setNewAthleteExpYears] = useState("");
-  const [newAthleteDiscipline, setNewAthleteDiscipline] = useState("sparring");
-  const [creating, setCreating] = useState(false);
-  
+  const [pulseFilter, setPulseFilter] = useState<PulseFilter>("all");
+  const [pulseStats, setPulseStats] = useState({ total: 0, attention: 0, injured: 0, noPlan: 0, stale: 0 });
+
   const [maxAthletes, setMaxAthletes] = useState(5);
   const [coachUserId, setCoachUserId] = useState<string | null>(null);
   const [coachClubId, setCoachClubId] = useState<string | null>(null);
