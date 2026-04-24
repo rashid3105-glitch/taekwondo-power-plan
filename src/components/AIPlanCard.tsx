@@ -10,6 +10,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useOfflineWorkoutLogs, type WorkoutLog } from "@/hooks/useOfflineWorkoutLogs";
+import { useExerciseFeedback, type ExerciseFeedback } from "@/hooks/useExerciseFeedback";
+import { ExerciseFeedbackPanel, ExerciseFeedbackView } from "@/components/coach/ExerciseFeedbackPanel";
 import { Badge } from "@/components/ui/badge";
 import { PeriodizationView } from "@/components/PeriodizationView";
 import { cn } from "@/lib/utils";
@@ -40,8 +42,13 @@ interface AIPlanCardProps {
     name: string;
     plan_data: any;
     created_at: string;
+    user_id?: string;
   };
   onPlanUpdated?: () => void;
+  /** When true, render coach-side feedback editor under each logged exercise */
+  coachMode?: boolean;
+  /** Required when coachMode=true; the athlete this plan belongs to */
+  athleteUserId?: string;
 }
 
 function renderSessionExercisesPDF(doc: any, session: PlanSession, margin: number, pageW: number, y: number, checkSpace: (n: number) => void) {
@@ -216,7 +223,7 @@ function translateDayShort(dayOfWeek: string, t: (k: string) => string): string 
   return dayOfWeek?.slice(0, 3)?.toUpperCase() || "?";
 }
 
-export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
+export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUserId }: AIPlanCardProps) {
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [activeSessionIndex, setActiveSessionIndex] = useState(0);
   const [exporting, setExporting] = useState(false);
@@ -228,6 +235,17 @@ export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
   const { toast } = useToast();
   const { t, locale } = useLanguage();
   const { upsertLog, getLog, today, isPending } = useOfflineWorkoutLogs(plan.id, selectedDay, activeSessionIndex);
+
+  // Feedback: collect ids of logs currently shown so we can fetch their feedback
+  const visibleLogIds = (selectedDay !== null
+    ? (localPlanData?.weeklySchedule?.[selectedDay] ? normalizeDaySessions(localPlanData.weeklySchedule[selectedDay]) : [])
+        .flatMap((_: any, sIdx: number) => {
+          const session = normalizeDaySessions(localPlanData.weeklySchedule[selectedDay])[sIdx];
+          return (session?.exercises || []).map((_: any, eIdx: number) => getLog(eIdx)?.id).filter(Boolean);
+        })
+    : []) as string[];
+  const { byLog: feedbackByLog, refresh: refreshFeedback, markRead } = useExerciseFeedback(visibleLogIds);
+  const effectiveAthleteId = athleteUserId ?? plan.user_id ?? "";
 
   // Get sessions for currently selected day
   const currentDaySessions = selectedDay !== null && schedule[selectedDay]
