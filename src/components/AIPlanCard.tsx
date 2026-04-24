@@ -741,6 +741,18 @@ function AIExerciseRow({ exercise, index, log, pending, onToggleComplete, onUpda
             </div>
           </div>
 
+          {/* Coach feedback (athlete view) or editor (coach view) */}
+          {coachMode && log?.id && athleteUserId ? (
+            <ExerciseFeedbackPanel
+              workoutLogId={log.id}
+              athleteId={athleteUserId}
+              existing={feedback?.[0]}
+              onSaved={() => onFeedbackChanged?.()}
+            />
+          ) : !coachMode && feedback && feedback.length > 0 ? (
+            <ExerciseFeedbackView feedback={feedback} onMarkRead={onMarkFeedbackRead} />
+          ) : null}
+
           {/* Prescribed details */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
             <div className="rounded-md bg-muted p-2.5">
