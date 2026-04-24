@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain, Clock, Apple, Home, Lock, NotebookPen, AlertTriangle, ClipboardList, HelpCircle, Trash2, Menu, Video as VideoIcon } from "lucide-react";
+import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain, Clock, Apple, Home, Lock, NotebookPen, AlertTriangle, ClipboardList, HelpCircle, Trash2, Menu, Video as VideoIcon, CalendarRange } from "lucide-react";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
@@ -608,6 +608,25 @@ export default function Dashboard() {
                   <div className="space-y-1.5">
                     <h3 className="text-sm font-bold text-foreground tracking-tight">{t("hubCompetitionsTitle")}</h3>
                     <p className="text-xs leading-relaxed text-muted-foreground">{t("hubCompetitionsDesc")}</p>
+                  </div>
+                </div>
+              </button>
+              <button
+                onClick={() => !isDemo && navigate("/season")}
+                disabled={isDemo}
+                className={`group relative overflow-hidden rounded-2xl border border-border border-l-[3px] border-l-primary bg-card/80 backdrop-blur-sm p-5 shadow-card text-left transition-all duration-300 ${isDemo ? "cursor-not-allowed opacity-70" : "cursor-pointer hover:border-primary/30 hover:-translate-y-1 hover:shadow-glow"}`}
+              >
+                <div className="absolute inset-0 rounded-2xl opacity-60 group-hover:opacity-100 transition-opacity"
+                     style={{ background: "radial-gradient(ellipse at 20% 50%, hsl(160 70% 50% / 0.15), transparent 60%)" }} />
+                <div className="relative flex items-start gap-4">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/15 relative">
+                    <CalendarRange className="h-5 w-5 text-primary" />
+                    {isDemo && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
+                  </div>
+                  <div className="space-y-1.5">
+                    <h3 className="text-sm font-bold text-foreground tracking-tight">{t("hubSeasonTitle")}</h3>
+                    <p className="text-xs leading-relaxed text-muted-foreground">{t(isDemo ? "demoLockedFeatureDesc" : "hubSeasonDesc")}</p>
+                    {isDemo && <p className="text-xs font-medium text-foreground">{t("demoUpgradePrompt")}</p>}
                   </div>
                 </div>
               </button>
