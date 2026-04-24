@@ -9,11 +9,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, CalendarRange, Loader2, Plus, Trash2, Sparkles, Save, Trophy } from "lucide-react";
+import { ArrowLeft, CalendarRange, Loader2, Plus, Trash2, Sparkles, Trophy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Watermark } from "@/components/Watermark";
 import { AppFooter } from "@/components/AppFooter";
 import { SeasonTimeline } from "@/components/season/SeasonTimeline";
+import { useLanguage } from "@/i18n/LanguageContext";
 import {
   PHASE_META, PHASE_TYPES, generateDefaultPhases, currentPhase, uid, todayISO, addDays,
   type SeasonPhase, type SeasonMilestone, type PhaseType,
@@ -33,6 +34,7 @@ interface SeasonPlanRow {
 export default function SeasonPlan() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [params] = useSearchParams();
   const athleteIdParam = params.get("athlete"); // coach-mode override
 
@@ -44,7 +46,7 @@ export default function SeasonPlan() {
   const [isCoachView, setIsCoachView] = useState(false);
 
   // Create form
-  const [name, setName] = useState("2025/2026 Season");
+  const [name, setName] = useState("2025/2026");
   const [seasonStart, setSeasonStart] = useState(todayISO());
   const [seasonEnd, setSeasonEnd] = useState(addDays(todayISO(), 365));
 
@@ -79,9 +81,8 @@ export default function SeasonPlan() {
 
   async function createPlan() {
     if (!seasonStart || !seasonEnd || seasonStart >= seasonEnd) {
-      toast({ title: "Invalid season dates", variant: "destructive" }); return;
+      toast({ title: t("seasonInvalidDates"), variant: "destructive" }); return;
     }
-    // Pull A-priority competitions in range to seed phases
     const { data: comps } = await supabase
       .from("competitions").select("name, event_date, priority")
       .eq("user_id", ownerId)
@@ -96,9 +97,9 @@ export default function SeasonPlan() {
       user_id: ownerId, name, season_start: seasonStart, season_end: seasonEnd,
       phases: phases as any, milestones: milestones as any,
     }).select().single();
-    if (error) { toast({ title: "Could not create", description: error.message, variant: "destructive" }); return; }
+    if (error) { toast({ title: t("seasonCouldNotCreate"), description: error.message, variant: "destructive" }); return; }
     setPlan({ ...(data as any), phases, milestones } as SeasonPlanRow);
-    toast({ title: "Season plan created" });
+    toast({ title: t("seasonCreated") });
   }
 
   async function persist(next: SeasonPlanRow) {
@@ -109,7 +110,7 @@ export default function SeasonPlan() {
       phases: next.phases as any, milestones: next.milestones as any,
     }).eq("id", next.id);
     setSaving(false);
-    if (error) toast({ title: "Save failed", description: error.message, variant: "destructive" });
+    if (error) toast({ title: t("seasonSaveFailed"), description: error.message, variant: "destructive" });
   }
 
   function updatePhase(id: string, patch: Partial<SeasonPhase>) {
@@ -124,11 +125,11 @@ export default function SeasonPlan() {
     const start = addDays(lastEnd, 1);
     const end = addDays(start, 13);
     if (end > plan.season_end) {
-      toast({ title: "No room left in season", variant: "destructive" }); return;
+      toast({ title: t("seasonNoRoom"), variant: "destructive" }); return;
     }
     const meta = PHASE_META.specific_prep;
     const newPhase: SeasonPhase = {
-      id: uid(), type: "specific_prep", label: meta.label,
+      id: uid(), type: "specific_prep", label: "",
       start_date: start, end_date: end, focus: "",
       volume_pct: meta.defaults.volume, intensity_pct: meta.defaults.intensity,
     };
@@ -137,19 +138,20 @@ export default function SeasonPlan() {
   }
 
   function deletePhase(id: string) {
-    if (!plan || !confirm("Delete this phase?")) return;
+    if (!plan || !confirm(t("seasonDeletePhaseConfirm"))) return;
     void persist({ ...plan, phases: plan.phases.filter((p) => p.id !== id) });
     if (selectedPhaseId === id) setSelectedPhaseId(null);
   }
 
   async function deletePlan() {
-    if (!plan || !confirm("Delete the entire season plan?")) return;
+    if (!plan || !confirm(t("seasonDeleteConfirm"))) return;
     await supabase.from("season_plans").delete().eq("id", plan.id);
     setPlan(null);
   }
 
   const selectedPhase = plan?.phases.find((p) => p.id === selectedPhaseId) ?? null;
   const active = plan ? currentPhase(plan.phases) : null;
+  const phaseLabel = (p: SeasonPhase) => p.label || t(PHASE_META[p.type].labelKey);
 
   return (
     <div className="min-h-screen bg-background relative">
@@ -157,34 +159,31 @@ export default function SeasonPlan() {
       <div className="relative z-10 max-w-5xl mx-auto p-4 md:p-6 space-y-6">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="sm" onClick={() => navigate(isCoachView ? "/coach" : "/dashboard")}>
-            <ArrowLeft className="h-4 w-4 mr-1" /> Back
+            <ArrowLeft className="h-4 w-4 mr-1" /> {t("back")}
           </Button>
           <h1 className="text-2xl font-bold flex items-center gap-2">
-            <CalendarRange className="h-6 w-6 text-primary" /> Season Planner
+            <CalendarRange className="h-6 w-6 text-primary" /> {t("seasonPlannerTitle")}
           </h1>
-          {isCoachView && <Badge variant="outline" className="ml-auto">Coach view</Badge>}
+          {isCoachView && <Badge variant="outline" className="ml-auto">{t("seasonCoachView")}</Badge>}
         </div>
 
         {loading ? (
           <div className="flex justify-center py-10"><Loader2 className="h-6 w-6 animate-spin" /></div>
         ) : !plan ? (
           <Card>
-            <CardHeader><CardTitle className="text-base flex items-center gap-2"><Sparkles className="h-4 w-4" /> Start your season</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-base flex items-center gap-2"><Sparkles className="h-4 w-4" /> {t("seasonStartYourSeason")}</CardTitle></CardHeader>
             <CardContent className="space-y-3">
-              <p className="text-sm text-muted-foreground">
-                Map your full competition season. We'll auto-build a periodization (General Prep → Specific Prep → Peak → Deload) around your A-priority events.
-              </p>
-              <div><Label>Season name</Label><Input value={name} onChange={(e) => setName(e.target.value.slice(0, 80))} /></div>
+              <p className="text-sm text-muted-foreground">{t("seasonStartYourSeasonDesc")}</p>
+              <div><Label>{t("seasonName")}</Label><Input value={name} onChange={(e) => setName(e.target.value.slice(0, 80))} /></div>
               <div className="grid grid-cols-2 gap-3">
-                <div><Label>Start</Label><Input type="date" value={seasonStart} onChange={(e) => setSeasonStart(e.target.value)} /></div>
-                <div><Label>End</Label><Input type="date" value={seasonEnd} onChange={(e) => setSeasonEnd(e.target.value)} /></div>
+                <div><Label>{t("seasonStart")}</Label><Input type="date" value={seasonStart} onChange={(e) => setSeasonStart(e.target.value)} /></div>
+                <div><Label>{t("seasonEnd")}</Label><Input type="date" value={seasonEnd} onChange={(e) => setSeasonEnd(e.target.value)} /></div>
               </div>
-              <Button onClick={createPlan} className="w-full"><Sparkles className="h-4 w-4 mr-1" /> Generate plan</Button>
+              <Button onClick={createPlan} className="w-full"><Sparkles className="h-4 w-4 mr-1" /> {t("seasonGenerate")}</Button>
             </CardContent>
           </Card>
         ) : (
           <>
-            {/* Header */}
             <Card>
               <CardHeader className="pb-3 flex flex-row items-start justify-between gap-2">
                 <div>
@@ -208,8 +207,8 @@ export default function SeasonPlan() {
               <CardContent className="space-y-3">
                 {active && (
                   <div className={`rounded-md border px-3 py-2 ${PHASE_META[active.type].colorClass}`}>
-                    <p className="text-[10px] uppercase tracking-wider font-bold opacity-70">Currently in</p>
-                    <p className="text-sm font-bold">{active.label}</p>
+                    <p className="text-[10px] uppercase tracking-wider font-bold opacity-70">{t("seasonCurrentlyIn")}</p>
+                    <p className="text-sm font-bold">{phaseLabel(active)}</p>
                     <p className="text-xs opacity-80">{active.focus}</p>
                   </div>
                 )}
@@ -221,85 +220,82 @@ export default function SeasonPlan() {
                   onPhaseClick={setSelectedPhaseId}
                   selectedPhaseId={selectedPhaseId}
                 />
-                {/* Legend */}
                 <div className="flex flex-wrap gap-1.5 pt-1">
-                  {PHASE_TYPES.map((t) => (
-                    <span key={t} className={`text-[10px] px-1.5 py-0.5 rounded border font-semibold ${PHASE_META[t].colorClass}`}>
-                      {PHASE_META[t].label}
+                  {PHASE_TYPES.map((tp) => (
+                    <span key={tp} className={`text-[10px] px-1.5 py-0.5 rounded border font-semibold ${PHASE_META[tp].colorClass}`}>
+                      {t(PHASE_META[tp].labelKey)}
                     </span>
                   ))}
                   <span className="text-[10px] px-1.5 py-0.5 rounded border border-border text-muted-foreground inline-flex items-center gap-1">
-                    <Trophy className="h-3 w-3" /> Competition
+                    <Trophy className="h-3 w-3" /> {t("seasonCompetition")}
                   </span>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Phase editor */}
             {selectedPhase ? (
               <Card>
                 <CardHeader className="pb-2 flex flex-row items-center justify-between">
-                  <CardTitle className="text-base">Edit phase</CardTitle>
+                  <CardTitle className="text-base">{t("seasonEditPhase")}</CardTitle>
                   <Button variant="ghost" size="sm" onClick={() => deletePhase(selectedPhase.id)} className="text-destructive">
-                    <Trash2 className="h-3.5 w-3.5 mr-1" /> Remove
+                    <Trash2 className="h-3.5 w-3.5 mr-1" /> {t("seasonRemove")}
                   </Button>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <Label>Type</Label>
-                      <Select value={selectedPhase.type} onValueChange={(v) => updatePhase(selectedPhase.id, { type: v as PhaseType, label: PHASE_META[v as PhaseType].label })}>
+                      <Label>{t("seasonType")}</Label>
+                      <Select value={selectedPhase.type} onValueChange={(v) => updatePhase(selectedPhase.id, { type: v as PhaseType, label: "" })}>
                         <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>{PHASE_TYPES.map((t) => <SelectItem key={t} value={t}>{PHASE_META[t].label}</SelectItem>)}</SelectContent>
+                        <SelectContent>{PHASE_TYPES.map((tp) => <SelectItem key={tp} value={tp}>{t(PHASE_META[tp].labelKey)}</SelectItem>)}</SelectContent>
                       </Select>
                     </div>
                     <div>
-                      <Label>Custom label</Label>
-                      <Input value={selectedPhase.label} onChange={(e) => updatePhase(selectedPhase.id, { label: e.target.value.slice(0, 60) })} />
+                      <Label>{t("seasonCustomLabel")}</Label>
+                      <Input value={selectedPhase.label} onChange={(e) => updatePhase(selectedPhase.id, { label: e.target.value.slice(0, 60) })} placeholder={t(PHASE_META[selectedPhase.type].labelKey)} />
                     </div>
                     <div>
-                      <Label>Start</Label>
+                      <Label>{t("seasonStart")}</Label>
                       <Input type="date" value={selectedPhase.start_date} min={plan.season_start} max={plan.season_end} onChange={(e) => updatePhase(selectedPhase.id, { start_date: e.target.value })} />
                     </div>
                     <div>
-                      <Label>End</Label>
+                      <Label>{t("seasonEnd")}</Label>
                       <Input type="date" value={selectedPhase.end_date} min={plan.season_start} max={plan.season_end} onChange={(e) => updatePhase(selectedPhase.id, { end_date: e.target.value })} />
                     </div>
                   </div>
                   <div>
-                    <Label>Focus / training emphasis</Label>
+                    <Label>{t("seasonFocus")}</Label>
                     <Textarea
                       value={selectedPhase.focus}
                       onChange={(e) => updatePhase(selectedPhase.id, { focus: e.target.value.slice(0, 400) })}
                       rows={2}
-                      placeholder="What this block targets…"
+                      placeholder={t("seasonFocusPlaceholder")}
                       maxLength={400}
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label className="flex justify-between">Volume <span className="text-muted-foreground text-xs">{selectedPhase.volume_pct}%</span></Label>
+                      <Label className="flex justify-between">{t("seasonVolume")} <span className="text-muted-foreground text-xs">{selectedPhase.volume_pct}%</span></Label>
                       <Slider value={[selectedPhase.volume_pct]} max={100} step={5} onValueChange={([v]) => updatePhase(selectedPhase.id, { volume_pct: v })} />
                     </div>
                     <div>
-                      <Label className="flex justify-between">Intensity <span className="text-muted-foreground text-xs">{selectedPhase.intensity_pct}%</span></Label>
+                      <Label className="flex justify-between">{t("seasonIntensity")} <span className="text-muted-foreground text-xs">{selectedPhase.intensity_pct}%</span></Label>
                       <Slider value={[selectedPhase.intensity_pct]} max={100} step={5} onValueChange={([v]) => updatePhase(selectedPhase.id, { intensity_pct: v })} />
                     </div>
                   </div>
                 </CardContent>
               </Card>
             ) : (
-              <p className="text-center text-sm text-muted-foreground">Tap a phase block above to edit it.</p>
+              <p className="text-center text-sm text-muted-foreground">{t("seasonTapPhase")}</p>
             )}
 
             <Button variant="outline" className="w-full" onClick={addPhase}>
-              <Plus className="h-4 w-4 mr-1" /> Add phase
+              <Plus className="h-4 w-4 mr-1" /> {t("seasonAddPhase")}
             </Button>
 
-            {/* Milestones list */}
             {plan.milestones.length > 0 && (
               <Card>
-                <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><Trophy className="h-4 w-4 text-explosive" /> Competitions</CardTitle></CardHeader>
+                <CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><Trophy className="h-4 w-4 text-explosive" /> {t("seasonCompetitions")}</CardTitle></CardHeader>
                 <CardContent className="space-y-1.5">
                   {plan.milestones.sort((a, b) => a.date.localeCompare(b.date)).map((m) => (
                     <div key={m.id} className="flex items-center gap-2 text-sm">

@@ -131,7 +131,7 @@ function makePhase(type: PhaseType, start: string, end: string, focus: string): 
   return {
     id: uid(),
     type,
-    label: meta.label,
+    label: "", // resolved at render time via PHASE_META[type].labelKey → t()
     start_date: start,
     end_date: end,
     focus,
