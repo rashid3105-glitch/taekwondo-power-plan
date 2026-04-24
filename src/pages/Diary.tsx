@@ -77,11 +77,8 @@ export default function Diary() {
       toast({ title: t("error"), description: t("diaryContentRequired"), variant: "destructive" });
       return;
     }
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
 
     const payload = {
-      user_id: user.id,
       entry_date: date,
       content: content.trim().slice(0, 5000),
       mood,
@@ -89,27 +86,25 @@ export default function Diary() {
       tags,
     };
 
-    if (editingId) {
-      const { error } = await supabase.from("diary_entries" as any).update(payload as any).eq("id", editingId);
-      if (error) { toast({ title: t("error"), description: error.message, variant: "destructive" }); return; }
+    try {
+      if (editingId) {
+        await updateEntry(editingId, payload);
+      } else {
+        await createEntry(payload);
+      }
       toast({ title: t("diarySaved") });
-    } else {
-      const { error } = await supabase.from("diary_entries" as any).insert(payload as any);
-      if (error) { toast({ title: t("error"), description: error.message, variant: "destructive" }); return; }
-      toast({ title: t("diarySaved") });
+      resetForm();
+    } catch (e: any) {
+      toast({ title: t("error"), description: e.message, variant: "destructive" });
     }
-
-    resetForm();
-    loadEntries();
   };
 
   const handleDelete = async (id: string) => {
-    const { error } = await supabase.from("diary_entries" as any).delete().eq("id", id);
-    if (error) {
-      toast({ title: t("error"), description: error.message, variant: "destructive" });
-    } else {
+    try {
+      await removeEntry(id);
       toast({ title: t("diaryDeleted") });
-      setEntries((prev) => prev.filter((e) => e.id !== id));
+    } catch (e: any) {
+      toast({ title: t("error"), description: e.message, variant: "destructive" });
     }
   };
 
