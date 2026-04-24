@@ -7,12 +7,13 @@ import { cn } from "@/lib/utils";
 import { upsertFeedback, deleteFeedback, type ExerciseFeedback } from "@/hooks/useExerciseFeedback";
 import { useToast } from "@/hooks/use-toast";
 import { haptics } from "@/lib/haptics";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const REACTIONS = [
-  { value: "thumbs_up", icon: ThumbsUp, label: "Good", className: "bg-primary/15 text-primary border-primary/30" },
-  { value: "fire", icon: Flame, label: "Fire", className: "bg-explosive/15 text-explosive border-explosive/30" },
-  { value: "check_form", icon: AlertTriangle, label: "Check form", className: "bg-amber-500/15 text-amber-600 border-amber-500/30" },
-  { value: "redo", icon: RotateCcw, label: "Redo", className: "bg-destructive/15 text-destructive border-destructive/30" },
+  { value: "thumbs_up", icon: ThumbsUp, labelKey: "reactionGood", className: "bg-primary/15 text-primary border-primary/30" },
+  { value: "fire", icon: Flame, labelKey: "reactionFire", className: "bg-explosive/15 text-explosive border-explosive/30" },
+  { value: "check_form", icon: AlertTriangle, labelKey: "reactionCheckForm", className: "bg-amber-500/15 text-amber-600 border-amber-500/30" },
+  { value: "redo", icon: RotateCcw, labelKey: "reactionRedo", className: "bg-destructive/15 text-destructive border-destructive/30" },
 ] as const;
 
 interface Props {
@@ -25,6 +26,7 @@ interface Props {
 /** Coach-side editor for a single exercise's feedback */
 export function ExerciseFeedbackPanel({ workoutLogId, athleteId, existing, onSaved }: Props) {
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [reaction, setReaction] = useState<string>(existing?.reaction ?? "none");
   const [comment, setComment] = useState(existing?.comment ?? "");
@@ -32,7 +34,7 @@ export function ExerciseFeedbackPanel({ workoutLogId, athleteId, existing, onSav
 
   async function save() {
     if (reaction === "none" && !comment.trim()) {
-      toast({ title: "Add a reaction or comment first", variant: "destructive" });
+      toast({ title: t("coachFeedbackAddFirst"), variant: "destructive" });
       return;
     }
     setSaving(true);
@@ -41,15 +43,15 @@ export function ExerciseFeedbackPanel({ workoutLogId, athleteId, existing, onSav
       haptics.success();
       onSaved();
       setOpen(false);
-      toast({ title: existing ? "Feedback updated" : "Feedback sent" });
+      toast({ title: existing ? t("coachFeedbackUpdated") : t("coachFeedbackSent") });
     } catch (e: any) {
-      toast({ title: "Could not save", description: e.message, variant: "destructive" });
+      toast({ title: t("coachFeedbackSaveError"), description: e.message, variant: "destructive" });
     } finally { setSaving(false); }
   }
 
   async function remove() {
     if (!existing) return;
-    if (!confirm("Delete feedback?")) return;
+    if (!confirm(t("coachFeedbackDeleteConfirm"))) return;
     await deleteFeedback(existing.id);
     onSaved();
     setOpen(false);
@@ -69,10 +71,10 @@ export function ExerciseFeedbackPanel({ workoutLogId, athleteId, existing, onSav
         {existing ? (
           <span className="flex-1 text-left flex items-center gap-1.5 min-w-0">
             {reactionItem && <reactionItem.icon className="h-3 w-3 flex-shrink-0" />}
-            <span className="truncate">{existing.comment || reactionItem?.label || "Edit feedback"}</span>
+            <span className="truncate">{existing.comment || (reactionItem ? t(reactionItem.labelKey) : t("coachFeedbackEdit"))}</span>
           </span>
         ) : (
-          <span className="flex-1 text-left">Leave feedback</span>
+          <span className="flex-1 text-left">{t("coachFeedbackLeave")}</span>
         )}
       </button>
     );
@@ -81,7 +83,7 @@ export function ExerciseFeedbackPanel({ workoutLogId, athleteId, existing, onSav
   return (
     <div className="rounded-md border border-primary/30 bg-primary/5 p-2.5 space-y-2">
       <div className="flex items-center justify-between">
-        <span className="text-[10px] uppercase tracking-wider font-bold text-primary">Coach feedback</span>
+        <span className="text-[10px] uppercase tracking-wider font-bold text-primary">{t("coachFeedback")}</span>
         <button onClick={() => setOpen(false)} className="text-muted-foreground hover:text-foreground">
           <X className="h-3.5 w-3.5" />
         </button>
@@ -99,7 +101,7 @@ export function ExerciseFeedbackPanel({ workoutLogId, athleteId, existing, onSav
               )}
             >
               <r.icon className="h-3 w-3" />
-              {r.label}
+              {t(r.labelKey)}
             </button>
           );
         })}
@@ -107,7 +109,7 @@ export function ExerciseFeedbackPanel({ workoutLogId, athleteId, existing, onSav
       <Textarea
         value={comment}
         onChange={(e) => setComment(e.target.value.slice(0, 280))}
-        placeholder="Short note for the athlete (optional)…"
+        placeholder={t("coachFeedbackPlaceholder")}
         rows={2}
         className="text-sm resize-none"
         maxLength={280}
@@ -117,12 +119,12 @@ export function ExerciseFeedbackPanel({ workoutLogId, athleteId, existing, onSav
         <div className="flex items-center gap-1.5">
           {existing && (
             <Button size="sm" variant="ghost" className="h-7 text-xs text-destructive" onClick={remove}>
-              Delete
+              {t("delete")}
             </Button>
           )}
           <Button size="sm" className="h-7 text-xs" onClick={save} disabled={saving}>
             {saving ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Save className="h-3 w-3 mr-1" />}
-            Save
+            {t("save")}
           </Button>
         </div>
       </div>
@@ -132,6 +134,7 @@ export function ExerciseFeedbackPanel({ workoutLogId, athleteId, existing, onSav
 
 /** Athlete-side read-only display for a single exercise's feedback list */
 export function ExerciseFeedbackView({ feedback, onMarkRead }: { feedback: ExerciseFeedback[]; onMarkRead?: (id: string) => void }) {
+  const { t } = useLanguage();
   if (feedback.length === 0) return null;
   return (
     <div className="space-y-1.5">
@@ -150,10 +153,10 @@ export function ExerciseFeedbackView({ feedback, onMarkRead }: { feedback: Exerc
               {r && (
                 <Badge variant="outline" className={cn("h-5 px-1.5 text-[10px] gap-1", r.className)}>
                   <r.icon className="h-3 w-3" />
-                  {r.label}
+                  {t(r.labelKey)}
                 </Badge>
               )}
-              <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Coach</span>
+              <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">{t("coach")}</span>
               {!f.is_read && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />}
             </div>
             {f.comment && <p className="text-foreground">{f.comment}</p>}
