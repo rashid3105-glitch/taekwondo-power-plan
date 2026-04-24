@@ -117,6 +117,7 @@ export default function AdminClubs() {
               <span className="text-xs text-muted-foreground whitespace-nowrap">{t("maxAthletes")}:</span>
               <Input
                 type="number"
+                inputMode="numeric"
                 min={1}
                 max={100}
                 value={newClubMax}

@@ -677,6 +677,7 @@ function AIExerciseRow({ exercise, index, log, pending, onToggleComplete, onUpda
                 <label className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1 block">Actual Sets</label>
                 <Input
                   type="number"
+                  inputMode="numeric"
                   min={0}
                   max={20}
                   placeholder={String(exercise.sets)}

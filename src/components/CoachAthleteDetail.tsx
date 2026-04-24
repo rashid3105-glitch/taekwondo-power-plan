@@ -278,6 +278,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
             <Label className="text-xs">{t("age")}</Label>
             <Input
               type="number"
+              inputMode="numeric"
               min={5}
               max={99}
               value={age}
