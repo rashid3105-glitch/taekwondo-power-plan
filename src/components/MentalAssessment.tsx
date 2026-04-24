@@ -100,6 +100,8 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     overallGood: "Good mental strength",
     overallAverage: "Average — room for growth",
     overallNeedsWork: "Needs work — let's build it up!",
+    pending: "Pending",
+    adviceWillSyncOnline: "Saved offline. Personalized advice will be generated when you reconnect.",
   },
   da: {
     title: "Mental præstation",
@@ -135,6 +137,8 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     overallGood: "God mental styrke",
     overallAverage: "Gennemsnitlig — plads til vækst",
     overallNeedsWork: "Har brug for arbejde — lad os bygge det op!",
+    pending: "Afventer",
+    adviceWillSyncOnline: "Gemt offline. Personlige råd genereres, når du er online igen.",
   },
   sv: {
     title: "Mental prestation",
@@ -170,6 +174,8 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     overallGood: "Bra mental styrka",
     overallAverage: "Genomsnittlig — utrymme för tillväxt",
     overallNeedsWork: "Behöver arbete — låt oss bygga upp det!",
+    pending: "Väntar",
+    adviceWillSyncOnline: "Sparat offline. Personliga råd genereras när du är online igen.",
   },
   de: {
     title: "Mentale Leistung",
@@ -205,6 +211,8 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     overallGood: "Gute mentale Stärke",
     overallAverage: "Durchschnittlich — Raum für Wachstum",
     overallNeedsWork: "Braucht Arbeit — lass es uns aufbauen!",
+    pending: "Ausstehend",
+    adviceWillSyncOnline: "Offline gespeichert. Personalisierte Ratschläge werden generiert, sobald du wieder online bist.",
   },
   ar: {
     title: "الأداء الذهني",
@@ -240,6 +248,8 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     overallGood: "قوة ذهنية جيدة",
     overallAverage: "متوسط — مجال للنمو",
     overallNeedsWork: "يحتاج عملاً — لنبنيه!",
+    pending: "قيد الانتظار",
+    adviceWillSyncOnline: "تم الحفظ دون اتصال. سيتم إنشاء النصائح المخصصة عند عودة الاتصال.",
   },
 };
 
