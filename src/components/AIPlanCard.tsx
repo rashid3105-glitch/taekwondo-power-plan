@@ -622,6 +622,11 @@ function AIExerciseRow({ exercise, index, log, pending, onToggleComplete, onUpda
             {displayName}
           </span>
         </button>
+        {pending && (
+          <Badge variant="outline" className="text-[9px] px-1.5 py-0 h-4 border-amber-500/40 text-amber-500 bg-amber-500/10 flex-shrink-0">
+            {t("workoutLogPending")}
+          </Badge>
+        )}
         {completed && <Check className="h-4 w-4 text-primary flex-shrink-0" />}
       </div>
 
