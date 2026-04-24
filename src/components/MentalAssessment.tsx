@@ -261,13 +261,18 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
   const [advice, setAdvice] = useState<any>(null);
   const [scores, setScores] = useState<Record<string, number>>({});
   const [totalScore, setTotalScore] = useState(0);
-  const [history, setHistory] = useState<Assessment[]>([]);
-  const [loadingHistory, setLoadingHistory] = useState(false);
+  const [pendingAdvice, setPendingAdvice] = useState(false);
   const [savingDiary, setSavingDiary] = useState(false);
   const [diarySaved, setDiarySaved] = useState(false);
   const { toast } = useToast();
   const { locale } = useLanguage();
-  
+  const {
+    assessments: history,
+    loading: loadingHistory,
+    submitOffline,
+    removeAssessment,
+  } = useOfflineMentalAssessments();
+
   // Map locale to supported locale with fallback
   const l: SupportedLocale = (["en", "da", "sv", "de", "ar"].includes(locale) ? locale : "en") as SupportedLocale;
   const questions = getQuestionsForAge(profile?.age);
@@ -279,23 +284,6 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
     if (score >= 15) return txt.overallAverage;
     return txt.overallNeedsWork;
   };
-
-  const loadHistory = async () => {
-    setLoadingHistory(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    const { data } = await supabase
-      .from("mental_assessments")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false });
-    if (data) setHistory(data as unknown as Assessment[]);
-    setLoadingHistory(false);
-  };
-
-  useEffect(() => {
-    loadHistory();
-  }, []);
 
   const handleAnswer = (value: number) => {
     const q = questions[currentQ];
@@ -325,26 +313,22 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
     const { catScores, total } = calculateScores();
     setStep("results");
     setGenerating(true);
+    setAdvice(null);
+    setPendingAdvice(false);
 
     try {
-      const { data, error } = await supabase.functions.invoke("generate-mental-advice", {
-        body: { answers, scores: catScores, totalScore: total, profile, language: locale },
+      const result = await submitOffline({
+        total_score: total,
+        scores: catScores,
+        answers,
+        profile,
+        language: locale,
       });
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-
-      setAdvice(data.advice);
-
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        await supabase.from("mental_assessments").insert({
-          user_id: user.id,
-          answers,
-          scores: catScores,
-          total_score: total,
-          ai_advice: data.advice,
-        } as any);
-        loadHistory();
+      if (result?.ai_advice) {
+        setAdvice(result.ai_advice);
+      } else {
+        // Submission queued offline — advice will arrive later via sync.
+        setPendingAdvice(true);
       }
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
@@ -399,8 +383,7 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
   };
 
   const deleteAssessment = async (id: string) => {
-    await supabase.from("mental_assessments").delete().eq("id", id);
-    loadHistory();
+    await removeAssessment(id);
   };
 
   const viewPastResult = (assessment: Assessment) => {
