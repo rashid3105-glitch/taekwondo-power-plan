@@ -506,6 +506,7 @@ export function AIPlanCard({ plan, onPlanUpdated }: AIPlanCardProps) {
                           exercise={ex}
                           index={j + 1}
                           log={getLog(j)}
+                          pending={isPending(j)}
                           onToggleComplete={(completed) => upsertLog(j, { completed })}
                           onUpdateSets={(actual_sets) => upsertLog(j, { actual_sets })}
                           onUpdateReps={(actual_reps) => upsertLog(j, { actual_reps })}
