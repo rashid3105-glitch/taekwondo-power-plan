@@ -623,7 +623,7 @@ function AIExerciseRow({ exercise, index, log, pending, onToggleComplete, onUpda
           </span>
         </button>
         {pending && (
-          <Badge variant="outline" className="text-[9px] px-1.5 py-0 h-4 border-amber-500/40 text-amber-500 bg-amber-500/10 flex-shrink-0">
+          <Badge variant="outline" className="text-[9px] px-1.5 py-0 h-4 border-border text-muted-foreground bg-secondary flex-shrink-0">
             {t("workoutLogPending")}
           </Badge>
         )}
