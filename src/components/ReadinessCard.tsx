@@ -145,7 +145,14 @@ export function ReadinessCard() {
         <CardContent className="pt-4 pb-4 flex items-center gap-3">
           <Icon className={`h-6 w-6 ${tier.color} flex-shrink-0`} />
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-semibold text-foreground">{t("readinessScoreLabel")} {today.score}/100</div>
+            <div className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+              {t("readinessScoreLabel")} {today.score}/100
+              {today.pending && (
+                <span className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-500">
+                  <CloudOff className="h-3 w-3" /> {t("workoutLogPending")}
+                </span>
+              )}
+            </div>
             <div className={`text-xs ${tier.color}`}>{tier.label}</div>
           </div>
         </CardContent>
