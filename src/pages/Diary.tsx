@@ -14,16 +14,10 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Watermark } from "@/components/Watermark";
 import { DiaryComments } from "@/components/DiaryComments";
+import { useOfflineDiary } from "@/hooks/useOfflineDiary";
+import type { CachedDiaryEntry } from "@/lib/diaryOfflineDB";
 
-interface DiaryEntry {
-  id: string;
-  entry_date: string;
-  content: string;
-  mood: number;
-  energy: number;
-  tags: string[];
-  created_at: string;
-}
+type DiaryEntry = CachedDiaryEntry;
 
 const MOOD_ICONS = [Frown, Frown, Meh, Smile, Laugh];
 const MOOD_LABELS = ["Very low", "Low", "Okay", "Good", "Great"];
@@ -39,8 +33,7 @@ export default function Diary() {
   const { toast } = useToast();
   const { t } = useLanguage();
 
-  const [entries, setEntries] = useState<DiaryEntry[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { entries, loading, createEntry, updateEntry, removeEntry } = useOfflineDiary();
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
@@ -52,26 +45,11 @@ export default function Diary() {
   const [tags, setTags] = useState<string[]>([]);
 
   useEffect(() => {
-    loadEntries();
-  }, []);
-
-  const loadEntries = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { navigate("/auth"); return; }
-
-    const { data, error } = await supabase
-      .from("diary_entries" as any)
-      .select("*")
-      .eq("user_id", user.id)
-      .order("entry_date", { ascending: false });
-
-    if (error) {
-      toast({ title: t("error"), description: error.message, variant: "destructive" });
-    } else {
-      setEntries((data as any) || []);
-    }
-    setLoading(false);
-  };
+    void (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) navigate("/auth");
+    })();
+  }, [navigate]);
 
   const resetForm = () => {
     setDate(new Date().toISOString().slice(0, 10));
@@ -99,11 +77,8 @@ export default function Diary() {
       toast({ title: t("error"), description: t("diaryContentRequired"), variant: "destructive" });
       return;
     }
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
 
     const payload = {
-      user_id: user.id,
       entry_date: date,
       content: content.trim().slice(0, 5000),
       mood,
@@ -111,27 +86,25 @@ export default function Diary() {
       tags,
     };
 
-    if (editingId) {
-      const { error } = await supabase.from("diary_entries" as any).update(payload as any).eq("id", editingId);
-      if (error) { toast({ title: t("error"), description: error.message, variant: "destructive" }); return; }
+    try {
+      if (editingId) {
+        await updateEntry(editingId, payload);
+      } else {
+        await createEntry(payload);
+      }
       toast({ title: t("diarySaved") });
-    } else {
-      const { error } = await supabase.from("diary_entries" as any).insert(payload as any);
-      if (error) { toast({ title: t("error"), description: error.message, variant: "destructive" }); return; }
-      toast({ title: t("diarySaved") });
+      resetForm();
+    } catch (e: any) {
+      toast({ title: t("error"), description: e.message, variant: "destructive" });
     }
-
-    resetForm();
-    loadEntries();
   };
 
   const handleDelete = async (id: string) => {
-    const { error } = await supabase.from("diary_entries" as any).delete().eq("id", id);
-    if (error) {
-      toast({ title: t("error"), description: error.message, variant: "destructive" });
-    } else {
+    try {
+      await removeEntry(id);
       toast({ title: t("diaryDeleted") });
-      setEntries((prev) => prev.filter((e) => e.id !== id));
+    } catch (e: any) {
+      toast({ title: t("error"), description: e.message, variant: "destructive" });
     }
   };
 
@@ -301,6 +274,11 @@ export default function Diary() {
                     <span className="text-primary" title={ENERGY_LABELS[(entry.energy || 3) - 1]}>
                       <EntryEnergy className="h-4 w-4" />
                     </span>
+                    {entry.pending && (
+                      <Badge variant="outline" className="text-[9px] border-amber-500/40 text-amber-500">
+                        {t("workoutLogPending")}
+                      </Badge>
+                    )}
                   </div>
                   <div className="flex gap-1">
                     <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => startEdit(entry)}>

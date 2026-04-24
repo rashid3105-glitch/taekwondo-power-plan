@@ -5,15 +5,24 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Sun, CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
+import { Sun, CheckCircle2, AlertTriangle, XCircle, CloudOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
+import {
+  computeReadinessScore,
+  getCachedCheckin,
+  putCachedCheckin,
+  queueReadinessIntent,
+  makeCheckinKey,
+} from "@/lib/readinessOfflineDB";
+import { syncReadiness } from "@/lib/readinessSyncEngine";
 
 interface Checkin {
-  id: string;
+  id?: string;
   score: number;
   recommendation: "green" | "amber" | "red";
   checkin_date: string;
+  pending?: boolean;
 }
 
 export function ReadinessCard() {
@@ -36,24 +45,93 @@ export function ReadinessCard() {
 
   useEffect(() => { void load(); }, []);
 
+  // Sync any queued check-ins whenever we come back online.
+  useEffect(() => {
+    const handler = async () => {
+      const r = await syncReadiness();
+      if (r.flushed > 0) await load();
+    };
+    window.addEventListener("online", handler);
+    if (navigator.onLine) void handler();
+    return () => window.removeEventListener("online", handler);
+  }, []);
+
   async function load() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
     const todayStr = new Date().toISOString().slice(0, 10);
-    const { data } = await supabase.from("readiness_checkins").select("*").eq("user_id", user.id).eq("checkin_date", todayStr).maybeSingle();
-    if (data) setToday(data as any);
+
+    if (navigator.onLine) {
+      const { data } = await supabase
+        .from("readiness_checkins")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("checkin_date", todayStr)
+        .maybeSingle();
+      if (data) {
+        await putCachedCheckin(user.id, todayStr, {
+          score: data.score,
+          recommendation: data.recommendation as "green" | "amber" | "red",
+          pending: false,
+        });
+        setToday({ ...(data as any), pending: false });
+        return;
+      }
+    }
+    // Offline or no server row — fall back to local cache.
+    const cached = await getCachedCheckin(user.id, todayStr);
+    if (cached) {
+      setToday({
+        score: cached.score,
+        recommendation: cached.recommendation,
+        checkin_date: cached.checkin_date,
+        pending: cached.pending,
+      });
+    }
   }
 
   async function submit() {
     setSubmitting(true);
     try {
-      const { data, error } = await supabase.functions.invoke("submit-readiness", {
-        body: { sleep_hours: sleep[0], soreness: soreness[0], mood: mood[0], motivation: motivation[0], is_sick: sick },
-      });
-      if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
-      setToday(data as Checkin);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+      const todayStr = new Date().toISOString().slice(0, 10);
+      const payload = {
+        sleep_hours: sleep[0],
+        soreness: soreness[0],
+        mood: mood[0],
+        motivation: motivation[0],
+        is_sick: sick,
+      };
+
+      // Compute locally so UI updates immediately whether online or offline.
+      const local = computeReadinessScore(payload);
+
+      if (navigator.onLine) {
+        const { data, error } = await supabase.functions.invoke("submit-readiness", { body: payload });
+        if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
+        const row = data as Checkin;
+        await putCachedCheckin(user.id, row.checkin_date, {
+          score: row.score,
+          recommendation: row.recommendation,
+          pending: false,
+        });
+        setToday({ ...row, pending: false });
+        toast({ title: t("readinessLogged"), description: `${t("readinessScoreLabel")} ${row.score}/100` });
+      } else {
+        // Queue for later sync. Cache locally with the computed score.
+        await putCachedCheckin(user.id, todayStr, { ...local, pending: true });
+        await queueReadinessIntent({
+          key: makeCheckinKey(user.id, todayStr),
+          user_id: user.id,
+          ...payload,
+          ...local,
+          queued_at: Date.now(),
+        });
+        setToday({ checkin_date: todayStr, ...local, pending: true });
+        toast({ title: t("readinessLogged"), description: `${t("readinessScoreLabel")} ${local.score}/100` });
+      }
       setOpen(false);
-      toast({ title: t("readinessLogged"), description: `${t("readinessScoreLabel")} ${(data as any).score}/100` });
     } catch (e: any) {
       toast({ title: t("error"), description: e.message, variant: "destructive" });
     } finally { setSubmitting(false); }
@@ -67,7 +145,14 @@ export function ReadinessCard() {
         <CardContent className="pt-4 pb-4 flex items-center gap-3">
           <Icon className={`h-6 w-6 ${tier.color} flex-shrink-0`} />
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-semibold text-foreground">{t("readinessScoreLabel")} {today.score}/100</div>
+            <div className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+              {t("readinessScoreLabel")} {today.score}/100
+              {today.pending && (
+                <span className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-500">
+                  <CloudOff className="h-3 w-3" /> {t("workoutLogPending")}
+                </span>
+              )}
+            </div>
             <div className={`text-xs ${tier.color}`}>{tier.label}</div>
           </div>
         </CardContent>
