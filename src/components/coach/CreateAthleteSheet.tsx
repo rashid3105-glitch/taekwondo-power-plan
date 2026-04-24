@@ -1,0 +1,212 @@
+import { useState } from "react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Loader2, UserPlus, Plus } from "lucide-react";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { validatePassword } from "@/lib/passwordValidation";
+
+interface Props {
+  disabled?: boolean;
+  onCreated: () => Promise<void> | void;
+  countLabel?: string;
+}
+
+export function CreateAthleteSheet({ disabled, onCreated, countLabel }: Props) {
+  const { t } = useLanguage();
+  const { toast } = useToast();
+  const [open, setOpen] = useState(false);
+
+  // Create form
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [age, setAge] = useState("");
+  const [belt, setBelt] = useState("white");
+  const [expYears, setExpYears] = useState("");
+  const [discipline, setDiscipline] = useState("sparring");
+  const [creating, setCreating] = useState(false);
+
+  // Add by code
+  const [code, setCode] = useState("");
+  const [adding, setAdding] = useState(false);
+
+  const reset = () => {
+    setName(""); setEmail(""); setPassword(""); setAge("");
+    setBelt("white"); setExpYears(""); setDiscipline("sparring");
+    setCode("");
+  };
+
+  const createAthlete = async () => {
+    if (!name.trim() || !email.trim() || !password.trim()) return;
+    const pw = validatePassword(password);
+    if (!pw.ok) {
+      toast({ title: t("error"), description: t("passwordTooWeak"), variant: "destructive" });
+      return;
+    }
+    setCreating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-athlete", {
+        body: {
+          name: name.trim(),
+          email: email.trim(),
+          password,
+          age: age ? parseInt(age) : null,
+          belt_level: belt,
+          experience_years: expYears ? parseInt(expYears) : null,
+          discipline,
+        },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      toast({ title: t("athleteCreated"), description: t("athleteCreatedDesc") });
+      reset();
+      setOpen(false);
+      await onCreated();
+    } catch (err: any) {
+      let description = err.message;
+      if (err.message === "COACH_CLUB_REQUIRED") description = t("completeClubBeforeCoach");
+      else if (err.message === "WEAK_PASSWORD") description = t("passwordTooWeak");
+      toast({ title: t("error"), description, variant: "destructive" });
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const addByCode = async () => {
+    if (!code.trim()) return;
+    setAdding(true);
+    try {
+      const { data: userId, error: lookupError } = await supabase
+        .rpc("lookup_athlete_by_code", { _code: code.trim() });
+      if (lookupError || !userId) {
+        toast({ title: t("error"), description: t("athleteNotFound"), variant: "destructive" });
+        return;
+      }
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { error } = await supabase
+        .from("coach_athletes")
+        .insert({ coach_id: user.id, athlete_id: userId as string });
+      if (error) {
+        if (error.code === "23505") {
+          toast({ title: t("error"), description: t("athleteAlreadyAdded"), variant: "destructive" });
+        } else if (error.message?.toLowerCase().includes("row-level security")) {
+          toast({ title: t("error"), description: t("sameClubRequired"), variant: "destructive" });
+        } else {
+          throw error;
+        }
+      } else {
+        toast({ title: t("athleteAdded") });
+        reset();
+        setOpen(false);
+        await onCreated();
+      }
+    } catch (err: any) {
+      toast({ title: t("error"), description: err.message, variant: "destructive" });
+    } finally {
+      setAdding(false);
+    }
+  };
+
+  return (
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>
+        <Button size="sm" disabled={disabled} className="whitespace-nowrap">
+          <Plus className="h-4 w-4 mr-1" />
+          {t("addAthleteAction")}
+          {countLabel && <span className="ml-1.5 opacity-80 text-[11px]">{countLabel}</span>}
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle className="flex items-center gap-2">
+            <UserPlus className="h-5 w-5" /> {t("addAthleteAction")}
+          </SheetTitle>
+          <SheetDescription>{t("createAthleteDesc")}</SheetDescription>
+        </SheetHeader>
+
+        <div className="mt-5 space-y-5">
+          {/* Add by code */}
+          <div className="rounded-lg border border-border bg-muted/20 p-3 space-y-2">
+            <p className="text-xs font-semibold text-foreground">{t("orAddByCode")}</p>
+            <div className="flex gap-2">
+              <Input
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                placeholder={t("athleteCodePlaceholder")}
+                className="flex-1 uppercase"
+              />
+              <Button onClick={addByCode} disabled={adding || !code.trim()} size="sm" variant="outline">
+                {adding ? <Loader2 className="h-4 w-4 animate-spin" /> : t("add")}
+              </Button>
+            </div>
+          </div>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-[10px] uppercase tracking-wider">
+              <span className="bg-background px-2 text-muted-foreground">{t("or")}</span>
+            </div>
+          </div>
+
+          {/* Create new */}
+          <div className="space-y-3">
+            <p className="text-xs font-semibold text-foreground">{t("createAthlete")}</p>
+            <p className="text-[11px] text-muted-foreground -mt-1">{t("athleteInheritsCoachClub")}</p>
+
+            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder={t("athleteName")} />
+            <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("athleteEmail")} />
+            <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t("athletePassword")} minLength={8} />
+            <p className="text-[11px] text-muted-foreground -mt-1">{t("passwordRequirementsHint")}</p>
+
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1">
+                <Label className="text-xs">{t("age")}</Label>
+                <Input type="number" inputMode="numeric" min={5} max={99} value={age} onChange={(e) => setAge(e.target.value)} placeholder="—" className="h-9" />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">{t("yearsOfExperience")}</Label>
+                <Input type="number" min={0} max={50} value={expYears} onChange={(e) => setExpYears(e.target.value)} placeholder="—" className="h-9" />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1">
+                <Label className="text-xs">{t("beltLevel")}</Label>
+                <Select value={belt} onValueChange={setBelt}>
+                  <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {["white", "yellow", "green", "blue", "red", "black"].map((b) => (
+                      <SelectItem key={b} value={b}>{t(b)}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">{t("discipline")}</Label>
+                <Select value={discipline} onValueChange={setDiscipline}>
+                  <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="sparring">{t("sparring")}</SelectItem>
+                    <SelectItem value="poomsae">{t("poomsae")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <Button onClick={createAthlete} disabled={creating || disabled || !name.trim() || !email.trim() || !password.trim()} className="w-full">
+              {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <><UserPlus className="h-4 w-4 mr-1" /> {t("createAccount")}</>}
+            </Button>
+          </div>
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}
