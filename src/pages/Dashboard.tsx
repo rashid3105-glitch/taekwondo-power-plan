@@ -124,6 +124,18 @@ export default function Dashboard() {
     loadData();
   }, []);
 
+  // Auto-flush queued offline workout logs when connectivity returns.
+  useEffect(() => {
+    const onOnline = async () => {
+      try {
+        const { syncWorkoutLogs } = await import("@/lib/workoutLogSyncEngine");
+        await syncWorkoutLogs();
+      } catch { /* best effort */ }
+    };
+    window.addEventListener("online", onOnline);
+    return () => window.removeEventListener("online", onOnline);
+  }, []);
+
   const loadData = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { navigate("/auth"); return; }
