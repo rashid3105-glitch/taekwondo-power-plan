@@ -1,6 +1,7 @@
 import { PHASE_META, daysBetween, type SeasonPhase, type SeasonMilestone } from "@/lib/seasonPlan";
 import { cn } from "@/lib/utils";
 import { Trophy } from "lucide-react";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface Props {
   seasonStart: string;
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export function SeasonTimeline({ seasonStart, seasonEnd, phases, milestones = [], onPhaseClick, selectedPhaseId }: Props) {
+  const { t } = useLanguage();
   const totalDays = Math.max(1, daysBetween(seasonStart, seasonEnd) + 1);
   const today = new Date().toISOString().slice(0, 10);
   const todayOffset = (daysBetween(seasonStart, today) / totalDays) * 100;
@@ -52,7 +54,7 @@ export function SeasonTimeline({ seasonStart, seasonEnd, phases, milestones = []
                 isSelected && "ring-2 ring-foreground ring-inset z-10"
               )}
               style={{ left: `${offset}%`, width: `${width}%` }}
-              title={`${p.label}: ${p.start_date} → ${p.end_date}`}
+              title={`${p.label || t(meta.labelKey)}: ${p.start_date} → ${p.end_date}`}
             >
               {width > 6 && (
                 <span className="text-[9px] font-bold uppercase tracking-wider truncate px-1">
