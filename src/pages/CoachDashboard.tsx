@@ -5,31 +5,30 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { CoachAthleteDetail } from "@/components/CoachAthleteDetail";
 import { AvatarImg } from "@/components/AvatarImg";
-import { validatePassword } from "@/lib/passwordValidation";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { PlanViewDialog } from "@/components/PlanViewDialog";
 import { DiaryComments } from "@/components/DiaryComments";
 import { SquadOverview } from "@/components/coach/SquadOverview";
+import { SquadPulse, type PulseFilter } from "@/components/coach/SquadPulse";
 import { SessionAttendance } from "@/components/coach/SessionAttendance";
 import { WeeklySquadExport } from "@/components/coach/WeeklySquadExport";
 import { CoachSentHistory } from "@/components/coach/CoachSentHistory";
+import { CreateAthleteSheet } from "@/components/coach/CreateAthleteSheet";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
-  ArrowLeft, Loader2, UserPlus, Trash2, Zap, Plus, User, Users, NotebookPen, Eye, Heart, UserCog,
+  ArrowLeft, Loader2, Zap, User, Users, NotebookPen, UserCog,
   Frown, Meh, Smile, Laugh, BatteryLow, BatteryMedium, BatteryFull, MessageSquare, Bell, Search, Send, Building,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -94,18 +93,9 @@ export default function CoachDashboard() {
   const [plans, setPlans] = useState<AthletePlan[]>([]);
   const [rehabPlans, setRehabPlans] = useState<RehabPlan[]>([]);
   const [loading, setLoading] = useState(true);
-  const [athleteCode, setAthleteCode] = useState("");
-  const [adding, setAdding] = useState(false);
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [newAthleteName, setNewAthleteName] = useState("");
-  const [newAthleteEmail, setNewAthleteEmail] = useState("");
-  const [newAthletePassword, setNewAthletePassword] = useState("");
-  const [newAthleteAge, setNewAthleteAge] = useState("");
-  const [newAthleteBelt, setNewAthleteBelt] = useState("white");
-  const [newAthleteExpYears, setNewAthleteExpYears] = useState("");
-  const [newAthleteDiscipline, setNewAthleteDiscipline] = useState("sparring");
-  const [creating, setCreating] = useState(false);
-  
+  const [pulseFilter, setPulseFilter] = useState<PulseFilter>("all");
+  const [pulseStats, setPulseStats] = useState({ total: 0, attention: 0, injured: 0, noPlan: 0, stale: 0 });
+
   const [maxAthletes, setMaxAthletes] = useState(5);
   const [coachUserId, setCoachUserId] = useState<string | null>(null);
   const [coachClubId, setCoachClubId] = useState<string | null>(null);
@@ -256,95 +246,7 @@ export default function CoachDashboard() {
 
   const MAX_ATHLETES = maxAthletes;
 
-  const addAthlete = async () => {
-    if (!athleteCode.trim()) return;
-    if (!isAdmin && athletes.length >= MAX_ATHLETES) {
-      toast({ title: t("error"), description: t("maxAthletesReached"), variant: "destructive" });
-      return;
-    }
-    setAdding(true);
-    try {
-      const { data: userId, error: lookupError } = await supabase
-        .rpc("lookup_athlete_by_code", { _code: athleteCode.trim() });
-
-      if (lookupError || !userId) {
-        toast({ title: t("error"), description: t("athleteNotFound"), variant: "destructive" });
-        setAdding(false);
-        return;
-      }
-
-      const profile = { user_id: userId };
-
-      const { error } = await supabase
-        .from("coach_athletes")
-        .insert({ coach_id: (await supabase.auth.getUser()).data.user!.id, athlete_id: profile.user_id });
-
-      if (error) {
-        if (error.code === "23505") {
-          toast({ title: t("error"), description: t("athleteAlreadyAdded"), variant: "destructive" });
-        } else if (error.message?.toLowerCase().includes("row-level security")) {
-          toast({ title: t("error"), description: t("sameClubRequired"), variant: "destructive" });
-        } else {
-          throw error;
-        }
-      } else {
-        toast({ title: t("athleteAdded") });
-        setAthleteCode("");
-        await loadAthletes();
-      }
-    } catch (err: any) {
-      toast({ title: t("error"), description: err.message, variant: "destructive" });
-    } finally {
-      setAdding(false);
-    }
-  };
-
-
-  const createAthlete = async () => {
-    if (!newAthleteName.trim() || !newAthleteEmail.trim() || !newAthletePassword.trim()) return;
-    if (!isAdmin && athletes.length >= MAX_ATHLETES) {
-      toast({ title: t("error"), description: t("maxAthletesReached"), variant: "destructive" });
-      return;
-    }
-    const pwCheck = validatePassword(newAthletePassword);
-    if (!pwCheck.ok) {
-      toast({ title: t("error"), description: t("passwordTooWeak"), variant: "destructive" });
-      return;
-    }
-    setCreating(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("create-athlete", {
-        body: {
-          name: newAthleteName.trim(),
-          email: newAthleteEmail.trim(),
-          password: newAthletePassword,
-          age: newAthleteAge ? parseInt(newAthleteAge) : null,
-          belt_level: newAthleteBelt,
-          experience_years: newAthleteExpYears ? parseInt(newAthleteExpYears) : null,
-          discipline: newAthleteDiscipline,
-        },
-      });
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-
-      toast({ title: t("athleteCreated"), description: t("athleteCreatedDesc") });
-      setNewAthleteName("");
-      setNewAthleteEmail("");
-      setNewAthletePassword("");
-      setNewAthleteAge("");
-      setNewAthleteBelt("white");
-      setNewAthleteExpYears("");
-      setNewAthleteDiscipline("sparring");
-      await loadAthletes();
-    } catch (err: any) {
-      let description = err.message;
-      if (err.message === "COACH_CLUB_REQUIRED") description = t("completeClubBeforeCoach");
-      else if (err.message === "WEAK_PASSWORD") description = t("passwordTooWeak");
-      toast({ title: t("error"), description, variant: "destructive" });
-    } finally {
-      setCreating(false);
-    }
-  };
+  // Add/create athlete moved into <CreateAthleteSheet />
 
   const removeAthlete = async (athleteId: string) => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -400,398 +302,121 @@ export default function CoachDashboard() {
 
       <main className="container max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {coachUserId && (
-          <Tabs defaultValue="overview" className="space-y-4">
+          <Tabs defaultValue="squad" className="space-y-4">
             <div className="flex items-center justify-between gap-2 flex-wrap">
               <div className="-mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto scrollbar-none w-full sm:w-auto">
                 <TabsList className="w-max">
-                  <TabsTrigger value="overview">{t("overview")}</TabsTrigger>
-                  <TabsTrigger value="athletes">{t("athletesTab")}</TabsTrigger>
+                  <TabsTrigger value="squad">{t("squadTab")}</TabsTrigger>
                   <TabsTrigger value="today">{t("todayTab")}</TabsTrigger>
                   <TabsTrigger value="messages">{t("messagesTab")}</TabsTrigger>
                 </TabsList>
               </div>
-              <WeeklySquadExport athletes={athletes as any} />
+              <div className="flex items-center gap-2">
+                <WeeklySquadExport athletes={athletes as any} />
+                <CreateAthleteSheet
+                  disabled={!isAdmin && athletes.length >= MAX_ATHLETES}
+                  onCreated={async () => { await loadAthletes(); }}
+                  countLabel={!isAdmin ? `${athletes.length}/${MAX_ATHLETES}` : undefined}
+                />
+              </div>
             </div>
-            <TabsContent value="overview" className="space-y-4">
-              <SquadOverview coachId={coachUserId} onSelectAthlete={(id) => setManageAthleteId(id)} allowedUserIds={athletes.map((a) => a.user_id)} />
-            </TabsContent>
-            <TabsContent value="today" className="space-y-4">
-              <SessionAttendance coachId={coachUserId} athletes={athletes.map((a) => ({ user_id: a.user_id, display_name: a.display_name, avatar_url: a.avatar_url }))} />
-            </TabsContent>
-            <TabsContent value="athletes" className="space-y-4 sm:space-y-6">
-              {/* Athlete limit warning */}
-        {!isAdmin && athletes.length >= MAX_ATHLETES && (
-          <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 flex flex-col sm:flex-row sm:items-center gap-2">
-            <span className="text-sm text-destructive flex-1">{t("maxAthletesReached")}</span>
-            <a href="mailto:info@sportstalent.dk?subject=Upgrade%20to%20Enterprise" className="inline-flex items-center justify-center gap-1 rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap">
-              {t("upgradeEnterprise")}
-            </a>
-          </div>
-        )}
 
-        {/* Create athlete */}
-        <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
-          <h3 className="font-bold text-foreground flex items-center gap-2">
-            <UserPlus className="h-5 w-5" /> {t("createAthlete")} {!isAdmin && <>({athletes.length}/{MAX_ATHLETES})</>}
-          </h3>
-          <p className="text-xs text-muted-foreground">{t("createAthleteDesc")}</p>
-          <p className="text-xs text-muted-foreground">{t("athleteInheritsCoachClub")}</p>
+            <TabsContent value="squad" className="space-y-4">
+              {!isAdmin && athletes.length >= MAX_ATHLETES && (
+                <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 flex flex-col sm:flex-row sm:items-center gap-2">
+                  <span className="text-sm text-destructive flex-1">{t("maxAthletesReached")}</span>
+                  <a href="mailto:info@sportstalent.dk?subject=Upgrade%20to%20Enterprise" className="inline-flex items-center justify-center gap-1 rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap">
+                    {t("upgradeEnterprise")}
+                  </a>
+                </div>
+              )}
 
-          {showCreateForm ? (
-            <div className="space-y-3">
-              <Input
-                value={newAthleteName}
-                onChange={(e) => setNewAthleteName(e.target.value)}
-                placeholder={t("athleteName")}
-              />
-              <Input
-                type="email"
-                value={newAthleteEmail}
-                onChange={(e) => setNewAthleteEmail(e.target.value)}
-                placeholder={t("athleteEmail")}
-              />
-              <Input
-                type="password"
-                value={newAthletePassword}
-                onChange={(e) => setNewAthletePassword(e.target.value)}
-                placeholder={t("athletePassword")}
-                minLength={8}
-              />
-              <p className="text-[11px] text-muted-foreground -mt-1">{t("passwordRequirementsHint")}</p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                <div className="space-y-1">
-                  <Label className="text-xs">{t("age")}</Label>
-                  <Input
-                    type="number"
-                    inputMode="numeric"
-                    min={5}
-                    max={99}
-                    value={newAthleteAge}
-                    onChange={(e) => setNewAthleteAge(e.target.value)}
-                    placeholder="—"
-                    className="h-9"
+              {athletes.length === 0 ? (
+                <div className="rounded-xl border border-border bg-card p-12 text-center shadow-card">
+                  <User className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
+                  <h3 className="font-bold text-foreground mb-1">{t("noAthletes")}</h3>
+                  <p className="text-sm text-muted-foreground">{t("noAthletesDesc")}</p>
+                </div>
+              ) : (
+                <>
+                  <SquadPulse
+                    stats={pulseStats}
+                    active={pulseFilter}
+                    onChange={setPulseFilter}
                   />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs">{t("beltLevel")}</Label>
-                  <Select value={newAthleteBelt} onValueChange={setNewAthleteBelt}>
-                    <SelectTrigger className="h-9">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {["white", "yellow", "green", "blue", "red", "black"].map((b) => (
-                        <SelectItem key={b} value={b}>{t(b)}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs">{t("yearsOfExperience")}</Label>
-                  <Input
-                    type="number"
-                    min={0}
-                    max={50}
-                    value={newAthleteExpYears}
-                    onChange={(e) => setNewAthleteExpYears(e.target.value)}
-                    placeholder="—"
-                    className="h-9"
+                  <SquadOverview
+                    coachId={coachUserId}
+                    onSelectAthlete={(id) => setManageAthleteId(id)}
+                    onDiary={(id, name) => openDiary(id, name)}
+                    onRemove={(id) => removeAthlete(id)}
+                    onViewPlan={(id) => {
+                      const p = plans.find((pp) => pp.user_id === id && pp.is_active) || plans.find((pp) => pp.user_id === id);
+                      const r = rehabPlans.find((rr) => rr.user_id === id && rr.is_active) || null;
+                      if (p) { setViewPlan(p); setViewRehabPlan(r); }
+                      else if (r) { setViewRehabPlan(r); }
+                    }}
+                    allowedUserIds={athletes.map((a) => a.user_id)}
+                    athleteMeta={athletes.map((a) => ({ user_id: a.user_id, club_name: a.club_name }))}
+                    pulseFilter={pulseFilter}
+                    onStatsChange={setPulseStats}
                   />
-                </div>
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs">{t("discipline")}</Label>
-                <Select value={newAthleteDiscipline} onValueChange={setNewAthleteDiscipline}>
-                  <SelectTrigger className="h-9">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="sparring">{t("sparring")}</SelectItem>
-                    <SelectItem value="poomsae">{t("poomsae")}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex gap-2">
-                <Button onClick={createAthlete} disabled={creating || !newAthleteName.trim() || !newAthleteEmail.trim() || !newAthletePassword.trim() || (!isAdmin && athletes.length >= MAX_ATHLETES)} size="sm">
-                  {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <><UserPlus className="h-4 w-4 mr-1" /> {t("createAccount")}</>}
-                </Button>
-                <Button variant="ghost" size="sm" onClick={() => setShowCreateForm(false)}>
-                  {t("cancel")}
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <Button onClick={() => setShowCreateForm(true)} size="sm" className="w-full sm:w-auto" disabled={!isAdmin && athletes.length >= MAX_ATHLETES}>
-              <Plus className="h-4 w-4 mr-1" /> {t("createAthlete")}
-            </Button>
-          )}
+                </>
+              )}
 
-          {/* Or add by code */}
-          <div className="border-t border-border pt-3 space-y-2">
-            <p className="text-xs text-muted-foreground">{t("orAddByCode")}</p>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <Input
-                value={athleteCode}
-                onChange={(e) => setAthleteCode(e.target.value)}
-                placeholder={t("athleteCodePlaceholder")}
-                className="flex-1 uppercase"
-              />
-              <Button onClick={addAthlete} disabled={adding || !athleteCode.trim() || (!isAdmin && athletes.length >= MAX_ATHLETES)} size="sm" variant="outline" className="w-full sm:w-auto">
-                {adding ? <Loader2 className="h-4 w-4 animate-spin" /> : <><UserPlus className="h-4 w-4 mr-1" /> {t("add")}</>}
-              </Button>
-            </div>
-          </div>
-        </div>
-
-
-        {/* Athlete list */}
-        {athletes.length === 0 ? (
-          <div className="rounded-xl border border-border bg-card p-12 text-center shadow-card">
-            <User className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
-            <h3 className="font-bold text-foreground mb-1">{t("noAthletes")}</h3>
-            <p className="text-sm text-muted-foreground">{t("noAthletesDesc")}</p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-              {t("myAthletes")} ({athletes.length})
-            </h3>
-            <div className="grid gap-3">
-              {athletes.map((a) => {
-                const athletePlans = plans.filter(p => p.user_id === a.user_id);
-                const athleteRehabs = rehabPlans.filter(r => r.user_id === a.user_id);
-                return (
-                  <div
-                    key={a.user_id}
-                    className="rounded-lg border bg-card p-3 sm:p-4 transition-colors border-border hover:border-muted-foreground/30 overflow-hidden"
-                  >
-                    <div className="flex items-center justify-between gap-2 min-w-0">
-                        <div className="flex items-center gap-3 min-w-0 flex-1">
-                        <AvatarImg avatarUrl={a.avatar_url} />
-                        <div className="min-w-0 flex-1">
-                          <p className="font-medium text-sm text-foreground truncate">{a.display_name || t("noName")}</p>
-                          <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
-                            {a.club_name && (
-                              <span className="inline-flex items-center gap-0.5 text-[10px] text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded-full">
-                                <Building className="h-2.5 w-2.5" />
-                                {a.club_name}
-                              </span>
-                            )}
-                            <p className="text-[10px] text-muted-foreground">{a.athlete_code}</p>
+              {/* Club Athletes (read-only) */}
+              {clubAthletes.length > 0 && (
+                <div className="space-y-3 pt-4 border-t border-border">
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                    <Users className="h-4 w-4" /> {t("clubAthletes")} ({clubAthletes.length})
+                  </h3>
+                  <p className="text-xs text-muted-foreground">{t("clubAthletesDesc")}</p>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    {clubAthletes.map((a) => (
+                      <div
+                        key={a.user_id}
+                        className="rounded-lg border bg-card p-3 border-border/50 overflow-hidden opacity-90"
+                      >
+                        <div className="flex items-center justify-between gap-2 min-w-0">
+                          <div className="flex items-center gap-3 min-w-0 flex-1">
+                            <AvatarImg avatarUrl={a.avatar_url} />
+                            <div className="min-w-0 flex-1">
+                              <p className="font-medium text-sm text-foreground truncate">{a.display_name || t("noName")}</p>
+                              <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
+                                {a.club_name && (
+                                  <span className="inline-flex items-center gap-0.5 text-[10px] text-muted-foreground">
+                                    <Building className="h-2.5 w-2.5" />
+                                    {a.club_name}
+                                  </span>
+                                )}
+                                <p className="text-[10px] text-muted-foreground">{a.athlete_code}</p>
+                                {a.belt_level && (
+                                  <span className="text-[10px] text-muted-foreground capitalize">· {a.belt_level}</span>
+                                )}
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1 flex-shrink-0">
-                        <Tooltip>
-                          <TooltipTrigger asChild>
+                          <div className="flex items-center gap-1 flex-shrink-0">
+                            <Badge variant="secondary" className="text-[10px]">{t("readOnly")}</Badge>
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-8 w-8 hover:bg-primary/10 hover:text-primary"
-                              onClick={(e) => { e.stopPropagation(); setManageAthleteId(a.user_id); }}
+                              className="h-8 w-8"
+                              title={t("diary")}
+                              onClick={() => openDiary(a.user_id, a.display_name)}
                             >
-                              <UserCog className="h-4 w-4" />
+                              <NotebookPen className="h-4 w-4" />
                             </Button>
-                          </TooltipTrigger>
-                          <TooltipContent side="left">{t("manageAthlete")}</TooltipContent>
-                        </Tooltip>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          title={t("diary")}
-                          onClick={(e) => { e.stopPropagation(); openDiary(a.user_id, a.display_name); }}
-                        >
-                          <NotebookPen className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-destructive"
-                          onClick={(e) => { e.stopPropagation(); removeAthlete(a.user_id); }}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="flex flex-wrap gap-1.5 mt-2">
-                      {a.belt_level && (
-                        <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full capitalize">
-                          {a.belt_level} {t("belt")}
-                        </span>
-                      )}
-                      {a.age && (
-                        <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">{a.age}y</span>
-                      )}
-                      {a.weight_kg && (
-                        <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">{a.weight_kg}kg</span>
-                      )}
-                      <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
-                        {a.tkd_sessions_per_week}x {t("tkdPerWeek")}
-                      </span>
-                      {a.current_injury && (
-                        <span className="text-[10px] bg-destructive/10 text-destructive px-2 py-0.5 rounded-full">
-                          ⚠ {a.current_injury}
-                        </span>
-                      )}
-                    </div>
-                    {a.goals && a.goals.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-1.5">
-                        {a.goals.map((g) => (
-                          <span key={g} className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                            {t(g) || g}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                    {/* Plan rows with eye button */}
-                    {athletePlans.length > 0 && (
-                      <div className="mt-2.5 space-y-1 border-t border-border pt-2">
-                        {athletePlans.map((p) => (
-                          <div key={p.id} className="flex items-center gap-2 text-xs">
-                            <Zap className="h-3 w-3 text-muted-foreground flex-shrink-0" />
-                            <span className="flex-1 truncate text-muted-foreground">
-                              {p.name}
-                            </span>
-                            {p.is_active && (
-                              <span className="text-[9px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-medium">
-                                Active
-                              </span>
-                            )}
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8 flex-shrink-0 hover:bg-primary/10 hover:text-primary"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    const athleteActiveRehab = athleteRehabs.find(r => r.is_active);
-                                    setViewPlan(p);
-                                    setViewRehabPlan(athleteActiveRehab || null);
-                                  }}
-                                >
-                                  <Eye className="h-4 w-4" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent side="left">View full plan</TooltipContent>
-                            </Tooltip>
                           </div>
-                        ))}
-                      </div>
-                    )}
-                    {/* Rehab plan rows */}
-                    {athleteRehabs.length > 0 && (
-                      <div className={cn("space-y-1", athletePlans.length === 0 ? "mt-2.5 border-t border-border pt-2" : "")}>
-                        {athleteRehabs.map((r) => (
-                          <div key={r.id} className="flex items-center gap-2 text-xs">
-                            <Heart className="h-3 w-3 text-destructive flex-shrink-0" />
-                            <span className="flex-1 truncate text-muted-foreground">
-                              {r.name}
-                            </span>
-                            {r.is_active && (
-                              <span className="text-[9px] bg-destructive/10 text-destructive px-1.5 py-0.5 rounded-full font-medium">
-                                Active
-                              </span>
-                            )}
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8 flex-shrink-0 hover:bg-destructive/10 hover:text-destructive"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setViewPlan(null);
-                                    setViewRehabPlan(r);
-                                  }}
-                                >
-                                  <Eye className="h-4 w-4" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent side="left">View rehab plan</TooltipContent>
-                            </Tooltip>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-
-        {/* Club Athletes (read-only) */}
-        {clubAthletes.length > 0 && (
-          <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-              <Users className="h-4 w-4" /> {t("clubAthletes")} ({clubAthletes.length})
-            </h3>
-            <p className="text-xs text-muted-foreground">{t("clubAthletesDesc")}</p>
-            <div className="grid gap-3">
-              {clubAthletes.map((a) => (
-                <div
-                  key={a.user_id}
-                  className="rounded-lg border bg-card p-3 sm:p-4 border-border/50 overflow-hidden opacity-90"
-                >
-                  <div className="flex items-center justify-between gap-2 min-w-0">
-                    <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <AvatarImg avatarUrl={a.avatar_url} />
-                      <div className="min-w-0 flex-1">
-                        <p className="font-medium text-sm text-foreground truncate">{a.display_name || t("noName")}</p>
-                        <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
-                          {a.club_name && (
-                            <span className="inline-flex items-center gap-0.5 text-[10px] text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded-full">
-                              <Building className="h-2.5 w-2.5" />
-                              {a.club_name}
-                            </span>
-                          )}
-                          <p className="text-[10px] text-muted-foreground">{a.athlete_code}</p>
                         </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-1 flex-shrink-0">
-                      <Badge variant="secondary" className="text-[10px]">{t("readOnly")}</Badge>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        title={t("diary")}
-                        onClick={() => openDiary(a.user_id, a.display_name)}
-                      >
-                        <NotebookPen className="h-4 w-4" />
-                      </Button>
-                    </div>
+                    ))}
                   </div>
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    {a.belt_level && (
-                      <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full capitalize">
-                        {a.belt_level} {t("belt")}
-                      </span>
-                    )}
-                    {a.age && (
-                      <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">{a.age}y</span>
-                    )}
-                    {a.weight_kg && (
-                      <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">{a.weight_kg}kg</span>
-                    )}
-                  </div>
-                  {a.goals && a.goals.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mt-1.5">
-                      {a.goals.map((g) => (
-                        <span key={g} className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                          {t(g) || g}
-                        </span>
-                      ))}
-                    </div>
-                  )}
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
+              )}
+            </TabsContent>
 
+            <TabsContent value="today" className="space-y-4">
+              <SessionAttendance coachId={coachUserId} athletes={athletes.map((a) => ({ user_id: a.user_id, display_name: a.display_name, avatar_url: a.avatar_url }))} />
             </TabsContent>
 
             <TabsContent value="messages" className="space-y-4">
@@ -1059,8 +684,6 @@ export default function CoachDashboard() {
             </div>
           </DialogContent>
         </Dialog>
-
-
 
         <Dialog open={!!diaryAthleteId} onOpenChange={(open) => { if (!open) setDiaryAthleteId(null); }}>
           <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
