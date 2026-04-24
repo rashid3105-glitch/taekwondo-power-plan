@@ -493,7 +493,7 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
             <Button onClick={() => { setCurrentQ(0); setAnswers({}); setStep("quiz"); }} className="flex-1">
               <Brain className="h-4 w-4 mr-1" /> {txt.startAssessment}
             </Button>
-            <Button variant="outline" onClick={() => { loadHistory(); setStep("history"); }} className="flex-1">
+            <Button variant="outline" onClick={() => setStep("history")} className="flex-1">
               <History className="h-4 w-4 mr-1" /> {txt.viewHistory}
             </Button>
           </div>
@@ -520,10 +520,17 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
           <div className="space-y-2">
             {history.map((h) => (
               <Card key={h.id} className="p-3 flex items-center justify-between">
-                <button onClick={() => viewPastResult(h)} className="flex-1 text-left">
-                  <p className="text-sm font-medium text-foreground">
-                    {txt.score}: {h.total_score}/30
-                  </p>
+                <button onClick={() => viewPastResult(h as any)} className="flex-1 text-left">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium text-foreground">
+                      {txt.score}: {h.total_score}/30
+                    </p>
+                    {h.pending && (
+                      <Badge variant="outline" className="gap-1 text-[10px] py-0 h-5">
+                        <CloudOff className="h-3 w-3" /> {txt.pending}
+                      </Badge>
+                    )}
+                  </div>
                   <p className="text-xs text-muted-foreground">
                     {new Date(h.created_at).toLocaleDateString()}
                   </p>
