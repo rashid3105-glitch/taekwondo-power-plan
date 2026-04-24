@@ -6,11 +6,15 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Plus, Trash2, Share2, Video, Tag, Copy, Check } from "lucide-react";
+import { Loader2, Plus, Trash2, Share2, Video, Tag, Copy, Check, WifiOff, CloudUpload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { techniquesFor, OUTCOMES, SIDES, type Discipline } from "@/lib/tkdTechniques";
 import { MatchSummary } from "./MatchSummary";
+import {
+  getCachedVideo, queueTagInsert, queueTagDelete, listPendingTagInsertsForVideo,
+  removePendingTagInsert, makeTempId, type PendingTagInsert,
+} from "@/lib/matchOfflineDB";
 
 interface MatchVideo {
   id: string;
@@ -37,23 +41,27 @@ interface MatchTag {
   side: "left" | "right" | "n/a";
   outcome: "scored" | "conceded" | "penalty" | "none";
   notes: string;
+  __pending?: boolean;
 }
 
 interface VideoTaggerProps {
   video: MatchVideo;
   isCoach: boolean;
+  isOffline?: boolean;
+  isCached?: boolean;
   onChanged?: () => void;
   onDeleted?: () => void;
 }
 
-export function VideoTagger({ video, isCoach, onChanged, onDeleted }: VideoTaggerProps) {
+export function VideoTagger({ video, isCoach, isOffline = false, isCached = false, onChanged, onDeleted }: VideoTaggerProps) {
   const { toast } = useToast();
   const { t } = useLanguage();
-  const [signedUrl, setSignedUrl] = useState<string | null>(null);
+  const [videoSrc, setVideoSrc] = useState<string | null>(null);
   const [tags, setTags] = useState<MatchTag[]>([]);
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const objectUrlRef = useRef<string | null>(null);
 
   // Tag draft
   const [technique, setTechnique] = useState<string>("");
@@ -73,17 +81,63 @@ export function VideoTagger({ video, isCoach, onChanged, onDeleted }: VideoTagge
 
   useEffect(() => {
     void load();
+    return () => {
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+        objectUrlRef.current = null;
+      }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [video.id]);
+  }, [video.id, isOffline, isCached]);
 
   async function load() {
     setLoading(true);
-    const [signedRes, tagsRes] = await Promise.all([
-      supabase.storage.from("match_videos").createSignedUrl(video.storage_path, 60 * 60),
-      supabase.from("match_tags").select("*").eq("video_id", video.id).order("timestamp_seconds"),
-    ]);
-    if (signedRes.data?.signedUrl) setSignedUrl(signedRes.data.signedUrl);
-    setTags((tagsRes.data || []) as MatchTag[]);
+    // Clean up previous object URL
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+      objectUrlRef.current = null;
+    }
+
+    // Resolve playback source: prefer cached blob if available; fall back to signed URL when online.
+    let src: string | null = null;
+    let serverTags: MatchTag[] = [];
+
+    if (isCached) {
+      const cached = await getCachedVideo(video.id);
+      if (cached) {
+        const url = URL.createObjectURL(cached.blob);
+        objectUrlRef.current = url;
+        src = url;
+      }
+    }
+    if (!src && !isOffline) {
+      const { data: signed } = await supabase.storage
+        .from("match_videos").createSignedUrl(video.storage_path, 60 * 60);
+      if (signed?.signedUrl) src = signed.signedUrl;
+    }
+    setVideoSrc(src);
+
+    if (!isOffline) {
+      const { data: tagsRes } = await supabase
+        .from("match_tags").select("*").eq("video_id", video.id).order("timestamp_seconds");
+      serverTags = (tagsRes || []) as MatchTag[];
+    }
+
+    // Merge with locally-pending tag inserts for this video
+    const pending = await listPendingTagInsertsForVideo(video.id);
+    const pendingTags: MatchTag[] = pending.map((p) => ({
+      id: p.id,
+      video_id: video.id,
+      timestamp_seconds: p.timestamp_seconds,
+      technique: p.technique,
+      side: p.side as MatchTag["side"],
+      outcome: p.outcome as MatchTag["outcome"],
+      notes: p.notes,
+      __pending: true,
+    }));
+
+    const merged = [...serverTags, ...pendingTags].sort((a, b) => a.timestamp_seconds - b.timestamp_seconds);
+    setTags(merged);
     setLoading(false);
   }
 
@@ -94,18 +148,32 @@ export function VideoTagger({ video, isCoach, onChanged, onDeleted }: VideoTagge
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setAdding(false); return; }
     const ts = Math.round(videoRef.current.currentTime * 10) / 10;
-    const { error } = await supabase.from("match_tags").insert({
-      video_id: video.id,
-      timestamp_seconds: ts,
-      technique,
-      side,
-      outcome,
-      notes: tagNote,
-      created_by: user.id,
-    });
-    if (error) {
-      toast({ title: t("error"), description: error.message, variant: "destructive" });
+
+    if (navigator.onLine && !isOffline) {
+      const { error } = await supabase.from("match_tags").insert({
+        video_id: video.id,
+        timestamp_seconds: ts,
+        technique, side, outcome, notes: tagNote,
+        created_by: user.id,
+      });
+      if (error) {
+        toast({ title: t("error"), description: error.message, variant: "destructive" });
+      } else {
+        setTagNote("");
+        await load();
+        onChanged?.();
+      }
     } else {
+      const pending: PendingTagInsert = {
+        id: makeTempId("tag"),
+        video_id: video.id,
+        timestamp_seconds: ts,
+        technique, side, outcome, notes: tagNote,
+        created_by: user.id,
+        created_at: Date.now(),
+      };
+      await queueTagInsert(pending);
+      toast({ title: t("matchOfflinePendingTag") });
       setTagNote("");
       await load();
       onChanged?.();
@@ -113,12 +181,31 @@ export function VideoTagger({ video, isCoach, onChanged, onDeleted }: VideoTagge
     setAdding(false);
   }
 
-  async function deleteTag(id: string) {
-    const { error } = await supabase.from("match_tags").delete().eq("id", id);
-    if (error) {
-      toast({ title: t("error"), description: error.message, variant: "destructive" });
-    } else {
+  async function deleteTag(id: string, isPending: boolean) {
+    if (isPending) {
+      await removePendingTagInsert(id);
       await load();
+      onChanged?.();
+      return;
+    }
+    if (navigator.onLine && !isOffline) {
+      const { error } = await supabase.from("match_tags").delete().eq("id", id);
+      if (error) {
+        toast({ title: t("error"), description: error.message, variant: "destructive" });
+      } else {
+        await load();
+        onChanged?.();
+      }
+    } else {
+      await queueTagDelete({
+        id: makeTempId("del"),
+        tag_id: id,
+        video_id: video.id,
+        created_at: Date.now(),
+      });
+      toast({ title: t("matchOfflineDeleteQueued") });
+      // Optimistically remove from view
+      setTags((prev) => prev.filter((x) => x.id !== id));
       onChanged?.();
     }
   }
@@ -185,6 +272,8 @@ export function VideoTagger({ video, isCoach, onChanged, onDeleted }: VideoTagge
     return `${m}:${r.toString().padStart(2, "0")}`;
   }
 
+  const onlineActionsDisabled = isOffline || !navigator.onLine;
+
   return (
     <div className="space-y-4">
       <Card>
@@ -194,6 +283,11 @@ export function VideoTagger({ video, isCoach, onChanged, onDeleted }: VideoTagge
               <CardTitle className="flex items-center gap-2 text-base">
                 <Video className="h-4 w-4 text-primary" />
                 {video.title}
+                {isCached && (
+                  <Badge variant="outline" className="text-[9px] h-4">
+                    {t("matchOfflineCached")}
+                  </Badge>
+                )}
               </CardTitle>
               <div className="flex flex-wrap gap-2 mt-1">
                 <Badge variant="outline" className="text-[10px]">
@@ -204,7 +298,7 @@ export function VideoTagger({ video, isCoach, onChanged, onDeleted }: VideoTagge
                 {video.match_date && <Badge variant="outline" className="text-[10px]">{video.match_date}</Badge>}
               </div>
             </div>
-            {isCoach && (
+            {isCoach && !onlineActionsDisabled && (
               <div className="flex gap-2">
                 {video.share_token ? (
                   <Button size="sm" variant="outline" onClick={revokeShare} disabled={sharing}>
@@ -221,6 +315,11 @@ export function VideoTagger({ video, isCoach, onChanged, onDeleted }: VideoTagge
                 </Button>
               </div>
             )}
+            {onlineActionsDisabled && (
+              <Badge variant="outline" className="gap-1 text-destructive border-destructive/40">
+                <WifiOff className="h-3 w-3" /> {t("matchOfflineNoConnection")}
+              </Badge>
+            )}
           </div>
           {shareUrl && (
             <div className="flex items-center gap-2 mt-2 p-2 bg-muted rounded text-xs">
@@ -234,10 +333,10 @@ export function VideoTagger({ video, isCoach, onChanged, onDeleted }: VideoTagge
         <CardContent className="space-y-4">
           {loading ? (
             <Loader2 className="h-5 w-5 animate-spin" />
-          ) : signedUrl ? (
+          ) : videoSrc ? (
             <video
               ref={videoRef}
-              src={signedUrl}
+              src={videoSrc}
               controls
               className="w-full rounded-lg border border-border bg-black"
               preload="metadata"
@@ -251,6 +350,12 @@ export function VideoTagger({ video, isCoach, onChanged, onDeleted }: VideoTagge
               <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
                 <Tag className="h-3 w-3" />
                 {t("matchAddTag")}
+                {onlineActionsDisabled && (
+                  <Badge variant="outline" className="ml-1 text-[9px] h-4">
+                    <CloudUpload className="h-2.5 w-2.5 mr-0.5" />
+                    {t("matchOfflinePendingTag")}
+                  </Badge>
+                )}
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                 <div>
@@ -333,11 +438,17 @@ export function VideoTagger({ video, isCoach, onChanged, onDeleted }: VideoTagge
                           {t(`matchOutcome${tag.outcome.charAt(0).toUpperCase() + tag.outcome.slice(1)}` as any)}
                         </Badge>
                       )}
+                      {tag.__pending && (
+                        <Badge variant="outline" className="text-[9px] h-4">
+                          <CloudUpload className="h-2.5 w-2.5 mr-0.5" />
+                          {t("matchOfflinePendingBadge")}
+                        </Badge>
+                      )}
                       {tag.notes && <span className="text-muted-foreground truncate flex-1">{tag.notes}</span>}
                       {isCoach && (
                         <Trash2
                           className="h-3 w-3 text-destructive opacity-0 group-hover:opacity-100"
-                          onClick={(e) => { e.stopPropagation(); void deleteTag(tag.id); }}
+                          onClick={(e) => { e.stopPropagation(); void deleteTag(tag.id, !!tag.__pending); }}
                         />
                       )}
                     </button>
