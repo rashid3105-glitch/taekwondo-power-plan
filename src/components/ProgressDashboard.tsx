@@ -229,8 +229,23 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="rounded-xl border border-border bg-card p-4 space-y-2">
+              <div className="h-3 w-16 rounded bg-muted animate-pulse" />
+              <div className="h-7 w-20 rounded bg-muted animate-pulse" />
+            </div>
+          ))}
+        </div>
+        <div className="rounded-xl border border-border bg-card p-4 space-y-3">
+          <div className="h-4 w-40 rounded bg-muted animate-pulse" />
+          <div className="h-48 w-full rounded-lg bg-muted/60 animate-pulse" />
+        </div>
+        <div className="rounded-xl border border-border bg-card p-4 space-y-3">
+          <div className="h-4 w-32 rounded bg-muted animate-pulse" />
+          <div className="h-32 w-full rounded-lg bg-muted/60 animate-pulse" />
+        </div>
       </div>
     );
   }

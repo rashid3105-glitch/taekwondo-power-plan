@@ -101,6 +101,12 @@
     overscroll-behavior-y: contain;
   }
 
+  html {
+    /* Prevent iOS Safari auto-scaling text after orientation change */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Inter', system-ui, sans-serif;
@@ -108,6 +114,11 @@
     -webkit-tap-highlight-color: transparent;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+  }
+
+  /* Kill the blue tap flash everywhere — feels instantly more native */
+  * {
+    -webkit-tap-highlight-color: transparent;
   }
 
   /* Buttons & interactive elements get native-feel tap behavior */

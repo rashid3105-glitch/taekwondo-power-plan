@@ -984,11 +984,11 @@ export default function AdminApproval() {
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label>Age</Label>
-                <Input type="number" value={editForm.age || ""} onChange={(e) => setEditForm(f => ({ ...f, age: e.target.value }))} />
+                <Input type="number" inputMode="numeric" value={editForm.age || ""} onChange={(e) => setEditForm(f => ({ ...f, age: e.target.value }))} />
               </div>
               <div className="space-y-2">
                 <Label>Weight (kg)</Label>
-                <Input type="number" value={editForm.weight_kg || ""} onChange={(e) => setEditForm(f => ({ ...f, weight_kg: e.target.value }))} />
+                <Input type="number" inputMode="decimal" value={editForm.weight_kg || ""} onChange={(e) => setEditForm(f => ({ ...f, weight_kg: e.target.value }))} />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -1005,13 +1005,13 @@ export default function AdminApproval() {
               </div>
               <div className="space-y-2">
                 <Label>Experience (years)</Label>
-                <Input type="number" value={editForm.experience_years || ""} onChange={(e) => setEditForm(f => ({ ...f, experience_years: e.target.value }))} />
+                <Input type="number" inputMode="numeric" value={editForm.experience_years || ""} onChange={(e) => setEditForm(f => ({ ...f, experience_years: e.target.value }))} />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label>Sessions/week</Label>
-                <Input type="number" value={editForm.tkd_sessions_per_week || 3} onChange={(e) => setEditForm(f => ({ ...f, tkd_sessions_per_week: e.target.value }))} />
+                <Input type="number" inputMode="numeric" value={editForm.tkd_sessions_per_week || 3} onChange={(e) => setEditForm(f => ({ ...f, tkd_sessions_per_week: e.target.value }))} />
               </div>
               <div className="space-y-2">
                 <Label>Discipline</Label>

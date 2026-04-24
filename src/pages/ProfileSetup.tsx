@@ -421,11 +421,11 @@ export default function ProfileSetup() {
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
             <div>
               <Label htmlFor="age">{t("age")}</Label>
-              <Input id="age" type="number" value={age} onChange={(e) => setAge(e.target.value)} placeholder="25" />
+              <Input id="age" type="number" inputMode="numeric" value={age} onChange={(e) => setAge(e.target.value)} placeholder="25" />
             </div>
             <div>
               <Label htmlFor="weight">{t("weightKg")}</Label>
-              <Input id="weight" type="number" step="0.1" value={weight} onChange={(e) => setWeight(e.target.value)} placeholder="70" />
+              <Input id="weight" type="number" inputMode="decimal" step="0.1" value={weight} onChange={(e) => setWeight(e.target.value)} placeholder="70" />
             </div>
           </div>
 
@@ -459,7 +459,7 @@ export default function ProfileSetup() {
             </div>
             <div>
               <Label htmlFor="exp">{t("yearsOfExperience")}</Label>
-              <Input id="exp" type="number" value={experience} onChange={(e) => setExperience(e.target.value)} placeholder="3" />
+              <Input id="exp" type="number" inputMode="numeric" value={experience} onChange={(e) => setExperience(e.target.value)} placeholder="3" />
             </div>
           </div>
 

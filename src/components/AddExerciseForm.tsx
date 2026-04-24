@@ -156,7 +156,7 @@ export function AddExerciseForm({ onClose, onAdded }: AddExerciseFormProps) {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div>
             <Label className="text-xs">Sets</Label>
-            <Input type="number" min={1} max={20} value={sets} onChange={(e) => setSets(e.target.value)} className="mt-1" />
+            <Input type="number" inputMode="numeric" min={1} max={20} value={sets} onChange={(e) => setSets(e.target.value)} className="mt-1" />
           </div>
           <div>
             <Label className="text-xs">Reps</Label>

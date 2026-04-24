@@ -275,6 +275,7 @@ export function PublicProfileSettings() {
                   <div className="flex gap-2">
                     <Input
                       type="number"
+                      inputMode="numeric"
                       value={a.year ?? ""}
                       onChange={(e) => { const n = [...achievements]; n[idx] = { ...a, year: e.target.value ? parseInt(e.target.value) : null }; setAchievements(n); }}
                       onBlur={() => void saveAchievement(idx)}

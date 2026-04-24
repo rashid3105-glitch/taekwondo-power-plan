@@ -10,6 +10,9 @@ const Toaster = ({ ...props }: ToasterProps) => {
     <Sonner
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
+      // Top-center on mobile keeps toasts clear of the bottom nav and home indicator.
+      // Sonner picks one position globally; top-center reads well on both phones and laptops.
+      position="top-center"
       toastOptions={{
         classNames: {
           toast:

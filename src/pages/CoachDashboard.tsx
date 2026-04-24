@@ -463,6 +463,7 @@ export default function CoachDashboard() {
                   <Label className="text-xs">{t("age")}</Label>
                   <Input
                     type="number"
+                    inputMode="numeric"
                     min={5}
                     max={99}
                     value={newAthleteAge}
