@@ -228,6 +228,9 @@ export default function AuthPage() {
                   onChange={(e) => setDisplayName(e.target.value)}
                   placeholder={t("yourName")}
                   required={!isLogin}
+                  autoComplete="name"
+                  autoCapitalize="words"
+                  enterKeyHint="next"
                   className="h-11 rounded-xl bg-secondary/40 border-border/60 focus:border-primary/50 transition-colors"
                 />
               </div>
@@ -237,10 +240,16 @@ export default function AuthPage() {
               <Input
                 id="email"
                 type="email"
+                inputMode="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="athlete@example.com"
                 required
+                autoComplete="email"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
+                enterKeyHint="next"
                 className="h-11 rounded-xl bg-secondary/40 border-border/60 focus:border-primary/50 transition-colors"
               />
             </div>
@@ -279,6 +288,8 @@ export default function AuthPage() {
                 placeholder="••••••••"
                 required
                 minLength={isLogin ? 6 : 8}
+                autoComplete={isLogin ? "current-password" : "new-password"}
+                enterKeyHint={isLogin ? "go" : "done"}
                 className="h-11 rounded-xl bg-secondary/40 border-border/60 focus:border-primary/50 transition-colors"
               />
               {!isLogin && (
