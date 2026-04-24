@@ -24,12 +24,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { PlanViewDialog } from "@/components/PlanViewDialog";
 import { DiaryComments } from "@/components/DiaryComments";
 import { SquadOverview } from "@/components/coach/SquadOverview";
+import { SquadPulse, type PulseFilter } from "@/components/coach/SquadPulse";
 import { SessionAttendance } from "@/components/coach/SessionAttendance";
 import { WeeklySquadExport } from "@/components/coach/WeeklySquadExport";
 import { CoachSentHistory } from "@/components/coach/CoachSentHistory";
+import { CreateAthleteSheet } from "@/components/coach/CreateAthleteSheet";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
-  ArrowLeft, Loader2, UserPlus, Trash2, Zap, Plus, User, Users, NotebookPen, Eye, Heart, UserCog,
+  ArrowLeft, Loader2, Zap, User, Users, NotebookPen, UserCog,
   Frown, Meh, Smile, Laugh, BatteryLow, BatteryMedium, BatteryFull, MessageSquare, Bell, Search, Send, Building,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
