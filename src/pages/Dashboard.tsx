@@ -127,6 +127,22 @@ export default function Dashboard() {
   const loadData = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { navigate("/auth"); return; }
+
+    const PLANS_CACHE_KEY = `cached_training_plans:${user.id}`;
+    const PROFILE_CACHE_KEY = `cached_profile:${user.id}`;
+
+    // If we're offline, hydrate from local cache so the user can still see today's plan.
+    if (!navigator.onLine) {
+      try {
+        const cachedProfile = localStorage.getItem(PROFILE_CACHE_KEY);
+        const cachedPlans = localStorage.getItem(PLANS_CACHE_KEY);
+        if (cachedProfile) setProfile(JSON.parse(cachedProfile) as Profile);
+        if (cachedPlans) setPlans(JSON.parse(cachedPlans) as TrainingPlan[]);
+      } catch { /* ignore cache parse errors */ }
+      setLoading(false);
+      return;
+    }
+
     // Update last_seen_at for online tracking
     supabase.from("profiles").update({ last_seen_at: new Date().toISOString() } as any).eq("user_id", user.id).then(() => {});
     const { data: adminCheck } = await supabase.rpc("is_admin", { _user_id: user.id });
@@ -161,6 +177,7 @@ export default function Dashboard() {
         return;
       }
       setProfile(profileData as Profile);
+      try { localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify(profileData)); } catch { /* quota */ }
       const { data: clubData } = await supabase
         .from("clubs" as any)
         .select("name")
@@ -182,7 +199,12 @@ export default function Dashboard() {
         setDemoDaysUntilDeletion(daysUntilDeletion);
       }
     }
-    if (plansRes.data) setPlans(plansRes.data as unknown as TrainingPlan[]);
+    if (plansRes.data) {
+      const plansList = plansRes.data as unknown as TrainingPlan[];
+      setPlans(plansList);
+      // Cache plans so the athlete can still view today's session offline.
+      try { localStorage.setItem(PLANS_CACHE_KEY, JSON.stringify(plansList)); } catch { /* quota */ }
+    }
     if (rehabRes.data) {
       setRehabPlans(rehabRes.data as unknown as RehabPlanRow[]);
       const active = (rehabRes.data as unknown as RehabPlanRow[]).find(r => r.is_active);
