@@ -517,22 +517,31 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
                     strategy={verticalListSortingStrategy}
                   >
                     <div className="space-y-2">
-                      {currentSession.exercises.map((ex: any, j: number) => (
-                        <SortableExerciseRow
-                          key={`ex-${j}`}
-                          id={`ex-${j}`}
-                          exercise={ex}
-                          index={j + 1}
-                          log={getLog(j)}
-                          pending={isPending(j)}
-                          onToggleComplete={(completed) => upsertLog(j, { completed })}
-                          onUpdateSets={(actual_sets) => upsertLog(j, { actual_sets })}
-                          onUpdateReps={(actual_reps) => upsertLog(j, { actual_reps })}
-                          onUpdateNotes={(notes) => upsertLog(j, { notes })}
-                          onSwap={() => setPickerMode({ dayIndex: selectedDay, sessionIndex: safeSessionIndex, exerciseIndex: j })}
-                          onRemove={() => handleRemoveExercise(selectedDay, j)}
-                        />
-                      ))}
+                      {currentSession.exercises.map((ex: any, j: number) => {
+                        const log = getLog(j);
+                        const fb = log?.id ? feedbackByLog(log.id) : [];
+                        return (
+                          <SortableExerciseRow
+                            key={`ex-${j}`}
+                            id={`ex-${j}`}
+                            exercise={ex}
+                            index={j + 1}
+                            log={log}
+                            pending={isPending(j)}
+                            onToggleComplete={(completed) => upsertLog(j, { completed })}
+                            onUpdateSets={(actual_sets) => upsertLog(j, { actual_sets })}
+                            onUpdateReps={(actual_reps) => upsertLog(j, { actual_reps })}
+                            onUpdateNotes={(notes) => upsertLog(j, { notes })}
+                            onSwap={() => setPickerMode({ dayIndex: selectedDay, sessionIndex: safeSessionIndex, exerciseIndex: j })}
+                            onRemove={() => handleRemoveExercise(selectedDay, j)}
+                            coachMode={coachMode}
+                            athleteUserId={effectiveAthleteId}
+                            feedback={fb}
+                            onFeedbackChanged={refreshFeedback}
+                            onMarkFeedbackRead={markRead}
+                          />
+                        );
+                      })}
                     </div>
                   </SortableContext>
                 </DndContext>
