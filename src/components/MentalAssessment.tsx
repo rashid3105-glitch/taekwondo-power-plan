@@ -471,6 +471,7 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
     setScores({});
     setTotalScore(0);
     setDiarySaved(false);
+    setPendingAdvice(false);
   };
 
   const getScoreColor = (score: number) => {
@@ -714,6 +715,13 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
             </Card>
           )}
         </>
+      ) : pendingAdvice ? (
+        <Card className="p-4 space-y-2 border-primary/30 bg-primary/5">
+          <h3 className="font-bold text-foreground text-sm flex items-center gap-2">
+            <CloudOff className="h-4 w-4 text-primary" /> {txt.pending}
+          </h3>
+          <p className="text-sm text-muted-foreground">{txt.adviceWillSyncOnline}</p>
+        </Card>
       ) : null}
 
       {advice && !diarySaved && (
