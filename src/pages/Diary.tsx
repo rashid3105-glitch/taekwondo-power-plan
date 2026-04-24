@@ -117,8 +117,26 @@ export default function Diary() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full" />
+      <div className="min-h-screen bg-background relative">
+        <Watermark />
+        <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10 pt-safe">
+          <div className="container max-w-3xl mx-auto px-3 sm:px-4 py-3 flex items-center gap-3">
+            <div className="h-9 w-9 rounded-md bg-muted animate-pulse" />
+            <div className="h-5 w-24 rounded bg-muted animate-pulse" />
+          </div>
+        </header>
+        <main className="container max-w-3xl mx-auto px-3 sm:px-4 py-4 space-y-3">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="rounded-xl border border-border bg-card p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="h-4 w-32 rounded bg-muted animate-pulse" />
+                <div className="h-4 w-16 rounded bg-muted animate-pulse" />
+              </div>
+              <div className="h-3 w-full rounded bg-muted animate-pulse" />
+              <div className="h-3 w-2/3 rounded bg-muted animate-pulse" />
+            </div>
+          ))}
+        </main>
       </div>
     );
   }
