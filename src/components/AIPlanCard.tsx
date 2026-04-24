@@ -559,6 +559,7 @@ interface AIExerciseRowProps {
   exercise: any;
   index: number;
   log?: WorkoutLog;
+  pending?: boolean;
   onToggleComplete: (completed: boolean) => void;
   onUpdateSets: (sets: number | null) => void;
   onUpdateReps: (reps: string | null) => void;
