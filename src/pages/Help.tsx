@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { UserCircle, ClipboardList, HeartPulse, Brain, Users, BarChart3, Clock, ChevronDown, Activity, Apple, TrendingUp, BookOpen, BookHeart, Download, Video } from "lucide-react";
+import { UserCircle, ClipboardList, HeartPulse, Brain, Users, BarChart3, Clock, ChevronDown, Activity, Apple, TrendingUp, BookOpen, BookHeart, Download, Video, CalendarRange, MessageSquare } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PublicNav } from "@/components/PublicNav";
 import { Watermark } from "@/components/Watermark";
@@ -11,7 +11,9 @@ import { cn } from "@/lib/utils";
 
 const helpSections = [
   { key: "helpProfile", icon: UserCircle, isNew: false },
-  { key: "helpMatchAnalysis", icon: Video, isNew: true },
+  { key: "helpSeasonPlan", icon: CalendarRange, isNew: true },
+  { key: "helpCoachFeedback", icon: MessageSquare, isNew: true },
+  { key: "helpMatchAnalysis", icon: Video, isNew: false },
   { key: "helpTrainingPlan", icon: ClipboardList, isNew: false },
   { key: "helpPhysicalTesting", icon: Activity, isNew: false },
   { key: "helpProgress", icon: TrendingUp, isNew: false },
@@ -130,6 +132,8 @@ export default function Help() {
                   <li>{t("changelogEntry76")}</li>
                   <li>{t("changelogEntry77")}</li>
                   <li>{t("changelogEntry78")}</li>
+                  <li>{t("changelogEntry79")}</li>
+                  <li>{t("changelogEntry80")}</li>
                 </ul>
               </div>
               <div className="rounded-lg border border-border bg-card px-5 py-4 space-y-3">
