@@ -4133,6 +4133,7 @@ const translations = {
     changelogEntry79: "Säsongsplanerare — visualisera hela säsongen med periodiseringsfaser (GPP → SPP → Topp → Övergång) automatiskt byggd kring A-prioritets tävlingar",
     changelogEntry80: "Tränarfeedback per övning — tränare ger snabba reaktioner (👍 🔥 ⚠️ 🔁) och korta kommentarer på loggade set; atleter ser ett pulserande märke tills de läser det",
     changelogEntry81: "Tränarpanel omstrukturerad — Lag-fliken slår samman Översikt och Atleter med pulsstatistik (behöver uppmärksamhet / skadad / ingen plan / inaktiv), sökning, filter och enhetliga kort med varningskanter",
+    changelogEntry82: "Historiken i Mental utvärdering fungerar igen — tidigare resultat öppnas pålitligt (med säker parsning av råd), korten visar en 'Tryck för att visa'-affordance, radering kräver nu bekräftelse och utvärderingar utan råd kan genereras på nytt",
     landingSeeFullWeek: "Se hela veckan",
     landingReadFullStory: "Läs hela berättelsen",
     landingShowAllFAQ: "Visa alla frågor",
