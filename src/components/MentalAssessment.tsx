@@ -297,6 +297,15 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     overallNeedsWork: "يحتاج عملاً — لنبنيه!",
     pending: "قيد الانتظار",
     adviceWillSyncOnline: "تم الحفظ دون اتصال. سيتم إنشاء النصائح المخصصة عند عودة الاتصال.",
+    confirmDeleteTitle: "حذف هذا التقييم؟",
+    confirmDeleteDesc: "سيؤدي هذا إلى إزالة التقييم ونصائحه نهائياً. لا يمكن التراجع.",
+    cancel: "إلغاء",
+    noAdviceTitle: "لا توجد نصائح متاحة",
+    noAdviceDesc: "لم يتم إنشاء نصائح مخصصة لهذا التقييم. حاول إنشاءها من جديد.",
+    regenerateAdvice: "إعادة إنشاء النصائح",
+    adviceRegenerated: "تم إعادة إنشاء النصائح",
+    adviceRegenerateFailed: "تعذّر إنشاء النصائح. يرجى المحاولة مرة أخرى.",
+    tapToView: "اضغط للعرض",
   },
 };
 
