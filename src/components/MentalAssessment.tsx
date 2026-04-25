@@ -608,9 +608,21 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
         ) : (
           <div className="space-y-2">
             {history.map((h) => (
-              <Card key={h.id} className="p-3 flex items-center justify-between">
-                <button onClick={() => viewPastResult(h as any)} className="flex-1 text-left">
-                  <div className="flex items-center gap-2">
+              <Card
+                key={h.id}
+                className="p-3 flex items-center justify-between gap-2 transition-all hover:border-primary/50 hover:bg-accent/40 active:scale-[0.99] cursor-pointer"
+                onClick={() => viewPastResult(h)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    viewPastResult(h);
+                  }
+                }}
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <p className="text-sm font-medium text-foreground">
                       {txt.score}: {h.total_score}/30
                     </p>
@@ -619,27 +631,60 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
                         <CloudOff className="h-3 w-3" /> {txt.pending}
                       </Badge>
                     )}
+                    {!h.pending && !h.ai_advice && (
+                      <Badge variant="secondary" className="text-[10px] py-0 h-5">
+                        {txt.noAdviceTitle}
+                      </Badge>
+                    )}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    {new Date(h.created_at).toLocaleDateString()}
+                    {new Date(h.created_at).toLocaleDateString()} · {txt.tapToView}
                   </p>
-                </button>
-                <div className="flex items-center gap-2">
-                  <div className="flex gap-1">
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <div className="hidden sm:flex gap-1">
                     {Object.entries(h.scores as Record<string, number>).map(([cat, score]) => (
                       <span key={cat} className={`text-xs font-bold ${getScoreColor(score as number)}`}>
                         {score as number}
                       </span>
                     ))}
                   </div>
-                  <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => deleteAssessment(h.id)}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-destructive"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setConfirmDeleteId(h.id);
+                    }}
+                    aria-label={txt.delete}
+                  >
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
                 </div>
               </Card>
             ))}
           </div>
         )}
+
+        <AlertDialog open={!!confirmDeleteId} onOpenChange={(o) => !o && setConfirmDeleteId(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{txt.confirmDeleteTitle}</AlertDialogTitle>
+              <AlertDialogDescription>{txt.confirmDeleteDesc}</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>{txt.cancel}</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => confirmDeleteId && deleteAssessment(confirmDeleteId)}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {txt.delete}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     );
   }
