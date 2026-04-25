@@ -29,6 +29,17 @@ import jsPDF from "jspdf";
 import { MentalRadarChart, drawRadarOnPDF } from "./MentalRadarChart";
 import { getQuestionsForAge, type MentalQuestion } from "@/data/mentalQuestions";
 import { useOfflineMentalAssessments } from "@/hooks/useOfflineMentalAssessments";
+import type { CachedAssessment } from "@/lib/mentalAssessmentOfflineDB";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface Profile {
   belt_level: string;
