@@ -388,15 +388,42 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
 
   const deleteAssessment = async (id: string) => {
     await removeAssessment(id);
+    setConfirmDeleteId(null);
   };
 
-  const viewPastResult = (assessment: Assessment) => {
-    const catScores = assessment.scores as Record<string, number>;
+  const viewPastResult = (assessment: CachedAssessment) => {
+    const catScores = (assessment.scores as Record<string, number>) || {};
     setScores(catScores);
     setTotalScore(assessment.total_score);
     const rawAdvice = assessment.ai_advice;
-    setAdvice(typeof rawAdvice === "string" ? JSON.parse(rawAdvice) : rawAdvice);
+    let parsed: any = null;
+    if (rawAdvice && typeof rawAdvice === "object") {
+      parsed = rawAdvice;
+    } else if (typeof rawAdvice === "string" && rawAdvice.trim()) {
+      try { parsed = JSON.parse(rawAdvice); } catch { parsed = null; }
+    }
+    setAdvice(parsed);
+    setViewingId(assessment.id);
+    setGenerating(false);
+    setPendingAdvice(false);
+    setDiarySaved(false);
     setStep("results");
+  };
+
+  const handleRegenerate = async () => {
+    if (!viewingId) return;
+    setRegenerating(true);
+    try {
+      const advice = await regenerateAdvice(viewingId, profile, locale);
+      if (advice) {
+        setAdvice(advice);
+        toast({ title: txt.adviceRegenerated });
+      } else {
+        toast({ title: txt.adviceRegenerateFailed, variant: "destructive" });
+      }
+    } finally {
+      setRegenerating(false);
+    }
   };
 
   const downloadPDF = () => {
