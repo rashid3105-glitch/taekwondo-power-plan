@@ -2714,6 +2714,7 @@ const translations = {
     changelogEntry79: "Sæsonplanlægger — visualiser hele sæsonen med periodiseringsfaser (GPP → SPP → Peak → Overgang) automatisk bygget op omkring A-prioritets stævner",
     changelogEntry80: "Trænerfeedback pr. øvelse — trænere giver hurtige reaktioner (👍 🔥 ⚠️ 🔁) og korte kommentarer på loggede sæt; atleter ser et pulserende mærke indtil de læser det",
     changelogEntry81: "Træner-dashboard omstruktureret — Hold-fanen samler Overblik og Atleter med puls-statistik (kræver opmærksomhed / skadet / ingen plan / inaktiv), søgning, filtre og forenede kort med farvede kanter",
+    changelogEntry82: "Historik i Mental vurdering virker igen — tidligere vurderinger åbner pålideligt (med sikker parsing af råd), kortene har en tydelig 'Tryk for at se'-affordance, sletning kræver nu bekræftelse, og vurderinger uden råd kan genereres på ny",
     landingSeeFullWeek: "Se hele ugen",
     landingReadFullStory: "Læs hele historien",
     landingShowAllFAQ: "Vis alle spørgsmål",
