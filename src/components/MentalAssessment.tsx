@@ -867,6 +867,21 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
           </h3>
           <p className="text-sm text-muted-foreground">{txt.adviceWillSyncOnline}</p>
         </Card>
+      ) : viewingId ? (
+        <Card className="p-4 space-y-3 border-primary/30 bg-primary/5">
+          <h3 className="font-bold text-foreground text-sm flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-primary" /> {txt.noAdviceTitle}
+          </h3>
+          <p className="text-sm text-muted-foreground">{txt.noAdviceDesc}</p>
+          <Button onClick={handleRegenerate} disabled={regenerating} size="sm" className="w-full">
+            {regenerating ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <RefreshCw className="h-4 w-4 mr-2" />
+            )}
+            {txt.regenerateAdvice}
+          </Button>
+        </Card>
       ) : null}
 
       {advice && !diarySaved && (
