@@ -165,5 +165,47 @@ export function useOfflineMentalAssessments() {
     [userId, assessments],
   );
 
-  return { assessments, loading, submitOffline, removeAssessment, refresh };
+  /**
+   * Re-runs the AI advice generator for an existing assessment that is missing
+   * personalised advice (e.g. the original generation failed).
+   */
+  const regenerateAdvice = useCallback(
+    async (id: string, profile: any, language: string) => {
+      if (!userId || !navigator.onLine) return null;
+      const target = assessments.find((a) => a.id === id);
+      if (!target || target.pending) return null;
+      const { data, error } = await supabase.functions.invoke(
+        "generate-mental-advice",
+        {
+          body: {
+            answers: target.answers,
+            scores: target.scores,
+            totalScore: target.total_score,
+            profile,
+            language,
+          },
+        },
+      );
+      if (error || (data as any)?.error) return null;
+      const advice = (data as any)?.advice ?? null;
+      await supabase
+        .from("mental_assessments")
+        .update({ ai_advice: advice as any })
+        .eq("id", id);
+      const updated: CachedAssessment = { ...target, ai_advice: advice };
+      await putCachedAssessment(updated);
+      setAssessments((prev) => prev.map((a) => (a.id === id ? updated : a)));
+      return advice;
+    },
+    [userId, assessments],
+  );
+
+  return {
+    assessments,
+    loading,
+    submitOffline,
+    removeAssessment,
+    regenerateAdvice,
+    refresh,
+  };
 }
