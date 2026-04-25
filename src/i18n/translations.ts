@@ -8290,6 +8290,7 @@ const translations = {
     changelogEntry79: "Sesongplanlegger — visualiser hele sesongen med periodiseringsfaser (GPP → SPP → Peak → Overgang) automatisk bygget rundt A-prioritets stevner",
     changelogEntry80: "Trenerfeedback per øvelse — trenere gir raske reaksjoner (👍 🔥 ⚠️ 🔁) og korte kommentarer på loggførte sett; utøvere ser et pulserende merke til de leser det",
     changelogEntry81: "Trenerpanel omstrukturert — Lag-fanen samler Oversikt og Utøvere med pulsstatistikk (trenger oppmerksomhet / skadet / ingen plan / inaktiv), søk, filtre og enhetlige kort med fargede kanter",
+    changelogEntry82: "Historikk i Mental vurdering virker igjen — tidligere resultater åpnes pålitelig (med trygg parsing av råd), kortene viser en 'Trykk for å vise'-affordance, sletting krever nå bekreftelse, og vurderinger uten råd kan genereres på nytt",
     landingSeeFullWeek: "Se hele uken",
     landingReadFullStory: "Les hele historien",
     landingShowAllFAQ: "Vis alle spørsmål",
