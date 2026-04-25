@@ -514,6 +514,7 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
     setTotalScore(0);
     setDiarySaved(false);
     setPendingAdvice(false);
+    setViewingId(null);
   };
 
   const getScoreColor = (score: number) => {
