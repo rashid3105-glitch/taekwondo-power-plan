@@ -1295,6 +1295,7 @@ const translations = {
     changelogEntry79: "Season Planner — visualize your full season with periodization phases (GPP → SPP → Peak → Transition) auto-built around A-priority competitions",
     changelogEntry80: "Per-exercise coach feedback — coaches leave quick reactions (👍 🔥 ⚠️ 🔁) and short comments on logged sets; athletes see a pulsing badge until they read it",
     changelogEntry81: "Coach dashboard restructured — Squad tab merges Overview and Athletes with pulse stats (need attention / injured / no plan / inactive), search, filters, and a unified card with severity borders",
+    changelogEntry82: "Mental assessment history fixed — past results open reliably (with safe advice parsing), entries show a Tap to view affordance, deletes now require confirmation, and assessments without advice can be regenerated on demand",
     landingSeeFullWeek: "See full week",
     landingReadFullStory: "Read full story",
     landingShowAllFAQ: "Show all questions",
