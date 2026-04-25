@@ -53,7 +53,7 @@ export function useOfflineMentalAssessments() {
           total_score: a.total_score,
           scores: (a.scores as Record<string, number>) || {},
           answers: (a.answers as Record<string, number>) || {},
-          ai_advice: a.ai_advice,
+          ai_advice: parseAdvice(a.ai_advice),
           created_at: a.created_at,
           pending: false,
         }));
