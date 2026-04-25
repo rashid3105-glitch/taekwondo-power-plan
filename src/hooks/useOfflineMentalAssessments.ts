@@ -26,6 +26,26 @@ function uuid() {
   return `local-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
+/**
+ * Normalises ai_advice into an object/null. Older rows may store it as a
+ * JSON string; bad data falls back to null so the UI can offer regeneration
+ * instead of crashing on JSON.parse.
+ */
+function parseAdvice(raw: unknown): any | null {
+  if (raw == null) return null;
+  if (typeof raw === "object") return raw;
+  if (typeof raw === "string") {
+    const trimmed = raw.trim();
+    if (!trimmed) return null;
+    try {
+      return JSON.parse(trimmed);
+    } catch {
+      return null;
+    }
+  }
+  return null;
+}
+
 export function useOfflineMentalAssessments() {
   const [assessments, setAssessments] = useState<CachedAssessment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -53,7 +73,7 @@ export function useOfflineMentalAssessments() {
           total_score: a.total_score,
           scores: (a.scores as Record<string, number>) || {},
           answers: (a.answers as Record<string, number>) || {},
-          ai_advice: a.ai_advice,
+          ai_advice: parseAdvice(a.ai_advice),
           created_at: a.created_at,
           pending: false,
         }));
@@ -145,5 +165,47 @@ export function useOfflineMentalAssessments() {
     [userId, assessments],
   );
 
-  return { assessments, loading, submitOffline, removeAssessment, refresh };
+  /**
+   * Re-runs the AI advice generator for an existing assessment that is missing
+   * personalised advice (e.g. the original generation failed).
+   */
+  const regenerateAdvice = useCallback(
+    async (id: string, profile: any, language: string) => {
+      if (!userId || !navigator.onLine) return null;
+      const target = assessments.find((a) => a.id === id);
+      if (!target || target.pending) return null;
+      const { data, error } = await supabase.functions.invoke(
+        "generate-mental-advice",
+        {
+          body: {
+            answers: target.answers,
+            scores: target.scores,
+            totalScore: target.total_score,
+            profile,
+            language,
+          },
+        },
+      );
+      if (error || (data as any)?.error) return null;
+      const advice = (data as any)?.advice ?? null;
+      await supabase
+        .from("mental_assessments")
+        .update({ ai_advice: advice as any })
+        .eq("id", id);
+      const updated: CachedAssessment = { ...target, ai_advice: advice };
+      await putCachedAssessment(updated);
+      setAssessments((prev) => prev.map((a) => (a.id === id ? updated : a)));
+      return advice;
+    },
+    [userId, assessments],
+  );
+
+  return {
+    assessments,
+    loading,
+    submitOffline,
+    removeAssessment,
+    regenerateAdvice,
+    refresh,
+  };
 }

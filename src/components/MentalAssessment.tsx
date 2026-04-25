@@ -29,6 +29,17 @@ import jsPDF from "jspdf";
 import { MentalRadarChart, drawRadarOnPDF } from "./MentalRadarChart";
 import { getQuestionsForAge, type MentalQuestion } from "@/data/mentalQuestions";
 import { useOfflineMentalAssessments } from "@/hooks/useOfflineMentalAssessments";
+import type { CachedAssessment } from "@/lib/mentalAssessmentOfflineDB";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface Profile {
   belt_level: string;
@@ -102,6 +113,15 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     overallNeedsWork: "Needs work — let's build it up!",
     pending: "Pending",
     adviceWillSyncOnline: "Saved offline. Personalized advice will be generated when you reconnect.",
+    confirmDeleteTitle: "Delete this assessment?",
+    confirmDeleteDesc: "This permanently removes the assessment and its advice. You can't undo this.",
+    cancel: "Cancel",
+    noAdviceTitle: "No advice available",
+    noAdviceDesc: "Personalised advice wasn't generated for this assessment. Try regenerating it.",
+    regenerateAdvice: "Regenerate advice",
+    adviceRegenerated: "Advice regenerated",
+    adviceRegenerateFailed: "Couldn't regenerate advice. Please try again.",
+    tapToView: "Tap to view",
   },
   da: {
     title: "Mental præstation",
@@ -139,6 +159,15 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     overallNeedsWork: "Har brug for arbejde — lad os bygge det op!",
     pending: "Afventer",
     adviceWillSyncOnline: "Gemt offline. Personlige råd genereres, når du er online igen.",
+    confirmDeleteTitle: "Slet denne vurdering?",
+    confirmDeleteDesc: "Dette fjerner vurderingen og dens råd permanent. Det kan ikke fortrydes.",
+    cancel: "Annuller",
+    noAdviceTitle: "Ingen råd tilgængelige",
+    noAdviceDesc: "Personlige råd blev ikke genereret for denne vurdering. Prøv at generere dem igen.",
+    regenerateAdvice: "Generér råd igen",
+    adviceRegenerated: "Råd genereret igen",
+    adviceRegenerateFailed: "Kunne ikke generere råd. Prøv igen.",
+    tapToView: "Tryk for at se",
   },
   sv: {
     title: "Mental prestation",
@@ -176,6 +205,15 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     overallNeedsWork: "Behöver arbete — låt oss bygga upp det!",
     pending: "Väntar",
     adviceWillSyncOnline: "Sparat offline. Personliga råd genereras när du är online igen.",
+    confirmDeleteTitle: "Radera denna utvärdering?",
+    confirmDeleteDesc: "Detta tar bort utvärderingen och råden permanent. Kan inte ångras.",
+    cancel: "Avbryt",
+    noAdviceTitle: "Inga råd tillgängliga",
+    noAdviceDesc: "Personliga råd genererades inte för denna utvärdering. Försök igen.",
+    regenerateAdvice: "Generera råd igen",
+    adviceRegenerated: "Råden har genererats igen",
+    adviceRegenerateFailed: "Kunde inte generera råd. Försök igen.",
+    tapToView: "Tryck för att visa",
   },
   de: {
     title: "Mentale Leistung",
@@ -213,6 +251,15 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     overallNeedsWork: "Braucht Arbeit — lass es uns aufbauen!",
     pending: "Ausstehend",
     adviceWillSyncOnline: "Offline gespeichert. Personalisierte Ratschläge werden generiert, sobald du wieder online bist.",
+    confirmDeleteTitle: "Diese Bewertung löschen?",
+    confirmDeleteDesc: "Damit werden die Bewertung und die Ratschläge dauerhaft entfernt. Dies kann nicht rückgängig gemacht werden.",
+    cancel: "Abbrechen",
+    noAdviceTitle: "Keine Ratschläge verfügbar",
+    noAdviceDesc: "Für diese Bewertung wurden keine Ratschläge generiert. Versuche es erneut.",
+    regenerateAdvice: "Ratschläge neu generieren",
+    adviceRegenerated: "Ratschläge neu generiert",
+    adviceRegenerateFailed: "Ratschläge konnten nicht generiert werden. Bitte erneut versuchen.",
+    tapToView: "Zum Anzeigen tippen",
   },
   ar: {
     title: "الأداء الذهني",
@@ -250,6 +297,15 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     overallNeedsWork: "يحتاج عملاً — لنبنيه!",
     pending: "قيد الانتظار",
     adviceWillSyncOnline: "تم الحفظ دون اتصال. سيتم إنشاء النصائح المخصصة عند عودة الاتصال.",
+    confirmDeleteTitle: "حذف هذا التقييم؟",
+    confirmDeleteDesc: "سيؤدي هذا إلى إزالة التقييم ونصائحه نهائياً. لا يمكن التراجع.",
+    cancel: "إلغاء",
+    noAdviceTitle: "لا توجد نصائح متاحة",
+    noAdviceDesc: "لم يتم إنشاء نصائح مخصصة لهذا التقييم. حاول إنشاءها من جديد.",
+    regenerateAdvice: "إعادة إنشاء النصائح",
+    adviceRegenerated: "تم إعادة إنشاء النصائح",
+    adviceRegenerateFailed: "تعذّر إنشاء النصائح. يرجى المحاولة مرة أخرى.",
+    tapToView: "اضغط للعرض",
   },
 };
 
@@ -271,7 +327,11 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
     loading: loadingHistory,
     submitOffline,
     removeAssessment,
+    regenerateAdvice,
   } = useOfflineMentalAssessments();
+  const [viewingId, setViewingId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [regenerating, setRegenerating] = useState(false);
 
   // Map locale to supported locale with fallback
   const l: SupportedLocale = (["en", "da", "sv", "de", "ar"].includes(locale) ? locale : "en") as SupportedLocale;
@@ -384,15 +444,42 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
 
   const deleteAssessment = async (id: string) => {
     await removeAssessment(id);
+    setConfirmDeleteId(null);
   };
 
-  const viewPastResult = (assessment: Assessment) => {
-    const catScores = assessment.scores as Record<string, number>;
+  const viewPastResult = (assessment: CachedAssessment) => {
+    const catScores = (assessment.scores as Record<string, number>) || {};
     setScores(catScores);
     setTotalScore(assessment.total_score);
     const rawAdvice = assessment.ai_advice;
-    setAdvice(typeof rawAdvice === "string" ? JSON.parse(rawAdvice) : rawAdvice);
+    let parsed: any = null;
+    if (rawAdvice && typeof rawAdvice === "object") {
+      parsed = rawAdvice;
+    } else if (typeof rawAdvice === "string" && rawAdvice.trim()) {
+      try { parsed = JSON.parse(rawAdvice); } catch { parsed = null; }
+    }
+    setAdvice(parsed);
+    setViewingId(assessment.id);
+    setGenerating(false);
+    setPendingAdvice(false);
+    setDiarySaved(false);
     setStep("results");
+  };
+
+  const handleRegenerate = async () => {
+    if (!viewingId) return;
+    setRegenerating(true);
+    try {
+      const advice = await regenerateAdvice(viewingId, profile, locale);
+      if (advice) {
+        setAdvice(advice);
+        toast({ title: txt.adviceRegenerated });
+      } else {
+        toast({ title: txt.adviceRegenerateFailed, variant: "destructive" });
+      }
+    } finally {
+      setRegenerating(false);
+    }
   };
 
   const downloadPDF = () => {
@@ -472,6 +559,7 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
     setTotalScore(0);
     setDiarySaved(false);
     setPendingAdvice(false);
+    setViewingId(null);
   };
 
   const getScoreColor = (score: number) => {
@@ -520,9 +608,21 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
         ) : (
           <div className="space-y-2">
             {history.map((h) => (
-              <Card key={h.id} className="p-3 flex items-center justify-between">
-                <button onClick={() => viewPastResult(h as any)} className="flex-1 text-left">
-                  <div className="flex items-center gap-2">
+              <Card
+                key={h.id}
+                className="p-3 flex items-center justify-between gap-2 transition-all hover:border-primary/50 hover:bg-accent/40 active:scale-[0.99] cursor-pointer"
+                onClick={() => viewPastResult(h)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    viewPastResult(h);
+                  }
+                }}
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <p className="text-sm font-medium text-foreground">
                       {txt.score}: {h.total_score}/30
                     </p>
@@ -531,27 +631,60 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
                         <CloudOff className="h-3 w-3" /> {txt.pending}
                       </Badge>
                     )}
+                    {!h.pending && !h.ai_advice && (
+                      <Badge variant="secondary" className="text-[10px] py-0 h-5">
+                        {txt.noAdviceTitle}
+                      </Badge>
+                    )}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    {new Date(h.created_at).toLocaleDateString()}
+                    {new Date(h.created_at).toLocaleDateString()} · {txt.tapToView}
                   </p>
-                </button>
-                <div className="flex items-center gap-2">
-                  <div className="flex gap-1">
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <div className="hidden sm:flex gap-1">
                     {Object.entries(h.scores as Record<string, number>).map(([cat, score]) => (
                       <span key={cat} className={`text-xs font-bold ${getScoreColor(score as number)}`}>
                         {score as number}
                       </span>
                     ))}
                   </div>
-                  <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => deleteAssessment(h.id)}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-destructive"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setConfirmDeleteId(h.id);
+                    }}
+                    aria-label={txt.delete}
+                  >
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
                 </div>
               </Card>
             ))}
           </div>
         )}
+
+        <AlertDialog open={!!confirmDeleteId} onOpenChange={(o) => !o && setConfirmDeleteId(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{txt.confirmDeleteTitle}</AlertDialogTitle>
+              <AlertDialogDescription>{txt.confirmDeleteDesc}</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>{txt.cancel}</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => confirmDeleteId && deleteAssessment(confirmDeleteId)}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {txt.delete}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     );
   }
@@ -624,11 +757,23 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
         <p className="text-sm text-muted-foreground">{getOverallLabel(totalScore)}</p>
 
         <div className="py-2">
-          <MentalRadarChart
-            scores={scores}
-            labels={Object.fromEntries(Object.entries(categoryLabels).map(([k, v]) => [k, v[l]]))}
-            previousScores={history.length > 0 ? (history[0].scores as Record<string, number>) : undefined}
-          />
+          {(() => {
+            // history is sorted newest-first. When viewing a past entry, the
+            // "previous" comparison is the entry recorded just before it.
+            // When viewing a fresh submission, compare to the most recent
+            // history entry that isn't the current one.
+            const idx = viewingId ? history.findIndex((h) => h.id === viewingId) : -1;
+            const prev = idx >= 0
+              ? history[idx + 1]
+              : history.find((h) => h.id !== viewingId);
+            return (
+              <MentalRadarChart
+                scores={scores}
+                labels={Object.fromEntries(Object.entries(categoryLabels).map(([k, v]) => [k, v[l]]))}
+                previousScores={prev ? (prev.scores as Record<string, number>) : undefined}
+              />
+            );
+          })()}
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-3">
@@ -721,6 +866,21 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
             <CloudOff className="h-4 w-4 text-primary" /> {txt.pending}
           </h3>
           <p className="text-sm text-muted-foreground">{txt.adviceWillSyncOnline}</p>
+        </Card>
+      ) : viewingId ? (
+        <Card className="p-4 space-y-3 border-primary/30 bg-primary/5">
+          <h3 className="font-bold text-foreground text-sm flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-primary" /> {txt.noAdviceTitle}
+          </h3>
+          <p className="text-sm text-muted-foreground">{txt.noAdviceDesc}</p>
+          <Button onClick={handleRegenerate} disabled={regenerating} size="sm" className="w-full">
+            {regenerating ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <RefreshCw className="h-4 w-4 mr-2" />
+            )}
+            {txt.regenerateAdvice}
+          </Button>
         </Card>
       ) : null}
 
