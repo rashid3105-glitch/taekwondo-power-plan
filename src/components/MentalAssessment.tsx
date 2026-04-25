@@ -271,7 +271,11 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
     loading: loadingHistory,
     submitOffline,
     removeAssessment,
+    regenerateAdvice,
   } = useOfflineMentalAssessments();
+  const [viewingId, setViewingId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [regenerating, setRegenerating] = useState(false);
 
   // Map locale to supported locale with fallback
   const l: SupportedLocale = (["en", "da", "sv", "de", "ar"].includes(locale) ? locale : "en") as SupportedLocale;
