@@ -757,11 +757,23 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
         <p className="text-sm text-muted-foreground">{getOverallLabel(totalScore)}</p>
 
         <div className="py-2">
-          <MentalRadarChart
-            scores={scores}
-            labels={Object.fromEntries(Object.entries(categoryLabels).map(([k, v]) => [k, v[l]]))}
-            previousScores={history.length > 0 ? (history[0].scores as Record<string, number>) : undefined}
-          />
+          {(() => {
+            // history is sorted newest-first. When viewing a past entry, the
+            // "previous" comparison is the entry recorded just before it.
+            // When viewing a fresh submission, compare to the most recent
+            // history entry that isn't the current one.
+            const idx = viewingId ? history.findIndex((h) => h.id === viewingId) : -1;
+            const prev = idx >= 0
+              ? history[idx + 1]
+              : history.find((h) => h.id !== viewingId);
+            return (
+              <MentalRadarChart
+                scores={scores}
+                labels={Object.fromEntries(Object.entries(categoryLabels).map(([k, v]) => [k, v[l]]))}
+                previousScores={prev ? (prev.scores as Record<string, number>) : undefined}
+              />
+            );
+          })()}
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-3">
