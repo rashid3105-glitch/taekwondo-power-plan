@@ -25,7 +25,7 @@ import { SquadPulse, type PulseFilter } from "@/components/coach/SquadPulse";
 import { SessionAttendance } from "@/components/coach/SessionAttendance";
 import { WeeklySquadExport } from "@/components/coach/WeeklySquadExport";
 import { CoachSentHistory } from "@/components/coach/CoachSentHistory";
-import { CreateAthleteSheet } from "@/components/coach/CreateAthleteSheet";
+import { CreateAthleteDialog } from "@/components/coach/CreateAthleteDialog";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   ArrowLeft, Loader2, Zap, User, Users, NotebookPen, UserCog,
@@ -313,7 +313,7 @@ export default function CoachDashboard() {
               </div>
               <div className="flex items-center gap-2">
                 <WeeklySquadExport athletes={athletes as any} />
-                <CreateAthleteSheet
+                <CreateAthleteDialog
                   disabled={!isAdmin && athletes.length >= MAX_ATHLETES}
                   onCreated={async () => { await loadAthletes(); }}
                   countLabel={!isAdmin ? `${athletes.length}/${MAX_ATHLETES}` : undefined}
