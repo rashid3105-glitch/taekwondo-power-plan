@@ -89,10 +89,10 @@ Return ONLY valid JSON (no markdown fences) matching:
   "recommendedAssessment": false
 }
 
-Exactly 3 nextCompetitionGoals. Set recommendedAssessment=true only if their overall ratings are mostly ≤2 and warrant re-doing the full mental baseline.`;
+Exactly 3 nextCompetitionGoals. Anchor every goal directly to the athlete's lowest performance scores — the dimensions they rated weakest on the 1–10 scale should drive the focus areas and SMART goals. Briefly reference the score (e.g. "you rated tactical execution 4/10") in the "why" so the athlete sees the link between their self-assessment and the goal. Set recommendedAssessment=true only if their overall ratings are mostly ≤4/10 and warrant re-doing the full mental baseline.`;
 
     const ratingsText = Object.entries(ratings)
-      .map(([k, v]) => `- ${k}: ${v}/5`)
+      .map(([k, v]) => `- ${k}: ${v}/10`)
       .join("\n");
     const reflectionsText = Object.entries(reflections || {})
       .filter(([, v]) => typeof v === "string" && v.trim().length > 0)
@@ -112,7 +112,7 @@ Athlete profile:
 - Experience: ${profile?.experience_years ?? "unknown"} years
 - Age: ${profile?.age ?? "unknown"}
 
-Performance ratings (1=poor, 5=excellent):
+Performance ratings (1=poor, 10=excellent) — the lowest scores should drive the next competition's goals:
 ${ratingsText}
 
 Reflection answers:
@@ -120,7 +120,7 @@ ${reflectionsText || "(none provided)"}
 
 ${baselineText}
 
-Generate the post-competition action plan.`;
+Generate the post-competition action plan, with goals targeted at lifting the lowest-rated dimensions.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

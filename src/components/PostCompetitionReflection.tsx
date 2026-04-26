@@ -79,7 +79,7 @@ export function PostCompetitionReflection({ competition, upcomingCompetitions, o
   const [resultText, setResultText] = useState(competition.result || "");
   const [mood, setMood] = useState(3);
   const [ratings, setRatings] = useState<Record<string, number>>(
-    Object.fromEntries(ratingKeys.map((k) => [k, 3])),
+    Object.fromEntries(ratingKeys.map((k) => [k, 5])),
   );
   const [reflectionAnswers, setReflectionAnswers] = useState<Record<string, string>>(
     Object.fromEntries(reflectionPrompts.map((k) => [k, ""])),
@@ -148,7 +148,7 @@ export function PostCompetitionReflection({ competition, upcomingCompetitions, o
     setStep(0);
     setResultText(competition.result || "");
     setMood(3);
-    setRatings(Object.fromEntries(ratingKeys.map((k) => [k, 3])));
+    setRatings(Object.fromEntries(ratingKeys.map((k) => [k, 5])));
     setReflectionAnswers(Object.fromEntries(reflectionPrompts.map((k) => [k, ""])));
     toast({ title: t("reflectionDeleted") });
   }
@@ -244,21 +244,22 @@ export function PostCompetitionReflection({ competition, upcomingCompetitions, o
       {step === 1 && (
         <div className="space-y-5">
           <h3 className="font-semibold text-sm">{t("reflectionStepRatings")}</h3>
+          <p className="text-xs text-muted-foreground -mt-2">{t("reflectionRatingsHint")}</p>
           {ratingKeys.map((key) => (
             <div key={key} className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="font-medium text-foreground">{t(`reflectionRating_${key}` as any)}</span>
-                <Badge variant="secondary" className="tabular-nums">{ratings[key]}/5</Badge>
+                <Badge variant="secondary" className="tabular-nums">{ratings[key]}/10</Badge>
               </div>
               <Slider
                 value={[ratings[key]]}
                 onValueChange={(v) => setRatings({ ...ratings, [key]: v[0] })}
-                min={1} max={5} step={1}
+                min={1} max={10} step={1}
                 className="touch-pan-y"
               />
               <div className="flex justify-between text-[10px] text-muted-foreground">
-                <span>{t("reflectionRatingPoor")}</span>
-                <span>{t("reflectionRatingExcellent")}</span>
+                <span>1 · {t("reflectionRatingPoor")}</span>
+                <span>10 · {t("reflectionRatingExcellent")}</span>
               </div>
             </div>
           ))}
@@ -418,7 +419,7 @@ function ResultsView({ reflection, competition, upcomingCompetitions, onChangeNe
             {Object.entries(reflection.ratings).map(([k, v]) => (
               <div key={k} className="flex items-center justify-between rounded-lg border border-border bg-background/50 px-3 py-2">
                 <span className="text-[11px] text-muted-foreground truncate">{t(`reflectionRating_${k}` as any)}</span>
-                <span className="text-sm font-semibold text-foreground tabular-nums">{String(v)}/5</span>
+                <span className="text-sm font-semibold text-foreground tabular-nums">{String(v)}/10</span>
               </div>
             ))}
           </div>

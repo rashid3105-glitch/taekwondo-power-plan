@@ -97,11 +97,11 @@ export function ReflectionTrendChart({ reflections, keys = DEFAULT_KEYS, classNa
         <LineChart data={data} margin={{ top: 4, right: 8, left: -10, bottom: 4 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
           <XAxis dataKey="dateLabel" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
-          <YAxis domain={[1, 5]} ticks={[1, 2, 3, 4, 5]} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
+          <YAxis domain={[1, 10]} ticks={[1, 2, 4, 6, 8, 10]} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
           <Tooltip
             contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", fontSize: 12 }}
             labelFormatter={(_, payload) => payload?.[0]?.payload?.label ?? ""}
-            formatter={(value: any, name: string) => [`${value}/5`, t(`reflectionRating_${name}` as any)]}
+            formatter={(value: any, name: string) => [`${value}/10`, t(`reflectionRating_${name}` as any)]}
           />
           <Legend
             wrapperStyle={{ fontSize: 10 }}
