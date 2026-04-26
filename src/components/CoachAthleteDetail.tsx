@@ -499,7 +499,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
 
         <TabsContent value="mental" className="space-y-4 mt-3">
           <CoachAthleteMental athleteId={athlete.user_id} />
-          <CoachAthleteReflections athleteId={athlete.user_id} />
+          <CoachAthleteReflections athleteId={athlete.user_id} athleteName={athlete.display_name} />
         </TabsContent>
 
         <TabsContent value="performance" className="space-y-4 mt-3">
