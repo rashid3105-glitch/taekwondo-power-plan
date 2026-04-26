@@ -176,7 +176,7 @@ export function CoachAthleteMental({ athleteId }: Props) {
   return (
     <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
       <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
-        <Brain className="h-4 w-4 text-purple-500" /> {tr.title}
+        <Brain className="h-4 w-4 text-primary" /> {tr.title}
       </h4>
 
       {loading ? (
