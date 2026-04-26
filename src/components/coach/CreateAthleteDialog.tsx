@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, UserPlus, Plus } from "lucide-react";
+import { Loader2, UserPlus } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,7 +16,7 @@ interface Props {
   countLabel?: string;
 }
 
-export function CreateAthleteSheet({ disabled, onCreated, countLabel }: Props) {
+export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) {
   const { t } = useLanguage();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
@@ -113,24 +113,33 @@ export function CreateAthleteSheet({ disabled, onCreated, countLabel }: Props) {
     }
   };
 
-  return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        <Button size="sm" disabled={disabled} className="whitespace-nowrap">
-          <Plus className="h-4 w-4 mr-1" />
-          {t("addAthleteAction")}
-          {countLabel && <span className="ml-1.5 opacity-80 text-[11px]">{countLabel}</span>}
-        </Button>
-      </SheetTrigger>
-      <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto">
-        <SheetHeader>
-          <SheetTitle className="flex items-center gap-2">
-            <UserPlus className="h-5 w-5" /> {t("addAthleteAction")}
-          </SheetTitle>
-          <SheetDescription>{t("createAthleteDesc")}</SheetDescription>
-        </SheetHeader>
+  const triggerTitle = `${t("addAthleteAction")}${countLabel ? " · " + countLabel : ""}`;
 
-        <div className="mt-5 space-y-5">
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button
+          size="icon"
+          disabled={disabled}
+          aria-label={triggerTitle}
+          title={triggerTitle}
+          className="shrink-0"
+        >
+          <UserPlus className="h-4 w-4" />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-md sm:max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <UserPlus className="h-5 w-5" /> {t("addAthleteAction")}
+            {countLabel && (
+              <span className="ml-auto text-xs font-normal text-muted-foreground">{countLabel}</span>
+            )}
+          </DialogTitle>
+          <DialogDescription>{t("createAthleteDesc")}</DialogDescription>
+        </DialogHeader>
+
+        <div className="mt-2 space-y-5">
           {/* Add by code */}
           <div className="rounded-lg border border-border bg-muted/20 p-3 space-y-2">
             <p className="text-xs font-semibold text-foreground">{t("orAddByCode")}</p>
@@ -206,7 +215,7 @@ export function CreateAthleteSheet({ disabled, onCreated, countLabel }: Props) {
             </Button>
           </div>
         </div>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }

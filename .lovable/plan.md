@@ -1,41 +1,42 @@
 ## Goal
-Make it obvious to athletes **where and when** to complete a post-competition reflection. Today the entry point is buried at the bottom of `/competitions`, with no prompt elsewhere.
+Replace the wide "Create athlete (X/Y)" button in the Coach Dashboard header with a compact **icon button** that opens a **centered modal dialog** containing the same create form. This frees up horizontal space — especially important on mobile (402px viewport) where the button currently wraps next to "Weekly export".
 
-## Changes
+## Where it shows up today
+`src/pages/CoachDashboard.tsx` (lines 314–321) renders `<CreateAthleteSheet>` next to `<WeeklySquadExport>` in the tab-bar row. The trigger inside `CreateAthleteSheet` is a full `Button` with `<Plus />` icon + `t("addAthleteAction")` text + an inline `countLabel` (`"3/5"`).
 
-### 1. Dashboard prompt banner (primary fix)
-Add a dismissible **"Reflect on your recent competition"** prompt card to `src/pages/Dashboard.tsx` that appears when:
-- The athlete has at least one competition with `event_date` in the **last 14 days**
-- AND no `competition_reflections` row exists yet for that competition
+The form itself currently lives in a right-side `<Sheet>`, which is fine on desktop but feels heavy for a quick action on mobile.
 
-Card shows:
-- Competition name + date + result (if present)
-- Sparkles icon, primary-colored CTA "Start reflection" → navigates to `/competitions/:id/reflect`
-- Small "Later" ghost button that hides it for that session (sessionStorage key per comp id)
+## Proposed changes
 
-If multiple unreflected past comps exist, show the most recent one only.
+### 1. `src/components/coach/CreateAthleteSheet.tsx` — convert to icon + modal
+- Rename the file to `CreateAthleteDialog.tsx` (and the exported component to `CreateAthleteDialog`) for clarity.
+- Replace `Sheet` / `SheetContent` / `SheetHeader` / `SheetTitle` / `SheetDescription` / `SheetTrigger` with `Dialog` / `DialogContent` / `DialogHeader` / `DialogTitle` / `DialogDescription` / `DialogTrigger` from `@/components/ui/dialog`.
+- Trigger becomes an **icon-only button**:
+  - `<Button size="icon" variant="default" aria-label={t("addAthleteAction")} title={`${t("addAthleteAction")}${countLabel ? " · " + countLabel : ""}`}>` with a `<UserPlus className="h-4 w-4" />` icon (more meaningful than a generic plus).
+  - Disabled state preserved (`disabled={!isAdmin && athletes.length >= MAX_ATHLETES}`); when disabled, tooltip/title surfaces the limit.
+- `DialogContent` uses `className="max-w-md sm:max-w-lg max-h-[90vh] overflow-y-auto"` so the form scrolls inside the modal on small screens.
+- Move the `countLabel` (e.g. `"3/5"`) from the trigger into the modal header as a small muted badge next to the title, so the info is preserved but no longer takes header space.
+- All existing form behavior is unchanged: "Add by code" block, divider, "Create new" form, validation, `create-athlete` Edge Function call, `lookup_athlete_by_code` RPC, success toasts, `onCreated()` callback, reset on close.
 
-### 2. Move "Past competitions" up + add empty-state hint on Competitions page
-In `src/pages/Competitions.tsx`:
-- Reorder so **Past competitions** section appears **above** the upcoming list when at least one past comp is unreflected (so the CTA is the first thing the athlete sees on return after an event)
-- When there are no past comps yet, add a small helper line under the page title: *"After each competition, you'll be able to reflect and set goals here."*
+### 2. `src/pages/CoachDashboard.tsx` — wire up renamed component
+- Update the import on line 28 to `import { CreateAthleteDialog } from "@/components/coach/CreateAthleteDialog";`.
+- Replace `<CreateAthleteSheet ... />` on line 316 with `<CreateAthleteDialog ... />` (same props: `disabled`, `onCreated`, `countLabel`).
+- The surrounding `<div className="flex items-center gap-2">` then naturally collapses to `[Weekly export][+ icon]`, leaving room for the Tabs row beside it on mobile.
 
-### 3. Inline "Reflect" CTA on each upcoming card once it becomes past
-Already handled — but ensure the **"Reflect" button uses the primary variant + pulse animation** for the first 7 days after the event date, fading to outline variant afterward, so it visually stands out.
+### 3. No new translation keys
+Reuses existing keys: `addAthleteAction`, `createAthlete`, `createAthleteDesc`, `orAddByCode`, etc. The icon button uses `addAthleteAction` as its `aria-label` for screen readers.
 
-### 4. Help / onboarding copy
-Add a one-line entry to `src/pages/Help.tsx` FAQ explaining the reflection flow and where to find it. Add changelog entry 85 ("Easier access to post-competition reflection").
+### 4. No backend or DB changes
+No migrations, no RLS changes, no Edge Function changes. The `create-athlete` function and `coach_athletes` insert path remain identical.
 
-### 5. i18n keys
-Add ~6 new keys across all 6 languages (DA, EN, SV, DE, AR, NO) in `src/i18n/translations.ts`:
-- `dashboardReflectPromptTitle`
-- `dashboardReflectPromptDesc`
-- `dashboardReflectPromptCTA`
-- `dashboardReflectPromptLater`
-- `competitionsReflectHint`
-- `helpFAQReflection`
+## Out of scope (not touched in this plan)
+- Pre-existing Edge Function build errors (`zod@3.23.8`, `@supabase/supabase-js@2.57.2` resolution, `coach-weekly-digest.tsx` `<Preview>` type). These were present before this change and are unrelated to the UI cleanup. Happy to clean them up in a separate pass if you'd like — just say the word.
 
-## Out of scope (ask first if you want them)
-- Push notification 24–48h after event_date (would need cron + push infra changes)
-- Email reminder via the transactional queue
-- Auto-create a reflection draft when a competition date passes
+## Files touched
+- **Renamed/rewritten**: `src/components/coach/CreateAthleteSheet.tsx` → `src/components/coach/CreateAthleteDialog.tsx`
+- **Edited**: `src/pages/CoachDashboard.tsx` (import + JSX tag)
+
+## Result
+On the 402px viewport you're using, the coach dashboard header row becomes:
+`[Squad | Today | Messages]   [📅 export] [👤+ icon]`
+…instead of the current wrapped two-row layout.
