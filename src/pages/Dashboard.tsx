@@ -27,6 +27,7 @@ import { PhysicalTesting } from "@/components/PhysicalTesting";
 import { Separator } from "@/components/ui/separator";
 import { SplashScreen } from "@/components/SplashScreen";
 import { ReadinessCard } from "@/components/ReadinessCard";
+import { ReflectionPromptCard } from "@/components/ReflectionPromptCard";
 import { Trophy } from "lucide-react";
 
 interface Profile {
@@ -557,6 +558,7 @@ export default function Dashboard() {
               )}
               <p className="text-sm text-muted-foreground mt-2">{t("hubChooseSection")}</p>
             </div>
+            {!isDemo && <ReflectionPromptCard />}
             {!isDemo && <ReadinessCard />}
             <div className="grid gap-3 sm:grid-cols-2">
               {([

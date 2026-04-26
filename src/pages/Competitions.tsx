@@ -123,6 +123,54 @@ export default function Competitions() {
 
   const latestWeight = weights[0]?.weight_kg ?? null;
 
+  const hasUnreflectedPast = pastComps.some((c) => !reflectedIds.has(c.id));
+
+  const PastCompetitionsSection = () =>
+    !loading && pastComps.length > 0 ? (
+      <div className="space-y-3">
+        <div>
+          <h2 className="text-lg font-bold flex items-center gap-2">
+            <Trophy className="h-5 w-5 text-muted-foreground" /> {t("reflectionPastTitle")}
+          </h2>
+          <p className="text-xs text-muted-foreground mt-0.5">{t("competitionsReflectHint")}</p>
+        </div>
+        <div className="space-y-2">
+          {pastComps.map((c) => {
+            const reflected = reflectedIds.has(c.id);
+            const daysSince = Math.round((Date.now() - new Date(c.event_date).getTime()) / 86400000);
+            const isFresh = !reflected && daysSince <= 7;
+            return (
+              <Card
+                key={c.id}
+                className={`border ${isFresh ? "border-primary/40 shadow-glow" : "border-border"}`}
+              >
+                <CardContent className="pt-4 pb-4 flex items-center justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <div className="font-semibold text-sm truncate">{c.name}</div>
+                    <div className="text-xs text-muted-foreground truncate">
+                      {c.event_date}{c.result ? ` · ${c.result}` : ""}
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant={reflected ? "outline" : "default"}
+                    onClick={() => navigate(`/competitions/${c.id}/reflect`)}
+                    className={isFresh ? "animate-pulse" : ""}
+                  >
+                    {reflected ? (
+                      <><CheckCircle2 className="h-4 w-4 mr-1" /> {t("reflectionDone")}</>
+                    ) : (
+                      <><Sparkles className="h-4 w-4 mr-1" /> {t("reflectionCTA")}</>
+                    )}
+                  </Button>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      </div>
+    ) : null;
+
   return (
     <div className="min-h-screen bg-background relative">
       <Watermark />
@@ -131,6 +179,9 @@ export default function Competitions() {
           <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")}><ArrowLeft className="h-4 w-4 mr-1" /> {t("competitionsBack")}</Button>
           <h1 className="text-2xl font-bold flex items-center gap-2"><Trophy className="h-6 w-6 text-primary" /> {t("competitionsTitle")}</h1>
         </div>
+
+        {/* Past competitions promoted to top when something needs reflection */}
+        {hasUnreflectedPast && <PastCompetitionsSection />}
 
         {/* Quick weight log */}
         <Card>
@@ -255,42 +306,8 @@ export default function Competitions() {
           </div>
         )}
 
-        {/* Past competitions — reflect CTA */}
-        {!loading && pastComps.length > 0 && (
-          <div className="space-y-3 pt-4 border-t border-border">
-            <h2 className="text-lg font-bold flex items-center gap-2">
-              <Trophy className="h-5 w-5 text-muted-foreground" /> {t("reflectionPastTitle")}
-            </h2>
-            <div className="space-y-2">
-              {pastComps.map((c) => {
-                const reflected = reflectedIds.has(c.id);
-                return (
-                  <Card key={c.id} className="border border-border">
-                    <CardContent className="pt-4 pb-4 flex items-center justify-between gap-3">
-                      <div className="min-w-0 flex-1">
-                        <div className="font-semibold text-sm truncate">{c.name}</div>
-                        <div className="text-xs text-muted-foreground truncate">
-                          {c.event_date}{c.result ? ` · ${c.result}` : ""}
-                        </div>
-                      </div>
-                      <Button
-                        size="sm"
-                        variant={reflected ? "outline" : "default"}
-                        onClick={() => navigate(`/competitions/${c.id}/reflect`)}
-                      >
-                        {reflected ? (
-                          <><CheckCircle2 className="h-4 w-4 mr-1" /> {t("reflectionDone")}</>
-                        ) : (
-                          <><Sparkles className="h-4 w-4 mr-1" /> {t("reflectionCTA")}</>
-                        )}
-                      </Button>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          </div>
-        )}
+        {/* Past comps shown at the bottom only if all already reflected (history view) */}
+        {!hasUnreflectedPast && <PastCompetitionsSection />}
       </div>
       <AppFooter />
       {viewPlan && (
