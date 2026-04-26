@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Trophy, Plus, ArrowLeft, Loader2, Scale, AlertTriangle, Calendar } from "lucide-react";
+import { Trophy, Plus, ArrowLeft, Loader2, Scale, AlertTriangle, Calendar, Sparkles, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Watermark } from "@/components/Watermark";
 import { AppFooter } from "@/components/AppFooter";
@@ -35,6 +35,8 @@ export default function Competitions() {
   const { toast } = useToast();
   const { t } = useLanguage();
   const [comps, setComps] = useState<Competition[]>([]);
+  const [pastComps, setPastComps] = useState<Competition[]>([]);
+  const [reflectedIds, setReflectedIds] = useState<Set<string>>(new Set());
   const [weights, setWeights] = useState<WeightLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState<string | null>(null);
@@ -58,11 +60,15 @@ export default function Competitions() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { navigate("/auth"); return; }
     const today = new Date().toISOString().slice(0, 10);
-    const [{ data: c }, { data: w }] = await Promise.all([
+    const [{ data: c }, { data: past }, { data: w }, { data: refls }] = await Promise.all([
       supabase.from("competitions").select("*").eq("user_id", user.id).gte("event_date", today).order("event_date"),
+      supabase.from("competitions").select("*").eq("user_id", user.id).lt("event_date", today).order("event_date", { ascending: false }).limit(20),
       supabase.from("weight_logs").select("log_date, weight_kg").eq("user_id", user.id).order("log_date", { ascending: false }).limit(30),
+      supabase.from("competition_reflections").select("competition_id").eq("user_id", user.id).not("competition_id", "is", null),
     ]);
     setComps((c || []) as Competition[]);
+    setPastComps((past || []) as Competition[]);
+    setReflectedIds(new Set((refls || []).map((r: any) => r.competition_id).filter(Boolean)));
     setWeights((w || []) as WeightLog[]);
     setLoading(false);
   }
