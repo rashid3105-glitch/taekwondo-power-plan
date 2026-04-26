@@ -26,7 +26,7 @@ const CoachWeeklyDigestEmail = ({
 }: CoachWeeklyDigestProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>📊 Your weekly squad digest — {totalAthletes ?? 0} athletes</Preview>
+    <Preview>{`📊 Your weekly squad digest — ${totalAthletes ?? 0} athletes`}</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={headerSection}>
