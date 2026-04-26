@@ -55,12 +55,12 @@ Deno.serve(async (req) => {
     const supaUser = createClient(SUPABASE_URL, ANON_KEY, {
       global: { headers: { Authorization: authHeader } },
     });
-    const { data: claimsData, error: claimsErr } = await supaUser.auth.getClaims(token);
-    if (claimsErr || !claimsData?.claims) {
+    const { data: userData, error: userErr } = await supaUser.auth.getUser(token);
+    if (userErr || !userData?.user) {
       return jsonResponse({ error: "Unauthorized" }, 401);
     }
-    const callerRole = claimsData.claims.role as string | undefined;
-    const callerId = claimsData.claims.sub as string | undefined;
+    const callerRole = (userData.user as any).role as string | undefined;
+    const callerId = userData.user.id;
     const isServiceRole = callerRole === "service_role";
 
     // ----- Validate body -----
