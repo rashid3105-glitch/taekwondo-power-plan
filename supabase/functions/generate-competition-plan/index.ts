@@ -1,7 +1,7 @@
 // Generate a peaking + weight-cut plan using Lovable AI Gateway.
 // Safety rails enforced server-side: max 0.7 kg/week cut, no >5% body weight in <14 days.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
-import { z } from "npm:zod@3.23.8";
+import { z } from "https://esm.sh/zod@3.23.8";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
