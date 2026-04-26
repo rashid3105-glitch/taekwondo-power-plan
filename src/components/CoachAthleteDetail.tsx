@@ -265,260 +265,278 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
         <SendReminderDialog athleteId={athlete.user_id} athleteName={athlete.display_name} />
       </div>
 
-      {/* Athlete Profile */}
-      <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
-        <div className="flex items-center justify-between">
-          <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
-            <UserCog className="h-4 w-4" /> {t("athleteProfile")}
-          </h4>
-          <Button size="sm" variant="outline" onClick={saveProfile} disabled={savingProfile}>
-            {savingProfile ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Save className="h-4 w-4 mr-1" /> {t("save")}</>}
-          </Button>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="space-y-1">
-            <Label className="text-xs">{t("age")}</Label>
-            <Input
-              type="number"
-              inputMode="numeric"
-              min={5}
-              max={99}
-              value={age}
-              onChange={(e) => setAge(e.target.value)}
-              placeholder="—"
-              className="h-9"
-            />
+      <Tabs defaultValue="profile" className="w-full">
+        <TabsList className="w-full grid grid-cols-4 h-auto p-1">
+          <TabsTrigger value="profile" className="flex flex-col gap-0.5 py-2 px-1 text-[11px] sm:text-xs sm:flex-row sm:gap-1.5">
+            <UserCog className="h-3.5 w-3.5" />
+            <span className="leading-tight">{t("tabProfilePlan")}</span>
+          </TabsTrigger>
+          <TabsTrigger value="mental" className="flex flex-col gap-0.5 py-2 px-1 text-[11px] sm:text-xs sm:flex-row sm:gap-1.5">
+            <Brain className="h-3.5 w-3.5" />
+            <span className="leading-tight">{t("tabMental")}</span>
+          </TabsTrigger>
+          <TabsTrigger value="performance" className="flex flex-col gap-0.5 py-2 px-1 text-[11px] sm:text-xs sm:flex-row sm:gap-1.5">
+            <ActivityIcon className="h-3.5 w-3.5" />
+            <span className="leading-tight">{t("tabPerformance")}</span>
+          </TabsTrigger>
+          <TabsTrigger value="activity" className="flex flex-col gap-0.5 py-2 px-1 text-[11px] sm:text-xs sm:flex-row sm:gap-1.5">
+            <ListChecks className="h-3.5 w-3.5" />
+            <span className="leading-tight">{t("tabActivity")}</span>
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="profile" className="space-y-4 mt-3">
+          {/* Athlete Profile */}
+          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
+            <div className="flex items-center justify-between">
+              <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+                <UserCog className="h-4 w-4" /> {t("athleteProfile")}
+              </h4>
+              <Button size="sm" variant="outline" onClick={saveProfile} disabled={savingProfile}>
+                {savingProfile ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Save className="h-4 w-4 mr-1" /> {t("save")}</>}
+              </Button>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="space-y-1">
+                <Label className="text-xs">{t("age")}</Label>
+                <Input
+                  type="number"
+                  inputMode="numeric"
+                  min={5}
+                  max={99}
+                  value={age}
+                  onChange={(e) => setAge(e.target.value)}
+                  placeholder="—"
+                  className="h-9"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">{t("weightKg")}</Label>
+                <Input
+                  type="number"
+                  min={20}
+                  max={200}
+                  step={0.1}
+                  value={weightKg}
+                  onChange={(e) => setWeightKg(e.target.value)}
+                  placeholder="—"
+                  className="h-9"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">{t("beltLevel")}</Label>
+                <Select value={beltLevel} onValueChange={setBeltLevel}>
+                  <SelectTrigger className="h-9">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {BELT_LEVELS.map((b) => (
+                      <SelectItem key={b} value={b}>{t(b)}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">{t("yearsOfExperience")}</Label>
+                <Input
+                  type="number"
+                  min={0}
+                  max={50}
+                  value={experienceYears}
+                  onChange={(e) => setExperienceYears(e.target.value)}
+                  placeholder="—"
+                  className="h-9"
+                />
+              </div>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">{t("discipline")}</Label>
+              <Select value={discipline} onValueChange={setDiscipline}>
+                <SelectTrigger className="h-9">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="sparring">{t("sparring")}</SelectItem>
+                  <SelectItem value="poomsae">{t("poomsae")}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">{t("country")}</Label>
+              <Select value={country} onValueChange={setCountry}>
+                <SelectTrigger className="h-9">
+                  <SelectValue placeholder={t("chooseCountry")} />
+                </SelectTrigger>
+                <SelectContent>
+                  {COUNTRIES.map((c) => (
+                    <SelectItem key={c} value={c}>{c}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-          <div className="space-y-1">
-            <Label className="text-xs">{t("weightKg")}</Label>
-            <Input
-              type="number"
-              min={20}
-              max={200}
-              step={0.1}
-              value={weightKg}
-              onChange={(e) => setWeightKg(e.target.value)}
-              placeholder="—"
-              className="h-9"
-            />
+          {/* Weekly Schedule */}
+          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
+            <div className="flex items-center justify-between">
+              <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+                <Calendar className="h-4 w-4" /> {t("weeklySchedule")}
+              </h4>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={saveSchedule}
+                disabled={savingSchedule}
+              >
+                {savingSchedule ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Save className="h-4 w-4 mr-1" /> {t("save")}</>}
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">{t("weeklyScheduleHint")}</p>
+            <WeekSchedulePicker schedule={schedule} onChange={setSchedule} />
           </div>
-          <div className="space-y-1">
-            <Label className="text-xs">{t("beltLevel")}</Label>
-            <Select value={beltLevel} onValueChange={setBeltLevel}>
-              <SelectTrigger className="h-9">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {BELT_LEVELS.map((b) => (
-                  <SelectItem key={b} value={b}>{t(b)}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-1">
-            <Label className="text-xs">{t("yearsOfExperience")}</Label>
-            <Input
-              type="number"
-              min={0}
-              max={50}
-              value={experienceYears}
-              onChange={(e) => setExperienceYears(e.target.value)}
-              placeholder="—"
-              className="h-9"
-            />
-          </div>
-        </div>
-        <div className="space-y-1">
-          <Label className="text-xs">{t("discipline")}</Label>
-          <Select value={discipline} onValueChange={setDiscipline}>
-            <SelectTrigger className="h-9">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="sparring">{t("sparring")}</SelectItem>
-              <SelectItem value="poomsae">{t("poomsae")}</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-1">
-          <Label className="text-xs">{t("country")}</Label>
-          <Select value={country} onValueChange={setCountry}>
-            <SelectTrigger className="h-9">
-              <SelectValue placeholder={t("chooseCountry")} />
-            </SelectTrigger>
-            <SelectContent>
-              {COUNTRIES.map((c) => (
-                <SelectItem key={c} value={c}>{c}</SelectItem>
+
+          {/* Training Goals & Plan */}
+          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
+            <div className="flex items-center justify-between">
+              <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+                <Target className="h-4 w-4" /> {t("trainingGoals")}
+              </h4>
+            </div>
+            <p className="text-xs text-muted-foreground">{t("selectAllThatApply")}</p>
+            <div className="flex flex-wrap gap-2">
+              {GOAL_OPTIONS.map((goal) => (
+                <button
+                  key={goal}
+                  type="button"
+                  onClick={() => toggleGoal(goal)}
+                  data-active={selectedGoals.includes(goal)}
+                  className="rounded-full px-3 py-1.5 text-xs font-medium border border-border transition-colors cursor-pointer
+                    data-[active=true]:bg-primary data-[active=true]:text-primary-foreground
+                    data-[active=false]:text-muted-foreground hover:text-foreground"
+                >
+                  {t(goal)}
+                </button>
               ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-      {/* Weekly Schedule */}
-      <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
-        <div className="flex items-center justify-between">
-          <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
-            <Calendar className="h-4 w-4" /> {t("weeklySchedule")}
-          </h4>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={saveSchedule}
-            disabled={savingSchedule}
-          >
-            {savingSchedule ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Save className="h-4 w-4 mr-1" /> {t("save")}</>}
-          </Button>
-        </div>
-        <p className="text-xs text-muted-foreground">{t("weeklyScheduleHint")}</p>
-        <WeekSchedulePicker schedule={schedule} onChange={setSchedule} />
-      </div>
-
-      {/* Training Goals & Plan */}
-      <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
-        <div className="flex items-center justify-between">
-          <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
-            <Target className="h-4 w-4" /> {t("trainingGoals")}
-          </h4>
-        </div>
-        <p className="text-xs text-muted-foreground">{t("selectAllThatApply")}</p>
-        <div className="flex flex-wrap gap-2">
-          {GOAL_OPTIONS.map((goal) => (
-            <button
-              key={goal}
-              type="button"
-              onClick={() => toggleGoal(goal)}
-              data-active={selectedGoals.includes(goal)}
-              className="rounded-full px-3 py-1.5 text-xs font-medium border border-border transition-colors cursor-pointer
-                data-[active=true]:bg-primary data-[active=true]:text-primary-foreground
-                data-[active=false]:text-muted-foreground hover:text-foreground"
-            >
-              {t(goal)}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Program Length */}
-      <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
-        <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
-          <Calendar className="h-4 w-4" /> {t("programLength")}
-        </h4>
-        <div className="flex items-center gap-4">
-          <Slider
-            value={[programWeeks]}
-            onValueChange={([v]) => setProgramWeeks(v)}
-            min={4}
-            max={12}
-            step={1}
-            className="flex-1"
-          />
-          <span className="text-sm font-bold text-foreground min-w-[60px] text-right">{programWeeks} {t("weeks")}</span>
-        </div>
-      </div>
-
-      {/* Training Plan */}
-      <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
-        <div className="flex items-center justify-between">
-          <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
-            <Zap className="h-4 w-4" /> {t("plan")}
-          </h4>
-          <Button onClick={generatePlan} disabled={generatingPlan} size="sm">
-            {generatingPlan ? (
-              <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
-            ) : (
-              <><Plus className="h-4 w-4 mr-1" /> {t("generatePlan")}</>
-            )}
-          </Button>
-        </div>
-        {activePlan ? (
-          <AIPlanCard plan={activePlan} coachMode athleteUserId={athlete.user_id} />
-        ) : (
-          <div className="text-center py-6">
-            <Zap className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-            <p className="text-sm text-muted-foreground">{t("noTrainingPlanYet")}</p>
+            </div>
           </div>
-        )}
-      </div>
 
-      {/* Rehab Plan */}
-      <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
-        <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
-          <Heart className="h-4 w-4" /> {t("injuryRehabPlan")}
-        </h4>
-        <p className="text-xs text-muted-foreground">{t("rehabDescription")}</p>
-        <div className="flex flex-col sm:flex-row gap-2">
-          <Input
-            value={rehabDescription}
-            onChange={(e) => setRehabDescription(e.target.value)}
-            placeholder={t("rehabPlaceholder")}
-            className="flex-1"
-          />
-          <Button
-            onClick={generateRehabPlan}
-            disabled={generatingRehab || !rehabDescription.trim()}
-            size="sm"
-            className="w-full sm:w-auto"
-          >
-            {generatingRehab ? (
-              <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
+          {/* Program Length */}
+          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
+            <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+              <Calendar className="h-4 w-4" /> {t("programLength")}
+            </h4>
+            <div className="flex items-center gap-4">
+              <Slider
+                value={[programWeeks]}
+                onValueChange={([v]) => setProgramWeeks(v)}
+                min={4}
+                max={12}
+                step={1}
+                className="flex-1"
+              />
+              <span className="text-sm font-bold text-foreground min-w-[60px] text-right">{programWeeks} {t("weeks")}</span>
+            </div>
+          </div>
+
+          {/* Training Plan */}
+          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
+            <div className="flex items-center justify-between">
+              <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+                <Zap className="h-4 w-4" /> {t("plan")}
+              </h4>
+              <Button onClick={generatePlan} disabled={generatingPlan} size="sm">
+                {generatingPlan ? (
+                  <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
+                ) : (
+                  <><Plus className="h-4 w-4 mr-1" /> {t("generatePlan")}</>
+                )}
+              </Button>
+            </div>
+            {activePlan ? (
+              <AIPlanCard plan={activePlan} coachMode athleteUserId={athlete.user_id} />
             ) : (
-              <><Plus className="h-4 w-4 mr-1" /> {t("generateRehabPlan")}</>
+              <div className="text-center py-6">
+                <Zap className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                <p className="text-sm text-muted-foreground">{t("noTrainingPlanYet")}</p>
+              </div>
             )}
-          </Button>
-        </div>
-        {activeRehab && (
-          <RehabPlanCard plan={activeRehab.plan_data} onDelete={async () => {
-            await supabase.from("rehab_plans").delete().eq("id", activeRehab.id);
-            onRefresh();
-          }} />
-        )}
-      </div>
+          </div>
 
-      {/* Form curve */}
-      <FormCurveChart userId={athlete.user_id} />
+          {/* Rehab Plan */}
+          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
+            <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+              <Heart className="h-4 w-4" /> {t("injuryRehabPlan")}
+            </h4>
+            <p className="text-xs text-muted-foreground">{t("rehabDescription")}</p>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Input
+                value={rehabDescription}
+                onChange={(e) => setRehabDescription(e.target.value)}
+                placeholder={t("rehabPlaceholder")}
+                className="flex-1"
+              />
+              <Button
+                onClick={generateRehabPlan}
+                disabled={generatingRehab || !rehabDescription.trim()}
+                size="sm"
+                className="w-full sm:w-auto"
+              >
+                {generatingRehab ? (
+                  <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
+                ) : (
+                  <><Plus className="h-4 w-4 mr-1" /> {t("generateRehabPlan")}</>
+                )}
+              </Button>
+            </div>
+            {activeRehab && (
+              <RehabPlanCard plan={activeRehab.plan_data} onDelete={async () => {
+                await supabase.from("rehab_plans").delete().eq("id", activeRehab.id);
+                onRefresh();
+              }} />
+            )}
+          </div>
+        </TabsContent>
 
-      {/* Match Analysis entry */}
-      <button
-        onClick={() => navigate(`/match-analysis/${athlete.user_id}`)}
-        className="w-full rounded-xl border border-border bg-card hover:bg-accent/30 transition-colors p-4 sm:p-5 shadow-card text-left flex items-center gap-3"
-      >
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/15">
-          <VideoIcon className="h-5 w-5 text-primary" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="font-semibold text-sm text-foreground">{t("matchAnalysisTitle")}</div>
-          <div className="text-xs text-muted-foreground truncate">{t("matchAnalysisMetaDesc")}</div>
-        </div>
-      </button>
+        <TabsContent value="mental" className="space-y-4 mt-3">
+          <CoachAthleteMental athleteId={athlete.user_id} />
+        </TabsContent>
 
-      {/* Season planner entry */}
-      <button
-        onClick={() => navigate(`/season?athlete=${athlete.user_id}`)}
-        className="w-full rounded-xl border border-border bg-card hover:bg-accent/30 transition-colors p-4 sm:p-5 shadow-card text-left flex items-center gap-3"
-      >
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/15">
-          <CalendarRange className="h-5 w-5 text-primary" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="font-semibold text-sm text-foreground">{t("seasonPlannerTitle")}</div>
-          <div className="text-xs text-muted-foreground truncate">{t("hubSeasonDesc")}</div>
-        </div>
-      </button>
+        <TabsContent value="performance" className="space-y-4 mt-3">
+          <FormCurveChart userId={athlete.user_id} />
+          <PhysicalTestComparison athleteId={athlete.user_id} />
+          <PhysicalTesting mode="coach" athleteId={athlete.user_id} athleteName={athlete.display_name} />
+        </TabsContent>
 
-      {/* Mental performance assessments */}
-      <CoachAthleteMental athleteId={athlete.user_id} />
+        <TabsContent value="activity" className="space-y-4 mt-3">
+          <button
+            onClick={() => navigate(`/match-analysis/${athlete.user_id}`)}
+            className="w-full rounded-xl border border-border bg-card hover:bg-accent/30 transition-colors p-4 sm:p-5 shadow-card text-left flex items-center gap-3"
+          >
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/15">
+              <VideoIcon className="h-5 w-5 text-primary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="font-semibold text-sm text-foreground">{t("matchAnalysisTitle")}</div>
+              <div className="text-xs text-muted-foreground truncate">{t("matchAnalysisMetaDesc")}</div>
+            </div>
+          </button>
 
-      {/* Private Coach Notes */}
-      <CoachNotes athleteId={athlete.user_id} />
+          <button
+            onClick={() => navigate(`/season?athlete=${athlete.user_id}`)}
+            className="w-full rounded-xl border border-border bg-card hover:bg-accent/30 transition-colors p-4 sm:p-5 shadow-card text-left flex items-center gap-3"
+          >
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/15">
+              <CalendarRange className="h-5 w-5 text-primary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="font-semibold text-sm text-foreground">{t("seasonPlannerTitle")}</div>
+              <div className="text-xs text-muted-foreground truncate">{t("hubSeasonDesc")}</div>
+            </div>
+          </button>
 
-      {/* Compare to club */}
-      <PhysicalTestComparison athleteId={athlete.user_id} />
-
-      {/* Reminder History */}
-      <ReminderHistory athleteId={athlete.user_id} />
-
-      {/* Physical Testing - Coach Mode */}
-      <PhysicalTesting mode="coach" athleteId={athlete.user_id} athleteName={athlete.display_name} />
+          <CoachNotes athleteId={athlete.user_id} />
+          <ReminderHistory athleteId={athlete.user_id} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
