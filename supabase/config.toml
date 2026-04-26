@@ -57,8 +57,5 @@ verify_jwt = false
 [functions.share-match-video]
 verify_jwt = false
 
-[functions.apply-competition-taper]
-verify_jwt = true
-
 [functions.send-coach-message]
 verify_jwt = false
