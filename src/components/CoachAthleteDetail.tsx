@@ -15,6 +15,7 @@ import { Loader2, Plus, Zap, Heart, Save, Calendar, UserCog, Target, CalendarRan
 import { SendReminderDialog } from "@/components/SendReminderDialog";
 import { ReminderHistory } from "@/components/ReminderHistory";
 import { CoachNotes } from "@/components/coach/CoachNotes";
+import { CoachAthleteMental } from "@/components/coach/CoachAthleteMental";
 import { PhysicalTestComparison } from "@/components/coach/PhysicalTestComparison";
 import { FormCurveChart } from "@/components/FormCurveChart";
 import { useNavigate } from "react-router-dom";
@@ -502,6 +503,9 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
           <div className="text-xs text-muted-foreground truncate">{t("hubSeasonDesc")}</div>
         </div>
       </button>
+
+      {/* Mental performance assessments */}
+      <CoachAthleteMental athleteId={athlete.user_id} />
 
       {/* Private Coach Notes */}
       <CoachNotes athleteId={athlete.user_id} />
