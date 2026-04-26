@@ -16,9 +16,10 @@ import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useOfflineCompetitionReflections } from "@/hooks/useOfflineCompetitionReflections";
+import { ReflectionTrendChart } from "@/components/ReflectionTrendChart";
 import {
   Trophy, ChevronLeft, ChevronRight, Loader2, Sparkles, Target,
-  CheckCircle2, CloudOff, Trash2,
+  CheckCircle2, CloudOff, Trash2, Zap,
 } from "lucide-react";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -172,6 +173,7 @@ export function PostCompetitionReflection({ competition, upcomingCompetitions, o
           onChangeNextComp={handleNextCompChange}
           onDelete={() => setShowDelete(true)}
         />
+        <ReflectionTrendChart reflections={reflections as any} />
         <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
           <AlertDialogContent>
             <AlertDialogHeader>
