@@ -17,6 +17,7 @@ import { SendReminderDialog } from "@/components/SendReminderDialog";
 import { ReminderHistory } from "@/components/ReminderHistory";
 import { CoachNotes } from "@/components/coach/CoachNotes";
 import { CoachAthleteMental } from "@/components/coach/CoachAthleteMental";
+import { CoachAthleteReflections } from "@/components/coach/CoachAthleteReflections";
 import { PhysicalTestComparison } from "@/components/coach/PhysicalTestComparison";
 import { FormCurveChart } from "@/components/FormCurveChart";
 import { useNavigate } from "react-router-dom";
@@ -498,6 +499,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
 
         <TabsContent value="mental" className="space-y-4 mt-3">
           <CoachAthleteMental athleteId={athlete.user_id} />
+          <CoachAthleteReflections athleteId={athlete.user_id} />
         </TabsContent>
 
         <TabsContent value="performance" className="space-y-4 mt-3">
