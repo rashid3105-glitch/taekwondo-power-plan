@@ -5800,7 +5800,7 @@ const translations = {
     reflectionGenerateMiniPlan: "1-Wochen-Fokusplan erstellen",
     reflectionMiniPlanName: "1-Wochen-Fokus",
     reflectionMiniPlanCreated: "1-Wochen-Fokusplan erstellt — siehe Training",
-    changelogEntry85: "Reflexion nach dem Wettkampf ist leichter zu finden — bis zu 14 Tage nach einem Wettkampf gibt es einen Hinweis auf der Startseite, und „Vergangene Wettkämpfe" steht oben auf der Wettkampf-Seite, solange etwas reflektiert werden soll.",
+    changelogEntry85: "Reflexion nach dem Wettkampf ist leichter zu finden — bis zu 14 Tage nach einem Wettkampf gibt es einen Hinweis auf der Startseite, und «Vergangene Wettkämpfe» steht oben auf der Wettkampf-Seite, solange etwas reflektiert werden soll.",
     dashboardReflectPromptTitle: "Reflektiere deinen letzten Wettkampf",
     dashboardReflectPromptDesc: "Drei Minuten jetzt geben dir drei konkrete Ziele für den nächsten Wettkampf.",
     dashboardReflectPromptCTA: "Reflexion starten",
