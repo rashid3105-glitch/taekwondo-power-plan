@@ -176,6 +176,66 @@ export type Database = {
         }
         Relationships: []
       }
+      competition_reflections: {
+        Row: {
+          ai_plan: Json | null
+          competition_date: string | null
+          competition_id: string | null
+          competition_name: string | null
+          created_at: string
+          id: string
+          next_competition_id: string | null
+          ratings: Json
+          reflections: Json
+          result: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_plan?: Json | null
+          competition_date?: string | null
+          competition_id?: string | null
+          competition_name?: string | null
+          created_at?: string
+          id?: string
+          next_competition_id?: string | null
+          ratings?: Json
+          reflections?: Json
+          result?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_plan?: Json | null
+          competition_date?: string | null
+          competition_id?: string | null
+          competition_name?: string | null
+          created_at?: string
+          id?: string
+          next_competition_id?: string | null
+          ratings?: Json
+          reflections?: Json
+          result?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "competition_reflections_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "competition_reflections_next_competition_id_fkey"
+            columns: ["next_competition_id"]
+            isOneToOne: false
+            referencedRelation: "competitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       competitions: {
         Row: {
           created_at: string
