@@ -34,6 +34,7 @@ import Programs from "./pages/Programs";
 import Contact from "./pages/Contact";
 import Install from "./pages/Install";
 import Competitions from "./pages/Competitions";
+import CompetitionReflection from "./pages/CompetitionReflection";
 import PublicAthlete from "./pages/PublicAthlete";
 import MatchAnalysis from "./pages/MatchAnalysis";
 import MatchShare from "./pages/MatchShare";
@@ -87,6 +88,7 @@ const AnimatedRoutes = () => {
         <Route path="/library/:section" element={<Page><Library /></Page>} />
         <Route path="/diary" element={<Page><Diary /></Page>} />
         <Route path="/competitions" element={<Page><Competitions /></Page>} />
+        <Route path="/competitions/:id/reflect" element={<Page><CompetitionReflection /></Page>} />
         <Route path="/season" element={<Page><SeasonPlan /></Page>} />
         <Route path="/match-analysis/me" element={<Page><MatchAnalysis /></Page>} />
         <Route path="/match-analysis/:athleteId" element={<Page><MatchAnalysis /></Page>} />
