@@ -176,6 +176,44 @@ export type Database = {
         }
         Relationships: []
       }
+      coach_reflection_comments: {
+        Row: {
+          athlete_id: string
+          coach_id: string
+          content: string
+          created_at: string
+          id: string
+          reflection_id: string
+          updated_at: string
+        }
+        Insert: {
+          athlete_id: string
+          coach_id: string
+          content?: string
+          created_at?: string
+          id?: string
+          reflection_id: string
+          updated_at?: string
+        }
+        Update: {
+          athlete_id?: string
+          coach_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          reflection_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coach_reflection_comments_reflection_id_fkey"
+            columns: ["reflection_id"]
+            isOneToOne: false
+            referencedRelation: "competition_reflections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       competition_reflections: {
         Row: {
           ai_plan: Json | null
