@@ -352,8 +352,41 @@ interface ResultsViewProps {
 }
 
 function ResultsView({ reflection, competition, upcomingCompetitions, onChangeNextComp, onDelete }: ResultsViewProps) {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
+  const { toast } = useToast();
+  const [generatingMini, setGeneratingMini] = useState<string | null>(null);
   const plan = reflection.ai_plan;
+
+  async function generateMiniPlan(focusArea: string) {
+    setGeneratingMini(focusArea);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not signed in");
+      const { data: profile } = await supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle();
+      const overrides = {
+        ...profile,
+        program_weeks: 1,
+        goals: [focusArea],
+      };
+      const { data, error } = await supabase.functions.invoke("generate-plan", {
+        body: { profile: overrides, language: locale },
+      });
+      if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
+      await supabase.from("training_plans").update({ is_active: false }).eq("user_id", user.id);
+      const { error: insErr } = await supabase.from("training_plans").insert({
+        user_id: user.id,
+        name: `${t("reflectionMiniPlanName")}: ${focusArea}`.slice(0, 80),
+        plan_data: data.plan,
+        is_active: true,
+      });
+      if (insErr) throw insErr;
+      toast({ title: t("reflectionMiniPlanCreated"), description: focusArea });
+    } catch (e: any) {
+      toast({ title: t("error"), description: e.message, variant: "destructive" });
+    } finally {
+      setGeneratingMini(null);
+    }
+  }
 
   return (
     <div className="space-y-4">
@@ -420,7 +453,7 @@ function ResultsView({ reflection, competition, upcomingCompetitions, onChangeNe
               <div className="text-xs font-semibold text-foreground mb-2">{t("reflectionFocusAreas")}</div>
               <div className="space-y-2">
                 {plan.focusAreas.map((a: any, i: number) => (
-                  <div key={i} className="rounded-lg border border-border bg-background/50 p-3 space-y-1">
+                  <div key={i} className="rounded-lg border border-border bg-background/50 p-3 space-y-2">
                     <div className="text-xs font-medium text-foreground">{a.area}</div>
                     {a.why && <div className="text-[11px] text-muted-foreground">{a.why}</div>}
                     {Array.isArray(a.suggestedDrills) && (
@@ -428,6 +461,17 @@ function ResultsView({ reflection, competition, upcomingCompetitions, onChangeNe
                         {a.suggestedDrills.map((d: string, j: number) => <li key={j}>{d}</li>)}
                       </ul>
                     )}
+                    <Button
+                      size="sm" variant="outline"
+                      className="h-7 text-[11px] gap-1"
+                      onClick={() => generateMiniPlan(a.area)}
+                      disabled={!!generatingMini}
+                    >
+                      {generatingMini === a.area
+                        ? <Loader2 className="h-3 w-3 animate-spin" />
+                        : <Zap className="h-3 w-3" />}
+                      {t("reflectionGenerateMiniPlan")}
+                    </Button>
                   </div>
                 ))}
               </div>
