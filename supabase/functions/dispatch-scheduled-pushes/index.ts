@@ -24,15 +24,50 @@ Deno.serve(async (req) => {
 
   let triggered = 0;
 
-  // 1. Competition countdown — fire at 07:00–08:00 UTC window (~09:00 CET)
+  // 1. Competition countdown + post-event reflection nudge — fire at 07:00–08:00 UTC (~09:00 CET)
   if (hour === 7) {
-    const { data: comps } = await supa.from("competitions").select("user_id, name, event_date").gte("event_date", todayStr);
+    // Look back up to 14 days for reflection nudges
+    const lookback = new Date(now.getTime() - 14 * 86400000).toISOString().slice(0, 10);
+    const { data: comps } = await supa
+      .from("competitions")
+      .select("id, user_id, name, event_date")
+      .gte("event_date", lookback);
+
+    // Pre-fetch reflections for these competitions to avoid N+1
+    const compIds = (comps || []).map((c: any) => c.id);
+    const reflectedSet = new Set<string>();
+    if (compIds.length) {
+      const { data: refls } = await supa
+        .from("competition_reflections")
+        .select("competition_id")
+        .in("competition_id", compIds);
+      for (const r of refls || []) if (r.competition_id) reflectedSet.add(r.competition_id);
+    }
+
     for (const c of comps || []) {
       const eventDate = new Date(c.event_date);
       const diffDays = Math.round((eventDate.getTime() - now.getTime()) / 86400000);
+
+      // Pre-event countdown
       if ([30, 14, 7, 3, 1].includes(diffDays)) {
         await sendPush([c.user_id], `🥋 ${diffDays} day${diffDays === 1 ? "" : "s"} to ${c.name}`,
           "Open the app to see today's plan and weight target.", "/competitions", "competition", `comp-${c.user_id}-${diffDays}`);
+        triggered++;
+      }
+
+      // Post-event reflection nudge — day +1, +3, +7 after event if not yet reflected
+      if ([-1, -3, -7].includes(diffDays) && !reflectedSet.has(c.id)) {
+        const dayLabel = Math.abs(diffDays);
+        await sendPush(
+          [c.user_id],
+          `📝 Reflect on ${c.name}`,
+          dayLabel === 1
+            ? "How did it go? Take 3 minutes to lock in lessons while it's fresh."
+            : `It's been ${dayLabel} days — capture your reflection before it fades.`,
+          `/competitions/${c.id}/reflect`,
+          "competition",
+          `reflect-${c.user_id}-${c.id}-${dayLabel}`,
+        );
         triggered++;
       }
     }
