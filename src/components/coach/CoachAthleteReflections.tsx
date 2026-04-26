@@ -199,7 +199,7 @@ export function CoachAthleteReflections({ athleteId, athleteName }: Props) {
                       <div className="text-[10px] text-muted-foreground truncate">
                         {formatDate(r.competition_date || r.created_at, l)}
                         {r.result ? ` · ${r.result}` : ""}
-                        {typeof overall === "number" ? ` · ${overall}/5` : ""}
+                        {typeof overall === "number" ? ` · ${overall}/10` : ""}
                         {existingComment?.content ? ` · ${t("coachReflectionCommentBadge")}` : ""}
                       </div>
                     </div>
@@ -214,7 +214,7 @@ export function CoachAthleteReflections({ athleteId, athleteName }: Props) {
                           {Object.entries(r.ratings).map(([k, v]) => (
                             <div key={k} className="flex items-center justify-between rounded border border-border bg-background px-2 py-1.5">
                               <span className="text-[10px] text-muted-foreground truncate">{t(`reflectionRating_${k}` as any)}</span>
-                              <span className="text-xs font-semibold tabular-nums">{v}/5</span>
+                              <span className="text-xs font-semibold tabular-nums">{v}/10</span>
                             </div>
                           ))}
                         </div>
