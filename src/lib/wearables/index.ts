@@ -60,20 +60,20 @@ type RawNativeSample = {
 
 async function loadNativePlugin(): Promise<any | null> {
   const platform = detectPlatform();
-  try {
-    // @ts-ignore - native plugin only present in Capacitor builds
-    if (platform === "ios") {
-      const mod: any = await import(/* @vite-ignore */ ("capacitor" + "-health"));
-      return mod?.CapacitorHealth ?? mod?.Health ?? mod?.default ?? null;
-    }
-    // @ts-ignore - native plugin only present in Capacitor builds
-    if (platform === "android") {
-      const mod: any = await import(/* @vite-ignore */ ("capacitor" + "-health-connect"));
-      return mod?.HealthConnect ?? mod?.default ?? null;
-    }
-  } catch {
-    // Plugin not installed in this build (e.g. PWA / preview) — fall back to no-op.
-    return null;
+  if (platform === "web") return null;
+
+  // We never use a static import of the native plugins — Vite would try to
+  // resolve the bare module names and fail the web build. Instead, on native
+  // we read the plugin off Capacitor's global Plugins registry, which the
+  // Capacitor runtime populates after `cap sync`. The web bundle stays clean.
+  const cap = (globalThis as any).Capacitor;
+  const registry = cap?.Plugins ?? {};
+
+  if (platform === "ios") {
+    return registry.CapacitorHealth ?? registry.Health ?? null;
+  }
+  if (platform === "android") {
+    return registry.HealthConnect ?? registry.HealthConnectPlugin ?? null;
   }
   return null;
 }
