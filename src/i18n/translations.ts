@@ -1366,8 +1366,6 @@ const translations = {
     bulkPartialFailure: "Some competitions could not be created",
     bulkSelectAtLeastOne: "Select at least one athlete",
     selectAthletes: "Select athletes",
-    selectAll: "Select all",
-    deselectAll: "Deselect all",
     defaultWeightClass: "Default weight class (kg)",
     weightOverride: "Weight class for this athlete",
     weightOverrideHint: "Weight class is pre-filled from each athlete's profile. Leave blank to use the default.",
