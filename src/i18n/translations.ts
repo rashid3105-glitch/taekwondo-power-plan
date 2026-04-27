@@ -244,6 +244,8 @@ const translations = {
     clubAthletes: "Club Athletes",
     clubAthletesDesc: "All athletes in your club (read-only)",
     readOnly: "Read-only",
+    editAction: "Edit",
+    lockAction: "Lock",
     hasPlan: "Has Plan",
     makeCoach: "Make Coach",
     removeCoach: "Remove Coach",
