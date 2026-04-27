@@ -399,6 +399,7 @@ export function PostCompetitionReflection({ competition, upcomingCompetitions, o
         )}
       </div>
     </Card>
+    </div>
   );
 }
 
