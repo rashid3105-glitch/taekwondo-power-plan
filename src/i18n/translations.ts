@@ -1574,6 +1574,9 @@ const translations = {
     recoveryTileTitle: "Recovery",
     recoverySleep: "Sleep",
     recoveryRhr: "RHR",
+    readinessFromWatch: "from watch",
+    coachRecoveryTrendTitle: "Recovery (7d)",
+    coachRecoveryLowFlag: "Low recovery signal — consider easing today's load.",
   },
   da: {
     // Common

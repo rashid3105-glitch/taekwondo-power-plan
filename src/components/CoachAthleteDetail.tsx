@@ -16,6 +16,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { SendReminderDialog } from "@/components/SendReminderDialog";
 import { ReminderHistory } from "@/components/ReminderHistory";
 import { CoachNotes } from "@/components/coach/CoachNotes";
+import { AthleteRecoveryTrend } from "@/components/coach/AthleteRecoveryTrend";
 import { CoachAthleteMental } from "@/components/coach/CoachAthleteMental";
 import { CoachAthleteReflections } from "@/components/coach/CoachAthleteReflections";
 import { PhysicalTestComparison } from "@/components/coach/PhysicalTestComparison";
@@ -535,6 +536,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
         </TabsContent>
 
         <TabsContent value="activity" className="space-y-4 mt-3">
+          <AthleteRecoveryTrend athleteId={athlete.user_id} />
           <button
             onClick={() => navigate(`/match-analysis/${athlete.user_id}`)}
             className="w-full rounded-xl border border-border bg-card hover:bg-accent/30 transition-colors p-4 sm:p-5 shadow-card text-left flex items-center gap-3"
