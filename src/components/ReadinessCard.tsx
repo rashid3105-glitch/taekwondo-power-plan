@@ -36,6 +36,9 @@ export function ReadinessCard() {
   const [motivation, setMotivation] = useState([4]);
   const [sick, setSick] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  // Auto-prefill from wearable summary (yesterday's sleep + HRV).
+  const [prefilledFromWatch, setPrefilledFromWatch] = useState(false);
+  const [hrvFromWatch, setHrvFromWatch] = useState<number | null>(null);
 
   const TIER = {
     green: { label: t("readinessTierGreen"), icon: CheckCircle2, color: "text-emerald-500", bg: "bg-emerald-500/10 border-emerald-500/30" },
