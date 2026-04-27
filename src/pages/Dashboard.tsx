@@ -580,20 +580,67 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
-              {profile && (
-                <div className="flex flex-wrap gap-4 mt-3 pt-3 border-t border-border/40 text-xs sm:text-sm text-muted-foreground">
-                  {profile.experience_years != null && profile.experience_years > 0 && (
-                    <span>{profile.experience_years} {t("yearsExp")}</span>
-                  )}
-                  {profile.tkd_sessions_per_week > 0 && (
-                    <span>{profile.tkd_sessions_per_week}x {t("sessionsWeek")}</span>
-                  )}
-                  {profile.program_weeks != null && profile.program_weeks > 0 && (
-                    <span>{profile.program_weeks} {t("weekProgram")}</span>
-                  )}
-                </div>
-              )}
-              <p className="text-sm text-muted-foreground mt-2">{t("hubChooseSection")}</p>
+              {(() => {
+                const quote = getDailyQuote(locale as QuoteLocale);
+                let eventLine: { label: string; sub: string } | null = null;
+                if (nextEvent) {
+                  const eventDate = new Date(nextEvent.event_date + "T00:00:00");
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0);
+                  const diffDays = Math.round((eventDate.getTime() - today.getTime()) / 86400000);
+                  const dateLabel =
+                    diffDays === 0 ? t("today") :
+                    diffDays === 1 ? t("tomorrow") :
+                    `${diffDays} ${t("daysAway")}`;
+                  const formatted = eventDate.toLocaleDateString(locale, { day: "numeric", month: "short", year: "numeric" });
+                  const subParts = [formatted, dateLabel, nextEvent.location].filter(Boolean) as string[];
+                  eventLine = { label: nextEvent.name, sub: subParts.join(" · ") };
+                }
+                return (
+                  <div className="mt-4 pt-4 border-t border-border/40 grid gap-3 sm:grid-cols-2">
+                    {/* Next upcoming competition / camp */}
+                    <button
+                      type="button"
+                      onClick={() => !isDemo && navigate("/competitions")}
+                      disabled={isDemo}
+                      className={`group flex items-start gap-3 rounded-xl border border-border/60 bg-secondary/30 p-3 text-left transition-all ${isDemo ? "opacity-70 cursor-not-allowed" : "hover:border-primary/40 hover:bg-secondary/50"}`}
+                    >
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-explosive/15">
+                        <Trophy className="h-4 w-4 text-explosive" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                          {t("nextEventTitle")}
+                        </p>
+                        {eventLine ? (
+                          <>
+                            <p className="text-sm font-bold text-foreground truncate">{eventLine.label}</p>
+                            <p className="text-xs text-muted-foreground truncate">{eventLine.sub}</p>
+                          </>
+                        ) : (
+                          <p className="text-xs text-muted-foreground mt-0.5">{t("noUpcomingEvent")}</p>
+                        )}
+                      </div>
+                    </button>
+
+                    {/* Daily motivational quote */}
+                    <div className="flex items-start gap-3 rounded-xl border border-border/60 bg-secondary/30 p-3">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/15">
+                        <QuoteIcon className="h-4 w-4 text-primary" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                          {t("dailyQuoteTitle")}
+                        </p>
+                        <p className="text-sm text-foreground italic leading-snug mt-0.5">
+                          "{quote.text}"
+                        </p>
+                        <p className="text-[11px] text-muted-foreground mt-1">— {quote.author}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
             {!isDemo && <ReflectionPromptCard />}
             {!isDemo && <ReadinessCard />}
