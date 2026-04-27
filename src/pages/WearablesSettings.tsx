@@ -87,13 +87,47 @@ export default function WearablesSettings() {
         <ArrowLeft className="h-4 w-4 mr-1" /> {t("home")}
       </Button>
 
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex items-center gap-3 mb-4">
         <div className="p-3 rounded-lg bg-primary/10">
           <Watch className="h-6 w-6 text-primary" />
         </div>
-        <div>
+        <div className="flex-1">
           <h1 className="text-2xl font-bold">{t("wearablesTitle")}</h1>
           <p className="text-sm text-muted-foreground">{t("wearablesSubtitle")}</p>
+        </div>
+      </div>
+
+      {/* Live connection pill */}
+      <div
+        className={`mb-6 flex items-center gap-3 rounded-lg border px-3 py-2 ${
+          status?.connected
+            ? "border-emerald-500/40 bg-emerald-500/10"
+            : "border-muted bg-muted/30"
+        }`}
+        aria-live="polite"
+      >
+        <span className="relative flex h-3 w-3">
+          {status?.connected && (
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+          )}
+          <span
+            className={`relative inline-flex h-3 w-3 rounded-full ${
+              status?.connected ? "bg-emerald-500" : "bg-muted-foreground/40"
+            }`}
+          />
+        </span>
+        <div className="flex-1 text-sm">
+          <span className="font-medium">
+            {status?.connected ? "Connected" : "Not connected"}
+          </span>
+          {status?.connected && (
+            <span className="text-muted-foreground">
+              {" · "}{providerLabel}
+              {status.last_sync_at
+                ? ` · last sync ${new Date(status.last_sync_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+                : ""}
+            </span>
+          )}
         </div>
       </div>
 
