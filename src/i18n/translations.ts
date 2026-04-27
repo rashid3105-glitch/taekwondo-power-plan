@@ -8841,8 +8841,6 @@ const translations = {
     bulkPartialFailure: "Noen stevner ble ikke opprettet",
     bulkSelectAtLeastOne: "Velg minst én utøver",
     selectAthletes: "Velg utøvere",
-    selectAll: "Velg alle",
-    deselectAll: "Fjern alle",
     defaultWeightClass: "Standard vektklasse (kg)",
     weightOverride: "Vektklasse for denne utøveren",
     weightOverrideHint: "Vektklassen forhåndsutfylles fra hver utøvers profil. La feltet stå tomt for å bruke standard.",
