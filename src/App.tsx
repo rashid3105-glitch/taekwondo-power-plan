@@ -34,6 +34,7 @@ import Programs from "./pages/Programs";
 import Contact from "./pages/Contact";
 import Install from "./pages/Install";
 import WearablesSettings from "./pages/WearablesSettings";
+import WearablesSync from "./pages/WearablesSync";
 import Competitions from "./pages/Competitions";
 import CompetitionReflection from "./pages/CompetitionReflection";
 import PublicAthlete from "./pages/PublicAthlete";
@@ -85,6 +86,7 @@ const AnimatedRoutes = () => {
         <Route path="/install" element={<Page><Install /></Page>} />
         <Route path="/profile-setup" element={<Page><ProfileSetup /></Page>} />
         <Route path="/wearables" element={<Page><WearablesSettings /></Page>} />
+        <Route path="/wearables/sync" element={<Page><WearablesSync /></Page>} />
         <Route path="/dashboard" element={<Page><Dashboard /></Page>} />
         <Route path="/library" element={<Page><LibraryChooser /></Page>} />
         <Route path="/library/:section" element={<Page><Library /></Page>} />

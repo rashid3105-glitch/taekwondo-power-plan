@@ -60,20 +60,20 @@ type RawNativeSample = {
 
 async function loadNativePlugin(): Promise<any | null> {
   const platform = detectPlatform();
-  try {
-    // @ts-ignore - native plugin only present in Capacitor builds
-    if (platform === "ios") {
-      const mod: any = await import(/* @vite-ignore */ ("capacitor" + "-health"));
-      return mod?.CapacitorHealth ?? mod?.Health ?? mod?.default ?? null;
-    }
-    // @ts-ignore - native plugin only present in Capacitor builds
-    if (platform === "android") {
-      const mod: any = await import(/* @vite-ignore */ ("capacitor" + "-health-connect"));
-      return mod?.HealthConnect ?? mod?.default ?? null;
-    }
-  } catch {
-    // Plugin not installed in this build (e.g. PWA / preview) — fall back to no-op.
-    return null;
+  if (platform === "web") return null;
+
+  // We never use a static import of the native plugins — Vite would try to
+  // resolve the bare module names and fail the web build. Instead, on native
+  // we read the plugin off Capacitor's global Plugins registry, which the
+  // Capacitor runtime populates after `cap sync`. The web bundle stays clean.
+  const cap = (globalThis as any).Capacitor;
+  const registry = cap?.Plugins ?? {};
+
+  if (platform === "ios") {
+    return registry.CapacitorHealth ?? registry.Health ?? null;
+  }
+  if (platform === "android") {
+    return registry.HealthConnect ?? registry.HealthConnectPlugin ?? null;
   }
   return null;
 }
@@ -158,15 +158,87 @@ export async function syncSince(sinceISO: string, deviceLabel?: string): Promise
   const provider = wearableProviderForPlatform();
   if (!provider) return 0;
 
-  const samples = await readNativeSamples(sinceISO);
+  try {
+    const samples = await readNativeSamples(sinceISO);
 
-  const { data, error } = await supabase.functions.invoke("ingest-wearable-samples", {
-    body: { provider, device_label: deviceLabel, samples },
-  });
-  if (error || (data as any)?.error) {
-    throw new Error((data as any)?.error || error?.message);
+    const { data, error } = await supabase.functions.invoke("ingest-wearable-samples", {
+      body: { provider, device_label: deviceLabel, samples },
+    });
+    if (error || (data as any)?.error) {
+      throw new Error((data as any)?.error || error?.message || "Ingest failed");
+    }
+    const inserted = (data as any)?.inserted ?? 0;
+    recordSyncResult({ ok: true, inserted, at: Date.now() });
+    return inserted;
+  } catch (e: any) {
+    recordSyncResult({ ok: false, error: e?.message || "Sync failed", at: Date.now() });
+    throw e;
   }
-  return (data as any)?.inserted ?? 0;
+}
+
+// ============================================================================
+// Local sync stats — surfaced on the Wearables Sync status page.
+// ============================================================================
+const SYNC_STATS_KEY = "wearable_sync_stats";
+
+export interface SyncStats {
+  last_attempt_at: number | null;
+  last_success_at: number | null;
+  last_inserted: number | null;
+  last_error: string | null;
+  total_inserted: number;
+  attempts: number;
+  failures: number;
+}
+
+const EMPTY_STATS: SyncStats = {
+  last_attempt_at: null,
+  last_success_at: null,
+  last_inserted: null,
+  last_error: null,
+  total_inserted: 0,
+  attempts: 0,
+  failures: 0,
+};
+
+export function getSyncStats(): SyncStats {
+  try {
+    const raw = localStorage.getItem(SYNC_STATS_KEY);
+    if (!raw) return { ...EMPTY_STATS };
+    return { ...EMPTY_STATS, ...JSON.parse(raw) };
+  } catch {
+    return { ...EMPTY_STATS };
+  }
+}
+
+export function clearSyncStats() {
+  localStorage.removeItem(SYNC_STATS_KEY);
+}
+
+function recordSyncResult(r: { ok: boolean; inserted?: number; error?: string; at: number }) {
+  const s = getSyncStats();
+  s.attempts += 1;
+  s.last_attempt_at = r.at;
+  if (r.ok) {
+    s.last_success_at = r.at;
+    s.last_inserted = r.inserted ?? 0;
+    s.total_inserted += r.inserted ?? 0;
+    s.last_error = null;
+  } else {
+    s.failures += 1;
+    s.last_error = r.error ?? "Unknown error";
+  }
+  try { localStorage.setItem(SYNC_STATS_KEY, JSON.stringify(s)); } catch {}
+}
+
+export async function getSampleCount(): Promise<number> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return 0;
+  const { count } = await supabase
+    .from("wearable_samples")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", user.id);
+  return count ?? 0;
 }
 
 /** 14-day initial backfill. */
