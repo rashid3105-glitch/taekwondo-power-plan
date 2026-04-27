@@ -7458,6 +7458,7 @@ const translations = {
     newBadge: "جديد",
     bulkSelectionHint: "حدد الرياضيين أدناه لإرسال الرسائل أو التذكيرات أو إنشاء الخطط بشكل مجمع.",
     selectAll: "تحديد الكل",
+    deselectAll: "إلغاء تحديد الكل",
     clearSelection: "مسح",
     messageAthlete: "إرسال رسالة",
     inbox: "صندوق الوارد",
