@@ -126,6 +126,21 @@ export default function Dashboard() {
     loadData();
   }, []);
 
+  // Background pull from Apple Health / Health Connect on app open, then
+  // auto-attach matched workout sessions to today's logs.
+  useEffect(() => {
+    (async () => {
+      try {
+        const { syncOnAppOpen, autoAttachWorkoutLogs } = await import("@/lib/wearables");
+        const inserted = await syncOnAppOpen();
+        if (inserted > 0) {
+          const today = new Date().toISOString().slice(0, 10);
+          await autoAttachWorkoutLogs(today);
+        }
+      } catch { /* best effort */ }
+    })();
+  }, []);
+
   // Auto-flush queued offline workout logs when connectivity returns.
   useEffect(() => {
     const onOnline = async () => {
