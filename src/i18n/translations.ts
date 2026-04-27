@@ -2881,8 +2881,6 @@ const translations = {
     bulkPartialFailure: "Nogle stævner kunne ikke oprettes",
     bulkSelectAtLeastOne: "Vælg mindst én atlet",
     selectAthletes: "Vælg atleter",
-    selectAll: "Vælg alle",
-    deselectAll: "Fravælg alle",
     defaultWeightClass: "Standard vægtklasse (kg)",
     weightOverride: "Vægtklasse for denne atlet",
     weightOverrideHint: "Vægtklassen forudfyldes fra hver atlets profil. Lad feltet være tomt for at bruge standard.",
