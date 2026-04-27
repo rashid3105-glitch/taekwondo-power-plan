@@ -149,6 +149,9 @@ export default function WearablesSettings() {
                 {t("wearableDisconnect")}
               </Button>
             </div>
+            <Button variant="ghost" size="sm" className="w-full" onClick={() => navigate("/wearables/sync")}>
+              View sync status & errors
+            </Button>
           </CardContent>
         </Card>
       ) : (
