@@ -117,6 +117,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
   const { t, locale } = useLanguage();
   const navigate = useNavigate();
   const [generatingPlan, setGeneratingPlan] = useState(false);
+  const [editing, setEditing] = useState(false);
   const [generatingRehab, setGeneratingRehab] = useState(false);
   const [rehabDescription, setRehabDescription] = useState("");
   const [savingSchedule, setSavingSchedule] = useState(false);
