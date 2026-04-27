@@ -91,7 +91,10 @@ export async function syncCompetitionReflections(): Promise<ReflectionSyncResult
         result.flushed += 1;
       } catch (e: any) {
         result.failed += 1;
-        result.errors.push(e?.message || String(e));
+        const msg = e?.message || String(e);
+        result.errors.push(msg);
+        // eslint-disable-next-line no-console
+        console.warn("[competitionReflectionSync] intent failed", intent.key, msg);
       }
     }
   } finally {
