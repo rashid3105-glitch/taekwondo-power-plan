@@ -29,7 +29,8 @@ import { SplashScreen } from "@/components/SplashScreen";
 import { ReadinessCard } from "@/components/ReadinessCard";
 import { RecoveryTile } from "@/components/RecoveryTile";
 import { ReflectionPromptCard } from "@/components/ReflectionPromptCard";
-import { Trophy } from "lucide-react";
+import { Trophy, Quote as QuoteIcon, Calendar as CalendarIcon } from "lucide-react";
+import { getDailyQuote, type Locale as QuoteLocale } from "@/data/motivationalQuotes";
 
 interface Profile {
   display_name: string;
