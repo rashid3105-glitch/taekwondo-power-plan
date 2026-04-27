@@ -1,40 +1,34 @@
-## What's actually happening
+## Problem
 
-Zakinah and Danilo's reflections are **not in the database** — only Farooq's row exists in `competition_reflections`. Their British Open 2026 competitions are there, but no reflection submission ever reached the server, and `generate-competition-reflection` has zero edge function logs for them.
+The "Sync failed — Edge Function returned a non-2xx status code" toast on the reflection screen is caused by a server-side validation bug in `generate-competition-reflection`.
 
-The post-competition reflection flow is **offline-first**: when an athlete completes the 4 steps, the submission is written to IndexedDB on their device and queued in an outbox. Only when their browser comes back online (and the tab is open) does the sync engine call the AI function and insert the row. If they finished the form on the bus / arena Wi-Fi and then closed the app before reconnecting — or the AI call failed silently — their answers are stranded on their phone and the coach sees nothing.
+The reflection wizard collects ratings on a **1–10 scale** (visible in the screenshot: "Overall performance 9/10", "Emotional control 6/10", etc. and the prompt itself says "1=poor, 10=excellent"), but the edge function rejects anything above 5:
 
-This means two things to fix:
+```ts
+if (typeof v !== "number" || v < 1 || v > 5)
+  return json({ error: "Ratings must be 1-5" }, 400);
+```
 
-1. **Recover their actual answers** — they need to reopen the app on the same device/browser where they filled it in, while online. The queued submission will then sync automatically (or we can prompt them).
-2. **Prevent this happening again** — make the offline state visible to the athlete and give the coach a signal so we don't silently lose reflections.
+Every submission therefore returns 400, the outbox marks it as failed, and reflections never reach the database. This explains why Zakinah and Danilo's reflections have been stuck pending — they were never bad data, the server was rejecting them.
 
-## Plan
+Edge logs confirm a steady stream of 400 responses from this function.
 
-### 1. Athlete-side visibility for stuck submissions
-In `PostCompetitionReflection.tsx` and on the dashboard reflection card:
-- Show a clear **"Pending sync"** banner whenever any reflection has `pending: true` in IndexedDB, with a manual **"Sync now"** button that calls `syncCompetitionReflections()`.
-- After submit, if `navigator.onLine === false`, show an explicit toast: "Saved on this device — will send to your coach when you're back online." Currently the success toast doesn't make this clear.
-- On app load (once, when online), automatically retry the outbox and toast the athlete if anything was flushed: "1 reflection synced to your coach."
+## Fix
 
-### 2. Coach-side empty-state hint
-In `CoachAthleteReflections.tsx`, when an athlete has competitions in the past but no reflections, show a soft hint: "No reflections yet for [Athlete]. If they completed one offline, ask them to open the app while online to sync." Plus a button to send them an event reminder pointing at the reflection.
+**One-line change** in `supabase/functions/generate-competition-reflection/index.ts`:
 
-### 3. Server-side safety net (optional, recommended)
-Add a fallback path in `useOfflineCompetitionReflections.submitOffline`: if the user is **online** at submit time, attempt a direct synchronous insert + AI call first, and only fall back to the outbox on failure. Today we always queue first, which is fragile when the AI call later fails and the user never reopens the app.
+- Update the rating bounds check from `v < 1 || v > 5` to `v < 1 || v > 10`.
+- Update the error message to "Ratings must be 1-10".
 
-### 4. Immediate action for Zakinah and Danilo
-Reach out and ask each to:
-- Open the app on the **same phone/browser** they used to fill in the reflection
-- Ensure they're online (Wi-Fi or mobile data)
-- Wait for the auto-sync, or pull-to-refresh on the dashboard
+That's the only required change — the AI prompt and the rest of the function already operate on a 1–10 scale.
 
-Once they do, the queued row will hit the AI function and appear in your coach view automatically. If they say they never see a "pending" indicator, the data was likely lost (browser cache cleared, different device, etc.) and they'll need to re-submit.
+## After deploy
 
-## Files to touch
-- `src/components/PostCompetitionReflection.tsx` — pending banner, clearer offline toast, manual sync button
-- `src/hooks/useOfflineCompetitionReflections.ts` — try-online-first path; expose `pendingCount`
-- `src/components/coach/CoachAthleteReflections.tsx` — improved empty state with reminder CTA
-- `src/lib/competitionReflectionSyncEngine.ts` — surface per-intent failure reasons (currently swallowed)
+- Existing pending reflections in athletes' offline outboxes will sync automatically the next time those athletes open the app online (the sync engine retries on reconnect and on the manual "Sync now" button we already added).
+- Ask Zakinah and Danilo to open the app once with internet — their reflections should then appear under the Mental tab in the Coach Dashboard.
 
-No DB schema or RLS changes needed — the data path is fine, the issue is purely client-side delivery.
+## Files
+
+- `supabase/functions/generate-competition-reflection/index.ts` — fix rating range validator (1 line + error message).
+
+No client, schema, or RLS changes needed.
