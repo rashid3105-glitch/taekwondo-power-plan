@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Sun, CheckCircle2, AlertTriangle, XCircle, CloudOff } from "lucide-react";
+import { Sun, CheckCircle2, AlertTriangle, XCircle, CloudOff, Watch } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import {
