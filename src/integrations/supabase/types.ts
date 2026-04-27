@@ -879,6 +879,7 @@ export type Database = {
           is_demo: boolean
           is_public: boolean
           last_seen_at: string | null
+          owns_wearable: boolean
           payment_date: string | null
           payment_status: string
           program_weeks: number | null
@@ -913,6 +914,7 @@ export type Database = {
           is_demo?: boolean
           is_public?: boolean
           last_seen_at?: string | null
+          owns_wearable?: boolean
           payment_date?: string | null
           payment_status?: string
           program_weeks?: number | null
@@ -947,6 +949,7 @@ export type Database = {
           is_demo?: boolean
           is_public?: boolean
           last_seen_at?: string | null
+          owns_wearable?: boolean
           payment_date?: string | null
           payment_status?: string
           program_weeks?: number | null
@@ -1327,6 +1330,126 @@ export type Database = {
         }
         Relationships: []
       }
+      wearable_connections: {
+        Row: {
+          connected_at: string
+          device_label: string | null
+          granted_scopes: string[]
+          id: string
+          last_sync_at: string | null
+          provider: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          connected_at?: string
+          device_label?: string | null
+          granted_scopes?: string[]
+          id?: string
+          last_sync_at?: string | null
+          provider: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          connected_at?: string
+          device_label?: string | null
+          granted_scopes?: string[]
+          id?: string
+          last_sync_at?: string | null
+          provider?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wearable_daily_summary: {
+        Row: {
+          baseline_hr_7d: number | null
+          baseline_hrv_7d: number | null
+          computed_at: string
+          hrv_rmssd: number | null
+          resting_hr: number | null
+          sleep_minutes: number | null
+          steps: number | null
+          summary_date: string
+          user_id: string
+          workout_count: number
+        }
+        Insert: {
+          baseline_hr_7d?: number | null
+          baseline_hrv_7d?: number | null
+          computed_at?: string
+          hrv_rmssd?: number | null
+          resting_hr?: number | null
+          sleep_minutes?: number | null
+          steps?: number | null
+          summary_date: string
+          user_id: string
+          workout_count?: number
+        }
+        Update: {
+          baseline_hr_7d?: number | null
+          baseline_hrv_7d?: number | null
+          computed_at?: string
+          hrv_rmssd?: number | null
+          resting_hr?: number | null
+          sleep_minutes?: number | null
+          steps?: number | null
+          summary_date?: string
+          user_id?: string
+          workout_count?: number
+        }
+        Relationships: []
+      }
+      wearable_samples: {
+        Row: {
+          created_at: string
+          end_at: string | null
+          external_id: string | null
+          id: string
+          metric_type: string
+          payload: Json
+          provider: string
+          source_device: string | null
+          start_at: string
+          unit: string | null
+          user_id: string
+          value_numeric: number | null
+        }
+        Insert: {
+          created_at?: string
+          end_at?: string | null
+          external_id?: string | null
+          id?: string
+          metric_type: string
+          payload?: Json
+          provider: string
+          source_device?: string | null
+          start_at: string
+          unit?: string | null
+          user_id: string
+          value_numeric?: number | null
+        }
+        Update: {
+          created_at?: string
+          end_at?: string | null
+          external_id?: string | null
+          id?: string
+          metric_type?: string
+          payload?: Json
+          provider?: string
+          source_device?: string | null
+          start_at?: string
+          unit?: string | null
+          user_id?: string
+          value_numeric?: number | null
+        }
+        Relationships: []
+      }
       weight_logs: {
         Row: {
           created_at: string
@@ -1543,6 +1666,10 @@ export type Database = {
           msg_id: number
           read_ct: number
         }[]
+      }
+      recompute_wearable_summary: {
+        Args: { _from: string; _to: string; _user_id: string }
+        Returns: undefined
       }
       users_share_club: {
         Args: { _first_user_id: string; _second_user_id: string }
