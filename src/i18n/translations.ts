@@ -7326,8 +7326,6 @@ const translations = {
     bulkPartialFailure: "تعذر إنشاء بعض المنافسات",
     bulkSelectAtLeastOne: "اختر لاعباً واحداً على الأقل",
     selectAthletes: "اختر اللاعبين",
-    selectAll: "اختر الكل",
-    deselectAll: "إلغاء تحديد الكل",
     defaultWeightClass: "فئة الوزن الافتراضية (كجم)",
     weightOverride: "فئة الوزن لهذا اللاعب",
     weightOverrideHint: "تتم تعبئة فئة الوزن من ملف كل لاعب. اتركه فارغًا لاستخدام الافتراضي.",
