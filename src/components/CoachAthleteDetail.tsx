@@ -288,13 +288,34 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
         </TabsList>
 
         <TabsContent value="profile" className="space-y-4 mt-3">
+          {/* Lock / Edit toggle */}
+          <div className="flex items-center justify-between rounded-lg border border-border bg-muted/30 px-3 py-2">
+            <span className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+              {editing ? (
+                <><Pencil className="h-3.5 w-3.5 text-primary" /> {t("editAction")}</>
+              ) : (
+                <><Lock className="h-3.5 w-3.5" /> {t("readOnly")}</>
+              )}
+            </span>
+            <Button
+              size="sm"
+              variant={editing ? "default" : "outline"}
+              onClick={() => setEditing((v) => !v)}
+              aria-label={editing ? t("lockAction") : t("editAction")}
+              title={editing ? t("lockAction") : t("editAction")}
+            >
+              {editing ? <Lock className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
+            </Button>
+          </div>
+
+          <fieldset disabled={!editing} className="space-y-4 group">
           {/* Athlete Profile */}
-          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
+          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3 group-disabled:opacity-70">
             <div className="flex items-center justify-between">
               <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
                 <UserCog className="h-4 w-4" /> {t("athleteProfile")}
               </h4>
-              <Button size="sm" variant="outline" onClick={saveProfile} disabled={savingProfile}>
+              <Button size="sm" variant="outline" onClick={saveProfile} disabled={!editing || savingProfile}>
                 {savingProfile ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Save className="h-4 w-4 mr-1" /> {t("save")}</>}
               </Button>
             </div>
@@ -327,7 +348,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
               </div>
               <div className="space-y-1">
                 <Label className="text-xs">{t("beltLevel")}</Label>
-                <Select value={beltLevel} onValueChange={setBeltLevel}>
+                <Select value={beltLevel} onValueChange={setBeltLevel} disabled={!editing}>
                   <SelectTrigger className="h-9">
                     <SelectValue />
                   </SelectTrigger>
@@ -353,7 +374,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
             </div>
             <div className="space-y-1">
               <Label className="text-xs">{t("discipline")}</Label>
-              <Select value={discipline} onValueChange={setDiscipline}>
+              <Select value={discipline} onValueChange={setDiscipline} disabled={!editing}>
                 <SelectTrigger className="h-9">
                   <SelectValue />
                 </SelectTrigger>
@@ -365,7 +386,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
             </div>
             <div className="space-y-1">
               <Label className="text-xs">{t("country")}</Label>
-              <Select value={country} onValueChange={setCountry}>
+              <Select value={country} onValueChange={setCountry} disabled={!editing}>
                 <SelectTrigger className="h-9">
                   <SelectValue placeholder={t("chooseCountry")} />
                 </SelectTrigger>
@@ -378,7 +399,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
             </div>
           </div>
           {/* Weekly Schedule */}
-          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
+          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3 group-disabled:opacity-70">
             <div className="flex items-center justify-between">
               <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
                 <Calendar className="h-4 w-4" /> {t("weeklySchedule")}
@@ -387,7 +408,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
                 size="sm"
                 variant="outline"
                 onClick={saveSchedule}
-                disabled={savingSchedule}
+                disabled={!editing || savingSchedule}
               >
                 {savingSchedule ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Save className="h-4 w-4 mr-1" /> {t("save")}</>}
               </Button>
@@ -397,7 +418,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
           </div>
 
           {/* Training Goals & Plan */}
-          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
+          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3 group-disabled:opacity-70">
             <div className="flex items-center justify-between">
               <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
                 <Target className="h-4 w-4" /> {t("trainingGoals")}
@@ -410,10 +431,12 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
                   key={goal}
                   type="button"
                   onClick={() => toggleGoal(goal)}
+                  disabled={!editing}
                   data-active={selectedGoals.includes(goal)}
                   className="rounded-full px-3 py-1.5 text-xs font-medium border border-border transition-colors cursor-pointer
                     data-[active=true]:bg-primary data-[active=true]:text-primary-foreground
-                    data-[active=false]:text-muted-foreground hover:text-foreground"
+                    data-[active=false]:text-muted-foreground hover:text-foreground
+                    disabled:cursor-not-allowed disabled:hover:text-muted-foreground"
                 >
                   {t(goal)}
                 </button>
@@ -422,7 +445,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
           </div>
 
           {/* Program Length */}
-          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
+          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3 group-disabled:opacity-70">
             <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
               <Calendar className="h-4 w-4" /> {t("programLength")}
             </h4>
@@ -433,6 +456,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
                 min={4}
                 max={12}
                 step={1}
+                disabled={!editing}
                 className="flex-1"
               />
               <span className="text-sm font-bold text-foreground min-w-[60px] text-right">{programWeeks} {t("weeks")}</span>
@@ -440,12 +464,12 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
           </div>
 
           {/* Training Plan */}
-          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
+          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3 group-disabled:opacity-70">
             <div className="flex items-center justify-between">
               <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
                 <Zap className="h-4 w-4" /> {t("plan")}
               </h4>
-              <Button onClick={generatePlan} disabled={generatingPlan} size="sm">
+              <Button onClick={generatePlan} disabled={!editing || generatingPlan} size="sm">
                 {generatingPlan ? (
                   <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
                 ) : (
@@ -464,7 +488,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
           </div>
 
           {/* Rehab Plan */}
-          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
+          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3 group-disabled:opacity-70">
             <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
               <Heart className="h-4 w-4" /> {t("injuryRehabPlan")}
             </h4>
@@ -478,7 +502,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
               />
               <Button
                 onClick={generateRehabPlan}
-                disabled={generatingRehab || !rehabDescription.trim()}
+                disabled={!editing || generatingRehab || !rehabDescription.trim()}
                 size="sm"
                 className="w-full sm:w-auto"
               >
@@ -496,6 +520,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
               }} />
             )}
           </div>
+          </fieldset>
         </TabsContent>
 
         <TabsContent value="mental" className="space-y-4 mt-3">
