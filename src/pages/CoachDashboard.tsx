@@ -26,6 +26,7 @@ import { SessionAttendance } from "@/components/coach/SessionAttendance";
 import { WeeklySquadExport } from "@/components/coach/WeeklySquadExport";
 import { CoachSentHistory } from "@/components/coach/CoachSentHistory";
 import { CreateAthleteDialog } from "@/components/coach/CreateAthleteDialog";
+import { CoachBulkCreateCompetitionDialog } from "@/components/coach/CoachBulkCreateCompetitionDialog";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   ArrowLeft, Loader2, Zap, User, Users, NotebookPen, UserCog,
@@ -311,8 +312,17 @@ export default function CoachDashboard() {
                   <TabsTrigger value="messages">{t("messagesTab")}</TabsTrigger>
                 </TabsList>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <WeeklySquadExport athletes={athletes as any} />
+                <CoachBulkCreateCompetitionDialog
+                  athletes={athletes.map((a) => ({
+                    user_id: a.user_id,
+                    display_name: a.display_name,
+                    weight_kg: a.weight_kg,
+                    avatar_url: a.avatar_url,
+                  }))}
+                  onCreated={async () => { await loadAthletes(); }}
+                />
                 <CreateAthleteDialog
                   disabled={!isAdmin && athletes.length >= MAX_ATHLETES}
                   onCreated={async () => { await loadAthletes(); }}
