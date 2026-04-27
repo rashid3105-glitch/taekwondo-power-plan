@@ -199,10 +199,31 @@ export function PostCompetitionReflection({ competition, upcomingCompetitions, o
 
   // ---------- Render ----------
 
+  const pendingBanner = pendingCount > 0 ? (
+    <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 flex items-center gap-2 text-xs text-amber-800 dark:text-amber-200">
+      <CloudOff className="h-4 w-4 flex-shrink-0" />
+      <div className="flex-1 min-w-0">
+        <div className="font-medium">{t("reflectionPendingTitle")}</div>
+        <div className="text-[11px] opacity-80">{t("reflectionPendingDesc")}</div>
+      </div>
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={handleSyncNow}
+        disabled={syncing || !navigator.onLine}
+        className="h-8 px-2 text-[11px]"
+      >
+        {syncing ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3 mr-1" />}
+        {t("reflectionSyncNow")}
+      </Button>
+    </div>
+  ) : null;
+
   // Step 4: results screen
   if (existing && step === 4) {
     return (
       <div className="space-y-4">
+        {pendingBanner}
         <ResultsView
           reflection={existing}
           competition={competition}
