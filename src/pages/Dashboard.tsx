@@ -84,6 +84,7 @@ export default function Dashboard() {
   const [rehabPlan, setRehabPlan] = useState<any>(null);
   const [rehabPlans, setRehabPlans] = useState<RehabPlanRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [nextEvent, setNextEvent] = useState<{ name: string; event_date: string; location: string | null; priority: string } | null>(null);
   const [activeTab, setActiveTab] = useState<"hub" | "plan" | "rehab" | "mental" | "progress" | "nutrition" | "testing">("hub");
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
