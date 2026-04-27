@@ -65,8 +65,10 @@ export function PostCompetitionReflection({ competition, upcomingCompetitions, o
   const { t, locale } = useLanguage();
   const { toast } = useToast();
   const l = (locale as SupportedLocale) || "en";
-  const { reflections, submitOffline, removeReflection, updateNextCompetition, refresh } =
-    useOfflineCompetitionReflections();
+  const {
+    reflections, pendingCount, syncing,
+    submitOffline, removeReflection, updateNextCompetition, refresh, syncNow,
+  } = useOfflineCompetitionReflections();
 
   // existing reflection for this competition (if any)
   const existing = useMemo(
