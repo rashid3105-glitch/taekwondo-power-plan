@@ -1506,6 +1506,7 @@ const translations = {
     newBadge: "New",
     bulkSelectionHint: "Tick athletes below to send messages, reminders, or generate plans in bulk.",
     selectAll: "Select all",
+    deselectAll: "Deselect all",
     clearSelection: "Clear",
     messageAthlete: "Send message",
     inbox: "Inbox",
