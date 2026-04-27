@@ -1,54 +1,40 @@
-## Goal
+## What's actually happening
 
-Let a coach create one competition (name, date, weight class, priority, location) and assign it to **multiple athletes at once** — instead of having to open each athlete and add it individually.
+Zakinah and Danilo's reflections are **not in the database** — only Farooq's row exists in `competition_reflections`. Their British Open 2026 competitions are there, but no reflection submission ever reached the server, and `generate-competition-reflection` has zero edge function logs for them.
 
-## Where it lives
+The post-competition reflection flow is **offline-first**: when an athlete completes the 4 steps, the submission is written to IndexedDB on their device and queued in an outbox. Only when their browser comes back online (and the tab is open) does the sync engine call the AI function and insert the row. If they finished the form on the bus / arena Wi-Fi and then closed the app before reconnecting — or the AI call failed silently — their answers are stranded on their phone and the coach sees nothing.
 
-A new button **"Create competition for multiple athletes"** in the Coach Dashboard → **Squad** tab header row, right next to the existing `WeeklySquadExport` and `CreateAthleteDialog` buttons (`src/pages/CoachDashboard.tsx` ~line 314).
+This means two things to fix:
 
-## UX flow
+1. **Recover their actual answers** — they need to reopen the app on the same device/browser where they filled it in, while online. The queued submission will then sync automatically (or we can prompt them).
+2. **Prevent this happening again** — make the offline state visible to the athlete and give the coach a signal so we don't silently lose reflections.
 
-```text
-[Coach Dashboard → Squad]
-   └─ "Bulk competition" button
-       └─ Dialog opens:
-            • Athlete picker (checkbox list of managed athletes,
-              with "Select all", search, and per-row weight class override)
-            • Competition fields (name *, date *, priority A/B/C, location)
-            • Default weight class (applied to all unless overridden)
-            • [Create for N athletes] button
-       └─ On submit: one edge-function call returns per-athlete success/fail
-       └─ Toast: "Created for 8 of 8 athletes" (or lists failures)
-```
+## Plan
 
-Each athlete gets their **own row** in the `competitions` table (so each can later edit, generate a plan, or reflect on it independently). They are not linked — this is a convenience bulk-create, not a shared event.
+### 1. Athlete-side visibility for stuck submissions
+In `PostCompetitionReflection.tsx` and on the dashboard reflection card:
+- Show a clear **"Pending sync"** banner whenever any reflection has `pending: true` in IndexedDB, with a manual **"Sync now"** button that calls `syncCompetitionReflections()`.
+- After submit, if `navigator.onLine === false`, show an explicit toast: "Saved on this device — will send to your coach when you're back online." Currently the success toast doesn't make this clear.
+- On app load (once, when online), automatically retry the outbox and toast the athlete if anything was flushed: "1 reflection synced to your coach."
 
-## Implementation
+### 2. Coach-side empty-state hint
+In `CoachAthleteReflections.tsx`, when an athlete has competitions in the past but no reflections, show a soft hint: "No reflections yet for [Athlete]. If they completed one offline, ask them to open the app while online to sync." Plus a button to send them an event reminder pointing at the reflection.
 
-### 1. New component
-`src/components/coach/CoachBulkCreateCompetitionDialog.tsx`
-- Props: `athletes: { user_id, display_name, weight_kg }[]`, `onCreated?: () => void`
-- State: selected athlete IDs (Set), per-athlete weight overrides, shared form fields
-- Pre-fills each athlete's default weight from their profile `weight_kg` (editable)
-- Submit calls one edge function with `{ athlete_ids[], name, event_date, priority, location, default_weight_class_kg, weight_overrides{} }`
+### 3. Server-side safety net (optional, recommended)
+Add a fallback path in `useOfflineCompetitionReflections.submitOffline`: if the user is **online** at submit time, attempt a direct synchronous insert + AI call first, and only fall back to the outbox on failure. Today we always queue first, which is fragile when the AI call later fails and the user never reopens the app.
 
-### 2. New edge function
-`supabase/functions/create-athlete-competitions-bulk/index.ts`
-- Auth: validate JWT, get caller `user.id`
-- Authorize: caller must be admin OR every `athlete_id` must have a `coach_athletes` row with `coach_id = user.id`
-- For each athlete, insert into `competitions` (service role) with that athlete's resolved weight class
-- Return `{ created: [{ athlete_id, competition_id }], failed: [{ athlete_id, error }] }`
-- Input validation matches existing `create-athlete-competition` (name ≤120, valid date, priority A/B/C, weight 20–200, max 100 athletes per call)
+### 4. Immediate action for Zakinah and Danilo
+Reach out and ask each to:
+- Open the app on the **same phone/browser** they used to fill in the reflection
+- Ensure they're online (Wi-Fi or mobile data)
+- Wait for the auto-sync, or pull-to-refresh on the dashboard
 
-### 3. Wire into Coach Dashboard
-- Import + render `<CoachBulkCreateCompetitionDialog athletes={athletes} onCreated={loadEverything} />` in the Squad tab header (only managed athletes, not club-only/read-only).
+Once they do, the queued row will hit the AI function and appear in your coach view automatically. If they say they never see a "pending" indicator, the data was likely lost (browser cache cleared, different device, etc.) and they'll need to re-submit.
 
-### 4. Translations
-Add keys to `src/i18n/translations.ts` (en/da/sv/de/ar):
-- `bulkCompetitionTitle`, `bulkCompetitionButton`, `selectAthletes`, `selectAll`, `defaultWeightClass`, `weightOverride`, `createForN`, `bulkCreatedSummary`, `bulkPartialFailure`.
+## Files to touch
+- `src/components/PostCompetitionReflection.tsx` — pending banner, clearer offline toast, manual sync button
+- `src/hooks/useOfflineCompetitionReflections.ts` — try-online-first path; expose `pendingCount`
+- `src/components/coach/CoachAthleteReflections.tsx` — improved empty state with reminder CTA
+- `src/lib/competitionReflectionSyncEngine.ts` — surface per-intent failure reasons (currently swallowed)
 
-## Notes / out of scope
-
-- One competition row per athlete (independent records). No shared "event" table.
-- Bulk **edit/delete** of these competitions later is out of scope — coaches still edit each athlete's competition individually from that athlete's detail page.
-- Club-only (read-only) athletes are excluded from the picker since coaches can't write to them.
+No DB schema or RLS changes needed — the data path is fine, the issue is purely client-side delivery.
