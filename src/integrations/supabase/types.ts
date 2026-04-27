@@ -1525,47 +1525,62 @@ export type Database = {
         Row: {
           actual_reps: string | null
           actual_sets: number | null
+          avg_hr: number | null
+          calories: number | null
           completed: boolean
           created_at: string
           day_index: number
+          duration_minutes: number | null
           exercise_index: number
           id: string
           logged_date: string
+          max_hr: number | null
           notes: string | null
           plan_id: string
           session_index: number
           updated_at: string
           user_id: string
+          wearable_source: string | null
         }
         Insert: {
           actual_reps?: string | null
           actual_sets?: number | null
+          avg_hr?: number | null
+          calories?: number | null
           completed?: boolean
           created_at?: string
           day_index: number
+          duration_minutes?: number | null
           exercise_index: number
           id?: string
           logged_date?: string
+          max_hr?: number | null
           notes?: string | null
           plan_id: string
           session_index?: number
           updated_at?: string
           user_id: string
+          wearable_source?: string | null
         }
         Update: {
           actual_reps?: string | null
           actual_sets?: number | null
+          avg_hr?: number | null
+          calories?: number | null
           completed?: boolean
           created_at?: string
           day_index?: number
+          duration_minutes?: number | null
           exercise_index?: number
           id?: string
           logged_date?: string
+          max_hr?: number | null
           notes?: string | null
           plan_id?: string
           session_index?: number
           updated_at?: string
           user_id?: string
+          wearable_source?: string | null
         }
         Relationships: [
           {
@@ -1593,6 +1608,18 @@ export type Database = {
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
         Returns: number
+      }
+      get_athlete_recovery_trend: {
+        Args: { _athlete_id: string; _days?: number }
+        Returns: {
+          baseline_hr_7d: number
+          baseline_hrv_7d: number
+          hrv_rmssd: number
+          resting_hr: number
+          sleep_minutes: number
+          steps: number
+          summary_date: string
+        }[]
       }
       get_club_member_profiles: {
         Args: { _club_id: string }
