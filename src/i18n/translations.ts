@@ -4532,6 +4532,7 @@ const translations = {
     newBadge: "Ny",
     bulkSelectionHint: "Markera atleter nedan för att skicka meddelanden, påminnelser eller generera planer i bulk.",
     selectAll: "Välj alla",
+    deselectAll: "Avmarkera alla",
     clearSelection: "Rensa",
     messageAthlete: "Skicka meddelande",
     inbox: "Inkorg",
