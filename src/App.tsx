@@ -34,6 +34,7 @@ import Programs from "./pages/Programs";
 import Contact from "./pages/Contact";
 import Install from "./pages/Install";
 import WearablesSettings from "./pages/WearablesSettings";
+import WearablesSync from "./pages/WearablesSync";
 import Competitions from "./pages/Competitions";
 import CompetitionReflection from "./pages/CompetitionReflection";
 import PublicAthlete from "./pages/PublicAthlete";
