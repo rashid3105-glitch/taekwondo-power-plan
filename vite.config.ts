@@ -64,4 +64,10 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      // Native-only Capacitor plugins; loaded dynamically at runtime on device.
+      external: ["capacitor-health", "capacitor-health-connect"],
+    },
+  },
 }));
