@@ -249,7 +249,9 @@ export function PostCompetitionReflection({ competition, upcomingCompetitions, o
   }
 
   return (
-    <Card className="p-4 sm:p-6 space-y-5">
+    <div className="space-y-3">
+      {pendingBanner}
+      <Card className="p-4 sm:p-6 space-y-5">
       <div className="space-y-2">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
