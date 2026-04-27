@@ -38,7 +38,7 @@ serve(async (req) => {
     }
     if (Object.keys(ratings).length > 12) return json({ error: "Too many ratings" }, 400);
     for (const v of Object.values(ratings)) {
-      if (typeof v !== "number" || v < 1 || v > 5) return json({ error: "Ratings must be 1-5" }, 400);
+      if (typeof v !== "number" || v < 1 || v > 10) return json({ error: "Ratings must be 1-10" }, 400);
     }
     // Validate reflections (free text, capped 280 chars per field)
     if (reflections && typeof reflections === "object") {
