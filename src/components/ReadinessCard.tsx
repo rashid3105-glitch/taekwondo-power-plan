@@ -202,9 +202,22 @@ export function ReadinessCard() {
       </CardHeader>
       <CardContent className="space-y-4">
         <div>
-          <Label className="text-xs">{t("readinessSleep")}: <strong>{sleep[0]} {t("readinessHours")}</strong></Label>
-          <Slider value={sleep} onValueChange={setSleep} min={0} max={12} step={0.5} />
+          <Label className="text-xs flex items-center gap-1.5">
+            {t("readinessSleep")}: <strong>{sleep[0]} {t("readinessHours")}</strong>
+            {prefilledFromWatch && (
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-primary/15 text-primary">
+                <Watch className="h-2.5 w-2.5" /> {t("readinessFromWatch")}
+              </span>
+            )}
+          </Label>
+          <Slider value={sleep} onValueChange={(v) => { setSleep(v); setPrefilledFromWatch(false); }} min={0} max={12} step={0.5} />
         </div>
+        {hrvFromWatch !== null && (
+          <div className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+            <Watch className="h-3 w-3 text-primary" />
+            HRV (RMSSD): <strong className="text-foreground">{hrvFromWatch}</strong> ms
+          </div>
+        )}
         <div>
           <Label className="text-xs">{t("readinessSoreness")}: <strong>{soreness[0]}/5</strong> ({sorenessWord})</Label>
           <Slider value={soreness} onValueChange={setSoreness} min={1} max={5} step={1} />
