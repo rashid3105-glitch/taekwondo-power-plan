@@ -241,6 +241,19 @@ export default function Dashboard() {
       const active = (rehabRes.data as unknown as RehabPlanRow[]).find(r => r.is_active);
       if (active) setRehabPlan(active.plan_data);
     }
+
+    // Fetch next upcoming competition / camp (today or later)
+    const todayIso = new Date().toISOString().slice(0, 10);
+    const { data: nextComp } = await supabase
+      .from("competitions")
+      .select("name, event_date, location, priority")
+      .eq("user_id", user.id)
+      .gte("event_date", todayIso)
+      .order("event_date", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+    setNextEvent((nextComp as any) || null);
+
     setLoading(false);
   };
 
