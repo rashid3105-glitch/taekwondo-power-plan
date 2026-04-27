@@ -50,6 +50,17 @@ export function useOfflineCompetitionReflections() {
   const [reflections, setReflections] = useState<CachedReflection[]>([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
+  const [pendingCount, setPendingCount] = useState(0);
+  const [syncing, setSyncing] = useState(false);
+
+  const recountPending = useCallback(async () => {
+    try {
+      const out = await listReflectionOutbox();
+      setPendingCount(out.length);
+    } catch {
+      // ignore — IndexedDB may be unavailable
+    }
+  }, []);
 
   const refresh = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -86,16 +97,35 @@ export function useOfflineCompetitionReflections() {
     }
     const local = await listCachedReflections(user.id);
     setReflections(local);
+    await recountPending();
     setLoading(false);
-  }, []);
+  }, [recountPending]);
 
   useEffect(() => { void refresh(); }, [refresh]);
 
-  // Sync on reconnect.
+  // Manual sync — used by "Sync now" button.
+  const syncNow = useCallback(async (): Promise<ReflectionSyncResult> => {
+    if (syncing) return { flushed: 0, failed: 0, errors: [] };
+    setSyncing(true);
+    try {
+      const r = await syncCompetitionReflections();
+      if (r.flushed > 0 || r.failed > 0) await refresh();
+      return r;
+    } finally {
+      setSyncing(false);
+    }
+  }, [refresh, syncing]);
+
+  // Sync on reconnect — toasts handled by callers via window event.
   useEffect(() => {
     const handler = async () => {
       const r = await syncCompetitionReflections();
-      if (r.flushed > 0) await refresh();
+      if (r.flushed > 0 || r.failed > 0) {
+        await refresh();
+        window.dispatchEvent(
+          new CustomEvent("competition-reflection-sync", { detail: r }),
+        );
+      }
     };
     window.addEventListener("online", handler);
     if (navigator.onLine) void handler();
