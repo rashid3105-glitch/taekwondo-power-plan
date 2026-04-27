@@ -168,9 +168,11 @@ export function useOfflineCompetitionReflections() {
         queued_at: Date.now(),
       });
       setReflections(await listCachedReflections(userId));
+      await recountPending();
 
       if (navigator.onLine) {
         const r = await syncCompetitionReflections();
+        await recountPending();
         if (r.flushed > 0) {
           const fresh = await listCachedReflections(userId);
           setReflections(fresh);
@@ -182,10 +184,11 @@ export function useOfflineCompetitionReflections() {
           );
           return replaced || null;
         }
+        // Online but sync failed — keep pending; caller will toast accordingly.
       }
       return rec;
     },
-    [userId],
+    [userId, recountPending],
   );
 
   const removeReflection = useCallback(
