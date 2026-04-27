@@ -1,7 +1,7 @@
 // React hook providing local-first post-competition reflection list/submit/delete
 // with background sync of queued submissions.
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   listCachedReflections,
@@ -9,9 +9,13 @@ import {
   putCachedReflection,
   deleteCachedReflection,
   queueReflection,
+  listReflectionOutbox,
   type CachedReflection,
 } from "@/lib/competitionReflectionOfflineDB";
-import { syncCompetitionReflections } from "@/lib/competitionReflectionSyncEngine";
+import {
+  syncCompetitionReflections,
+  type ReflectionSyncResult,
+} from "@/lib/competitionReflectionSyncEngine";
 
 interface SubmitInput {
   competition_id: string | null;
