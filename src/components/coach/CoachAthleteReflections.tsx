@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { ReflectionTrendChart } from "@/components/ReflectionTrendChart";
 import { CoachCreateCompetitionDialog } from "@/components/coach/CoachCreateCompetitionDialog";
+import { CoachManualReflectionDialog } from "@/components/coach/CoachManualReflectionDialog";
 
 type SupportedLocale = "en" | "da" | "sv" | "de" | "ar" | "no";
 
