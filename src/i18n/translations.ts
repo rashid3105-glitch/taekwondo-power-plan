@@ -4396,8 +4396,6 @@ const translations = {
     bulkPartialFailure: "Vissa tävlingar kunde inte skapas",
     bulkSelectAtLeastOne: "Välj minst en atlet",
     selectAthletes: "Välj atleter",
-    selectAll: "Välj alla",
-    deselectAll: "Avmarkera alla",
     defaultWeightClass: "Standard viktklass (kg)",
     weightOverride: "Viktklass för denna atlet",
     weightOverrideHint: "Viktklassen förifylls från varje atlets profil. Lämna tomt för att använda standard.",
