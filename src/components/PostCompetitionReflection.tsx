@@ -161,7 +161,16 @@ export function PostCompetitionReflection({ competition, upcomingCompetitions, o
 
       await refresh();
       setStep(4);
-      toast({ title: synced?.ai_plan ? t("reflectionSaved") : t("reflectionSavedOffline") });
+      if (synced?.ai_plan) {
+        toast({ title: t("reflectionSaved") });
+      } else {
+        toast({
+          title: t("reflectionSavedOffline"),
+          description: navigator.onLine
+            ? t("reflectionSavedOnlineRetryDesc")
+            : t("reflectionSavedOfflineDesc"),
+        });
+      }
     } catch (e: any) {
       toast({ title: t("error"), description: e.message, variant: "destructive" });
     } finally {
