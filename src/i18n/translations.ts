@@ -5994,6 +5994,7 @@ const translations = {
     newBadge: "Neu",
     bulkSelectionHint: "Athleten unten ankreuzen, um Nachrichten, Erinnerungen zu senden oder Pläne im Bulk zu erstellen.",
     selectAll: "Alle auswählen",
+    deselectAll: "Alle abwählen",
     clearSelection: "Leeren",
     messageAthlete: "Nachricht senden",
     inbox: "Posteingang",
