@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain, Clock, Apple, Home, Lock, NotebookPen, AlertTriangle, ClipboardList, HelpCircle, Trash2, Menu, Video as VideoIcon, CalendarRange } from "lucide-react";
+import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain, Clock, Apple, Home, Lock, NotebookPen, AlertTriangle, ClipboardList, HelpCircle, Trash2, Menu, Video as VideoIcon, CalendarRange, Watch } from "lucide-react";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
@@ -27,6 +27,7 @@ import { PhysicalTesting } from "@/components/PhysicalTesting";
 import { Separator } from "@/components/ui/separator";
 import { SplashScreen } from "@/components/SplashScreen";
 import { ReadinessCard } from "@/components/ReadinessCard";
+import { RecoveryTile } from "@/components/RecoveryTile";
 import { ReflectionPromptCard } from "@/components/ReflectionPromptCard";
 import { Trophy } from "lucide-react";
 
@@ -394,6 +395,12 @@ export default function Dashboard() {
               <User className="h-4 w-4 shrink-0" />
               <span>{t("profile")}</span>
             </button>
+            {(profile as any)?.owns_wearable && (
+              <button onClick={() => { setMenuOpen(false); navigate("/wearables"); }} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer">
+                <Watch className="h-4 w-4 shrink-0" />
+                <span>{t("wearablesTitle")}</span>
+              </button>
+            )}
             {isCoach && (
               <button onClick={() => { setMenuOpen(false); navigate("/coach"); }} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer">
                 <Users className="h-4 w-4 shrink-0" />
@@ -560,6 +567,7 @@ export default function Dashboard() {
             </div>
             {!isDemo && <ReflectionPromptCard />}
             {!isDemo && <ReadinessCard />}
+            {!isDemo && (profile as any)?.owns_wearable && <RecoveryTile />}
             <div className="grid gap-3 sm:grid-cols-2">
               {([
                 { tab: "plan" as const, icon: Zap, titleKey: "hubTrainingTitle", descKey: "hubTrainingDesc", color: "text-tab-plan", iconBg: "bg-tab-plan/15", borderColor: "border-l-tab-plan", gradient: "radial-gradient(ellipse at 20% 50%, hsl(190 95% 50% / 0.15), transparent 60%)", locked: false },

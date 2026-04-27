@@ -31,6 +31,7 @@ const UpdateProfileSchema = z.object({
   club_id: z.string().uuid().nullable(),
   country: z.string().max(100).nullable(),
   custom_calories: z.number().int().min(500).max(10000).nullable(),
+  owns_wearable: z.boolean().optional(),
   avatar_url: z
     .string()
     .max(500)
