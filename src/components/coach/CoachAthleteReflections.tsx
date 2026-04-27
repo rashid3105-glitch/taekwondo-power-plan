@@ -72,6 +72,7 @@ export function CoachAthleteReflections({ athleteId, athleteName }: Props) {
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [savingId, setSavingId] = useState<string | null>(null);
   const [coachId, setCoachId] = useState<string | null>(null);
+  const [reloadTick, setReloadTick] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
