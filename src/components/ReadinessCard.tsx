@@ -163,6 +163,21 @@ export function ReadinessCard() {
     );
   }
 
+  async function openForm() {
+    setOpen(true);
+    // Best-effort prefill from yesterday's wearable summary.
+    try {
+      const { getYesterdaySummary } = await import("@/lib/wearables");
+      const s = await getYesterdaySummary();
+      if (s?.sleep_minutes && s.sleep_minutes > 60) {
+        const hours = Math.round((s.sleep_minutes / 60) * 2) / 2;
+        setSleep([Math.min(12, Math.max(0, hours))]);
+        setPrefilledFromWatch(true);
+      }
+      if (s?.hrv_rmssd) setHrvFromWatch(Math.round(s.hrv_rmssd));
+    } catch { /* no-op */ }
+  }
+
   if (!open) {
     return (
       <Card className="border-2 border-primary/40 bg-primary/5">
@@ -172,7 +187,7 @@ export function ReadinessCard() {
             <div className="text-sm font-semibold">{t("readinessMorningTitle")}</div>
             <div className="text-xs text-muted-foreground">{t("readinessMorningDesc")}</div>
           </div>
-          <Button size="sm" onClick={() => setOpen(true)}>{t("readinessStart")}</Button>
+          <Button size="sm" onClick={openForm}>{t("readinessStart")}</Button>
         </CardContent>
       </Card>
     );
