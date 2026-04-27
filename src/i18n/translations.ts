@@ -8971,6 +8971,7 @@ const translations = {
     newBadge: "Ny",
     bulkSelectionHint: "Kryss av utøvere nedenfor for å sende meldinger, påminnelser eller generere planer i bulk.",
     selectAll: "Velg alle",
+    deselectAll: "Fjern alle",
     clearSelection: "Tøm",
     messageAthlete: "Send melding",
     inbox: "Innboks",
