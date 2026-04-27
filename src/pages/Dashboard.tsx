@@ -29,6 +29,7 @@ import { SplashScreen } from "@/components/SplashScreen";
 import { ReadinessCard } from "@/components/ReadinessCard";
 import { RecoveryTile } from "@/components/RecoveryTile";
 import { ReflectionPromptCard } from "@/components/ReflectionPromptCard";
+import { WhatsNewInline } from "@/components/landing/WhatsNewInline";
 import { Trophy, Quote as QuoteIcon, Calendar as CalendarIcon } from "lucide-react";
 import { getDailyQuote, type Locale as QuoteLocale } from "@/data/motivationalQuotes";
 
@@ -642,6 +643,7 @@ export default function Dashboard() {
                 );
               })()}
             </div>
+            <WhatsNewInline />
             {!isDemo && <ReflectionPromptCard />}
             {!isDemo && <ReadinessCard />}
             {!isDemo && (profile as any)?.owns_wearable && <RecoveryTile />}
