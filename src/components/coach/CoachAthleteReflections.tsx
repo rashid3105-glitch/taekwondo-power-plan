@@ -121,7 +121,7 @@ export function CoachAthleteReflections({ athleteId, athleteName }: Props) {
       setLoading(false);
     })();
     return () => { cancelled = true; };
-  }, [athleteId]);
+  }, [athleteId, reloadTick]);
 
   const trendData = useMemo(
     () => items.map((r) => ({
