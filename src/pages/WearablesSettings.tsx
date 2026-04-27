@@ -191,7 +191,7 @@ export default function WearablesSettings() {
       ) : (
         <Card>
           <CardHeader><CardTitle className="text-base">{t("wearableConnect")} {providerLabel}</CardTitle></CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground">{t("wearableMetricsList")}</p>
             <ul className="text-sm space-y-1 text-foreground/80 list-disc pl-5">
               <li>{t("wearableMetricSleep")}</li>
@@ -200,7 +200,47 @@ export default function WearablesSettings() {
               <li>{t("wearableMetricSteps")}</li>
               <li>{t("wearableMetricWorkouts")}</li>
             </ul>
-            <Button onClick={handleConnect} disabled={busy} className="w-full">
+
+            {/* Step-by-step help */}
+            <div className="rounded-lg border bg-muted/30 p-3">
+              <div className="flex items-center gap-2 mb-2 text-sm font-medium">
+                {provider === "apple_health" ? (
+                  <Apple className="h-4 w-4 text-primary" />
+                ) : (
+                  <Smartphone className="h-4 w-4 text-primary" />
+                )}
+                How to connect
+              </div>
+              <ol className="text-sm space-y-1.5 text-foreground/80 list-decimal pl-5">
+                {provider === "apple_health" ? (
+                  <>
+                    <li>Make sure your Apple Watch is paired and syncing to the Health app.</li>
+                    <li>Tap <span className="font-medium">Connect Apple Health</span> below.</li>
+                    <li>iOS will show a permission sheet — tap <span className="font-medium">Turn On All</span> for Sleep, Heart Rate, HRV, Steps and Workouts.</li>
+                    <li>Wait a few seconds for the first 14-day backfill to finish — the dot above turns green when ready.</li>
+                  </>
+                ) : provider === "health_connect" ? (
+                  <>
+                    <li>Install <span className="font-medium">Health Connect</span> from the Play Store if you don't have it yet.</li>
+                    <li>Open your watch app (Garmin, Fitbit, Samsung Health, etc.) and enable Health Connect sync.</li>
+                    <li>Tap <span className="font-medium">Connect Health Connect</span> below and allow read access to all 5 metrics.</li>
+                    <li>Wait a few seconds for the first 14-day backfill — the dot above turns green when ready.</li>
+                  </>
+                ) : (
+                  <>
+                    <li>Open this app on your phone (iOS or Android) — wearable sync runs on-device only.</li>
+                    <li>Make sure your watch is syncing to Apple Health (iPhone) or Health Connect (Android).</li>
+                    <li>Return here and tap Connect.</li>
+                  </>
+                )}
+              </ol>
+              <p className="text-xs text-muted-foreground mt-3 flex items-start gap-1.5">
+                <ShieldCheck className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+                We never write to your watch. You can disconnect any time.
+              </p>
+            </div>
+
+            <Button onClick={handleConnect} disabled={busy} className="w-full h-11">
               <Watch className="h-4 w-4 mr-2" />
               {t("wearableConnect")} {providerLabel}
             </Button>
