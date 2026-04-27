@@ -643,6 +643,7 @@ export default function Dashboard() {
                 );
               })()}
             </div>
+            <WhatsNewInline />
             {!isDemo && <ReflectionPromptCard />}
             {!isDemo && <ReadinessCard />}
             {!isDemo && (profile as any)?.owns_wearable && <RecoveryTile />}
