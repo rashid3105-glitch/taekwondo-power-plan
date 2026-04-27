@@ -94,6 +94,32 @@ export function PostCompetitionReflection({ competition, upcomingCompetitions, o
     if (existing) setStep(4);
   }, [existing?.id]);
 
+  // Listen for background sync flushes (e.g. user came back online) and toast.
+  useEffect(() => {
+    const handler = (ev: Event) => {
+      const detail = (ev as CustomEvent).detail as { flushed: number; failed: number };
+      if (!detail) return;
+      if (detail.flushed > 0) {
+        toast({ title: t("reflectionSyncedToast") });
+      } else if (detail.failed > 0) {
+        toast({ title: t("reflectionSyncFailedToast"), variant: "destructive" });
+      }
+    };
+    window.addEventListener("competition-reflection-sync", handler as EventListener);
+    return () => window.removeEventListener("competition-reflection-sync", handler as EventListener);
+  }, [toast, t]);
+
+  async function handleSyncNow() {
+    const r = await syncNow();
+    if (r.flushed > 0) {
+      toast({ title: t("reflectionSyncedToast") });
+    } else if (r.failed > 0) {
+      toast({ title: t("reflectionSyncFailedToast"), description: r.errors[0], variant: "destructive" });
+    } else if (pendingCount === 0) {
+      toast({ title: t("reflectionNothingToSync") });
+    }
+  }
+
   const totalSteps = 4;
   const progress = ((step + 1) / (totalSteps + 1)) * 100;
 
