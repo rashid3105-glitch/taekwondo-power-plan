@@ -225,9 +225,12 @@ export function useOfflineCompetitionReflections() {
   return {
     reflections,
     loading,
+    pendingCount,
+    syncing,
     submitOffline,
     removeReflection,
     updateNextCompetition,
     refresh,
+    syncNow,
   };
 }
