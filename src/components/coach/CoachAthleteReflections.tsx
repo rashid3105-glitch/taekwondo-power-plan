@@ -169,13 +169,20 @@ export function CoachAthleteReflections({ athleteId, athleteName }: Props) {
   return (
     <div className="space-y-3">
       <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center justify-between gap-2 flex-wrap">
           <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
             <Trophy className="h-4 w-4 text-primary" /> {t("coachReflectionsTitle")}
           </h4>
-          {athleteName && (
-            <CoachCreateCompetitionDialog athleteId={athleteId} athleteName={athleteName} />
-          )}
+          <div className="flex items-center gap-2 flex-wrap">
+            <CoachManualReflectionDialog
+              athleteId={athleteId}
+              athleteName={athleteName}
+              onCreated={() => setReloadTick((n) => n + 1)}
+            />
+            {athleteName && (
+              <CoachCreateCompetitionDialog athleteId={athleteId} athleteName={athleteName} />
+            )}
+          </div>
         </div>
 
         {items.length === 0 ? (
