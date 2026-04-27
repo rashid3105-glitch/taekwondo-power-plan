@@ -61,12 +61,14 @@ type RawNativeSample = {
 async function loadNativePlugin(): Promise<any | null> {
   const platform = detectPlatform();
   try {
+    // @ts-ignore - native plugin only present in Capacitor builds
     if (platform === "ios") {
-      const mod: any = await import(/* @vite-ignore */ "capacitor-health");
+      const mod: any = await import(/* @vite-ignore */ ("capacitor" + "-health"));
       return mod?.CapacitorHealth ?? mod?.Health ?? mod?.default ?? null;
     }
+    // @ts-ignore - native plugin only present in Capacitor builds
     if (platform === "android") {
-      const mod: any = await import(/* @vite-ignore */ "capacitor-health-connect");
+      const mod: any = await import(/* @vite-ignore */ ("capacitor" + "-health-connect"));
       return mod?.HealthConnect ?? mod?.default ?? null;
     }
   } catch {
