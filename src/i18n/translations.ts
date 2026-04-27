@@ -5860,8 +5860,6 @@ const translations = {
     bulkPartialFailure: "Einige Wettkämpfe konnten nicht erstellt werden",
     bulkSelectAtLeastOne: "Mindestens einen Athleten auswählen",
     selectAthletes: "Athleten auswählen",
-    selectAll: "Alle auswählen",
-    deselectAll: "Alle abwählen",
     defaultWeightClass: "Standard-Gewichtsklasse (kg)",
     weightOverride: "Gewichtsklasse für diesen Athleten",
     weightOverrideHint: "Die Gewichtsklasse wird aus dem Profil jedes Athleten vorausgefüllt. Leer lassen, um den Standard zu verwenden.",
