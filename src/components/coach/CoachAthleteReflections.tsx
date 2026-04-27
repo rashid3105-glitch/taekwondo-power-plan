@@ -177,7 +177,10 @@ export function CoachAthleteReflections({ athleteId, athleteName }: Props) {
         </div>
 
         {items.length === 0 ? (
-          <div className="text-xs text-muted-foreground">{t("coachReflectionsNone")}</div>
+          <div className="text-xs text-muted-foreground space-y-1">
+            <div>{t("coachReflectionsNone")}</div>
+            <div className="text-[11px] opacity-80">{t("coachReflectionsHint")}</div>
+          </div>
         ) : (
           <div className="space-y-2">
             {items.map((r) => {

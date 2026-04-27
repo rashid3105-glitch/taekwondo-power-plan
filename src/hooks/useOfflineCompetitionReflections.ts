@@ -1,7 +1,7 @@
 // React hook providing local-first post-competition reflection list/submit/delete
 // with background sync of queued submissions.
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   listCachedReflections,
@@ -9,9 +9,13 @@ import {
   putCachedReflection,
   deleteCachedReflection,
   queueReflection,
+  listReflectionOutbox,
   type CachedReflection,
 } from "@/lib/competitionReflectionOfflineDB";
-import { syncCompetitionReflections } from "@/lib/competitionReflectionSyncEngine";
+import {
+  syncCompetitionReflections,
+  type ReflectionSyncResult,
+} from "@/lib/competitionReflectionSyncEngine";
 
 interface SubmitInput {
   competition_id: string | null;
@@ -46,6 +50,17 @@ export function useOfflineCompetitionReflections() {
   const [reflections, setReflections] = useState<CachedReflection[]>([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
+  const [pendingCount, setPendingCount] = useState(0);
+  const [syncing, setSyncing] = useState(false);
+
+  const recountPending = useCallback(async () => {
+    try {
+      const out = await listReflectionOutbox();
+      setPendingCount(out.length);
+    } catch {
+      // ignore — IndexedDB may be unavailable
+    }
+  }, []);
 
   const refresh = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -82,16 +97,35 @@ export function useOfflineCompetitionReflections() {
     }
     const local = await listCachedReflections(user.id);
     setReflections(local);
+    await recountPending();
     setLoading(false);
-  }, []);
+  }, [recountPending]);
 
   useEffect(() => { void refresh(); }, [refresh]);
 
-  // Sync on reconnect.
+  // Manual sync — used by "Sync now" button.
+  const syncNow = useCallback(async (): Promise<ReflectionSyncResult> => {
+    if (syncing) return { flushed: 0, failed: 0, errors: [] };
+    setSyncing(true);
+    try {
+      const r = await syncCompetitionReflections();
+      if (r.flushed > 0 || r.failed > 0) await refresh();
+      return r;
+    } finally {
+      setSyncing(false);
+    }
+  }, [refresh, syncing]);
+
+  // Sync on reconnect — toasts handled by callers via window event.
   useEffect(() => {
     const handler = async () => {
       const r = await syncCompetitionReflections();
-      if (r.flushed > 0) await refresh();
+      if (r.flushed > 0 || r.failed > 0) {
+        await refresh();
+        window.dispatchEvent(
+          new CustomEvent("competition-reflection-sync", { detail: r }),
+        );
+      }
     };
     window.addEventListener("online", handler);
     if (navigator.onLine) void handler();
@@ -134,9 +168,11 @@ export function useOfflineCompetitionReflections() {
         queued_at: Date.now(),
       });
       setReflections(await listCachedReflections(userId));
+      await recountPending();
 
       if (navigator.onLine) {
         const r = await syncCompetitionReflections();
+        await recountPending();
         if (r.flushed > 0) {
           const fresh = await listCachedReflections(userId);
           setReflections(fresh);
@@ -148,10 +184,11 @@ export function useOfflineCompetitionReflections() {
           );
           return replaced || null;
         }
+        // Online but sync failed — keep pending; caller will toast accordingly.
       }
       return rec;
     },
-    [userId],
+    [userId, recountPending],
   );
 
   const removeReflection = useCallback(
@@ -188,9 +225,12 @@ export function useOfflineCompetitionReflections() {
   return {
     reflections,
     loading,
+    pendingCount,
+    syncing,
     submitOffline,
     removeReflection,
     updateNextCompetition,
     refresh,
+    syncNow,
   };
 }

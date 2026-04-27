@@ -19,7 +19,7 @@ import { useOfflineCompetitionReflections } from "@/hooks/useOfflineCompetitionR
 import { ReflectionTrendChart } from "@/components/ReflectionTrendChart";
 import {
   Trophy, ChevronLeft, ChevronRight, Loader2, Sparkles, Target,
-  CheckCircle2, CloudOff, Trash2, Zap,
+  CheckCircle2, CloudOff, Trash2, Zap, RefreshCw,
 } from "lucide-react";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -65,8 +65,10 @@ export function PostCompetitionReflection({ competition, upcomingCompetitions, o
   const { t, locale } = useLanguage();
   const { toast } = useToast();
   const l = (locale as SupportedLocale) || "en";
-  const { reflections, submitOffline, removeReflection, updateNextCompetition, refresh } =
-    useOfflineCompetitionReflections();
+  const {
+    reflections, pendingCount, syncing,
+    submitOffline, removeReflection, updateNextCompetition, refresh, syncNow,
+  } = useOfflineCompetitionReflections();
 
   // existing reflection for this competition (if any)
   const existing = useMemo(
@@ -91,6 +93,32 @@ export function PostCompetitionReflection({ competition, upcomingCompetitions, o
   useEffect(() => {
     if (existing) setStep(4);
   }, [existing?.id]);
+
+  // Listen for background sync flushes (e.g. user came back online) and toast.
+  useEffect(() => {
+    const handler = (ev: Event) => {
+      const detail = (ev as CustomEvent).detail as { flushed: number; failed: number };
+      if (!detail) return;
+      if (detail.flushed > 0) {
+        toast({ title: t("reflectionSyncedToast") });
+      } else if (detail.failed > 0) {
+        toast({ title: t("reflectionSyncFailedToast"), variant: "destructive" });
+      }
+    };
+    window.addEventListener("competition-reflection-sync", handler as EventListener);
+    return () => window.removeEventListener("competition-reflection-sync", handler as EventListener);
+  }, [toast, t]);
+
+  async function handleSyncNow() {
+    const r = await syncNow();
+    if (r.flushed > 0) {
+      toast({ title: t("reflectionSyncedToast") });
+    } else if (r.failed > 0) {
+      toast({ title: t("reflectionSyncFailedToast"), description: r.errors[0], variant: "destructive" });
+    } else if (pendingCount === 0) {
+      toast({ title: t("reflectionNothingToSync") });
+    }
+  }
 
   const totalSteps = 4;
   const progress = ((step + 1) / (totalSteps + 1)) * 100;
@@ -133,7 +161,16 @@ export function PostCompetitionReflection({ competition, upcomingCompetitions, o
 
       await refresh();
       setStep(4);
-      toast({ title: synced?.ai_plan ? t("reflectionSaved") : t("reflectionSavedOffline") });
+      if (synced?.ai_plan) {
+        toast({ title: t("reflectionSaved") });
+      } else {
+        toast({
+          title: t("reflectionSavedOffline"),
+          description: navigator.onLine
+            ? t("reflectionSavedOnlineRetryDesc")
+            : t("reflectionSavedOfflineDesc"),
+        });
+      }
     } catch (e: any) {
       toast({ title: t("error"), description: e.message, variant: "destructive" });
     } finally {
@@ -162,10 +199,31 @@ export function PostCompetitionReflection({ competition, upcomingCompetitions, o
 
   // ---------- Render ----------
 
+  const pendingBanner = pendingCount > 0 ? (
+    <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 flex items-center gap-2 text-xs text-amber-800 dark:text-amber-200">
+      <CloudOff className="h-4 w-4 flex-shrink-0" />
+      <div className="flex-1 min-w-0">
+        <div className="font-medium">{t("reflectionPendingTitle")}</div>
+        <div className="text-[11px] opacity-80">{t("reflectionPendingDesc")}</div>
+      </div>
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={handleSyncNow}
+        disabled={syncing || !navigator.onLine}
+        className="h-8 px-2 text-[11px]"
+      >
+        {syncing ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3 mr-1" />}
+        {t("reflectionSyncNow")}
+      </Button>
+    </div>
+  ) : null;
+
   // Step 4: results screen
   if (existing && step === 4) {
     return (
       <div className="space-y-4">
+        {pendingBanner}
         <ResultsView
           reflection={existing}
           competition={competition}
@@ -191,7 +249,9 @@ export function PostCompetitionReflection({ competition, upcomingCompetitions, o
   }
 
   return (
-    <Card className="p-4 sm:p-6 space-y-5">
+    <div className="space-y-3">
+      {pendingBanner}
+      <Card className="p-4 sm:p-6 space-y-5">
       <div className="space-y-2">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
@@ -339,6 +399,7 @@ export function PostCompetitionReflection({ competition, upcomingCompetitions, o
         )}
       </div>
     </Card>
+    </div>
   );
 }
 
