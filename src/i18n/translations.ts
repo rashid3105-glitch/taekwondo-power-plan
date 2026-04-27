@@ -1756,6 +1756,8 @@ const translations = {
     clubAthletes: "Klub-atleter",
     clubAthletesDesc: "Alle atleter i din klub (skrivebeskyttet)",
     readOnly: "Skrivebeskyttet",
+    editAction: "Rediger",
+    lockAction: "Lås",
     hasPlan: "Har plan",
     makeCoach: "Gør til træner",
     removeCoach: "Fjern træner",
