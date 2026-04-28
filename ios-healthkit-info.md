@@ -29,6 +29,31 @@ Then press ▶ in Xcode with your iPhone connected.
 Settings → Wearables → **Connect Apple Health** → grant permissions.
 Background sync runs on app open (rate-limited to once every 30 minutes).
 
-## 5. Before App Store submission
-Remove the `server` block from `capacitor.config.ts` so the app loads the bundled
-`dist/` build instead of the Lovable sandbox URL, then run `npm run build && npx cap sync ios`.
+## 5. Dev hot-reload vs native build (IMPORTANT)
+The `server.url` block in `capacitor.config.ts` was used during early development
+to hot-reload the iOS app from the Lovable preview URL. **It is now removed**
+because:
+- A real iPhone has no Lovable login session, so the preview URL responds with
+  a "proxy error" overlay instead of the app.
+- HealthKit only bridges reliably when the web layer is loaded from inside the
+  app bundle (not from a remote origin).
+
+The app now loads `dist/index.html` from inside the bundle. Iteration loop:
+```bash
+git pull
+npm install        # only if package.json changed
+npm run build
+npx cap sync ios
+# then re-run from Xcode
+```
+
+If you ever want hot-reload back temporarily for non-native UI work, re-add:
+```ts
+server: {
+  url: 'https://a65f5c86-1a84-4640-b139-4767189347ea.lovableproject.com?forceHideBadge=true',
+  cleartext: true,
+}
+```
+…but expect HealthKit to fail in that mode. Remove again before submitting to
+the App Store.
+

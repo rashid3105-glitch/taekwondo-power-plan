@@ -56,6 +56,31 @@ Background sync runs on app open (rate-limited to once every 30 minutes).
 ## 6. Privacy policy URL (required by Google Play if you ship)
 You must host a privacy policy that explains how Sportstalent uses Health Connect data. Sportstalent's existing `/privacy` page already covers this — link to `https://sportstalent.dk/privacy` in the Play Console listing.
 
-## 7. Before Play Store submission
-Remove the `server` block from `capacitor.config.ts` so the app loads the bundled
-`dist/` build instead of the Lovable sandbox URL, then run `npm run build && npx cap sync android`.
+## 7. Dev hot-reload vs native build (IMPORTANT)
+The `server.url` block in `capacitor.config.ts` was used during early development
+to hot-reload the Android app from the Lovable preview URL. **It is now removed**
+because:
+- A real device has no Lovable login session, so the preview URL responds with
+  a "proxy error" overlay instead of the app.
+- Health Connect only bridges reliably when the web layer is loaded from inside
+  the app bundle (not from a remote origin).
+
+The app now loads `dist/index.html` from inside the bundle. Iteration loop:
+```bash
+git pull
+npm install        # only if package.json changed
+npm run build
+npx cap sync android
+# then re-run from Android Studio
+```
+
+If you ever want hot-reload back temporarily for non-native UI work, re-add:
+```ts
+server: {
+  url: 'https://a65f5c86-1a84-4640-b139-4767189347ea.lovableproject.com?forceHideBadge=true',
+  cleartext: true,
+}
+```
+…but expect Health Connect to fail in that mode. Remove again before submitting
+to the Play Store.
+
