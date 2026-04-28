@@ -93,10 +93,12 @@ export async function requestPermissions(): Promise<string[]> {
 
   const plugin = await loadNativePlugin();
   if (!plugin) {
+    console.warn("[wearables] Native health plugin not found on Capacitor.Plugins. Falling back to stub. Platform:", detectPlatform());
     // Plugin not bundled yet — record an "active" connection in dev so the UI
     // proceeds; native build will replace this with real auth.
     return ["sleep", "heart_rate", "hrv", "steps", "workouts"];
   }
+  console.info("[wearables] Native plugin loaded for", detectPlatform());
 
   const platform = detectPlatform();
   const reads = (Object.keys(METRIC_KEYS) as WearableMetric[]).map(

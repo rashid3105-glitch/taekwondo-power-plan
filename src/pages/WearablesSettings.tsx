@@ -147,11 +147,30 @@ export default function WearablesSettings() {
       )}
 
       {!supported ? (
-        <Card>
-          <CardHeader><CardTitle className="text-base">{t("wearableInstallAppTitle")}</CardTitle></CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground mb-3">{t("wearableInstallAppDesc")}</p>
-            <Button onClick={() => navigate("/install")}>{t("wearableHowToInstall")}</Button>
+        <Card className="border-amber-500/30 bg-amber-500/5">
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <AlertCircle className="h-5 w-5 text-amber-500" />
+              {t("wearableInstallAppTitle")}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-sm text-foreground/90 font-medium">
+              Apple Watch and Garmin sync only work inside the Sportstalent iOS or Android app.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              You're currently viewing Sportstalent in a web browser. Apple's HealthKit and Android's Health Connect can't be accessed from the browser — install the native app on your phone to connect your watch.
+            </p>
+            <ul className="text-sm space-y-1 text-foreground/80 list-disc pl-5">
+              <li><span className="font-medium">iPhone:</span> install the iOS app, sign in, then come back to this page.</li>
+              <li><span className="font-medium">Android:</span> install the Android app + Health Connect, then return here.</li>
+            </ul>
+            <p className="text-xs text-muted-foreground">
+              Until then you can still log workouts, readiness and diary entries manually — they all flow into the same recovery picture.
+            </p>
+            <Button onClick={() => navigate("/install")} className="w-full h-11">
+              {t("wearableHowToInstall")}
+            </Button>
           </CardContent>
         </Card>
       ) : status?.connected ? (
