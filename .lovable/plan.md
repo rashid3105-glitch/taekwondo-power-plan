@@ -1,49 +1,47 @@
-## Goal
+## What's actually happening
 
-Get the wearables shout-out in front of **everyone** — landing visitors AND logged-in athletes — using the existing `landing_announcements` system you already control from the admin panel. No new tables, no new editor: you write the copy yourself in the admin "What's New" editor, and the banner shows up in two places.
+### 1. iWatch won't connect
 
-## What you'll do (no code)
+Apple Health / HealthKit is only accessible from the **native iOS app build** of Sportstalent (Capacitor). It cannot be accessed from a normal browser, including:
+- the Lovable preview window
+- Safari on iPhone
+- the published web URL `sportstalent.dk`
 
-1. Open the admin panel → "Landing announcement" editor.
-2. Fill in the 6 language fields with your wearables shout-out (≤80 chars each), e.g. EN: "Sync Apple Health & Health Connect — Recovery & Readiness, automatic.".
-3. Set link URL to `/wearables` (or `/help#changelog` if you prefer the explanation).
-4. Toggle **Show on landing** on, save.
+I checked the database: there is **no `wearable_connections` row for your account** and **0 wearable samples**, so the Connect button has never reached the backend. Combined with the fact that the preview you're using runs in a browser, the most likely cause is that the Connect flow is being attempted from the web, where it is correctly disabled — but the messaging is too soft and looks like a normal "Connect" button that just doesn't do anything.
 
-## What I'll build
+### 2. "Checkbox empty after saving"
 
-The single change: **make the existing `WhatsNewInline` banner also render on the authenticated dashboard hub**, so the same admin-controlled message reaches both audiences.
+The database actually shows your profile saved with `owns_wearable = true` at 08:29 today. So it IS persisting. What's happening is one of these (both fixable):
+- The Profile Setup page reloads, but the checkbox uses a plain `<input type="checkbox">` rather than the app's `Checkbox` component, so it doesn't always render the saved state cleanly on iOS Safari.
+- After saving, you may be redirected somewhere that re-reads a stale profile cache.
 
-### Where it appears on the dashboard
+## Plan
 
-`src/pages/Dashboard.tsx`, hub tab — directly under the welcome card (with Next event + Quote of the day) and above `ReflectionPromptCard` / `ReadinessCard`. Same compact one-line style as on the landing page; tappable, links to whatever URL you set in the admin editor.
+### A. Make the wearable connect flow honest about web vs app
 
-```text
-┌──────────────────────────────────────────────┐
-│ Welcome back, Farooq!                        │
-│ 🏆 Next up           💬 Quote of the day      │
-└──────────────────────────────────────────────┘
-   ✨ What's new: Sync Apple Health …  Read →    ← banner
-┌──────────────────────────────────────────────┐
-│ ReflectionPromptCard / ReadinessCard …       │
-└──────────────────────────────────────────────┘
-```
+In `src/pages/WearablesSettings.tsx`, when `isWearableSupported()` is false (i.e. running in the browser), replace the soft "Install app" card with a clearer block that explains:
+- Apple Watch / iWatch sync **only works in the iOS app**, not in the browser.
+- A direct CTA to the existing `/install` page with iPhone install instructions.
+- A note that until you install the native app, you can still log workouts manually.
 
-### Behaviour
+Also, verify the native check itself is robust: log to console which platform was detected and which plugin (if any) was found, so if you do install the iOS app and the plugin is missing we can see it immediately in the logs.
 
-- Reads the **single active row** from `landing_announcements` (RLS already allows `anon` + `authenticated` to view active rows — no policy change needed).
-- Hidden when no active announcement exists, so toggling it off in admin instantly removes it from both the landing page and the dashboard.
-- Hidden for demo accounts? **No** — this is general-audience marketing news, so it shows for everyone including demo users (matches landing behaviour).
-- Reuses the exact same component, so the styling, i18n routing, internal vs external link handling, and motion intro are identical to the landing version.
+### B. Fix the checkbox UX
 
-### Technical details
+In `src/pages/ProfileSetup.tsx`:
+- Replace the bare `<input type="checkbox">` for "I own a wearable" with the project's standard `Checkbox` component (same one used elsewhere). This guarantees consistent checked-state rendering across iOS Safari and the PWA.
+- Add a tiny visual confirmation (the existing toast already fires) — no extra logic needed beyond the component swap and making sure the controlled `checked` value rehydrates from the loaded profile (which it already does at line 114).
 
-- Add `<WhatsNewInline />` import + render to `Dashboard.tsx` inside the hub tab (`activeTab === "hub"`), placed between the welcome card and the `ReflectionPromptCard`.
-- No DB migration. No new translation keys (the prefix/link labels already exist: `whatsNewPrefix`, `whatsNewLink`).
-- No admin UI change — your existing editor already controls visibility via the `is_active` flag.
-- One file changed: `src/pages/Dashboard.tsx`.
+### C. Quick sanity checks (no code change)
+
+I'll verify after the swap:
+- Save profile with the box ticked → reload `/profile-setup` → box stays ticked.
+- On the Wearables page in the web preview → see the new "iOS app required" explanation.
+
+## Files to change
+- `src/pages/WearablesSettings.tsx` — clearer "browser vs app" messaging when unsupported, optional debug log when a plugin is missing.
+- `src/pages/ProfileSetup.tsx` — swap raw `<input>` for the `Checkbox` component.
 
 ## Out of scope
-
-- No dismiss button (you control duration via the admin toggle — flip it off when the news is stale).
-- No coach-dashboard variant (coaches still get it via the landing page if they visit, plus the changelog).
-- No notification/email push.
+- Building / shipping a new iOS native build (that's a separate Capacitor build & TestFlight task).
+- Any DB or edge-function changes — backend works correctly.
