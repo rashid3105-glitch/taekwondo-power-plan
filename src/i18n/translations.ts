@@ -1589,6 +1589,13 @@ const translations = {
     readinessFromWatch: "from watch",
     coachRecoveryTrendTitle: "Recovery (7d)",
     coachRecoveryLowFlag: "Low recovery signal — consider easing today's load.",
+    recoveryProgressTitle: "Recovery & Wearables",
+    recoveryCollectingData: "Collecting data — come back in a few days once your watch has synced.",
+    recoveryOpenSync: "Open sync status",
+    recoveryLast30d: "Last 30 days",
+    recoveryLoadVsRecovery: "Training load vs recovery (HRV)",
+    recoveryTrainingMinutes: "Training minutes",
+    recoveryAvgHrv: "Avg HRV",
   },
   da: {
     // Common
