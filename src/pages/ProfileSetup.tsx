@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Zap, Camera, Loader2, Home } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekSchedulePicker";
@@ -538,12 +539,11 @@ export default function ProfileSetup() {
               </Label>
               <p className="text-xs text-muted-foreground">{t("wearableOwnHint")}</p>
             </div>
-            <input
+            <Checkbox
               id="ownsWearable"
-              type="checkbox"
-              className="h-5 w-5 accent-primary"
+              className="h-5 w-5"
               checked={ownsWearable}
-              onChange={(e) => setOwnsWearable(e.target.checked)}
+              onCheckedChange={(v) => setOwnsWearable(v === true)}
             />
           </div>
 
