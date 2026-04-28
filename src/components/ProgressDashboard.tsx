@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, BarChart3, TrendingUp, Target, Calendar, Zap, Brain, ClipboardList, Filter } from "lucide-react";
 import { PhysicalTestProgress } from "@/components/PhysicalTestProgress";
 import { FormCurveChart } from "@/components/FormCurveChart";
+import { RecoveryProgressSection } from "@/components/progress/RecoveryProgressSection";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   AreaChart, Area, Legend, Cell,
@@ -293,6 +294,9 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
           ))}
         </div>
       </div>
+
+      {/* Recovery & wearables (hidden if no watch) */}
+      <RecoveryProgressSection />
 
       {/* Form curve — combined load/strain/output composite */}
       <FormCurveChart />

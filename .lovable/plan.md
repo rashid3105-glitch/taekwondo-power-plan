@@ -1,52 +1,46 @@
-# Fix "proxy error" on iPhone and enable Apple Health
+## Where Apple Watch / Health Connect data shows today
 
-## What's happening
-The Capacitor config currently tells the iOS app to load the UI from the Lovable preview URL (`https://a65f5c86-...lovableproject.com`). On a real iPhone in Xcode, that URL requires a Lovable login session the phone doesn't have, which produces the "proxy error" overlay. It also prevents HealthKit from working, because HealthKit only bridges reliably when the web layer is loaded from inside the app bundle.
+Currently your wearable stats appear in **3 places only**:
 
-## What to change
+1. **Dashboard hub** — small `RecoveryTile` (yesterday's Sleep / RHR / HRV with trend arrows vs 7-day baseline). Only shown if the athlete has `owns_wearable = true`.
+2. **Readiness check-in card** — auto-prefills sleep + HRV from yesterday's wearable summary so the athlete doesn't have to retype it.
+3. **Coach view** (`CoachAthleteDetail`) — a 7-day `AthleteRecoveryTrend` sparkline trio for each athlete.
+4. **Workout logs** — wearable workout match silently attached (avg HR, max HR, duration, calories) but **never visualised**.
 
-### 1. Disable the dev server URL in `capacitor.config.ts`
-Remove (or comment out) the `server` block so the iOS app loads `dist/index.html` from inside the app bundle instead of from the Lovable preview.
+Also exists but only on dedicated pages: `/wearables` (settings) and `/wearables-sync` (status / sample count).
 
-Final file:
-```ts
-import type { CapacitorConfig } from '@capacitor/cli';
+So today the **Progress tab shows nothing from the watch** — which is exactly the gap you noticed. Yes, this would be a strong addition: the Progress page is where athletes already look for trends, and recovery data tells the most important story (training load vs sleep/HRV).
 
-const config: CapacitorConfig = {
-  appId: 'app.lovable.a65f5c861a844640b1394767189347ea',
-  appName: 'Sportstalent',
-  webDir: 'dist',
-  ios: { contentInset: 'always' },
-};
+---
 
-export default config;
-```
+## Plan: add a "Recovery" section to the Progress page
 
-### 2. Document the dev/native build trade-off
-Add a short note to `ios-healthkit-info.md` (and the matching Android file) explaining:
-- The `server` block was for hot-reload during early development.
-- For HealthKit testing on a real device, the app must load the bundled `dist/`.
-- If a developer wants hot-reload back later, they can temporarily re-add the block while testing non-native features only.
+Add a new section at the top of `ProgressDashboard.tsx`, only rendered when `profile.owns_wearable` is true and at least one summary row exists. Keeps the page clean for non-wearable users.
 
-### 3. (No code) Steps for you to run on your Mac after the change
-```bash
-git pull                     # pull the new capacitor.config.ts
-npm install                  # in case anything changed
-npm run build                # build dist/
-npx cap sync ios             # copy dist/ + plugins into iOS project
-npx cap open ios             # reopen Xcode
-```
-Then in Xcode press ▶ with your iPhone connected. The proxy overlay will be gone, the app will load instantly from the bundle, and the **Connect Apple Health** button will trigger the real native permission sheet.
+### Section contents
 
-### 4. Iteration loop going forward
-Whenever you change code in Lovable and want it on the phone:
-1. `git pull` on your Mac
-2. `npm run build && npx cap sync ios`
-3. Re-run from Xcode
+1. **30-day trend chart (3 lines)** — Sleep hours, Resting HR, HRV RMSSD on a shared time axis. Toggle chips to focus on one metric. Uses existing recharts pattern from the rest of the page.
+2. **Weekly averages strip** — last 7d vs previous 7d for each metric, with up/down delta and a red flag if RHR ↑>5 bpm or HRV ↓>8 ms (same thresholds already used in `AthleteRecoveryTrend`).
+3. **Training load vs recovery overlay** — small bar+line combo: weekly training minutes (from `workout_logs` already used in this page) overlaid with average HRV. Lets the athlete spot when load is outpacing recovery.
+4. **Workout intensity rows** — for each logged workout in the period that has `avg_hr` / `calories` from the watch, show the values inline in the existing volume list. Tiny watch icon next to wearable-sourced rows.
 
-(No need to re-run `npx cap add ios` again — that's only the first time.)
+### Empty / fallback states
 
-## What we are NOT changing
-- No frontend UX changes — `WearablesSettings.tsx` and `src/lib/wearables/index.ts` already handle the iOS path correctly.
-- No database, RLS, or edge function changes.
-- The web preview will continue to show the friendly "Wearables require the iOS or Android app" message — that's correct and expected on web.
+- No wearable connected → section hidden entirely.
+- Wearable connected but <3 days of data → show a soft "Collecting data — come back in a few days" placeholder with link to `/wearables-sync`.
+
+### Technical details
+
+- New component `src/components/progress/RecoveryProgressSection.tsx` (keeps `ProgressDashboard.tsx` from growing further).
+- Reads `wearable_daily_summary` for last 30 days in one query (RLS already restricts to own user).
+- Reuses `RecoveryTrendDay` shape from `src/lib/wearables`.
+- For workout intensity, extend the existing workout query in `ProgressDashboard` to also `select` `avg_hr, max_hr, duration_minutes, calories, wearable_source` (already on `workout_logs`).
+- All new strings added to `src/i18n/translations.ts` for da/en/sv/de/ar.
+- No backend / RLS / migration changes — all data already exists, we're just surfacing it.
+- Hidden by default for accounts without `owns_wearable`, so non-watch users see no change.
+
+### Out of scope (ask if you want them later)
+
+- Sleep stage breakdown (deep/REM) — not currently ingested.
+- Strain / training-load score — would need a model; can add as a follow-up.
+- Coach-facing version on the Progress tab in `CoachAthleteDetail` — the coach already has the 7-day sparkline; happy to extend if you want parity.
