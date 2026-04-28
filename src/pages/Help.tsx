@@ -77,7 +77,17 @@ export default function Help() {
                   <Icon className={cn("h-4 w-4", isActive ? "text-primary-foreground" : "text-primary")} />
                 </div>
                 <span className="font-semibold text-sm">
-                  {t(`${section.key}Title`)}
+                  {t(`${section.key}Title`).includes("\n") ? (
+                    <span className="flex flex-col">
+                      {t(`${section.key}Title`).split("\n").map((line, i) => (
+                        <span key={i} className={i === 0 ? "text-[10px] text-primary-foreground/80 leading-tight" : ""}>
+                          {line}
+                        </span>
+                      ))}
+                    </span>
+                  ) : (
+                    t(`${section.key}Title`)
+                  )}
                 </span>
                 {section.isNew && (
                   <span className={cn(
