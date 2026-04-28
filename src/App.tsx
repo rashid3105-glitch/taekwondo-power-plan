@@ -4,9 +4,11 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { useEffect } from "react";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { FloatingDiaryButton } from "@/components/FloatingDiaryButton";
 import { OfflineBanner } from "@/components/OfflineBanner";
+import { syncOnAppOpen, isWearableSupported } from "@/lib/wearables";
 import Index from "./pages/Index";
 import FeatureDetail from "./pages/FeatureDetail";
 import Auth from "./pages/Auth";
@@ -109,20 +111,34 @@ const AnimatedRoutes = () => {
   );
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <LanguageProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <OfflineBanner />
-          <AnimatedRoutes />
-          <FloatingDiaryButton />
-        </BrowserRouter>
-      </TooltipProvider>
-    </LanguageProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  // Native wearable sync: pull HealthKit / Health Connect samples on app open
+  // and whenever the app returns to the foreground. No-ops on web.
+  useEffect(() => {
+    if (!isWearableSupported()) return;
+    void syncOnAppOpen();
+    const onVisible = () => {
+      if (document.visibilityState === "visible") void syncOnAppOpen();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, []);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <LanguageProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <OfflineBanner />
+            <AnimatedRoutes />
+            <FloatingDiaryButton />
+          </BrowserRouter>
+        </TooltipProvider>
+      </LanguageProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
