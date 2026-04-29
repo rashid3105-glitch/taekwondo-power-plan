@@ -402,23 +402,25 @@ export async function initialBackfill(): Promise<number> {
 /** Fetch latest connection status row for the current user. */
 export async function getStatus(): Promise<WearableStatus> {
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { provider: null, connected: false, last_sync_at: null, device_label: null };
+  if (!user) return { provider: null, connected: false, last_sync_at: null, last_attempt_at: null, device_label: null };
 
   const provider = wearableProviderForPlatform();
   const { data } = await supabase
     .from("wearable_connections")
-    .select("provider,status,last_sync_at,device_label")
+    .select("provider,status,last_sync_at,last_attempt_at,device_label")
     .eq("user_id", user.id)
     .order("last_sync_at", { ascending: false, nullsFirst: false })
     .limit(1)
     .maybeSingle();
 
-  if (!data) return { provider, connected: false, last_sync_at: null, device_label: null };
+  if (!data) return { provider, connected: false, last_sync_at: null, last_attempt_at: null, device_label: null };
+  const row = data as any;
   return {
-    provider: data.provider as WearableProvider,
-    connected: data.status === "active",
-    last_sync_at: data.last_sync_at,
-    device_label: data.device_label,
+    provider: row.provider as WearableProvider,
+    connected: row.status === "active",
+    last_sync_at: row.last_sync_at,
+    last_attempt_at: row.last_attempt_at ?? null,
+    device_label: row.device_label,
   };
 }
 
