@@ -269,6 +269,120 @@ export default function Health() {
         </CardContent>
       </Card>
 
+      {/* Sleep */}
+      <Card className="mb-4">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base flex items-center gap-2">
+            <Moon className="h-4 w-4 text-primary" /> {t("healthSleepTitle" as any) || "Sleep"}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {hasSleep ? (
+            <>
+              <div className="grid grid-cols-2 gap-2 text-center">
+                <Stat
+                  label={t("healthSleepLast" as any) || "Last night"}
+                  value={sleepLast != null ? `${(sleepLast / 60).toFixed(1)}h` : "—"}
+                />
+                <Stat
+                  label={t("healthSleepAvg7" as any) || "7-night avg"}
+                  value={sleepAvg7 != null ? `${(sleepAvg7 / 60).toFixed(1)}h` : "—"}
+                />
+              </div>
+              <div className="h-40">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={sleepData} margin={{ top: 5, right: 8, left: 0, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="date" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
+                    <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} unit="h" />
+                    <Tooltip contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", fontSize: 11 }} />
+                    <Bar dataKey="hours" fill="hsl(220, 70%, 55%)" radius={[3, 3, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </>
+          ) : (
+            <EmptyMetric label={t("healthSleepEmpty" as any) || "No sleep data yet. Grant Sleep access in Apple Health → Sharing → SPORTS TALENT, then Sync now."} />
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Resting HR */}
+      <Card className="mb-4">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base flex items-center gap-2">
+            <HeartPulse className="h-4 w-4 text-primary" /> {t("healthRhrTitle" as any) || "Resting heart rate"}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {hasRhr ? (
+            <>
+              <div className="grid grid-cols-3 gap-2 text-center">
+                <Stat label={t("healthRhrLast" as any) || "Latest"} value={rhrLast != null ? `${Math.round(rhrLast)} bpm` : "—"} />
+                <Stat label={t("healthRhrAvg7" as any) || "7-day avg"} value={rhrAvg7 != null ? `${Math.round(rhrAvg7)} bpm` : "—"} />
+                <Stat
+                  label={t("healthRhrDelta" as any) || "vs baseline"}
+                  value={rhrLast != null && rhrBase != null ? `${rhrLast - rhrBase >= 0 ? "+" : ""}${Math.round(rhrLast - rhrBase)}` : "—"}
+                  tone={rhrLast != null && rhrBase != null ? (rhrLast - rhrBase <= 0 ? "good" : "bad") : undefined}
+                />
+              </div>
+              <div className="h-40">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={rhrData} margin={{ top: 5, right: 8, left: 0, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="date" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
+                    <YAxis domain={["auto", "auto"]} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
+                    <Tooltip contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", fontSize: 11 }} />
+                    <Line type="monotone" dataKey="rhr" stroke="hsl(0, 75%, 55%)" strokeWidth={2} dot={false} connectNulls />
+                    <Line type="monotone" dataKey="baseline" stroke="hsl(var(--muted-foreground))" strokeWidth={1} strokeDasharray="4 4" dot={false} connectNulls />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </>
+          ) : (
+            <EmptyMetric label={t("healthRhrEmpty" as any) || "No resting heart rate yet. Apple Watch records this automatically — sync after a few days of wear."} />
+          )}
+        </CardContent>
+      </Card>
+
+      {/* HRV */}
+      <Card className="mb-4">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base flex items-center gap-2">
+            <Waves className="h-4 w-4 text-primary" /> {t("healthHrvTitle" as any) || "Heart-rate variability (HRV)"}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {hasHrv ? (
+            <>
+              <div className="grid grid-cols-3 gap-2 text-center">
+                <Stat label={t("healthHrvLast" as any) || "Latest"} value={hrvLast != null ? `${Math.round(hrvLast)} ms` : "—"} />
+                <Stat label={t("healthHrvAvg7" as any) || "7-day avg"} value={hrvAvg7 != null ? `${Math.round(hrvAvg7)} ms` : "—"} />
+                <Stat
+                  label={t("healthHrvDelta" as any) || "vs baseline"}
+                  value={hrvLast != null && hrvBase != null ? `${hrvLast - hrvBase >= 0 ? "+" : ""}${Math.round(hrvLast - hrvBase)}` : "—"}
+                  tone={hrvLast != null && hrvBase != null ? (hrvLast - hrvBase >= 0 ? "good" : "bad") : undefined}
+                />
+              </div>
+              <div className="h-40">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={hrvData} margin={{ top: 5, right: 8, left: 0, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="date" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
+                    <YAxis domain={["auto", "auto"]} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} unit=" ms" />
+                    <Tooltip contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", fontSize: 11 }} />
+                    <Line type="monotone" dataKey="hrv" stroke="hsl(160, 75%, 45%)" strokeWidth={2} dot={false} connectNulls />
+                    <Line type="monotone" dataKey="baseline" stroke="hsl(var(--muted-foreground))" strokeWidth={1} strokeDasharray="4 4" dot={false} connectNulls />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </>
+          ) : (
+            <EmptyMetric label={t("healthHrvEmpty" as any) || "No HRV data yet. Apple Watch records this overnight — wear it to bed and sync the next day."} />
+          )}
+        </CardContent>
+      </Card>
+
       {/* Workouts */}
       <Card className="mb-4">
         <CardHeader className="pb-3">
