@@ -9,8 +9,25 @@ import {
 } from "@simplewebauthn/browser";
 import { supabase } from "@/integrations/supabase/client";
 
+/**
+ * True when the document is loaded inside a cross-origin iframe.
+ * WebAuthn (`navigator.credentials.create/get`) is blocked by browsers in this
+ * case — relevant when running inside the Lovable editor preview.
+ */
+export function isInCrossOriginIframe(): boolean {
+  try {
+    if (typeof window === "undefined") return false;
+    if (window.top === window.self) return false;
+    // Accessing window.top.location.origin throws on cross-origin
+    return window.top!.location.origin !== window.location.origin;
+  } catch {
+    return true;
+  }
+}
+
 export function passkeysSupported(): boolean {
   try {
+    if (isInCrossOriginIframe()) return false;
     return browserSupportsWebAuthn();
   } catch {
     return false;
@@ -26,12 +43,31 @@ export async function platformAuthenticatorAvailable(): Promise<boolean> {
 }
 
 /**
+ * Try to extract the JSON `{ error }` body from a FunctionsHttpError so toasts
+ * show the real reason instead of "non-2xx status code".
+ */
+async function extractFnError(err: any, fallback: string): Promise<string> {
+  try {
+    const ctx = err?.context;
+    if (ctx && typeof ctx.json === "function") {
+      const body = await ctx.json();
+      if (body?.error) return body.error;
+    }
+    if (ctx && typeof ctx.text === "function") {
+      const txt = await ctx.text();
+      if (txt) return txt;
+    }
+  } catch { /* ignore */ }
+  return err?.message || fallback;
+}
+
+/**
  * Enroll a new passkey for the currently signed-in user.
  * Triggers the OS biometric prompt (Face ID / Touch ID / Windows Hello).
  */
 export async function enrollPasskey(deviceLabel?: string): Promise<void> {
   const optsRes = await supabase.functions.invoke("passkey-register-options");
-  if (optsRes.error) throw new Error(optsRes.error.message);
+  if (optsRes.error) throw new Error(await extractFnError(optsRes.error, "Could not start enrollment"));
   const { options } = optsRes.data as { options: any };
 
   const attResp = await startRegistration(options);
@@ -39,7 +75,7 @@ export async function enrollPasskey(deviceLabel?: string): Promise<void> {
   const verifyRes = await supabase.functions.invoke("passkey-register-verify", {
     body: { response: attResp, deviceLabel: deviceLabel || guessDeviceLabel() },
   });
-  if (verifyRes.error) throw new Error(verifyRes.error.message);
+  if (verifyRes.error) throw new Error(await extractFnError(verifyRes.error, "Enrollment failed"));
   const data = verifyRes.data as { success?: boolean; error?: string };
   if (!data.success) throw new Error(data.error || "Enrollment failed");
 }
@@ -52,7 +88,7 @@ export async function signInWithPasskey(email?: string): Promise<void> {
   const optsRes = await supabase.functions.invoke("passkey-login-options", {
     body: { email },
   });
-  if (optsRes.error) throw new Error(optsRes.error.message);
+  if (optsRes.error) throw new Error(await extractFnError(optsRes.error, "Could not start login"));
   const { options } = optsRes.data as { options: any };
 
   const assertion = await startAuthentication(options);
@@ -60,7 +96,7 @@ export async function signInWithPasskey(email?: string): Promise<void> {
   const verifyRes = await supabase.functions.invoke("passkey-login-verify", {
     body: { response: assertion },
   });
-  if (verifyRes.error) throw new Error(verifyRes.error.message);
+  if (verifyRes.error) throw new Error(await extractFnError(verifyRes.error, "Login failed"));
   const data = verifyRes.data as { email?: string; hashed_token?: string; error?: string };
   if (!data.email || !data.hashed_token) {
     throw new Error(data.error || "Login failed");
