@@ -1,11 +1,10 @@
 // Native HealthKit / Health Connect bridge built on the `capacitor-health`
 // plugin. Web users get a stub that reports "unsupported".
 //
-// IMPORTANT: capacitor-health only exposes Steps, Active Calories, Mindfulness
-// (aggregated) and Workouts (with HR series, calories, distance). Sleep,
-// Resting HR and HRV are *not* surfaced by this plugin, so we only ingest
-// `steps` and `workout` samples. The DB schema accepts the other metrics so
-// they remain null on the daily summary — that's fine.
+// We ingest: Steps (aggregated daily), Workouts (with HR series, calories,
+// distance), Sleep, Resting Heart Rate and Heart-Rate Variability. The latter
+// three are pulled via `Health.readSamples` which works on both iOS HealthKit
+// and Android Health Connect.
 
 import { supabase } from "@/integrations/supabase/client";
 
