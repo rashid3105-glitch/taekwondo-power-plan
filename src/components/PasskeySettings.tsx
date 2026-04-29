@@ -10,7 +10,7 @@ import {
   platformAuthenticatorAvailable,
 } from "@/lib/passkeys";
 import { Fingerprint, Trash2, Loader2, ShieldCheck } from "lucide-react";
-import { triggerHaptic } from "@/lib/haptics";
+import { haptics } from "@/lib/haptics";
 
 interface Passkey {
   id: string;
@@ -46,7 +46,7 @@ export function PasskeySettings() {
 
   const handleEnroll = async () => {
     setEnrolling(true);
-    triggerHaptic();
+    haptics.tap();
     try {
       await enrollPasskey();
       toast({ title: t("passkeyEnrolled") });
@@ -63,7 +63,7 @@ export function PasskeySettings() {
   };
 
   const handleRemove = async (id: string) => {
-    triggerHaptic();
+    haptics.tap();
     const { error } = await supabase.from("user_passkeys").delete().eq("id", id);
     if (error) {
       toast({ title: t("error"), description: error.message, variant: "destructive" });

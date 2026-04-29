@@ -10,7 +10,7 @@ import {
   passkeysSupported,
   platformAuthenticatorAvailable,
 } from "@/lib/passkeys";
-import { triggerHaptic } from "@/lib/haptics";
+import { haptics } from "@/lib/haptics";
 
 /**
  * One-time prompt shown on the dashboard inviting the user to enable Face ID.
@@ -65,7 +65,7 @@ export function EnablePasskeyCard() {
 
   const handleEnable = async () => {
     setBusy(true);
-    triggerHaptic();
+    haptics.tap();
     try {
       await enrollPasskey();
       toast({ title: t("passkeyEnrolled") });
