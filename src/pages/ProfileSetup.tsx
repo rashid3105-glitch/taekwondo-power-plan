@@ -571,6 +571,8 @@ export default function ProfileSetup() {
           <PublicProfileSettings />
         </div>
 
+        <PasskeySettings />
+
         <AccountDangerZone />
       </div>
     </div>
