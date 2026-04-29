@@ -351,6 +351,7 @@ export interface SyncStats {
   last_success_at: number | null;
   last_inserted: number | null;
   last_error: string | null;
+  last_breakdown: MetricBreakdown | null;
   total_inserted: number;
   attempts: number;
   failures: number;
@@ -361,6 +362,7 @@ const EMPTY_STATS: SyncStats = {
   last_success_at: null,
   last_inserted: null,
   last_error: null,
+  last_breakdown: null,
   total_inserted: 0,
   attempts: 0,
   failures: 0,
@@ -380,13 +382,14 @@ export function clearSyncStats() {
   localStorage.removeItem(SYNC_STATS_KEY);
 }
 
-function recordSyncResult(r: { ok: boolean; inserted?: number; error?: string; at: number }) {
+function recordSyncResult(r: { ok: boolean; inserted?: number; breakdown?: MetricBreakdown; error?: string; at: number }) {
   const s = getSyncStats();
   s.attempts += 1;
   s.last_attempt_at = r.at;
   if (r.ok) {
     s.last_success_at = r.at;
     s.last_inserted = r.inserted ?? 0;
+    s.last_breakdown = r.breakdown ?? null;
     s.total_inserted += r.inserted ?? 0;
     s.last_error = null;
   } else {
