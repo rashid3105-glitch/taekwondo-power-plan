@@ -476,3 +476,11 @@ function Stat({ label, value, tone }: { label: string; value: React.ReactNode; t
     </div>
   );
 }
+
+function EmptyMetric({ label }: { label: string }) {
+  return (
+    <p className="text-sm text-muted-foreground rounded-md border border-dashed border-border px-3 py-3">
+      {label}
+    </p>
+  );
+}
