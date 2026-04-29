@@ -141,6 +141,27 @@
     }
   }
 
+  /* ---- Touch-device press feedback (iPhone, Android) ----
+     iOS simulates :hover on tap and leaves it sticky after release, so the
+     visual press feels delayed/desynced. On touch devices we:
+       1. Disable hover transitions so :hover never visibly "sticks".
+       2. Add an instant :active flash on every tappable surface. */
+  @media (hover: none) {
+    *:hover {
+      transition-duration: 0ms !important;
+    }
+    button:active,
+    a:active,
+    [role="button"]:active,
+    [role="tab"]:active,
+    [role="menuitem"]:active,
+    [role="option"]:active,
+    .tappable:active {
+      opacity: 0.85;
+      transition: opacity 40ms linear;
+    }
+  }
+
   h1, h2, h3, h4 {
     font-family: 'Inter', system-ui, sans-serif;
     @apply tracking-tight;
