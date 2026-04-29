@@ -8,7 +8,6 @@ import { useEffect } from "react";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { FloatingDiaryButton } from "@/components/FloatingDiaryButton";
 import { OfflineBanner } from "@/components/OfflineBanner";
-import { syncOnAppOpen, isWearableSupported } from "@/lib/wearables";
 import Index from "./pages/Index";
 import FeatureDetail from "./pages/FeatureDetail";
 import Auth from "./pages/Auth";
@@ -114,18 +113,6 @@ const AnimatedRoutes = () => {
 };
 
 const App = () => {
-  // Native wearable sync: pull HealthKit / Health Connect samples on app open
-  // and whenever the app returns to the foreground. No-ops on web.
-  useEffect(() => {
-    if (!isWearableSupported()) return;
-    void syncOnAppOpen();
-    const onVisible = () => {
-      if (document.visibilityState === "visible") void syncOnAppOpen();
-    };
-    document.addEventListener("visibilitychange", onVisible);
-    return () => document.removeEventListener("visibilitychange", onVisible);
-  }, []);
-
   return (
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
