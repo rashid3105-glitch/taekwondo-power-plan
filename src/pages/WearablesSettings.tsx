@@ -54,11 +54,37 @@ export default function WearablesSettings() {
     tap();
     setBusy(true);
     try {
-      const since = status?.last_sync_at ?? new Date(Date.now() - 86400_000).toISOString();
+      // Always pull at least the last 14 days when the user taps Sync —
+      // a tighter window often returns 0 samples and looks broken.
+      const fourteenDaysAgo = new Date(Date.now() - 14 * 86400_000).toISOString();
+      const since = status?.last_sync_at && status.last_sync_at > fourteenDaysAgo
+        ? status.last_sync_at
+        : fourteenDaysAgo;
       const inserted = await syncSince(since);
-      success();
-      toast({ title: t("wearableSyncDone"), description: `${inserted} ${t("wearableSamples")}` });
+      if (inserted > 0) {
+        success();
+        toast({ title: t("wearableSyncDone"), description: `+${inserted} ${t("wearableSamples")}` });
+      } else {
+        toast({
+          title: "No new data received",
+          description: "Your watch returned 0 new samples. Open the Sync status page for details and a permissions check.",
+        });
+      }
       await load();
+    } catch (e: any) {
+      toast({ title: t("error"), description: e.message, variant: "destructive" });
+    } finally { setBusy(false); }
+  }
+
+  async function handleReRequestPermissions() {
+    tap();
+    setBusy(true);
+    try {
+      await requestPermissions();
+      toast({
+        title: "Permission sheet shown",
+        description: "Make sure every metric (Sleep, Resting Heart Rate, HRV, Steps, Workouts) is enabled, then tap Sync now.",
+      });
     } catch (e: any) {
       toast({ title: t("error"), description: e.message, variant: "destructive" });
     } finally { setBusy(false); }
@@ -124,8 +150,8 @@ export default function WearablesSettings() {
             <span className="text-muted-foreground">
               {" · "}{providerLabel}
               {status.last_sync_at
-                ? ` · last sync ${new Date(status.last_sync_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
-                : ""}
+                ? ` · last data ${new Date(status.last_sync_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+                : " · waiting for first data"}
             </span>
           )}
         </div>
@@ -185,7 +211,7 @@ export default function WearablesSettings() {
             <div className="text-sm text-muted-foreground">
               {t("wearableLastSync")}: {status.last_sync_at
                 ? new Date(status.last_sync_at).toLocaleString()
-                : "—"}
+                : <span className="text-amber-600">Waiting for first data — tap Sync now</span>}
             </div>
             {status.device_label && (
               <div className="text-sm text-muted-foreground">
@@ -202,6 +228,16 @@ export default function WearablesSettings() {
                 {t("wearableDisconnect")}
               </Button>
             </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full"
+              onClick={handleReRequestPermissions}
+              disabled={busy}
+            >
+              <ShieldCheck className="h-4 w-4 mr-2" />
+              Re-request health permissions
+            </Button>
             <div className="flex gap-2">
               <Button variant="ghost" size="sm" className="flex-1" onClick={() => navigate("/health")}>
                 Open health stats

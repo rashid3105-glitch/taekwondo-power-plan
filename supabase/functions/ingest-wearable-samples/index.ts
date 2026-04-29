@@ -58,15 +58,24 @@ Deno.serve(async (req) => {
     );
     const { provider, device_label, granted_scopes, samples } = parsed.data;
 
-    // Upsert connection row
-    await supa.from("wearable_connections").upsert({
+    // Per-metric breakdown of what the device reported
+    const breakdown: Record<string, number> = {
+      sleep: 0, resting_hr: 0, hrv: 0, steps: 0, workout: 0,
+    };
+    for (const s of samples) breakdown[s.metric_type] = (breakdown[s.metric_type] ?? 0) + 1;
+
+    // Upsert connection row — but DO NOT bump last_sync_at unless we actually
+    // ingested data. We track the attempt separately via last_attempt_at so
+    // the UI can distinguish "we tried" from "we got data".
+    const baseConnection: Record<string, unknown> = {
       user_id: user.id,
       provider,
       status: "active",
       device_label: device_label ?? null,
       granted_scopes: granted_scopes ?? [],
-      last_sync_at: new Date().toISOString(),
-    }, { onConflict: "user_id,provider" });
+      last_attempt_at: new Date().toISOString(),
+    };
+    await supa.from("wearable_connections").upsert(baseConnection, { onConflict: "user_id,provider" });
 
     let inserted = 0;
     if (samples.length > 0) {
@@ -98,8 +107,25 @@ Deno.serve(async (req) => {
       if (rpcErr) console.error("recompute_wearable_summary failed", rpcErr);
     }
 
+    // Only update last_sync_at when we actually stored data — otherwise the
+    // UI lies about the freshness of the recovery picture.
+    let last_sync_at: string | null = null;
+    if (inserted > 0) {
+      last_sync_at = new Date().toISOString();
+      await supa.from("wearable_connections")
+        .update({ last_sync_at })
+        .eq("user_id", user.id)
+        .eq("provider", provider);
+    }
+
     return new Response(
-      JSON.stringify({ ok: true, inserted, last_sync_at: new Date().toISOString() }),
+      JSON.stringify({
+        ok: true,
+        inserted,
+        received: samples.length,
+        breakdown,
+        last_sync_at,
+      }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (e: any) {

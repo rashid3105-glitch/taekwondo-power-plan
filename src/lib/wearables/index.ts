@@ -26,8 +26,14 @@ export interface WearableStatus {
   provider: WearableProvider | null;
   connected: boolean;
   last_sync_at: string | null;
+  last_attempt_at: string | null;
   device_label: string | null;
 }
+
+export type MetricBreakdown = Record<WearableMetric, number>;
+const EMPTY_BREAKDOWN: MetricBreakdown = {
+  sleep: 0, resting_hr: 0, hrv: 0, steps: 0, workout: 0,
+};
 
 function detectPlatform(): "ios" | "android" | "web" {
   if (typeof navigator === "undefined") return "web";
@@ -302,10 +308,22 @@ async function readNativeSamples(sinceISO: string): Promise<WearableSample[]> {
  */
 export async function syncSince(sinceISO: string, deviceLabel?: string): Promise<number> {
   const provider = wearableProviderForPlatform();
-  if (!provider) return 0;
+  if (!provider) {
+    recordSyncResult({
+      ok: false,
+      error: "Wearable sync only works inside the iOS or Android app. Open Sportstalent on your phone, not the browser.",
+      at: Date.now(),
+    });
+    return 0;
+  }
 
   try {
     const samples = await readNativeSamples(sinceISO);
+
+    // Per-metric breakdown of what the device actually returned, before upload
+    const localBreakdown: MetricBreakdown = { ...EMPTY_BREAKDOWN };
+    for (const s of samples) localBreakdown[s.metric_type] += 1;
+    console.info("[wearables] device returned samples:", localBreakdown, "since", sinceISO);
 
     const { data, error } = await supabase.functions.invoke("ingest-wearable-samples", {
       body: { provider, device_label: deviceLabel, samples },
@@ -314,7 +332,8 @@ export async function syncSince(sinceISO: string, deviceLabel?: string): Promise
       throw new Error((data as any)?.error || error?.message || "Ingest failed");
     }
     const inserted = (data as any)?.inserted ?? 0;
-    recordSyncResult({ ok: true, inserted, at: Date.now() });
+    const breakdown = ((data as any)?.breakdown ?? localBreakdown) as MetricBreakdown;
+    recordSyncResult({ ok: true, inserted, breakdown, at: Date.now() });
     return inserted;
   } catch (e: any) {
     recordSyncResult({ ok: false, error: e?.message || "Sync failed", at: Date.now() });
@@ -332,6 +351,7 @@ export interface SyncStats {
   last_success_at: number | null;
   last_inserted: number | null;
   last_error: string | null;
+  last_breakdown: MetricBreakdown | null;
   total_inserted: number;
   attempts: number;
   failures: number;
@@ -342,6 +362,7 @@ const EMPTY_STATS: SyncStats = {
   last_success_at: null,
   last_inserted: null,
   last_error: null,
+  last_breakdown: null,
   total_inserted: 0,
   attempts: 0,
   failures: 0,
@@ -361,13 +382,14 @@ export function clearSyncStats() {
   localStorage.removeItem(SYNC_STATS_KEY);
 }
 
-function recordSyncResult(r: { ok: boolean; inserted?: number; error?: string; at: number }) {
+function recordSyncResult(r: { ok: boolean; inserted?: number; breakdown?: MetricBreakdown; error?: string; at: number }) {
   const s = getSyncStats();
   s.attempts += 1;
   s.last_attempt_at = r.at;
   if (r.ok) {
     s.last_success_at = r.at;
     s.last_inserted = r.inserted ?? 0;
+    s.last_breakdown = r.breakdown ?? null;
     s.total_inserted += r.inserted ?? 0;
     s.last_error = null;
   } else {
@@ -396,23 +418,25 @@ export async function initialBackfill(): Promise<number> {
 /** Fetch latest connection status row for the current user. */
 export async function getStatus(): Promise<WearableStatus> {
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { provider: null, connected: false, last_sync_at: null, device_label: null };
+  if (!user) return { provider: null, connected: false, last_sync_at: null, last_attempt_at: null, device_label: null };
 
   const provider = wearableProviderForPlatform();
   const { data } = await supabase
     .from("wearable_connections")
-    .select("provider,status,last_sync_at,device_label")
+    .select("provider,status,last_sync_at,last_attempt_at,device_label")
     .eq("user_id", user.id)
     .order("last_sync_at", { ascending: false, nullsFirst: false })
     .limit(1)
     .maybeSingle();
 
-  if (!data) return { provider, connected: false, last_sync_at: null, device_label: null };
+  if (!data) return { provider, connected: false, last_sync_at: null, last_attempt_at: null, device_label: null };
+  const row = data as any;
   return {
-    provider: data.provider as WearableProvider,
-    connected: data.status === "active",
-    last_sync_at: data.last_sync_at,
-    device_label: data.device_label,
+    provider: row.provider as WearableProvider,
+    connected: row.status === "active",
+    last_sync_at: row.last_sync_at,
+    last_attempt_at: row.last_attempt_at ?? null,
+    device_label: row.device_label,
   };
 }
 
