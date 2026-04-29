@@ -1,6 +1,12 @@
-// Thin platform-branched wrapper around HealthKit (iOS) / Health Connect (Android).
-// Web users get a stub that reports "unsupported". Native plugins are loaded
-// dynamically so the web build stays lean and doesn't fail when they're absent.
+// Native HealthKit / Health Connect bridge built on the `capacitor-health`
+// plugin. Web users get a stub that reports "unsupported".
+//
+// IMPORTANT: capacitor-health only exposes Steps, Active Calories, Mindfulness
+// (aggregated) and Workouts (with HR series, calories, distance). Sleep,
+// Resting HR and HRV are *not* surfaced by this plugin, so we only ingest
+// `steps` and `workout` samples. The DB schema accepts the other metrics so
+// they remain null on the daily summary — that's fine.
+
 import { supabase } from "@/integrations/supabase/client";
 
 export type WearableProvider = "apple_health" | "health_connect";
@@ -46,109 +52,150 @@ export function isWearableSupported(): boolean {
 }
 
 // ============================================================================
-// Native plugin bridge (Capacitor)
-// ----------------------------------------------------------------------------
-// We dynamically import community plugins so the web bundle never tries to
-// resolve native modules. The plugins expose roughly the same surface for
-// HealthKit and Health Connect, so we normalise the response to WearableSample.
+// capacitor-health bridge
 // ============================================================================
-type RawNativeSample = {
-  startDate: string; endDate?: string;
-  value?: number; unit?: string;
-  sourceName?: string; uuid?: string;
-};
-
-async function loadNativePlugin(): Promise<any | null> {
-  const platform = detectPlatform();
-  if (platform === "web") return null;
-
-  // We never use a static import of the native plugins — Vite would try to
-  // resolve the bare module names and fail the web build. Instead, on native
-  // we read the plugin off Capacitor's global Plugins registry, which the
-  // Capacitor runtime populates after `cap sync`. The web bundle stays clean.
-  const cap = (globalThis as any).Capacitor;
-  const registry = cap?.Plugins ?? {};
-
-  if (platform === "ios") {
-    return registry.CapacitorHealth ?? registry.Health ?? null;
+async function loadHealth(): Promise<any | null> {
+  if (detectPlatform() === "web") return null;
+  try {
+    const mod: any = await import(/* @vite-ignore */ "capacitor-health");
+    return mod?.Health ?? null;
+  } catch (e) {
+    console.warn("[wearables] capacitor-health import failed", e);
+    return null;
   }
-  if (platform === "android") {
-    return registry.HealthConnect ?? registry.HealthConnectPlugin ?? null;
-  }
-  return null;
 }
 
-const METRIC_KEYS: Record<WearableMetric, { ios: string; android: string }> = {
-  sleep:      { ios: "sleepAnalysis",   android: "SleepSession" },
-  resting_hr: { ios: "restingHeartRate", android: "RestingHeartRate" },
-  hrv:        { ios: "heartRateVariability", android: "HeartRateVariabilityRmssd" },
-  steps:      { ios: "steps",            android: "Steps" },
-  workout:    { ios: "workout",          android: "ExerciseSession" },
-};
+const PERMISSIONS = [
+  "READ_STEPS",
+  "READ_HEART_RATE",
+  "READ_WORKOUTS",
+  "READ_ACTIVE_CALORIES",
+  "READ_TOTAL_CALORIES",
+  "READ_DISTANCE",
+] as const;
 
-/** Request permissions for the 5 MVP metrics. Returns granted scope list. */
+/** Request permissions for the metrics we actually pull. */
 export async function requestPermissions(): Promise<string[]> {
   const provider = wearableProviderForPlatform();
   if (!provider) throw new Error("Wearables require the iOS or Android app.");
 
-  const plugin = await loadNativePlugin();
-  if (!plugin) {
-    console.warn("[wearables] Native health plugin not found on Capacitor.Plugins. Falling back to stub. Platform:", detectPlatform());
-    // Plugin not bundled yet — record an "active" connection in dev so the UI
-    // proceeds; native build will replace this with real auth.
-    return ["sleep", "heart_rate", "hrv", "steps", "workouts"];
+  const Health = await loadHealth();
+  if (!Health) {
+    console.warn("[wearables] capacitor-health not available; using stub.");
+    return [...PERMISSIONS];
   }
-  console.info("[wearables] Native plugin loaded for", detectPlatform());
 
-  const platform = detectPlatform();
-  const reads = (Object.keys(METRIC_KEYS) as WearableMetric[]).map(
-    (m) => METRIC_KEYS[m][platform === "ios" ? "ios" : "android"],
-  );
   try {
-    if (typeof plugin.requestAuthorization === "function") {
-      await plugin.requestAuthorization({ read: reads, write: [] });
-    } else if (typeof plugin.requestPermissions === "function") {
-      await plugin.requestPermissions({ permissions: reads });
+    const avail = await Health.isHealthAvailable?.();
+    if (avail && avail.available === false) {
+      throw new Error(
+        provider === "health_connect"
+          ? "Google Health Connect isn't installed on this device."
+          : "Apple Health isn't available on this device.",
+      );
     }
+    await Health.requestHealthPermissions({ permissions: [...PERMISSIONS] });
   } catch (e: any) {
     throw new Error(e?.message || "Permission request failed");
   }
-  return reads;
+  return [...PERMISSIONS];
+}
+
+interface RawWorkout {
+  startDate: string;
+  endDate: string;
+  workoutType?: string;
+  sourceName?: string;
+  id?: string;
+  duration?: number;
+  distance?: number;
+  steps?: number;
+  calories?: number;
+  sourceBundleId?: string;
+  heartRate?: { timestamp: string; bpm: number }[];
+}
+
+interface AggregatedBucket {
+  startDate: string;
+  endDate: string;
+  value: number;
 }
 
 async function readNativeSamples(sinceISO: string): Promise<WearableSample[]> {
-  const plugin = await loadNativePlugin();
-  if (!plugin) return [];
-  const platform = detectPlatform();
+  const Health = await loadHealth();
+  if (!Health) return [];
+
+  const startDate = sinceISO;
+  const endDate = new Date().toISOString();
   const out: WearableSample[] = [];
 
-  for (const metric of Object.keys(METRIC_KEYS) as WearableMetric[]) {
-    const dataType = METRIC_KEYS[metric][platform === "ios" ? "ios" : "android"];
-    try {
-      const fn = plugin.queryAggregated || plugin.query || plugin.read;
-      if (!fn) continue;
-      const res: any = await fn.call(plugin, {
-        dataType,
-        startDate: sinceISO,
-        endDate: new Date().toISOString(),
+  // ── Steps (daily aggregation) ──────────────────────────────────────────
+  try {
+    const stepsRes: any = await Health.queryAggregated({
+      startDate, endDate, dataType: "steps", bucket: "day",
+    });
+    const buckets: AggregatedBucket[] = stepsRes?.aggregatedData ?? stepsRes?.data ?? stepsRes ?? [];
+    for (const b of buckets) {
+      if (!b?.startDate) continue;
+      const dayKey = (b.startDate || "").slice(0, 10);
+      out.push({
+        metric_type: "steps",
+        value_numeric: Math.round(Number(b.value) || 0),
+        unit: "count",
+        start_at: new Date(b.startDate).toISOString(),
+        end_at: b.endDate ? new Date(b.endDate).toISOString() : undefined,
+        external_id: `steps-${dayKey}`,
       });
-      const raws: RawNativeSample[] = Array.isArray(res) ? res : (res?.samples ?? res?.records ?? []);
-      for (const r of raws) {
-        out.push({
-          metric_type: metric,
-          value_numeric: typeof r.value === "number" ? r.value : null,
-          unit: r.unit,
-          start_at: r.startDate,
-          end_at: r.endDate,
-          source_device: r.sourceName,
-          external_id: r.uuid,
-          payload: r as Record<string, unknown>,
-        });
-      }
-    } catch {
-      // Skip metrics the user denied or that aren't supported on this device.
     }
+  } catch (e) {
+    console.warn("[wearables] steps query failed", e);
   }
+
+  // ── Workouts (with HR series, calories, distance) ──────────────────────
+  try {
+    const workoutsRes: any = await Health.queryWorkouts({
+      startDate, endDate,
+      includeHeartRate: true, includeRoute: false, includeSteps: true,
+    });
+    const list: RawWorkout[] = workoutsRes?.workouts ?? [];
+    for (const w of list) {
+      if (!w?.startDate) continue;
+      const hrSeries = Array.isArray(w.heartRate) ? w.heartRate.filter(h => Number(h?.bpm) > 0) : [];
+      const avgHr = hrSeries.length
+        ? Math.round(hrSeries.reduce((s, h) => s + Number(h.bpm), 0) / hrSeries.length)
+        : null;
+      const maxHr = hrSeries.length ? Math.round(Math.max(...hrSeries.map(h => Number(h.bpm)))) : null;
+      const start = new Date(w.startDate);
+      const end = w.endDate ? new Date(w.endDate) : start;
+      const durationMin = typeof w.duration === "number"
+        ? Math.round(w.duration / 60)
+        : Math.max(0, Math.round((end.getTime() - start.getTime()) / 60000));
+
+      out.push({
+        metric_type: "workout",
+        value_numeric: durationMin,
+        unit: "min",
+        start_at: start.toISOString(),
+        end_at: end.toISOString(),
+        source_device: w.sourceName,
+        external_id: w.id ?? `workout-${start.toISOString()}`,
+        payload: {
+          workoutType: w.workoutType,
+          duration_minutes: durationMin,
+          avg_hr: avgHr,
+          max_hr: maxHr,
+          calories: typeof w.calories === "number" ? Math.round(w.calories) : null,
+          distance_m: typeof w.distance === "number" ? Math.round(w.distance) : null,
+          steps: typeof w.steps === "number" ? Math.round(w.steps) : null,
+          source: w.sourceName ?? null,
+          source_bundle: w.sourceBundleId ?? null,
+        },
+      });
+    }
+  } catch (e) {
+    console.warn("[wearables] workouts query failed", e);
+  }
+
   return out;
 }
 
@@ -179,7 +226,7 @@ export async function syncSince(sinceISO: string, deviceLabel?: string): Promise
 }
 
 // ============================================================================
-// Local sync stats — surfaced on the Wearables Sync status page.
+// Local sync stats
 // ============================================================================
 const SYNC_STATS_KEY = "wearable_sync_stats";
 
@@ -295,10 +342,7 @@ export async function getYesterdaySummary() {
 }
 
 // ============================================================================
-// Background pull on app open
-// ----------------------------------------------------------------------------
-// Rate-limited to once every 30 minutes to avoid hammering native APIs when
-// the user toggles between apps. Uses last_sync_at when available.
+// Background pull on app open (rate-limited 30 min)
 // ============================================================================
 const LAST_PULL_KEY = "wearable_last_pull_at";
 
@@ -322,10 +366,6 @@ export async function syncOnAppOpen(): Promise<number> {
 
 // ============================================================================
 // Workout auto-attach
-// ----------------------------------------------------------------------------
-// Find the most-overlapping wearable workout sample for a given logged_date
-// and patch the workout_logs row with avg_hr / duration / calories so coaches
-// see real intensity instead of a binary "completed" flag.
 // ============================================================================
 export interface AttachableMatch {
   duration_minutes: number;
@@ -350,7 +390,6 @@ export async function findWorkoutMatch(date: string): Promise<AttachableMatch | 
     .order("start_at", { ascending: true });
   if (!data || data.length === 0) return null;
 
-  // Pick the longest workout that day as the "main" session.
   let best: any = null;
   let bestDur = 0;
   for (const w of data as any[]) {
@@ -370,7 +409,6 @@ export async function findWorkoutMatch(date: string): Promise<AttachableMatch | 
   };
 }
 
-/** Attach the wearable workout match to all workout_logs for the day if not already set. */
 export async function autoAttachWorkoutLogs(date: string): Promise<number> {
   const match = await findWorkoutMatch(date);
   if (!match) return 0;
