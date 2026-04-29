@@ -84,7 +84,7 @@ export function MedicalDocumentTranslator() {
       return;
     }
 
-    triggerHaptic("light");
+    haptics.tap();
     setLoading(true);
     setResult(null);
     try {
@@ -112,7 +112,7 @@ export function MedicalDocumentTranslator() {
         return;
       }
       setResult(data.result);
-      triggerHaptic("success");
+      haptics.success();
     } catch (e: any) {
       toast.error(e?.message || t("error"));
     } finally {
