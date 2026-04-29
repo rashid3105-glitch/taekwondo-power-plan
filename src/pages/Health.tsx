@@ -10,11 +10,21 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { PageMeta } from "@/components/PageMeta";
 import { tap } from "@/lib/haptics";
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  BarChart, Bar, LineChart, Line, ReferenceLine,
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
+import { Moon, HeartPulse, Waves } from "lucide-react";
 import { getStatus, getSyncStats, syncSince, type WearableStatus } from "@/lib/wearables";
 
-interface DailyRow { summary_date: string; steps: number | null; }
+interface DailyRow {
+  summary_date: string;
+  steps: number | null;
+  sleep_minutes: number | null;
+  resting_hr: number | null;
+  hrv_rmssd: number | null;
+  baseline_hr_7d: number | null;
+  baseline_hrv_7d: number | null;
+}
 interface WorkoutSample {
   id: string;
   start_at: string;
