@@ -71,6 +71,9 @@ const PERMISSIONS = [
   "READ_ACTIVE_CALORIES",
   "READ_TOTAL_CALORIES",
   "READ_DISTANCE",
+  "READ_SLEEP",
+  "READ_RESTING_HEART_RATE",
+  "READ_HEART_RATE_VARIABILITY",
 ] as const;
 
 /** Request permissions for the metrics we actually pull. */
