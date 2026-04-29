@@ -211,7 +211,7 @@ export default function WearablesSettings() {
             <div className="text-sm text-muted-foreground">
               {t("wearableLastSync")}: {status.last_sync_at
                 ? new Date(status.last_sync_at).toLocaleString()
-                : "—"}
+                : <span className="text-amber-600">Waiting for first data — tap Sync now</span>}
             </div>
             {status.device_label && (
               <div className="text-sm text-muted-foreground">
@@ -228,6 +228,16 @@ export default function WearablesSettings() {
                 {t("wearableDisconnect")}
               </Button>
             </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full"
+              onClick={handleReRequestPermissions}
+              disabled={busy}
+            >
+              <ShieldCheck className="h-4 w-4 mr-2" />
+              Re-request health permissions
+            </Button>
             <div className="flex gap-2">
               <Button variant="ghost" size="sm" className="flex-1" onClick={() => navigate("/health")}>
                 Open health stats
