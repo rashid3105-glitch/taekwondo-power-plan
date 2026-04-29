@@ -83,7 +83,7 @@ export default function WearablesSettings() {
   return (
     <div className="min-h-screen bg-background p-4 max-w-2xl mx-auto">
       <PageMeta title="Wearables · Sportstalent" description="Connect your watch for automatic recovery data." noindex />
-      <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="mb-4">
+      <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")} className="mb-4">
         <ArrowLeft className="h-4 w-4 mr-1" /> {t("home")}
       </Button>
 
@@ -202,9 +202,14 @@ export default function WearablesSettings() {
                 {t("wearableDisconnect")}
               </Button>
             </div>
-            <Button variant="ghost" size="sm" className="w-full" onClick={() => navigate("/wearables/sync")}>
-              View sync status & errors
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="ghost" size="sm" className="flex-1" onClick={() => navigate("/health")}>
+                Open health stats
+              </Button>
+              <Button variant="ghost" size="sm" className="flex-1" onClick={() => navigate("/wearables/sync")}>
+                Sync status & errors
+              </Button>
+            </div>
           </CardContent>
         </Card>
       ) : (
