@@ -9,8 +9,25 @@ import {
 } from "@simplewebauthn/browser";
 import { supabase } from "@/integrations/supabase/client";
 
+/**
+ * True when the document is loaded inside a cross-origin iframe.
+ * WebAuthn (`navigator.credentials.create/get`) is blocked by browsers in this
+ * case — relevant when running inside the Lovable editor preview.
+ */
+export function isInCrossOriginIframe(): boolean {
+  try {
+    if (typeof window === "undefined") return false;
+    if (window.top === window.self) return false;
+    // Accessing window.top.location.origin throws on cross-origin
+    return window.top!.location.origin !== window.location.origin;
+  } catch {
+    return true;
+  }
+}
+
 export function passkeysSupported(): boolean {
   try {
+    if (isInCrossOriginIframe()) return false;
     return browserSupportsWebAuthn();
   } catch {
     return false;
