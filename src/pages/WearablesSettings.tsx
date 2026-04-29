@@ -150,8 +150,8 @@ export default function WearablesSettings() {
             <span className="text-muted-foreground">
               {" · "}{providerLabel}
               {status.last_sync_at
-                ? ` · last sync ${new Date(status.last_sync_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
-                : ""}
+                ? ` · last data ${new Date(status.last_sync_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+                : " · waiting for first data"}
             </span>
           )}
         </div>
