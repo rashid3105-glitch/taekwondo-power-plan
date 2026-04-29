@@ -56,8 +56,9 @@ Deno.serve(async (req) => {
       return json({ error: "Verification failed" }, 400);
     }
 
-    const { credential } = verification.registrationInfo;
-    const publicKeyB64 = btoa(String.fromCharCode(...credential.publicKey));
+    // @simplewebauthn/server v10: fields are flat on registrationInfo
+    const { credentialID, credentialPublicKey, counter } = verification.registrationInfo;
+    const publicKeyB64 = btoa(String.fromCharCode(...credentialPublicKey));
 
     // Enforce 5 passkeys per user
     const { count } = await admin
@@ -70,9 +71,9 @@ Deno.serve(async (req) => {
 
     const { error: insertErr } = await admin.from("user_passkeys").insert({
       user_id: userId,
-      credential_id: credential.id,
+      credential_id: credentialID,
       public_key: publicKeyB64,
-      counter: credential.counter,
+      counter: counter,
       transports: response.response.transports || null,
       device_label: deviceLabel,
       last_used_at: new Date().toISOString(),
