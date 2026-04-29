@@ -845,6 +845,9 @@ export default function Dashboard() {
               }} />
             )}
 
+            {/* Medical document translator */}
+            <MedicalDocumentTranslator />
+
             {/* Previous rehab plans */}
             {rehabPlans.filter(p => !p.is_active).length > 0 && (
               <div>
