@@ -250,6 +250,38 @@ export default function AuthPage() {
             </p>
           </div>
 
+          {/* Passkey login (returning users on this device) */}
+          {isLogin && passkeyAvailable && (
+            <>
+              <Button
+                type="button"
+                onClick={handlePasskeyLogin}
+                disabled={passkeyLoading}
+                className="w-full h-11 font-bold text-sm rounded-xl bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30"
+                variant="outline"
+              >
+                {passkeyLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    <Fingerprint className="h-4 w-4 mr-2" />
+                    {t("continueWithFaceId")}
+                  </>
+                )}
+              </Button>
+              <div className="relative my-2">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-border/40" />
+                </div>
+                <div className="relative flex justify-center">
+                  <span className="bg-background px-2 text-[10px] uppercase tracking-wider text-muted-foreground">
+                    {t("usePasswordInstead")}
+                  </span>
+                </div>
+              </div>
+            </>
+          )}
+
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
