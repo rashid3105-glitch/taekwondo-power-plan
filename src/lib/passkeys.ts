@@ -34,7 +34,7 @@ export async function enrollPasskey(deviceLabel?: string): Promise<void> {
   if (optsRes.error) throw new Error(optsRes.error.message);
   const { options } = optsRes.data as { options: any };
 
-  const attResp = await startRegistration({ optionsJSON: options });
+  const attResp = await startRegistration(options);
 
   const verifyRes = await supabase.functions.invoke("passkey-register-verify", {
     body: { response: attResp, deviceLabel: deviceLabel || guessDeviceLabel() },
@@ -55,7 +55,7 @@ export async function signInWithPasskey(email?: string): Promise<void> {
   if (optsRes.error) throw new Error(optsRes.error.message);
   const { options } = optsRes.data as { options: any };
 
-  const assertion = await startAuthentication({ optionsJSON: options });
+  const assertion = await startAuthentication(options);
 
   const verifyRes = await supabase.functions.invoke("passkey-login-verify", {
     body: { response: assertion },
