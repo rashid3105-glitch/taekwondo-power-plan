@@ -22,8 +22,8 @@ interface WorkoutSample {
 
 /**
  * Compact recovery tile shown on the Dashboard hub for athletes who own a
- * wearable. Prefers Sleep/RHR/HRV when available, otherwise falls back to
- * Steps + last workout (which is what `capacitor-health` actually exposes).
+ * wearable. Prefers Sleep/RHR/HRV when available (pulled from Apple Health
+ * / Health Connect), otherwise falls back to Steps + last workout.
  */
 export function RecoveryTile() {
   const { t } = useLanguage();
