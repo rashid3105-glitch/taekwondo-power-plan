@@ -47,8 +47,8 @@ export default function WearablesSync() {
         toast({
           title: "No new data",
           description: status?.last_sync_at
-            ? `Nothing new since ${new Date(status.last_sync_at).toLocaleString()}. Open Apple Health / Health Connect to confirm your watch is syncing, then try again.`
-            : "Make sure your watch is paired and syncing to Apple Health / Health Connect, then try again.",
+            ? `Nothing new since ${new Date(status.last_sync_at).toLocaleString()}. In Apple Health → Sharing → SPORTS TALENT, make sure Steps, Workouts, Sleep, Resting Heart Rate and HRV are all enabled, then try again.`
+            : "Make sure your watch is paired and that Steps, Workouts, Sleep, Resting Heart Rate and HRV are enabled in Apple Health → Sharing → SPORTS TALENT, then try again.",
         });
       } else {
         toast({ title: t("wearableSyncDone" as any), description: `+${inserted}` });
