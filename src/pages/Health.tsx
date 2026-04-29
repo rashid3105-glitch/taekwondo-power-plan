@@ -89,6 +89,56 @@ export default function Health() {
     return { today, yday, avg7, delta: today - yday };
   }, [steps]);
 
+  // Recovery series for charts (sleep / RHR / HRV) — strip nulls
+  const sleepData = useMemo(
+    () => steps.map(r => ({
+      date: r.summary_date.slice(5),
+      hours: r.sleep_minutes != null ? Math.round((r.sleep_minutes / 60) * 10) / 10 : null,
+    })),
+    [steps],
+  );
+  const rhrData = useMemo(
+    () => steps.map(r => ({
+      date: r.summary_date.slice(5),
+      rhr: r.resting_hr != null ? Math.round(Number(r.resting_hr)) : null,
+      baseline: r.baseline_hr_7d != null ? Math.round(Number(r.baseline_hr_7d)) : null,
+    })),
+    [steps],
+  );
+  const hrvData = useMemo(
+    () => steps.map(r => ({
+      date: r.summary_date.slice(5),
+      hrv: r.hrv_rmssd != null ? Math.round(Number(r.hrv_rmssd) * 10) / 10 : null,
+      baseline: r.baseline_hrv_7d != null ? Math.round(Number(r.baseline_hrv_7d) * 10) / 10 : null,
+    })),
+    [steps],
+  );
+
+  function lastNonNull<T extends keyof DailyRow>(field: T): number | null {
+    for (let i = steps.length - 1; i >= 0; i--) {
+      const v = steps[i][field];
+      if (v != null) return Number(v);
+    }
+    return null;
+  }
+  function avgLast7(field: keyof DailyRow): number | null {
+    const vals = steps.slice(-7).map(r => r[field]).filter(v => v != null).map(Number);
+    if (!vals.length) return null;
+    return Math.round((vals.reduce((a, b) => a + b, 0) / vals.length) * 10) / 10;
+  }
+
+  const sleepLast = lastNonNull("sleep_minutes");
+  const rhrLast = lastNonNull("resting_hr");
+  const hrvLast = lastNonNull("hrv_rmssd");
+  const sleepAvg7 = avgLast7("sleep_minutes");
+  const rhrAvg7 = avgLast7("resting_hr");
+  const hrvAvg7 = avgLast7("hrv_rmssd");
+  const rhrBase = lastNonNull("baseline_hr_7d");
+  const hrvBase = lastNonNull("baseline_hrv_7d");
+  const hasSleep = steps.some(r => r.sleep_minutes != null);
+  const hasRhr = steps.some(r => r.resting_hr != null);
+  const hasHrv = steps.some(r => r.hrv_rmssd != null);
+
   const workoutSummary = useMemo(() => {
     if (!workouts.length) return null;
     let totalMin = 0, totalCal = 0, hrSum = 0, hrCount = 0;
