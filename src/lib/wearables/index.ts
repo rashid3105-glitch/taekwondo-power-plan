@@ -26,8 +26,14 @@ export interface WearableStatus {
   provider: WearableProvider | null;
   connected: boolean;
   last_sync_at: string | null;
+  last_attempt_at: string | null;
   device_label: string | null;
 }
+
+export type MetricBreakdown = Record<WearableMetric, number>;
+const EMPTY_BREAKDOWN: MetricBreakdown = {
+  sleep: 0, resting_hr: 0, hrv: 0, steps: 0, workout: 0,
+};
 
 function detectPlatform(): "ios" | "android" | "web" {
   if (typeof navigator === "undefined") return "web";
