@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -91,6 +91,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, locale } = useLanguage();
+  const hasBootstrappedWearablesRef = useRef(false);
   const isDemoLockedTab = (tab: typeof activeTab) => isDemo && !["hub", "plan"].includes(tab);
   const handleTabChange = (tab: typeof activeTab) => {
     if (isDemoLockedTab(tab)) return;
@@ -132,6 +133,9 @@ export default function Dashboard() {
   // Background pull from Apple Health / Health Connect on app open, then
   // auto-attach matched workout sessions to today's logs.
   useEffect(() => {
+    if (hasBootstrappedWearablesRef.current) return;
+    hasBootstrappedWearablesRef.current = true;
+
     (async () => {
       try {
         const { syncOnAppOpen, autoAttachWorkoutLogs } = await import("@/lib/wearables");

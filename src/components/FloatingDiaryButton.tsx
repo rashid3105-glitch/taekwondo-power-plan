@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { NotebookPen } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,49 +8,81 @@ export const FloatingDiaryButton = () => {
   const location = useLocation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const mountedRef = useRef(true);
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setIsLoggedIn(!!session);
-      if (session) loadUnreadCount(session.user.id);
-    };
-    checkAuth();
+  const loadUnreadCount = useCallback(async (userId: string) => {
+    const { data: diaryEntries } = await supabase
+      .from("diary_entries")
+      .select("id")
+      .eq("user_id", userId);
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsLoggedIn(!!session);
-      if (session) loadUnreadCount(session.user.id);
-    });
+    const entryIds = (diaryEntries || []).map((entry: any) => entry.id);
+    if (!entryIds.length) {
+      if (mountedRef.current) {
+        setUnreadCount((prev) => (prev === 0 ? prev : 0));
+      }
+      return;
+    }
 
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const loadUnreadCount = async (userId: string) => {
-    // Count unread comments on this user's diary entries
     const { count } = await supabase
       .from("diary_comments" as any)
       .select("id", { count: "exact", head: true })
       .eq("is_read", false)
-      .in("diary_entry_id", 
-        // Use a subquery approach: get user's diary entry IDs first
-        await supabase
-          .from("diary_entries")
-          .select("id")
-          .eq("user_id", userId)
-          .then(({ data }) => (data || []).map((e: any) => e.id))
-      );
-    setUnreadCount(count || 0);
-  };
+      .in("diary_entry_id", entryIds);
+
+    if (mountedRef.current) {
+      const nextCount = count || 0;
+      setUnreadCount((prev) => (prev === nextCount ? prev : nextCount));
+    }
+  }, []);
+
+  useEffect(() => {
+    mountedRef.current = true;
+
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!mountedRef.current) return;
+
+      const loggedIn = !!session;
+      setIsLoggedIn((prev) => (prev === loggedIn ? prev : loggedIn));
+      if (session) {
+        await loadUnreadCount(session.user.id);
+      } else {
+        setUnreadCount((prev) => (prev === 0 ? prev : 0));
+      }
+    };
+
+    void checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      const loggedIn = !!session;
+      if (mountedRef.current) {
+        setIsLoggedIn((prev) => (prev === loggedIn ? prev : loggedIn));
+      }
+      if (session) {
+        void loadUnreadCount(session.user.id);
+      } else if (mountedRef.current) {
+        setUnreadCount((prev) => (prev === 0 ? prev : 0));
+      }
+    });
+
+    return () => {
+      mountedRef.current = false;
+      subscription.unsubscribe();
+    };
+  }, [loadUnreadCount]);
 
   // Refresh count periodically
   useEffect(() => {
     if (!isLoggedIn) return;
-    const interval = setInterval(async () => {
+    const interval = window.setInterval(async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (session) loadUnreadCount(session.user.id);
+      if (session) {
+        await loadUnreadCount(session.user.id);
+      }
     }, 30000);
-    return () => clearInterval(interval);
-  }, [isLoggedIn]);
+    return () => window.clearInterval(interval);
+  }, [isLoggedIn, loadUnreadCount]);
 
   if (!isLoggedIn || location.pathname === "/diary" || location.pathname === "/auth" || location.pathname === "/reset-password") {
     return null;

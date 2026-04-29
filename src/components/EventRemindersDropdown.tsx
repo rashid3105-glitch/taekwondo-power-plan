@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -31,8 +31,9 @@ export function EventRemindersDropdown() {
   const [reminders, setReminders] = useState<EventReminder[]>([]);
   const [messages, setMessages] = useState<CoachMessage[]>([]);
   const [open, setOpen] = useState(false);
+  const mountedRef = useRef(true);
 
-  const loadInbox = async () => {
+  const loadInbox = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
@@ -51,15 +52,22 @@ export function EventRemindersDropdown() {
         .limit(20),
     ]);
 
+    if (!mountedRef.current) return;
     if (rData) setReminders(rData as unknown as EventReminder[]);
     if (mData) setMessages(mData as unknown as CoachMessage[]);
-  };
+  }, []);
 
   useEffect(() => {
-    loadInbox();
-    const interval = setInterval(loadInbox, 60000);
-    return () => clearInterval(interval);
-  }, []);
+    mountedRef.current = true;
+    void loadInbox();
+    const interval = window.setInterval(() => {
+      void loadInbox();
+    }, 60000);
+    return () => {
+      mountedRef.current = false;
+      window.clearInterval(interval);
+    };
+  }, [loadInbox]);
 
   const unreadCount =
     reminders.filter((r) => !r.is_read).length +
