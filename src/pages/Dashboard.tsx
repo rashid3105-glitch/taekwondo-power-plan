@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { AIPlanCard } from "@/components/AIPlanCard";
 import { Badge } from "@/components/ui/badge";
 import { RehabPlanCard } from "@/components/RehabPlanCard";
+import { MedicalDocumentTranslator } from "@/components/MedicalDocumentTranslator";
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
