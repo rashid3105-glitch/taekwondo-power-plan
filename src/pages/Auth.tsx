@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Users, FlaskConical, Zap, Shield, BarChart3, Brain, ArrowLeft, ChevronRight } from "lucide-react";
+import { Users, FlaskConical, Zap, Shield, BarChart3, Brain, ArrowLeft, ChevronRight, Fingerprint, Loader2 } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
@@ -13,6 +13,12 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { PageMeta } from "@/components/PageMeta";
 import { motion } from "framer-motion";
 import { validatePassword } from "@/lib/passwordValidation";
+import {
+  passkeysSupported,
+  platformAuthenticatorAvailable,
+  signInWithPasskey,
+} from "@/lib/passkeys";
+import { haptics } from "@/lib/haptics";
 
 const features = [
   { icon: Zap, labelKey: "pricingFeatureAiPlans" as const },
@@ -29,12 +35,39 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [wantsCoach, setWantsCoach] = useState(false);
   const [wantsDemo, setWantsDemo] = useState(false);
+  const [passkeyAvailable, setPasskeyAvailable] = useState(false);
+  const [passkeyLoading, setPasskeyLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
 
   // Read redirect param so we can send user back after login
   const redirectTo = new URLSearchParams(window.location.search).get("redirect");
+
+  useEffect(() => {
+    (async () => {
+      if (!passkeysSupported()) return;
+      const ok = await platformAuthenticatorAvailable();
+      setPasskeyAvailable(ok);
+    })();
+  }, []);
+
+  const handlePasskeyLogin = async () => {
+    setPasskeyLoading(true);
+    haptics.tap();
+    try {
+      await signInWithPasskey(email || undefined);
+      navigate(redirectTo || "/dashboard");
+    } catch (e: any) {
+      toast({
+        title: t("passkeyLoginFailed"),
+        description: e?.message,
+        variant: "destructive",
+      });
+    } finally {
+      setPasskeyLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -216,6 +249,38 @@ export default function AuthPage() {
               </button>
             </p>
           </div>
+
+          {/* Passkey login (returning users on this device) */}
+          {isLogin && passkeyAvailable && (
+            <>
+              <Button
+                type="button"
+                onClick={handlePasskeyLogin}
+                disabled={passkeyLoading}
+                className="w-full h-11 font-bold text-sm rounded-xl bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30"
+                variant="outline"
+              >
+                {passkeyLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    <Fingerprint className="h-4 w-4 mr-2" />
+                    {t("continueWithFaceId")}
+                  </>
+                )}
+              </Button>
+              <div className="relative my-2">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-border/40" />
+                </div>
+                <div className="relative flex justify-center">
+                  <span className="bg-background px-2 text-[10px] uppercase tracking-wider text-muted-foreground">
+                    {t("usePasswordInstead")}
+                  </span>
+                </div>
+              </div>
+            </>
+          )}
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">

@@ -13,6 +13,7 @@ import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekScheduleP
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { AccountDangerZone } from "@/components/AccountDangerZone";
+import { PasskeySettings } from "@/components/PasskeySettings";
 import { PublicProfileSettings } from "@/components/profile/PublicProfileSettings";
 
 import { COUNTRIES } from "@/data/countries";
@@ -569,6 +570,8 @@ export default function ProfileSetup() {
         <div className="mt-6">
           <PublicProfileSettings />
         </div>
+
+        <PasskeySettings />
 
         <AccountDangerZone />
       </div>

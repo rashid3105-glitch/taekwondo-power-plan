@@ -880,6 +880,7 @@ export type Database = {
           is_public: boolean
           last_seen_at: string | null
           owns_wearable: boolean
+          passkey_prompt_dismissed_at: string | null
           payment_date: string | null
           payment_status: string
           program_weeks: number | null
@@ -915,6 +916,7 @@ export type Database = {
           is_public?: boolean
           last_seen_at?: string | null
           owns_wearable?: boolean
+          passkey_prompt_dismissed_at?: string | null
           payment_date?: string | null
           payment_status?: string
           program_weeks?: number | null
@@ -950,6 +952,7 @@ export type Database = {
           is_public?: boolean
           last_seen_at?: string | null
           owns_wearable?: boolean
+          passkey_prompt_dismissed_at?: string | null
           payment_date?: string | null
           payment_status?: string
           program_weeks?: number | null
@@ -1261,6 +1264,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_passkeys: {
+        Row: {
+          counter: number
+          created_at: string
+          credential_id: string
+          device_label: string | null
+          id: string
+          last_used_at: string | null
+          public_key: string
+          transports: string[] | null
+          user_id: string
+        }
+        Insert: {
+          counter?: number
+          created_at?: string
+          credential_id: string
+          device_label?: string | null
+          id?: string
+          last_used_at?: string | null
+          public_key: string
+          transports?: string[] | null
+          user_id: string
+        }
+        Update: {
+          counter?: number
+          created_at?: string
+          credential_id?: string
+          device_label?: string | null
+          id?: string
+          last_used_at?: string | null
+          public_key?: string
+          transports?: string[] | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_recipes: {
         Row: {
           calories: number
@@ -1447,6 +1486,36 @@ export type Database = {
           unit?: string | null
           user_id?: string
           value_numeric?: number | null
+        }
+        Relationships: []
+      }
+      webauthn_challenges: {
+        Row: {
+          challenge: string
+          created_at: string
+          email: string | null
+          expires_at: string
+          id: string
+          kind: string
+          user_id: string | null
+        }
+        Insert: {
+          challenge: string
+          created_at?: string
+          email?: string | null
+          expires_at: string
+          id?: string
+          kind: string
+          user_id?: string | null
+        }
+        Update: {
+          challenge?: string
+          created_at?: string
+          email?: string | null
+          expires_at?: string
+          id?: string
+          kind?: string
+          user_id?: string | null
         }
         Relationships: []
       }

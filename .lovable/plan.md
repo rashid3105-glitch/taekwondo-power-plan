@@ -1,41 +1,69 @@
-## Plan
+## Passkey Login (Face ID / Touch ID / Windows Hello)
 
-1. Isolate the exact dashboard component causing the render loop
-   - Trace the native `/dashboard` mount path across `src/App.tsx`, `src/pages/Dashboard.tsx`, and the widgets that mount immediately there.
-   - Focus first on components with async effects and state writes on mount: `FloatingDiaryButton`, `EventRemindersDropdown`, `ReadinessCard`, `RecoveryTile`, `ReflectionPromptCard`, and the app-open wearable sync path.
-   - If needed, temporarily narrow the mounted set to identify which component is repeatedly updating state on iPhone.
+Add WebAuthn passkeys so returning users sign in by tapping a button and confirming with their device biometric. The face/fingerprint never leaves the device — only a cryptographic signature does. Email + password stays as the fallback for new devices and recovery.
 
-2. Fix the unstable update path
-   - Remove or guard the repeated state update that is causing React error #185 (`Maximum update depth exceeded`).
-   - Make the offending effect idempotent so it cannot retrigger endlessly from native lifecycle changes, auth callbacks, or remount churn.
-   - If the issue comes from a shared primitive or wrapper, patch it there so the fix applies system-wide instead of only on one page.
+### How it will feel for the user
 
-3. Validate the native flow that was crashing
-   - Verify `/dashboard` opens without the crash on the native build path.
-   - Check the likely trigger interactions after load: opening the menu sheet, opening reminders, and loading wearable/readiness widgets.
-   - Confirm there are no new console/runtime errors tied to the same route.
+**On the Auth page (returning user, same device):**
+- Big "Continue with Face ID" button at the top, above the email field.
+- One tap → native Face ID prompt → straight into dashboard. No typing.
+- Email + password form is collapsed below as "Use password instead".
 
-## What I believe the problem is
+**First-time enrollment (after a normal email/password login):**
+- A one-time card on the dashboard: "Enable Face ID for faster login" → tap → Face ID prompt → done.
+- Also accessible later from a new "Security" section in account settings.
 
-React error `#185` decodes to:
-`Maximum update depth exceeded`
+**Edge cases:**
+- New device or different browser → email + password as today, then offer to enroll.
+- User loses device → password login still works; they can revoke old passkeys from Security settings.
+- Up to 5 passkeys per account (one per device).
 
-So this is not a Health permission error by itself. It means a mounted dashboard component is repeatedly calling state updates during a render/effect cycle. Based on the current code, the highest-risk areas are the dashboard-mounted components that do async auth/data reads on mount plus the native app-open wearable sync hook.
+### What gets built
 
-## Technical details
+**1. Database — one new table**
+- `user_passkeys`: stores the public key, credential ID, device label ("iPhone 15"), counter, last-used date. RLS so users only see/delete their own. No biometric data, only public keys.
 
-Primary files to inspect and likely adjust:
-- `src/App.tsx`
-- `src/pages/Dashboard.tsx`
-- `src/components/FloatingDiaryButton.tsx`
-- `src/components/EventRemindersDropdown.tsx`
-- `src/components/ReadinessCard.tsx`
-- `src/components/RecoveryTile.tsx`
-- `src/components/ReflectionPromptCard.tsx`
-- potentially `src/lib/wearables/index.ts` if native foreground sync is causing repeated remount/update pressure
+**2. Edge functions — four small ones**
+- `passkey-register-options` — issues a challenge for enrolling a new passkey.
+- `passkey-register-verify` — verifies the enrollment response and stores the public key.
+- `passkey-login-options` — issues a challenge for login (looked up by email).
+- `passkey-login-verify` — verifies the signature and returns a Supabase session.
 
-Stabilization approach:
-- ensure mount effects do not indirectly retrigger themselves
-- avoid repeated state writes when values have not changed
-- guard async callbacks after unmount/remount
-- prevent native visibility/auth listeners from causing a feedback loop into the dashboard tree
+All four use the standard `@simplewebauthn/server` library (Deno-compatible).
+
+**3. Frontend pieces**
+- New `src/lib/passkeys.ts` helper wrapping `@simplewebauthn/browser` (handles browser + iOS Capacitor WebView).
+- New "Continue with Face ID" button on `src/pages/Auth.tsx`, shown only when the browser supports WebAuthn.
+- New `EnablePasskeyCard` shown once on the dashboard after first login (dismissible, remembered in profile).
+- New "Security" section in account settings listing enrolled devices with a "Remove" button per passkey.
+- Translations added for DA / EN / SV / DE / AR.
+
+**4. iOS Capacitor support**
+- Add `@capacitor/browser` is not needed — modern iOS WebView supports WebAuthn natively from iOS 16+.
+- Configure the app's Associated Domains to bind passkeys to `sportstalent.dk`. This requires hosting an `apple-app-site-association` file at `https://sportstalent.dk/.well-known/apple-app-site-association` and adding the entitlement to the iOS project (one-time setup, you do this in Xcode after `npx cap sync`).
+
+### Technical details
+
+**Library**: `@simplewebauthn/server` (edge functions) + `@simplewebauthn/browser` (frontend). Industry standard, used by GitHub, Shopify, etc.
+
+**Session bridging**: After `passkey-login-verify` succeeds, the edge function uses the Supabase service role key to generate a magic-link-style session token (`generateLink` with type `magiclink`) and returns it to the client, which calls `supabase.auth.verifyOtp` to establish the session. This is the standard Supabase pattern for custom auth flows.
+
+**Security**:
+- Challenges are single-use, 5-minute TTL, stored in a small `webauthn_challenges` table and deleted after verification.
+- Origin and RP ID strictly checked against `sportstalent.dk` and the Capacitor app ID.
+- Counter check prevents cloned-credential replay attacks.
+- Rate limit on `passkey-login-options` (5/min per email) to prevent enumeration.
+
+**iOS associated domains**: requires editing the iOS project once after `npx cap sync` to add the `webcredentials:sportstalent.dk` entitlement. I'll provide exact Xcode steps in the implementation message.
+
+### Out of scope (call out explicitly)
+
+- No actual face-recognition / camera capture — this is OS-level biometric only.
+- No removal of email + password — it stays as fallback and admin recovery path.
+- No passkey support on the published `taekwondo-power-plan.lovable.app` preview domain (passkeys are domain-bound to `sportstalent.dk` and the iOS app bundle).
+
+### Rollout
+
+1. Ship the database, edge functions, and Security settings UI first (no user-visible login change).
+2. Test enrollment + login on iPhone (Capacitor build) and desktop Safari/Chrome.
+3. Enable the "Continue with Face ID" button on the Auth page once verified end-to-end.

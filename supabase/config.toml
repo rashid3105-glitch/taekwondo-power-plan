@@ -59,3 +59,8 @@ verify_jwt = false
 
 [functions.send-coach-message]
 verify_jwt = false
+[functions.passkey-login-options]
+verify_jwt = false
+
+[functions.passkey-login-verify]
+verify_jwt = false
