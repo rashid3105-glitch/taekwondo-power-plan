@@ -97,14 +97,13 @@ export async function signInWithPasskey(email?: string): Promise<void> {
     body: { response: assertion },
   });
   if (verifyRes.error) throw new Error(await extractFnError(verifyRes.error, "Login failed"));
-  const data = verifyRes.data as { email?: string; hashed_token?: string; error?: string };
-  if (!data.email || !data.hashed_token) {
+  const data = verifyRes.data as { hashed_token?: string; error?: string };
+  if (!data.hashed_token) {
     throw new Error(data.error || "Login failed");
   }
 
   const { error } = await supabase.auth.verifyOtp({
-    type: "magiclink",
-    email: data.email,
+    type: "email",
     token_hash: data.hashed_token,
   });
   if (error) throw error;
