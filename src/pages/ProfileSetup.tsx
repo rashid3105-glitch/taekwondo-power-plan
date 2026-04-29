@@ -532,18 +532,30 @@ export default function ProfileSetup() {
             </div>
           </div>
 
-          <div className="rounded-lg border border-border p-3 flex items-center justify-between gap-3">
-            <div className="flex-1">
-              <Label htmlFor="ownsWearable" className="text-sm font-medium">
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => setOwnsWearable((v) => !v)}
+            onKeyDown={(e) => {
+              if (e.key === " " || e.key === "Enter") {
+                e.preventDefault();
+                setOwnsWearable((v) => !v);
+              }
+            }}
+            className="rounded-lg border border-border p-3 flex items-center justify-between gap-3 cursor-pointer select-none"
+          >
+            <div className="flex-1 pointer-events-none">
+              <span className="text-sm font-medium block">
                 {t("wearableOwnQuestion")}
-              </Label>
+              </span>
               <p className="text-xs text-muted-foreground">{t("wearableOwnHint")}</p>
             </div>
             <Checkbox
               id="ownsWearable"
-              className="h-5 w-5"
+              className="h-5 w-5 pointer-events-none"
               checked={ownsWearable}
-              onCheckedChange={(v) => setOwnsWearable(v === true)}
+              tabIndex={-1}
+              aria-label={t("wearableOwnQuestion")}
             />
           </div>
 
