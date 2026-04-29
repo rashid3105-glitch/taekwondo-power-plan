@@ -110,22 +110,51 @@ export default function WearablesSync() {
               : <Badge variant="outline">Not connected</Badge>
           } />
           <Row label="Device" value={status?.device_label ?? "—"} />
-          <Row label="Server last sync" value={fmt(status?.last_sync_at ?? null)} />
+          <Row label="Last attempt (server)" value={fmt(status?.last_attempt_at ?? null)} />
+          <Row label="Last successful data (server)" value={
+            status?.last_sync_at
+              ? fmt(status.last_sync_at)
+              : <span className="text-amber-600">No data ingested yet</span>
+          } />
         </CardContent>
       </Card>
 
       <Card className="mb-4">
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">Pulls</CardTitle>
+          <CardTitle className="text-base">Pulls (this device)</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
           <Row label="Last attempt" value={fmt(stats.last_attempt_at)} />
           <Row label="Last successful pull" value={fmt(stats.last_success_at)} />
           <Row label="Last batch size" value={stats.last_inserted ?? "—"} />
-          <Row label="Total samples (device)" value={count.toLocaleString()} />
+          <Row label="Total samples in cloud" value={count.toLocaleString()} />
           <Row label="Total inserted (this device)" value={stats.total_inserted.toLocaleString()} />
           <Row label="Attempts" value={stats.attempts} />
           <Row label="Failures" value={stats.failures} />
+        </CardContent>
+      </Card>
+
+      <Card className="mb-4">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base">Last pull breakdown</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2 text-sm">
+          {stats.last_breakdown ? (
+            <>
+              <Row label="Sleep" value={stats.last_breakdown.sleep} />
+              <Row label="Resting heart rate" value={stats.last_breakdown.resting_hr} />
+              <Row label="HRV" value={stats.last_breakdown.hrv} />
+              <Row label="Steps" value={stats.last_breakdown.steps} />
+              <Row label="Workouts" value={stats.last_breakdown.workout} />
+              {Object.values(stats.last_breakdown).every(n => n === 0) && (
+                <p className="text-xs text-amber-600 mt-2">
+                  Every metric was 0. The most common causes are: (a) you're using the web app instead of the installed iOS/Android app, or (b) Apple Health → Sharing → SPORTS TALENT has the metrics turned off. Tap "Re-request health permissions" on the previous screen.
+                </p>
+              )}
+            </>
+          ) : (
+            <p className="text-muted-foreground">No pull yet.</p>
+          )}
         </CardContent>
       </Card>
 
