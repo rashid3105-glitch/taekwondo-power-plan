@@ -107,8 +107,25 @@ Deno.serve(async (req) => {
       if (rpcErr) console.error("recompute_wearable_summary failed", rpcErr);
     }
 
+    // Only update last_sync_at when we actually stored data — otherwise the
+    // UI lies about the freshness of the recovery picture.
+    let last_sync_at: string | null = null;
+    if (inserted > 0) {
+      last_sync_at = new Date().toISOString();
+      await supa.from("wearable_connections")
+        .update({ last_sync_at })
+        .eq("user_id", user.id)
+        .eq("provider", provider);
+    }
+
     return new Response(
-      JSON.stringify({ ok: true, inserted, last_sync_at: new Date().toISOString() }),
+      JSON.stringify({
+        ok: true,
+        inserted,
+        received: samples.length,
+        breakdown,
+        last_sync_at,
+      }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (e: any) {
