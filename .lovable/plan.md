@@ -1,46 +1,72 @@
-## Where Apple Watch / Health Connect data shows today
+## What's actually happening
 
-Currently your wearable stats appear in **3 places only**:
+Two issues, one root cause for the missing numbers:
 
-1. **Dashboard hub** — small `RecoveryTile` (yesterday's Sleep / RHR / HRV with trend arrows vs 7-day baseline). Only shown if the athlete has `owns_wearable = true`.
-2. **Readiness check-in card** — auto-prefills sleep + HRV from yesterday's wearable summary so the athlete doesn't have to retype it.
-3. **Coach view** (`CoachAthleteDetail`) — a 7-day `AthleteRecoveryTrend` sparkline trio for each athlete.
-4. **Workout logs** — wearable workout match silently attached (avg HR, max HR, duration, calories) but **never visualised**.
-
-Also exists but only on dedicated pages: `/wearables` (settings) and `/wearables-sync` (status / sample count).
-
-So today the **Progress tab shows nothing from the watch** — which is exactly the gap you noticed. Yes, this would be a strong addition: the Progress page is where athletes already look for trends, and recovery data tells the most important story (training load vs sleep/HRV).
+1. **Sync says "+0" because nothing is being read from HealthKit.** The installed plugin is `capacitor-health` (Martin Ley's plugin). Its real API is `requestHealthPermissions`, `queryAggregated`, `queryWorkouts` with permission strings like `READ_STEPS`, `READ_HEART_RATE`, `READ_WORKOUTS`. Our wrapper in `src/lib/wearables/index.ts` calls non-existent methods (`requestAuthorization`, `query`, `read`) with the wrong data-type names (`sleepAnalysis`, `restingHeartRate`, etc.). Every metric loop silently fails, so the device sends an empty `samples: []` array. The edge function happily reports `inserted: 0` — that's the "+0" you see. The database confirms it: `wearable_samples` and `wearable_daily_summary` are both empty.
+2. **Plugin scope is narrower than we modeled.** `capacitor-health` only exposes Steps, Active Calories, Mindfulness (aggregated) + Workouts (with HR series + calories + distance). It does **not** expose Sleep, Resting Heart Rate or HRV. We need to drop those metrics for the iOS/Android MVP and surface what we actually can read.
+3. **The /wearables ↔ /wearables/sync loop** is caused by mixed back-button strategies: the Sync page hard-navigates to `/wearables`, while the Wearables page uses `navigate(-1)` (history back). After visiting Sync, history is `[…, /wearables, /wearables/sync]`; "Back" on Wearables sends you back to Sync again.
 
 ---
 
-## Plan: add a "Recovery" section to the Progress page
+## The fix
 
-Add a new section at the top of `ProgressDashboard.tsx`, only rendered when `profile.owns_wearable` is true and at least one summary row exists. Keeps the page clean for non-wearable users.
+### 1. Replace the native bridge with the real `capacitor-health` API
 
-### Section contents
+In `src/lib/wearables/index.ts`:
 
-1. **30-day trend chart (3 lines)** — Sleep hours, Resting HR, HRV RMSSD on a shared time axis. Toggle chips to focus on one metric. Uses existing recharts pattern from the rest of the page.
-2. **Weekly averages strip** — last 7d vs previous 7d for each metric, with up/down delta and a red flag if RHR ↑>5 bpm or HRV ↓>8 ms (same thresholds already used in `AthleteRecoveryTrend`).
-3. **Training load vs recovery overlay** — small bar+line combo: weekly training minutes (from `workout_logs` already used in this page) overlaid with average HRV. Lets the athlete spot when load is outpacing recovery.
-4. **Workout intensity rows** — for each logged workout in the period that has `avg_hr` / `calories` from the watch, show the values inline in the existing volume list. Tiny watch icon next to wearable-sourced rows.
+- Import the plugin properly: `const { Health } = await import("capacitor-health")` (only on native, behind the platform check we already have).
+- Replace `requestPermissions()` to call `Health.requestHealthPermissions({ permissions: ["READ_STEPS","READ_HEART_RATE","READ_WORKOUTS","READ_ACTIVE_CALORIES","READ_TOTAL_CALORIES","READ_DISTANCE"] })`.
+- Replace `readNativeSamples(sinceISO)` with two real readers:
+  - `Health.queryAggregated({ startDate, endDate, dataType: "steps", bucket: "day" })` → emit one `steps` sample per day.
+  - `Health.queryWorkouts({ startDate, endDate, includeHeartRate: true, includeRoute: false, includeSteps: true })` → for each workout emit one `workout` sample with `start_at`, `end_at`, `value_numeric = duration`, `source_device = sourceName`, `external_id = id`, and `payload = { avg_hr, max_hr, calories, distance, workoutType }` (compute avg/max from the returned `heartRate` array).
+- Drop the `sleep`, `resting_hr`, `hrv` mapping rows.
+- Keep the existing ingest call (`ingest-wearable-samples`) as-is — it already accepts these metric types.
 
-### Empty / fallback states
+### 2. Update what we display so it matches what we can actually pull
 
-- No wearable connected → section hidden entirely.
-- Wearable connected but <3 days of data → show a soft "Collecting data — come back in a few days" placeholder with link to `/wearables-sync`.
+- **Server side** (`supabase/functions/ingest-wearable-samples`): no schema change. The `recompute_wearable_summary` RPC keeps writing `steps` to the daily summary; sleep/RHR/HRV columns simply stay null on iOS, which is fine.
+- **Recovery & Wearables section on Progress page**: hide RHR/HRV/Sleep rows when there's no data and instead show:
+  - "Steps (last 7 days, 30-day chart)"
+  - "Workouts captured" — count + total duration + avg HR per workout, sourced from `wearable_samples` where `metric_type = 'workout'`.
+- **RecoveryTile on the Dashboard hub**: same treatment — show Steps + last workout HR when sleep/HRV are null, instead of three em-dashes.
 
-### Technical details
+### 3. New "Health" page with detailed stats
 
-- New component `src/components/progress/RecoveryProgressSection.tsx` (keeps `ProgressDashboard.tsx` from growing further).
-- Reads `wearable_daily_summary` for last 30 days in one query (RLS already restricts to own user).
-- Reuses `RecoveryTrendDay` shape from `src/lib/wearables`.
-- For workout intensity, extend the existing workout query in `ProgressDashboard` to also `select` `avg_hr, max_hr, duration_minutes, calories, wearable_source` (already on `workout_logs`).
-- All new strings added to `src/i18n/translations.ts` for da/en/sv/de/ar.
-- No backend / RLS / migration changes — all data already exists, we're just surfacing it.
-- Hidden by default for accounts without `owns_wearable`, so non-watch users see no change.
+Create `src/pages/Health.tsx` route at `/health` and add a small "Open health stats" link from `/wearables`:
 
-### Out of scope (ask if you want them later)
+- Summary header: total samples, last successful pull, connection state (compact).
+- **Steps card**: 30-day bar chart (uses `wearable_daily_summary.steps`), 7-day average, today vs. yesterday delta.
+- **Workouts card**: list of last 14 workouts from `wearable_samples` (date, duration, avg HR, max HR, calories, source). Tap a row to expand HR zones (computed client-side from payload).
+- **HR zones card**: distribution across the last 14 days using each workout's HR average vs. theoretical zones based on `220 - profile.age`.
+- All copy goes through `src/i18n/translations.ts` for the 5 supported locales.
 
-- Sleep stage breakdown (deep/REM) — not currently ingested.
-- Strain / training-load score — would need a model; can add as a follow-up.
-- Coach-facing version on the Progress tab in `CoachAthleteDetail` — the coach already has the 7-day sparkline; happy to extend if you want parity.
+### 4. Break the back-button loop
+
+In `src/pages/WearablesSync.tsx` change the back button from `navigate("/wearables")` to `navigate(-1)` **only when** history length > 1, otherwise fall back to `/wearables`. And add an explicit "Done" button that pops back twice if the previous entry was `/wearables`. Symmetrically, in `WearablesSettings.tsx`, change `navigate(-1)` to `navigate("/dashboard")` so the Wearables page never sends you back into Sync.
+
+### 5. Show the user that something happened
+
+In `WearablesSync.tsx`, when "Sync now" returns 0 samples, show a friendlier hint instead of a silent toast: "No new data since {last_sync_at}. Open Apple Health to verify your watch is syncing, then try again."
+
+---
+
+## Files touched
+
+```text
+src/lib/wearables/index.ts                       (rewrite native bridge)
+src/components/RecoveryTile.tsx                  (graceful empty states for sleep/RHR/HRV)
+src/components/progress/RecoveryProgressSection.tsx (steps + workouts focus)
+src/pages/WearablesSettings.tsx                  (back -> /dashboard, link to /health)
+src/pages/WearablesSync.tsx                      (back -> -1, friendlier zero-result toast)
+src/pages/Health.tsx                             (new page: steps, workouts, HR zones)
+src/App.tsx                                      (register /health route)
+src/i18n/translations.ts                         (new keys for Health page)
+```
+
+No DB migration. No edge function change. No new dependencies.
+
+---
+
+## Out of scope (call out for you)
+
+- **Sleep, Resting Heart Rate, and HRV** are not available through `capacitor-health`. Restoring those would require swapping in a different plugin (e.g. `@perfood/capacitor-healthkit` for iOS-only HRV/RHR, plus a separate Health Connect plugin for Android). Happy to do that as a follow-up — just say the word and I'll plan it. For now the Health page will be honest about what's measured.
