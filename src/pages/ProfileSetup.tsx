@@ -13,6 +13,7 @@ import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekScheduleP
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { AccountDangerZone } from "@/components/AccountDangerZone";
+import { PasskeySettings } from "@/components/PasskeySettings";
 import { PublicProfileSettings } from "@/components/profile/PublicProfileSettings";
 
 import { COUNTRIES } from "@/data/countries";
