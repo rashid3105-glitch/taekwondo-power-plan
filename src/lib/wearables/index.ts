@@ -198,8 +198,102 @@ async function readNativeSamples(sinceISO: string): Promise<WearableSample[]> {
     console.warn("[wearables] workouts query failed", e);
   }
 
+  // ── Sleep / Resting HR / HRV (raw samples) ─────────────────────────────
+  // Plugin returns objects shaped like:
+  //   { startDate, endDate, value, unit, sourceName?, id?, samples?: [{ stage, startDate, endDate }] }
+  // Sleep may include sleep-stage subsamples; we sum "asleep" minutes when
+  // present, otherwise fall back to (endDate - startDate).
+  async function readRaw(dataType: string): Promise<any[]> {
+    try {
+      const res: any = await Health.readSamples({ startDate, endDate, dataType });
+      return res?.samples ?? res?.data ?? res ?? [];
+    } catch (e) {
+      console.warn(`[wearables] ${dataType} query failed`, e);
+      return [];
+    }
+  }
+
+  // Sleep
+  const sleepRaw = await readRaw("sleep");
+  for (const s of sleepRaw) {
+    if (!s?.startDate) continue;
+    const start = new Date(s.startDate);
+    const end = s.endDate ? new Date(s.endDate) : start;
+    let minutes: number;
+    const subs = Array.isArray(s.samples) ? s.samples : null;
+    if (subs && subs.length) {
+      // Sum any stage that isn't explicitly "awake" / "inBed"
+      minutes = 0;
+      for (const sub of subs) {
+        const stage = String(sub?.stage ?? sub?.value ?? "").toLowerCase();
+        if (stage.includes("awake") || stage === "in_bed" || stage === "inbed") continue;
+        const ss = sub?.startDate ? new Date(sub.startDate).getTime() : null;
+        const se = sub?.endDate ? new Date(sub.endDate).getTime() : null;
+        if (ss != null && se != null && se > ss) {
+          minutes += Math.round((se - ss) / 60000);
+        }
+      }
+      if (minutes === 0) {
+        minutes = Math.max(0, Math.round((end.getTime() - start.getTime()) / 60000));
+      }
+    } else {
+      const v = Number(s.value);
+      minutes = Number.isFinite(v) && v > 0
+        ? Math.round(v) // already minutes
+        : Math.max(0, Math.round((end.getTime() - start.getTime()) / 60000));
+    }
+    if (minutes <= 0) continue;
+    out.push({
+      metric_type: "sleep",
+      value_numeric: minutes,
+      unit: "min",
+      start_at: start.toISOString(),
+      end_at: end.toISOString(),
+      source_device: s.sourceName,
+      external_id: s.id ?? `sleep-${start.toISOString()}`,
+      payload: { source: s.sourceName ?? null, raw_unit: s.unit ?? null },
+    });
+  }
+
+  // Resting Heart Rate
+  const rhrRaw = await readRaw("restingHeartRate");
+  for (const s of rhrRaw) {
+    if (!s?.startDate) continue;
+    const bpm = Number(s.value);
+    if (!Number.isFinite(bpm) || bpm <= 0) continue;
+    const start = new Date(s.startDate);
+    const end = s.endDate ? new Date(s.endDate) : start;
+    out.push({
+      metric_type: "resting_hr",
+      value_numeric: Math.round(bpm),
+      unit: "bpm",
+      start_at: start.toISOString(),
+      end_at: end.toISOString(),
+      source_device: s.sourceName,
+      external_id: s.id ?? `rhr-${start.toISOString()}`,
+    });
+  }
+
+  // Heart-Rate Variability (RMSSD/SDNN, ms)
+  const hrvRaw = await readRaw("heartRateVariability");
+  for (const s of hrvRaw) {
+    if (!s?.startDate) continue;
+    const ms = Number(s.value);
+    if (!Number.isFinite(ms) || ms <= 0) continue;
+    const start = new Date(s.startDate);
+    const end = s.endDate ? new Date(s.endDate) : start;
+    out.push({
+      metric_type: "hrv",
+      value_numeric: Math.round(ms * 10) / 10,
+      unit: "ms",
+      start_at: start.toISOString(),
+      end_at: end.toISOString(),
+      source_device: s.sourceName,
+      external_id: s.id ?? `hrv-${start.toISOString()}`,
+    });
+  }
+
   return out;
-}
 
 /**
  * Pull samples since `sinceISO` from the native health store and POST them
