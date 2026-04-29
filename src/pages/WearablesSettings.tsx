@@ -54,11 +54,37 @@ export default function WearablesSettings() {
     tap();
     setBusy(true);
     try {
-      const since = status?.last_sync_at ?? new Date(Date.now() - 86400_000).toISOString();
+      // Always pull at least the last 14 days when the user taps Sync —
+      // a tighter window often returns 0 samples and looks broken.
+      const fourteenDaysAgo = new Date(Date.now() - 14 * 86400_000).toISOString();
+      const since = status?.last_sync_at && status.last_sync_at > fourteenDaysAgo
+        ? status.last_sync_at
+        : fourteenDaysAgo;
       const inserted = await syncSince(since);
-      success();
-      toast({ title: t("wearableSyncDone"), description: `${inserted} ${t("wearableSamples")}` });
+      if (inserted > 0) {
+        success();
+        toast({ title: t("wearableSyncDone"), description: `+${inserted} ${t("wearableSamples")}` });
+      } else {
+        toast({
+          title: "No new data received",
+          description: "Your watch returned 0 new samples. Open the Sync status page for details and a permissions check.",
+        });
+      }
       await load();
+    } catch (e: any) {
+      toast({ title: t("error"), description: e.message, variant: "destructive" });
+    } finally { setBusy(false); }
+  }
+
+  async function handleReRequestPermissions() {
+    tap();
+    setBusy(true);
+    try {
+      await requestPermissions();
+      toast({
+        title: "Permission sheet shown",
+        description: "Make sure every metric (Sleep, Resting Heart Rate, HRV, Steps, Workouts) is enabled, then tap Sync now.",
+      });
     } catch (e: any) {
       toast({ title: t("error"), description: e.message, variant: "destructive" });
     } finally { setBusy(false); }
