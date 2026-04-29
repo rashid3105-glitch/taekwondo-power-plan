@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Users, FlaskConical, Zap, Shield, BarChart3, Brain, ArrowLeft, ChevronRight } from "lucide-react";
+import { Users, FlaskConical, Zap, Shield, BarChart3, Brain, ArrowLeft, ChevronRight, Fingerprint, Loader2 } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
@@ -13,6 +13,12 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { PageMeta } from "@/components/PageMeta";
 import { motion } from "framer-motion";
 import { validatePassword } from "@/lib/passwordValidation";
+import {
+  passkeysSupported,
+  platformAuthenticatorAvailable,
+  signInWithPasskey,
+} from "@/lib/passkeys";
+import { haptics } from "@/lib/haptics";
 
 const features = [
   { icon: Zap, labelKey: "pricingFeatureAiPlans" as const },
