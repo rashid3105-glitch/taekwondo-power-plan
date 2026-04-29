@@ -1,69 +1,70 @@
-## Passkey Login (Face ID / Touch ID / Windows Hello)
+## Medical Document Translator (Rehab tab)
 
-Add WebAuthn passkeys so returning users sign in by tapping a button and confirming with their device biometric. The face/fingerprint never leaves the device — only a cryptographic signature does. Email + password stays as the fallback for new devices and recovery.
+A helper that turns medical jargon (doctor's notes, MRI/X-ray reports, discharge papers) into something an athlete can understand. Result is shown on screen only — not saved.
 
-### How it will feel for the user
+### User flow
 
-**On the Auth page (returning user, same device):**
-- Big "Continue with Face ID" button at the top, above the email field.
-- One tap → native Face ID prompt → straight into dashboard. No typing.
-- Email + password form is collapsed below as "Use password instead".
+1. In the Rehab tab, below the "Generate Rehab Plan" card, a new card: **"Understand a medical document"**.
+2. User can either:
+   - Paste/type text into a textarea, OR
+   - Upload an image (JPG/PNG/HEIC) of the document, OR
+   - Upload a PDF of the report.
+3. Click **"Translate to plain language"**.
+4. The system returns a structured explanation in the user's selected language:
+   - **Summary** — 2-3 sentence overview
+   - **Key findings** — bullet list, each medical term followed by a plain-language explanation
+   - **What this likely means for training** — TKD-relevant context
+   - **Questions to ask your doctor** — 3-5 follow-up questions
+   - **Disclaimer** — clearly states this is not medical advice
+5. User can copy the explanation or clear it and start over.
 
-**First-time enrollment (after a normal email/password login):**
-- A one-time card on the dashboard: "Enable Face ID for faster login" → tap → Face ID prompt → done.
-- Also accessible later from a new "Security" section in account settings.
+### Safety & guardrails
 
-**Edge cases:**
-- New device or different browser → email + password as today, then offer to enroll.
-- User loses device → password login still works; they can revoke old passkeys from Security settings.
-- Up to 5 passkeys per account (one per device).
-
-### What gets built
-
-**1. Database — one new table**
-- `user_passkeys`: stores the public key, credential ID, device label ("iPhone 15"), counter, last-used date. RLS so users only see/delete their own. No biometric data, only public keys.
-
-**2. Edge functions — four small ones**
-- `passkey-register-options` — issues a challenge for enrolling a new passkey.
-- `passkey-register-verify` — verifies the enrollment response and stores the public key.
-- `passkey-login-options` — issues a challenge for login (looked up by email).
-- `passkey-login-verify` — verifies the signature and returns a Supabase session.
-
-All four use the standard `@simplewebauthn/server` library (Deno-compatible).
-
-**3. Frontend pieces**
-- New `src/lib/passkeys.ts` helper wrapping `@simplewebauthn/browser` (handles browser + iOS Capacitor WebView).
-- New "Continue with Face ID" button on `src/pages/Auth.tsx`, shown only when the browser supports WebAuthn.
-- New `EnablePasskeyCard` shown once on the dashboard after first login (dismissible, remembered in profile).
-- New "Security" section in account settings listing enrolled devices with a "Remove" button per passkey.
-- Translations added for DA / EN / SV / DE / AR.
-
-**4. iOS Capacitor support**
-- Add `@capacitor/browser` is not needed — modern iOS WebView supports WebAuthn natively from iOS 16+.
-- Configure the app's Associated Domains to bind passkeys to `sportstalent.dk`. This requires hosting an `apple-app-site-association` file at `https://sportstalent.dk/.well-known/apple-app-site-association` and adding the entitlement to the iOS project (one-time setup, you do this in Xcode after `npx cap sync`).
+- Visible disclaimer above and below the result: "This is an educational explanation, not medical advice. Always follow your doctor's or physiotherapist's instructions."
+- No diagnoses, no treatment recommendations, no medication dosing.
+- File size limit: 10 MB. Text limit: 15,000 characters.
+- Result is one-off — nothing stored in the database. Files are sent to the edge function and discarded.
 
 ### Technical details
 
-**Library**: `@simplewebauthn/server` (edge functions) + `@simplewebauthn/browser` (frontend). Industry standard, used by GitHub, Shopify, etc.
+**New edge function: `translate-medical-document`** (verify_jwt = true)
+- Accepts `{ text?: string, fileBase64?: string, mimeType?: string, language: string }`.
+- Validates: at least one of text or file is provided, payload < 12 MB, text < 15,000 chars, mimeType in allowed list (`image/jpeg`, `image/png`, `image/webp`, `image/heic`, `application/pdf`, `text/plain`).
+- Calls Lovable AI Gateway with `google/gemini-3-flash-preview` (vision-capable, handles images and PDFs natively via `image_url` content parts with base64 data URI; PDFs sent the same way).
+- System prompt: "You are a medical communicator helping a martial arts athlete understand a medical document. Translate jargon into plain ${lang}. Never diagnose, never prescribe, never give dosing advice. If the document is not medical, say so."
+- Uses tool-calling for structured output: returns `{ summary, keyFindings: [{term, explanation}], trainingImplications, questionsForDoctor: [string] }`.
+- Handles 429/402 from gateway and surfaces friendly errors.
 
-**Session bridging**: After `passkey-login-verify` succeeds, the edge function uses the Supabase service role key to generate a magic-link-style session token (`generateLink` with type `magiclink`) and returns it to the client, which calls `supabase.auth.verifyOtp` to establish the session. This is the standard Supabase pattern for custom auth flows.
+**New component: `src/components/MedicalDocumentTranslator.tsx`**
+- Tabs: "Paste text" | "Upload file"
+- File input with drag-and-drop, accepts the allowed MIME types, shows filename + size.
+- Converts file to base64 client-side.
+- Calls the edge function via `supabase.functions.invoke`.
+- Renders result with the structured sections, copy button, clear button.
+- Loading state with spinner; error toasts.
 
-**Security**:
-- Challenges are single-use, 5-minute TTL, stored in a small `webauthn_challenges` table and deleted after verification.
-- Origin and RP ID strictly checked against `sportstalent.dk` and the Capacitor app ID.
-- Counter check prevents cloned-credential replay attacks.
-- Rate limit on `passkey-login-options` (5/min per email) to prevent enumeration.
+**Dashboard integration**
+- Import and render `<MedicalDocumentTranslator />` inside the rehab tab block in `src/pages/Dashboard.tsx`, placed below the rehab plan generator card.
+- Gated the same way as the rehab plan: hidden in demo mode (`renderDemoLockedState`), available to all paid/free users (no coach gating needed since it's just educational).
 
-**iOS associated domains**: requires editing the iOS project once after `npx cap sync` to add the `webcredentials:sportstalent.dk` entitlement. I'll provide exact Xcode steps in the implementation message.
+**i18n**
+- Add ~15 keys to `src/i18n/translations.ts` for all 6 supported languages (DA, EN, SV, DE, AR, NO):
+  - card title, description, tab labels, placeholder, button label, loading text, disclaimer, section headers (summary, key findings, training implications, questions for doctor), copy/clear button labels, file too large error, unsupported file error.
 
-### Out of scope (call out explicitly)
+**Config**
+- Add `[functions.translate-medical-document]` block to `supabase/config.toml` (default `verify_jwt = true` is fine, no override needed — but added explicitly for clarity).
 
-- No actual face-recognition / camera capture — this is OS-level biometric only.
-- No removal of email + password — it stays as fallback and admin recovery path.
-- No passkey support on the published `taekwondo-power-plan.lovable.app` preview domain (passkeys are domain-bound to `sportstalent.dk` and the iOS app bundle).
+### Files touched
 
-### Rollout
+- new: `supabase/functions/translate-medical-document/index.ts`
+- new: `src/components/MedicalDocumentTranslator.tsx`
+- edit: `src/pages/Dashboard.tsx` (add component into rehab tab section)
+- edit: `src/i18n/translations.ts` (new keys × 6 languages)
+- edit: `supabase/config.toml` (optional explicit block)
 
-1. Ship the database, edge functions, and Security settings UI first (no user-visible login change).
-2. Test enrollment + login on iPhone (Capacitor build) and desktop Safari/Chrome.
-3. Enable the "Continue with Face ID" button on the Auth page once verified end-to-end.
+### Out of scope
+
+- Saving translations to history (per your decision)
+- OCR fallback (Gemini handles images and PDFs directly via vision)
+- Per-paragraph term highlighting in the source document
+- Sharing the translation with a coach

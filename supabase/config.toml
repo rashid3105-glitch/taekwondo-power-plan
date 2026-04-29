@@ -64,3 +64,6 @@ verify_jwt = false
 
 [functions.passkey-login-verify]
 verify_jwt = false
+
+[functions.translate-medical-document]
+verify_jwt = true
