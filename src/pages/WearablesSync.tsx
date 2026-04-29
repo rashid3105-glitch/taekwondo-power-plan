@@ -43,7 +43,16 @@ export default function WearablesSync() {
     try {
       const since = status?.last_sync_at ?? new Date(Date.now() - 86400_000).toISOString();
       const inserted = await syncSince(since);
-      toast({ title: t("wearableSyncDone" as any), description: `+${inserted}` });
+      if (inserted === 0) {
+        toast({
+          title: "No new data",
+          description: status?.last_sync_at
+            ? `Nothing new since ${new Date(status.last_sync_at).toLocaleString()}. Open Apple Health / Health Connect to confirm your watch is syncing, then try again.`
+            : "Make sure your watch is paired and syncing to Apple Health / Health Connect, then try again.",
+        });
+      } else {
+        toast({ title: t("wearableSyncDone" as any), description: `+${inserted}` });
+      }
     } catch (e: any) {
       toast({ title: t("error" as any), description: e.message, variant: "destructive" });
     } finally {
@@ -60,7 +69,15 @@ export default function WearablesSync() {
   return (
     <div className="min-h-screen bg-background p-4 max-w-2xl mx-auto">
       <PageMeta title="Wearables Sync · Sportstalent" description="Sync status, last pull and ingest errors." noindex />
-      <Button variant="ghost" size="sm" onClick={() => navigate("/wearables")} className="mb-4">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => {
+          if (window.history.length > 1) navigate(-1);
+          else navigate("/dashboard");
+        }}
+        className="mb-4"
+      >
         <ArrowLeft className="h-4 w-4 mr-1" /> {t("back" as any) || "Back"}
       </Button>
 
