@@ -294,6 +294,7 @@ async function readNativeSamples(sinceISO: string): Promise<WearableSample[]> {
   }
 
   return out;
+}
 
 /**
  * Pull samples since `sinceISO` from the native health store and POST them
