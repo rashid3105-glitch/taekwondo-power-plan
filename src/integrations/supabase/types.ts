@@ -1375,6 +1375,7 @@ export type Database = {
           device_label: string | null
           granted_scopes: string[]
           id: string
+          last_attempt_at: string | null
           last_sync_at: string | null
           provider: string
           status: string
@@ -1386,6 +1387,7 @@ export type Database = {
           device_label?: string | null
           granted_scopes?: string[]
           id?: string
+          last_attempt_at?: string | null
           last_sync_at?: string | null
           provider: string
           status?: string
@@ -1397,6 +1399,7 @@ export type Database = {
           device_label?: string | null
           granted_scopes?: string[]
           id?: string
+          last_attempt_at?: string | null
           last_sync_at?: string | null
           provider?: string
           status?: string
