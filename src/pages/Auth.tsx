@@ -35,12 +35,39 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [wantsCoach, setWantsCoach] = useState(false);
   const [wantsDemo, setWantsDemo] = useState(false);
+  const [passkeyAvailable, setPasskeyAvailable] = useState(false);
+  const [passkeyLoading, setPasskeyLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
 
   // Read redirect param so we can send user back after login
   const redirectTo = new URLSearchParams(window.location.search).get("redirect");
+
+  useEffect(() => {
+    (async () => {
+      if (!passkeysSupported()) return;
+      const ok = await platformAuthenticatorAvailable();
+      setPasskeyAvailable(ok);
+    })();
+  }, []);
+
+  const handlePasskeyLogin = async () => {
+    setPasskeyLoading(true);
+    haptics.tap();
+    try {
+      await signInWithPasskey(email || undefined);
+      navigate(redirectTo || "/dashboard");
+    } catch (e: any) {
+      toast({
+        title: t("passkeyLoginFailed"),
+        description: e?.message,
+        variant: "destructive",
+      });
+    } finally {
+      setPasskeyLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
