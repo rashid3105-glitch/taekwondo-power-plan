@@ -308,10 +308,22 @@ async function readNativeSamples(sinceISO: string): Promise<WearableSample[]> {
  */
 export async function syncSince(sinceISO: string, deviceLabel?: string): Promise<number> {
   const provider = wearableProviderForPlatform();
-  if (!provider) return 0;
+  if (!provider) {
+    recordSyncResult({
+      ok: false,
+      error: "Wearable sync only works inside the iOS or Android app. Open Sportstalent on your phone, not the browser.",
+      at: Date.now(),
+    });
+    return 0;
+  }
 
   try {
     const samples = await readNativeSamples(sinceISO);
+
+    // Per-metric breakdown of what the device actually returned, before upload
+    const localBreakdown: MetricBreakdown = { ...EMPTY_BREAKDOWN };
+    for (const s of samples) localBreakdown[s.metric_type] += 1;
+    console.info("[wearables] device returned samples:", localBreakdown, "since", sinceISO);
 
     const { data, error } = await supabase.functions.invoke("ingest-wearable-samples", {
       body: { provider, device_label: deviceLabel, samples },
@@ -320,7 +332,8 @@ export async function syncSince(sinceISO: string, deviceLabel?: string): Promise
       throw new Error((data as any)?.error || error?.message || "Ingest failed");
     }
     const inserted = (data as any)?.inserted ?? 0;
-    recordSyncResult({ ok: true, inserted, at: Date.now() });
+    const breakdown = ((data as any)?.breakdown ?? localBreakdown) as MetricBreakdown;
+    recordSyncResult({ ok: true, inserted, breakdown, at: Date.now() });
     return inserted;
   } catch (e: any) {
     recordSyncResult({ ok: false, error: e?.message || "Sync failed", at: Date.now() });
