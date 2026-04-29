@@ -23,10 +23,10 @@ interface WorkoutSample {
 }
 
 /**
- * Compact "Recovery & Wearables" widget on the Progress page.
- * Focuses on Steps + Workouts (the metrics our capacitor-health bridge
- * actually reads). Sleep / RHR / HRV are shown only if data is present
- * (e.g. another data source wrote into the daily summary).
+ * "Recovery & Wearables" widget on the Progress page.
+ * Shows Steps + Workouts (always available) plus Sleep / RHR / HRV when
+ * they're present in the daily summary (pulled via capacitor-health on iOS
+ * and Android Health Connect).
  */
 export function RecoveryProgressSection() {
   const { t } = useLanguage();
