@@ -41,14 +41,18 @@ export default function WearablesSync() {
     tap();
     setBusy(true);
     try {
-      const since = status?.last_sync_at ?? new Date(Date.now() - 86400_000).toISOString();
+      // Always look back at least 14 days when manually syncing
+      const fourteenDaysAgo = new Date(Date.now() - 14 * 86400_000).toISOString();
+      const since = status?.last_sync_at && status.last_sync_at > fourteenDaysAgo
+        ? status.last_sync_at
+        : fourteenDaysAgo;
       const inserted = await syncSince(since);
       if (inserted === 0) {
         toast({
-          title: "No new data",
-          description: status?.last_sync_at
-            ? `Nothing new since ${new Date(status.last_sync_at).toLocaleString()}. In Apple Health → Sharing → SPORTS TALENT, make sure Steps, Workouts, Sleep, Resting Heart Rate and HRV are all enabled, then try again.`
-            : "Make sure your watch is paired and that Steps, Workouts, Sleep, Resting Heart Rate and HRV are enabled in Apple Health → Sharing → SPORTS TALENT, then try again.",
+          title: "No new data received",
+          description: supported
+            ? "Your watch returned 0 new samples. Check the breakdown below — if every metric is 0, re-open Apple Health → Sharing → SPORTS TALENT and turn every metric on, then tap Sync now."
+            : "Wearable data can only be read inside the iOS or Android app. Open Sportstalent on your phone to sync.",
         });
       } else {
         toast({ title: t("wearableSyncDone" as any), description: `+${inserted}` });
