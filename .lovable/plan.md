@@ -1,72 +1,59 @@
-## What's actually happening
+# Add Sleep, Resting HR, and HRV from Apple Health / Health Connect
 
-Two issues, one root cause for the missing numbers:
+Good news: no new plugin needed. The `capacitor-health` plugin already installed (v8.1.0) supports `sleep`, `restingHeartRate`, and `heartRateVariability` via its `readSamples` method. The previous integration just didn't call them. We'll wire them up, request the right permissions, and surface the data on the Health page, the Recovery tile, and the readiness prefill.
 
-1. **Sync says "+0" because nothing is being read from HealthKit.** The installed plugin is `capacitor-health` (Martin Ley's plugin). Its real API is `requestHealthPermissions`, `queryAggregated`, `queryWorkouts` with permission strings like `READ_STEPS`, `READ_HEART_RATE`, `READ_WORKOUTS`. Our wrapper in `src/lib/wearables/index.ts` calls non-existent methods (`requestAuthorization`, `query`, `read`) with the wrong data-type names (`sleepAnalysis`, `restingHeartRate`, etc.). Every metric loop silently fails, so the device sends an empty `samples: []` array. The edge function happily reports `inserted: 0` — that's the "+0" you see. The database confirms it: `wearable_samples` and `wearable_daily_summary` are both empty.
-2. **Plugin scope is narrower than we modeled.** `capacitor-health` only exposes Steps, Active Calories, Mindfulness (aggregated) + Workouts (with HR series + calories + distance). It does **not** expose Sleep, Resting Heart Rate or HRV. We need to drop those metrics for the iOS/Android MVP and surface what we actually can read.
-3. **The /wearables ↔ /wearables/sync loop** is caused by mixed back-button strategies: the Sync page hard-navigates to `/wearables`, while the Wearables page uses `navigate(-1)` (history back). After visiting Sync, history is `[…, /wearables, /wearables/sync]`; "Back" on Wearables sends you back to Sync again.
+## What changes for the user
 
----
+- iPhone (and Android via Health Connect) will now share Sleep duration, Resting Heart Rate, and HRV with the app.
+- The Health page gets three new cards: Sleep (last 7 nights), Resting HR (trend + 7-day baseline), HRV (trend + 7-day baseline).
+- The Recovery tile on the Progress page shows last night's sleep, RHR vs baseline, and HRV vs baseline (instead of only steps/workouts).
+- Morning readiness check-in is prefilled from yesterday's sleep when available.
+- The first-time permission prompt now also asks for Sleep / Heart Rate / HRV access.
+- Sync Status page shows per-metric counts (Steps, Workouts, Sleep, RHR, HRV) so you can see exactly what was ingested.
 
-## The fix
+## Technical changes
 
-### 1. Replace the native bridge with the real `capacitor-health` API
+1. **`src/lib/wearables/index.ts`**
+   - Extend `PERMISSIONS` with `READ_SLEEP`, `READ_RESTING_HEART_RATE`, `READ_HEART_RATE_VARIABILITY`.
+   - In `readNativeSamples`, add three calls to `Health.readSamples({ dataType, startDate, endDate })` for `sleep`, `restingHeartRate`, `heartRateVariability`.
+   - Map results into `WearableSample` rows:
+     - `sleep` → `metric_type: "sleep"`, `value_numeric` = minutes between start/end (sum of asleep states if the plugin returns sleep stages; otherwise total duration), `unit: "min"`.
+     - `restingHeartRate` → `metric_type: "resting_hr"`, `value_numeric` = bpm, `unit: "bpm"`.
+     - `heartRateVariability` → `metric_type: "hrv"`, `value_numeric` = ms (RMSSD/SDNN as returned), `unit: "ms"`.
+   - Use stable `external_id`s (e.g. `sleep-<startISO>`, `rhr-<startISO>`, `hrv-<startISO>`) so re-syncs don't duplicate.
+   - Update the file's header comment (it currently says these metrics aren't supported — that's stale).
 
-In `src/lib/wearables/index.ts`:
+2. **No DB or edge function changes** — the schema and `recompute_wearable_summary` already handle `sleep`, `resting_hr`, `hrv`. Once samples land, the daily summary and 7-day baselines populate automatically.
 
-- Import the plugin properly: `const { Health } = await import("capacitor-health")` (only on native, behind the platform check we already have).
-- Replace `requestPermissions()` to call `Health.requestHealthPermissions({ permissions: ["READ_STEPS","READ_HEART_RATE","READ_WORKOUTS","READ_ACTIVE_CALORIES","READ_TOTAL_CALORIES","READ_DISTANCE"] })`.
-- Replace `readNativeSamples(sinceISO)` with two real readers:
-  - `Health.queryAggregated({ startDate, endDate, dataType: "steps", bucket: "day" })` → emit one `steps` sample per day.
-  - `Health.queryWorkouts({ startDate, endDate, includeHeartRate: true, includeRoute: false, includeSteps: true })` → for each workout emit one `workout` sample with `start_at`, `end_at`, `value_numeric = duration`, `source_device = sourceName`, `external_id = id`, and `payload = { avg_hr, max_hr, calories, distance, workoutType }` (compute avg/max from the returned `heartRate` array).
-- Drop the `sleep`, `resting_hr`, `hrv` mapping rows.
-- Keep the existing ingest call (`ingest-wearable-samples`) as-is — it already accepts these metric types.
+3. **`src/pages/Health.tsx`**
+   - Pull `wearable_daily_summary` for the last 30 days.
+   - Add three cards under the existing Steps card:
+     - Sleep: line/bar of nightly minutes, "last night" highlight, 7-day average.
+     - Resting HR: line of daily RHR with the 7-day baseline overlay.
+     - HRV: line of daily HRV with the 7-day baseline overlay.
+   - Each card shows an empty state ("Grant Sleep / Heart access in Apple Health → Sources → SPORTS TALENT") if no samples in the window.
 
-### 2. Update what we display so it matches what we can actually pull
+4. **`src/components/RecoveryTile.tsx` and `src/components/progress/RecoveryProgressSection.tsx`**
+   - Restore the sleep / RHR / HRV blocks (they were removed when we thought the plugin couldn't supply them).
+   - Use `wearable_daily_summary` for yesterday + 7-day baseline; show deltas (e.g. "RHR 54 bpm, ‑3 vs 7-day").
 
-- **Server side** (`supabase/functions/ingest-wearable-samples`): no schema change. The `recompute_wearable_summary` RPC keeps writing `steps` to the daily summary; sleep/RHR/HRV columns simply stay null on iOS, which is fine.
-- **Recovery & Wearables section on Progress page**: hide RHR/HRV/Sleep rows when there's no data and instead show:
-  - "Steps (last 7 days, 30-day chart)"
-  - "Workouts captured" — count + total duration + avg HR per workout, sourced from `wearable_samples` where `metric_type = 'workout'`.
-- **RecoveryTile on the Dashboard hub**: same treatment — show Steps + last workout HR when sleep/HRV are null, instead of three em-dashes.
+5. **`src/pages/WearablesSync.tsx`**
+   - In the post-sync summary, break down inserted samples per metric (the ingest function already returns `inserted`; we'll additionally query counts per `metric_type` for the synced window so the UI can show "Sleep: 6, RHR: 7, HRV: 7, Steps: 14, Workouts: 3").
+   - Update the "0 samples" guidance to mention enabling Sleep / Heart Rate / HRV in Apple Health → Sharing → SPORTS TALENT.
 
-### 3. New "Health" page with detailed stats
+6. **`src/i18n/translations.ts`**
+   - Add labels for the new cards, empty states, and permission copy across DA / EN / SV / DE / AR.
 
-Create `src/pages/Health.tsx` route at `/health` and add a small "Open health stats" link from `/wearables`:
+## iOS / Android prerequisites (one-time, user-side)
 
-- Summary header: total samples, last successful pull, connection state (compact).
-- **Steps card**: 30-day bar chart (uses `wearable_daily_summary.steps`), 7-day average, today vs. yesterday delta.
-- **Workouts card**: list of last 14 workouts from `wearable_samples` (date, duration, avg HR, max HR, calories, source). Tap a row to expand HR zones (computed client-side from payload).
-- **HR zones card**: distribution across the last 14 days using each workout's HR average vs. theoretical zones based on `220 - profile.age`.
-- All copy goes through `src/i18n/translations.ts` for the 5 supported locales.
+- iOS Info.plist already has `NSHealthShareUsageDescription` (set when capacitor-health was first added). No change needed.
+- After this update the user must:
+  1. `git pull`, `npm install`, `npx cap sync ios` (and/or `android`).
+  2. Reinstall the app on the device (a permission scope change requires re-prompting).
+  3. On first launch, grant the new Sleep / Heart Rate / HRV toggles in the Apple Health permission sheet (or in Health Connect on Android).
 
-### 4. Break the back-button loop
+## Out of scope
 
-In `src/pages/WearablesSync.tsx` change the back button from `navigate("/wearables")` to `navigate(-1)` **only when** history length > 1, otherwise fall back to `/wearables`. And add an explicit "Done" button that pops back twice if the previous entry was `/wearables`. Symmetrically, in `WearablesSettings.tsx`, change `navigate(-1)` to `navigate("/dashboard")` so the Wearables page never sends you back into Sync.
-
-### 5. Show the user that something happened
-
-In `WearablesSync.tsx`, when "Sync now" returns 0 samples, show a friendlier hint instead of a silent toast: "No new data since {last_sync_at}. Open Apple Health to verify your watch is syncing, then try again."
-
----
-
-## Files touched
-
-```text
-src/lib/wearables/index.ts                       (rewrite native bridge)
-src/components/RecoveryTile.tsx                  (graceful empty states for sleep/RHR/HRV)
-src/components/progress/RecoveryProgressSection.tsx (steps + workouts focus)
-src/pages/WearablesSettings.tsx                  (back -> /dashboard, link to /health)
-src/pages/WearablesSync.tsx                      (back -> -1, friendlier zero-result toast)
-src/pages/Health.tsx                             (new page: steps, workouts, HR zones)
-src/App.tsx                                      (register /health route)
-src/i18n/translations.ts                         (new keys for Health page)
-```
-
-No DB migration. No edge function change. No new dependencies.
-
----
-
-## Out of scope (call out for you)
-
-- **Sleep, Resting Heart Rate, and HRV** are not available through `capacitor-health`. Restoring those would require swapping in a different plugin (e.g. `@perfood/capacitor-healthkit` for iOS-only HRV/RHR, plus a separate Health Connect plugin for Android). Happy to do that as a follow-up — just say the word and I'll plan it. For now the Health page will be honest about what's measured.
+- No change to the database schema, RLS, or edge functions.
+- No change to the workout auto-attach logic.
+- No new third-party plugin.
