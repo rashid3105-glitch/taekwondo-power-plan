@@ -51,14 +51,15 @@ Deno.serve(async (req) => {
 
     const publicKeyBytes = Uint8Array.from(atob(passkey.public_key), (c) => c.charCodeAt(0));
 
+    // @simplewebauthn/server v10 expects `authenticator`, not `credential`
     const verification = await verifyAuthenticationResponse({
       response,
       expectedChallenge: matched.challenge,
       expectedOrigin: EXPECTED_ORIGINS,
       expectedRPID: RP_ID,
-      credential: {
-        id: passkey.credential_id,
-        publicKey: publicKeyBytes,
+      authenticator: {
+        credentialID: passkey.credential_id,
+        credentialPublicKey: publicKeyBytes,
         counter: Number(passkey.counter),
         transports: passkey.transports || undefined,
       },
