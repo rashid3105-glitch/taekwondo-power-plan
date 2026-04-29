@@ -54,7 +54,7 @@ export default function Health() {
     const [{ data: prof }, { data: sums }, { data: ws }, st] = await Promise.all([
       supabase.from("profiles").select("age").eq("user_id", user.id).maybeSingle(),
       supabase.from("wearable_daily_summary")
-        .select("summary_date,steps")
+        .select("summary_date,steps,sleep_minutes,resting_hr,hrv_rmssd,baseline_hr_7d,baseline_hrv_7d")
         .eq("user_id", user.id)
         .gte("summary_date", since)
         .order("summary_date", { ascending: true }),
