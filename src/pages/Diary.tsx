@@ -9,15 +9,19 @@ import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import {
   Zap, ArrowLeft, Plus, Trash2, Edit2, Save, X, SmilePlus,
-  Frown, Meh, Smile, Laugh, Battery, BatteryLow, BatteryMedium, BatteryFull,
-  Search, ChevronDown, ChevronRight, Dumbbell, Trophy, Heart, Brain,
-  Bandage, NotebookPen, Filter,
+  Frown, Meh, Smile, Laugh, BatteryLow, BatteryMedium, BatteryFull,
+  Search, ChevronDown, ChevronRight, Filter,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Watermark } from "@/components/Watermark";
 import { DiaryComments } from "@/components/DiaryComments";
 import { useOfflineDiary } from "@/hooks/useOfflineDiary";
 import type { CachedDiaryEntry, DiaryEntryType } from "@/lib/diaryOfflineDB";
+import {
+  ENTRY_TYPES, typeMeta, computeTypeCounts, computeAvailableTags,
+  filterEntries, groupByMonth, currentMonthKey,
+  type DateRange, type ViewMode,
+} from "@/lib/diaryFilters";
 
 type DiaryEntry = CachedDiaryEntry;
 
@@ -29,29 +33,6 @@ const ENERGY_ICONS = [BatteryLow, BatteryLow, BatteryMedium, BatteryFull, Batter
 const ENERGY_LABELS = ["Drained", "Low", "Moderate", "High", "Peak"];
 
 const PRESET_TAGS = ["competition", "recovery", "technique", "sparring", "strength", "cardio", "flexibility", "mindset"];
-
-interface TypeMeta {
-  value: DiaryEntryType;
-  i18nKey: string;
-  Icon: typeof Dumbbell;
-  color: string;
-  bg: string;
-  border: string;
-}
-
-const ENTRY_TYPES: TypeMeta[] = [
-  { value: "general", i18nKey: "diaryTypeGeneral", Icon: NotebookPen, color: "text-muted-foreground", bg: "bg-muted/40", border: "border-border" },
-  { value: "training", i18nKey: "diaryTypeTraining", Icon: Dumbbell, color: "text-primary", bg: "bg-primary/10", border: "border-primary/40" },
-  { value: "competition", i18nKey: "diaryTypeCompetition", Icon: Trophy, color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/40" },
-  { value: "recovery", i18nKey: "diaryTypeRecovery", Icon: Heart, color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/40" },
-  { value: "mental", i18nKey: "diaryTypeMental", Icon: Brain, color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/40" },
-  { value: "injury", i18nKey: "diaryTypeInjury", Icon: Bandage, color: "text-destructive", bg: "bg-destructive/10", border: "border-destructive/40" },
-];
-
-const typeMeta = (t: DiaryEntryType): TypeMeta => ENTRY_TYPES.find((x) => x.value === t) || ENTRY_TYPES[0];
-
-type DateRange = "7" | "30" | "90" | "all";
-type ViewMode = "compact" | "detailed";
 
 export default function Diary() {
   const navigate = useNavigate();
