@@ -36,14 +36,25 @@ const EMPTY_BREAKDOWN: MetricBreakdown = {
   sleep: 0, resting_hr: 0, hrv: 0, steps: 0, workout: 0,
 };
 
+// Build marker — bumped whenever this file changes. Lets us see in the iOS
+// diagnostics panel whether the device is running the latest JS bundle.
+export const WEARABLES_BUILD_MARKER = "2026-04-30-detect-v3";
+
 export interface PlatformSignals {
   capacitorPlatform: string;        // raw value from Capacitor.getPlatform()
   capacitorIsNative: boolean;       // Capacitor.isNativePlatform()
   windowCapacitorPlatform: string;  // (window as any).Capacitor?.getPlatform?.()
   hasWebkitBridge: boolean;         // iOS WKWebView marker
+  hasHealthHandler: boolean;        // window.webkit.messageHandlers.Health (iOS)
+  hasAnyPluginHandler: boolean;     // any non-trivial messageHandler key
+  healthPluginRegistered: boolean;  // Capacitor.isPluginAvailable("Health")
   userAgentHint: boolean;           // CapacitorWebView in UA
   schemeHint: boolean;              // location starts with capacitor:// / ionic://
+  localhostHint: boolean;           // http(s)://localhost — Capacitor's bundled URL
   serverUrl: string | null;         // capacitor.config server.url if hot-reloaded
+  isIosUA: boolean;
+  isAndroidUA: boolean;
+  buildMarker: string;
   userAgent: string;
   href: string;
 }
@@ -51,9 +62,11 @@ export interface PlatformSignals {
 export function getPlatformSignals(): PlatformSignals {
   let capacitorPlatform = "";
   let capacitorIsNative = false;
+  let healthPluginRegistered = false;
   try {
     capacitorPlatform = Capacitor?.getPlatform?.() ?? "";
     capacitorIsNative = !!Capacitor?.isNativePlatform?.();
+    healthPluginRegistered = !!Capacitor?.isPluginAvailable?.("Health");
   } catch { /* ignore */ }
 
   const win: any = typeof window !== "undefined" ? window : undefined;
@@ -62,11 +75,26 @@ export function getPlatformSignals(): PlatformSignals {
     try { return winCap?.getPlatform?.() ?? ""; } catch { return ""; }
   })();
 
-  const hasWebkitBridge = !!win?.webkit?.messageHandlers;
+  const handlers = win?.webkit?.messageHandlers;
+  const hasWebkitBridge = !!handlers;
+  const hasHealthHandler = !!(handlers && (handlers as any).Health);
+  const hasAnyPluginHandler = (() => {
+    try {
+      if (!handlers) return false;
+      const keys = Object.keys(handlers as object);
+      return keys.length > 0;
+    } catch { return false; }
+  })();
+
   const userAgent = (typeof navigator !== "undefined" && navigator.userAgent) || "";
   const userAgentHint = /CapacitorWebView/i.test(userAgent);
+  const isIosUA = /iPhone|iPad|iPod/i.test(userAgent);
+  const isAndroidUA = /Android/i.test(userAgent);
+
   const href = (typeof location !== "undefined" && location.href) || "";
   const schemeHint = /^(capacitor|ionic):\/\//i.test(href);
+  const localhostHint = /^https?:\/\/localhost(?::\d+)?(\/|$)/i.test(href);
+
   const serverUrl: string | null = (() => {
     try {
       const v = winCap?.serverUrl ?? winCap?.config?.server?.url ?? null;
@@ -79,38 +107,66 @@ export function getPlatformSignals(): PlatformSignals {
     capacitorIsNative,
     windowCapacitorPlatform,
     hasWebkitBridge,
+    hasHealthHandler,
+    hasAnyPluginHandler,
+    healthPluginRegistered,
     userAgentHint,
     schemeHint,
+    localhostHint,
     serverUrl,
+    isIosUA,
+    isAndroidUA,
+    buildMarker: WEARABLES_BUILD_MARKER,
     userAgent: userAgent.slice(0, 200),
     href: href.slice(0, 200),
   };
 }
 
 function detectPlatform(): "ios" | "android" | "web" {
-  // Hardened detection — we accept any of several independent signals,
-  // because a single failing bridge check has shipped false-negatives in
-  // production (WebView shadows globals, plugins inject late, etc.).
+  // Hardened detection — accept ANY independent signal, because we keep
+  // shipping false-negatives where a single check fails inside a real
+  // native WebView. Order: cheapest/strongest signals first.
   const s = getPlatformSignals();
 
-  const candidates = [s.capacitorPlatform, s.windowCapacitorPlatform];
-  for (const c of candidates) {
-    if (c === "ios" || c === "android") return c;
+  // 1. Official Capacitor reports
+  if (s.capacitorPlatform === "ios" || s.capacitorPlatform === "android") {
+    return s.capacitorPlatform;
+  }
+  if (s.windowCapacitorPlatform === "ios" || s.windowCapacitorPlatform === "android") {
+    return s.windowCapacitorPlatform;
   }
   if (s.capacitorIsNative) {
-    // isNativePlatform true but getPlatform empty — guess from UA / scheme.
-    if (/iPhone|iPad|iPod/i.test(s.userAgent)) return "ios";
-    if (/Android/i.test(s.userAgent)) return "android";
+    if (s.isIosUA) return "ios";
+    if (s.isAndroidUA) return "android";
   }
-  if (s.hasWebkitBridge && /iPhone|iPad|iPod/i.test(s.userAgent)) return "ios";
+
+  // 2. Health plugin actually registered with the bridge
+  if (s.healthPluginRegistered) {
+    if (s.isIosUA) return "ios";
+    if (s.isAndroidUA) return "android";
+  }
+
+  // 3. iOS WKWebView native message handlers (with iPhone UA)
+  if ((s.hasHealthHandler || s.hasAnyPluginHandler) && s.isIosUA) return "ios";
+
+  // 4. Custom URL scheme
   if (s.schemeHint) {
-    if (/iPhone|iPad|iPod/i.test(s.userAgent)) return "ios";
-    if (/Android/i.test(s.userAgent)) return "android";
+    if (s.isIosUA) return "ios";
+    if (s.isAndroidUA) return "android";
   }
+
+  // 5. UA tag
   if (s.userAgentHint) {
-    if (/iPhone|iPad|iPod/i.test(s.userAgent)) return "ios";
-    if (/Android/i.test(s.userAgent)) return "android";
+    if (s.isIosUA) return "ios";
+    if (s.isAndroidUA) return "android";
   }
+
+  // 6. Capacitor's bundled URL is http(s)://localhost. If we're on iOS UA
+  //    AND served from localhost AND we have *any* webkit handler, treat
+  //    as native iOS even though Capacitor's own checks said otherwise.
+  if (s.localhostHint && s.isIosUA && s.hasWebkitBridge) return "ios";
+  if (s.localhostHint && s.isAndroidUA) return "android";
+
   return "web";
 }
 
