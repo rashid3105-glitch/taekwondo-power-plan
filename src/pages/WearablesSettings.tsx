@@ -416,7 +416,17 @@ function DeviceReadiness({ diag }: { diag: WearableDiagnostics }) {
   const s = diag.signals;
 
   const hotReloadActive = !!s.serverUrl;
-  const bridgeButNotNative = !diag.inNativeApp && (s.hasWebkitBridge || s.userAgentHint || s.schemeHint);
+  // Any signal suggesting we ARE in a native shell, even if Capacitor's own
+  // checks said otherwise.
+  const nativeSignals =
+    s.capacitorIsNative ||
+    s.healthPluginRegistered ||
+    s.hasHealthHandler ||
+    s.hasAnyPluginHandler ||
+    s.userAgentHint ||
+    s.schemeHint ||
+    (s.localhostHint && (s.isIosUA || s.isAndroidUA));
+  const looksNativeButDetectionFailed = !diag.inNativeApp && nativeSignals;
 
   return (
     <div className="mb-4 rounded-lg border bg-muted/20 p-3 text-xs space-y-1.5">
@@ -433,7 +443,14 @@ function DeviceReadiness({ diag }: { diag: WearableDiagnostics }) {
 
       <DiagRow
         ok={diag.inNativeApp}
-        label={diag.inNativeApp ? "Running in native app" : "Not detected as native app"}
+        warn={looksNativeButDetectionFailed}
+        label={
+          diag.inNativeApp
+            ? "Running in native app"
+            : looksNativeButDetectionFailed
+              ? "Native shell detected, but bridge isn't fully wired"
+              : "Not detected as native app"
+        }
       />
       <DiagRow
         ok={diag.pluginLoaded}
@@ -469,14 +486,13 @@ function DeviceReadiness({ diag }: { diag: WearableDiagnostics }) {
         </p>
       )}
 
-      {!diag.inNativeApp && !hotReloadActive && bridgeButNotNative && (
+      {looksNativeButDetectionFailed && !hotReloadActive && (
         <p className="mt-2 rounded border border-amber-500/40 bg-amber-500/10 p-2 text-foreground/90">
-          Capacitor WebView detected, but the bundled <code>dist/</code> doesn't expose the native bridge.
-          Run <code>npm run build && npx cap sync ios</code> and rebuild in Xcode.
+          The device looks like a native shell (Capacitor or HealthKit handlers found), but <code>Capacitor.getPlatform()</code> still says "{s.capacitorPlatform || "web"}". This usually means the iOS bundle in Xcode is older than this code. Pull the latest, then run <code>npm run build && npx cap sync ios</code> and rebuild from Xcode.
         </p>
       )}
 
-      {!diag.inNativeApp && !hotReloadActive && !bridgeButNotNative && (
+      {!diag.inNativeApp && !hotReloadActive && !nativeSignals && (
         <p className="mt-2 text-muted-foreground">
           HealthKit and Health Connect aren't accessible from a browser. Install the Sportstalent app on your phone and open it from the home screen icon — not Safari.
         </p>
@@ -484,13 +500,18 @@ function DeviceReadiness({ diag }: { diag: WearableDiagnostics }) {
 
       {showDetails && (
         <div className="mt-2 space-y-0.5 rounded bg-background/60 p-2 font-mono text-[10px] text-foreground/80 break-all">
+          <div>build = {s.buildMarker}</div>
           <div>capacitor.getPlatform() = "{s.capacitorPlatform || "<empty>"}"</div>
           <div>capacitor.isNativePlatform() = {String(s.capacitorIsNative)}</div>
           <div>window.Capacitor.getPlatform() = "{s.windowCapacitorPlatform || "<empty>"}"</div>
           <div>isPluginAvailable("Health") = {String(diag.healthPluginAvailable)}</div>
           <div>webkit.messageHandlers = {String(s.hasWebkitBridge)}</div>
+          <div>webkit.messageHandlers.Health = {String(s.hasHealthHandler)}</div>
+          <div>any plugin handler = {String(s.hasAnyPluginHandler)}</div>
           <div>UA hint (CapacitorWebView) = {String(s.userAgentHint)}</div>
           <div>scheme hint (capacitor://) = {String(s.schemeHint)}</div>
+          <div>localhost hint = {String(s.localhostHint)}</div>
+          <div>isIosUA = {String(s.isIosUA)} / isAndroidUA = {String(s.isAndroidUA)}</div>
           <div>serverUrl = {s.serverUrl ?? "null"}</div>
           <div>UA = {s.userAgent}</div>
           <div>href = {s.href}</div>
