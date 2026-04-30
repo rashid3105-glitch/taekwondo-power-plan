@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 const helpSections = [
   { key: "helpProfile", icon: UserCircle, isNew: false },
   { key: "helpSeasonPlan", icon: CalendarRange, isNew: true },
-  { key: "helpWearables", icon: Watch, isNew: true },
+  { key: "helpWearables", icon: NotebookPen, isNew: true },
   { key: "helpCoachFeedback", icon: MessageSquare, isNew: true },
   { key: "helpMatchAnalysis", icon: Video, isNew: false },
   { key: "helpTrainingPlan", icon: ClipboardList, isNew: false },
