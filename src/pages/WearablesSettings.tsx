@@ -338,8 +338,8 @@ export default function WearablesSettings() {
               <ol className="text-sm space-y-1.5 text-foreground/80 list-decimal pl-5">
                 {provider === "apple_health" ? (
                   <>
-                    <li>Make sure your Apple Watch is paired and syncing to the Health app.</li>
-                    <li>Tap <span className="font-medium">Connect Apple Health</span> below.</li>
+                    <li>Make sure your Apple Watch (or any other device) is syncing into the Health app on this iPhone.</li>
+                    <li>Tap <span className="font-medium">Connect iPhone Health</span> below.</li>
                     <li>iOS will show a permission sheet — tap <span className="font-medium">Turn On All</span> for Sleep, Heart Rate, HRV, Steps and Workouts.</li>
                     <li>Wait a few seconds for the first 14-day backfill to finish — the dot above turns green when ready.</li>
                   </>
@@ -352,15 +352,15 @@ export default function WearablesSettings() {
                   </>
                 ) : (
                   <>
-                    <li>Open this app on your phone (iOS or Android) — wearable sync runs on-device only.</li>
-                    <li>Make sure your watch is syncing to Apple Health (iPhone) or Health Connect (Android).</li>
+                    <li>Open this app on your phone (iOS or Android) — health sync runs on-device only.</li>
+                    <li>iPhone Health (or Health Connect on Android) is where your watch and apps store their data.</li>
                     <li>Return here and tap Connect.</li>
                   </>
                 )}
               </ol>
               <p className="text-xs text-muted-foreground mt-3 flex items-start gap-1.5">
                 <ShieldCheck className="h-3.5 w-3.5 mt-0.5 shrink-0" />
-                We never write to your watch. You can disconnect any time.
+                We never write to your Health data. You can disconnect any time.
               </p>
             </div>
 
