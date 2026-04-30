@@ -292,16 +292,28 @@ export default function WearablesSettings() {
                 {t("wearableDisconnect")}
               </Button>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full"
-              onClick={handleReRequestPermissions}
-              disabled={busy}
-            >
-              <ShieldCheck className="h-4 w-4 mr-2" />
-              Re-request health permissions
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1"
+                onClick={handleReRequestPermissions}
+                disabled={busy}
+              >
+                <ShieldCheck className="h-4 w-4 mr-2" />
+                Re-request permissions
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1"
+                onClick={handleResetConnection}
+                disabled={busy}
+              >
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Reset connection
+              </Button>
+            </div>
             <div className="flex gap-2">
               <Button variant="ghost" size="sm" className="flex-1" onClick={() => navigate("/health")}>
                 Open health stats
