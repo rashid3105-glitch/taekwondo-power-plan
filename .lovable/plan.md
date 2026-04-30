@@ -1,89 +1,70 @@
-# Diary scalability — make many entries easy to navigate
+# Coach diary view — samme filtrerings- og grupperingsprincipper som atletens dagbog
 
-The diary already stores `tags`, `mood`, `energy` and `entry_date` on every entry, but the UI just renders one long flat list. Once an athlete has 50+ entries it becomes a wall of text. Below is a layered improvement that keeps the mobile-first cockpit feel.
+Coach åbner i dag en `Dialog` i `src/pages/CoachDashboard.tsx` der bare lister alle dagbogsindlæg flat. Når en atlet har mange entries bliver det lige så uoverskueligt som det var for atleten selv. Vi genbruger samme model som vi netop indførte i `src/pages/Diary.tsx`.
 
-## What we'll add
+## Hvad coachen får
 
-### 1. Entry type (new field)
-A small, fixed set of types so each entry has a clear purpose and color. Picked once at the top of the form, stored as `entry_type` on the row.
+### 1. Sticky filterbjælke i toppen af dialogen
+- **Søgning** i `content` (case-insensitive)
+- **Type-chips**: Alle / Træning / Konkurrence / Recovery / Mental / Skade / Generel — med antal pr. type
+- **Tag-chips** baseret på de tags der faktisk findes i atletens entries
+- **Datointerval**: Sidste 7 / 30 / 90 dage / Alle (default 30 dage så scroll er kort)
+- **Humør-filter** bag "Flere filtre" (Lav 1–2 / Neutral 3 / Høj 4–5)
+- Aktive filtre vises som fjernbare chips + "Ryd alle"
 
-Proposed types (icon + accent color):
-- **Training** — daily session reflection
-- **Competition** — match day / event
-- **Recovery** — rest, sleep, soreness
-- **Mental** — focus, nerves, motivation
-- **Injury** — pain, rehab notes
-- **General** — free-form (default)
+### 2. Gruppering pr. måned med sticky headers
+"April 2026", "Marts 2026" osv. Indeværende måned åben, ældre måneder kollapset. Antal vises i header.
 
-This is different from tags: type = the *kind* of entry (one), tags = themes inside it (many).
+### 3. Kompakt visning + tap for at udvide
+Hver række: dato · type-ikon · humør · ~80 tegn af content. Tap åbner fuld tekst, tags og **eksisterende coach-kommentar (`DiaryComments`)** — uændret funktionalitet, bare pakket ind.
 
-### 2. Filter & search bar (sticky under header)
-- **Search** input — matches `content` (case-insensitive substring)
-- **Type chips** — All / Training / Competition / Recovery / Mental / Injury / General. Counts shown next to each.
-- **Tag chips** — only the tags actually present in the user's entries (deduplicated from existing data, not the static preset)
-- **Date range** — Last 7 days / 30 days / 90 days / All (default 30 days so the initial scroll stays short)
-- **Mood filter** (optional, behind a "More filters" toggle) — Low (1–2) / Neutral (3) / High (4–5)
+Compact/detailed-toggle huskes i localStorage (separat nøgle fra atletens, så coachens valg ikke overskrives).
 
-Active filters show as removable chips above the list. A single "Clear" resets all.
+### 4. Lazy load
+Render første 20 entries, "Indlæs ældre" knap. Filtre kører altid på hele det hentede sæt.
 
-### 3. Group by month with sticky headers
-Entries grouped under "April 2026", "March 2026", etc. — collapsible. The current month is expanded by default; older months start collapsed. Each group header shows the entry count.
+### 5. Hop til dato
+Lille kalender-ikon i header der filtrerer til en specifik dag — nyttigt når coach vil se en konkret konkurrencedag.
 
-### 4. Compact list view + expand on tap
-Default each entry to a one-line summary (date · type icon · mood · first ~80 chars). Tap to expand the full content, tags and coach comments. This dramatically shortens the scroll. A small toggle in the header (compact / detailed) remembers the choice in localStorage.
-
-### 5. Pagination / lazy load
-Render the first 20 entries; show a "Load older entries" button at the bottom. Filters always run on the full cached set so search across history still works.
-
-### 6. Quick "Jump to date" calendar
-A small calendar icon in the header opens a date picker that scrolls to / filters that day. Useful for coaches reviewing a specific competition.
-
-## Suggested UI layout (mobile)
+## Mock-up (mobil)
 
 ```text
 ┌─────────────────────────────────────┐
-│ ← Diary                  [+ New]    │  header
+│ 📓 Mikkel — Dagbog            [x]   │
 ├─────────────────────────────────────┤
-│ 🔍 Search entries...                │  sticky filter bar
-│ [All 47] [Training 22] [Comp 5] ... │  type chips (scrollable row)
-│ #competition #sparring #recovery    │  tag chips (scrollable row)
-│ Last 30 days ▾   More filters ▾     │
+│ 🔍 Søg i indlæg...                  │
+│ [Alle 47] [Træning 22] [Komp 5] ... │
+│ #sparring #recovery #angst          │
+│ Sidste 30 dage ▾   Flere filtre ▾   │
 ├─────────────────────────────────────┤
-│ APRIL 2026 (12)                  ▾ │  month header
-│ ─────────────────────────────────── │
-│ 🥋 Apr 28 · 😀 ⚡⚡⚡ Felt sharp...  │  compact entry row
-│ 🏆 Apr 20 · 🙂 ⚡⚡   First gold...  │
-│ 💪 Apr 18 · 😐 ⚡     Heavy legs... │
-│ ...                                 │
-│ MARCH 2026 (15)                  ▸ │  collapsed
+│ APRIL 2026 (12)                  ▾ │
+│ 🥋 28. apr · 😀 ⚡⚡⚡ Følte mig...  │
+│ 🏆 20. apr · 🙂 ⚡⚡   Første guld...│
+│ MARTS 2026 (15)                  ▸ │
 └─────────────────────────────────────┘
 ```
 
-## Why entry types AND tags (not one or the other)
+## Tekniske noter
 
-- **Type** answers "what is this entry?" — single, structural, drives the icon/color and the primary filter chip row. Coaches scanning quickly can spot all competition entries at a glance.
-- **Tags** answer "what's in it?" — multiple, free-form themes (sparring, kicks, anxiety). Great for cross-cutting search (e.g. all entries tagged `sparring` regardless of type).
+- Ingen DB-ændringer — `entry_type` og `tags` er allerede tilføjet i forrige PR.
+- Trækker stadig data direkte fra `diary_entries` for den valgte atlet (coach har kun læseadgang, ingen offline-cache nødvendig).
+- Genbrug så vidt muligt små rene funktioner fra `src/pages/Diary.tsx` ved at flytte dem til en delt fil:
+  - `src/lib/diaryFilters.ts` (ny): `filterEntries`, `groupByMonth`, `availableTags`, `typeCounts`, type-konstanter (label, ikon, accentfarve).
+  - `src/pages/Diary.tsx` refaktoreres til at importere fra den fælles fil — ingen funktionel ændring der.
+- Ny komponent `src/components/coach/CoachDiaryView.tsx` indeholder filterbjælke, gruppering, kompakt liste og udvidelse. Tager `athleteId`, `athleteName` og en `entries`-prop (eller henter selv).
+- `src/pages/CoachDashboard.tsx` udskifter den nuværende inline-liste i dialogen med `<CoachDiaryView entries={diaryEntries} ... />`. Eksisterende `DiaryComments` integration bevares uændret i den udvidede række.
+- i18n: alle nye strenge findes allerede fra atlet-dagbogen — ingen nye nøgler.
+- localStorage-nøgle for compact-toggle: `coach-diary-compact` (separat fra atletens `diary-compact`).
 
-Both together let the athlete pivot the same data two different ways without forcing a rigid taxonomy.
+## Filer der ændres
 
-## Technical notes
+- `src/pages/CoachDashboard.tsx` — erstat inline diary-liste med `CoachDiaryView`
+- `src/components/coach/CoachDiaryView.tsx` — ny komponent
+- `src/lib/diaryFilters.ts` — ny delt helper-modul (udtræk fra `Diary.tsx`)
+- `src/pages/Diary.tsx` — refaktor til at bruge `diaryFilters.ts` (ingen UI-ændring)
 
-- **DB**: add `entry_type text not null default 'general'` to `diary_entries` plus a check/enum-style validation trigger (per project rules — no CHECK constraints). Backfill existing rows to `'general'`.
-- **Offline**: extend `CachedDiaryEntry`, `DiaryOutboxIntent` and the sync engine in `src/lib/diaryOfflineDB.ts` / `src/lib/diarySyncEngine.ts` to carry `entry_type`. Bump the IndexedDB `DB_VERSION` from 1 → 2 with a no-op `onupgradeneeded` (existing rows just get `entry_type` undefined, treated as `general`).
-- **i18n**: add type labels and filter strings to `src/i18n/translations.ts` for EN/DA/SV/DE/AR.
-- **Coach view**: pass type + filters through to `CoachAthleteDetail` so coaches see the same structure.
-- **Performance**: filtering and grouping happen in memory on the cached list — no extra queries.
+## Uden for scope
 
-## Out of scope (can come later)
-
-- Auto-linking diary entries to a specific competition or training session
-- Weekly auto-summary ("you wrote 6 entries this week, mostly tagged sparring")
-- Export filtered set to PDF
-
-## Files we'll touch
-
-- `src/pages/Diary.tsx` — filter bar, grouping, compact view, type picker in form
-- `src/lib/diaryOfflineDB.ts`, `src/lib/diarySyncEngine.ts`, `src/hooks/useOfflineDiary.ts` — carry `entry_type`
-- `src/components/coach/CoachAthleteReflections.tsx` (and any coach diary view) — same filters
-- `src/i18n/translations.ts` — new strings
-- One Supabase migration — add column + validation trigger + backfill
+- At lade coach redigere/tilføje dagbogsindlæg
+- Eksport af filtreret sæt til PDF
+- Cross-athlete søgning på tværs af hele klubben
