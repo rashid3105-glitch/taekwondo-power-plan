@@ -15,6 +15,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { AccountDangerZone } from "@/components/AccountDangerZone";
 import { PasskeySettings } from "@/components/PasskeySettings";
 import { PublicProfileSettings } from "@/components/profile/PublicProfileSettings";
+import { WearableConnectWizard } from "@/components/wearables/WearableConnectWizard";
 
 import { COUNTRIES } from "@/data/countries";
 
