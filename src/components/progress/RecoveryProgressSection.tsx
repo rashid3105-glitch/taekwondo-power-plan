@@ -31,7 +31,7 @@ interface WorkoutSample {
 export function RecoveryProgressSection() {
   const { t } = useLanguage();
   const [loaded, setLoaded] = useState(false);
-  const [ownsWearable, setOwnsWearable] = useState(false);
+  
   const [rows, setRows] = useState<SummaryRow[]>([]);
   const [workouts, setWorkouts] = useState<WorkoutSample[]>([]);
 
@@ -93,7 +93,7 @@ export function RecoveryProgressSection() {
   const hasAnyData = rows.some(r => (r.steps ?? 0) > 0) || workouts.length > 0;
 
   if (!loaded) return null;
-  if (!ownsWearable) return null;
+  if (!hasAnyData) return null;
 
   if (!hasAnyData) {
     return (
