@@ -105,7 +105,7 @@ export function RecoveryProgressSection() {
         </div>
         <p className="text-sm text-muted-foreground">
           {t("recoveryCollectingData")}{" "}
-          <Link to="/wearables/sync" className="text-primary underline">{t("recoveryOpenSync")}</Link>
+          <Link to="/health" className="text-primary underline">{t("healthOpenDetails" as any) || "Open Health"}</Link>
         </p>
       </div>
     );
