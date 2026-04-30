@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { UserCircle, ClipboardList, HeartPulse, Brain, Users, BarChart3, Clock, ChevronDown, Activity, Apple, TrendingUp, BookOpen, BookHeart, Download, Video, CalendarRange, MessageSquare, Watch } from "lucide-react";
+import { UserCircle, ClipboardList, HeartPulse, Brain, Users, BarChart3, Clock, ChevronDown, Activity, Apple, TrendingUp, BookOpen, BookHeart, Download, Video, CalendarRange, MessageSquare, NotebookPen } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PublicNav } from "@/components/PublicNav";
 import { Watermark } from "@/components/Watermark";
@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 const helpSections = [
   { key: "helpProfile", icon: UserCircle, isNew: false },
   { key: "helpSeasonPlan", icon: CalendarRange, isNew: true },
-  { key: "helpWearables", icon: Watch, isNew: true },
+  { key: "helpWearables", icon: NotebookPen, isNew: true },
   { key: "helpCoachFeedback", icon: MessageSquare, isNew: true },
   { key: "helpMatchAnalysis", icon: Video, isNew: false },
   { key: "helpTrainingPlan", icon: ClipboardList, isNew: false },
