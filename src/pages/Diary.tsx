@@ -131,53 +131,14 @@ export default function Diary() {
 
   // ----- Derived: counts, available tags, filtered+grouped entries -----
 
-  const typeCounts = useMemo(() => {
-    const c: Record<string, number> = { all: entries.length };
-    for (const e of entries) {
-      const k = e.entry_type || "general";
-      c[k] = (c[k] || 0) + 1;
-    }
-    return c;
-  }, [entries]);
-
-  const availableTags = useMemo(() => {
-    const set = new Set<string>();
-    for (const e of entries) for (const t of e.tags || []) set.add(t);
-    return Array.from(set).sort();
-  }, [entries]);
-
-  const filtered = useMemo(() => {
-    const now = new Date();
-    const cutoff = dateRange === "all" ? null : new Date(now.getTime() - parseInt(dateRange) * 86400000);
-    const q = search.trim().toLowerCase();
-    return entries.filter((e) => {
-      if (typeFilter !== "all" && (e.entry_type || "general") !== typeFilter) return false;
-      if (tagFilter && !(e.tags || []).includes(tagFilter)) return false;
-      if (cutoff) {
-        const d = new Date(e.entry_date + "T00:00:00");
-        if (d < cutoff) return false;
-      }
-      if (q && !e.content.toLowerCase().includes(q)) return false;
-      return true;
-    });
-  }, [entries, typeFilter, tagFilter, dateRange, search]);
-
-  const grouped = useMemo(() => {
-    const map = new Map<string, DiaryEntry[]>();
-    for (const e of filtered) {
-      const d = new Date(e.entry_date + "T00:00:00");
-      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-      const arr = map.get(key) || [];
-      arr.push(e);
-      map.set(key, arr);
-    }
-    return Array.from(map.entries()).sort((a, b) => (a[0] < b[0] ? 1 : -1));
-  }, [filtered]);
-
-  const currentMonthKey = useMemo(() => {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-  }, []);
+  const typeCounts = useMemo(() => computeTypeCounts(entries), [entries]);
+  const availableTags = useMemo(() => computeAvailableTags(entries), [entries]);
+  const filtered = useMemo(
+    () => filterEntries(entries, { typeFilter, tagFilter, dateRange, search }),
+    [entries, typeFilter, tagFilter, dateRange, search],
+  );
+  const grouped = useMemo(() => groupByMonth(filtered), [filtered]);
+  const monthKeyToday = useMemo(() => currentMonthKey(), []);
 
   const toggleMonth = (key: string) => {
     setCollapsedMonths((prev) => {
