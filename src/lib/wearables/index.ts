@@ -59,15 +59,41 @@ export function isWearableSupported(): boolean {
 // ============================================================================
 // capacitor-health bridge
 // ============================================================================
+// IMPORTANT (iOS): HealthKit's permission sheet is only shown when
+// `requestHealthPermissions` is called *synchronously* inside a user gesture.
+// Any `await` between the button tap and that call causes iOS to silently
+// deny the prompt. We therefore eagerly preload the plugin module on screen
+// mount via `preloadHealthPlugin()` and cache it, so the click handler can
+// call it with zero awaits in front.
+
+let _HealthCache: any | null = null;
+let _HealthLoadPromise: Promise<any | null> | null = null;
+
 async function loadHealth(): Promise<any | null> {
+  if (_HealthCache) return _HealthCache;
   if (detectPlatform() === "web") return null;
-  try {
-    const mod: any = await import(/* @vite-ignore */ "capacitor-health");
-    return mod?.Health ?? null;
-  } catch (e) {
-    console.warn("[wearables] capacitor-health import failed", e);
-    return null;
-  }
+  if (_HealthLoadPromise) return _HealthLoadPromise;
+  _HealthLoadPromise = (async () => {
+    try {
+      const mod: any = await import(/* @vite-ignore */ "capacitor-health");
+      _HealthCache = mod?.Health ?? null;
+      return _HealthCache;
+    } catch (e) {
+      console.warn("[wearables] capacitor-health import failed", e);
+      return null;
+    }
+  })();
+  return _HealthLoadPromise;
+}
+
+/** Call from screen mount so the plugin is hot when the user taps Connect. */
+export async function preloadHealthPlugin(): Promise<void> {
+  await loadHealth();
+}
+
+/** Synchronous accessor for the click handler (returns null if not preloaded). */
+export function getHealthSync(): any | null {
+  return _HealthCache;
 }
 
 const PERMISSIONS = [
@@ -82,31 +108,100 @@ const PERMISSIONS = [
   "READ_HEART_RATE_VARIABILITY",
 ] as const;
 
-/** Request permissions for the metrics we actually pull. */
+export interface WearableDiagnostics {
+  inNativeApp: boolean;
+  provider: WearableProvider | null;
+  pluginLoaded: boolean;
+  healthAvailable: boolean | null; // null = unknown / not checked
+  availabilityError: string | null;
+}
+
+/** Run on screen mount. Safe to call from a non-gesture context. */
+export async function getDiagnostics(): Promise<WearableDiagnostics> {
+  const provider = wearableProviderForPlatform();
+  const inNativeApp = provider !== null;
+  const Health = await loadHealth();
+  let healthAvailable: boolean | null = null;
+  let availabilityError: string | null = null;
+  if (Health?.isHealthAvailable) {
+    try {
+      const r = await Health.isHealthAvailable();
+      healthAvailable = r?.available !== false;
+    } catch (e: any) {
+      availabilityError = e?.message || String(e);
+    }
+  }
+  return {
+    inNativeApp,
+    provider,
+    pluginLoaded: !!Health,
+    healthAvailable,
+    availabilityError,
+  };
+}
+
+const LAST_GRANT_KEY = "wearable_last_grant";
+
+export interface PermissionGrantRecord {
+  at: number;
+  raw: unknown;
+  error: string | null;
+}
+
+export function getLastPermissionGrant(): PermissionGrantRecord | null {
+  try {
+    const raw = localStorage.getItem(LAST_GRANT_KEY);
+    return raw ? (JSON.parse(raw) as PermissionGrantRecord) : null;
+  } catch { return null; }
+}
+
+function recordPermissionGrant(rec: PermissionGrantRecord) {
+  try { localStorage.setItem(LAST_GRANT_KEY, JSON.stringify(rec)); } catch {}
+}
+
+/**
+ * Request permissions. MUST be called synchronously inside a user gesture
+ * on iOS — see the note above. The caller should have invoked
+ * `preloadHealthPlugin()` on screen mount; if not, we fall back to the
+ * async loader (which works on Android but may be silently denied on iOS).
+ */
 export async function requestPermissions(): Promise<string[]> {
   const provider = wearableProviderForPlatform();
   if (!provider) throw new Error("Wearables require the iOS or Android app.");
 
-  const Health = await loadHealth();
+  const Health = _HealthCache ?? (await loadHealth());
   if (!Health) {
     console.warn("[wearables] capacitor-health not available; using stub.");
+    recordPermissionGrant({ at: Date.now(), raw: null, error: "plugin not loaded" });
     return [...PERMISSIONS];
   }
 
   try {
-    const avail = await Health.isHealthAvailable?.();
-    if (avail && avail.available === false) {
-      throw new Error(
-        provider === "health_connect"
-          ? "Google Health Connect isn't installed on this device."
-          : "Apple Health isn't available on this device.",
-      );
-    }
-    await Health.requestHealthPermissions({ permissions: [...PERMISSIONS] });
+    // NOTE: do NOT call isHealthAvailable() here — it adds an await and
+    // breaks the iOS user-gesture chain. Availability is checked separately
+    // in getDiagnostics() at screen mount.
+    const result = await Health.requestHealthPermissions({ permissions: [...PERMISSIONS] });
+    recordPermissionGrant({ at: Date.now(), raw: result ?? null, error: null });
   } catch (e: any) {
-    throw new Error(e?.message || "Permission request failed");
+    const msg = e?.message || "Permission request failed";
+    recordPermissionGrant({ at: Date.now(), raw: null, error: msg });
+    throw new Error(msg);
   }
   return [...PERMISSIONS];
+}
+
+/** Wipe the local connection so the next Connect tap is a clean start. */
+export async function resetConnection(): Promise<void> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+  await supabase.from("wearable_connections")
+    .delete()
+    .eq("user_id", user.id);
+  try {
+    localStorage.removeItem(LAST_PULL_KEY);
+    localStorage.removeItem(SYNC_STATS_KEY);
+    localStorage.removeItem(LAST_GRANT_KEY);
+  } catch {}
 }
 
 interface RawWorkout {
