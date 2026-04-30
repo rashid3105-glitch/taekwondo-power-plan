@@ -815,9 +815,9 @@ export default function Dashboard() {
         ) : activeTab === "mental" ? (
           isDemo ? renderDemoLockedState("mental") : <MentalAssessment profile={profile} />
         ) : activeTab === "testing" ? (
-          isDemo ? renderDemoLockedState("testing") : <PhysicalTesting mode={isCoach ? "coach" : "individual"} />
+          isDemo ? renderDemoLockedState("testing") : isModuleLocked("testing") ? renderTierLockedState("testing") : <PhysicalTesting mode={isCoach ? "coach" : "individual"} />
         ) : activeTab === "rehab" ? (
-          isDemo ? renderDemoLockedState("injuryRehabPlan") : (
+          isDemo ? renderDemoLockedState("injuryRehabPlan") : isModuleLocked("rehab") ? renderTierLockedState("injuryRehabPlan") : (
           <>
             {/* Rehab Plan Generator */}
             {(!hasCoach || isPaid) && (
