@@ -32,8 +32,10 @@ import { RecoveryTile } from "@/components/RecoveryTile";
 import { ReflectionPromptCard } from "@/components/ReflectionPromptCard";
 import { EnablePasskeyCard } from "@/components/EnablePasskeyCard";
 import { WhatsNewInline } from "@/components/landing/WhatsNewInline";
-import { Trophy, Quote as QuoteIcon, Calendar as CalendarIcon } from "lucide-react";
+import { Trophy, Quote as QuoteIcon, Calendar as CalendarIcon, Sparkles } from "lucide-react";
 import { getDailyQuote, type Locale as QuoteLocale } from "@/data/motivationalQuotes";
+import { useEntitlements } from "@/hooks/useEntitlements";
+import type { LockedModule } from "@/lib/entitlements";
 
 interface Profile {
   display_name: string;
@@ -94,9 +96,25 @@ export default function Dashboard() {
   const { toast } = useToast();
   const { t, locale } = useLanguage();
   
+  const { isLocked: isModuleLocked } = useEntitlements();
+
+  // Map dashboard tabs to entitlement modules. Tabs not in this map are never tier-locked.
+  const TAB_TO_MODULE: Partial<Record<typeof activeTab, LockedModule>> = {
+    rehab: "rehab",
+    testing: "testing",
+  };
+  const isTierLockedTab = (tab: typeof activeTab) => {
+    const mod = TAB_TO_MODULE[tab];
+    return mod ? isModuleLocked(mod) : false;
+  };
+
   const isDemoLockedTab = (tab: typeof activeTab) => isDemo && !["hub", "plan"].includes(tab);
   const handleTabChange = (tab: typeof activeTab) => {
     if (isDemoLockedTab(tab)) return;
+    if (isTierLockedTab(tab)) {
+      navigate("/pricing");
+      return;
+    }
     setActiveTab(tab);
     setMenuOpen(false);
   };
@@ -113,6 +131,23 @@ export default function Dashboard() {
       <div className="flex justify-center">
         <Button variant="outline" size="sm" onClick={() => navigate("/pricing")}>
           {t("viewPricing")}
+        </Button>
+      </div>
+    </div>
+  );
+
+  const renderTierLockedState = (featureKey: string) => (
+    <div className="rounded-xl border border-primary/20 bg-card p-8 sm:p-10 text-center shadow-card space-y-4">
+      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+        <Lock className="h-5 w-5 text-primary" />
+      </div>
+      <div className="space-y-2">
+        <h3 className="font-bold text-foreground">{t(featureKey)}</h3>
+        <p className="text-sm text-muted-foreground">{t("moduleLockedDesc")}</p>
+      </div>
+      <div className="flex justify-center">
+        <Button size="sm" onClick={() => navigate("/pricing")}>
+          <Sparkles className="h-4 w-4 mr-1" /> {t("upgradeToUnlock")}
         </Button>
       </div>
     </div>
@@ -639,17 +674,17 @@ export default function Dashboard() {
                 { tab: "plan" as const, icon: Zap, titleKey: "hubTrainingTitle", descKey: "hubTrainingDesc", color: "text-tab-plan", iconBg: "bg-tab-plan/15", borderColor: "border-l-tab-plan", gradient: "radial-gradient(ellipse at 20% 50%, hsl(190 95% 50% / 0.15), transparent 60%)", locked: false },
                 { tab: "progress" as const, icon: BarChart3, titleKey: "hubProgressTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubProgressDesc", color: "text-tab-progress", iconBg: "bg-tab-progress/15", borderColor: "border-l-tab-progress", gradient: "radial-gradient(ellipse at 20% 50%, hsl(45 90% 55% / 0.15), transparent 60%)", locked: isDemo },
                 { tab: "nutrition" as const, icon: Apple, titleKey: "hubNutritionTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubNutritionDesc", color: "text-tab-nutrition", iconBg: "bg-tab-nutrition/15", borderColor: "border-l-tab-nutrition", gradient: "radial-gradient(ellipse at 20% 50%, hsl(142 70% 45% / 0.15), transparent 60%)", locked: isDemo },
-                { tab: "rehab" as const, icon: Heart, titleKey: "hubRehabTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubRehabDesc", color: "text-tab-rehab", iconBg: "bg-tab-rehab/15", borderColor: "border-l-tab-rehab", gradient: "radial-gradient(ellipse at 20% 50%, hsl(0 72% 51% / 0.15), transparent 60%)", locked: isDemo },
+                { tab: "rehab" as const, icon: Heart, titleKey: "hubRehabTitle", descKey: (isDemo || isModuleLocked("rehab")) ? "moduleLockedDesc" : "hubRehabDesc", color: "text-tab-rehab", iconBg: "bg-tab-rehab/15", borderColor: "border-l-tab-rehab", gradient: "radial-gradient(ellipse at 20% 50%, hsl(0 72% 51% / 0.15), transparent 60%)", locked: isDemo || isModuleLocked("rehab") },
                 { tab: "mental" as const, icon: Brain, titleKey: "hubMentalTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubMentalDesc", color: "text-tab-mental", iconBg: "bg-tab-mental/15", borderColor: "border-l-tab-mental", gradient: "radial-gradient(ellipse at 20% 50%, hsl(330 60% 72% / 0.15), transparent 60%)", locked: isDemo },
-                { tab: "testing" as const, icon: ClipboardList, titleKey: "hubTestingTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubTestingDesc", color: "text-primary", iconBg: "bg-primary/15", borderColor: "border-l-primary", gradient: "radial-gradient(ellipse at 20% 50%, hsl(210 80% 55% / 0.15), transparent 60%)", locked: isDemo },
+                { tab: "testing" as const, icon: ClipboardList, titleKey: "hubTestingTitle", descKey: (isDemo || isModuleLocked("testing")) ? "moduleLockedDesc" : "hubTestingDesc", color: "text-primary", iconBg: "bg-primary/15", borderColor: "border-l-primary", gradient: "radial-gradient(ellipse at 20% 50%, hsl(210 80% 55% / 0.15), transparent 60%)", locked: isDemo || isModuleLocked("testing") },
               ]).map((section) => {
                 const Icon = section.icon;
                 return (
                   <button
                     key={section.tab}
                     onClick={() => handleTabChange(section.tab)}
-                    disabled={section.locked}
-                    className={`group relative overflow-hidden rounded-2xl border border-border border-l-[3px] ${section.borderColor} bg-card/80 backdrop-blur-sm p-5 shadow-card text-left transition-all duration-300 ${section.locked ? "cursor-not-allowed opacity-70" : "cursor-pointer hover:border-primary/30 hover:-translate-y-1 hover:shadow-glow"}`}
+                    disabled={isDemo && section.locked}
+                    className={`group relative overflow-hidden rounded-2xl border border-border border-l-[3px] ${section.borderColor} bg-card/80 backdrop-blur-sm p-5 shadow-card text-left transition-all duration-300 ${section.locked ? "opacity-70 cursor-pointer" : "cursor-pointer hover:border-primary/30 hover:-translate-y-1 hover:shadow-glow"} ${isDemo && section.locked ? "cursor-not-allowed" : ""}`}
                   >
                     <div
                       className="absolute inset-0 rounded-2xl transition-opacity duration-500 opacity-60 group-hover:opacity-100"
@@ -663,7 +698,7 @@ export default function Dashboard() {
                       <div className="space-y-1.5">
                         <h3 className="text-sm font-bold text-foreground tracking-tight">{t(section.titleKey)}</h3>
                         <p className="text-xs leading-relaxed text-muted-foreground">{t(section.descKey)}</p>
-                        {section.locked && <p className="text-xs font-medium text-foreground">{t("demoUpgradePrompt")}</p>}
+                        {section.locked && <p className="text-xs font-medium text-foreground">{t(isDemo ? "demoUpgradePrompt" : "upgradeToUnlock")}</p>}
                       </div>
                     </div>
                   </button>
@@ -679,7 +714,7 @@ export default function Dashboard() {
                 <div className="relative flex items-start gap-4">
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/15 relative">
                     <Trophy className="h-5 w-5 text-primary" />
-                    {isDemo && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
+                    {(isDemo || isModuleLocked("competitions")) && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
                   </div>
                   <div className="space-y-1.5">
                     <h3 className="text-sm font-bold text-foreground tracking-tight">{t("hubCompetitionsTitle")}</h3>
@@ -697,7 +732,7 @@ export default function Dashboard() {
                 <div className="relative flex items-start gap-4">
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/15 relative">
                     <CalendarRange className="h-5 w-5 text-primary" />
-                    {isDemo && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
+                    {(isDemo || isModuleLocked("season_plan")) && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
                   </div>
                   <div className="space-y-1.5">
                     <h3 className="text-sm font-bold text-foreground tracking-tight">{t("hubSeasonTitle")}</h3>
@@ -716,7 +751,7 @@ export default function Dashboard() {
                 <div className="relative flex items-start gap-4">
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/15 relative">
                     <VideoIcon className="h-5 w-5 text-primary" />
-                    {isDemo && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
+                    {(isDemo || isModuleLocked("match_analysis")) && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
                   </div>
                   <div className="space-y-1.5">
                     <h3 className="text-sm font-bold text-foreground tracking-tight">{t("hubMatchTitle")}</h3>
@@ -737,7 +772,7 @@ export default function Dashboard() {
                 <div className="relative flex items-start gap-4">
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/15 relative">
                     <BookOpen className="h-5 w-5 text-primary" />
-                    {isDemo && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
+                    {(isDemo || isModuleLocked("library")) && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
                   </div>
                   <div className="space-y-1.5">
                     <h3 className="text-sm font-bold text-foreground tracking-tight">{t("hubLibraryTitle")}</h3>
@@ -780,9 +815,9 @@ export default function Dashboard() {
         ) : activeTab === "mental" ? (
           isDemo ? renderDemoLockedState("mental") : <MentalAssessment profile={profile} />
         ) : activeTab === "testing" ? (
-          isDemo ? renderDemoLockedState("testing") : <PhysicalTesting mode={isCoach ? "coach" : "individual"} />
+          isDemo ? renderDemoLockedState("testing") : isModuleLocked("testing") ? renderTierLockedState("testing") : <PhysicalTesting mode={isCoach ? "coach" : "individual"} />
         ) : activeTab === "rehab" ? (
-          isDemo ? renderDemoLockedState("injuryRehabPlan") : (
+          isDemo ? renderDemoLockedState("injuryRehabPlan") : isModuleLocked("rehab") ? renderTierLockedState("injuryRehabPlan") : (
           <>
             {/* Rehab Plan Generator */}
             {(!hasCoach || isPaid) && (
