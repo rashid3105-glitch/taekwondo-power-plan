@@ -11,6 +11,7 @@ import {
   deleteCachedEntry,
   queueDiaryIntent,
   type CachedDiaryEntry,
+  type DiaryEntryType,
 } from "@/lib/diaryOfflineDB";
 import { syncDiary } from "@/lib/diarySyncEngine";
 
@@ -20,6 +21,7 @@ interface NewEntry {
   mood: number;
   energy: number;
   tags: string[];
+  entry_type: DiaryEntryType;
 }
 
 function uuid() {
@@ -57,6 +59,7 @@ export function useOfflineDiary() {
           mood: e.mood,
           energy: e.energy,
           tags: (e.tags as string[]) || [],
+          entry_type: (e.entry_type as DiaryEntryType) || "general",
           created_at: e.created_at,
           updated_at: e.updated_at,
           pending: false,
@@ -97,6 +100,7 @@ export function useOfflineDiary() {
         mood: input.mood,
         energy: input.energy,
         tags: input.tags,
+        entry_type: input.entry_type,
         created_at: now,
         updated_at: now,
         pending: true,
@@ -134,12 +138,12 @@ export function useOfflineDiary() {
         mood: input.mood,
         energy: input.energy,
         tags: input.tags,
+        entry_type: input.entry_type,
         created_at: existing?.created_at || now,
         updated_at: now,
         pending: true,
       };
       await putCachedEntry(rec);
-      // If still pending create, mutate the create intent in place.
       await queueDiaryIntent({
         key: id,
         op: isLocalOnly ? "create" : "update",
@@ -163,7 +167,6 @@ export function useOfflineDiary() {
       const existing = entries.find((e) => e.id === id);
       await deleteCachedEntry(id);
       setEntries((prev) => prev.filter((e) => e.id !== id));
-      // If it was local-only (never synced), just drop the queued create intent.
       if (existing?.pending) {
         await queueDiaryIntent({
           key: id,
@@ -175,9 +178,9 @@ export function useOfflineDiary() {
           mood: existing.mood,
           energy: existing.energy,
           tags: existing.tags,
+          entry_type: existing.entry_type,
           queued_at: Date.now(),
         });
-        // Local-only delete — just discard queued intents matching this key.
         const { removeDiaryIntent } = await import("@/lib/diaryOfflineDB");
         await removeDiaryIntent(id);
         return;
@@ -192,6 +195,7 @@ export function useOfflineDiary() {
         mood: existing?.mood || 3,
         energy: existing?.energy || 3,
         tags: existing?.tags || [],
+        entry_type: existing?.entry_type || "general",
         queued_at: Date.now(),
       });
       if (navigator.onLine) await syncDiary();
