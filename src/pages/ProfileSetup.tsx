@@ -581,6 +581,11 @@ export default function ProfileSetup() {
 
         <AccountDangerZone />
       </div>
+
+      <WearableConnectWizard
+        open={wizardOpen}
+        onClose={() => setWizardOpen(false)}
+      />
     </div>
   );
 }
