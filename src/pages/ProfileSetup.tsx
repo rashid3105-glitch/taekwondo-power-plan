@@ -537,6 +537,28 @@ export default function ProfileSetup() {
             </div>
           </div>
 
+          <div>
+            <Label htmlFor="defaultLocale">{t("defaultLanguage")}</Label>
+            <p className="text-xs text-muted-foreground mb-1">{t("defaultLanguageHint")}</p>
+            <select
+              id="defaultLocale"
+              value={defaultLocale}
+              onChange={(e) => {
+                const v = e.target.value as Locale | "";
+                setDefaultLocale(v);
+                if (v) setLocale(v);
+              }}
+              className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <option value="">{`— ${t("defaultLanguage")} —`}</option>
+              <option value="en">🇬🇧 English</option>
+              <option value="da">🇩🇰 Dansk</option>
+              <option value="sv">🇸🇪 Svenska</option>
+              <option value="no">🇳🇴 Norsk</option>
+              <option value="de">🇩🇪 Deutsch</option>
+              <option value="ar">🇸🇦 العربية</option>
+            </select>
+          </div>
 
           <div>
             <Label htmlFor="injury">{t("currentInjury")}</Label>
