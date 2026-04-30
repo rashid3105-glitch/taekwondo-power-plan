@@ -12,6 +12,7 @@ import {
   preloadHealthPlugin, getDiagnostics, resetConnection,
   type WearableStatus, type WearableDiagnostics,
 } from "@/lib/wearables";
+import { WearableConnectWizard } from "@/components/wearables/WearableConnectWizard";
 import { PageMeta } from "@/components/PageMeta";
 import { tap, success } from "@/lib/haptics";
 
@@ -23,6 +24,7 @@ export default function WearablesSettings() {
   const [busy, setBusy] = useState(false);
   const [ownsWearable, setOwnsWearable] = useState<boolean | null>(null);
   const [diag, setDiag] = useState<WearableDiagnostics | null>(null);
+  const [wizardOpen, setWizardOpen] = useState(false);
 
   useEffect(() => {
     void load();
