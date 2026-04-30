@@ -714,7 +714,7 @@ export default function Dashboard() {
                 <div className="relative flex items-start gap-4">
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/15 relative">
                     <Trophy className="h-5 w-5 text-primary" />
-                    {isDemo && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
+                    {(isDemo || isModuleLocked("competitions")) && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
                   </div>
                   <div className="space-y-1.5">
                     <h3 className="text-sm font-bold text-foreground tracking-tight">{t("hubCompetitionsTitle")}</h3>
@@ -732,7 +732,7 @@ export default function Dashboard() {
                 <div className="relative flex items-start gap-4">
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/15 relative">
                     <CalendarRange className="h-5 w-5 text-primary" />
-                    {isDemo && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
+                    {(isDemo || isModuleLocked("season_plan")) && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
                   </div>
                   <div className="space-y-1.5">
                     <h3 className="text-sm font-bold text-foreground tracking-tight">{t("hubSeasonTitle")}</h3>
@@ -751,7 +751,7 @@ export default function Dashboard() {
                 <div className="relative flex items-start gap-4">
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/15 relative">
                     <VideoIcon className="h-5 w-5 text-primary" />
-                    {isDemo && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
+                    {(isDemo || isModuleLocked("match_analysis")) && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
                   </div>
                   <div className="space-y-1.5">
                     <h3 className="text-sm font-bold text-foreground tracking-tight">{t("hubMatchTitle")}</h3>
@@ -772,7 +772,7 @@ export default function Dashboard() {
                 <div className="relative flex items-start gap-4">
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/15 relative">
                     <BookOpen className="h-5 w-5 text-primary" />
-                    {isDemo && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
+                    {(isDemo || isModuleLocked("library")) && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
                   </div>
                   <div className="space-y-1.5">
                     <h3 className="text-sm font-bold text-foreground tracking-tight">{t("hubLibraryTitle")}</h3>
