@@ -15,7 +15,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { AccountDangerZone } from "@/components/AccountDangerZone";
 import { PasskeySettings } from "@/components/PasskeySettings";
 import { PublicProfileSettings } from "@/components/profile/PublicProfileSettings";
-import { WearableConnectWizard } from "@/components/wearables/WearableConnectWizard";
+
 
 import { COUNTRIES } from "@/data/countries";
 
@@ -66,8 +66,6 @@ export default function ProfileSetup() {
   const [clubId, setClubId] = useState("");
   const [country, setCountry] = useState("");
   const [customCalories, setCustomCalories] = useState("");
-  const [ownsWearable, setOwnsWearable] = useState(false);
-  const [wizardOpen, setWizardOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -115,7 +113,7 @@ export default function ProfileSetup() {
           setClubId(profileData.club_id || "");
           setCountry(profileData.country || "");
           setCustomCalories(profileData.custom_calories?.toString() || "");
-          setOwnsWearable(!!profileData.owns_wearable);
+          
         }
       } catch (err: any) {
         toast({ title: t("error"), description: err.message, variant: "destructive" });
@@ -281,7 +279,7 @@ export default function ProfileSetup() {
         club_id: clubId || null,
         country: country || null,
         custom_calories: customCalories ? parseInt(customCalories) : null,
-        owns_wearable: ownsWearable,
+        
         avatar_url: cleanAvatarUrl,
       };
 
@@ -535,24 +533,6 @@ export default function ProfileSetup() {
             </div>
           </div>
 
-          <div className="rounded-lg border border-border p-3 flex items-center justify-between gap-3">
-            <div className="flex-1">
-              <Label htmlFor="ownsWearable" className="text-sm font-medium">
-                {t("wearableOwnQuestion")}
-              </Label>
-              <p className="text-xs text-muted-foreground">{t("wearableOwnHint")}</p>
-            </div>
-            <Checkbox
-              id="ownsWearable"
-              className="h-5 w-5"
-              checked={ownsWearable}
-              onCheckedChange={(v) => {
-                const enabled = v === true;
-                setOwnsWearable(enabled);
-                if (enabled) setWizardOpen(true);
-              }}
-            />
-          </div>
 
           <div>
             <Label htmlFor="injury">{t("currentInjury")}</Label>
@@ -582,10 +562,6 @@ export default function ProfileSetup() {
         <AccountDangerZone />
       </div>
 
-      <WearableConnectWizard
-        open={wizardOpen}
-        onClose={() => setWizardOpen(false)}
-      />
     </div>
   );
 }
