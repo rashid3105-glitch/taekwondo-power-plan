@@ -27,6 +27,7 @@ export default function WearablesSync() {
   const [status, setStatus] = useState<WearableStatus | null>(null);
   const [stats, setStats] = useState<SyncStats>(getSyncStats());
   const [count, setCount] = useState<number>(0);
+  const [grant, setGrant] = useState<PermissionGrantRecord | null>(getLastPermissionGrant());
   const [busy, setBusy] = useState(false);
 
   useEffect(() => { void load(); }, []);
@@ -34,6 +35,7 @@ export default function WearablesSync() {
   async function load() {
     setStatus(await getStatus());
     setStats(getSyncStats());
+    setGrant(getLastPermissionGrant());
     setCount(await getSampleCount());
   }
 
