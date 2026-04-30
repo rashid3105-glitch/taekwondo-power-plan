@@ -33,11 +33,10 @@ const individualTiers: Tier[] = [
     yearlyPriceKey: "pricingAthleteYearlyPrice",
     features: [
       "pricingFeatureSingleAthlete",
-      "pricingFeatureAiPlans",
+      "pricingFeatureLimitedModules",
+      "pricingFeatureOnePlan",
       "pricingFeatureProgress",
       "pricingFeatureMental",
-      "pricingFeatureRehab",
-      "pricingFeatureLibrary",
     ],
   },
   {
@@ -49,9 +48,9 @@ const individualTiers: Tier[] = [
     yearlyPriceKey: "pricingCoachSoloYearlyPrice",
     features: [
       "pricingFeatureCoachSeat",
+      "pricingFeatureAllModules",
+      "pricingFeatureOnePlan",
       "pricingFeatureNoAthletes",
-      "pricingFeatureAthleteManagement",
-      "pricingFeatureSquadOverview",
       "pricingFeatureLibrary",
     ],
   },
@@ -67,8 +66,8 @@ const teamTiers: Tier[] = [
     yearlyPriceKey: "pricingTeamSmallYearlyPrice",
     features: [
       "pricingFeature5Athletes",
-      "pricingFeatureCoachIncluded",
-      "pricingFeatureAthleteManagement",
+      "pricingFeatureAllModules",
+      "pricingFeatureUnlimitedPlans",
       "pricingFeatureBulkPlans",
       "pricingFeatureSquadOverview",
     ],
@@ -83,8 +82,8 @@ const teamTiers: Tier[] = [
     popular: true,
     features: [
       "pricingFeature15Athletes",
-      "pricingFeatureCoachIncluded",
-      "pricingFeatureAthleteManagement",
+      "pricingFeatureAllModules",
+      "pricingFeatureUnlimitedPlans",
       "pricingFeatureBulkPlans",
       "pricingFeatureSquadOverview",
       "pricingFeatureOnboarding",
