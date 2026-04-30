@@ -1,50 +1,87 @@
-## Why your iWatch isn't connecting
+## Goal
 
-I dug into the database and the code. Two real problems are stacking on top of each other:
+When the user enables the "I own a wearable" checkbox in Profile, open a guided **Connect Wizard** that walks them through every common iOS failure cause one step at a time, with a clear "next fix" CTA at each step. No more dumping diagnostics and hoping the user pieces it together.
 
-1. **Your Apple Health connection in our backend is marked `revoked`** (from a previous disconnect). The Wearables screen only shows the green "Connected" card when status is active, so when you tap *Connect Apple Health* nothing visible happens for the connection state — even if iOS prompts.
-2. **The Apple Health permission prompt is silently denied by iOS.** Apple requires the HealthKit permission request to be triggered *immediately* from the button tap, with no `await` in between. Today our `handleConnect` does `await requestPermissions()` *after* the React state update, and our `requestPermissions()` itself does several `await` calls (dynamic import of `capacitor-health`, availability check) before finally calling `requestHealthPermissions`. On iOS, that broken "user gesture" chain is the #1 reason the system sheet never appears.
+## Trigger
 
-There is also zero data in `wearable_samples` for any user, and the edge function has never logged an invocation — so the device truly isn't reaching the bridge yet. Fixing the prompt is the unlock.
+In `src/pages/ProfileSetup.tsx`, when `ownsWearable` is toggled from `false → true`, immediately open the wizard as a full-screen `Dialog` (not navigation, so the user keeps their profile context). The wizard can also be re-opened later from `WearablesSettings` via a "Run guided setup" button.
 
-## What I'll change
+## The wizard — one step visible at a time
 
-### 1. Fix the iOS user-gesture chain so the Health prompt actually shows
-- Pre-load the `capacitor-health` module on the Wearables screen mount, so when you tap the button there is **no `await` before** `requestHealthPermissions`.
-- Remove the `await Health.isHealthAvailable()` step from inside the request path; move it to a separate "diagnostics" check that runs on screen load.
-- Call `requestHealthPermissions` synchronously in the click handler, then do the backfill afterwards.
+A single `WearableConnectWizard` component with a numbered stepper at the top and exactly **one actionable card** below. Each step has:
+- A clear title ("Step 2 of 5 — Install the iOS app")
+- Why this matters (1 short sentence)
+- The exact thing to do
+- A primary CTA button that performs the next check
+- A subtle "I already did this — re-check" link
 
-### 2. Re-activate a revoked connection automatically
-- When the user taps *Connect Apple Health* and a previous row exists with `status = revoked`, flip it back to `active` as part of the connect flow (the ingest function already upserts active, but the connect button currently never reaches ingest because the prompt is silently denied).
-- Add a small "Reset connection" affordance under *Re-request health permissions* that wipes the revoked row so the next connect is a clean start.
+The wizard auto-advances as each check passes. The user is never shown step N+1 until step N is green.
 
-### 3. Make the screen tell the truth about what's happening
-- Show a one-line **diagnostic strip** on Wearables Settings the moment the page loads, with three green/amber dots:
-  - "Running in native iOS app" (true/false)
-  - "Apple Health available on this device" (true/false)
-  - "HealthKit entitlement detected" (true/false based on whether `capacitor-health` exposes the iOS plugin)
-- If any are false, tell the user exactly what to do (rebuild from Xcode after `npx cap sync ios`, or open Apple Health → Sources → Sportstalent and enable each metric).
-- After tapping Connect, log the raw response from `requestHealthPermissions` and show it on the Sync screen so we can see if iOS actually granted any types.
+### Step 1 — Are you in the native app?
 
-### 4. Verify the loop end-to-end
-- After the Health sheet is granted, run the 14-day backfill, confirm rows appear in `wearable_samples`, and confirm `wearable_connections.last_sync_at` becomes non-null and `status = active`.
-- If the breakdown still shows all zeros, the Sync screen will now point to the exact Apple Health toggle that's off (Sleep / Resting HR / HRV / Steps / Workouts).
+Check: `wearableProviderForPlatform()` returns `apple_health` or `health_connect`.
 
-## What you'll need to do once on the phone
+- **Pass**: green check, auto-advance.
+- **Fail (web/Safari)**: show "Install the Sportstalent app" card with two CTAs:
+  - "Open install guide" → navigates to `/install`
+  - "I've installed it — open the app and re-run setup"
 
-These are one-time native-build steps that I can't do for you from here, but the plan above only works if they're already true:
+  Block further steps. This is the #1 cause: Safari/PWA can't reach HealthKit.
 
-1. You must be running a build that came from `npm run build && npx cap sync ios` and was launched from Xcode (or TestFlight). The Lovable preview URL on Safari can't talk to HealthKit.
-2. In Xcode → Signing & Capabilities, the **HealthKit** capability must be added to the App target.
-3. `Info.plist` must contain `NSHealthShareUsageDescription` (and `NSHealthUpdateUsageDescription`). Both are already documented in `ios-healthkit-info.md`.
+### Step 2 — Is the native health plugin loaded?
 
-If any of those are missing, iOS will silently refuse to show the prompt no matter what we change in the JS layer.
+Check: `getDiagnostics().pluginLoaded === true`.
 
-## Files I'll touch
+- **Fail**: this means the user is on an old build that predates the HealthKit capability. Show:
+  > "Your installed app is missing the Health bridge. Reinstall the latest build from TestFlight / App Store."
+  CTA: "Open install guide" + a copy-to-clipboard of the troubleshooting steps for the user's coach/admin (`npm run build && npx cap sync ios`, add HealthKit capability in Xcode).
 
-- `src/lib/wearables/index.ts` — pre-load the plugin, remove `await` chain before `requestHealthPermissions`, return raw permission result.
-- `src/pages/WearablesSettings.tsx` — diagnostic strip, "Reset connection" button, click handler that calls the bridge with no awaits in between.
-- `src/pages/WearablesSync.tsx` — show last permission grant payload and clearer per-metric guidance.
-- (Possibly) a tiny helper to flip `status` from `revoked` → `active` via the existing ingest function (no new migration needed; the upsert already handles it once a real sync runs).
+### Step 3 — Is HealthKit / Health Connect available on the device?
 
-No DB migration. No new edge function.
+Check: `getDiagnostics().healthAvailable === true`.
+
+- **Fail (iOS)**: rare — usually iPad without Health. Suggest using iPhone.
+- **Fail (Android)**: prompt to install Health Connect from Play Store with a deep link.
+
+### Step 4 — Tap Connect (the actual permission prompt)
+
+This is the critical step. Card shows:
+- A big "Connect Apple Health" button.
+- Below it, plain-language text: "iOS will pop up a permission sheet. Tap **Turn On All**."
+
+The button calls `requestPermissions()` synchronously inside the click handler (no awaits before — same rule as today). After resolution:
+- If `getLastPermissionGrant().error` is set → show the error, offer "Try again".
+- If permissions resolved but `last_grant.raw` shows nothing was granted → show:
+  > "It looks like you tapped Don't Allow, or the sheet was dismissed. Open Settings → Health → Data Access → Sportstalent and turn each metric on."
+  CTA: "Open iOS Settings" (uses `window.location.href = "App-Prefs:HEALTH"` on iOS — best-effort).
+- If grant looks healthy → auto-advance.
+
+If the prompt **never appeared** (we detect this when the call resolves in <300 ms with no raw payload — strong sign iOS silently denied because of a broken gesture chain or missing entitlement), show:
+> "iOS didn't show the permission sheet. This usually means the app needs to be reinstalled from TestFlight."
+CTA: "Reset connection and try again" (calls `resetConnection()` then loops back to Step 1).
+
+### Step 5 — Backfill and verify
+
+Call `initialBackfill()`. Show a live progress card with the per-metric breakdown returned. After it finishes:
+- If `inserted > 0` → success screen, "Done — close wizard".
+- If `inserted === 0` → show per-metric checklist with what was missing (e.g. "Sleep: 0 samples — open Health → Sleep and confirm your watch is logging sleep") and a "Re-run sync" button.
+
+## What changes in code
+
+- **New** `src/components/wearables/WearableConnectWizard.tsx` — the dialog with the 5 stepper UI. Uses existing `getDiagnostics`, `requestPermissions`, `getLastPermissionGrant`, `initialBackfill`, `resetConnection` from `src/lib/wearables/index.ts`. No backend changes.
+- **New** `src/lib/wearables/promptDetection.ts` — tiny helper that wraps `requestPermissions()` and times the call so we can flag "prompt never appeared" (resolves too fast with no raw payload).
+- **Edit** `src/pages/ProfileSetup.tsx` — when the "I own a wearable" checkbox flips on, open the wizard. Persist `owns_wearable=true` only after the user dismisses the wizard (so an accidental tick can be backed out).
+- **Edit** `src/pages/WearablesSettings.tsx` — add a prominent "Run guided setup" button at the top that opens the same wizard, replacing the current ad-hoc help block (we keep the existing single-screen UI for already-connected users).
+- **i18n**: add wizard strings to `src/i18n/translations.ts` (DA, EN, SV, DE, AR) — title, the 5 step labels, and the per-step error CTAs. No English fallbacks.
+
+## What we explicitly do NOT change
+
+- No DB migration.
+- No edge-function change.
+- The native iOS build (Xcode capabilities, Info.plist entries) is unchanged — those are documented in `ios-healthkit-info.md` and remain a one-time native build prerequisite.
+
+## Visuals
+
+Stepper bar at the top: 5 dots, current = primary, completed = emerald with check, future = muted. Below it, a single card with generous padding, one big primary button, and one tertiary "Skip / I'll do this later" link that closes the wizard without touching `owns_wearable`.
+
+Dark cockpit theme (matches the rest of the authenticated app). Haptic `tap()` on every CTA, `success()` on completion.
