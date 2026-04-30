@@ -40,6 +40,7 @@ import PublicAthlete from "./pages/PublicAthlete";
 import MatchAnalysis from "./pages/MatchAnalysis";
 import MatchShare from "./pages/MatchShare";
 import SeasonPlan from "./pages/SeasonPlan";
+import { UpgradeGate } from "@/components/UpgradeGate";
 
 const queryClient = new QueryClient();
 
@@ -88,14 +89,14 @@ const AnimatedRoutes = () => {
         <Route path="/wearables" element={<Navigate to="/health" replace />} />
         <Route path="/wearables/sync" element={<Navigate to="/health" replace />} />
         <Route path="/dashboard" element={<Page><Dashboard /></Page>} />
-        <Route path="/library" element={<Page><LibraryChooser /></Page>} />
-        <Route path="/library/:section" element={<Page><Library /></Page>} />
+        <Route path="/library" element={<Page><UpgradeGate module="library"><LibraryChooser /></UpgradeGate></Page>} />
+        <Route path="/library/:section" element={<Page><UpgradeGate module="library"><Library /></UpgradeGate></Page>} />
         <Route path="/diary" element={<Page><Diary /></Page>} />
-        <Route path="/competitions" element={<Page><Competitions /></Page>} />
-        <Route path="/competitions/:id/reflect" element={<Page><CompetitionReflection /></Page>} />
-        <Route path="/season" element={<Page><SeasonPlan /></Page>} />
-        <Route path="/match-analysis/me" element={<Page><MatchAnalysis /></Page>} />
-        <Route path="/match-analysis/:athleteId" element={<Page><MatchAnalysis /></Page>} />
+        <Route path="/competitions" element={<Page><UpgradeGate module="competitions"><Competitions /></UpgradeGate></Page>} />
+        <Route path="/competitions/:id/reflect" element={<Page><UpgradeGate module="competitions"><CompetitionReflection /></UpgradeGate></Page>} />
+        <Route path="/season" element={<Page><UpgradeGate module="season_plan"><SeasonPlan /></UpgradeGate></Page>} />
+        <Route path="/match-analysis/me" element={<Page><UpgradeGate module="match_analysis"><MatchAnalysis /></UpgradeGate></Page>} />
+        <Route path="/match-analysis/:athleteId" element={<Page><UpgradeGate module="match_analysis"><MatchAnalysis /></UpgradeGate></Page>} />
         <Route path="/match/share/:token" element={<Page><MatchShare /></Page>} />
         <Route path="/athlete/:code" element={<Page><PublicAthlete /></Page>} />
         <Route path="/payment-success" element={<Page><PaymentSuccess /></Page>} />
