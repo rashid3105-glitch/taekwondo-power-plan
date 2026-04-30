@@ -9,15 +9,19 @@ import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import {
   Zap, ArrowLeft, Plus, Trash2, Edit2, Save, X, SmilePlus,
-  Frown, Meh, Smile, Laugh, Battery, BatteryLow, BatteryMedium, BatteryFull,
-  Search, ChevronDown, ChevronRight, Dumbbell, Trophy, Heart, Brain,
-  Bandage, NotebookPen, Filter,
+  Frown, Meh, Smile, Laugh, BatteryLow, BatteryMedium, BatteryFull,
+  Search, ChevronDown, ChevronRight, Filter,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Watermark } from "@/components/Watermark";
 import { DiaryComments } from "@/components/DiaryComments";
 import { useOfflineDiary } from "@/hooks/useOfflineDiary";
 import type { CachedDiaryEntry, DiaryEntryType } from "@/lib/diaryOfflineDB";
+import {
+  ENTRY_TYPES, typeMeta, computeTypeCounts, computeAvailableTags,
+  filterEntries, groupByMonth, currentMonthKey,
+  type DateRange, type ViewMode,
+} from "@/lib/diaryFilters";
 
 type DiaryEntry = CachedDiaryEntry;
 
@@ -29,29 +33,6 @@ const ENERGY_ICONS = [BatteryLow, BatteryLow, BatteryMedium, BatteryFull, Batter
 const ENERGY_LABELS = ["Drained", "Low", "Moderate", "High", "Peak"];
 
 const PRESET_TAGS = ["competition", "recovery", "technique", "sparring", "strength", "cardio", "flexibility", "mindset"];
-
-interface TypeMeta {
-  value: DiaryEntryType;
-  i18nKey: string;
-  Icon: typeof Dumbbell;
-  color: string;
-  bg: string;
-  border: string;
-}
-
-const ENTRY_TYPES: TypeMeta[] = [
-  { value: "general", i18nKey: "diaryTypeGeneral", Icon: NotebookPen, color: "text-muted-foreground", bg: "bg-muted/40", border: "border-border" },
-  { value: "training", i18nKey: "diaryTypeTraining", Icon: Dumbbell, color: "text-primary", bg: "bg-primary/10", border: "border-primary/40" },
-  { value: "competition", i18nKey: "diaryTypeCompetition", Icon: Trophy, color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/40" },
-  { value: "recovery", i18nKey: "diaryTypeRecovery", Icon: Heart, color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/40" },
-  { value: "mental", i18nKey: "diaryTypeMental", Icon: Brain, color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/40" },
-  { value: "injury", i18nKey: "diaryTypeInjury", Icon: Bandage, color: "text-destructive", bg: "bg-destructive/10", border: "border-destructive/40" },
-];
-
-const typeMeta = (t: DiaryEntryType): TypeMeta => ENTRY_TYPES.find((x) => x.value === t) || ENTRY_TYPES[0];
-
-type DateRange = "7" | "30" | "90" | "all";
-type ViewMode = "compact" | "detailed";
 
 export default function Diary() {
   const navigate = useNavigate();
@@ -150,53 +131,14 @@ export default function Diary() {
 
   // ----- Derived: counts, available tags, filtered+grouped entries -----
 
-  const typeCounts = useMemo(() => {
-    const c: Record<string, number> = { all: entries.length };
-    for (const e of entries) {
-      const k = e.entry_type || "general";
-      c[k] = (c[k] || 0) + 1;
-    }
-    return c;
-  }, [entries]);
-
-  const availableTags = useMemo(() => {
-    const set = new Set<string>();
-    for (const e of entries) for (const t of e.tags || []) set.add(t);
-    return Array.from(set).sort();
-  }, [entries]);
-
-  const filtered = useMemo(() => {
-    const now = new Date();
-    const cutoff = dateRange === "all" ? null : new Date(now.getTime() - parseInt(dateRange) * 86400000);
-    const q = search.trim().toLowerCase();
-    return entries.filter((e) => {
-      if (typeFilter !== "all" && (e.entry_type || "general") !== typeFilter) return false;
-      if (tagFilter && !(e.tags || []).includes(tagFilter)) return false;
-      if (cutoff) {
-        const d = new Date(e.entry_date + "T00:00:00");
-        if (d < cutoff) return false;
-      }
-      if (q && !e.content.toLowerCase().includes(q)) return false;
-      return true;
-    });
-  }, [entries, typeFilter, tagFilter, dateRange, search]);
-
-  const grouped = useMemo(() => {
-    const map = new Map<string, DiaryEntry[]>();
-    for (const e of filtered) {
-      const d = new Date(e.entry_date + "T00:00:00");
-      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-      const arr = map.get(key) || [];
-      arr.push(e);
-      map.set(key, arr);
-    }
-    return Array.from(map.entries()).sort((a, b) => (a[0] < b[0] ? 1 : -1));
-  }, [filtered]);
-
-  const currentMonthKey = useMemo(() => {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-  }, []);
+  const typeCounts = useMemo(() => computeTypeCounts(entries), [entries]);
+  const availableTags = useMemo(() => computeAvailableTags(entries), [entries]);
+  const filtered = useMemo(
+    () => filterEntries(entries, { typeFilter, tagFilter, dateRange, search }),
+    [entries, typeFilter, tagFilter, dateRange, search],
+  );
+  const grouped = useMemo(() => groupByMonth(filtered), [filtered]);
+  const monthKeyToday = useMemo(() => currentMonthKey(), []);
 
   const toggleMonth = (key: string) => {
     setCollapsedMonths((prev) => {
@@ -498,12 +440,12 @@ export default function Diary() {
           </div>
         ) : (
           grouped.map(([monthKey, items]) => {
-            const collapsed = collapsedMonths.has(monthKey) || (monthKey !== currentMonthKey && !collapsedMonths.has(`__open:${monthKey}`));
+            const collapsed = collapsedMonths.has(monthKey) || (monthKey !== monthKeyToday && !collapsedMonths.has(`__open:${monthKey}`));
             // Default: current month open, others collapsed unless user toggled
             const userToggled = collapsedMonths.has(monthKey) || collapsedMonths.has(`__open:${monthKey}`);
             const isCollapsed = userToggled
               ? collapsedMonths.has(monthKey)
-              : monthKey !== currentMonthKey;
+              : monthKey !== monthKeyToday;
             const [yearStr, monthStr] = monthKey.split("-");
             const monthDate = new Date(parseInt(yearStr), parseInt(monthStr) - 1, 1);
             const monthLabel = monthDate.toLocaleDateString(undefined, { month: "long", year: "numeric" });
