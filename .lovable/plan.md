@@ -1,60 +1,50 @@
-# Plan: fix the persistent “not in native app” message on iPhone
+# Plan: Forenkl iPhone Health-flow og fjern falsk "ikke i native app"-besked
 
-## What I think is actually happening
-The issue is likely no longer just one missing bridge check. At this point there are two concrete possibilities:
+## Mål
+Få wearable-flowet til at fungere pålideligt på iPhone — uden at brugeren bliver mødt af "du er ikke i den native app" når appen faktisk **er** den native iOS-app. Samtidig flytte fokus fra "Apple Watch" til "iPhone Health" (som er den faktiske datakilde).
 
-1. The app is running in a real native shell, but our detection is still too strict and misses valid Capacitor-on-iOS cases.
-2. The iPhone build is still using an older bundled web build, which matches your screenshot because the new diagnostics/details UI does not appear there.
+## Hvad jeg ændrer
 
-## What I’ll change
+### 1. Stop med at vise "ikke i native app" som default
+Den nuværende detection er for streng. Jeg gør det modsatte: hvis der er **et eneste** native-signal til stede (Capacitor bridge, webkit handler, Health-plugin, capacitor:// scheme, eller localhost+iOS UA), behandler vi det som native iOS. Kun hvis ingen signaler matcher, viser vi browser-fallback.
 
-### 1) Make native detection accept more real iOS native signals
-Update `src/lib/wearables/index.ts` so `inNativeApp` can also become true when any of these are present:
-- `Capacitor.isNativePlatform()`
-- `Capacitor.getPlatform() === "ios" | "android"`
-- `window.Capacitor.getPlatform()`
-- registered plugin presence via `Capacitor.isPluginAvailable("Health")`
-- iOS WebView markers combined with iPhone/iPad user agent
-- local Capacitor URL patterns such as `http://localhost` that occur inside native WebViews
+### 2. Adskil "ikke native" fra "Health utilgængelig"
+I dag bliver alt rullet sammen til samme besked. Jeg deler det op i klare tilstande:
+- **Browser** → vis "installer app"
+- **Native app, men Health-bridge mangler** → vis "appen skal bygges igen i Xcode med HealthKit aktiveret"
+- **Native app, Health utilgængelig** → vis "din enhed understøtter ikke HealthKit"
+- **Native app, klar** → vis "Forbind iPhone Health"-knap
+- **Permission afvist** → vis link til iOS Indstillinger → Sundhed
+- **Ingen data efter sync** → vis tjekliste over kilder (Watch, iPhone, manuelle indtastninger)
 
-This removes the current gap where the app may be native, but still falls back to `web`.
+### 3. Omskriv tekster til "iPhone Health"-fokus
+- Fjern fokus på Apple Watch som separat kilde.
+- Forklar at Apple Watch, AirPods, tredjeparts apps og manuelle indtastninger alle skriver ind i iPhone Health-databasen — det er denne app læser fra.
+- Knappen "Connect Apple Health" → "Forbind iPhone Health".
 
-### 2) Add stronger raw diagnostics so the next screen tells us exactly which bundle is running
-Extend diagnostics in `src/lib/wearables/index.ts` and the UI in:
-- `src/pages/WearablesSettings.tsx`
-- `src/components/wearables/WearableConnectWizard.tsx`
+### 4. Forbedret diagnostik-panel
+Gør det kompakt og forståeligt:
+- Grøn/gul/rød status pr. lag (Native app · Health bridge · Permissions · Data).
+- Konkret næste-skridt under hvert lag der fejler.
+- Skjul rå tekniske detaljer bag en "Vis tekniske oplysninger"-knap (kun synlig hvis noget fejler).
 
-I’ll show extra fields such as:
-- current URL
-- whether it is `http://localhost`
-- whether the Health plugin is registered
-- whether the imported health module loaded
-- a build/version marker from the current JS bundle
+### 5. Fjern build-marker visningen fra hovedsiden
+Build-markeren (`2026-04-30-detect-v3`) flyttes ind under "tekniske detaljer", så almindelige brugere ikke ser den.
 
-That way we can distinguish “native runtime but weak detection” from “phone still running an old build”.
+## Filer der ændres
+- `src/lib/wearables/index.ts` — løsnet detection-logik, nye tilstandskategorier
+- `src/lib/wearables/promptDetection.ts` — bedre kategorisering af "never_shown"
+- `src/pages/WearablesSettings.tsx` — opdateret UI/copy, samlet status-panel
+- `src/components/wearables/WearableConnectWizard.tsx` — opdateret tekst og recovery-flow
+- `src/i18n/translations.ts` — nye/justerede strenge på DA/EN/SV/DE/AR
 
-### 3) Replace the misleading fallback copy
-Right now the wizard jumps straight to “you are not in the native app”. I’ll change that so the message is more precise:
-- if native signals exist: say native shell detected, but bridge/plugin/bundle is not ready
-- only say “not in native app” when all native signals are genuinely absent
+## Tekniske noter
+- Ingen ændringer i database eller edge functions.
+- Ingen ændringer i `capacitor-health`-pluginet eller iOS-projektet.
+- Hvis du STADIG ser "native app mangler bridge" efter denne opdatering, er årsagen i Xcode-projektet (manglende HealthKit capability eller stale build) — ikke i web-appen.
 
-### 4) Add explicit stale-bundle guidance
-If the diagnostics suggest the iPhone is running an older bundle, the UI will say so directly and tell the user to:
-- pull latest code
-- run `npm run build`
-- run `npx cap sync ios`
-- rebuild from Xcode
-
-## Technical details
-- Files to update:
-  - `src/lib/wearables/index.ts`
-  - `src/pages/WearablesSettings.tsx`
-  - `src/components/wearables/WearableConnectWizard.tsx`
-  - `src/i18n/translations.ts`
-- No backend or database changes
-- No native Swift changes unless diagnostics prove the Health bridge is missing from the iOS project itself
-
-## Expected result
-After this change, one of two things should happen on device:
-- the app correctly recognizes the native iPhone build and lets you continue, or
-- the screen shows an exact technical reason instead of the generic “not in native app” message, so the remaining issue can be fixed in one step.
+## Validering
+Efter implementering skal følgende være sandt:
+- På iPhone-app: ingen "du er ikke i native app"-besked vises medmindre appen reelt kører i Safari.
+- Status-panelet viser tydeligt hvilket lag der evt. fejler.
+- Forbind-knappen taler om iPhone Health, ikke om Apple Watch som adskilt enhed.
