@@ -2,9 +2,10 @@
 // Outbox holds pending create / update / delete intents.
 
 const DB_NAME = "diary-offline";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 export type DiaryOp = "create" | "update" | "delete";
+export type DiaryEntryType = "general" | "training" | "competition" | "recovery" | "mental" | "injury";
 
 export interface DiaryOutboxIntent {
   // Local id (uuid). For "create" intents this is also used as a placeholder
@@ -19,6 +20,7 @@ export interface DiaryOutboxIntent {
   mood: number;
   energy: number;
   tags: string[];
+  entry_type: DiaryEntryType;
   queued_at: number;
 }
 
@@ -30,6 +32,7 @@ export interface CachedDiaryEntry {
   mood: number;
   energy: number;
   tags: string[];
+  entry_type: DiaryEntryType;
   created_at: string;
   updated_at: string;
   // true when this row only exists locally and has not been pushed yet.
