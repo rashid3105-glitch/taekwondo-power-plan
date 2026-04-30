@@ -150,12 +150,31 @@ export function WearableConnectWizard({ open, onClose, onCompleted }: Props) {
                 <SuccessLine label={t("wizardStep1Pass")} />
               ) : (
                 <>
-                  <p className="text-sm text-foreground/80">{t("wizardStep1Fail")}</p>
+                  {(() => {
+                    const s = diag?.signals;
+                    const looksNative = !!s && (
+                      s.capacitorIsNative || s.healthPluginRegistered ||
+                      s.hasHealthHandler || s.hasAnyPluginHandler ||
+                      s.userAgentHint || s.schemeHint ||
+                      (s.localhostHint && (s.isIosUA || s.isAndroidUA))
+                    );
+                    if (looksNative) {
+                      return (
+                        <p className="text-sm text-foreground/80">
+                          Native shell detected, but the JS bundle in this build doesn't see the Capacitor bridge. Pull the latest code, then run <code>npm run build &amp;&amp; npx cap sync ios</code> and rebuild from Xcode.
+                        </p>
+                      );
+                    }
+                    return <p className="text-sm text-foreground/80">{t("wizardStep1Fail")}</p>;
+                  })()}
                   {diag?.signals && (
                     <div className="rounded border border-amber-500/30 bg-amber-500/5 p-2 text-[11px] font-mono text-foreground/80 space-y-0.5 break-all">
+                      <div>build = {diag.signals.buildMarker}</div>
                       <div>platform = "{diag.signals.capacitorPlatform || "<empty>"}"</div>
                       <div>isNative = {String(diag.signals.capacitorIsNative)}</div>
+                      <div>Health registered = {String(diag.signals.healthPluginRegistered)}</div>
                       <div>webkit bridge = {String(diag.signals.hasWebkitBridge)}</div>
+                      <div>localhost = {String(diag.signals.localhostHint)}</div>
                       <div>serverUrl = {diag.signals.serverUrl ?? "null"}</div>
                     </div>
                   )}
