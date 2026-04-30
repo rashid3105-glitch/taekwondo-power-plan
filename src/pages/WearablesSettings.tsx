@@ -9,7 +9,8 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import {
   getStatus, requestPermissions, initialBackfill, syncSince, disconnect,
   isWearableSupported, wearableProviderForPlatform,
-  type WearableStatus,
+  preloadHealthPlugin, getDiagnostics, resetConnection,
+  type WearableStatus, type WearableDiagnostics,
 } from "@/lib/wearables";
 import { PageMeta } from "@/components/PageMeta";
 import { tap, success } from "@/lib/haptics";
@@ -21,8 +22,16 @@ export default function WearablesSettings() {
   const [status, setStatus] = useState<WearableStatus | null>(null);
   const [busy, setBusy] = useState(false);
   const [ownsWearable, setOwnsWearable] = useState<boolean | null>(null);
+  const [diag, setDiag] = useState<WearableDiagnostics | null>(null);
 
-  useEffect(() => { void load(); }, []);
+  useEffect(() => {
+    void load();
+    // Preload the native health plugin so the Connect tap can call
+    // requestPermissions() with NO awaits between the gesture and the
+    // HealthKit prompt — required on iOS or the sheet is silently denied.
+    void preloadHealthPlugin();
+    void getDiagnostics().then(setDiag);
+  }, []);
 
   async function load() {
     const { data: { user } } = await supabase.auth.getUser();
@@ -36,18 +45,25 @@ export default function WearablesSettings() {
     setStatus(await getStatus());
   }
 
-  async function handleConnect() {
+  function handleConnect() {
+    // CRITICAL iOS rule: do NOT await anything before requestPermissions().
+    // Any await here breaks the user-gesture chain and HealthKit silently
+    // denies the prompt. We fire the request synchronously, then chain the
+    // backfill afterwards.
     tap();
     setBusy(true);
-    try {
-      await requestPermissions();
-      const inserted = await initialBackfill();
-      success();
-      toast({ title: t("wearableConnected"), description: `${inserted} ${t("wearableSamples")}` });
-      await load();
-    } catch (e: any) {
-      toast({ title: t("error"), description: e.message, variant: "destructive" });
-    } finally { setBusy(false); }
+    const promptPromise = requestPermissions();
+    promptPromise
+      .then(() => initialBackfill())
+      .then((inserted) => {
+        success();
+        toast({ title: t("wearableConnected"), description: `${inserted} ${t("wearableSamples")}` });
+        return load();
+      })
+      .catch((e: any) => {
+        toast({ title: t("error"), description: e?.message || "Connect failed", variant: "destructive" });
+      })
+      .finally(() => setBusy(false));
   }
 
   async function handleSync() {
