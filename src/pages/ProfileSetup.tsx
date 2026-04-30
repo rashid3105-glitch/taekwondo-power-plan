@@ -11,6 +11,7 @@ import { Zap, Camera, Loader2, Home } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekSchedulePicker";
 import { useLanguage } from "@/i18n/LanguageContext";
+import type { Locale } from "@/i18n/translations";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { AccountDangerZone } from "@/components/AccountDangerZone";
 import { PasskeySettings } from "@/components/PasskeySettings";
@@ -66,13 +67,14 @@ export default function ProfileSetup() {
   const [clubId, setClubId] = useState("");
   const [country, setCountry] = useState("");
   const [customCalories, setCustomCalories] = useState("");
+  const [defaultLocale, setDefaultLocale] = useState<Locale | "">("");
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { t } = useLanguage();
+  const { t, locale, setLocale } = useLanguage();
 
   useEffect(() => {
     const loadProfileSetupData = async () => {
@@ -87,7 +89,7 @@ export default function ProfileSetup() {
           supabase.from("clubs" as any).select("id, name").order("name"),
           supabase
             .from("profiles")
-            .select("age, weight_kg, belt_level, experience_years, discipline, goals, weekly_schedule, program_weeks, current_injury, avatar_url, club_id, country, custom_calories")
+            .select("age, weight_kg, belt_level, experience_years, discipline, goals, weekly_schedule, program_weeks, current_injury, avatar_url, club_id, country, custom_calories, default_locale")
             .eq("user_id", user.id)
             .maybeSingle(),
         ]);
@@ -113,6 +115,7 @@ export default function ProfileSetup() {
           setClubId(profileData.club_id || "");
           setCountry(profileData.country || "");
           setCustomCalories(profileData.custom_calories?.toString() || "");
+          setDefaultLocale((profileData.default_locale as Locale) || "");
           
         }
       } catch (err: any) {
@@ -279,6 +282,7 @@ export default function ProfileSetup() {
         club_id: clubId || null,
         country: country || null,
         custom_calories: customCalories ? parseInt(customCalories) : null,
+        default_locale: defaultLocale || null,
         
         avatar_url: cleanAvatarUrl,
       };
@@ -533,6 +537,28 @@ export default function ProfileSetup() {
             </div>
           </div>
 
+          <div>
+            <Label htmlFor="defaultLocale">{t("defaultLanguage")}</Label>
+            <p className="text-xs text-muted-foreground mb-1">{t("defaultLanguageHint")}</p>
+            <select
+              id="defaultLocale"
+              value={defaultLocale}
+              onChange={(e) => {
+                const v = e.target.value as Locale | "";
+                setDefaultLocale(v);
+                if (v) setLocale(v);
+              }}
+              className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <option value="">{`— ${t("defaultLanguage")} —`}</option>
+              <option value="en">🇬🇧 English</option>
+              <option value="da">🇩🇰 Dansk</option>
+              <option value="sv">🇸🇪 Svenska</option>
+              <option value="no">🇳🇴 Norsk</option>
+              <option value="de">🇩🇪 Deutsch</option>
+              <option value="ar">🇸🇦 العربية</option>
+            </select>
+          </div>
 
           <div>
             <Label htmlFor="injury">{t("currentInjury")}</Label>

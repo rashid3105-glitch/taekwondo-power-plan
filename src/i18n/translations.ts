@@ -2,6 +2,8 @@ export type Locale = "en" | "da" | "sv" | "de" | "ar" | "no";
 
 const translations = {
   en: {
+    defaultLanguage: "Default language",
+    defaultLanguageHint: "Your app will start in this language each time you sign in. You can still switch any time.",
     // Common
     plan: "Plan",
     progress: "Progress",
@@ -1726,6 +1728,8 @@ const translations = {
     manualSaveError: "Could not save entry",
   },
   da: {
+    defaultLanguage: "Standardsprog",
+    defaultLanguageHint: "Appen starter på dette sprog hver gang du logger ind. Du kan stadig skifte når som helst.",
     // Common
     plan: "Plan",
     progress: "Fremgang",
@@ -3399,6 +3403,8 @@ const translations = {
     manualSaveError: "Kunne ikke gemme indtastningen",
   },
   sv: {
+    defaultLanguage: "Standardspråk",
+    defaultLanguageHint: "Appen startar på detta språk varje gång du loggar in. Du kan fortfarande byta när som helst.",
     // Common
     plan: "Plan",
     progress: "Framsteg",
@@ -5072,6 +5078,8 @@ const translations = {
     manualSaveError: "Kunde inte spara posten",
   },
   de: {
+    defaultLanguage: "Standardsprache",
+    defaultLanguageHint: "Die App startet bei jeder Anmeldung in dieser Sprache. Du kannst sie jederzeit wechseln.",
     plan: "Plan",
     progress: "Fortschritt",
     library: "Bibliothek",
@@ -6695,6 +6703,8 @@ const translations = {
   },
 
   ar: {
+    defaultLanguage: "اللغة الافتراضية",
+    defaultLanguageHint: "سيبدأ التطبيق بهذه اللغة في كل مرة تسجّل فيها الدخول. يمكنك التبديل في أي وقت.",
     plan: "الخطة",
     progress: "التقدم",
     library: "المكتبة",
@@ -8307,6 +8317,8 @@ const translations = {
     wizardOpenSetupCta: "تشغيل الإعداد الموجَّه",
   },
   no: {
+    defaultLanguage: "Standardspråk",
+    defaultLanguageHint: "Appen starter på dette språket hver gang du logger inn. Du kan likevel bytte når som helst.",
     // Common
     plan: "Plan",
     progress: "Fremgang",

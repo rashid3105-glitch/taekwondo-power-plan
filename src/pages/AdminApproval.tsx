@@ -71,20 +71,20 @@ export default function AdminApproval() {
     if (typeof window === "undefined") return "all";
     return localStorage.getItem("admin.approval.clubScope") || "all";
   });
-  const [collapsedClubs, setCollapsedClubs] = useState<Record<string, boolean>>(() => {
+  const [expandedClubs, setExpandedClubs] = useState<Record<string, boolean>>(() => {
     if (typeof window === "undefined") return {};
     try {
-      return JSON.parse(localStorage.getItem("admin.approval.collapsedClubs") || "{}");
+      return JSON.parse(localStorage.getItem("admin.approval.expandedClubs") || "{}");
     } catch {
       return {};
     }
   });
 
-  const toggleClubCollapsed = (clubName: string, open: boolean) => {
-    setCollapsedClubs(prev => {
-      const next = { ...prev, [clubName]: !open };
+  const toggleClubExpanded = (clubName: string, open: boolean) => {
+    setExpandedClubs(prev => {
+      const next = { ...prev, [clubName]: open };
       if (typeof window !== "undefined") {
-        localStorage.setItem("admin.approval.collapsedClubs", JSON.stringify(next));
+        localStorage.setItem("admin.approval.expandedClubs", JSON.stringify(next));
       }
       return next;
     });
@@ -932,8 +932,8 @@ export default function AdminApproval() {
                 return (
                   <Collapsible
                     key={group.clubName}
-                    open={!collapsedClubs[group.clubName]}
-                    onOpenChange={(open) => toggleClubCollapsed(group.clubName, open)}
+                    open={expandedClubs[group.clubName] === true}
+                    onOpenChange={(open) => toggleClubExpanded(group.clubName, open)}
                   >
                     <div className={`rounded-lg border p-4 ${isNoClub ? 'border-yellow-500/30 bg-yellow-500/5' : 'border-primary/20 bg-primary/5'}`}>
                       <CollapsibleTrigger className={`group flex items-center justify-between w-full mb-3 pb-2 border-b ${isNoClub ? 'border-yellow-500/20' : 'border-primary/10'}`}>
