@@ -9,7 +9,8 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import {
   getStatus, requestPermissions, initialBackfill, syncSince, disconnect,
   isWearableSupported, wearableProviderForPlatform,
-  type WearableStatus,
+  preloadHealthPlugin, getDiagnostics, resetConnection,
+  type WearableStatus, type WearableDiagnostics,
 } from "@/lib/wearables";
 import { PageMeta } from "@/components/PageMeta";
 import { tap, success } from "@/lib/haptics";
@@ -21,8 +22,16 @@ export default function WearablesSettings() {
   const [status, setStatus] = useState<WearableStatus | null>(null);
   const [busy, setBusy] = useState(false);
   const [ownsWearable, setOwnsWearable] = useState<boolean | null>(null);
+  const [diag, setDiag] = useState<WearableDiagnostics | null>(null);
 
-  useEffect(() => { void load(); }, []);
+  useEffect(() => {
+    void load();
+    // Preload the native health plugin so the Connect tap can call
+    // requestPermissions() with NO awaits between the gesture and the
+    // HealthKit prompt — required on iOS or the sheet is silently denied.
+    void preloadHealthPlugin();
+    void getDiagnostics().then(setDiag);
+  }, []);
 
   async function load() {
     const { data: { user } } = await supabase.auth.getUser();
@@ -36,18 +45,25 @@ export default function WearablesSettings() {
     setStatus(await getStatus());
   }
 
-  async function handleConnect() {
+  function handleConnect() {
+    // CRITICAL iOS rule: do NOT await anything before requestPermissions().
+    // Any await here breaks the user-gesture chain and HealthKit silently
+    // denies the prompt. We fire the request synchronously, then chain the
+    // backfill afterwards.
     tap();
     setBusy(true);
-    try {
-      await requestPermissions();
-      const inserted = await initialBackfill();
-      success();
-      toast({ title: t("wearableConnected"), description: `${inserted} ${t("wearableSamples")}` });
-      await load();
-    } catch (e: any) {
-      toast({ title: t("error"), description: e.message, variant: "destructive" });
-    } finally { setBusy(false); }
+    const promptPromise = requestPermissions();
+    promptPromise
+      .then(() => initialBackfill())
+      .then((inserted) => {
+        success();
+        toast({ title: t("wearableConnected"), description: `${inserted} ${t("wearableSamples")}` });
+        return load();
+      })
+      .catch((e: any) => {
+        toast({ title: t("error"), description: e?.message || "Connect failed", variant: "destructive" });
+      })
+      .finally(() => setBusy(false));
   }
 
   async function handleSync() {
@@ -76,17 +92,35 @@ export default function WearablesSettings() {
     } finally { setBusy(false); }
   }
 
-  async function handleReRequestPermissions() {
+  function handleReRequestPermissions() {
+    // Same iOS gesture rule — call requestPermissions synchronously.
+    tap();
+    setBusy(true);
+    requestPermissions()
+      .then(() => {
+        toast({
+          title: "Permission sheet shown",
+          description: "Make sure every metric (Sleep, Resting Heart Rate, HRV, Steps, Workouts) is enabled, then tap Sync now.",
+        });
+      })
+      .catch((e: any) => {
+        toast({ title: t("error"), description: e?.message || "Failed", variant: "destructive" });
+      })
+      .finally(() => setBusy(false));
+  }
+
+  async function handleResetConnection() {
     tap();
     setBusy(true);
     try {
-      await requestPermissions();
+      await resetConnection();
       toast({
-        title: "Permission sheet shown",
-        description: "Make sure every metric (Sleep, Resting Heart Rate, HRV, Steps, Workouts) is enabled, then tap Sync now.",
+        title: "Connection reset",
+        description: "Local connection cleared. Tap Connect Apple Health again to start fresh.",
       });
+      await load();
     } catch (e: any) {
-      toast({ title: t("error"), description: e.message, variant: "destructive" });
+      toast({ title: t("error"), description: e?.message || "Reset failed", variant: "destructive" });
     } finally { setBusy(false); }
   }
 
@@ -156,6 +190,36 @@ export default function WearablesSettings() {
           )}
         </div>
       </div>
+
+      {/* Native diagnostics strip — helps explain why no permission prompt shows. */}
+      {diag && (
+        <div className="mb-4 rounded-lg border bg-muted/20 p-3 text-xs space-y-1.5">
+          <div className="font-medium text-foreground/90 mb-1">Device readiness</div>
+          <DiagRow ok={diag.inNativeApp} label={diag.inNativeApp ? "Running in native app" : "Not in native app — open the installed iOS/Android app, not Safari"} />
+          <DiagRow ok={diag.pluginLoaded} label={diag.pluginLoaded ? "Health plugin loaded" : "Health plugin not loaded — rebuild with npx cap sync ios + reinstall"} />
+          <DiagRow
+            ok={diag.healthAvailable === true}
+            warn={diag.healthAvailable === null}
+            label={
+              diag.healthAvailable === true
+                ? (diag.provider === "apple_health" ? "Apple Health available" : "Health Connect available")
+                : diag.healthAvailable === false
+                  ? (diag.provider === "apple_health"
+                      ? "Apple Health unavailable on this device"
+                      : "Health Connect not installed — install it from Play Store")
+                  : "Health availability not checked yet"
+            }
+          />
+          {diag.availabilityError && (
+            <div className="text-destructive">Error: {diag.availabilityError}</div>
+          )}
+          {!diag.inNativeApp && (
+            <p className="text-muted-foreground pt-1">
+              HealthKit and Health Connect are not accessible from a browser. Install the Sportstalent app on your phone and open it from the home screen icon, not from Safari.
+            </p>
+          )}
+        </div>
+      )}
 
       {ownsWearable === false && (
         <Card className="border-amber-500/30 bg-amber-500/5 mb-4">
@@ -228,16 +292,28 @@ export default function WearablesSettings() {
                 {t("wearableDisconnect")}
               </Button>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full"
-              onClick={handleReRequestPermissions}
-              disabled={busy}
-            >
-              <ShieldCheck className="h-4 w-4 mr-2" />
-              Re-request health permissions
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1"
+                onClick={handleReRequestPermissions}
+                disabled={busy}
+              >
+                <ShieldCheck className="h-4 w-4 mr-2" />
+                Re-request permissions
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1"
+                onClick={handleResetConnection}
+                disabled={busy}
+              >
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Reset connection
+              </Button>
+            </div>
             <div className="flex gap-2">
               <Button variant="ghost" size="sm" className="flex-1" onClick={() => navigate("/health")}>
                 Open health stats
@@ -304,10 +380,30 @@ export default function WearablesSettings() {
               <Watch className="h-4 w-4 mr-2" />
               {t("wearableConnect")} {providerLabel}
             </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full"
+              onClick={handleResetConnection}
+              disabled={busy}
+            >
+              <RefreshCw className="h-3.5 w-3.5 mr-2" />
+              Reset previous connection
+            </Button>
             <p className="text-xs text-muted-foreground">{t("wearablePrivacyNote")}</p>
           </CardContent>
         </Card>
       )}
+    </div>
+  );
+}
+
+function DiagRow({ ok, warn, label }: { ok: boolean; warn?: boolean; label: string }) {
+  const color = ok ? "bg-emerald-500" : warn ? "bg-amber-500" : "bg-destructive";
+  return (
+    <div className="flex items-start gap-2">
+      <span className={`mt-1 inline-block h-2 w-2 rounded-full ${color} shrink-0`} />
+      <span className="text-foreground/85">{label}</span>
     </div>
   );
 }

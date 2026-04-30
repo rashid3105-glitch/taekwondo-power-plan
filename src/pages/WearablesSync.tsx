@@ -10,8 +10,8 @@ import { PageMeta } from "@/components/PageMeta";
 import { tap } from "@/lib/haptics";
 import {
   getStatus, getSyncStats, getSampleCount, syncSince, clearSyncStats,
-  isWearableSupported, wearableProviderForPlatform,
-  type WearableStatus, type SyncStats,
+  isWearableSupported, wearableProviderForPlatform, getLastPermissionGrant,
+  type WearableStatus, type SyncStats, type PermissionGrantRecord,
 } from "@/lib/wearables";
 
 function fmt(ts: number | string | null): string {
@@ -27,6 +27,7 @@ export default function WearablesSync() {
   const [status, setStatus] = useState<WearableStatus | null>(null);
   const [stats, setStats] = useState<SyncStats>(getSyncStats());
   const [count, setCount] = useState<number>(0);
+  const [grant, setGrant] = useState<PermissionGrantRecord | null>(getLastPermissionGrant());
   const [busy, setBusy] = useState(false);
 
   useEffect(() => { void load(); }, []);
@@ -34,6 +35,7 @@ export default function WearablesSync() {
   async function load() {
     setStatus(await getStatus());
     setStats(getSyncStats());
+    setGrant(getLastPermissionGrant());
     setCount(await getSampleCount());
   }
 
@@ -154,6 +156,32 @@ export default function WearablesSync() {
             </>
           ) : (
             <p className="text-muted-foreground">No pull yet.</p>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card className="mb-4">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base">Last permission grant (this device)</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2 text-sm">
+          {grant ? (
+            <>
+              <Row label="At" value={fmt(grant.at)} />
+              <Row label="Error" value={grant.error ?? <span className="text-emerald-600">none</span>} />
+              {grant.raw !== null && grant.raw !== undefined && (
+                <pre className="text-[11px] whitespace-pre-wrap rounded-md bg-muted p-2 mt-2 max-h-40 overflow-auto">
+                  {JSON.stringify(grant.raw, null, 2)}
+                </pre>
+              )}
+              {!grant.error && grant.raw === null && (
+                <p className="text-xs text-amber-600">
+                  Plugin returned no payload. On iOS this often means the HealthKit permission sheet was never shown — usually because the request didn't fire from a direct user tap or the app isn't running from a real native build.
+                </p>
+              )}
+            </>
+          ) : (
+            <p className="text-muted-foreground">No permission request recorded yet. Tap <span className="font-medium">Connect Apple Health</span> on the previous screen.</p>
           )}
         </CardContent>
       </Card>
