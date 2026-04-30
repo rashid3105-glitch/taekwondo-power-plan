@@ -191,6 +191,36 @@ export default function WearablesSettings() {
         </div>
       </div>
 
+      {/* Native diagnostics strip — helps explain why no permission prompt shows. */}
+      {diag && (
+        <div className="mb-4 rounded-lg border bg-muted/20 p-3 text-xs space-y-1.5">
+          <div className="font-medium text-foreground/90 mb-1">Device readiness</div>
+          <DiagRow ok={diag.inNativeApp} label={diag.inNativeApp ? "Running in native app" : "Not in native app — open the installed iOS/Android app, not Safari"} />
+          <DiagRow ok={diag.pluginLoaded} label={diag.pluginLoaded ? "Health plugin loaded" : "Health plugin not loaded — rebuild with npx cap sync ios + reinstall"} />
+          <DiagRow
+            ok={diag.healthAvailable === true}
+            warn={diag.healthAvailable === null}
+            label={
+              diag.healthAvailable === true
+                ? (diag.provider === "apple_health" ? "Apple Health available" : "Health Connect available")
+                : diag.healthAvailable === false
+                  ? (diag.provider === "apple_health"
+                      ? "Apple Health unavailable on this device"
+                      : "Health Connect not installed — install it from Play Store")
+                  : "Health availability not checked yet"
+            }
+          />
+          {diag.availabilityError && (
+            <div className="text-destructive">Error: {diag.availabilityError}</div>
+          )}
+          {!diag.inNativeApp && (
+            <p className="text-muted-foreground pt-1">
+              HealthKit and Health Connect are not accessible from a browser. Install the Sportstalent app on your phone and open it from the home screen icon, not from Safari.
+            </p>
+          )}
+        </div>
+      )}
+
       {ownsWearable === false && (
         <Card className="border-amber-500/30 bg-amber-500/5 mb-4">
           <CardContent className="pt-4 pb-4 flex items-start gap-3">
