@@ -380,10 +380,30 @@ export default function WearablesSettings() {
               <Watch className="h-4 w-4 mr-2" />
               {t("wearableConnect")} {providerLabel}
             </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full"
+              onClick={handleResetConnection}
+              disabled={busy}
+            >
+              <RefreshCw className="h-3.5 w-3.5 mr-2" />
+              Reset previous connection
+            </Button>
             <p className="text-xs text-muted-foreground">{t("wearablePrivacyNote")}</p>
           </CardContent>
         </Card>
       )}
+    </div>
+  );
+}
+
+function DiagRow({ ok, warn, label }: { ok: boolean; warn?: boolean; label: string }) {
+  const color = ok ? "bg-emerald-500" : warn ? "bg-amber-500" : "bg-destructive";
+  return (
+    <div className="flex items-start gap-2">
+      <span className={`mt-1 inline-block h-2 w-2 rounded-full ${color} shrink-0`} />
+      <span className="text-foreground/85">{label}</span>
     </div>
   );
 }
