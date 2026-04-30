@@ -10,8 +10,8 @@ import { PageMeta } from "@/components/PageMeta";
 import { tap } from "@/lib/haptics";
 import {
   getStatus, getSyncStats, getSampleCount, syncSince, clearSyncStats,
-  isWearableSupported, wearableProviderForPlatform,
-  type WearableStatus, type SyncStats,
+  isWearableSupported, wearableProviderForPlatform, getLastPermissionGrant,
+  type WearableStatus, type SyncStats, type PermissionGrantRecord,
 } from "@/lib/wearables";
 
 function fmt(ts: number | string | null): string {
