@@ -683,8 +683,8 @@ export default function Dashboard() {
                   <button
                     key={section.tab}
                     onClick={() => handleTabChange(section.tab)}
-                    disabled={section.locked}
-                    className={`group relative overflow-hidden rounded-2xl border border-border border-l-[3px] ${section.borderColor} bg-card/80 backdrop-blur-sm p-5 shadow-card text-left transition-all duration-300 ${section.locked ? "cursor-not-allowed opacity-70" : "cursor-pointer hover:border-primary/30 hover:-translate-y-1 hover:shadow-glow"}`}
+                    disabled={isDemo && section.locked}
+                    className={`group relative overflow-hidden rounded-2xl border border-border border-l-[3px] ${section.borderColor} bg-card/80 backdrop-blur-sm p-5 shadow-card text-left transition-all duration-300 ${section.locked ? "opacity-70 cursor-pointer" : "cursor-pointer hover:border-primary/30 hover:-translate-y-1 hover:shadow-glow"} ${isDemo && section.locked ? "cursor-not-allowed" : ""}`}
                   >
                     <div
                       className="absolute inset-0 rounded-2xl transition-opacity duration-500 opacity-60 group-hover:opacity-100"
@@ -698,7 +698,7 @@ export default function Dashboard() {
                       <div className="space-y-1.5">
                         <h3 className="text-sm font-bold text-foreground tracking-tight">{t(section.titleKey)}</h3>
                         <p className="text-xs leading-relaxed text-muted-foreground">{t(section.descKey)}</p>
-                        {section.locked && <p className="text-xs font-medium text-foreground">{t("demoUpgradePrompt")}</p>}
+                        {section.locked && <p className="text-xs font-medium text-foreground">{t(isDemo ? "demoUpgradePrompt" : "upgradeToUnlock")}</p>}
                       </div>
                     </div>
                   </button>
