@@ -40,15 +40,6 @@ export function RecoveryProgressSection() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { setLoaded(true); return; }
 
-      const { data: prof } = await supabase
-        .from("profiles")
-        .select("owns_wearable")
-        .eq("user_id", user.id)
-        .maybeSingle();
-      const owns = !!(prof as any)?.owns_wearable;
-      setOwnsWearable(owns);
-      if (!owns) { setLoaded(true); return; }
-
       const since = new Date(Date.now() - 30 * 86400_000).toISOString().slice(0, 10);
       const since14 = new Date(Date.now() - 14 * 86400_000).toISOString();
 

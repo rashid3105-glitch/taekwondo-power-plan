@@ -93,7 +93,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, locale } = useLanguage();
-  const hasBootstrappedWearablesRef = useRef(false);
+  
   const isDemoLockedTab = (tab: typeof activeTab) => isDemo && !["hub", "plan"].includes(tab);
   const handleTabChange = (tab: typeof activeTab) => {
     if (isDemoLockedTab(tab)) return;
