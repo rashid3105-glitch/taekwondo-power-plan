@@ -378,8 +378,17 @@ export default function WearablesSettings() {
               </p>
             </div>
 
-            <Button onClick={handleConnect} disabled={busy} className="w-full h-11">
+            <Button onClick={() => { tap(); setWizardOpen(true); }} disabled={busy} className="w-full h-11">
               <Watch className="h-4 w-4 mr-2" />
+              {t("wizardOpenSetupCta")}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full"
+              onClick={handleConnect}
+              disabled={busy}
+            >
               {t("wearableConnect")} {providerLabel}
             </Button>
             <Button
@@ -396,6 +405,12 @@ export default function WearablesSettings() {
           </CardContent>
         </Card>
       )}
+
+      <WearableConnectWizard
+        open={wizardOpen}
+        onClose={() => setWizardOpen(false)}
+        onCompleted={() => { void load(); }}
+      />
     </div>
   );
 }
