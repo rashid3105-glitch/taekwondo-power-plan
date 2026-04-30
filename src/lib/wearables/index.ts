@@ -7,6 +7,7 @@
 // and Android Health Connect.
 
 import { supabase } from "@/integrations/supabase/client";
+import { Capacitor } from "@capacitor/core";
 
 export type WearableProvider = "apple_health" | "health_connect";
 export type WearableMetric = "sleep" | "resting_hr" | "hrv" | "steps" | "workout";
@@ -36,12 +37,22 @@ const EMPTY_BREAKDOWN: MetricBreakdown = {
 };
 
 function detectPlatform(): "ios" | "android" | "web" {
-  if (typeof navigator === "undefined") return "web";
-  const cap = (globalThis as any).Capacitor;
-  if (cap?.getPlatform) {
-    const p = cap.getPlatform();
-    if (p === "ios" || p === "android") return p;
-  }
+  // Use the official Capacitor API. `globalThis.Capacitor` is sometimes
+  // missing or shadowed in the WebView even when running in the installed
+  // native app, which previously caused the app to wrongly behave as web
+  // and show "Not connected" forever.
+  try {
+    if (Capacitor?.isNativePlatform?.()) {
+      const p = Capacitor.getPlatform();
+      if (p === "ios" || p === "android") return p;
+    }
+    const p2 = Capacitor?.getPlatform?.();
+    if (p2 === "ios" || p2 === "android") return p2;
+  } catch { /* fall through */ }
+  // Fallback: window.Capacitor for older bridges
+  const cap: any = (typeof window !== "undefined" ? (window as any).Capacitor : undefined);
+  const p3 = cap?.getPlatform?.();
+  if (p3 === "ios" || p3 === "android") return p3;
   return "web";
 }
 
