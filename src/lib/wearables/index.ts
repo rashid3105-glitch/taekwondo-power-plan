@@ -38,7 +38,7 @@ const EMPTY_BREAKDOWN: MetricBreakdown = {
 
 // Build marker — bumped whenever this file changes. Lets us see in the iOS
 // diagnostics panel whether the device is running the latest JS bundle.
-export const WEARABLES_BUILD_MARKER = "2026-04-30-detect-v3";
+export const WEARABLES_BUILD_MARKER = "2026-04-30-iphone-health-v4";
 
 export interface PlatformSignals {
   capacitorPlatform: string;        // raw value from Capacitor.getPlatform()
