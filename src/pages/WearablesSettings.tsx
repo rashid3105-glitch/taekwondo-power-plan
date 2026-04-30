@@ -160,38 +160,51 @@ export default function WearablesSettings() {
       </div>
 
       {/* Live connection pill */}
-      <div
-        className={`mb-6 flex items-center gap-3 rounded-lg border px-3 py-2 ${
-          status?.connected
-            ? "border-emerald-500/40 bg-emerald-500/10"
-            : "border-muted bg-muted/30"
-        }`}
-        aria-live="polite"
-      >
-        <span className="relative flex h-3 w-3">
-          {status?.connected && (
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-          )}
-          <span
-            className={`relative inline-flex h-3 w-3 rounded-full ${
-              status?.connected ? "bg-emerald-500" : "bg-muted-foreground/40"
-            }`}
-          />
-        </span>
-        <div className="flex-1 text-sm">
-          <span className="font-medium">
-            {status?.connected ? "Connected" : "Not connected"}
-          </span>
-          {status?.connected && (
-            <span className="text-muted-foreground">
-              {" · "}{providerLabel}
-              {status.last_sync_at
-                ? ` · last data ${new Date(status.last_sync_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
-                : " · waiting for first data"}
+      {(() => {
+        const grant = (typeof window !== "undefined")
+          ? (() => { try { return JSON.parse(localStorage.getItem("wearable_last_grant") || "null"); } catch { return null; } })()
+          : null;
+        const recentGrant = grant && !grant.error && (Date.now() - Number(grant.at || 0) < 10 * 60_000);
+        const pending = !status?.connected && diag?.inNativeApp && recentGrant;
+        const stateClass = status?.connected
+          ? "border-emerald-500/40 bg-emerald-500/10"
+          : pending
+            ? "border-amber-500/40 bg-amber-500/10"
+            : "border-muted bg-muted/30";
+        const dotClass = status?.connected
+          ? "bg-emerald-500"
+          : pending
+            ? "bg-amber-500"
+            : "bg-muted-foreground/40";
+        return (
+          <div className={`mb-6 flex items-center gap-3 rounded-lg border px-3 py-2 ${stateClass}`} aria-live="polite">
+            <span className="relative flex h-3 w-3">
+              {(status?.connected || pending) && (
+                <span className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-75 ${status?.connected ? "bg-emerald-400" : "bg-amber-400"}`} />
+              )}
+              <span className={`relative inline-flex h-3 w-3 rounded-full ${dotClass}`} />
             </span>
-          )}
-        </div>
-      </div>
+            <div className="flex-1 text-sm">
+              <span className="font-medium">
+                {status?.connected ? "Connected" : pending ? "Syncing first data…" : "Not connected"}
+              </span>
+              {status?.connected && (
+                <span className="text-muted-foreground">
+                  {" · "}{providerLabel}
+                  {status.last_sync_at
+                    ? ` · last data ${new Date(status.last_sync_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+                    : " · waiting for first data"}
+                </span>
+              )}
+              {pending && (
+                <span className="text-muted-foreground">
+                  {" · "}{providerLabel} · permission granted, pulling samples
+                </span>
+              )}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Native diagnostics strip — helps explain why no permission prompt shows. */}
       {diag && (
