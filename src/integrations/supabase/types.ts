@@ -871,6 +871,7 @@ export type Database = {
           created_at: string
           current_injury: string | null
           custom_calories: number | null
+          default_locale: string | null
           demo_expires_at: string | null
           demo_full_access: boolean
           discipline: string
@@ -907,6 +908,7 @@ export type Database = {
           created_at?: string
           current_injury?: string | null
           custom_calories?: number | null
+          default_locale?: string | null
           demo_expires_at?: string | null
           demo_full_access?: boolean
           discipline?: string
@@ -943,6 +945,7 @@ export type Database = {
           created_at?: string
           current_injury?: string | null
           custom_calories?: number | null
+          default_locale?: string | null
           demo_expires_at?: string | null
           demo_full_access?: boolean
           discipline?: string
