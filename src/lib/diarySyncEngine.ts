@@ -48,12 +48,12 @@ export async function syncDiary(): Promise<DiarySyncResult> {
               mood: intent.mood,
               energy: intent.energy,
               tags: intent.tags,
+              entry_type: intent.entry_type,
             })
             .select()
             .single();
           if (error) throw error;
           const newId = (data as { id: string }).id;
-          // Replace local placeholder row with the server row.
           await deleteCachedEntry(intent.key);
           await putCachedEntry({
             id: newId,
@@ -63,6 +63,7 @@ export async function syncDiary(): Promise<DiarySyncResult> {
             mood: (data as any).mood,
             energy: (data as any).energy,
             tags: ((data as any).tags as string[]) || [],
+            entry_type: ((data as any).entry_type as any) || "general",
             created_at: (data as any).created_at,
             updated_at: (data as any).updated_at,
             pending: false,
@@ -78,6 +79,7 @@ export async function syncDiary(): Promise<DiarySyncResult> {
               mood: intent.mood,
               energy: intent.energy,
               tags: intent.tags,
+              entry_type: intent.entry_type,
             })
             .eq("id", id)
             .select()
@@ -91,6 +93,7 @@ export async function syncDiary(): Promise<DiarySyncResult> {
             mood: (data as any).mood,
             energy: (data as any).energy,
             tags: ((data as any).tags as string[]) || [],
+            entry_type: ((data as any).entry_type as any) || "general",
             created_at: (data as any).created_at,
             updated_at: (data as any).updated_at,
             pending: false,

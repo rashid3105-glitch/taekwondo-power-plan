@@ -390,6 +390,7 @@ export type Database = {
           created_at: string
           energy: number
           entry_date: string
+          entry_type: string
           id: string
           mood: number
           tags: string[]
@@ -401,6 +402,7 @@ export type Database = {
           created_at?: string
           energy?: number
           entry_date?: string
+          entry_type?: string
           id?: string
           mood?: number
           tags?: string[]
@@ -412,6 +414,7 @@ export type Database = {
           created_at?: string
           energy?: number
           entry_date?: string
+          entry_type?: string
           id?: string
           mood?: number
           tags?: string[]
