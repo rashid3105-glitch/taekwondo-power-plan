@@ -162,6 +162,32 @@ export default function WearablesSync() {
 
       <Card className="mb-4">
         <CardHeader className="pb-3">
+          <CardTitle className="text-base">Last permission grant (this device)</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2 text-sm">
+          {grant ? (
+            <>
+              <Row label="At" value={fmt(grant.at)} />
+              <Row label="Error" value={grant.error ?? <span className="text-emerald-600">none</span>} />
+              {grant.raw !== null && grant.raw !== undefined && (
+                <pre className="text-[11px] whitespace-pre-wrap rounded-md bg-muted p-2 mt-2 max-h-40 overflow-auto">
+                  {JSON.stringify(grant.raw, null, 2)}
+                </pre>
+              )}
+              {!grant.error && grant.raw === null && (
+                <p className="text-xs text-amber-600">
+                  Plugin returned no payload. On iOS this often means the HealthKit permission sheet was never shown — usually because the request didn't fire from a direct user tap or the app isn't running from a real native build.
+                </p>
+              )}
+            </>
+          ) : (
+            <p className="text-muted-foreground">No permission request recorded yet. Tap <span className="font-medium">Connect Apple Health</span> on the previous screen.</p>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card className="mb-4">
+        <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
             {stats.last_error
               ? <AlertCircle className="h-4 w-4 text-destructive" />
