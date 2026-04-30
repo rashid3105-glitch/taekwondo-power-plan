@@ -31,7 +31,7 @@ interface WorkoutSample {
 export function RecoveryProgressSection() {
   const { t } = useLanguage();
   const [loaded, setLoaded] = useState(false);
-  const [ownsWearable, setOwnsWearable] = useState(false);
+  
   const [rows, setRows] = useState<SummaryRow[]>([]);
   const [workouts, setWorkouts] = useState<WorkoutSample[]>([]);
 
@@ -39,15 +39,6 @@ export function RecoveryProgressSection() {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { setLoaded(true); return; }
-
-      const { data: prof } = await supabase
-        .from("profiles")
-        .select("owns_wearable")
-        .eq("user_id", user.id)
-        .maybeSingle();
-      const owns = !!(prof as any)?.owns_wearable;
-      setOwnsWearable(owns);
-      if (!owns) { setLoaded(true); return; }
 
       const since = new Date(Date.now() - 30 * 86400_000).toISOString().slice(0, 10);
       const since14 = new Date(Date.now() - 14 * 86400_000).toISOString();
@@ -102,7 +93,7 @@ export function RecoveryProgressSection() {
   const hasAnyData = rows.some(r => (r.steps ?? 0) > 0) || workouts.length > 0;
 
   if (!loaded) return null;
-  if (!ownsWearable) return null;
+  if (!hasAnyData) return null;
 
   if (!hasAnyData) {
     return (
@@ -114,7 +105,7 @@ export function RecoveryProgressSection() {
         </div>
         <p className="text-sm text-muted-foreground">
           {t("recoveryCollectingData")}{" "}
-          <Link to="/wearables/sync" className="text-primary underline">{t("recoveryOpenSync")}</Link>
+          <Link to="/health" className="text-primary underline">{t("healthOpenDetails" as any) || "Open Health"}</Link>
         </p>
       </div>
     );

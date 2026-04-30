@@ -3,19 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Activity, Footprints, Heart, Flame, Watch, RefreshCw } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { ArrowLeft, Activity, Footprints } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PageMeta } from "@/components/PageMeta";
-import { tap } from "@/lib/haptics";
 import {
-  BarChart, Bar, LineChart, Line, ReferenceLine,
+  BarChart, Bar, LineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
 import { Moon, HeartPulse, Waves } from "lucide-react";
-import { getStatus, getSyncStats, syncSince, type WearableStatus } from "@/lib/wearables";
-import { QuickExportCard } from "@/components/health/QuickExportCard";
+import { ManualHealthEntryCard } from "@/components/health/ManualHealthEntryCard";
+import { HealthSourceGuide } from "@/components/health/HealthSourceGuide";
 
 interface DailyRow {
   summary_date: string;
@@ -26,52 +23,25 @@ interface DailyRow {
   baseline_hr_7d: number | null;
   baseline_hrv_7d: number | null;
 }
-interface WorkoutSample {
-  id: string;
-  start_at: string;
-  end_at: string | null;
-  source_device: string | null;
-  payload: any;
-  value_numeric: number | null;
-}
 
 export default function Health() {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const { t } = useLanguage();
   const [loaded, setLoaded] = useState(false);
-  const [age, setAge] = useState<number | null>(null);
   const [steps, setSteps] = useState<DailyRow[]>([]);
-  const [workouts, setWorkouts] = useState<WorkoutSample[]>([]);
-  const [status, setStatus] = useState<WearableStatus | null>(null);
-  const [busy, setBusy] = useState(false);
 
   async function load() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { navigate("/auth"); return; }
     const since = new Date(Date.now() - 30 * 86400_000).toISOString().slice(0, 10);
-    const since14 = new Date(Date.now() - 14 * 86400_000).toISOString();
 
-    const [{ data: prof }, { data: sums }, { data: ws }, st] = await Promise.all([
-      supabase.from("profiles").select("age").eq("user_id", user.id).maybeSingle(),
-      supabase.from("wearable_daily_summary")
-        .select("summary_date,steps,sleep_minutes,resting_hr,hrv_rmssd,baseline_hr_7d,baseline_hrv_7d")
-        .eq("user_id", user.id)
-        .gte("summary_date", since)
-        .order("summary_date", { ascending: true }),
-      supabase.from("wearable_samples")
-        .select("id,start_at,end_at,source_device,payload,value_numeric")
-        .eq("user_id", user.id)
-        .eq("metric_type", "workout")
-        .gte("start_at", since14)
-        .order("start_at", { ascending: false })
-        .limit(40),
-      getStatus(),
-    ]);
-    setAge(((prof as any)?.age as number | null) ?? null);
+    const { data: sums } = await supabase.from("wearable_daily_summary")
+      .select("summary_date,steps,sleep_minutes,resting_hr,hrv_rmssd,baseline_hr_7d,baseline_hrv_7d")
+      .eq("user_id", user.id)
+      .gte("summary_date", since)
+      .order("summary_date", { ascending: true });
+
     setSteps((sums ?? []) as DailyRow[]);
-    setWorkouts((ws ?? []) as WorkoutSample[]);
-    setStatus(st);
     setLoaded(true);
   }
 
@@ -90,7 +60,6 @@ export default function Health() {
     return { today, yday, avg7, delta: today - yday };
   }, [steps]);
 
-  // Recovery series for charts (sleep / RHR / HRV) — strip nulls
   const sleepData = useMemo(
     () => steps.map(r => ({
       date: r.summary_date.slice(5),
@@ -139,65 +108,11 @@ export default function Health() {
   const hasSleep = steps.some(r => r.sleep_minutes != null);
   const hasRhr = steps.some(r => r.resting_hr != null);
   const hasHrv = steps.some(r => r.hrv_rmssd != null);
-
-  const workoutSummary = useMemo(() => {
-    if (!workouts.length) return null;
-    let totalMin = 0, totalCal = 0, hrSum = 0, hrCount = 0;
-    for (const w of workouts) {
-      const p = w.payload || {};
-      totalMin += Number(p.duration_minutes ?? w.value_numeric ?? 0);
-      totalCal += Number(p.calories ?? 0);
-      if (typeof p.avg_hr === "number") { hrSum += p.avg_hr; hrCount += 1; }
-    }
-    return {
-      count: workouts.length,
-      totalMin: Math.round(totalMin),
-      totalCal: Math.round(totalCal),
-      avgHr: hrCount ? Math.round(hrSum / hrCount) : null,
-    };
-  }, [workouts]);
-
-  // HR zones: % of max HR (220 - age). 5 standard zones.
-  const hrZones = useMemo(() => {
-    const maxHr = age ? 220 - age : 190;
-    const zones = [
-      { name: "Z1", lo: 0.50, hi: 0.60, color: "hsl(200, 85%, 55%)" },
-      { name: "Z2", lo: 0.60, hi: 0.70, color: "hsl(160, 75%, 45%)" },
-      { name: "Z3", lo: 0.70, hi: 0.80, color: "hsl(45, 90%, 55%)" },
-      { name: "Z4", lo: 0.80, hi: 0.90, color: "hsl(20, 90%, 55%)" },
-      { name: "Z5", lo: 0.90, hi: 1.10, color: "hsl(0, 80%, 55%)" },
-    ].map(z => ({ ...z, loBpm: Math.round(z.lo * maxHr), hiBpm: Math.round(z.hi * maxHr), minutes: 0 }));
-    for (const w of workouts) {
-      const p = w.payload || {};
-      const avgHr: number | null = typeof p.avg_hr === "number" ? p.avg_hr : null;
-      const mins: number = Number(p.duration_minutes ?? w.value_numeric ?? 0);
-      if (!avgHr || !mins) continue;
-      const z = zones.find(zz => avgHr >= zz.loBpm && avgHr < zz.hiBpm) ?? zones[zones.length - 1];
-      z.minutes += mins;
-    }
-    return { maxHr, zones };
-  }, [workouts, age]);
-
-  async function handleSync() {
-    tap();
-    setBusy(true);
-    try {
-      const since = status?.last_sync_at ?? new Date(Date.now() - 86400_000).toISOString();
-      const inserted = await syncSince(since);
-      if (inserted === 0) {
-        toast({ title: t("healthNoNewData" as any), description: t("healthNoNewDataDesc" as any) });
-      } else {
-        toast({ title: t("wearableSyncDone" as any), description: `+${inserted}` });
-      }
-      await load();
-    } catch (e: any) {
-      toast({ title: t("error" as any), description: e?.message, variant: "destructive" });
-    } finally { setBusy(false); }
-  }
+  const hasSteps = steps.some(r => r.steps != null && r.steps > 0);
 
   return (
     <div className="min-h-screen bg-background p-4 max-w-3xl mx-auto">
-      <PageMeta title="Health · Sportstalent" description="Steps, workouts and heart-rate zones from your watch." noindex />
+      <PageMeta title="Health · Sportstalent" description="Log sleep, resting HR, HRV and steps to track recovery." noindex />
       <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")} className="mb-4">
         <ArrowLeft className="h-4 w-4 mr-1" /> {t("back" as any) || "Back"}
       </Button>
@@ -208,39 +123,17 @@ export default function Health() {
         </div>
         <div className="flex-1">
           <h1 className="text-2xl font-bold">{t("healthPageTitle" as any) || "Health"}</h1>
-          <p className="text-sm text-muted-foreground">{t("healthPageSubtitle" as any) || "Steps, workouts and heart-rate zones from your watch."}</p>
+          <p className="text-sm text-muted-foreground">
+            {t("healthPageSubtitleManual" as any) || "Log sleep, resting heart rate, HRV and steps to track your recovery."}
+          </p>
         </div>
-        <Button size="sm" variant="outline" onClick={handleSync} disabled={busy || !status?.connected}>
-          <RefreshCw className={`h-4 w-4 mr-1.5 ${busy ? "animate-spin" : ""}`} />
-          {t("wearableSyncNow")}
-        </Button>
       </div>
 
-      {/* Connection strip */}
-      <div className={`mb-4 flex items-center gap-3 rounded-lg border px-3 py-2 ${
-        status?.connected
-          ? "border-emerald-500/40 bg-emerald-500/10"
-          : "border-amber-500/30 bg-amber-500/5"
-      }`}>
-        <Watch className="h-4 w-4 text-muted-foreground" />
-        <div className="flex-1 text-sm">
-          {status?.connected ? (
-            <>
-              <Badge variant="default" className="bg-emerald-500/15 text-emerald-600 border-emerald-500/30 mr-2">Active</Badge>
-              {status.device_label || (status.provider === "apple_health" ? "Apple Health" : "Health Connect")}
-              {status.last_sync_at ? <span className="text-muted-foreground"> · {new Date(status.last_sync_at).toLocaleString()}</span> : null}
-            </>
-          ) : (
-            <span>{t("healthNotConnected" as any) || "Not connected. Open Wearables to set up your watch."}</span>
-          )}
-        </div>
-        <Button size="sm" variant="ghost" onClick={() => navigate("/wearables")}>
-          {t("healthManage" as any) || "Manage"}
-        </Button>
-      </div>
+      {/* Manual entry */}
+      <ManualHealthEntryCard onSaved={() => void load()} />
 
-      {/* Quick export — pick one or more metrics, fetch 7-day daily stats */}
-      <QuickExportCard />
+      {/* Where to find numbers */}
+      <HealthSourceGuide />
 
       {/* Steps */}
       <Card className="mb-4">
@@ -250,26 +143,32 @@ export default function Health() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div className="grid grid-cols-3 gap-2 text-center">
-            <Stat label={t("healthStepsToday" as any) || "Today"} value={stepsTotals.today.toLocaleString()} />
-            <Stat label={t("healthStepsAvg7" as any) || "7-day avg"} value={stepsTotals.avg7.toLocaleString()} />
-            <Stat
-              label={t("healthStepsDelta" as any) || "vs yesterday"}
-              value={`${stepsTotals.delta >= 0 ? "+" : ""}${stepsTotals.delta.toLocaleString()}`}
-              tone={stepsTotals.delta >= 0 ? "good" : "bad"}
-            />
-          </div>
-          <div className="h-44">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={stepData} margin={{ top: 5, right: 8, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="date" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
-                <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
-                <Tooltip contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", fontSize: 11 }} />
-                <Bar dataKey="steps" fill="hsl(var(--primary))" radius={[3, 3, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+          {hasSteps ? (
+            <>
+              <div className="grid grid-cols-3 gap-2 text-center">
+                <Stat label={t("healthStepsToday" as any) || "Today"} value={stepsTotals.today.toLocaleString()} />
+                <Stat label={t("healthStepsAvg7" as any) || "7-day avg"} value={stepsTotals.avg7.toLocaleString()} />
+                <Stat
+                  label={t("healthStepsDelta" as any) || "vs yesterday"}
+                  value={`${stepsTotals.delta >= 0 ? "+" : ""}${stepsTotals.delta.toLocaleString()}`}
+                  tone={stepsTotals.delta >= 0 ? "good" : "bad"}
+                />
+              </div>
+              <div className="h-44">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={stepData} margin={{ top: 5, right: 8, left: 0, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="date" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
+                    <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
+                    <Tooltip contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", fontSize: 11 }} />
+                    <Bar dataKey="steps" fill="hsl(var(--primary))" radius={[3, 3, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </>
+          ) : (
+            <EmptyMetric label={t("healthStepsEmpty" as any) || "No steps logged yet. Use the form above to add today's number."} />
+          )}
         </CardContent>
       </Card>
 
@@ -306,7 +205,7 @@ export default function Health() {
               </div>
             </>
           ) : (
-            <EmptyMetric label={t("healthSleepEmpty" as any) || "No sleep data yet. Grant Sleep access in Apple Health → Sharing → SPORTS TALENT, then Sync now."} />
+            <EmptyMetric label={t("healthSleepEmptyManual" as any) || "No sleep logged yet. Add your last-night hours above."} />
           )}
         </CardContent>
       </Card>
@@ -344,7 +243,7 @@ export default function Health() {
               </div>
             </>
           ) : (
-            <EmptyMetric label={t("healthRhrEmpty" as any) || "No resting heart rate yet. Apple Watch records this automatically — sync after a few days of wear."} />
+            <EmptyMetric label={t("healthRhrEmptyManual" as any) || "No resting HR logged yet. Add today's reading above."} />
           )}
         </CardContent>
       </Card>
@@ -382,89 +281,10 @@ export default function Health() {
               </div>
             </>
           ) : (
-            <EmptyMetric label={t("healthHrvEmpty" as any) || "No HRV data yet. Apple Watch records this overnight — wear it to bed and sync the next day."} />
+            <EmptyMetric label={t("healthHrvEmptyManual" as any) || "No HRV logged yet. Add today's reading above."} />
           )}
         </CardContent>
       </Card>
-
-      {/* Workouts */}
-      <Card className="mb-4">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base flex items-center gap-2">
-            <Heart className="h-4 w-4 text-primary" /> {t("healthWorkoutsTitle" as any) || "Workouts (last 14 days)"}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {workoutSummary ? (
-            <div className="grid grid-cols-4 gap-2 text-center">
-              <Stat label={t("healthWoCount" as any) || "Sessions"} value={workoutSummary.count} />
-              <Stat label={t("healthWoMinutes" as any) || "Minutes"} value={workoutSummary.totalMin} />
-              <Stat label={t("healthWoCalories" as any) || "Calories"} value={workoutSummary.totalCal.toLocaleString()} />
-              <Stat label={t("healthWoAvgHr" as any) || "Avg HR"} value={workoutSummary.avgHr ?? "—"} />
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">{t("healthNoWorkouts" as any) || "No workouts captured yet. Try a session with your watch and sync again."}</p>
-          )}
-
-          {workouts.length > 0 && (
-            <div className="divide-y divide-border rounded-lg border border-border overflow-hidden">
-              {workouts.slice(0, 14).map(w => {
-                const p = w.payload || {};
-                const start = new Date(w.start_at);
-                return (
-                  <div key={w.id} className="flex items-center gap-3 px-3 py-2 text-sm">
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium truncate">{p.workoutType || "Workout"}</div>
-                      <div className="text-[11px] text-muted-foreground">
-                        {start.toLocaleDateString()} · {start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                        {p.source ? ` · ${p.source}` : ""}
-                      </div>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <div className="font-semibold">{Math.round(Number(p.duration_minutes ?? w.value_numeric ?? 0))} min</div>
-                      <div className="text-[11px] text-muted-foreground">
-                        {p.avg_hr ? `${p.avg_hr} bpm` : "—"}
-                        {p.calories ? ` · ${Math.round(p.calories)} kcal` : ""}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* HR zones */}
-      {workouts.length > 0 && (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Flame className="h-4 w-4 text-primary" /> {t("healthHrZonesTitle" as any) || "Heart-rate zones"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <p className="text-xs text-muted-foreground">
-              {t("healthHrZonesHint" as any) || `Estimated max HR ${hrZones.maxHr} bpm (220 − age). Minutes spent per workout's average HR.`}
-            </p>
-            {hrZones.zones.map(z => {
-              const total = hrZones.zones.reduce((s, x) => s + x.minutes, 0) || 1;
-              const pct = Math.round((z.minutes / total) * 100);
-              return (
-                <div key={z.name} className="space-y-1">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-medium">{z.name} <span className="text-muted-foreground">{z.loBpm}–{z.hiBpm} bpm</span></span>
-                    <span className="text-muted-foreground">{z.minutes} min · {pct}%</span>
-                  </div>
-                  <div className="h-2 rounded-full bg-muted overflow-hidden">
-                    <div className="h-full" style={{ width: `${pct}%`, background: z.color }} />
-                  </div>
-                </div>
-              );
-            })}
-          </CardContent>
-        </Card>
-      )}
 
       {!loaded && <p className="text-center text-sm text-muted-foreground py-6">Loading…</p>}
     </div>
