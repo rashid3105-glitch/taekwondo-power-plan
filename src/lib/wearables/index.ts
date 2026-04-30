@@ -183,12 +183,21 @@ export interface WearableDiagnostics {
   pluginLoaded: boolean;
   healthAvailable: boolean | null; // null = unknown / not checked
   availabilityError: string | null;
+  healthPluginAvailable: boolean;  // Capacitor.isPluginAvailable("Health")
+  signals: PlatformSignals;
 }
+
+let _diagLogged = false;
 
 /** Run on screen mount. Safe to call from a non-gesture context. */
 export async function getDiagnostics(): Promise<WearableDiagnostics> {
+  const signals = getPlatformSignals();
   const provider = wearableProviderForPlatform();
   const inNativeApp = provider !== null;
+
+  let healthPluginAvailable = false;
+  try { healthPluginAvailable = !!Capacitor?.isPluginAvailable?.("Health"); } catch { /* ignore */ }
+
   const Health = await loadHealth();
   let healthAvailable: boolean | null = null;
   let availabilityError: string | null = null;
@@ -200,13 +209,23 @@ export async function getDiagnostics(): Promise<WearableDiagnostics> {
       availabilityError = e?.message || String(e);
     }
   }
-  return {
+
+  const result: WearableDiagnostics = {
     inNativeApp,
     provider,
     pluginLoaded: !!Health,
     healthAvailable,
     availabilityError,
+    healthPluginAvailable,
+    signals,
   };
+
+  if (!_diagLogged) {
+    _diagLogged = true;
+    // eslint-disable-next-line no-console
+    console.info("[wearables] platform signals", result);
+  }
+  return result;
 }
 
 const LAST_GRANT_KEY = "wearable_last_grant";
