@@ -2,6 +2,8 @@ export type Locale = "en" | "da" | "sv" | "de" | "ar" | "no";
 
 const translations = {
   en: {
+    defaultLanguage: "Default language",
+    defaultLanguageHint: "Your app will start in this language each time you sign in. You can still switch any time.",
     // Common
     plan: "Plan",
     progress: "Progress",
