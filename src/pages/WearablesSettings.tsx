@@ -12,6 +12,7 @@ import {
   preloadHealthPlugin, getDiagnostics, resetConnection,
   type WearableStatus, type WearableDiagnostics,
 } from "@/lib/wearables";
+import { WearableConnectWizard } from "@/components/wearables/WearableConnectWizard";
 import { PageMeta } from "@/components/PageMeta";
 import { tap, success } from "@/lib/haptics";
 
@@ -23,6 +24,7 @@ export default function WearablesSettings() {
   const [busy, setBusy] = useState(false);
   const [ownsWearable, setOwnsWearable] = useState<boolean | null>(null);
   const [diag, setDiag] = useState<WearableDiagnostics | null>(null);
+  const [wizardOpen, setWizardOpen] = useState(false);
 
   useEffect(() => {
     void load();
@@ -376,8 +378,17 @@ export default function WearablesSettings() {
               </p>
             </div>
 
-            <Button onClick={handleConnect} disabled={busy} className="w-full h-11">
+            <Button onClick={() => { tap(); setWizardOpen(true); }} disabled={busy} className="w-full h-11">
               <Watch className="h-4 w-4 mr-2" />
+              {t("wizardOpenSetupCta")}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full"
+              onClick={handleConnect}
+              disabled={busy}
+            >
               {t("wearableConnect")} {providerLabel}
             </Button>
             <Button
@@ -394,6 +405,12 @@ export default function WearablesSettings() {
           </CardContent>
         </Card>
       )}
+
+      <WearableConnectWizard
+        open={wizardOpen}
+        onClose={() => setWizardOpen(false)}
+        onCompleted={() => { void load(); }}
+      />
     </div>
   );
 }

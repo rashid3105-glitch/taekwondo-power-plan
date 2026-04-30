@@ -15,6 +15,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { AccountDangerZone } from "@/components/AccountDangerZone";
 import { PasskeySettings } from "@/components/PasskeySettings";
 import { PublicProfileSettings } from "@/components/profile/PublicProfileSettings";
+import { WearableConnectWizard } from "@/components/wearables/WearableConnectWizard";
 
 import { COUNTRIES } from "@/data/countries";
 
@@ -66,6 +67,7 @@ export default function ProfileSetup() {
   const [country, setCountry] = useState("");
   const [customCalories, setCustomCalories] = useState("");
   const [ownsWearable, setOwnsWearable] = useState(false);
+  const [wizardOpen, setWizardOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -544,7 +546,11 @@ export default function ProfileSetup() {
               id="ownsWearable"
               className="h-5 w-5"
               checked={ownsWearable}
-              onCheckedChange={(v) => setOwnsWearable(v === true)}
+              onCheckedChange={(v) => {
+                const enabled = v === true;
+                setOwnsWearable(enabled);
+                if (enabled) setWizardOpen(true);
+              }}
             />
           </div>
 
@@ -575,6 +581,11 @@ export default function ProfileSetup() {
 
         <AccountDangerZone />
       </div>
+
+      <WearableConnectWizard
+        open={wizardOpen}
+        onClose={() => setWizardOpen(false)}
+      />
     </div>
   );
 }
