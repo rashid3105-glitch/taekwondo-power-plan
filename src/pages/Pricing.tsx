@@ -98,8 +98,8 @@ const teamTiers: Tier[] = [
     yearlyPriceKey: "pricingTeamLargeYearlyPrice",
     features: [
       "pricingFeature25Athletes",
-      "pricingFeatureCoachIncluded",
-      "pricingFeatureAthleteManagement",
+      "pricingFeatureAllModules",
+      "pricingFeatureUnlimitedPlans",
       "pricingFeatureBulkPlans",
       "pricingFeatureSquadOverview",
       "pricingFeatureOnboarding",
