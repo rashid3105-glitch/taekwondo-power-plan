@@ -9,25 +9,26 @@ const corsHeaders = {
 };
 
 const PRICE_IDS: Record<string, Record<string, string>> = {
+  // 2026 DKK pricing
   athlete: {
-    monthly: "price_1TP1NQCrYQiZxdDXC0qFahCe",
-    yearly: "price_1TP1NSCrYQiZxdDXZ1fMEV8B",
+    monthly: "price_1TS2U1CrYQiZxdDX324WQLGt", // 49 DKK/md
+    yearly: "price_1TS2UYCrYQiZxdDXV6YlDmMh",  // 470 DKK/år
   },
   coach_solo: {
-    monthly: "price_1TP1NTCrYQiZxdDXevyiuYuU",
-    yearly: "price_1TP1NUCrYQiZxdDX8Ufkrbfv",
+    monthly: "price_1TS2U4CrYQiZxdDXDlVynkBK", // 99 DKK/md
+    yearly: "price_1TS2UhCrYQiZxdDXT0x1eJIJ",  // 950 DKK/år
   },
   team_small: {
-    monthly: "price_1TP1NVCrYQiZxdDXx0zsm2AY",
-    yearly: "price_1TP1NXCrYQiZxdDXQIeYbeGf",
+    monthly: "price_1TS2U4CrYQiZxdDXFXl0NoY3", // 399 DKK/md
+    yearly: "price_1TS2UjCrYQiZxdDXsSbn1ORg",  // 3.830 DKK/år
   },
   team_medium: {
-    monthly: "price_1TP1NYCrYQiZxdDXk4XJAyS2",
-    yearly: "price_1TP1NZCrYQiZxdDXUJFpqFdF",
+    monthly: "price_1TS2U5CrYQiZxdDXIRq2hIlv", // 699 DKK/md
+    yearly: "price_1TS2UkCrYQiZxdDX9yv9l5jB",  // 6.710 DKK/år
   },
   team_large: {
-    monthly: "price_1TP1NaCrYQiZxdDXxJ2h33iV",
-    yearly: "price_1TP1NbCrYQiZxdDXiHINFKkv",
+    monthly: "price_1TS2U6CrYQiZxdDX8tM6AoTK", // 999 DKK/md
+    yearly: "price_1TS2UlCrYQiZxdDXuqRP67fU",  // 9.590 DKK/år
   },
   // Legacy aliases for grandfathered references
   personal: {
