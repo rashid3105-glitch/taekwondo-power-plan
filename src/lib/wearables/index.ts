@@ -38,7 +38,7 @@ const EMPTY_BREAKDOWN: MetricBreakdown = {
 
 // Build marker — bumped whenever this file changes. Lets us see in the iOS
 // diagnostics panel whether the device is running the latest JS bundle.
-export const WEARABLES_BUILD_MARKER = "2026-04-30-detect-v3";
+export const WEARABLES_BUILD_MARKER = "2026-04-30-iphone-health-v4";
 
 export interface PlatformSignals {
   capacitorPlatform: string;        // raw value from Capacitor.getPlatform()
@@ -123,9 +123,12 @@ export function getPlatformSignals(): PlatformSignals {
 }
 
 function detectPlatform(): "ios" | "android" | "web" {
-  // Hardened detection — accept ANY independent signal, because we keep
-  // shipping false-negatives where a single check fails inside a real
-  // native WebView. Order: cheapest/strongest signals first.
+  // Loose detection — accept ANY single native signal. We previously had
+  // false negatives where Capacitor.getPlatform() returned "" inside a real
+  // WKWebView, which made the app claim "you are not in the native app"
+  // even when it was. The cost of a false positive (showing the Connect
+  // button in a browser) is much smaller than the cost of a false negative
+  // (blocking real iPhone users).
   const s = getPlatformSignals();
 
   // 1. Official Capacitor reports
@@ -135,36 +138,25 @@ function detectPlatform(): "ios" | "android" | "web" {
   if (s.windowCapacitorPlatform === "ios" || s.windowCapacitorPlatform === "android") {
     return s.windowCapacitorPlatform;
   }
-  if (s.capacitorIsNative) {
+
+  // 2. Any native indicator + UA → trust the UA for OS routing
+  const anyNativeHint =
+    s.capacitorIsNative ||
+    s.healthPluginRegistered ||
+    s.hasHealthHandler ||
+    s.hasAnyPluginHandler ||
+    s.userAgentHint ||
+    s.schemeHint ||
+    (s.localhostHint && s.hasWebkitBridge);
+
+  if (anyNativeHint) {
     if (s.isIosUA) return "ios";
     if (s.isAndroidUA) return "android";
   }
 
-  // 2. Health plugin actually registered with the bridge
-  if (s.healthPluginRegistered) {
-    if (s.isIosUA) return "ios";
-    if (s.isAndroidUA) return "android";
-  }
-
-  // 3. iOS WKWebView native message handlers (with iPhone UA)
-  if ((s.hasHealthHandler || s.hasAnyPluginHandler) && s.isIosUA) return "ios";
-
-  // 4. Custom URL scheme
-  if (s.schemeHint) {
-    if (s.isIosUA) return "ios";
-    if (s.isAndroidUA) return "android";
-  }
-
-  // 5. UA tag
-  if (s.userAgentHint) {
-    if (s.isIosUA) return "ios";
-    if (s.isAndroidUA) return "android";
-  }
-
-  // 6. Capacitor's bundled URL is http(s)://localhost. If we're on iOS UA
-  //    AND served from localhost AND we have *any* webkit handler, treat
-  //    as native iOS even though Capacitor's own checks said otherwise.
-  if (s.localhostHint && s.isIosUA && s.hasWebkitBridge) return "ios";
+  // 3. localhost + iOS/Android UA alone is enough — Capacitor's bundled URL
+  //    is http://localhost and a real iPhone Safari never lands there.
+  if (s.localhostHint && s.isIosUA) return "ios";
   if (s.localhostHint && s.isAndroidUA) return "android";
 
   return "web";

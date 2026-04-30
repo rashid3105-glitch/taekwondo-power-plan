@@ -234,10 +234,10 @@ export default function WearablesSettings() {
           </CardHeader>
           <CardContent className="space-y-3">
             <p className="text-sm text-foreground/90 font-medium">
-              Apple Watch and Garmin sync only work inside the Sportstalent iOS or Android app.
+              iPhone Health and Health Connect can only be read from inside the Sportstalent app.
             </p>
             <p className="text-sm text-muted-foreground">
-              You're currently viewing Sportstalent in a web browser. Apple's HealthKit and Android's Health Connect can't be accessed from the browser — install the native app on your phone to connect your watch.
+              You're currently viewing Sportstalent in a web browser. Apple's iPhone Health database (where your watch, AirPods, and other apps write their data) and Android's Health Connect can't be accessed from the browser — install the native app to connect.
             </p>
             <ul className="text-sm space-y-1 text-foreground/80 list-disc pl-5">
               <li><span className="font-medium">iPhone:</span> install the iOS app, sign in, then come back to this page.</li>
@@ -338,8 +338,8 @@ export default function WearablesSettings() {
               <ol className="text-sm space-y-1.5 text-foreground/80 list-decimal pl-5">
                 {provider === "apple_health" ? (
                   <>
-                    <li>Make sure your Apple Watch is paired and syncing to the Health app.</li>
-                    <li>Tap <span className="font-medium">Connect Apple Health</span> below.</li>
+                    <li>Make sure your Apple Watch (or any other device) is syncing into the Health app on this iPhone.</li>
+                    <li>Tap <span className="font-medium">Connect iPhone Health</span> below.</li>
                     <li>iOS will show a permission sheet — tap <span className="font-medium">Turn On All</span> for Sleep, Heart Rate, HRV, Steps and Workouts.</li>
                     <li>Wait a few seconds for the first 14-day backfill to finish — the dot above turns green when ready.</li>
                   </>
@@ -352,15 +352,15 @@ export default function WearablesSettings() {
                   </>
                 ) : (
                   <>
-                    <li>Open this app on your phone (iOS or Android) — wearable sync runs on-device only.</li>
-                    <li>Make sure your watch is syncing to Apple Health (iPhone) or Health Connect (Android).</li>
+                    <li>Open this app on your phone (iOS or Android) — health sync runs on-device only.</li>
+                    <li>iPhone Health (or Health Connect on Android) is where your watch and apps store their data.</li>
                     <li>Return here and tap Connect.</li>
                   </>
                 )}
               </ol>
               <p className="text-xs text-muted-foreground mt-3 flex items-start gap-1.5">
                 <ShieldCheck className="h-3.5 w-3.5 mt-0.5 shrink-0" />
-                We never write to your watch. You can disconnect any time.
+                We never write to your Health data. You can disconnect any time.
               </p>
             </div>
 
@@ -416,8 +416,6 @@ function DeviceReadiness({ diag }: { diag: WearableDiagnostics }) {
   const s = diag.signals;
 
   const hotReloadActive = !!s.serverUrl;
-  // Any signal suggesting we ARE in a native shell, even if Capacitor's own
-  // checks said otherwise.
   const nativeSignals =
     s.capacitorIsNative ||
     s.healthPluginRegistered ||
@@ -427,17 +425,29 @@ function DeviceReadiness({ diag }: { diag: WearableDiagnostics }) {
     s.schemeHint ||
     (s.localhostHint && (s.isIosUA || s.isAndroidUA));
   const looksNativeButDetectionFailed = !diag.inNativeApp && nativeSignals;
+  const provider = diag.provider;
+  const isApple = provider === "apple_health";
+
+  // Hide the whole panel when everything is healthy — the green status pill
+  // above already conveys "ready".
+  const allGood =
+    diag.inNativeApp &&
+    diag.pluginLoaded &&
+    diag.healthPluginAvailable &&
+    diag.healthAvailable === true &&
+    !hotReloadActive;
+  if (allGood) return null;
 
   return (
     <div className="mb-4 rounded-lg border bg-muted/20 p-3 text-xs space-y-1.5">
       <div className="flex items-center justify-between mb-1">
-        <div className="font-medium text-foreground/90">Device readiness</div>
+        <div className="font-medium text-foreground/90">Connection check</div>
         <button
           type="button"
           onClick={() => setShowDetails(v => !v)}
           className="text-[11px] underline text-muted-foreground hover:text-foreground"
         >
-          {showDetails ? "Hide details" : "Show details"}
+          {showDetails ? "Hide technical details" : "Show technical details"}
         </button>
       </div>
 
@@ -446,32 +456,36 @@ function DeviceReadiness({ diag }: { diag: WearableDiagnostics }) {
         warn={looksNativeButDetectionFailed}
         label={
           diag.inNativeApp
-            ? "Running in native app"
+            ? "Sportstalent app detected"
             : looksNativeButDetectionFailed
-              ? "Native shell detected, but bridge isn't fully wired"
-              : "Not detected as native app"
+              ? "App is starting up — tap Connect to retry"
+              : "Open this from the Sportstalent app on your phone"
         }
       />
       <DiagRow
-        ok={diag.pluginLoaded}
-        label={diag.pluginLoaded ? "Health plugin loaded" : "Health plugin not loaded — run npx cap sync ios then rebuild"}
-      />
-      <DiagRow
-        ok={diag.healthPluginAvailable}
+        ok={diag.pluginLoaded || diag.healthPluginAvailable}
         warn={!diag.inNativeApp}
-        label={diag.healthPluginAvailable ? "Capacitor Health bridge registered" : "Capacitor Health bridge NOT registered in WebView"}
+        label={
+          diag.pluginLoaded || diag.healthPluginAvailable
+            ? (isApple ? "iPhone Health module ready" : "Health Connect module ready")
+            : (isApple
+                ? "iPhone Health module not loaded yet"
+                : "Health Connect module not loaded yet")
+        }
       />
       <DiagRow
         ok={diag.healthAvailable === true}
-        warn={diag.healthAvailable === null}
+        warn={diag.healthAvailable === null || !diag.inNativeApp}
         label={
           diag.healthAvailable === true
-            ? (diag.provider === "apple_health" ? "Apple Health available" : "Health Connect available")
+            ? (isApple ? "iPhone Health is available" : "Health Connect is available")
             : diag.healthAvailable === false
-              ? (diag.provider === "apple_health"
-                  ? "Apple Health unavailable on this device"
+              ? (isApple
+                  ? "iPhone Health unavailable on this device"
                   : "Health Connect not installed — install it from Play Store")
-              : "Health availability not checked yet"
+              : (isApple
+                  ? "iPhone Health status: checking…"
+                  : "Health Connect status: checking…")
         }
       />
 
@@ -481,20 +495,14 @@ function DeviceReadiness({ diag }: { diag: WearableDiagnostics }) {
 
       {hotReloadActive && (
         <p className="mt-2 rounded border border-amber-500/40 bg-amber-500/10 p-2 text-foreground/90">
-          <span className="font-medium">Hot-reload is active</span> (server.url is set in capacitor.config.ts → <code className="text-[10px]">{s.serverUrl}</code>).
-          HealthKit will not work in this mode. Remove <code>server.url</code>, then run <code>npm run build && npx cap sync ios</code> and rebuild from Xcode.
-        </p>
-      )}
-
-      {looksNativeButDetectionFailed && !hotReloadActive && (
-        <p className="mt-2 rounded border border-amber-500/40 bg-amber-500/10 p-2 text-foreground/90">
-          The device looks like a native shell (Capacitor or HealthKit handlers found), but <code>Capacitor.getPlatform()</code> still says "{s.capacitorPlatform || "web"}". This usually means the iOS bundle in Xcode is older than this code. Pull the latest, then run <code>npm run build && npx cap sync ios</code> and rebuild from Xcode.
+          <span className="font-medium">Development hot-reload is active.</span>{" "}
+          iPhone Health can't bridge in this mode. The next production build will fix it automatically.
         </p>
       )}
 
       {!diag.inNativeApp && !hotReloadActive && !nativeSignals && (
         <p className="mt-2 text-muted-foreground">
-          HealthKit and Health Connect aren't accessible from a browser. Install the Sportstalent app on your phone and open it from the home screen icon — not Safari.
+          iPhone Health and Health Connect aren't accessible from a web browser. Install Sportstalent on your phone, then open this page from inside the app.
         </p>
       )}
 
