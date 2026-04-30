@@ -132,24 +132,6 @@ export default function Dashboard() {
     loadData();
   }, []);
 
-  // Background pull from Apple Health / Health Connect on app open, then
-  // auto-attach matched workout sessions to today's logs.
-  useEffect(() => {
-    if (hasBootstrappedWearablesRef.current) return;
-    hasBootstrappedWearablesRef.current = true;
-
-    (async () => {
-      try {
-        const { syncOnAppOpen, autoAttachWorkoutLogs } = await import("@/lib/wearables");
-        const inserted = await syncOnAppOpen();
-        if (inserted > 0) {
-          const today = new Date().toISOString().slice(0, 10);
-          await autoAttachWorkoutLogs(today);
-        }
-      } catch { /* best effort */ }
-    })();
-  }, []);
-
   // Auto-flush queued offline workout logs when connectivity returns.
   useEffect(() => {
     const onOnline = async () => {
@@ -432,12 +414,10 @@ export default function Dashboard() {
               <User className="h-4 w-4 shrink-0" />
               <span>{t("profile")}</span>
             </button>
-            {(profile as any)?.owns_wearable && (
-              <button onClick={() => { setMenuOpen(false); navigate("/wearables"); }} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer">
-                <Watch className="h-4 w-4 shrink-0" />
-                <span>{t("wearablesTitle")}</span>
-              </button>
-            )}
+            <button onClick={() => { setMenuOpen(false); navigate("/health"); }} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer">
+              <Watch className="h-4 w-4 shrink-0" />
+              <span>{t("healthPageTitle" as any) || "Health"}</span>
+            </button>
             {isCoach && (
               <button onClick={() => { setMenuOpen(false); navigate("/coach"); }} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer">
                 <Users className="h-4 w-4 shrink-0" />
@@ -653,7 +633,7 @@ export default function Dashboard() {
             {!isDemo && <EnablePasskeyCard />}
             {!isDemo && <ReflectionPromptCard />}
             {!isDemo && <ReadinessCard />}
-            {!isDemo && (profile as any)?.owns_wearable && <RecoveryTile />}
+            {!isDemo && <RecoveryTile />}
             <div className="grid gap-3 sm:grid-cols-2">
               {([
                 { tab: "plan" as const, icon: Zap, titleKey: "hubTrainingTitle", descKey: "hubTrainingDesc", color: "text-tab-plan", iconBg: "bg-tab-plan/15", borderColor: "border-l-tab-plan", gradient: "radial-gradient(ellipse at 20% 50%, hsl(190 95% 50% / 0.15), transparent 60%)", locked: false },

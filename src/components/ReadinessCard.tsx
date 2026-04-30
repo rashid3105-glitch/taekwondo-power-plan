@@ -165,16 +165,23 @@ export function ReadinessCard() {
 
   async function openForm() {
     setOpen(true);
-    // Best-effort prefill from yesterday's wearable summary.
+    // Best-effort prefill from yesterday's manually-logged summary.
     try {
-      const { getYesterdaySummary } = await import("@/lib/wearables");
-      const s = await getYesterdaySummary();
+      const yday = new Date(Date.now() - 86400_000).toISOString().slice(0, 10);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: s } = await supabase
+        .from("wearable_daily_summary")
+        .select("sleep_minutes,hrv_rmssd")
+        .eq("user_id", user.id)
+        .eq("summary_date", yday)
+        .maybeSingle();
       if (s?.sleep_minutes && s.sleep_minutes > 60) {
         const hours = Math.round((s.sleep_minutes / 60) * 2) / 2;
         setSleep([Math.min(12, Math.max(0, hours))]);
         setPrefilledFromWatch(true);
       }
-      if (s?.hrv_rmssd) setHrvFromWatch(Math.round(s.hrv_rmssd));
+      if (s?.hrv_rmssd) setHrvFromWatch(Math.round(Number(s.hrv_rmssd)));
     } catch { /* no-op */ }
   }
 

@@ -3,7 +3,26 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Activity, AlertTriangle, Watch } from "lucide-react";
 import { LineChart, Line, ResponsiveContainer, YAxis, Tooltip } from "recharts";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { getAthleteRecoveryTrend, type RecoveryTrendDay } from "@/lib/wearables";
+import { supabase } from "@/integrations/supabase/client";
+
+interface RecoveryTrendDay {
+  summary_date: string;
+  sleep_minutes: number | null;
+  resting_hr: number | null;
+  hrv_rmssd: number | null;
+  steps: number | null;
+  baseline_hr_7d: number | null;
+  baseline_hrv_7d: number | null;
+}
+
+async function getAthleteRecoveryTrend(athleteId: string, days: number): Promise<RecoveryTrendDay[]> {
+  const { data, error } = await supabase.rpc("get_athlete_recovery_trend", {
+    _athlete_id: athleteId,
+    _days: days,
+  });
+  if (error) return [];
+  return (data ?? []) as RecoveryTrendDay[];
+}
 
 interface Props { athleteId: string }
 
