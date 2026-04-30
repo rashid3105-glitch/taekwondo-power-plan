@@ -1,72 +1,60 @@
-## Problem
+# Plan: fix the persistent “not in native app” message on iPhone
 
-På din iPhone (kørt fra Xcode) viser wizard og diagnostik stadig "Du er ikke i den native app", selvom du faktisk kører den installerede app. Det betyder at `Capacitor.isNativePlatform()` returnerer `false` i WebView'et — typisk fordi:
+## What I think is actually happening
+The issue is likely no longer just one missing bridge check. At this point there are two concrete possibilities:
 
-1. `dist/` der blev bundlet ind i iOS-projektet er en ældre build hvor `@capacitor/core` ikke fik injiceret bridgen korrekt (eller `npx cap sync ios` ikke er kørt efter sidste `npm run build`).
-2. Den lokale `capacitor.config.ts` har en `server.url` som peger på Lovable-preview — så WebView'et loader webversionen i stedet for `dist/`-bundle'et, og Capacitor-runtime'en bliver ikke injiceret.
-3. Vi tjekker kun `isNativePlatform()` / `getPlatform()`, ikke `isPluginAvailable("Health")` eller `window.webkit.messageHandlers`, som er stærkere signaler på iOS.
+1. The app is running in a real native shell, but our detection is still too strict and misses valid Capacitor-on-iOS cases.
+2. The iPhone build is still using an older bundled web build, which matches your screenshot because the new diagnostics/details UI does not appear there.
 
-Vi har ingen synlig diagnose i UI, der fortæller *hvorfor* detektionen siger "ikke native", så det er umuligt at adskille de tre årsager fra hinanden.
+## What I’ll change
 
-## Løsning
+### 1) Make native detection accept more real iOS native signals
+Update `src/lib/wearables/index.ts` so `inNativeApp` can also become true when any of these are present:
+- `Capacitor.isNativePlatform()`
+- `Capacitor.getPlatform() === "ios" | "android"`
+- `window.Capacitor.getPlatform()`
+- registered plugin presence via `Capacitor.isPluginAvailable("Health")`
+- iOS WebView markers combined with iPhone/iPad user agent
+- local Capacitor URL patterns such as `http://localhost` that occur inside native WebViews
 
-Gør detektion + diagnostik selvforklarende, så enhver iOS-build enten registreres som native eller fortæller præcis hvad der mangler.
+This removes the current gap where the app may be native, but still falls back to `web`.
 
-### 1. Hærd `detectPlatform()` i `src/lib/wearables/index.ts`
+### 2) Add stronger raw diagnostics so the next screen tells us exactly which bundle is running
+Extend diagnostics in `src/lib/wearables/index.ts` and the UI in:
+- `src/pages/WearablesSettings.tsx`
+- `src/components/wearables/WearableConnectWizard.tsx`
 
-Tilføj flere uafhængige signaler og betragt det som native hvis ét af dem matcher:
+I’ll show extra fields such as:
+- current URL
+- whether it is `http://localhost`
+- whether the Health plugin is registered
+- whether the imported health module loaded
+- a build/version marker from the current JS bundle
 
-- `Capacitor.isNativePlatform()` (officiel)
-- `Capacitor.getPlatform() === 'ios' | 'android'`
-- `(window as any).Capacitor?.isNativePlatform?.()`
-- `(window as any).webkit?.messageHandlers?.bridge` (iOS WKWebView bridge marker)
-- `navigator.userAgent` indeholder `"CapacitorWebView"` eller URL'en starter med `capacitor://` / `ionic://` (iOS) eller `https://localhost` med Capacitor user-agent (Android).
+That way we can distinguish “native runtime but weak detection” from “phone still running an old build”.
 
-Hvis nogen af disse er sande → returnér `"ios"`/`"android"`. Det fjerner false-negatives når én bridge-detektion fejler.
+### 3) Replace the misleading fallback copy
+Right now the wizard jumps straight to “you are not in the native app”. I’ll change that so the message is more precise:
+- if native signals exist: say native shell detected, but bridge/plugin/bundle is not ready
+- only say “not in native app” when all native signals are genuinely absent
 
-### 2. Udvid `WearableDiagnostics` med ægte fejlårsager
+### 4) Add explicit stale-bundle guidance
+If the diagnostics suggest the iPhone is running an older bundle, the UI will say so directly and tell the user to:
+- pull latest code
+- run `npm run build`
+- run `npx cap sync ios`
+- rebuild from Xcode
 
-Føj nye felter (alt synligt i UI):
+## Technical details
+- Files to update:
+  - `src/lib/wearables/index.ts`
+  - `src/pages/WearablesSettings.tsx`
+  - `src/components/wearables/WearableConnectWizard.tsx`
+  - `src/i18n/translations.ts`
+- No backend or database changes
+- No native Swift changes unless diagnostics prove the Health bridge is missing from the iOS project itself
 
-- `capacitorPlatform: string` (rå værdi fra `getPlatform()`)
-- `capacitorIsNative: boolean`
-- `hasWebkitBridge: boolean` (iOS specifikt)
-- `userAgent: string` (kort)
-- `serverUrl: string | null` (læs `(window as any).Capacitor?.serverUrl` hvis sat — afslører hot-reload-konfig)
-- `healthPluginAvailable: boolean` via `Capacitor.isPluginAvailable("Health")`
-
-### 3. Opdater "Device readiness"-stripe i `WearablesSettings.tsx`
-
-Erstat den enkelte "Not in native app"-linje med en lille tabel der viser hver af de fem råværdier ovenfor. Når mindst ét signal er native, marker raden "Running in native app" som grøn, men vis stadig de detaljerede signaler (foldet ind under en "Vis detaljer"-knap, så det ikke spammer almindelige brugere).
-
-Tilføj en målrettet hjælpetekst når `serverUrl` er sat:
-
-> "Hot-reload er aktiveret i `capacitor.config.ts` (`server.url`). HealthKit virker ikke i denne tilstand — fjern `server.url`, kør `npm run build && npx cap sync ios` og åbn appen igen fra Xcode."
-
-Og når `capacitorIsNative === false` men `hasWebkitBridge === true`:
-
-> "Capacitor-bridgen blev fundet, men `dist/` matcher ikke det installerede bundle. Kør `npm run build && npx cap sync ios` og rebuild i Xcode."
-
-### 4. Opdater wizardens trin 1 med samme logik
-
-`WearableConnectWizard.tsx` step 1 skal:
-
-- Bruge den nye, mere tolerante `inNativeApp`-værdi.
-- Vise samme detaljer-knap som settings når den fejler, så du på telefonen kan se den præcise grund.
-
-### 5. Konsollog ved mount
-
-I `getDiagnostics()` log alle råsignaler én gang via `console.info("[wearables] platform signals", { ... })`, så vi i næste fejlrapport kan se data direkte fra Xcode-konsollen.
-
-## Filer der ændres
-
-- `src/lib/wearables/index.ts` — hærdet `detectPlatform()`, udvidet `WearableDiagnostics`, console-log.
-- `src/pages/WearablesSettings.tsx` — ny diagnose-detalje-strip, målrettet fejlforklaring.
-- `src/components/wearables/WearableConnectWizard.tsx` — trin 1 bruger ny detektion + viser detaljer ved fejl.
-- `src/i18n/translations.ts` — nye nøgler (DA + EN minimum, evt. SV/DE/AR).
-
-## Tekniske noter
-
-- Vi rører ikke ved `capacitor-health`-pluginnet eller permission-flowet — kun detektion + UI.
-- Ingen build-script-ændringer; brugeren skal stadig køre `npm run build && npx cap sync ios` efter pull (det fortæller den nye fejlbesked nu eksplicit).
-- Når planen er implementeret: pull, `npm run build && npx cap sync ios`, rebuild i Xcode, åbn wizarden — strippen fortæller præcis hvilket signal der mangler.
+## Expected result
+After this change, one of two things should happen on device:
+- the app correctly recognizes the native iPhone build and lets you continue, or
+- the screen shows an exact technical reason instead of the generic “not in native app” message, so the remaining issue can be fixed in one step.
