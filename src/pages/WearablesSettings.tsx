@@ -234,10 +234,10 @@ export default function WearablesSettings() {
           </CardHeader>
           <CardContent className="space-y-3">
             <p className="text-sm text-foreground/90 font-medium">
-              Apple Watch and Garmin sync only work inside the Sportstalent iOS or Android app.
+              iPhone Health and Health Connect can only be read from inside the Sportstalent app.
             </p>
             <p className="text-sm text-muted-foreground">
-              You're currently viewing Sportstalent in a web browser. Apple's HealthKit and Android's Health Connect can't be accessed from the browser — install the native app on your phone to connect your watch.
+              You're currently viewing Sportstalent in a web browser. Apple's iPhone Health database (where your watch, AirPods, and other apps write their data) and Android's Health Connect can't be accessed from the browser — install the native app to connect.
             </p>
             <ul className="text-sm space-y-1 text-foreground/80 list-disc pl-5">
               <li><span className="font-medium">iPhone:</span> install the iOS app, sign in, then come back to this page.</li>
