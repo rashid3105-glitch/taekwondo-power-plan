@@ -19,7 +19,7 @@ import { useOfflineDiary } from "@/hooks/useOfflineDiary";
 import type { CachedDiaryEntry, DiaryEntryType } from "@/lib/diaryOfflineDB";
 import {
   ENTRY_TYPES, typeMeta, computeTypeCounts, computeAvailableTags,
-  filterEntries, groupByMonth, monthKeyToday,
+  filterEntries, groupByMonth, currentMonthKey,
   type DateRange, type ViewMode,
 } from "@/lib/diaryFilters";
 
@@ -138,7 +138,7 @@ export default function Diary() {
     [entries, typeFilter, tagFilter, dateRange, search],
   );
   const grouped = useMemo(() => groupByMonth(filtered), [filtered]);
-  const monthKeyToday = useMemo(() => monthKeyToday(), []);
+  const monthKeyToday = useMemo(() => currentMonthKey(), []);
 
   const toggleMonth = (key: string) => {
     setCollapsedMonths((prev) => {
