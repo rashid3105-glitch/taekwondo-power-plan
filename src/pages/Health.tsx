@@ -15,6 +15,7 @@ import {
 } from "recharts";
 import { Moon, HeartPulse, Waves } from "lucide-react";
 import { getStatus, getSyncStats, syncSince, type WearableStatus } from "@/lib/wearables";
+import { QuickExportCard } from "@/components/health/QuickExportCard";
 
 interface DailyRow {
   summary_date: string;
@@ -237,6 +238,9 @@ export default function Health() {
           {t("healthManage" as any) || "Manage"}
         </Button>
       </div>
+
+      {/* Quick export — pick one or more metrics, fetch 7-day daily stats */}
+      <QuickExportCard />
 
       {/* Steps */}
       <Card className="mb-4">
