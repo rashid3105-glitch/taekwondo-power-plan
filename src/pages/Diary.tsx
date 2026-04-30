@@ -19,7 +19,7 @@ import { useOfflineDiary } from "@/hooks/useOfflineDiary";
 import type { CachedDiaryEntry, DiaryEntryType } from "@/lib/diaryOfflineDB";
 import {
   ENTRY_TYPES, typeMeta, computeTypeCounts, computeAvailableTags,
-  filterEntries, groupByMonth, currentMonthKey,
+  filterEntries, groupByMonth, monthKeyToday,
   type DateRange, type ViewMode,
 } from "@/lib/diaryFilters";
 
@@ -138,7 +138,7 @@ export default function Diary() {
     [entries, typeFilter, tagFilter, dateRange, search],
   );
   const grouped = useMemo(() => groupByMonth(filtered), [filtered]);
-  const monthKeyToday = useMemo(() => currentMonthKey(), []);
+  const monthKeyToday = useMemo(() => monthKeyToday(), []);
 
   const toggleMonth = (key: string) => {
     setCollapsedMonths((prev) => {
@@ -440,12 +440,12 @@ export default function Diary() {
           </div>
         ) : (
           grouped.map(([monthKey, items]) => {
-            const collapsed = collapsedMonths.has(monthKey) || (monthKey !== currentMonthKey && !collapsedMonths.has(`__open:${monthKey}`));
+            const collapsed = collapsedMonths.has(monthKey) || (monthKey !== monthKeyToday && !collapsedMonths.has(`__open:${monthKey}`));
             // Default: current month open, others collapsed unless user toggled
             const userToggled = collapsedMonths.has(monthKey) || collapsedMonths.has(`__open:${monthKey}`);
             const isCollapsed = userToggled
               ? collapsedMonths.has(monthKey)
-              : monthKey !== currentMonthKey;
+              : monthKey !== monthKeyToday;
             const [yearStr, monthStr] = monthKey.split("-");
             const monthDate = new Date(parseInt(yearStr), parseInt(monthStr) - 1, 1);
             const monthLabel = monthDate.toLocaleDateString(undefined, { month: "long", year: "numeric" });
