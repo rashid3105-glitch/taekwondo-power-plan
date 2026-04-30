@@ -96,9 +96,25 @@ export default function Dashboard() {
   const { toast } = useToast();
   const { t, locale } = useLanguage();
   
+  const { isLocked: isModuleLocked } = useEntitlements();
+
+  // Map dashboard tabs to entitlement modules. Tabs not in this map are never tier-locked.
+  const TAB_TO_MODULE: Partial<Record<typeof activeTab, LockedModule>> = {
+    rehab: "rehab",
+    testing: "testing",
+  };
+  const isTierLockedTab = (tab: typeof activeTab) => {
+    const mod = TAB_TO_MODULE[tab];
+    return mod ? isModuleLocked(mod) : false;
+  };
+
   const isDemoLockedTab = (tab: typeof activeTab) => isDemo && !["hub", "plan"].includes(tab);
   const handleTabChange = (tab: typeof activeTab) => {
     if (isDemoLockedTab(tab)) return;
+    if (isTierLockedTab(tab)) {
+      navigate("/pricing");
+      return;
+    }
     setActiveTab(tab);
     setMenuOpen(false);
   };
@@ -115,6 +131,23 @@ export default function Dashboard() {
       <div className="flex justify-center">
         <Button variant="outline" size="sm" onClick={() => navigate("/pricing")}>
           {t("viewPricing")}
+        </Button>
+      </div>
+    </div>
+  );
+
+  const renderTierLockedState = (featureKey: string) => (
+    <div className="rounded-xl border border-primary/20 bg-card p-8 sm:p-10 text-center shadow-card space-y-4">
+      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+        <Lock className="h-5 w-5 text-primary" />
+      </div>
+      <div className="space-y-2">
+        <h3 className="font-bold text-foreground">{t(featureKey)}</h3>
+        <p className="text-sm text-muted-foreground">{t("moduleLockedDesc")}</p>
+      </div>
+      <div className="flex justify-center">
+        <Button size="sm" onClick={() => navigate("/pricing")}>
+          <Sparkles className="h-4 w-4 mr-1" /> {t("upgradeToUnlock")}
         </Button>
       </div>
     </div>
