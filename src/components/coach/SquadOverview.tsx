@@ -93,7 +93,7 @@ export function SquadOverview({
   const { t } = useLanguage();
   const [rows, setRows] = useState<SquadRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sort, setSort] = useState<SortKey>("attention");
+  const [sort, setSort] = useState<SortKey>("name");
   const [view, setView] = useState<ViewMode>("compact");
   const [search, setSearch] = useState("");
   const [beltFilter, setBeltFilter] = useState<string>("all");
@@ -165,7 +165,11 @@ export function SquadOverview({
 
   const sorted = useMemo(() => {
     return [...filtered].sort((a, b) => {
-      if (sort === "name") return a.display_name.localeCompare(b.display_name);
+      if (sort === "name") {
+        const firstA = (a.display_name || "").trim().split(/\s+/)[0] || "";
+        const firstB = (b.display_name || "").trim().split(/\s+/)[0] || "";
+        return firstA.localeCompare(firstB, undefined, { sensitivity: "base" });
+      }
       if (sort === "belt") return BELT_ORDER.indexOf(a.belt_level) - BELT_ORDER.indexOf(b.belt_level);
       if (sort === "lastActive") {
         const da = a.last_seen_at ? new Date(a.last_seen_at).getTime() : 0;
