@@ -151,10 +151,24 @@ export function WearableConnectWizard({ open, onClose, onCompleted }: Props) {
               ) : (
                 <>
                   <p className="text-sm text-foreground/80">{t("wizardStep1Fail")}</p>
-                  <Button onClick={() => navigate("/install")} className="w-full h-11">
-                    <Download className="h-4 w-4 mr-2" />
-                    {t("wizardOpenInstallGuide")}
-                  </Button>
+                  {diag?.signals && (
+                    <div className="rounded border border-amber-500/30 bg-amber-500/5 p-2 text-[11px] font-mono text-foreground/80 space-y-0.5 break-all">
+                      <div>platform = "{diag.signals.capacitorPlatform || "<empty>"}"</div>
+                      <div>isNative = {String(diag.signals.capacitorIsNative)}</div>
+                      <div>webkit bridge = {String(diag.signals.hasWebkitBridge)}</div>
+                      <div>serverUrl = {diag.signals.serverUrl ?? "null"}</div>
+                    </div>
+                  )}
+                  {diag?.signals?.serverUrl ? (
+                    <p className="text-xs text-amber-700 dark:text-amber-400">
+                      Hot-reload (<code>server.url</code>) is active in capacitor.config.ts. Remove it, run <code>npm run build && npx cap sync ios</code>, then rebuild from Xcode.
+                    </p>
+                  ) : (
+                    <Button onClick={() => navigate("/install")} className="w-full h-11">
+                      <Download className="h-4 w-4 mr-2" />
+                      {t("wizardOpenInstallGuide")}
+                    </Button>
+                  )}
                   <Button variant="outline" onClick={recheck} disabled={busy} className="w-full h-11">
                     <RefreshCw className={`h-4 w-4 mr-2 ${busy ? "animate-spin" : ""}`} />
                     {t("wizardRecheck")}

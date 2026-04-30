@@ -207,34 +207,7 @@ export default function WearablesSettings() {
       })()}
 
       {/* Native diagnostics strip — helps explain why no permission prompt shows. */}
-      {diag && (
-        <div className="mb-4 rounded-lg border bg-muted/20 p-3 text-xs space-y-1.5">
-          <div className="font-medium text-foreground/90 mb-1">Device readiness</div>
-          <DiagRow ok={diag.inNativeApp} label={diag.inNativeApp ? "Running in native app" : "Not in native app — open the installed iOS/Android app, not Safari"} />
-          <DiagRow ok={diag.pluginLoaded} label={diag.pluginLoaded ? "Health plugin loaded" : "Health plugin not loaded — rebuild with npx cap sync ios + reinstall"} />
-          <DiagRow
-            ok={diag.healthAvailable === true}
-            warn={diag.healthAvailable === null}
-            label={
-              diag.healthAvailable === true
-                ? (diag.provider === "apple_health" ? "Apple Health available" : "Health Connect available")
-                : diag.healthAvailable === false
-                  ? (diag.provider === "apple_health"
-                      ? "Apple Health unavailable on this device"
-                      : "Health Connect not installed — install it from Play Store")
-                  : "Health availability not checked yet"
-            }
-          />
-          {diag.availabilityError && (
-            <div className="text-destructive">Error: {diag.availabilityError}</div>
-          )}
-          {!diag.inNativeApp && (
-            <p className="text-muted-foreground pt-1">
-              HealthKit and Health Connect are not accessible from a browser. Install the Sportstalent app on your phone and open it from the home screen icon, not from Safari.
-            </p>
-          )}
-        </div>
-      )}
+      {diag && <DeviceReadiness diag={diag} />}
 
       {ownsWearable === false && (
         <Card className="border-amber-500/30 bg-amber-500/5 mb-4">
@@ -434,6 +407,95 @@ function DiagRow({ ok, warn, label }: { ok: boolean; warn?: boolean; label: stri
     <div className="flex items-start gap-2">
       <span className={`mt-1 inline-block h-2 w-2 rounded-full ${color} shrink-0`} />
       <span className="text-foreground/85">{label}</span>
+    </div>
+  );
+}
+
+function DeviceReadiness({ diag }: { diag: WearableDiagnostics }) {
+  const [showDetails, setShowDetails] = useState(false);
+  const s = diag.signals;
+
+  const hotReloadActive = !!s.serverUrl;
+  const bridgeButNotNative = !diag.inNativeApp && (s.hasWebkitBridge || s.userAgentHint || s.schemeHint);
+
+  return (
+    <div className="mb-4 rounded-lg border bg-muted/20 p-3 text-xs space-y-1.5">
+      <div className="flex items-center justify-between mb-1">
+        <div className="font-medium text-foreground/90">Device readiness</div>
+        <button
+          type="button"
+          onClick={() => setShowDetails(v => !v)}
+          className="text-[11px] underline text-muted-foreground hover:text-foreground"
+        >
+          {showDetails ? "Hide details" : "Show details"}
+        </button>
+      </div>
+
+      <DiagRow
+        ok={diag.inNativeApp}
+        label={diag.inNativeApp ? "Running in native app" : "Not detected as native app"}
+      />
+      <DiagRow
+        ok={diag.pluginLoaded}
+        label={diag.pluginLoaded ? "Health plugin loaded" : "Health plugin not loaded — run npx cap sync ios then rebuild"}
+      />
+      <DiagRow
+        ok={diag.healthPluginAvailable}
+        warn={!diag.inNativeApp}
+        label={diag.healthPluginAvailable ? "Capacitor Health bridge registered" : "Capacitor Health bridge NOT registered in WebView"}
+      />
+      <DiagRow
+        ok={diag.healthAvailable === true}
+        warn={diag.healthAvailable === null}
+        label={
+          diag.healthAvailable === true
+            ? (diag.provider === "apple_health" ? "Apple Health available" : "Health Connect available")
+            : diag.healthAvailable === false
+              ? (diag.provider === "apple_health"
+                  ? "Apple Health unavailable on this device"
+                  : "Health Connect not installed — install it from Play Store")
+              : "Health availability not checked yet"
+        }
+      />
+
+      {diag.availabilityError && (
+        <div className="text-destructive">Error: {diag.availabilityError}</div>
+      )}
+
+      {hotReloadActive && (
+        <p className="mt-2 rounded border border-amber-500/40 bg-amber-500/10 p-2 text-foreground/90">
+          <span className="font-medium">Hot-reload is active</span> (server.url is set in capacitor.config.ts → <code className="text-[10px]">{s.serverUrl}</code>).
+          HealthKit will not work in this mode. Remove <code>server.url</code>, then run <code>npm run build && npx cap sync ios</code> and rebuild from Xcode.
+        </p>
+      )}
+
+      {!diag.inNativeApp && !hotReloadActive && bridgeButNotNative && (
+        <p className="mt-2 rounded border border-amber-500/40 bg-amber-500/10 p-2 text-foreground/90">
+          Capacitor WebView detected, but the bundled <code>dist/</code> doesn't expose the native bridge.
+          Run <code>npm run build && npx cap sync ios</code> and rebuild in Xcode.
+        </p>
+      )}
+
+      {!diag.inNativeApp && !hotReloadActive && !bridgeButNotNative && (
+        <p className="mt-2 text-muted-foreground">
+          HealthKit and Health Connect aren't accessible from a browser. Install the Sportstalent app on your phone and open it from the home screen icon — not Safari.
+        </p>
+      )}
+
+      {showDetails && (
+        <div className="mt-2 space-y-0.5 rounded bg-background/60 p-2 font-mono text-[10px] text-foreground/80 break-all">
+          <div>capacitor.getPlatform() = "{s.capacitorPlatform || "<empty>"}"</div>
+          <div>capacitor.isNativePlatform() = {String(s.capacitorIsNative)}</div>
+          <div>window.Capacitor.getPlatform() = "{s.windowCapacitorPlatform || "<empty>"}"</div>
+          <div>isPluginAvailable("Health") = {String(diag.healthPluginAvailable)}</div>
+          <div>webkit.messageHandlers = {String(s.hasWebkitBridge)}</div>
+          <div>UA hint (CapacitorWebView) = {String(s.userAgentHint)}</div>
+          <div>scheme hint (capacitor://) = {String(s.schemeHint)}</div>
+          <div>serverUrl = {s.serverUrl ?? "null"}</div>
+          <div>UA = {s.userAgent}</div>
+          <div>href = {s.href}</div>
+        </div>
+      )}
     </div>
   );
 }

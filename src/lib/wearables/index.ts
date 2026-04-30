@@ -36,23 +36,81 @@ const EMPTY_BREAKDOWN: MetricBreakdown = {
   sleep: 0, resting_hr: 0, hrv: 0, steps: 0, workout: 0,
 };
 
-function detectPlatform(): "ios" | "android" | "web" {
-  // Use the official Capacitor API. `globalThis.Capacitor` is sometimes
-  // missing or shadowed in the WebView even when running in the installed
-  // native app, which previously caused the app to wrongly behave as web
-  // and show "Not connected" forever.
+export interface PlatformSignals {
+  capacitorPlatform: string;        // raw value from Capacitor.getPlatform()
+  capacitorIsNative: boolean;       // Capacitor.isNativePlatform()
+  windowCapacitorPlatform: string;  // (window as any).Capacitor?.getPlatform?.()
+  hasWebkitBridge: boolean;         // iOS WKWebView marker
+  userAgentHint: boolean;           // CapacitorWebView in UA
+  schemeHint: boolean;              // location starts with capacitor:// / ionic://
+  serverUrl: string | null;         // capacitor.config server.url if hot-reloaded
+  userAgent: string;
+  href: string;
+}
+
+export function getPlatformSignals(): PlatformSignals {
+  let capacitorPlatform = "";
+  let capacitorIsNative = false;
   try {
-    if (Capacitor?.isNativePlatform?.()) {
-      const p = Capacitor.getPlatform();
-      if (p === "ios" || p === "android") return p;
-    }
-    const p2 = Capacitor?.getPlatform?.();
-    if (p2 === "ios" || p2 === "android") return p2;
-  } catch { /* fall through */ }
-  // Fallback: window.Capacitor for older bridges
-  const cap: any = (typeof window !== "undefined" ? (window as any).Capacitor : undefined);
-  const p3 = cap?.getPlatform?.();
-  if (p3 === "ios" || p3 === "android") return p3;
+    capacitorPlatform = Capacitor?.getPlatform?.() ?? "";
+    capacitorIsNative = !!Capacitor?.isNativePlatform?.();
+  } catch { /* ignore */ }
+
+  const win: any = typeof window !== "undefined" ? window : undefined;
+  const winCap: any = win?.Capacitor;
+  const windowCapacitorPlatform = (() => {
+    try { return winCap?.getPlatform?.() ?? ""; } catch { return ""; }
+  })();
+
+  const hasWebkitBridge = !!win?.webkit?.messageHandlers;
+  const userAgent = (typeof navigator !== "undefined" && navigator.userAgent) || "";
+  const userAgentHint = /CapacitorWebView/i.test(userAgent);
+  const href = (typeof location !== "undefined" && location.href) || "";
+  const schemeHint = /^(capacitor|ionic):\/\//i.test(href);
+  const serverUrl: string | null = (() => {
+    try {
+      const v = winCap?.serverUrl ?? winCap?.config?.server?.url ?? null;
+      return typeof v === "string" && v.length ? v : null;
+    } catch { return null; }
+  })();
+
+  return {
+    capacitorPlatform,
+    capacitorIsNative,
+    windowCapacitorPlatform,
+    hasWebkitBridge,
+    userAgentHint,
+    schemeHint,
+    serverUrl,
+    userAgent: userAgent.slice(0, 200),
+    href: href.slice(0, 200),
+  };
+}
+
+function detectPlatform(): "ios" | "android" | "web" {
+  // Hardened detection — we accept any of several independent signals,
+  // because a single failing bridge check has shipped false-negatives in
+  // production (WebView shadows globals, plugins inject late, etc.).
+  const s = getPlatformSignals();
+
+  const candidates = [s.capacitorPlatform, s.windowCapacitorPlatform];
+  for (const c of candidates) {
+    if (c === "ios" || c === "android") return c;
+  }
+  if (s.capacitorIsNative) {
+    // isNativePlatform true but getPlatform empty — guess from UA / scheme.
+    if (/iPhone|iPad|iPod/i.test(s.userAgent)) return "ios";
+    if (/Android/i.test(s.userAgent)) return "android";
+  }
+  if (s.hasWebkitBridge && /iPhone|iPad|iPod/i.test(s.userAgent)) return "ios";
+  if (s.schemeHint) {
+    if (/iPhone|iPad|iPod/i.test(s.userAgent)) return "ios";
+    if (/Android/i.test(s.userAgent)) return "android";
+  }
+  if (s.userAgentHint) {
+    if (/iPhone|iPad|iPod/i.test(s.userAgent)) return "ios";
+    if (/Android/i.test(s.userAgent)) return "android";
+  }
   return "web";
 }
 
@@ -125,12 +183,21 @@ export interface WearableDiagnostics {
   pluginLoaded: boolean;
   healthAvailable: boolean | null; // null = unknown / not checked
   availabilityError: string | null;
+  healthPluginAvailable: boolean;  // Capacitor.isPluginAvailable("Health")
+  signals: PlatformSignals;
 }
+
+let _diagLogged = false;
 
 /** Run on screen mount. Safe to call from a non-gesture context. */
 export async function getDiagnostics(): Promise<WearableDiagnostics> {
+  const signals = getPlatformSignals();
   const provider = wearableProviderForPlatform();
   const inNativeApp = provider !== null;
+
+  let healthPluginAvailable = false;
+  try { healthPluginAvailable = !!Capacitor?.isPluginAvailable?.("Health"); } catch { /* ignore */ }
+
   const Health = await loadHealth();
   let healthAvailable: boolean | null = null;
   let availabilityError: string | null = null;
@@ -142,13 +209,23 @@ export async function getDiagnostics(): Promise<WearableDiagnostics> {
       availabilityError = e?.message || String(e);
     }
   }
-  return {
+
+  const result: WearableDiagnostics = {
     inNativeApp,
     provider,
     pluginLoaded: !!Health,
     healthAvailable,
     availabilityError,
+    healthPluginAvailable,
+    signals,
   };
+
+  if (!_diagLogged) {
+    _diagLogged = true;
+    // eslint-disable-next-line no-console
+    console.info("[wearables] platform signals", result);
+  }
+  return result;
 }
 
 const LAST_GRANT_KEY = "wearable_last_grant";
