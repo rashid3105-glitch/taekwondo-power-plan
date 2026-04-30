@@ -92,17 +92,35 @@ export default function WearablesSettings() {
     } finally { setBusy(false); }
   }
 
-  async function handleReRequestPermissions() {
+  function handleReRequestPermissions() {
+    // Same iOS gesture rule — call requestPermissions synchronously.
+    tap();
+    setBusy(true);
+    requestPermissions()
+      .then(() => {
+        toast({
+          title: "Permission sheet shown",
+          description: "Make sure every metric (Sleep, Resting Heart Rate, HRV, Steps, Workouts) is enabled, then tap Sync now.",
+        });
+      })
+      .catch((e: any) => {
+        toast({ title: t("error"), description: e?.message || "Failed", variant: "destructive" });
+      })
+      .finally(() => setBusy(false));
+  }
+
+  async function handleResetConnection() {
     tap();
     setBusy(true);
     try {
-      await requestPermissions();
+      await resetConnection();
       toast({
-        title: "Permission sheet shown",
-        description: "Make sure every metric (Sleep, Resting Heart Rate, HRV, Steps, Workouts) is enabled, then tap Sync now.",
+        title: "Connection reset",
+        description: "Local connection cleared. Tap Connect Apple Health again to start fresh.",
       });
+      await load();
     } catch (e: any) {
-      toast({ title: t("error"), description: e.message, variant: "destructive" });
+      toast({ title: t("error"), description: e?.message || "Reset failed", variant: "destructive" });
     } finally { setBusy(false); }
   }
 
