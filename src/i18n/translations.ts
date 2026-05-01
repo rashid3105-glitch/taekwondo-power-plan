@@ -1767,6 +1767,12 @@ const translations = {
     next: "Next",
     pending: "Waiting to sync",
     notFound: "Not found",
+    helpReflectionTitle: "Post-Competition Reflection",
+    helpReflectionSteps: "1. After each competition a card appears on the Mental tab inviting you to reflect\n2. Tap \"Start reflection\" to walk through 4 short steps: result, what worked, what to improve, tactical notes\n3. Rate physical, mental and tactical performance on a 1–10 scale\n4. The system generates a personalized action plan and 3 SMART goals from your answers\n5. The reflection is saved locally instantly and syncs when you're back online — works offline\n6. Coach view: on the athlete's Mental tab, coaches see all reflections, average ratings, and can add comments\n7. Trends appear in a chart so you can track performance evolution across multiple competitions",
+    changelog_2026_05_01: "May 1, 2026",
+    changelogEntry92: "Post-Competition Reflection: 4-step flow with a personalized action plan and 3 SMART goals; works offline.",
+    changelogEntry93: "Health page: manual entry for sleep / resting HR / HRV / steps with iPhone re-sync, 7-day baselines, and a device guide for Apple, Garmin, Polar, Fitbit, Samsung, Whoop and Oura.",
+    changelogEntry94: "Norwegian language: fixed a bug where the Health page previously showed Arabic text on Norwegian.",
   },
   da: {
     defaultLanguage: "Standardsprog",
