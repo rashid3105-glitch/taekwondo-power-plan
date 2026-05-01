@@ -106,7 +106,7 @@ export function CoachManualReflectionDialog({ athleteId, athleteName, onCreated 
       if (error || (data as any)?.error) {
         throw new Error((data as any)?.error || error?.message || "Failed");
       }
-      toast({ title: t("coachManualReflectionSaved" as any) });
+      toast({ title: t("coachManualReflectionSaved") });
       setOpen(false);
       reset();
       onCreated?.();
@@ -121,23 +121,23 @@ export function CoachManualReflectionDialog({ athleteId, athleteName, onCreated 
     <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) reset(); }}>
       <DialogTrigger asChild>
         <Button size="sm" variant="outline" className="h-8 px-2 text-[11px] gap-1">
-          <Plus className="h-3 w-3" /> {t("coachManualReflectionOpen" as any)}
+          <Plus className="h-3 w-3" /> {t("coachManualReflectionOpen")}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{t("coachManualReflectionTitle" as any)}{athleteName ? ` – ${athleteName}` : ""}</DialogTitle>
+          <DialogTitle>{t("coachManualReflectionTitle")}{athleteName ? ` – ${athleteName}` : ""}</DialogTitle>
           <DialogDescription className="text-xs">
-            {t("coachManualReflectionDesc" as any)}
+            {t("coachManualReflectionDesc")}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
           <div className="space-y-1.5">
-            <Label className="text-xs">{t("coachManualReflectionCompetition" as any)}</Label>
+            <Label className="text-xs">{t("coachManualReflectionCompetition")}</Label>
             <Select value={competitionId} onValueChange={pickCompetition}>
               <SelectTrigger className="h-10">
-                <SelectValue placeholder={t("coachManualReflectionPickCompetition" as any)} />
+                <SelectValue placeholder={t("coachManualReflectionPickCompetition")} />
               </SelectTrigger>
               <SelectContent>
                 {competitions.map((c) => (
@@ -150,12 +150,12 @@ export function CoachManualReflectionDialog({ athleteId, athleteName, onCreated 
           </div>
 
           <div className="space-y-1.5">
-            <Label className="text-xs">{t("coachManualReflectionResult" as any)}</Label>
+            <Label className="text-xs">{t("coachManualReflectionResult")}</Label>
             <Input value={resultText} onChange={(e) => setResultText(e.target.value)} maxLength={200} />
           </div>
 
           <div className="space-y-2">
-            <Label className="text-xs font-semibold">{t("coachManualReflectionRatings" as any)}</Label>
+            <Label className="text-xs font-semibold">{t("coachManualReflectionRatings")}</Label>
             <div className="grid grid-cols-2 gap-2">
               {RATING_KEYS.map((k) => (
                 <div key={k} className="space-y-1">
@@ -175,7 +175,7 @@ export function CoachManualReflectionDialog({ athleteId, athleteName, onCreated 
           </div>
 
           <div className="space-y-2">
-            <Label className="text-xs font-semibold">{t("coachManualReflectionAnswers" as any)}</Label>
+            <Label className="text-xs font-semibold">{t("coachManualReflectionAnswers")}</Label>
             {REFLECTION_KEYS.map((k) => (
               <div key={k} className="space-y-1">
                 <div className="text-[10px] text-muted-foreground">{t(`reflectionPrompt_${k}` as any)}</div>
