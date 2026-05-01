@@ -116,7 +116,7 @@ export function ManualHealthEntryCard({ onSaved }: Props) {
       toast.success(t("manualSavedToast"));
       onSaved?.();
     } catch (e: any) {
-      toast.error(e?.message || "Save failed");
+      toast.error(e?.message || t("manualSaveError"));
     } finally {
       setBusy(false);
     }
