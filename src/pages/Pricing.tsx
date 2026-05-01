@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Watermark } from "@/components/Watermark";
 import { PageMeta } from "@/components/PageMeta";
@@ -11,14 +11,13 @@ import { PublicNav } from "@/components/PublicNav";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import type { TranslationKey } from "@/i18n/translations";
+import { detectCurrency, formatPrice, getTierPrice } from "@/lib/currency";
 
 type Tier = {
   key: "athlete" | "coach_solo" | "team_small" | "team_medium" | "team_large";
   icon: typeof User;
   nameKey: TranslationKey;
   descKey: TranslationKey;
-  monthlyPriceKey: TranslationKey;
-  yearlyPriceKey: TranslationKey;
   features: TranslationKey[];
   popular?: boolean;
 };
@@ -29,8 +28,6 @@ const individualTiers: Tier[] = [
     icon: User,
     nameKey: "pricingTierAthlete",
     descKey: "pricingTierAthleteDesc",
-    monthlyPriceKey: "pricingAthletePrice",
-    yearlyPriceKey: "pricingAthleteYearlyPrice",
     features: [
       "pricingFeatureSingleAthlete",
       "pricingFeatureLimitedModules",
@@ -44,8 +41,6 @@ const individualTiers: Tier[] = [
     icon: Zap,
     nameKey: "pricingTierCoachSolo",
     descKey: "pricingTierCoachSoloDesc",
-    monthlyPriceKey: "pricingCoachSoloPrice",
-    yearlyPriceKey: "pricingCoachSoloYearlyPrice",
     features: [
       "pricingFeatureCoachSeat",
       "pricingFeatureAllModules",
@@ -62,8 +57,6 @@ const teamTiers: Tier[] = [
     icon: Users,
     nameKey: "pricingTierTeamSmall",
     descKey: "pricingTierTeamSmallDesc",
-    monthlyPriceKey: "pricingTeamSmallPrice",
-    yearlyPriceKey: "pricingTeamSmallYearlyPrice",
     features: [
       "pricingFeature5Athletes",
       "pricingFeatureAllModules",
@@ -77,8 +70,6 @@ const teamTiers: Tier[] = [
     icon: Users2,
     nameKey: "pricingTierTeamMedium",
     descKey: "pricingTierTeamMediumDesc",
-    monthlyPriceKey: "pricingTeamMediumPrice",
-    yearlyPriceKey: "pricingTeamMediumYearlyPrice",
     popular: true,
     features: [
       "pricingFeature15Athletes",
@@ -94,8 +85,6 @@ const teamTiers: Tier[] = [
     icon: Building2,
     nameKey: "pricingTierTeamLarge",
     descKey: "pricingTierTeamLargeDesc",
-    monthlyPriceKey: "pricingTeamLargePrice",
-    yearlyPriceKey: "pricingTeamLargeYearlyPrice",
     features: [
       "pricingFeature25Athletes",
       "pricingFeatureAllModules",
@@ -110,12 +99,13 @@ const teamTiers: Tier[] = [
 
 export default function Pricing() {
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly");
   const [loadingTier, setLoadingTier] = useState<string | null>(null);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isPaidOrDemo, setIsPaidOrDemo] = useState(false);
   const [managingPortal, setManagingPortal] = useState(false);
+  const currency = useMemo(() => detectCurrency(), []);
 
   useEffect(() => {
     checkSubscription();
@@ -165,7 +155,7 @@ export default function Pricing() {
     setLoadingTier(tierKey);
     try {
       const { data, error } = await supabase.functions.invoke("create-checkout-session", {
-        body: { tier: tierKey, billingCycle },
+        body: { tier: tierKey, billingCycle, currency },
       });
       if (error) throw error;
       if (data?.url) {
@@ -195,7 +185,8 @@ export default function Pricing() {
 
   const renderTierCard = (tier: Tier) => {
     const Icon = tier.icon;
-    const priceKey = billingCycle === "yearly" ? tier.yearlyPriceKey : tier.monthlyPriceKey;
+    const amount = getTierPrice(tier.key, currency, billingCycle);
+    const priceDisplay = amount != null ? formatPrice(amount, currency, billingCycle, locale) : "";
     const isLoading = loadingTier === tier.key;
 
     return (
@@ -219,7 +210,7 @@ export default function Pricing() {
         </CardHeader>
         <CardContent className="flex-1 space-y-4">
           <div className="text-center">
-            <span className="text-3xl font-extrabold text-foreground">{t(priceKey)}</span>
+            <span className="text-3xl font-extrabold text-foreground">{priceDisplay}</span>
           </div>
           <ul className="space-y-2">
             {tier.features.map((featureKey) => (
