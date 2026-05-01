@@ -94,11 +94,10 @@ export function HealthSourceGuide() {
       <CardHeader className="pb-3">
         <CardTitle className="text-base flex items-center gap-2">
           <BookOpen className="h-4 w-4 text-primary" />
-          {t("healthGuideTitle" as any) || "Where to find these numbers"}
+          {t("healthGuideTitle")}
         </CardTitle>
         <p className="text-xs text-muted-foreground">
-          {t("healthGuideHint" as any) ||
-            "Pick your device — we'll point you to the exact screen."}
+          {t("healthGuideHint")}
         </p>
       </CardHeader>
       <CardContent>
@@ -108,18 +107,17 @@ export function HealthSourceGuide() {
               <AccordionTrigger className="text-sm">{s.name}</AccordionTrigger>
               <AccordionContent>
                 <ul className="space-y-1.5 text-xs text-muted-foreground">
-                  <li><strong className="text-foreground">Sleep:</strong> {s.steps.sleep}</li>
-                  <li><strong className="text-foreground">Resting HR:</strong> {s.steps.rhr}</li>
-                  <li><strong className="text-foreground">HRV:</strong> {s.steps.hrv}</li>
-                  <li><strong className="text-foreground">Steps:</strong> {s.steps.steps}</li>
+                  <li><strong className="text-foreground">{t("healthGuideLabelSleep")}:</strong> {s.steps.sleep}</li>
+                  <li><strong className="text-foreground">{t("healthGuideLabelRhr")}:</strong> {s.steps.rhr}</li>
+                  <li><strong className="text-foreground">{t("healthGuideLabelHrv")}:</strong> {s.steps.hrv}</li>
+                  <li><strong className="text-foreground">{t("healthGuideLabelSteps")}:</strong> {s.steps.steps}</li>
                 </ul>
               </AccordionContent>
             </AccordionItem>
           ))}
         </Accordion>
         <p className="mt-3 text-[11px] text-muted-foreground">
-          {t("healthGuideGeneric" as any) ||
-            "Don't see your device? Open its companion app and look for the daily summary screen — copy the four numbers."}
+          {t("healthGuideGeneric")}
         </p>
       </CardContent>
     </Card>
