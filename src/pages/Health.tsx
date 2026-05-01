@@ -288,6 +288,7 @@ export default function Health() {
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
             <Footprints className="h-4 w-4 text-primary" /> {t("healthStepsTitle" as any) || "Steps"}
+            <MetricInfo text={t("healthTooltipSteps" as any) || "Total daily steps. Reflects overall activity volume; sustained drops can flag fatigue or a rest day."} />
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
