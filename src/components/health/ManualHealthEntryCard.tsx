@@ -65,7 +65,7 @@ export function ManualHealthEntryCard({ onSaved }: Props) {
     setBusy(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { toast.error(t("authRequired" as any) || "Please sign in"); return; }
+      if (!user) { toast.error(t("authRequired")); return; }
 
       const sleepHours = parse(sleep);
       const rhrVal = parse(rhr);
@@ -73,7 +73,7 @@ export function ManualHealthEntryCard({ onSaved }: Props) {
       const stepsVal = parse(steps);
 
       if (sleepHours == null && rhrVal == null && hrvVal == null && stepsVal == null) {
-        toast.error(t("manualNoValues" as any) || "Enter at least one value");
+        toast.error(t("manualNoValues"));
         return;
       }
 
@@ -113,10 +113,10 @@ export function ManualHealthEntryCard({ onSaved }: Props) {
         }, { onConflict: "user_id,summary_date" });
 
       if (error) throw error;
-      toast.success(t("manualSavedToast" as any) || "Saved");
+      toast.success(t("manualSavedToast"));
       onSaved?.();
     } catch (e: any) {
-      toast.error(e?.message || "Save failed");
+      toast.error(e?.message || t("manualSaveError"));
     } finally {
       setBusy(false);
     }
@@ -127,15 +127,15 @@ export function ManualHealthEntryCard({ onSaved }: Props) {
       <CardHeader className="pb-3">
         <CardTitle className="text-base flex items-center gap-2">
           <Save className="h-4 w-4 text-primary" />
-          {t("manualHealthTitle" as any) || "Log today's data"}
+          {t("manualHealthTitle")}
         </CardTitle>
         <p className="text-xs text-muted-foreground">
-          {t("manualHealthHint" as any) || "Type the numbers from your watch or health app. Leave blank to skip."}
+          {t("manualHealthHint")}
         </p>
       </CardHeader>
       <CardContent className="space-y-3">
         <div>
-          <Label htmlFor="health-date" className="text-xs">{t("date" as any) || "Date"}</Label>
+          <Label htmlFor="health-date" className="text-xs">{t("date")}</Label>
           <Input
             id="health-date"
             type="date"
@@ -149,7 +149,7 @@ export function ManualHealthEntryCard({ onSaved }: Props) {
         <div className="grid grid-cols-2 gap-3">
           <Field
             id="m-sleep"
-            label={t("manualSleepLabel" as any) || "Sleep (hours)"}
+            label={t("manualSleepLabel")}
             placeholder="7.5"
             unit="h"
             icon={<Moon className="h-3.5 w-3.5" />}
@@ -159,7 +159,7 @@ export function ManualHealthEntryCard({ onSaved }: Props) {
           />
           <Field
             id="m-rhr"
-            label={t("manualRhrLabel" as any) || "Resting HR (bpm)"}
+            label={t("manualRhrLabel")}
             placeholder="54"
             unit="bpm"
             icon={<HeartPulse className="h-3.5 w-3.5" />}
@@ -169,7 +169,7 @@ export function ManualHealthEntryCard({ onSaved }: Props) {
           />
           <Field
             id="m-hrv"
-            label={t("manualHrvLabel" as any) || "HRV / RMSSD (ms)"}
+            label={t("manualHrvLabel")}
             placeholder="62"
             unit="ms"
             icon={<Waves className="h-3.5 w-3.5" />}
@@ -179,7 +179,7 @@ export function ManualHealthEntryCard({ onSaved }: Props) {
           />
           <Field
             id="m-steps"
-            label={t("manualStepsLabel" as any) || "Steps"}
+            label={t("manualStepsLabel")}
             placeholder="8420"
             unit=""
             icon={<Footprints className="h-3.5 w-3.5" />}
@@ -191,7 +191,7 @@ export function ManualHealthEntryCard({ onSaved }: Props) {
 
         <Button onClick={handleSave} disabled={busy} className="w-full">
           <Save className="h-4 w-4 mr-1.5" />
-          {busy ? "…" : (t("manualSaveBtn" as any) || "Save entry")}
+          {busy ? "…" : (t("manualSaveBtn"))}
         </Button>
       </CardContent>
     </Card>

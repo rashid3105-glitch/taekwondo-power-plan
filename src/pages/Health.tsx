@@ -40,7 +40,7 @@ export default function Health() {
     // Require an authenticated session — the edge function rejects anon calls.
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
-      if (!silent) toast.error(t("healthResyncError" as any) || "Sync failed. Please try again.");
+      if (!silent) toast.error(t("healthResyncError"));
       return;
     }
     setSyncing(true);
@@ -53,14 +53,14 @@ export default function Health() {
       if (error) throw error;
       if (!silent) {
         const n = (data as { days_synced?: number })?.days_synced ?? 0;
-        const msg = (t("healthResyncSuccess" as any) || "Synced {n} days from iPhone").replace("{n}", String(n));
+        const msg = (t("healthResyncSuccess")).replace("{n}", String(n));
         toast.success(msg);
       }
       try { localStorage.setItem("health:lastAutoSync", String(Date.now())); } catch {}
       await load();
     } catch (e) {
       console.error("resync-health failed", e);
-      if (!silent) toast.error(t("healthResyncError" as any) || "Sync failed. Please try again.");
+      if (!silent) toast.error(t("healthResyncError"));
     } finally {
       setSyncing(false);
     }
@@ -253,7 +253,7 @@ export default function Health() {
     <div className="min-h-screen bg-background p-4 max-w-3xl mx-auto">
       <PageMeta title="Health · Sportstalent" description="Log sleep, resting HR, HRV and steps to track recovery." noindex />
       <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")} className="mb-4">
-        <ArrowLeft className="h-4 w-4 mr-1" /> {t("back" as any) || "Back"}
+        <ArrowLeft className="h-4 w-4 mr-1" /> {t("back")}
       </Button>
 
       <div className="flex items-start gap-3 mb-3">
@@ -261,9 +261,9 @@ export default function Health() {
           <Activity className="h-6 w-6 text-primary" />
         </div>
         <div className="flex-1 min-w-0">
-          <h1 className="text-2xl font-bold">{t("healthPageTitle" as any) || "Health"}</h1>
+          <h1 className="text-2xl font-bold">{t("healthPageTitle")}</h1>
           <p className="text-sm text-muted-foreground">
-            {t("healthPageSubtitleManual" as any) || "Log sleep, resting heart rate, HRV and steps to track your recovery."}
+            {t("healthPageSubtitleManual")}
           </p>
         </div>
         <Button
@@ -274,11 +274,11 @@ export default function Health() {
           className="h-11 sm:h-9 shrink-0"
         >
           <RefreshCw className={`h-4 w-4 mr-2 ${syncing ? "animate-spin" : ""}`} />
-          {t("healthResyncButton" as any) || "Re-sync from iPhone"}
+          {t("healthResyncButton")}
         </Button>
       </div>
       <p className="text-xs text-muted-foreground mb-6">
-        {t("healthResyncHint" as any) || "Pulls the last 30 days from your iPhone's HealthBridge sync and refreshes your 7-day baselines."}
+        {t("healthResyncHint")}
       </p>
 
       {/* Manual entry */}
@@ -288,15 +288,15 @@ export default function Health() {
       {/* 7-day overview with per-metric toggles */}
       <Card className="mb-4">
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">{t("healthChart7dTitle" as any) || "Last 7 days overview"}</CardTitle>
+          <CardTitle className="text-base">{t("healthChart7dTitle")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex flex-wrap gap-2">
             {([
-              { key: "steps", color: "hsl(var(--primary))", label: t("healthStepsTitle" as any) || "Steps" },
-              { key: "sleep", color: "hsl(220, 70%, 55%)", label: t("healthSleepTitle" as any) || "Sleep" },
-              { key: "rhr", color: "hsl(0, 75%, 55%)", label: t("healthRhrTitle" as any) || "RHR" },
-              { key: "hrv", color: "hsl(160, 75%, 45%)", label: t("healthHrvTitle" as any) || "HRV" },
+              { key: "steps", color: "hsl(var(--primary))", label: t("healthStepsTitle") },
+              { key: "sleep", color: "hsl(220, 70%, 55%)", label: t("healthSleepTitle") },
+              { key: "rhr", color: "hsl(0, 75%, 55%)", label: t("healthRhrTitle") },
+              { key: "hrv", color: "hsl(160, 75%, 45%)", label: t("healthHrvTitle") },
             ] as const).map(m => {
               const active = show[m.key];
               return (
@@ -340,18 +340,18 @@ export default function Health() {
       <Card className="mb-4">
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
-            <Footprints className="h-4 w-4 text-primary" /> {t("healthStepsTitle" as any) || "Steps"}
-            <MetricInfo text={t("healthTooltipSteps" as any) || "Total daily steps. Reflects overall activity volume; sustained drops can flag fatigue or a rest day."} />
+            <Footprints className="h-4 w-4 text-primary" /> {t("healthStepsTitle")}
+            <MetricInfo text={t("healthTooltipSteps")} />
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {hasSteps ? (
             <>
               <div className="grid grid-cols-3 gap-2 text-center">
-                <Stat label={t("healthStepsToday" as any) || "Today"} value={stepsTotals.today.toLocaleString()} />
-                <Stat label={t("healthStepsAvg7" as any) || "7-day avg"} value={stepsTotals.avg7.toLocaleString()} />
+                <Stat label={t("healthStepsToday")} value={stepsTotals.today.toLocaleString()} />
+                <Stat label={t("healthStepsAvg7")} value={stepsTotals.avg7.toLocaleString()} />
                 <Stat
-                  label={t("healthStepsDelta" as any) || "vs yesterday"}
+                  label={t("healthStepsDelta")}
                   value={`${stepsTotals.delta >= 0 ? "+" : ""}${stepsTotals.delta.toLocaleString()}`}
                   tone={stepsTotals.delta >= 0 ? "good" : "bad"}
                 />
@@ -369,7 +369,7 @@ export default function Health() {
               </div>
             </>
           ) : (
-            <EmptyMetric label={t("healthStepsEmpty" as any) || "No steps logged yet. Use the form above to add today's number."} />
+            <EmptyMetric label={t("healthStepsEmpty")} />
           )}
         </CardContent>
       </Card>
@@ -378,8 +378,8 @@ export default function Health() {
       <Card className="mb-4">
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
-            <Moon className="h-4 w-4 text-primary" /> {t("healthSleepTitle" as any) || "Sleep"}
-            <MetricInfo text={t("healthTooltipSleep" as any) || "Last night's total sleep in hours. Aim 7–9h; comparing to your 7-night average reveals accumulated debt."} />
+            <Moon className="h-4 w-4 text-primary" /> {t("healthSleepTitle")}
+            <MetricInfo text={t("healthTooltipSleep")} />
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -387,11 +387,11 @@ export default function Health() {
             <>
               <div className="grid grid-cols-2 gap-2 text-center">
                 <Stat
-                  label={t("healthSleepLast" as any) || "Last night"}
+                  label={t("healthSleepLast")}
                   value={sleepLast != null ? `${(sleepLast / 60).toFixed(1)}h` : "—"}
                 />
                 <Stat
-                  label={t("healthSleepAvg7" as any) || "7-night avg"}
+                  label={t("healthSleepAvg7")}
                   value={sleepAvg7 != null ? `${(sleepAvg7 / 60).toFixed(1)}h` : "—"}
                 />
               </div>
@@ -408,7 +408,7 @@ export default function Health() {
               </div>
             </>
           ) : (
-            <EmptyMetric label={t("healthSleepEmptyManual" as any) || "No sleep logged yet. Add your last-night hours above."} />
+            <EmptyMetric label={t("healthSleepEmptyManual")} />
           )}
         </CardContent>
       </Card>
@@ -417,18 +417,18 @@ export default function Health() {
       <Card className="mb-4">
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
-            <HeartPulse className="h-4 w-4 text-primary" /> {t("healthRhrTitle" as any) || "Resting heart rate"}
-            <MetricInfo text={t("healthTooltipRhr" as any) || "Resting heart rate (bpm). A rise of +5 or more above your 7-day baseline signals stress, illness or incomplete recovery."} />
+            <HeartPulse className="h-4 w-4 text-primary" /> {t("healthRhrTitle")}
+            <MetricInfo text={t("healthTooltipRhr")} />
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {hasRhr ? (
             <>
               <div className="grid grid-cols-3 gap-2 text-center">
-                <Stat label={t("healthRhrLast" as any) || "Latest"} value={rhrLast != null ? `${Math.round(rhrLast)} bpm` : "—"} />
-                <Stat label={t("healthRhrAvg7" as any) || "7-day avg"} value={rhrAvg7 != null ? `${Math.round(rhrAvg7)} bpm` : "—"} />
+                <Stat label={t("healthRhrLast")} value={rhrLast != null ? `${Math.round(rhrLast)} bpm` : "—"} />
+                <Stat label={t("healthRhrAvg7")} value={rhrAvg7 != null ? `${Math.round(rhrAvg7)} bpm` : "—"} />
                 <Stat
-                  label={t("healthRhrDelta" as any) || "vs baseline"}
+                  label={t("healthRhrDelta")}
                   value={rhrLast != null && rhrBase != null ? `${rhrLast - rhrBase >= 0 ? "+" : ""}${Math.round(rhrLast - rhrBase)}` : "—"}
                   tone={rhrLast != null && rhrBase != null ? (rhrLast - rhrBase <= 0 ? "good" : "bad") : undefined}
                 />
@@ -447,7 +447,7 @@ export default function Health() {
               </div>
             </>
           ) : (
-            <EmptyMetric label={t("healthRhrEmptyManual" as any) || "No resting HR logged yet. Add today's reading above."} />
+            <EmptyMetric label={t("healthRhrEmptyManual")} />
           )}
         </CardContent>
       </Card>
@@ -456,18 +456,18 @@ export default function Health() {
       <Card className="mb-4">
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
-            <Waves className="h-4 w-4 text-primary" /> {t("healthHrvTitle" as any) || "Heart-rate variability (HRV)"}
-            <MetricInfo text={t("healthTooltipHrv" as any) || "Heart-rate variability (RMSSD, ms). Clearly below your 7-day baseline = nervous-system strain; back off the load."} />
+            <Waves className="h-4 w-4 text-primary" /> {t("healthHrvTitle")}
+            <MetricInfo text={t("healthTooltipHrv")} />
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {hasHrv ? (
             <>
               <div className="grid grid-cols-3 gap-2 text-center">
-                <Stat label={t("healthHrvLast" as any) || "Latest"} value={hrvLast != null ? `${Math.round(hrvLast)} ms` : "—"} />
-                <Stat label={t("healthHrvAvg7" as any) || "7-day avg"} value={hrvAvg7 != null ? `${Math.round(hrvAvg7)} ms` : "—"} />
+                <Stat label={t("healthHrvLast")} value={hrvLast != null ? `${Math.round(hrvLast)} ms` : "—"} />
+                <Stat label={t("healthHrvAvg7")} value={hrvAvg7 != null ? `${Math.round(hrvAvg7)} ms` : "—"} />
                 <Stat
-                  label={t("healthHrvDelta" as any) || "vs baseline"}
+                  label={t("healthHrvDelta")}
                   value={hrvLast != null && hrvBase != null ? `${hrvLast - hrvBase >= 0 ? "+" : ""}${Math.round(hrvLast - hrvBase)}` : "—"}
                   tone={hrvLast != null && hrvBase != null ? (hrvLast - hrvBase >= 0 ? "good" : "bad") : undefined}
                 />
@@ -486,7 +486,7 @@ export default function Health() {
               </div>
             </>
           ) : (
-            <EmptyMetric label={t("healthHrvEmptyManual" as any) || "No HRV logged yet. Add today's reading above."} />
+            <EmptyMetric label={t("healthHrvEmptyManual")} />
           )}
         </CardContent>
       </Card>
