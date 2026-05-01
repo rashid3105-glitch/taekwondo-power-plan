@@ -389,6 +389,7 @@ export default function Help() {
 }
 
 const CHANGELOG: { dateKey: string; entries: string[] }[] = [
+  { dateKey: "changelog_2026_05_01", entries: ["changelogEntry92", "changelogEntry93", "changelogEntry94"] },
   { dateKey: "changelog_2026_04_27", entries: ["changelogEntry89", "changelogEntry90", "changelogEntry91"] },
   { dateKey: "changelog_2026_04_26", entries: ["changelogEntry86", "changelogEntry87", "changelogEntry88"] },
   { dateKey: "changelog_2026_04_23", entries: ["changelogEntry74","changelogEntry75","changelogEntry76","changelogEntry77","changelogEntry78","changelogEntry79","changelogEntry80","changelogEntry81","changelogEntry82","changelogEntry83","changelogEntry84","changelogEntry85"] },
