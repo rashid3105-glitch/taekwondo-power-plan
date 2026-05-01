@@ -35,23 +35,30 @@ export default function Health() {
   const [syncing, setSyncing] = useState(false);
   const [show, setShow] = useState({ steps: true, sleep: true, rhr: true, hrv: true });
 
-  async function handleResync() {
+  async function runResync({ silent }: { silent: boolean }) {
     if (syncing) return;
     setSyncing(true);
-    haptics.tap();
+    if (!silent) haptics.tap();
     try {
       const { data, error } = await supabase.functions.invoke("resync-health", { body: {} });
       if (error) throw error;
-      const n = (data as { days_synced?: number })?.days_synced ?? 0;
-      const msg = (t("healthResyncSuccess" as any) || "Synced {n} days from iPhone").replace("{n}", String(n));
-      toast.success(msg);
+      if (!silent) {
+        const n = (data as { days_synced?: number })?.days_synced ?? 0;
+        const msg = (t("healthResyncSuccess" as any) || "Synced {n} days from iPhone").replace("{n}", String(n));
+        toast.success(msg);
+      }
+      try { localStorage.setItem("health:lastAutoSync", String(Date.now())); } catch {}
       await load();
     } catch (e) {
       console.error("resync-health failed", e);
-      toast.error(t("healthResyncError" as any) || "Sync failed. Please try again.");
+      if (!silent) toast.error(t("healthResyncError" as any) || "Sync failed. Please try again.");
     } finally {
       setSyncing(false);
     }
+  }
+
+  async function handleResync() {
+    await runResync({ silent: false });
   }
 
   async function load() {
