@@ -461,3 +461,18 @@ function EmptyMetric({ label }: { label: string }) {
     </p>
   );
 }
+
+function MetricInfo({ text }: { text: string }) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button type="button" className="ml-1 text-muted-foreground hover:text-foreground" aria-label="info">
+          <Info className="h-3.5 w-3.5" />
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="top" className="max-w-xs text-xs leading-snug">
+        {text}
+      </TooltipContent>
+    </Tooltip>
+  );
+}
