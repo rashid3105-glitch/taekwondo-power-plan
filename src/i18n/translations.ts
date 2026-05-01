@@ -6864,6 +6864,12 @@ const translations = {
     next: "Weiter",
     pending: "Wartet auf Synchronisation",
     notFound: "Nicht gefunden",
+    helpReflectionTitle: "Reflexion nach dem Wettkampf",
+    helpReflectionSteps: "1. Nach jedem Wettkampf erscheint im Mental-Tab eine Karte, die zur Reflexion auffordert\n2. Tippe „Reflexion starten\" für 4 kurze Schritte: Ergebnis, was lief gut, was muss besser werden, taktische Notizen\n3. Bewerte körperliche, mentale und taktische Leistung von 1–10\n4. Das System erzeugt einen persönlichen Aktionsplan und 3 SMART-Ziele aus deinen Antworten\n5. Reflexion wird sofort lokal gespeichert und synchronisiert sich, sobald du wieder online bist — funktioniert offline\n6. Trainer-Ansicht: Im Mental-Tab des Athleten sieht der Trainer alle Reflexionen, Durchschnittsbewertungen und kann Kommentare hinzufügen\n7. Trends erscheinen in einem Diagramm, sodass du die Leistungsentwicklung über mehrere Wettkämpfe sehen kannst",
+    changelog_2026_05_01: "1. Mai 2026",
+    changelogEntry92: "Reflexion nach dem Wettkampf: 4-Schritte-Flow mit persönlichem Aktionsplan und 3 SMART-Zielen; offlinefähig.",
+    changelogEntry93: "Gesundheits-Seite: Manuelle Eingabe für Schlaf/Ruhepuls/HRV/Schritte mit iPhone-Resync, 7-Tage-Baselines und Geräteleitfaden für Apple, Garmin, Polar, Fitbit, Samsung, Whoop und Oura.",
+    changelogEntry94: "Norwegische Sprachunterstützung: Fehler behoben, bei dem die Gesundheits-Seite auf Norwegisch arabischen Text zeigte.",
   },
 
   ar: {
