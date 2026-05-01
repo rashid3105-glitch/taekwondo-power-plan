@@ -78,7 +78,7 @@ const SECTIONS: SectionDef[] = [
     chipBg: "bg-tab-mental",
     chipFg: "text-white",
     accent: "bg-tab-mental",
-    topics: ["helpMentalPlan", "helpDiary"],
+    topics: ["helpMentalPlan", "helpDiary", "helpReflection"],
   },
   {
     id: "coach",
