@@ -1,29 +1,32 @@
-## Pricing display check — results
+# Require admin approval for coach-created athletes
 
-I traced every tier through `getTierPrice` + `formatPrice` for all 4 currencies and all supported app locales. Everything renders correctly.
+## Goal
+Coaches can still create athlete accounts, but the athletes cannot use the system until an admin approves them — same gate that already exists for self-signups.
 
-### Sample output per tier (monthly / yearly)
+## Current behavior
+- Coach uses **Add athlete** dialog → calls the `create-athlete` edge function.
+- That function sets `is_approved: true` on the new profile, so the athlete can log straight in and use everything.
+- Self-signups, by contrast, are created with `is_approved: false` and land on the `PendingApproval` screen until an admin approves them in **Admin → Approvals**.
 
-| Tier | DKK (da-DK) | NOK (nb-NO) | SEK (sv-SE) | EUR (en) |
-|---|---|---|---|---|
-| Athlete | 49 DKK / 470 DKK | 69 NOK / 660 NOK | 79 SEK / 760 SEK | €6.50 / €63 |
-| Coach Solo | 99 DKK / 950 DKK | 139 NOK / 1 330 NOK | 159 SEK / 1 530 SEK | €13 / €127 |
-| Team Small | 399 DKK / 3.830 DKK | 559 NOK / 5 360 NOK | 639 SEK / 6 160 SEK | €53 / €514 |
-| Team Medium | 699 DKK / 6.710 DKK | 979 NOK / 9 390 NOK | 1 119 SEK / 10 780 SEK | €94 / €900 |
-| Team Large | 999 DKK / 9.590 DKK | 1 399 NOK / 13 420 NOK | 1 599 SEK / 15 410 SEK | €134 / €1.287 |
+## Proposed change
+1. **Edge function `create-athlete`**
+   - Change `is_approved: true` → `is_approved: false` in the profile update.
+   - Keep everything else (club inheritance, coach link via `coach_athletes`, email confirmed, demo metadata) as-is, so the athlete still appears under the coach immediately and the admin sees them in the pending queue.
 
-### What's working
-- **Currency detection** picks DKK for `da-*`/`*-DK`, NOK for `nb/nn/no-*`, SEK for `sv-*`/`*-SE`, EUR for everyone else.
-- **EUR decimals** are smart: `€13` (whole) vs `€6.50` (with cents).
-- **Scandinavian currencies** show as integers with `DKK`/`NOK`/`SEK` suffix.
-- **Period suffix** is localized: `/md`, `/mån`, `/Mon.`, `/شهر`, `/mo` and `/år`, `/Jahr`, `/سنة`, `/yr`.
-- **Stripe checkout** receives the detected currency and uses the matching `currency_options` on the same Price ID.
+2. **Coach UX (`CreateAthleteDialog.tsx`)**
+   - Update the success toast/description to make the new behavior obvious, e.g. *"Athlete created — pending admin approval before they can sign in."*
+   - Add localized strings (`da`, `en`, `sv`, `de`, `ar`) for the new message.
 
-### No bugs found
-No changes required. Pricing page is displaying correctly for all four currencies.
+3. **Admin queue (`AdminApproval.tsx`)**
+   - No code change needed — coach-created athletes will show up here automatically because they now have `is_approved = false`. Worth verifying visually.
 
-### Optional polish (only if you want it)
-1. **NOK/SEK label position** — currently shows `49 DKK`. Some prefer `kr 49` or `49 kr`. Today we show the ISO code; want me to switch to the `kr` symbol instead?
-2. **App-locale vs browser-locale mismatch** — currency is locked to browser locale, but a user can manually switch the app language. Example: a Danish user who switches the app to English still sees DKK with `/mo` suffix. Want a manual currency switcher next to the language switcher?
+4. **Athlete login experience**
+   - No change needed — `PendingApproval.tsx` already handles unapproved users.
 
-Tell me if you want either of these and I'll implement. Otherwise we're done.
+## Open question
+Do you want **admin-created** athletes (admin uses the same dialog) to also require approval, or should admins be auto-approved? Simplest is: everyone created via this dialog is pending until an admin clicks approve — admins can approve their own creations in one click. Let me know if you'd prefer admins to bypass.
+
+## Out of scope
+- No DB schema or RLS changes.
+- No change to coach approval flow.
+- No change to the "add by code" flow (that links an existing athlete to a coach; the athlete's approval status is unchanged).

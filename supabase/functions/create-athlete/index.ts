@@ -100,9 +100,11 @@ Deno.serve(async (req) => {
     }
 
     // Update profile with additional fields if provided
+    // Admins creating athletes auto-approve them; coach-created athletes
+    // require admin approval before they can use the system.
     const profileUpdates: Record<string, any> = {
       club_id: coachProfile.club_id,
-      is_approved: true,
+      is_approved: !!isAdmin,
     };
     if (age != null && typeof age === "number" && age >= 5 && age <= 99) profileUpdates.age = age;
     if (belt_level && typeof belt_level === "string") profileUpdates.belt_level = belt_level;
