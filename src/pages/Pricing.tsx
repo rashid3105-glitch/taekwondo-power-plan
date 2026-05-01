@@ -28,8 +28,6 @@ const individualTiers: Tier[] = [
     icon: User,
     nameKey: "pricingTierAthlete",
     descKey: "pricingTierAthleteDesc",
-    monthlyPriceKey: "pricingAthletePrice",
-    yearlyPriceKey: "pricingAthleteYearlyPrice",
     features: [
       "pricingFeatureSingleAthlete",
       "pricingFeatureLimitedModules",
@@ -43,8 +41,6 @@ const individualTiers: Tier[] = [
     icon: Zap,
     nameKey: "pricingTierCoachSolo",
     descKey: "pricingTierCoachSoloDesc",
-    monthlyPriceKey: "pricingCoachSoloPrice",
-    yearlyPriceKey: "pricingCoachSoloYearlyPrice",
     features: [
       "pricingFeatureCoachSeat",
       "pricingFeatureAllModules",
@@ -61,8 +57,6 @@ const teamTiers: Tier[] = [
     icon: Users,
     nameKey: "pricingTierTeamSmall",
     descKey: "pricingTierTeamSmallDesc",
-    monthlyPriceKey: "pricingTeamSmallPrice",
-    yearlyPriceKey: "pricingTeamSmallYearlyPrice",
     features: [
       "pricingFeature5Athletes",
       "pricingFeatureAllModules",
@@ -76,8 +70,6 @@ const teamTiers: Tier[] = [
     icon: Users2,
     nameKey: "pricingTierTeamMedium",
     descKey: "pricingTierTeamMediumDesc",
-    monthlyPriceKey: "pricingTeamMediumPrice",
-    yearlyPriceKey: "pricingTeamMediumYearlyPrice",
     popular: true,
     features: [
       "pricingFeature15Athletes",
@@ -93,8 +85,6 @@ const teamTiers: Tier[] = [
     icon: Building2,
     nameKey: "pricingTierTeamLarge",
     descKey: "pricingTierTeamLargeDesc",
-    monthlyPriceKey: "pricingTeamLargePrice",
-    yearlyPriceKey: "pricingTeamLargeYearlyPrice",
     features: [
       "pricingFeature25Athletes",
       "pricingFeatureAllModules",
