@@ -252,8 +252,6 @@ export default function Health() {
       {/* Manual entry */}
       <ManualHealthEntryCard onSaved={() => void load()} />
 
-      {/* Where to find numbers */}
-      <HealthSourceGuide />
 
       {/* 7-day overview with per-metric toggles */}
       <Card className="mb-4">
