@@ -35,13 +35,52 @@ export default function Health() {
     if (!user) { navigate("/auth"); return; }
     const since = new Date(Date.now() - 30 * 86400_000).toISOString().slice(0, 10);
 
-    const { data: sums } = await supabase.from("wearable_daily_summary")
-      .select("summary_date,steps,sleep_minutes,resting_hr,hrv_rmssd,baseline_hr_7d,baseline_hrv_7d")
-      .eq("user_id", user.id)
-      .gte("summary_date", since)
-      .order("summary_date", { ascending: true });
+    // Read both sources in parallel: summary table (manual + mirrored)
+    // and the raw iPhone health_data table (in case the mirror trigger
+    // is briefly behind).
+    const [summaryRes, healthRes] = await Promise.all([
+      supabase.from("wearable_daily_summary")
+        .select("summary_date,steps,sleep_minutes,resting_hr,hrv_rmssd,baseline_hr_7d,baseline_hrv_7d")
+        .eq("user_id", user.id)
+        .gte("summary_date", since)
+        .order("summary_date", { ascending: true }),
+      supabase.from("health_data")
+        .select("date,steps,sleep_hours,heart_rate_avg,hrv")
+        .eq("user_id", user.id)
+        .gte("date", since)
+        .order("date", { ascending: true }),
+    ]);
 
-    setSteps((sums ?? []) as DailyRow[]);
+    // Merge by date — summary wins, health_data fills any nulls.
+    const byDate = new Map<string, DailyRow>();
+    for (const r of summaryRes.data ?? []) {
+      byDate.set(r.summary_date, {
+        summary_date: r.summary_date,
+        steps: r.steps ?? null,
+        sleep_minutes: r.sleep_minutes ?? null,
+        resting_hr: r.resting_hr as number | null,
+        hrv_rmssd: r.hrv_rmssd as number | null,
+        baseline_hr_7d: r.baseline_hr_7d as number | null,
+        baseline_hrv_7d: r.baseline_hrv_7d as number | null,
+      });
+    }
+    for (const h of healthRes.data ?? []) {
+      const existing = byDate.get(h.date) ?? {
+        summary_date: h.date,
+        steps: null, sleep_minutes: null, resting_hr: null, hrv_rmssd: null,
+        baseline_hr_7d: null, baseline_hrv_7d: null,
+      };
+      byDate.set(h.date, {
+        ...existing,
+        steps: existing.steps ?? (h.steps != null ? Number(h.steps) : null),
+        sleep_minutes: existing.sleep_minutes ?? (h.sleep_hours != null ? Math.round(Number(h.sleep_hours) * 60) : null),
+        resting_hr: existing.resting_hr ?? (h.heart_rate_avg as number | null),
+        hrv_rmssd: existing.hrv_rmssd ?? (h.hrv as number | null),
+      });
+    }
+
+    const merged = Array.from(byDate.values()).sort((a, b) => a.summary_date.localeCompare(b.summary_date));
+    setSteps(merged);
     setLoaded(true);
   }
 
