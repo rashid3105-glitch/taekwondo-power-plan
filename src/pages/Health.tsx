@@ -173,30 +173,115 @@ export default function Health() {
   const hasHrv = steps.some(r => r.hrv_rmssd != null);
   const hasSteps = steps.some(r => r.steps != null && r.steps > 0);
 
+  // Build normalized 7-day overview chart data (0-100 per metric)
+  const last7 = useMemo(() => steps.slice(-7), [steps]);
+  const overviewData = useMemo(() => {
+    const max = (vals: (number | null)[]) => {
+      const nums = vals.filter((v): v is number => v != null && Number.isFinite(v));
+      return nums.length ? Math.max(...nums) : 0;
+    };
+    const stepsMax = Math.max(max(last7.map(r => r.steps)), 1);
+    const sleepMax = Math.max(max(last7.map(r => r.sleep_minutes)), 1);
+    const rhrMax = Math.max(max(last7.map(r => r.resting_hr)), 1);
+    const hrvMax = Math.max(max(last7.map(r => r.hrv_rmssd)), 1);
+    return last7.map(r => ({
+      date: r.summary_date.slice(5),
+      Steps: r.steps != null ? Math.round((r.steps / stepsMax) * 100) : null,
+      Sleep: r.sleep_minutes != null ? Math.round((r.sleep_minutes / sleepMax) * 100) : null,
+      RHR: r.resting_hr != null ? Math.round((Number(r.resting_hr) / rhrMax) * 100) : null,
+      HRV: r.hrv_rmssd != null ? Math.round((Number(r.hrv_rmssd) / hrvMax) * 100) : null,
+    }));
+  }, [last7]);
+
   return (
+    <TooltipProvider delayDuration={200}>
     <div className="min-h-screen bg-background p-4 max-w-3xl mx-auto">
       <PageMeta title="Health · Sportstalent" description="Log sleep, resting HR, HRV and steps to track recovery." noindex />
       <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")} className="mb-4">
         <ArrowLeft className="h-4 w-4 mr-1" /> {t("back" as any) || "Back"}
       </Button>
 
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex items-start gap-3 mb-3">
         <div className="p-3 rounded-lg bg-primary/10">
           <Activity className="h-6 w-6 text-primary" />
         </div>
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <h1 className="text-2xl font-bold">{t("healthPageTitle" as any) || "Health"}</h1>
           <p className="text-sm text-muted-foreground">
             {t("healthPageSubtitleManual" as any) || "Log sleep, resting heart rate, HRV and steps to track your recovery."}
           </p>
         </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleResync}
+          disabled={syncing}
+          className="h-11 sm:h-9 shrink-0"
+        >
+          <RefreshCw className={`h-4 w-4 mr-2 ${syncing ? "animate-spin" : ""}`} />
+          {t("healthResyncButton" as any) || "Re-sync from iPhone"}
+        </Button>
       </div>
+      <p className="text-xs text-muted-foreground mb-6">
+        {t("healthResyncHint" as any) || "Pulls the last 30 days from your iPhone's HealthBridge sync and refreshes your 7-day baselines."}
+      </p>
 
       {/* Manual entry */}
       <ManualHealthEntryCard onSaved={() => void load()} />
 
       {/* Where to find numbers */}
       <HealthSourceGuide />
+
+      {/* 7-day overview with per-metric toggles */}
+      <Card className="mb-4">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base">{t("healthChart7dTitle" as any) || "Last 7 days overview"}</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex flex-wrap gap-2">
+            {([
+              { key: "steps", color: "hsl(var(--primary))", label: t("healthStepsTitle" as any) || "Steps" },
+              { key: "sleep", color: "hsl(220, 70%, 55%)", label: t("healthSleepTitle" as any) || "Sleep" },
+              { key: "rhr", color: "hsl(0, 75%, 55%)", label: t("healthRhrTitle" as any) || "RHR" },
+              { key: "hrv", color: "hsl(160, 75%, 45%)", label: t("healthHrvTitle" as any) || "HRV" },
+            ] as const).map(m => {
+              const active = show[m.key];
+              return (
+                <button
+                  key={m.key}
+                  type="button"
+                  onClick={() => setShow(s => ({ ...s, [m.key]: !s[m.key] }))}
+                  className={`text-xs px-3 py-1 rounded-full border transition ${
+                    active ? "bg-foreground/5 border-border" : "opacity-40 border-dashed border-border"
+                  }`}
+                >
+                  <span className="inline-block w-2 h-2 rounded-full mr-2 align-middle" style={{ background: m.color }} />
+                  {m.label}
+                </button>
+              );
+            })}
+          </div>
+          <div className="h-56">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={overviewData} margin={{ top: 5, right: 8, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="date" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
+                <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} unit="%" />
+                <RTooltip contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", fontSize: 11 }} />
+                <Legend wrapperStyle={{ fontSize: 11 }} />
+                {show.steps && <Line type="monotone" dataKey="Steps" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} connectNulls />}
+                {show.sleep && <Line type="monotone" dataKey="Sleep" stroke="hsl(220, 70%, 55%)" strokeWidth={2} dot={false} connectNulls />}
+                {show.rhr && <Line type="monotone" dataKey="RHR" stroke="hsl(0, 75%, 55%)" strokeWidth={2} dot={false} connectNulls />}
+                {show.hrv && <Line type="monotone" dataKey="HRV" stroke="hsl(160, 75%, 45%)" strokeWidth={2} dot={false} connectNulls />}
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+          <p className="text-[11px] text-muted-foreground">
+            Values normalized 0–100% within the 7-day window so all metrics share one axis.
+          </p>
+        </CardContent>
+      </Card>
+
 
       {/* Steps */}
       <Card className="mb-4">
