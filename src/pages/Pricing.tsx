@@ -155,7 +155,7 @@ export default function Pricing() {
     setLoadingTier(tierKey);
     try {
       const { data, error } = await supabase.functions.invoke("create-checkout-session", {
-        body: { tier: tierKey, billingCycle },
+        body: { tier: tierKey, billingCycle, currency },
       });
       if (error) throw error;
       if (data?.url) {
