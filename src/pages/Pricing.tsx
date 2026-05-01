@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Watermark } from "@/components/Watermark";
 import { PageMeta } from "@/components/PageMeta";
@@ -11,14 +11,13 @@ import { PublicNav } from "@/components/PublicNav";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import type { TranslationKey } from "@/i18n/translations";
+import { detectCurrency, formatPrice, getTierPrice } from "@/lib/currency";
 
 type Tier = {
   key: "athlete" | "coach_solo" | "team_small" | "team_medium" | "team_large";
   icon: typeof User;
   nameKey: TranslationKey;
   descKey: TranslationKey;
-  monthlyPriceKey: TranslationKey;
-  yearlyPriceKey: TranslationKey;
   features: TranslationKey[];
   popular?: boolean;
 };
