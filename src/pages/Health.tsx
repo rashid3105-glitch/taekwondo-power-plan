@@ -91,13 +91,23 @@ export default function Health() {
         .order("date", { ascending: true }),
     ]);
 
-    // Merge by date — summary wins, health_data fills any nulls.
+    // Merge by date. Priority rule: a real (non-null, non-zero for steps/sleep)
+    // value from `health_data` wins over a 0/null in `wearable_daily_summary`,
+    // because the iPhone is the source of truth and the summary table can lag
+    // (or have been wiped by an old recompute).
     const byDate = new Map<string, DailyRow>();
+
+    function nonZeroOrNull(v: number | null | undefined): number | null {
+      if (v == null) return null;
+      const n = Number(v);
+      return n > 0 ? n : null;
+    }
+
     for (const r of summaryRes.data ?? []) {
       byDate.set(r.summary_date, {
         summary_date: r.summary_date,
-        steps: r.steps ?? null,
-        sleep_minutes: r.sleep_minutes ?? null,
+        steps: nonZeroOrNull(r.steps as number | null),
+        sleep_minutes: nonZeroOrNull(r.sleep_minutes as number | null),
         resting_hr: r.resting_hr as number | null,
         hrv_rmssd: r.hrv_rmssd as number | null,
         baseline_hr_7d: r.baseline_hr_7d as number | null,
@@ -110,16 +120,29 @@ export default function Health() {
         steps: null, sleep_minutes: null, resting_hr: null, hrv_rmssd: null,
         baseline_hr_7d: null, baseline_hrv_7d: null,
       };
+      const hSteps = h.steps != null ? Number(h.steps) : null;
+      const hSleepMin = h.sleep_hours != null ? Math.round(Number(h.sleep_hours) * 60) : null;
       byDate.set(h.date, {
         ...existing,
-        steps: existing.steps ?? (h.steps != null ? Number(h.steps) : null),
-        sleep_minutes: existing.sleep_minutes ?? (h.sleep_hours != null ? Math.round(Number(h.sleep_hours) * 60) : null),
+        // Prefer the bigger of the two so a fresher iPhone value never gets
+        // hidden behind a stale 0 in the summary table.
+        steps: Math.max(existing.steps ?? 0, hSteps && hSteps > 0 ? hSteps : 0) || null,
+        sleep_minutes: existing.sleep_minutes ?? (hSleepMin && hSleepMin > 0 ? hSleepMin : null),
         resting_hr: existing.resting_hr ?? (h.heart_rate_avg as number | null),
         hrv_rmssd: existing.hrv_rmssd ?? (h.hrv as number | null),
       });
     }
 
-    const merged = Array.from(byDate.values()).sort((a, b) => a.summary_date.localeCompare(b.summary_date));
+    // Only render days that have at least one real metric — no walls of zeros.
+    const merged = Array.from(byDate.values())
+      .filter(
+        (r) =>
+          (r.steps != null && r.steps > 0) ||
+          (r.sleep_minutes != null && r.sleep_minutes > 0) ||
+          r.resting_hr != null ||
+          r.hrv_rmssd != null,
+      )
+      .sort((a, b) => a.summary_date.localeCompare(b.summary_date));
     setSteps(merged);
     setLoaded(true);
   }
