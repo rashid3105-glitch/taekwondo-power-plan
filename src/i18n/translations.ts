@@ -6700,6 +6700,15 @@ const translations = {
     manualSaveBtn: "Eintrag speichern",
     manualSavedToast: "Eintrag gespeichert",
     manualSaveError: "Eintrag konnte nicht gespeichert werden",
+    healthResyncButton: "Vom iPhone neu synchronisieren",
+    healthResyncHint: "Holt die letzten 30 Tage aus dem HealthBridge-Sync deines iPhones und aktualisiert deine 7-Tage-Baselines.",
+    healthResyncSuccess: "{n} Tage vom iPhone synchronisiert",
+    healthResyncError: "Sync fehlgeschlagen. Bitte erneut versuchen.",
+    healthChart7dTitle: "7-Tage Übersicht",
+    healthTooltipSteps: "Tägliche Gesamtschritte. Spiegelt die allgemeine Aktivitätsmenge wider; anhaltende Rückgänge können auf Müdigkeit oder einen Ruhetag hindeuten.",
+    healthTooltipSleep: "Schlafdauer der letzten Nacht in Stunden. Ziel 7–9h; Vergleich mit dem 7-Nächte-Schnitt zeigt Schlafschulden.",
+    healthTooltipRhr: "Ruheherzfrequenz (bpm). Anstieg +5 oder mehr über die 7-Tage-Baseline deutet auf Stress, Krankheit oder unvollständige Erholung hin.",
+    healthTooltipHrv: "Herzratenvariabilität (RMSSD, ms). Deutlich unter der 7-Tage-Baseline = Belastung des Nervensystems; reduziere die Last.",
   },
 
   ar: {
