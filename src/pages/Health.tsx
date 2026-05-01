@@ -326,6 +326,7 @@ export default function Health() {
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
             <Moon className="h-4 w-4 text-primary" /> {t("healthSleepTitle" as any) || "Sleep"}
+            <MetricInfo text={t("healthTooltipSleep" as any) || "Last night's total sleep in hours. Aim 7–9h; comparing to your 7-night average reveals accumulated debt."} />
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
