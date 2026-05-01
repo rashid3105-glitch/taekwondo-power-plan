@@ -404,6 +404,7 @@ export default function Health() {
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
             <Waves className="h-4 w-4 text-primary" /> {t("healthHrvTitle" as any) || "Heart-rate variability (HRV)"}
+            <MetricInfo text={t("healthTooltipHrv" as any) || "Heart-rate variability (RMSSD, ms). Clearly below your 7-day baseline = nervous-system strain; back off the load."} />
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
