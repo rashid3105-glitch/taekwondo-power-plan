@@ -3483,6 +3483,12 @@ const translations = {
     next: "Næste",
     pending: "Venter på synk",
     notFound: "Ikke fundet",
+    helpReflectionTitle: "Refleksion efter konkurrence",
+    helpReflectionSteps: "1. Efter hver konkurrence vises et kort på Mental-fanen, der beder om en refleksion\n2. Tryk \"Start refleksion\" for 4 korte trin: resultat, hvad virkede, hvad skal forbedres, taktiske noter\n3. Vurder fysisk, mental og taktisk præstation på en skala 1–10\n4. Systemet genererer en personlig handlingsplan og 3 SMART-mål ud fra dine svar\n5. Refleksionen gemmes lokalt med det samme og synkroniseres, når du er online igen — virker offline\n6. Træner-visning: på atletens Mental-fane kan træneren se alle refleksioner, gennemsnitsvurderinger og tilføje kommentarer\n7. Trends vises i en graf, så du kan følge udviklingen over flere konkurrencer",
+    changelog_2026_05_01: "1. maj 2026",
+    changelogEntry92: "Refleksion efter konkurrence: 4-trins flow med personlig handlingsplan og 3 SMART-mål; virker offline.",
+    changelogEntry93: "Sundhedsside: manuel indtastning af søvn/hvilepuls/HRV/skridt med iPhone-resync, 7-dages baselines og enhedsguide til Apple, Garmin, Polar, Fitbit, Samsung, Whoop og Oura.",
+    changelogEntry94: "Norsk sprogunderstøttelse: rettet fejl hvor Sundhedssiden tidligere viste arabisk tekst på norsk.",
   },
   sv: {
     defaultLanguage: "Standardspråk",
