@@ -576,6 +576,39 @@ export type Database = {
         }
         Relationships: []
       }
+      health_data: {
+        Row: {
+          created_at: string
+          date: string
+          heart_rate_avg: number | null
+          hrv: number | null
+          id: string
+          sleep_hours: number | null
+          steps: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          heart_rate_avg?: number | null
+          hrv?: number | null
+          id?: string
+          sleep_hours?: number | null
+          steps?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          heart_rate_avg?: number | null
+          hrv?: number | null
+          id?: string
+          sleep_hours?: number | null
+          steps?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       landing_announcements: {
         Row: {
           created_at: string
