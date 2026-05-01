@@ -436,6 +436,7 @@ export default function Health() {
 
       {!loaded && <p className="text-center text-sm text-muted-foreground py-6">Loading…</p>}
     </div>
+    </TooltipProvider>
   );
 }
 
