@@ -1,62 +1,66 @@
 ## Goal
 
-Right now your iPhone bridge writes daily rows into `health_data`, but the **Health** page (and the coach-side recovery widgets) read from `wearable_daily_summary`. So nothing shows up. We'll fix it on two levels:
+On top of the previously approved 7-day chart + per-metric toggles + tooltips, add a **"Re-sync from iPhone"** action button on the Health page that performs a server-side **backfill** of the last 30 days from `health_data` into `wearable_daily_summary` and recomputes the 7-day baselines.
 
-1. **DB trigger** — every insert/update on `health_data` automatically mirrors into `wearable_daily_summary`. This means the coach Recovery views, the form-curve job, and any other consumer of `wearable_daily_summary` light up too — no extra frontend work needed anywhere else.
-2. **Health page merge** — the page also reads `health_data` directly and merges it with `wearable_daily_summary`, so older manual entries and brand-new iPhone syncs both render even if the trigger is briefly behind.
+Important framing for the user: the website cannot read HealthKit. The iPhone HealthBridge app is what pushes raw rows into `health_data`. This button takes whatever the phone has already pushed and (re)mirrors it into the dashboard's summary table — useful when:
+- a row landed in `health_data` but the trigger ran before all fields were present,
+- baselines look stale,
+- the user manually edited rows and wants the rolling 7-day averages refreshed.
 
-After this, your iPhone tap → "Sync" → Health page refresh shows the last 7 days of steps, sleep, resting HR and HRV with charts.
+## What changes
 
----
+### 1. New Edge Function: `resync-health`
 
-## Step 1 — Database trigger (mirror `health_data` → `wearable_daily_summary`)
+Location: `supabase/functions/resync-health/index.ts`
 
-Create a trigger that runs on every insert/update of `health_data` and upserts the matching daily summary row.
+Behavior:
+- Validates the caller's JWT in code (per project pattern), reads `auth.uid()`.
+- For that user, selects the last 30 days from `health_data`.
+- For each row, performs the same upsert into `wearable_daily_summary` that the existing `mirror_health_data_to_summary` trigger does (using the service role to bypass RLS):
+  - steps, sleep_minutes (sleep_hours × 60, rounded), resting_hr, hrv_rmssd
+  - `ON CONFLICT (user_id, summary_date) DO UPDATE` with `COALESCE(EXCLUDED.x, s.x)` so manual entries are never wiped.
+- After the upserts, calls the existing `recompute_wearable_summary(user_id, from, to)` Postgres function once, with `from = today-30` and `to = today`, to refresh the 7-day baselines for the whole window.
+- Returns `{ ok: true, days_synced: N, from, to }`.
+- CORS handled via `corsHeaders` import.
+- Input validation with Zod (empty body OK; optional `days: 1..90`, default 30).
 
-Mapping:
+No new tables, no schema changes, no RLS changes. The function uses the SECURITY DEFINER RPC + service role for the upserts, and only ever touches the caller's own `user_id`.
 
-```text
-health_data.steps          → wearable_daily_summary.steps
-health_data.sleep_hours    → wearable_daily_summary.sleep_minutes  (× 60)
-health_data.heart_rate_avg → wearable_daily_summary.resting_hr
-health_data.hrv            → wearable_daily_summary.hrv_rmssd
-health_data.date           → wearable_daily_summary.summary_date
-health_data.user_id        → wearable_daily_summary.user_id
-```
+### 2. UI button on `src/pages/Health.tsx`
 
-After upserting the row, the trigger calls the existing `recompute_wearable_summary(user_id, date, date)` function so the 7-day baselines for HR and HRV are refreshed automatically — that's what powers the "vs baseline" stats on the page.
+- New "Re-sync from iPhone" button, placed in the page header row (next to the title), `variant="outline" size="sm"`, with a `RefreshCw` icon.
+- On click:
+  1. Sets a local `syncing` state, spins the icon (`animate-spin`).
+  2. Calls `supabase.functions.invoke('resync-health')`.
+  3. On success: `toast.success(...)` with "Synced N days from iPhone", then re-runs `load()` to refresh the page.
+  4. On error: `toast.error(...)` with the error message; logs to console.
+  5. Triggers `haptics.tap()` per project mobile baseline.
+- Button is `h-11` on mobile per project Core rules.
+- Disabled while `syncing` is true.
 
-`SECURITY DEFINER` so it bypasses RLS, scoped `search_path = public` for safety.
+### 3. Helper text near the button
 
-## Step 2 — Backfill existing rows
+A single muted line under the button:
+> "Pulls the last 30 days from your iPhone's HealthBridge sync and refreshes your 7-day baselines."
 
-Run a one-time UPSERT to mirror everything currently in `health_data` into `wearable_daily_summary`, then call `recompute_wearable_summary` per affected user so existing iPhone syncs show up immediately on first load.
+(Translatable via i18n.)
 
-## Step 3 — Health page reads both tables and merges
+### 4. i18n
 
-In `src/pages/Health.tsx`:
+Add to `src/i18n/translations.ts` (DA, EN, SV, DE, AR):
+- `healthResyncButton` — "Re-sync from iPhone"
+- `healthResyncHint` — explanatory line above
+- `healthResyncSuccess` — "Synced {n} days from iPhone"
+- `healthResyncError` — "Sync failed. Please try again."
 
-- Keep the existing `wearable_daily_summary` query for 30 days.
-- Add a parallel query against `health_data` (RLS already lets the user read their own rows) selecting `date, steps, sleep_hours, heart_rate_avg, hrv` for the same window.
-- Merge by date in JS: for each day, prefer the `wearable_daily_summary` row; if a field is `null` there but present in `health_data`, fill it in (converting `sleep_hours` → minutes).
-- All the existing chart logic, "today / 7-day avg / vs baseline" cards, and empty-states keep working unchanged because they consume the merged `DailyRow[]`.
+## Files touched
 
-This guarantees:
-- The Health page shows iPhone data instantly (via direct `health_data` read), even before the trigger has populated the summary.
-- Coach recovery views and the form-curve calculation still see the data (via the trigger-mirrored `wearable_daily_summary`).
+- **New**: `supabase/functions/resync-health/index.ts`
+- **Edited**: `src/pages/Health.tsx` (button + handler, on top of the previously planned overview chart and tooltips)
+- **Edited**: `src/i18n/translations.ts` (4 new keys × 5 languages)
 
-## Step 4 — Verify end-to-end
+## Out of scope
 
-1. Open the Health page → confirm last sync from iPhone shows up under Steps/Sleep/RHR/HRV.
-2. Tap "Sync" again on iPhone → refresh page → today's row updates.
-3. Check coach view (`AthleteRecoveryTrend`) for an athlete who synced → trend chart populates.
-
----
-
-## Technical notes
-
-- The trigger uses `INSERT … ON CONFLICT (user_id, summary_date) DO UPDATE` so re-syncs on the same day overwrite cleanly.
-- We only fill non-null fields from `health_data` so manual entries via `ManualHealthEntryCard` (which writes directly to `wearable_daily_summary`) are never clobbered by a sparser iPhone payload.
-- `recompute_wearable_summary` is called inside the trigger with a 1-day window — cheap, and it refreshes the 7-day rolling baselines for that date.
-- No frontend type changes needed; `DailyRow` already covers all four metrics.
-- No schema changes to `health_data` or `wearable_daily_summary` — purely additive (one trigger function, one trigger, one backfill, one merged query).
+- No deep link to the iOS app (could be added later as `healthbridge://sync` if you confirm a URL scheme).
+- No DB schema changes.
+- No coach-side button — coaches still see the trigger-mirrored data automatically.
