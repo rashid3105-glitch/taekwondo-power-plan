@@ -37,10 +37,19 @@ export default function Health() {
 
   async function runResync({ silent }: { silent: boolean }) {
     if (syncing) return;
+    // Require an authenticated session — the edge function rejects anon calls.
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      if (!silent) toast.error(t("healthResyncError" as any) || "Sync failed. Please try again.");
+      return;
+    }
     setSyncing(true);
     if (!silent) haptics.tap();
     try {
-      const { data, error } = await supabase.functions.invoke("resync-health", { body: {} });
+      const { data, error } = await supabase.functions.invoke("resync-health", {
+        body: {},
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
       if (error) throw error;
       if (!silent) {
         const n = (data as { days_synced?: number })?.days_synced ?? 0;
