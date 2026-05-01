@@ -60,12 +60,18 @@ serve(async (req) => {
     if (authError || !data.user?.email) throw new Error("User not authenticated");
 
     const user = data.user;
-    const { tier, billingCycle } = await req.json();
+    const { tier, billingCycle, currency } = await req.json();
 
     if (!tier || !billingCycle) throw new Error("Missing tier or billingCycle");
     if (!PRICE_IDS[tier]?.[billingCycle]) throw new Error("Invalid tier or billing cycle");
 
     const priceId = PRICE_IDS[tier][billingCycle];
+
+    // Validate currency. Default to DKK if missing/unknown.
+    const allowedCurrencies = new Set(["dkk", "nok", "sek", "eur"]);
+    const checkoutCurrency = allowedCurrencies.has((currency || "").toLowerCase())
+      ? (currency as string).toLowerCase()
+      : "dkk";
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",
@@ -84,11 +90,12 @@ serve(async (req) => {
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
       client_reference_id: user.id,
+      currency: checkoutCurrency,
       line_items: [{ price: priceId, quantity: 1 }],
       mode: "subscription",
       success_url: `${origin}/payment-success`,
       cancel_url: `${origin}/pricing`,
-      metadata: { tier, billingCycle, user_id: user.id },
+      metadata: { tier, billingCycle, user_id: user.id, currency: checkoutCurrency },
     });
 
     return new Response(JSON.stringify({ url: session.url }), {
