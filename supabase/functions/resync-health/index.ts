@@ -1,5 +1,6 @@
 // Re-sync HealthBridge data: re-mirror last N days of public.health_data
-// into public.wearable_daily_summary, then refresh the 7-day baselines.
+// into public.wearable_daily_summary using strictly additive COALESCE,
+// then refresh ONLY the 7-day baselines (never overwrite real metrics).
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 
 const corsHeaders = {
@@ -21,7 +22,6 @@ Deno.serve(async (req) => {
     const ANON = Deno.env.get("SUPABASE_ANON_KEY")!;
     const SERVICE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-    // Verify the JWT
     const userClient = createClient(SUPABASE_URL, ANON, {
       global: { headers: { Authorization: authHeader } },
     });
@@ -32,7 +32,6 @@ Deno.serve(async (req) => {
     }
     const userId = claimsData.claims.sub as string;
 
-    // Parse optional days param
     let days = 30;
     try {
       const body = await req.json().catch(() => ({}));
@@ -46,7 +45,6 @@ Deno.serve(async (req) => {
     const fromStr = from.toISOString().slice(0, 10);
     const toStr = today.toISOString().slice(0, 10);
 
-    // Service-role client for the upsert + RPC
     const admin = createClient(SUPABASE_URL, SERVICE);
 
     // Pull raw HealthKit rows
@@ -64,27 +62,53 @@ Deno.serve(async (req) => {
 
     let mirrored = 0;
     for (const r of rows ?? []) {
-      const sleepMinutes = r.sleep_hours != null ? Math.round(Number(r.sleep_hours) * 60) : null;
-      const steps = r.steps != null ? Math.round(Number(r.steps)) : null;
+      // Treat 0 as "no signal" for steps and sleep so we never wipe a real
+      // value with an empty iPhone payload.
+      const incomingSteps =
+        r.steps != null && Number(r.steps) > 0 ? Math.round(Number(r.steps)) : null;
+      const incomingSleepMinutes =
+        r.sleep_hours != null && Number(r.sleep_hours) > 0
+          ? Math.round(Number(r.sleep_hours) * 60)
+          : null;
+      const incomingHr = r.heart_rate_avg != null ? Number(r.heart_rate_avg) : null;
+      const incomingHrv = r.hrv != null ? Number(r.hrv) : null;
 
-      // Match the trigger: COALESCE on conflict so manual entries are preserved.
-      // We can't express COALESCE via the JS client, so call a tiny inline SQL via RPC?
-      // Instead: read existing row, then merge in JS, then upsert.
+      // If the iPhone row has nothing useful at all, skip it entirely.
+      if (
+        incomingSteps == null &&
+        incomingSleepMinutes == null &&
+        incomingHr == null &&
+        incomingHrv == null
+      ) {
+        continue;
+      }
+
       const { data: existing } = await admin
         .from("wearable_daily_summary")
-        .select("steps, sleep_minutes, resting_hr, hrv_rmssd")
+        .select("steps, sleep_minutes, resting_hr, hrv_rmssd, workout_count")
         .eq("user_id", userId)
         .eq("summary_date", r.date)
         .maybeSingle();
 
+      // Strictly additive merge: incoming wins only when it has a real value.
+      // Existing real values are preserved; never demote a non-zero to zero.
+      const mergedSteps =
+        incomingSteps != null
+          ? Math.max(incomingSteps, existing?.steps ?? 0)
+          : existing?.steps ?? null;
+      const mergedSleep =
+        incomingSleepMinutes ?? existing?.sleep_minutes ?? null;
+      const mergedHr = incomingHr ?? existing?.resting_hr ?? null;
+      const mergedHrv = incomingHrv ?? existing?.hrv_rmssd ?? null;
+
       const merged = {
         user_id: userId,
         summary_date: r.date,
-        steps: steps ?? existing?.steps ?? 0,
-        sleep_minutes: sleepMinutes ?? existing?.sleep_minutes ?? null,
-        resting_hr: r.heart_rate_avg ?? existing?.resting_hr ?? null,
-        hrv_rmssd: r.hrv ?? existing?.hrv_rmssd ?? null,
-        workout_count: 0,
+        steps: mergedSteps,
+        sleep_minutes: mergedSleep,
+        resting_hr: mergedHr,
+        hrv_rmssd: mergedHrv,
+        workout_count: existing?.workout_count ?? 0,
         computed_at: new Date().toISOString(),
       };
 
@@ -99,13 +123,53 @@ Deno.serve(async (req) => {
       mirrored++;
     }
 
-    // Refresh the 7-day rolling baselines for the whole window
-    const { error: rpcErr } = await admin.rpc("recompute_wearable_summary", {
-      _user_id: userId,
-      _from: fromStr,
-      _to: toStr,
-    });
-    if (rpcErr) console.error("recompute_wearable_summary failed", rpcErr);
+    // Refresh ONLY the 7-day rolling baselines for the affected window.
+    // We deliberately do NOT call recompute_wearable_summary here — that RPC
+    // overwrites steps/sleep/hr/hrv from the (often empty) wearable_samples
+    // table, which destroys the values we just mirrored.
+    const { data: windowRows, error: winErr } = await admin
+      .from("wearable_daily_summary")
+      .select("summary_date, resting_hr, hrv_rmssd")
+      .eq("user_id", userId)
+      .gte("summary_date", fromStr)
+      .lte("summary_date", toStr)
+      .order("summary_date", { ascending: true });
+
+    if (!winErr && windowRows) {
+      // Compute 7-day trailing average for hr/hrv per date and update in place.
+      for (let i = 0; i < windowRows.length; i++) {
+        const cur = windowRows[i];
+        const curDate = new Date(cur.summary_date as string);
+        const windowStart = new Date(curDate.getTime() - 7 * 86400000);
+        const trailing = windowRows.filter((w) => {
+          const d = new Date(w.summary_date as string);
+          return d >= windowStart && d < curDate;
+        });
+        const hrVals = trailing
+          .map((w) => (w.resting_hr != null ? Number(w.resting_hr) : null))
+          .filter((v): v is number => v != null);
+        const hrvVals = trailing
+          .map((w) => (w.hrv_rmssd != null ? Number(w.hrv_rmssd) : null))
+          .filter((v): v is number => v != null);
+        const baseHr =
+          hrVals.length > 0 ? hrVals.reduce((a, b) => a + b, 0) / hrVals.length : null;
+        const baseHrv =
+          hrvVals.length > 0
+            ? hrvVals.reduce((a, b) => a + b, 0) / hrvVals.length
+            : null;
+
+        await admin
+          .from("wearable_daily_summary")
+          .update({
+            baseline_hr_7d: baseHr,
+            baseline_hrv_7d: baseHrv,
+          })
+          .eq("user_id", userId)
+          .eq("summary_date", cur.summary_date as string);
+      }
+    } else if (winErr) {
+      console.error("window read failed", winErr);
+    }
 
     return json({
       ok: true,
