@@ -99,12 +99,13 @@ const teamTiers: Tier[] = [
 
 export default function Pricing() {
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly");
   const [loadingTier, setLoadingTier] = useState<string | null>(null);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isPaidOrDemo, setIsPaidOrDemo] = useState(false);
   const [managingPortal, setManagingPortal] = useState(false);
+  const currency = useMemo(() => detectCurrency(), []);
 
   useEffect(() => {
     checkSubscription();
