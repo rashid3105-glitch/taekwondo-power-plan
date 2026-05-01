@@ -185,7 +185,8 @@ export default function Pricing() {
 
   const renderTierCard = (tier: Tier) => {
     const Icon = tier.icon;
-    const priceKey = billingCycle === "yearly" ? tier.yearlyPriceKey : tier.monthlyPriceKey;
+    const amount = getTierPrice(tier.key, currency, billingCycle);
+    const priceDisplay = amount != null ? formatPrice(amount, currency, billingCycle, locale) : "";
     const isLoading = loadingTier === tier.key;
 
     return (
@@ -209,7 +210,7 @@ export default function Pricing() {
         </CardHeader>
         <CardContent className="flex-1 space-y-4">
           <div className="text-center">
-            <span className="text-3xl font-extrabold text-foreground">{t(priceKey)}</span>
+            <span className="text-3xl font-extrabold text-foreground">{priceDisplay}</span>
           </div>
           <ul className="space-y-2">
             {tier.features.map((featureKey) => (
