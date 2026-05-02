@@ -376,38 +376,13 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
         </div>
       </div>
 
-      {/* Tab toggle */}
+      {/* Periodization timeline (above the weekly schedule) */}
       {periodization.length > 0 && (
-        <div className="flex rounded-lg border border-border bg-secondary/30 p-0.5">
-          <button
-            onClick={() => setActiveTab("schedule")}
-            className={cn(
-              "flex-1 flex items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition-all",
-              activeTab === "schedule" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            <Dumbbell className="h-3.5 w-3.5" /> Weekly Schedule
-          </button>
-          <button
-            onClick={() => setActiveTab("periodization")}
-            className={cn(
-              "flex-1 flex items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition-all",
-              activeTab === "periodization" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            <Layers className="h-3.5 w-3.5" /> Periodization
-          </button>
-        </div>
-      )}
-
-      {/* Periodization view */}
-      {activeTab === "periodization" && periodization.length > 0 && (
         <PeriodizationView periodization={periodization} programWeeks={plan.plan_data?.programWeeks} />
       )}
 
       {/* Week overview */}
-      {activeTab === "schedule" && (
-        <>
+      <>
           <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5 sm:gap-2">
             {schedule.map((day: any, i: number) => {
               const sessions = normalizeDaySessions(day);
