@@ -18,19 +18,19 @@ const DayScheduleSchema = z.object({
 });
 
 const UpdateProfileSchema = z.object({
-  age: z.number().int().min(5).max(99).nullable(),
-  weight_kg: z.number().min(20).max(300).nullable(),
-  belt_level: z.string().min(1).max(20),
-  experience_years: z.number().int().min(0).max(80).nullable(),
-  tkd_sessions_per_week: z.number().int().min(0).max(14),
-  goals: z.array(z.string().min(1).max(100)).max(20),
-  weekly_schedule: z.array(DayScheduleSchema).min(1).max(7),
-  program_weeks: z.number().int().min(1).max(52),
-  current_injury: z.string().max(500).nullable(),
-  discipline: z.string().min(1).max(50),
-  club_id: z.string().uuid().nullable(),
-  country: z.string().max(100).nullable(),
-  custom_calories: z.number().int().min(500).max(10000).nullable(),
+  age: z.number().int().min(5).max(99).nullable().optional(),
+  weight_kg: z.number().min(20).max(300).nullable().optional(),
+  belt_level: z.string().min(1).max(20).optional(),
+  experience_years: z.number().int().min(0).max(80).nullable().optional(),
+  tkd_sessions_per_week: z.number().int().min(0).max(14).optional(),
+  goals: z.array(z.string().min(1).max(100)).max(20).optional(),
+  weekly_schedule: z.array(DayScheduleSchema).min(1).max(7).optional(),
+  program_weeks: z.number().int().min(1).max(52).optional(),
+  current_injury: z.string().max(500).nullable().optional(),
+  discipline: z.string().min(1).max(50).optional(),
+  club_id: z.string().uuid().nullable().optional(),
+  country: z.string().max(100).nullable().optional(),
+  custom_calories: z.number().int().min(500).max(10000).nullable().optional(),
   owns_wearable: z.boolean().optional(),
   default_locale: z.enum(["en", "da", "sv", "no", "de", "ar"]).nullable().optional(),
   onboarding_completed: z.boolean().optional(),
@@ -48,7 +48,7 @@ const UpdateProfileSchema = z.object({
       return trimmed === "" ? null : trimmed;
     })
     .refine(
-      (v) => v === null || /^[0-9a-f-]{36}\/avatar\.(jpg|jpeg|png|webp|gif)$/i.test(v),
+      (v) => v === undefined || v === null || /^[0-9a-f-]{36}\/avatar\.(jpg|jpeg|png|webp|gif)$/i.test(v),
       { message: "avatar_url must match {uuid}/avatar.{jpg|jpeg|png|webp|gif}" }
     ),
 });
