@@ -591,3 +591,18 @@ function MetricInfo({ text }: { text: string }) {
     </Tooltip>
   );
 }
+
+function NormLegend({ bandLabel, targetLabel }: { bandLabel: string; targetLabel: string }) {
+  return (
+    <div className="flex flex-wrap gap-3 text-[10px] text-muted-foreground pt-1">
+      <span className="inline-flex items-center gap-1.5">
+        <span className="inline-block w-3 h-2 rounded-sm bg-foreground/10 border border-border" />
+        {bandLabel}
+      </span>
+      <span className="inline-flex items-center gap-1.5">
+        <span className="inline-block w-4 border-t-2 border-dashed border-foreground/40" />
+        {targetLabel}
+      </span>
+    </div>
+  );
+}
