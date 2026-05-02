@@ -1588,6 +1588,8 @@ const translations = {
     healthVsNormAbove: "Above norm",
     healthStepsWeekTotal: "7-day total",
     notesSaved: "Notes saved",
+    shareWithClubCoaches: "Share with club coaches",
+    onlyVisibleToYouAndAthlete: "Only you and the athlete will see this",
     todaysSession: "Today's session",
     compareToClub: "Compare to club",
     compareToClubDesc: "Athlete vs the median for this athlete's club.",
