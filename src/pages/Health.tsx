@@ -7,9 +7,11 @@ import { ArrowLeft, Activity, Footprints, RefreshCw, Info } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PageMeta } from "@/components/PageMeta";
 import {
-  BarChart, Bar, LineChart, Line,
+  BarChart, Bar, LineChart, Line, ComposedChart, Area,
+  ReferenceArea, ReferenceLine,
   XAxis, YAxis, CartesianGrid, Tooltip as RTooltip, ResponsiveContainer, Legend,
 } from "recharts";
+import { healthNorms, compareToBand } from "@/lib/healthNorms";
 import { Moon, HeartPulse, Waves } from "lucide-react";
 import { ManualHealthEntryCard } from "@/components/health/ManualHealthEntryCard";
 import { HealthSourceGuide } from "@/components/health/HealthSourceGuide";
