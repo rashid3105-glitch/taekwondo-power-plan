@@ -628,8 +628,6 @@ const translations = {
     phaseAccumulation: "Accumulation",
     phaseIntensification: "Intensification",
     phasePeaking: "Peaking",
-    phaseDeload: "Deload",
-    phaseCompetition: "Competition",
     phaseRecovery: "Recovery",
     yearsExp: "years experience",
     sessionsWeek: "sessions/week",
