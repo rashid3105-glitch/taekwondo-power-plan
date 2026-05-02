@@ -357,6 +357,7 @@ export type Database = {
           diary_entry_id: string
           id: string
           is_read: boolean
+          is_shared: boolean
           updated_at: string
         }
         Insert: {
@@ -366,6 +367,7 @@ export type Database = {
           diary_entry_id: string
           id?: string
           is_read?: boolean
+          is_shared?: boolean
           updated_at?: string
         }
         Update: {
@@ -375,6 +377,7 @@ export type Database = {
           diary_entry_id?: string
           id?: string
           is_read?: boolean
+          is_shared?: boolean
           updated_at?: string
         }
         Relationships: [
