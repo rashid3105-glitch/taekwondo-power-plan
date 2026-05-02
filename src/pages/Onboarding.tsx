@@ -12,7 +12,7 @@ import { Loader2, ArrowLeft, ArrowRight, Sparkles, Users, FileText, Trophy, Zap 
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekSchedulePicker";
-import { triggerHaptic } from "@/lib/haptics";
+import { haptics } from "@/lib/haptics";
 
 const DEFAULT_SCHEDULE: DaySchedule[] = [
   { day: "Monday", type: "tkd" },
