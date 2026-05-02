@@ -5099,6 +5099,8 @@ const translations = {
     healthVsNormAbove: "Över norm",
     healthStepsWeekTotal: "7-dagars totalt",
     notesSaved: "Anteckningar sparade",
+    shareWithClubCoaches: "Dela med klubbens tränare",
+    onlyVisibleToYouAndAthlete: "Endast du och atleten ser detta",
     todaysSession: "Dagens pass",
     compareToClub: "Jämför med klubb",
     compareToClubDesc: "Atlet mot medianen för atletens klubb.",
