@@ -906,6 +906,9 @@ export type Database = {
           avatar_url: string | null
           belt_level: string
           club_id: string | null
+          coach_athlete_count_band: string | null
+          coach_club_name: string | null
+          coach_focus: string[] | null
           country: string | null
           created_at: string
           current_injury: string | null
@@ -922,6 +925,7 @@ export type Database = {
           is_demo: boolean
           is_public: boolean
           last_seen_at: string | null
+          onboarding_completed: boolean
           owns_wearable: boolean
           passkey_prompt_dismissed_at: string | null
           payment_date: string | null
@@ -943,6 +947,9 @@ export type Database = {
           avatar_url?: string | null
           belt_level?: string
           club_id?: string | null
+          coach_athlete_count_band?: string | null
+          coach_club_name?: string | null
+          coach_focus?: string[] | null
           country?: string | null
           created_at?: string
           current_injury?: string | null
@@ -959,6 +966,7 @@ export type Database = {
           is_demo?: boolean
           is_public?: boolean
           last_seen_at?: string | null
+          onboarding_completed?: boolean
           owns_wearable?: boolean
           passkey_prompt_dismissed_at?: string | null
           payment_date?: string | null
@@ -980,6 +988,9 @@ export type Database = {
           avatar_url?: string | null
           belt_level?: string
           club_id?: string | null
+          coach_athlete_count_band?: string | null
+          coach_club_name?: string | null
+          coach_focus?: string[] | null
           country?: string | null
           created_at?: string
           current_injury?: string | null
@@ -996,6 +1007,7 @@ export type Database = {
           is_demo?: boolean
           is_public?: boolean
           last_seen_at?: string | null
+          onboarding_completed?: boolean
           owns_wearable?: boolean
           passkey_prompt_dismissed_at?: string | null
           payment_date?: string | null
