@@ -6,76 +6,78 @@
 
 @layer base {
   :root {
-    --background: 220 20% 7%;
-    --foreground: 210 20% 95%;
+    /* Fresh sporty light palette — electric blue + lime accent */
+    --background: 210 30% 98%;
+    --foreground: 222 35% 12%;
 
-    --card: 220 18% 12%;
-    --card-foreground: 210 20% 95%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 35% 12%;
 
-    --popover: 220 18% 10%;
-    --popover-foreground: 210 20% 95%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 35% 12%;
 
-    --primary: 190 95% 50%;
-    --primary-foreground: 220 20% 7%;
+    --primary: 222 95% 56%;
+    --primary-foreground: 210 40% 99%;
 
-    --secondary: 220 15% 16%;
-    --secondary-foreground: 210 20% 85%;
+    --secondary: 215 25% 94%;
+    --secondary-foreground: 222 35% 18%;
 
-    --muted: 220 15% 14%;
-    --muted-foreground: 215 15% 55%;
+    --muted: 215 25% 95%;
+    --muted-foreground: 220 12% 42%;
 
-    --accent: 35 100% 55%;
-    --accent-foreground: 220 20% 7%;
+    --accent: 80 90% 50%;
+    --accent-foreground: 222 35% 12%;
 
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 210 20% 98%;
+    --destructive: 0 78% 52%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 220 15% 18%;
-    --input: 220 15% 18%;
-    --ring: 190 95% 50%;
+    --border: 220 15% 88%;
+    --input: 220 15% 88%;
+    --ring: 222 95% 56%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 220 18% 10%;
-    --sidebar-foreground: 210 20% 85%;
-    --sidebar-primary: 190 95% 50%;
-    --sidebar-primary-foreground: 220 20% 7%;
-    --sidebar-accent: 220 15% 16%;
-    --sidebar-accent-foreground: 210 20% 85%;
-    --sidebar-border: 220 15% 18%;
-    --sidebar-ring: 190 95% 50%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222 35% 18%;
+    --sidebar-primary: 222 95% 56%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 215 25% 94%;
+    --sidebar-accent-foreground: 222 35% 18%;
+    --sidebar-border: 220 15% 88%;
+    --sidebar-ring: 222 95% 56%;
 
-    /* Custom tokens */
-    --energy: 190 95% 50%;
-    --energy-glow: 190 100% 60%;
-    --power: 35 100% 55%;
-    --speed: 160 80% 45%;
-    --explosive: 350 85% 55%;
-    --gradient-energy: linear-gradient(135deg, hsl(190 95% 50%), hsl(160 80% 45%));
-    --gradient-power: linear-gradient(135deg, hsl(35 100% 55%), hsl(15 90% 55%));
-    --gradient-explosive: linear-gradient(135deg, hsl(350 85% 55%), hsl(330 75% 50%));
-    --shadow-glow: 0 0 30px -5px hsl(190 95% 50% / 0.3);
-    --shadow-card: 0 4px 24px -4px hsl(0 0% 0% / 0.5);
+    /* Custom tokens — sporty energy */
+    --energy: 222 95% 56%;
+    --energy-glow: 222 100% 65%;
+    --power: 80 90% 50%;
+    --speed: 190 95% 48%;
+    --explosive: 350 90% 56%;
+    --gradient-energy: linear-gradient(135deg, hsl(222 95% 56%), hsl(190 95% 48%));
+    --gradient-power: linear-gradient(135deg, hsl(80 90% 50%), hsl(150 80% 45%));
+    --gradient-explosive: linear-gradient(135deg, hsl(350 90% 56%), hsl(15 95% 55%));
+    --shadow-glow: 0 10px 30px -10px hsl(222 95% 56% / 0.35);
+    --shadow-card: 0 4px 20px -6px hsl(222 30% 20% / 0.12);
 
-    /* Tab colors */
-    --tab-plan: 210 90% 56%;
-    --tab-progress: 45 90% 55%;
-    --tab-rehab: 0 72% 51%;
-    --tab-nutrition: 142 70% 45%;
-    --tab-mental: 330 60% 72%;
-    /* Club landing page tokens */
-    --landing-navy: 217 68% 14%;
-    --landing-navy-elevated: 222 60% 18%;
-    --landing-red: 353 100% 45%;
-    --landing-red-hover: 353 100% 40%;
+    /* Tab colors — keep distinct, slightly more vivid */
+    --tab-plan: 222 95% 56%;
+    --tab-progress: 38 95% 52%;
+    --tab-rehab: 0 78% 55%;
+    --tab-nutrition: 150 75% 40%;
+    --tab-mental: 280 75% 60%;
 
-    /* Light section tokens */
-    --light-bg: 210 20% 97%;
+    /* Landing page tokens — align with main palette */
+    --landing-navy: 222 60% 16%;
+    --landing-navy-elevated: 222 45% 22%;
+    --landing-red: 350 90% 52%;
+    --landing-red-hover: 350 90% 46%;
+
+    /* Light section tokens (legacy — match new defaults) */
+    --light-bg: 210 30% 98%;
     --light-card: 0 0% 100%;
-    --light-card-foreground: 220 20% 15%;
-    --light-border: 220 10% 88%;
-    --light-muted: 220 10% 94%;
-    --light-muted-foreground: 220 10% 40%;
+    --light-card-foreground: 222 35% 12%;
+    --light-border: 220 15% 88%;
+    --light-muted: 215 25% 95%;
+    --light-muted-foreground: 220 12% 42%;
   }
 }
 
