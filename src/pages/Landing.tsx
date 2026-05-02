@@ -306,7 +306,7 @@ const Waitlist = () => {
     try {
       const { error } = await supabase
         .from("waitlist")
-        .insert({ ...parsed.data, locale });
+        .insert([{ ...parsed.data, locale }]);
       if (error) throw error;
       setDone(true);
       toast.success(t("landingClubWaitlistSuccess"));
