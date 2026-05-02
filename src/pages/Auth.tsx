@@ -44,6 +44,11 @@ export default function AuthPage() {
 
   // Read redirect param so we can send user back after login
   const redirectTo = new URLSearchParams(window.location.search).get("redirect");
+  const inviteCode = new URLSearchParams(window.location.search).get("invite");
+
+  useEffect(() => {
+    if (inviteCode) sessionStorage.setItem("pending_invite_code", inviteCode);
+  }, [inviteCode]);
 
   useEffect(() => {
     (async () => {
