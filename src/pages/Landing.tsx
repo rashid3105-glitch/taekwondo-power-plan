@@ -573,9 +573,8 @@ const Pricing = () => {
                   <div className="text-[11px] uppercase tracking-wide text-slate-300/70 font-semibold">
                     {t("landingPricingFrom")}
                   </div>
-                  <div className="flex items-baseline gap-1 mt-0.5">
+                  <div className="mt-0.5">
                     <span className="text-xl font-black text-white">{priceDisplay}</span>
-                    <span className="text-xs text-slate-300/70">{t("landingPricingPerMonth")}</span>
                   </div>
                 </div>
                 <p className="text-xs text-slate-300/80 leading-relaxed">{t(tier.descKey)}</p>
