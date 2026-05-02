@@ -509,17 +509,15 @@ const Pricing = () => {
   const currency = detectCurrency();
 
   const tiers: Array<{
-    key: "athlete" | "coach_solo" | "team_small" | "team_medium" | "team_large";
-    nameKey: "landingPricingTierAthlete" | "landingPricingTierCoach" | "landingPricingTierSmall" | "landingPricingTierMedium" | "landingPricingTierLarge";
-    descKey: "landingPricingTierAthleteDesc" | "landingPricingTierCoachDesc" | "landingPricingTierSmallDesc" | "landingPricingTierMediumDesc" | "landingPricingTierLargeDesc";
+    key: "athlete" | "coach_solo" | "team_small";
+    nameKey: "landingPricingTierAthlete" | "landingPricingTierCoach" | "landingPricingTierSmall";
+    descKey: "landingPricingTierAthleteDesc" | "landingPricingTierCoachDesc" | "landingPricingTierSmallDesc";
     icon: typeof User;
     popular?: boolean;
   }> = [
     { key: "athlete", nameKey: "landingPricingTierAthlete", descKey: "landingPricingTierAthleteDesc", icon: User },
-    { key: "coach_solo", nameKey: "landingPricingTierCoach", descKey: "landingPricingTierCoachDesc", icon: Users },
+    { key: "coach_solo", nameKey: "landingPricingTierCoach", descKey: "landingPricingTierCoachDesc", icon: Users, popular: true },
     { key: "team_small", nameKey: "landingPricingTierSmall", descKey: "landingPricingTierSmallDesc", icon: Users },
-    { key: "team_medium", nameKey: "landingPricingTierMedium", descKey: "landingPricingTierMediumDesc", icon: Trophy, popular: true },
-    { key: "team_large", nameKey: "landingPricingTierLarge", descKey: "landingPricingTierLargeDesc", icon: Trophy },
   ];
 
   return (
@@ -541,7 +539,7 @@ const Pricing = () => {
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 max-w-4xl mx-auto">
           {tiers.map((tier, idx) => {
             const amount = getTierPrice(tier.key, currency, "monthly");
             const priceDisplay = amount != null ? formatPrice(amount, currency, "monthly", locale) : "";
