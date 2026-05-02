@@ -539,7 +539,7 @@ const Pricing = () => {
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 max-w-4xl mx-auto">
           {tiers.map((tier, idx) => {
             const amount = getTierPrice(tier.key, currency, "monthly");
             const priceDisplay = amount != null ? formatPrice(amount, currency, "monthly", locale) : "";
