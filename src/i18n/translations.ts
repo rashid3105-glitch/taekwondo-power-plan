@@ -8469,6 +8469,8 @@ const translations = {
     healthVsNormAbove: "أعلى من المعيار",
     healthStepsWeekTotal: "إجمالي 7 أيام",
     notesSaved: "تم حفظ الملاحظات",
+    shareWithClubCoaches: "مشاركة مع مدربي النادي",
+    onlyVisibleToYouAndAthlete: "أنت واللاعب فقط من يرى هذا",
     todaysSession: "جلسة اليوم",
     compareToClub: "مقارنة بالنادي",
     compareToClubDesc: "الرياضي مقابل متوسط نادي الرياضي.",
