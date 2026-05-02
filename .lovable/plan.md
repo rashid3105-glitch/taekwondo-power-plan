@@ -1,62 +1,113 @@
-## 1) Shared coach notes per club (admin-controlled)
+## Goal
 
-Today every coach has fully private notes on each athlete (`coach_athlete_notes`, RLS: only the owning coach can read/write). We'll let an admin flip a per-club switch that lets all coaches in that club read each other's notes on athletes from that club. Writes stay private to the author (each coach still owns and edits only their own note row), so we get a transparent shared view without anyone overwriting another coach's text.
+Replace the current `/` landing page with a new public landing page targeted at small Taekwondo clubs (navy + red, club-focused copy). Archive the existing landing at `/v1`. Add `/signup` and `/login` redirects. Localize everything via the existing i18n system. Add a waitlist table.
 
-### Database
-- Add `clubs.share_coach_notes boolean not null default false`.
-- New SECURITY DEFINER helper `public.club_shares_coach_notes(_club_id uuid) returns boolean`.
-- Add an extra SELECT policy on `coach_athlete_notes`: a coach may read another coach's note when (a) the reader has the `coach` role, (b) reader and note's coach share a club, (c) reader and the athlete share that same club, and (d) that club has `share_coach_notes = true`.
-- Existing "Coaches manage own notes" policy is unchanged → no one can edit another coach's note.
+## Routing changes
 
-### Admin UI (`src/pages/AdminClubs.tsx`)
-- Add a "Share coach notes" `Switch` to each club row, next to `max_athletes`.
-- Toggling updates `clubs.share_coach_notes` and shows a toast.
-- New translations: `shareCoachNotes`, `shareCoachNotesHint`.
+- `/` → new `Landing.tsx` (the new club-focused page)
+- `/v1` → existing `Index.tsx` (archived, unchanged)
+- `/signup` → redirect to `/auth?tab=signup`
+- `/login` → redirect to `/auth?tab=signin`
+- `Auth.tsx` already supports tab switching; verify it reads the `tab` query param (small tweak if not).
 
-### Coach UI (`src/components/coach/CoachNotes.tsx`)
-- Keep the existing editable textarea (the coach's own note).
-- When the athlete's club has sharing enabled, fetch all other coaches' notes for this athlete and render them below as read-only cards: coach display name + timestamp + content.
-- Small badge "Shared in club" so coaches understand visibility.
+## Page sections (single scrollable page)
 
----
+1. **Sticky navbar** — transparent over hero, solid navy on scroll. Logo "Sportstalent.dk" left. Right: language switcher (reuse `LanguageSwitcher`), "Log ind" ghost → `/login`, "Kom i gang" red → `/signup`.
+2. **Hero** — H1, subhead, two CTAs ("Opret gratis konto" red → `/signup`, "Få tidlig adgang" outline → scroll to `#waitlist`), small "Allerede medlem? Log ind her" link → `/login`.
+3. **Pain points** — 3-column grid, lucide icons (`Clock`, `TrendingUp`, `BookOpen`).
+4. **Features** — 2×2 card grid, icons (`MessageSquare`, `CalendarDays`, `BookOpen`, `Users`). Per project rule, label these as "Personlig assistent" / "Personalized" — never "AI".
+5. **Credibility** — centered dark card, "Bygget af en tidligere landsholdstræner" copy.
+6. **Waitlist** (`id="waitlist"`) — name / club / email form → inserts into new `waitlist` table → inline success toast. Below form: "Klar til at starte nu? → Opret konto" link.
+7. **Footer** — copyright + Privatlivspolitik (`/privacy`) + Kontakt (`/contact`).
 
-## 2) Better Health graphs with norm baselines (`src/pages/Health.tsx`)
+All sections use `motion` enter animations consistent with the existing landing.
 
-Today Steps/Sleep/RHR/HRV are plain bars; only RHR/HRV have a personal 7-day baseline line. We'll keep the personal baseline and add a fixed "healthy adult athlete" norm band so every chart has context, plus richer detail.
+## Design tokens
 
-### Norm reference values (constants in a new `src/lib/healthNorms.ts`)
-- Steps: target 10 000/day, low 5 000.
-- Sleep: target 8h, low 7h, high 9h (band).
-- RHR: athlete band 50–65 bpm.
-- HRV (RMSSD): athlete healthy ≥ 50 ms, low < 30 ms.
+Add to `src/index.css` and `tailwind.config.ts` (HSL values):
 
-### Chart upgrades (each metric card)
-- Switch the per-metric charts from `BarChart` to `ComposedChart`:
-  - Bars (or area for sleep) for the daily value.
-  - `ReferenceArea` for the healthy norm band, soft `--muted` fill.
-  - `ReferenceLine` for the target value, dashed `--primary`.
-  - Existing personal 7-day baseline line stays for RHR / HRV.
-- Tooltip: show value, delta vs 7-day avg, and "vs norm" label (Below / In range / Above).
-- Add a small legend row under each chart explaining the band and target line.
-- Increase chart height from `h-40/44` to `h-56` for readability on mobile.
-- Steps card: add a weekly total stat tile alongside today / 7-day avg.
+- `--landing-navy: 217 68% 14%`        (#0B1F3A)
+- `--landing-navy-elevated: 222 60% 18%` (#112347)
+- `--landing-red: 353 100% 45%`         (#E8001D)
+- `--landing-red-hover: 353 100% 40%`
 
-### 7-day overview card
-- Keep the normalized 0–100 % multi-line view, but add a horizontal `ReferenceLine` at 100 % marked "Personal max in window" so users understand what the normalization means.
+Map Tailwind classes `bg-landing-navy`, `bg-landing-elevated`, `bg-landing-red`, `text-landing-red`, `border-landing-red`. Use these tokens throughout the new page — no raw hex in components.
 
-No backend changes for part 2 — the data already exists in `wearable_daily_summary`.
+## Internationalization
 
----
+Add ~35 new keys to `src/i18n/translations.ts` for all 5 locales (DA, EN, SV, DE, AR), namespaced `landingClub*` (e.g. `landingClubHeroTitle`, `landingClubPain1Title`, `landingClubWaitlistSuccess`). Danish is the source of truth (uses the exact copy provided); EN/SV/DE/AR are faithful translations. RTL handled automatically by existing LanguageContext.
 
-## Files to touch
+The "Sportstalent.dk" wordmark stays the same string in all languages (brand). Wordmark co-exists with existing "SPORTS TALENT" identity used inside the app — landing page is the public-facing club acquisition entry point.
 
-- `supabase/migrations/<new>.sql` — add column, helper function, extra SELECT policy.
-- `src/pages/AdminClubs.tsx` — Switch + update handler.
-- `src/components/coach/CoachNotes.tsx` — read & render other coaches' notes when shared.
-- `src/i18n/translations.ts` — new keys for admin toggle, "Shared in club" label, norm legends.
-- `src/lib/healthNorms.ts` — new constants module.
-- `src/pages/Health.tsx` — ComposedCharts + ReferenceArea/Line + richer tooltips/stats.
+## Waitlist database
 
-## Open question
+New migration:
 
-For shared club notes: should an athlete also see all coach notes about them when sharing is on, or keep notes coach-only (current behavior)? Default in this plan: still coach-only; athletes never see them.
+```sql
+CREATE TABLE public.waitlist (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  club text not null,
+  email text not null,
+  locale text,
+  created_at timestamptz not null default now()
+);
+
+ALTER TABLE public.waitlist ENABLE ROW LEVEL SECURITY;
+
+-- Public can sign up
+CREATE POLICY "Anyone can join waitlist"
+  ON public.waitlist FOR INSERT TO anon, authenticated
+  WITH CHECK (
+    char_length(name)  BETWEEN 1 AND 120 AND
+    char_length(club)  BETWEEN 1 AND 120 AND
+    char_length(email) BETWEEN 3 AND 254 AND
+    email ~* '^[^@\s]+@[^@\s]+\.[^@\s]+$'
+  );
+
+-- Only admins can read
+CREATE POLICY "Admins read waitlist"
+  ON public.waitlist FOR SELECT TO authenticated
+  USING (public.is_admin(auth.uid()));
+
+CREATE INDEX waitlist_email_idx ON public.waitlist (email);
+```
+
+Client-side: zod validation on form (name 1–120, club 1–120, email valid + ≤254), `supabase.from('waitlist').insert(...)`, success → sonner toast + replace form with success message.
+
+## Files
+
+**New**
+- `src/pages/Landing.tsx`
+- `src/components/landing/club/LandingNav.tsx`
+- `src/components/landing/club/LandingHero.tsx`
+- `src/components/landing/club/PainPoints.tsx`
+- `src/components/landing/club/FeatureCards.tsx`
+- `src/components/landing/club/Credibility.tsx`
+- `src/components/landing/club/WaitlistForm.tsx`
+- `src/components/landing/club/LandingFooter.tsx`
+- `supabase/migrations/<timestamp>_waitlist.sql`
+
+**Edited**
+- `src/App.tsx` — `/` → Landing, `/v1` → Index, add `/signup` and `/login` redirect routes.
+- `src/pages/Auth.tsx` — read `?tab=signup|signin` and open the right tab.
+- `src/index.css` — add landing color tokens.
+- `src/tailwind.config.ts` — register the tokens as Tailwind colors.
+- `src/i18n/translations.ts` — add `landingClub*` keys for DA / EN / SV / DE / AR.
+
+**Untouched** — every other page, route, component, and the existing `Index.tsx` (just remounted at `/v1`).
+
+## Out of scope / not changed
+
+- Existing `Index.tsx` and all its sub-components stay as-is.
+- No changes to existing brand identity inside the authenticated app.
+- No email infrastructure changes; waitlist signup is DB-only for now (admin notification can be added later).
+- No SEO sitemap edits beyond `<PageMeta>` on the new page (canonical `https://sportstalent.dk/`, hreflang for the 5 locales).
+
+## Verification after build
+
+- `/` renders the new page; `/v1` still renders the old one.
+- `/signup` and `/login` land on the right Auth tab.
+- Waitlist form: invalid email → inline error; valid submit → row appears in `waitlist` table; success message shown.
+- Language switch in navbar updates all copy live (incl. RTL for Arabic).
+- Mobile (402×636) layout: nav collapses cleanly, all CTAs ≥ 44px tap targets, no horizontal scroll.
