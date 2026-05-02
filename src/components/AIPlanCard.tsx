@@ -551,7 +551,6 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
             }}
           />
         </>
-      )}
     </div>
   );
 }
