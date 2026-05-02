@@ -166,15 +166,15 @@ export default function Onboarding() {
       haptics.success();
 
       // After onboarding, send athletes without an active subscription to /pricing
-      if (role !== "coach") {
+      if (role !== "coach" && userId) {
         try {
           const { data: subRow } = await supabase
             .from("subscriptions")
             .select("status")
-            .eq("user_id", session!.user.id)
+            .eq("user_id", userId)
             .maybeSingle();
           const { data: pf } = await supabase.rpc("get_profile_protected_fields", {
-            _user_id: session!.user.id,
+            _user_id: userId,
           });
           const hasAccess =
             subRow?.status === "active" ||
