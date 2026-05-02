@@ -7,7 +7,7 @@ import { ArrowLeft, Activity, Footprints, RefreshCw, Info } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PageMeta } from "@/components/PageMeta";
 import {
-  BarChart, Bar, LineChart, Line, ComposedChart, Area,
+  Bar, LineChart, Line, ComposedChart,
   ReferenceArea, ReferenceLine,
   XAxis, YAxis, CartesianGrid, Tooltip as RTooltip, ResponsiveContainer, Legend,
 } from "recharts";
