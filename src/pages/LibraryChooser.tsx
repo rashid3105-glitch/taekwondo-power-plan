@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { AppFooter } from "@/components/AppFooter";
 import { Watermark } from "@/components/Watermark";
-import { Dumbbell, Brain, UtensilsCrossed, ClipboardList, ArrowLeft, BookOpen } from "lucide-react";
+import { Dumbbell, Brain, UtensilsCrossed, ClipboardList, ArrowLeft, BookOpen, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { TranslationKey } from "@/i18n/translations";
@@ -45,6 +45,14 @@ const libraries: {
     icon: ClipboardList,
     color: "text-primary",
     bgClass: "bg-primary/10 border-primary/20 hover:border-primary/40",
+  },
+  {
+    id: "hiit",
+    labelKey: "libHiitLabel",
+    descKey: "libHiitDesc",
+    icon: Zap,
+    color: "text-destructive",
+    bgClass: "bg-destructive/10 border-destructive/20 hover:border-destructive/40",
   },
 ];
 
