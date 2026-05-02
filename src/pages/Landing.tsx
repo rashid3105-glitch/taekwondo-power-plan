@@ -506,7 +506,7 @@ const Credibility = () => {
 
 const Pricing = () => {
   const { t, locale } = useLanguage();
-  const currency = detectCurrency(locale);
+  const currency = detectCurrency();
 
   const tiers: Array<{
     key: "athlete" | "coach_solo" | "team_small" | "team_medium" | "team_large";
