@@ -1416,28 +1416,31 @@ export type Database = {
       }
       waitlist: {
         Row: {
-          club: string
+          club: string | null
           created_at: string
           email: string
           id: string
           locale: string | null
           name: string
+          role: string | null
         }
         Insert: {
-          club: string
+          club?: string | null
           created_at?: string
           email: string
           id?: string
           locale?: string | null
           name: string
+          role?: string | null
         }
         Update: {
-          club?: string
+          club?: string | null
           created_at?: string
           email?: string
           id?: string
           locale?: string | null
           name?: string
+          role?: string | null
         }
         Relationships: []
       }
