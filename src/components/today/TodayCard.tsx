@@ -11,7 +11,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { normalizeDaySessions, type PlanSession } from "@/lib/planSessionUtils";
 import { useOfflineWorkoutLogs } from "@/hooks/useOfflineWorkoutLogs";
 import { supabase } from "@/integrations/supabase/client";
-import { hapticTap } from "@/lib/haptics";
+import { haptics } from "@/lib/haptics";
 import { FeatureEmptyState } from "@/components/FeatureEmptyState";
 
 interface Plan {
@@ -67,13 +67,15 @@ export function TodayCard({ activePlan, onGoToProgress, onGoToPlan }: Props) {
 
   if (!activePlan) {
     return (
-      <div className="rounded-2xl border border-border bg-card/80 p-5 shadow-card">
+      <div className="rounded-2xl border border-border bg-card/80 p-1 shadow-card">
         <FeatureEmptyState
           icon={Play}
-          title={t("hubTrainingTitle")}
-          description={t("hubTrainingDesc")}
-          actionLabel={t("hubTrainingTitle")}
-          onAction={onGoToPlan}
+          titleKey="hubTrainingTitle"
+          descKey="hubTrainingDesc"
+          ctaKey="hubTrainingTitle"
+          onCta={onGoToPlan}
+          accentClass="text-tab-plan"
+          iconBgClass="bg-tab-plan/15"
         />
       </div>
     );
