@@ -228,6 +228,10 @@ export default function Dashboard() {
         navigate("/pending-approval");
         return;
       }
+      if (!profileData.onboarding_completed) {
+        navigate("/onboarding");
+        return;
+      }
       if (!profileData.club_id) {
         navigate("/profile-setup");
         return;
