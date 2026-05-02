@@ -4,7 +4,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Play, Pause, RotateCcw, X, Zap, Heart, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { triggerHaptic } from "@/lib/haptics";
+import { haptics } from "@/lib/haptics";
 import type { HiitInterval } from "@/data/hiitWorkouts";
 
 interface HiitRunnerProps {
