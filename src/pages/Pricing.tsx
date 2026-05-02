@@ -104,8 +104,10 @@ export default function Pricing() {
   const [loadingTier, setLoadingTier] = useState<string | null>(null);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isPaidOrDemo, setIsPaidOrDemo] = useState(false);
+  const [currentTier, setCurrentTier] = useState<string | null>(null);
   const [managingPortal, setManagingPortal] = useState(false);
   const currency = useMemo(() => detectCurrency(), []);
+  const showWelcome = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("welcome") === "1";
 
   useEffect(() => {
     checkSubscription();
@@ -134,6 +136,7 @@ export default function Pricing() {
       if (data?.subscribed) {
         setIsSubscribed(true);
         setIsPaidOrDemo(true);
+        if (data?.tier) setCurrentTier(data.tier);
       }
     } catch {
       // silently ignore
