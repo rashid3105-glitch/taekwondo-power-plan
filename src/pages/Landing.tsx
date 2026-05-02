@@ -20,6 +20,7 @@ import {
   Stethoscope,
   Brain,
   Trophy,
+  Tag,
 } from "lucide-react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
@@ -39,6 +40,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { toast } from "sonner";
 import { haptics } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
+import { detectCurrency, formatPrice, getTierPrice } from "@/lib/currency";
 
 /* ────────────────────────────────────────────────────────── */
 /*                          NAVBAR                             */
@@ -70,8 +72,14 @@ const Nav = () => {
           Sportstalent<span className="text-landing-red">.dk</span>
         </Link>
 
-        {/* Center: language switcher (hidden on small to save space) */}
-        <div className="hidden md:flex items-center justify-center flex-1">
+        {/* Center: pricing link + language switcher (hidden on small to save space) */}
+        <div className="hidden md:flex items-center justify-center gap-4 flex-1">
+          <a
+            href="#priser"
+            className="text-sm text-slate-200/80 hover:text-white transition-colors"
+          >
+            {t("landingV2NavPricing")}
+          </a>
           <LanguageSwitcher />
         </div>
 
@@ -493,6 +501,113 @@ const Credibility = () => {
 };
 
 /* ────────────────────────────────────────────────────────── */
+/*                          PRICING                            */
+/* ────────────────────────────────────────────────────────── */
+
+const Pricing = () => {
+  const { t, locale } = useLanguage();
+  const currency = detectCurrency();
+
+  const tiers: Array<{
+    key: "athlete" | "coach_solo" | "team_small" | "team_medium" | "team_large";
+    nameKey: "landingPricingTierAthlete" | "landingPricingTierCoach" | "landingPricingTierSmall" | "landingPricingTierMedium" | "landingPricingTierLarge";
+    descKey: "landingPricingTierAthleteDesc" | "landingPricingTierCoachDesc" | "landingPricingTierSmallDesc" | "landingPricingTierMediumDesc" | "landingPricingTierLargeDesc";
+    icon: typeof User;
+    popular?: boolean;
+  }> = [
+    { key: "athlete", nameKey: "landingPricingTierAthlete", descKey: "landingPricingTierAthleteDesc", icon: User },
+    { key: "coach_solo", nameKey: "landingPricingTierCoach", descKey: "landingPricingTierCoachDesc", icon: Users },
+    { key: "team_small", nameKey: "landingPricingTierSmall", descKey: "landingPricingTierSmallDesc", icon: Users },
+    { key: "team_medium", nameKey: "landingPricingTierMedium", descKey: "landingPricingTierMediumDesc", icon: Trophy, popular: true },
+    { key: "team_large", nameKey: "landingPricingTierLarge", descKey: "landingPricingTierLargeDesc", icon: Trophy },
+  ];
+
+  return (
+    <section id="priser" className="py-16 sm:py-20 px-4 sm:px-6 scroll-mt-20">
+      <div className="max-w-6xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-10"
+        >
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-landing-red/15 border border-landing-red/30 text-landing-red text-xs font-semibold mb-4">
+            <Tag className="w-3.5 h-3.5" />
+            {t("landingPricingTitle")}
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white mb-3">
+            {t("landingPricingSubtitle")}
+          </h2>
+        </motion.div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+          {tiers.map((tier, idx) => {
+            const amount = getTierPrice(tier.key, currency, "monthly");
+            const priceDisplay = amount != null ? formatPrice(amount, currency, "monthly", locale) : "";
+            const Icon = tier.icon;
+            return (
+              <motion.div
+                key={tier.key}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: idx * 0.05 }}
+                className={cn(
+                  "relative rounded-2xl bg-landing-elevated border p-5 flex flex-col gap-3",
+                  tier.popular ? "border-landing-red/60 ring-1 ring-landing-red/40" : "border-white/10",
+                )}
+              >
+                {tier.popular && (
+                  <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full bg-landing-red text-white text-[10px] font-bold uppercase tracking-wide whitespace-nowrap">
+                    {t("landingPricingPopular")}
+                  </div>
+                )}
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
+                    <Icon className="w-4 h-4 text-landing-red" />
+                  </div>
+                  <div className="text-sm font-bold text-white">{t(tier.nameKey)}</div>
+                </div>
+                <div>
+                  <div className="text-[11px] uppercase tracking-wide text-slate-300/70 font-semibold">
+                    {t("landingPricingFrom")}
+                  </div>
+                  <div className="mt-0.5">
+                    <span className="text-xl font-black text-white">{priceDisplay}</span>
+                  </div>
+                </div>
+                <p className="text-xs text-slate-300/80 leading-relaxed">{t(tier.descKey)}</p>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+          className="mt-8 flex flex-col items-center gap-3"
+        >
+          <Link to="/pricing">
+            <Button
+              size="lg"
+              className="bg-landing-red hover:bg-landing-red-hover text-white font-semibold"
+              onClick={() => haptics.tap()}
+            >
+              {t("landingPricingCta")}
+              <ArrowRight className="w-4 h-4 ml-1" />
+            </Button>
+          </Link>
+          <p className="text-xs text-slate-300/70">{t("landingPricingTrialNote")}</p>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+/* ────────────────────────────────────────────────────────── */
 /*                          WAITLIST                           */
 /* ────────────────────────────────────────────────────────── */
 
@@ -702,6 +817,7 @@ const Landing = () => {
         <CoachHighlight />
         <FeaturesGrid />
         <Credibility />
+        <Pricing />
         <Waitlist />
       </main>
       <Footer />
