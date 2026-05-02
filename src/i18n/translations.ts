@@ -10203,6 +10203,8 @@ const translations = {
     healthVsNormAbove: "Over norm",
     healthStepsWeekTotal: "7-dagers total",
     notesSaved: "Notater lagret",
+    shareWithClubCoaches: "Del med trenere i klubben",
+    onlyVisibleToYouAndAthlete: "Bare du og utøveren ser dette",
     todaysSession: "Dagens økt",
     compareToClub: "Sammenlign med klubb",
     compareToClubDesc: "Utøver mot medianen for utøverens klubb.",
