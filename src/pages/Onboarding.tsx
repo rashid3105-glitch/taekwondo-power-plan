@@ -89,8 +89,8 @@ export default function Onboarding() {
   const toggleGoal = (g: string) => setGoals((p) => p.includes(g) ? p.filter((x) => x !== g) : [...p, g]);
   const toggleFocus = (f: string) => setFocus((p) => p.includes(f) ? p.filter((x) => x !== f) : [...p, f]);
 
-  const next = () => { triggerHaptic("light"); setStep((s) => s + 1); };
-  const back = () => { triggerHaptic("light"); setStep((s) => Math.max(0, s - 1)); };
+  const next = () => { haptics.tap(); setStep((s) => s + 1); };
+  const back = () => { haptics.tap(); setStep((s) => Math.max(0, s - 1)); };
 
   const validateAthleteStep1 = () => {
     if (!age || !weight) { toast.error(t("onbValidationMissing")); return false; }
@@ -151,7 +151,7 @@ export default function Onboarding() {
         }).catch(() => { /* non-blocking */ });
       }
 
-      triggerHaptic("success");
+      haptics.success();
       navigate(role === "coach" ? "/coach" : "/dashboard");
     } catch (e) {
       console.error(e);
