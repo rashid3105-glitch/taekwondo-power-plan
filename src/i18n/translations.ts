@@ -2695,7 +2695,6 @@ const translations = {
     todayStart: "Start træning",
     todayFinish: "Afslut træning",
     todayMarkDone: "Markér som gennemført",
-    todayCompleted: "Gennemført",
     todayDoneTitle: "Godt klaret!",
     todayDoneBody: "Dagens træning er logget i din fremgang.",
     todaySeeProgress: "Se min fremgang",
