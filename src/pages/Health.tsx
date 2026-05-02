@@ -177,7 +177,8 @@ export default function Health() {
     const today = last7[last7.length - 1] ?? 0;
     const yday = last7[last7.length - 2] ?? 0;
     const avg7 = last7.length ? Math.round(last7.reduce((a, b) => a + b, 0) / last7.length) : 0;
-    return { today, yday, avg7, delta: today - yday };
+    const total7 = last7.reduce((a, b) => a + b, 0);
+    return { today, yday, avg7, delta: today - yday, total7 };
   }, [steps]);
 
   const sleepData = useMemo(
