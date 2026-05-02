@@ -11,6 +11,7 @@ import {
 } from "recharts";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { normalizeDaySessions } from "@/lib/planSessionUtils";
+import { FeatureEmptyState } from "@/components/FeatureEmptyState";
 
 interface WorkoutLog {
   id: string;
