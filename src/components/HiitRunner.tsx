@@ -57,14 +57,14 @@ export function HiitRunner({ open, onClose, intervals, workoutName }: HiitRunner
           if (next >= intervals.length) {
             setRunning(false);
             setDone(true);
-            triggerHaptic("success");
+            haptics.success();
             beep(523, 250);
             setTimeout(() => beep(659, 250), 200);
             setTimeout(() => beep(784, 350), 400);
             return 0;
           }
           setIdx(next);
-          triggerHaptic("medium");
+          haptics.tap();
           beep(intervals[next].type === "WORK" ? 880 : 440, 200);
           return intervals[next].duration;
         }
@@ -95,12 +95,12 @@ export function HiitRunner({ open, onClose, intervals, workoutName }: HiitRunner
     setTimeLeft(intervals[0].duration);
     setRunning(false);
     setDone(false);
-    triggerHaptic("light");
+    haptics.tap();
   };
 
   const toggleRun = () => {
     setRunning((r) => !r);
-    triggerHaptic("light");
+    haptics.tap();
   };
 
   return (
