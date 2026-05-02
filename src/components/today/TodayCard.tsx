@@ -111,7 +111,7 @@ export function TodayCard({ activePlan, onGoToProgress, onGoToPlan }: Props) {
               planId={activePlan.id}
               dayIndex={dayIndex}
               sessionIndex={si}
-              onStart={() => { hapticTap(); setOpenSession(si); }}
+              onStart={() => { haptics.tap(); setOpenSession(si); }}
             />
           ))}
         </div>
@@ -223,7 +223,7 @@ function SessionDialog({
             <TkdRunner
               focus={session.focus}
               completed={logs[0]?.completed === true}
-              onMark={async () => { hapticTap(); await upsertLog(0, { completed: true }); }}
+              onMark={async () => { haptics.tap(); await upsertLog(0, { completed: true }); }}
             />
           ) : (
             exercises.map((ex: any, i: number) => (
@@ -232,7 +232,7 @@ function SessionDialog({
                 exercise={ex}
                 completed={logs.find((l) => l.exercise_index === i)?.completed === true}
                 onComplete={async () => {
-                  hapticTap();
+                  haptics.tap();
                   await upsertLog(i, { completed: true, actual_sets: ex.sets, actual_reps: ex.reps });
                 }}
               />
@@ -318,7 +318,7 @@ function GymExerciseCard({ exercise, completed, onComplete }: { exercise: any; c
             <Checkbox
               checked={c}
               onCheckedChange={(v) => {
-                hapticTap();
+                haptics.tap();
                 setChecked((prev) => prev.map((x, idx) => (idx === i ? v === true : x)));
               }}
             />
