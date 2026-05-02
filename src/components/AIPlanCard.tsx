@@ -227,7 +227,6 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [activeSessionIndex, setActiveSessionIndex] = useState(0);
   const [exporting, setExporting] = useState(false);
-  const [activeTab, setActiveTab] = useState<"schedule" | "periodization">("schedule");
   const [pickerMode, setPickerMode] = useState<{ dayIndex: number; sessionIndex: number; exerciseIndex?: number } | null>(null);
   const [localPlanData, setLocalPlanData] = useState(plan.plan_data);
   const schedule = localPlanData?.weeklySchedule || [];
