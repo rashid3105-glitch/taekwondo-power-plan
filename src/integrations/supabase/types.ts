@@ -80,6 +80,7 @@ export type Database = {
           id: string
           max_athletes: number
           name: string
+          share_coach_notes: boolean
           slug: string
         }
         Insert: {
@@ -87,6 +88,7 @@ export type Database = {
           id?: string
           max_athletes?: number
           name: string
+          share_coach_notes?: boolean
           slug: string
         }
         Update: {
@@ -94,6 +96,7 @@ export type Database = {
           id?: string
           max_athletes?: number
           name?: string
+          share_coach_notes?: boolean
           slug?: string
         }
         Relationships: []
@@ -1708,6 +1711,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      club_shares_coach_notes: { Args: { _club_id: string }; Returns: boolean }
       compute_form_curve: {
         Args: { _user_id: string; _weeks?: number }
         Returns: undefined
