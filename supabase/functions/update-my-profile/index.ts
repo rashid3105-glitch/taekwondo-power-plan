@@ -33,6 +33,10 @@ const UpdateProfileSchema = z.object({
   custom_calories: z.number().int().min(500).max(10000).nullable(),
   owns_wearable: z.boolean().optional(),
   default_locale: z.enum(["en", "da", "sv", "no", "de", "ar"]).nullable().optional(),
+  onboarding_completed: z.boolean().optional(),
+  coach_club_name: z.string().max(120).nullable().optional(),
+  coach_athlete_count_band: z.string().max(20).nullable().optional(),
+  coach_focus: z.array(z.string().min(1).max(40)).max(10).nullable().optional(),
   avatar_url: z
     .string()
     .max(500)
