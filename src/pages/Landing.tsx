@@ -40,6 +40,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { toast } from "sonner";
 import { haptics } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
+import { detectCurrency, formatPrice, getTierPrice } from "@/lib/currency";
 
 /* ────────────────────────────────────────────────────────── */
 /*                          NAVBAR                             */
