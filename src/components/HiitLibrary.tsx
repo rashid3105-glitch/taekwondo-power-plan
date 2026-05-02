@@ -6,8 +6,22 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Zap, Play, Clock, Flame, Target } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { cn } from "@/lib/utils";
+import type { TranslationKey } from "@/i18n/translations";
 
 const CATEGORIES: HiitWorkout["category"][] = ["kicks", "conditioning", "footwork", "sparring"];
+
+const CAT_KEY: Record<HiitWorkout["category"], TranslationKey> = {
+  kicks: "hiitCat_kicks",
+  conditioning: "hiitCat_conditioning",
+  footwork: "hiitCat_footwork",
+  sparring: "hiitCat_sparring",
+};
+
+const LEVEL_KEY: Record<HiitWorkout["level"], TranslationKey> = {
+  beginner: "hiitLevel_beginner",
+  intermediate: "hiitLevel_intermediate",
+  advanced: "hiitLevel_advanced",
+};
 
 const LEVEL_STYLES: Record<HiitWorkout["level"], string> = {
   beginner: "bg-accent/15 text-accent-foreground border-accent/30",
