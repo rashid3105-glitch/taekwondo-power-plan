@@ -72,8 +72,14 @@ const Nav = () => {
           Sportstalent<span className="text-landing-red">.dk</span>
         </Link>
 
-        {/* Center: language switcher (hidden on small to save space) */}
-        <div className="hidden md:flex items-center justify-center flex-1">
+        {/* Center: pricing link + language switcher (hidden on small to save space) */}
+        <div className="hidden md:flex items-center justify-center gap-4 flex-1">
+          <a
+            href="#priser"
+            className="text-sm text-slate-200/80 hover:text-white transition-colors"
+          >
+            {t("landingV2NavPricing")}
+          </a>
           <LanguageSwitcher />
         </div>
 
