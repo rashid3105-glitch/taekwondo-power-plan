@@ -509,17 +509,15 @@ const Pricing = () => {
   const currency = detectCurrency();
 
   const tiers: Array<{
-    key: "athlete" | "coach_solo" | "team_small" | "team_medium" | "team_large";
-    nameKey: "landingPricingTierAthlete" | "landingPricingTierCoach" | "landingPricingTierSmall" | "landingPricingTierMedium" | "landingPricingTierLarge";
-    descKey: "landingPricingTierAthleteDesc" | "landingPricingTierCoachDesc" | "landingPricingTierSmallDesc" | "landingPricingTierMediumDesc" | "landingPricingTierLargeDesc";
+    key: "athlete" | "coach_solo" | "team_small";
+    nameKey: "landingPricingTierAthlete" | "landingPricingTierCoach" | "landingPricingTierSmall";
+    descKey: "landingPricingTierAthleteDesc" | "landingPricingTierCoachDesc" | "landingPricingTierSmallDesc";
     icon: typeof User;
     popular?: boolean;
   }> = [
     { key: "athlete", nameKey: "landingPricingTierAthlete", descKey: "landingPricingTierAthleteDesc", icon: User },
-    { key: "coach_solo", nameKey: "landingPricingTierCoach", descKey: "landingPricingTierCoachDesc", icon: Users },
+    { key: "coach_solo", nameKey: "landingPricingTierCoach", descKey: "landingPricingTierCoachDesc", icon: Users, popular: true },
     { key: "team_small", nameKey: "landingPricingTierSmall", descKey: "landingPricingTierSmallDesc", icon: Users },
-    { key: "team_medium", nameKey: "landingPricingTierMedium", descKey: "landingPricingTierMediumDesc", icon: Trophy, popular: true },
-    { key: "team_large", nameKey: "landingPricingTierLarge", descKey: "landingPricingTierLargeDesc", icon: Trophy },
   ];
 
   return (
