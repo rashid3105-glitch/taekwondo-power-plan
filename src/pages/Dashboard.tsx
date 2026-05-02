@@ -589,10 +589,24 @@ export default function Dashboard() {
                   fallbackClassName="h-14 w-14 rounded-full bg-muted flex items-center justify-center border-2 border-primary/30 shrink-0"
                 />
                 <div className="flex-1 min-w-0 space-y-1">
-                  <h2 className="text-xl sm:text-2xl font-extrabold text-foreground truncate">
-                    {t("welcomeBack")}, {profile?.display_name || "Athlete"}!
-                  </h2>
-                  <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                  {(() => {
+                    const fullName = profile?.display_name?.trim() || "";
+                    const firstName = fullName ? fullName.split(/\s+/)[0] : "SPORTSTALENT";
+                    const hour = new Date().getHours();
+                    const greetingKey =
+                      hour >= 5 && hour < 12 ? "greetingMorning" :
+                      hour >= 12 && hour < 18 ? "greetingAfternoon" :
+                      "greetingEvening";
+                    return (
+                      <>
+                        <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground truncate tracking-tight">
+                          {firstName}
+                        </h2>
+                        <p className="text-sm text-muted-foreground">{t(greetingKey)}</p>
+                      </>
+                    );
+                  })()}
+                  <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground pt-1">
                     {profile?.belt_level && (
                       <Badge variant="outline" className="capitalize text-xs">
                         {profile.belt_level}
