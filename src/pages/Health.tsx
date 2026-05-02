@@ -350,26 +350,41 @@ export default function Health() {
         <CardContent className="space-y-3">
           {hasSteps ? (
             <>
-              <div className="grid grid-cols-3 gap-2 text-center">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
                 <Stat label={t("healthStepsToday")} value={stepsTotals.today.toLocaleString()} />
                 <Stat label={t("healthStepsAvg7")} value={stepsTotals.avg7.toLocaleString()} />
+                <Stat label={t("healthStepsWeekTotal")} value={stepsTotals.total7.toLocaleString()} />
                 <Stat
                   label={t("healthStepsDelta")}
                   value={`${stepsTotals.delta >= 0 ? "+" : ""}${stepsTotals.delta.toLocaleString()}`}
                   tone={stepsTotals.delta >= 0 ? "good" : "bad"}
                 />
               </div>
-              <div className="h-44">
+              <div className="h-56">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={stepData} margin={{ top: 5, right: 8, left: 0, bottom: 0 }}>
+                  <ComposedChart data={stepData} margin={{ top: 5, right: 8, left: 0, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis dataKey="date" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
                     <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
-                    <RTooltip contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", fontSize: 11 }} />
+                    <RTooltip
+                      contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", fontSize: 11 }}
+                      formatter={(v: any) => {
+                        const n = Number(v);
+                        const verdict = compareToBand(n, healthNorms.steps.bandLow, healthNorms.steps.bandHigh);
+                        const label = verdict === "below" ? t("healthVsNormBelow") : verdict === "above" ? t("healthVsNormAbove") : t("healthVsNormIn");
+                        return [`${n.toLocaleString()} (${label})`, t("healthStepsTitle")];
+                      }}
+                    />
+                    <ReferenceArea y1={healthNorms.steps.bandLow} y2={healthNorms.steps.bandHigh} fill="hsl(var(--primary))" fillOpacity={0.06} />
+                    <ReferenceLine y={healthNorms.steps.target} stroke="hsl(var(--primary))" strokeDasharray="4 4" strokeOpacity={0.7} />
                     <Bar dataKey="steps" fill="hsl(var(--primary))" radius={[3, 3, 0, 0]} />
-                  </BarChart>
+                  </ComposedChart>
                 </ResponsiveContainer>
               </div>
+              <NormLegend
+                bandLabel={`${t("healthNormBand")}: ${healthNorms.steps.bandLow.toLocaleString()}–${healthNorms.steps.bandHigh.toLocaleString()}`}
+                targetLabel={`${t("healthNormTarget")}: ${healthNorms.steps.target.toLocaleString()}`}
+              />
             </>
           ) : (
             <EmptyMetric label={t("healthStepsEmpty")} />
