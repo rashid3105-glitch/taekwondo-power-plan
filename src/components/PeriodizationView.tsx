@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { TrendingUp, TrendingDown, Minus, Zap, Shield, Dumbbell, Battery } from "lucide-react";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface PeriodizationPhase {
   phase: string;
@@ -27,6 +28,17 @@ const PHASE_COLORS: Record<string, string> = {
   "recovery": "bg-speed/15 text-speed border-speed/30",
 };
 
+const PHASE_KEYS: Record<string, string> = {
+  "anatomical adaptation": "phaseAnatomicalAdaptation",
+  "accumulation": "phaseAccumulation",
+  "intensification": "phaseIntensification",
+  "peaking": "phasePeaking",
+  "peak": "phasePeaking",
+  "deload": "phaseDeload",
+  "competition": "phaseCompetition",
+  "recovery": "phaseRecovery",
+};
+
 function getPhaseColor(phase: string) {
   const key = phase.toLowerCase();
   for (const [k, v] of Object.entries(PHASE_COLORS)) {
@@ -44,7 +56,19 @@ function getPhaseIcon(phase: string) {
   return Dumbbell;
 }
 
+function getPhaseLabel(phase: string, t: (k: string) => string): string {
+  const key = phase.toLowerCase();
+  for (const [k, transKey] of Object.entries(PHASE_KEYS)) {
+    if (key.includes(k)) {
+      const translated = t(transKey);
+      if (translated && translated !== transKey) return translated;
+    }
+  }
+  return phase;
+}
+
 export function PeriodizationView({ periodization, programWeeks }: PeriodizationViewProps) {
+  const { t } = useLanguage();
   if (!periodization?.length) return null;
 
   const totalWeeks = programWeeks || periodization[periodization.length - 1]?.endWeek || 8;
@@ -52,8 +76,10 @@ export function PeriodizationView({ periodization, programWeeks }: Periodization
   return (
     <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-5">
       <div>
-        <h3 className="text-sm font-bold text-foreground">Program Periodization</h3>
-        <p className="text-xs text-muted-foreground">{totalWeeks}-week progression overview</p>
+        <h3 className="text-sm font-bold text-foreground">{t("periodizationTitle")}</h3>
+        <p className="text-xs text-muted-foreground">
+          {(t("periodizationSubtitle") || "{{n}}-week overview").replace("{{n}}", String(totalWeeks))}
+        </p>
       </div>
 
       {/* Timeline bar */}
@@ -63,16 +89,17 @@ export function PeriodizationView({ periodization, programWeeks }: Periodization
             const span = phase.endWeek - phase.startWeek + 1;
             const widthPercent = (span / totalWeeks) * 100;
             const colorClass = getPhaseColor(phase.phase);
+            const label = getPhaseLabel(phase.phase, t);
 
             return (
               <div
                 key={i}
                 className={cn("flex items-center justify-center text-[9px] sm:text-[10px] font-bold uppercase tracking-wider transition-all", colorClass)}
                 style={{ width: `${widthPercent}%` }}
-                title={`${phase.phase}: Weeks ${phase.weeks}`}
+                title={`${label}: ${(t("weeksLabel") || "Weeks {{range}}").replace("{{range}}", phase.weeks)}`}
               >
                 {span >= 2 && (
-                  <span className="truncate px-1">{phase.phase}</span>
+                  <span className="truncate px-1">{label}</span>
                 )}
               </div>
             );
@@ -93,6 +120,8 @@ export function PeriodizationView({ periodization, programWeeks }: Periodization
         {periodization.map((phase, i) => {
           const Icon = getPhaseIcon(phase.phase);
           const colorClass = getPhaseColor(phase.phase);
+          const label = getPhaseLabel(phase.phase, t);
+          const weeksLine = (t("weeksLabel") || "Weeks {{range}}").replace("{{range}}", phase.weeks);
 
           return (
             <div key={i} className={cn("rounded-lg border p-3 sm:p-4 space-y-3", colorClass)}>
@@ -100,8 +129,8 @@ export function PeriodizationView({ periodization, programWeeks }: Periodization
                 <div className="flex items-center gap-2">
                   <Icon className="h-4 w-4 flex-shrink-0" />
                   <div>
-                    <p className="text-sm font-bold">{phase.phase}</p>
-                    <p className="text-[10px] opacity-70 font-semibold">Weeks {phase.weeks}</p>
+                    <p className="text-sm font-bold">{label}</p>
+                    <p className="text-[10px] opacity-70 font-semibold">{weeksLine}</p>
                   </div>
                 </div>
               </div>
@@ -112,7 +141,7 @@ export function PeriodizationView({ periodization, programWeeks }: Periodization
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-[10px] uppercase tracking-wider font-semibold opacity-60">Volume</span>
+                    <span className="text-[10px] uppercase tracking-wider font-semibold opacity-60">{t("volume")}</span>
                     <span className="text-[10px] font-bold">{phase.volumePercent}%</span>
                   </div>
                   <div className="h-2 rounded-full bg-background/50 overflow-hidden">
@@ -124,12 +153,12 @@ export function PeriodizationView({ periodization, programWeeks }: Periodization
                 </div>
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-[10px] uppercase tracking-wider font-semibold opacity-60">Intensity</span>
+                    <span className="text-[10px] uppercase tracking-wider font-semibold opacity-60">{t("intensity")}</span>
                     <span className="text-[10px] font-bold">{phase.intensityPercent}%</span>
                   </div>
                   <div className="h-2 rounded-full bg-background/50 overflow-hidden">
                     <div
-                      className="h-full rounded-full bg-accent transition-all duration-500"
+                      className="h-full rounded-full bg-destructive transition-all duration-500"
                       style={{ width: `${phase.intensityPercent}%` }}
                     />
                   </div>
@@ -138,7 +167,7 @@ export function PeriodizationView({ periodization, programWeeks }: Periodization
 
               {/* Key changes */}
               <p className="text-[10px] opacity-70 leading-relaxed">
-                <span className="font-bold uppercase tracking-wider">Key changes: </span>
+                <span className="font-bold uppercase tracking-wider">{t("keyChanges")} </span>
                 {phase.keyChanges}
               </p>
             </div>

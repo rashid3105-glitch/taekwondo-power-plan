@@ -1,113 +1,126 @@
 ## Goal
 
-Replace the current `/` landing page with a new public landing page targeted at small Taekwondo clubs (navy + red, club-focused copy). Archive the existing landing at `/v1`. Add `/signup` and `/login` redirects. Localize everything via the existing i18n system. Add a waitlist table.
+Polish the authenticated app: a personalized home greeting, contextual empty states, an active-plan badge on the home card, and an always-visible periodization timeline above the weekly schedule. All text via the existing i18n system. Landing page and auth routes untouched.
 
-## Routing changes
+## Status of each item
 
-- `/` → new `Landing.tsx` (the new club-focused page)
-- `/v1` → existing `Index.tsx` (archived, unchanged)
-- `/signup` → redirect to `/auth?tab=signup`
-- `/login` → redirect to `/auth?tab=signin`
-- `Auth.tsx` already supports tab switching; verify it reads the `tab` query param (small tweak if not).
+- **#2 Logout → "/"** — already implemented in `Dashboard.tsx` (`handleSignOut` already calls `navigate("/")`), and the only other auth signout in `PendingApproval.tsx` already redirects via state change. **No change needed.** Will verify only.
 
-## Page sections (single scrollable page)
+The other 4 items below need work.
 
-1. **Sticky navbar** — transparent over hero, solid navy on scroll. Logo "Sportstalent.dk" left. Right: language switcher (reuse `LanguageSwitcher`), "Log ind" ghost → `/login`, "Kom i gang" red → `/signup`.
-2. **Hero** — H1, subhead, two CTAs ("Opret gratis konto" red → `/signup`, "Få tidlig adgang" outline → scroll to `#waitlist`), small "Allerede medlem? Log ind her" link → `/login`.
-3. **Pain points** — 3-column grid, lucide icons (`Clock`, `TrendingUp`, `BookOpen`).
-4. **Features** — 2×2 card grid, icons (`MessageSquare`, `CalendarDays`, `BookOpen`, `Users`). Per project rule, label these as "Personlig assistent" / "Personalized" — never "AI".
-5. **Credibility** — centered dark card, "Bygget af en tidligere landsholdstræner" copy.
-6. **Waitlist** (`id="waitlist"`) — name / club / email form → inserts into new `waitlist` table → inline success toast. Below form: "Klar til at starte nu? → Opret konto" link.
-7. **Footer** — copyright + Privatlivspolitik (`/privacy`) + Kontakt (`/contact`).
+---
 
-All sections use `motion` enter animations consistent with the existing landing.
+## 1. Personalized home greeting
 
-## Design tokens
+**Where:** `src/pages/Dashboard.tsx`, the existing welcome card on the Home tab (around line 583–604).
 
-Add to `src/index.css` and `tailwind.config.ts` (HSL values):
+**Change:**
+- Compute first name as `profile.display_name.trim().split(/\s+/)[0]` (fallback to "SPORTSTALENT" if empty).
+- Compute time-of-day bucket from `new Date().getHours()`:
+  - 5–11 → `greetingMorning`
+  - 12–17 → `greetingAfternoon`
+  - 18–4 → `greetingEvening`
+- Replace the `{t("welcomeBack")}, {profile?.display_name}` line with:
+  - Large heading: first name (or app name)
+  - Subline: localized time-of-day greeting + optional belt/club chips that already exist
+- Keep the existing avatar + chips layout; only the heading text changes.
 
-- `--landing-navy: 217 68% 14%`        (#0B1F3A)
-- `--landing-navy-elevated: 222 60% 18%` (#112347)
-- `--landing-red: 353 100% 45%`         (#E8001D)
-- `--landing-red-hover: 353 100% 40%`
+**i18n keys to add** to `src/i18n/translations.ts` for all 6 locales (DA / EN / SV / DE / AR / NO):
+- `greetingMorning`  e.g. DA: "God morgen", EN: "Good morning"
+- `greetingAfternoon`  e.g. DA: "God eftermiddag"
+- `greetingEvening`  e.g. DA: "God aften"
 
-Map Tailwind classes `bg-landing-navy`, `bg-landing-elevated`, `bg-landing-red`, `text-landing-red`, `border-landing-red`. Use these tokens throughout the new page — no raw hex in components.
+---
 
-## Internationalization
+## 3. Empty states for 5 features
 
-Add ~35 new keys to `src/i18n/translations.ts` for all 5 locales (DA, EN, SV, DE, AR), namespaced `landingClub*` (e.g. `landingClubHeroTitle`, `landingClubPain1Title`, `landingClubWaitlistSuccess`). Danish is the source of truth (uses the exact copy provided); EN/SV/DE/AR are faithful translations. RTL handled automatically by existing LanguageContext.
+Reusable component `src/components/FeatureEmptyState.tsx`:
+- Props: `icon`, `titleKey`, `descKey`, `ctaKey`, `onCta`, optional `accentClass` (e.g. `text-tab-plan`).
+- Renders existing dark-card styling: `rounded-xl border border-border bg-card p-10 sm:p-12 text-center shadow-card`, large 56px icon in muted+accent halo, bold heading, muted-foreground subtext, primary `Button` CTA. Mobile-friendly (h-11 button, safe padding).
 
-The "Sportstalent.dk" wordmark stays the same string in all languages (brand). Wordmark co-exists with existing "SPORTS TALENT" identity used inside the app — landing page is the public-facing club acquisition entry point.
+**Apply at:**
 
-## Waitlist database
+| Feature | Trigger condition | Icon | CTA action |
+|---|---|---|---|
+| Plan (`activeTab === "plan"`, no `activePlan`) | Replace existing minimal block at lines 1007–1015 of `Dashboard.tsx` | `Zap` | scroll to / focus the existing generate button (already in profile-summary card above) |
+| Fremgang (Progress) — `ProgressDashboard.tsx` when `logs.length === 0` | New early-return branch | `BarChart3` | call `onGoToPlan?.()` to switch to Plan tab |
+| Ernæring (Nutrition) — `NutritionPlan.tsx` when no `plan` and not `readOnly` | Add above the goal-selection card (or fold into it) | `Apple` | scroll to existing goal selector / pre-select first goal |
+| Genoptræning (Rehab) — Dashboard.tsx rehab tab when no `rehabPlan` | Add below the generator card | `Heart` | focus the rehab injury input |
+| Mental — `MentalAssessment.tsx` when `assessments.length === 0` and not mid-assessment | Add an empty state above the start-assessment trigger | `Brain` | call the existing "start assessment" handler |
 
-New migration:
+**i18n keys to add** (6 locales):
+- `emptyPlanTitle` / `emptyPlanDesc` / `emptyPlanCta`
+- `emptyProgressTitle` / `emptyProgressDesc` / `emptyProgressCta`
+- `emptyNutritionTitle` / `emptyNutritionDesc` / `emptyNutritionCta`
+- `emptyRehabTitle` / `emptyRehabDesc` / `emptyRehabCta`
+- `emptyMentalTitle` / `emptyMentalDesc` / `emptyMentalCta`
 
-```sql
-CREATE TABLE public.waitlist (
-  id uuid primary key default gen_random_uuid(),
-  name text not null,
-  club text not null,
-  email text not null,
-  locale text,
-  created_at timestamptz not null default now()
-);
+(Where a meaningful key already exists — e.g. `noTrainingPlanYet` — reuse it inside the new component to avoid duplication.)
 
-ALTER TABLE public.waitlist ENABLE ROW LEVEL SECURITY;
+---
 
--- Public can sign up
-CREATE POLICY "Anyone can join waitlist"
-  ON public.waitlist FOR INSERT TO anon, authenticated
-  WITH CHECK (
-    char_length(name)  BETWEEN 1 AND 120 AND
-    char_length(club)  BETWEEN 1 AND 120 AND
-    char_length(email) BETWEEN 3 AND 254 AND
-    email ~* '^[^@\s]+@[^@\s]+\.[^@\s]+$'
-  );
+## 4. Active-plan badge on Home card
 
--- Only admins can read
-CREATE POLICY "Admins read waitlist"
-  ON public.waitlist FOR SELECT TO authenticated
-  USING (public.is_admin(auth.uid()));
+**Where:** `src/pages/Dashboard.tsx`, the `plan` card inside the `NAV_ITEMS` grid at lines 672–706.
 
-CREATE INDEX waitlist_email_idx ON public.waitlist (email);
-```
+**Change:**
+- The `activePlan` const is already computed at line 368.
+- Add a small absolutely-positioned badge in the top-right corner of the Plan card only (`tab === "plan"`):
+  - `<span className="absolute top-2 right-2 inline-flex items-center gap-1 rounded-full bg-speed/15 text-speed border border-speed/30 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider"><span className="h-1.5 w-1.5 rounded-full bg-speed animate-pulse" />{t("activeBadge")}</span>`
+- Show only when `activePlan` exists. No negative state when there is no plan.
 
-Client-side: zod validation on form (name 1–120, club 1–120, email valid + ≤254), `supabase.from('waitlist').insert(...)`, success → sonner toast + replace form with success message.
+**i18n key to add** (6 locales):
+- `activeBadge` — DA: "Aktiv", EN: "Active", SV: "Aktiv", DE: "Aktiv", AR: "نشط", NO: "Aktiv"
 
-## Files
+---
 
-**New**
-- `src/pages/Landing.tsx`
-- `src/components/landing/club/LandingNav.tsx`
-- `src/components/landing/club/LandingHero.tsx`
-- `src/components/landing/club/PainPoints.tsx`
-- `src/components/landing/club/FeatureCards.tsx`
-- `src/components/landing/club/Credibility.tsx`
-- `src/components/landing/club/WaitlistForm.tsx`
-- `src/components/landing/club/LandingFooter.tsx`
-- `supabase/migrations/<timestamp>_waitlist.sql`
+## 5. Periodization timeline above the weekly schedule
 
-**Edited**
-- `src/App.tsx` — `/` → Landing, `/v1` → Index, add `/signup` and `/login` redirect routes.
-- `src/pages/Auth.tsx` — read `?tab=signup|signin` and open the right tab.
-- `src/index.css` — add landing color tokens.
-- `src/tailwind.config.ts` — register the tokens as Tailwind colors.
-- `src/i18n/translations.ts` — add `landingClub*` keys for DA / EN / SV / DE / AR.
+**Where:** `src/components/AIPlanCard.tsx` (lines 380–410) and `src/components/PeriodizationView.tsx`.
 
-**Untouched** — every other page, route, component, and the existing `Index.tsx` (just remounted at `/v1`).
+**Changes in `AIPlanCard.tsx`:**
+- Remove the schedule/periodization tab toggle and `activeTab` state (lines 230, 380–402, 405–407, 410).
+- Always render `<PeriodizationView ... />` directly above the weekly grid when `periodization.length > 0`.
 
-## Out of scope / not changed
+**Changes in `PeriodizationView.tsx`:**
+- Replace hardcoded English strings with i18n via `useLanguage()`:
+  - "Program Periodization" → `t("periodizationTitle")`
+  - "{n}-week progression overview" → `t("periodizationSubtitle").replace("{{n}}", String(totalWeeks))`
+  - "Weeks {x}" → `t("weeksLabel").replace("{{range}}", phase.weeks)`
+  - "Volume" → `t("volume")`, "Intensity" → `t("intensity")`
+  - "Key changes:" → `t("keyChanges")`
+  - Phase name: pass `phase.phase.toLowerCase()` through a small lookup → `phaseAnatomicalAdaptation` / `phaseAccumulation` / `phaseIntensification` / `phasePeaking` / `phaseDeload` / `phaseCompetition` / `phaseRecovery`. Falls back to the raw name when no key matches.
+- Color tweak per spec: keep `bg-primary` for the volume bar (cyan/blue in this dark cockpit theme), but change the intensity bar from `bg-accent` to **`bg-destructive`** (red) so the contrast matches the spec's "volume in blue, intensity in red".
 
-- Existing `Index.tsx` and all its sub-components stay as-is.
-- No changes to existing brand identity inside the authenticated app.
-- No email infrastructure changes; waitlist signup is DB-only for now (admin notification can be added later).
-- No SEO sitemap edits beyond `<PageMeta>` on the new page (canonical `https://sportstalent.dk/`, hreflang for the 5 locales).
+**i18n keys to add** (6 locales):
+- `periodizationTitle`, `periodizationSubtitle` (with `{{n}}` placeholder), `weeksLabel` (with `{{range}}`), `volume`, `intensity`, `keyChanges`
+- `phaseAnatomicalAdaptation`, `phaseAccumulation`, `phaseIntensification`, `phasePeaking`, `phaseDeload`, `phaseCompetition`, `phaseRecovery`
 
-## Verification after build
+(Reuse any of the above that already exist in `translations.ts`; only add what's missing.)
 
-- `/` renders the new page; `/v1` still renders the old one.
-- `/signup` and `/login` land on the right Auth tab.
-- Waitlist form: invalid email → inline error; valid submit → row appears in `waitlist` table; success message shown.
-- Language switch in navbar updates all copy live (incl. RTL for Arabic).
-- Mobile (402×636) layout: nav collapses cleanly, all CTAs ≥ 44px tap targets, no horizontal scroll.
+---
+
+## What's NOT changing
+
+- No new routes, no nav changes.
+- Landing page (`/`) and auth (`/auth`, `/signup`, `/login`) untouched.
+- No additional API calls — periodization timeline uses data the `generate-plan` edge function already returns.
+- Logout already redirects to `/`; verifying only, no edit.
+
+## Files touched
+
+- `src/pages/Dashboard.tsx` — greeting refactor, empty-state replacement on Plan + Rehab tabs, active-plan badge on home Plan card.
+- `src/components/AIPlanCard.tsx` — drop tab toggle, render periodization above schedule.
+- `src/components/PeriodizationView.tsx` — i18n + intensity color → red.
+- `src/components/ProgressDashboard.tsx` — empty state branch.
+- `src/components/NutritionPlan.tsx` — empty state branch.
+- `src/components/MentalAssessment.tsx` — empty state branch.
+- `src/components/FeatureEmptyState.tsx` — new shared component.
+- `src/i18n/translations.ts` — ~17 new keys × 6 locales.
+
+## Verification
+
+- Visual check on the Home tab in DA + AR (RTL) viewports.
+- Confirm the badge only renders when an active plan exists.
+- Confirm periodization renders above the schedule and the intensity bars are red.
+- Spot-check empty states by temporarily logging into a fresh account state (or using a profile with no plan/no logs/no assessments).

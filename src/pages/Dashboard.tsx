@@ -36,6 +36,7 @@ import { Trophy, Quote as QuoteIcon, Calendar as CalendarIcon, Sparkles } from "
 import { getDailyQuote, type Locale as QuoteLocale } from "@/data/motivationalQuotes";
 import { useEntitlements } from "@/hooks/useEntitlements";
 import type { LockedModule } from "@/lib/entitlements";
+import { FeatureEmptyState } from "@/components/FeatureEmptyState";
 
 interface Profile {
   display_name: string;
@@ -589,10 +590,24 @@ export default function Dashboard() {
                   fallbackClassName="h-14 w-14 rounded-full bg-muted flex items-center justify-center border-2 border-primary/30 shrink-0"
                 />
                 <div className="flex-1 min-w-0 space-y-1">
-                  <h2 className="text-xl sm:text-2xl font-extrabold text-foreground truncate">
-                    {t("welcomeBack")}, {profile?.display_name || "Athlete"}!
-                  </h2>
-                  <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                  {(() => {
+                    const fullName = profile?.display_name?.trim() || "";
+                    const firstName = fullName ? fullName.split(/\s+/)[0] : "SPORTSTALENT";
+                    const hour = new Date().getHours();
+                    const greetingKey =
+                      hour >= 5 && hour < 12 ? "greetingMorning" :
+                      hour >= 12 && hour < 18 ? "greetingAfternoon" :
+                      "greetingEvening";
+                    return (
+                      <>
+                        <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground truncate tracking-tight">
+                          {firstName}
+                        </h2>
+                        <p className="text-sm text-muted-foreground">{t(greetingKey)}</p>
+                      </>
+                    );
+                  })()}
+                  <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground pt-1">
                     {profile?.belt_level && (
                       <Badge variant="outline" className="capitalize text-xs">
                         {profile.belt_level}
@@ -686,6 +701,12 @@ export default function Dashboard() {
                     disabled={isDemo && section.locked}
                     className={`group relative overflow-hidden rounded-2xl border border-border border-l-[3px] ${section.borderColor} bg-card/80 backdrop-blur-sm p-5 shadow-card text-left transition-all duration-300 ${section.locked ? "opacity-70 cursor-pointer" : "cursor-pointer hover:border-primary/30 hover:-translate-y-1 hover:shadow-glow"} ${isDemo && section.locked ? "cursor-not-allowed" : ""}`}
                   >
+                    {section.tab === "plan" && activePlan && (
+                      <span className="absolute top-2 right-2 z-10 inline-flex items-center gap-1 rounded-full bg-speed/15 text-speed border border-speed/30 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">
+                        <span className="h-1.5 w-1.5 rounded-full bg-speed animate-pulse" />
+                        {t("activeBadge")}
+                      </span>
+                    )}
                     <div
                       className="absolute inset-0 rounded-2xl transition-opacity duration-500 opacity-60 group-hover:opacity-100"
                       style={{ background: section.gradient }}
@@ -1004,14 +1025,24 @@ export default function Dashboard() {
                   </div>
                 )}
               </div>
+            ) : (!hasCoach || isPaid) ? (
+              <FeatureEmptyState
+                icon={Zap}
+                titleKey="emptyPlanTitle"
+                descKey="emptyPlanDesc"
+                ctaKey={generating ? "generating" : "emptyPlanCta"}
+                onCta={generating ? undefined : generatePlan}
+                accentClass="text-tab-plan"
+                iconBgClass="bg-tab-plan/15"
+              />
             ) : (
-              <div className="rounded-xl border border-border bg-card p-12 text-center shadow-card">
-                <Zap className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
-                <h3 className="font-bold text-foreground mb-1">{t("noTrainingPlanYet")}</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  {t("noTrainingPlanDesc")}
-                </p>
-              </div>
+              <FeatureEmptyState
+                icon={Zap}
+                titleKey="emptyPlanTitle"
+                descKey="emptyPlanDesc"
+                accentClass="text-tab-plan"
+                iconBgClass="bg-tab-plan/15"
+              />
             )}
 
             {/* Previous plans */}
