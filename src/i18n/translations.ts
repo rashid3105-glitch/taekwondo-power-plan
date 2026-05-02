@@ -705,7 +705,7 @@ const translations = {
     todayStart: "Start session",
     todayFinish: "Finish session",
     todayMarkDone: "Mark as completed",
-    todayCompleted: "Completed",
+    
     todayDoneTitle: "Well done!",
     todayDoneBody: "Today's session is logged in your progress.",
     todaySeeProgress: "See my progress",
