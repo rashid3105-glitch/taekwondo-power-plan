@@ -37,6 +37,8 @@ const UpdateProfileSchema = z.object({
   coach_club_name: z.string().max(120).nullable().optional(),
   coach_athlete_count_band: z.string().max(20).nullable().optional(),
   coach_focus: z.array(z.string().min(1).max(40)).max(10).nullable().optional(),
+  pending_invite_code: z.string().max(20).nullable().optional(),
+  pending_coach_id: z.string().uuid().nullable().optional(),
   avatar_url: z
     .string()
     .max(500)

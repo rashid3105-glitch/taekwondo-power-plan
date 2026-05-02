@@ -42,6 +42,7 @@ import PublicAthlete from "./pages/PublicAthlete";
 import MatchAnalysis from "./pages/MatchAnalysis";
 import MatchShare from "./pages/MatchShare";
 import SeasonPlan from "./pages/SeasonPlan";
+import JoinInvite from "./pages/JoinInvite";
 import { UpgradeGate } from "@/components/UpgradeGate";
 
 const queryClient = new QueryClient();
@@ -105,6 +106,7 @@ const AnimatedRoutes = () => {
         <Route path="/match-analysis/:athleteId" element={<Page><UpgradeGate module="match_analysis"><MatchAnalysis /></UpgradeGate></Page>} />
         <Route path="/match/share/:token" element={<Page><MatchShare /></Page>} />
         <Route path="/athlete/:code" element={<Page><PublicAthlete /></Page>} />
+        <Route path="/join/:code" element={<Page><JoinInvite /></Page>} />
         <Route path="/payment-success" element={<Page><PaymentSuccess /></Page>} />
         <Route path="/unsubscribe" element={<Page><Unsubscribe /></Page>} />
         <Route path="/privacy" element={<Page><PrivacyPolicy /></Page>} />

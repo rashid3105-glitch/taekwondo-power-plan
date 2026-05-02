@@ -27,6 +27,8 @@ import { SessionAttendance } from "@/components/coach/SessionAttendance";
 import { WeeklySquadExport } from "@/components/coach/WeeklySquadExport";
 import { CoachSentHistory } from "@/components/coach/CoachSentHistory";
 import { CreateAthleteDialog } from "@/components/coach/CreateAthleteDialog";
+import { InviteDialog } from "@/components/coach/InviteDialog";
+import { PendingAthletesSection } from "@/components/coach/PendingAthletesSection";
 import { CoachBulkCreateCompetitionDialog } from "@/components/coach/CoachBulkCreateCompetitionDialog";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
@@ -335,10 +337,19 @@ export default function CoachDashboard() {
                   onCreated={async () => { await loadAthletes(); }}
                   countLabel={!isAdmin ? `${athletes.length}/${MAX_ATHLETES}` : undefined}
                 />
+                {coachUserId && (
+                  <InviteDialog
+                    coachId={coachUserId}
+                    clubId={coachClubId}
+                    pendingCount={0}
+                    approvedCount={athletes.length}
+                  />
+                )}
               </div>
             </div>
 
             <TabsContent value="squad" className="space-y-4">
+              {coachUserId && <PendingAthletesSection coachId={coachUserId} />}
               {!isAdmin && athletes.length >= MAX_ATHLETES && (
                 <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 flex flex-col sm:flex-row sm:items-center gap-2">
                   <span className="text-sm text-destructive flex-1">{t("maxAthletesReached")}</span>

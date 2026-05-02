@@ -240,12 +240,9 @@ export default function AdminApproval() {
   };
 
   const approveUser = async (userId: string) => {
-    const { error } = await supabase
-      .from("profiles")
-      .update({ is_approved: true } as any)
-      .eq("user_id", userId);
-    if (error) {
-      toast({ title: t("error"), description: error.message, variant: "destructive" });
+    const { data, error } = await supabase.rpc("admin_approve_with_invite" as any, { _athlete_id: userId });
+    if (error || !(data as any)?.ok) {
+      toast({ title: t("error"), description: error?.message || (data as any)?.error, variant: "destructive" });
     } else {
       toast({ title: t("userApproved") });
       loadUsers();

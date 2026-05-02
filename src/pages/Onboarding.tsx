@@ -142,6 +142,18 @@ export default function Onboarding() {
       });
       if (error) throw error;
 
+      // Apply pending invite (athlete signed up via /join/CODE)
+      const pendingInvite = sessionStorage.getItem("pending_invite_code");
+      if (role === "athlete" && pendingInvite) {
+        sessionStorage.removeItem("pending_invite_code");
+        await supabase.rpc("apply_invite_to_my_profile" as any, { _code: pendingInvite });
+        haptics.success();
+        toast.success(t("joinRequestSent"));
+        await supabase.auth.signOut();
+        navigate("/");
+        return;
+      }
+
       // Background plan generation for approved athletes
       if (role === "athlete" && isApproved) {
         setGenerating(true);

@@ -44,6 +44,11 @@ export default function AuthPage() {
 
   // Read redirect param so we can send user back after login
   const redirectTo = new URLSearchParams(window.location.search).get("redirect");
+  const inviteCode = new URLSearchParams(window.location.search).get("invite");
+
+  useEffect(() => {
+    if (inviteCode) sessionStorage.setItem("pending_invite_code", inviteCode);
+  }, [inviteCode]);
 
   useEffect(() => {
     (async () => {
@@ -78,6 +83,15 @@ export default function AuthPage() {
       if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        const pendingInvite = sessionStorage.getItem("pending_invite_code");
+        if (pendingInvite) {
+          sessionStorage.removeItem("pending_invite_code");
+          await supabase.rpc("apply_invite_to_my_profile" as any, { _code: pendingInvite });
+          await supabase.auth.signOut();
+          toast({ title: t("joinRequestSent") });
+          navigate("/");
+          return;
+        }
         navigate(redirectTo || "/dashboard");
       } else {
         const pwCheck = validatePassword(password);
