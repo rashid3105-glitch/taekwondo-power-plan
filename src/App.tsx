@@ -12,6 +12,7 @@ import Landing from "./pages/Landing";
 import FeatureDetail from "./pages/FeatureDetail";
 import Auth from "./pages/Auth";
 import ProfileSetup from "./pages/ProfileSetup";
+import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
 import Library from "./pages/Library";
 import LibraryChooser from "./pages/LibraryChooser";
@@ -89,6 +90,7 @@ const AnimatedRoutes = () => {
         <Route path="/help" element={<Page><Help /></Page>} />
         <Route path="/install" element={<Page><Install /></Page>} />
         <Route path="/profile-setup" element={<Page><ProfileSetup /></Page>} />
+        <Route path="/onboarding" element={<Page><Onboarding /></Page>} />
         <Route path="/health" element={<Page><Health /></Page>} />
         <Route path="/wearables" element={<Navigate to="/health" replace />} />
         <Route path="/wearables/sync" element={<Navigate to="/health" replace />} />
