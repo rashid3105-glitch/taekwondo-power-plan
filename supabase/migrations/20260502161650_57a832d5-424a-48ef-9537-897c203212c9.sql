@@ -1,0 +1,1 @@
+UPDATE public.profiles SET onboarding_completed = true WHERE onboarding_completed = false AND club_id IS NOT NULL AND is_approved = true;
