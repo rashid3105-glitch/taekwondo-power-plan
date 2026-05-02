@@ -191,15 +191,22 @@ export default function Pricing() {
     const amount = getTierPrice(tier.key, currency, billingCycle);
     const priceDisplay = amount != null ? formatPrice(amount, currency, billingCycle, locale) : "";
     const isLoading = loadingTier === tier.key;
+    const isCurrent = currentTier === tier.key;
 
     return (
       <Card
         key={tier.key}
         className={`relative flex flex-col bg-card shadow-sm ${
+          isCurrent ? "border-emerald-500 shadow-lg ring-2 ring-emerald-500/30" :
           tier.popular ? "border-primary shadow-lg ring-2 ring-primary/20" : "border-border"
         }`}
       >
-        {tier.popular && (
+        {isCurrent && (
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-emerald-500 px-3 py-0.5 text-xs font-bold text-white">
+            {t("currentPlan")}
+          </div>
+        )}
+        {!isCurrent && tier.popular && (
           <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-0.5 text-xs font-bold text-primary-foreground">
             {t("pricingPopular")}
           </div>
@@ -225,7 +232,21 @@ export default function Pricing() {
           </ul>
         </CardContent>
         <CardFooter>
-          {isPaidOrDemo ? (
+          {isCurrent ? (
+            <Button className="w-full" variant="outline" onClick={() => navigate("/settings/subscription")}>
+              {t("manageSubscription")}
+            </Button>
+          ) : isPaidOrDemo && isSubscribed ? (
+            <Button
+              className="w-full"
+              variant={tier.popular ? "default" : "outline"}
+              disabled={isLoading}
+              onClick={() => handleCheckout(tier.key)}
+            >
+              {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              {t("switchToThisPlan")}
+            </Button>
+          ) : isPaidOrDemo ? (
             <Button className="w-full" variant="outline" onClick={() => navigate("/dashboard")}>
               {t("backToDashboard")}
             </Button>
