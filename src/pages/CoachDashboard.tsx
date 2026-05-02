@@ -349,6 +349,7 @@ export default function CoachDashboard() {
             </div>
 
             <TabsContent value="squad" className="space-y-4">
+              {coachUserId && <PendingAthletesSection coachId={coachUserId} />}
               {!isAdmin && athletes.length >= MAX_ATHLETES && (
                 <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 flex flex-col sm:flex-row sm:items-center gap-2">
                   <span className="text-sm text-destructive flex-1">{t("maxAthletesReached")}</span>
