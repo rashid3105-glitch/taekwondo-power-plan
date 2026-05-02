@@ -413,17 +413,31 @@ export default function Health() {
                   value={sleepAvg7 != null ? `${(sleepAvg7 / 60).toFixed(1)}h` : "—"}
                 />
               </div>
-              <div className="h-40">
+              <div className="h-56">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={sleepData} margin={{ top: 5, right: 8, left: 0, bottom: 0 }}>
+                  <ComposedChart data={sleepData} margin={{ top: 5, right: 8, left: 0, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis dataKey="date" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
-                    <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} unit="h" />
-                    <RTooltip contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", fontSize: 11 }} />
+                    <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} unit="h" domain={[0, 12]} />
+                    <RTooltip
+                      contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", fontSize: 11 }}
+                      formatter={(v: any) => {
+                        if (v == null) return ["—", t("healthSleepTitle")];
+                        const verdict = compareToBand(Number(v), healthNorms.sleep.bandLow, healthNorms.sleep.bandHigh);
+                        const label = verdict === "below" ? t("healthVsNormBelow") : verdict === "above" ? t("healthVsNormAbove") : t("healthVsNormIn");
+                        return [`${v}h (${label})`, t("healthSleepTitle")];
+                      }}
+                    />
+                    <ReferenceArea y1={healthNorms.sleep.bandLow} y2={healthNorms.sleep.bandHigh} fill="hsl(220, 70%, 55%)" fillOpacity={0.08} />
+                    <ReferenceLine y={healthNorms.sleep.target} stroke="hsl(220, 70%, 55%)" strokeDasharray="4 4" strokeOpacity={0.7} />
                     <Bar dataKey="hours" fill="hsl(220, 70%, 55%)" radius={[3, 3, 0, 0]} />
-                  </BarChart>
+                  </ComposedChart>
                 </ResponsiveContainer>
               </div>
+              <NormLegend
+                bandLabel={`${t("healthNormBand")}: ${healthNorms.sleep.bandLow}–${healthNorms.sleep.bandHigh}h`}
+                targetLabel={`${t("healthNormTarget")}: ${healthNorms.sleep.target}h`}
+              />
             </>
           ) : (
             <EmptyMetric label={t("healthSleepEmptyManual")} />
@@ -451,18 +465,33 @@ export default function Health() {
                   tone={rhrLast != null && rhrBase != null ? (rhrLast - rhrBase <= 0 ? "good" : "bad") : undefined}
                 />
               </div>
-              <div className="h-40">
+              <div className="h-56">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={rhrData} margin={{ top: 5, right: 8, left: 0, bottom: 0 }}>
+                  <ComposedChart data={rhrData} margin={{ top: 5, right: 8, left: 0, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis dataKey="date" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
-                    <YAxis domain={["auto", "auto"]} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
-                    <RTooltip contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", fontSize: 11 }} />
+                    <YAxis domain={[40, 90]} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} unit=" bpm" />
+                    <RTooltip
+                      contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", fontSize: 11 }}
+                      formatter={(v: any, name: any) => {
+                        if (v == null) return ["—", name];
+                        if (name === "baseline") return [`${v} bpm`, "7d baseline"];
+                        const verdict = compareToBand(Number(v), healthNorms.rhr.bandLow, healthNorms.rhr.bandHigh);
+                        const label = verdict === "below" ? t("healthVsNormBelow") : verdict === "above" ? t("healthVsNormAbove") : t("healthVsNormIn");
+                        return [`${v} bpm (${label})`, t("healthRhrTitle")];
+                      }}
+                    />
+                    <ReferenceArea y1={healthNorms.rhr.bandLow} y2={healthNorms.rhr.bandHigh} fill="hsl(0, 75%, 55%)" fillOpacity={0.07} />
+                    <ReferenceLine y={healthNorms.rhr.target} stroke="hsl(0, 75%, 55%)" strokeDasharray="4 4" strokeOpacity={0.7} />
                     <Line type="monotone" dataKey="rhr" stroke="hsl(0, 75%, 55%)" strokeWidth={2} dot={false} connectNulls />
                     <Line type="monotone" dataKey="baseline" stroke="hsl(var(--muted-foreground))" strokeWidth={1} strokeDasharray="4 4" dot={false} connectNulls />
-                  </LineChart>
+                  </ComposedChart>
                 </ResponsiveContainer>
               </div>
+              <NormLegend
+                bandLabel={`${t("healthNormBand")}: ${healthNorms.rhr.bandLow}–${healthNorms.rhr.bandHigh} bpm`}
+                targetLabel={`${t("healthNormTarget")}: ${healthNorms.rhr.target} bpm`}
+              />
             </>
           ) : (
             <EmptyMetric label={t("healthRhrEmptyManual")} />
@@ -490,18 +519,33 @@ export default function Health() {
                   tone={hrvLast != null && hrvBase != null ? (hrvLast - hrvBase >= 0 ? "good" : "bad") : undefined}
                 />
               </div>
-              <div className="h-40">
+              <div className="h-56">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={hrvData} margin={{ top: 5, right: 8, left: 0, bottom: 0 }}>
+                  <ComposedChart data={hrvData} margin={{ top: 5, right: 8, left: 0, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis dataKey="date" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
-                    <YAxis domain={["auto", "auto"]} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} unit=" ms" />
-                    <RTooltip contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", fontSize: 11 }} />
+                    <YAxis domain={[0, 120]} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} unit=" ms" />
+                    <RTooltip
+                      contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", fontSize: 11 }}
+                      formatter={(v: any, name: any) => {
+                        if (v == null) return ["—", name];
+                        if (name === "baseline") return [`${v} ms`, "7d baseline"];
+                        const verdict = compareToBand(Number(v), healthNorms.hrv.bandLow, healthNorms.hrv.bandHigh);
+                        const label = verdict === "below" ? t("healthVsNormBelow") : verdict === "above" ? t("healthVsNormAbove") : t("healthVsNormIn");
+                        return [`${v} ms (${label})`, t("healthHrvTitle")];
+                      }}
+                    />
+                    <ReferenceArea y1={healthNorms.hrv.bandLow} y2={healthNorms.hrv.bandHigh} fill="hsl(160, 75%, 45%)" fillOpacity={0.08} />
+                    <ReferenceLine y={healthNorms.hrv.target} stroke="hsl(160, 75%, 45%)" strokeDasharray="4 4" strokeOpacity={0.7} />
                     <Line type="monotone" dataKey="hrv" stroke="hsl(160, 75%, 45%)" strokeWidth={2} dot={false} connectNulls />
                     <Line type="monotone" dataKey="baseline" stroke="hsl(var(--muted-foreground))" strokeWidth={1} strokeDasharray="4 4" dot={false} connectNulls />
-                  </LineChart>
+                  </ComposedChart>
                 </ResponsiveContainer>
               </div>
+              <NormLegend
+                bandLabel={`${t("healthNormBand")}: ${healthNorms.hrv.bandLow}–${healthNorms.hrv.bandHigh} ms`}
+                targetLabel={`${t("healthNormTarget")}: ${healthNorms.hrv.target} ms`}
+              />
             </>
           ) : (
             <EmptyMetric label={t("healthHrvEmptyManual")} />
