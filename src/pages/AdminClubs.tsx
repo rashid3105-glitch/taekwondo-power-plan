@@ -7,10 +7,13 @@ import { Loader2, ArrowLeft, Building, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 
+import { Switch } from "@/components/ui/switch";
+
 interface Club {
   id: string;
   name: string;
   max_athletes: number;
+  share_coach_notes: boolean;
 }
 
 export default function AdminClubs() {
@@ -39,7 +42,7 @@ export default function AdminClubs() {
   const loadClubs = async () => {
     const { data, error } = await supabase
       .from("clubs" as any)
-      .select("id, name, max_athletes")
+      .select("id, name, max_athletes, share_coach_notes")
       .order("name");
 
     if (error) {
@@ -57,6 +60,19 @@ export default function AdminClubs() {
       toast({ title: t("clubUpdated") });
     } catch (err: any) {
       toast({ title: t("error"), description: err.message, variant: "destructive" });
+    }
+  };
+
+  const updateShareCoachNotes = async (clubId: string, value: boolean) => {
+    setClubs(prev => prev.map(c => c.id === clubId ? { ...c, share_coach_notes: value } : c));
+    try {
+      const { error } = await supabase.from("clubs" as any).update({ share_coach_notes: value } as any).eq("id", clubId);
+      if (error) throw error;
+      toast({ title: t("clubUpdated") });
+    } catch (err: any) {
+      toast({ title: t("error"), description: err.message, variant: "destructive" });
+      // revert
+      setClubs(prev => prev.map(c => c.id === clubId ? { ...c, share_coach_notes: !value } : c));
     }
   };
 
