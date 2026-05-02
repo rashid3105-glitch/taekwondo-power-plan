@@ -21,6 +21,7 @@ import PendingApproval from "./pages/PendingApproval";
 import AdminApproval from "./pages/AdminApproval";
 import CoachDashboard from "./pages/CoachDashboard";
 import Pricing from "./pages/Pricing";
+import SubscriptionSettings from "./pages/SubscriptionSettings";
 import Help from "./pages/Help";
 import Diary from "./pages/Diary";
 import AdminPayments from "./pages/AdminPayments";
