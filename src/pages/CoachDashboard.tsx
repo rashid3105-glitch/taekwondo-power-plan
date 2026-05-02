@@ -337,6 +337,14 @@ export default function CoachDashboard() {
                   onCreated={async () => { await loadAthletes(); }}
                   countLabel={!isAdmin ? `${athletes.length}/${MAX_ATHLETES}` : undefined}
                 />
+                {coachUserId && (
+                  <InviteDialog
+                    coachId={coachUserId}
+                    clubId={coachClubId}
+                    pendingCount={0}
+                    approvedCount={athletes.length}
+                  />
+                )}
               </div>
             </div>
 
