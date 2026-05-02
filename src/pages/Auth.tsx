@@ -111,7 +111,7 @@ export default function AuthPage() {
         }
 
         toast({ title: t("accountCreated"), description: t("youreSignedIn") });
-        navigate(redirectTo ? `/profile-setup?redirect=${encodeURIComponent(redirectTo)}` : "/profile-setup");
+        navigate(redirectTo ? `/onboarding?redirect=${encodeURIComponent(redirectTo)}` : "/onboarding");
       }
     } catch (err: any) {
       toast({ title: t("error"), description: err.message, variant: "destructive" });

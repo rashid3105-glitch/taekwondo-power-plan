@@ -159,7 +159,12 @@ export default function CoachDashboard() {
     if (!isCoach) { navigate("/dashboard"); return; }
     setIsAdmin(userRoles.includes("admin"));
 
-    const coachClubId = (profileRes.data as any)?.club_id;
+    const coachProfile = profileRes.data as any;
+    if (!coachProfile?.onboarding_completed) {
+      navigate("/onboarding");
+      return;
+    }
+    const coachClubId = coachProfile?.club_id;
     if (!coachClubId) {
       toast({ title: t("completeClubBeforeCoach"), variant: "destructive" });
       navigate("/profile-setup");
