@@ -256,14 +256,15 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
 
   if (!hasWorkoutData && !hasMentalData && !planProgress) {
     return (
-      <div className="rounded-xl border border-border bg-card p-12 text-center shadow-card">
-        <BarChart3 className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
-        <h3 className="font-bold text-foreground mb-1">{t("noWorkoutData")}</h3>
-        <p className="text-sm text-muted-foreground mb-4">{t("noWorkoutDataDesc")}</p>
-        {onGoToPlan && (
-          <Button onClick={onGoToPlan} size="sm">{t("goToPlan")}</Button>
-        )}
-      </div>
+      <FeatureEmptyState
+        icon={BarChart3}
+        titleKey="emptyProgressTitle"
+        descKey="emptyProgressDesc"
+        ctaKey={onGoToPlan ? "emptyProgressCta" : undefined}
+        onCta={onGoToPlan}
+        accentClass="text-tab-progress"
+        iconBgClass="bg-tab-progress/15"
+      />
     );
   }
 
