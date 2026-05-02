@@ -42,6 +42,7 @@ import PublicAthlete from "./pages/PublicAthlete";
 import MatchAnalysis from "./pages/MatchAnalysis";
 import MatchShare from "./pages/MatchShare";
 import SeasonPlan from "./pages/SeasonPlan";
+import JoinInvite from "./pages/JoinInvite";
 import { UpgradeGate } from "@/components/UpgradeGate";
 
 const queryClient = new QueryClient();
