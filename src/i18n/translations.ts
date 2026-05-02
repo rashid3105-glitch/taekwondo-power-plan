@@ -6783,6 +6783,8 @@ const translations = {
     healthVsNormAbove: "Über Norm",
     healthStepsWeekTotal: "7-Tage-Summe",
     notesSaved: "Notizen gespeichert",
+    shareWithClubCoaches: "Mit Vereinstrainern teilen",
+    onlyVisibleToYouAndAthlete: "Nur du und der Athlet sehen dies",
     todaysSession: "Heutige Einheit",
     compareToClub: "Mit Verein vergleichen",
     compareToClubDesc: "Athlet im Vergleich zum Median des Vereins.",
