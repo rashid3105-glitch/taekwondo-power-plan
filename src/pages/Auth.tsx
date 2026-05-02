@@ -28,7 +28,8 @@ const features = [
 ];
 
 export default function AuthPage() {
-  const [isLogin, setIsLogin] = useState(true);
+  const initialTab = new URLSearchParams(window.location.search).get("tab");
+  const [isLogin, setIsLogin] = useState(initialTab !== "signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
