@@ -279,6 +279,11 @@ export default function Pricing() {
 
       <div className="px-4 py-8">
         <div className="mx-auto max-w-6xl space-y-8">
+          {showWelcome && !isPaidOrDemo && (
+            <div className="rounded-lg border border-primary/30 bg-primary/10 px-4 py-3 text-center text-sm text-foreground">
+              {t("chooseSubscriptionToStart")}
+            </div>
+          )}
           <div className="text-center space-y-2">
             <h1 className="text-3xl font-extrabold text-foreground">{t("pricingTitle")}</h1>
             <p className="text-muted-foreground max-w-lg mx-auto">{t("pricingSubtitle")}</p>
