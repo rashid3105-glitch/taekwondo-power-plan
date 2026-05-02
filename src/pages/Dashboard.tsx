@@ -36,6 +36,7 @@ import { Trophy, Quote as QuoteIcon, Calendar as CalendarIcon, Sparkles } from "
 import { getDailyQuote, type Locale as QuoteLocale } from "@/data/motivationalQuotes";
 import { useEntitlements } from "@/hooks/useEntitlements";
 import type { LockedModule } from "@/lib/entitlements";
+import { FeatureEmptyState } from "@/components/FeatureEmptyState";
 
 interface Profile {
   display_name: string;
