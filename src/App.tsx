@@ -21,6 +21,7 @@ import PendingApproval from "./pages/PendingApproval";
 import AdminApproval from "./pages/AdminApproval";
 import CoachDashboard from "./pages/CoachDashboard";
 import Pricing from "./pages/Pricing";
+import SubscriptionSettings from "./pages/SubscriptionSettings";
 import Help from "./pages/Help";
 import Diary from "./pages/Diary";
 import AdminPayments from "./pages/AdminPayments";
@@ -88,6 +89,7 @@ const AnimatedRoutes = () => {
         <Route path="/admin/clubs" element={<Page><AdminClubs /></Page>} />
         <Route path="/coach" element={<Page><CoachDashboard /></Page>} />
         <Route path="/pricing" element={<Page><Pricing /></Page>} />
+        <Route path="/settings/subscription" element={<Page><SubscriptionSettings /></Page>} />
         <Route path="/help" element={<Page><Help /></Page>} />
         <Route path="/install" element={<Page><Install /></Page>} />
         <Route path="/profile-setup" element={<Page><ProfileSetup /></Page>} />

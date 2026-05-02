@@ -35,6 +35,15 @@ serve(async (req) => {
 
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
     if (customers.data.length === 0) {
+      await supabaseClient.from("subscriptions").upsert({
+        user_id: user.id,
+        status: "inactive",
+        tier_id: null,
+        stripe_customer_id: null,
+        stripe_subscription_id: null,
+        current_period_end: null,
+        cancel_at_period_end: false,
+      }, { onConflict: "user_id" });
       return new Response(JSON.stringify({ subscribed: false }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
@@ -116,6 +125,18 @@ serve(async (req) => {
       }
     }
 
+    // Upsert into subscriptions table (source of truth for paywall)
+    const sub = hasActiveSub ? subscriptions.data[0] : null;
+    await supabaseClient.from("subscriptions").upsert({
+      user_id: user.id,
+      tier_id: tier,
+      status: hasActiveSub ? "active" : "inactive",
+      stripe_customer_id: customerId,
+      stripe_subscription_id: sub?.id ?? null,
+      current_period_end: subscriptionEnd,
+      cancel_at_period_end: sub?.cancel_at_period_end ?? false,
+    }, { onConflict: "user_id" });
+
     return new Response(
       JSON.stringify({
         subscribed: hasActiveSub,
@@ -123,6 +144,7 @@ serve(async (req) => {
         subscription_end: subscriptionEnd,
         tier,
         max_athletes: maxAthletes,
+        cancel_at_period_end: sub?.cancel_at_period_end ?? false,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
     );

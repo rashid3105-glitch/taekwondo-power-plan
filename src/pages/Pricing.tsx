@@ -104,8 +104,10 @@ export default function Pricing() {
   const [loadingTier, setLoadingTier] = useState<string | null>(null);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isPaidOrDemo, setIsPaidOrDemo] = useState(false);
+  const [currentTier, setCurrentTier] = useState<string | null>(null);
   const [managingPortal, setManagingPortal] = useState(false);
   const currency = useMemo(() => detectCurrency(), []);
+  const showWelcome = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("welcome") === "1";
 
   useEffect(() => {
     checkSubscription();
@@ -134,6 +136,7 @@ export default function Pricing() {
       if (data?.subscribed) {
         setIsSubscribed(true);
         setIsPaidOrDemo(true);
+        if (data?.tier) setCurrentTier(data.tier);
       }
     } catch {
       // silently ignore
@@ -188,15 +191,22 @@ export default function Pricing() {
     const amount = getTierPrice(tier.key, currency, billingCycle);
     const priceDisplay = amount != null ? formatPrice(amount, currency, billingCycle, locale) : "";
     const isLoading = loadingTier === tier.key;
+    const isCurrent = currentTier === tier.key;
 
     return (
       <Card
         key={tier.key}
         className={`relative flex flex-col bg-card shadow-sm ${
+          isCurrent ? "border-emerald-500 shadow-lg ring-2 ring-emerald-500/30" :
           tier.popular ? "border-primary shadow-lg ring-2 ring-primary/20" : "border-border"
         }`}
       >
-        {tier.popular && (
+        {isCurrent && (
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-emerald-500 px-3 py-0.5 text-xs font-bold text-white">
+            {t("currentPlan")}
+          </div>
+        )}
+        {!isCurrent && tier.popular && (
           <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-0.5 text-xs font-bold text-primary-foreground">
             {t("pricingPopular")}
           </div>
@@ -222,7 +232,21 @@ export default function Pricing() {
           </ul>
         </CardContent>
         <CardFooter>
-          {isPaidOrDemo ? (
+          {isCurrent ? (
+            <Button className="w-full" variant="outline" onClick={() => navigate("/settings/subscription")}>
+              {t("manageSubscription")}
+            </Button>
+          ) : isPaidOrDemo && isSubscribed ? (
+            <Button
+              className="w-full"
+              variant={tier.popular ? "default" : "outline"}
+              disabled={isLoading}
+              onClick={() => handleCheckout(tier.key)}
+            >
+              {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              {t("switchToThisPlan")}
+            </Button>
+          ) : isPaidOrDemo ? (
             <Button className="w-full" variant="outline" onClick={() => navigate("/dashboard")}>
               {t("backToDashboard")}
             </Button>
@@ -255,6 +279,11 @@ export default function Pricing() {
 
       <div className="px-4 py-8">
         <div className="mx-auto max-w-6xl space-y-8">
+          {showWelcome && !isPaidOrDemo && (
+            <div className="rounded-lg border border-primary/30 bg-primary/10 px-4 py-3 text-center text-sm text-foreground">
+              {t("chooseSubscriptionToStart")}
+            </div>
+          )}
           <div className="text-center space-y-2">
             <h1 className="text-3xl font-extrabold text-foreground">{t("pricingTitle")}</h1>
             <p className="text-muted-foreground max-w-lg mx-auto">{t("pricingSubtitle")}</p>

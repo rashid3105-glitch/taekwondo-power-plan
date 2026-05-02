@@ -164,6 +164,30 @@ export default function Onboarding() {
       }
 
       haptics.success();
+
+      // After onboarding, send athletes without an active subscription to /pricing
+      if (role !== "coach" && userId) {
+        try {
+          const { data: subRow } = await supabase
+            .from("subscriptions")
+            .select("status")
+            .eq("user_id", userId)
+            .maybeSingle();
+          const { data: pf } = await supabase.rpc("get_profile_protected_fields", {
+            _user_id: userId,
+          });
+          const hasAccess =
+            subRow?.status === "active" ||
+            pf?.[0]?.payment_status === "paid" ||
+            pf?.[0]?.is_demo ||
+            pf?.[0]?.demo_full_access;
+          if (!hasAccess) {
+            navigate("/pricing?welcome=1");
+            return;
+          }
+        } catch { /* fall through to dashboard */ }
+      }
+
       navigate(role === "coach" ? "/coach" : "/dashboard");
     } catch (e) {
       console.error(e);
