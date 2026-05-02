@@ -63,6 +63,12 @@
     --tab-rehab: 0 72% 51%;
     --tab-nutrition: 142 70% 45%;
     --tab-mental: 330 60% 72%;
+    /* Club landing page tokens */
+    --landing-navy: 217 68% 14%;
+    --landing-navy-elevated: 222 60% 18%;
+    --landing-red: 353 100% 45%;
+    --landing-red-hover: 353 100% 40%;
+
     /* Light section tokens */
     --light-bg: 210 20% 97%;
     --light-card: 0 0% 100%;

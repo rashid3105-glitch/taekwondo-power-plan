@@ -1414,6 +1414,33 @@ export type Database = {
         }
         Relationships: []
       }
+      waitlist: {
+        Row: {
+          club: string
+          created_at: string
+          email: string
+          id: string
+          locale: string | null
+          name: string
+        }
+        Insert: {
+          club: string
+          created_at?: string
+          email: string
+          id?: string
+          locale?: string | null
+          name: string
+        }
+        Update: {
+          club?: string
+          created_at?: string
+          email?: string
+          id?: string
+          locale?: string | null
+          name?: string
+        }
+        Relationships: []
+      }
       wearable_connections: {
         Row: {
           connected_at: string

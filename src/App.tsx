@@ -8,6 +8,7 @@ import { LanguageProvider } from "@/i18n/LanguageContext";
 import { FloatingDiaryButton } from "@/components/FloatingDiaryButton";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import Index from "./pages/Index";
+import Landing from "./pages/Landing";
 import FeatureDetail from "./pages/FeatureDetail";
 import Auth from "./pages/Auth";
 import ProfileSetup from "./pages/ProfileSetup";
@@ -68,7 +69,10 @@ const AnimatedRoutes = () => {
   return (
     <AnimatePresence mode="wait" initial={false}>
       <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<Page><Index /></Page>} />
+        <Route path="/" element={<Page><Landing /></Page>} />
+        <Route path="/v1" element={<Page><Index /></Page>} />
+        <Route path="/signup" element={<Navigate to="/auth?tab=signup" replace />} />
+        <Route path="/login" element={<Navigate to="/auth?tab=signin" replace />} />
         <Route path="/methodology" element={<Page><Methodology /></Page>} />
         <Route path="/about" element={<Page><About /></Page>} />
         <Route path="/programs" element={<Page><Programs /></Page>} />

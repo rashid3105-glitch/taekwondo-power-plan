@@ -56,6 +56,10 @@ export default {
         "tab-rehab": "hsl(var(--tab-rehab))",
         "tab-nutrition": "hsl(var(--tab-nutrition))",
         "tab-mental": "hsl(var(--tab-mental))",
+        "landing-navy": "hsl(var(--landing-navy))",
+        "landing-elevated": "hsl(var(--landing-navy-elevated))",
+        "landing-red": "hsl(var(--landing-red))",
+        "landing-red-hover": "hsl(var(--landing-red-hover))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
