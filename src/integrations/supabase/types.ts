@@ -149,6 +149,47 @@ export type Database = {
         }
         Relationships: []
       }
+      coach_invites: {
+        Row: {
+          active: boolean
+          club_id: string | null
+          coach_id: string
+          code: string
+          created_at: string
+          expires_at: string
+          id: string
+          uses_count: number
+        }
+        Insert: {
+          active?: boolean
+          club_id?: string | null
+          coach_id: string
+          code: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          uses_count?: number
+        }
+        Update: {
+          active?: boolean
+          club_id?: string | null
+          coach_id?: string
+          code?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          uses_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coach_invites_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       coach_messages: {
         Row: {
           athlete_id: string
@@ -930,11 +971,14 @@ export type Database = {
           passkey_prompt_dismissed_at: string | null
           payment_date: string | null
           payment_status: string
+          pending_coach_id: string | null
+          pending_invite_code: string | null
           program_weeks: number | null
           public_show_achievements: boolean
           public_show_competitions: boolean
           public_show_prs: boolean
           public_show_videos: boolean
+          rejection_reason: string | null
           tkd_sessions_per_week: number
           updated_at: string
           user_id: string
@@ -971,11 +1015,14 @@ export type Database = {
           passkey_prompt_dismissed_at?: string | null
           payment_date?: string | null
           payment_status?: string
+          pending_coach_id?: string | null
+          pending_invite_code?: string | null
           program_weeks?: number | null
           public_show_achievements?: boolean
           public_show_competitions?: boolean
           public_show_prs?: boolean
           public_show_videos?: boolean
+          rejection_reason?: string | null
           tkd_sessions_per_week?: number
           updated_at?: string
           user_id: string
@@ -1012,11 +1059,14 @@ export type Database = {
           passkey_prompt_dismissed_at?: string | null
           payment_date?: string | null
           payment_status?: string
+          pending_coach_id?: string | null
+          pending_invite_code?: string | null
           program_weeks?: number | null
           public_show_achievements?: boolean
           public_show_competitions?: boolean
           public_show_prs?: boolean
           public_show_videos?: boolean
+          rejection_reason?: string | null
           tkd_sessions_per_week?: number
           updated_at?: string
           user_id?: string
@@ -1756,6 +1806,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_approve_with_invite: {
+        Args: { _athlete_id: string }
+        Returns: Json
+      }
+      admin_reject_with_reason: {
+        Args: { _athlete_id: string; _reason: string }
+        Returns: Json
+      }
+      apply_invite_to_my_profile: { Args: { _code: string }; Returns: Json }
       club_shares_coach_notes: { Args: { _club_id: string }; Returns: boolean }
       compute_form_curve: {
         Args: { _user_id: string; _weeks?: number }
@@ -1803,6 +1862,7 @@ export type Database = {
         }[]
       }
       get_club_test_medians: { Args: { _athlete_id: string }; Returns: Json }
+      get_invite_by_code: { Args: { _code: string }; Returns: Json }
       get_profile_protected_fields: {
         Args: { _user_id: string }
         Returns: {
