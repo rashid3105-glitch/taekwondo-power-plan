@@ -100,9 +100,15 @@ Deno.serve(async (req) => {
 
     const adminClient = createClient(supabaseUrl, serviceRoleKey);
 
+    // Drop undefined keys so we only update fields the client actually sent.
+    const updateData: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(parsed.data)) {
+      if (v !== undefined) updateData[k] = v;
+    }
+
     const { data: updatedProfile, error: updateError } = await adminClient
       .from("profiles")
-      .update(parsed.data)
+      .update(updateData)
       .eq("user_id", user.id)
       .select("user_id")
       .single();
