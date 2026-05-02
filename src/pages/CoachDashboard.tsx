@@ -149,7 +149,7 @@ export default function CoachDashboard() {
         .eq("user_id", user.id),
       supabase
         .from("profiles")
-        .select("club_id")
+        .select("club_id, onboarding_completed")
         .eq("user_id", user.id)
         .maybeSingle(),
     ]);
