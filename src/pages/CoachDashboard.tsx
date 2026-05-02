@@ -27,6 +27,8 @@ import { SessionAttendance } from "@/components/coach/SessionAttendance";
 import { WeeklySquadExport } from "@/components/coach/WeeklySquadExport";
 import { CoachSentHistory } from "@/components/coach/CoachSentHistory";
 import { CreateAthleteDialog } from "@/components/coach/CreateAthleteDialog";
+import { InviteDialog } from "@/components/coach/InviteDialog";
+import { PendingAthletesSection } from "@/components/coach/PendingAthletesSection";
 import { CoachBulkCreateCompetitionDialog } from "@/components/coach/CoachBulkCreateCompetitionDialog";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
