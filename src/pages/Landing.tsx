@@ -817,6 +817,7 @@ const Landing = () => {
         <CoachHighlight />
         <FeaturesGrid />
         <Credibility />
+        <Pricing />
         <Waitlist />
       </main>
       <Footer />
