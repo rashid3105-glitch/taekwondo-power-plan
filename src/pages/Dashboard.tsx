@@ -1024,14 +1024,24 @@ export default function Dashboard() {
                   </div>
                 )}
               </div>
+            ) : (!hasCoach || isPaid) ? (
+              <FeatureEmptyState
+                icon={Zap}
+                titleKey="emptyPlanTitle"
+                descKey="emptyPlanDesc"
+                ctaKey={generating ? "generating" : "emptyPlanCta"}
+                onCta={generating ? undefined : generatePlan}
+                accentClass="text-tab-plan"
+                iconBgClass="bg-tab-plan/15"
+              />
             ) : (
-              <div className="rounded-xl border border-border bg-card p-12 text-center shadow-card">
-                <Zap className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
-                <h3 className="font-bold text-foreground mb-1">{t("noTrainingPlanYet")}</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  {t("noTrainingPlanDesc")}
-                </p>
-              </div>
+              <FeatureEmptyState
+                icon={Zap}
+                titleKey="emptyPlanTitle"
+                descKey="emptyPlanDesc"
+                accentClass="text-tab-plan"
+                iconBgClass="bg-tab-plan/15"
+              />
             )}
 
             {/* Previous plans */}
