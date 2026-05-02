@@ -700,6 +700,12 @@ export default function Dashboard() {
                     disabled={isDemo && section.locked}
                     className={`group relative overflow-hidden rounded-2xl border border-border border-l-[3px] ${section.borderColor} bg-card/80 backdrop-blur-sm p-5 shadow-card text-left transition-all duration-300 ${section.locked ? "opacity-70 cursor-pointer" : "cursor-pointer hover:border-primary/30 hover:-translate-y-1 hover:shadow-glow"} ${isDemo && section.locked ? "cursor-not-allowed" : ""}`}
                   >
+                    {section.tab === "plan" && activePlan && (
+                      <span className="absolute top-2 right-2 z-10 inline-flex items-center gap-1 rounded-full bg-speed/15 text-speed border border-speed/30 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">
+                        <span className="h-1.5 w-1.5 rounded-full bg-speed animate-pulse" />
+                        {t("activeBadge")}
+                      </span>
+                    )}
                     <div
                       className="absolute inset-0 rounded-2xl transition-opacity duration-500 opacity-60 group-hover:opacity-100"
                       style={{ background: section.gradient }}
