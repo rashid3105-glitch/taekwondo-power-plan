@@ -37,6 +37,7 @@ import { getDailyQuote, type Locale as QuoteLocale } from "@/data/motivationalQu
 import { useEntitlements } from "@/hooks/useEntitlements";
 import type { LockedModule } from "@/lib/entitlements";
 import { FeatureEmptyState } from "@/components/FeatureEmptyState";
+import { TodayCard } from "@/components/today/TodayCard";
 
 interface Profile {
   display_name: string;
@@ -688,6 +689,13 @@ export default function Dashboard() {
             {!isDemo && <ReflectionPromptCard />}
             {!isDemo && <ReadinessCard />}
             {!isDemo && <RecoveryTile />}
+            {!isDemo && (
+              <TodayCard
+                activePlan={activePlan}
+                onGoToProgress={() => handleTabChange("progress")}
+                onGoToPlan={() => handleTabChange("plan")}
+              />
+            )}
             <div className="grid gap-3 sm:grid-cols-2">
               {([
                 { tab: "plan" as const, icon: Zap, titleKey: "hubTrainingTitle", descKey: "hubTrainingDesc", color: "text-tab-plan", iconBg: "bg-tab-plan/15", borderColor: "border-l-tab-plan", gradient: "radial-gradient(ellipse at 20% 50%, hsl(190 95% 50% / 0.15), transparent 60%)", locked: false },
