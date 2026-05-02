@@ -240,7 +240,7 @@ function SessionDialog({
           )}
         </div>
 
-        <div className="p-4 border-t border-border safe-pb">
+        <div className="p-4 border-t border-border pb-[env(safe-area-inset-bottom)]">
           <Button className="w-full" size="lg" disabled={!allDone || finishing} onClick={handleFinish}>
             {finishing ? <Loader2 className="h-4 w-4 animate-spin" /> : t("todayFinish")}
           </Button>
