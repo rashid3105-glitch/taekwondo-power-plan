@@ -5,7 +5,8 @@ import { ExerciseLibrary } from "@/components/ExerciseLibrary";
 import { MentalLibrary } from "@/components/MentalLibrary";
 import { NutritionLibrary } from "@/components/NutritionLibrary";
 import { TestLibrary } from "@/components/TestLibrary";
-import { Dumbbell, Brain, UtensilsCrossed, ClipboardList, ArrowLeft, BookOpen } from "lucide-react";
+import { HiitLibrary } from "@/components/HiitLibrary";
+import { Dumbbell, Brain, UtensilsCrossed, ClipboardList, ArrowLeft, BookOpen, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { TranslationKey } from "@/i18n/translations";
@@ -15,6 +16,7 @@ const TITLE_KEYS: Record<string, TranslationKey> = {
   mental: "hubMentalTitle",
   nutrition: "hubNutritionTitle",
   testing: "libTestingLabel",
+  hiit: "libHiitLabel",
 };
 
 const ICONS: Record<string, typeof Dumbbell> = {
@@ -22,6 +24,7 @@ const ICONS: Record<string, typeof Dumbbell> = {
   mental: Brain,
   nutrition: UtensilsCrossed,
   testing: ClipboardList,
+  hiit: Zap,
 };
 
 const COLORS: Record<string, string> = {
@@ -29,6 +32,7 @@ const COLORS: Record<string, string> = {
   mental: "text-tab-mental",
   nutrition: "text-tab-nutrition",
   testing: "text-primary",
+  hiit: "text-destructive",
 };
 
 export default function Library() {
@@ -60,6 +64,7 @@ export default function Library() {
         {section === "mental" && <MentalLibrary />}
         {section === "nutrition" && <NutritionLibrary />}
         {section === "testing" && <TestLibrary />}
+        {section === "hiit" && <HiitLibrary />}
       </main>
       <AppFooter />
     </div>
