@@ -1,8 +1,8 @@
 import { useState } from "react";
-import jsPDF from "jspdf";
 import { Button } from "@/components/ui/button";
 import { Download, Loader2 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { toast } from "sonner";
 
 interface Athlete {
   user_id: string;
@@ -23,15 +23,18 @@ export function WeeklySquadExport({ athletes }: Props) {
   const [busy, setBusy] = useState(false);
 
   const handleExport = async () => {
+    if (busy) return;
     setBusy(true);
     try {
+      const { jsPDF } = await import("jspdf");
       const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
       const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
       const margin = 30;
 
       doc.setFontSize(16);
       doc.setFont("helvetica", "bold");
-      doc.text(t("weeklySquadOverview"), margin, 40);
+      doc.text(t("weeklySquadOverview") || "Weekly squad overview", margin, 40);
       doc.setFontSize(10);
       doc.setFont("helvetica", "normal");
       doc.text(new Date().toLocaleDateString(), margin, 58);
@@ -42,9 +45,10 @@ export function WeeklySquadExport({ athletes }: Props) {
       // Header row
       doc.setFont("helvetica", "bold");
       doc.setFontSize(9);
-      doc.text(t("athlete"), margin, y);
+      doc.text(t("athlete") || "Athlete", margin, y);
       DAYS.forEach((d, i) => {
-        doc.text(t(d) || d, margin + 140 + i * colWidth, y);
+        const label = t(d as any);
+        doc.text(label && label !== d ? label : d.slice(0, 3), margin + 140 + i * colWidth, y);
       });
       doc.setLineWidth(0.5);
       doc.line(margin, y + 4, pageWidth - margin, y + 4);
@@ -54,23 +58,30 @@ export function WeeklySquadExport({ athletes }: Props) {
       doc.setFontSize(8);
 
       athletes.forEach((a) => {
-        if (y > doc.internal.pageSize.getHeight() - 40) {
+        if (y > pageHeight - 40) {
           doc.addPage();
           y = 50;
         }
         doc.setFont("helvetica", "bold");
-        doc.text(a.display_name.slice(0, 22), margin, y);
+        doc.text((a.display_name || "—").slice(0, 22), margin, y);
         doc.setFont("helvetica", "normal");
         doc.setFontSize(7);
-        doc.text(`${a.belt_level} · ${a.athlete_code || ""}`, margin, y + 10);
+        doc.text(`${a.belt_level || ""} · ${a.athlete_code || ""}`, margin, y + 10);
         doc.setFontSize(8);
 
         const schedule = Array.isArray(a.weekly_schedule) ? a.weekly_schedule : [];
         DAYS.forEach((d, i) => {
-          const item = schedule.find((s: any) => s.day === d);
-          const type = item?.type || "—";
-          const label = type === "tkd" ? "TKD" : type === "gym" ? t("gym") : type === "rest" ? t("rest") : "—";
-          doc.text(label, margin + 140 + i * colWidth, y);
+          const item = schedule.find(
+            (s: any) => s?.day === d || s?.dayOfWeek === d || s?.day?.toLowerCase?.() === d.toLowerCase(),
+          );
+          const type = item?.type || (Array.isArray(item?.sessions) ? item.sessions[0]?.type : undefined) || "—";
+          const label =
+            type === "tkd" ? "TKD" :
+            type === "gym" ? (t("gym") || "Gym") :
+            type === "rest" ? (t("rest") || "Rest") :
+            type === "recovery" ? (t("rest") || "Rest") :
+            "—";
+          doc.text(String(label), margin + 140 + i * colWidth, y);
         });
 
         y += 24;
@@ -78,7 +89,23 @@ export function WeeklySquadExport({ athletes }: Props) {
         doc.line(margin, y - 6, pageWidth - margin, y - 6);
       });
 
-      doc.save(`squad-week-${new Date().toISOString().slice(0, 10)}.pdf`);
+      const filename = `squad-week-${new Date().toISOString().slice(0, 10)}.pdf`;
+
+      // Use blob + anchor for cross-browser reliability (Safari/iOS friendly)
+      const blob = doc.output("blob");
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+      toast.success(t("pdfExported") || "PDF exported");
+    } catch (err: any) {
+      console.error("[WeeklySquadExport] failed", err);
+      toast.error(err?.message || "Export failed");
     } finally {
       setBusy(false);
     }
