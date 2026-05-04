@@ -61,16 +61,18 @@ export default function Competitions() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { navigate("/auth"); return; }
     const today = new Date().toISOString().slice(0, 10);
-    const [{ data: c }, { data: past }, { data: w }, { data: refls }] = await Promise.all([
+    const [{ data: c }, { data: past }, { data: w }, { data: refls }, { data: prof }] = await Promise.all([
       supabase.from("competitions").select("*").eq("user_id", user.id).gte("event_date", today).order("event_date"),
       supabase.from("competitions").select("*").eq("user_id", user.id).lt("event_date", today).order("event_date", { ascending: false }).limit(20),
       supabase.from("weight_logs").select("log_date, weight_kg").eq("user_id", user.id).order("log_date", { ascending: false }).limit(30),
       supabase.from("competition_reflections").select("competition_id").eq("user_id", user.id).not("competition_id", "is", null),
+      supabase.from("profiles").select("discipline").eq("id", user.id).maybeSingle(),
     ]);
     setComps((c || []) as Competition[]);
     setPastComps((past || []) as Competition[]);
     setReflectedIds(new Set((refls || []).map((r: any) => r.competition_id).filter(Boolean)));
     setWeights((w || []) as WeightLog[]);
+    setIsPoomsae((prof as any)?.discipline === "poomsae");
     setLoading(false);
   }
 
