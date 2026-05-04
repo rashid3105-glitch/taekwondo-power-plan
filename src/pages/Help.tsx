@@ -121,7 +121,20 @@ export default function Help() {
   const { t } = useLanguage();
   const [activeTopic, setActiveTopic] = useState<TopicKey | null>(null);
   const [query, setQuery] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showAllChangelog, setShowAllChangelog] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || cancelled) return;
+      const { data } = await supabase.rpc("is_admin", { _user_id: user.id });
+      if (!cancelled && data === true) setIsAdmin(true);
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   // Translation helper with safe fallback for new section keys
   const tr = (key: string) => {
