@@ -374,7 +374,7 @@ export default function CoachDashboard() {
                   />
                   <SquadOverview
                     coachId={coachUserId}
-                    onSelectAthlete={(id) => setManageAthleteId(id)}
+                    onSelectAthlete={(id) => navigate(`/coach/athlete/${id}`)}
                     onDiary={(id, name) => openDiary(id, name)}
                     onRemove={(id) => removeAthlete(id)}
                     onViewPlan={(id) => {
@@ -738,53 +738,7 @@ export default function CoachDashboard() {
           rehabPlan={viewRehabPlan}
         />
 
-        {/* Manage Athlete Dialog/Drawer */}
-        {(() => {
-          const managedAthlete = manageAthleteId ? athletes.find(a => a.user_id === manageAthleteId) : null;
-          const athletePlans = managedAthlete ? plans.filter(p => p.user_id === managedAthlete.user_id) : [];
-          const athleteRehabs = managedAthlete ? rehabPlans.filter(r => r.user_id === managedAthlete.user_id) : [];
-          const isOpen = !!managedAthlete;
-          const onClose = () => setManageAthleteId(null);
-
-          const content = managedAthlete ? (
-            <CoachAthleteDetail
-              athlete={managedAthlete as any}
-              plans={athletePlans}
-              rehabPlans={athleteRehabs}
-              onRefresh={async () => { await loadAthletes(); }}
-            />
-          ) : null;
-
-          if (isMobile) {
-            return (
-              <Drawer open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
-                <DrawerContent className="max-h-[90vh]">
-                  <DrawerHeader>
-                    <DrawerTitle className="flex items-center gap-2">
-                      <UserCog className="h-5 w-5" /> {managedAthlete?.display_name}
-                    </DrawerTitle>
-                  </DrawerHeader>
-                  <div className="px-4 pb-6 overflow-y-auto max-h-[75vh]">
-                    {content}
-                  </div>
-                </DrawerContent>
-              </Drawer>
-            );
-          }
-
-          return (
-            <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
-              <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle className="flex items-center gap-2">
-                    <UserCog className="h-5 w-5" /> {managedAthlete?.display_name}
-                  </DialogTitle>
-                </DialogHeader>
-                {content}
-              </DialogContent>
-            </Dialog>
-          );
-        })()}
+        {/* Athlete management moved to dedicated /coach/athlete/:id page */}
       </main>
       <AppFooter />
     </div>
