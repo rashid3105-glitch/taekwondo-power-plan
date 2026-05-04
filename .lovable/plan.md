@@ -1,17 +1,17 @@
-## Goal
-On the Competitions page, hide all weight/weight-cut features when the athlete's discipline is `poomsae` (forms only — no weight classes).
+## Bug
+On the Competitions page my recent change queried profiles with `.eq("id", user.id)`, but the `profiles` table is keyed on `user_id` (the `id` column is a separate UUID). So the lookup returned nothing and `isPoomsae` stayed `false`, even for athletes with `discipline = 'poomsae'` (verified in DB for the current user).
 
-## Changes
+## Fix
+**File: `src/pages/Competitions.tsx`** — in the `load()` Promise.all, change the profile query from:
 
-**File: `src/pages/Competitions.tsx`**
+```ts
+supabase.from("profiles").select("discipline").eq("id", user.id).maybeSingle()
+```
 
-1. On load, fetch `profiles.discipline` for the current user and store as `isPoomsae = discipline === "poomsae"`.
-2. When `isPoomsae`:
-   - Hide the "Today's weight" quick-log card (Scale icon block).
-   - Hide the "Weight class (kg)" input in the Create Competition dialog; do not send `weight_class_kg`.
-   - In the competition list cards, hide the weight-class badge and the weight-cut "current → target / on track / behind" status block.
-3. When `isPoomsae` is false (sparring), keep current behavior unchanged.
+to:
 
-## Notes
-- Frontend-only change. No DB or edge function changes — `weight_class_kg` simply stays null for poomsae athletes.
-- No change to past competitions, reflections, plan generation, or coach views (out of scope).
+```ts
+supabase.from("profiles").select("discipline").eq("user_id", user.id).maybeSingle()
+```
+
+No other changes needed — once the lookup returns the row, the existing `isPoomsae` gating already hides the weight log card, the weight-class field in the create dialog, the weight-class badge, and the weight-cut status block.
