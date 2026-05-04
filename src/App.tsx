@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,6 +8,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { FloatingDiaryButton } from "@/components/FloatingDiaryButton";
 import { OfflineBanner } from "@/components/OfflineBanner";
+import { SplashScreen } from "@/components/SplashScreen";
 import Index from "./pages/Index";
 import Landing from "./pages/Landing";
 import FeatureDetail from "./pages/FeatureDetail";
@@ -121,10 +123,13 @@ const AnimatedRoutes = () => {
 };
 
 const App = () => {
+  const [showSplash, setShowSplash] = useState(true);
+
   return (
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
         <TooltipProvider>
+          {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
           <Toaster />
           <Sonner />
           <BrowserRouter>
