@@ -382,16 +382,39 @@ export default function Help() {
                   <ChevronDown className="h-4 w-4 text-muted-foreground ml-auto transition-transform duration-200 group-data-[state=open]:rotate-180" />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="mt-4 space-y-3">
-                  {CHANGELOG.map(({ dateKey, entries }) => (
-                    <div key={dateKey} className="rounded-xl border border-border bg-card px-5 py-4 space-y-3 shadow-sm">
-                      <h3 className="text-sm font-bold text-foreground">{t(dateKey as Parameters<typeof t>[0])}</h3>
-                      <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-5">
-                        {entries.map((e) => (
-                          <li key={e}>{t(e as Parameters<typeof t>[0])}</li>
+                  {(() => {
+                    const cutoff = Date.now() - 14 * 24 * 60 * 60 * 1000;
+                    const visible = (isAdmin || showAllChangelog)
+                      ? CHANGELOG
+                      : CHANGELOG.filter(({ dateKey }) => {
+                          const m = dateKey.match(/^changelog_(\d{4})_(\d{2})_(\d{2})$/);
+                          if (!m) return true;
+                          return new Date(`${m[1]}-${m[2]}-${m[3]}T00:00:00Z`).getTime() >= cutoff;
+                        });
+                    return (
+                      <>
+                        {visible.map(({ dateKey, entries }) => (
+                          <div key={dateKey} className="rounded-xl border border-border bg-card px-5 py-4 space-y-3 shadow-sm">
+                            <h3 className="text-sm font-bold text-foreground">{t(dateKey as Parameters<typeof t>[0])}</h3>
+                            <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-5">
+                              {entries.map((e) => (
+                                <li key={e}>{t(e as Parameters<typeof t>[0])}</li>
+                              ))}
+                            </ul>
+                          </div>
                         ))}
-                      </ul>
-                    </div>
-                  ))}
+                        {!isAdmin && !showAllChangelog && visible.length < CHANGELOG.length && (
+                          <button
+                            type="button"
+                            onClick={() => setShowAllChangelog(true)}
+                            className="w-full rounded-xl border border-dashed border-border bg-card/50 px-4 py-3 text-sm font-semibold text-primary hover:bg-muted/50 transition-colors"
+                          >
+                            {t("changelogShowAll")}
+                          </button>
+                        )}
+                      </>
+                    );
+                  })()}
                 </CollapsibleContent>
               </Collapsible>
             )}
