@@ -206,7 +206,9 @@ export default function Competitions() {
             <div className="space-y-3">
               <div><Label>{t("competitionsName")} *</Label><Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Nordic Open" /></div>
               <div><Label>{t("competitionsDate")} *</Label><Input type="date" value={date} onChange={(e) => setDate(e.target.value)} /></div>
-              <div><Label>{t("competitionsWeightClass")}</Label><Input type="number" inputMode="decimal" step="0.1" value={weightClass} onChange={(e) => setWeightClass(e.target.value)} placeholder="67.5" /></div>
+              {!isPoomsae && (
+                <div><Label>{t("competitionsWeightClass")}</Label><Input type="number" inputMode="decimal" step="0.1" value={weightClass} onChange={(e) => setWeightClass(e.target.value)} placeholder="67.5" /></div>
+              )}
               <div>
                 <Label>{t("competitionsPriority")}</Label>
                 <Select value={priority} onValueChange={(v) => setPriority(v as any)}>
