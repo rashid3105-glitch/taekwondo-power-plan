@@ -9,8 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
-  ArrowLeft, Loader2, Heart, Building, Bell, MessageSquare, NotebookPen,
-  LayoutDashboard, UserCog, Brain, Activity as ActivityIcon, ListChecks,
+  ArrowLeft, Loader2, Heart, Building, NotebookPen,
+  LayoutDashboard, UserCog,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -18,8 +18,6 @@ import { CoachAthleteDetail } from "@/components/CoachAthleteDetail";
 import { AthleteOverviewTab } from "@/components/coach/AthleteOverviewTab";
 import { CoachDiaryView } from "@/components/coach/CoachDiaryView";
 import { SendReminderDialog } from "@/components/SendReminderDialog";
-import { SendMessageDialog } from "@/components/coach/SendMessageDialog";
-import { cn } from "@/lib/utils";
 
 interface AthleteProfile {
   user_id: string;
@@ -50,7 +48,7 @@ interface RehabPlan {
   created_at: string; user_id: string; injury_description: string;
 }
 
-const TABS = ["overview", "profile", "mental", "performance", "activity"] as const;
+const TABS = ["overview", "manage"] as const;
 type TabKey = (typeof TABS)[number];
 
 export default function CoachAthleteOverview() {
@@ -88,7 +86,6 @@ export default function CoachAthleteOverview() {
     if (!user) { navigate("/auth"); return; }
     if (!athleteId) { navigate("/coach"); return; }
 
-    // Verify coach role
     const { data: rolesData } = await supabase.from("user_roles").select("role").eq("user_id", user.id);
     const roles = (rolesData || []).map((r: any) => r.role);
     if (!roles.some((r: string) => r === "coach" || r === "admin")) {
@@ -96,7 +93,6 @@ export default function CoachAthleteOverview() {
       return;
     }
 
-    // Fetch athlete profile
     const [profileRes, plansRes, rehabRes, clubsRes] = await Promise.all([
       supabase
         .from("profiles")
@@ -170,28 +166,9 @@ export default function CoachAthleteOverview() {
               <ArrowLeft className="h-4 w-4 mr-1" /> {t("squadTab")}
             </Button>
             <div className="flex items-center gap-1.5">
-              <SendMessageDialog
-                athleteId={athlete.user_id}
-                athleteName={athlete.display_name}
-                trigger={
-                  <Button variant="outline" size="sm" className="h-8">
-                    <MessageSquare className="h-3.5 w-3.5 sm:mr-1" />
-                    <span className="hidden sm:inline">{t("message")}</span>
-                  </Button>
-                }
-              />
-              <SendReminderDialog
-                athleteId={athlete.user_id}
-                athleteName={athlete.display_name}
-                trigger={
-                  <Button variant="outline" size="sm" className="h-8">
-                    <Bell className="h-3.5 w-3.5 sm:mr-1" />
-                    <span className="hidden sm:inline">{t("reminder")}</span>
-                  </Button>
-                }
-              />
-              <Button variant="outline" size="sm" className="h-8" onClick={openDiary}>
-                <NotebookPen className="h-3.5 w-3.5 sm:mr-1" />
+              <SendReminderDialog athleteId={athlete.user_id} athleteName={athlete.display_name} />
+              <Button variant="outline" size="sm" className="h-9" onClick={openDiary}>
+                <NotebookPen className="h-4 w-4 sm:mr-1" />
                 <span className="hidden sm:inline">{t("diary")}</span>
               </Button>
             </div>
@@ -234,30 +211,16 @@ export default function CoachAthleteOverview() {
 
       <main className="container max-w-5xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <div className="-mx-3 sm:mx-0 px-3 sm:px-0 overflow-x-auto scrollbar-none">
-            <TabsList className="w-max">
-              <TabsTrigger value="overview" className="gap-1.5">
-                <LayoutDashboard className="h-3.5 w-3.5" />
-                <span>{t("overview")}</span>
-              </TabsTrigger>
-              <TabsTrigger value="profile" className="gap-1.5">
-                <UserCog className="h-3.5 w-3.5" />
-                <span>{t("tabProfilePlan")}</span>
-              </TabsTrigger>
-              <TabsTrigger value="mental" className="gap-1.5">
-                <Brain className="h-3.5 w-3.5" />
-                <span>{t("tabMental")}</span>
-              </TabsTrigger>
-              <TabsTrigger value="performance" className="gap-1.5">
-                <ActivityIcon className="h-3.5 w-3.5" />
-                <span>{t("tabPerformance")}</span>
-              </TabsTrigger>
-              <TabsTrigger value="activity" className="gap-1.5">
-                <ListChecks className="h-3.5 w-3.5" />
-                <span>{t("tabActivity")}</span>
-              </TabsTrigger>
-            </TabsList>
-          </div>
+          <TabsList className="grid grid-cols-2 w-full sm:w-[360px]">
+            <TabsTrigger value="overview" className="gap-1.5">
+              <LayoutDashboard className="h-3.5 w-3.5" />
+              <span>{t("overview")}</span>
+            </TabsTrigger>
+            <TabsTrigger value="manage" className="gap-1.5">
+              <UserCog className="h-3.5 w-3.5" />
+              <span>{t("manage")}</span>
+            </TabsTrigger>
+          </TabsList>
 
           <TabsContent value="overview" className="space-y-4 mt-3">
             <AthleteOverviewTab
@@ -267,20 +230,14 @@ export default function CoachAthleteOverview() {
             />
           </TabsContent>
 
-          {/* Reuse existing detail body for the rest. We render it once and let
-              its inner Tabs follow the chosen sub-section via defaultValue. */}
-          {(["profile", "mental", "performance", "activity"] as const).map((key) => (
-            <TabsContent key={key} value={key} className="mt-3">
-              <CoachAthleteDetailWrapper
-                key={key + athlete.user_id}
-                athlete={athlete}
-                plans={plans}
-                rehabPlans={rehabPlans}
-                onRefresh={load}
-                initialTab={key}
-              />
-            </TabsContent>
-          ))}
+          <TabsContent value="manage" className="mt-3">
+            <CoachAthleteDetail
+              athlete={athlete as any}
+              plans={plans}
+              rehabPlans={rehabPlans}
+              onRefresh={load}
+            />
+          </TabsContent>
         </Tabs>
       </main>
 
@@ -302,44 +259,6 @@ export default function CoachAthleteOverview() {
       </Dialog>
 
       <AppFooter />
-    </div>
-  );
-}
-
-/**
- * Renders the existing CoachAthleteDetail (with its nested 4-tab UI) but hides
- * its internal TabsList — we drive section selection from the parent's tab value.
- * We do this by wrapping in a div with [data-coach-section] so we can scope
- * the CSS hide rule, and passing the desired tab via a prop interpreted below.
- */
-function CoachAthleteDetailWrapper({
-  athlete, plans, rehabPlans, onRefresh, initialTab,
-}: {
-  athlete: AthleteProfile;
-  plans: AthletePlan[];
-  rehabPlans: RehabPlan[];
-  onRefresh: () => Promise<void>;
-  initialTab: "profile" | "mental" | "performance" | "activity";
-}) {
-  // Map parent tab -> CoachAthleteDetail's internal tab value.
-  // CoachAthleteDetail's defaultValue is "profile". To switch the inner tab we
-  // re-mount the component (via key) and use a small CSS trick: hide its
-  // internal TabsList and force the requested TabsContent via initial scroll.
-  // Simpler: just remount with a key and rely on the user not seeing the inner
-  // list (we hide it via the wrapper class).
-  return (
-    <div className={cn("athlete-detail-wrapper", `view-${initialTab}`)}>
-      <style>{`
-        .athlete-detail-wrapper > div > div:first-child { display: none; }
-        .athlete-detail-wrapper [role="tablist"] { display: none !important; }
-      `}</style>
-      <CoachAthleteDetail
-        athlete={athlete as any}
-        plans={plans}
-        rehabPlans={rehabPlans}
-        onRefresh={onRefresh}
-        initialTab={initialTab}
-      />
     </div>
   );
 }
