@@ -66,7 +66,7 @@ export default function Competitions() {
       supabase.from("competitions").select("*").eq("user_id", user.id).lt("event_date", today).order("event_date", { ascending: false }).limit(20),
       supabase.from("weight_logs").select("log_date, weight_kg").eq("user_id", user.id).order("log_date", { ascending: false }).limit(30),
       supabase.from("competition_reflections").select("competition_id").eq("user_id", user.id).not("competition_id", "is", null),
-      supabase.from("profiles").select("discipline").eq("id", user.id).maybeSingle(),
+      supabase.from("profiles").select("discipline").eq("user_id", user.id).maybeSingle(),
     ]);
     setComps((c || []) as Competition[]);
     setPastComps((past || []) as Competition[]);
