@@ -123,10 +123,13 @@ const AnimatedRoutes = () => {
 };
 
 const App = () => {
+  const [showSplash, setShowSplash] = useState(true);
+
   return (
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
         <TooltipProvider>
+          {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
           <Toaster />
           <Sonner />
           <BrowserRouter>
