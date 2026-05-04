@@ -38,6 +38,7 @@ export default function Competitions() {
   const [pastComps, setPastComps] = useState<Competition[]>([]);
   const [reflectedIds, setReflectedIds] = useState<Set<string>>(new Set());
   const [weights, setWeights] = useState<WeightLog[]>([]);
+  const [isPoomsae, setIsPoomsae] = useState(false);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState<string | null>(null);
   const [viewPlan, setViewPlan] = useState<Competition | null>(null);
@@ -60,16 +61,18 @@ export default function Competitions() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { navigate("/auth"); return; }
     const today = new Date().toISOString().slice(0, 10);
-    const [{ data: c }, { data: past }, { data: w }, { data: refls }] = await Promise.all([
+    const [{ data: c }, { data: past }, { data: w }, { data: refls }, { data: prof }] = await Promise.all([
       supabase.from("competitions").select("*").eq("user_id", user.id).gte("event_date", today).order("event_date"),
       supabase.from("competitions").select("*").eq("user_id", user.id).lt("event_date", today).order("event_date", { ascending: false }).limit(20),
       supabase.from("weight_logs").select("log_date, weight_kg").eq("user_id", user.id).order("log_date", { ascending: false }).limit(30),
       supabase.from("competition_reflections").select("competition_id").eq("user_id", user.id).not("competition_id", "is", null),
+      supabase.from("profiles").select("discipline").eq("id", user.id).maybeSingle(),
     ]);
     setComps((c || []) as Competition[]);
     setPastComps((past || []) as Competition[]);
     setReflectedIds(new Set((refls || []).map((r: any) => r.competition_id).filter(Boolean)));
     setWeights((w || []) as WeightLog[]);
+    setIsPoomsae((prof as any)?.discipline === "poomsae");
     setLoading(false);
   }
 
@@ -181,17 +184,19 @@ export default function Competitions() {
         {/* Past competitions promoted to top when something needs reflection */}
         {hasUnreflectedPast && <PastCompetitionsSection />}
 
-        {/* Quick weight log */}
-        <Card>
-          <CardHeader className="pb-3"><CardTitle className="flex items-center gap-2 text-base"><Scale className="h-4 w-4" /> {t("competitionsTodayWeight")}</CardTitle></CardHeader>
-          <CardContent className="flex gap-2 items-end">
-            <div className="flex-1">
-              <Label className="text-xs">{t("competitionsWeightKg")}</Label>
-              <Input type="number" inputMode="decimal" step="0.1" value={todayWeight} onChange={(e) => setTodayWeight(e.target.value)} placeholder={latestWeight ? `${latestWeight} ${t("competitionsLastSuffix")}` : t("competitionsWeightPlaceholder")} />
-            </div>
-            <Button onClick={logWeight}>{t("competitionsLog")}</Button>
-          </CardContent>
-        </Card>
+        {/* Quick weight log — sparring only */}
+        {!isPoomsae && (
+          <Card>
+            <CardHeader className="pb-3"><CardTitle className="flex items-center gap-2 text-base"><Scale className="h-4 w-4" /> {t("competitionsTodayWeight")}</CardTitle></CardHeader>
+            <CardContent className="flex gap-2 items-end">
+              <div className="flex-1">
+                <Label className="text-xs">{t("competitionsWeightKg")}</Label>
+                <Input type="number" inputMode="decimal" step="0.1" value={todayWeight} onChange={(e) => setTodayWeight(e.target.value)} placeholder={latestWeight ? `${latestWeight} ${t("competitionsLastSuffix")}` : t("competitionsWeightPlaceholder")} />
+              </div>
+              <Button onClick={logWeight}>{t("competitionsLog")}</Button>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Create new */}
         <Dialog open={createOpen} onOpenChange={setCreateOpen}>
@@ -201,7 +206,9 @@ export default function Competitions() {
             <div className="space-y-3">
               <div><Label>{t("competitionsName")} *</Label><Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Nordic Open" /></div>
               <div><Label>{t("competitionsDate")} *</Label><Input type="date" value={date} onChange={(e) => setDate(e.target.value)} /></div>
-              <div><Label>{t("competitionsWeightClass")}</Label><Input type="number" inputMode="decimal" step="0.1" value={weightClass} onChange={(e) => setWeightClass(e.target.value)} placeholder="67.5" /></div>
+              {!isPoomsae && (
+                <div><Label>{t("competitionsWeightClass")}</Label><Input type="number" inputMode="decimal" step="0.1" value={weightClass} onChange={(e) => setWeightClass(e.target.value)} placeholder="67.5" /></div>
+              )}
               <div>
                 <Label>{t("competitionsPriority")}</Label>
                 <Select value={priority} onValueChange={(v) => setPriority(v as any)}>
@@ -237,7 +244,7 @@ export default function Competitions() {
                         <div className="flex flex-wrap gap-2 mt-1 text-xs">
                           <Badge variant="secondary"><Calendar className="h-3 w-3 mr-1" />{days} {t("competitionsDays")}</Badge>
                           <Badge variant="outline">{t("competitionsPriorityLabel")} {c.priority}</Badge>
-                          {c.weight_class_kg && <Badge variant="outline">{c.weight_class_kg} kg</Badge>}
+                          {!isPoomsae && c.weight_class_kg && <Badge variant="outline">{c.weight_class_kg} kg</Badge>}
                           {c.location && <Badge variant="outline">{c.location}</Badge>}
                         </div>
                       </div>
@@ -245,7 +252,7 @@ export default function Competitions() {
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    {targetGap !== null && (
+                    {!isPoomsae && targetGap !== null && (
                       <div className={`text-sm p-2 rounded border ${onTrack ? "border-primary/40 bg-primary/10 text-primary" : "border-destructive/40 bg-destructive/10 text-destructive"}`}>
                         {t("competitionsCurrent")} {latestWeight} kg → {t("competitionsTarget")} {c.weight_class_kg} kg ({targetGap > 0 ? `${targetGap.toFixed(1)} ${t("competitionsToCut")}` : t("competitionsAtTarget")}) · {onTrack ? t("competitionsOnTrack") : t("competitionsBehind")}
                       </div>
