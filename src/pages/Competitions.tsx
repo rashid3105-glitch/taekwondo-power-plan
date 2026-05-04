@@ -244,7 +244,7 @@ export default function Competitions() {
                         <div className="flex flex-wrap gap-2 mt-1 text-xs">
                           <Badge variant="secondary"><Calendar className="h-3 w-3 mr-1" />{days} {t("competitionsDays")}</Badge>
                           <Badge variant="outline">{t("competitionsPriorityLabel")} {c.priority}</Badge>
-                          {c.weight_class_kg && <Badge variant="outline">{c.weight_class_kg} kg</Badge>}
+                          {!isPoomsae && c.weight_class_kg && <Badge variant="outline">{c.weight_class_kg} kg</Badge>}
                           {c.location && <Badge variant="outline">{c.location}</Badge>}
                         </div>
                       </div>
