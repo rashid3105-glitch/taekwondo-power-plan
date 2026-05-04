@@ -1962,6 +1962,10 @@ const translations = {
     changelogEntry92: "Post-Competition Reflection: 4-step flow with a personalized action plan and 3 SMART goals; works offline.",
     changelogEntry93: "Health page: manual entry for sleep / resting HR / HRV / steps with iPhone re-sync, 7-day baselines, and a device guide for Apple, Garmin, Polar, Fitbit, Samsung, Whoop and Oura.",
     changelogEntry94: "Norwegian language: fixed a bug where the Health page previously showed Arabic text on Norwegian.",
+    changelog_2026_05_04: "May 4, 2026",
+    changelogEntry95: "HIIT module in the Library: 6 Taekwondo-specific interval workouts (Tabata Kicks, Olympic Blitz, Sparring Rounds and more) with a full-screen interval runner, audio cues, haptic feedback and circular progress timer.",
+    changelogEntry96: "Fresh, sporty palette across the entire app — unified light theme with electric blue and lime accents replacing the dark cockpit, so public and authenticated pages now feel like one product.",
+    changelogEntry97: "New club-focused landing page at sportstalent.dk with a streamlined Athlete / Coach / Small Team flow and a compact \"What's new\" teaser linking into the changelog.",
 
     // ── Club landing page (/) ──
     landingClubLogIn: "Log in",
@@ -3989,6 +3993,10 @@ const translations = {
     changelogEntry92: "Refleksion efter konkurrence: 4-trins flow med personlig handlingsplan og 3 SMART-mål; virker offline.",
     changelogEntry93: "Sundhedsside: manuel indtastning af søvn/hvilepuls/HRV/skridt med iPhone-resync, 7-dages baselines og enhedsguide til Apple, Garmin, Polar, Fitbit, Samsung, Whoop og Oura.",
     changelogEntry94: "Norsk sprogunderstøttelse: rettet fejl hvor Sundhedssiden tidligere viste arabisk tekst på norsk.",
+    changelog_2026_05_04: "4. maj 2026",
+    changelogEntry95: "HIIT-modul i biblioteket: 6 taekwondo-specifikke intervaltræninger (Tabata Kicks, Olympic Blitz, Sparring Rounds m.fl.) med fuldskærms intervaltimer, lydsignaler, haptisk feedback og cirkulær fremdriftsindikator.",
+    changelogEntry96: "Frisk, sporty palette i hele appen — samlet lyst tema med elektrisk blå og lime-accenter erstatter det mørke cockpit, så offentlige og indloggede sider nu føles som ét produkt.",
+    changelogEntry97: "Ny klub-fokuseret landingsside på sportstalent.dk med et strømlinet Atlet / Træner / Lille hold-flow og en kompakt \"Nyt\"-teaser der linker ind i changelogget.",
 
     // ── Club landing page (/) ──
     landingClubLogIn: "Log ind",
@@ -6015,6 +6023,10 @@ const translations = {
     changelogEntry92: "Reflektion efter tävling: 4-stegsflöde med personlig handlingsplan och 3 SMART-mål; fungerar offline.",
     changelogEntry93: "Hälso-sida: manuell inmatning av sömn/vilopuls/HRV/steg med iPhone-synk, 7-dagars baslinjer och enhetsguide för Apple, Garmin, Polar, Fitbit, Samsung, Whoop och Oura.",
     changelogEntry94: "Norskt språkstöd: åtgärdat fel där Hälso-sidan tidigare visade arabisk text på norska.",
+    changelog_2026_05_04: "4 maj 2026",
+    changelogEntry95: "HIIT-modul i biblioteket: 6 taekwondo-specifika intervallpass (Tabata Kicks, Olympic Blitz, Sparring Rounds m.fl.) med fullskärms intervalltimer, ljudsignaler, haptisk feedback och cirkulär framstegsindikator.",
+    changelogEntry96: "Fräsch, sportig palett i hela appen — enhetligt ljust tema med elektriskt blå och lime-accenter ersätter det mörka cockpitet, så publika och inloggade sidor känns som en produkt.",
+    changelogEntry97: "Ny klubbfokuserad landningssida på sportstalent.dk med strömlinjeformat Atlet / Tränare / Litet lag-flöde och en kompakt \"Nytt\"-teaser som länkar till changeloggen.",
 
     // ── Club landing page (/) ──
     landingClubLogIn: "Logga in",
@@ -7990,6 +8002,10 @@ const translations = {
     changelogEntry92: "Reflexion nach dem Wettkampf: 4-Schritte-Flow mit persönlichem Aktionsplan und 3 SMART-Zielen; offlinefähig.",
     changelogEntry93: "Gesundheits-Seite: Manuelle Eingabe für Schlaf/Ruhepuls/HRV/Schritte mit iPhone-Resync, 7-Tage-Baselines und Geräteleitfaden für Apple, Garmin, Polar, Fitbit, Samsung, Whoop und Oura.",
     changelogEntry94: "Norwegische Sprachunterstützung: Fehler behoben, bei dem die Gesundheits-Seite auf Norwegisch arabischen Text zeigte.",
+    changelog_2026_05_04: "4. Mai 2026",
+    changelogEntry95: "HIIT-Modul in der Bibliothek: 6 Taekwondo-spezifische Intervall-Workouts (Tabata Kicks, Olympic Blitz, Sparring Rounds u.a.) mit Vollbild-Intervalltimer, Audiosignalen, haptischem Feedback und kreisförmiger Fortschrittsanzeige.",
+    changelogEntry96: "Frische, sportliche Farbpalette in der gesamten App — einheitliches helles Theme mit elektrischem Blau und Lime-Akzenten ersetzt das dunkle Cockpit, sodass öffentliche und eingeloggte Seiten wie ein Produkt wirken.",
+    changelogEntry97: "Neue club-fokussierte Landingpage auf sportstalent.dk mit gestrafftem Athlet / Trainer / Kleines Team-Flow und einem kompakten „Neu\"-Teaser, der in das Changelog verlinkt.",
 
     // ── Club landing page (/) ──
     landingClubLogIn: "Anmelden",
@@ -9966,6 +9982,10 @@ const translations = {
     changelogEntry92: "التفكر بعد المنافسة: تدفق من 4 خطوات مع خطة عمل مخصّصة و3 أهداف SMART؛ يعمل دون إنترنت.",
     changelogEntry93: "صفحة الصحة: إدخال يدوي للنوم/نبض الراحة/HRV/الخطوات مع إعادة مزامنة من الآيفون، خطوط أساس لـ 7 أيام، ودليل أجهزة لـ Apple وGarmin وPolar وFitbit وSamsung وWhoop وOura.",
     changelogEntry94: "دعم اللغة النرويجية: إصلاح خلل كانت فيه صفحة الصحة تعرض نصًا عربيًا على النرويجية.",
+    changelog_2026_05_04: "4 مايو 2026",
+    changelogEntry95: "وحدة HIIT في المكتبة: 6 تمارين فترات مخصصة للتايكوندو (Tabata Kicks، Olympic Blitz، Sparring Rounds وغيرها) مع مؤقت فترات بملء الشاشة، إشارات صوتية، استجابة لمسية، ومؤشر تقدم دائري.",
+    changelogEntry96: "لوحة ألوان جديدة منعشة ورياضية في كامل التطبيق — سمة فاتحة موحدة بأزرق كهربائي ولمسات الليمون تحل محل القمرة الداكنة، لتبدو الصفحات العامة وصفحات تسجيل الدخول كمنتج واحد.",
+    changelogEntry97: "صفحة هبوط جديدة موجهة للأندية على sportstalent.dk بتدفق مبسّط للرياضي / المدرب / الفريق الصغير، وتشويقة \"الجديد\" مدمجة تربط بسجل التغييرات.",
 
     // ── Club landing page (/) ──
     landingClubLogIn: "تسجيل الدخول",
@@ -11970,6 +11990,10 @@ const translations = {
     changelogEntry92: "Refleksjon etter konkurranse: 4-stegs flyt med personlig handlingsplan og 3 SMART-mål; fungerer offline.",
     changelogEntry93: "Helse-side: manuell innlogging av søvn/hvilepuls/HRV/skritt med iPhone-resync, 7-dagers baselines og enhetsguide for Apple, Garmin, Polar, Fitbit, Samsung, Whoop og Oura.",
     changelogEntry94: "Norsk språkstøtte: rettet feil hvor Helse-siden tidligere viste arabisk tekst på norsk.",
+    changelog_2026_05_04: "4. mai 2026",
+    changelogEntry95: "HIIT-modul i biblioteket: 6 taekwondo-spesifikke intervalløkter (Tabata Kicks, Olympic Blitz, Sparring Rounds m.fl.) med fullskjerms intervalltimer, lydsignaler, haptisk tilbakemelding og sirkulær fremdriftsindikator.",
+    changelogEntry96: "Frisk, sporty palett i hele appen — samlet lyst tema med elektrisk blå og lime-aksenter erstatter det mørke cockpitet, slik at offentlige og innloggede sider nå føles som ett produkt.",
+    changelogEntry97: "Ny klubb-fokusert landingsside på sportstalent.dk med et strømlinjeformet Utøver / Trener / Lite lag-flyt og en kompakt \"Nytt\"-teaser som lenker til changeloggen.",
 
     // ── Club landing page (/) ──
     landingClubLogIn: "Logg inn",
