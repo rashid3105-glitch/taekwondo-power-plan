@@ -10307,7 +10307,7 @@ const translations = {
     discipline: "Disciplin",
     disciplineHint: "Velg din primære taekwondo-disciplin",
     sparring: "Sparring (kjemper)",
-    poomsae: "Poomsae (Former)",
+    poomsae: "Poomsae (Forms)",
     saving: "Lagrer...",
     saveProfileContinue: "Lagre profil & fortsæt",
     profileSaved: "Profil lagret!",
