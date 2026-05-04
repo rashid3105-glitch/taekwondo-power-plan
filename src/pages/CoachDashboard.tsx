@@ -374,7 +374,7 @@ export default function CoachDashboard() {
                   />
                   <SquadOverview
                     coachId={coachUserId}
-                    onSelectAthlete={(id) => setManageAthleteId(id)}
+                    onSelectAthlete={(id) => navigate(`/coach/athlete/${id}`)}
                     onDiary={(id, name) => openDiary(id, name)}
                     onRemove={(id) => removeAthlete(id)}
                     onViewPlan={(id) => {
