@@ -38,6 +38,7 @@ export default function Competitions() {
   const [pastComps, setPastComps] = useState<Competition[]>([]);
   const [reflectedIds, setReflectedIds] = useState<Set<string>>(new Set());
   const [weights, setWeights] = useState<WeightLog[]>([]);
+  const [isPoomsae, setIsPoomsae] = useState(false);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState<string | null>(null);
   const [viewPlan, setViewPlan] = useState<Competition | null>(null);
