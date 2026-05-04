@@ -252,7 +252,7 @@ export default function Competitions() {
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    {targetGap !== null && (
+                    {!isPoomsae && targetGap !== null && (
                       <div className={`text-sm p-2 rounded border ${onTrack ? "border-primary/40 bg-primary/10 text-primary" : "border-destructive/40 bg-destructive/10 text-destructive"}`}>
                         {t("competitionsCurrent")} {latestWeight} kg → {t("competitionsTarget")} {c.weight_class_kg} kg ({targetGap > 0 ? `${targetGap.toFixed(1)} ${t("competitionsToCut")}` : t("competitionsAtTarget")}) · {onTrack ? t("competitionsOnTrack") : t("competitionsBehind")}
                       </div>
