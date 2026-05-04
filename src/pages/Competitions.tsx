@@ -184,17 +184,19 @@ export default function Competitions() {
         {/* Past competitions promoted to top when something needs reflection */}
         {hasUnreflectedPast && <PastCompetitionsSection />}
 
-        {/* Quick weight log */}
-        <Card>
-          <CardHeader className="pb-3"><CardTitle className="flex items-center gap-2 text-base"><Scale className="h-4 w-4" /> {t("competitionsTodayWeight")}</CardTitle></CardHeader>
-          <CardContent className="flex gap-2 items-end">
-            <div className="flex-1">
-              <Label className="text-xs">{t("competitionsWeightKg")}</Label>
-              <Input type="number" inputMode="decimal" step="0.1" value={todayWeight} onChange={(e) => setTodayWeight(e.target.value)} placeholder={latestWeight ? `${latestWeight} ${t("competitionsLastSuffix")}` : t("competitionsWeightPlaceholder")} />
-            </div>
-            <Button onClick={logWeight}>{t("competitionsLog")}</Button>
-          </CardContent>
-        </Card>
+        {/* Quick weight log — sparring only */}
+        {!isPoomsae && (
+          <Card>
+            <CardHeader className="pb-3"><CardTitle className="flex items-center gap-2 text-base"><Scale className="h-4 w-4" /> {t("competitionsTodayWeight")}</CardTitle></CardHeader>
+            <CardContent className="flex gap-2 items-end">
+              <div className="flex-1">
+                <Label className="text-xs">{t("competitionsWeightKg")}</Label>
+                <Input type="number" inputMode="decimal" step="0.1" value={todayWeight} onChange={(e) => setTodayWeight(e.target.value)} placeholder={latestWeight ? `${latestWeight} ${t("competitionsLastSuffix")}` : t("competitionsWeightPlaceholder")} />
+              </div>
+              <Button onClick={logWeight}>{t("competitionsLog")}</Button>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Create new */}
         <Dialog open={createOpen} onOpenChange={setCreateOpen}>
