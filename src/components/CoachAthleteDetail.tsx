@@ -387,6 +387,60 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
               </div>
             </div>
             <div className="space-y-1">
+            <div className="space-y-3 rounded-lg border border-border bg-muted/20 p-3">
+              <div>
+                <Label className="text-sm font-semibold">{t("licenses") || "Licenses"}</Label>
+                <p className="text-xs text-muted-foreground">{t("licensesHint") || "Optional — for competition eligibility"}</p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label className="text-xs">{t("galLicense") || "GAL license"}</Label>
+                  <Input
+                    value={galLicense}
+                    onChange={(e) => setGalLicense(e.target.value)}
+                    placeholder="—"
+                    maxLength={50}
+                    className="h-9"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">{t("expiresAt") || "Expires"}</Label>
+                  <Input
+                    type="date"
+                    value={galLicenseExpires}
+                    onChange={(e) => setGalLicenseExpires(e.target.value)}
+                    className="h-9"
+                  />
+                </div>
+              </div>
+              {country === "Denmark" && (
+                <div className="space-y-2 pt-2 border-t border-border/60">
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="coach_has_mfb"
+                      checked={hasMyFightBook}
+                      onCheckedChange={(c) => setHasMyFightBook(!!c)}
+                      disabled={!editing}
+                    />
+                    <Label htmlFor="coach_has_mfb" className="text-sm font-normal cursor-pointer">
+                      {t("hasMyFightBook") || "MyFightBook"}
+                    </Label>
+                  </div>
+                  {hasMyFightBook && (
+                    <div className="space-y-1">
+                      <Label className="text-xs">{t("expiresAt") || "Expires"}</Label>
+                      <Input
+                        type="date"
+                        value={myFightBookExpires}
+                        onChange={(e) => setMyFightBookExpires(e.target.value)}
+                        className="h-9"
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            <div className="space-y-1">
               <Label className="text-xs">{t("discipline")}</Label>
               <Select value={discipline} onValueChange={setDiscipline} disabled={!editing}>
                 <SelectTrigger className="h-9">
