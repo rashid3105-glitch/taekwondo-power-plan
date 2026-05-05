@@ -291,6 +291,10 @@ export default function ProfileSetup() {
         country: country || null,
         custom_calories: customCalories ? parseInt(customCalories) : null,
         default_locale: defaultLocale || null,
+        gal_license: galLicense.trim() || null,
+        gal_license_expires_at: galLicenseExpires || null,
+        has_myfightbook: hasMyFightBook,
+        myfightbook_expires_at: hasMyFightBook && myFightBookExpires ? myFightBookExpires : null,
         
         avatar_url: cleanAvatarUrl,
       };
