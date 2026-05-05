@@ -344,13 +344,55 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
             {loading ? (
               <Loader2 className="h-5 w-5 animate-spin" />
             ) : videoSrc ? (
-              <video
-                ref={videoRef}
-                src={videoSrc}
-                controls
-                className="w-full h-[400px] object-contain rounded-lg border border-border bg-black"
-                preload="metadata"
-              />
+              <div className="space-y-2">
+                <video
+                  ref={videoRef}
+                  src={videoSrc}
+                  controls
+                  className="w-full h-[400px] object-contain rounded-lg border border-border bg-black"
+                  preload="metadata"
+                  onLoadedMetadata={(e) => {
+                    const d = (e.target as HTMLVideoElement).duration;
+                    if (Number.isFinite(d) && d > 0) setDuration(d);
+                  }}
+                />
+                {/* Clickable timeline markers */}
+                {duration > 0 && (
+                  <div className="relative h-7 mt-1">
+                    <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-1 rounded-full bg-muted" />
+                    {tags.map((tag) => {
+                      const pct = Math.min(100, Math.max(0, (tag.timestamp_seconds / duration) * 100));
+                      const color =
+                        tag.outcome === "scored" ? "bg-emerald-500 hover:bg-emerald-400" :
+                        tag.outcome === "conceded" ? "bg-rose-500 hover:bg-rose-400" :
+                        tag.outcome === "penalty" ? "bg-amber-500 hover:bg-amber-400" :
+                        "bg-primary hover:bg-primary/80";
+                      return (
+                        <button
+                          key={tag.id}
+                          type="button"
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => jumpTo(tag.timestamp_seconds)}
+                          onMouseEnter={() => setHoverTag(tag)}
+                          onMouseLeave={() => setHoverTag((p) => (p?.id === tag.id ? null : p))}
+                          className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 h-3 w-3 rounded-full ring-2 ring-background transition-transform hover:scale-125 ${color}`}
+                          style={{ left: `${pct}%` }}
+                          title={`${fmt(tag.timestamp_seconds)} — ${tag.notes || tag.technique}`}
+                          aria-label={`${fmt(tag.timestamp_seconds)} ${tag.technique}`}
+                        />
+                      );
+                    })}
+                    {hoverTag && (
+                      <div
+                        className="absolute -top-7 z-10 -translate-x-1/2 px-2 py-0.5 rounded bg-foreground text-background text-[10px] font-mono whitespace-nowrap pointer-events-none shadow-md"
+                        style={{ left: `${Math.min(100, Math.max(0, (hoverTag.timestamp_seconds / duration) * 100))}%` }}
+                      >
+                        {fmt(hoverTag.timestamp_seconds)}{hoverTag.notes ? ` · ${hoverTag.notes}` : ""}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             ) : (
               <div className="text-sm text-muted-foreground">{t("matchVideoUnavailable")}</div>
             )}
