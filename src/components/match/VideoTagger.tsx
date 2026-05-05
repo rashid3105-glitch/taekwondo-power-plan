@@ -497,7 +497,7 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
                           {t("matchOfflinePendingBadge")}
                         </Badge>
                       )}
-                      {tag.notes && <span className="text-muted-foreground truncate flex-1">{tag.notes}</span>}
+                      {tag.notes && <span className="text-muted-foreground flex-1 whitespace-normal break-words">{tag.notes}</span>}
                       {isCoach && (
                         <Trash2
                           className="h-3 w-3 text-destructive opacity-0 group-hover:opacity-100"
