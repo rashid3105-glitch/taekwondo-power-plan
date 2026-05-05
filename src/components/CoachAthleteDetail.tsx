@@ -386,7 +386,6 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
                 />
               </div>
             </div>
-            <div className="space-y-1">
             <div className="space-y-3 rounded-lg border border-border bg-muted/20 p-3">
               <div>
                 <Label className="text-sm font-semibold">{t("licenses") || "Licenses"}</Label>
