@@ -586,6 +586,62 @@ export default function ProfileSetup() {
             />
           </div>
 
+          <div className="rounded-lg border border-border bg-muted/20 p-3 space-y-3">
+            <div>
+              <Label className="text-sm font-semibold">{t("licenses") || "Licenses"}</Label>
+              <p className="text-xs text-muted-foreground">{t("licensesHint") || "Optional — for competition eligibility"}</p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="gal_license" className="text-xs">{t("galLicense") || "GAL license"}</Label>
+                <Input
+                  id="gal_license"
+                  value={galLicense}
+                  onChange={(e) => setGalLicense(e.target.value)}
+                  placeholder="—"
+                  maxLength={50}
+                />
+              </div>
+              <div>
+                <Label htmlFor="gal_expires" className="text-xs">{t("expiresAt") || "Expires"}</Label>
+                <Input
+                  id="gal_expires"
+                  type="date"
+                  value={galLicenseExpires}
+                  onChange={(e) => setGalLicenseExpires(e.target.value)}
+                />
+              </div>
+            </div>
+
+            {country === "Denmark" && (
+              <div className="space-y-2 pt-2 border-t border-border/60">
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="has_mfb"
+                    checked={hasMyFightBook}
+                    onCheckedChange={(c) => setHasMyFightBook(!!c)}
+                  />
+                  <Label htmlFor="has_mfb" className="text-sm font-normal cursor-pointer">
+                    {t("hasMyFightBook") || "MyFightBook"}
+                  </Label>
+                </div>
+                {hasMyFightBook && (
+                  <div>
+                    <Label htmlFor="mfb_expires" className="text-xs">{t("expiresAt") || "Expires"}</Label>
+                    <Input
+                      id="mfb_expires"
+                      type="date"
+                      value={myFightBookExpires}
+                      onChange={(e) => setMyFightBookExpires(e.target.value)}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? t("saving") : t("saveProfileContinue")}
           </Button>
