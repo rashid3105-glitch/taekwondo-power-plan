@@ -207,6 +207,13 @@ export default function CoachAthleteOverview() {
                   </Badge>
                 )}
               </div>
+              <div className="mt-2">
+                <CoachAvatarUpload
+                  athleteId={athlete.user_id}
+                  hasAvatar={!!athlete.avatar_url}
+                  onUploaded={(url) => setAthlete({ ...athlete, avatar_url: url })}
+                />
+              </div>
             </div>
           </div>
         </div>
