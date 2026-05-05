@@ -18,6 +18,7 @@ import { CoachAthleteDetail } from "@/components/CoachAthleteDetail";
 import { AthleteOverviewTab } from "@/components/coach/AthleteOverviewTab";
 import { CoachDiaryView } from "@/components/coach/CoachDiaryView";
 import { SendReminderDialog } from "@/components/SendReminderDialog";
+import { CoachAvatarUpload } from "@/components/coach/CoachAvatarUpload";
 
 interface AthleteProfile {
   user_id: string;
