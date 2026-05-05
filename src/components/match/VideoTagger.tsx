@@ -62,6 +62,9 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
   const [adding, setAdding] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const objectUrlRef = useRef<string | null>(null);
+  const loadedKeyRef = useRef<string | null>(null);
+  const lastTimeRef = useRef<number>(0);
+  const wasPlayingRef = useRef<boolean>(false);
   const [duration, setDuration] = useState<number>(video.duration_seconds || 0);
   const [hoverTag, setHoverTag] = useState<MatchTag | null>(null);
 
@@ -88,11 +91,20 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
         URL.revokeObjectURL(objectUrlRef.current);
         objectUrlRef.current = null;
       }
+      loadedKeyRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [video.id, isOffline, isCached]);
 
   async function load() {
+    // Skip if we already loaded this exact source – prevents the <video>
+    // element from being torn down (and restarting at 0) on parent re-renders
+    // that happen after adding/deleting a tag.
+    const key = `${video.id}|${isOffline ? "off" : "on"}|${isCached ? "c" : "n"}`;
+    if (loadedKeyRef.current === key && videoSrc) {
+      return;
+    }
+    loadedKeyRef.current = key;
     setLoading(true);
     // Clean up previous object URL
     if (objectUrlRef.current) {
@@ -349,11 +361,28 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
                   ref={videoRef}
                   src={videoSrc}
                   controls
+                  playsInline
+                  {...({ "webkit-playsinline": "true" } as any)}
+                  x-webkit-airplay="allow"
+                  controlsList="nodownload"
                   className="w-full h-[400px] object-contain rounded-lg border border-border bg-black"
                   preload="metadata"
                   onLoadedMetadata={(e) => {
-                    const d = (e.target as HTMLVideoElement).duration;
-                    if (Number.isFinite(d) && d > 0) setDuration(d);
+                    const v = e.target as HTMLVideoElement;
+                    if (Number.isFinite(v.duration) && v.duration > 0) setDuration(v.duration);
+                    // Restore playback position if we had one (e.g. signed URL refreshed).
+                    if (lastTimeRef.current > 0 && Math.abs(v.currentTime - lastTimeRef.current) > 0.25) {
+                      try { v.currentTime = lastTimeRef.current; } catch {}
+                    }
+                    if (wasPlayingRef.current) {
+                      void v.play().catch(() => {});
+                    }
+                  }}
+                  onTimeUpdate={(e) => { lastTimeRef.current = (e.target as HTMLVideoElement).currentTime; }}
+                  onPlay={() => { wasPlayingRef.current = true; }}
+                  onPause={(e) => {
+                    wasPlayingRef.current = false;
+                    lastTimeRef.current = (e.target as HTMLVideoElement).currentTime;
                   }}
                 />
                 {/* Clickable timeline markers */}
@@ -448,7 +477,17 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
                     <Input value={tagNote} onChange={(e) => setTagNote(e.target.value)} className="h-9" placeholder="…" />
                   </div>
                 </div>
-                <Button type="button" onClick={addTag} disabled={adding} size="sm" className="w-full">
+                <Button
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => {
+                    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+                    void addTag();
+                  }}
+                  disabled={adding}
+                  size="sm"
+                  className="w-full"
+                >
                   {adding ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : <Plus className="h-3.5 w-3.5 mr-1" />}
                   {t("matchTagAtCurrent")}
                 </Button>
