@@ -150,17 +150,19 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
     const ts = Math.round(videoRef.current.currentTime * 10) / 10;
 
     if (navigator.onLine && !isOffline) {
-      const { error } = await supabase.from("match_tags").insert({
+      const { data: inserted, error } = await supabase.from("match_tags").insert({
         video_id: video.id,
         timestamp_seconds: ts,
         technique, side, outcome, notes: tagNote,
         created_by: user.id,
-      });
+      }).select().single();
       if (error) {
         toast({ title: t("error"), description: error.message, variant: "destructive" });
       } else {
         setTagNote("");
-        await load();
+        if (inserted) {
+          setTags((prev) => [...prev, inserted as MatchTag].sort((a, b) => a.timestamp_seconds - b.timestamp_seconds));
+        }
         onChanged?.();
       }
     } else {
@@ -175,7 +177,13 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
       await queueTagInsert(pending);
       toast({ title: t("matchOfflinePendingTag") });
       setTagNote("");
-      await load();
+      setTags((prev) => [...prev, {
+        id: pending.id,
+        video_id: video.id,
+        timestamp_seconds: ts,
+        technique, side, outcome, notes: tagNote,
+        __pending: true,
+      }].sort((a, b) => a.timestamp_seconds - b.timestamp_seconds));
       onChanged?.();
     }
     setAdding(false);
