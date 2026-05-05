@@ -960,12 +960,16 @@ export type Database = {
           discipline: string
           display_name: string
           experience_years: number | null
+          gal_license: string | null
+          gal_license_expires_at: string | null
           goals: string[] | null
+          has_myfightbook: boolean
           id: string
           is_approved: boolean
           is_demo: boolean
           is_public: boolean
           last_seen_at: string | null
+          myfightbook_expires_at: string | null
           onboarding_completed: boolean
           owns_wearable: boolean
           passkey_prompt_dismissed_at: string | null
@@ -1004,12 +1008,16 @@ export type Database = {
           discipline?: string
           display_name?: string
           experience_years?: number | null
+          gal_license?: string | null
+          gal_license_expires_at?: string | null
           goals?: string[] | null
+          has_myfightbook?: boolean
           id?: string
           is_approved?: boolean
           is_demo?: boolean
           is_public?: boolean
           last_seen_at?: string | null
+          myfightbook_expires_at?: string | null
           onboarding_completed?: boolean
           owns_wearable?: boolean
           passkey_prompt_dismissed_at?: string | null
@@ -1048,12 +1056,16 @@ export type Database = {
           discipline?: string
           display_name?: string
           experience_years?: number | null
+          gal_license?: string | null
+          gal_license_expires_at?: string | null
           goals?: string[] | null
+          has_myfightbook?: boolean
           id?: string
           is_approved?: boolean
           is_demo?: boolean
           is_public?: boolean
           last_seen_at?: string | null
+          myfightbook_expires_at?: string | null
           onboarding_completed?: boolean
           owns_wearable?: boolean
           passkey_prompt_dismissed_at?: string | null

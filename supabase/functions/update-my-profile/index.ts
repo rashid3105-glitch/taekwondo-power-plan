@@ -39,6 +39,10 @@ const UpdateProfileSchema = z.object({
   coach_focus: z.array(z.string().min(1).max(40)).max(10).nullable().optional(),
   pending_invite_code: z.string().max(20).nullable().optional(),
   pending_coach_id: z.string().uuid().nullable().optional(),
+  gal_license: z.string().max(50).nullable().optional(),
+  gal_license_expires_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
+  has_myfightbook: z.boolean().optional(),
+  myfightbook_expires_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
   avatar_url: z
     .string()
     .max(500)

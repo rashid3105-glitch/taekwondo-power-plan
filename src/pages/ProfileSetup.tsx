@@ -68,6 +68,10 @@ export default function ProfileSetup() {
   const [country, setCountry] = useState("");
   const [customCalories, setCustomCalories] = useState("");
   const [defaultLocale, setDefaultLocale] = useState<Locale | "">("");
+  const [galLicense, setGalLicense] = useState("");
+  const [galLicenseExpires, setGalLicenseExpires] = useState("");
+  const [hasMyFightBook, setHasMyFightBook] = useState(false);
+  const [myFightBookExpires, setMyFightBookExpires] = useState("");
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -89,7 +93,7 @@ export default function ProfileSetup() {
           supabase.from("clubs" as any).select("id, name").order("name"),
           supabase
             .from("profiles")
-            .select("age, weight_kg, belt_level, experience_years, discipline, goals, weekly_schedule, program_weeks, current_injury, avatar_url, club_id, country, custom_calories, default_locale")
+            .select("age, weight_kg, belt_level, experience_years, discipline, goals, weekly_schedule, program_weeks, current_injury, avatar_url, club_id, country, custom_calories, default_locale, gal_license, gal_license_expires_at, has_myfightbook, myfightbook_expires_at")
             .eq("user_id", user.id)
             .maybeSingle(),
         ]);
@@ -116,6 +120,10 @@ export default function ProfileSetup() {
           setCountry(profileData.country || "");
           setCustomCalories(profileData.custom_calories?.toString() || "");
           setDefaultLocale((profileData.default_locale as Locale) || "");
+          setGalLicense(profileData.gal_license || "");
+          setGalLicenseExpires(profileData.gal_license_expires_at || "");
+          setHasMyFightBook(!!profileData.has_myfightbook);
+          setMyFightBookExpires(profileData.myfightbook_expires_at || "");
           
         }
       } catch (err: any) {
@@ -283,6 +291,10 @@ export default function ProfileSetup() {
         country: country || null,
         custom_calories: customCalories ? parseInt(customCalories) : null,
         default_locale: defaultLocale || null,
+        gal_license: galLicense.trim() || null,
+        gal_license_expires_at: galLicenseExpires || null,
+        has_myfightbook: hasMyFightBook,
+        myfightbook_expires_at: hasMyFightBook && myFightBookExpires ? myFightBookExpires : null,
         
         avatar_url: cleanAvatarUrl,
       };
@@ -573,6 +585,62 @@ export default function ProfileSetup() {
               maxLength={200}
             />
           </div>
+
+          <div className="rounded-lg border border-border bg-muted/20 p-3 space-y-3">
+            <div>
+              <Label className="text-sm font-semibold">{t("licenses") || "Licenses"}</Label>
+              <p className="text-xs text-muted-foreground">{t("licensesHint") || "Optional — for competition eligibility"}</p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="gal_license" className="text-xs">{t("galLicense") || "GAL license"}</Label>
+                <Input
+                  id="gal_license"
+                  value={galLicense}
+                  onChange={(e) => setGalLicense(e.target.value)}
+                  placeholder="—"
+                  maxLength={50}
+                />
+              </div>
+              <div>
+                <Label htmlFor="gal_expires" className="text-xs">{t("expiresAt") || "Expires"}</Label>
+                <Input
+                  id="gal_expires"
+                  type="date"
+                  value={galLicenseExpires}
+                  onChange={(e) => setGalLicenseExpires(e.target.value)}
+                />
+              </div>
+            </div>
+
+            {country === "Denmark" && (
+              <div className="space-y-2 pt-2 border-t border-border/60">
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="has_mfb"
+                    checked={hasMyFightBook}
+                    onCheckedChange={(c) => setHasMyFightBook(!!c)}
+                  />
+                  <Label htmlFor="has_mfb" className="text-sm font-normal cursor-pointer">
+                    {t("hasMyFightBook") || "MyFightBook"}
+                  </Label>
+                </div>
+                {hasMyFightBook && (
+                  <div>
+                    <Label htmlFor="mfb_expires" className="text-xs">{t("expiresAt") || "Expires"}</Label>
+                    <Input
+                      id="mfb_expires"
+                      type="date"
+                      value={myFightBookExpires}
+                      onChange={(e) => setMyFightBookExpires(e.target.value)}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
 
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? t("saving") : t("saveProfileContinue")}
