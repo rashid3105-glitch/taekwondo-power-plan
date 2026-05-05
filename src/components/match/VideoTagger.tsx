@@ -150,17 +150,19 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
     const ts = Math.round(videoRef.current.currentTime * 10) / 10;
 
     if (navigator.onLine && !isOffline) {
-      const { error } = await supabase.from("match_tags").insert({
+      const { data: inserted, error } = await supabase.from("match_tags").insert({
         video_id: video.id,
         timestamp_seconds: ts,
         technique, side, outcome, notes: tagNote,
         created_by: user.id,
-      });
+      }).select().single();
       if (error) {
         toast({ title: t("error"), description: error.message, variant: "destructive" });
       } else {
         setTagNote("");
-        await load();
+        if (inserted) {
+          setTags((prev) => [...prev, inserted as MatchTag].sort((a, b) => a.timestamp_seconds - b.timestamp_seconds));
+        }
         onChanged?.();
       }
     } else {
@@ -175,7 +177,13 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
       await queueTagInsert(pending);
       toast({ title: t("matchOfflinePendingTag") });
       setTagNote("");
-      await load();
+      setTags((prev) => [...prev, {
+        id: pending.id,
+        video_id: video.id,
+        timestamp_seconds: ts,
+        technique, side, outcome, notes: tagNote,
+        __pending: true,
+      }].sort((a, b) => a.timestamp_seconds - b.timestamp_seconds));
       onChanged?.();
     }
     setAdding(false);
@@ -184,7 +192,7 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
   async function deleteTag(id: string, isPending: boolean) {
     if (isPending) {
       await removePendingTagInsert(id);
-      await load();
+      setTags((prev) => prev.filter((x) => x.id !== id));
       onChanged?.();
       return;
     }
@@ -193,7 +201,7 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
       if (error) {
         toast({ title: t("error"), description: error.message, variant: "destructive" });
       } else {
-        await load();
+        setTags((prev) => prev.filter((x) => x.id !== id));
         onChanged?.();
       }
     } else {
@@ -204,7 +212,6 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
         created_at: Date.now(),
       });
       toast({ title: t("matchOfflineDeleteQueued") });
-      // Optimistically remove from view
       setTags((prev) => prev.filter((x) => x.id !== id));
       onChanged?.();
     }
@@ -331,77 +338,79 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
           )}
         </CardHeader>
         <CardContent className="space-y-4">
-          {loading ? (
-            <Loader2 className="h-5 w-5 animate-spin" />
-          ) : videoSrc ? (
-            <video
-              ref={videoRef}
-              src={videoSrc}
-              controls
-              className="w-full rounded-lg border border-border bg-black"
-              preload="metadata"
-            />
-          ) : (
-            <div className="text-sm text-muted-foreground">{t("matchVideoUnavailable")}</div>
-          )}
+          <div className={isCoach ? "grid gap-4 lg:grid-cols-[1fr_320px]" : ""}>
+            {loading ? (
+              <Loader2 className="h-5 w-5 animate-spin" />
+            ) : videoSrc ? (
+              <video
+                ref={videoRef}
+                src={videoSrc}
+                controls
+                className="w-full h-[400px] object-contain rounded-lg border border-border bg-black"
+                preload="metadata"
+              />
+            ) : (
+              <div className="text-sm text-muted-foreground">{t("matchVideoUnavailable")}</div>
+            )}
 
-          {isCoach && (
-            <div className="rounded-lg border border-border p-3 space-y-2">
-              <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
-                <Tag className="h-3 w-3" />
-                {t("matchAddTag")}
-                {onlineActionsDisabled && (
-                  <Badge variant="outline" className="ml-1 text-[9px] h-4">
-                    <CloudUpload className="h-2.5 w-2.5 mr-0.5" />
-                    {t("matchOfflinePendingTag")}
-                  </Badge>
-                )}
+            {isCoach && (
+              <div className="rounded-lg border border-border p-3 space-y-2 lg:max-h-[400px] lg:overflow-auto">
+                <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+                  <Tag className="h-3 w-3" />
+                  {t("matchAddTag")}
+                  {onlineActionsDisabled && (
+                    <Badge variant="outline" className="ml-1 text-[9px] h-4">
+                      <CloudUpload className="h-2.5 w-2.5 mr-0.5" />
+                      {t("matchOfflinePendingTag")}
+                    </Badge>
+                  )}
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="text-xs">{t("matchTechnique")}</Label>
+                    <Select value={technique} onValueChange={setTechnique}>
+                      <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {techList.map((tech) => (
+                          <SelectItem key={tech.key} value={tech.key}>{t(tech.labelKey as any)}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-xs">{t("matchSide")}</Label>
+                    <Select value={side} onValueChange={(v) => setSide(v as any)}>
+                      <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {SIDES.map((s) => (
+                          <SelectItem key={s.key} value={s.key}>{t(s.labelKey as any)}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-xs">{t("matchOutcome")}</Label>
+                    <Select value={outcome} onValueChange={(v) => setOutcome(v as any)}>
+                      <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {OUTCOMES.map((o) => (
+                          <SelectItem key={o.key} value={o.key}>{t(o.labelKey as any)}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-xs">{t("matchNoteOptional")}</Label>
+                    <Input value={tagNote} onChange={(e) => setTagNote(e.target.value)} className="h-9" placeholder="…" />
+                  </div>
+                </div>
+                <Button type="button" onClick={addTag} disabled={adding} size="sm" className="w-full">
+                  {adding ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : <Plus className="h-3.5 w-3.5 mr-1" />}
+                  {t("matchTagAtCurrent")}
+                </Button>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                <div>
-                  <Label className="text-xs">{t("matchTechnique")}</Label>
-                  <Select value={technique} onValueChange={setTechnique}>
-                    <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {techList.map((tech) => (
-                        <SelectItem key={tech.key} value={tech.key}>{t(tech.labelKey as any)}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label className="text-xs">{t("matchSide")}</Label>
-                  <Select value={side} onValueChange={(v) => setSide(v as any)}>
-                    <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {SIDES.map((s) => (
-                        <SelectItem key={s.key} value={s.key}>{t(s.labelKey as any)}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label className="text-xs">{t("matchOutcome")}</Label>
-                  <Select value={outcome} onValueChange={(v) => setOutcome(v as any)}>
-                    <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {OUTCOMES.map((o) => (
-                        <SelectItem key={o.key} value={o.key}>{t(o.labelKey as any)}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label className="text-xs">{t("matchNoteOptional")}</Label>
-                  <Input value={tagNote} onChange={(e) => setTagNote(e.target.value)} className="h-9" placeholder="…" />
-                </div>
-              </div>
-              <Button onClick={addTag} disabled={adding} size="sm" className="w-full">
-                {adding ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : <Plus className="h-3.5 w-3.5 mr-1" />}
-                {t("matchTagAtCurrent")}
-              </Button>
-            </div>
-          )}
+            )}
+          </div>
 
           <div>
             <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
