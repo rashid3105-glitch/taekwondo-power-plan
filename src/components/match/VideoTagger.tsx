@@ -91,11 +91,20 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
         URL.revokeObjectURL(objectUrlRef.current);
         objectUrlRef.current = null;
       }
+      loadedKeyRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [video.id, isOffline, isCached]);
 
   async function load() {
+    // Skip if we already loaded this exact source – prevents the <video>
+    // element from being torn down (and restarting at 0) on parent re-renders
+    // that happen after adding/deleting a tag.
+    const key = `${video.id}|${isOffline ? "off" : "on"}|${isCached ? "c" : "n"}`;
+    if (loadedKeyRef.current === key && videoSrc) {
+      return;
+    }
+    loadedKeyRef.current = key;
     setLoading(true);
     // Clean up previous object URL
     if (objectUrlRef.current) {
