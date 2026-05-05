@@ -62,6 +62,9 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
   const [adding, setAdding] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const objectUrlRef = useRef<string | null>(null);
+  const loadedKeyRef = useRef<string | null>(null);
+  const lastTimeRef = useRef<number>(0);
+  const wasPlayingRef = useRef<boolean>(false);
   const [duration, setDuration] = useState<number>(video.duration_seconds || 0);
   const [hoverTag, setHoverTag] = useState<MatchTag | null>(null);
 

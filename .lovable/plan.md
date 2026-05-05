@@ -1,49 +1,27 @@
-## Goal
+## Problem
 
-Improve the Match Analyse layout so the coach can watch the clip and tag at the same time, with a fixed video height and no playback interruption when adding a tag or pressing play/pause.
+On iPhone, every time the coach adds a tag/note while analysing a match video, the video jumps back to the start. Two causes in `src/components/match/VideoTagger.tsx` + `src/pages/MatchAnalysis.tsx`:
 
-## Changes (frontend only, in `src/components/match/VideoTagger.tsx`)
+1. **iOS plays the `<video>` in fullscreen by default** (no `playsInline`). Any DOM/state update around it kicks Safari out of the player and resets `currentTime` to 0.
+2. After saving a tag, `onChanged` in `MatchAnalysis.tsx` calls `init()` which refetches the whole videos list. That replaces the `activeVideo` object reference and causes the `VideoTagger` `useEffect([video.id, isOffline, isCached])` to look stable — but the parent re-render plus offline-state changes can still trigger a re-load that regenerates `videoSrc` and resets the `<video>` element.
 
-### 1. Fixed 400px video height + side-by-side layout
+## Fix
 
-Wrap the video player and the "Add tag" panel in a 2-column grid on `lg:` and stack on smaller screens.
+**`src/components/match/VideoTagger.tsx`**
+- Add iOS-friendly attributes to the `<video>`: `playsInline`, `webkit-playsinline`, `x-webkit-airplay="allow"`, `controlsList="nodownload"`, `disablePictureInPicture={false}`. This keeps playback inline so adding a tag no longer dismisses the player.
+- Track `currentTime` in a ref via `onTimeUpdate` and `onPause`. If `videoSrc` ever changes while we already have a position (e.g. signed URL refresh after `load()`), restore `currentTime` on `onLoadedMetadata` and resume `play()` if it was playing before.
+- Do **not** re-run `load()` after `addTag` / `deleteTag` (already the case) — but also memoise `videoSrc` so a parent rerender that doesn't change `video.id` cannot trigger a new signed URL fetch. Guard `load()` with an "already loaded for this id" check.
+- Blur the note `<Input>` before calling `addTag` on iOS so Safari doesn't steal focus from the video element. Use `onMouseDown={e => e.preventDefault()}` on the Add Tag button (and timeline markers already do this) to keep the video element from losing focus.
 
-```text
-lg ≥ 1024px                          mobile / tablet
-┌────────────────┬───────────────┐   ┌────────────────┐
-│  Video (400px) │  Add tag      │   │  Video (400px) │
-│                │  - technique  │   ├────────────────┤
-│                │  - side       │   │  Add tag       │
-│                │  - outcome    │   ├────────────────┤
-│                │  - note       │   │  Tag list      │
-│                │  [+ Tag]      │   └────────────────┘
-├────────────────┴───────────────┤
-│  Tag list (full width)         │
-└────────────────────────────────┘
-```
+**`src/pages/MatchAnalysis.tsx`**
+- Replace the heavy `onChanged={() => { void init(); void offline.refresh(); }}` with a lightweight refresh that only updates the videos list metadata (no full re-init that re-derives `activeVideo` identity). Pass a stable callback via `useCallback` so `VideoTagger` props don't churn.
 
-- `<video>` element: replace `w-full` with `className="w-full h-[400px] object-contain rounded-lg border border-border bg-black"` so the height is locked at 400 px and the frame letterboxes instead of stretching.
-- Tag panel becomes a sibling column with `max-h-[400px] overflow-auto` so it matches the video height visually.
-- Tag list stays below the grid (full width) since it can be long.
+## Verification
 
-### 2. Don't reload the player when adding/deleting a tag
-
-Today, `addTag()` and `deleteTag()` call `await load()`, which re-resolves the signed URL, sets `videoSrc` again and re-mounts the `<video>` element. Result: playback stops, position jumps to 0, focus moves to the page.
-
-Fix:
-- Append the inserted tag to local `tags` state (using the row returned by `.insert(...).select().single()` for online, or the pending object for offline) instead of calling `load()`.
-- For delete: filter the tag out of local `tags` state.
-- Keep `onChanged?.()` so the parent's pending counter still updates.
-- Only call full `load()` when `video.id`, `isOffline`, or `isCached` changes (already in the existing `useEffect`).
-
-### 3. Keep focus on the video on play/pause
-
-- The "Tag at current time" button is inside a `<form>`-less div but still triggers a parent re-render due to `setAdding`/`load()`. Once #2 is in place, no remount happens.
-- Also add `type="button"` to the add-tag and delete buttons (defensive — prevents any implicit form submit) and `onMouseDown={(e) => e.preventDefault()}` on the delete `<Trash2>` so it doesn't steal focus from the video while hovering tag rows.
-- The `<video controls>` itself keeps native play/pause; no React state is touched on play, so focus stays on the video element.
+- Reload preview on iPhone 16 Pro, open a video, play, pause, add a tag → video stays at the same timestamp.
+- Repeat with the video still playing → tag is added without interrupting playback (or auto-resumes from the same spot).
+- Desktop Chrome/Safari unchanged.
 
 ## Out of scope
 
-- No changes to data model, RPCs, or offline sync.
-- No changes to `MatchShare.tsx` (public viewer).
-- Tag list height and styling unchanged apart from the grid wrapping.
+No backend, schema, or business-logic changes.
