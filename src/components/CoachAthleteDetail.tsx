@@ -163,6 +163,10 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
         goals: selectedGoals,
         program_weeks: programWeeks,
         country: country || null,
+        gal_license: galLicense.trim() || null,
+        gal_license_expires_at: galLicenseExpires || null,
+        has_myfightbook: hasMyFightBook,
+        myfightbook_expires_at: hasMyFightBook && myFightBookExpires ? myFightBookExpires : null,
       };
       if (age) updates.age = Math.min(Math.max(parseInt(age), 5), 99);
       if (experienceYears) updates.experience_years = Math.min(Math.max(parseInt(experienceYears), 0), 50);
