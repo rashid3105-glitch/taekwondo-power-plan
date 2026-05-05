@@ -362,8 +362,7 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
                   src={videoSrc}
                   controls
                   playsInline
-                  // @ts-expect-error iOS Safari legacy attribute
-                  webkit-playsinline="true"
+                  {...({ "webkit-playsinline": "true" } as any)}
                   x-webkit-airplay="allow"
                   controlsList="nodownload"
                   className="w-full h-[400px] object-contain rounded-lg border border-border bg-black"
