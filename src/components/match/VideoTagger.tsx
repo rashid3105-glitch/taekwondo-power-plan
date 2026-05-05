@@ -361,11 +361,29 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
                   ref={videoRef}
                   src={videoSrc}
                   controls
+                  playsInline
+                  // @ts-expect-error iOS Safari legacy attribute
+                  webkit-playsinline="true"
+                  x-webkit-airplay="allow"
+                  controlsList="nodownload"
                   className="w-full h-[400px] object-contain rounded-lg border border-border bg-black"
                   preload="metadata"
                   onLoadedMetadata={(e) => {
-                    const d = (e.target as HTMLVideoElement).duration;
-                    if (Number.isFinite(d) && d > 0) setDuration(d);
+                    const v = e.target as HTMLVideoElement;
+                    if (Number.isFinite(v.duration) && v.duration > 0) setDuration(v.duration);
+                    // Restore playback position if we had one (e.g. signed URL refreshed).
+                    if (lastTimeRef.current > 0 && Math.abs(v.currentTime - lastTimeRef.current) > 0.25) {
+                      try { v.currentTime = lastTimeRef.current; } catch {}
+                    }
+                    if (wasPlayingRef.current) {
+                      void v.play().catch(() => {});
+                    }
+                  }}
+                  onTimeUpdate={(e) => { lastTimeRef.current = (e.target as HTMLVideoElement).currentTime; }}
+                  onPlay={() => { wasPlayingRef.current = true; }}
+                  onPause={(e) => {
+                    wasPlayingRef.current = false;
+                    lastTimeRef.current = (e.target as HTMLVideoElement).currentTime;
                   }}
                 />
                 {/* Clickable timeline markers */}
