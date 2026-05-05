@@ -36,6 +36,10 @@ interface AthleteProfile {
   avatar_url: string | null;
   discipline: string;
   country: string | null;
+  gal_license: string | null;
+  gal_license_expires_at: string | null;
+  has_myfightbook: boolean | null;
+  myfightbook_expires_at: string | null;
   club_id?: string | null;
   club_name?: string | null;
 }
