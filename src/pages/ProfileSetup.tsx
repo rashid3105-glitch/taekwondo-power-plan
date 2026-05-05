@@ -120,6 +120,10 @@ export default function ProfileSetup() {
           setCountry(profileData.country || "");
           setCustomCalories(profileData.custom_calories?.toString() || "");
           setDefaultLocale((profileData.default_locale as Locale) || "");
+          setGalLicense(profileData.gal_license || "");
+          setGalLicenseExpires(profileData.gal_license_expires_at || "");
+          setHasMyFightBook(!!profileData.has_myfightbook);
+          setMyFightBookExpires(profileData.myfightbook_expires_at || "");
           
         }
       } catch (err: any) {
