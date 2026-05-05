@@ -477,7 +477,17 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
                     <Input value={tagNote} onChange={(e) => setTagNote(e.target.value)} className="h-9" placeholder="…" />
                   </div>
                 </div>
-                <Button type="button" onClick={addTag} disabled={adding} size="sm" className="w-full">
+                <Button
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => {
+                    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+                    void addTag();
+                  }}
+                  disabled={adding}
+                  size="sm"
+                  className="w-full"
+                >
                   {adding ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : <Plus className="h-3.5 w-3.5 mr-1" />}
                   {t("matchTagAtCurrent")}
                 </Button>
