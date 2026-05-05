@@ -156,6 +156,7 @@ const translations = {
     changePhoto: "Change photo",
     addPhoto: "Add photo",
     photoUploaded: "Photo uploaded!",
+    cropPhoto: "Crop photo",
     uploadFailed: "Upload failed",
     selectImageFile: "Please select an image file",
 
@@ -2258,6 +2259,7 @@ const translations = {
     changePhoto: "Skift foto",
     addPhoto: "Tilføj foto",
     photoUploaded: "Foto uploadet!",
+    cropPhoto: "Beskær foto",
     uploadFailed: "Upload fejlede",
     selectImageFile: "Vælg venligst en billedfil",
 
@@ -4308,6 +4310,7 @@ const translations = {
     changePhoto: "Byt foto",
     addPhoto: "Lägg till foto",
     photoUploaded: "Foto uppladdat!",
+    cropPhoto: "Beskär foto",
     uploadFailed: "Uppladdning misslyckades",
     selectImageFile: "Välj en bildfil",
 
@@ -6349,6 +6352,7 @@ const translations = {
     changePhoto: "Foto ändern",
     addPhoto: "Foto hinzufügen",
     photoUploaded: "Foto hochgeladen!",
+    cropPhoto: "Foto zuschneiden",
     uploadFailed: "Upload fehlgeschlagen",
     selectImageFile: "Bitte wählen Sie eine Bilddatei",
     generatePlan: "Plan generieren",
@@ -8410,6 +8414,7 @@ const translations = {
     changePhoto: "تغيير الصورة",
     addPhoto: "إضافة صورة",
     photoUploaded: "تم تحميل الصورة!",
+    cropPhoto: "اقتصاص الصورة",
     uploadFailed: "فشل التحميل",
     selectImageFile: "الرجاء تحديد ملف صورة",
     generatePlan: "إنشاء خطة",
@@ -10415,6 +10420,7 @@ const translations = {
     changePhoto: "Skift foto",
     addPhoto: "Legg til foto",
     photoUploaded: "Foto uploadet!",
+    cropPhoto: "Beskjær foto",
     uploadFailed: "Upload fejlede",
     selectImageFile: "Velg vennligst en billedfil",
 
