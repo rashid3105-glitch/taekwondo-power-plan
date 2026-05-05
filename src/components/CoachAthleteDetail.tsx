@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { AIPlanCard } from "@/components/AIPlanCard";
@@ -72,6 +73,10 @@ interface AthleteProfile {
   avatar_url: string | null;
   discipline: string;
   country: string | null;
+  gal_license: string | null;
+  gal_license_expires_at: string | null;
+  has_myfightbook: boolean | null;
+  myfightbook_expires_at: string | null;
 }
 
 interface AthletePlan {
@@ -136,6 +141,10 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
   const [selectedGoals, setSelectedGoals] = useState<string[]>(athlete.goals || []);
   const [programWeeks, setProgramWeeks] = useState(athlete.program_weeks || 8);
   const [country, setCountry] = useState(athlete.country || "");
+  const [galLicense, setGalLicense] = useState(athlete.gal_license || "");
+  const [galLicenseExpires, setGalLicenseExpires] = useState(athlete.gal_license_expires_at || "");
+  const [hasMyFightBook, setHasMyFightBook] = useState(!!athlete.has_myfightbook);
+  const [myFightBookExpires, setMyFightBookExpires] = useState(athlete.myfightbook_expires_at || "");
 
   const toggleGoal = (goal: string) => {
     setSelectedGoals((prev) =>
@@ -155,6 +164,10 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
         goals: selectedGoals,
         program_weeks: programWeeks,
         country: country || null,
+        gal_license: galLicense.trim() || null,
+        gal_license_expires_at: galLicenseExpires || null,
+        has_myfightbook: hasMyFightBook,
+        myfightbook_expires_at: hasMyFightBook && myFightBookExpires ? myFightBookExpires : null,
       };
       if (age) updates.age = Math.min(Math.max(parseInt(age), 5), 99);
       if (experienceYears) updates.experience_years = Math.min(Math.max(parseInt(experienceYears), 0), 50);
@@ -372,6 +385,59 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
                   className="h-9"
                 />
               </div>
+            </div>
+            <div className="space-y-3 rounded-lg border border-border bg-muted/20 p-3">
+              <div>
+                <Label className="text-sm font-semibold">{t("licenses") || "Licenses"}</Label>
+                <p className="text-xs text-muted-foreground">{t("licensesHint") || "Optional — for competition eligibility"}</p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label className="text-xs">{t("galLicense") || "GAL license"}</Label>
+                  <Input
+                    value={galLicense}
+                    onChange={(e) => setGalLicense(e.target.value)}
+                    placeholder="—"
+                    maxLength={50}
+                    className="h-9"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">{t("expiresAt") || "Expires"}</Label>
+                  <Input
+                    type="date"
+                    value={galLicenseExpires}
+                    onChange={(e) => setGalLicenseExpires(e.target.value)}
+                    className="h-9"
+                  />
+                </div>
+              </div>
+              {country === "Denmark" && (
+                <div className="space-y-2 pt-2 border-t border-border/60">
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="coach_has_mfb"
+                      checked={hasMyFightBook}
+                      onCheckedChange={(c) => setHasMyFightBook(!!c)}
+                      disabled={!editing}
+                    />
+                    <Label htmlFor="coach_has_mfb" className="text-sm font-normal cursor-pointer">
+                      {t("hasMyFightBook") || "MyFightBook"}
+                    </Label>
+                  </div>
+                  {hasMyFightBook && (
+                    <div className="space-y-1">
+                      <Label className="text-xs">{t("expiresAt") || "Expires"}</Label>
+                      <Input
+                        type="date"
+                        value={myFightBookExpires}
+                        onChange={(e) => setMyFightBookExpires(e.target.value)}
+                        className="h-9"
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
             <div className="space-y-1">
               <Label className="text-xs">{t("discipline")}</Label>
