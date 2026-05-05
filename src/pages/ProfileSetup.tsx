@@ -68,6 +68,10 @@ export default function ProfileSetup() {
   const [country, setCountry] = useState("");
   const [customCalories, setCustomCalories] = useState("");
   const [defaultLocale, setDefaultLocale] = useState<Locale | "">("");
+  const [galLicense, setGalLicense] = useState("");
+  const [galLicenseExpires, setGalLicenseExpires] = useState("");
+  const [hasMyFightBook, setHasMyFightBook] = useState(false);
+  const [myFightBookExpires, setMyFightBookExpires] = useState("");
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
