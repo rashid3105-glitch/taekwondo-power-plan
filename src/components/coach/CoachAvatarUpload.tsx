@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Camera, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { AvatarCropDialog } from "@/components/AvatarCropDialog";
 
 interface Props {
   athleteId: string;
@@ -11,62 +12,59 @@ interface Props {
   onUploaded: (newAvatarUrl: string) => void;
 }
 
-const ALLOWED_EXT = ["jpg", "png", "webp", "gif"];
+const ALLOWED_EXT = ["jpg", "jpeg", "png", "webp", "gif", "heic", "heif"];
 
 export function CoachAvatarUpload({ athleteId, hasAvatar, onUploaded }: Props) {
   const { t } = useLanguage();
   const { toast } = useToast();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const onFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const original = e.target.files?.[0];
     if (!original) return;
-    setUploading(true);
-
-    let file: File = original;
     let ext = (original.name.split(".").pop() || "").toLowerCase();
-    if (ext === "jpeg" || ext === "jpe") ext = "jpg";
+    if (!ALLOWED_EXT.includes(ext) && !original.type.startsWith("image/")) {
+      toast({ title: t("uploadFailed"), description: `Unsupported (.${ext})`, variant: "destructive" });
+      if (inputRef.current) inputRef.current.value = "";
+      return;
+    }
+    if (original.size > 15 * 1024 * 1024) {
+      toast({ title: t("uploadFailed"), description: "Image too large (max 15 MB).", variant: "destructive" });
+      if (inputRef.current) inputRef.current.value = "";
+      return;
+    }
 
-    const isHeic =
-      ext === "heic" || ext === "heif" ||
-      original.type === "image/heic" || original.type === "image/heif";
-
-    if (isHeic) {
+    let blob: Blob = original;
+    // Convert HEIC for browser preview
+    if (ext === "heic" || ext === "heif" || original.type === "image/heic" || original.type === "image/heif") {
       try {
         const heic2any = (await import("heic2any")).default;
-        const converted = await heic2any({ blob: original, toType: "image/jpeg", quality: 0.85 });
-        const blob = Array.isArray(converted) ? converted[0] : converted;
-        file = new File([blob], original.name.replace(/\.(heic|heif)$/i, ".jpg"), { type: "image/jpeg" });
-        ext = "jpg";
+        const c = await heic2any({ blob: original, toType: "image/jpeg", quality: 0.9 });
+        blob = Array.isArray(c) ? c[0] : c;
       } catch {
-        toast({ title: t("uploadFailed"), description: "HEIC not supported. Use JPG or PNG.", variant: "destructive" });
-        setUploading(false);
+        toast({ title: t("uploadFailed"), description: "HEIC not supported. Use JPG/PNG.", variant: "destructive" });
         if (inputRef.current) inputRef.current.value = "";
         return;
       }
-    } else if (!ext) {
-      ext = original.type === "image/png" ? "png" : "jpg";
     }
+    setPreviewUrl(URL.createObjectURL(blob));
+    if (inputRef.current) inputRef.current.value = "";
+  };
 
-    if (!ALLOWED_EXT.includes(ext)) {
-      toast({ title: t("uploadFailed"), description: `Unsupported format (.${ext}).`, variant: "destructive" });
-      setUploading(false);
-      if (inputRef.current) inputRef.current.value = "";
-      return;
-    }
-    if (file.size > 10 * 1024 * 1024) {
-      toast({ title: t("uploadFailed"), description: "Image too large (max 10 MB).", variant: "destructive" });
-      setUploading(false);
-      if (inputRef.current) inputRef.current.value = "";
-      return;
-    }
+  const handleCancel = () => {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl(null);
+  };
 
+  const handleCropped = async (cropped: Blob) => {
+    setUploading(true);
     try {
-      const filePath = `${athleteId}/avatar.${ext}`;
+      const filePath = `${athleteId}/avatar.jpg`;
       const { error: uploadError } = await supabase.storage
         .from("avatars")
-        .upload(filePath, file, { upsert: true, contentType: file.type || undefined });
+        .upload(filePath, cropped, { upsert: true, contentType: "image/jpeg" });
       if (uploadError) throw uploadError;
 
       const newUrl = filePath + "?t=" + Date.now();
@@ -78,11 +76,12 @@ export function CoachAvatarUpload({ athleteId, hasAvatar, onUploaded }: Props) {
 
       onUploaded(newUrl);
       toast({ title: t("photoUploaded") });
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(null);
     } catch (err: any) {
       toast({ title: t("uploadFailed"), description: err?.message || "Unknown error", variant: "destructive" });
     } finally {
       setUploading(false);
-      if (inputRef.current) inputRef.current.value = "";
     }
   };
 
@@ -106,6 +105,12 @@ export function CoachAvatarUpload({ athleteId, hasAvatar, onUploaded }: Props) {
         {uploading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Camera className="h-3.5 w-3.5" />}
         <span className="text-xs">{hasAvatar ? t("changePhoto") : t("addPhoto")}</span>
       </Button>
+      <AvatarCropDialog
+        open={!!previewUrl}
+        imageSrc={previewUrl}
+        onCancel={handleCancel}
+        onCropped={handleCropped}
+      />
     </>
   );
 }
