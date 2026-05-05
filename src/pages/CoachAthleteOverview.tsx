@@ -18,6 +18,7 @@ import { CoachAthleteDetail } from "@/components/CoachAthleteDetail";
 import { AthleteOverviewTab } from "@/components/coach/AthleteOverviewTab";
 import { CoachDiaryView } from "@/components/coach/CoachDiaryView";
 import { SendReminderDialog } from "@/components/SendReminderDialog";
+import { CoachAvatarUpload } from "@/components/coach/CoachAvatarUpload";
 
 interface AthleteProfile {
   user_id: string;
@@ -175,7 +176,9 @@ export default function CoachAthleteOverview() {
           </div>
 
           <div className="flex items-center gap-3">
-            <AvatarImg avatarUrl={athlete.avatar_url} />
+            <div className="relative">
+              <AvatarImg avatarUrl={athlete.avatar_url} className="h-14 w-14 rounded-full object-cover border-2 border-border" />
+            </div>
             <div className="min-w-0 flex-1">
               <h1 className="text-lg sm:text-xl font-extrabold text-foreground truncate">{athlete.display_name}</h1>
               <div className="flex items-center gap-1.5 flex-wrap mt-1">
@@ -203,6 +206,13 @@ export default function CoachAthleteOverview() {
                     {t("noPlan")}
                   </Badge>
                 )}
+              </div>
+              <div className="mt-2">
+                <CoachAvatarUpload
+                  athleteId={athlete.user_id}
+                  hasAvatar={!!athlete.avatar_url}
+                  onUploaded={(url) => setAthlete({ ...athlete, avatar_url: url })}
+                />
               </div>
             </div>
           </div>
