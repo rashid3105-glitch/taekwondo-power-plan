@@ -490,8 +490,8 @@ export default function MatchAnalysis() {
                   isCoach={isCoach && activeVideo.coach_id === me}
                   isOffline={!offline.online}
                   isCached={offline.cachedIds.has(activeVideo.id)}
-                  onChanged={() => { void init(); void offline.refresh(); }}
-                  onDeleted={() => { void init(); void offline.refresh(); }}
+                  onChanged={() => { void offline.refresh(); }}
+                  onDeleted={() => { setActiveId(null); void init(); void offline.refresh(); }}
                 />
               )}
               {activeVideo?.__pending && (
