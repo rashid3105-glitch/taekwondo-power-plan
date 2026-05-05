@@ -192,7 +192,7 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
   async function deleteTag(id: string, isPending: boolean) {
     if (isPending) {
       await removePendingTagInsert(id);
-      await load();
+      setTags((prev) => prev.filter((x) => x.id !== id));
       onChanged?.();
       return;
     }
@@ -201,7 +201,7 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
       if (error) {
         toast({ title: t("error"), description: error.message, variant: "destructive" });
       } else {
-        await load();
+        setTags((prev) => prev.filter((x) => x.id !== id));
         onChanged?.();
       }
     } else {
@@ -212,7 +212,6 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
         created_at: Date.now(),
       });
       toast({ title: t("matchOfflineDeleteQueued") });
-      // Optimistically remove from view
       setTags((prev) => prev.filter((x) => x.id !== id));
       onChanged?.();
     }
