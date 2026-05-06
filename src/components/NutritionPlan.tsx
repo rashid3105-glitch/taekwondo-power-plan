@@ -477,6 +477,12 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
                     </button>
                     {expandedMeal === i && (
                       <div className="px-3 pb-3 space-y-2 border-t border-border pt-2">
+                        <img
+                          src={getMealImage(meal.name)}
+                          alt={meal.name}
+                          loading="lazy"
+                          className="w-full h-36 sm:h-44 object-cover rounded-md border border-border"
+                        />
                         <div>
                           <p className="text-xs font-medium text-foreground mb-1">{t("foods")}:</p>
                           <ul className="space-y-0.5">
