@@ -142,6 +142,9 @@ export function RecipeCard({ recipe, index, onPhotoChange }: RecipeCardProps) {
                     </button>
                   )}
                 </div>
+                <p className="absolute bottom-2 left-2 right-2 text-[10px] text-background/90 bg-foreground/40 backdrop-blur-sm rounded px-1.5 py-0.5 leading-tight pointer-events-none">
+                  {labels.hint}
+                </p>
               </>
             )}
           </div>
