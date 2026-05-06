@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { type Recipe, RECIPE_CATEGORY_ICONS } from "@/data/recipes";
-import { ChevronDown, ChevronUp, Clock, Flame } from "lucide-react";
+import { ChevronDown, ChevronUp, Clock, Flame, ImagePlus, Loader2, Trash2 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { CATEGORY_IMAGES } from "@/data/recipeImages";
 
@@ -13,9 +13,54 @@ const CATEGORY_KEYS: Record<string, string> = {
   "post-workout": "catPostWorkout",
 };
 
-export function RecipeCard({ recipe, index }: { recipe: Recipe; index: number }) {
+const PHOTO_LABELS: Record<string, { add: string; replace: string; remove: string; uploading: string }> = {
+  en: { add: "Add photo", replace: "Replace photo", remove: "Remove photo", uploading: "Uploading…" },
+  da: { add: "Tilføj foto", replace: "Skift foto", remove: "Fjern foto", uploading: "Uploader…" },
+  no: { add: "Legg til foto", replace: "Bytt foto", remove: "Fjern foto", uploading: "Laster opp…" },
+  sv: { add: "Lägg till foto", replace: "Byt foto", remove: "Ta bort foto", uploading: "Laddar upp…" },
+  de: { add: "Foto hinzufügen", replace: "Foto ersetzen", remove: "Foto entfernen", uploading: "Wird hochgeladen…" },
+  ar: { add: "أضف صورة", replace: "استبدال الصورة", remove: "إزالة الصورة", uploading: "جارٍ الرفع…" },
+};
+
+interface RecipeCardProps {
+  recipe: Recipe;
+  index: number;
+  /** When provided, enables in-card photo editing (replace/remove). */
+  onPhotoChange?: (file: File | null) => Promise<void>;
+}
+
+export function RecipeCard({ recipe, index, onPhotoChange }: RecipeCardProps) {
   const [expanded, setExpanded] = useState(false);
-  const { t } = useLanguage();
+  const [busy, setBusy] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const { t, locale } = useLanguage();
+  const labels = PHOTO_LABELS[locale] ?? PHOTO_LABELS.en;
+  const hasCustomPhoto = !!recipe.imageUrl;
+
+  const triggerPick = () => fileRef.current?.click();
+
+  const handleFile = async (file: File | undefined) => {
+    if (!file || !onPhotoChange) return;
+    if (!file.type.startsWith("image/")) return;
+    if (file.size > 5 * 1024 * 1024) return;
+    setBusy(true);
+    try {
+      await onPhotoChange(file);
+    } finally {
+      setBusy(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  };
+
+  const handleRemove = async () => {
+    if (!onPhotoChange) return;
+    setBusy(true);
+    try {
+      await onPhotoChange(null);
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <div className="rounded-lg border border-border bg-secondary/30 overflow-hidden transition-all">
@@ -34,16 +79,50 @@ export function RecipeCard({ recipe, index }: { recipe: Recipe; index: number })
 
       {expanded && (
         <div className="px-4 pb-4 pt-1 space-y-4 animate-slide-up">
-          {/* Image */}
-          <img
-            src={recipe.imageUrl || CATEGORY_IMAGES[recipe.category]}
-            alt={recipe.name}
-            loading="lazy"
-            className="w-full h-40 sm:h-48 object-cover rounded-md border border-border"
-            onError={(e) => {
-              (e.currentTarget as HTMLImageElement).src = CATEGORY_IMAGES[recipe.category];
-            }}
-          />
+          {/* Image with optional edit overlay */}
+          <div className="relative">
+            <img
+              src={recipe.imageUrl || CATEGORY_IMAGES[recipe.category]}
+              alt={recipe.name}
+              loading="lazy"
+              className="w-full h-40 sm:h-48 object-cover rounded-md border border-border"
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).src = CATEGORY_IMAGES[recipe.category];
+              }}
+            />
+            {onPhotoChange && (
+              <>
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => handleFile(e.target.files?.[0])}
+                />
+                <div className="absolute top-2 right-2 flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={triggerPick}
+                    disabled={busy}
+                    className="inline-flex items-center gap-1 text-[11px] font-semibold bg-background/90 backdrop-blur border border-border rounded-md px-2 py-1 hover:bg-background disabled:opacity-60"
+                  >
+                    {busy ? <Loader2 className="h-3 w-3 animate-spin" /> : <ImagePlus className="h-3 w-3" />}
+                    {busy ? labels.uploading : (hasCustomPhoto ? labels.replace : labels.add)}
+                  </button>
+                  {hasCustomPhoto && !busy && (
+                    <button
+                      type="button"
+                      onClick={handleRemove}
+                      className="inline-flex items-center gap-1 text-[11px] font-semibold bg-destructive/90 text-destructive-foreground rounded-md px-2 py-1 hover:bg-destructive"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                      {labels.remove}
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
 
           {/* Meta */}
           <div className="flex items-center gap-4 text-xs text-muted-foreground">

@@ -153,23 +153,73 @@ export function NutritionLibrary() {
       )}
 
       <div className="space-y-2">
-        {filtered.map((recipe, i) => (
-          <div key={recipe.id} className="relative">
-            <RecipeCard recipe={recipe} index={i + 1} />
-            {"isCustom" in recipe && recipe.isCustom && (
-              <div className="absolute top-2 right-2 flex items-center gap-1.5 z-10">
-                <span className="text-[9px] bg-tab-nutrition/15 text-tab-nutrition px-1.5 py-0.5 rounded-full font-bold uppercase">{t("customLabel")}</span>
-                <button
-                  onClick={() => deleteCustomRecipe(recipe.dbId)}
-                  className="h-6 w-6 rounded-full bg-destructive/15 text-destructive flex items-center justify-center hover:bg-destructive/25 transition-colors"
-                  title={t("delete")}
-                >
-                  <Trash2 className="h-3 w-3" />
-                </button>
-              </div>
-            )}
-          </div>
-        ))}
+        {filtered.map((recipe, i) => {
+          const isCustom = "isCustom" in recipe && recipe.isCustom;
+          const handlePhotoChange = isCustom
+            ? async (file: File | null) => {
+                const dbId = (recipe as Recipe & { dbId: string }).dbId;
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) return;
+
+                // Best-effort: remove old file in our bucket if it was ours
+                const oldUrl = recipe.imageUrl;
+                if (oldUrl) {
+                  const marker = "/recipe-images/";
+                  const idx = oldUrl.indexOf(marker);
+                  if (idx !== -1) {
+                    const oldPath = oldUrl.slice(idx + marker.length);
+                    if (oldPath.startsWith(`${user.id}/`)) {
+                      await supabase.storage.from("recipe-images").remove([oldPath]);
+                    }
+                  }
+                }
+
+                let newUrl: string | null = null;
+                if (file) {
+                  const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+                  const path = `${user.id}/${Date.now()}.${ext}`;
+                  const { error: upErr } = await supabase.storage
+                    .from("recipe-images")
+                    .upload(path, file, { contentType: file.type, upsert: false });
+                  if (upErr) {
+                    toast({ title: t("recipeSaveFailed"), description: upErr.message, variant: "destructive" });
+                    return;
+                  }
+                  newUrl = supabase.storage.from("recipe-images").getPublicUrl(path).data.publicUrl;
+                }
+
+                const { error } = await supabase
+                  .from("user_recipes")
+                  .update({ image_url: newUrl })
+                  .eq("id", dbId);
+                if (error) {
+                  toast({ title: t("recipeSaveFailed"), description: error.message, variant: "destructive" });
+                  return;
+                }
+                setUserRecipes((prev) =>
+                  prev.map((r) => (r.dbId === dbId ? { ...r, imageUrl: newUrl || undefined } : r)),
+                );
+              }
+            : undefined;
+
+          return (
+            <div key={recipe.id} className="relative">
+              <RecipeCard recipe={recipe} index={i + 1} onPhotoChange={handlePhotoChange} />
+              {isCustom && (
+                <div className="absolute top-2 right-2 flex items-center gap-1.5 z-10">
+                  <span className="text-[9px] bg-tab-nutrition/15 text-tab-nutrition px-1.5 py-0.5 rounded-full font-bold uppercase">{t("customLabel")}</span>
+                  <button
+                    onClick={() => deleteCustomRecipe((recipe as Recipe & { dbId: string }).dbId)}
+                    className="h-6 w-6 rounded-full bg-destructive/15 text-destructive flex items-center justify-center hover:bg-destructive/25 transition-colors"
+                    title={t("delete")}
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
