@@ -390,8 +390,46 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
         <PeriodizationView periodization={periodization} programWeeks={plan.plan_data?.programWeeks} />
       )}
 
+      {/* View toggle */}
+      {programWeeks > 1 && (
+        <div className="flex gap-1 rounded-lg border border-border bg-secondary/30 p-0.5 w-fit">
+          {(["program", "week"] as const).map((mode) => (
+            <button
+              key={mode}
+              onClick={() => {
+                setViewMode(mode);
+                if (typeof window !== "undefined") localStorage.setItem("planViewMode", mode);
+              }}
+              className={cn(
+                "px-3 py-1.5 text-xs font-semibold rounded-md transition-all",
+                viewMode === mode
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              {mode === "program" ? (t("programView") || "Program") : (t("weekView") || "Week")}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Week overview */}
       <>
+          {viewMode === "program" && programWeeks > 1 ? (
+            <PlanProgramGrid
+              weeklySchedule={schedule}
+              programWeeks={programWeeks}
+              periodization={periodization}
+              selectedWeek={selectedWeek}
+              selectedDay={selectedDay}
+              currentWeekIndex={0}
+              onCellClick={(wi, di) => {
+                setSelectedWeek(wi);
+                setSelectedDay(selectedDay === di && selectedWeek === wi ? null : di);
+                setActiveSessionIndex(0);
+              }}
+            />
+          ) : (
           <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5 sm:gap-2">
             {schedule.map((day: any, i: number) => {
               const sessions = normalizeDaySessions(day);
@@ -434,7 +472,7 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
               );
             })}
           </div>
-
+          )}
           {/* Day detail */}
           {selectedDay !== null && schedule[selectedDay] && (
             <div className="animate-slide-up rounded-xl border border-border bg-card p-3 sm:p-5 shadow-card">
