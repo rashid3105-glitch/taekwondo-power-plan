@@ -761,6 +761,11 @@ export default function Dashboard() {
           )
         ) : (
           <>
+            <div>
+              <Button variant="ghost" size="sm" onClick={() => handleTabChange("hub")} className="-ml-2">
+                <ArrowLeft className="h-4 w-4 mr-1" /> {t("back") || "Back"}
+              </Button>
+            </div>
             {/* Profile summary */}
             {profile && (
               <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
