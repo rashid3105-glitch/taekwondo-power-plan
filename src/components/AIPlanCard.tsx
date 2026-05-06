@@ -21,6 +21,7 @@ import { CalendarDropdown } from "@/components/CalendarDropdown";
 import { TrainingReminder } from "@/components/TrainingReminder";
 import { normalizeDaySessions, type PlanSession } from "@/lib/planSessionUtils";
 import { localizeDayOfWeek, localizeExerciseName } from "@/lib/planTranslation";
+import { PlanProgramGrid } from "@/components/plan/PlanProgramGrid";
 
 const CATEGORY_DOT: Record<string, string> = {
   power: "bg-accent",
@@ -229,6 +230,14 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
   const [exporting, setExporting] = useState(false);
   const [pickerMode, setPickerMode] = useState<{ dayIndex: number; sessionIndex: number; exerciseIndex?: number } | null>(null);
   const [localPlanData, setLocalPlanData] = useState(plan.plan_data);
+  const programWeeks = Math.max(1, Number(plan.plan_data?.programWeeks) || 1);
+  const [viewMode, setViewMode] = useState<"program" | "week">(() => {
+    if (typeof window === "undefined") return programWeeks > 1 ? "program" : "week";
+    const saved = localStorage.getItem("planViewMode");
+    if (saved === "program" || saved === "week") return saved;
+    return programWeeks > 1 ? "program" : "week";
+  });
+  const [selectedWeek, setSelectedWeek] = useState(0);
   const schedule = localPlanData?.weeklySchedule || [];
   const periodization = localPlanData?.periodization || [];
   const { toast } = useToast();
@@ -381,8 +390,46 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
         <PeriodizationView periodization={periodization} programWeeks={plan.plan_data?.programWeeks} />
       )}
 
+      {/* View toggle */}
+      {programWeeks > 1 && (
+        <div className="flex gap-1 rounded-lg border border-border bg-secondary/30 p-0.5 w-fit">
+          {(["program", "week"] as const).map((mode) => (
+            <button
+              key={mode}
+              onClick={() => {
+                setViewMode(mode);
+                if (typeof window !== "undefined") localStorage.setItem("planViewMode", mode);
+              }}
+              className={cn(
+                "px-3 py-1.5 text-xs font-semibold rounded-md transition-all",
+                viewMode === mode
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              {mode === "program" ? (t("programView") || "Program") : (t("weekView") || "Week")}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Week overview */}
       <>
+          {viewMode === "program" && programWeeks > 1 ? (
+            <PlanProgramGrid
+              weeklySchedule={schedule}
+              programWeeks={programWeeks}
+              periodization={periodization}
+              selectedWeek={selectedWeek}
+              selectedDay={selectedDay}
+              currentWeekIndex={0}
+              onCellClick={(wi, di) => {
+                setSelectedWeek(wi);
+                setSelectedDay(selectedDay === di && selectedWeek === wi ? null : di);
+                setActiveSessionIndex(0);
+              }}
+            />
+          ) : (
           <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5 sm:gap-2">
             {schedule.map((day: any, i: number) => {
               const sessions = normalizeDaySessions(day);
@@ -425,13 +472,20 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
               );
             })}
           </div>
-
+          )}
           {/* Day detail */}
           {selectedDay !== null && schedule[selectedDay] && (
             <div className="animate-slide-up rounded-xl border border-border bg-card p-3 sm:p-5 shadow-card">
               <div className="mb-4 flex items-center justify-between">
                 <div>
-                  <h3 className="font-bold text-foreground">{localizeDayOfWeek(schedule[selectedDay].dayOfWeek, locale)}</h3>
+                  <h3 className="font-bold text-foreground">
+                    {viewMode === "program" && programWeeks > 1 && (
+                      <span className="text-xs font-semibold text-primary uppercase tracking-wider mr-2">
+                        {(t("weekN") || "Week {{n}}").replace("{{n}}", String(selectedWeek + 1))} ·
+                      </span>
+                    )}
+                    {localizeDayOfWeek(schedule[selectedDay].dayOfWeek, locale)}
+                  </h3>
                 </div>
                 <CalendarDropdown plan={plan} dayIndex={selectedDay} />
               </div>
