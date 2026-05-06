@@ -58,6 +58,8 @@ export function NutritionLibrary() {
   const [filter, setFilter] = useState<RecipeCategory | "all" | "custom">("all");
   const [showForm, setShowForm] = useState(false);
   const [userRecipes, setUserRecipes] = useState<(Recipe & { isCustom: true; dbId: string })[]>([]);
+  const [photoOverrides, setPhotoOverrides] = useState<Record<string, string>>({});
+  const [userId, setUserId] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { toast } = useToast();
   const { t, locale } = useLanguage();
@@ -70,17 +72,24 @@ export function NutritionLibrary() {
 
   const loadUserRecipes = async () => {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setIsLoggedIn(false); return; }
+    if (!user) { setIsLoggedIn(false); setUserId(null); return; }
     setIsLoggedIn(true);
+    setUserId(user.id);
 
-    const { data } = await supabase
-      .from("user_recipes")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false });
+    const [{ data }, { data: overrides }] = await Promise.all([
+      supabase.from("user_recipes").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
+      supabase.from("recipe_photo_overrides").select("recipe_id, image_url").eq("user_id", user.id),
+    ]);
 
     if (data) {
       setUserRecipes((data as unknown as UserRecipeRow[]).map(toRecipe));
+    }
+    if (overrides) {
+      const map: Record<string, string> = {};
+      for (const o of overrides as { recipe_id: string; image_url: string }[]) {
+        map[o.recipe_id] = o.image_url;
+      }
+      setPhotoOverrides(map);
     }
   };
 
@@ -92,6 +101,32 @@ export function NutritionLibrary() {
       toast({ title: t("recipeDeleted") });
       setUserRecipes((prev) => prev.filter((r) => r.dbId !== dbId));
     }
+  };
+
+  const uploadAndSwap = async (file: File | null, currentUrl: string | undefined) => {
+    if (!userId) return null;
+    // Best-effort remove old file in our bucket if it was ours
+    if (currentUrl) {
+      const marker = "/recipe-images/";
+      const idx = currentUrl.indexOf(marker);
+      if (idx !== -1) {
+        const oldPath = currentUrl.slice(idx + marker.length);
+        if (oldPath.startsWith(`${userId}/`)) {
+          await supabase.storage.from("recipe-images").remove([oldPath]);
+        }
+      }
+    }
+    if (!file) return null;
+    const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    const path = `${userId}/${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage
+      .from("recipe-images")
+      .upload(path, file, { contentType: file.type, upsert: false });
+    if (upErr) {
+      toast({ title: t("recipeSaveFailed"), description: upErr.message, variant: "destructive" });
+      throw upErr;
+    }
+    return supabase.storage.from("recipe-images").getPublicUrl(path).data.publicUrl;
   };
 
   const allRecipes = [
