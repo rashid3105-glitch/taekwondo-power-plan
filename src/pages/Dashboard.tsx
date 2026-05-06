@@ -700,15 +700,15 @@ export default function Dashboard() {
             </div>
           </div>
         ) : activeTab === "progress" ? (
-          isDemo ? renderDemoLockedState("progress") : <ProgressDashboard onGoToPlan={() => handleTabChange("plan")} />
+          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isDemo ? renderDemoLockedState("progress") : <ProgressDashboard onGoToPlan={() => handleTabChange("plan")} />}</>
         ) : activeTab === "nutrition" ? (
-          isDemo ? renderDemoLockedState("nutrition") : <NutritionPlan profile={profile} readOnly={hasCoach && !isPaid} />
+          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isDemo ? renderDemoLockedState("nutrition") : <NutritionPlan profile={profile} readOnly={hasCoach && !isPaid} />}</>
         ) : activeTab === "mental" ? (
-          isDemo ? renderDemoLockedState("mental") : <MentalAssessment profile={profile} />
+          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isDemo ? renderDemoLockedState("mental") : <MentalAssessment profile={profile} />}</>
         ) : activeTab === "testing" ? (
-          isDemo ? renderDemoLockedState("testing") : isModuleLocked("testing") ? renderTierLockedState("testing") : <PhysicalTesting mode={isCoach ? "coach" : "individual"} />
+          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isDemo ? renderDemoLockedState("testing") : isModuleLocked("testing") ? renderTierLockedState("testing") : <PhysicalTesting mode={isCoach ? "coach" : "individual"} />}</>
         ) : activeTab === "rehab" ? (
-          isDemo ? renderDemoLockedState("injuryRehabPlan") : isModuleLocked("rehab") ? renderTierLockedState("injuryRehabPlan") : (
+          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isDemo ? renderDemoLockedState("injuryRehabPlan") : isModuleLocked("rehab") ? renderTierLockedState("injuryRehabPlan") : (
           <>
             {/* Rehab Plan Generator */}
             {(!hasCoach || isPaid) && (
