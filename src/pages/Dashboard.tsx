@@ -662,6 +662,9 @@ export default function Dashboard() {
               onGoToPlan={() => handleTabChange("plan")}
             />
 
+            {/* Daily motivational quote */}
+            <HubDailyQuote />
+
             {/* 2. Next event countdown */}
             <HubNextEvent event={nextEvent} />
 
