@@ -11,6 +11,7 @@ interface Props {
   isDemo: boolean;
   isLocked: (mod: "competitions" | "match_analysis") => boolean;
   onAllModules: () => void;
+  onTab: (tab: "plan" | "progress") => void;
 }
 
 export function HubPinnedModules({
