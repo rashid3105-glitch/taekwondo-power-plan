@@ -72,8 +72,21 @@ export function AddRecipeForm({ onClose, onAdded }: AddRecipeFormProps) {
   const [ingredients, setIngredients] = useState("");
   const [steps, setSteps] = useState("");
   const [tip, setTip] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { toast } = useToast();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
+
+  const handleImagePick = (file: File | undefined) => {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "Max 5 MB", variant: "destructive" });
+      return;
+    }
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
