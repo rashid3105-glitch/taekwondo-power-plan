@@ -127,6 +127,21 @@ export function AddRecipeForm({ onClose, onAdded }: AddRecipeFormProps) {
       return;
     }
 
+    let uploadedImageUrl: string | null = null;
+    if (imageFile) {
+      const ext = imageFile.name.split(".").pop()?.toLowerCase() || "jpg";
+      const path = `${user.id}/${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("recipe-images")
+        .upload(path, imageFile, { contentType: imageFile.type, upsert: false });
+      if (upErr) {
+        toast({ title: t("recipeSaveFailed"), description: upErr.message, variant: "destructive" });
+        setSaving(false);
+        return;
+      }
+      uploadedImageUrl = supabase.storage.from("recipe-images").getPublicUrl(path).data.publicUrl;
+    }
+
     const { error } = await supabase.from("user_recipes").insert({
       user_id: user.id,
       name: trimmedName,
@@ -139,6 +154,7 @@ export function AddRecipeForm({ onClose, onAdded }: AddRecipeFormProps) {
       ingredients: ingredientsList.slice(0, 20).map((s) => s.slice(0, 200)),
       steps: stepsList.slice(0, 15).map((s) => s.slice(0, 300)),
       tip: tip.trim().slice(0, 300),
+      image_url: uploadedImageUrl,
     });
 
     if (error) {
