@@ -130,7 +130,11 @@ export function NutritionLibrary() {
   };
 
   const allRecipes = [
-    ...builtIn.map((r) => ({ ...r, isCustom: false as const })),
+    ...builtIn.map((r) => ({
+      ...r,
+      isCustom: false as const,
+      imageUrl: photoOverrides[r.id] || r.imageUrl,
+    })),
     ...userRecipes,
   ];
 
