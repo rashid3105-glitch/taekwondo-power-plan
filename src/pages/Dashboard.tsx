@@ -32,7 +32,7 @@ import { RecoveryTile } from "@/components/RecoveryTile";
 import { ReflectionPromptCard } from "@/components/ReflectionPromptCard";
 import { EnablePasskeyCard } from "@/components/EnablePasskeyCard";
 import { WhatsNewInline } from "@/components/landing/WhatsNewInline";
-import { Trophy, Quote as QuoteIcon, Calendar as CalendarIcon, Sparkles } from "lucide-react";
+import { Trophy, Quote as QuoteIcon, Calendar as CalendarIcon, Sparkles, ArrowLeft } from "lucide-react";
 import { getDailyQuote, type Locale as QuoteLocale } from "@/data/motivationalQuotes";
 import { useEntitlements } from "@/hooks/useEntitlements";
 import type { LockedModule } from "@/lib/entitlements";
