@@ -32,6 +32,7 @@ interface UserRecipeRow {
   ingredients: string[];
   steps: string[];
   tip: string;
+  image_url?: string | null;
 }
 
 function toRecipe(row: UserRecipeRow): Recipe & { isCustom: true; dbId: string } {
@@ -49,6 +50,7 @@ function toRecipe(row: UserRecipeRow): Recipe & { isCustom: true; dbId: string }
     ingredients: row.ingredients,
     steps: row.steps,
     tip: row.tip,
+    imageUrl: row.image_url || undefined,
   };
 }
 

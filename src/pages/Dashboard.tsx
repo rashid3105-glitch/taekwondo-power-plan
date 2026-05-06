@@ -39,6 +39,7 @@ import type { LockedModule } from "@/lib/entitlements";
 import { FeatureEmptyState } from "@/components/FeatureEmptyState";
 import { TodayCard } from "@/components/today/TodayCard";
 import { HubTodayHero } from "@/components/hub/HubTodayHero";
+import { HubDailyQuote } from "@/components/hub/HubDailyQuote";
 import { HubNextEvent } from "@/components/hub/HubNextEvent";
 import { HubRecoveryStrip } from "@/components/hub/HubRecoveryStrip";
 import { HubPinnedModules } from "@/components/hub/HubPinnedModules";
@@ -661,6 +662,9 @@ export default function Dashboard() {
               activePlan={activePlan}
               onGoToPlan={() => handleTabChange("plan")}
             />
+
+            {/* Daily motivational quote */}
+            <HubDailyQuote />
 
             {/* 2. Next event countdown */}
             <HubNextEvent event={nextEvent} />

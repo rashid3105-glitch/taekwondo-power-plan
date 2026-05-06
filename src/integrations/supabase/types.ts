@@ -1513,6 +1513,7 @@ export type Database = {
           created_at: string
           fat: number
           id: string
+          image_url: string | null
           ingredients: string[]
           name: string
           prep_time: string
@@ -1529,6 +1530,7 @@ export type Database = {
           created_at?: string
           fat?: number
           id?: string
+          image_url?: string | null
           ingredients?: string[]
           name: string
           prep_time?: string
@@ -1545,6 +1547,7 @@ export type Database = {
           created_at?: string
           fat?: number
           id?: string
+          image_url?: string | null
           ingredients?: string[]
           name?: string
           prep_time?: string

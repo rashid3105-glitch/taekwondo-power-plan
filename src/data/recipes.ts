@@ -12,6 +12,7 @@ export interface Recipe {
   ingredients: string[];
   steps: string[];
   tip: string;
+  imageUrl?: string;
 }
 
 interface LocalizedRecipeText {

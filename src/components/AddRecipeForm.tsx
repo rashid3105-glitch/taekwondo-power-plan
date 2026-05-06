@@ -6,10 +6,43 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { X, Plus, Loader2 } from "lucide-react";
+import { X, Plus, Loader2, ImagePlus } from "lucide-react";
 import { type RecipeCategory } from "@/data/recipes";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { TranslationKey } from "@/i18n/translations";
+
+const PHOTO_LABEL: Record<string, string> = {
+  en: "Photo (optional)",
+  da: "Foto (valgfrit)",
+  no: "Foto (valgfritt)",
+  sv: "Foto (valfritt)",
+  de: "Foto (optional)",
+  ar: "صورة (اختياري)",
+};
+const REPLACE_LABEL: Record<string, string> = {
+  en: "Replace",
+  da: "Skift",
+  no: "Bytt",
+  sv: "Byt",
+  de: "Ersetzen",
+  ar: "استبدال",
+};
+const REMOVE_LABEL: Record<string, string> = {
+  en: "Remove",
+  da: "Fjern",
+  no: "Fjern",
+  sv: "Ta bort",
+  de: "Entfernen",
+  ar: "إزالة",
+};
+const ADD_PHOTO_LABEL: Record<string, string> = {
+  en: "Add a photo of the meal",
+  da: "Tilføj et billede af måltidet",
+  no: "Legg til et bilde av måltidet",
+  sv: "Lägg till en bild av måltidet",
+  de: "Foto der Mahlzeit hinzufügen",
+  ar: "أضف صورة للوجبة",
+};
 
 const CATEGORIES: RecipeCategory[] = ["breakfast", "lunch", "dinner", "snack", "pre-workout", "post-workout"];
 
@@ -39,8 +72,21 @@ export function AddRecipeForm({ onClose, onAdded }: AddRecipeFormProps) {
   const [ingredients, setIngredients] = useState("");
   const [steps, setSteps] = useState("");
   const [tip, setTip] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { toast } = useToast();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
+
+  const handleImagePick = (file: File | undefined) => {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "Max 5 MB", variant: "destructive" });
+      return;
+    }
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,6 +127,21 @@ export function AddRecipeForm({ onClose, onAdded }: AddRecipeFormProps) {
       return;
     }
 
+    let uploadedImageUrl: string | null = null;
+    if (imageFile) {
+      const ext = imageFile.name.split(".").pop()?.toLowerCase() || "jpg";
+      const path = `${user.id}/${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("recipe-images")
+        .upload(path, imageFile, { contentType: imageFile.type, upsert: false });
+      if (upErr) {
+        toast({ title: t("recipeSaveFailed"), description: upErr.message, variant: "destructive" });
+        setSaving(false);
+        return;
+      }
+      uploadedImageUrl = supabase.storage.from("recipe-images").getPublicUrl(path).data.publicUrl;
+    }
+
     const { error } = await supabase.from("user_recipes").insert({
       user_id: user.id,
       name: trimmedName,
@@ -93,6 +154,7 @@ export function AddRecipeForm({ onClose, onAdded }: AddRecipeFormProps) {
       ingredients: ingredientsList.slice(0, 20).map((s) => s.slice(0, 200)),
       steps: stepsList.slice(0, 15).map((s) => s.slice(0, 300)),
       tip: tip.trim().slice(0, 300),
+      image_url: uploadedImageUrl,
     });
 
     if (error) {
@@ -154,6 +216,35 @@ export function AddRecipeForm({ onClose, onAdded }: AddRecipeFormProps) {
             <Label className="text-xs">{t("recipeFatLabel")}</Label>
             <Input type="number" inputMode="numeric" min={0} max={500} value={fat} onChange={(e) => setFat(e.target.value)} placeholder="15" className="mt-1" />
           </div>
+        </div>
+
+        {/* Photo upload */}
+        <div>
+          <Label className="text-xs">{PHOTO_LABEL[locale] ?? PHOTO_LABEL.en}</Label>
+          {imagePreview ? (
+            <div className="mt-1 relative">
+              <img src={imagePreview} alt="" className="w-full h-40 object-cover rounded-md border border-border" />
+              <div className="absolute top-2 right-2 flex gap-1.5">
+                <label className="text-[11px] font-semibold bg-background/90 border border-border rounded-md px-2 py-1 cursor-pointer hover:bg-background">
+                  {REPLACE_LABEL[locale] ?? REPLACE_LABEL.en}
+                  <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImagePick(e.target.files?.[0])} />
+                </label>
+                <button
+                  type="button"
+                  onClick={() => { setImageFile(null); setImagePreview(null); }}
+                  className="text-[11px] font-semibold bg-destructive/90 text-destructive-foreground rounded-md px-2 py-1 hover:bg-destructive"
+                >
+                  {REMOVE_LABEL[locale] ?? REMOVE_LABEL.en}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <label className="mt-1 flex items-center justify-center gap-2 h-24 rounded-md border-2 border-dashed border-border bg-muted/30 text-xs text-muted-foreground cursor-pointer hover:bg-muted/50">
+              <ImagePlus className="h-4 w-4" />
+              {ADD_PHOTO_LABEL[locale] ?? ADD_PHOTO_LABEL.en}
+              <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImagePick(e.target.files?.[0])} />
+            </label>
+          )}
         </div>
 
         <div>
