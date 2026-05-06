@@ -230,7 +230,18 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
   const [exporting, setExporting] = useState(false);
   const [pickerMode, setPickerMode] = useState<{ dayIndex: number; sessionIndex: number; exerciseIndex?: number } | null>(null);
   const [localPlanData, setLocalPlanData] = useState(plan.plan_data);
-  const programWeeks = Math.max(1, Number(plan.plan_data?.programWeeks) || 1);
+  const programWeeks = (() => {
+    const explicit = Number(plan.plan_data?.programWeeks);
+    if (explicit && explicit > 0) return Math.max(1, explicit);
+    const phases = (plan.plan_data?.periodization || []) as any[];
+    const maxWeek = phases.reduce((acc, p) => {
+      const r = p?.weekRange;
+      const end = Array.isArray(r) ? Number(r[1]) : 0;
+      return end > acc ? end : acc;
+    }, 0);
+    if (maxWeek > 0) return maxWeek;
+    return 6;
+  })();
   const [viewMode, setViewMode] = useState<"program" | "week">(() => {
     if (typeof window === "undefined") return programWeeks > 1 ? "program" : "week";
     const saved = localStorage.getItem("planViewMode");
