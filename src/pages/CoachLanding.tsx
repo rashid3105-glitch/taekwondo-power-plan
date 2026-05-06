@@ -525,65 +525,109 @@ function Testimonials() {
   );
 }
 
-/* ───────────────── Pricing Teaser ───────────────── */
+/* ───────────────── Pricing ───────────────── */
+const PRICING_TIERS = [
+  {
+    name: "Athlete",
+    price: "49",
+    desc: "For individual athletes",
+    features: ["Single athlete seat", "Core training & progress", "1 active plan", "Mental & recovery tracking"],
+    cta: "Get started",
+    popular: false,
+  },
+  {
+    name: "Coach Solo",
+    price: "99",
+    desc: "For independent coaches",
+    features: ["Coach seat", "All modules unlocked", "1 active plan", "Full performance library"],
+    cta: "Get started",
+    popular: false,
+  },
+  {
+    name: "Team Small",
+    price: "399",
+    desc: "Up to 5 athletes",
+    features: ["5 athlete seats", "All modules unlocked", "Unlimited plans", "Bulk plan creation", "Squad overview"],
+    cta: "Start free trial",
+    popular: true,
+  },
+  {
+    name: "Team Medium",
+    price: "699",
+    desc: "Up to 15 athletes",
+    features: ["15 athlete seats", "All modules", "Unlimited plans", "Bulk planning", "Onboarding included"],
+    cta: "Start free trial",
+    popular: false,
+  },
+  {
+    name: "Team Large",
+    price: "999",
+    desc: "Up to 25 athletes",
+    features: ["25 athlete seats", "All modules", "Unlimited plans", "Onboarding", "Priority support"],
+    cta: "Start free trial",
+    popular: false,
+  },
+];
+
 function PricingTeaser() {
   return (
-    <section id="pricing" className="mx-auto max-w-5xl px-5 py-20 lg:py-28">
+    <section id="pricing" className="mx-auto max-w-6xl px-5 py-20 lg:py-28">
       <h2 className={`${headline} text-4xl sm:text-5xl mb-3 text-center`} style={{ color: C.text }}>
         Simple pricing
       </h2>
       <p className={`text-center text-sm mb-12 ${body}`} style={{ color: C.muted }}>
-        Start free. Upgrade when your club grows.
+        14-day free trial · no commitment · cancel anytime
       </p>
-      <div className="grid md:grid-cols-2 gap-5">
-        <div className="rounded-xl p-8 border" style={{ borderColor: C.border, background: C.bg2 }}>
-          <div className={`${headline} text-2xl`} style={{ color: C.text }}>Starter</div>
-          <div className={`${headline} text-5xl my-4`} style={{ color: C.text }}>Free</div>
-          <ul className={`space-y-2.5 mb-8 text-sm ${body}`} style={{ color: C.text }}>
-            <li className="flex gap-2"><Check className="h-4 w-4 mt-0.5" style={{ color: C.gold }} />Up to 10 athletes</li>
-            <li className="flex gap-2"><Check className="h-4 w-4 mt-0.5" style={{ color: C.gold }} />Session logging & readiness tracking</li>
-            <li className="flex gap-2"><Check className="h-4 w-4 mt-0.5" style={{ color: C.gold }} />Coaching assistant</li>
-          </ul>
-          <Link
-            to="/auth?tab=signup"
-            className={`inline-flex w-full items-center justify-center gap-2 rounded-md px-6 py-3 text-sm font-semibold border ${body}`}
-            style={{ borderColor: C.border, color: C.text }}
+      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        {PRICING_TIERS.map((tier) => (
+          <div
+            key={tier.name}
+            className={`rounded-xl p-7 border relative ${tier.popular ? "border-2" : ""}`}
+            style={{
+              borderColor: tier.popular ? C.red : C.border,
+              background: C.bg2,
+            }}
           >
-            Get started free <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-        <div
-          className="rounded-xl p-8 border-2 relative"
-          style={{ borderColor: C.red, background: C.bg2 }}
-        >
-          <span
-            className={`absolute -top-3 left-6 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded ${body}`}
-            style={{ background: C.red, color: C.text }}
-          >
-            Most popular
-          </span>
-          <div className={`${headline} text-2xl`} style={{ color: C.text }}>Club</div>
-          <div className={`${headline} text-5xl my-4`} style={{ color: C.text }}>
-            199 <span className="text-2xl" style={{ color: C.muted }}>DKK/mo</span>
+            {tier.popular && (
+              <span
+                className={`absolute -top-3 left-6 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded ${body}`}
+                style={{ background: C.red, color: C.text }}
+              >
+                Most popular
+              </span>
+            )}
+            <div className={`${headline} text-2xl`} style={{ color: C.text }}>{tier.name}</div>
+            <div className={`text-xs uppercase tracking-wider mt-3 ${body}`} style={{ color: C.muted }}>From</div>
+            <div className={`${headline} text-4xl mt-1 mb-2`} style={{ color: C.text }}>
+              {tier.price} <span className="text-xl" style={{ color: C.muted }}>DKK/mo</span>
+            </div>
+            <p className={`text-xs mb-5 ${body}`} style={{ color: C.muted }}>{tier.desc}</p>
+            <ul className={`space-y-2 mb-7 text-sm ${body}`} style={{ color: C.text }}>
+              {tier.features.map((f) => (
+                <li key={f} className="flex gap-2">
+                  <Check className="h-4 w-4 mt-0.5 shrink-0" style={{ color: tier.popular ? C.red : C.gold }} />
+                  <span>{f}</span>
+                </li>
+              ))}
+            </ul>
+            <Link
+              to="/auth?tab=signup"
+              className={`inline-flex w-full items-center justify-center gap-2 rounded-md px-4 py-3 text-sm font-bold ${body}`}
+              style={
+                tier.popular
+                  ? { background: C.red, color: C.text }
+                  : { border: `1px solid ${C.border}`, color: C.text }
+              }
+            >
+              {tier.cta} <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
-          <ul className={`space-y-2.5 mb-8 text-sm ${body}`} style={{ color: C.text }}>
-            <li className="flex gap-2"><Check className="h-4 w-4 mt-0.5" style={{ color: C.red }} />Unlimited athletes</li>
-            <li className="flex gap-2"><Check className="h-4 w-4 mt-0.5" style={{ color: C.red }} />Weekly athlete reports</li>
-            <li className="flex gap-2"><Check className="h-4 w-4 mt-0.5" style={{ color: C.red }} />Training plan builder</li>
-            <li className="flex gap-2"><Check className="h-4 w-4 mt-0.5" style={{ color: C.red }} />Full progress analytics</li>
-            <li className="flex gap-2"><Check className="h-4 w-4 mt-0.5" style={{ color: C.red }} />Competition prep tools</li>
-          </ul>
-          <Link
-            to="/auth?tab=signup"
-            className={`inline-flex w-full items-center justify-center gap-2 rounded-md px-6 py-3 text-sm font-bold ${body}`}
-            style={{ background: C.red, color: C.text }}
-          >
-            Start 30-day free trial <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
+        ))}
       </div>
-      <p className={`text-center text-xs mt-6 ${body}`} style={{ color: C.muted }}>
-        Building a larger academy or federation setup?{" "}
+      <p className={`text-center text-xs mt-8 ${body}`} style={{ color: C.muted }}>
+        See full plans & yearly discounts on the{" "}
+        <Link to="/pricing" className="underline" style={{ color: C.text }}>pricing page</Link>
+        {" · "}Federation setup?{" "}
         <Link to="/contact" className="underline" style={{ color: C.text }}>Contact us</Link>.
       </p>
     </section>
