@@ -642,6 +642,7 @@ export default function Dashboard() {
               matchClipsCount={0}
               isDemo={isDemo}
               isLocked={(mod) => isModuleLocked(mod)}
+              onTab={(tab) => handleTabChange(tab)}
               onAllModules={() => {
                 const el = document.getElementById("hub-other-modules");
                 el?.scrollIntoView({ behavior: "smooth", block: "start" });
