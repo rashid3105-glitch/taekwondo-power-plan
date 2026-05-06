@@ -40,7 +40,7 @@ export function HubPinnedModules({
         : t("hubTrainingDesc").slice(0, 40) + "…",
       iconBg: "bg-tab-plan/15",
       iconColor: "text-tab-plan",
-      onClick: () => navigate("/dashboard"),
+      onClick: () => onTab("plan"),
       locked: false,
     },
     {
