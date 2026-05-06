@@ -284,6 +284,32 @@ export default function Health() {
         {t("healthResyncHint")}
       </p>
 
+      {/* Why these metrics matter */}
+      <Card className="mb-4 border-primary/30 bg-primary/5">
+        <CardContent className="pt-4 pb-4">
+          <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
+            <Activity className="h-4 w-4 text-primary" />
+            {t("healthWhyTitle" as any) || "Why these numbers matter"}
+          </h3>
+          <ul className="space-y-2.5">
+            {[
+              { icon: Moon, label: t("recoverySleep"), text: "Sleep is when your body repairs muscles and stores energy. 7–9 hours helps you train harder tomorrow." },
+              { icon: Heart, label: t("recoveryRhr"), text: "A lower resting heart rate means your heart is working efficiently. Seeing it drop over time is a great sign of improving fitness." },
+              { icon: Activity, label: "HRV", text: "HRV measures how well your body recovers from stress. A higher number means you're ready to perform." },
+              { icon: Footprints, label: "Steps", text: "Daily movement outside training keeps your body active and supports recovery." },
+            ].map(({ icon: Icon, label, text }) => (
+              <li key={label} className="flex gap-2.5 items-start">
+                <Icon className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                <p className="text-xs text-foreground leading-relaxed">
+                  <span className="font-bold">{label}</span>
+                  <span className="text-muted-foreground"> — {text}</span>
+                </p>
+              </li>
+            ))}
+          </ul>
+        </CardContent>
+      </Card>
+
       {/* Manual entry */}
       <ManualHealthEntryCard onSaved={() => void load()} />
 
