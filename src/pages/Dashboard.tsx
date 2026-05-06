@@ -32,7 +32,7 @@ import { RecoveryTile } from "@/components/RecoveryTile";
 import { ReflectionPromptCard } from "@/components/ReflectionPromptCard";
 import { EnablePasskeyCard } from "@/components/EnablePasskeyCard";
 import { WhatsNewInline } from "@/components/landing/WhatsNewInline";
-import { Trophy, Quote as QuoteIcon, Calendar as CalendarIcon, Sparkles } from "lucide-react";
+import { Trophy, Quote as QuoteIcon, Calendar as CalendarIcon, Sparkles, ArrowLeft } from "lucide-react";
 import { getDailyQuote, type Locale as QuoteLocale } from "@/data/motivationalQuotes";
 import { useEntitlements } from "@/hooks/useEntitlements";
 import type { LockedModule } from "@/lib/entitlements";
@@ -761,6 +761,11 @@ export default function Dashboard() {
           )
         ) : (
           <>
+            <div>
+              <Button variant="ghost" size="sm" onClick={() => handleTabChange("hub")} className="-ml-2">
+                <ArrowLeft className="h-4 w-4 mr-1" /> {t("back") || "Back"}
+              </Button>
+            </div>
             {/* Profile summary */}
             {profile && (
               <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
