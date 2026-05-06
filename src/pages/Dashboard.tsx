@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain, Clock, Apple, Home, Lock, NotebookPen, AlertTriangle, ClipboardList, HelpCircle, Trash2, Menu, Video as VideoIcon, CalendarRange, Watch } from "lucide-react";
@@ -97,7 +97,14 @@ export default function Dashboard() {
   const [rehabPlans, setRehabPlans] = useState<RehabPlanRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [nextEvent, setNextEvent] = useState<{ name: string; event_date: string; location: string | null; priority: string } | null>(null);
-  const [activeTab, setActiveTab] = useState<"hub" | "plan" | "rehab" | "mental" | "progress" | "nutrition" | "testing">("hub");
+  type TabKey = "hub" | "plan" | "rehab" | "mental" | "progress" | "nutrition" | "testing";
+  const VALID_TABS: TabKey[] = ["hub", "plan", "rehab", "mental", "progress", "nutrition", "testing"];
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialTab = (() => {
+    const t = searchParams.get("tab") as TabKey | null;
+    return t && VALID_TABS.includes(t) ? t : "hub";
+  })();
+  const [activeTab, setActiveTab] = useState<TabKey>(initialTab);
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -105,18 +112,50 @@ export default function Dashboard() {
   
   const { isLocked: isModuleLocked } = useEntitlements();
 
+  // Sync activeTab → URL ?tab= so browser back/refresh works.
+  useEffect(() => {
+    const current = searchParams.get("tab");
+    if (activeTab === "hub") {
+      if (current) {
+        const next = new URLSearchParams(searchParams);
+        next.delete("tab");
+        setSearchParams(next, { replace: false });
+      }
+    } else if (current !== activeTab) {
+      const next = new URLSearchParams(searchParams);
+      next.set("tab", activeTab);
+      setSearchParams(next, { replace: false });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab]);
+
+  // Sync URL → activeTab (browser back/forward navigation).
+  useEffect(() => {
+    const t = (searchParams.get("tab") as TabKey | null) ?? "hub";
+    const next = t && VALID_TABS.includes(t) ? t : "hub";
+    if (next !== activeTab) setActiveTab(next);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
   // Map dashboard tabs to entitlement modules. Tabs not in this map are never tier-locked.
-  const TAB_TO_MODULE: Partial<Record<typeof activeTab, LockedModule>> = {
+  const TAB_TO_MODULE: Partial<Record<TabKey, LockedModule>> = {
     rehab: "rehab",
     testing: "testing",
   };
-  const isTierLockedTab = (tab: typeof activeTab) => {
+  const isTierLockedTab = (tab: TabKey) => {
     const mod = TAB_TO_MODULE[tab];
     return mod ? isModuleLocked(mod) : false;
   };
 
-  const isDemoLockedTab = (tab: typeof activeTab) => isDemo && !["hub", "plan"].includes(tab);
-  const handleTabChange = (tab: typeof activeTab) => {
+  const BackToHub = ({ onBack, label }: { onBack: () => void; label: string }) => (
+    <div className="mb-3">
+      <Button variant="ghost" size="sm" onClick={onBack} className="-ml-2 h-11 sm:h-9">
+        <ArrowLeft className="h-4 w-4 mr-1" /> {label}
+      </Button>
+    </div>
+  );
+  const isDemoLockedTab = (tab: TabKey) => isDemo && !["hub", "plan"].includes(tab);
+  const handleTabChange = (tab: TabKey) => {
     if (isDemoLockedTab(tab)) return;
     if (isTierLockedTab(tab)) {
       navigate("/pricing");
@@ -668,15 +707,15 @@ export default function Dashboard() {
             </div>
           </div>
         ) : activeTab === "progress" ? (
-          isDemo ? renderDemoLockedState("progress") : <ProgressDashboard onGoToPlan={() => handleTabChange("plan")} />
+          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isDemo ? renderDemoLockedState("progress") : <ProgressDashboard onGoToPlan={() => handleTabChange("plan")} />}</>
         ) : activeTab === "nutrition" ? (
-          isDemo ? renderDemoLockedState("nutrition") : <NutritionPlan profile={profile} readOnly={hasCoach && !isPaid} />
+          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isDemo ? renderDemoLockedState("nutrition") : <NutritionPlan profile={profile} readOnly={hasCoach && !isPaid} />}</>
         ) : activeTab === "mental" ? (
-          isDemo ? renderDemoLockedState("mental") : <MentalAssessment profile={profile} />
+          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isDemo ? renderDemoLockedState("mental") : <MentalAssessment profile={profile} />}</>
         ) : activeTab === "testing" ? (
-          isDemo ? renderDemoLockedState("testing") : isModuleLocked("testing") ? renderTierLockedState("testing") : <PhysicalTesting mode={isCoach ? "coach" : "individual"} />
+          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isDemo ? renderDemoLockedState("testing") : isModuleLocked("testing") ? renderTierLockedState("testing") : <PhysicalTesting mode={isCoach ? "coach" : "individual"} />}</>
         ) : activeTab === "rehab" ? (
-          isDemo ? renderDemoLockedState("injuryRehabPlan") : isModuleLocked("rehab") ? renderTierLockedState("injuryRehabPlan") : (
+          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isDemo ? renderDemoLockedState("injuryRehabPlan") : isModuleLocked("rehab") ? renderTierLockedState("injuryRehabPlan") : (
           <>
             {/* Rehab Plan Generator */}
             {(!hasCoach || isPaid) && (
@@ -758,14 +797,10 @@ export default function Dashboard() {
               </div>
             )}
           </>
-          )
+          )}</>
         ) : (
           <>
-            <div>
-              <Button variant="ghost" size="sm" onClick={() => handleTabChange("hub")} className="-ml-2">
-                <ArrowLeft className="h-4 w-4 mr-1" /> {t("back") || "Back"}
-              </Button>
-            </div>
+            <BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />
             {/* Profile summary */}
             {profile && (
               <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
