@@ -13,13 +13,13 @@ const CATEGORY_KEYS: Record<string, string> = {
   "post-workout": "catPostWorkout",
 };
 
-const PHOTO_LABELS: Record<string, { add: string; replace: string; remove: string; uploading: string }> = {
-  en: { add: "Add photo", replace: "Replace photo", remove: "Remove photo", uploading: "Uploading…" },
-  da: { add: "Tilføj foto", replace: "Skift foto", remove: "Fjern foto", uploading: "Uploader…" },
-  no: { add: "Legg til foto", replace: "Bytt foto", remove: "Fjern foto", uploading: "Laster opp…" },
-  sv: { add: "Lägg till foto", replace: "Byt foto", remove: "Ta bort foto", uploading: "Laddar upp…" },
-  de: { add: "Foto hinzufügen", replace: "Foto ersetzen", remove: "Foto entfernen", uploading: "Wird hochgeladen…" },
-  ar: { add: "أضف صورة", replace: "استبدال الصورة", remove: "إزالة الصورة", uploading: "جارٍ الرفع…" },
+const PHOTO_LABELS: Record<string, { add: string; replace: string; remove: string; uploading: string; hint: string }> = {
+  en: { add: "Add photo", replace: "Replace photo", remove: "Remove photo", uploading: "Uploading…", hint: "Recommended: 1200×800 JPG, ≤300 KB (3:2 landscape)" },
+  da: { add: "Tilføj foto", replace: "Skift foto", remove: "Fjern foto", uploading: "Uploader…", hint: "Anbefalet: 1200×800 JPG, ≤300 KB (3:2 liggende)" },
+  no: { add: "Legg til foto", replace: "Bytt foto", remove: "Fjern foto", uploading: "Laster opp…", hint: "Anbefalt: 1200×800 JPG, ≤300 KB (3:2 liggende)" },
+  sv: { add: "Lägg till foto", replace: "Byt foto", remove: "Ta bort foto", uploading: "Laddar upp…", hint: "Rekommenderat: 1200×800 JPG, ≤300 KB (3:2 liggande)" },
+  de: { add: "Foto hinzufügen", replace: "Foto ersetzen", remove: "Foto entfernen", uploading: "Wird hochgeladen…", hint: "Empfohlen: 1200×800 JPG, ≤300 KB (3:2 Querformat)" },
+  ar: { add: "أضف صورة", replace: "استبدال الصورة", remove: "إزالة الصورة", uploading: "جارٍ الرفع…", hint: "موصى به: 1200×800 JPG، ≤300 كيلوبايت (3:2 أفقي)" },
 };
 
 interface RecipeCardProps {
