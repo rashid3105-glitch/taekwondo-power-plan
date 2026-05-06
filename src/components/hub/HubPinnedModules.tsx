@@ -23,6 +23,7 @@ export function HubPinnedModules({
   isDemo,
   isLocked,
   onAllModules,
+  onTab,
 }: Props) {
   const { t } = useLanguage();
   const navigate = useNavigate();
