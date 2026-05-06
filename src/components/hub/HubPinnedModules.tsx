@@ -53,7 +53,7 @@ export function HubPinnedModules({
           : t("hubProgressTitle"),
       iconBg: "bg-tab-progress/15",
       iconColor: "text-tab-progress",
-      onClick: () => navigate("/dashboard?tab=progress"),
+      onClick: () => onTab("progress"),
       locked: isDemo,
     },
     {
