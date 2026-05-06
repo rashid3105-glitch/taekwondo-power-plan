@@ -197,36 +197,9 @@ export function NutritionLibrary() {
           const handlePhotoChange = isCustom
             ? async (file: File | null) => {
                 const dbId = (recipe as Recipe & { dbId: string }).dbId;
-                const { data: { user } } = await supabase.auth.getUser();
-                if (!user) return;
-
-                // Best-effort: remove old file in our bucket if it was ours
-                const oldUrl = recipe.imageUrl;
-                if (oldUrl) {
-                  const marker = "/recipe-images/";
-                  const idx = oldUrl.indexOf(marker);
-                  if (idx !== -1) {
-                    const oldPath = oldUrl.slice(idx + marker.length);
-                    if (oldPath.startsWith(`${user.id}/`)) {
-                      await supabase.storage.from("recipe-images").remove([oldPath]);
-                    }
-                  }
-                }
-
+                if (!userId) return;
                 let newUrl: string | null = null;
-                if (file) {
-                  const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
-                  const path = `${user.id}/${Date.now()}.${ext}`;
-                  const { error: upErr } = await supabase.storage
-                    .from("recipe-images")
-                    .upload(path, file, { contentType: file.type, upsert: false });
-                  if (upErr) {
-                    toast({ title: t("recipeSaveFailed"), description: upErr.message, variant: "destructive" });
-                    return;
-                  }
-                  newUrl = supabase.storage.from("recipe-images").getPublicUrl(path).data.publicUrl;
-                }
-
+                try { newUrl = await uploadAndSwap(file, recipe.imageUrl); } catch { return; }
                 const { error } = await supabase
                   .from("user_recipes")
                   .update({ image_url: newUrl })
@@ -238,6 +211,34 @@ export function NutritionLibrary() {
                 setUserRecipes((prev) =>
                   prev.map((r) => (r.dbId === dbId ? { ...r, imageUrl: newUrl || undefined } : r)),
                 );
+              }
+            : isLoggedIn
+            ? async (file: File | null) => {
+                if (!userId) return;
+                const currentOverride = photoOverrides[recipe.id];
+                let newUrl: string | null = null;
+                try { newUrl = await uploadAndSwap(file, currentOverride); } catch { return; }
+                if (newUrl) {
+                  const { error } = await supabase
+                    .from("recipe_photo_overrides")
+                    .upsert({ user_id: userId, recipe_id: recipe.id, image_url: newUrl }, { onConflict: "user_id,recipe_id" });
+                  if (error) {
+                    toast({ title: t("recipeSaveFailed"), description: error.message, variant: "destructive" });
+                    return;
+                  }
+                  setPhotoOverrides((prev) => ({ ...prev, [recipe.id]: newUrl! }));
+                } else {
+                  await supabase
+                    .from("recipe_photo_overrides")
+                    .delete()
+                    .eq("user_id", userId)
+                    .eq("recipe_id", recipe.id);
+                  setPhotoOverrides((prev) => {
+                    const next = { ...prev };
+                    delete next[recipe.id];
+                    return next;
+                  });
+                }
               }
             : undefined;
 
