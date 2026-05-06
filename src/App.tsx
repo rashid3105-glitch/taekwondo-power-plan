@@ -76,7 +76,8 @@ const AnimatedRoutes = () => {
   return (
     <AnimatePresence mode="wait" initial={false}>
       <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<Page><Landing /></Page>} />
+        <Route path="/" element={<Page><CoachLanding /></Page>} />
+        <Route path="/v2" element={<Page><Landing /></Page>} />
         <Route path="/v1" element={<Page><Index /></Page>} />
         <Route path="/signup" element={<Navigate to="/auth?tab=signup" replace />} />
         <Route path="/login" element={<Navigate to="/auth?tab=signin" replace />} />
