@@ -11,6 +11,7 @@ import { OfflineBanner } from "@/components/OfflineBanner";
 import { SplashScreen } from "@/components/SplashScreen";
 import Index from "./pages/Index";
 import Landing from "./pages/Landing";
+import CoachLanding from "./pages/CoachLanding";
 import FeatureDetail from "./pages/FeatureDetail";
 import Auth from "./pages/Auth";
 import ProfileSetup from "./pages/ProfileSetup";
