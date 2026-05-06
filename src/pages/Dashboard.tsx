@@ -38,6 +38,11 @@ import { useEntitlements } from "@/hooks/useEntitlements";
 import type { LockedModule } from "@/lib/entitlements";
 import { FeatureEmptyState } from "@/components/FeatureEmptyState";
 import { TodayCard } from "@/components/today/TodayCard";
+import { HubTodayHero } from "@/components/hub/HubTodayHero";
+import { HubNextEvent } from "@/components/hub/HubNextEvent";
+import { HubRecoveryStrip } from "@/components/hub/HubRecoveryStrip";
+import { HubPinnedModules } from "@/components/hub/HubPinnedModules";
+import { HubOtherModules } from "@/components/hub/HubOtherModules";
 
 interface Profile {
   display_name: string;
