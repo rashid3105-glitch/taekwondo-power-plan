@@ -13,13 +13,13 @@ const CATEGORY_KEYS: Record<string, string> = {
   "post-workout": "catPostWorkout",
 };
 
-const PHOTO_LABELS: Record<string, { add: string; replace: string; remove: string; uploading: string }> = {
-  en: { add: "Add photo", replace: "Replace photo", remove: "Remove photo", uploading: "Uploading…" },
-  da: { add: "Tilføj foto", replace: "Skift foto", remove: "Fjern foto", uploading: "Uploader…" },
-  no: { add: "Legg til foto", replace: "Bytt foto", remove: "Fjern foto", uploading: "Laster opp…" },
-  sv: { add: "Lägg till foto", replace: "Byt foto", remove: "Ta bort foto", uploading: "Laddar upp…" },
-  de: { add: "Foto hinzufügen", replace: "Foto ersetzen", remove: "Foto entfernen", uploading: "Wird hochgeladen…" },
-  ar: { add: "أضف صورة", replace: "استبدال الصورة", remove: "إزالة الصورة", uploading: "جارٍ الرفع…" },
+const PHOTO_LABELS: Record<string, { add: string; replace: string; remove: string; uploading: string; hint: string }> = {
+  en: { add: "Add photo", replace: "Replace photo", remove: "Remove photo", uploading: "Uploading…", hint: "Recommended: 1200×800 JPG, ≤300 KB (3:2 landscape)" },
+  da: { add: "Tilføj foto", replace: "Skift foto", remove: "Fjern foto", uploading: "Uploader…", hint: "Anbefalet: 1200×800 JPG, ≤300 KB (3:2 liggende)" },
+  no: { add: "Legg til foto", replace: "Bytt foto", remove: "Fjern foto", uploading: "Laster opp…", hint: "Anbefalt: 1200×800 JPG, ≤300 KB (3:2 liggende)" },
+  sv: { add: "Lägg till foto", replace: "Byt foto", remove: "Ta bort foto", uploading: "Laddar upp…", hint: "Rekommenderat: 1200×800 JPG, ≤300 KB (3:2 liggande)" },
+  de: { add: "Foto hinzufügen", replace: "Foto ersetzen", remove: "Foto entfernen", uploading: "Wird hochgeladen…", hint: "Empfohlen: 1200×800 JPG, ≤300 KB (3:2 Querformat)" },
+  ar: { add: "أضف صورة", replace: "استبدال الصورة", remove: "إزالة الصورة", uploading: "جارٍ الرفع…", hint: "موصى به: 1200×800 JPG، ≤300 كيلوبايت (3:2 أفقي)" },
 };
 
 interface RecipeCardProps {
@@ -41,8 +41,30 @@ export function RecipeCard({ recipe, index, onPhotoChange }: RecipeCardProps) {
 
   const handleFile = async (file: File | undefined) => {
     if (!file || !onPhotoChange) return;
-    if (!file.type.startsWith("image/")) return;
-    if (file.size > 5 * 1024 * 1024) return;
+    if (!file.type.startsWith("image/")) {
+      alert(labels.hint);
+      return;
+    }
+    // Soft size cap: 500 KB. Encourage compression.
+    if (file.size > 500 * 1024) {
+      alert(`${labels.hint}\n\n(${Math.round(file.size / 1024)} KB)`);
+      return;
+    }
+    // Validate dimensions (landscape 3:2, tolerant)
+    const dims = await new Promise<{ w: number; h: number } | null>((resolve) => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => { resolve({ w: img.naturalWidth, h: img.naturalHeight }); URL.revokeObjectURL(url); };
+      img.onerror = () => { resolve(null); URL.revokeObjectURL(url); };
+      img.src = url;
+    });
+    if (dims) {
+      const ratio = dims.w / dims.h;
+      if (dims.w < 800 || ratio < 1.3 || ratio > 1.7) {
+        alert(`${labels.hint}\n\n(${dims.w}×${dims.h})`);
+        return;
+      }
+    }
     setBusy(true);
     try {
       await onPhotoChange(file);
@@ -120,6 +142,9 @@ export function RecipeCard({ recipe, index, onPhotoChange }: RecipeCardProps) {
                     </button>
                   )}
                 </div>
+                <p className="absolute bottom-2 left-2 right-2 text-[10px] text-background/90 bg-foreground/40 backdrop-blur-sm rounded px-1.5 py-0.5 leading-tight pointer-events-none">
+                  {labels.hint}
+                </p>
               </>
             )}
           </div>
