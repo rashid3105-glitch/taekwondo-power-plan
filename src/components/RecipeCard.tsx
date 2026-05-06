@@ -41,8 +41,30 @@ export function RecipeCard({ recipe, index, onPhotoChange }: RecipeCardProps) {
 
   const handleFile = async (file: File | undefined) => {
     if (!file || !onPhotoChange) return;
-    if (!file.type.startsWith("image/")) return;
-    if (file.size > 5 * 1024 * 1024) return;
+    if (!file.type.startsWith("image/")) {
+      alert(labels.hint);
+      return;
+    }
+    // Soft size cap: 500 KB. Encourage compression.
+    if (file.size > 500 * 1024) {
+      alert(`${labels.hint}\n\n(${Math.round(file.size / 1024)} KB)`);
+      return;
+    }
+    // Validate dimensions (landscape 3:2, tolerant)
+    const dims = await new Promise<{ w: number; h: number } | null>((resolve) => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => { resolve({ w: img.naturalWidth, h: img.naturalHeight }); URL.revokeObjectURL(url); };
+      img.onerror = () => { resolve(null); URL.revokeObjectURL(url); };
+      img.src = url;
+    });
+    if (dims) {
+      const ratio = dims.w / dims.h;
+      if (dims.w < 800 || ratio < 1.3 || ratio > 1.7) {
+        alert(`${labels.hint}\n\n(${dims.w}×${dims.h})`);
+        return;
+      }
+    }
     setBusy(true);
     try {
       await onPhotoChange(file);
