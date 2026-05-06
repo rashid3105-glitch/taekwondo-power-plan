@@ -38,6 +38,11 @@ import { useEntitlements } from "@/hooks/useEntitlements";
 import type { LockedModule } from "@/lib/entitlements";
 import { FeatureEmptyState } from "@/components/FeatureEmptyState";
 import { TodayCard } from "@/components/today/TodayCard";
+import { HubTodayHero } from "@/components/hub/HubTodayHero";
+import { HubNextEvent } from "@/components/hub/HubNextEvent";
+import { HubRecoveryStrip } from "@/components/hub/HubRecoveryStrip";
+import { HubPinnedModules } from "@/components/hub/HubPinnedModules";
+import { HubOtherModules } from "@/components/hub/HubOtherModules";
 
 interface Profile {
   display_name: string;
@@ -585,257 +590,77 @@ export default function Dashboard() {
           </div>
         )}
         {activeTab === "hub" ? (
-          <div className="space-y-6">
-            <div className="relative overflow-hidden rounded-lg border bg-card/80 backdrop-blur-sm p-4 sm:p-5"
-              style={{ backgroundImage: "radial-gradient(ellipse at 80% 0%, hsl(var(--primary) / 0.10), transparent 60%)" }}>
-              <div className="flex items-center gap-4">
-                <AvatarImg
-                  avatarUrl={profile?.avatar_url}
-                  className="h-14 w-14 rounded-full object-cover border-2 border-primary/30 shrink-0"
-                  fallbackClassName="h-14 w-14 rounded-full bg-muted flex items-center justify-center border-2 border-primary/30 shrink-0"
-                />
-                <div className="flex-1 min-w-0 space-y-1">
-                  {(() => {
-                    const fullName = profile?.display_name?.trim() || "";
-                    const firstName = fullName ? fullName.split(/\s+/)[0] : "SPORTSTALENT";
-                    const hour = new Date().getHours();
-                    const greetingKey =
-                      hour >= 5 && hour < 12 ? "greetingMorning" :
-                      hour >= 12 && hour < 18 ? "greetingAfternoon" :
-                      "greetingEvening";
-                    return (
-                      <>
-                        <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground truncate tracking-tight">
-                          {firstName}
-                        </h2>
-                        <p className="text-sm text-muted-foreground">{t(greetingKey)}</p>
-                      </>
-                    );
-                  })()}
-                  <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground pt-1">
-                    {profile?.belt_level && (
-                      <Badge variant="outline" className="capitalize text-xs">
-                        {profile.belt_level}
-                      </Badge>
-                    )}
-                    {clubName && <span>{clubName}</span>}
-                  </div>
-                </div>
+          <div className="space-y-4">
+            {/* Greeting line */}
+            <div className="flex items-center gap-3 px-1">
+              <AvatarImg
+                avatarUrl={profile?.avatar_url}
+                className="h-10 w-10 rounded-full object-cover border border-border shrink-0"
+                fallbackClassName="h-10 w-10 rounded-full bg-muted flex items-center justify-center border border-border shrink-0"
+              />
+              <div className="min-w-0">
+                {(() => {
+                  const fullName = profile?.display_name?.trim() || "";
+                  const firstName = fullName ? fullName.split(/\s+/)[0] : "Athlete";
+                  const hour = new Date().getHours();
+                  const greetingKey =
+                    hour >= 5 && hour < 12 ? "greetingMorning" :
+                    hour >= 12 && hour < 18 ? "greetingAfternoon" :
+                    "greetingEvening";
+                  return (
+                    <>
+                      <p className="text-xs text-muted-foreground">{t(greetingKey)}</p>
+                      <p className="text-base font-bold text-foreground truncate">{firstName}</p>
+                    </>
+                  );
+                })()}
               </div>
-              {(() => {
-                const quote = getDailyQuote(locale as QuoteLocale);
-                let eventLine: { label: string; sub: string } | null = null;
-                if (nextEvent) {
-                  const eventDate = new Date(nextEvent.event_date + "T00:00:00");
-                  const today = new Date();
-                  today.setHours(0, 0, 0, 0);
-                  const diffDays = Math.round((eventDate.getTime() - today.getTime()) / 86400000);
-                  const dateLabel =
-                    diffDays === 0 ? t("today") :
-                    diffDays === 1 ? t("tomorrow") :
-                    `${diffDays} ${t("daysAway")}`;
-                  const formatted = eventDate.toLocaleDateString(locale, { day: "numeric", month: "short", year: "numeric" });
-                  const subParts = [formatted, dateLabel, nextEvent.location].filter(Boolean) as string[];
-                  eventLine = { label: nextEvent.name, sub: subParts.join(" · ") };
-                }
-                return (
-                  <div className="mt-4 pt-4 border-t border-border/40 grid gap-3 sm:grid-cols-2">
-                    {/* Next upcoming competition / camp */}
-                    <button
-                      type="button"
-                      onClick={() => !isDemo && navigate("/competitions")}
-                      disabled={isDemo}
-                      className={`group flex items-start gap-3 rounded-xl border border-border/60 bg-secondary/30 p-3 text-left transition-all ${isDemo ? "opacity-70 cursor-not-allowed" : "hover:border-primary/40 hover:bg-secondary/50"}`}
-                    >
-                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-explosive/15">
-                        <Trophy className="h-4 w-4 text-explosive" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                          {t("nextEventTitle")}
-                        </p>
-                        {eventLine ? (
-                          <>
-                            <p className="text-sm font-bold text-foreground truncate">{eventLine.label}</p>
-                            <p className="text-xs text-muted-foreground truncate">{eventLine.sub}</p>
-                          </>
-                        ) : (
-                          <p className="text-xs text-muted-foreground mt-0.5">{t("noUpcomingEvent")}</p>
-                        )}
-                      </div>
-                    </button>
-
-                    {/* Daily motivational quote */}
-                    <div className="flex items-start gap-3 rounded-xl border border-border/60 bg-secondary/30 p-3">
-                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/15">
-                        <QuoteIcon className="h-4 w-4 text-primary" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                          {t("dailyQuoteTitle")}
-                        </p>
-                        <p className="text-sm text-foreground italic leading-snug mt-0.5">
-                          "{quote.text}"
-                        </p>
-                        <p className="text-[11px] text-muted-foreground mt-1">— {quote.author}</p>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })()}
             </div>
-            <WhatsNewInline />
-            {!isDemo && <EnablePasskeyCard />}
+
+            {/* 1. Today's session hero */}
+            <HubTodayHero
+              activePlan={activePlan}
+              onGoToPlan={() => handleTabChange("plan")}
+            />
+
+            {/* 2. Next event countdown */}
+            <HubNextEvent event={nextEvent} />
+
+            {/* 3. Recovery strip */}
+            {!isDemo && <HubRecoveryStrip />}
+
+            {/* Optional readiness / reflection prompts (only when actionable) */}
             {!isDemo && <ReflectionPromptCard />}
             {!isDemo && <ReadinessCard />}
-            {!isDemo && <RecoveryTile />}
-            {!isDemo && (
-              <TodayCard
-                activePlan={activePlan}
-                onGoToProgress={() => handleTabChange("progress")}
-                onGoToPlan={() => handleTabChange("plan")}
-              />
-            )}
-            <div className="grid gap-3 sm:grid-cols-2">
-              {([
-                { tab: "plan" as const, icon: Zap, titleKey: "hubTrainingTitle", descKey: "hubTrainingDesc", color: "text-tab-plan", iconBg: "bg-tab-plan/15", borderColor: "border-l-tab-plan", gradient: "radial-gradient(ellipse at 20% 50%, hsl(190 95% 50% / 0.15), transparent 60%)", locked: false },
-                { tab: "progress" as const, icon: BarChart3, titleKey: "hubProgressTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubProgressDesc", color: "text-tab-progress", iconBg: "bg-tab-progress/15", borderColor: "border-l-tab-progress", gradient: "radial-gradient(ellipse at 20% 50%, hsl(45 90% 55% / 0.15), transparent 60%)", locked: isDemo },
-                { tab: "nutrition" as const, icon: Apple, titleKey: "hubNutritionTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubNutritionDesc", color: "text-tab-nutrition", iconBg: "bg-tab-nutrition/15", borderColor: "border-l-tab-nutrition", gradient: "radial-gradient(ellipse at 20% 50%, hsl(142 70% 45% / 0.15), transparent 60%)", locked: isDemo },
-                { tab: "rehab" as const, icon: Heart, titleKey: "hubRehabTitle", descKey: (isDemo || isModuleLocked("rehab")) ? "moduleLockedDesc" : "hubRehabDesc", color: "text-tab-rehab", iconBg: "bg-tab-rehab/15", borderColor: "border-l-tab-rehab", gradient: "radial-gradient(ellipse at 20% 50%, hsl(0 72% 51% / 0.15), transparent 60%)", locked: isDemo || isModuleLocked("rehab") },
-                { tab: "mental" as const, icon: Brain, titleKey: "hubMentalTitle", descKey: isDemo ? "demoLockedFeatureDesc" : "hubMentalDesc", color: "text-tab-mental", iconBg: "bg-tab-mental/15", borderColor: "border-l-tab-mental", gradient: "radial-gradient(ellipse at 20% 50%, hsl(330 60% 72% / 0.15), transparent 60%)", locked: isDemo },
-                { tab: "testing" as const, icon: ClipboardList, titleKey: "hubTestingTitle", descKey: (isDemo || isModuleLocked("testing")) ? "moduleLockedDesc" : "hubTestingDesc", color: "text-primary", iconBg: "bg-primary/15", borderColor: "border-l-primary", gradient: "radial-gradient(ellipse at 20% 50%, hsl(210 80% 55% / 0.15), transparent 60%)", locked: isDemo || isModuleLocked("testing") },
-              ]).map((section) => {
-                const Icon = section.icon;
-                return (
-                  <button
-                    key={section.tab}
-                    onClick={() => handleTabChange(section.tab)}
-                    disabled={isDemo && section.locked}
-                    className={`group relative overflow-hidden rounded-2xl border border-border border-l-[3px] ${section.borderColor} bg-card/80 backdrop-blur-sm p-5 shadow-card text-left transition-all duration-300 ${section.locked ? "opacity-70 cursor-pointer" : "cursor-pointer hover:border-primary/30 hover:-translate-y-1 hover:shadow-glow"} ${isDemo && section.locked ? "cursor-not-allowed" : ""}`}
-                  >
-                    {section.tab === "plan" && activePlan && (
-                      <span className="absolute top-2 right-2 z-10 inline-flex items-center gap-1 rounded-full bg-speed/15 text-speed border border-speed/30 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">
-                        <span className="h-1.5 w-1.5 rounded-full bg-speed animate-pulse" />
-                        {t("activeBadge")}
-                      </span>
-                    )}
-                    <div
-                      className="absolute inset-0 rounded-2xl transition-opacity duration-500 opacity-60 group-hover:opacity-100"
-                      style={{ background: section.gradient }}
-                    />
-                    <div className="relative flex items-start gap-4">
-                      <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${section.iconBg} relative`}>
-                        <Icon className={`h-5 w-5 ${section.color}`} />
-                        {section.locked && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
-                      </div>
-                      <div className="space-y-1.5">
-                        <h3 className="text-sm font-bold text-foreground tracking-tight">{t(section.titleKey)}</h3>
-                        <p className="text-xs leading-relaxed text-muted-foreground">{t(section.descKey)}</p>
-                        {section.locked && <p className="text-xs font-medium text-foreground">{t(isDemo ? "demoUpgradePrompt" : "upgradeToUnlock")}</p>}
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
-              <button
-                onClick={() => !isDemo && navigate("/competitions")}
-                disabled={isDemo}
-                className={`group relative overflow-hidden rounded-2xl border border-border border-l-[3px] border-l-primary bg-card/80 backdrop-blur-sm p-5 shadow-card text-left transition-all duration-300 ${isDemo ? "cursor-not-allowed opacity-70" : "cursor-pointer hover:border-primary/30 hover:-translate-y-1 hover:shadow-glow"}`}
-              >
-                <div className="absolute inset-0 rounded-2xl opacity-60 group-hover:opacity-100 transition-opacity"
-                     style={{ background: "radial-gradient(ellipse at 20% 50%, hsl(45 90% 55% / 0.15), transparent 60%)" }} />
-                <div className="relative flex items-start gap-4">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/15 relative">
-                    <Trophy className="h-5 w-5 text-primary" />
-                    {(isDemo || isModuleLocked("competitions")) && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
-                  </div>
-                  <div className="space-y-1.5">
-                    <h3 className="text-sm font-bold text-foreground tracking-tight">{t("hubCompetitionsTitle")}</h3>
-                    <p className="text-xs leading-relaxed text-muted-foreground">{t("hubCompetitionsDesc")}</p>
-                  </div>
-                </div>
-              </button>
-              <button
-                onClick={() => !isDemo && navigate("/season")}
-                disabled={isDemo}
-                className={`group relative overflow-hidden rounded-2xl border border-border border-l-[3px] border-l-primary bg-card/80 backdrop-blur-sm p-5 shadow-card text-left transition-all duration-300 ${isDemo ? "cursor-not-allowed opacity-70" : "cursor-pointer hover:border-primary/30 hover:-translate-y-1 hover:shadow-glow"}`}
-              >
-                <div className="absolute inset-0 rounded-2xl opacity-60 group-hover:opacity-100 transition-opacity"
-                     style={{ background: "radial-gradient(ellipse at 20% 50%, hsl(160 70% 50% / 0.15), transparent 60%)" }} />
-                <div className="relative flex items-start gap-4">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/15 relative">
-                    <CalendarRange className="h-5 w-5 text-primary" />
-                    {(isDemo || isModuleLocked("season_plan")) && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
-                  </div>
-                  <div className="space-y-1.5">
-                    <h3 className="text-sm font-bold text-foreground tracking-tight">{t("hubSeasonTitle")}</h3>
-                    <p className="text-xs leading-relaxed text-muted-foreground">{t(isDemo ? "demoLockedFeatureDesc" : "hubSeasonDesc")}</p>
-                    {isDemo && <p className="text-xs font-medium text-foreground">{t("demoUpgradePrompt")}</p>}
-                  </div>
-                </div>
-              </button>
-              <button
-                onClick={() => !isDemo && navigate("/match-analysis/me")}
-                disabled={isDemo}
-                className={`group relative overflow-hidden rounded-2xl border border-border border-l-[3px] border-l-primary bg-card/80 backdrop-blur-sm p-5 shadow-card text-left transition-all duration-300 ${isDemo ? "cursor-not-allowed opacity-70" : "cursor-pointer hover:border-primary/30 hover:-translate-y-1 hover:shadow-glow"}`}
-              >
-                <div className="absolute inset-0 rounded-2xl opacity-60 group-hover:opacity-100 transition-opacity"
-                     style={{ background: "radial-gradient(ellipse at 20% 50%, hsl(190 95% 50% / 0.15), transparent 60%)" }} />
-                <div className="relative flex items-start gap-4">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/15 relative">
-                    <VideoIcon className="h-5 w-5 text-primary" />
-                    {(isDemo || isModuleLocked("match_analysis")) && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
-                  </div>
-                  <div className="space-y-1.5">
-                    <h3 className="text-sm font-bold text-foreground tracking-tight">{t("hubMatchTitle")}</h3>
-                    <p className="text-xs leading-relaxed text-muted-foreground">{t(isDemo ? "demoLockedFeatureDesc" : "hubMatchDesc")}</p>
-                    {isDemo && <p className="text-xs font-medium text-foreground">{t("demoUpgradePrompt")}</p>}
-                  </div>
-                </div>
-              </button>
-              <button
-                onClick={() => !isDemo && navigate("/library")}
-                disabled={isDemo}
-                className={`group relative overflow-hidden rounded-2xl border border-border border-l-[3px] border-l-primary bg-card/80 backdrop-blur-sm p-5 shadow-card text-left transition-all duration-300 ${isDemo ? "cursor-not-allowed opacity-70" : "cursor-pointer hover:border-primary/30 hover:-translate-y-1 hover:shadow-glow"}`}
-              >
-                <div
-                  className="absolute inset-0 rounded-2xl transition-opacity duration-500 opacity-60 group-hover:opacity-100"
-                  style={{ background: "radial-gradient(ellipse at 20% 50%, hsl(270 70% 55% / 0.15), transparent 60%)" }}
-                />
-                <div className="relative flex items-start gap-4">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/15 relative">
-                    <BookOpen className="h-5 w-5 text-primary" />
-                    {(isDemo || isModuleLocked("library")) && <Lock className="absolute -right-1 -top-1 h-3.5 w-3.5 text-muted-foreground" />}
-                  </div>
-                  <div className="space-y-1.5">
-                    <h3 className="text-sm font-bold text-foreground tracking-tight">{t("hubLibraryTitle")}</h3>
-                    <p className="text-xs leading-relaxed text-muted-foreground">{t(isDemo ? "demoLockedFeatureDesc" : "hubLibraryDesc")}</p>
-                    {isDemo && <p className="text-xs font-medium text-foreground">{t("demoUpgradePrompt")}</p>}
-                  </div>
-                </div>
-              </button>
-              <button
-                onClick={() => navigate("/help")}
-                className="group relative overflow-hidden rounded-2xl border border-border border-l-[3px] border-l-accent bg-card/80 backdrop-blur-sm p-5 shadow-card text-left transition-all duration-300 cursor-pointer hover:border-primary/30 hover:-translate-y-1 hover:shadow-glow"
-              >
-                <div
-                  className="absolute inset-0 rounded-2xl transition-opacity duration-500 opacity-60 group-hover:opacity-100"
-                  style={{ background: "radial-gradient(ellipse at 20% 50%, hsl(200 70% 50% / 0.15), transparent 60%)" }}
-                />
-                <div className="relative flex items-start gap-4">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent/15">
-                    <HelpCircle className="h-5 w-5 text-accent" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <h3 className="text-sm font-bold text-foreground tracking-tight">{t("helpTitle")}</h3>
-                    <p className="text-xs leading-relaxed text-muted-foreground">{t("helpSubtitle")}</p>
-                  </div>
-                </div>
-              </button>
-            </div>
+
+            {/* 4. Pinned modules */}
+            <HubPinnedModules
+              hasActivePlan={!!activePlan}
+              activePlanWeek={null}
+              metricsUpdated={0}
+              nextEventName={nextEvent?.name ?? null}
+              matchClipsCount={0}
+              isDemo={isDemo}
+              isLocked={(mod) => isModuleLocked(mod)}
+              onAllModules={() => {
+                const el = document.getElementById("hub-other-modules");
+                el?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
+            />
+
+            {/* 5. Other modules chips */}
+            <HubOtherModules
+              isDemo={isDemo}
+              isLocked={(mod) => isModuleLocked(mod)}
+              onTab={(tab) => handleTabChange(tab)}
+            />
+
+            {/* Demoted: passkey + what's new */}
+            {!isDemo && <EnablePasskeyCard />}
+            <WhatsNewInline />
 
             {/* Quick link */}
-            <div className="flex justify-center">
+            <div className="flex justify-center pt-2">
               <Button variant="outline" size="sm" onClick={() => navigate("/profile-setup")}>
                 <User className="h-4 w-4 mr-1" /> {t("profile")}
               </Button>
