@@ -21,6 +21,7 @@ import { CalendarDropdown } from "@/components/CalendarDropdown";
 import { TrainingReminder } from "@/components/TrainingReminder";
 import { normalizeDaySessions, type PlanSession } from "@/lib/planSessionUtils";
 import { localizeDayOfWeek, localizeExerciseName } from "@/lib/planTranslation";
+import { PlanProgramGrid } from "@/components/plan/PlanProgramGrid";
 
 const CATEGORY_DOT: Record<string, string> = {
   power: "bg-accent",
