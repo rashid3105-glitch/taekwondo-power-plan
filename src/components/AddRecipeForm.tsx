@@ -218,6 +218,35 @@ export function AddRecipeForm({ onClose, onAdded }: AddRecipeFormProps) {
           </div>
         </div>
 
+        {/* Photo upload */}
+        <div>
+          <Label className="text-xs">{PHOTO_LABEL[locale] ?? PHOTO_LABEL.en}</Label>
+          {imagePreview ? (
+            <div className="mt-1 relative">
+              <img src={imagePreview} alt="" className="w-full h-40 object-cover rounded-md border border-border" />
+              <div className="absolute top-2 right-2 flex gap-1.5">
+                <label className="text-[11px] font-semibold bg-background/90 border border-border rounded-md px-2 py-1 cursor-pointer hover:bg-background">
+                  {REPLACE_LABEL[locale] ?? REPLACE_LABEL.en}
+                  <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImagePick(e.target.files?.[0])} />
+                </label>
+                <button
+                  type="button"
+                  onClick={() => { setImageFile(null); setImagePreview(null); }}
+                  className="text-[11px] font-semibold bg-destructive/90 text-destructive-foreground rounded-md px-2 py-1 hover:bg-destructive"
+                >
+                  {REMOVE_LABEL[locale] ?? REMOVE_LABEL.en}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <label className="mt-1 flex items-center justify-center gap-2 h-24 rounded-md border-2 border-dashed border-border bg-muted/30 text-xs text-muted-foreground cursor-pointer hover:bg-muted/50">
+              <ImagePlus className="h-4 w-4" />
+              {ADD_PHOTO_LABEL[locale] ?? ADD_PHOTO_LABEL.en}
+              <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImagePick(e.target.files?.[0])} />
+            </label>
+          )}
+        </div>
+
         <div>
           <Label className="text-xs">{t("recipeIngredientsLabel")}</Label>
           <Textarea value={ingredients} onChange={(e) => setIngredients(e.target.value)} placeholder={"200g chicken breast\n150g brown rice\n100g broccoli"} rows={4} className="mt-1 text-xs" />
