@@ -147,6 +147,13 @@ export default function Dashboard() {
     return mod ? isModuleLocked(mod) : false;
   };
 
+  const BackToHub = ({ onBack, label }: { onBack: () => void; label: string }) => (
+    <div className="mb-3">
+      <Button variant="ghost" size="sm" onClick={onBack} className="-ml-2 h-11 sm:h-9">
+        <ArrowLeft className="h-4 w-4 mr-1" /> {label}
+      </Button>
+    </div>
+  );
   const isDemoLockedTab = (tab: TabKey) => isDemo && !["hub", "plan"].includes(tab);
   const handleTabChange = (tab: TabKey) => {
     if (isDemoLockedTab(tab)) return;
