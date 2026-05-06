@@ -97,7 +97,14 @@ export default function Dashboard() {
   const [rehabPlans, setRehabPlans] = useState<RehabPlanRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [nextEvent, setNextEvent] = useState<{ name: string; event_date: string; location: string | null; priority: string } | null>(null);
-  const [activeTab, setActiveTab] = useState<"hub" | "plan" | "rehab" | "mental" | "progress" | "nutrition" | "testing">("hub");
+  type TabKey = "hub" | "plan" | "rehab" | "mental" | "progress" | "nutrition" | "testing";
+  const VALID_TABS: TabKey[] = ["hub", "plan", "rehab", "mental", "progress", "nutrition", "testing"];
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialTab = (() => {
+    const t = searchParams.get("tab") as TabKey | null;
+    return t && VALID_TABS.includes(t) ? t : "hub";
+  })();
+  const [activeTab, setActiveTab] = useState<TabKey>(initialTab);
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -105,18 +112,43 @@ export default function Dashboard() {
   
   const { isLocked: isModuleLocked } = useEntitlements();
 
+  // Sync activeTab → URL ?tab= so browser back/refresh works.
+  useEffect(() => {
+    const current = searchParams.get("tab");
+    if (activeTab === "hub") {
+      if (current) {
+        const next = new URLSearchParams(searchParams);
+        next.delete("tab");
+        setSearchParams(next, { replace: false });
+      }
+    } else if (current !== activeTab) {
+      const next = new URLSearchParams(searchParams);
+      next.set("tab", activeTab);
+      setSearchParams(next, { replace: false });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab]);
+
+  // Sync URL → activeTab (browser back/forward navigation).
+  useEffect(() => {
+    const t = (searchParams.get("tab") as TabKey | null) ?? "hub";
+    const next = t && VALID_TABS.includes(t) ? t : "hub";
+    if (next !== activeTab) setActiveTab(next);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
   // Map dashboard tabs to entitlement modules. Tabs not in this map are never tier-locked.
-  const TAB_TO_MODULE: Partial<Record<typeof activeTab, LockedModule>> = {
+  const TAB_TO_MODULE: Partial<Record<TabKey, LockedModule>> = {
     rehab: "rehab",
     testing: "testing",
   };
-  const isTierLockedTab = (tab: typeof activeTab) => {
+  const isTierLockedTab = (tab: TabKey) => {
     const mod = TAB_TO_MODULE[tab];
     return mod ? isModuleLocked(mod) : false;
   };
 
-  const isDemoLockedTab = (tab: typeof activeTab) => isDemo && !["hub", "plan"].includes(tab);
-  const handleTabChange = (tab: typeof activeTab) => {
+  const isDemoLockedTab = (tab: TabKey) => isDemo && !["hub", "plan"].includes(tab);
+  const handleTabChange = (tab: TabKey) => {
     if (isDemoLockedTab(tab)) return;
     if (isTierLockedTab(tab)) {
       navigate("/pricing");
