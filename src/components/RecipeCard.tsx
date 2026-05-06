@@ -34,6 +34,17 @@ export function RecipeCard({ recipe, index }: { recipe: Recipe; index: number })
 
       {expanded && (
         <div className="px-4 pb-4 pt-1 space-y-4 animate-slide-up">
+          {/* Image */}
+          <img
+            src={recipe.imageUrl || CATEGORY_IMAGES[recipe.category]}
+            alt={recipe.name}
+            loading="lazy"
+            className="w-full h-40 sm:h-48 object-cover rounded-md border border-border"
+            onError={(e) => {
+              (e.currentTarget as HTMLImageElement).src = CATEGORY_IMAGES[recipe.category];
+            }}
+          />
+
           {/* Meta */}
           <div className="flex items-center gap-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> {recipe.prepTime}</span>
