@@ -12,7 +12,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip as RTooltip, ResponsiveContainer, Legend,
 } from "recharts";
 import { healthNorms, compareToBand } from "@/lib/healthNorms";
-import { Moon, HeartPulse, Waves } from "lucide-react";
+import { Moon, HeartPulse, Waves, Heart } from "lucide-react";
 import { ManualHealthEntryCard } from "@/components/health/ManualHealthEntryCard";
 import { HealthSourceGuide } from "@/components/health/HealthSourceGuide";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
