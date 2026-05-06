@@ -1167,6 +1167,33 @@ export type Database = {
         }
         Relationships: []
       }
+      recipe_photo_overrides: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string
+          recipe_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url: string
+          recipe_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string
+          recipe_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       rehab_plans: {
         Row: {
           created_at: string
