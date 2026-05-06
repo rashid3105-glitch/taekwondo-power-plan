@@ -6,10 +6,43 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { X, Plus, Loader2 } from "lucide-react";
+import { X, Plus, Loader2, ImagePlus } from "lucide-react";
 import { type RecipeCategory } from "@/data/recipes";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { TranslationKey } from "@/i18n/translations";
+
+const PHOTO_LABEL: Record<string, string> = {
+  en: "Photo (optional)",
+  da: "Foto (valgfrit)",
+  no: "Foto (valgfritt)",
+  sv: "Foto (valfritt)",
+  de: "Foto (optional)",
+  ar: "صورة (اختياري)",
+};
+const REPLACE_LABEL: Record<string, string> = {
+  en: "Replace",
+  da: "Skift",
+  no: "Bytt",
+  sv: "Byt",
+  de: "Ersetzen",
+  ar: "استبدال",
+};
+const REMOVE_LABEL: Record<string, string> = {
+  en: "Remove",
+  da: "Fjern",
+  no: "Fjern",
+  sv: "Ta bort",
+  de: "Entfernen",
+  ar: "إزالة",
+};
+const ADD_PHOTO_LABEL: Record<string, string> = {
+  en: "Add a photo of the meal",
+  da: "Tilføj et billede af måltidet",
+  no: "Legg til et bilde av måltidet",
+  sv: "Lägg till en bild av måltidet",
+  de: "Foto der Mahlzeit hinzufügen",
+  ar: "أضف صورة للوجبة",
+};
 
 const CATEGORIES: RecipeCategory[] = ["breakfast", "lunch", "dinner", "snack", "pre-workout", "post-workout"];
 
