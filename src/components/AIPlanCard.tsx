@@ -478,7 +478,14 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
             <div className="animate-slide-up rounded-xl border border-border bg-card p-3 sm:p-5 shadow-card">
               <div className="mb-4 flex items-center justify-between">
                 <div>
-                  <h3 className="font-bold text-foreground">{localizeDayOfWeek(schedule[selectedDay].dayOfWeek, locale)}</h3>
+                  <h3 className="font-bold text-foreground">
+                    {viewMode === "program" && programWeeks > 1 && (
+                      <span className="text-xs font-semibold text-primary uppercase tracking-wider mr-2">
+                        {(t("weekN") || "Week {{n}}").replace("{{n}}", String(selectedWeek + 1))} ·
+                      </span>
+                    )}
+                    {localizeDayOfWeek(schedule[selectedDay].dayOfWeek, locale)}
+                  </h3>
                 </div>
                 <CalendarDropdown plan={plan} dayIndex={selectedDay} />
               </div>
