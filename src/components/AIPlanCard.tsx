@@ -233,7 +233,7 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
   const programWeeks = (() => {
     const explicit = Number(plan.plan_data?.programWeeks);
     if (explicit && explicit > 0) return Math.max(1, explicit);
-    const phases = (plan.plan_data?.periodization || periodization || []) as any[];
+    const phases = (plan.plan_data?.periodization || []) as any[];
     const maxWeek = phases.reduce((acc, p) => {
       const r = p?.weekRange;
       const end = Array.isArray(r) ? Number(r[1]) : 0;
