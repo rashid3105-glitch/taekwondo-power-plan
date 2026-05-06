@@ -11,6 +11,7 @@ interface Props {
   isDemo: boolean;
   isLocked: (mod: "competitions" | "match_analysis") => boolean;
   onAllModules: () => void;
+  onTab: (tab: "plan" | "progress") => void;
 }
 
 export function HubPinnedModules({
@@ -22,6 +23,7 @@ export function HubPinnedModules({
   isDemo,
   isLocked,
   onAllModules,
+  onTab,
 }: Props) {
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -38,7 +40,7 @@ export function HubPinnedModules({
         : t("hubTrainingDesc").slice(0, 40) + "…",
       iconBg: "bg-tab-plan/15",
       iconColor: "text-tab-plan",
-      onClick: () => navigate("/dashboard"),
+      onClick: () => onTab("plan"),
       locked: false,
     },
     {
@@ -51,7 +53,7 @@ export function HubPinnedModules({
           : t("hubProgressTitle"),
       iconBg: "bg-tab-progress/15",
       iconColor: "text-tab-progress",
-      onClick: () => navigate("/dashboard?tab=progress"),
+      onClick: () => onTab("progress"),
       locked: isDemo,
     },
     {
