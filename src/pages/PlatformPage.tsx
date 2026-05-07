@@ -66,10 +66,10 @@ export default function PlatformPage() {
       <header className="sticky top-0 z-40 backdrop-blur-xl bg-background/80 border-b border-border">
         <div className="mx-auto max-w-6xl px-5 py-3 flex items-center justify-between">
           <Link to="/" className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1">
-            <ArrowLeft className="h-4 w-4" /> {t("back") || "Back"}
+            <ArrowLeft className="h-4 w-4" /> {ui.back}
           </Link>
           <Link to="/auth?tab=signup">
-            <Button size="sm" className="font-semibold">{t("getStarted") || "Get started"}</Button>
+            <Button size="sm" className="font-semibold">{ui.getStarted}</Button>
           </Link>
         </div>
       </header>
