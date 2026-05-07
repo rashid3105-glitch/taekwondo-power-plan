@@ -72,6 +72,7 @@ export type CLStrings = {
   galleryEyebrow?: string;
   galleryTitle?: string;
   gallerySub?: string;
+  storyRows?: { eyebrow: string; title: string; body: string; bullets: string[] }[];
 
   metaTitle: string;
   metaDesc: string;
