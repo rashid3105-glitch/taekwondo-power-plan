@@ -62,7 +62,7 @@ export type CLStrings = {
   finalCtaDesc: string;
   finalCtaButton: string;
 
-  footerCols: { title: string; links: string[] }[];
+  footerCols: { title: string; links: { label: string; href: string }[] }[];
   footerCopy: string;
   footerPrivacy: string;
   footerContact: string;
