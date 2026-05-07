@@ -408,53 +408,67 @@ function Testimonials() {
   );
 }
 
-/* ───────────────── Action Gallery ───────────────── */
-const GALLERY = [
-  { src: photoSideKick, alt: "Sparring side kick", span: "row-span-2" },
-  { src: photoSparringJuniors, alt: "Junior sparring match", span: "" },
-  { src: photoCoachCorner, alt: "Coach guiding athlete in corner", span: "" },
-  { src: photoHighKick, alt: "High kick blocked", span: "" },
-  { src: photoDenJump, alt: "Denmark athlete jump kick", span: "row-span-2" },
-  { src: photoCoachTalk, alt: "Coach talking with athlete", span: "" },
-  { src: photoPunch, alt: "Punch in clinch", span: "" },
-  { src: photoClash, alt: "Aerial clash", span: "" },
-  { src: photoCoachBench, alt: "Coach courtside", span: "" },
-];
+/* ───────────────── Story Rows (Everfit-style) ───────────────── */
+const STORY_PHOTOS = [photoCoachCorner, photoSideKick, photoCoachTalk, photoDenJump];
 
-function ActionGallery() {
+function StoryRows() {
   const cl = useCL();
+  const rows = cl.storyRows ?? [];
   return (
-    <section className="mx-auto max-w-7xl px-5 py-20 lg:py-24">
-      <div className="max-w-2xl mb-10">
-        <p className={`text-xs font-semibold tracking-[0.25em] mb-3 ${body}`} style={{ color: C.red }}>
-          {cl.galleryEyebrow ?? "REAL ATHLETES · REAL MOMENTS"}
-        </p>
-        <h2 className={`${headline} text-4xl sm:text-5xl`} style={{ color: C.text }}>
-          {cl.galleryTitle ?? "Built ringside, not behind a desk."}
-        </h2>
-        <p className={`mt-4 text-sm ${body}`} style={{ color: C.muted }}>
-          {cl.gallerySub ?? "From the corner to the mat — Sportstalent is shaped by the moments coaches and athletes live every weekend."}
-        </p>
-      </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[140px] md:auto-rows-[180px] gap-3">
-        {GALLERY.map((g, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, scale: 0.96 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true, margin: "-40px" }}
-            transition={{ duration: 0.4, delay: i * 0.04 }}
-            className={`relative overflow-hidden rounded-xl border ${g.span}`}
-            style={{ borderColor: C.border }}
-          >
-            <img
-              src={g.src}
-              alt={g.alt}
-              loading="lazy"
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-          </motion.div>
-        ))}
+    <section className="border-y" style={{ borderColor: C.border, background: C.bg }}>
+      <div className="mx-auto max-w-6xl px-5 py-20 lg:py-28 space-y-20 lg:space-y-28">
+        {rows.map((row, i) => {
+          const reverse = i % 2 === 1;
+          const accent = i % 2 === 0 ? C.red : C.gold;
+          return (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.55 }}
+              className={`grid lg:grid-cols-2 gap-10 lg:gap-16 items-center ${reverse ? "lg:[&>*:first-child]:order-2" : ""}`}
+            >
+              <div className="relative">
+                <div
+                  className="pointer-events-none absolute -inset-4 rounded-3xl opacity-30 blur-2xl"
+                  style={{ background: `radial-gradient(ellipse, ${accent}55, transparent 70%)` }}
+                  aria-hidden
+                />
+                <div
+                  className="relative aspect-[4/5] sm:aspect-[5/6] rounded-2xl overflow-hidden border shadow-xl"
+                  style={{ borderColor: C.border }}
+                >
+                  <img
+                    src={STORY_PHOTOS[i % STORY_PHOTOS.length]}
+                    alt={row.title}
+                    loading="lazy"
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
+                </div>
+              </div>
+              <div>
+                <p className={`text-xs font-bold tracking-[0.25em] mb-3 ${body}`} style={{ color: accent }}>
+                  {row.eyebrow}
+                </p>
+                <h3 className={`${headline} text-3xl sm:text-4xl lg:text-5xl leading-[1.05]`} style={{ color: C.text }}>
+                  {row.title}
+                </h3>
+                <p className={`mt-5 text-base sm:text-lg max-w-xl leading-relaxed ${body}`} style={{ color: C.text, opacity: 0.75 }}>
+                  {row.body}
+                </p>
+                <ul className={`mt-6 space-y-2.5 ${body}`}>
+                  {row.bullets.map((b) => (
+                    <li key={b} className="flex gap-2.5 text-sm" style={{ color: C.text }}>
+                      <Check className="h-4 w-4 mt-0.5 shrink-0" style={{ color: accent }} />
+                      {b}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </motion.div>
+          );
+        })}
       </div>
     </section>
   );
