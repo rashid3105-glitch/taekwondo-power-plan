@@ -4,37 +4,19 @@ import { motion } from "framer-motion";
 import { PageMeta } from "@/components/PageMeta";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
+import { platformStrings, type PlatformSlug } from "./platformPageStrings";
 
 import coachDashboardImg from "@/assets/screenshots/coach-dashboard.png";
 import coachAttendanceImg from "@/assets/screenshots/coach-attendance.png";
 import athleteDashboardImg from "@/assets/screenshots/athlete-dashboard.png";
 import diaryImg from "@/assets/screenshots/diary.png";
 import healthImg from "@/assets/screenshots/health.png";
-import competitionsImg from "@/assets/screenshots/competitions.png";
 import seasonImg from "@/assets/screenshots/season-plan.png";
 import libraryImg from "@/assets/screenshots/library.png";
 
-type Slug =
-  | "coach-dashboard"
-  | "plan-builder"
-  | "squad-reports"
-  | "roster"
-  | "diary"
-  | "readiness"
-  | "progress"
-  | "library";
+type Slug = PlatformSlug;
 
-type Content = {
-  audience: "coach" | "athlete";
-  title: string;
-  intro: string;
-  bullets: string[];
-  image: string;
-  imageAlt: string;
-  metaDesc: string;
-};
-
-const CONTENT: Record<Slug, Content> = {
+const META: Record<Slug, { audience: "coach" | "athlete"; image: string }> = {
   "coach-dashboard": {
     audience: "coach",
     title: "Coach Dashboard",
