@@ -13,7 +13,7 @@ import photoHighKick from "@/assets/photos/high-kick-block.jpg";
 import photoCoachTalk from "@/assets/photos/coach-talk-denmark.jpg";
 import photoPunch from "@/assets/photos/punch-clinch.jpg";
 import photoSideKick from "@/assets/photos/side-kick-new.png";
-import photoDenJump from "@/assets/photos/den-jump-kick.jpg";
+import photoDenJump from "@/assets/photos/den-jump-kick-new.png";
 import photoClash from "@/assets/photos/clash-aerial.jpg";
 import photoCoachBench from "@/assets/photos/coach-bench.jpg";
 
