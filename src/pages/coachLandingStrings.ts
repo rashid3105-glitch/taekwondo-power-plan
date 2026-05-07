@@ -26,7 +26,8 @@ export type CLStrings = {
   mockWeeklyLoad: string;
   mockTrimpDay: string;
 
-  marqueeTrust: string;
+  trustEyebrow: string;
+  trustLine: string;
 
   featuresTitle1: string;
   featuresTitle2: string;
