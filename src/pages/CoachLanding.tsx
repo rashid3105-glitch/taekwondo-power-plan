@@ -408,6 +408,58 @@ function Testimonials() {
   );
 }
 
+/* ───────────────── Action Gallery ───────────────── */
+const GALLERY = [
+  { src: photoSideKick, alt: "Sparring side kick", span: "row-span-2" },
+  { src: photoSparringJuniors, alt: "Junior sparring match", span: "" },
+  { src: photoCoachCorner, alt: "Coach guiding athlete in corner", span: "" },
+  { src: photoHighKick, alt: "High kick blocked", span: "" },
+  { src: photoDenJump, alt: "Denmark athlete jump kick", span: "row-span-2" },
+  { src: photoCoachTalk, alt: "Coach talking with athlete", span: "" },
+  { src: photoPunch, alt: "Punch in clinch", span: "" },
+  { src: photoClash, alt: "Aerial clash", span: "" },
+  { src: photoCoachBench, alt: "Coach courtside", span: "" },
+];
+
+function ActionGallery() {
+  const cl = useCL();
+  return (
+    <section className="mx-auto max-w-7xl px-5 py-20 lg:py-24">
+      <div className="max-w-2xl mb-10">
+        <p className={`text-xs font-semibold tracking-[0.25em] mb-3 ${body}`} style={{ color: C.red }}>
+          {cl.galleryEyebrow}
+        </p>
+        <h2 className={`${headline} text-4xl sm:text-5xl`} style={{ color: C.text }}>
+          {cl.galleryTitle}
+        </h2>
+        <p className={`mt-4 text-sm ${body}`} style={{ color: C.muted }}>
+          {cl.gallerySub}
+        </p>
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[140px] md:auto-rows-[180px] gap-3">
+        {GALLERY.map((g, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, scale: 0.96 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.4, delay: i * 0.04 }}
+            className={`relative overflow-hidden rounded-xl border ${g.span}`}
+            style={{ borderColor: C.border }}
+          >
+            <img
+              src={g.src}
+              alt={g.alt}
+              loading="lazy"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          </motion.div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 /* ───────────────── Pricing ───────────────── */
 const PRICES = ["49", "99", "399", "699", "999"];
 const POPULAR_INDEX = 2;
