@@ -118,14 +118,9 @@ function Nav() {
     </header>
   );
 }
-const HERO_PHRASES = [
-  "Like You Have More Time.",
-  "Like You Have More Staff.",
-  "Like You've Seen It All Before.",
-  "Like Your Best Season Starts Now.",
-];
-
 function Hero() {
+  const cl = useCL();
+  const phrases = cl.heroPhrases;
   const [i, setI] = useState(0);
   const [reduced, setReduced] = useState(false);
 
@@ -133,13 +128,12 @@ function Hero() {
     const m = window.matchMedia("(prefers-reduced-motion: reduce)");
     setReduced(m.matches);
     if (m.matches) return;
-    const t = setInterval(() => setI((x) => (x + 1) % HERO_PHRASES.length), 2500);
+    const t = setInterval(() => setI((x) => (x + 1) % phrases.length), 2500);
     return () => clearInterval(t);
-  }, []);
+  }, [phrases.length]);
 
   return (
     <section id="top" className="relative overflow-hidden">
-      {/* Glow */}
       <div
         className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 h-[600px] w-[900px] rounded-full opacity-30"
         style={{ background: `radial-gradient(ellipse, ${C.red}55, transparent 70%)` }}
@@ -147,14 +141,11 @@ function Hero() {
       />
       <div className="relative mx-auto max-w-7xl px-5 pt-16 pb-20 lg:pt-24 lg:pb-28 grid lg:grid-cols-[1.1fr_1fr] gap-14 items-center">
         <div>
-          <p
-            className={`text-xs font-semibold tracking-[0.25em] mb-5 ${body}`}
-            style={{ color: C.red }}
-          >
-            BUILT FOR TAEKWONDO COACHES
+          <p className={`text-xs font-semibold tracking-[0.25em] mb-5 ${body}`} style={{ color: C.red }}>
+            {cl.heroBadge}
           </p>
           <h1 className={`${headline} text-5xl sm:text-6xl lg:text-7xl leading-[0.95]`} style={{ color: C.text }}>
-            Coach Every Athlete
+            {cl.heroTitle}
             <br />
             <span className="relative inline-block min-h-[1.05em]" style={{ color: C.red }}>
               <AnimatePresence mode="wait">
@@ -166,15 +157,13 @@ function Hero() {
                   transition={{ duration: 0.4 }}
                   className="inline-block"
                 >
-                  {HERO_PHRASES[reduced ? 0 : i]}
+                  {phrases[reduced ? 0 : i]}
                 </motion.span>
               </AnimatePresence>
             </span>
           </h1>
           <p className={`mt-6 text-base sm:text-lg max-w-xl ${body}`} style={{ color: C.text, opacity: 0.75 }}>
-            Sportstalent brings together 20 years of taekwondo coaching knowledge into one
-            platform — so every athlete in your club gets the attention they deserve, and
-            you spend less time on admin.
+            {cl.heroDesc}
           </p>
           <div className={`mt-8 flex flex-col sm:flex-row gap-3 ${body}`}>
             <Link
@@ -182,22 +171,21 @@ function Hero() {
               className="inline-flex items-center justify-center gap-2 rounded-md px-6 py-3 text-sm font-bold transition-transform active:scale-[0.98]"
               style={{ background: C.red, color: C.text }}
             >
-              Start Free <ArrowRight className="h-4 w-4" />
+              {cl.heroCtaPrimary} <ArrowRight className="h-4 w-4" />
             </Link>
             <a
               href="#how"
               className="inline-flex items-center justify-center gap-2 rounded-md px-6 py-3 text-sm font-semibold border transition-colors"
               style={{ borderColor: C.border, color: C.text }}
             >
-              See How It Works
+              {cl.heroCtaSecondary}
             </a>
           </div>
           <p className={`mt-4 text-xs ${body}`} style={{ color: C.muted }}>
-            Free for clubs under 10 athletes · No credit card needed
+            {cl.heroFinePrint}
           </p>
         </div>
 
-        {/* Mockup */}
         <DashboardMockup />
       </div>
     </section>
