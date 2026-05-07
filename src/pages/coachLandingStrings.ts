@@ -162,9 +162,9 @@ const en: CLStrings = {
 
   testimonialsTitle: "Coaches who switched, didn't switch back",
   testimonials: [
-    { stat: "20 years", quote: "Finally a platform that actually understands taekwondo — not just generic fitness.", name: "Coach Mads", club: "Copenhagen TKD" },
-    { stat: "+3 hrs/week", quote: "My athletes log sessions themselves now. I get back 3 hours every week.", name: "Coach Lena", club: "Aarhus Taekwondo" },
-    { stat: "Parents on-board", quote: "The weekly report alone is worth it. Parents finally understand what we're building.", name: "Coach Tariq", club: "Oslo Kampsport" },
+    { stat: "20 years", quote: "Finally a platform that actually understands taekwondo — not just generic fitness.", name: "Coach Sami", club: "Klub i København" },
+    { stat: "+3 hrs/week", quote: "My athletes log sessions themselves now. I get back 3 hours every week.", name: "Coach Janne", club: "Klub i Malmø" },
+    { stat: "Parents on-board", quote: "The weekly report alone is worth it. Parents finally understand what we're building.", name: "Coach Michael", club: "Klub i London" },
   ],
 
   pricingTitle: "Simple pricing",
@@ -322,9 +322,9 @@ const da: CLStrings = {
 
   testimonialsTitle: "Trænere der skiftede, skiftede ikke tilbage",
   testimonials: [
-    { stat: "20 år", quote: "Endelig en platform der faktisk forstår taekwondo — ikke bare generel fitness.", name: "Træner Mads", club: "Copenhagen TKD" },
-    { stat: "+3 t/uge", quote: "Mine atleter logger selv sessionerne nu. Jeg får 3 timer tilbage om ugen.", name: "Træner Lena", club: "Aarhus Taekwondo" },
-    { stat: "Forældre med", quote: "Den ugentlige rapport alene er det værd. Forældre forstår endelig, hvad vi bygger.", name: "Træner Tariq", club: "Oslo Kampsport" },
+    { stat: "20 år", quote: "Endelig en platform der faktisk forstår taekwondo — ikke bare generel fitness.", name: "Træner Sami", club: "Klub i København" },
+    { stat: "+3 t/uge", quote: "Mine atleter logger selv sessionerne nu. Jeg får 3 timer tilbage om ugen.", name: "Træner Janne", club: "Klub i Malmø" },
+    { stat: "Forældre med", quote: "Den ugentlige rapport alene er det værd. Forældre forstår endelig, hvad vi bygger.", name: "Træner Michael", club: "Klub i London" },
   ],
 
   pricingTitle: "Enkle priser",
@@ -470,9 +470,9 @@ const sv: CLStrings = {
 
   testimonialsTitle: "Tränare som bytte, bytte inte tillbaka",
   testimonials: [
-    { stat: "20 år", quote: "Äntligen en plattform som verkligen förstår taekwondo — inte bara generell fitness.", name: "Tränare Mads", club: "Copenhagen TKD" },
-    { stat: "+3 h/vecka", quote: "Mina atleter loggar sina pass själva nu. Jag får tillbaka 3 timmar i veckan.", name: "Tränare Lena", club: "Aarhus Taekwondo" },
-    { stat: "Föräldrar med", quote: "Bara veckorapporten är värd det. Föräldrar förstår äntligen vad vi bygger.", name: "Tränare Tariq", club: "Oslo Kampsport" },
+    { stat: "20 år", quote: "Äntligen en plattform som verkligen förstår taekwondo — inte bara generell fitness.", name: "Tränare Sami", club: "Klub i København" },
+    { stat: "+3 h/vecka", quote: "Mina atleter loggar sina pass själva nu. Jag får tillbaka 3 timmar i veckan.", name: "Tränare Janne", club: "Klub i Malmø" },
+    { stat: "Föräldrar med", quote: "Bara veckorapporten är värd det. Föräldrar förstår äntligen vad vi bygger.", name: "Tränare Michael", club: "Klub i London" },
   ],
 
   pricingTitle: "Enkla priser",
@@ -618,9 +618,9 @@ const no: CLStrings = {
 
   testimonialsTitle: "Trenere som byttet, byttet ikke tilbake",
   testimonials: [
-    { stat: "20 år", quote: "Endelig en plattform som faktisk forstår taekwondo — ikke bare generell fitness.", name: "Trener Mads", club: "Copenhagen TKD" },
-    { stat: "+3 t/uke", quote: "Utøverne mine logger øktene selv nå. Jeg får tilbake 3 timer i uken.", name: "Trener Lena", club: "Aarhus Taekwondo" },
-    { stat: "Foreldre med", quote: "Den ukentlige rapporten alene er verdt det. Foreldre forstår endelig hva vi bygger.", name: "Trener Tariq", club: "Oslo Kampsport" },
+    { stat: "20 år", quote: "Endelig en plattform som faktisk forstår taekwondo — ikke bare generell fitness.", name: "Trener Sami", club: "Klub i København" },
+    { stat: "+3 t/uke", quote: "Utøverne mine logger øktene selv nå. Jeg får tilbake 3 timer i uken.", name: "Trener Janne", club: "Klub i Malmø" },
+    { stat: "Foreldre med", quote: "Den ukentlige rapporten alene er verdt det. Foreldre forstår endelig hva vi bygger.", name: "Trener Michael", club: "Klub i London" },
   ],
 
   pricingTitle: "Enkle priser",
@@ -766,9 +766,9 @@ const de: CLStrings = {
 
   testimonialsTitle: "Trainer, die wechselten, blieben dabei",
   testimonials: [
-    { stat: "20 Jahre", quote: "Endlich eine Plattform, die Taekwondo wirklich versteht — nicht nur generisches Fitness.", name: "Trainer Mads", club: "Copenhagen TKD" },
-    { stat: "+3 Std/Woche", quote: "Meine Athleten loggen ihre Einheiten selbst. Ich gewinne 3 Stunden pro Woche zurück.", name: "Trainerin Lena", club: "Aarhus Taekwondo" },
-    { stat: "Eltern dabei", quote: "Allein der Wochenbericht ist es wert. Eltern verstehen endlich, was wir aufbauen.", name: "Trainer Tariq", club: "Oslo Kampsport" },
+    { stat: "20 Jahre", quote: "Endlich eine Plattform, die Taekwondo wirklich versteht — nicht nur generisches Fitness.", name: "Trainer Sami", club: "Klub i København" },
+    { stat: "+3 Std/Woche", quote: "Meine Athleten loggen ihre Einheiten selbst. Ich gewinne 3 Stunden pro Woche zurück.", name: "Trainer Janne", club: "Klub i Malmø" },
+    { stat: "Eltern dabei", quote: "Allein der Wochenbericht ist es wert. Eltern verstehen endlich, was wir aufbauen.", name: "Trainer Michael", club: "Klub i London" },
   ],
 
   pricingTitle: "Einfache Preise",
@@ -914,9 +914,9 @@ const ar: CLStrings = {
 
   testimonialsTitle: "المدربون الذين انتقلوا، لم يعودوا",
   testimonials: [
-    { stat: "20 سنة", quote: "أخيراً منصة تفهم التايكوندو فعلاً — وليست لياقة عامة فحسب.", name: "المدرب مادس", club: "Copenhagen TKD" },
-    { stat: "+3 ساعات/أسبوع", quote: "رياضيوني يسجلون جلساتهم بأنفسهم الآن. أوفر 3 ساعات أسبوعياً.", name: "المدربة لينا", club: "Aarhus Taekwondo" },
-    { stat: "الأهل معنا", quote: "التقرير الأسبوعي وحده يستحق ذلك. أصبح الأهل يفهمون ما نبنيه.", name: "المدرب طارق", club: "Oslo Kampsport" },
+    { stat: "20 سنة", quote: "أخيراً منصة تفهم التايكوندو فعلاً — وليست لياقة عامة فحسب.", name: "المدرب سامي", club: "Klub i København" },
+    { stat: "+3 ساعات/أسبوع", quote: "رياضيوني يسجلون جلساتهم بأنفسهم الآن. أوفر 3 ساعات أسبوعياً.", name: "المدرب جني", club: "Klub i Malmø" },
+    { stat: "الأهل معنا", quote: "التقرير الأسبوعي وحده يستحق ذلك. أصبح الأهل يفهمون ما نبنيه.", name: "المدرب مايكل", club: "Klub i London" },
   ],
 
   pricingTitle: "تسعير بسيط",
