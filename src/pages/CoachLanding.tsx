@@ -485,8 +485,12 @@ function Footer() {
               <div className={`${headline} text-sm mb-3`} style={{ color: C.text }}>{col.title}</div>
               <ul className="space-y-2">
                 {col.links.map((l) => (
-                  <li key={l}>
-                    <a href="#" className="text-xs" style={{ color: C.muted }}>{l}</a>
+                  <li key={l.label}>
+                    {l.href.startsWith("/") ? (
+                      <Link to={l.href} className="text-xs hover:underline" style={{ color: C.muted }}>{l.label}</Link>
+                    ) : (
+                      <a href={l.href} className="text-xs hover:underline" style={{ color: C.muted }}>{l.label}</a>
+                    )}
                   </li>
                 ))}
               </ul>
