@@ -566,7 +566,7 @@ const no: CLStrings = {
     "Sportstalent samler 20 års taekwondo-trenerkunnskap i én plattform — slik at hver utøver i klubben får oppmerksomheten de fortjener, og du bruker mindre tid på administrasjon.",
   heroCtaPrimary: "Start gratis",
   heroCtaSecondary: "Se hvordan det fungerer",
-  heroFinePrint: "Gratis for klubber under 10 utøvere · Ingen kortinformasjon nødvendig",
+  heroFinePrint: "Gratis for klubber under 10 utøvere i en prøveperiode · Ingen kortinformasjon nødvendig",
 
   mockSquadPulse: "Lagets puls",
   mockWeek: "Uke 14 · 18 utøvere",
