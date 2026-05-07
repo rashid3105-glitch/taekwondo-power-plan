@@ -7,6 +7,15 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { COACH_LANDING_STRINGS } from "./coachLandingStrings";
 import sportstalentLogo from "@/assets/sportstalent-logo.jpeg";
+import photoCoachCorner from "@/assets/photos/coach-athlete-corner.jpg";
+import photoSparringJuniors from "@/assets/photos/sparring-juniors.jpg";
+import photoHighKick from "@/assets/photos/high-kick-block.jpg";
+import photoCoachTalk from "@/assets/photos/coach-talk-denmark.jpg";
+import photoPunch from "@/assets/photos/punch-clinch.jpg";
+import photoSideKick from "@/assets/photos/side-kick-referee.jpg";
+import photoDenJump from "@/assets/photos/den-jump-kick.jpg";
+import photoClash from "@/assets/photos/clash-aerial.jpg";
+import photoCoachBench from "@/assets/photos/coach-bench.jpg";
 
 const useCL = () => {
   const { locale } = useLanguage();
