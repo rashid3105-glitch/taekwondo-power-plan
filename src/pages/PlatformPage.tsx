@@ -17,134 +17,14 @@ import libraryImg from "@/assets/screenshots/library.png";
 type Slug = PlatformSlug;
 
 const META: Record<Slug, { audience: "coach" | "athlete"; image: string }> = {
-  "coach-dashboard": {
-    audience: "coach",
-    title: "Coach Dashboard",
-    intro:
-      "One screen for your entire club. See every athlete's status — readiness, plan adherence, last activity — at a glance, ranked by who needs you most today.",
-    bullets: [
-      "Squad pulse: needs attention, injured, no active plan, inactive 7d+",
-      "Search and filter by belt, name, or club role",
-      "Quick actions: view profile, edit plan, message — without leaving the list",
-      "Bulk competition assignment and weekly PDF export",
-    ],
-    image: coachDashboardImg,
-    imageAlt: "Coach dashboard with squad pulse and athlete roster",
-    metaDesc:
-      "See your whole taekwondo club from one screen. Squad pulse, readiness flags, plan status — all in real time.",
-  },
-  "plan-builder": {
-    audience: "coach",
-    title: "Plan Builder",
-    intro:
-      "Build a periodized season around the competitions that matter. Sportstalent automatically structures General Prep → Specific Prep → Peak → Deload around every A-priority event.",
-    bullets: [
-      "Season planner with auto-periodization",
-      "4–12 week training blocks tailored to belt level and age",
-      "Drag-and-drop weekly editing across TKD, gym, rest days",
-      "Peaks and tapers calculated from competition dates and weight goals",
-    ],
-    image: seasonImg,
-    imageAlt: "Season planner with auto-periodization around competitions",
-    metaDesc:
-      "Build periodized taekwondo plans in minutes. Auto-tapers around competitions, drag-and-drop weekly edits.",
-  },
-  "squad-reports": {
-    audience: "coach",
-    title: "Squad Reports",
-    intro:
-      "Know who's on the mat today before you walk in. Daily attendance, weekly load summaries, and a one-click PDF that's ready for parents, assistant coaches, or federation reviews.",
-    bullets: [
-      "Today's training: planned session per athlete, mark present/absent",
-      "Weekly PDF export for the whole squad",
-      "Auto-flag overload, undertrain, and missed readiness check-ins",
-      "Athlete-by-athlete summaries with notes you can share",
-    ],
-    image: coachAttendanceImg,
-    imageAlt: "Today's training attendance view for a coach's squad",
-    metaDesc:
-      "Daily attendance, weekly squad PDFs, load flags — share with parents, federations, or your assistant coaches.",
-  },
-  roster: {
-    audience: "coach",
-    title: "Roster Management",
-    intro:
-      "Add athletes in seconds, group them by club, and keep belts, weight categories, and contact details in one place. Invite via link or create accounts directly.",
-    bullets: [
-      "Invite athletes by link or email — no friction",
-      "Belt, weight class, and birth date tracked per athlete",
-      "Assistant coach roles with managed vs view-only athletes",
-      "Pending requests reviewed in one click",
-    ],
-    image: coachDashboardImg,
-    imageAlt: "Roster list with belts, clubs, and quick actions",
-    metaDesc:
-      "Roster management for taekwondo clubs: invite, group by club, manage belts and weight classes.",
-  },
-  diary: {
-    audience: "athlete",
-    title: "Daily Diary",
-    intro:
-      "A 60-second log after every session. Athletes write what worked, what didn't, and how it felt — coach can read and respond directly inside the app.",
-    bullets: [
-      "Filter by training, mental, general, or hashtag",
-      "Coach comments appear inline (read-only for the athlete)",
-      "Works offline — entries sync when you're back online",
-      "Searchable history across months and seasons",
-    ],
-    image: diaryImg,
-    imageAlt: "Athlete diary with category filters and tag chips",
-    metaDesc:
-      "Athlete training diary with offline support, coach comments, and tag-based filtering.",
-  },
-  readiness: {
-    audience: "athlete",
-    title: "Readiness Check",
-    intro:
-      "A daily pulse on how the athlete is recovering. Sleep, resting HR, HRV, and steps — entered manually or pulled automatically from Apple Health / Health Connect.",
-    bullets: [
-      "Auto-syncs from iPhone HealthBridge or Android Health Connect",
-      "7-day rolling baselines flag low recovery before injury",
-      "Coach sees a recovery sparkline directly in the squad view",
-      "Manual entry for athletes without a wearable",
-    ],
-    image: healthImg,
-    imageAlt: "Daily readiness check with sleep, HR, HRV inputs",
-    metaDesc:
-      "Daily readiness check with sleep, HRV, RHR — auto-synced from Apple Health and Health Connect.",
-  },
-  progress: {
-    audience: "athlete",
-    title: "Progress Tracking",
-    intro:
-      "Belt to belt, season to season. Visualise training volume, recovery trends, mental scores, and competition results in one continuous view.",
-    bullets: [
-      "Today's hub: next event, next session, recovery, readiness",
-      "Personalised quote and pinned modules in one place",
-      "Form curve, weekly load, and physical test history",
-      "Post-competition reflections with SMART goal tracking",
-    ],
-    image: athleteDashboardImg,
-    imageAlt: "Athlete dashboard with today's training, recovery, and next event",
-    metaDesc:
-      "Track progress over time: load, recovery, mental scores, competition reflections — for taekwondo athletes.",
-  },
-  library: {
-    audience: "athlete",
-    title: "Performance Library",
-    intro:
-      "100+ taekwondo-specific exercises, mental training drills, recipes, physical tests, and HIIT sessions — built by coaches, organised so athletes actually use them.",
-    bullets: [
-      "TKD exercises with cues and short demo videos",
-      "Mental training: focus, visualisation, mental toughness drills",
-      "Athlete-friendly recipes and physical test protocols",
-      "Live HIIT sessions you can run in the gym",
-    ],
-    image: libraryImg,
-    imageAlt: "Performance library: exercises, mental training, nutrition, tests, HIIT",
-    metaDesc:
-      "Taekwondo performance library: exercises, mental training, nutrition, physical tests, HIIT.",
-  },
+  "coach-dashboard": { audience: "coach", image: coachDashboardImg },
+  "plan-builder": { audience: "coach", image: seasonImg },
+  "squad-reports": { audience: "coach", image: coachAttendanceImg },
+  roster: { audience: "coach", image: coachDashboardImg },
+  diary: { audience: "athlete", image: diaryImg },
+  readiness: { audience: "athlete", image: healthImg },
+  progress: { audience: "athlete", image: athleteDashboardImg },
+  library: { audience: "athlete", image: libraryImg },
 };
 
 const ORDER: Slug[] = [
@@ -161,14 +41,18 @@ const ORDER: Slug[] = [
 export default function PlatformPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { locale } = useLanguage();
 
-  const data = slug && (CONTENT as Record<string, Content>)[slug];
-  if (!data) return <Navigate to="/" replace />;
+  const meta =
+    slug && (META as Record<string, { audience: "coach" | "athlete"; image: string }>)[slug];
+  const localeBundle = platformStrings[locale] ?? platformStrings.en;
+  const data = slug ? localeBundle.content[slug as Slug] : undefined;
+  const ui = localeBundle.ui;
+  if (!meta || !data) return <Navigate to="/" replace />;
 
   const idx = ORDER.indexOf(slug as Slug);
   const next = ORDER[(idx + 1) % ORDER.length];
-  const audienceColor = data.audience === "coach" ? "#E63946" : "#0EA5E9";
+  const audienceColor = meta.audience === "coach" ? "#E63946" : "#0EA5E9";
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
