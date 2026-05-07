@@ -3,6 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X, ArrowRight, Check } from "lucide-react";
 import { PageMeta } from "@/components/PageMeta";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { COACH_LANDING_STRINGS } from "./coachLandingStrings";
+
+const useCL = () => {
+  const { locale } = useLanguage();
+  return COACH_LANDING_STRINGS[locale] ?? COACH_LANDING_STRINGS.en;
+};
 
 /* ───────────────── Tokens ─────────────────
    Scoped via inline arbitrary values so global theme isn't touched.
