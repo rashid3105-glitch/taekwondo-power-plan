@@ -52,6 +52,8 @@ export type CLStrings = {
   mostPopular: string;
   fromLabel: string;
   perMonth: string;
+  currency?: string;
+  prices?: [string, string, string, string, string];
   tiers: { name: string; desc: string; features: string[]; cta: string }[];
   pricingFootnoteLead: string;
   pricingFootnoteLink: string;
