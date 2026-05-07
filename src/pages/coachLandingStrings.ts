@@ -67,6 +67,10 @@ export type CLStrings = {
   footerPrivacy: string;
   footerContact: string;
 
+  galleryEyebrow?: string;
+  galleryTitle?: string;
+  gallerySub?: string;
+
   metaTitle: string;
   metaDesc: string;
 };
@@ -201,7 +205,7 @@ const en: CLStrings = {
       { label: "Readiness Check", href: "/platform/readiness" },
       { label: "Progress Tracking", href: "/platform/progress" },
       { label: "Performance Library", href: "/platform/library" },
-      { label: "Install the app", href: "/install" },
+      { label: "Nutrition Plan", href: "/kostplan" },
     ] },
     { title: "Company", links: [
       { label: "About", href: "/about" },
@@ -214,6 +218,9 @@ const en: CLStrings = {
   footerCopy: "© 2025 Sportstalent.dk · Made for taekwondo, by people who love the sport 🥋",
   footerPrivacy: "Privacy",
   footerContact: "Contact",
+  galleryEyebrow: "REAL ATHLETES · REAL MOMENTS",
+  galleryTitle: "Built ringside, not behind a desk.",
+  gallerySub: "From the corner to the mat — Sportstalent is shaped by the moments coaches and athletes live every weekend.",
 
   metaTitle: "Sportstalent — Coaching Platform Built for Taekwondo Clubs",
   metaDesc:
@@ -350,7 +357,7 @@ const da: CLStrings = {
       { label: "Parathed", href: "/platform/readiness" },
       { label: "Fremgang", href: "/platform/progress" },
       { label: "Bibliotek", href: "/platform/library" },
-      { label: "Installér app", href: "/install" },
+      { label: "Kostplan", href: "/kostplan" },
     ] },
     { title: "Firma", links: [
       { label: "Om", href: "/about" },
@@ -363,6 +370,9 @@ const da: CLStrings = {
   footerCopy: "© 2025 Sportstalent.dk · Lavet til taekwondo, af folk der elsker sporten 🥋",
   footerPrivacy: "Privatliv",
   footerContact: "Kontakt",
+  galleryEyebrow: "RIGTIGE ATLETER · RIGTIGE ØJEBLIKKE",
+  galleryTitle: "Bygget ringside — ikke bag et skrivebord.",
+  gallerySub: "Fra hjørnet til måtten — Sportstalent er formet af de øjeblikke trænere og atleter lever hver weekend.",
 
   metaTitle: "Sportstalent — Træningsplatform bygget til taekwondo-klubber",
   metaDesc:
@@ -487,7 +497,7 @@ const sv: CLStrings = {
       { label: "Beredskap", href: "/platform/readiness" },
       { label: "Utveckling", href: "/platform/progress" },
       { label: "Bibliotek", href: "/platform/library" },
-      { label: "Installera appen", href: "/install" },
+      { label: "Kostplan", href: "/kostplan" },
     ] },
     { title: "Företag", links: [
       { label: "Om oss", href: "/about" },
@@ -500,6 +510,9 @@ const sv: CLStrings = {
   footerCopy: "© 2025 Sportstalent.dk · Gjord för taekwondo, av människor som älskar sporten 🥋",
   footerPrivacy: "Integritet",
   footerContact: "Kontakt",
+  galleryEyebrow: "RIKTIGA ATLETER · RIKTIGA ÖGONBLICK",
+  galleryTitle: "Byggt vid ringen, inte bakom ett skrivbord.",
+  gallerySub: "Från hörnet till mattan — Sportstalent formas av ögonblicken som tränare och atleter lever varje helg.",
 
   metaTitle: "Sportstalent — Träningsplattform byggd för taekwondo-klubbar",
   metaDesc:
@@ -624,7 +637,7 @@ const no: CLStrings = {
       { label: "Beredskap", href: "/platform/readiness" },
       { label: "Fremgang", href: "/platform/progress" },
       { label: "Bibliotek", href: "/platform/library" },
-      { label: "Installer appen", href: "/install" },
+      { label: "Kostplan", href: "/kostplan" },
     ] },
     { title: "Selskap", links: [
       { label: "Om oss", href: "/about" },
@@ -637,6 +650,9 @@ const no: CLStrings = {
   footerCopy: "© 2025 Sportstalent.dk · Laget for taekwondo, av folk som elsker sporten 🥋",
   footerPrivacy: "Personvern",
   footerContact: "Kontakt",
+  galleryEyebrow: "EKTE UTØVERE · EKTE ØYEBLIKK",
+  galleryTitle: "Bygget ringside — ikke bak et skrivebord.",
+  gallerySub: "Fra hjørnet til matten — Sportstalent formes av øyeblikkene trenere og utøvere lever hver helg.",
 
   metaTitle: "Sportstalent — Treningsplattform bygd for taekwondo-klubber",
   metaDesc:
@@ -761,7 +777,7 @@ const de: CLStrings = {
       { label: "Bereitschaft", href: "/platform/readiness" },
       { label: "Fortschritt", href: "/platform/progress" },
       { label: "Bibliothek", href: "/platform/library" },
-      { label: "App installieren", href: "/install" },
+      { label: "Ernährungsplan", href: "/kostplan" },
     ] },
     { title: "Unternehmen", links: [
       { label: "Über uns", href: "/about" },
@@ -774,6 +790,9 @@ const de: CLStrings = {
   footerCopy: "© 2025 Sportstalent.dk · Gemacht für Taekwondo, von Menschen, die den Sport lieben 🥋",
   footerPrivacy: "Datenschutz",
   footerContact: "Kontakt",
+  galleryEyebrow: "ECHTE ATHLETEN · ECHTE MOMENTE",
+  galleryTitle: "Am Ring entwickelt – nicht am Schreibtisch.",
+  gallerySub: "Von der Ecke bis zur Matte – Sportstalent entsteht aus den Momenten, die Trainer und Athleten jedes Wochenende erleben.",
 
   metaTitle: "Sportstalent — Trainingsplattform für Taekwondo-Vereine",
   metaDesc:
@@ -898,7 +917,7 @@ const ar: CLStrings = {
       { label: "فحص الجاهزية", href: "/platform/readiness" },
       { label: "تتبع التقدم", href: "/platform/progress" },
       { label: "مكتبة الأداء", href: "/platform/library" },
-      { label: "ثبّت التطبيق", href: "/install" },
+      { label: "خطة التغذية", href: "/kostplan" },
     ] },
     { title: "الشركة", links: [
       { label: "من نحن", href: "/about" },
@@ -911,6 +930,9 @@ const ar: CLStrings = {
   footerCopy: "© 2025 Sportstalent.dk · صُنع لأجل التايكوندو، من قبل أشخاص يحبّون الرياضة 🥋",
   footerPrivacy: "الخصوصية",
   footerContact: "تواصل",
+  galleryEyebrow: "رياضيون حقيقيون · لحظات حقيقية",
+  galleryTitle: "بُني على حافة الحلبة، لا خلف المكتب.",
+  gallerySub: "من الزاوية إلى البساط — يتشكل Sportstalent من اللحظات التي يعيشها المدربون والرياضيون كل عطلة أسبوع.",
 
   metaTitle: "Sportstalent — منصة تدريب مصممة لأندية التايكوندو",
   metaDesc:

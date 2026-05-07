@@ -40,7 +40,7 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import About from "./pages/About";
 import Programs from "./pages/Programs";
 import Contact from "./pages/Contact";
-import Install from "./pages/Install";
+import Kostplan from "./pages/Kostplan";
 import Health from "./pages/Health";
 import Competitions from "./pages/Competitions";
 import CompetitionReflection from "./pages/CompetitionReflection";
@@ -99,7 +99,8 @@ const AnimatedRoutes = () => {
         <Route path="/pricing" element={<Page><Pricing /></Page>} />
         <Route path="/settings/subscription" element={<Page><SubscriptionSettings /></Page>} />
         <Route path="/help" element={<Page><Help /></Page>} />
-        <Route path="/install" element={<Page><Install /></Page>} />
+        <Route path="/kostplan" element={<Page><Kostplan /></Page>} />
+        <Route path="/install" element={<Navigate to="/kostplan" replace />} />
         <Route path="/profile-setup" element={<Page><ProfileSetup /></Page>} />
         <Route path="/onboarding" element={<Page><Onboarding /></Page>} />
         <Route path="/health" element={<Page><Health /></Page>} />
