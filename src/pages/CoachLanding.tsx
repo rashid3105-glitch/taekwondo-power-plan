@@ -610,7 +610,7 @@ export default function CoachLanding() {
         <HowItWorks />
         <SplitSection />
         <Testimonials />
-        <ActionGallery />
+        <StoryRows />
         <PricingTeaser />
         <FinalCTA />
       </main>
