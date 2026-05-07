@@ -115,14 +115,14 @@ export default function PlatformPage() {
               </span>
             </div>
             <img
-              src={data.image}
+              src={meta.image}
               alt={data.imageAlt}
               className="w-full h-auto block"
               loading="lazy"
             />
           </motion.div>
           <p className="mt-3 text-center text-xs text-muted-foreground italic">
-            Real screenshot from inside Sportstalent.
+            {ui.screenshotCaption}
           </p>
         </section>
 
