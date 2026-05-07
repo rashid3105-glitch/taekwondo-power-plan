@@ -156,10 +156,10 @@ export default function PlatformPage() {
             className="px-8 font-bold"
             style={{ background: audienceColor, color: "#fff" }}
           >
-            {t("getStarted") || "Start free"} <ArrowRight className="h-4 w-4 ml-1.5" />
+            {ui.startFree} <ArrowRight className="h-4 w-4 ml-1.5" />
           </Button>
           <p className="mt-3 text-[11px] text-muted-foreground/70">
-            14-day trial · no credit card required
+            {ui.trialNote}
           </p>
 
           <div className="mt-12 flex items-center justify-center">
@@ -167,7 +167,7 @@ export default function PlatformPage() {
               to={`/platform/${next}`}
               className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5"
             >
-              Next: {CONTENT[next].title} <ArrowRight className="h-4 w-4" />
+              {ui.next}: {localeBundle.content[next].title} <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </section>
