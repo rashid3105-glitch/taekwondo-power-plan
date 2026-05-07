@@ -70,7 +70,7 @@ function Nav() {
           <Link
             to="/auth?tab=signup"
             className="text-sm font-semibold rounded-md px-4 py-2 transition-transform active:scale-[0.98]"
-            style={{ background: C.red, color: C.text }}
+            style={{ background: C.red, color: "#FFFFFF" }}
           >
             {cl.navGetStarted}
           </Link>
@@ -109,7 +109,7 @@ function Nav() {
                 to="/auth?tab=signup"
                 onClick={() => setOpen(false)}
                 className="ml-auto text-sm font-semibold rounded-md px-4 py-2"
-                style={{ background: C.red, color: C.text }}
+                style={{ background: C.red, color: "#FFFFFF" }}
               >
                 {cl.navGetStarted}
               </Link>
@@ -171,7 +171,7 @@ function Hero() {
             <Link
               to="/auth?tab=signup"
               className="inline-flex items-center justify-center gap-2 rounded-md px-6 py-3 text-sm font-bold transition-transform active:scale-[0.98]"
-              style={{ background: C.red, color: C.text }}
+              style={{ background: C.red, color: "#FFFFFF" }}
             >
               {cl.heroCtaPrimary} <ArrowRight className="h-4 w-4" />
             </Link>
@@ -418,7 +418,7 @@ function PricingTeaser() {
               style={{ borderColor: popular ? C.red : C.border, background: C.bg2 }}
             >
               {popular && (
-                <span className={`absolute -top-3 left-6 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded ${body}`} style={{ background: C.red, color: C.text }}>
+                <span className={`absolute -top-3 left-6 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded ${body}`} style={{ background: C.red, color: "#FFFFFF" }}>
                   {cl.mostPopular}
                 </span>
               )}
@@ -439,7 +439,7 @@ function PricingTeaser() {
               <Link
                 to="/auth?tab=signup"
                 className={`inline-flex w-full items-center justify-center gap-2 rounded-md px-4 py-3 text-sm font-bold ${body}`}
-                style={popular ? { background: C.red, color: C.text } : { border: `1px solid ${C.border}`, color: C.text }}
+                style={popular ? { background: C.red, color: "#FFFFFF" } : { border: `1px solid ${C.border}`, color: C.text }}
               >
                 {tier.cta} <ArrowRight className="h-4 w-4" />
               </Link>
