@@ -13,19 +13,21 @@ const useCL = () => {
 };
 
 /* ───────────────── Tokens ─────────────────
-   Scoped via inline arbitrary values so global theme isn't touched.
-   bg #0A0A0C · red #E8002D · gold #C9A84C · text #F0EDE8 · muted #5A5860 · deep red #8B0019
+   Light, sporty palette inspired by modern fitness SaaS (Everfit-style).
+   Scoped via inline values so global theme isn't touched.
 */
 const C = {
-  bg: "#0A0A0C",
-  bg2: "#111114",
-  bg3: "#17171B",
-  red: "#E8002D",
-  redDeep: "#8B0019",
-  gold: "#C9A84C",
-  text: "#F0EDE8",
-  muted: "#5A5860",
-  border: "#23232A",
+  bg: "#FFFFFF",
+  bg2: "#F6F8FB",
+  bg3: "#EEF2F7",
+  red: "#E63946",
+  redDeep: "#0B1220", // used for final CTA band (dark navy)
+  blue: "#0EA5E9",
+  text: "#0B1220",
+  muted: "#5B6678",
+  border: "#E4E8EF",
+  // Backwards-compat alias for any leftover `gold` references → blue
+  gold: "#0EA5E9",
 };
 
 const headline = "font-['Bebas_Neue'] tracking-wide";
