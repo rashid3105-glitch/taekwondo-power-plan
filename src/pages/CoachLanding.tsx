@@ -461,7 +461,7 @@ function ActionGallery() {
 }
 
 /* ───────────────── Pricing ───────────────── */
-const PRICES = ["49", "99", "399", "699", "999"];
+const FALLBACK_PRICES = ["49", "99", "399", "699", "999"];
 const POPULAR_INDEX = 2;
 
 function PricingTeaser() {
@@ -487,7 +487,7 @@ function PricingTeaser() {
               <div className={`${headline} text-2xl`} style={{ color: C.text }}>{tier.name}</div>
               <div className={`text-xs uppercase tracking-wider mt-3 ${body}`} style={{ color: C.muted }}>{cl.fromLabel}</div>
               <div className={`${headline} text-4xl mt-1 mb-2`} style={{ color: C.text }}>
-                {PRICES[idx]} <span className="text-xl" style={{ color: C.muted }}>{cl.perMonth}</span>
+                {(cl.prices ?? FALLBACK_PRICES)[idx]} <span className="text-xl" style={{ color: C.muted }}>{cl.perMonth}</span>
               </div>
               <p className={`text-xs mb-5 ${body}`} style={{ color: C.muted }}>{tier.desc}</p>
               <ul className={`space-y-2 mb-7 text-sm ${body}`} style={{ color: C.text }}>
