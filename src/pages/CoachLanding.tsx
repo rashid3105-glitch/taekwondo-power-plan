@@ -13,19 +13,21 @@ const useCL = () => {
 };
 
 /* ───────────────── Tokens ─────────────────
-   Scoped via inline arbitrary values so global theme isn't touched.
-   bg #0A0A0C · red #E8002D · gold #C9A84C · text #F0EDE8 · muted #5A5860 · deep red #8B0019
+   Light, sporty palette inspired by modern fitness SaaS (Everfit-style).
+   Scoped via inline values so global theme isn't touched.
 */
 const C = {
-  bg: "#0A0A0C",
-  bg2: "#111114",
-  bg3: "#17171B",
-  red: "#E8002D",
-  redDeep: "#8B0019",
-  gold: "#C9A84C",
-  text: "#F0EDE8",
-  muted: "#5A5860",
-  border: "#23232A",
+  bg: "#FFFFFF",
+  bg2: "#F6F8FB",
+  bg3: "#EEF2F7",
+  red: "#E63946",
+  redDeep: "#0B1220", // used for final CTA band (dark navy)
+  blue: "#0EA5E9",
+  text: "#0B1220",
+  muted: "#5B6678",
+  border: "#E4E8EF",
+  // Backwards-compat alias for any leftover `gold` references → blue
+  gold: "#0EA5E9",
 };
 
 const headline = "font-['Bebas_Neue'] tracking-wide";
@@ -68,7 +70,7 @@ function Nav() {
           <Link
             to="/auth?tab=signup"
             className="text-sm font-semibold rounded-md px-4 py-2 transition-transform active:scale-[0.98]"
-            style={{ background: C.red, color: C.text }}
+            style={{ background: C.red, color: "#FFFFFF" }}
           >
             {cl.navGetStarted}
           </Link>
@@ -107,7 +109,7 @@ function Nav() {
                 to="/auth?tab=signup"
                 onClick={() => setOpen(false)}
                 className="ml-auto text-sm font-semibold rounded-md px-4 py-2"
-                style={{ background: C.red, color: C.text }}
+                style={{ background: C.red, color: "#FFFFFF" }}
               >
                 {cl.navGetStarted}
               </Link>
@@ -169,7 +171,7 @@ function Hero() {
             <Link
               to="/auth?tab=signup"
               className="inline-flex items-center justify-center gap-2 rounded-md px-6 py-3 text-sm font-bold transition-transform active:scale-[0.98]"
-              style={{ background: C.red, color: C.text }}
+              style={{ background: C.red, color: "#FFFFFF" }}
             >
               {cl.heroCtaPrimary} <ArrowRight className="h-4 w-4" />
             </Link>
@@ -255,36 +257,23 @@ function DashboardMockup() {
   );
 }
 
-/* ───────────────── Marquee ───────────────── */
-const CLUBS = [
-  "Copenhagen TKD", "Aarhus Taekwondo", "Oslo Kampsport", "Malmö TKD",
-  "Odense Taekwondo", "Stockholm Kampsport", "Vejle TKD", "Bergen Taekwondo",
-];
-
-function Marquee() {
+/* ───────────────── Trust line ───────────────── */
+function TrustLine() {
   const cl = useCL();
   return (
     <section className="border-y" style={{ borderColor: C.border, background: C.bg2 }}>
-      <div className="mx-auto max-w-7xl px-5 py-6 flex flex-col md:flex-row items-center gap-5">
-        <p className={`text-xs uppercase tracking-[0.2em] whitespace-nowrap ${body}`} style={{ color: C.muted }}>
-          {cl.marqueeTrust}
+      <div className="mx-auto max-w-5xl px-5 py-6 flex flex-col sm:flex-row items-center gap-3 sm:gap-6 text-center sm:text-start">
+        <p className={`text-[10px] uppercase tracking-[0.25em] whitespace-nowrap ${body}`} style={{ color: C.muted }}>
+          {cl.trustEyebrow}
         </p>
-        <div className="relative flex-1 overflow-hidden w-full">
-          <div className="flex gap-3 animate-[marquee_30s_linear_infinite] hover:[animation-play-state:paused]">
-            {[...CLUBS, ...CLUBS].map((c, i) => (
-              <span key={i} className={`shrink-0 rounded-full px-4 py-1.5 text-xs font-medium border ${body}`} style={{ borderColor: C.border, color: C.text, background: C.bg }}>
-                {c}
-              </span>
-            ))}
-          </div>
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-12" style={{ background: `linear-gradient(to right, ${C.bg2}, transparent)` }} />
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-12" style={{ background: `linear-gradient(to left, ${C.bg2}, transparent)` }} />
-        </div>
+        <p className={`text-sm sm:text-[15px] flex-1 ${body}`} style={{ color: C.text }}>
+          {cl.trustLine}
+        </p>
       </div>
-      <style>{`@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }`}</style>
     </section>
   );
 }
+
 
 /* ───────────────── Features ───────────────── */
 const FEATURE_ICONS = ["🥋", "📋", "📊", "📄"];
@@ -429,7 +418,7 @@ function PricingTeaser() {
               style={{ borderColor: popular ? C.red : C.border, background: C.bg2 }}
             >
               {popular && (
-                <span className={`absolute -top-3 left-6 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded ${body}`} style={{ background: C.red, color: C.text }}>
+                <span className={`absolute -top-3 left-6 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded ${body}`} style={{ background: C.red, color: "#FFFFFF" }}>
                   {cl.mostPopular}
                 </span>
               )}
@@ -450,7 +439,7 @@ function PricingTeaser() {
               <Link
                 to="/auth?tab=signup"
                 className={`inline-flex w-full items-center justify-center gap-2 rounded-md px-4 py-3 text-sm font-bold ${body}`}
-                style={popular ? { background: C.red, color: C.text } : { border: `1px solid ${C.border}`, color: C.text }}
+                style={popular ? { background: C.red, color: "#FFFFFF" } : { border: `1px solid ${C.border}`, color: C.text }}
               >
                 {tier.cta} <ArrowRight className="h-4 w-4" />
               </Link>
@@ -474,9 +463,9 @@ function FinalCTA() {
   return (
     <section style={{ background: C.redDeep }} className="py-20 lg:py-24">
       <div className="mx-auto max-w-4xl px-5 text-center">
-        <h2 className={`${headline} text-4xl sm:text-6xl mb-4`} style={{ color: C.text }}>{cl.finalCtaTitle}</h2>
-        <p className={`text-base sm:text-lg mb-8 ${body}`} style={{ color: C.text, opacity: 0.85 }}>{cl.finalCtaDesc}</p>
-        <Link to="/auth?tab=signup" className={`inline-flex items-center gap-2 rounded-md px-8 py-4 text-base font-bold ${body}`} style={{ background: C.text, color: C.redDeep }}>
+        <h2 className={`${headline} text-4xl sm:text-6xl mb-4`} style={{ color: "#FFFFFF" }}>{cl.finalCtaTitle}</h2>
+        <p className={`text-base sm:text-lg mb-8 ${body}`} style={{ color: "#FFFFFF", opacity: 0.85 }}>{cl.finalCtaDesc}</p>
+        <Link to="/auth?tab=signup" className={`inline-flex items-center gap-2 rounded-md px-8 py-4 text-base font-bold ${body}`} style={{ background: C.red, color: "#FFFFFF" }}>
           {cl.finalCtaButton} <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
@@ -496,8 +485,12 @@ function Footer() {
               <div className={`${headline} text-sm mb-3`} style={{ color: C.text }}>{col.title}</div>
               <ul className="space-y-2">
                 {col.links.map((l) => (
-                  <li key={l}>
-                    <a href="#" className="text-xs" style={{ color: C.muted }}>{l}</a>
+                  <li key={l.label}>
+                    {l.href.startsWith("/") ? (
+                      <Link to={l.href} className="text-xs hover:underline" style={{ color: C.muted }}>{l.label}</Link>
+                    ) : (
+                      <a href={l.href} className="text-xs hover:underline" style={{ color: C.muted }}>{l.label}</a>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -536,7 +529,7 @@ export default function CoachLanding() {
       <Nav />
       <main>
         <Hero />
-        <Marquee />
+        <TrustLine />
         <Features />
         <HowItWorks />
         <SplitSection />
