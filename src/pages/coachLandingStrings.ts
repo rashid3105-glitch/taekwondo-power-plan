@@ -201,7 +201,7 @@ const en: CLStrings = {
       { label: "Readiness Check", href: "/platform/readiness" },
       { label: "Progress Tracking", href: "/platform/progress" },
       { label: "Performance Library", href: "/platform/library" },
-      { label: "Install the app", href: "/install" },
+      { label: "Nutrition Plan", href: "/kostplan" },
     ] },
     { title: "Company", links: [
       { label: "About", href: "/about" },
@@ -350,7 +350,7 @@ const da: CLStrings = {
       { label: "Parathed", href: "/platform/readiness" },
       { label: "Fremgang", href: "/platform/progress" },
       { label: "Bibliotek", href: "/platform/library" },
-      { label: "Installér app", href: "/install" },
+      { label: "Kostplan", href: "/kostplan" },
     ] },
     { title: "Firma", links: [
       { label: "Om", href: "/about" },
@@ -487,7 +487,7 @@ const sv: CLStrings = {
       { label: "Beredskap", href: "/platform/readiness" },
       { label: "Utveckling", href: "/platform/progress" },
       { label: "Bibliotek", href: "/platform/library" },
-      { label: "Installera appen", href: "/install" },
+      { label: "Kostplan", href: "/kostplan" },
     ] },
     { title: "Företag", links: [
       { label: "Om oss", href: "/about" },
@@ -624,7 +624,7 @@ const no: CLStrings = {
       { label: "Beredskap", href: "/platform/readiness" },
       { label: "Fremgang", href: "/platform/progress" },
       { label: "Bibliotek", href: "/platform/library" },
-      { label: "Installer appen", href: "/install" },
+      { label: "Kostplan", href: "/kostplan" },
     ] },
     { title: "Selskap", links: [
       { label: "Om oss", href: "/about" },
@@ -761,7 +761,7 @@ const de: CLStrings = {
       { label: "Bereitschaft", href: "/platform/readiness" },
       { label: "Fortschritt", href: "/platform/progress" },
       { label: "Bibliothek", href: "/platform/library" },
-      { label: "App installieren", href: "/install" },
+      { label: "Ernährungsplan", href: "/kostplan" },
     ] },
     { title: "Unternehmen", links: [
       { label: "Über uns", href: "/about" },
@@ -898,7 +898,7 @@ const ar: CLStrings = {
       { label: "فحص الجاهزية", href: "/platform/readiness" },
       { label: "تتبع التقدم", href: "/platform/progress" },
       { label: "مكتبة الأداء", href: "/platform/library" },
-      { label: "ثبّت التطبيق", href: "/install" },
+      { label: "خطة التغذية", href: "/kostplan" },
     ] },
     { title: "الشركة", links: [
       { label: "من نحن", href: "/about" },
