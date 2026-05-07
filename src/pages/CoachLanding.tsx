@@ -257,36 +257,23 @@ function DashboardMockup() {
   );
 }
 
-/* ───────────────── Marquee ───────────────── */
-const CLUBS = [
-  "Copenhagen TKD", "Aarhus Taekwondo", "Oslo Kampsport", "Malmö TKD",
-  "Odense Taekwondo", "Stockholm Kampsport", "Vejle TKD", "Bergen Taekwondo",
-];
-
-function Marquee() {
+/* ───────────────── Trust line ───────────────── */
+function TrustLine() {
   const cl = useCL();
   return (
     <section className="border-y" style={{ borderColor: C.border, background: C.bg2 }}>
-      <div className="mx-auto max-w-7xl px-5 py-6 flex flex-col md:flex-row items-center gap-5">
-        <p className={`text-xs uppercase tracking-[0.2em] whitespace-nowrap ${body}`} style={{ color: C.muted }}>
-          {cl.marqueeTrust}
+      <div className="mx-auto max-w-5xl px-5 py-6 flex flex-col sm:flex-row items-center gap-3 sm:gap-6 text-center sm:text-start">
+        <p className={`text-[10px] uppercase tracking-[0.25em] whitespace-nowrap ${body}`} style={{ color: C.muted }}>
+          {cl.trustEyebrow}
         </p>
-        <div className="relative flex-1 overflow-hidden w-full">
-          <div className="flex gap-3 animate-[marquee_30s_linear_infinite] hover:[animation-play-state:paused]">
-            {[...CLUBS, ...CLUBS].map((c, i) => (
-              <span key={i} className={`shrink-0 rounded-full px-4 py-1.5 text-xs font-medium border ${body}`} style={{ borderColor: C.border, color: C.text, background: C.bg }}>
-                {c}
-              </span>
-            ))}
-          </div>
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-12" style={{ background: `linear-gradient(to right, ${C.bg2}, transparent)` }} />
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-12" style={{ background: `linear-gradient(to left, ${C.bg2}, transparent)` }} />
-        </div>
+        <p className={`text-sm sm:text-[15px] flex-1 ${body}`} style={{ color: C.text }}>
+          {cl.trustLine}
+        </p>
       </div>
-      <style>{`@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }`}</style>
     </section>
   );
 }
+
 
 /* ───────────────── Features ───────────────── */
 const FEATURE_ICONS = ["🥋", "📋", "📊", "📄"];
