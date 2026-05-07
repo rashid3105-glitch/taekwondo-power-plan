@@ -13,6 +13,7 @@ import Index from "./pages/Index";
 import Landing from "./pages/Landing";
 import CoachLanding from "./pages/CoachLanding";
 import FeatureDetail from "./pages/FeatureDetail";
+import PlatformPage from "./pages/PlatformPage";
 import Auth from "./pages/Auth";
 import ProfileSetup from "./pages/ProfileSetup";
 import Onboarding from "./pages/Onboarding";
@@ -86,6 +87,7 @@ const AnimatedRoutes = () => {
         <Route path="/programs" element={<Page><Programs /></Page>} />
         <Route path="/contact" element={<Page><Contact /></Page>} />
         <Route path="/features/:section" element={<Page><FeatureDetail /></Page>} />
+        <Route path="/platform/:slug" element={<Page><PlatformPage /></Page>} />
         <Route path="/auth" element={<Page><Auth /></Page>} />
         <Route path="/reset-password" element={<Page><ResetPassword /></Page>} />
         <Route path="/pending-approval" element={<Page><PendingApproval /></Page>} />
