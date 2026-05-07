@@ -463,9 +463,9 @@ function FinalCTA() {
   return (
     <section style={{ background: C.redDeep }} className="py-20 lg:py-24">
       <div className="mx-auto max-w-4xl px-5 text-center">
-        <h2 className={`${headline} text-4xl sm:text-6xl mb-4`} style={{ color: C.text }}>{cl.finalCtaTitle}</h2>
-        <p className={`text-base sm:text-lg mb-8 ${body}`} style={{ color: C.text, opacity: 0.85 }}>{cl.finalCtaDesc}</p>
-        <Link to="/auth?tab=signup" className={`inline-flex items-center gap-2 rounded-md px-8 py-4 text-base font-bold ${body}`} style={{ background: C.text, color: C.redDeep }}>
+        <h2 className={`${headline} text-4xl sm:text-6xl mb-4`} style={{ color: "#FFFFFF" }}>{cl.finalCtaTitle}</h2>
+        <p className={`text-base sm:text-lg mb-8 ${body}`} style={{ color: "#FFFFFF", opacity: 0.85 }}>{cl.finalCtaDesc}</p>
+        <Link to="/auth?tab=signup" className={`inline-flex items-center gap-2 rounded-md px-8 py-4 text-base font-bold ${body}`} style={{ background: C.red, color: "#FFFFFF" }}>
           {cl.finalCtaButton} <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
