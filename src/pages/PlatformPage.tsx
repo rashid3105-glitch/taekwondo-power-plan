@@ -85,7 +85,7 @@ export default function PlatformPage() {
               className="inline-block text-[10px] font-bold tracking-widest uppercase px-2.5 py-1 rounded-full"
               style={{ background: `${audienceColor}1A`, color: audienceColor }}
             >
-              {data.audience === "coach" ? "For Coaches" : "For Athletes"}
+              {meta.audience === "coach" ? ui.forCoaches : ui.forAthletes}
             </span>
             <h1 className="mt-3 text-3xl sm:text-5xl font-black tracking-tight text-foreground">
               {data.title}
