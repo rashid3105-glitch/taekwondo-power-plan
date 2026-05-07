@@ -98,7 +98,7 @@ const en: CLStrings = {
     "Sportstalent brings together 20 years of taekwondo coaching knowledge into one platform — so every athlete in your club gets the attention they deserve, and you spend less time on admin.",
   heroCtaPrimary: "Start Free",
   heroCtaSecondary: "See How It Works",
-  heroFinePrint: "Free for clubs under 10 athletes · No credit card needed",
+  heroFinePrint: "Free for clubs under 10 athletes during a trial period · No credit card needed",
 
   mockSquadPulse: "Squad Pulse",
   mockWeek: "Week 14 · 18 athletes",
