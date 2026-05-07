@@ -525,7 +525,7 @@ export default function CoachLanding() {
       <Nav />
       <main>
         <Hero />
-        <Marquee />
+        <TrustLine />
         <Features />
         <HowItWorks />
         <SplitSection />
