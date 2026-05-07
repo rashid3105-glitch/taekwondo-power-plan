@@ -6,6 +6,7 @@ import { PageMeta } from "@/components/PageMeta";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { COACH_LANDING_STRINGS } from "./coachLandingStrings";
+import sportstalentLogo from "@/assets/sportstalent-logo.jpeg";
 
 const useCL = () => {
   const { locale } = useLanguage();
@@ -49,8 +50,8 @@ function Nav() {
       style={{ background: `${C.bg}cc`, borderBottom: `1px solid ${C.border}` }}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4">
-        <a href="#top" className={`${headline} text-2xl flex items-center gap-2`} style={{ color: C.text }}>
-          Sportstalent <span aria-hidden>🥋</span>
+        <a href="#top" className="flex items-center" aria-label="Sportstalent">
+          <img src={sportstalentLogo} alt="Sportstalent" className="h-8 w-auto object-contain" />
         </a>
         <nav className={`hidden md:flex items-center gap-8 ${body}`}>
           {links.map((l) => (
