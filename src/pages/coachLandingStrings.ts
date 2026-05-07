@@ -252,7 +252,8 @@ const da: CLStrings = {
   mockWeeklyLoad: "Ugentlig belastning",
   mockTrimpDay: "TRIMP/dag",
 
-  marqueeTrust: "Brugt af klubber i hele Skandinavien",
+  trustEyebrow: "Brugt af",
+  trustLine: "Brugt af klubber med fokus på kamp og poomsae — bygget så alle klubber kan få gavn.",
 
   featuresTitle1: "Alt din klub har brug for.",
   featuresTitle2: "Intet den ikke har.",
@@ -330,10 +331,34 @@ const da: CLStrings = {
   finalCtaButton: "Start gratis i dag",
 
   footerCols: [
-    { title: "Platform", links: ["Funktioner", "Priser", "Metode", "Hjælp"] },
-    { title: "For trænere", links: ["Træner-dashboard", "Rapporter", "Roster", "Planbygger"] },
-    { title: "For atleter", links: ["Dagbog", "Parathed", "Fremgang", "Bibliotek"] },
-    { title: "Firma", links: ["Om", "Kontakt", "Privatliv", "Log ind"] },
+    { title: "Platform", links: [
+      { label: "Funktioner", href: "#features" },
+      { label: "Priser", href: "/pricing" },
+      { label: "Metode", href: "/methodology" },
+      { label: "Programmer", href: "/programs" },
+      { label: "Hjælp", href: "/help" },
+    ] },
+    { title: "For trænere", links: [
+      { label: "Træner-dashboard", href: "#for-coaches" },
+      { label: "Planbygger", href: "#for-coaches" },
+      { label: "Holdrapporter", href: "#for-coaches" },
+      { label: "Roster", href: "#for-coaches" },
+      { label: "Book demo", href: "/contact" },
+    ] },
+    { title: "For atleter", links: [
+      { label: "Dagbog", href: "#for-athletes" },
+      { label: "Parathed", href: "#for-athletes" },
+      { label: "Fremgang", href: "#for-athletes" },
+      { label: "Bibliotek", href: "#for-athletes" },
+      { label: "Installér app", href: "/install" },
+    ] },
+    { title: "Firma", links: [
+      { label: "Om", href: "/about" },
+      { label: "Kontakt", href: "/contact" },
+      { label: "Privatliv", href: "/privacy" },
+      { label: "Log ind", href: "/auth?tab=signin" },
+      { label: "Kom i gang gratis", href: "/auth?tab=signup" },
+    ] },
   ],
   footerCopy: "© 2025 Sportstalent.dk · Lavet til taekwondo, af folk der elsker sporten 🥋",
   footerPrivacy: "Privatliv",
@@ -376,7 +401,8 @@ const sv: CLStrings = {
   mockWeeklyLoad: "Veckobelastning",
   mockTrimpDay: "TRIMP/dag",
 
-  marqueeTrust: "Används av klubbar över hela Skandinavien",
+  trustEyebrow: "Används av",
+  trustLine: "Används av klubbar specialiserade på sparring och poomsae — byggd så alla klubbar kan dra nytta.",
 
   featuresTitle1: "Allt din klubb behöver.",
   featuresTitle2: "Inget den inte gör.",
@@ -442,10 +468,34 @@ const sv: CLStrings = {
   finalCtaButton: "Börja gratis idag",
 
   footerCols: [
-    { title: "Plattform", links: ["Funktioner", "Priser", "Metod", "Hjälp"] },
-    { title: "För tränare", links: ["Tränardashboard", "Rapporter", "Roster", "Planbyggare"] },
-    { title: "För atleter", links: ["Dagbok", "Beredskap", "Utveckling", "Bibliotek"] },
-    { title: "Företag", links: ["Om oss", "Kontakt", "Integritet", "Logga in"] },
+    { title: "Plattform", links: [
+      { label: "Funktioner", href: "#features" },
+      { label: "Priser", href: "/pricing" },
+      { label: "Metod", href: "/methodology" },
+      { label: "Program", href: "/programs" },
+      { label: "Hjälp", href: "/help" },
+    ] },
+    { title: "För tränare", links: [
+      { label: "Tränardashboard", href: "#for-coaches" },
+      { label: "Planbyggare", href: "#for-coaches" },
+      { label: "Lagrapporter", href: "#for-coaches" },
+      { label: "Roster", href: "#for-coaches" },
+      { label: "Boka demo", href: "/contact" },
+    ] },
+    { title: "För atleter", links: [
+      { label: "Dagbok", href: "#for-athletes" },
+      { label: "Beredskap", href: "#for-athletes" },
+      { label: "Utveckling", href: "#for-athletes" },
+      { label: "Bibliotek", href: "#for-athletes" },
+      { label: "Installera appen", href: "/install" },
+    ] },
+    { title: "Företag", links: [
+      { label: "Om oss", href: "/about" },
+      { label: "Kontakt", href: "/contact" },
+      { label: "Integritet", href: "/privacy" },
+      { label: "Logga in", href: "/auth?tab=signin" },
+      { label: "Börja gratis", href: "/auth?tab=signup" },
+    ] },
   ],
   footerCopy: "© 2025 Sportstalent.dk · Gjord för taekwondo, av människor som älskar sporten 🥋",
   footerPrivacy: "Integritet",
@@ -488,7 +538,8 @@ const no: CLStrings = {
   mockWeeklyLoad: "Ukentlig belastning",
   mockTrimpDay: "TRIMP/dag",
 
-  marqueeTrust: "Brukt av klubber over hele Skandinavia",
+  trustEyebrow: "Brukt av",
+  trustLine: "Brukt av klubber spesialisert på sparring og poomsae — bygget så alle klubber kan dra nytte.",
 
   featuresTitle1: "Alt klubben din trenger.",
   featuresTitle2: "Ingenting den ikke trenger.",
@@ -554,10 +605,34 @@ const no: CLStrings = {
   finalCtaButton: "Start gratis i dag",
 
   footerCols: [
-    { title: "Plattform", links: ["Funksjoner", "Priser", "Metode", "Hjelp"] },
-    { title: "For trenere", links: ["Trenerdashboard", "Rapporter", "Roster", "Planbygger"] },
-    { title: "For utøvere", links: ["Dagbok", "Beredskap", "Fremgang", "Bibliotek"] },
-    { title: "Selskap", links: ["Om oss", "Kontakt", "Personvern", "Logg inn"] },
+    { title: "Plattform", links: [
+      { label: "Funksjoner", href: "#features" },
+      { label: "Priser", href: "/pricing" },
+      { label: "Metode", href: "/methodology" },
+      { label: "Programmer", href: "/programs" },
+      { label: "Hjelp", href: "/help" },
+    ] },
+    { title: "For trenere", links: [
+      { label: "Trenerdashboard", href: "#for-coaches" },
+      { label: "Planbygger", href: "#for-coaches" },
+      { label: "Lagrapporter", href: "#for-coaches" },
+      { label: "Roster", href: "#for-coaches" },
+      { label: "Book demo", href: "/contact" },
+    ] },
+    { title: "For utøvere", links: [
+      { label: "Dagbok", href: "#for-athletes" },
+      { label: "Beredskap", href: "#for-athletes" },
+      { label: "Fremgang", href: "#for-athletes" },
+      { label: "Bibliotek", href: "#for-athletes" },
+      { label: "Installer appen", href: "/install" },
+    ] },
+    { title: "Selskap", links: [
+      { label: "Om oss", href: "/about" },
+      { label: "Kontakt", href: "/contact" },
+      { label: "Personvern", href: "/privacy" },
+      { label: "Logg inn", href: "/auth?tab=signin" },
+      { label: "Start gratis", href: "/auth?tab=signup" },
+    ] },
   ],
   footerCopy: "© 2025 Sportstalent.dk · Laget for taekwondo, av folk som elsker sporten 🥋",
   footerPrivacy: "Personvern",
@@ -600,7 +675,8 @@ const de: CLStrings = {
   mockWeeklyLoad: "Wochenbelastung",
   mockTrimpDay: "TRIMP/Tag",
 
-  marqueeTrust: "Genutzt von Vereinen in ganz Skandinavien",
+  trustEyebrow: "Genutzt von",
+  trustLine: "Genutzt von Vereinen mit Fokus auf Sparring und Poomsae — gebaut, damit jeder Verein profitiert.",
 
   featuresTitle1: "Alles, was dein Verein braucht.",
   featuresTitle2: "Nichts, was er nicht braucht.",
@@ -666,10 +742,34 @@ const de: CLStrings = {
   finalCtaButton: "Heute kostenlos starten",
 
   footerCols: [
-    { title: "Plattform", links: ["Funktionen", "Preise", "Methodik", "Hilfe"] },
-    { title: "Für Trainer", links: ["Trainer-Dashboard", "Berichte", "Kader", "Plan-Builder"] },
-    { title: "Für Athleten", links: ["Tagebuch", "Bereitschaft", "Fortschritt", "Bibliothek"] },
-    { title: "Unternehmen", links: ["Über uns", "Kontakt", "Datenschutz", "Anmelden"] },
+    { title: "Plattform", links: [
+      { label: "Funktionen", href: "#features" },
+      { label: "Preise", href: "/pricing" },
+      { label: "Methodik", href: "/methodology" },
+      { label: "Programme", href: "/programs" },
+      { label: "Hilfe", href: "/help" },
+    ] },
+    { title: "Für Trainer", links: [
+      { label: "Trainer-Dashboard", href: "#for-coaches" },
+      { label: "Plan-Builder", href: "#for-coaches" },
+      { label: "Team-Berichte", href: "#for-coaches" },
+      { label: "Kader", href: "#for-coaches" },
+      { label: "Demo buchen", href: "/contact" },
+    ] },
+    { title: "Für Athleten", links: [
+      { label: "Tagebuch", href: "#for-athletes" },
+      { label: "Bereitschaft", href: "#for-athletes" },
+      { label: "Fortschritt", href: "#for-athletes" },
+      { label: "Bibliothek", href: "#for-athletes" },
+      { label: "App installieren", href: "/install" },
+    ] },
+    { title: "Unternehmen", links: [
+      { label: "Über uns", href: "/about" },
+      { label: "Kontakt", href: "/contact" },
+      { label: "Datenschutz", href: "/privacy" },
+      { label: "Anmelden", href: "/auth?tab=signin" },
+      { label: "Kostenlos starten", href: "/auth?tab=signup" },
+    ] },
   ],
   footerCopy: "© 2025 Sportstalent.dk · Gemacht für Taekwondo, von Menschen, die den Sport lieben 🥋",
   footerPrivacy: "Datenschutz",
@@ -712,7 +812,8 @@ const ar: CLStrings = {
   mockWeeklyLoad: "الحمل الأسبوعي",
   mockTrimpDay: "TRIMP/يوم",
 
-  marqueeTrust: "موثوق به من قبل أندية في كل إسكندنافيا",
+  trustEyebrow: "تستخدمه",
+  trustLine: "تستخدمه أندية متخصصة في القتال والبومسي — ومصمم ليستفيد منه أي نادٍ.",
 
   featuresTitle1: "كل ما يحتاجه ناديك.",
   featuresTitle2: "ولا شيء لا يحتاجه.",
@@ -778,10 +879,34 @@ const ar: CLStrings = {
   finalCtaButton: "ابدأ مجاناً اليوم",
 
   footerCols: [
-    { title: "المنصة", links: ["الميزات", "الأسعار", "المنهجية", "المساعدة"] },
-    { title: "للمدربين", links: ["لوحة المدرب", "التقارير", "القائمة", "بانئ الخطط"] },
-    { title: "للرياضيين", links: ["اليوميات", "الجاهزية", "التقدم", "المكتبة"] },
-    { title: "الشركة", links: ["من نحن", "تواصل", "الخصوصية", "تسجيل الدخول"] },
+    { title: "المنصة", links: [
+      { label: "الميزات", href: "#features" },
+      { label: "الأسعار", href: "/pricing" },
+      { label: "المنهجية", href: "/methodology" },
+      { label: "البرامج", href: "/programs" },
+      { label: "المساعدة", href: "/help" },
+    ] },
+    { title: "للمدربين", links: [
+      { label: "لوحة المدرب", href: "#for-coaches" },
+      { label: "بانئ الخطط", href: "#for-coaches" },
+      { label: "تقارير الفريق", href: "#for-coaches" },
+      { label: "القائمة", href: "#for-coaches" },
+      { label: "احجز عرضاً", href: "/contact" },
+    ] },
+    { title: "للرياضيين", links: [
+      { label: "اليوميات", href: "#for-athletes" },
+      { label: "فحص الجاهزية", href: "#for-athletes" },
+      { label: "تتبع التقدم", href: "#for-athletes" },
+      { label: "مكتبة الأداء", href: "#for-athletes" },
+      { label: "ثبّت التطبيق", href: "/install" },
+    ] },
+    { title: "الشركة", links: [
+      { label: "من نحن", href: "/about" },
+      { label: "تواصل", href: "/contact" },
+      { label: "الخصوصية", href: "/privacy" },
+      { label: "تسجيل الدخول", href: "/auth?tab=signin" },
+      { label: "ابدأ مجاناً", href: "/auth?tab=signup" },
+    ] },
   ],
   footerCopy: "© 2025 Sportstalent.dk · صُنع لأجل التايكوندو، من قبل أشخاص يحبّون الرياضة 🥋",
   footerPrivacy: "الخصوصية",
