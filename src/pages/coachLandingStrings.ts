@@ -103,7 +103,8 @@ const en: CLStrings = {
   mockWeeklyLoad: "Weekly load",
   mockTrimpDay: "TRIMP/day",
 
-  marqueeTrust: "Trusted by clubs across Scandinavia",
+  trustEyebrow: "Trusted by",
+  trustLine: "Used by clubs specialized in sparring and poomsae — and built so any club can benefit.",
 
   featuresTitle1: "Everything your club needs.",
   featuresTitle2: "Nothing it doesn't.",
@@ -181,10 +182,34 @@ const en: CLStrings = {
   finalCtaButton: "Start Free Today",
 
   footerCols: [
-    { title: "Platform", links: ["Features", "Pricing", "Methodology", "Help"] },
-    { title: "For Coaches", links: ["Coach Dashboard", "Reports", "Roster", "Plan Builder"] },
-    { title: "For Athletes", links: ["Diary", "Readiness", "Progress", "Library"] },
-    { title: "Company", links: ["About", "Contact", "Privacy", "Sign in"] },
+    { title: "Platform", links: [
+      { label: "Features", href: "#features" },
+      { label: "Pricing", href: "/pricing" },
+      { label: "Methodology", href: "/methodology" },
+      { label: "Programs", href: "/programs" },
+      { label: "Help Center", href: "/help" },
+    ] },
+    { title: "For Coaches", links: [
+      { label: "Coach Dashboard", href: "#for-coaches" },
+      { label: "Plan Builder", href: "#for-coaches" },
+      { label: "Squad Reports", href: "#for-coaches" },
+      { label: "Roster Management", href: "#for-coaches" },
+      { label: "Book a demo", href: "/contact" },
+    ] },
+    { title: "For Athletes", links: [
+      { label: "Daily Diary", href: "#for-athletes" },
+      { label: "Readiness Check", href: "#for-athletes" },
+      { label: "Progress Tracking", href: "#for-athletes" },
+      { label: "Performance Library", href: "#for-athletes" },
+      { label: "Install the app", href: "/install" },
+    ] },
+    { title: "Company", links: [
+      { label: "About", href: "/about" },
+      { label: "Contact", href: "/contact" },
+      { label: "Privacy Policy", href: "/privacy" },
+      { label: "Sign in", href: "/auth?tab=signin" },
+      { label: "Start free", href: "/auth?tab=signup" },
+    ] },
   ],
   footerCopy: "© 2025 Sportstalent.dk · Made for taekwondo, by people who love the sport 🥋",
   footerPrivacy: "Privacy",
