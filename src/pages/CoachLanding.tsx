@@ -427,13 +427,13 @@ function ActionGallery() {
     <section className="mx-auto max-w-7xl px-5 py-20 lg:py-24">
       <div className="max-w-2xl mb-10">
         <p className={`text-xs font-semibold tracking-[0.25em] mb-3 ${body}`} style={{ color: C.red }}>
-          {cl.galleryEyebrow}
+          {cl.galleryEyebrow ?? "REAL ATHLETES · REAL MOMENTS"}
         </p>
         <h2 className={`${headline} text-4xl sm:text-5xl`} style={{ color: C.text }}>
-          {cl.galleryTitle}
+          {cl.galleryTitle ?? "Built ringside, not behind a desk."}
         </h2>
         <p className={`mt-4 text-sm ${body}`} style={{ color: C.muted }}>
-          {cl.gallerySub}
+          {cl.gallerySub ?? "From the corner to the mat — Sportstalent is shaped by the moments coaches and athletes live every weekend."}
         </p>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[140px] md:auto-rows-[180px] gap-3">
