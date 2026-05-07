@@ -142,7 +142,7 @@ const COPY = {
 
 export default function Kostplan() {
   const { locale } = useLanguage();
-  const t = (COPY as Record<string, typeof COPY.en>)[locale] ?? COPY.en;
+  const t = (COPY as unknown as Record<string, typeof COPY.en>)[locale] ?? COPY.en;
   const accent = "#16A34A";
 
   return (
