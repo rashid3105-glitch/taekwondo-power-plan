@@ -67,6 +67,10 @@ export type CLStrings = {
   footerPrivacy: string;
   footerContact: string;
 
+  galleryEyebrow?: string;
+  galleryTitle?: string;
+  gallerySub?: string;
+
   metaTitle: string;
   metaDesc: string;
 };
