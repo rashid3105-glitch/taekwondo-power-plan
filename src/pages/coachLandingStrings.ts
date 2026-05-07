@@ -1,0 +1,769 @@
+import type { Locale } from "@/i18n/translations";
+
+export type CLStrings = {
+  navFeatures: string;
+  navForCoaches: string;
+  navForAthletes: string;
+  navPricing: string;
+  navLogin: string;
+  navGetStarted: string;
+
+  heroBadge: string;
+  heroTitle: string;
+  heroPhrases: [string, string, string, string];
+  heroDesc: string;
+  heroCtaPrimary: string;
+  heroCtaSecondary: string;
+  heroFinePrint: string;
+
+  mockSquadPulse: string;
+  mockWeek: string;
+  mockOnTrack: string;
+  mockSessionsLogged: string;
+  mockThisWeek: string;
+  mockAvgReadiness: string;
+  mockVsLast: string;
+  mockWeeklyLoad: string;
+  mockTrimpDay: string;
+
+  marqueeTrust: string;
+
+  featuresTitle1: string;
+  featuresTitle2: string;
+  features: { title: string; desc: string }[];
+
+  howTitle: string;
+  steps: { title: string; desc: string }[];
+
+  splitTitle: string;
+  coachesLabel: string;
+  coachesTitle: string;
+  coachFeatures: string[];
+  athletesLabel: string;
+  athletesTitle: string;
+  athleteFeatures: string[];
+
+  testimonialsTitle: string;
+  testimonials: { stat: string; quote: string; name: string; club: string }[];
+
+  pricingTitle: string;
+  pricingSub: string;
+  mostPopular: string;
+  fromLabel: string;
+  perMonth: string;
+  tiers: { name: string; desc: string; features: string[]; cta: string }[];
+  pricingFootnoteLead: string;
+  pricingFootnoteLink: string;
+  pricingFootnoteFedLead: string;
+  pricingFootnoteContact: string;
+
+  finalCtaTitle: string;
+  finalCtaDesc: string;
+  finalCtaButton: string;
+
+  footerCols: { title: string; links: string[] }[];
+  footerCopy: string;
+  footerPrivacy: string;
+  footerContact: string;
+
+  metaTitle: string;
+  metaDesc: string;
+};
+
+const en: CLStrings = {
+  navFeatures: "Features",
+  navForCoaches: "For Coaches",
+  navForAthletes: "For Athletes",
+  navPricing: "Pricing",
+  navLogin: "Log in",
+  navGetStarted: "Get Started",
+
+  heroBadge: "BUILT FOR TAEKWONDO COACHES",
+  heroTitle: "Coach Every Athlete",
+  heroPhrases: [
+    "Like You Have More Time.",
+    "Like You Have More Staff.",
+    "Like You've Seen It All Before.",
+    "Like Your Best Season Starts Now.",
+  ],
+  heroDesc:
+    "Sportstalent brings together 20 years of taekwondo coaching knowledge into one platform — so every athlete in your club gets the attention they deserve, and you spend less time on admin.",
+  heroCtaPrimary: "Start Free",
+  heroCtaSecondary: "See How It Works",
+  heroFinePrint: "Free for clubs under 10 athletes · No credit card needed",
+
+  mockSquadPulse: "Squad Pulse",
+  mockWeek: "Week 14 · 18 athletes",
+  mockOnTrack: "ON TRACK",
+  mockSessionsLogged: "Sessions logged",
+  mockThisWeek: "this week",
+  mockAvgReadiness: "Avg readiness",
+  mockVsLast: "+4 vs last",
+  mockWeeklyLoad: "Weekly load",
+  mockTrimpDay: "TRIMP/day",
+
+  marqueeTrust: "Trusted by clubs across Scandinavia",
+
+  featuresTitle1: "Everything your club needs.",
+  featuresTitle2: "Nothing it doesn't.",
+  features: [
+    {
+      title: "Coaching Assistant",
+      desc: "Get session recommendations, technique guidance, and training advice drawn from deep sport-specific knowledge. Like having a second coach in the room.",
+    },
+    {
+      title: "Training Plan Builder",
+      desc: "Build periodized plans for any belt level in minutes. Tailored to age, competition schedule, and individual goals.",
+    },
+    {
+      title: "Athlete Progress Tracker",
+      desc: "Every session logged. Every readiness check recorded. Spot patterns before they become injuries.",
+    },
+    {
+      title: "Weekly Performance Reports",
+      desc: "A clear, shareable summary of each athlete's week — ready for parents, assistant coaches, or federation reviews.",
+    },
+  ],
+
+  howTitle: "How it works",
+  steps: [
+    { title: "Add your athletes", desc: "Set up your club roster in under 5 minutes" },
+    { title: "Athletes log their training", desc: "Session type, effort level, how they feel — takes 60 seconds after practice" },
+    { title: "You coach with clarity", desc: "Weekly summaries, load trends, and guidance surface automatically so you can focus on the mat" },
+  ],
+
+  splitTitle: "Built for both sides of the equation",
+  coachesLabel: "For Coaches",
+  coachesTitle: "Run your whole club from one screen",
+  coachFeatures: [
+    "Full roster view across all athletes",
+    "Training load trends and recovery flags",
+    "One-click weekly reports per athlete",
+    "Drill and technique library with 100+ taekwondo-specific entries",
+    "Competition prep planning tools",
+  ],
+  athletesLabel: "For Athletes",
+  athletesTitle: "Train with structure and feedback",
+  athleteFeatures: [
+    "Personal session diary",
+    "Daily readiness check-in",
+    "Progress over time — belt to belt",
+    "See this week's training focus from your coach",
+  ],
+
+  testimonialsTitle: "Coaches who switched, didn't switch back",
+  testimonials: [
+    { stat: "20 years", quote: "Finally a platform that actually understands taekwondo — not just generic fitness.", name: "Coach Mads", club: "Copenhagen TKD" },
+    { stat: "+3 hrs/week", quote: "My athletes log sessions themselves now. I get back 3 hours every week.", name: "Coach Lena", club: "Aarhus Taekwondo" },
+    { stat: "Parents on-board", quote: "The weekly report alone is worth it. Parents finally understand what we're building.", name: "Coach Tariq", club: "Oslo Kampsport" },
+  ],
+
+  pricingTitle: "Simple pricing",
+  pricingSub: "14-day free trial · no commitment · cancel anytime",
+  mostPopular: "Most popular",
+  fromLabel: "From",
+  perMonth: "DKK/mo",
+  tiers: [
+    { name: "Athlete", desc: "For individual athletes", features: ["Single athlete seat", "Core training & progress", "1 active plan", "Mental & recovery tracking"], cta: "Get started" },
+    { name: "Coach Solo", desc: "For independent coaches", features: ["Coach seat", "All modules unlocked", "1 active plan", "Full performance library"], cta: "Get started" },
+    { name: "Team Small", desc: "Up to 5 athletes", features: ["5 athlete seats", "All modules unlocked", "Unlimited plans", "Bulk plan creation", "Squad overview"], cta: "Start free trial" },
+    { name: "Team Medium", desc: "Up to 15 athletes", features: ["15 athlete seats", "All modules", "Unlimited plans", "Bulk planning", "Onboarding included"], cta: "Start free trial" },
+    { name: "Team Large", desc: "Up to 25 athletes", features: ["25 athlete seats", "All modules", "Unlimited plans", "Onboarding", "Priority support"], cta: "Start free trial" },
+  ],
+  pricingFootnoteLead: "See full plans & yearly discounts on the",
+  pricingFootnoteLink: "pricing page",
+  pricingFootnoteFedLead: "Federation setup?",
+  pricingFootnoteContact: "Contact us",
+
+  finalCtaTitle: "Your next champion is already in your club.",
+  finalCtaDesc: "Give every athlete the coaching they deserve — without burning out doing it.",
+  finalCtaButton: "Start Free Today",
+
+  footerCols: [
+    { title: "Platform", links: ["Features", "Pricing", "Methodology", "Help"] },
+    { title: "For Coaches", links: ["Coach Dashboard", "Reports", "Roster", "Plan Builder"] },
+    { title: "For Athletes", links: ["Diary", "Readiness", "Progress", "Library"] },
+    { title: "Company", links: ["About", "Contact", "Privacy", "Sign in"] },
+  ],
+  footerCopy: "© 2025 Sportstalent.dk · Made for taekwondo, by people who love the sport 🥋",
+  footerPrivacy: "Privacy",
+  footerContact: "Contact",
+
+  metaTitle: "Sportstalent — Coaching Platform Built for Taekwondo Clubs",
+  metaDesc:
+    "The coaching platform built for taekwondo clubs. Run your roster, track readiness, build periodized plans, and send weekly reports — all in one place.",
+};
+
+const da: CLStrings = {
+  navFeatures: "Funktioner",
+  navForCoaches: "For trænere",
+  navForAthletes: "For atleter",
+  navPricing: "Priser",
+  navLogin: "Log ind",
+  navGetStarted: "Kom i gang",
+
+  heroBadge: "BYGGET TIL TAEKWONDO-TRÆNERE",
+  heroTitle: "Træn alle atleter",
+  heroPhrases: [
+    "Som havde du mere tid.",
+    "Som havde du flere hænder.",
+    "Som havde du set det hele før.",
+    "Som starter din bedste sæson nu.",
+  ],
+  heroDesc:
+    "Sportstalent samler 20 års taekwondo-trænererfaring i én platform — så alle atleter i klubben får den opmærksomhed, de fortjener, og du bruger mindre tid på administration.",
+  heroCtaPrimary: "Start gratis",
+  heroCtaSecondary: "Se hvordan det virker",
+  heroFinePrint: "Gratis for klubber under 10 atleter · Intet kreditkort kræves",
+
+  mockSquadPulse: "Holdets puls",
+  mockWeek: "Uge 14 · 18 atleter",
+  mockOnTrack: "PÅ SPORET",
+  mockSessionsLogged: "Loggede sessioner",
+  mockThisWeek: "denne uge",
+  mockAvgReadiness: "Gns. parathed",
+  mockVsLast: "+4 vs sidste",
+  mockWeeklyLoad: "Ugentlig belastning",
+  mockTrimpDay: "TRIMP/dag",
+
+  marqueeTrust: "Brugt af klubber i hele Skandinavien",
+
+  featuresTitle1: "Alt din klub har brug for.",
+  featuresTitle2: "Intet den ikke har.",
+  features: [
+    {
+      title: "Træner-assistent",
+      desc: "Få anbefalinger til sessioner, teknikvejledning og træningsråd baseret på dyb sportsfaglig viden. Som at have en ekstra træner i salen.",
+    },
+    {
+      title: "Træningsplan-bygger",
+      desc: "Byg periodiserede planer for ethvert bæltetrin på minutter. Tilpasset alder, konkurrenceprogram og individuelle mål.",
+    },
+    {
+      title: "Atletfremgang",
+      desc: "Hver session logget. Hver paratheds-tjek registreret. Opdag mønstre før de bliver til skader.",
+    },
+    {
+      title: "Ugentlige rapporter",
+      desc: "En tydelig, delbar opsummering af hver atlets uge — klar til forældre, assistenttrænere eller forbund.",
+    },
+  ],
+
+  howTitle: "Sådan virker det",
+  steps: [
+    { title: "Tilføj dine atleter", desc: "Opsæt klubbens roster på under 5 minutter" },
+    { title: "Atleter logger deres træning", desc: "Sessionstype, intensitet, hvordan de føler sig — tager 60 sekunder efter træning" },
+    { title: "Du træner med klarhed", desc: "Ugentlige opsummeringer, belastningstrends og vejledning kommer automatisk, så du kan fokusere på måtten" },
+  ],
+
+  splitTitle: "Bygget til begge sider af ligningen",
+  coachesLabel: "For trænere",
+  coachesTitle: "Driv hele klubben fra én skærm",
+  coachFeatures: [
+    "Fuldt rosteroverblik over alle atleter",
+    "Træningsbelastning og restitutionsflag",
+    "Ugentlige rapporter pr. atlet med ét klik",
+    "Drill- og teknikbibliotek med 100+ taekwondo-specifikke øvelser",
+    "Værktøjer til konkurrenceforberedelse",
+  ],
+  athletesLabel: "For atleter",
+  athletesTitle: "Træn med struktur og feedback",
+  athleteFeatures: [
+    "Personlig træningsdagbog",
+    "Dagligt paratheds-tjek",
+    "Fremgang over tid — bælte for bælte",
+    "Se ugens træningsfokus fra din træner",
+  ],
+
+  testimonialsTitle: "Trænere der skiftede, skiftede ikke tilbage",
+  testimonials: [
+    { stat: "20 år", quote: "Endelig en platform der faktisk forstår taekwondo — ikke bare generel fitness.", name: "Træner Mads", club: "Copenhagen TKD" },
+    { stat: "+3 t/uge", quote: "Mine atleter logger selv sessionerne nu. Jeg får 3 timer tilbage om ugen.", name: "Træner Lena", club: "Aarhus Taekwondo" },
+    { stat: "Forældre med", quote: "Den ugentlige rapport alene er det værd. Forældre forstår endelig, hvad vi bygger.", name: "Træner Tariq", club: "Oslo Kampsport" },
+  ],
+
+  pricingTitle: "Enkle priser",
+  pricingSub: "14 dages gratis prøve · ingen binding · opsig når som helst",
+  mostPopular: "Mest populær",
+  fromLabel: "Fra",
+  perMonth: "DKK/md",
+  tiers: [
+    { name: "Atlet", desc: "Til individuelle atleter", features: ["Én atletplads", "Kerne-træning og fremgang", "1 aktiv plan", "Mental & restitution"], cta: "Kom i gang" },
+    { name: "Træner Solo", desc: "Til selvstændige trænere", features: ["Trænerplads", "Alle moduler åbne", "1 aktiv plan", "Fuldt performance-bibliotek"], cta: "Kom i gang" },
+    { name: "Team Small", desc: "Op til 5 atleter", features: ["5 atletpladser", "Alle moduler åbne", "Ubegrænsede planer", "Bulk-planlægning", "Holdoverblik"], cta: "Start gratis prøve" },
+    { name: "Team Medium", desc: "Op til 15 atleter", features: ["15 atletpladser", "Alle moduler", "Ubegrænsede planer", "Bulk-planlægning", "Onboarding inkluderet"], cta: "Start gratis prøve" },
+    { name: "Team Large", desc: "Op til 25 atleter", features: ["25 atletpladser", "Alle moduler", "Ubegrænsede planer", "Onboarding", "Prioritet support"], cta: "Start gratis prøve" },
+  ],
+  pricingFootnoteLead: "Se alle planer og årlige rabatter på",
+  pricingFootnoteLink: "prissiden",
+  pricingFootnoteFedLead: "Forbundsopsætning?",
+  pricingFootnoteContact: "Kontakt os",
+
+  finalCtaTitle: "Din næste mester er allerede i din klub.",
+  finalCtaDesc: "Giv alle atleter den træning de fortjener — uden at brænde ud.",
+  finalCtaButton: "Start gratis i dag",
+
+  footerCols: [
+    { title: "Platform", links: ["Funktioner", "Priser", "Metode", "Hjælp"] },
+    { title: "For trænere", links: ["Træner-dashboard", "Rapporter", "Roster", "Planbygger"] },
+    { title: "For atleter", links: ["Dagbog", "Parathed", "Fremgang", "Bibliotek"] },
+    { title: "Firma", links: ["Om", "Kontakt", "Privatliv", "Log ind"] },
+  ],
+  footerCopy: "© 2025 Sportstalent.dk · Lavet til taekwondo, af folk der elsker sporten 🥋",
+  footerPrivacy: "Privatliv",
+  footerContact: "Kontakt",
+
+  metaTitle: "Sportstalent — Træningsplatform bygget til taekwondo-klubber",
+  metaDesc:
+    "Træningsplatformen bygget til taekwondo-klubber. Driv dit roster, følg parathed, byg periodiserede planer og send ugentlige rapporter — alt ét sted.",
+};
+
+const sv: CLStrings = {
+  navFeatures: "Funktioner",
+  navForCoaches: "För tränare",
+  navForAthletes: "För atleter",
+  navPricing: "Priser",
+  navLogin: "Logga in",
+  navGetStarted: "Kom igång",
+
+  heroBadge: "BYGGD FÖR TAEKWONDO-TRÄNARE",
+  heroTitle: "Träna varje atlet",
+  heroPhrases: [
+    "Som om du hade mer tid.",
+    "Som om du hade fler händer.",
+    "Som om du sett allt förut.",
+    "Som om din bästa säsong börjar nu.",
+  ],
+  heroDesc:
+    "Sportstalent samlar 20 års taekwondo-träning i en plattform — så att varje atlet i din klubb får den uppmärksamhet de förtjänar och du lägger mindre tid på administration.",
+  heroCtaPrimary: "Börja gratis",
+  heroCtaSecondary: "Se hur det fungerar",
+  heroFinePrint: "Gratis för klubbar under 10 atleter · Inget kreditkort krävs",
+
+  mockSquadPulse: "Lagets puls",
+  mockWeek: "Vecka 14 · 18 atleter",
+  mockOnTrack: "PÅ SPÅR",
+  mockSessionsLogged: "Loggade pass",
+  mockThisWeek: "denna vecka",
+  mockAvgReadiness: "Snitt-beredskap",
+  mockVsLast: "+4 mot förra",
+  mockWeeklyLoad: "Veckobelastning",
+  mockTrimpDay: "TRIMP/dag",
+
+  marqueeTrust: "Används av klubbar över hela Skandinavien",
+
+  featuresTitle1: "Allt din klubb behöver.",
+  featuresTitle2: "Inget den inte gör.",
+  features: [
+    { title: "Tränarassistent", desc: "Få passrekommendationer, teknikvägledning och träningsråd från djup sportkunskap. Som en extra tränare i salen." },
+    { title: "Träningsplansbyggare", desc: "Bygg periodiserade planer för varje bältesnivå på minuter. Anpassad efter ålder, tävlingsschema och individuella mål." },
+    { title: "Atletutveckling", desc: "Varje pass loggat. Varje beredskapscheck registrerad. Upptäck mönster innan de blir skador." },
+    { title: "Veckorapporter", desc: "En tydlig, delbar sammanfattning av varje atlets vecka — redo för föräldrar, assisterande tränare eller förbund." },
+  ],
+
+  howTitle: "Så fungerar det",
+  steps: [
+    { title: "Lägg till dina atleter", desc: "Sätt upp klubbens roster på under 5 minuter" },
+    { title: "Atleter loggar sin träning", desc: "Passtyp, intensitet, hur de mår — tar 60 sekunder efter passet" },
+    { title: "Du tränar med klarhet", desc: "Veckosammanfattningar, belastningstrender och vägledning dyker upp automatiskt så du kan fokusera på mattan" },
+  ],
+
+  splitTitle: "Byggd för båda sidor av ekvationen",
+  coachesLabel: "För tränare",
+  coachesTitle: "Driv hela klubben från en skärm",
+  coachFeatures: [
+    "Full rosteröversikt över alla atleter",
+    "Belastningstrender och återhämtningsflaggor",
+    "Veckorapporter per atlet med ett klick",
+    "Övnings- och teknikbibliotek med 100+ taekwondo-specifika poster",
+    "Verktyg för tävlingsförberedelse",
+  ],
+  athletesLabel: "För atleter",
+  athletesTitle: "Träna med struktur och feedback",
+  athleteFeatures: [
+    "Personlig träningsdagbok",
+    "Daglig beredskapscheck",
+    "Framsteg över tid — bälte för bälte",
+    "Se veckans träningsfokus från din tränare",
+  ],
+
+  testimonialsTitle: "Tränare som bytte, bytte inte tillbaka",
+  testimonials: [
+    { stat: "20 år", quote: "Äntligen en plattform som verkligen förstår taekwondo — inte bara generell fitness.", name: "Tränare Mads", club: "Copenhagen TKD" },
+    { stat: "+3 h/vecka", quote: "Mina atleter loggar sina pass själva nu. Jag får tillbaka 3 timmar i veckan.", name: "Tränare Lena", club: "Aarhus Taekwondo" },
+    { stat: "Föräldrar med", quote: "Bara veckorapporten är värd det. Föräldrar förstår äntligen vad vi bygger.", name: "Tränare Tariq", club: "Oslo Kampsport" },
+  ],
+
+  pricingTitle: "Enkla priser",
+  pricingSub: "14 dagars gratis prov · ingen bindning · säg upp när som helst",
+  mostPopular: "Mest populär",
+  fromLabel: "Från",
+  perMonth: "DKK/mån",
+  tiers: [
+    { name: "Atlet", desc: "För enskilda atleter", features: ["En atletplats", "Kärnträning och utveckling", "1 aktiv plan", "Mental & återhämtning"], cta: "Kom igång" },
+    { name: "Coach Solo", desc: "För enskilda tränare", features: ["Tränarplats", "Alla moduler upplåsta", "1 aktiv plan", "Fullt prestationsbibliotek"], cta: "Kom igång" },
+    { name: "Team Small", desc: "Upp till 5 atleter", features: ["5 atletplatser", "Alla moduler upplåsta", "Obegränsade planer", "Bulkplanering", "Lagöversikt"], cta: "Starta gratis prov" },
+    { name: "Team Medium", desc: "Upp till 15 atleter", features: ["15 atletplatser", "Alla moduler", "Obegränsade planer", "Bulkplanering", "Onboarding ingår"], cta: "Starta gratis prov" },
+    { name: "Team Large", desc: "Upp till 25 atleter", features: ["25 atletplatser", "Alla moduler", "Obegränsade planer", "Onboarding", "Prioriterad support"], cta: "Starta gratis prov" },
+  ],
+  pricingFootnoteLead: "Se alla planer och årsrabatter på",
+  pricingFootnoteLink: "prissidan",
+  pricingFootnoteFedLead: "Förbundsuppsättning?",
+  pricingFootnoteContact: "Kontakta oss",
+
+  finalCtaTitle: "Din nästa mästare finns redan i din klubb.",
+  finalCtaDesc: "Ge varje atlet den träning de förtjänar — utan att bränna ut dig.",
+  finalCtaButton: "Börja gratis idag",
+
+  footerCols: [
+    { title: "Plattform", links: ["Funktioner", "Priser", "Metod", "Hjälp"] },
+    { title: "För tränare", links: ["Tränardashboard", "Rapporter", "Roster", "Planbyggare"] },
+    { title: "För atleter", links: ["Dagbok", "Beredskap", "Utveckling", "Bibliotek"] },
+    { title: "Företag", links: ["Om oss", "Kontakt", "Integritet", "Logga in"] },
+  ],
+  footerCopy: "© 2025 Sportstalent.dk · Gjord för taekwondo, av människor som älskar sporten 🥋",
+  footerPrivacy: "Integritet",
+  footerContact: "Kontakt",
+
+  metaTitle: "Sportstalent — Träningsplattform byggd för taekwondo-klubbar",
+  metaDesc:
+    "Träningsplattformen byggd för taekwondo-klubbar. Driv ditt roster, följ beredskap, bygg periodiserade planer och skicka veckorapporter — allt på ett ställe.",
+};
+
+const no: CLStrings = {
+  navFeatures: "Funksjoner",
+  navForCoaches: "For trenere",
+  navForAthletes: "For utøvere",
+  navPricing: "Priser",
+  navLogin: "Logg inn",
+  navGetStarted: "Kom i gang",
+
+  heroBadge: "BYGD FOR TAEKWONDO-TRENERE",
+  heroTitle: "Tren hver utøver",
+  heroPhrases: [
+    "Som om du hadde mer tid.",
+    "Som om du hadde flere hender.",
+    "Som om du hadde sett alt før.",
+    "Som om din beste sesong starter nå.",
+  ],
+  heroDesc:
+    "Sportstalent samler 20 års taekwondo-trenerkunnskap i én plattform — slik at hver utøver i klubben får oppmerksomheten de fortjener, og du bruker mindre tid på administrasjon.",
+  heroCtaPrimary: "Start gratis",
+  heroCtaSecondary: "Se hvordan det fungerer",
+  heroFinePrint: "Gratis for klubber under 10 utøvere · Ingen kortinformasjon nødvendig",
+
+  mockSquadPulse: "Lagets puls",
+  mockWeek: "Uke 14 · 18 utøvere",
+  mockOnTrack: "PÅ SPORET",
+  mockSessionsLogged: "Loggede økter",
+  mockThisWeek: "denne uken",
+  mockAvgReadiness: "Snitt-beredskap",
+  mockVsLast: "+4 vs forrige",
+  mockWeeklyLoad: "Ukentlig belastning",
+  mockTrimpDay: "TRIMP/dag",
+
+  marqueeTrust: "Brukt av klubber over hele Skandinavia",
+
+  featuresTitle1: "Alt klubben din trenger.",
+  featuresTitle2: "Ingenting den ikke trenger.",
+  features: [
+    { title: "Treningsassistent", desc: "Få øktanbefalinger, teknikkveiledning og treningsråd basert på dyp sportkunnskap. Som å ha en ekstra trener i salen." },
+    { title: "Treningsplan-bygger", desc: "Bygg periodiserte planer for hvert beltenivå på minutter. Tilpasset alder, konkurranseplan og individuelle mål." },
+    { title: "Utøverutvikling", desc: "Hver økt logget. Hver beredskapssjekk registrert. Oppdag mønstre før de blir skader." },
+    { title: "Ukentlige rapporter", desc: "En tydelig, delbar oppsummering av hver utøvers uke — klar for foreldre, assistenttrenere eller forbund." },
+  ],
+
+  howTitle: "Slik fungerer det",
+  steps: [
+    { title: "Legg til utøverne dine", desc: "Sett opp klubbens roster på under 5 minutter" },
+    { title: "Utøvere logger treningen sin", desc: "Økttype, intensitet, hvordan de føler seg — tar 60 sekunder etter trening" },
+    { title: "Du trener med klarhet", desc: "Ukentlige oppsummeringer, belastningstrender og veiledning kommer automatisk så du kan fokusere på matten" },
+  ],
+
+  splitTitle: "Bygd for begge sider av ligningen",
+  coachesLabel: "For trenere",
+  coachesTitle: "Driv hele klubben fra én skjerm",
+  coachFeatures: [
+    "Fullt rosteroverblikk over alle utøvere",
+    "Belastningstrender og restitusjonsflagg",
+    "Ukentlige rapporter per utøver med ett klikk",
+    "Øvelses- og teknikkbibliotek med 100+ taekwondo-spesifikke oppføringer",
+    "Verktøy for konkurranseforberedelse",
+  ],
+  athletesLabel: "For utøvere",
+  athletesTitle: "Tren med struktur og tilbakemelding",
+  athleteFeatures: [
+    "Personlig treningsdagbok",
+    "Daglig beredskapssjekk",
+    "Fremgang over tid — belte for belte",
+    "Se ukens treningsfokus fra treneren din",
+  ],
+
+  testimonialsTitle: "Trenere som byttet, byttet ikke tilbake",
+  testimonials: [
+    { stat: "20 år", quote: "Endelig en plattform som faktisk forstår taekwondo — ikke bare generell fitness.", name: "Trener Mads", club: "Copenhagen TKD" },
+    { stat: "+3 t/uke", quote: "Utøverne mine logger øktene selv nå. Jeg får tilbake 3 timer i uken.", name: "Trener Lena", club: "Aarhus Taekwondo" },
+    { stat: "Foreldre med", quote: "Den ukentlige rapporten alene er verdt det. Foreldre forstår endelig hva vi bygger.", name: "Trener Tariq", club: "Oslo Kampsport" },
+  ],
+
+  pricingTitle: "Enkle priser",
+  pricingSub: "14 dagers gratis prøve · ingen binding · si opp når som helst",
+  mostPopular: "Mest populær",
+  fromLabel: "Fra",
+  perMonth: "DKK/mnd",
+  tiers: [
+    { name: "Utøver", desc: "For individuelle utøvere", features: ["Én utøverplass", "Kjernetrening og fremgang", "1 aktiv plan", "Mental & restitusjon"], cta: "Kom i gang" },
+    { name: "Trener Solo", desc: "For uavhengige trenere", features: ["Trenerplass", "Alle moduler åpne", "1 aktiv plan", "Fullt prestasjonsbibliotek"], cta: "Kom i gang" },
+    { name: "Team Small", desc: "Opptil 5 utøvere", features: ["5 utøverplasser", "Alle moduler åpne", "Ubegrensede planer", "Bulk-planlegging", "Lagoversikt"], cta: "Start gratis prøve" },
+    { name: "Team Medium", desc: "Opptil 15 utøvere", features: ["15 utøverplasser", "Alle moduler", "Ubegrensede planer", "Bulk-planlegging", "Onboarding inkludert"], cta: "Start gratis prøve" },
+    { name: "Team Large", desc: "Opptil 25 utøvere", features: ["25 utøverplasser", "Alle moduler", "Ubegrensede planer", "Onboarding", "Prioritert støtte"], cta: "Start gratis prøve" },
+  ],
+  pricingFootnoteLead: "Se alle planer og årsrabatter på",
+  pricingFootnoteLink: "prissiden",
+  pricingFootnoteFedLead: "Forbundsoppsett?",
+  pricingFootnoteContact: "Kontakt oss",
+
+  finalCtaTitle: "Din neste mester er allerede i klubben din.",
+  finalCtaDesc: "Gi hver utøver treningen de fortjener — uten å brenne ut.",
+  finalCtaButton: "Start gratis i dag",
+
+  footerCols: [
+    { title: "Plattform", links: ["Funksjoner", "Priser", "Metode", "Hjelp"] },
+    { title: "For trenere", links: ["Trenerdashboard", "Rapporter", "Roster", "Planbygger"] },
+    { title: "For utøvere", links: ["Dagbok", "Beredskap", "Fremgang", "Bibliotek"] },
+    { title: "Selskap", links: ["Om oss", "Kontakt", "Personvern", "Logg inn"] },
+  ],
+  footerCopy: "© 2025 Sportstalent.dk · Laget for taekwondo, av folk som elsker sporten 🥋",
+  footerPrivacy: "Personvern",
+  footerContact: "Kontakt",
+
+  metaTitle: "Sportstalent — Treningsplattform bygd for taekwondo-klubber",
+  metaDesc:
+    "Treningsplattformen bygd for taekwondo-klubber. Driv rosteret ditt, følg beredskap, bygg periodiserte planer og send ukentlige rapporter — alt på ett sted.",
+};
+
+const de: CLStrings = {
+  navFeatures: "Funktionen",
+  navForCoaches: "Für Trainer",
+  navForAthletes: "Für Athleten",
+  navPricing: "Preise",
+  navLogin: "Anmelden",
+  navGetStarted: "Loslegen",
+
+  heroBadge: "GEBAUT FÜR TAEKWONDO-TRAINER",
+  heroTitle: "Trainiere jeden Athleten",
+  heroPhrases: [
+    "Als hättest du mehr Zeit.",
+    "Als hättest du mehr Personal.",
+    "Als hättest du alles schon gesehen.",
+    "Als startet deine beste Saison jetzt.",
+  ],
+  heroDesc:
+    "Sportstalent vereint 20 Jahre Taekwondo-Trainingswissen in einer Plattform — damit jeder Athlet im Verein die Aufmerksamkeit bekommt, die er verdient, und du weniger Zeit mit Verwaltung verbringst.",
+  heroCtaPrimary: "Kostenlos starten",
+  heroCtaSecondary: "So funktioniert es",
+  heroFinePrint: "Kostenlos für Vereine unter 10 Athleten · Keine Kreditkarte nötig",
+
+  mockSquadPulse: "Team-Puls",
+  mockWeek: "Woche 14 · 18 Athleten",
+  mockOnTrack: "AUF KURS",
+  mockSessionsLogged: "Erfasste Einheiten",
+  mockThisWeek: "diese Woche",
+  mockAvgReadiness: "Ø Bereitschaft",
+  mockVsLast: "+4 vs. letzte",
+  mockWeeklyLoad: "Wochenbelastung",
+  mockTrimpDay: "TRIMP/Tag",
+
+  marqueeTrust: "Genutzt von Vereinen in ganz Skandinavien",
+
+  featuresTitle1: "Alles, was dein Verein braucht.",
+  featuresTitle2: "Nichts, was er nicht braucht.",
+  features: [
+    { title: "Trainer-Assistent", desc: "Erhalte Empfehlungen, Technik-Hinweise und Trainingsrat aus tiefem Sportwissen. Wie ein zweiter Trainer im Raum." },
+    { title: "Trainingsplan-Builder", desc: "Periodisierte Pläne für jede Gürtelstufe in Minuten. Angepasst an Alter, Wettkampfplan und individuelle Ziele." },
+    { title: "Athleten-Fortschritt", desc: "Jede Einheit erfasst. Jeder Bereitschafts-Check dokumentiert. Erkenne Muster, bevor sie zu Verletzungen werden." },
+    { title: "Wöchentliche Berichte", desc: "Eine klare, teilbare Wochenübersicht pro Athlet — bereit für Eltern, Co-Trainer oder Verband." },
+  ],
+
+  howTitle: "So funktioniert's",
+  steps: [
+    { title: "Athleten hinzufügen", desc: "Vereinskader in unter 5 Minuten einrichten" },
+    { title: "Athleten loggen ihr Training", desc: "Art, Intensität, Befinden — 60 Sekunden nach dem Training" },
+    { title: "Du trainierst mit Klarheit", desc: "Wochenübersichten, Belastungstrends und Hinweise erscheinen automatisch — du fokussierst dich auf die Matte" },
+  ],
+
+  splitTitle: "Gebaut für beide Seiten der Gleichung",
+  coachesLabel: "Für Trainer",
+  coachesTitle: "Den ganzen Verein von einem Bildschirm leiten",
+  coachFeatures: [
+    "Vollständiger Kader-Überblick",
+    "Belastungstrends und Erholungs-Flags",
+    "Wochenberichte pro Athlet mit einem Klick",
+    "Übungs- und Technikbibliothek mit 100+ Taekwondo-spezifischen Einträgen",
+    "Werkzeuge zur Wettkampfvorbereitung",
+  ],
+  athletesLabel: "Für Athleten",
+  athletesTitle: "Mit Struktur und Feedback trainieren",
+  athleteFeatures: [
+    "Persönliches Trainingstagebuch",
+    "Tägliche Bereitschaftsprüfung",
+    "Fortschritt über die Zeit — Gürtel für Gürtel",
+    "Wochen-Trainingsfokus vom Trainer sehen",
+  ],
+
+  testimonialsTitle: "Trainer, die wechselten, blieben dabei",
+  testimonials: [
+    { stat: "20 Jahre", quote: "Endlich eine Plattform, die Taekwondo wirklich versteht — nicht nur generisches Fitness.", name: "Trainer Mads", club: "Copenhagen TKD" },
+    { stat: "+3 Std/Woche", quote: "Meine Athleten loggen ihre Einheiten selbst. Ich gewinne 3 Stunden pro Woche zurück.", name: "Trainerin Lena", club: "Aarhus Taekwondo" },
+    { stat: "Eltern dabei", quote: "Allein der Wochenbericht ist es wert. Eltern verstehen endlich, was wir aufbauen.", name: "Trainer Tariq", club: "Oslo Kampsport" },
+  ],
+
+  pricingTitle: "Einfache Preise",
+  pricingSub: "14 Tage kostenlos · keine Bindung · jederzeit kündbar",
+  mostPopular: "Am beliebtesten",
+  fromLabel: "Ab",
+  perMonth: "DKK/Mon.",
+  tiers: [
+    { name: "Athlet", desc: "Für einzelne Athleten", features: ["Ein Athletenplatz", "Kerntraining & Fortschritt", "1 aktiver Plan", "Mental & Erholung"], cta: "Loslegen" },
+    { name: "Coach Solo", desc: "Für unabhängige Trainer", features: ["Trainerplatz", "Alle Module freigeschaltet", "1 aktiver Plan", "Volle Performance-Bibliothek"], cta: "Loslegen" },
+    { name: "Team Small", desc: "Bis zu 5 Athleten", features: ["5 Athletenplätze", "Alle Module freigeschaltet", "Unbegrenzte Pläne", "Bulk-Planung", "Team-Übersicht"], cta: "Kostenlos testen" },
+    { name: "Team Medium", desc: "Bis zu 15 Athleten", features: ["15 Athletenplätze", "Alle Module", "Unbegrenzte Pläne", "Bulk-Planung", "Onboarding inklusive"], cta: "Kostenlos testen" },
+    { name: "Team Large", desc: "Bis zu 25 Athleten", features: ["25 Athletenplätze", "Alle Module", "Unbegrenzte Pläne", "Onboarding", "Priorisierter Support"], cta: "Kostenlos testen" },
+  ],
+  pricingFootnoteLead: "Alle Pläne und Jahresrabatte auf der",
+  pricingFootnoteLink: "Preisseite",
+  pricingFootnoteFedLead: "Verbands-Setup?",
+  pricingFootnoteContact: "Kontaktiere uns",
+
+  finalCtaTitle: "Dein nächster Champion ist bereits in deinem Verein.",
+  finalCtaDesc: "Gib jedem Athleten das Training, das er verdient — ohne auszubrennen.",
+  finalCtaButton: "Heute kostenlos starten",
+
+  footerCols: [
+    { title: "Plattform", links: ["Funktionen", "Preise", "Methodik", "Hilfe"] },
+    { title: "Für Trainer", links: ["Trainer-Dashboard", "Berichte", "Kader", "Plan-Builder"] },
+    { title: "Für Athleten", links: ["Tagebuch", "Bereitschaft", "Fortschritt", "Bibliothek"] },
+    { title: "Unternehmen", links: ["Über uns", "Kontakt", "Datenschutz", "Anmelden"] },
+  ],
+  footerCopy: "© 2025 Sportstalent.dk · Gemacht für Taekwondo, von Menschen, die den Sport lieben 🥋",
+  footerPrivacy: "Datenschutz",
+  footerContact: "Kontakt",
+
+  metaTitle: "Sportstalent — Trainingsplattform für Taekwondo-Vereine",
+  metaDesc:
+    "Die Trainingsplattform für Taekwondo-Vereine. Verwalte deinen Kader, verfolge die Bereitschaft, baue periodisierte Pläne und sende wöchentliche Berichte — alles an einem Ort.",
+};
+
+const ar: CLStrings = {
+  navFeatures: "الميزات",
+  navForCoaches: "للمدربين",
+  navForAthletes: "للرياضيين",
+  navPricing: "الأسعار",
+  navLogin: "تسجيل الدخول",
+  navGetStarted: "ابدأ الآن",
+
+  heroBadge: "مصمم لمدربي التايكوندو",
+  heroTitle: "درّب كل رياضي",
+  heroPhrases: [
+    "وكأن لديك وقتاً أطول.",
+    "وكأن لديك فريقاً أكبر.",
+    "وكأنك رأيت كل شيء من قبل.",
+    "وكأن أفضل موسم لك يبدأ الآن.",
+  ],
+  heroDesc:
+    "يجمع Sportstalent عشرين عاماً من خبرة تدريب التايكوندو في منصة واحدة — ليحصل كل رياضي في ناديك على الاهتمام الذي يستحقه، مع تقليل وقت الإدارة.",
+  heroCtaPrimary: "ابدأ مجاناً",
+  heroCtaSecondary: "شاهد كيف يعمل",
+  heroFinePrint: "مجاني للأندية أقل من 10 رياضيين · لا حاجة لبطاقة ائتمان",
+
+  mockSquadPulse: "نبض الفريق",
+  mockWeek: "الأسبوع 14 · 18 رياضي",
+  mockOnTrack: "على المسار",
+  mockSessionsLogged: "الجلسات المسجلة",
+  mockThisWeek: "هذا الأسبوع",
+  mockAvgReadiness: "متوسط الجاهزية",
+  mockVsLast: "+4 مقارنة بالسابق",
+  mockWeeklyLoad: "الحمل الأسبوعي",
+  mockTrimpDay: "TRIMP/يوم",
+
+  marqueeTrust: "موثوق به من قبل أندية في كل إسكندنافيا",
+
+  featuresTitle1: "كل ما يحتاجه ناديك.",
+  featuresTitle2: "ولا شيء لا يحتاجه.",
+  features: [
+    { title: "مساعد التدريب", desc: "احصل على توصيات الجلسات وإرشادات الفنية ونصائح التدريب من معرفة رياضية عميقة. كأن لديك مدرباً ثانياً في القاعة." },
+    { title: "أداة بناء الخطط", desc: "ابنِ خططاً مرحلية لأي مستوى حزام في دقائق. مخصصة حسب العمر وجدول البطولات والأهداف الفردية." },
+    { title: "متابعة تقدّم الرياضيين", desc: "كل جلسة مسجلة. كل فحص جاهزية موثّق. اكتشف الأنماط قبل أن تتحول إلى إصابات." },
+    { title: "تقارير أسبوعية", desc: "ملخص واضح وقابل للمشاركة لأسبوع كل رياضي — جاهز للأهل أو المدربين المساعدين أو الاتحاد." },
+  ],
+
+  howTitle: "كيف يعمل",
+  steps: [
+    { title: "أضف رياضييك", desc: "أعد قائمة النادي في أقل من 5 دقائق" },
+    { title: "يسجل الرياضيون تدريبهم", desc: "نوع الجلسة والمجهود وكيف يشعرون — 60 ثانية بعد التدريب" },
+    { title: "تدرّب بوضوح", desc: "تظهر الملخصات الأسبوعية وأنماط الحمل والإرشادات تلقائياً لتركّز على البساط" },
+  ],
+
+  splitTitle: "مصمم لطرفي المعادلة",
+  coachesLabel: "للمدربين",
+  coachesTitle: "أدر ناديك بأكمله من شاشة واحدة",
+  coachFeatures: [
+    "نظرة كاملة على جميع الرياضيين",
+    "اتجاهات الحمل وعلامات التعافي",
+    "تقارير أسبوعية لكل رياضي بنقرة واحدة",
+    "مكتبة تمارين وفنيات تتضمن أكثر من 100 إدخال خاص بالتايكوندو",
+    "أدوات للتحضير للبطولات",
+  ],
+  athletesLabel: "للرياضيين",
+  athletesTitle: "تدرب بهيكلية وملاحظات",
+  athleteFeatures: [
+    "يوميات تدريب شخصية",
+    "فحص جاهزية يومي",
+    "التقدم عبر الزمن — حزام بحزام",
+    "اطّلع على تركيز التدريب الأسبوعي من مدربك",
+  ],
+
+  testimonialsTitle: "المدربون الذين انتقلوا، لم يعودوا",
+  testimonials: [
+    { stat: "20 سنة", quote: "أخيراً منصة تفهم التايكوندو فعلاً — وليست لياقة عامة فحسب.", name: "المدرب مادس", club: "Copenhagen TKD" },
+    { stat: "+3 ساعات/أسبوع", quote: "رياضيوني يسجلون جلساتهم بأنفسهم الآن. أوفر 3 ساعات أسبوعياً.", name: "المدربة لينا", club: "Aarhus Taekwondo" },
+    { stat: "الأهل معنا", quote: "التقرير الأسبوعي وحده يستحق ذلك. أصبح الأهل يفهمون ما نبنيه.", name: "المدرب طارق", club: "Oslo Kampsport" },
+  ],
+
+  pricingTitle: "تسعير بسيط",
+  pricingSub: "تجربة مجانية 14 يوماً · بدون التزام · ألغِ في أي وقت",
+  mostPopular: "الأكثر شعبية",
+  fromLabel: "ابتداءً من",
+  perMonth: "DKK/شهر",
+  tiers: [
+    { name: "رياضي", desc: "للرياضيين الأفراد", features: ["مقعد رياضي واحد", "التدريب الأساسي والتقدم", "خطة نشطة واحدة", "متابعة الذهنية والتعافي"], cta: "ابدأ" },
+    { name: "Coach Solo", desc: "للمدربين المستقلين", features: ["مقعد مدرب", "كل الوحدات مفتوحة", "خطة نشطة واحدة", "مكتبة الأداء كاملة"], cta: "ابدأ" },
+    { name: "Team Small", desc: "حتى 5 رياضيين", features: ["5 مقاعد", "كل الوحدات", "خطط غير محدودة", "إنشاء خطط بالجملة", "نظرة عامة على الفريق"], cta: "ابدأ التجربة المجانية" },
+    { name: "Team Medium", desc: "حتى 15 رياضي", features: ["15 مقعد", "كل الوحدات", "خطط غير محدودة", "تخطيط بالجملة", "إعداد مرفق"], cta: "ابدأ التجربة المجانية" },
+    { name: "Team Large", desc: "حتى 25 رياضي", features: ["25 مقعد", "كل الوحدات", "خطط غير محدودة", "إعداد", "دعم ذو أولوية"], cta: "ابدأ التجربة المجانية" },
+  ],
+  pricingFootnoteLead: "اطّلع على كل الخطط والخصومات السنوية على",
+  pricingFootnoteLink: "صفحة الأسعار",
+  pricingFootnoteFedLead: "إعداد للاتحاد؟",
+  pricingFootnoteContact: "تواصل معنا",
+
+  finalCtaTitle: "بطلك القادم موجود بالفعل في ناديك.",
+  finalCtaDesc: "امنح كل رياضي التدريب الذي يستحقه — دون أن تنهك نفسك.",
+  finalCtaButton: "ابدأ مجاناً اليوم",
+
+  footerCols: [
+    { title: "المنصة", links: ["الميزات", "الأسعار", "المنهجية", "المساعدة"] },
+    { title: "للمدربين", links: ["لوحة المدرب", "التقارير", "القائمة", "بانئ الخطط"] },
+    { title: "للرياضيين", links: ["اليوميات", "الجاهزية", "التقدم", "المكتبة"] },
+    { title: "الشركة", links: ["من نحن", "تواصل", "الخصوصية", "تسجيل الدخول"] },
+  ],
+  footerCopy: "© 2025 Sportstalent.dk · صُنع لأجل التايكوندو، من قبل أشخاص يحبّون الرياضة 🥋",
+  footerPrivacy: "الخصوصية",
+  footerContact: "تواصل",
+
+  metaTitle: "Sportstalent — منصة تدريب مصممة لأندية التايكوندو",
+  metaDesc:
+    "منصة التدريب المصممة لأندية التايكوندو. أدر القائمة، تابع الجاهزية، ابنِ خططاً مرحلية وأرسل تقارير أسبوعية — كل ذلك في مكان واحد.",
+};
+
+export const COACH_LANDING_STRINGS: Record<Locale, CLStrings> = { en, da, sv, no, de, ar };
