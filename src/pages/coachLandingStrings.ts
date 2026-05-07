@@ -98,7 +98,7 @@ const en: CLStrings = {
     "Sportstalent brings together 20 years of taekwondo coaching knowledge into one platform — so every athlete in your club gets the attention they deserve, and you spend less time on admin.",
   heroCtaPrimary: "Start Free",
   heroCtaSecondary: "See How It Works",
-  heroFinePrint: "Free for clubs under 10 athletes · No credit card needed",
+  heroFinePrint: "Free for clubs under 10 athletes during a trial period · No credit card needed",
 
   mockSquadPulse: "Squad Pulse",
   mockWeek: "Week 14 · 18 athletes",
@@ -258,7 +258,7 @@ const da: CLStrings = {
     "Sportstalent samler 20 års taekwondo-trænererfaring i én platform — så alle atleter i klubben får den opmærksomhed, de fortjener, og du bruger mindre tid på administration.",
   heroCtaPrimary: "Start gratis",
   heroCtaSecondary: "Se hvordan det virker",
-  heroFinePrint: "Gratis for klubber under 10 atleter · Intet kreditkort kræves",
+  heroFinePrint: "Gratis for klubber under 10 atleter i en prøveperiode · Intet kreditkort kræves",
 
   mockSquadPulse: "Holdets puls",
   mockWeek: "Uge 14 · 18 atleter",
@@ -418,7 +418,7 @@ const sv: CLStrings = {
     "Sportstalent samlar 20 års taekwondo-träning i en plattform — så att varje atlet i din klubb får den uppmärksamhet de förtjänar och du lägger mindre tid på administration.",
   heroCtaPrimary: "Börja gratis",
   heroCtaSecondary: "Se hur det fungerar",
-  heroFinePrint: "Gratis för klubbar under 10 atleter · Inget kreditkort krävs",
+  heroFinePrint: "Gratis för klubbar under 10 atleter under en provperiod · Inget kreditkort krävs",
 
   mockSquadPulse: "Lagets puls",
   mockWeek: "Vecka 14 · 18 atleter",
@@ -566,7 +566,7 @@ const no: CLStrings = {
     "Sportstalent samler 20 års taekwondo-trenerkunnskap i én plattform — slik at hver utøver i klubben får oppmerksomheten de fortjener, og du bruker mindre tid på administrasjon.",
   heroCtaPrimary: "Start gratis",
   heroCtaSecondary: "Se hvordan det fungerer",
-  heroFinePrint: "Gratis for klubber under 10 utøvere · Ingen kortinformasjon nødvendig",
+  heroFinePrint: "Gratis for klubber under 10 utøvere i en prøveperiode · Ingen kortinformasjon nødvendig",
 
   mockSquadPulse: "Lagets puls",
   mockWeek: "Uke 14 · 18 utøvere",
