@@ -436,14 +436,14 @@ function StoryRows() {
                   aria-hidden
                 />
                 <div
-                  className="relative aspect-[4/5] sm:aspect-[5/6] rounded-2xl overflow-hidden border shadow-xl"
+                  className="relative rounded-2xl overflow-hidden border shadow-xl"
                   style={{ borderColor: C.border }}
                 >
                   <img
                     src={STORY_PHOTOS[i % STORY_PHOTOS.length]}
                     alt={row.title}
                     loading="lazy"
-                    className="absolute inset-0 h-full w-full object-scale-down"
+                    className="block h-auto w-full object-contain"
                   />
                 </div>
               </div>
