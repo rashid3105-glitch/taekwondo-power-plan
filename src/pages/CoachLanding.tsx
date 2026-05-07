@@ -33,12 +33,13 @@ const body = "font-['DM_Sans']";
 
 /* ───────────────── Nav ───────────────── */
 function Nav() {
+  const cl = useCL();
   const [open, setOpen] = useState(false);
   const links = [
-    { label: "Features", href: "#features" },
-    { label: "For Coaches", href: "#for-coaches" },
-    { label: "For Athletes", href: "#for-athletes" },
-    { label: "Pricing", href: "#pricing" },
+    { label: cl.navFeatures, href: "#features" },
+    { label: cl.navForCoaches, href: "#for-coaches" },
+    { label: cl.navForAthletes, href: "#for-athletes" },
+    { label: cl.navPricing, href: "#pricing" },
   ];
   return (
     <header
@@ -61,24 +62,28 @@ function Nav() {
             </a>
           ))}
         </nav>
-        <div className={`hidden md:flex items-center gap-5 ${body}`}>
-          <Link to="/auth" className="text-sm" style={{ color: C.muted }}>Log in</Link>
+        <div className={`hidden md:flex items-center gap-4 ${body}`}>
+          <LanguageSwitcher />
+          <Link to="/auth" className="text-sm" style={{ color: C.muted }}>{cl.navLogin}</Link>
           <Link
             to="/auth?tab=signup"
             className="text-sm font-semibold rounded-md px-4 py-2 transition-transform active:scale-[0.98]"
             style={{ background: C.red, color: C.text }}
           >
-            Get Started
+            {cl.navGetStarted}
           </Link>
         </div>
-        <button
-          className="md:hidden p-2 rounded-md"
-          onClick={() => setOpen((o) => !o)}
-          aria-label="Menu"
-          style={{ color: C.text }}
-        >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        <div className="md:hidden flex items-center gap-2">
+          <LanguageSwitcher />
+          <button
+            className="p-2 rounded-md"
+            onClick={() => setOpen((o) => !o)}
+            aria-label="Menu"
+            style={{ color: C.text }}
+          >
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
       {open && (
         <div className={`md:hidden border-t ${body}`} style={{ borderColor: C.border, background: C.bg }}>
@@ -96,7 +101,7 @@ function Nav() {
             ))}
             <div className="flex gap-3 pt-3 border-t" style={{ borderColor: C.border }}>
               <Link to="/auth" onClick={() => setOpen(false)} className="text-sm py-2" style={{ color: C.muted }}>
-                Log in
+                {cl.navLogin}
               </Link>
               <Link
                 to="/auth?tab=signup"
@@ -104,7 +109,7 @@ function Nav() {
                 className="ml-auto text-sm font-semibold rounded-md px-4 py-2"
                 style={{ background: C.red, color: C.text }}
               >
-                Get Started
+                {cl.navGetStarted}
               </Link>
             </div>
           </div>
@@ -113,8 +118,6 @@ function Nav() {
     </header>
   );
 }
-
-/* ───────────────── Hero ───────────────── */
 const HERO_PHRASES = [
   "Like You Have More Time.",
   "Like You Have More Staff.",
