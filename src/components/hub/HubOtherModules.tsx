@@ -13,12 +13,12 @@ export function HubOtherModules({ isDemo, isLocked, onTab }: Props) {
   const navigate = useNavigate();
 
   const chips = [
-    { key: "mental", icon: Brain, label: t("mental"), color: "text-tab-mental", bg: "bg-tab-mental/10 border-tab-mental/30", onClick: () => onTab("mental"), locked: isDemo },
-    { key: "nutrition", icon: Apple, label: t("nutrition"), color: "text-tab-nutrition", bg: "bg-tab-nutrition/10 border-tab-nutrition/30", onClick: () => onTab("nutrition"), locked: isDemo },
-    { key: "rehab", icon: Heart, label: t("hubRehabTitle"), color: "text-tab-rehab", bg: "bg-tab-rehab/10 border-tab-rehab/30", onClick: () => onTab("rehab"), locked: isDemo || isLocked("rehab") },
-    { key: "testing", icon: ClipboardList, label: t("testing"), color: "text-primary", bg: "bg-primary/10 border-primary/30", onClick: () => onTab("testing"), locked: isDemo || isLocked("testing") },
-    { key: "season", icon: CalendarRange, label: t("hubSeasonTitle"), color: "text-primary", bg: "bg-primary/10 border-primary/30", onClick: () => navigate("/season"), locked: isDemo || isLocked("season_plan") },
-    { key: "library", icon: BookOpen, label: t("hubLibraryTitle"), color: "text-primary", bg: "bg-primary/10 border-primary/30", onClick: () => navigate("/library"), locked: isDemo || isLocked("library") },
+    { key: "mental", icon: Brain, label: t("mental"), color: "text-tab-mental", bg: "bg-tab-mental/10 border-tab-mental/30", onClick: () => onTab("mental"), locked: isDemo, hasNew: false },
+    { key: "nutrition", icon: Apple, label: t("nutrition"), color: "text-tab-nutrition", bg: "bg-tab-nutrition/10 border-tab-nutrition/30", onClick: () => onTab("nutrition"), locked: isDemo, hasNew: false },
+    { key: "rehab", icon: Heart, label: t("hubRehabTitle"), color: "text-tab-rehab", bg: "bg-tab-rehab/10 border-tab-rehab/30", onClick: () => onTab("rehab"), locked: isDemo || isLocked("rehab"), hasNew: true },
+    { key: "testing", icon: ClipboardList, label: t("testing"), color: "text-primary", bg: "bg-primary/10 border-primary/30", onClick: () => onTab("testing"), locked: isDemo || isLocked("testing"), hasNew: false },
+    { key: "season", icon: CalendarRange, label: t("hubSeasonTitle"), color: "text-primary", bg: "bg-primary/10 border-primary/30", onClick: () => navigate("/season"), locked: isDemo || isLocked("season_plan"), hasNew: false },
+    { key: "library", icon: BookOpen, label: t("hubLibraryTitle"), color: "text-primary", bg: "bg-primary/10 border-primary/30", onClick: () => navigate("/library"), locked: isDemo || isLocked("library"), hasNew: false },
   ];
 
   return (
