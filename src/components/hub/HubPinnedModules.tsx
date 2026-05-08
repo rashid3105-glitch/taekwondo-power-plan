@@ -41,8 +41,11 @@ export function HubPinnedModules({
   })();
 
   const daysUntilNextEvent = (() => {
-    // nextEventName carries no date here; if event prop expanded, this is unknown.
-    return null as number | null;
+    if (!nextEventDate) return null;
+    const now = new Date();
+    const ev = new Date(nextEventDate);
+    const ms = ev.getTime() - now.getTime();
+    return Math.max(0, Math.ceil(ms / 86400000));
   })();
 
   const tiles = [
