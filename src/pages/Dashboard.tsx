@@ -27,7 +27,7 @@ import { Watermark } from "@/components/Watermark";
 import { PhysicalTesting } from "@/components/PhysicalTesting";
 import { Separator } from "@/components/ui/separator";
 import { SplashScreen } from "@/components/SplashScreen";
-import { ReadinessCard } from "@/components/ReadinessCard";
+// ReadinessCard moved into HubReadinessBanner (conditional + dismissible).
 import { RecoveryTile } from "@/components/RecoveryTile";
 import { ReflectionPromptCard } from "@/components/ReflectionPromptCard";
 import { EnablePasskeyCard } from "@/components/EnablePasskeyCard";
