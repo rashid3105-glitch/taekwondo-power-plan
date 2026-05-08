@@ -542,7 +542,7 @@ export default function Dashboard() {
             const items = [
               { key: "hjem", label: "Hjem", icon: Home, active: activeTab === "hub", onClick: () => handleTabChange("hub") },
               { key: "plan", label: "Plan", icon: CalendarIcon, active: activeTab === "plan", onClick: () => handleTabChange("plan") },
-              { key: "drills", label: "Drills", icon: require("lucide-react").Swords, active: false, onClick: () => navigate("/library") },
+              { key: "drills", label: "Drills", icon: Swords, active: false, onClick: () => navigate("/library") },
               { key: "fremgang", label: "Fremgang", icon: BarChart3, active: activeTab === "progress", onClick: () => handleTabChange("progress") },
               { key: "profil", label: "Profil", icon: User, active: false, onClick: () => navigate("/profile-setup") },
             ];
