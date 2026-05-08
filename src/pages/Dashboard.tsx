@@ -44,6 +44,7 @@ import { HubNextEvent } from "@/components/hub/HubNextEvent";
 import { HubRecoveryStrip } from "@/components/hub/HubRecoveryStrip";
 import { HubPinnedModules } from "@/components/hub/HubPinnedModules";
 import { HubOtherModules } from "@/components/hub/HubOtherModules";
+import { HubReadinessBanner } from "@/components/hub/HubReadinessBanner";
 
 interface Profile {
   display_name: string;
