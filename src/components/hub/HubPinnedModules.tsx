@@ -7,6 +7,7 @@ interface Props {
   activePlanWeek?: number | null;
   metricsUpdated?: number;
   nextEventName?: string | null;
+  nextEventDate?: string | null;
   matchClipsCount?: number;
   isDemo: boolean;
   isLocked: (mod: "competitions" | "match_analysis") => boolean;
@@ -19,6 +20,7 @@ export function HubPinnedModules({
   activePlanWeek,
   metricsUpdated,
   nextEventName,
+  nextEventDate,
   matchClipsCount,
   isDemo,
   isLocked,
@@ -28,16 +30,30 @@ export function HubPinnedModules({
   const { t } = useLanguage();
   const navigate = useNavigate();
 
+  // ISO week number
+  const isoWeek = (() => {
+    const d = new Date();
+    const target = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    const dayNum = target.getUTCDay() || 7;
+    target.setUTCDate(target.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(target.getUTCFullYear(), 0, 1));
+    return Math.ceil((((target.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+  })();
+
+  const daysUntilNextEvent = (() => {
+    if (!nextEventDate) return null;
+    const now = new Date();
+    const ev = new Date(nextEventDate);
+    const ms = ev.getTime() - now.getTime();
+    return Math.max(0, Math.ceil(ms / 86400000));
+  })();
+
   const tiles = [
     {
       key: "plan",
       icon: Zap,
       title: t("hubTrainingTitle"),
-      sub: hasActivePlan && activePlanWeek
-        ? `${t("week")} ${activePlanWeek} · ${t("activeBadge")}`
-        : hasActivePlan
-        ? t("activeBadge")
-        : t("hubTrainingDesc").slice(0, 40) + "…",
+      sub: `Uge ${isoWeek} aktiv`,
       iconBg: "bg-tab-plan/15",
       iconColor: "text-tab-plan",
       onClick: () => onTab("plan"),
@@ -47,10 +63,7 @@ export function HubPinnedModules({
       key: "progress",
       icon: BarChart3,
       title: t("hubProgressTitle"),
-      sub:
-        metricsUpdated && metricsUpdated > 0
-          ? `${metricsUpdated} ${t("metricsUpdated")}`
-          : t("hubProgressTitle"),
+      sub: "Opdateret i dag",
       iconBg: "bg-tab-progress/15",
       iconColor: "text-tab-progress",
       onClick: () => onTab("progress"),
@@ -60,7 +73,11 @@ export function HubPinnedModules({
       key: "competitions",
       icon: Trophy,
       title: t("hubCompetitionsTitle"),
-      sub: nextEventName || t("noUpcomingEvent").slice(0, 40),
+      sub: nextEventName
+        ? (daysUntilNextEvent !== null
+            ? `${nextEventName} · ${daysUntilNextEvent} dage`
+            : nextEventName)
+        : t("noUpcomingEvent").slice(0, 40),
       iconBg: "bg-explosive/15",
       iconColor: "text-explosive",
       onClick: () => navigate("/competitions"),
@@ -70,10 +87,7 @@ export function HubPinnedModules({
       key: "match",
       icon: VideoIcon,
       title: t("hubMatchTitle"),
-      sub:
-        matchClipsCount && matchClipsCount > 0
-          ? `${matchClipsCount} ${t("clipsReady")}`
-          : t("hubMatchTitle"),
+      sub: "Se seneste klip",
       iconBg: "bg-primary/15",
       iconColor: "text-primary",
       onClick: () => navigate("/match-analysis/me"),
