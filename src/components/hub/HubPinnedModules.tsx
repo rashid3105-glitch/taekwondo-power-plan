@@ -7,6 +7,7 @@ interface Props {
   activePlanWeek?: number | null;
   metricsUpdated?: number;
   nextEventName?: string | null;
+  nextEventDate?: string | null;
   matchClipsCount?: number;
   isDemo: boolean;
   isLocked: (mod: "competitions" | "match_analysis") => boolean;
