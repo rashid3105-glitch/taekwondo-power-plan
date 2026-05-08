@@ -37,7 +37,7 @@ import type { LockedModule } from "@/lib/entitlements";
 import { FeatureEmptyState } from "@/components/FeatureEmptyState";
 import { TodayCard } from "@/components/today/TodayCard";
 import { HubTodayHero } from "@/components/hub/HubTodayHero";
-import { HubDailyQuote } from "@/components/hub/HubDailyQuote";
+// HubDailyQuote removed from dashboard.
 import { HubNextEvent } from "@/components/hub/HubNextEvent";
 import { HubRecoveryStrip } from "@/components/hub/HubRecoveryStrip";
 import { HubPinnedModules } from "@/components/hub/HubPinnedModules";
