@@ -1,9 +1,10 @@
 // Recompute form curve for the current authenticated user (or all users if cron-triggered with service role).
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { checkCronAuth } from "../_shared/cronAuth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-cron-secret",
 };
 
 Deno.serve(async (req) => {
@@ -19,6 +20,8 @@ Deno.serve(async (req) => {
     const weeks: number = Math.min(Math.max(parseInt(body?.weeks ?? 12), 1), 52);
 
     if (allMode) {
+      const unauthorized = checkCronAuth(req, corsHeaders);
+      if (unauthorized) return unauthorized;
       // Cron mode: compute for every athlete
       const { data: profiles } = await supa.from("profiles").select("user_id").eq("is_approved", true);
       let count = 0;
