@@ -20,6 +20,7 @@ export function HubPinnedModules({
   activePlanWeek,
   metricsUpdated,
   nextEventName,
+  nextEventDate,
   matchClipsCount,
   isDemo,
   isLocked,
