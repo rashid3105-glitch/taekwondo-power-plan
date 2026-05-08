@@ -632,12 +632,15 @@ export default function Dashboard() {
         )}
         {activeTab === "hub" ? (
           <div className="space-y-4">
-            {/* Greeting line */}
+            {/* Conditional readiness banner (top of scrollable content) */}
+            {!isDemo && <HubReadinessBanner />}
+
+            {/* Greeting line — bigger profile picture */}
             <div className="flex items-center gap-3 px-1">
               <AvatarImg
                 avatarUrl={profile?.avatar_url}
-                className="h-10 w-10 rounded-full object-cover border border-border shrink-0"
-                fallbackClassName="h-10 w-10 rounded-full bg-muted flex items-center justify-center border border-border shrink-0"
+                className="h-16 w-16 sm:h-20 sm:w-20 rounded-full object-cover border-2 border-border shrink-0"
+                fallbackClassName="h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-muted flex items-center justify-center border-2 border-border shrink-0"
               />
               <div className="min-w-0">
                 {(() => {
@@ -651,7 +654,7 @@ export default function Dashboard() {
                   return (
                     <>
                       <p className="text-xs text-muted-foreground">{t(greetingKey)}</p>
-                      <p className="text-base font-bold text-foreground truncate">{firstName}</p>
+                      <p className="text-lg font-bold text-foreground truncate">{firstName}</p>
                     </>
                   );
                 })()}
@@ -664,18 +667,14 @@ export default function Dashboard() {
               onGoToPlan={() => handleTabChange("plan")}
             />
 
-            {/* Daily motivational quote */}
-            <HubDailyQuote />
-
             {/* 2. Next event countdown */}
             <HubNextEvent event={nextEvent} />
 
             {/* 3. Recovery strip */}
             {!isDemo && <HubRecoveryStrip />}
 
-            {/* Optional readiness / reflection prompts (only when actionable) */}
+            {/* Optional reflection prompt */}
             {!isDemo && <ReflectionPromptCard />}
-            {!isDemo && <ReadinessCard />}
 
             {/* 4. Pinned modules */}
             <HubPinnedModules
@@ -683,6 +682,7 @@ export default function Dashboard() {
               activePlanWeek={null}
               metricsUpdated={0}
               nextEventName={nextEvent?.name ?? null}
+              nextEventDate={nextEvent?.event_date ?? null}
               matchClipsCount={0}
               isDemo={isDemo}
               isLocked={(mod) => isModuleLocked(mod)}
@@ -700,9 +700,8 @@ export default function Dashboard() {
               onTab={(tab) => handleTabChange(tab)}
             />
 
-            {/* Demoted: passkey + what's new */}
+            {/* Demoted: passkey */}
             {!isDemo && <EnablePasskeyCard />}
-            <WhatsNewInline />
 
             {/* Quick link */}
             <div className="flex justify-center pt-2">
@@ -711,6 +710,7 @@ export default function Dashboard() {
               </Button>
             </div>
           </div>
+
         ) : activeTab === "progress" ? (
           <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isDemo ? renderDemoLockedState("progress") : <ProgressDashboard onGoToPlan={() => handleTabChange("plan")} />}</>
         ) : activeTab === "nutrition" ? (
