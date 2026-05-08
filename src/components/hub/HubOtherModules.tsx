@@ -35,11 +35,17 @@ export function HubOtherModules({ isDemo, isLocked, onTab }: Props) {
               type="button"
               onClick={() => !chip.locked && chip.onClick()}
               disabled={chip.locked}
-              className={`shrink-0 inline-flex items-center gap-1.5 rounded-full border px-3 py-2 text-xs font-semibold transition-colors ${chip.bg} ${chip.color} ${chip.locked ? "opacity-60" : "hover:opacity-90"}`}
+              className={`relative shrink-0 inline-flex items-center gap-1.5 rounded-full border px-3 py-2 text-xs font-semibold transition-colors ${chip.bg} ${chip.color} ${chip.locked ? "opacity-60" : "hover:opacity-90"}`}
             >
               <Icon className="h-3.5 w-3.5" />
               {chip.label}
               {chip.locked && <Lock className="h-3 w-3 ml-0.5" />}
+              {chip.hasNew && !chip.locked && (
+                <span
+                  aria-label="new"
+                  className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-destructive"
+                />
+              )}
             </button>
           );
         })}
