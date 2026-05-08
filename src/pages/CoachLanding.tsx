@@ -16,6 +16,8 @@ import photoSideKick from "@/assets/photos/side-kick-new.png";
 import photoDenJump from "@/assets/photos/den-jump-kick-new.png";
 import photoClash from "@/assets/photos/clash-aerial.jpg";
 import photoCoachBench from "@/assets/photos/coach-bench.jpg";
+import photoPoomsaeSideKick from "@/assets/photos/poomsae-side-kick.jpeg";
+import photoJuniorAxeKick from "@/assets/photos/junior-axe-kick.jpeg";
 
 const useCL = () => {
   const { locale } = useLanguage();
@@ -409,7 +411,7 @@ function Testimonials() {
 }
 
 /* ───────────────── Story Rows (Everfit-style) ───────────────── */
-const STORY_PHOTOS = [photoCoachCorner, photoSideKick, photoCoachTalk, photoDenJump];
+const STORY_PHOTOS = [photoCoachCorner, photoPoomsaeSideKick, photoCoachTalk, photoJuniorAxeKick, photoSideKick, photoDenJump];
 
 function StoryRows() {
   const cl = useCL();
