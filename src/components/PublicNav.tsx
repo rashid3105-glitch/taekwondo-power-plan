@@ -30,7 +30,7 @@ export function PublicNav() {
           onClick={() => navigate("/")}
           className="flex items-center gap-2 cursor-pointer"
         >
-          <img src={logo} alt="Sportstalent" className="h-8 w-8 rounded-lg object-contain flex-shrink-0" />
+          <img src={logo} alt="Sportstalent" className="h-10 w-10 rounded-lg object-contain flex-shrink-0" />
           <span className="text-sm font-extrabold tracking-tight text-foreground whitespace-nowrap hidden sm:inline">
             SPORTSTALENT
           </span>
