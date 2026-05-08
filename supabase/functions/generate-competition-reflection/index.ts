@@ -4,6 +4,7 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { checkAIEntitlement } from "../_shared/checkEntitlement.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -27,6 +28,10 @@ serve(async (req) => {
     const token = authHeader.replace("Bearer ", "");
     const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
     if (claimsError || !claimsData?.claims) return json({ error: "Unauthorized" }, 401);
+
+    const userId = (claimsData.claims as any).sub as string;
+    const notEntitled = await checkAIEntitlement(userId, corsHeaders);
+    if (notEntitled) return notEntitled;
 
     const raw = await req.text();
     if (raw.length > 10000) return json({ error: "Request too large" }, 400);
