@@ -534,40 +534,37 @@ export default function Dashboard() {
         </SheetContent>
       </Sheet>
 
-      {/* Mobile bottom nav */}
+      {/* Mobile bottom nav — 5 tabs */}
       <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-card/95 backdrop-blur-sm sm:hidden pb-safe">
         <div className="flex items-stretch justify-around px-1 pt-1.5">
-          {[
-            { tab: "hub" as const, icon: Home, label: "Home", color: "text-primary", bg: "bg-primary/10" },
-            { tab: "plan" as const, icon: Zap, label: t("plan"), color: "text-tab-plan", bg: "bg-tab-plan/10" },
-            { tab: "progress" as const, icon: BarChart3, label: t("progress"), color: "text-tab-progress", bg: "bg-tab-progress/10" },
-            { tab: "nutrition" as const, icon: Apple, label: t("nutrition"), color: "text-tab-nutrition", bg: "bg-tab-nutrition/10" },
-            { tab: "rehab" as const, icon: Heart, label: t("rehab"), color: "text-tab-rehab", bg: "bg-tab-rehab/10" },
-            { tab: "mental" as const, icon: Brain, label: t("mental"), color: "text-tab-mental", bg: "bg-tab-mental/10" },
-          ].map(({ tab, icon: Icon, label, color, bg }) => {
-            const locked = isDemoLockedTab(tab);
-            const active = activeTab === tab;
-            return (
+          {(() => {
+            // Lazy import lucide icons here to keep diff tight
+            const items = [
+              { key: "hjem", label: "Hjem", icon: Home, active: activeTab === "hub", onClick: () => handleTabChange("hub") },
+              { key: "plan", label: "Plan", icon: CalendarIcon, active: activeTab === "plan", onClick: () => handleTabChange("plan") },
+              { key: "drills", label: "Drills", icon: require("lucide-react").Swords, active: false, onClick: () => navigate("/library") },
+              { key: "fremgang", label: "Fremgang", icon: BarChart3, active: activeTab === "progress", onClick: () => handleTabChange("progress") },
+              { key: "profil", label: "Profil", icon: User, active: false, onClick: () => navigate("/profile-setup") },
+            ];
+            return items.map(({ key, label, icon: Icon, active, onClick }) => (
               <button
-                key={tab}
+                key={key}
                 onClick={() => {
-                  if (locked) return;
                   import("@/lib/haptics").then((h) => h.tap()).catch(() => { /* ignore */ });
-                  handleTabChange(tab);
+                  onClick();
                 }}
-                disabled={locked}
                 aria-current={active ? "page" : undefined}
                 aria-label={label}
                 className={`relative flex flex-1 min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg px-1 py-1.5 transition-colors ${
-                  active ? `${color} ${bg}` : "text-muted-foreground"
-                } ${locked ? "opacity-50" : "active:scale-95"}`}
+                  active ? "text-destructive" : "text-muted-foreground"
+                } active:scale-95`}
                 style={{ minHeight: 48 }}
               >
                 <Icon className="h-5 w-5" />
-                <span className="text-[10px] font-semibold leading-tight truncate max-w-full">{label}</span>
+                <span className="text-[9px] font-semibold uppercase tracking-wide leading-tight truncate max-w-full">{label}</span>
               </button>
-            );
-          })}
+            ));
+          })()}
         </div>
       </nav>
 
