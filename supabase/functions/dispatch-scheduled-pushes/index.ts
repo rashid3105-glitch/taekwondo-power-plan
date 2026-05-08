@@ -3,14 +3,18 @@
 // - Competition countdown milestones (-30/-14/-7/-3/-1 days at 09:00 local)
 // - Daily weight-log nudge during active cut window (08:00 local)
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { checkCronAuth } from "../_shared/cronAuth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-cron-secret",
 };
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+
+  const unauthorized = checkCronAuth(req, corsHeaders);
+  if (unauthorized) return unauthorized;
 
   const supa = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
   const now = new Date();

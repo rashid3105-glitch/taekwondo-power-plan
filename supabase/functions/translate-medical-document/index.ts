@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { checkAIEntitlement } from "../_shared/checkEntitlement.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -51,6 +52,10 @@ serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    const userId = (claimsData.claims as any).sub as string;
+    const notEntitled = await checkAIEntitlement(userId, corsHeaders);
+    if (notEntitled) return notEntitled;
 
     const raw = await req.text();
     if (raw.length > 14_000_000) {
