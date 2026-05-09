@@ -568,6 +568,7 @@ export default function Dashboard() {
       </nav>
 
       <main className="container max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
+        <InviteWelcomeBanner />
         {isDemo && demoDaysLeft !== null && demoDaysLeft <= 0 ? (
           <div className="rounded-xl border-2 border-destructive bg-destructive/10 p-5 sm:p-6 space-y-4">
             <div className="flex items-center gap-3">
