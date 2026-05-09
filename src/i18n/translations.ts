@@ -7152,6 +7152,7 @@ const translations = {
     hubLibraryDesc: "Durchsuchen Sie die gesamte Sammlung von Übungen, Rezepten und mentalen Trainingstechniken, um Ihr Wissen zu erweitern.",
     diary: "Tagebuch",
     diaryDesc: "Notizen, Stimmung und Energie aus jedem Training",
+    profileCachedHint: "Aus Cache angezeigt",
     diaryNewEntry: "Neuer Eintrag",
     diaryEditEntry: "Eintrag bearbeiten",
     diaryPlaceholder: "Wie war Ihr Training heute? Schreiben Sie Ihre Gedanken...",
