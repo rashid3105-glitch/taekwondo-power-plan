@@ -39,10 +39,7 @@ export interface ChatMessage {
 }
 
 export async function editMessage(id: string, newBody: string) {
-  const { error } = await supabase
-    .from("chat_messages")
-    .update({ body: newBody.trim(), edited_at: new Date().toISOString() })
-    .eq("id", id);
+  const { error } = await supabase.rpc("edit_chat_message", { _id: id, _body: newBody });
   if (error) throw error;
 }
 
