@@ -148,7 +148,7 @@ const App = () => {
           <BrowserRouter>
             <OfflineBanner />
             <AnimatedRoutes />
-            <FloatingDiaryButton />
+            <FloatingChatButton />
           </BrowserRouter>
         </TooltipProvider>
       </LanguageProvider>
