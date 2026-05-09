@@ -7,7 +7,8 @@ import { useMessages } from "@/hooks/useMessages";
 import { MessageBubble } from "./MessageBubble";
 import { MessageComposer } from "./MessageComposer";
 import { supabase } from "@/integrations/supabase/client";
-import type { ChatThread } from "@/lib/chatApi";
+import { editMessage, softDeleteMessage, type ChatThread } from "@/lib/chatApi";
+import { toast } from "sonner";
 
 interface Props {
   thread: ChatThread;
