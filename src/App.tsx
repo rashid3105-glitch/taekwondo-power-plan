@@ -49,6 +49,8 @@ import MatchAnalysis from "./pages/MatchAnalysis";
 import MatchShare from "./pages/MatchShare";
 import SeasonPlan from "./pages/SeasonPlan";
 import JoinInvite from "./pages/JoinInvite";
+import SignupCoach from "./pages/SignupCoach";
+import InviteSignup from "./pages/InviteSignup";
 import { UpgradeGate } from "@/components/UpgradeGate";
 
 const queryClient = new QueryClient();
@@ -80,6 +82,8 @@ const AnimatedRoutes = () => {
         <Route path="/" element={<Page><CoachLanding /></Page>} />
         <Route path="/v2" element={<Page><Landing /></Page>} />
         <Route path="/v1" element={<Page><Index /></Page>} />
+        <Route path="/signup/coach" element={<Page><SignupCoach /></Page>} />
+        <Route path="/invite/:code" element={<Page><InviteSignup /></Page>} />
         <Route path="/signup" element={<Navigate to="/auth?tab=signup" replace />} />
         <Route path="/login" element={<Navigate to="/auth?tab=signin" replace />} />
         <Route path="/methodology" element={<Page><Methodology /></Page>} />
