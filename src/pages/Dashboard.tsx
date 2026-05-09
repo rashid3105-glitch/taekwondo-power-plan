@@ -45,6 +45,8 @@ import { HubPinnedModules } from "@/components/hub/HubPinnedModules";
 import { HubOtherModules } from "@/components/hub/HubOtherModules";
 import { HubReadinessBanner } from "@/components/hub/HubReadinessBanner";
 import { InviteWelcomeBanner } from "@/components/hub/InviteWelcomeBanner";
+import { useOfflineProfile } from "@/hooks/useOfflineProfile";
+import { useOfflinePlan } from "@/hooks/useOfflinePlan";
 
 interface Profile {
   display_name: string;
