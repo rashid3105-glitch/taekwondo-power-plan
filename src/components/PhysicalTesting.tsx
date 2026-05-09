@@ -454,8 +454,15 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
                             );
                           }
                           return (
-                            <tr key={r.id} className="border-b border-border/50 last:border-0">
-                              <td className="py-2 text-foreground">{new Date(r.test_date).toLocaleDateString()}</td>
+                            <tr key={r.local_id} className="border-b border-border/50 last:border-0">
+                              <td className="py-2 text-foreground">
+                                <span className="inline-flex items-center gap-1.5">
+                                  {new Date(r.test_date).toLocaleDateString()}
+                                  {r.pending && (
+                                    <WifiOff className="h-3 w-3 text-amber-500" aria-label="Pending sync" />
+                                  )}
+                                </span>
+                              </td>
                               <td className="py-2 text-right font-mono font-bold text-foreground">{r.value}</td>
                               <td className="py-2 text-left text-muted-foreground">{r.unit}</td>
                               <td className="py-2 text-right">{changeEl || "—"}</td>
