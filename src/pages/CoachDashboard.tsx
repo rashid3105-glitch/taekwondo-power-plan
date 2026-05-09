@@ -36,6 +36,7 @@ import {
   Frown, Meh, Smile, Laugh, BatteryLow, BatteryMedium, BatteryFull, MessageSquare, Bell, Search, Send, Building,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { MessagesIcon } from "@/components/chat/MessagesIcon";
 
 interface AthleteProfile {
   user_id: string;
