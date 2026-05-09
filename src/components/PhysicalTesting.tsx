@@ -475,7 +475,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
                                 {r.notes || "—"}
                               </td>
                               <td className="py-2 text-right">
-                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDelete(r.id)}>
+                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDelete(r.local_id)}>
                                   <Trash2 className="h-3.5 w-3.5 text-destructive" />
                                 </Button>
                               </td>
