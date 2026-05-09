@@ -135,6 +135,13 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
   const [testDate, setTestDate] = useState(new Date().toISOString().split("T")[0]);
   const [testNotes, setTestNotes] = useState("");
 
+  // Resolve current user id once for individual mode + tested_by metadata.
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setCurrentUserId(user?.id ?? null);
+    });
+  }, []);
+
   // Load coach's athletes if in coach mode without a pre-selected athlete
   useEffect(() => {
     if (mode === "coach" && !athleteId) {
@@ -142,15 +149,24 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
     }
   }, [mode, athleteId]);
 
-  useEffect(() => {
-    const targetId = athleteId || selectedAthleteId;
-    if (mode === "coach" && !targetId) {
-      setResults([]);
-      setLoading(false);
-      return;
-    }
-    loadResults();
-  }, [athleteId, selectedAthleteId]);
+  const targetUserId =
+    mode === "coach" ? (athleteId || selectedAthleteId || null) : currentUserId;
+
+  const { results: cachedResults, loading, addResult, removeResult } =
+    useOfflinePhysicalTests(targetUserId);
+
+  const results: TestResult[] = cachedResults.map((r) => ({
+    id: r.server_id || r.local_id,
+    local_id: r.local_id,
+    test_name: r.test_name,
+    category: r.category,
+    value: r.value,
+    unit: r.unit,
+    test_type: r.test_type,
+    test_date: r.test_date,
+    notes: r.notes,
+    pending: r.pending,
+  }));
 
   const loadAthletes = async () => {
     setLoadingAthletes(true);
@@ -178,23 +194,6 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
       }
     }
     setLoadingAthletes(false);
-  };
-
-  const loadResults = async () => {
-    setLoading(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    const targetId = mode === "coach" ? (athleteId || selectedAthleteId) : user.id;
-    if (!targetId) { setLoading(false); return; }
-
-    const { data } = await supabase
-      .from("physical_test_results" as any)
-      .select("*")
-      .eq("user_id", targetId)
-      .order("test_date", { ascending: false });
-
-    if (data) setResults(data as unknown as TestResult[]);
-    setLoading(false);
   };
 
   const handleSubmit = async () => {
