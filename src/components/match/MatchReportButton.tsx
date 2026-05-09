@@ -38,7 +38,7 @@ interface Props {
 
 export function MatchReportButton({ tags, video, profile }: Props) {
   const { toast } = useToast();
-  const { t, lang } = useLanguage();
+  const { t, locale } = useLanguage();
   const [loading, setLoading] = useState(false);
 
   const minTags = 3;
@@ -59,7 +59,7 @@ export function MatchReportButton({ tags, video, profile }: Props) {
           })),
           video,
           profile,
-          language: lang,
+          language: locale,
         },
       });
       if (error || (data as any)?.error) {
