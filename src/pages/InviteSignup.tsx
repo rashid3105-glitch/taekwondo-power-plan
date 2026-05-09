@@ -31,8 +31,8 @@ export default function InviteSignup() {
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
 
-  const currency = detectCurrency(locale as string);
-  const monthly = getTierPrice("athlete", currency, "monthly");
+  const currency = detectCurrency();
+  const monthly = getTierPrice("athlete", currency, "monthly") ?? 49;
   const priceLabel = formatPrice(monthly, currency, "monthly", locale as string);
 
   useEffect(() => {
