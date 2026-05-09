@@ -657,6 +657,12 @@ export default function Dashboard() {
                     <>
                       <p className="text-xs text-muted-foreground">{t(greetingKey)}</p>
                       <p className="text-lg font-bold text-foreground truncate">{firstName}</p>
+                      {profileFromCache && (
+                        <p className="text-[10px] text-muted-foreground/80 truncate">
+                          {t("profileCachedHint" as any) || "Vises fra cache"}
+                          {profileCachedAt ? ` · ${new Date(profileCachedAt).toLocaleDateString()}` : ""}
+                        </p>
+                      )}
                     </>
                   );
                 })()}
