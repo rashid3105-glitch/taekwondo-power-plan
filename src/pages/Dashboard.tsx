@@ -898,6 +898,13 @@ export default function Dashboard() {
               </div>
             )}
 
+            {/* Offline notice when there's no usable plan */}
+            {!planOnline && !activePlan && !offlinePlan && (
+              <div className="rounded-xl border border-border bg-muted/40 p-4 text-sm text-muted-foreground">
+                Træningsplan ikke tilgængelig offline — åbn appen online én gang for at aktivere offline adgang.
+              </div>
+            )}
+
             {/* Active plan */}
             {activePlan ? (
               <div className="space-y-2">
