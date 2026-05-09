@@ -40,6 +40,7 @@ const TOPICS: Record<TopicKey, Topic> = {
   helpReflection: { key: "helpReflection", icon: NotebookPen, isNew: true },
   helpAddStudents: { key: "helpAddStudents", icon: Users },
   helpStudentProgress: { key: "helpStudentProgress", icon: BarChart3 },
+  helpChat: { key: "helpChat", icon: MessageCircle, isNew: true },
 };
 
 type SectionDef = {
