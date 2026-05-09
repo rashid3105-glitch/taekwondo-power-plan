@@ -43,6 +43,7 @@ import { HubRecoveryStrip } from "@/components/hub/HubRecoveryStrip";
 import { HubPinnedModules } from "@/components/hub/HubPinnedModules";
 import { HubOtherModules } from "@/components/hub/HubOtherModules";
 import { HubReadinessBanner } from "@/components/hub/HubReadinessBanner";
+import { InviteWelcomeBanner } from "@/components/hub/InviteWelcomeBanner";
 
 interface Profile {
   display_name: string;
