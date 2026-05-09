@@ -807,6 +807,7 @@ const translations = {
     // Diary
     diary: "Diary",
     diaryDesc: "Notes, mood and energy from every session",
+    profileCachedHint: "Showing cached profile",
     diaryNewEntry: "New Entry",
     diaryEditEntry: "Edit Entry",
     diaryPlaceholder: "How was your training today? Write your thoughts...",
@@ -2941,6 +2942,7 @@ const translations = {
     // Diary
     diary: "Dagbog",
     diaryDesc: "Noter, humør og energi fra hver træning",
+    profileCachedHint: "Vises fra cache",
     diaryNewEntry: "Ny indgang",
     diaryEditEntry: "Rediger indgang",
     diaryPlaceholder: "Hvordan var din træning i dag? Skriv dine tanker...",
@@ -5061,6 +5063,7 @@ const translations = {
     // Diary
     diary: "Dagbok",
     diaryDesc: "Anteckningar, humör och energi från varje träning",
+    profileCachedHint: "Visar cachad profil",
     diaryNewEntry: "Ny post",
     diaryEditEntry: "Redigera post",
     diaryPlaceholder: "Hur var din träning idag? Skriv dina tankar...",
@@ -7149,6 +7152,7 @@ const translations = {
     hubLibraryDesc: "Durchsuchen Sie die gesamte Sammlung von Übungen, Rezepten und mentalen Trainingstechniken, um Ihr Wissen zu erweitern.",
     diary: "Tagebuch",
     diaryDesc: "Notizen, Stimmung und Energie aus jedem Training",
+    profileCachedHint: "Aus Cache angezeigt",
     diaryNewEntry: "Neuer Eintrag",
     diaryEditEntry: "Eintrag bearbeiten",
     diaryPlaceholder: "Wie war Ihr Training heute? Schreiben Sie Ihre Gedanken...",
@@ -9226,6 +9230,7 @@ const translations = {
     hubLibraryDesc: "تصفح المجموعة الكاملة من التمارين، والوصفات، وتقنيات التدريب العقلي لتوسيع معرفتك.",
     diary: "المفكرة",
     diaryDesc: "ملاحظات ومزاج وطاقة من كل جلسة تدريب",
+    profileCachedHint: "يُعرض من الذاكرة المؤقتة",
     diaryNewEntry: "إدخال جديد",
     diaryEditEntry: "تعديل إدخال",
     diaryPlaceholder: "كيف كان تدريبك اليوم؟ اكتب أفكارك...",
@@ -11337,6 +11342,7 @@ const translations = {
     // Diary
     diary: "Dagbog",
     diaryDesc: "Notater, humør og energi fra hver økt",
+    profileCachedHint: "Viser bufret profil",
     diaryNewEntry: "Ny indgang",
     diaryEditEntry: "Rediger indgang",
     diaryPlaceholder: "Hvordan var din trening i dag? Skriv dine tanker...",

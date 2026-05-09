@@ -5,11 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { Loader2, Plus, Trash2, Timer, Dumbbell, Wind, Zap, ClipboardList, Users } from "lucide-react";
+import { Loader2, Plus, Trash2, Timer, Dumbbell, Wind, Zap, ClipboardList, Users, WifiOff } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { useOfflinePhysicalTests } from "@/hooks/useOfflinePhysicalTests";
 
 interface TestResult {
   id: string;
+  local_id: string;
   test_name: string;
   category: string;
   value: number;
@@ -17,6 +19,7 @@ interface TestResult {
   test_type: string;
   test_date: string;
   notes: string;
+  pending: boolean;
 }
 
 interface CoachAthlete {
@@ -87,8 +90,7 @@ interface PhysicalTestingProps {
 }
 
 export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestingProps) {
-  const [results, setResults] = useState<TestResult[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [activeCategory, setActiveCategory] = useState("speed");
   const { toast } = useToast();
@@ -133,6 +135,13 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
   const [testDate, setTestDate] = useState(new Date().toISOString().split("T")[0]);
   const [testNotes, setTestNotes] = useState("");
 
+  // Resolve current user id once for individual mode + tested_by metadata.
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setCurrentUserId(user?.id ?? null);
+    });
+  }, []);
+
   // Load coach's athletes if in coach mode without a pre-selected athlete
   useEffect(() => {
     if (mode === "coach" && !athleteId) {
@@ -140,15 +149,24 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
     }
   }, [mode, athleteId]);
 
-  useEffect(() => {
-    const targetId = athleteId || selectedAthleteId;
-    if (mode === "coach" && !targetId) {
-      setResults([]);
-      setLoading(false);
-      return;
-    }
-    loadResults();
-  }, [athleteId, selectedAthleteId]);
+  const targetUserId =
+    mode === "coach" ? (athleteId || selectedAthleteId || null) : currentUserId;
+
+  const { results: cachedResults, loading, addResult, removeResult } =
+    useOfflinePhysicalTests(targetUserId);
+
+  const results: TestResult[] = cachedResults.map((r) => ({
+    id: r.server_id || r.local_id,
+    local_id: r.local_id,
+    test_name: r.test_name,
+    category: r.category,
+    value: r.value,
+    unit: r.unit,
+    test_type: r.test_type,
+    test_date: r.test_date,
+    notes: r.notes,
+    pending: r.pending,
+  }));
 
   const loadAthletes = async () => {
     setLoadingAthletes(true);
@@ -176,23 +194,6 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
       }
     }
     setLoadingAthletes(false);
-  };
-
-  const loadResults = async () => {
-    setLoading(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    const targetId = mode === "coach" ? (athleteId || selectedAthleteId) : user.id;
-    if (!targetId) { setLoading(false); return; }
-
-    const { data } = await supabase
-      .from("physical_test_results" as any)
-      .select("*")
-      .eq("user_id", targetId)
-      .order("test_date", { ascending: false });
-
-    if (data) setResults(data as unknown as TestResult[]);
-    setLoading(false);
   };
 
   const handleSubmit = async () => {
@@ -240,35 +241,32 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
     const standardTest = Object.values(STANDARD_TESTS).flat().find(t => t.name === finalName);
     const unit = testUnit || standardTest?.unit || "";
 
-    const { error } = await supabase.from("physical_test_results" as any).insert({
-      user_id: targetId,
-      test_name: finalName,
-      category: activeCategory,
-      value: parsedValue,
-      unit,
-      test_type: mode === "coach" ? "coach" : "individual",
-      tested_by: mode === "coach" ? user.id : null,
-      notes: testNotes,
-      test_date: testDate,
-    } as any);
-
-    if (error) {
-      toast({ title: t("error"), description: error.message, variant: "destructive" });
-    } else {
+    try {
+      await addResult({
+        user_id: targetId,
+        test_name: finalName,
+        category: activeCategory,
+        value: parsedValue,
+        unit,
+        test_type: mode === "coach" ? "coach" : "individual",
+        tested_by: mode === "coach" ? user.id : null,
+        notes: testNotes,
+        test_date: testDate,
+      });
       toast({ title: t("ptResultSaved") });
       setSelectedTest("");
       setCustomTestName("");
       setTestValue("");
       setTestUnit("");
       setTestNotes("");
-      loadResults();
+    } catch (e: any) {
+      toast({ title: t("error"), description: e?.message || "Save failed", variant: "destructive" });
     }
     setSaving(false);
   };
 
-  const handleDelete = async (id: string) => {
-    await supabase.from("physical_test_results" as any).delete().eq("id", id);
-    loadResults();
+  const handleDelete = async (localId: string) => {
+    await removeResult(localId);
   };
 
   const categoryResults = results.filter(r => r.category === activeCategory);
@@ -456,8 +454,15 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
                             );
                           }
                           return (
-                            <tr key={r.id} className="border-b border-border/50 last:border-0">
-                              <td className="py-2 text-foreground">{new Date(r.test_date).toLocaleDateString()}</td>
+                            <tr key={r.local_id} className="border-b border-border/50 last:border-0">
+                              <td className="py-2 text-foreground">
+                                <span className="inline-flex items-center gap-1.5">
+                                  {new Date(r.test_date).toLocaleDateString()}
+                                  {r.pending && (
+                                    <WifiOff className="h-3 w-3 text-amber-500" aria-label="Pending sync" />
+                                  )}
+                                </span>
+                              </td>
                               <td className="py-2 text-right font-mono font-bold text-foreground">{r.value}</td>
                               <td className="py-2 text-left text-muted-foreground">{r.unit}</td>
                               <td className="py-2 text-right">{changeEl || "—"}</td>
@@ -470,7 +475,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
                                 {r.notes || "—"}
                               </td>
                               <td className="py-2 text-right">
-                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDelete(r.id)}>
+                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDelete(r.local_id)}>
                                   <Trash2 className="h-3.5 w-3.5 text-destructive" />
                                 </Button>
                               </td>

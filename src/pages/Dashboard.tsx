@@ -45,6 +45,8 @@ import { HubPinnedModules } from "@/components/hub/HubPinnedModules";
 import { HubOtherModules } from "@/components/hub/HubOtherModules";
 import { HubReadinessBanner } from "@/components/hub/HubReadinessBanner";
 import { InviteWelcomeBanner } from "@/components/hub/InviteWelcomeBanner";
+import { useOfflineProfile } from "@/hooks/useOfflineProfile";
+import { useOfflinePlan } from "@/hooks/useOfflinePlan";
 
 interface Profile {
   display_name: string;
@@ -113,6 +115,8 @@ export default function Dashboard() {
   const { t, locale } = useLanguage();
   
   const { isLocked: isModuleLocked } = useEntitlements();
+  const { isFromCache: profileFromCache, cachedAt: profileCachedAt } = useOfflineProfile();
+  const { plan: offlinePlan, online: planOnline } = useOfflinePlan();
 
   // Sync activeTab → URL ?tab= so browser back/refresh works.
   useEffect(() => {
@@ -653,6 +657,12 @@ export default function Dashboard() {
                     <>
                       <p className="text-xs text-muted-foreground">{t(greetingKey)}</p>
                       <p className="text-lg font-bold text-foreground truncate">{firstName}</p>
+                      {profileFromCache && (
+                        <p className="text-[10px] text-muted-foreground/80 truncate">
+                          {t("profileCachedHint" as any) || "Vises fra cache"}
+                          {profileCachedAt ? ` · ${new Date(profileCachedAt).toLocaleDateString()}` : ""}
+                        </p>
+                      )}
                     </>
                   );
                 })()}
@@ -885,6 +895,13 @@ export default function Dashboard() {
                     </Button>
                   )}
                 </div>
+              </div>
+            )}
+
+            {/* Offline notice when there's no usable plan */}
+            {!planOnline && !activePlan && !offlinePlan && (
+              <div className="rounded-xl border border-border bg-muted/40 p-4 text-sm text-muted-foreground">
+                Træningsplan ikke tilgængelig offline — åbn appen online én gang for at aktivere offline adgang.
               </div>
             )}
 
