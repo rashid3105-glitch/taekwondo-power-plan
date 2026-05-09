@@ -2942,6 +2942,7 @@ const translations = {
     // Diary
     diary: "Dagbog",
     diaryDesc: "Noter, humør og energi fra hver træning",
+    profileCachedHint: "Vises fra cache",
     diaryNewEntry: "Ny indgang",
     diaryEditEntry: "Rediger indgang",
     diaryPlaceholder: "Hvordan var din træning i dag? Skriv dine tanker...",
