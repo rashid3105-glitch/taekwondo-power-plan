@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { EventRemindersDropdown } from "@/components/EventRemindersDropdown";
-import { MessagesIcon } from "@/components/chat/MessagesIcon";
+// MessagesIcon removed: chat is now a global floating button
 import { AvatarImg } from "@/components/AvatarImg";
 import logo from "@/assets/logo.png";
 import { useToast } from "@/hooks/use-toast";
@@ -32,7 +32,7 @@ import { SplashScreen } from "@/components/SplashScreen";
 import { RecoveryTile } from "@/components/RecoveryTile";
 import { ReflectionPromptCard } from "@/components/ReflectionPromptCard";
 import { EnablePasskeyCard } from "@/components/EnablePasskeyCard";
-import { Calendar as CalendarIcon, Sparkles, ArrowLeft } from "lucide-react";
+import { Calendar as CalendarIcon, Sparkles, ArrowLeft, ChevronRight } from "lucide-react";
 import { useEntitlements } from "@/hooks/useEntitlements";
 import type { LockedModule } from "@/lib/entitlements";
 import { FeatureEmptyState } from "@/components/FeatureEmptyState";
@@ -432,7 +432,6 @@ export default function Dashboard() {
             </div>
             <div className="flex items-center gap-2">
               <LanguageSwitcher />
-              <MessagesIcon />
               <EventRemindersDropdown />
               <Button variant="ghost" size="icon" onClick={() => setMenuOpen(true)}>
                 <Menu className="h-5 w-5" />
@@ -701,6 +700,21 @@ export default function Dashboard() {
 
             {/* Demoted: passkey */}
             {!isDemo && <EnablePasskeyCard />}
+
+            {/* Diary entry point */}
+            <button
+              onClick={() => navigate("/diary")}
+              className="w-full flex items-center gap-3 rounded-xl border border-border bg-card p-4 shadow-card text-left hover:bg-accent/30 transition-colors"
+            >
+              <div className="h-10 w-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                <NotebookPen className="h-5 w-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-sm font-semibold text-foreground">{t("diary") || "Dagbog"}</div>
+                <div className="text-xs text-muted-foreground truncate">{t("diaryDesc") || "Dine noter og træningsdagbog"}</div>
+              </div>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            </button>
 
             {/* Quick link */}
             <div className="flex justify-center pt-2">

@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { LanguageProvider } from "@/i18n/LanguageContext";
-import { FloatingDiaryButton } from "@/components/FloatingDiaryButton";
+import { FloatingChatButton } from "@/components/chat/FloatingChatButton";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { SplashScreen } from "@/components/SplashScreen";
 import Index from "./pages/Index";
@@ -148,7 +148,7 @@ const App = () => {
           <BrowserRouter>
             <OfflineBanner />
             <AnimatedRoutes />
-            <FloatingDiaryButton />
+            <FloatingChatButton />
           </BrowserRouter>
         </TooltipProvider>
       </LanguageProvider>
