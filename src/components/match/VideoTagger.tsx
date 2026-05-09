@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { techniquesFor, OUTCOMES, SIDES, type Discipline } from "@/lib/tkdTechniques";
 import { MatchSummary } from "./MatchSummary";
+import { MatchReportButton } from "./MatchReportButton";
 import {
   getCachedVideo, queueTagInsert, queueTagDelete, listPendingTagInsertsForVideo,
   removePendingTagInsert, makeTempId, type PendingTagInsert,
@@ -67,6 +68,7 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
   const wasPlayingRef = useRef<boolean>(false);
   const [duration, setDuration] = useState<number>(video.duration_seconds || 0);
   const [hoverTag, setHoverTag] = useState<MatchTag | null>(null);
+  const [myProfile, setMyProfile] = useState<{ display_name: string; belt_level?: string | null; weight_category?: string | null } | null>(null);
 
   // Tag draft
   const [technique, setTechnique] = useState<string>("");
@@ -86,6 +88,7 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
 
   useEffect(() => {
     void load();
+    void loadMyProfile();
     return () => {
       if (objectUrlRef.current) {
         URL.revokeObjectURL(objectUrlRef.current);
@@ -95,6 +98,24 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [video.id, isOffline, isCached]);
+
+  async function loadMyProfile() {
+    if (isOffline) return;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { data } = await supabase
+      .from("profiles")
+      .select("display_name, belt_level, weight_kg")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    if (data) {
+      setMyProfile({
+        display_name: (data as any).display_name || "Athlete",
+        belt_level: (data as any).belt_level || null,
+        weight_category: (data as any).weight_kg ? `${(data as any).weight_kg} kg` : null,
+      });
+    }
+  }
 
   async function load() {
     // Skip if we already loaded this exact source – prevents the <video>
@@ -552,6 +573,24 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
         </CardContent>
       </Card>
 
+      <MatchReportButton
+        tags={tags.map((tg) => ({
+          technique: tg.technique,
+          side: tg.side,
+          outcome: tg.outcome,
+          timestamp_seconds: tg.timestamp_seconds,
+          notes: tg.notes || "",
+        }))}
+        video={{
+          title: video.title,
+          discipline: video.discipline,
+          opponent_name: video.opponent_name,
+          event_name: video.event_name,
+          match_date: video.match_date,
+          duration_seconds: video.duration_seconds,
+        }}
+        profile={myProfile}
+      />
       {tags.length > 0 && <MatchSummary tags={tags} discipline={video.discipline} />}
     </div>
   );
