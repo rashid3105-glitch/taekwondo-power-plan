@@ -196,10 +196,7 @@ export async function sendMessage(params: {
 }
 
 export async function softDeleteMessage(id: string) {
-  const { error } = await supabase
-    .from("chat_messages")
-    .update({ deleted_at: new Date().toISOString() })
-    .eq("id", id);
+  const { error } = await supabase.rpc("delete_chat_message", { _id: id });
   if (error) throw error;
 }
 
