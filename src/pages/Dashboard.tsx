@@ -115,6 +115,8 @@ export default function Dashboard() {
   const { t, locale } = useLanguage();
   
   const { isLocked: isModuleLocked } = useEntitlements();
+  const { isFromCache: profileFromCache, cachedAt: profileCachedAt } = useOfflineProfile();
+  const { plan: offlinePlan, online: planOnline } = useOfflinePlan();
 
   // Sync activeTab → URL ?tab= so browser back/refresh works.
   useEffect(() => {
