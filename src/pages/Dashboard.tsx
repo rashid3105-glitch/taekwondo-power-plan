@@ -713,7 +713,7 @@ export default function Dashboard() {
                 <div className="text-sm font-semibold text-foreground">{t("diary") || "Dagbog"}</div>
                 <div className="text-xs text-muted-foreground truncate">{t("diaryDesc") || "Dine noter og træningsdagbog"}</div>
               </div>
-              <ArrowLeft className="h-4 w-4 text-muted-foreground rotate-180" />
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </button>
 
             {/* Quick link */}
