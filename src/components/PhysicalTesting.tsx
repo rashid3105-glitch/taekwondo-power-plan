@@ -5,11 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { Loader2, Plus, Trash2, Timer, Dumbbell, Wind, Zap, ClipboardList, Users } from "lucide-react";
+import { Loader2, Plus, Trash2, Timer, Dumbbell, Wind, Zap, ClipboardList, Users, WifiOff } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { useOfflinePhysicalTests } from "@/hooks/useOfflinePhysicalTests";
 
 interface TestResult {
   id: string;
+  local_id: string;
   test_name: string;
   category: string;
   value: number;
@@ -17,6 +19,7 @@ interface TestResult {
   test_type: string;
   test_date: string;
   notes: string;
+  pending: boolean;
 }
 
 interface CoachAthlete {
