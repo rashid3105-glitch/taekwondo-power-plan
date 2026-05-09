@@ -39,7 +39,7 @@ export async function syncPhysicalTests(): Promise<PhysicalTestSyncResult> {
           .select()
           .single();
         if (error) throw error;
-        const serverId = (data as { id: string }).id;
+        const serverId = (data as unknown as { id: string }).id;
 
         // Update the matching cached row with the server id and clear the pending flag.
         const cached = await listCachedResults(intent.user_id);
