@@ -90,8 +90,7 @@ interface PhysicalTestingProps {
 }
 
 export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestingProps) {
-  const [results, setResults] = useState<TestResult[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [activeCategory, setActiveCategory] = useState("speed");
   const { toast } = useToast();
