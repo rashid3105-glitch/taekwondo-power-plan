@@ -2075,9 +2075,14 @@ export type Database = {
         Args: { _member_ids: string[]; _title: string }
         Returns: string
       }
+      delete_chat_message: { Args: { _id: string }; Returns: undefined }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
+      }
+      edit_chat_message: {
+        Args: { _body: string; _id: string }
+        Returns: undefined
       }
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
