@@ -807,6 +807,7 @@ const translations = {
     // Diary
     diary: "Diary",
     diaryDesc: "Notes, mood and energy from every session",
+    profileCachedHint: "Showing cached profile",
     diaryNewEntry: "New Entry",
     diaryEditEntry: "Edit Entry",
     diaryPlaceholder: "How was your training today? Write your thoughts...",
