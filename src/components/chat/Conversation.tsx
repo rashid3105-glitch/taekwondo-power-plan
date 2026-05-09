@@ -86,6 +86,22 @@ export function Conversation({ thread, onBack }: Props) {
                 isOwn={m.sender_id === meId}
                 senderName={memberMap.get(m.sender_id)?.display_name}
                 showSender={thread.kind === "group" && senderChanged}
+                onDelete={async () => {
+                  try {
+                    await softDeleteMessage(m.id);
+                    await refresh();
+                  } catch (e: any) {
+                    toast.error(e?.message ?? "Kunne ikke slette");
+                  }
+                }}
+                onEdit={async (newBody) => {
+                  try {
+                    await editMessage(m.id, newBody);
+                    await refresh();
+                  } catch (e: any) {
+                    toast.error(e?.message ?? "Kunne ikke redigere");
+                  }
+                }}
               />
             );
           })}
