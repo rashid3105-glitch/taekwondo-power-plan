@@ -115,6 +115,7 @@ const AnimatedRoutes = () => {
         <Route path="/library" element={<Page><UpgradeGate module="library"><LibraryChooser /></UpgradeGate></Page>} />
         <Route path="/library/:section" element={<Page><UpgradeGate module="library"><Library /></UpgradeGate></Page>} />
         <Route path="/diary" element={<Page><Diary /></Page>} />
+        <Route path="/messages" element={<Page><Messages /></Page>} />
         <Route path="/competitions" element={<Page><UpgradeGate module="competitions"><Competitions /></UpgradeGate></Page>} />
         <Route path="/competitions/:id/reflect" element={<Page><UpgradeGate module="competitions"><CompetitionReflection /></UpgradeGate></Page>} />
         <Route path="/season" element={<Page><UpgradeGate module="season_plan"><SeasonPlan /></UpgradeGate></Page>} />
