@@ -51,6 +51,7 @@ import SeasonPlan from "./pages/SeasonPlan";
 import JoinInvite from "./pages/JoinInvite";
 import SignupCoach from "./pages/SignupCoach";
 import InviteSignup from "./pages/InviteSignup";
+import Messages from "./pages/Messages";
 import { UpgradeGate } from "@/components/UpgradeGate";
 
 const queryClient = new QueryClient();
