@@ -16,7 +16,7 @@ interface Props {
 }
 
 export function Conversation({ thread, onBack }: Props) {
-  const { messages, loading } = useMessages(thread.id);
+  const { messages, loading, refresh } = useMessages(thread.id);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [meId, setMeId] = useState<string | null>(null);
 
