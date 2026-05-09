@@ -24,14 +24,16 @@ export function useOfflinePlan() {
         .from("training_plans")
         .select("*")
         .eq("user_id", user.id)
-        .eq("is_active", true)
-        .maybeSingle();
+        .order("created_at", { ascending: false });
       if (!error && data) {
-        setPlan(data);
-        setCachedAt(Date.now());
-        await setCachedPlan(user.id, data);
-        setLoading(false);
-        return;
+        const active = (data as any[]).find((p) => p.is_active) || null;
+        if (active) {
+          setPlan(active);
+          setCachedAt(Date.now());
+          await setCachedPlan(user.id, active);
+          setLoading(false);
+          return;
+        }
       }
     }
 
