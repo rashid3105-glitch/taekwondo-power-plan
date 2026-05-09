@@ -432,7 +432,6 @@ export default function Dashboard() {
             </div>
             <div className="flex items-center gap-2">
               <LanguageSwitcher />
-              <MessagesIcon />
               <EventRemindersDropdown />
               <Button variant="ghost" size="icon" onClick={() => setMenuOpen(true)}>
                 <Menu className="h-5 w-5" />
