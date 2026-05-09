@@ -5063,6 +5063,7 @@ const translations = {
     // Diary
     diary: "Dagbok",
     diaryDesc: "Anteckningar, humör och energi från varje träning",
+    profileCachedHint: "Visar cachad profil",
     diaryNewEntry: "Ny post",
     diaryEditEntry: "Redigera post",
     diaryPlaceholder: "Hur var din träning idag? Skriv dina tankar...",
