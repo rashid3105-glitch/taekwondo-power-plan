@@ -241,35 +241,32 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
     const standardTest = Object.values(STANDARD_TESTS).flat().find(t => t.name === finalName);
     const unit = testUnit || standardTest?.unit || "";
 
-    const { error } = await supabase.from("physical_test_results" as any).insert({
-      user_id: targetId,
-      test_name: finalName,
-      category: activeCategory,
-      value: parsedValue,
-      unit,
-      test_type: mode === "coach" ? "coach" : "individual",
-      tested_by: mode === "coach" ? user.id : null,
-      notes: testNotes,
-      test_date: testDate,
-    } as any);
-
-    if (error) {
-      toast({ title: t("error"), description: error.message, variant: "destructive" });
-    } else {
+    try {
+      await addResult({
+        user_id: targetId,
+        test_name: finalName,
+        category: activeCategory,
+        value: parsedValue,
+        unit,
+        test_type: mode === "coach" ? "coach" : "individual",
+        tested_by: mode === "coach" ? user.id : null,
+        notes: testNotes,
+        test_date: testDate,
+      });
       toast({ title: t("ptResultSaved") });
       setSelectedTest("");
       setCustomTestName("");
       setTestValue("");
       setTestUnit("");
       setTestNotes("");
-      loadResults();
+    } catch (e: any) {
+      toast({ title: t("error"), description: e?.message || "Save failed", variant: "destructive" });
     }
     setSaving(false);
   };
 
-  const handleDelete = async (id: string) => {
-    await supabase.from("physical_test_results" as any).delete().eq("id", id);
-    loadResults();
+  const handleDelete = async (localId: string) => {
+    await removeResult(localId);
   };
 
   const categoryResults = results.filter(r => r.category === activeCategory);
