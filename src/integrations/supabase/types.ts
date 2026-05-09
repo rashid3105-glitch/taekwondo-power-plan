@@ -82,6 +82,7 @@ export type Database = {
           body: string
           created_at: string
           deleted_at: string | null
+          edited_at: string | null
           id: string
           sender_id: string
           thread_id: string
@@ -93,6 +94,7 @@ export type Database = {
           body?: string
           created_at?: string
           deleted_at?: string | null
+          edited_at?: string | null
           id?: string
           sender_id: string
           thread_id: string
@@ -104,6 +106,7 @@ export type Database = {
           body?: string
           created_at?: string
           deleted_at?: string | null
+          edited_at?: string | null
           id?: string
           sender_id?: string
           thread_id?: string
