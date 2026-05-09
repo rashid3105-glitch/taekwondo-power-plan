@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import {
   UserCircle, ClipboardList, HeartPulse, Brain, Users, BarChart3, Clock, ChevronDown,
   Activity, Apple, TrendingUp, BookOpen, BookHeart, Download, Video, CalendarRange,
-  MessageSquare, NotebookPen, Search, X, Dumbbell, Heart, Sparkles, UserCog, Settings,
+  MessageSquare, MessageCircle, NotebookPen, Search, X, Dumbbell, Heart, Sparkles, UserCog, Settings,
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PublicNav } from "@/components/PublicNav";
@@ -19,7 +19,7 @@ type TopicKey =
   | "helpMatchAnalysis" | "helpTrainingPlan" | "helpPhysicalTesting" | "helpProgress"
   | "helpNutrition" | "helpRehabPlan" | "helpMentalPlan" | "helpLibrary" | "helpDiary"
   | "helpReflection"
-  | "helpAddStudents" | "helpStudentProgress";
+  | "helpAddStudents" | "helpStudentProgress" | "helpChat";
 
 type Topic = { key: TopicKey; icon: typeof UserCircle; isNew?: boolean };
 
@@ -40,6 +40,7 @@ const TOPICS: Record<TopicKey, Topic> = {
   helpReflection: { key: "helpReflection", icon: NotebookPen, isNew: true },
   helpAddStudents: { key: "helpAddStudents", icon: Users },
   helpStudentProgress: { key: "helpStudentProgress", icon: BarChart3 },
+  helpChat: { key: "helpChat", icon: MessageCircle, isNew: true },
 };
 
 type SectionDef = {
@@ -88,7 +89,7 @@ const SECTIONS: SectionDef[] = [
     chipBg: "bg-tab-progress",
     chipFg: "text-white",
     accent: "bg-tab-progress",
-    topics: ["helpAddStudents", "helpStudentProgress", "helpCoachFeedback"],
+    topics: ["helpAddStudents", "helpStudentProgress", "helpCoachFeedback", "helpChat"],
   },
   {
     id: "account",
@@ -426,6 +427,7 @@ export default function Help() {
 }
 
 const CHANGELOG: { dateKey: string; entries: string[] }[] = [
+  { dateKey: "changelog_2026_05_09", entries: ["changelogEntry102", "changelogEntry103", "changelogEntry104", "changelogEntry105"] },
   { dateKey: "changelog_2026_05_06", entries: ["changelogEntry98", "changelogEntry99", "changelogEntry100", "changelogEntry101"] },
   { dateKey: "changelog_2026_05_04", entries: ["changelogEntry95", "changelogEntry96", "changelogEntry97"] },
   { dateKey: "changelog_2026_05_01", entries: ["changelogEntry92", "changelogEntry93", "changelogEntry94"] },
