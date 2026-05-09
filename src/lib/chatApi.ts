@@ -35,6 +35,15 @@ export interface ChatMessage {
   attachment_size_bytes: number | null;
   created_at: string;
   deleted_at: string | null;
+  edited_at: string | null;
+}
+
+export async function editMessage(id: string, newBody: string) {
+  const { error } = await supabase
+    .from("chat_messages")
+    .update({ body: newBody.trim(), edited_at: new Date().toISOString() })
+    .eq("id", id);
+  if (error) throw error;
 }
 
 export async function startDirectThread(otherUserId: string): Promise<string> {

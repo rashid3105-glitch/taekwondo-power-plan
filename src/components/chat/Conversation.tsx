@@ -7,7 +7,8 @@ import { useMessages } from "@/hooks/useMessages";
 import { MessageBubble } from "./MessageBubble";
 import { MessageComposer } from "./MessageComposer";
 import { supabase } from "@/integrations/supabase/client";
-import type { ChatThread } from "@/lib/chatApi";
+import { editMessage, softDeleteMessage, type ChatThread } from "@/lib/chatApi";
+import { toast } from "sonner";
 
 interface Props {
   thread: ChatThread;
@@ -15,7 +16,7 @@ interface Props {
 }
 
 export function Conversation({ thread, onBack }: Props) {
-  const { messages, loading } = useMessages(thread.id);
+  const { messages, loading, refresh } = useMessages(thread.id);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [meId, setMeId] = useState<string | null>(null);
 
@@ -85,6 +86,22 @@ export function Conversation({ thread, onBack }: Props) {
                 isOwn={m.sender_id === meId}
                 senderName={memberMap.get(m.sender_id)?.display_name}
                 showSender={thread.kind === "group" && senderChanged}
+                onDelete={async () => {
+                  try {
+                    await softDeleteMessage(m.id);
+                    await refresh();
+                  } catch (e: any) {
+                    toast.error(e?.message ?? "Kunne ikke slette");
+                  }
+                }}
+                onEdit={async (newBody) => {
+                  try {
+                    await editMessage(m.id, newBody);
+                    await refresh();
+                  } catch (e: any) {
+                    toast.error(e?.message ?? "Kunne ikke redigere");
+                  }
+                }}
               />
             );
           })}
