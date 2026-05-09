@@ -9230,6 +9230,7 @@ const translations = {
     hubLibraryDesc: "تصفح المجموعة الكاملة من التمارين، والوصفات، وتقنيات التدريب العقلي لتوسيع معرفتك.",
     diary: "المفكرة",
     diaryDesc: "ملاحظات ومزاج وطاقة من كل جلسة تدريب",
+    profileCachedHint: "يُعرض من الذاكرة المؤقتة",
     diaryNewEntry: "إدخال جديد",
     diaryEditEntry: "تعديل إدخال",
     diaryPlaceholder: "كيف كان تدريبك اليوم؟ اكتب أفكارك...",
