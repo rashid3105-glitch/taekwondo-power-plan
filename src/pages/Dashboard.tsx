@@ -701,6 +701,21 @@ export default function Dashboard() {
             {/* Demoted: passkey */}
             {!isDemo && <EnablePasskeyCard />}
 
+            {/* Diary entry point */}
+            <button
+              onClick={() => navigate("/diary")}
+              className="w-full flex items-center gap-3 rounded-xl border border-border bg-card p-4 shadow-card text-left hover:bg-accent/30 transition-colors"
+            >
+              <div className="h-10 w-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                <NotebookPen className="h-5 w-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-sm font-semibold text-foreground">{t("diary") || "Dagbog"}</div>
+                <div className="text-xs text-muted-foreground truncate">{t("diaryDesc") || "Dine noter og træningsdagbog"}</div>
+              </div>
+              <ArrowLeft className="h-4 w-4 text-muted-foreground rotate-180" />
+            </button>
+
             {/* Quick link */}
             <div className="flex justify-center pt-2">
               <Button variant="outline" size="sm" onClick={() => navigate("/profile-setup")}>
