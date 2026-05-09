@@ -74,6 +74,118 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_messages: {
+        Row: {
+          attachment_path: string | null
+          attachment_size_bytes: number | null
+          attachment_type: string | null
+          body: string
+          created_at: string
+          deleted_at: string | null
+          id: string
+          sender_id: string
+          thread_id: string
+        }
+        Insert: {
+          attachment_path?: string | null
+          attachment_size_bytes?: number | null
+          attachment_type?: string | null
+          body?: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          sender_id: string
+          thread_id: string
+        }
+        Update: {
+          attachment_path?: string | null
+          attachment_size_bytes?: number | null
+          attachment_type?: string | null
+          body?: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          sender_id?: string
+          thread_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "chat_threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_thread_members: {
+        Row: {
+          joined_at: string
+          last_read_at: string
+          muted: boolean
+          role: string
+          thread_id: string
+          user_id: string
+        }
+        Insert: {
+          joined_at?: string
+          last_read_at?: string
+          muted?: boolean
+          role?: string
+          thread_id: string
+          user_id: string
+        }
+        Update: {
+          joined_at?: string
+          last_read_at?: string
+          muted?: boolean
+          role?: string
+          thread_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_thread_members_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "chat_threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_threads: {
+        Row: {
+          club_id: string | null
+          created_at: string
+          created_by: string
+          id: string
+          kind: string
+          last_message_at: string
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          club_id?: string | null
+          created_at?: string
+          created_by: string
+          id?: string
+          kind: string
+          last_message_at?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          club_id?: string | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          kind?: string
+          last_message_at?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       clubs: {
         Row: {
           created_at: string
@@ -831,6 +943,7 @@ export type Database = {
       }
       notification_preferences: {
         Row: {
+          chat_messages: boolean
           competition_countdown: boolean
           diary_comments: boolean
           event_reminders: boolean
@@ -841,6 +954,7 @@ export type Database = {
           weight_log_reminders: boolean
         }
         Insert: {
+          chat_messages?: boolean
           competition_countdown?: boolean
           diary_comments?: boolean
           event_reminders?: boolean
@@ -851,6 +965,7 @@ export type Database = {
           weight_log_reminders?: boolean
         }
         Update: {
+          chat_messages?: boolean
           competition_countdown?: boolean
           diary_comments?: boolean
           event_reminders?: boolean
@@ -1934,6 +2049,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_chat_group_member: {
+        Args: { _thread: string; _user: string }
+        Returns: undefined
+      }
       admin_approve_with_invite: {
         Args: { _athlete_id: string }
         Returns: Json
@@ -1943,10 +2062,15 @@ export type Database = {
         Returns: Json
       }
       apply_invite_to_my_profile: { Args: { _code: string }; Returns: Json }
+      can_chat_with: { Args: { _a: string; _b: string }; Returns: boolean }
       club_shares_coach_notes: { Args: { _club_id: string }; Returns: boolean }
       compute_form_curve: {
         Args: { _user_id: string; _weeks?: number }
         Returns: undefined
+      }
+      create_group_thread: {
+        Args: { _member_ids: string[]; _title: string }
+        Returns: string
       }
       delete_email: {
         Args: { message_id: number; queue_name: string }
@@ -2006,6 +2130,13 @@ export type Database = {
       get_public_athlete_bundle: { Args: { _code: string }; Returns: Json }
       get_shared_match_video: { Args: { _token: string }; Returns: Json }
       get_squad_overview: { Args: { _coach_id: string }; Returns: Json }
+      get_unread_chat_counts: {
+        Args: never
+        Returns: {
+          thread_id: string
+          unread_count: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -2014,7 +2145,15 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_chat_thread_member: {
+        Args: { _thread: string; _uid: string }
+        Returns: boolean
+      }
       lookup_athlete_by_code: { Args: { _code: string }; Returns: string }
+      mark_chat_thread_read: {
+        Args: { _thread_id: string }
+        Returns: undefined
+      }
       mark_coach_message_read: {
         Args: { _message_id: string }
         Returns: undefined
@@ -2046,6 +2185,15 @@ export type Database = {
         Args: { _from: string; _to: string; _user_id: string }
         Returns: undefined
       }
+      remove_chat_group_member: {
+        Args: { _thread: string; _user: string }
+        Returns: undefined
+      }
+      rename_chat_group: {
+        Args: { _thread: string; _title: string }
+        Returns: undefined
+      }
+      start_direct_thread: { Args: { _other_user: string }; Returns: string }
       users_share_club: {
         Args: { _first_user_id: string; _second_user_id: string }
         Returns: boolean

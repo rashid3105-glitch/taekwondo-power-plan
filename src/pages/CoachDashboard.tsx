@@ -36,6 +36,7 @@ import {
   Frown, Meh, Smile, Laugh, BatteryLow, BatteryMedium, BatteryFull, MessageSquare, Bell, Search, Send, Building,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { MessagesIcon } from "@/components/chat/MessagesIcon";
 
 interface AthleteProfile {
   user_id: string;
@@ -306,7 +307,10 @@ export default function CoachDashboard() {
             </div>
             <span className="text-sm sm:text-base font-extrabold text-foreground">{t("coachDashboard")}</span>
           </div>
-          <LanguageSwitcher />
+          <div className="flex items-center gap-1">
+            <MessagesIcon isCoach />
+            <LanguageSwitcher />
+          </div>
         </div>
       </header>
 

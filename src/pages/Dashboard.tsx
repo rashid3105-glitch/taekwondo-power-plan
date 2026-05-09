@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { EventRemindersDropdown } from "@/components/EventRemindersDropdown";
+import { MessagesIcon } from "@/components/chat/MessagesIcon";
 import { AvatarImg } from "@/components/AvatarImg";
 import logo from "@/assets/logo.png";
 import { useToast } from "@/hooks/use-toast";
@@ -431,6 +432,7 @@ export default function Dashboard() {
             </div>
             <div className="flex items-center gap-2">
               <LanguageSwitcher />
+              <MessagesIcon />
               <EventRemindersDropdown />
               <Button variant="ghost" size="icon" onClick={() => setMenuOpen(true)}>
                 <Menu className="h-5 w-5" />
