@@ -475,7 +475,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
                             );
                           }
                           return (
-                            <FragmentWithKey key={r.local_id}>
+                            <Fragment key={r.local_id}>
                             <tr className="border-b border-border/50 last:border-0">
                               <td className="py-2 text-foreground">
                                 <span className="inline-flex items-center gap-1.5">
@@ -561,7 +561,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
                                 </td>
                               </tr>
                             )}
-                            </FragmentWithKey>
+                            </Fragment>
                           );
                         })}
                       </tbody>
