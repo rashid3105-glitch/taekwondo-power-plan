@@ -859,6 +859,7 @@ export type Database = {
       }
       match_videos: {
         Row: {
+          athlete_age: string | null
           athlete_id: string
           club_id: string | null
           coach_id: string
@@ -870,6 +871,7 @@ export type Database = {
           match_date: string | null
           notes: string
           opponent_name: string | null
+          poomsae_type: string | null
           share_expires_at: string | null
           share_token: string | null
           storage_path: string
@@ -877,6 +879,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          athlete_age?: string | null
           athlete_id: string
           club_id?: string | null
           coach_id: string
@@ -888,6 +891,7 @@ export type Database = {
           match_date?: string | null
           notes?: string
           opponent_name?: string | null
+          poomsae_type?: string | null
           share_expires_at?: string | null
           share_token?: string | null
           storage_path: string
@@ -895,6 +899,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          athlete_age?: string | null
           athlete_id?: string
           club_id?: string | null
           coach_id?: string
@@ -906,6 +911,7 @@ export type Database = {
           match_date?: string | null
           notes?: string
           opponent_name?: string | null
+          poomsae_type?: string | null
           share_expires_at?: string | null
           share_token?: string | null
           storage_path?: string
