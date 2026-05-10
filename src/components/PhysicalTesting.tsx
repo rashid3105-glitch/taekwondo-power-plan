@@ -496,11 +496,70 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
                                 {r.notes || "—"}
                               </td>
                               <td className="py-2 text-right">
-                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDelete(r.local_id)}>
-                                  <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                                </Button>
+                                <div className="flex items-center justify-end gap-1">
+                                  {mode === "coach" && editingId !== r.local_id && (
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-7 w-7"
+                                      onClick={() => {
+                                        setEditingId(r.local_id);
+                                        setEditValue(String(r.value));
+                                        setEditNotes(r.notes || "");
+                                      }}
+                                    >
+                                      <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
+                                    </Button>
+                                  )}
+                                  {mode === "coach" && (
+                                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDelete(r.local_id)}>
+                                      <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                                    </Button>
+                                  )}
+                                </div>
                               </td>
                             </tr>
+                            {mode === "coach" && editingId === r.local_id && (
+                              <tr key={`${r.local_id}-edit`}>
+                                <td colSpan={7} className="pb-3 pt-1 px-1">
+                                  <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 space-y-2">
+                                    <p className="text-xs font-bold text-primary uppercase tracking-wider">{t("ptEditResult")}</p>
+                                    <div className="flex gap-2 flex-wrap">
+                                      <Input
+                                        type="text"
+                                        inputMode="decimal"
+                                        value={editValue}
+                                        onChange={e => setEditValue(e.target.value)}
+                                        className="h-8 w-24 text-sm"
+                                        placeholder={t("ptValue")}
+                                      />
+                                      <Input
+                                        value={editNotes}
+                                        onChange={e => setEditNotes(e.target.value)}
+                                        className="h-8 flex-1 text-sm"
+                                        placeholder={t("ptNotes")}
+                                      />
+                                      <Button
+                                        size="sm"
+                                        className="h-8"
+                                        onClick={async () => {
+                                          const parsed = Number(editValue.replace(",", "."));
+                                          if (!Number.isFinite(parsed)) return;
+                                          await updateResult(r.local_id, { value: parsed, notes: editNotes });
+                                            setEditingId(null);
+                                            toast({ title: t("ptResultSaved") });
+                                        }}
+                                      >
+                                        {t("save")}
+                                      </Button>
+                                      <Button size="sm" variant="ghost" className="h-8" onClick={() => setEditingId(null)}>
+                                        {t("cancel")}
+                                      </Button>
+                                    </div>
+                                  </div>
+                                </td>
+                              </tr>
+                            )}
                           );
                         })}
                       </tbody>
