@@ -8,6 +8,8 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { Loader2, Plus, Trash2, Timer, Dumbbell, Wind, Zap, ClipboardList, Users, WifiOff } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useOfflinePhysicalTests } from "@/hooks/useOfflinePhysicalTests";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { BeepTestTimer } from "@/components/BeepTestTimer";
 
 interface TestResult {
   id: string;
