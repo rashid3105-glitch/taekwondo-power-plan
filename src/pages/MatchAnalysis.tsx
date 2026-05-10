@@ -375,6 +375,30 @@ export default function MatchAnalysis() {
                         </SelectContent>
                       </Select>
                     </div>
+                    {discipline === "poomsae" && (
+                      <div>
+                        <Label>{t("matchPoomsaeType")}</Label>
+                        <Select value={poomsaeType} onValueChange={(v) => setPoomsaeType(v as any)}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="individual">{t("matchPoomsaeIndividual")}</SelectItem>
+                            <SelectItem value="pair">{t("matchPoomsaePair")}</SelectItem>
+                            <SelectItem value="team">{t("matchPoomsaeTeam")}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                    <div>
+                      <Label>{t("matchAthleteAge")}</Label>
+                      <Input
+                        value={athleteAge}
+                        onChange={(e) => setAthleteAge(e.target.value.replace(/[^0-9]/g, "").slice(0, 3))}
+                        inputMode="numeric"
+                        maxLength={3}
+                        placeholder={t("matchAthleteAgePlaceholder")}
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">{t("matchAthleteAgeHint")}</p>
+                    </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
                         <Label>{t("matchOpponent")}</Label>
