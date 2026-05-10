@@ -31,7 +31,7 @@ const TOPICS: Record<TopicKey, Topic> = {
   helpMatchAnalysis: { key: "helpMatchAnalysis", icon: Video },
   helpMatchReport: { key: "helpMatchReport", icon: FileText, isNew: true },
   helpTrainingPlan: { key: "helpTrainingPlan", icon: ClipboardList },
-  helpPhysicalTesting: { key: "helpPhysicalTesting", icon: Activity },
+  helpPhysicalTesting: { key: "helpPhysicalTesting", icon: Activity, isNew: true },
   helpProgress: { key: "helpProgress", icon: TrendingUp },
   helpNutrition: { key: "helpNutrition", icon: Apple },
   helpRehabPlan: { key: "helpRehabPlan", icon: HeartPulse },
@@ -428,6 +428,7 @@ export default function Help() {
 }
 
 const CHANGELOG: { dateKey: string; entries: string[] }[] = [
+  { dateKey: "changelog_2026_05_10b", entries: ["changelogEntry109"] },
   { dateKey: "changelog_2026_05_10", entries: ["changelogEntry106", "changelogEntry107", "changelogEntry108"] },
   { dateKey: "changelog_2026_05_09", entries: ["changelogEntry102", "changelogEntry103", "changelogEntry104", "changelogEntry105"] },
   { dateKey: "changelog_2026_05_06", entries: ["changelogEntry98", "changelogEntry99", "changelogEntry100", "changelogEntry101"] },

@@ -28,7 +28,7 @@ const TESTS: TestDefinition[] = [
     protocol: { en: "Start in a three-point stance at the center cone. Sprint 5 yards left, touch the line, sprint 10 yards right, touch, then sprint 5 yards back to center.", da: "Start i tre-punkts position ved center-kegle. Sprint 5 yards til venstre, rør linjen, sprint 10 yards til højre, rør, sprint derefter 5 yards tilbage til midten.", sv: "Starta i trepunktsposition vid mitten. Sprinta 5 yards vänster, rör linjen, sprinta 10 yards höger, rör, sprinta sedan 5 yards tillbaka till mitten." }
   },
   // Endurance
-  { name: "Beep Test", category: "endurance", unit: "level", type: "coach",
+  { name: "Beep Test", category: "endurance", unit: "level", type: "both",
     description: { en: "Multi-stage fitness test (20m shuttle run) measuring aerobic endurance.", da: "Multistage fitnesstest (20m pendulløb) der måler aerob udholdenhed.", sv: "Multistage fitnesstest (20m pendellopp) som mäter aerob uthållighet." },
     protocol: { en: "Run back and forth between two lines 20m apart, keeping pace with the audio beeps. Each level gets faster. Test ends when you can't keep up twice.", da: "Løb frem og tilbage mellem to linjer med 20m mellemrum, hold trit med bippene. Hvert niveau bliver hurtigere. Testen stopper når du ikke kan følge med to gange.", sv: "Spring fram och tillbaka mellan två linjer 20m ifrån varandra, håll takten med ljudsignalerna. Varje nivå blir snabbare. Testet slutar när du inte kan hänga med två gånger." }
   },

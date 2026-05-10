@@ -8,6 +8,8 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { Loader2, Plus, Trash2, Timer, Dumbbell, Wind, Zap, ClipboardList, Users, WifiOff } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useOfflinePhysicalTests } from "@/hooks/useOfflinePhysicalTests";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { BeepTestTimer } from "@/components/BeepTestTimer";
 
 interface TestResult {
   id: string;
@@ -134,6 +136,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
   const [testUnit, setTestUnit] = useState("");
   const [testDate, setTestDate] = useState(new Date().toISOString().split("T")[0]);
   const [testNotes, setTestNotes] = useState("");
+  const [beepOpen, setBeepOpen] = useState(false);
 
   // Resolve current user id once for individual mode + tested_by metadata.
   useEffect(() => {
@@ -354,9 +357,23 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
           <TabsContent key={cat} value={cat} className="space-y-4">
             {/* Add test form */}
             <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
-              <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                <Plus className="h-4 w-4" /> {t("ptAddResult")}
-              </h3>
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+                  <Plus className="h-4 w-4" /> {t("ptAddResult")}
+                </h3>
+                {cat === "endurance" && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => setBeepOpen(true)}
+                    className="gap-1.5"
+                  >
+                    <Wind className="h-4 w-4" />
+                    {t("beepTestRunBeepTest")}
+                  </Button>
+                )}
+              </div>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
                   <Select value={selectedTest} onValueChange={(v) => {
@@ -496,6 +513,32 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
           </TabsContent>
         ))}
       </Tabs>
+
+      <Dialog open={beepOpen} onOpenChange={setBeepOpen}>
+        <DialogContent className="max-w-md p-4 sm:p-6 max-h-[95vh] overflow-y-auto">
+          <DialogTitle className="sr-only">{t("beepTestTitle")}</DialogTitle>
+          <BeepTestTimer
+            mode={mode}
+            athletes={athletes}
+            currentUserId={currentUserId}
+            onSave={async ({ userId, level, shuttle, testType, testedBy }) => {
+              const decimalLevel = Math.round((level + shuttle / 100) * 100) / 100;
+              await addResult({
+                user_id: userId,
+                test_name: "Beep Test",
+                category: "endurance",
+                value: decimalLevel,
+                unit: "level",
+                test_type: testType,
+                tested_by: testedBy,
+                notes: `Beep test — level ${level} shuttle ${shuttle}`,
+                test_date: new Date().toISOString().split("T")[0],
+              });
+            }}
+            onClose={() => setBeepOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
