@@ -39,6 +39,8 @@ interface MatchVideoRow {
   share_token: string | null;
   share_expires_at: string | null;
   created_at: string;
+  poomsae_type: "individual" | "pair" | "team" | null;
+  athlete_age: string | null;
   __pending?: boolean; // synthetic row from outbox
   __outboxId?: string;
 }
