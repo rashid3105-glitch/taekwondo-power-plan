@@ -271,6 +271,8 @@ export default function MatchAnalysis() {
           athlete_id: resolvedAthleteId, coach_id: me, club_id: clubId,
           title, storage_path: path, duration_seconds: duration, discipline,
           opponent_name: opponent || null, event_name: eventName || null, match_date: matchDate || null,
+          poomsae_type: discipline === "poomsae" ? poomsaeType : null,
+          athlete_age: athleteAge.trim() || null,
         });
         if (insErr) throw insErr;
         toast({ title: t("matchUploadSuccess") });
@@ -283,7 +285,9 @@ export default function MatchAnalysis() {
           opponent_name: opponent || null, event_name: eventName || null,
           match_date: matchDate || null, duration_seconds: duration,
           file, file_name: file.name, created_at: Date.now(), status: "pending",
-        });
+          poomsae_type: discipline === "poomsae" ? poomsaeType : null,
+          athlete_age: athleteAge.trim() || null,
+        } as any);
         toast({ title: t("matchOfflineQueuedToast") });
       }
 
