@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import {
   UserCircle, ClipboardList, HeartPulse, Brain, Users, BarChart3, Clock, ChevronDown,
   Activity, Apple, TrendingUp, BookOpen, BookHeart, Download, Video, CalendarRange,
-  MessageSquare, MessageCircle, NotebookPen, Search, X, Dumbbell, Heart, Sparkles, UserCog, Settings,
+  MessageSquare, MessageCircle, NotebookPen, Search, X, Dumbbell, Heart, Sparkles, UserCog, Settings, FileText,
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PublicNav } from "@/components/PublicNav";
@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 
 type TopicKey =
   | "helpProfile" | "helpSeasonPlan" | "helpWearables" | "helpCoachFeedback"
-  | "helpMatchAnalysis" | "helpTrainingPlan" | "helpPhysicalTesting" | "helpProgress"
+  | "helpMatchAnalysis" | "helpMatchReport" | "helpTrainingPlan" | "helpPhysicalTesting" | "helpProgress"
   | "helpNutrition" | "helpRehabPlan" | "helpMentalPlan" | "helpLibrary" | "helpDiary"
   | "helpReflection"
   | "helpAddStudents" | "helpStudentProgress" | "helpChat";
@@ -29,6 +29,7 @@ const TOPICS: Record<TopicKey, Topic> = {
   helpWearables: { key: "helpWearables", icon: NotebookPen, isNew: true },
   helpCoachFeedback: { key: "helpCoachFeedback", icon: MessageSquare, isNew: true },
   helpMatchAnalysis: { key: "helpMatchAnalysis", icon: Video },
+  helpMatchReport: { key: "helpMatchReport", icon: FileText, isNew: true },
   helpTrainingPlan: { key: "helpTrainingPlan", icon: ClipboardList },
   helpPhysicalTesting: { key: "helpPhysicalTesting", icon: Activity },
   helpProgress: { key: "helpProgress", icon: TrendingUp },
@@ -62,7 +63,7 @@ const SECTIONS: SectionDef[] = [
     chipBg: "bg-primary",
     chipFg: "text-primary-foreground",
     accent: "bg-primary",
-    topics: ["helpTrainingPlan", "helpSeasonPlan", "helpPhysicalTesting", "helpMatchAnalysis", "helpProgress"],
+    topics: ["helpTrainingPlan", "helpSeasonPlan", "helpPhysicalTesting", "helpMatchAnalysis", "helpMatchReport", "helpProgress"],
   },
   {
     id: "health",
@@ -427,6 +428,7 @@ export default function Help() {
 }
 
 const CHANGELOG: { dateKey: string; entries: string[] }[] = [
+  { dateKey: "changelog_2026_05_10", entries: ["changelogEntry106", "changelogEntry107", "changelogEntry108"] },
   { dateKey: "changelog_2026_05_09", entries: ["changelogEntry102", "changelogEntry103", "changelogEntry104", "changelogEntry105"] },
   { dateKey: "changelog_2026_05_06", entries: ["changelogEntry98", "changelogEntry99", "changelogEntry100", "changelogEntry101"] },
   { dateKey: "changelog_2026_05_04", entries: ["changelogEntry95", "changelogEntry96", "changelogEntry97"] },

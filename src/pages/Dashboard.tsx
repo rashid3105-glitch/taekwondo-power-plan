@@ -109,6 +109,21 @@ export default function Dashboard() {
     return t && VALID_TABS.includes(t) ? t : "hub";
   })();
   const [activeTab, setActiveTab] = useState<TabKey>(initialTab);
+  const [seenDots, setSeenDots] = useState<Set<string>>(() => {
+    try {
+      const raw = localStorage.getItem("navDots_seen");
+      return new Set(raw ? JSON.parse(raw) : []);
+    } catch { return new Set(); }
+  });
+  function markDotSeen(key: string) {
+    setSeenDots((prev) => {
+      if (prev.has(key)) return prev;
+      const next = new Set(prev);
+      next.add(key);
+      try { localStorage.setItem("navDots_seen", JSON.stringify([...next])); } catch { /* ignore */ }
+      return next;
+    });
+  }
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -544,16 +559,17 @@ export default function Dashboard() {
           {(() => {
             // Lazy import lucide icons here to keep diff tight
             const items = [
-              { key: "hjem", label: "Hjem", icon: Home, active: activeTab === "hub", onClick: () => handleTabChange("hub") },
-              { key: "plan", label: "Plan", icon: CalendarIcon, active: activeTab === "plan", onClick: () => handleTabChange("plan") },
-              { key: "drills", label: "Drills", icon: Swords, active: false, onClick: () => navigate("/library") },
-              { key: "fremgang", label: "Fremgang", icon: BarChart3, active: activeTab === "progress", onClick: () => handleTabChange("progress") },
-              { key: "profil", label: "Profil", icon: User, active: false, onClick: () => navigate("/profile-setup") },
+              { key: "hjem", label: "Hjem", icon: Home, active: activeTab === "hub", dot: true, onClick: () => handleTabChange("hub") },
+              { key: "plan", label: "Plan", icon: CalendarIcon, active: activeTab === "plan", dot: false, onClick: () => handleTabChange("plan") },
+              { key: "drills", label: "Drills", icon: Swords, active: false, dot: true, onClick: () => navigate("/library") },
+              { key: "fremgang", label: "Fremgang", icon: BarChart3, active: activeTab === "progress", dot: false, onClick: () => handleTabChange("progress") },
+              { key: "profil", label: "Profil", icon: User, active: false, dot: false, onClick: () => navigate("/profile-setup") },
             ];
-            return items.map(({ key, label, icon: Icon, active, onClick }) => (
+            return items.map(({ key, label, icon: Icon, active, dot, onClick }) => (
               <button
                 key={key}
                 onClick={() => {
+                  if (dot) markDotSeen(key);
                   import("@/lib/haptics").then((h) => h.tap()).catch(() => { /* ignore */ });
                   onClick();
                 }}
@@ -564,7 +580,12 @@ export default function Dashboard() {
                 } active:scale-95`}
                 style={{ minHeight: 48 }}
               >
-                <Icon className="h-5 w-5" />
+                <div className="relative">
+                  <Icon className="h-5 w-5" />
+                  {dot && !seenDots.has(key) && (
+                    <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-destructive border border-card" />
+                  )}
+                </div>
                 <span className="text-[9px] font-semibold uppercase tracking-wide leading-tight truncate max-w-full">{label}</span>
               </button>
             ));
