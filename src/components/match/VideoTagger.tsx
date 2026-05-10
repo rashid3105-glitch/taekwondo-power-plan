@@ -590,6 +590,8 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
           event_name: video.event_name,
           match_date: video.match_date,
           duration_seconds: video.duration_seconds,
+          poomsae_type: video.poomsae_type ?? null,
+          athlete_age: video.athlete_age ?? null,
         }}
         profile={myProfile}
       />
