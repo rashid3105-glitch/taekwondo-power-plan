@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { Loader2, Plus, Trash2, Timer, Dumbbell, Wind, Zap, ClipboardList, Users, WifiOff } from "lucide-react";
+import { Loader2, Plus, Trash2, Timer, Dumbbell, Wind, Zap, ClipboardList, Users, WifiOff, Pencil } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useOfflinePhysicalTests } from "@/hooks/useOfflinePhysicalTests";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
