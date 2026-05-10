@@ -452,12 +452,7 @@ export default function Diary() {
           </div>
         ) : (
           grouped.map(([monthKey, items]) => {
-            const collapsed = collapsedMonths.has(monthKey) || (monthKey !== monthKeyToday && !collapsedMonths.has(`__open:${monthKey}`));
-            // Default: current month open, others collapsed unless user toggled
-            const userToggled = collapsedMonths.has(monthKey) || collapsedMonths.has(`__open:${monthKey}`);
-            const isCollapsed = userToggled
-              ? collapsedMonths.has(monthKey)
-              : monthKey !== monthKeyToday;
+            const isCollapsed = collapsedMonths.has(monthKey);
             const [yearStr, monthStr] = monthKey.split("-");
             const monthDate = new Date(parseInt(yearStr), parseInt(monthStr) - 1, 1);
             const monthLabel = monthDate.toLocaleDateString(undefined, { month: "long", year: "numeric" });
