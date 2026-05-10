@@ -141,6 +141,17 @@ export default function Diary() {
   const grouped = useMemo(() => groupByMonth(filtered), [filtered]);
   const monthKeyToday = useMemo(() => currentMonthKey(), []);
 
+  useEffect(() => {
+    if (autoCollapsed || grouped.length === 0) return;
+    const initial = new Set(
+      grouped
+        .map(([key]) => key)
+        .filter((key) => key !== monthKeyToday)
+    );
+    setCollapsedMonths(initial);
+    setAutoCollapsed(true);
+  }, [grouped, autoCollapsed, monthKeyToday]);
+
   const toggleMonth = (key: string) => {
     setCollapsedMonths((prev) => {
       const next = new Set(prev);
