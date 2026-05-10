@@ -132,5 +132,22 @@ export function useOfflinePhysicalTests(targetUserId: string | null) {
     [results],
   );
 
-  return { results, loading, addResult, removeResult, refresh };
+  const updateResult = useCallback(
+    async (localId: string, patch: Partial<Pick<NewTestInput, "value" | "unit" | "notes">>) => {
+      const existing = (await listCachedResults(targetUserId ?? "")).find(r => r.local_id === localId);
+      if (!existing) return;
+      const updated: CachedTestResult = { ...existing, ...patch };
+      await putCachedResult(updated);
+      setResults(await listCachedResults(targetUserId ?? ""));
+      if (existing.server_id && navigator.onLine) {
+        await supabase
+          .from("physical_test_results" as any)
+          .update({ value: updated.value, unit: updated.unit, notes: updated.notes } as any)
+          .eq("id", existing.server_id);
+      }
+    },
+    [targetUserId, results]
+  );
+
+  return { results, loading, addResult, removeResult, updateResult, refresh };
 }
