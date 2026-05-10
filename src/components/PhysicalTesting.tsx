@@ -357,9 +357,23 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
           <TabsContent key={cat} value={cat} className="space-y-4">
             {/* Add test form */}
             <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
-              <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                <Plus className="h-4 w-4" /> {t("ptAddResult")}
-              </h3>
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+                  <Plus className="h-4 w-4" /> {t("ptAddResult")}
+                </h3>
+                {cat === "endurance" && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => setBeepOpen(true)}
+                    className="gap-1.5"
+                  >
+                    <Wind className="h-4 w-4" />
+                    {t("beepTestRunBeepTest")}
+                  </Button>
+                )}
+              </div>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div>
                   <Select value={selectedTest} onValueChange={(v) => {
