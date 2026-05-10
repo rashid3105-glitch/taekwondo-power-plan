@@ -561,6 +561,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
                                 </td>
                               </tr>
                             )}
+                            </>
                           );
                         })}
                       </tbody>
