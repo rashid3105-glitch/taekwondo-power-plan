@@ -291,7 +291,7 @@ export default function MatchAnalysis() {
         toast({ title: t("matchOfflineQueuedToast") });
       }
 
-      setTitle(""); setOpponent(""); setEventName(""); setMatchDate(""); setFile(null);
+      setTitle(""); setOpponent(""); setEventName(""); setMatchDate(""); setFile(null); setAthleteAge(""); setPoomsaeType("individual");
       setUploadOpen(false);
       await Promise.all([init(), offline.refresh()]);
     } catch (e: any) {
