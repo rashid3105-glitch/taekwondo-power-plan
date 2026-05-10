@@ -136,6 +136,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
   const [testUnit, setTestUnit] = useState("");
   const [testDate, setTestDate] = useState(new Date().toISOString().split("T")[0]);
   const [testNotes, setTestNotes] = useState("");
+  const [beepOpen, setBeepOpen] = useState(false);
 
   // Resolve current user id once for individual mode + tested_by metadata.
   useEffect(() => {
