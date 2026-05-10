@@ -59,6 +59,7 @@ export default function Diary() {
   const [viewMode, setViewMode] = useState<ViewMode>(() => (localStorage.getItem("diary-view") as ViewMode) || "compact");
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [collapsedMonths, setCollapsedMonths] = useState<Set<string>>(new Set());
+  const [autoCollapsed, setAutoCollapsed] = useState(false);
 
   useEffect(() => { localStorage.setItem("diary-view", viewMode); }, [viewMode]);
   useEffect(() => { localStorage.setItem("diary-range", dateRange); }, [dateRange]);
@@ -139,6 +140,17 @@ export default function Diary() {
   );
   const grouped = useMemo(() => groupByMonth(filtered), [filtered]);
   const monthKeyToday = useMemo(() => currentMonthKey(), []);
+
+  useEffect(() => {
+    if (autoCollapsed || grouped.length === 0) return;
+    const initial = new Set(
+      grouped
+        .map(([key]) => key)
+        .filter((key) => key !== monthKeyToday)
+    );
+    setCollapsedMonths(initial);
+    setAutoCollapsed(true);
+  }, [grouped, autoCollapsed, monthKeyToday]);
 
   const toggleMonth = (key: string) => {
     setCollapsedMonths((prev) => {
@@ -440,12 +452,7 @@ export default function Diary() {
           </div>
         ) : (
           grouped.map(([monthKey, items]) => {
-            const collapsed = collapsedMonths.has(monthKey) || (monthKey !== monthKeyToday && !collapsedMonths.has(`__open:${monthKey}`));
-            // Default: current month open, others collapsed unless user toggled
-            const userToggled = collapsedMonths.has(monthKey) || collapsedMonths.has(`__open:${monthKey}`);
-            const isCollapsed = userToggled
-              ? collapsedMonths.has(monthKey)
-              : monthKey !== monthKeyToday;
+            const isCollapsed = collapsedMonths.has(monthKey);
             const [yearStr, monthStr] = monthKey.split("-");
             const monthDate = new Date(parseInt(yearStr), parseInt(monthStr) - 1, 1);
             const monthLabel = monthDate.toLocaleDateString(undefined, { month: "long", year: "numeric" });
