@@ -192,6 +192,8 @@ export default function MatchAnalysis() {
       share_token: m.share_token,
       share_expires_at: m.share_expires_at,
       created_at: m.created_at,
+      poomsae_type: (m as any).poomsae_type ?? null,
+      athlete_age: (m as any).athlete_age ?? null,
     };
   }
 
