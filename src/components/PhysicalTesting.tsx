@@ -475,8 +475,8 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
                             );
                           }
                           return (
-                            <>
-                            <tr key={r.local_id} className="border-b border-border/50 last:border-0">
+                            <FragmentWithKey key={r.local_id}>
+                            <tr className="border-b border-border/50 last:border-0">
                               <td className="py-2 text-foreground">
                                 <span className="inline-flex items-center gap-1.5">
                                   {new Date(r.test_date).toLocaleDateString()}
