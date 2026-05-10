@@ -155,8 +155,12 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
   const targetUserId =
     mode === "coach" ? (athleteId || selectedAthleteId || null) : currentUserId;
 
-  const { results: cachedResults, loading, addResult, removeResult } =
+  const { results: cachedResults, loading, addResult, removeResult, updateResult } =
     useOfflinePhysicalTests(targetUserId);
+
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState("");
+  const [editNotes, setEditNotes] = useState("");
 
   const results: TestResult[] = cachedResults.map((r) => ({
     id: r.server_id || r.local_id,
