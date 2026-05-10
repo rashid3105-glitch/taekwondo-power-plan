@@ -513,6 +513,32 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
           </TabsContent>
         ))}
       </Tabs>
+
+      <Dialog open={beepOpen} onOpenChange={setBeepOpen}>
+        <DialogContent className="max-w-md p-4 sm:p-6 max-h-[95vh] overflow-y-auto">
+          <DialogTitle className="sr-only">{t("beepTestTitle")}</DialogTitle>
+          <BeepTestTimer
+            mode={mode}
+            athletes={athletes}
+            currentUserId={currentUserId}
+            onSave={async ({ userId, level, shuttle, testType, testedBy }) => {
+              const decimalLevel = Math.round((level + shuttle / 100) * 100) / 100;
+              await addResult({
+                user_id: userId,
+                test_name: "Beep Test",
+                category: "endurance",
+                value: decimalLevel,
+                unit: "level",
+                test_type: testType,
+                tested_by: testedBy,
+                notes: `Beep test — level ${level} shuttle ${shuttle}`,
+                test_date: new Date().toISOString().split("T")[0],
+              });
+            }}
+            onClose={() => setBeepOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
