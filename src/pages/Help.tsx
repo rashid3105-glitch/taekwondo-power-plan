@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 
 type TopicKey =
   | "helpProfile" | "helpSeasonPlan" | "helpWearables" | "helpCoachFeedback"
-  | "helpMatchAnalysis" | "helpTrainingPlan" | "helpPhysicalTesting" | "helpProgress"
+  | "helpMatchAnalysis" | "helpMatchReport" | "helpTrainingPlan" | "helpPhysicalTesting" | "helpProgress"
   | "helpNutrition" | "helpRehabPlan" | "helpMentalPlan" | "helpLibrary" | "helpDiary"
   | "helpReflection"
   | "helpAddStudents" | "helpStudentProgress" | "helpChat";
