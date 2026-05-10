@@ -32,6 +32,8 @@ interface MatchVideo {
   share_token: string | null;
   share_expires_at: string | null;
   created_at: string;
+  poomsae_type?: "individual" | "pair" | "team" | null;
+  athlete_age?: string | null;
 }
 
 interface MatchTag {
@@ -588,6 +590,8 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
           event_name: video.event_name,
           match_date: video.match_date,
           duration_seconds: video.duration_seconds,
+          poomsae_type: video.poomsae_type ?? null,
+          athlete_age: video.athlete_age ?? null,
         }}
         profile={myProfile}
       />

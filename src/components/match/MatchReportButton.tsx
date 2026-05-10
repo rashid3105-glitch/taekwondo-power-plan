@@ -22,6 +22,8 @@ interface VideoMeta {
   event_name?: string | null;
   match_date?: string | null;
   duration_seconds?: number | null;
+  poomsae_type?: "individual" | "pair" | "team" | null;
+  athlete_age?: string | null;
 }
 
 interface ProfileMeta {

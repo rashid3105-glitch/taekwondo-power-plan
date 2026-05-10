@@ -39,6 +39,8 @@ interface MatchVideoRow {
   share_token: string | null;
   share_expires_at: string | null;
   created_at: string;
+  poomsae_type: "individual" | "pair" | "team" | null;
+  athlete_age: string | null;
   __pending?: boolean; // synthetic row from outbox
   __outboxId?: string;
 }
@@ -67,6 +69,8 @@ export default function MatchAnalysis() {
   const [opponent, setOpponent] = useState("");
   const [eventName, setEventName] = useState("");
   const [matchDate, setMatchDate] = useState("");
+  const [poomsaeType, setPoomsaeType] = useState<"individual" | "pair" | "team">("individual");
+  const [athleteAge, setAthleteAge] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -156,6 +160,8 @@ export default function MatchAnalysis() {
         share_token: null,
         share_expires_at: null,
         created_at: new Date(u.created_at).toISOString(),
+        poomsae_type: (u as any).poomsae_type ?? null,
+        athlete_age: (u as any).athlete_age ?? null,
         __pending: true,
         __outboxId: u.id,
       });
@@ -186,6 +192,8 @@ export default function MatchAnalysis() {
       share_token: m.share_token,
       share_expires_at: m.share_expires_at,
       created_at: m.created_at,
+      poomsae_type: (m as any).poomsae_type ?? null,
+      athlete_age: (m as any).athlete_age ?? null,
     };
   }
 
@@ -263,6 +271,8 @@ export default function MatchAnalysis() {
           athlete_id: resolvedAthleteId, coach_id: me, club_id: clubId,
           title, storage_path: path, duration_seconds: duration, discipline,
           opponent_name: opponent || null, event_name: eventName || null, match_date: matchDate || null,
+          poomsae_type: discipline === "poomsae" ? poomsaeType : null,
+          athlete_age: athleteAge.trim() || null,
         });
         if (insErr) throw insErr;
         toast({ title: t("matchUploadSuccess") });
@@ -275,11 +285,13 @@ export default function MatchAnalysis() {
           opponent_name: opponent || null, event_name: eventName || null,
           match_date: matchDate || null, duration_seconds: duration,
           file, file_name: file.name, created_at: Date.now(), status: "pending",
-        });
+          poomsae_type: discipline === "poomsae" ? poomsaeType : null,
+          athlete_age: athleteAge.trim() || null,
+        } as any);
         toast({ title: t("matchOfflineQueuedToast") });
       }
 
-      setTitle(""); setOpponent(""); setEventName(""); setMatchDate(""); setFile(null);
+      setTitle(""); setOpponent(""); setEventName(""); setMatchDate(""); setFile(null); setAthleteAge(""); setPoomsaeType("individual");
       setUploadOpen(false);
       await Promise.all([init(), offline.refresh()]);
     } catch (e: any) {
@@ -362,6 +374,30 @@ export default function MatchAnalysis() {
                           <SelectItem value="poomsae">{t("matchDisciplinePoomsae")}</SelectItem>
                         </SelectContent>
                       </Select>
+                    </div>
+                    {discipline === "poomsae" && (
+                      <div>
+                        <Label>{t("matchPoomsaeType")}</Label>
+                        <Select value={poomsaeType} onValueChange={(v) => setPoomsaeType(v as any)}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="individual">{t("matchPoomsaeIndividual")}</SelectItem>
+                            <SelectItem value="pair">{t("matchPoomsaePair")}</SelectItem>
+                            <SelectItem value="team">{t("matchPoomsaeTeam")}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                    <div>
+                      <Label>{t("matchAthleteAge")}</Label>
+                      <Input
+                        value={athleteAge}
+                        onChange={(e) => setAthleteAge(e.target.value.replace(/[^0-9]/g, "").slice(0, 3))}
+                        inputMode="numeric"
+                        maxLength={3}
+                        placeholder={t("matchAthleteAgePlaceholder")}
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">{t("matchAthleteAgeHint")}</p>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
