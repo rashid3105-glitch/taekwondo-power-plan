@@ -160,6 +160,8 @@ export default function MatchAnalysis() {
         share_token: null,
         share_expires_at: null,
         created_at: new Date(u.created_at).toISOString(),
+        poomsae_type: (u as any).poomsae_type ?? null,
+        athlete_age: (u as any).athlete_age ?? null,
         __pending: true,
         __outboxId: u.id,
       });
