@@ -29,6 +29,7 @@ const TOPICS: Record<TopicKey, Topic> = {
   helpWearables: { key: "helpWearables", icon: NotebookPen, isNew: true },
   helpCoachFeedback: { key: "helpCoachFeedback", icon: MessageSquare, isNew: true },
   helpMatchAnalysis: { key: "helpMatchAnalysis", icon: Video },
+  helpMatchReport: { key: "helpMatchReport", icon: FileText, isNew: true },
   helpTrainingPlan: { key: "helpTrainingPlan", icon: ClipboardList },
   helpPhysicalTesting: { key: "helpPhysicalTesting", icon: Activity },
   helpProgress: { key: "helpProgress", icon: TrendingUp },
