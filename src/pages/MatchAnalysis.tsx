@@ -69,6 +69,8 @@ export default function MatchAnalysis() {
   const [opponent, setOpponent] = useState("");
   const [eventName, setEventName] = useState("");
   const [matchDate, setMatchDate] = useState("");
+  const [poomsaeType, setPoomsaeType] = useState<"individual" | "pair" | "team">("individual");
+  const [athleteAge, setAthleteAge] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
 
