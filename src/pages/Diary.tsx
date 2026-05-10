@@ -59,6 +59,7 @@ export default function Diary() {
   const [viewMode, setViewMode] = useState<ViewMode>(() => (localStorage.getItem("diary-view") as ViewMode) || "compact");
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [collapsedMonths, setCollapsedMonths] = useState<Set<string>>(new Set());
+  const [autoCollapsed, setAutoCollapsed] = useState(false);
 
   useEffect(() => { localStorage.setItem("diary-view", viewMode); }, [viewMode]);
   useEffect(() => { localStorage.setItem("diary-range", dateRange); }, [dateRange]);
