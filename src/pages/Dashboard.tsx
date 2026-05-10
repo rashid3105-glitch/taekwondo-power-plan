@@ -109,6 +109,21 @@ export default function Dashboard() {
     return t && VALID_TABS.includes(t) ? t : "hub";
   })();
   const [activeTab, setActiveTab] = useState<TabKey>(initialTab);
+  const [seenDots, setSeenDots] = useState<Set<string>>(() => {
+    try {
+      const raw = localStorage.getItem("navDots_seen");
+      return new Set(raw ? JSON.parse(raw) : []);
+    } catch { return new Set(); }
+  });
+  function markDotSeen(key: string) {
+    setSeenDots((prev) => {
+      if (prev.has(key)) return prev;
+      const next = new Set(prev);
+      next.add(key);
+      try { localStorage.setItem("navDots_seen", JSON.stringify([...next])); } catch { /* ignore */ }
+      return next;
+    });
+  }
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
