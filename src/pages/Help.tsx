@@ -19,7 +19,7 @@ type TopicKey =
   | "helpMatchAnalysis" | "helpMatchReport" | "helpTrainingPlan" | "helpPhysicalTesting" | "helpProgress"
   | "helpNutrition" | "helpRehabPlan" | "helpMentalPlan" | "helpLibrary" | "helpDiary"
   | "helpReflection"
-  | "helpAddStudents" | "helpStudentProgress" | "helpChat";
+  | "helpAddStudents" | "helpStudentProgress" | "helpChat" | "helpWeeklyReport";
 
 type Topic = { key: TopicKey; icon: typeof UserCircle; isNew?: boolean };
 
