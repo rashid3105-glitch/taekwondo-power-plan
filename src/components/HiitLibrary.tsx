@@ -100,7 +100,7 @@ export function HiitLibrary() {
               <div className="flex items-start justify-between gap-3 mb-2">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <h3 className="text-base font-extrabold text-foreground leading-tight">{w.name}</h3>
+                    <h3 className="text-base font-extrabold text-foreground leading-tight">{wName(w)}</h3>
                     <span
                       className={cn(
                         "text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-full font-bold border",
