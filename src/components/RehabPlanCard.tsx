@@ -221,7 +221,7 @@ export function RehabPlanCard({ plan, onDelete }: RehabPlanCardProps) {
               <button className="text-left cursor-pointer">
                 <h2 className="text-base font-bold text-foreground">{plan.rehabPlanName}</h2>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  Estimated recovery: ~{plan.estimatedWeeks} weeks
+                  {t("rehabEstimatedRecovery")}: ~{plan.estimatedWeeks} {t("rehabWeeks")}
                 </p>
               </button>
             </CollapsibleTrigger>
