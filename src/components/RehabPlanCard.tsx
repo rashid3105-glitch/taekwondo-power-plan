@@ -303,7 +303,7 @@ export function RehabPlanCard({ plan, onDelete }: RehabPlanCardProps) {
                   <div className="flex items-start gap-2 rounded-lg bg-primary/5 border border-primary/20 p-3">
                     <ArrowRight className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
                     <div>
-                      <p className="text-[10px] uppercase tracking-wider text-primary font-bold mb-0.5">Progress when:</p>
+                      <p className="text-[10px] uppercase tracking-wider text-primary font-bold mb-0.5">{t("rehabProgressWhen")}:</p>
                       <p className="text-xs text-foreground">{phase.criteria}</p>
                     </div>
                   </div>
