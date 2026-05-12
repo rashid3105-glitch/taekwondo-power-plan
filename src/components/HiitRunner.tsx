@@ -30,7 +30,15 @@ function beep(freq = 880, dur = 150) {
 }
 
 export function HiitRunner({ open, onClose, intervals, workoutName }: HiitRunnerProps) {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
+  const getName = (iv?: HiitInterval) => {
+    if (!iv) return "";
+    return (iv.nameLocales as any)?.[locale] || iv.name;
+  };
+  const getDesc = (iv?: HiitInterval) => {
+    if (!iv) return "";
+    return (iv.descLocales as any)?.[locale] || iv.description || "";
+  };
   const [idx, setIdx] = useState(0);
   const [timeLeft, setTimeLeft] = useState(intervals[0]?.duration ?? 0);
   const [running, setRunning] = useState(false);
