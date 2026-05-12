@@ -42,7 +42,9 @@ function formatDuration(secs: number): string {
 export function HiitLibrary() {
   const [filter, setFilter] = useState<HiitWorkout["category"] | "all">("all");
   const [active, setActive] = useState<HiitWorkout | null>(null);
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
+  const wName = (w: HiitWorkout) => (w.nameLocales as any)?.[locale] || w.name;
+  const wDesc = (w: HiitWorkout) => (w.descLocales as any)?.[locale] || w.description;
 
   const filtered = filter === "all" ? HIIT_WORKOUTS : HIIT_WORKOUTS.filter((w) => w.category === filter);
 
