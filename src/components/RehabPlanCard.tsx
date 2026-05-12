@@ -132,7 +132,7 @@ async function generateRehabPDF(plan: any, labels: PdfLabels) {
         if (ex.coachingCue) {
           doc.setFontSize(8);
           doc.setTextColor(80);
-          const cueLines = doc.splitTextToSize(`Coaching: ${ex.coachingCue}`, pageW - 12);
+          const cueLines = doc.splitTextToSize(`${labels.coaching}: ${ex.coachingCue}`, pageW - 12);
           doc.text(cueLines, margin + 10, y);
           y += cueLines.length * 3.5;
           doc.setTextColor(0);
