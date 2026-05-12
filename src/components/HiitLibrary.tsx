@@ -110,7 +110,7 @@ export function HiitLibrary() {
                       {t(`hiitLevel_${w.level}` as any)}
                     </span>
                   </div>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{w.description}</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{wDesc(w)}</p>
                 </div>
                 <div className="h-10 w-10 rounded-lg bg-destructive/15 text-destructive flex items-center justify-center shrink-0">
                   <Zap className="h-5 w-5" fill="currentColor" />
