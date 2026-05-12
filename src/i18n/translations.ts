@@ -8471,6 +8471,8 @@ const translations = {
     changelogEntry106: "Kampfanalyse-KI-Bericht: erstellt ein vollständiges WT-konformes PDF mit Stärken, Schwächen, technischer Analyse, Empfehlungen und taktischen Hinweisen — basierend auf den World-Taekwondo-Kyorugi- und Poomsae-Bewertungskriterien",
     changelogEntry107: "Poomsae-Videoanalyse unterstützt jetzt Einzel-, Paar- und Team-Untertypen — die KI wendet die korrekten WT-Synchronisations- und Bewertungskriterien für jeden Typ an",
     changelogEntry108: "Altersfeld beim Video-Upload hinzugefügt — wird verwendet, um die korrekten Alterskategorie-Regeln (Cadet ≤13, Junior 14–17, Senior 18+) in der KI-Analyse anzuwenden",
+    changelog_2026_05_12: "12. Mai 2026",
+    changelogEntry111: "Verletzungs-Reha ist jetzt für alle im Athlete-Plan verfügbar",
     changelog_2026_05_11: "11. Mai 2026",
     changelogEntry110: "Der wöchentliche Kader-PDF-Export enthält jetzt eine KI-geschriebene Zusammenfassung pro Athlet — basierend auf Tagebucheinträgen, Readiness-Check-ins und Trainingsabschluss — in der Sprache des Trainers verfasst und bereit, mit dem Athleten geteilt zu werden",
     weeklyReportGenerating: "KI-Zusammenfassungen werden erstellt… einen Moment bitte",
