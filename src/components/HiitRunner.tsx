@@ -203,12 +203,12 @@ export function HiitRunner({ open, onClose, intervals, workoutName }: HiitRunner
               <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mb-1">
                 {currentRound} / {totalRounds} · {idx + 1}/{intervals.length}
               </div>
-              <div className="text-lg font-extrabold text-foreground leading-tight">{cur?.name}</div>
+              <div className="text-lg font-extrabold text-foreground leading-tight">{getName(cur)}</div>
               {cur?.korean && (
                 <div className="text-xs text-muted-foreground mt-0.5">{cur.korean}</div>
               )}
-              {cur?.description && (
-                <div className="text-xs text-muted-foreground mt-2">{cur.description}</div>
+              {getDesc(cur) && (
+                <div className="text-xs text-muted-foreground mt-2">{getDesc(cur)}</div>
               )}
             </div>
 
