@@ -34,7 +34,7 @@ const TOPICS: Record<TopicKey, Topic> = {
   helpPhysicalTesting: { key: "helpPhysicalTesting", icon: Activity, isNew: true },
   helpProgress: { key: "helpProgress", icon: TrendingUp },
   helpNutrition: { key: "helpNutrition", icon: Apple },
-  helpRehabPlan: { key: "helpRehabPlan", icon: HeartPulse },
+  helpRehabPlan: { key: "helpRehabPlan", icon: HeartPulse, isNew: true },
   helpMentalPlan: { key: "helpMentalPlan", icon: Brain },
   helpLibrary: { key: "helpLibrary", icon: BookOpen },
   helpDiary: { key: "helpDiary", icon: BookHeart },
@@ -429,6 +429,7 @@ export default function Help() {
 }
 
 const CHANGELOG: { dateKey: string; entries: string[] }[] = [
+  { dateKey: "changelog_2026_05_12", entries: ["changelogEntry111"] },
   { dateKey: "changelog_2026_05_11", entries: ["changelogEntry110"] },
   { dateKey: "changelog_2026_05_10b", entries: ["changelogEntry109"] },
   { dateKey: "changelog_2026_05_10", entries: ["changelogEntry106", "changelogEntry107", "changelogEntry108"] },
