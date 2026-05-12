@@ -95,7 +95,7 @@ async function generateRehabPDF(plan: any, labels: PdfLabels) {
       doc.setFont("helvetica", "italic");
       doc.setFontSize(8);
       doc.setTextColor(59, 130, 246);
-      const criteriaLines = doc.splitTextToSize(`Progress when: ${phase.criteria}`, pageW - 8);
+      const criteriaLines = doc.splitTextToSize(`${labels.progressWhen}: ${phase.criteria}`, pageW - 8);
       doc.text(criteriaLines, margin + 4, y);
       y += criteriaLines.length * 4 + 2;
       doc.setTextColor(0);
