@@ -559,7 +559,7 @@ export default function Dashboard() {
           {(() => {
             // Lazy import lucide icons here to keep diff tight
             const items = [
-              { key: "hjem", label: "Hjem", icon: Home, active: activeTab === "hub", dot: true, onClick: () => handleTabChange("hub") },
+              { key: "hjem-rehab-unlock", label: "Hjem", icon: Home, active: activeTab === "hub", dot: true, onClick: () => handleTabChange("hub") },
               { key: "plan", label: "Plan", icon: CalendarIcon, active: activeTab === "plan", dot: false, onClick: () => handleTabChange("plan") },
               { key: "drills", label: "Drills", icon: Swords, active: false, dot: true, onClick: () => navigate("/library") },
               { key: "fremgang", label: "Fremgang", icon: BarChart3, active: activeTab === "progress", dot: false, onClick: () => handleTabChange("progress") },
