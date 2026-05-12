@@ -7,8 +7,18 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useLanguage } from "@/i18n/LanguageContext";
 
-async function generateRehabPDF(plan: any) {
+type PdfLabels = {
+  estimatedRecovery: string;
+  weeks: string;
+  safetyNotes: string;
+  coaching: string;
+  progression: string;
+  progressWhen: string;
+};
+
+async function generateRehabPDF(plan: any, labels: PdfLabels) {
   const { jsPDF } = await import("jspdf");
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const margin = 15;
