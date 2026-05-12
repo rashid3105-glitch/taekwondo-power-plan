@@ -146,7 +146,7 @@ export function HiitLibrary() {
           open={!!active}
           onClose={() => setActive(null)}
           intervals={active.intervals}
-          workoutName={active.name}
+          workoutName={wName(active)}
         />
       )}
     </div>
