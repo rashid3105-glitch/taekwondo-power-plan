@@ -324,6 +324,7 @@ export function RehabPlanCard({ plan, onDelete }: RehabPlanCardProps) {
 }
 
 function RehabExerciseRow({ exercise, index }: { exercise: any; index: number }) {
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
 
   return (
