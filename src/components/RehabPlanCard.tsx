@@ -185,13 +185,23 @@ interface RehabPlanCardProps {
 }
 
 export function RehabPlanCard({ plan, onDelete }: RehabPlanCardProps) {
+  const { t } = useLanguage();
   const [openPhase, setOpenPhase] = useState<number | null>(0);
   const [downloading, setDownloading] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
 
   const handleDownload = async () => {
     setDownloading(true);
-    try { await generateRehabPDF(plan); } finally { setDownloading(false); }
+    try {
+      await generateRehabPDF(plan, {
+        estimatedRecovery: t("rehabEstimatedRecovery"),
+        weeks: t("rehabWeeks"),
+        safetyNotes: t("rehabSafetyNotes"),
+        coaching: t("rehabCoaching"),
+        progression: t("rehabProgression"),
+        progressWhen: t("rehabProgressWhen"),
+      });
+    } finally { setDownloading(false); }
   };
 
   if (!plan) return null;
