@@ -267,7 +267,7 @@ export function RehabPlanCard({ plan, onDelete }: RehabPlanCardProps) {
         <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
           <div className="flex items-center gap-2 mb-2">
             <AlertTriangle className="h-4 w-4 text-destructive" />
-            <span className="text-xs font-bold uppercase tracking-wider text-destructive">Safety Notes</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-destructive">{t("rehabSafetyNotes")}</span>
           </div>
           <ul className="space-y-1">
             {plan.importantNotes.map((note: string, i: number) => (
