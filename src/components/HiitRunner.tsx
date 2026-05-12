@@ -219,7 +219,7 @@ export function HiitRunner({ open, onClose, intervals, workoutName }: HiitRunner
                   {t("hiitNext")}
                 </span>
                 <span className="font-bold text-foreground truncate ml-2">
-                  {intervals[idx + 1].name}
+                  {getName(intervals[idx + 1])}
                 </span>
                 <span className="text-muted-foreground ml-2 tabular-nums">
                   {intervals[idx + 1].duration}s
