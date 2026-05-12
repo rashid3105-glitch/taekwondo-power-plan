@@ -242,15 +242,15 @@ export function RehabPlanCard({ plan, onDelete }: RehabPlanCardProps) {
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Delete Rehab Plan</AlertDialogTitle>
+                    <AlertDialogTitle>{t("rehabDeleteTitle")}</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Are you sure you want to delete this rehab plan? This action cannot be undone.
+                      {t("rehabDeleteDesc")}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
                     <AlertDialogAction onClick={onDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                      Delete
+                      {t("delete")}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
