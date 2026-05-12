@@ -48,7 +48,7 @@ interface Profile {
   discipline?: string;
 }
 
-type SupportedLocale = "en" | "da" | "sv" | "de" | "ar";
+type SupportedLocale = "en" | "da" | "sv" | "de" | "ar" | "no";
 
 const categoryIcons: Record<string, React.ReactNode> = {
   mentalToughness: <Shield className="h-4 w-4" />,
