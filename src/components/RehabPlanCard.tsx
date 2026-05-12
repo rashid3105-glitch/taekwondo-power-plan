@@ -36,7 +36,7 @@ async function generateRehabPDF(plan: any, labels: PdfLabels) {
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(120);
-  doc.text(`Estimated recovery: ~${plan.estimatedWeeks} weeks`, margin, y);
+  doc.text(`${labels.estimatedRecovery}: ~${plan.estimatedWeeks} ${labels.weeks}`, margin, y);
   y += 6;
   if (plan.injurySummary) {
     const summaryLines = doc.splitTextToSize(plan.injurySummary, pageW);
