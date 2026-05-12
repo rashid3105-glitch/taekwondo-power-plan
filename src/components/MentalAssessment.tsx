@@ -48,7 +48,7 @@ interface Profile {
   discipline?: string;
 }
 
-type SupportedLocale = "en" | "da" | "sv" | "de" | "ar";
+type SupportedLocale = "en" | "da" | "sv" | "de" | "ar" | "no";
 
 const categoryIcons: Record<string, React.ReactNode> = {
   mentalToughness: <Shield className="h-4 w-4" />,
@@ -60,12 +60,12 @@ const categoryIcons: Record<string, React.ReactNode> = {
 };
 
 const categoryLabels: Record<string, Record<SupportedLocale, string>> = {
-  mentalToughness: { en: "Mental Toughness", da: "Mental styrke", sv: "Mental styrka", de: "Mentale Stärke", ar: "القوة الذهنية" },
-  competitionAnxiety: { en: "Competition Anxiety", da: "Konkurrenceangst", sv: "Tävlingsångest", de: "Wettkampfangst", ar: "قلق المنافسة" },
-  focusConcentration: { en: "Focus & Concentration", da: "Fokus & koncentration", sv: "Fokus & koncentration", de: "Fokus & Konzentration", ar: "التركيز والانتباه" },
-  recoveryFromLoss: { en: "Recovery from Loss", da: "Håndtering af nederlag", sv: "Återhämtning efter förlust", de: "Erholung nach Niederlagen", ar: "التعافي من الخسارة" },
-  confidence: { en: "Confidence", da: "Selvtillid", sv: "Självförtroende", de: "Selbstvertrauen", ar: "الثقة بالنفس" },
-  motivation: { en: "Motivation", da: "Motivation", sv: "Motivation", de: "Motivation", ar: "التحفيز" },
+  mentalToughness: { en: "Mental Toughness", da: "Mental styrke", sv: "Mental styrka", de: "Mentale Stärke", ar: "القوة الذهنية", no: "Mental styrke" },
+  competitionAnxiety: { en: "Competition Anxiety", da: "Konkurrenceangst", sv: "Tävlingsångest", de: "Wettkampfangst", ar: "قلق المنافسة", no: "Konkurranseangst" },
+  focusConcentration: { en: "Focus & Concentration", da: "Fokus & koncentration", sv: "Fokus & koncentration", de: "Fokus & Konzentration", ar: "التركيز والانتباه", no: "Fokus og konsentrasjon" },
+  recoveryFromLoss: { en: "Recovery from Loss", da: "Håndtering af nederlag", sv: "Återhämtning efter förlust", de: "Erholung nach Niederlagen", ar: "التعافي من الخسارة", no: "Håndtering av nederlag" },
+  confidence: { en: "Confidence", da: "Selvtillid", sv: "Självförtroende", de: "Selbstvertrauen", ar: "الثقة بالنفس", no: "Selvtillit" },
+  motivation: { en: "Motivation", da: "Motivation", sv: "Motivation", de: "Motivation", ar: "التحفيز", no: "Motivasjon" },
 };
 
 interface Assessment {
@@ -307,6 +307,52 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     adviceRegenerateFailed: "تعذّر إنشاء النصائح. يرجى المحاولة مرة أخرى.",
     tapToView: "اضغط للعرض",
   },
+  no: {
+    title: "Mental ytelse",
+    subtitle: "Vurder din mentale beredskap og få personlige mestringsstrategier",
+    startAssessment: "Start vurdering",
+    viewHistory: "Vis historikk",
+    question: "Spørsmål",
+    of: "av",
+    next: "Neste",
+    back: "Tilbake",
+    getResults: "Få resultatene og rådene mine",
+    yourScore: "Din mentale poengsum",
+    outOf: "av 30",
+    generating: "Genererer personlige råd...",
+    strengths: "Dine styrker",
+    areasToImprove: "Forbedringsområder",
+    techniques: "Teknikker",
+    dailyHabit: "Daglig vane",
+    preCompRoutine: "Førkonkurranserutine",
+    affirmations: "Personlige affirmasjoner",
+    retake: "Ta vurderingen igjen",
+    backToIntro: "Tilbake",
+    history: "Vurderingshistorikk",
+    noHistory: "Ingen tidligere vurderinger ennå.",
+    score: "Poengsum",
+    delete: "Slett",
+    downloadPlan: "Last ned plan",
+    saveToDiary: "Lagre i dagboken",
+    savedToDiary: "Lagret i dagboken!",
+    diaryNote: "Mental vurdering sammendrag",
+    saveToDiaryPrompt: "Vil du lagre dette vurderingssammendraget som et notat i dagboken din?",
+    overallExcellent: "Utmerket mental beredskap!",
+    overallGood: "God mental styrke",
+    overallAverage: "Gjennomsnittlig — rom for vekst",
+    overallNeedsWork: "Trenger arbeid — la oss bygge det opp!",
+    pending: "Venter",
+    adviceWillSyncOnline: "Lagret frakoblet. Personlige råd genereres når du er tilkoblet igjen.",
+    confirmDeleteTitle: "Slette denne vurderingen?",
+    confirmDeleteDesc: "Dette fjerner vurderingen og rådene permanent. Det kan ikke angres.",
+    cancel: "Avbryt",
+    noAdviceTitle: "Ingen råd tilgjengelig",
+    noAdviceDesc: "Personlige råd ble ikke generert for denne vurderingen. Prøv å generere dem igjen.",
+    regenerateAdvice: "Generer råd på nytt",
+    adviceRegenerated: "Råd generert på nytt",
+    adviceRegenerateFailed: "Kunne ikke generere råd. Prøv igjen.",
+    tapToView: "Trykk for å se",
+  },
 };
 
 export function MentalAssessment({ profile }: { profile: Profile | null }) {
@@ -334,7 +380,7 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
   const [regenerating, setRegenerating] = useState(false);
 
   // Map locale to supported locale with fallback
-  const l: SupportedLocale = (["en", "da", "sv", "de", "ar"].includes(locale) ? locale : "en") as SupportedLocale;
+  const l: SupportedLocale = (["en", "da", "sv", "de", "ar", "no"].includes(locale) ? locale : "en") as SupportedLocale;
   const questions = getQuestionsForAge(profile?.age);
   const txt = translations[l];
 

@@ -30,7 +30,15 @@ function beep(freq = 880, dur = 150) {
 }
 
 export function HiitRunner({ open, onClose, intervals, workoutName }: HiitRunnerProps) {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
+  const getName = (iv?: HiitInterval) => {
+    if (!iv) return "";
+    return (iv.nameLocales as any)?.[locale] || iv.name;
+  };
+  const getDesc = (iv?: HiitInterval) => {
+    if (!iv) return "";
+    return (iv.descLocales as any)?.[locale] || iv.description || "";
+  };
   const [idx, setIdx] = useState(0);
   const [timeLeft, setTimeLeft] = useState(intervals[0]?.duration ?? 0);
   const [running, setRunning] = useState(false);
@@ -195,12 +203,12 @@ export function HiitRunner({ open, onClose, intervals, workoutName }: HiitRunner
               <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mb-1">
                 {currentRound} / {totalRounds} · {idx + 1}/{intervals.length}
               </div>
-              <div className="text-lg font-extrabold text-foreground leading-tight">{cur?.name}</div>
+              <div className="text-lg font-extrabold text-foreground leading-tight">{getName(cur)}</div>
               {cur?.korean && (
                 <div className="text-xs text-muted-foreground mt-0.5">{cur.korean}</div>
               )}
-              {cur?.description && (
-                <div className="text-xs text-muted-foreground mt-2">{cur.description}</div>
+              {getDesc(cur) && (
+                <div className="text-xs text-muted-foreground mt-2">{getDesc(cur)}</div>
               )}
             </div>
 
@@ -211,7 +219,7 @@ export function HiitRunner({ open, onClose, intervals, workoutName }: HiitRunner
                   {t("hiitNext")}
                 </span>
                 <span className="font-bold text-foreground truncate ml-2">
-                  {intervals[idx + 1].name}
+                  {getName(intervals[idx + 1])}
                 </span>
                 <span className="text-muted-foreground ml-2 tabular-nums">
                   {intervals[idx + 1].duration}s

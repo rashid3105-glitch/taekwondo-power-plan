@@ -42,7 +42,9 @@ function formatDuration(secs: number): string {
 export function HiitLibrary() {
   const [filter, setFilter] = useState<HiitWorkout["category"] | "all">("all");
   const [active, setActive] = useState<HiitWorkout | null>(null);
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
+  const wName = (w: HiitWorkout) => (w.nameLocales as any)?.[locale] || w.name;
+  const wDesc = (w: HiitWorkout) => (w.descLocales as any)?.[locale] || w.description;
 
   const filtered = filter === "all" ? HIIT_WORKOUTS : HIIT_WORKOUTS.filter((w) => w.category === filter);
 
@@ -98,7 +100,7 @@ export function HiitLibrary() {
               <div className="flex items-start justify-between gap-3 mb-2">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <h3 className="text-base font-extrabold text-foreground leading-tight">{w.name}</h3>
+                    <h3 className="text-base font-extrabold text-foreground leading-tight">{wName(w)}</h3>
                     <span
                       className={cn(
                         "text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-full font-bold border",
@@ -108,7 +110,7 @@ export function HiitLibrary() {
                       {t(`hiitLevel_${w.level}` as any)}
                     </span>
                   </div>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{w.description}</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{wDesc(w)}</p>
                 </div>
                 <div className="h-10 w-10 rounded-lg bg-destructive/15 text-destructive flex items-center justify-center shrink-0">
                   <Zap className="h-5 w-5" fill="currentColor" />
@@ -144,7 +146,7 @@ export function HiitLibrary() {
           open={!!active}
           onClose={() => setActive(null)}
           intervals={active.intervals}
-          workoutName={active.name}
+          workoutName={wName(active)}
         />
       )}
     </div>
