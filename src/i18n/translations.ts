@@ -2032,6 +2032,8 @@ const translations = {
     changelogEntry106: "Match analysis AI report: generates a full WT-compliant PDF with strengths, weaknesses, technical analysis, recommendations, and tactical notes — powered by World Taekwondo kyorugi and poomsae judging criteria",
     changelogEntry107: "Poomsae video analysis now supports Individual, Pair, and Team sub-types — the AI applies the correct WT synchronisation and judging criteria for each",
     changelogEntry108: "Athlete age field added to video upload — used to apply the correct age-category rules (Cadet ≤13, Junior 14–17, Senior 18+) in the AI analysis",
+    changelog_2026_05_12: "May 12, 2026",
+    changelogEntry111: "Injury rehab is now available to everyone on the Athlete plan",
     changelog_2026_05_11: "May 11, 2026",
     changelogEntry110: "Weekly squad PDF export now includes an AI-written summary per athlete — based on diary entries, readiness check-ins, and training completion — written in the coach's language and ready to share with the athlete",
     weeklyReportGenerating: "Generating AI summaries… this may take a moment",
