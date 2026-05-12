@@ -86,7 +86,7 @@ async function generateRehabPDF(plan: any, labels: PdfLabels) {
     doc.setTextColor(255);
     doc.text(phase.phase, margin + 4, y + 7);
     doc.setFontSize(8);
-    doc.text(`Weeks ${phase.weeks} · ${phase.goal}`, margin + pageW - 4, y + 7, { align: "right" });
+    doc.text(`${labels.weeks} ${phase.weeks} · ${phase.goal}`, margin + pageW - 4, y + 7, { align: "right" });
     doc.setTextColor(0);
     y += 14;
 
