@@ -54,7 +54,7 @@ async function generateRehabPDF(plan: any, labels: PdfLabels) {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(9);
     doc.setTextColor(220, 38, 38);
-    doc.text("SAFETY NOTES", margin + 4, y + 6);
+    doc.text(labels.safetyNotes, margin + 4, y + 6);
     doc.setTextColor(0);
     y += 10;
     doc.setFont("helvetica", "normal");
