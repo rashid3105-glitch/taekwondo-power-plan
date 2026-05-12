@@ -150,7 +150,7 @@ async function generateRehabPDF(plan: any, labels: PdfLabels) {
         if (ex.progressionTip) {
           doc.setFontSize(8);
           doc.setTextColor(34, 197, 94);
-          const progLines = doc.splitTextToSize(`Progression: ${ex.progressionTip}`, pageW - 12);
+          const progLines = doc.splitTextToSize(`${labels.progression}: ${ex.progressionTip}`, pageW - 12);
           doc.text(progLines, margin + 10, y);
           y += progLines.length * 3.5;
           doc.setTextColor(0);
