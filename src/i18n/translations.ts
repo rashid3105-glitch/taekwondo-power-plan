@@ -4171,6 +4171,8 @@ const translations = {
     changelogEntry106: "Kampanalyse AI-rapport: genererer en komplet WT-konform PDF med styrker, svagheder, teknisk analyse, anbefalinger og taktiske noter — baseret på World Taekwondo kyorugi- og poomsae-bedømmelseskriterier",
     changelogEntry107: "Poomsae-videoanalyse understøtter nu Individuel, Par og Hold — AI'en anvender de korrekte WT synkroniserings- og bedømmelseskriterier for hver type",
     changelogEntry108: "Alder-felt tilføjet til video-upload — bruges til at anvende det korrekte aldersgruppe-regelsæt (Cadet ≤13, Junior 14–17, Senior 18+) i AI-analysen",
+    changelog_2026_05_12: "12. maj 2026",
+    changelogEntry111: "Skade-genoptræning er nu tilgængelig for alle på Athlete-planen",
     changelog_2026_05_11: "11. maj 2026",
     changelogEntry110: "Ugentlig hold-PDF-eksport inkluderer nu en AI-skrevet opsummering pr. atlet — baseret på dagbogsindlæg, readiness check-ins og træningsgennemførelse — skrevet på trænersprog og klar til at dele med atleten",
     weeklyReportGenerating: "Genererer AI-opsummeringer… det tager et øjeblik",
