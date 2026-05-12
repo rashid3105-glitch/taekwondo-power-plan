@@ -343,25 +343,25 @@ function RehabExerciseRow({ exercise, index }: { exercise: any; index: number })
         <div className="px-3 pb-3 space-y-2 animate-slide-up">
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             <div className="rounded-md bg-muted p-2">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Sets × Reps</p>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("rehabSetsReps")}</p>
               <p className="text-sm font-bold text-foreground">{exercise.sets} × {exercise.reps}</p>
             </div>
             <div className="rounded-md bg-muted p-2">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Rest</p>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("rehabRest")}</p>
               <p className="text-sm font-bold text-foreground">{exercise.rest}</p>
             </div>
             {exercise.tempo && (
               <div className="rounded-md bg-muted p-2">
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Tempo</p>
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("rehabTempo")}</p>
                 <p className="text-sm font-bold text-foreground">{exercise.tempo}</p>
               </div>
             )}
           </div>
           <p className="text-xs text-muted-foreground">
-            <span className="font-semibold text-foreground">Coaching: </span>{exercise.coachingCue}
+            <span className="font-semibold text-foreground">{t("rehabCoaching")}: </span>{exercise.coachingCue}
           </p>
           <p className="text-xs text-primary/80">
-            <span className="font-semibold text-primary">Why: </span>{exercise.whyItMatters}
+            <span className="font-semibold text-primary">{t("rehabWhy")}: </span>{exercise.whyItMatters}
           </p>
           {exercise.painGuideline && (
             <div className="flex items-start gap-1.5 text-xs text-destructive">
@@ -371,7 +371,7 @@ function RehabExerciseRow({ exercise, index }: { exercise: any; index: number })
           )}
           {exercise.progressionTip && (
             <p className="text-xs text-accent">
-              <span className="font-semibold">Progression: </span>{exercise.progressionTip}
+              <span className="font-semibold">{t("rehabProgression")}: </span>{exercise.progressionTip}
             </p>
           )}
         </div>
