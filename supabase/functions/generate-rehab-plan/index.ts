@@ -33,7 +33,7 @@ serve(async (req) => {
       return new Response(JSON.stringify({ error: "Request too large" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
     const { injury, profile, language } = JSON.parse(body);
-    const lang = language === "da" ? "Danish" : language === "sv" ? "Swedish" : language === "de" ? "German" : language === "ar" ? "Arabic" : "English";
+    const lang = language === "da" ? "Danish" : language === "sv" ? "Swedish" : language === "de" ? "German" : language === "ar" ? "Arabic" : language === "no" ? "Norwegian" : "English";
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
@@ -50,27 +50,37 @@ serve(async (req) => {
       });
     }
 
-    const systemPrompt = `You are an expert sports physiotherapist and strength & conditioning coach specializing in martial arts injury rehabilitation. You create evidence-based rehab programs for muscle/tendon injuries common in taekwondo athletes.
+    const systemPrompt = `You are a sports injury helper for taekwondo athletes. Your job is to create a simple, step-by-step recovery plan that an athlete (including teenagers) can read and follow on their own.
 
-Your programs must:
-- Be progressive (pain-free ROM → loading → sport-specific return)
-- Include specific sets, reps, tempo, and rest periods
-- Prioritize tissue healing timelines
-- Include criteria for progressing between phases
-- Be safe and conservative — when in doubt, be cautious
+WRITING RULES — follow these strictly:
+- Write like you're talking directly to the athlete ("you", "your knee", "when you feel ready")
+- No medical jargon. Replace clinical terms with plain words:
+  • "ROM" → "how far you can move it"
+  • "eccentric loading" → "slowly lowering the weight"
+  • "proprioception" → "balance and body awareness"
+  • "tissue healing" → "healing"
+  • "inflammation" → "swelling and soreness"
+  • "acute phase" → "first days after the injury"
+  • "pain > 3/10" → "more than mild pain" or "pain above a 3 out of 10 — where 0 is no pain and 10 is the worst imaginable"
+  • "sport-specific" → "taekwondo-specific"
+  • "progression criteria" → "you're ready for the next step when..."
+- Keep sentences short. Maximum 2 sentences per instruction.
+- Safety notes should sound caring, not scary: "Take it easy if this hurts more than a little" not "Discontinue if VAS > 3"
+- Phase names should be simple: "Rest & Protect", "Start Moving Again", "Get Stronger", "Back to Training"
+- Goals should be motivating: "Get the swelling down and protect the injury" not "Reduce inflammatory response"
 
 Return a valid JSON object with this exact structure:
 {
-  "rehabPlanName": "string",
-  "injurySummary": "string (brief explanation of the injury type and typical recovery)",
+  "rehabPlanName": "string (simple name like 'Knee Sprain Recovery Plan')",
+  "injurySummary": "string (2-3 sentences in plain language explaining what happened and roughly how long recovery takes)",
   "estimatedWeeks": number,
-  "importantNotes": ["string (key safety notes, red flags to watch for)"],
+  "importantNotes": ["string (caring, plain-language safety reminders — max 1 sentence each)"],
   "phases": [
     {
-      "phase": "string (e.g. 'Acute/Protection', 'Early Rehab', 'Late Rehab', 'Return to Sport')",
-      "weeks": "string (e.g. '1-2')",
-      "goal": "string",
-      "criteria": "string (what must be achieved before moving to next phase)",
+      "phase": "string (simple phase name)",
+      "weeks": "string (e.g. 'Week 1–2')",
+      "goal": "string (simple motivating goal)",
+      "criteria": "string (plain language: 'You're ready for the next step when you can...')",
       "exercises": [
         {
           "name": "string",
@@ -79,10 +89,10 @@ Return a valid JSON object with this exact structure:
           "reps": "string",
           "tempo": "string or null",
           "rest": "string",
-          "coachingCue": "string",
-          "whyItMatters": "string (how this helps the specific injury)",
-          "progressionTip": "string (how to make it harder when ready)",
-          "painGuideline": "string (e.g. 'Stop if pain > 3/10')"
+          "coachingCue": "string (what to focus on — plain, short, practical)",
+          "whyItMatters": "string (1 sentence in plain language: why this exercise helps YOU recover)",
+          "progressionTip": "string (simple: 'When this feels easy, try...')",
+          "painGuideline": "string (caring tone: 'Stop if it hurts more than a little' or 'A mild ache is okay — sharp pain means stop')"
         }
       ]
     }
@@ -90,7 +100,7 @@ Return a valid JSON object with this exact structure:
 }
 
 IMPORTANT: Return ONLY the JSON object, no markdown, no code fences.
-IMPORTANT: ALL text content (rehabPlanName, injurySummary, importantNotes, phase names, goals, criteria, exercise names where appropriate, coachingCues, whyItMatters, progressionTips, painGuidelines) MUST be written in ${lang}.`;
+IMPORTANT: ALL text content MUST be written in ${lang}.`;
 
     const discipline = profile?.discipline || 'sparring';
     const isSparring = discipline === 'sparring';

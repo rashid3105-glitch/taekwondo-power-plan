@@ -7,8 +7,18 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useLanguage } from "@/i18n/LanguageContext";
 
-async function generateRehabPDF(plan: any) {
+type PdfLabels = {
+  estimatedRecovery: string;
+  weeks: string;
+  safetyNotes: string;
+  coaching: string;
+  progression: string;
+  progressWhen: string;
+};
+
+async function generateRehabPDF(plan: any, labels: PdfLabels) {
   const { jsPDF } = await import("jspdf");
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const margin = 15;
@@ -26,7 +36,7 @@ async function generateRehabPDF(plan: any) {
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(120);
-  doc.text(`Estimated recovery: ~${plan.estimatedWeeks} weeks`, margin, y);
+  doc.text(`${labels.estimatedRecovery}: ~${plan.estimatedWeeks} ${labels.weeks}`, margin, y);
   y += 6;
   if (plan.injurySummary) {
     const summaryLines = doc.splitTextToSize(plan.injurySummary, pageW);
@@ -44,7 +54,7 @@ async function generateRehabPDF(plan: any) {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(9);
     doc.setTextColor(220, 38, 38);
-    doc.text("SAFETY NOTES", margin + 4, y + 6);
+    doc.text(labels.safetyNotes, margin + 4, y + 6);
     doc.setTextColor(0);
     y += 10;
     doc.setFont("helvetica", "normal");
@@ -76,7 +86,7 @@ async function generateRehabPDF(plan: any) {
     doc.setTextColor(255);
     doc.text(phase.phase, margin + 4, y + 7);
     doc.setFontSize(8);
-    doc.text(`Weeks ${phase.weeks} · ${phase.goal}`, margin + pageW - 4, y + 7, { align: "right" });
+    doc.text(`${labels.weeks} ${phase.weeks} · ${phase.goal}`, margin + pageW - 4, y + 7, { align: "right" });
     doc.setTextColor(0);
     y += 14;
 
@@ -85,7 +95,7 @@ async function generateRehabPDF(plan: any) {
       doc.setFont("helvetica", "italic");
       doc.setFontSize(8);
       doc.setTextColor(59, 130, 246);
-      const criteriaLines = doc.splitTextToSize(`Progress when: ${phase.criteria}`, pageW - 8);
+      const criteriaLines = doc.splitTextToSize(`${labels.progressWhen}: ${phase.criteria}`, pageW - 8);
       doc.text(criteriaLines, margin + 4, y);
       y += criteriaLines.length * 4 + 2;
       doc.setTextColor(0);
@@ -122,7 +132,7 @@ async function generateRehabPDF(plan: any) {
         if (ex.coachingCue) {
           doc.setFontSize(8);
           doc.setTextColor(80);
-          const cueLines = doc.splitTextToSize(`Coaching: ${ex.coachingCue}`, pageW - 12);
+          const cueLines = doc.splitTextToSize(`${labels.coaching}: ${ex.coachingCue}`, pageW - 12);
           doc.text(cueLines, margin + 10, y);
           y += cueLines.length * 3.5;
           doc.setTextColor(0);
@@ -140,7 +150,7 @@ async function generateRehabPDF(plan: any) {
         if (ex.progressionTip) {
           doc.setFontSize(8);
           doc.setTextColor(34, 197, 94);
-          const progLines = doc.splitTextToSize(`Progression: ${ex.progressionTip}`, pageW - 12);
+          const progLines = doc.splitTextToSize(`${labels.progression}: ${ex.progressionTip}`, pageW - 12);
           doc.text(progLines, margin + 10, y);
           y += progLines.length * 3.5;
           doc.setTextColor(0);
@@ -175,13 +185,23 @@ interface RehabPlanCardProps {
 }
 
 export function RehabPlanCard({ plan, onDelete }: RehabPlanCardProps) {
+  const { t } = useLanguage();
   const [openPhase, setOpenPhase] = useState<number | null>(0);
   const [downloading, setDownloading] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
 
   const handleDownload = async () => {
     setDownloading(true);
-    try { await generateRehabPDF(plan); } finally { setDownloading(false); }
+    try {
+      await generateRehabPDF(plan, {
+        estimatedRecovery: t("rehabEstimatedRecovery"),
+        weeks: t("rehabWeeks"),
+        safetyNotes: t("rehabSafetyNotes"),
+        coaching: t("rehabCoaching"),
+        progression: t("rehabProgression"),
+        progressWhen: t("rehabProgressWhen"),
+      });
+    } finally { setDownloading(false); }
   };
 
   if (!plan) return null;
@@ -201,7 +221,7 @@ export function RehabPlanCard({ plan, onDelete }: RehabPlanCardProps) {
               <button className="text-left cursor-pointer">
                 <h2 className="text-base font-bold text-foreground">{plan.rehabPlanName}</h2>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  Estimated recovery: ~{plan.estimatedWeeks} weeks
+                  {t("rehabEstimatedRecovery")}: ~{plan.estimatedWeeks} {t("rehabWeeks")}
                 </p>
               </button>
             </CollapsibleTrigger>
@@ -222,15 +242,15 @@ export function RehabPlanCard({ plan, onDelete }: RehabPlanCardProps) {
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Delete Rehab Plan</AlertDialogTitle>
+                    <AlertDialogTitle>{t("rehabDeleteTitle")}</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Are you sure you want to delete this rehab plan? This action cannot be undone.
+                      {t("rehabDeleteDesc")}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
                     <AlertDialogAction onClick={onDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                      Delete
+                      {t("delete")}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
@@ -247,7 +267,7 @@ export function RehabPlanCard({ plan, onDelete }: RehabPlanCardProps) {
         <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
           <div className="flex items-center gap-2 mb-2">
             <AlertTriangle className="h-4 w-4 text-destructive" />
-            <span className="text-xs font-bold uppercase tracking-wider text-destructive">Safety Notes</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-destructive">{t("rehabSafetyNotes")}</span>
           </div>
           <ul className="space-y-1">
             {plan.importantNotes.map((note: string, i: number) => (
@@ -283,7 +303,7 @@ export function RehabPlanCard({ plan, onDelete }: RehabPlanCardProps) {
                   <div className="flex items-start gap-2 rounded-lg bg-primary/5 border border-primary/20 p-3">
                     <ArrowRight className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
                     <div>
-                      <p className="text-[10px] uppercase tracking-wider text-primary font-bold mb-0.5">Progress when:</p>
+                      <p className="text-[10px] uppercase tracking-wider text-primary font-bold mb-0.5">{t("rehabProgressWhen")}:</p>
                       <p className="text-xs text-foreground">{phase.criteria}</p>
                     </div>
                   </div>
@@ -304,6 +324,7 @@ export function RehabPlanCard({ plan, onDelete }: RehabPlanCardProps) {
 }
 
 function RehabExerciseRow({ exercise, index }: { exercise: any; index: number }) {
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
 
   return (
@@ -322,25 +343,25 @@ function RehabExerciseRow({ exercise, index }: { exercise: any; index: number })
         <div className="px-3 pb-3 space-y-2 animate-slide-up">
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             <div className="rounded-md bg-muted p-2">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Sets × Reps</p>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("rehabSetsReps")}</p>
               <p className="text-sm font-bold text-foreground">{exercise.sets} × {exercise.reps}</p>
             </div>
             <div className="rounded-md bg-muted p-2">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Rest</p>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("rehabRest")}</p>
               <p className="text-sm font-bold text-foreground">{exercise.rest}</p>
             </div>
             {exercise.tempo && (
               <div className="rounded-md bg-muted p-2">
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Tempo</p>
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("rehabTempo")}</p>
                 <p className="text-sm font-bold text-foreground">{exercise.tempo}</p>
               </div>
             )}
           </div>
           <p className="text-xs text-muted-foreground">
-            <span className="font-semibold text-foreground">Coaching: </span>{exercise.coachingCue}
+            <span className="font-semibold text-foreground">{t("rehabCoaching")}: </span>{exercise.coachingCue}
           </p>
           <p className="text-xs text-primary/80">
-            <span className="font-semibold text-primary">Why: </span>{exercise.whyItMatters}
+            <span className="font-semibold text-primary">{t("rehabWhy")}: </span>{exercise.whyItMatters}
           </p>
           {exercise.painGuideline && (
             <div className="flex items-start gap-1.5 text-xs text-destructive">
@@ -350,7 +371,7 @@ function RehabExerciseRow({ exercise, index }: { exercise: any; index: number })
           )}
           {exercise.progressionTip && (
             <p className="text-xs text-accent">
-              <span className="font-semibold">Progression: </span>{exercise.progressionTip}
+              <span className="font-semibold">{t("rehabProgression")}: </span>{exercise.progressionTip}
             </p>
           )}
         </div>
