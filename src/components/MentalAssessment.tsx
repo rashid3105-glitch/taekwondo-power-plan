@@ -380,7 +380,7 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
   const [regenerating, setRegenerating] = useState(false);
 
   // Map locale to supported locale with fallback
-  const l: SupportedLocale = (["en", "da", "sv", "de", "ar"].includes(locale) ? locale : "en") as SupportedLocale;
+  const l: SupportedLocale = (["en", "da", "sv", "de", "ar", "no"].includes(locale) ? locale : "en") as SupportedLocale;
   const questions = getQuestionsForAge(profile?.age);
   const txt = translations[l];
 
