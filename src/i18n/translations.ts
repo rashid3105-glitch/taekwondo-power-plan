@@ -800,6 +800,10 @@ const translations = {
     // Coach-managed
     coachManagedBanner: "Your programs are managed by your coach. You can view and download your plans.",
     coachManagedBannerNamed: "Your programs are managed by {{coach}}. You can view and download your plans.",
+    coachManagesPlanTitle: "Your coach manages your training plan",
+    coachManagesPlanDescNamed: "{{coach}} will generate and update your training plan. You will be notified when a new plan is ready.",
+    coachManagesPlanDesc: "Your coach will generate and update your training plan. You will be notified when a new plan is ready.",
+    coachManagesPlanHint: "If you have questions about your plan, send a message to your coach via the chat button.",
     coachManagedAction: "Coach-managed — view only",
     coachManagedActionNamed: "Managed by {{coach}} — view only",
     hubLibraryTitle: "Library",
