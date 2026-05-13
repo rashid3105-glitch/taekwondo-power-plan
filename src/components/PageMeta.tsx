@@ -10,7 +10,10 @@ interface PageMetaProps {
 export const PageMeta = ({ title, description, canonical, noindex }: PageMetaProps) => {
   useEffect(() => {
     const suffix = "Sportstalent";
-    document.title = title === suffix ? title : `${title} | ${suffix}`;
+    // Only append the brand suffix if the title doesn't already contain it
+    document.title = title.toLowerCase().includes(suffix.toLowerCase())
+      ? title
+      : `${title} | ${suffix}`;
 
     if (description) {
       let meta = document.querySelector('meta[name="description"]');
