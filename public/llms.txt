@@ -1,0 +1,19 @@
+# Sportstalent
+
+> Sport science strength & conditioning platform built for taekwondo athletes and the coaches who guide them. Periodized training plans, readiness tracking, injury rehab, nutrition, mental performance and competition reflection — in one place.
+
+Sportstalent helps taekwondo clubs run their roster, build periodized 4–12 week programs, monitor athlete readiness, and turn each competition into a structured lesson. The platform is bilingual (Danish, English, Swedish, German, Norwegian, Arabic) and works offline in the gym.
+
+## Pages
+
+- [Home](/): Coaching platform overview for taekwondo clubs.
+- [Programs](/programs): Periodized training programs — competition prep, general S&C, poomsae.
+- [Methodology](/methodology): The sport science behind the periodization, readiness and rehab models.
+- [Pricing](/pricing): Personal and Coach plans.
+- [About](/about): Mission, vision and the team behind Sportstalent.
+- [Contact](/contact): Get in touch.
+- [Help Center](/help): Feature guides and changelog.
+- [Sign up](/signup): Create an athlete account.
+- [Sign up as coach](/signup/coach): Create a coach account.
+- [Taekwondo training program](/taekwondo-training-program): Sample sport-specific S&C plan.
+- [Privacy policy](/privacy): How we handle your data.
