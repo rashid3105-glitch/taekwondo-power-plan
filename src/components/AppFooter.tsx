@@ -9,11 +9,11 @@ export const AppFooter = () => {
       <p className="text-center text-[11px] text-muted-foreground tracking-wide">
         Made for More. Built to Perform.
       </p>
-      <p className="text-center text-[10px] text-muted-foreground/60">
+      <p className="text-center text-[10px] text-muted-foreground">
         sportstalent.dk © F. Rashid
       </p>
       <p className="text-center">
-        <Link to="/privacy" className="text-[10px] text-muted-foreground/50 hover:text-muted-foreground underline">
+        <Link to="/privacy" className="text-[10px] text-muted-foreground hover:text-muted-foreground underline">
           {t("privacyPolicy")}
         </Link>
       </p>

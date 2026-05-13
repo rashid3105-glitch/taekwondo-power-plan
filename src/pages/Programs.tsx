@@ -98,7 +98,7 @@ export default function Programs() {
                 {t("getStarted")} <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
               </span>
             </Button>
-            <p className="mt-3 text-[11px] text-muted-foreground/60">{t("ctaSubtext")}</p>
+            <p className="mt-3 text-[11px] text-muted-foreground">{t("ctaSubtext")}</p>
           </section>
         </div>
       </main>
