@@ -824,6 +824,9 @@ export default function AdminApproval() {
           <Button variant="outline" size="sm" onClick={() => navigate("/admin/clubs")}>
             <Building className="h-4 w-4 mr-1" /> {t("clubManagement")}
           </Button>
+          <Button variant="outline" size="sm" onClick={() => navigate("/admin/modules")}>
+            <LayoutGrid className="h-4 w-4 mr-1" /> Module Access
+          </Button>
         </div>
 
         <h1 className="text-xl font-extrabold text-foreground">{t("userApproval")}</h1>
