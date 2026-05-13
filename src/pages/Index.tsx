@@ -34,7 +34,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col relative">
       <PageMeta
-        title="Strength & Conditioning for Taekwondo Athletes — Periodized Training Plans | Sportstalent"
+        title="S&C Training for Taekwondo Athletes | Sportstalent"
         description="Periodized strength and conditioning programs built specifically for taekwondo athletes. Sport science-based weekly training plans with TKD-specific exercises for explosive power, speed, and kick performance."
         canonical="https://sportstalent.dk/"
       />
