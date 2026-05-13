@@ -749,7 +749,7 @@ export default function Dashboard() {
             {/* 5. Other modules chips */}
             <HubOtherModules
               isDemo={isDemo}
-              isLocked={(mod) => isModuleLocked(mod)}
+              isLocked={(mod) => isModuleLocked(mod) || (mod === "rehab" && !isModuleEnabled("rehab")) || (mod === "testing" && !isModuleEnabled("testing"))}
               onTab={(tab) => handleTabChange(tab)}
             />
 
