@@ -222,13 +222,12 @@ export default function Dashboard() {
   );
 
   const renderModuleDisabledState = () => (
-    <div className="rounded-xl border border-border bg-card p-8 sm:p-10 text-center shadow-card space-y-3">
-      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-secondary">
+    <div className="rounded-xl border border-border bg-card p-8 text-center space-y-3">
+      <div className="mx-auto h-12 w-12 rounded-full bg-muted flex items-center justify-center">
         <Lock className="h-5 w-5 text-muted-foreground" />
       </div>
-      <p className="text-sm text-muted-foreground">
-        This module is not available for your account.
-      </p>
+      <h3 className="font-bold text-foreground">{t("moduleNotAvailable")}</h3>
+      <p className="text-sm text-muted-foreground">{t("moduleNotAvailableDesc")}</p>
     </div>
   );
 
