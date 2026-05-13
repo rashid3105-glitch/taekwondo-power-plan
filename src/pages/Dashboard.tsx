@@ -970,13 +970,17 @@ export default function Dashboard() {
                 iconBgClass="bg-tab-plan/15"
               />
             ) : (
-              <FeatureEmptyState
-                icon={Zap}
-                titleKey="emptyPlanTitle"
-                descKey="emptyPlanDesc"
-                accentClass="text-tab-plan"
-                iconBgClass="bg-tab-plan/15"
-              />
+              <div className="rounded-xl border border-accent/30 bg-accent/5 p-6 space-y-3 text-center">
+                <div className="mx-auto h-12 w-12 rounded-full bg-accent/10 flex items-center justify-center">
+                  <Users className="h-6 w-6 text-accent" />
+                </div>
+                <h3 className="font-bold text-foreground">{t("coachManagesPlanTitle")}</h3>
+                <p className="text-sm text-muted-foreground">{coachName
+                  ? (t("coachManagesPlanDescNamed") || "").replace("{{coach}}", coachName)
+                  : t("coachManagesPlanDesc")
+                }</p>
+                <p className="text-xs text-muted-foreground">{t("coachManagesPlanHint")}</p>
+              </div>
             )}
 
             {/* Previous plans */}
