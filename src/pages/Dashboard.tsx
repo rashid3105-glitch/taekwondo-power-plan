@@ -445,8 +445,8 @@ export default function Dashboard() {
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10 pt-safe">
         <div className="container max-w-4xl mx-auto px-3 sm:px-4 py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <img src={logo} alt="Sportstalent" className="h-9 w-9 rounded-lg object-contain" />
+            <div className="flex items-center gap-3">
+              <img src={logo} alt="Sportstalent" className="h-12 w-12 sm:h-14 sm:w-14 rounded-lg object-contain" />
               <span className="text-sm sm:text-base font-extrabold text-foreground">SPORTSTALENT</span>
             </div>
             <div className="flex items-center gap-2">
