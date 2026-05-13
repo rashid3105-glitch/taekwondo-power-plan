@@ -3003,6 +3003,10 @@ const translations = {
     // Coach-managed
     coachManagedBanner: "Dine programmer administreres af din træner. Du kan se og downloade dine planer.",
     coachManagedBannerNamed: "Dine programmer administreres af {{coach}}. Du kan se og downloade dine planer.",
+    coachManagesPlanTitle: "Din træner administrerer din træningsplan",
+    coachManagesPlanDescNamed: "{{coach}} genererer og opdaterer din træningsplan. Du får besked, når en ny plan er klar.",
+    coachManagesPlanDesc: "Din træner genererer og opdaterer din træningsplan. Du får besked, når en ny plan er klar.",
+    coachManagesPlanHint: "Har du spørgsmål til din plan, så send en besked til din træner via chat-knappen.",
     coachManagedAction: "Trænerstyret — kun visning",
     coachManagedActionNamed: "Styret af {{coach}} — kun visning",
     hubLibraryTitle: "Bibliotek",
