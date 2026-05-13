@@ -780,15 +780,15 @@ export default function Dashboard() {
           </div>
 
         ) : activeTab === "progress" ? (
-          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isDemo ? renderDemoLockedState("progress") : <ProgressDashboard onGoToPlan={() => handleTabChange("plan")} />}</>
+          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isTabModuleDisabled("progress") ? renderModuleDisabledState() : isDemo ? renderDemoLockedState("progress") : <ProgressDashboard onGoToPlan={() => handleTabChange("plan")} />}</>
         ) : activeTab === "nutrition" ? (
-          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isDemo ? renderDemoLockedState("nutrition") : <NutritionPlan profile={profile} readOnly={hasCoach && !isPaid} />}</>
+          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isTabModuleDisabled("nutrition") ? renderModuleDisabledState() : isDemo ? renderDemoLockedState("nutrition") : <NutritionPlan profile={profile} readOnly={hasCoach && !isPaid} />}</>
         ) : activeTab === "mental" ? (
-          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isDemo ? renderDemoLockedState("mental") : <MentalAssessment profile={profile} />}</>
+          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isTabModuleDisabled("mental") ? renderModuleDisabledState() : isDemo ? renderDemoLockedState("mental") : <MentalAssessment profile={profile} />}</>
         ) : activeTab === "testing" ? (
-          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isDemo ? renderDemoLockedState("testing") : isModuleLocked("testing") ? renderTierLockedState("testing") : <PhysicalTesting mode={isCoach ? "coach" : "individual"} />}</>
+          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isTabModuleDisabled("testing") ? renderModuleDisabledState() : isDemo ? renderDemoLockedState("testing") : isModuleLocked("testing") ? renderTierLockedState("testing") : <PhysicalTesting mode={isCoach ? "coach" : "individual"} />}</>
         ) : activeTab === "rehab" ? (
-          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isDemo ? renderDemoLockedState("injuryRehabPlan") : isModuleLocked("rehab") ? renderTierLockedState("injuryRehabPlan") : (
+          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isTabModuleDisabled("rehab") ? renderModuleDisabledState() : isDemo ? renderDemoLockedState("injuryRehabPlan") : isModuleLocked("rehab") ? renderTierLockedState("injuryRehabPlan") : (
           <>
             {/* Rehab Plan Generator */}
             {(!hasCoach || isPaid) && (
