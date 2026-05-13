@@ -6,7 +6,7 @@ import { PageMeta } from "@/components/PageMeta";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { COACH_LANDING_STRINGS } from "./coachLandingStrings";
-import sportstalentLogo from "@/assets/sportstalent-logo.jpeg";
+import sportstalentLogo from "@/assets/sportstalent-logo.png";
 import photoCoachCorner from "@/assets/photos/coach-athlete-corner.jpg";
 import photoSparringJuniors from "@/assets/photos/sparring-juniors.jpg";
 import photoHighKick from "@/assets/photos/high-kick-block.jpg";
