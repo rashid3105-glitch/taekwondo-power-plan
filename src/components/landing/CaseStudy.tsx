@@ -97,7 +97,7 @@ export const CaseStudy = () => {
                 </div>
               ))}
             </div>
-            <p className="mt-3 text-[10px] text-muted-foreground/60 italic text-right">
+            <p className="mt-3 text-[10px] text-muted-foreground italic text-right">
               {lt(story.nameNote, locale)}
             </p>
           </div>
@@ -119,7 +119,7 @@ export const CaseStudy = () => {
                 </div>
               ))}
             </div>
-            <p className="mt-2 text-[9px] text-muted-foreground/50 text-center italic">
+            <p className="mt-2 text-[9px] text-muted-foreground text-center italic">
               {lt(story.methodNote, locale)}
             </p>
           </div>

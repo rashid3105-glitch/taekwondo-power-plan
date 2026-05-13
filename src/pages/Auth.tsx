@@ -208,7 +208,7 @@ export default function AuthPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.7 }}
-            className="text-[10px] text-muted-foreground/50 pt-2"
+            className="text-[10px] text-muted-foreground pt-2"
           >
             {t("ctaSubtext")}
           </motion.p>
@@ -434,7 +434,7 @@ export default function AuthPage() {
             </Button>
           </form>
 
-          <p className="text-center text-[10px] text-muted-foreground/50 pt-2">
+          <p className="text-center text-[10px] text-muted-foreground pt-2">
             {t("ctaSubtext")}
           </p>
         </motion.div>

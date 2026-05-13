@@ -34,7 +34,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col relative">
       <PageMeta
-        title="Strength & Conditioning for Taekwondo Athletes — Periodized Training Plans | Sportstalent"
+        title="S&C Training for Taekwondo Athletes | Sportstalent"
         description="Periodized strength and conditioning programs built specifically for taekwondo athletes. Sport science-based weekly training plans with TKD-specific exercises for explosive power, speed, and kick performance."
         canonical="https://sportstalent.dk/"
       />
@@ -142,7 +142,7 @@ const Index = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.7 }}
-              className="mt-3 text-[11px] text-muted-foreground/60"
+              className="mt-3 text-[11px] text-muted-foreground"
             >
               {t("ctaSubtext")}
             </motion.p>
@@ -198,7 +198,7 @@ const Index = () => {
                 {t("landingCtaButton")} <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
               </span>
             </Button>
-            <p className="mt-3 text-[11px] text-muted-foreground/60">
+            <p className="mt-3 text-[11px] text-muted-foreground">
               {t("ctaSubtext")}
             </p>
           </motion.div>
