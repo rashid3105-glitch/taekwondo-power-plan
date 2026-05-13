@@ -233,7 +233,7 @@ const en: CLStrings = {
     { eyebrow: "AFTER THE FIGHT", title: "Turn every match into a lesson.", body: "Post-competition reflections, video tagging and SMART goals make sure the next training cycle starts where the last one ended.", bullets: ["4-step reflection on every match", "Video tags by technique & outcome", "3 personalized SMART goals per cycle"] },
   ],
 
-  metaTitle: "Sportstalent — Coaching Platform Built for Taekwondo Clubs",
+  metaTitle: "Sportstalent — Coaching Platform for Taekwondo Clubs",
   metaDesc:
     "The coaching platform built for taekwondo clubs. Run your roster, track readiness, build periodized plans, and send weekly reports — all in one place.",
 };
@@ -393,7 +393,7 @@ const da: CLStrings = {
     { eyebrow: "EFTER KAMPEN", title: "Gør hver kamp til en lektion.", body: "Refleksioner efter konkurrence, video-tagging og SMART-mål sikrer, at næste cyklus starter dér, hvor den sidste sluttede.", bullets: ["4-trins refleksion efter hver kamp", "Video-tags på teknik & udfald", "3 personlige SMART-mål pr. cyklus"] },
   ],
 
-  metaTitle: "Sportstalent — Træningsplatform bygget til taekwondo-klubber",
+  metaTitle: "Sportstalent — Træningsplatform for taekwondo-klubber",
   metaDesc:
     "Træningsplatformen bygget til taekwondo-klubber. Driv dit roster, følg parathed, byg periodiserede planer og send ugentlige rapporter — alt ét sted.",
 };
@@ -541,7 +541,7 @@ const sv: CLStrings = {
     { eyebrow: "EFTER MATCHEN", title: "Gör varje match till en lektion.", body: "Reflektioner efter tävling, videotaggning och SMART-mål säkerställer att nästa cykel börjar där förra slutade.", bullets: ["4-stegs reflektion efter varje match", "Videotaggar på teknik & utfall", "3 personliga SMART-mål per cykel"] },
   ],
 
-  metaTitle: "Sportstalent — Träningsplattform byggd för taekwondo-klubbar",
+  metaTitle: "Sportstalent — Plattform för taekwondo-klubbar",
   metaDesc:
     "Träningsplattformen byggd för taekwondo-klubbar. Driv ditt roster, följ beredskap, bygg periodiserade planer och skicka veckorapporter — allt på ett ställe.",
 };
@@ -689,7 +689,7 @@ const no: CLStrings = {
     { eyebrow: "ETTER KAMPEN", title: "Gjør hver kamp til en lekse.", body: "Refleksjoner etter konkurranse, video-tagging og SMART-mål sikrer at neste syklus starter der den forrige sluttet.", bullets: ["4-stegs refleksjon etter hver kamp", "Video-tags på teknikk & utfall", "3 personlige SMART-mål per syklus"] },
   ],
 
-  metaTitle: "Sportstalent — Treningsplattform bygd for taekwondo-klubber",
+  metaTitle: "Sportstalent — Plattform for taekwondo-klubber",
   metaDesc:
     "Treningsplattformen bygd for taekwondo-klubber. Driv rosteret ditt, følg beredskap, bygg periodiserte planer og send ukentlige rapporter — alt på ett sted.",
 };
@@ -837,7 +837,7 @@ const de: CLStrings = {
     { eyebrow: "NACH DEM KAMPF", title: "Mach jeden Kampf zur Lektion.", body: "Reflexionen nach dem Wettkampf, Video-Tagging und SMART-Ziele sorgen dafür, dass der nächste Zyklus dort beginnt, wo der letzte aufhörte.", bullets: ["4-Schritte-Reflexion nach jedem Kampf", "Video-Tags nach Technik & Ergebnis", "3 persönliche SMART-Ziele pro Zyklus"] },
   ],
 
-  metaTitle: "Sportstalent — Trainingsplattform für Taekwondo-Vereine",
+  metaTitle: "Sportstalent — Plattform für Taekwondo-Vereine",
   metaDesc:
     "Die Trainingsplattform für Taekwondo-Vereine. Verwalte deinen Kader, verfolge die Bereitschaft, baue periodisierte Pläne und sende wöchentliche Berichte — alles an einem Ort.",
 };
