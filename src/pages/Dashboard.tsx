@@ -738,7 +738,7 @@ export default function Dashboard() {
               nextEventDate={nextEvent?.event_date ?? null}
               matchClipsCount={0}
               isDemo={isDemo}
-              isLocked={(mod) => isModuleLocked(mod)}
+              isLocked={(mod) => isModuleLocked(mod) || (mod === "match_analysis" && !isModuleEnabled("video"))}
               onTab={(tab) => handleTabChange(tab)}
               onAllModules={() => {
                 const el = document.getElementById("hub-other-modules");
