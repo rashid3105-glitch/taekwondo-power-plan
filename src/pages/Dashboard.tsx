@@ -130,6 +130,7 @@ export default function Dashboard() {
   const { t, locale } = useLanguage();
   
   const { isLocked: isModuleLocked } = useEntitlements();
+  const { isModuleEnabled } = useAthleteModuleAccess();
   const { isFromCache: profileFromCache, cachedAt: profileCachedAt } = useOfflineProfile();
   const { plan: offlinePlan, online: planOnline } = useOfflinePlan();
 
