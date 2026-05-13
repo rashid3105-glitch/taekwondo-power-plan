@@ -74,6 +74,30 @@ export type Database = {
         }
         Relationships: []
       }
+      athlete_module_overrides: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          id: string
+          module: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          enabled: boolean
+          id?: string
+          module: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          module?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           attachment_path: string | null
@@ -188,6 +212,38 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      club_module_defaults: {
+        Row: {
+          club_id: string
+          created_at: string
+          enabled: boolean
+          id: string
+          module: string
+        }
+        Insert: {
+          club_id: string
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          module: string
+        }
+        Update: {
+          club_id?: string
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          module?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "club_module_defaults_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       clubs: {
         Row: {
