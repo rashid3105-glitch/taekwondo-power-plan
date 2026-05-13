@@ -118,3 +118,77 @@ export function useEntitlements(): EntitlementState {
     },
   };
 }
+
+// ----------------------------------------------------------------------------
+// Per-athlete module access (club defaults + athlete overrides, admin-managed)
+// ----------------------------------------------------------------------------
+
+interface AthleteModuleAccessState {
+  loading: boolean;
+  isModuleEnabled: (module: string) => boolean;
+  refresh: () => Promise<void>;
+}
+
+export function useAthleteModuleAccess(): AthleteModuleAccessState {
+  const [loading, setLoading] = useState(true);
+  const [clubDefaults, setClubDefaults] = useState<Record<string, boolean>>({});
+  const [overrides, setOverrides] = useState<Record<string, boolean>>({});
+
+  const load = async () => {
+    setLoading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        setClubDefaults({});
+        setOverrides({});
+        return;
+      }
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("club_id")
+        .eq("user_id", session.user.id)
+        .maybeSingle();
+      const clubId = (profile as any)?.club_id ?? null;
+
+      const [defaultsRes, overridesRes] = await Promise.all([
+        clubId
+          ? supabase
+              .from("club_module_defaults" as any)
+              .select("module, enabled")
+              .eq("club_id", clubId)
+          : Promise.resolve({ data: [] as any[] }),
+        supabase
+          .from("athlete_module_overrides" as any)
+          .select("module, enabled")
+          .eq("user_id", session.user.id),
+      ]);
+
+      const cd: Record<string, boolean> = {};
+      for (const r of ((defaultsRes as any).data || []) as { module: string; enabled: boolean }[]) {
+        cd[r.module] = r.enabled;
+      }
+      const ov: Record<string, boolean> = {};
+      for (const r of ((overridesRes as any).data || []) as { module: string; enabled: boolean }[]) {
+        ov[r.module] = r.enabled;
+      }
+      setClubDefaults(cd);
+      setOverrides(ov);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  return {
+    loading,
+    isModuleEnabled: (module: string) => {
+      if (overrides[module] !== undefined) return overrides[module];
+      if (clubDefaults[module] !== undefined) return clubDefaults[module];
+      return true;
+    },
+    refresh: load,
+  };
+}
