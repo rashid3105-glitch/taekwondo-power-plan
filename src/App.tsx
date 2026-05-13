@@ -23,6 +23,7 @@ import LibraryChooser from "./pages/LibraryChooser";
 import ResetPassword from "./pages/ResetPassword";
 import PendingApproval from "./pages/PendingApproval";
 import AdminApproval from "./pages/AdminApproval";
+import AdminModuleAccess from "./pages/AdminModuleAccess";
 import CoachDashboard from "./pages/CoachDashboard";
 import CoachAthleteOverview from "./pages/CoachAthleteOverview";
 import Pricing from "./pages/Pricing";
