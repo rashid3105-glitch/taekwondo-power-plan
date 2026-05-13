@@ -221,6 +221,29 @@ export default function Dashboard() {
     </div>
   );
 
+  const renderModuleDisabledState = () => (
+    <div className="rounded-xl border border-border bg-card p-8 sm:p-10 text-center shadow-card space-y-3">
+      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-secondary">
+        <Lock className="h-5 w-5 text-muted-foreground" />
+      </div>
+      <p className="text-sm text-muted-foreground">
+        This module is not available for your account.
+      </p>
+    </div>
+  );
+
+  const TAB_MODULE_MAP: Partial<Record<TabKey, string>> = {
+    progress: "progress",
+    mental: "mental",
+    nutrition: "nutrition",
+    testing: "testing",
+    rehab: "rehab",
+  };
+  const isTabModuleDisabled = (tab: TabKey) => {
+    const m = TAB_MODULE_MAP[tab];
+    return m ? !isModuleEnabled(m) : false;
+  };
+
   const NAV_ITEMS: { tab: typeof activeTab; icon: typeof Home; labelKey: string; color: string }[] = [
     { tab: "hub", icon: Home, labelKey: "hubWelcome", color: "text-primary" },
     { tab: "plan", icon: Zap, labelKey: "plan", color: "text-tab-plan" },
