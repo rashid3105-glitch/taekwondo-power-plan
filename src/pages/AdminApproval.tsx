@@ -11,7 +11,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Loader2, CheckCircle, XCircle, ArrowLeft, Download, Shield, Trash2, Users, CreditCard, CalendarIcon, FlaskConical, ChevronDown, KeyRound, Search, Pencil, UserCheck, UserX, Crown, Building } from "lucide-react";
+import { Loader2, CheckCircle, XCircle, ArrowLeft, Download, Shield, Trash2, Users, CreditCard, CalendarIcon, FlaskConical, ChevronDown, KeyRound, Search, Pencil, UserCheck, UserX, Crown, Building, LayoutGrid } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { format } from "date-fns";
@@ -823,6 +823,9 @@ export default function AdminApproval() {
           </Button>
           <Button variant="outline" size="sm" onClick={() => navigate("/admin/clubs")}>
             <Building className="h-4 w-4 mr-1" /> {t("clubManagement")}
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => navigate("/admin/modules")}>
+            <LayoutGrid className="h-4 w-4 mr-1" /> Module Access
           </Button>
         </div>
 

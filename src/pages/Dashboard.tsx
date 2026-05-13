@@ -33,7 +33,7 @@ import { RecoveryTile } from "@/components/RecoveryTile";
 import { ReflectionPromptCard } from "@/components/ReflectionPromptCard";
 import { EnablePasskeyCard } from "@/components/EnablePasskeyCard";
 import { Calendar as CalendarIcon, Sparkles, ArrowLeft, ChevronRight } from "lucide-react";
-import { useEntitlements } from "@/hooks/useEntitlements";
+import { useEntitlements, useAthleteModuleAccess } from "@/hooks/useEntitlements";
 import type { LockedModule } from "@/lib/entitlements";
 import { FeatureEmptyState } from "@/components/FeatureEmptyState";
 import { TodayCard } from "@/components/today/TodayCard";
@@ -130,6 +130,7 @@ export default function Dashboard() {
   const { t, locale } = useLanguage();
   
   const { isLocked: isModuleLocked } = useEntitlements();
+  const { isModuleEnabled } = useAthleteModuleAccess();
   const { isFromCache: profileFromCache, cachedAt: profileCachedAt } = useOfflineProfile();
   const { plan: offlinePlan, online: planOnline } = useOfflinePlan();
 
@@ -219,6 +220,29 @@ export default function Dashboard() {
       </div>
     </div>
   );
+
+  const renderModuleDisabledState = () => (
+    <div className="rounded-xl border border-border bg-card p-8 sm:p-10 text-center shadow-card space-y-3">
+      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-secondary">
+        <Lock className="h-5 w-5 text-muted-foreground" />
+      </div>
+      <p className="text-sm text-muted-foreground">
+        This module is not available for your account.
+      </p>
+    </div>
+  );
+
+  const TAB_MODULE_MAP: Partial<Record<TabKey, string>> = {
+    progress: "progress",
+    mental: "mental",
+    nutrition: "nutrition",
+    testing: "testing",
+    rehab: "rehab",
+  };
+  const isTabModuleDisabled = (tab: TabKey) => {
+    const m = TAB_MODULE_MAP[tab];
+    return m ? !isModuleEnabled(m) : false;
+  };
 
   const NAV_ITEMS: { tab: typeof activeTab; icon: typeof Home; labelKey: string; color: string }[] = [
     { tab: "hub", icon: Home, labelKey: "hubWelcome", color: "text-primary" },
@@ -714,7 +738,7 @@ export default function Dashboard() {
               nextEventDate={nextEvent?.event_date ?? null}
               matchClipsCount={0}
               isDemo={isDemo}
-              isLocked={(mod) => isModuleLocked(mod)}
+              isLocked={(mod) => isModuleLocked(mod) || (mod === "match_analysis" && !isModuleEnabled("video"))}
               onTab={(tab) => handleTabChange(tab)}
               onAllModules={() => {
                 const el = document.getElementById("hub-other-modules");
@@ -725,7 +749,7 @@ export default function Dashboard() {
             {/* 5. Other modules chips */}
             <HubOtherModules
               isDemo={isDemo}
-              isLocked={(mod) => isModuleLocked(mod)}
+              isLocked={(mod) => isModuleLocked(mod) || (mod === "rehab" && !isModuleEnabled("rehab")) || (mod === "testing" && !isModuleEnabled("testing"))}
               onTab={(tab) => handleTabChange(tab)}
             />
 
@@ -733,19 +757,21 @@ export default function Dashboard() {
             {!isDemo && <EnablePasskeyCard />}
 
             {/* Diary entry point */}
-            <button
-              onClick={() => navigate("/diary")}
-              className="w-full flex items-center gap-3 rounded-xl border border-border bg-card p-4 shadow-card text-left hover:bg-accent/30 transition-colors"
-            >
-              <div className="h-10 w-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                <NotebookPen className="h-5 w-5" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-sm font-semibold text-foreground">{t("diary") || "Dagbog"}</div>
-                <div className="text-xs text-muted-foreground truncate">{t("diaryDesc") || "Dine noter og træningsdagbog"}</div>
-              </div>
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            </button>
+            {isModuleEnabled("diary") && (
+              <button
+                onClick={() => navigate("/diary")}
+                className="w-full flex items-center gap-3 rounded-xl border border-border bg-card p-4 shadow-card text-left hover:bg-accent/30 transition-colors"
+              >
+                <div className="h-10 w-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                  <NotebookPen className="h-5 w-5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-semibold text-foreground">{t("diary") || "Dagbog"}</div>
+                  <div className="text-xs text-muted-foreground truncate">{t("diaryDesc") || "Dine noter og træningsdagbog"}</div>
+                </div>
+                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              </button>
+            )}
 
             {/* Quick link */}
             <div className="flex justify-center pt-2">
@@ -756,15 +782,15 @@ export default function Dashboard() {
           </div>
 
         ) : activeTab === "progress" ? (
-          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isDemo ? renderDemoLockedState("progress") : <ProgressDashboard onGoToPlan={() => handleTabChange("plan")} />}</>
+          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isTabModuleDisabled("progress") ? renderModuleDisabledState() : isDemo ? renderDemoLockedState("progress") : <ProgressDashboard onGoToPlan={() => handleTabChange("plan")} />}</>
         ) : activeTab === "nutrition" ? (
-          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isDemo ? renderDemoLockedState("nutrition") : <NutritionPlan profile={profile} readOnly={hasCoach && !isPaid} />}</>
+          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isTabModuleDisabled("nutrition") ? renderModuleDisabledState() : isDemo ? renderDemoLockedState("nutrition") : <NutritionPlan profile={profile} readOnly={hasCoach && !isPaid} />}</>
         ) : activeTab === "mental" ? (
-          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isDemo ? renderDemoLockedState("mental") : <MentalAssessment profile={profile} />}</>
+          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isTabModuleDisabled("mental") ? renderModuleDisabledState() : isDemo ? renderDemoLockedState("mental") : <MentalAssessment profile={profile} />}</>
         ) : activeTab === "testing" ? (
-          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isDemo ? renderDemoLockedState("testing") : isModuleLocked("testing") ? renderTierLockedState("testing") : <PhysicalTesting mode={isCoach ? "coach" : "individual"} />}</>
+          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isTabModuleDisabled("testing") ? renderModuleDisabledState() : isDemo ? renderDemoLockedState("testing") : isModuleLocked("testing") ? renderTierLockedState("testing") : <PhysicalTesting mode={isCoach ? "coach" : "individual"} />}</>
         ) : activeTab === "rehab" ? (
-          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isDemo ? renderDemoLockedState("injuryRehabPlan") : isModuleLocked("rehab") ? renderTierLockedState("injuryRehabPlan") : (
+          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isTabModuleDisabled("rehab") ? renderModuleDisabledState() : isDemo ? renderDemoLockedState("injuryRehabPlan") : isModuleLocked("rehab") ? renderTierLockedState("injuryRehabPlan") : (
           <>
             {/* Rehab Plan Generator */}
             {(!hasCoach || isPaid) && (
