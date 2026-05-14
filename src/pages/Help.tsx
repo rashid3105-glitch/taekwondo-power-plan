@@ -18,7 +18,7 @@ type TopicKey =
   | "helpProfile" | "helpSeasonPlan" | "helpWearables" | "helpCoachFeedback"
   | "helpMatchAnalysis" | "helpMatchReport" | "helpTrainingPlan" | "helpPhysicalTesting" | "helpProgress"
   | "helpNutrition" | "helpRehabPlan" | "helpMentalPlan" | "helpLibrary" | "helpDiary"
-  | "helpReflection"
+  | "helpReflection" | "helpParentPortal"
   | "helpAddStudents" | "helpStudentProgress" | "helpChat" | "helpWeeklyReport";
 
 type Topic = { key: TopicKey; icon: typeof UserCircle; isNew?: boolean };
@@ -39,6 +39,7 @@ const TOPICS: Record<TopicKey, Topic> = {
   helpLibrary: { key: "helpLibrary", icon: BookOpen },
   helpDiary: { key: "helpDiary", icon: BookHeart },
   helpReflection: { key: "helpReflection", icon: NotebookPen, isNew: true },
+  helpParentPortal: { key: "helpParentPortal", icon: Users, isNew: true },
   helpAddStudents: { key: "helpAddStudents", icon: Users },
   helpStudentProgress: { key: "helpStudentProgress", icon: BarChart3 },
   helpChat: { key: "helpChat", icon: MessageCircle, isNew: true },
@@ -100,7 +101,7 @@ const SECTIONS: SectionDef[] = [
     chipBg: "bg-tab-nutrition",
     chipFg: "text-white",
     accent: "bg-tab-nutrition",
-    topics: ["helpProfile", "helpLibrary"],
+    topics: ["helpProfile", "helpLibrary", "helpParentPortal"],
   },
 ];
 
@@ -429,6 +430,7 @@ export default function Help() {
 }
 
 const CHANGELOG: { dateKey: string; entries: string[] }[] = [
+  { dateKey: "changelog_2026_05_14b", entries: ["changelogEntry115"] },
   { dateKey: "changelog_2026_05_14", entries: ["changelogEntry112", "changelogEntry113", "changelogEntry114"] },
   { dateKey: "changelog_2026_05_11", entries: ["changelogEntry110"] },
   { dateKey: "changelog_2026_05_10b", entries: ["changelogEntry109"] },

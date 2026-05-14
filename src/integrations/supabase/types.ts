@@ -1078,6 +1078,57 @@ export type Database = {
         }
         Relationships: []
       }
+      parent_athletes: {
+        Row: {
+          athlete_id: string
+          created_at: string
+          id: string
+          parent_user_id: string
+        }
+        Insert: {
+          athlete_id: string
+          created_at?: string
+          id?: string
+          parent_user_id: string
+        }
+        Update: {
+          athlete_id?: string
+          created_at?: string
+          id?: string
+          parent_user_id?: string
+        }
+        Relationships: []
+      }
+      parent_invites: {
+        Row: {
+          athlete_id: string
+          code: string
+          created_at: string
+          expires_at: string
+          id: string
+          parent_user_id: string | null
+          used_at: string | null
+        }
+        Insert: {
+          athlete_id: string
+          code: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          parent_user_id?: string | null
+          used_at?: string | null
+        }
+        Update: {
+          athlete_id?: string
+          code?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          parent_user_id?: string | null
+          used_at?: string | null
+        }
+        Relationships: []
+      }
       physical_test_results: {
         Row: {
           category: string
@@ -1147,6 +1198,7 @@ export type Database = {
           id: string
           is_approved: boolean
           is_demo: boolean
+          is_parent: boolean
           is_public: boolean
           last_seen_at: string | null
           myfightbook_expires_at: string | null
@@ -1195,6 +1247,7 @@ export type Database = {
           id?: string
           is_approved?: boolean
           is_demo?: boolean
+          is_parent?: boolean
           is_public?: boolean
           last_seen_at?: string | null
           myfightbook_expires_at?: string | null
@@ -1243,6 +1296,7 @@ export type Database = {
           id?: string
           is_approved?: boolean
           is_demo?: boolean
+          is_parent?: boolean
           is_public?: boolean
           last_seen_at?: string | null
           myfightbook_expires_at?: string | null
@@ -2114,6 +2168,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_parent_invite: { Args: { _code: string }; Returns: Json }
       add_chat_group_member: {
         Args: { _thread: string; _user: string }
         Returns: undefined
@@ -2185,6 +2240,7 @@ export type Database = {
       }
       get_club_test_medians: { Args: { _athlete_id: string }; Returns: Json }
       get_invite_by_code: { Args: { _code: string }; Returns: Json }
+      get_parent_invite_info: { Args: { _code: string }; Returns: Json }
       get_profile_protected_fields: {
         Args: { _user_id: string }
         Returns: {
@@ -2217,6 +2273,10 @@ export type Database = {
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_chat_thread_member: {
         Args: { _thread: string; _uid: string }
+        Returns: boolean
+      }
+      is_parent_of: {
+        Args: { _athlete: string; _parent: string }
         Returns: boolean
       }
       lookup_athlete_by_code: { Args: { _code: string }; Returns: string }

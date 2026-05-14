@@ -326,6 +326,10 @@ export default function Dashboard() {
 
     if (profileRes.data) {
       const profileData = profileRes.data as any;
+      if (profileData.is_parent) {
+        navigate("/parent-dashboard");
+        return;
+      }
       if (!profileData.is_approved) {
         navigate("/pending-approval");
         return;

@@ -53,6 +53,8 @@ import JoinInvite from "./pages/JoinInvite";
 import SignupCoach from "./pages/SignupCoach";
 import InviteSignup from "./pages/InviteSignup";
 import Messages from "./pages/Messages";
+import ParentJoin from "./pages/ParentJoin";
+import ParentDashboard from "./pages/ParentDashboard";
 import { UpgradeGate } from "@/components/UpgradeGate";
 
 const queryClient = new QueryClient();
@@ -126,6 +128,8 @@ const AnimatedRoutes = () => {
         <Route path="/match/share/:token" element={<Page><MatchShare /></Page>} />
         <Route path="/athlete/:code" element={<Page><PublicAthlete /></Page>} />
         <Route path="/join/:code" element={<Page><JoinInvite /></Page>} />
+        <Route path="/parent-join/:code" element={<Page><ParentJoin /></Page>} />
+        <Route path="/parent-dashboard" element={<Page><ParentDashboard /></Page>} />
         <Route path="/payment-success" element={<Page><PaymentSuccess /></Page>} />
         <Route path="/unsubscribe" element={<Page><Unsubscribe /></Page>} />
         <Route path="/privacy" element={<Page><PrivacyPolicy /></Page>} />
