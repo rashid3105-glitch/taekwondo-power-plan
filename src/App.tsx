@@ -53,6 +53,8 @@ import JoinInvite from "./pages/JoinInvite";
 import SignupCoach from "./pages/SignupCoach";
 import InviteSignup from "./pages/InviteSignup";
 import Messages from "./pages/Messages";
+import ParentJoin from "./pages/ParentJoin";
+import ParentDashboard from "./pages/ParentDashboard";
 import { UpgradeGate } from "@/components/UpgradeGate";
 
 const queryClient = new QueryClient();
