@@ -44,10 +44,34 @@ Deno.serve(async (req) => {
     // Get current profile
     const { data: profile } = await admin
       .from("profiles")
-      .select("user_id, club_id")
+      .select("user_id, club_id, is_demo, demo_full_access, demo_expires_at, payment_status, is_approved")
       .eq("user_id", user.id)
       .maybeSingle();
     if (!profile) throw new Error("Profile missing");
+
+    // Prevent privilege escalation / trial reuse: only brand-new users (no
+    // existing demo, no paid status, not already approved) may bootstrap a
+    // coach trial. Existing athletes or returning demo users are blocked.
+    const alreadyDemo = !!profile.is_demo || !!profile.demo_full_access || !!profile.demo_expires_at;
+    const alreadyPaid = profile.payment_status === "paid";
+    if (alreadyDemo || alreadyPaid || profile.is_approved) {
+      return new Response(
+        JSON.stringify({ error: "Trial not available for this account" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    // Also block if user already has any role assigned
+    const { data: existingRoles } = await admin
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id);
+    if (existingRoles && existingRoles.length > 0) {
+      return new Response(
+        JSON.stringify({ error: "Trial not available for this account" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
 
     // Ensure club
     let clubId = profile.club_id;
