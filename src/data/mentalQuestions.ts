@@ -49,6 +49,10 @@ export const adultQuestions: MentalQuestion[] = [
       de: "Wenn ich in einem Kampf mit Punkten hinten liege, dann...",
       ar: "عندما أكون متأخرًا بالنقاط في مباراة، أنا..."
     },
+    variants: [
+      { en: "You're 3 points down with 1 minute left. What happens in your head?", da: "Du er 3 point bagud med 1 minut tilbage. Hvad sker der i dit hoved?", sv: "Du är 3 poäng under med 1 minut kvar. Vad händer i ditt huvud?", de: "Du liegst 3 Punkte zurück mit 1 Minute noch. Was passiert in deinem Kopf?", ar: "أنت متأخر 3 نقاط ودقيقة واحدة متبقية. ماذا يحدث في رأسك؟" },
+      { en: "Halfway through a match and things aren't going your way...", da: "Halvvejs i en kamp og tingene går ikke din vej...", sv: "Halvvägs i en match och saker går inte din väg...", de: "Auf halbem Weg durch einen Kampf und die Dinge laufen nicht nach Plan...", ar: "في منتصف المباراة والأمور لا تسير كما تريد..." },
+    ],
     options: [
       { value: 1, label: { en: "Panic and lose composure completely", da: "Går i panik og mister fatningen helt", sv: "Får panik och tappar fattningen helt", de: "Gerate in Panik und verliere völlig die Fassung", ar: "أصاب بالذعر وأفقد رباطة جأشي تمامًا" } },
       { value: 2, label: { en: "Get frustrated and make more mistakes", da: "Bliver frustreret og laver flere fejl", sv: "Blir frustrerad och gör fler misstag", de: "Werde frustriert und mache mehr Fehler", ar: "أشعر بالإحباط وأرتكب المزيد من الأخطاء" } },
