@@ -84,9 +84,9 @@ export function PostCompetitionReflection({ competition, upcomingCompetitions, o
   const [ratings, setRatings] = useState<Record<string, number>>(
     Object.fromEntries(ratingKeys.map((k) => [k, 5])),
   );
-  const [reflectionAnswers, setReflectionAnswers] = useState<Record<string, string>>(
-    Object.fromEntries(reflectionPrompts.map((k) => [k, ""])),
-  );
+  const [checkedWentWell, setCheckedWentWell] = useState<string[]>([]);
+  const [checkedWorkOn, setCheckedWorkOn] = useState<string[]>([]);
+  const [overallNote, setOverallNote] = useState("");
   const [nextCompId, setNextCompId] = useState<string>("none");
   const [showDelete, setShowDelete] = useState(false);
 
