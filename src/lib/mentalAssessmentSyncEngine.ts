@@ -54,8 +54,10 @@ export async function syncMentalAssessments(): Promise<MentalAssessmentSyncResul
             user_id: intent.user_id,
             answers: intent.answers,
             scores: intent.scores,
-            total_score: intent.total_score,
-            ai_advice: advice,
+            // total_score column is integer in the DB — round the decimal average.
+            total_score: Math.round(intent.total_score),
+            // ai_advice column is text — store as JSON string (parseAdvice normalises on read).
+            ai_advice: advice ? JSON.stringify(advice) : null,
           } as any)
           .select("id, created_at")
           .single();
