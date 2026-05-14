@@ -10,6 +10,7 @@ export interface MentalQuestion {
   id: string;
   category: string;
   text: LangText;
+  variants?: LangText[];
   options: { value: number; label: LangText }[];
 }
 
