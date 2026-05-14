@@ -3,6 +3,7 @@
 // (free text), 4) AI-generated action plan with goals for next competition.
 
 import { useEffect, useMemo, useState } from "react";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
