@@ -71,6 +71,10 @@ export const adultQuestions: MentalQuestion[] = [
       de: "Wenn ich während des Trainings Schmerzen oder Unbehagen verspüre, dann...",
       ar: "عندما أشعر بالألم أو عدم الراحة أثناء التدريب، أنا..."
     },
+    variants: [
+      { en: "Your body is screaming at you mid-session. Your response is...", da: "Din krop skriger til dig midt i træningen. Din reaktion er...", sv: "Din kropp skriker mitt under passet. Din reaktion är...", de: "Dein Körper schreit dich mitten im Training an. Deine Reaktion ist...", ar: "جسمك يصرخ في منتصف التمرين. ردة فعلك هي..." },
+      { en: "Discomfort hits during a hard set. What's your move?", da: "Ubehag rammer under et hårdt sæt. Hvad gør du?", sv: "Obehag slår till under ett tungt set. Vad gör du?", de: "Beschwerden treten bei einem harten Satz auf. Was tust du?", ar: "يأتيك الانزعاج أثناء مجموعة صعبة. ماذا تفعل؟" },
+    ],
     options: [
       { value: 1, label: { en: "Stop immediately and avoid the exercise", da: "Stopper med det samme og undgår øvelsen", sv: "Slutar omedelbart och undviker övningen", de: "Höre sofort auf und meide die Übung", ar: "أتوقف فورًا وأتجنب التمرين" } },
       { value: 2, label: { en: "Reduce intensity significantly and feel defeated", da: "Reducerer intensiteten markant og føler mig besejret", sv: "Minskar intensiteten markant och känner mig besegrad", de: "Reduziere die Intensität deutlich und fühle mich besiegt", ar: "أقلل الشدة بشكل كبير وأشعر بالهزيمة" } },
