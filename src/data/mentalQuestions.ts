@@ -116,6 +116,10 @@ export const adultQuestions: MentalQuestion[] = [
       de: "Die körperliche Reaktion meines Körpers auf Wettkampfstress ist...",
       ar: "استجابة جسدي الجسدية لضغط المنافسة هي..."
     },
+    variants: [
+      { en: "When competition stress hits, your body reacts by...", da: "Når konkurrencestress rammer, reagerer din krop med...", sv: "När tävlingsstress slår till reagerar kroppen med...", de: "Wenn Wettkampfstress kommt, reagiert dein Körper mit...", ar: "عندما يضربك ضغط المنافسة، جسمك يتفاعل بـ..." },
+      { en: "Pre-fight nerves show up in your body as...", da: "Nerver før kamp viser sig i kroppen som...", sv: "Nerverna före kampen visar sig i kroppen som...", de: "Wettkampfnervosität zeigt sich körperlich als...", ar: "التوتر قبل القتال يظهر في جسمك كـ..." },
+    ],
     options: [
       { value: 1, label: { en: "Severe — shaking, nausea, can't warm up properly", da: "Alvorlig — rysten, kvalme, kan ikke varme ordentligt op", sv: "Allvarlig — skakningar, illamående, kan inte värma upp ordentligt", de: "Schwer — Zittern, Übelkeit, kann mich nicht richtig aufwärmen", ar: "شديدة — ارتعاش، غثيان، لا أستطيع الإحماء بشكل صحيح" } },
       { value: 2, label: { en: "Noticeable tension, tight muscles, shallow breathing", da: "Mærkbar spænding, stramme muskler, overfladisk vejrtrækning", sv: "Märkbar spänning, stela muskler, ytlig andning", de: "Spürbare Anspannung, verspannte Muskeln, flache Atmung", ar: "توتر ملحوظ، عضلات مشدودة، تنفس ضحل" } },
