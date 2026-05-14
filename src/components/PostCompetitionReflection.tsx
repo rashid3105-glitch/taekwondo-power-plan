@@ -20,7 +20,7 @@ import { useOfflineCompetitionReflections } from "@/hooks/useOfflineCompetitionR
 import { ReflectionTrendChart } from "@/components/ReflectionTrendChart";
 import {
   Trophy, ChevronLeft, ChevronRight, Loader2, Sparkles, Target,
-  CheckCircle2, CloudOff, Trash2, Zap, RefreshCw,
+  CloudOff, Trash2, RefreshCw,
 } from "lucide-react";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
