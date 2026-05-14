@@ -138,9 +138,11 @@ export function PostCompetitionReflection({ competition, upcomingCompetitions, o
       ]);
 
       const ratingsWithMood = { ...ratings, postCompMood: mood };
-      const trimmedReflections = Object.fromEntries(
-        Object.entries(reflectionAnswers).map(([k, v]) => [k, (v || "").slice(0, 280)]),
-      );
+      const trimmedReflections = {
+        wentWell: checkedWentWell.join(", "),
+        workOn: checkedWorkOn.join(", "),
+        overallNote: overallNote.slice(0, 400),
+      };
 
       const synced = await submitOffline({
         competition_id: competition.id,
