@@ -780,7 +780,7 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
               {categoryLabels[q.category][l]}
             </span>
           </div>
-          <h3 className="font-bold text-foreground text-base sm:text-lg">{q.text[l]}</h3>
+          <h3 className="font-bold text-foreground text-base sm:text-lg">{(questionTexts[currentQ] || q.text)[l]}</h3>
           <div className="space-y-2">
             {q.options.map((opt) => (
               <button
