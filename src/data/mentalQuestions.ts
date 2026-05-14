@@ -94,6 +94,10 @@ export const adultQuestions: MentalQuestion[] = [
       de: "Vor einem Wettkampf oder Sparringkampf fühle ich mich...",
       ar: "قبل منافسة أو مباراة تدريبية، أشعر..."
     },
+    variants: [
+      { en: "You wake up on competition day. Your mind is...", da: "Du vågner på stævnedagen. Dit sind er...", sv: "Du vaknar på tävlingsdagen. Ditt sinne är...", de: "Du wachst am Wettkampftag auf. Dein Kopf ist...", ar: "تستيقظ في يوم المنافسة. ذهنك..." },
+      { en: "An hour before you compete, your body and mind feel...", da: "En time før du konkurrerer, føler din krop og dit sind sig...", sv: "En timme innan du tävlar, känns din kropp och ditt sinne...", de: "Eine Stunde vor dem Wettkampf fühlen sich Körper und Geist...", ar: "قبل ساعة من منافستك، جسمك وعقلك يشعران..." },
+    ],
     options: [
       { value: 1, label: { en: "Overwhelmed with anxiety, can't function well", da: "Overvældet af angst, kan ikke fungere godt", sv: "Överväldigad av ångest, kan inte fungera bra", de: "Überwältigt von Angst, kann nicht gut funktionieren", ar: "غارق في القلق، لا أستطيع العمل بشكل جيد" } },
       { value: 2, label: { en: "Very nervous, it hurts my performance", da: "Meget nervøs, det påvirker min præstation negativt", sv: "Väldigt nervös, det skadar min prestation", de: "Sehr nervös, es schadet meiner Leistung", ar: "متوتر جدًا، يؤثر على أدائي" } },
