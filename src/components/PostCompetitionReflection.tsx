@@ -54,12 +54,12 @@ const ratingKeys = [
   "recoveryBetweenMatches",
 ] as const;
 
-const reflectionPrompts = [
-  "wentWell",
-  "didntGoWell",
-  "biggestLearning",
-  "whatIdDoDifferently",
-  "mentalTriggers",
+const WENT_WELL_OPTIONS = [
+  "technique", "speed", "power", "tactics", "mentalStrength",
+] as const;
+
+const WORK_ON_OPTIONS = [
+  "technique", "speed", "power", "tactics", "mentalStrength",
 ] as const;
 
 export function PostCompetitionReflection({ competition, upcomingCompetitions, onClose }: Props) {
