@@ -696,11 +696,19 @@ export default function Dashboard() {
 
             {/* Greeting line — bigger profile picture */}
             <div className="flex items-center gap-3 px-1">
-              <AvatarImg
-                avatarUrl={profile?.avatar_url}
-                className="h-16 w-16 sm:h-20 sm:w-20 rounded-full object-cover border-2 border-border shrink-0"
-                fallbackClassName="h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-muted flex items-center justify-center border-2 border-border shrink-0"
-              />
+              <div className="relative shrink-0">
+                <AvatarImg
+                  avatarUrl={profile?.avatar_url}
+                  className="h-16 w-16 sm:h-20 sm:w-20 rounded-full object-cover border-2 border-border"
+                  fallbackClassName="h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-muted flex items-center justify-center border-2 border-border"
+                />
+                <span
+                  className={cn(
+                    "absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-background",
+                    isOnline ? "bg-green-500" : "bg-destructive"
+                  )}
+                />
+              </div>
               <div className="min-w-0">
                 {(() => {
                   const fullName = profile?.display_name?.trim() || "";
