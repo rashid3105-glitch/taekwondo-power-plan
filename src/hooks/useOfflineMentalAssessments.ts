@@ -107,12 +107,20 @@ export function useOfflineMentalAssessments() {
    */
   const submitOffline = useCallback(
     async (input: SubmitInput) => {
-      if (!userId) return null;
+      // Resolve user directly rather than relying on the userId state, which
+      // may not be set yet if the component mounts and the user submits quickly.
+      let uid = userId;
+      if (!uid) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return null;
+        uid = user.id;
+        setUserId(uid);
+      }
       const localId = uuid();
       const now = new Date().toISOString();
       const rec: CachedAssessment = {
         id: localId,
-        user_id: userId,
+        user_id: uid,
         total_score: input.total_score,
         scores: input.scores,
         answers: input.answers,
@@ -123,7 +131,7 @@ export function useOfflineMentalAssessments() {
       await putCachedAssessment(rec);
       await queueMentalAssessment({
         key: localId,
-        user_id: userId,
+        user_id: uid,
         total_score: input.total_score,
         scores: input.scores,
         answers: input.answers,
@@ -131,12 +139,12 @@ export function useOfflineMentalAssessments() {
         language: input.language,
         queued_at: Date.now(),
       });
-      setAssessments(await listCachedAssessments(userId));
+      setAssessments(await listCachedAssessments(uid));
 
       if (navigator.onLine) {
         const r = await syncMentalAssessments();
         if (r.flushed > 0) {
-          const fresh = await listCachedAssessments(userId);
+          const fresh = await listCachedAssessments(uid);
           setAssessments(fresh);
           // Find the latest synced row (the previously-pending one is gone, the
           // newest non-pending row with matching scores is its replacement).

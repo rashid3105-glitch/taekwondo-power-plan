@@ -432,9 +432,16 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
       });
       if (result?.ai_advice) {
         setAdvice(result.ai_advice);
-      } else {
-        // Submission queued offline — advice will arrive later via sync.
+      } else if (!navigator.onLine) {
+        // Genuinely offline — advice will sync later.
         setPendingAdvice(true);
+      } else {
+        // Online but no advice returned — show a retry toast instead of
+        // the misleading offline banner.
+        toast({
+          title: txt.adviceRegenerateFailed,
+          variant: "destructive",
+        });
       }
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
