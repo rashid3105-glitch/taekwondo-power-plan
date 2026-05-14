@@ -107,7 +107,7 @@ Deno.serve(async (req) => {
     console.error('Template not found in registry', { templateName })
     return new Response(
       JSON.stringify({
-        error: `Template '${templateName}' not found. Available: ${Object.keys(TEMPLATES).join(', ')}`,
+        error: 'Template not found',
       }),
       {
         status: 404,
