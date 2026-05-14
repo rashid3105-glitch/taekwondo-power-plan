@@ -33,6 +33,7 @@ import { RecoveryTile } from "@/components/RecoveryTile";
 import { ReflectionPromptCard } from "@/components/ReflectionPromptCard";
 import { EnablePasskeyCard } from "@/components/EnablePasskeyCard";
 import { Calendar as CalendarIcon, Sparkles, ArrowLeft, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useEntitlements, useAthleteModuleAccess } from "@/hooks/useEntitlements";
 import type { LockedModule } from "@/lib/entitlements";
 import { FeatureEmptyState } from "@/components/FeatureEmptyState";
