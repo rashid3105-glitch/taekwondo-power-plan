@@ -39,6 +39,7 @@ const TOPICS: Record<TopicKey, Topic> = {
   helpLibrary: { key: "helpLibrary", icon: BookOpen },
   helpDiary: { key: "helpDiary", icon: BookHeart },
   helpReflection: { key: "helpReflection", icon: NotebookPen, isNew: true },
+  helpParentPortal: { key: "helpParentPortal", icon: Users, isNew: true },
   helpAddStudents: { key: "helpAddStudents", icon: Users },
   helpStudentProgress: { key: "helpStudentProgress", icon: BarChart3 },
   helpChat: { key: "helpChat", icon: MessageCircle, isNew: true },
