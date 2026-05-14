@@ -484,41 +484,8 @@ interface ResultsViewProps {
 }
 
 function ResultsView({ reflection, competition, upcomingCompetitions, onChangeNextComp, onDelete }: ResultsViewProps) {
-  const { t, locale } = useLanguage();
-  const { toast } = useToast();
-  const [generatingMini, setGeneratingMini] = useState<string | null>(null);
+  const { t } = useLanguage();
   const plan = reflection.ai_plan;
-
-  async function generateMiniPlan(focusArea: string) {
-    setGeneratingMini(focusArea);
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not signed in");
-      const { data: profile } = await supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle();
-      const overrides = {
-        ...profile,
-        program_weeks: 1,
-        goals: [focusArea],
-      };
-      const { data, error } = await supabase.functions.invoke("generate-plan", {
-        body: { profile: overrides, language: locale },
-      });
-      if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
-      await supabase.from("training_plans").update({ is_active: false }).eq("user_id", user.id);
-      const { error: insErr } = await supabase.from("training_plans").insert({
-        user_id: user.id,
-        name: `${t("reflectionMiniPlanName")}: ${focusArea}`.slice(0, 80),
-        plan_data: data.plan,
-        is_active: true,
-      });
-      if (insErr) throw insErr;
-      toast({ title: t("reflectionMiniPlanCreated"), description: focusArea });
-    } catch (e: any) {
-      toast({ title: t("error"), description: e.message, variant: "destructive" });
-    } finally {
-      setGeneratingMini(null);
-    }
-  }
 
   return (
     <div className="space-y-4">
@@ -557,86 +524,48 @@ function ResultsView({ reflection, competition, upcomingCompetitions, onChangeNe
         </Card>
       )}
 
-      {/* AI plan */}
+      {/* AI plan (simplified) */}
       {plan ? (
-        <Card className="p-4 sm:p-5 space-y-4">
+        <Card className="p-4 space-y-4">
           <div className="flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-primary" />
             <h3 className="font-semibold text-sm">{t("reflectionPlanTitle")}</h3>
           </div>
 
           {plan.summary && (
-            <p className="text-xs text-muted-foreground leading-relaxed">{plan.summary}</p>
+            <p className="text-sm text-foreground leading-relaxed">{plan.summary}</p>
           )}
 
           {Array.isArray(plan.strengths) && plan.strengths.length > 0 && (
-            <div>
-              <div className="text-xs font-semibold text-foreground mb-1">{t("reflectionStrengths")}</div>
-              <div className="flex flex-wrap gap-1.5">
-                {plan.strengths.map((s: string, i: number) => (
-                  <Badge key={i} variant="secondary" className="text-[11px]">{s}</Badge>
-                ))}
-              </div>
+            <div className="space-y-1.5">
+              <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("reflectionStrengths")}</div>
+              {plan.strengths.map((s: string, i: number) => (
+                <div key={i} className="flex items-center gap-2 text-sm text-foreground">
+                  <span className="text-green-500 text-base">✓</span> {s}
+                </div>
+              ))}
             </div>
           )}
 
           {Array.isArray(plan.focusAreas) && plan.focusAreas.length > 0 && (
-            <div>
-              <div className="text-xs font-semibold text-foreground mb-2">{t("reflectionFocusAreas")}</div>
-              <div className="space-y-2">
-                {plan.focusAreas.map((a: any, i: number) => (
-                  <div key={i} className="rounded-lg border border-border bg-background/50 p-3 space-y-2">
-                    <div className="text-xs font-medium text-foreground">{a.area}</div>
-                    {a.why && <div className="text-[11px] text-muted-foreground">{a.why}</div>}
-                    {Array.isArray(a.suggestedDrills) && (
-                      <ul className="text-[11px] text-muted-foreground list-disc list-inside space-y-0.5 pt-1">
-                        {a.suggestedDrills.map((d: string, j: number) => <li key={j}>{d}</li>)}
-                      </ul>
-                    )}
-                    <Button
-                      size="sm" variant="outline"
-                      className="h-7 text-[11px] gap-1"
-                      onClick={() => generateMiniPlan(a.area)}
-                      disabled={!!generatingMini}
-                    >
-                      {generatingMini === a.area
-                        ? <Loader2 className="h-3 w-3 animate-spin" />
-                        : <Zap className="h-3 w-3" />}
-                      {t("reflectionGenerateMiniPlan")}
-                    </Button>
-                  </div>
-                ))}
-              </div>
+            <div className="space-y-2">
+              <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("reflectionFocusAreas")}</div>
+              {plan.focusAreas.map((a: any, i: number) => (
+                <div key={i} className="rounded-xl border border-border bg-muted/30 p-3 space-y-1">
+                  <div className="text-sm font-semibold text-foreground">{a.area}</div>
+                  {a.tip && <div className="text-sm text-muted-foreground">{a.tip}</div>}
+                </div>
+              ))}
             </div>
           )}
 
-          {Array.isArray(plan.nextCompetitionGoals) && plan.nextCompetitionGoals.length > 0 && (
-            <div>
-              <div className="text-xs font-semibold text-foreground mb-2 flex items-center gap-1">
-                <Target className="h-3.5 w-3.5 text-primary" /> {t("reflectionNextGoals")}
+          {plan.nextGoal && (
+            <div className="rounded-xl border-2 border-primary/30 bg-primary/5 p-3 flex items-start gap-2">
+              <Target className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+              <div>
+                <div className="text-xs font-semibold text-primary uppercase tracking-wide mb-1">{t("reflectionNextGoals")}</div>
+                <div className="text-sm text-foreground">{plan.nextGoal}</div>
               </div>
-              <div className="space-y-2">
-                {plan.nextCompetitionGoals.map((g: any, i: number) => (
-                  <div key={i} className="rounded-lg border-2 border-primary/30 bg-primary/5 p-3 space-y-1">
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                      <div className="text-xs font-semibold text-foreground">{g.goal}</div>
-                    </div>
-                    {g.why && <div className="text-[11px] text-muted-foreground pl-6"><span className="font-medium">{t("reflectionGoalWhy")}:</span> {g.why}</div>}
-                    {g.how && <div className="text-[11px] text-muted-foreground pl-6"><span className="font-medium">{t("reflectionGoalHow")}:</span> {g.how}</div>}
-                    {g.metric && <div className="text-[11px] text-muted-foreground pl-6"><span className="font-medium">{t("reflectionGoalMetric")}:</span> {g.metric}</div>}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {Array.isArray(plan.mentalRoutineUpdates) && plan.mentalRoutineUpdates.length > 0 && (
-            <div>
-              <div className="text-xs font-semibold text-foreground mb-1">{t("reflectionRoutineUpdates")}</div>
-              <ul className="text-xs text-muted-foreground space-y-0.5 list-disc list-inside">
-                {plan.mentalRoutineUpdates.map((s: string, i: number) => <li key={i}>{s}</li>)}
-              </ul>
             </div>
           )}
 
@@ -660,7 +589,7 @@ function ResultsView({ reflection, competition, upcomingCompetitions, onChangeNe
           )}
         </Card>
       ) : (
-        <Card className="p-4 sm:p-5 text-xs text-muted-foreground italic flex items-center gap-2">
+        <Card className="p-4 text-xs text-muted-foreground italic flex items-center gap-2">
           <CloudOff className="h-4 w-4" />
           {t("reflectionPlanWillSync")}
         </Card>
