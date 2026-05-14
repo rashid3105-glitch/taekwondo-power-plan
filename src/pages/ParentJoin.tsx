@@ -105,13 +105,13 @@ export default function ParentJoin() {
             ) : (
               <div className="space-y-2">
                 <Button
-                  onClick={() => navigate(`/auth?tab=signup&invite_type=parent&code=${code}`)}
+                  onClick={() => navigate(`/auth?tab=signup&redirect=${encodeURIComponent(`/parent-join/${code}`)}`)}
                   className="w-full"
                 >
                   {t("joinSignupCta")}
                 </Button>
                 <Button
-                  onClick={() => navigate(`/auth?tab=signin&invite_type=parent&code=${code}`)}
+                  onClick={() => navigate(`/auth?tab=signin&redirect=${encodeURIComponent(`/parent-join/${code}`)}`)}
                   variant="outline"
                   className="w-full"
                 >
