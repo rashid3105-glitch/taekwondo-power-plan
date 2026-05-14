@@ -189,7 +189,9 @@ export function PostCompetitionReflection({ competition, upcomingCompetitions, o
     setResultText(competition.result || "");
     setMood(3);
     setRatings(Object.fromEntries(ratingKeys.map((k) => [k, 5])));
-    setReflectionAnswers(Object.fromEntries(reflectionPrompts.map((k) => [k, ""])));
+    setCheckedWentWell([]);
+    setCheckedWorkOn([]);
+    setOverallNote("");
     toast({ title: t("reflectionDeleted") });
   }
 
