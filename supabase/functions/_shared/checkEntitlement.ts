@@ -32,10 +32,17 @@ export async function checkAIEntitlement(
       .maybeSingle();
     if (sub?.status === "active") return null;
 
-    // Demo with full access
+    // Demo with full access (must not be expired)
     const { data: pf } = await supa.rpc("get_profile_protected_fields", { _user_id: userId });
     const row = Array.isArray(pf) ? pf[0] : pf;
-    if (row?.is_demo && row?.demo_full_access) return null;
+    const today = new Date().toISOString().slice(0, 10);
+    if (
+      row?.is_demo &&
+      row?.demo_full_access &&
+      (!row?.demo_expires_at || row.demo_expires_at >= today)
+    ) {
+      return null;
+    }
 
     // Live Stripe fallback — local subscriptions table may be stale
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
