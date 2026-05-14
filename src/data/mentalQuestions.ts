@@ -10,6 +10,7 @@ export interface MentalQuestion {
   id: string;
   category: string;
   text: LangText;
+  variants?: LangText[];
   options: { value: number; label: LangText }[];
 }
 
@@ -26,6 +27,10 @@ export const adultQuestions: MentalQuestion[] = [
       de: "Wenn das Training extrem hart wird, dann...",
       ar: "عندما يصبح التدريب صعبًا للغاية، أنا..."
     },
+    variants: [
+      { en: "Rate how you handle yourself when training gets brutal...", da: "Hvad sker der indeni, når træningen er på grænsen?", sv: "Vad händer inuti dig när träningen är på gränsen?", de: "Was passiert in dir wenn das Training an die Grenze geht?", ar: "كيف تتعامل مع نفسك عندما يكون التدريب على حافة القدرة؟" },
+      { en: "Your coach pushes you past your comfort zone. You...", da: "Træneren presser dig ud over din komfortzone. Du...", sv: "Tränaren pressar dig utanför din komfortzon. Du...", de: "Dein Trainer drückt dich über deine Komfortzone. Du...", ar: "مدربك يدفعك خارج منطقة الراحة. أنت..." },
+    ],
     options: [
       { value: 1, label: { en: "Usually quit or give up", da: "Giver jeg normalt op", sv: "Ger jag oftast upp", de: "Gebe ich normalerweise auf", ar: "عادة أستسلم" } },
       { value: 2, label: { en: "Struggle and often stop early", da: "Kæmper og stopper ofte tidligt", sv: "Kämpar och slutar ofta tidigt", de: "Kämpfe und höre oft früh auf", ar: "أعاني وغالبًا أتوقف مبكرًا" } },
@@ -44,6 +49,10 @@ export const adultQuestions: MentalQuestion[] = [
       de: "Wenn ich in einem Kampf mit Punkten hinten liege, dann...",
       ar: "عندما أكون متأخرًا بالنقاط في مباراة، أنا..."
     },
+    variants: [
+      { en: "You're 3 points down with 1 minute left. What happens in your head?", da: "Du er 3 point bagud med 1 minut tilbage. Hvad sker der i dit hoved?", sv: "Du är 3 poäng under med 1 minut kvar. Vad händer i ditt huvud?", de: "Du liegst 3 Punkte zurück mit 1 Minute noch. Was passiert in deinem Kopf?", ar: "أنت متأخر 3 نقاط ودقيقة واحدة متبقية. ماذا يحدث في رأسك؟" },
+      { en: "Halfway through a match and things aren't going your way...", da: "Halvvejs i en kamp og tingene går ikke din vej...", sv: "Halvvägs i en match och saker går inte din väg...", de: "Auf halbem Weg durch einen Kampf und die Dinge laufen nicht nach Plan...", ar: "في منتصف المباراة والأمور لا تسير كما تريد..." },
+    ],
     options: [
       { value: 1, label: { en: "Panic and lose composure completely", da: "Går i panik og mister fatningen helt", sv: "Får panik och tappar fattningen helt", de: "Gerate in Panik und verliere völlig die Fassung", ar: "أصاب بالذعر وأفقد رباطة جأشي تمامًا" } },
       { value: 2, label: { en: "Get frustrated and make more mistakes", da: "Bliver frustreret og laver flere fejl", sv: "Blir frustrerad och gör fler misstag", de: "Werde frustriert und mache mehr Fehler", ar: "أشعر بالإحباط وأرتكب المزيد من الأخطاء" } },
@@ -62,6 +71,10 @@ export const adultQuestions: MentalQuestion[] = [
       de: "Wenn ich während des Trainings Schmerzen oder Unbehagen verspüre, dann...",
       ar: "عندما أشعر بالألم أو عدم الراحة أثناء التدريب، أنا..."
     },
+    variants: [
+      { en: "Your body is screaming at you mid-session. Your response is...", da: "Din krop skriger til dig midt i træningen. Din reaktion er...", sv: "Din kropp skriker mitt under passet. Din reaktion är...", de: "Dein Körper schreit dich mitten im Training an. Deine Reaktion ist...", ar: "جسمك يصرخ في منتصف التمرين. ردة فعلك هي..." },
+      { en: "Discomfort hits during a hard set. What's your move?", da: "Ubehag rammer under et hårdt sæt. Hvad gør du?", sv: "Obehag slår till under ett tungt set. Vad gör du?", de: "Beschwerden treten bei einem harten Satz auf. Was tust du?", ar: "يأتيك الانزعاج أثناء مجموعة صعبة. ماذا تفعل؟" },
+    ],
     options: [
       { value: 1, label: { en: "Stop immediately and avoid the exercise", da: "Stopper med det samme og undgår øvelsen", sv: "Slutar omedelbart och undviker övningen", de: "Höre sofort auf und meide die Übung", ar: "أتوقف فورًا وأتجنب التمرين" } },
       { value: 2, label: { en: "Reduce intensity significantly and feel defeated", da: "Reducerer intensiteten markant og føler mig besejret", sv: "Minskar intensiteten markant och känner mig besegrad", de: "Reduziere die Intensität deutlich und fühle mich besiegt", ar: "أقلل الشدة بشكل كبير وأشعر بالهزيمة" } },
@@ -81,6 +94,10 @@ export const adultQuestions: MentalQuestion[] = [
       de: "Vor einem Wettkampf oder Sparringkampf fühle ich mich...",
       ar: "قبل منافسة أو مباراة تدريبية، أشعر..."
     },
+    variants: [
+      { en: "You wake up on competition day. Your mind is...", da: "Du vågner på stævnedagen. Dit sind er...", sv: "Du vaknar på tävlingsdagen. Ditt sinne är...", de: "Du wachst am Wettkampftag auf. Dein Kopf ist...", ar: "تستيقظ في يوم المنافسة. ذهنك..." },
+      { en: "An hour before you compete, your body and mind feel...", da: "En time før du konkurrerer, føler din krop og dit sind sig...", sv: "En timme innan du tävlar, känns din kropp och ditt sinne...", de: "Eine Stunde vor dem Wettkampf fühlen sich Körper und Geist...", ar: "قبل ساعة من منافستك، جسمك وعقلك يشعران..." },
+    ],
     options: [
       { value: 1, label: { en: "Overwhelmed with anxiety, can't function well", da: "Overvældet af angst, kan ikke fungere godt", sv: "Överväldigad av ångest, kan inte fungera bra", de: "Überwältigt von Angst, kann nicht gut funktionieren", ar: "غارق في القلق، لا أستطيع العمل بشكل جيد" } },
       { value: 2, label: { en: "Very nervous, it hurts my performance", da: "Meget nervøs, det påvirker min præstation negativt", sv: "Väldigt nervös, det skadar min prestation", de: "Sehr nervös, es schadet meiner Leistung", ar: "متوتر جدًا، يؤثر على أدائي" } },
@@ -99,6 +116,10 @@ export const adultQuestions: MentalQuestion[] = [
       de: "Die körperliche Reaktion meines Körpers auf Wettkampfstress ist...",
       ar: "استجابة جسدي الجسدية لضغط المنافسة هي..."
     },
+    variants: [
+      { en: "When competition stress hits, your body reacts by...", da: "Når konkurrencestress rammer, reagerer din krop med...", sv: "När tävlingsstress slår till reagerar kroppen med...", de: "Wenn Wettkampfstress kommt, reagiert dein Körper mit...", ar: "عندما يضربك ضغط المنافسة، جسمك يتفاعل بـ..." },
+      { en: "Pre-fight nerves show up in your body as...", da: "Nerver før kamp viser sig i kroppen som...", sv: "Nerverna före kampen visar sig i kroppen som...", de: "Wettkampfnervosität zeigt sich körperlich als...", ar: "التوتر قبل القتال يظهر في جسمك كـ..." },
+    ],
     options: [
       { value: 1, label: { en: "Severe — shaking, nausea, can't warm up properly", da: "Alvorlig — rysten, kvalme, kan ikke varme ordentligt op", sv: "Allvarlig — skakningar, illamående, kan inte värma upp ordentligt", de: "Schwer — Zittern, Übelkeit, kann mich nicht richtig aufwärmen", ar: "شديدة — ارتعاش، غثيان، لا أستطيع الإحماء بشكل صحيح" } },
       { value: 2, label: { en: "Noticeable tension, tight muscles, shallow breathing", da: "Mærkbar spænding, stramme muskler, overfladisk vejrtrækning", sv: "Märkbar spänning, stela muskler, ytlig andning", de: "Spürbare Anspannung, verspannte Muskeln, flache Atmung", ar: "توتر ملحوظ، عضلات مشدودة، تنفس ضحل" } },
@@ -117,6 +138,10 @@ export const adultQuestions: MentalQuestion[] = [
       de: "Die Nacht vor einem Wettkampf, mein Schlaf ist...",
       ar: "في الليلة السابقة للمنافسة، نومي..."
     },
+    variants: [
+      { en: "How well do you actually sleep the night before fight day?", da: "Hvor godt sover du faktisk natten før kampdag?", sv: "Hur väl sover du faktiskt natten före tävlingsdagen?", de: "Wie gut schläfst du wirklich in der Nacht vor dem Wettkampftag?", ar: "كم تنام جيدًا فعلاً في الليلة السابقة ليوم القتال؟" },
+      { en: "Comp tomorrow. You're in bed. What happens?", da: "Stævne i morgen. Du ligger i sengen. Hvad sker der?", sv: "Tävling imorgon. Du ligger i sängen. Vad händer?", de: "Wettkampf morgen. Du liegst im Bett. Was passiert?", ar: "منافسة غدًا. أنت في السرير. ماذا يحدث؟" },
+    ],
     options: [
       { value: 1, label: { en: "Terrible — I barely sleep, mind races all night", da: "Forfærdelig — jeg sover næsten ikke, tankerne kører hele natten", sv: "Hemsk — jag sover knappt, tankarna rusar hela natten", de: "Schrecklich — ich schlafe kaum, Gedanken rasen die ganze Nacht", ar: "فظيع — بالكاد أنام، أفكاري تتسارع طوال الليل" } },
       { value: 2, label: { en: "Restless, I wake up multiple times", da: "Urolig, jeg vågner flere gange", sv: "Rastlös, jag vaknar flera gånger", de: "Unruhig, ich wache mehrmals auf", ar: "مضطرب، أستيقظ عدة مرات" } },

@@ -3,13 +3,14 @@
 // (free text), 4) AI-generated action plan with goals for next competition.
 
 import { useEffect, useMemo, useState } from "react";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
-import { Slider } from "@/components/ui/slider";
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
@@ -19,7 +20,7 @@ import { useOfflineCompetitionReflections } from "@/hooks/useOfflineCompetitionR
 import { ReflectionTrendChart } from "@/components/ReflectionTrendChart";
 import {
   Trophy, ChevronLeft, ChevronRight, Loader2, Sparkles, Target,
-  CheckCircle2, CloudOff, Trash2, Zap, RefreshCw,
+  CloudOff, Trash2, RefreshCw,
 } from "lucide-react";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -53,12 +54,12 @@ const ratingKeys = [
   "recoveryBetweenMatches",
 ] as const;
 
-const reflectionPrompts = [
-  "wentWell",
-  "didntGoWell",
-  "biggestLearning",
-  "whatIdDoDifferently",
-  "mentalTriggers",
+const WENT_WELL_OPTIONS = [
+  "technique", "speed", "power", "tactics", "mentalStrength",
+] as const;
+
+const WORK_ON_OPTIONS = [
+  "technique", "speed", "power", "tactics", "mentalStrength",
 ] as const;
 
 export function PostCompetitionReflection({ competition, upcomingCompetitions, onClose }: Props) {
@@ -83,9 +84,9 @@ export function PostCompetitionReflection({ competition, upcomingCompetitions, o
   const [ratings, setRatings] = useState<Record<string, number>>(
     Object.fromEntries(ratingKeys.map((k) => [k, 5])),
   );
-  const [reflectionAnswers, setReflectionAnswers] = useState<Record<string, string>>(
-    Object.fromEntries(reflectionPrompts.map((k) => [k, ""])),
-  );
+  const [checkedWentWell, setCheckedWentWell] = useState<string[]>([]);
+  const [checkedWorkOn, setCheckedWorkOn] = useState<string[]>([]);
+  const [overallNote, setOverallNote] = useState("");
   const [nextCompId, setNextCompId] = useState<string>("none");
   const [showDelete, setShowDelete] = useState(false);
 
@@ -137,9 +138,11 @@ export function PostCompetitionReflection({ competition, upcomingCompetitions, o
       ]);
 
       const ratingsWithMood = { ...ratings, postCompMood: mood };
-      const trimmedReflections = Object.fromEntries(
-        Object.entries(reflectionAnswers).map(([k, v]) => [k, (v || "").slice(0, 280)]),
-      );
+      const trimmedReflections = {
+        wentWell: checkedWentWell.join(", "),
+        workOn: checkedWorkOn.join(", "),
+        overallNote: overallNote.slice(0, 400),
+      };
 
       const synced = await submitOffline({
         competition_id: competition.id,
@@ -186,7 +189,9 @@ export function PostCompetitionReflection({ competition, upcomingCompetitions, o
     setResultText(competition.result || "");
     setMood(3);
     setRatings(Object.fromEntries(ratingKeys.map((k) => [k, 5])));
-    setReflectionAnswers(Object.fromEntries(reflectionPrompts.map((k) => [k, ""])));
+    setCheckedWentWell([]);
+    setCheckedWorkOn([]);
+    setOverallNote("");
     toast({ title: t("reflectionDeleted") });
   }
 
@@ -304,48 +309,113 @@ export function PostCompetitionReflection({ competition, upcomingCompetitions, o
       {step === 1 && (
         <div className="space-y-5">
           <h3 className="font-semibold text-sm">{t("reflectionStepRatings")}</h3>
-          <p className="text-xs text-muted-foreground -mt-2">{t("reflectionRatingsHint")}</p>
           {ratingKeys.map((key) => (
             <div key={key} className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="font-medium text-foreground">{t(`reflectionRating_${key}` as any)}</span>
-                <Badge variant="secondary" className="tabular-nums">{ratings[key]}/10</Badge>
+              <div className="text-sm font-medium text-foreground">{t(`reflectionRating_${key}` as any)}</div>
+              <div className="grid grid-cols-5 gap-1.5">
+                {[1,2,3,4,5,6,7,8,9,10].map((v) => (
+                  <button
+                    key={v}
+                    type="button"
+                    onClick={() => setRatings({ ...ratings, [key]: v })}
+                    className={cn(
+                      "h-10 rounded-lg border-2 text-sm font-semibold transition-all",
+                      ratings[key] === v
+                        ? "border-primary bg-primary/15 text-primary"
+                        : "border-border bg-background text-muted-foreground hover:border-primary/50"
+                    )}
+                  >
+                    {v}
+                  </button>
+                ))}
               </div>
-              <Slider
-                value={[ratings[key]]}
-                onValueChange={(v) => setRatings({ ...ratings, [key]: v[0] })}
-                min={1} max={10} step={1}
-                className="touch-pan-y"
-              />
-              <div className="flex justify-between text-[10px] text-muted-foreground">
-                <span>1 · {t("reflectionRatingPoor")}</span>
-                <span>10 · {t("reflectionRatingExcellent")}</span>
+              <div className="flex justify-between text-[10px] text-muted-foreground px-0.5">
+                <span>{t("reflectionRatingPoor")}</span>
+                <span>{t("reflectionRatingExcellent")}</span>
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* Step 2 — Guided reflection */}
+      {/* Step 2 — Checklist reflection */}
       {step === 2 && (
-        <div className="space-y-4">
+        <div className="space-y-5">
           <h3 className="font-semibold text-sm">{t("reflectionStepReflect")}</h3>
-          {reflectionPrompts.map((key) => (
-            <div key={key}>
-              <Label className="text-xs">{t(`reflectionPrompt_${key}` as any)}</Label>
-              <Textarea
-                value={reflectionAnswers[key]}
-                onChange={(e) => setReflectionAnswers({ ...reflectionAnswers, [key]: e.target.value.slice(0, 280) })}
-                rows={2}
-                maxLength={280}
-                placeholder={t(`reflectionPlaceholder_${key}` as any)}
-                className="resize-none"
-              />
-              <div className="text-[10px] text-muted-foreground text-right mt-0.5">
-                {reflectionAnswers[key].length} / 280
-              </div>
+
+          {/* Went well */}
+          <div className="space-y-2">
+            <div className="text-sm font-medium text-foreground flex items-center gap-2">
+              <span className="text-green-500">✓</span> {t("reflectionWentWellTitle")}
             </div>
-          ))}
+            <div className="space-y-1.5">
+              {WENT_WELL_OPTIONS.map((opt) => {
+                const key = `wentWell_${opt}`;
+                const checked = checkedWentWell.includes(opt);
+                return (
+                  <button
+                    key={opt}
+                    type="button"
+                    onClick={() => setCheckedWentWell(prev =>
+                      checked ? prev.filter(x => x !== opt) : prev.length < 5 ? [...prev, opt] : prev
+                    )}
+                    className={cn(
+                      "w-full text-left rounded-xl border-2 px-3 py-2.5 text-sm transition-all",
+                      checked
+                        ? "border-green-500 bg-green-500/10 text-foreground font-medium"
+                        : "border-border bg-background text-muted-foreground hover:border-green-500/50"
+                    )}
+                  >
+                    {t(key as any)}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Work on */}
+          <div className="space-y-2">
+            <div className="text-sm font-medium text-foreground flex items-center gap-2">
+              <span className="text-primary">→</span> {t("reflectionWorkOnTitle")}
+            </div>
+            <div className="space-y-1.5">
+              {WORK_ON_OPTIONS.map((opt) => {
+                const key = `workOn_${opt}`;
+                const checked = checkedWorkOn.includes(opt);
+                return (
+                  <button
+                    key={opt}
+                    type="button"
+                    onClick={() => setCheckedWorkOn(prev =>
+                      checked ? prev.filter(x => x !== opt) : prev.length < 5 ? [...prev, opt] : prev
+                    )}
+                    className={cn(
+                      "w-full text-left rounded-xl border-2 px-3 py-2.5 text-sm transition-all",
+                      checked
+                        ? "border-primary bg-primary/10 text-foreground font-medium"
+                        : "border-border bg-background text-muted-foreground hover:border-primary/50"
+                    )}
+                  >
+                    {t(key as any)}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Overall note */}
+          <div className="space-y-1.5">
+            <div className="text-sm font-medium text-foreground">{t("reflectionOverallNote")}</div>
+            <Textarea
+              value={overallNote}
+              onChange={(e) => setOverallNote(e.target.value.slice(0, 400))}
+              rows={3}
+              maxLength={400}
+              placeholder={t("reflectionOverallNotePlaceholder")}
+              className="resize-none"
+            />
+            <div className="text-[10px] text-muted-foreground text-right">{overallNote.length}/400</div>
+          </div>
         </div>
       )}
 
@@ -414,41 +484,8 @@ interface ResultsViewProps {
 }
 
 function ResultsView({ reflection, competition, upcomingCompetitions, onChangeNextComp, onDelete }: ResultsViewProps) {
-  const { t, locale } = useLanguage();
-  const { toast } = useToast();
-  const [generatingMini, setGeneratingMini] = useState<string | null>(null);
+  const { t } = useLanguage();
   const plan = reflection.ai_plan;
-
-  async function generateMiniPlan(focusArea: string) {
-    setGeneratingMini(focusArea);
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not signed in");
-      const { data: profile } = await supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle();
-      const overrides = {
-        ...profile,
-        program_weeks: 1,
-        goals: [focusArea],
-      };
-      const { data, error } = await supabase.functions.invoke("generate-plan", {
-        body: { profile: overrides, language: locale },
-      });
-      if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
-      await supabase.from("training_plans").update({ is_active: false }).eq("user_id", user.id);
-      const { error: insErr } = await supabase.from("training_plans").insert({
-        user_id: user.id,
-        name: `${t("reflectionMiniPlanName")}: ${focusArea}`.slice(0, 80),
-        plan_data: data.plan,
-        is_active: true,
-      });
-      if (insErr) throw insErr;
-      toast({ title: t("reflectionMiniPlanCreated"), description: focusArea });
-    } catch (e: any) {
-      toast({ title: t("error"), description: e.message, variant: "destructive" });
-    } finally {
-      setGeneratingMini(null);
-    }
-  }
 
   return (
     <div className="space-y-4">
@@ -487,86 +524,48 @@ function ResultsView({ reflection, competition, upcomingCompetitions, onChangeNe
         </Card>
       )}
 
-      {/* AI plan */}
+      {/* AI plan (simplified) */}
       {plan ? (
-        <Card className="p-4 sm:p-5 space-y-4">
+        <Card className="p-4 space-y-4">
           <div className="flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-primary" />
             <h3 className="font-semibold text-sm">{t("reflectionPlanTitle")}</h3>
           </div>
 
           {plan.summary && (
-            <p className="text-xs text-muted-foreground leading-relaxed">{plan.summary}</p>
+            <p className="text-sm text-foreground leading-relaxed">{plan.summary}</p>
           )}
 
           {Array.isArray(plan.strengths) && plan.strengths.length > 0 && (
-            <div>
-              <div className="text-xs font-semibold text-foreground mb-1">{t("reflectionStrengths")}</div>
-              <div className="flex flex-wrap gap-1.5">
-                {plan.strengths.map((s: string, i: number) => (
-                  <Badge key={i} variant="secondary" className="text-[11px]">{s}</Badge>
-                ))}
-              </div>
+            <div className="space-y-1.5">
+              <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("reflectionStrengths")}</div>
+              {plan.strengths.map((s: string, i: number) => (
+                <div key={i} className="flex items-center gap-2 text-sm text-foreground">
+                  <span className="text-green-500 text-base">✓</span> {s}
+                </div>
+              ))}
             </div>
           )}
 
           {Array.isArray(plan.focusAreas) && plan.focusAreas.length > 0 && (
-            <div>
-              <div className="text-xs font-semibold text-foreground mb-2">{t("reflectionFocusAreas")}</div>
-              <div className="space-y-2">
-                {plan.focusAreas.map((a: any, i: number) => (
-                  <div key={i} className="rounded-lg border border-border bg-background/50 p-3 space-y-2">
-                    <div className="text-xs font-medium text-foreground">{a.area}</div>
-                    {a.why && <div className="text-[11px] text-muted-foreground">{a.why}</div>}
-                    {Array.isArray(a.suggestedDrills) && (
-                      <ul className="text-[11px] text-muted-foreground list-disc list-inside space-y-0.5 pt-1">
-                        {a.suggestedDrills.map((d: string, j: number) => <li key={j}>{d}</li>)}
-                      </ul>
-                    )}
-                    <Button
-                      size="sm" variant="outline"
-                      className="h-7 text-[11px] gap-1"
-                      onClick={() => generateMiniPlan(a.area)}
-                      disabled={!!generatingMini}
-                    >
-                      {generatingMini === a.area
-                        ? <Loader2 className="h-3 w-3 animate-spin" />
-                        : <Zap className="h-3 w-3" />}
-                      {t("reflectionGenerateMiniPlan")}
-                    </Button>
-                  </div>
-                ))}
-              </div>
+            <div className="space-y-2">
+              <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{t("reflectionFocusAreas")}</div>
+              {plan.focusAreas.map((a: any, i: number) => (
+                <div key={i} className="rounded-xl border border-border bg-muted/30 p-3 space-y-1">
+                  <div className="text-sm font-semibold text-foreground">{a.area}</div>
+                  {a.tip && <div className="text-sm text-muted-foreground">{a.tip}</div>}
+                </div>
+              ))}
             </div>
           )}
 
-          {Array.isArray(plan.nextCompetitionGoals) && plan.nextCompetitionGoals.length > 0 && (
-            <div>
-              <div className="text-xs font-semibold text-foreground mb-2 flex items-center gap-1">
-                <Target className="h-3.5 w-3.5 text-primary" /> {t("reflectionNextGoals")}
+          {plan.nextGoal && (
+            <div className="rounded-xl border-2 border-primary/30 bg-primary/5 p-3 flex items-start gap-2">
+              <Target className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+              <div>
+                <div className="text-xs font-semibold text-primary uppercase tracking-wide mb-1">{t("reflectionNextGoals")}</div>
+                <div className="text-sm text-foreground">{plan.nextGoal}</div>
               </div>
-              <div className="space-y-2">
-                {plan.nextCompetitionGoals.map((g: any, i: number) => (
-                  <div key={i} className="rounded-lg border-2 border-primary/30 bg-primary/5 p-3 space-y-1">
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                      <div className="text-xs font-semibold text-foreground">{g.goal}</div>
-                    </div>
-                    {g.why && <div className="text-[11px] text-muted-foreground pl-6"><span className="font-medium">{t("reflectionGoalWhy")}:</span> {g.why}</div>}
-                    {g.how && <div className="text-[11px] text-muted-foreground pl-6"><span className="font-medium">{t("reflectionGoalHow")}:</span> {g.how}</div>}
-                    {g.metric && <div className="text-[11px] text-muted-foreground pl-6"><span className="font-medium">{t("reflectionGoalMetric")}:</span> {g.metric}</div>}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {Array.isArray(plan.mentalRoutineUpdates) && plan.mentalRoutineUpdates.length > 0 && (
-            <div>
-              <div className="text-xs font-semibold text-foreground mb-1">{t("reflectionRoutineUpdates")}</div>
-              <ul className="text-xs text-muted-foreground space-y-0.5 list-disc list-inside">
-                {plan.mentalRoutineUpdates.map((s: string, i: number) => <li key={i}>{s}</li>)}
-              </ul>
             </div>
           )}
 
@@ -590,7 +589,7 @@ function ResultsView({ reflection, competition, upcomingCompetitions, onChangeNe
           )}
         </Card>
       ) : (
-        <Card className="p-4 sm:p-5 text-xs text-muted-foreground italic flex items-center gap-2">
+        <Card className="p-4 text-xs text-muted-foreground italic flex items-center gap-2">
           <CloudOff className="h-4 w-4" />
           {t("reflectionPlanWillSync")}
         </Card>

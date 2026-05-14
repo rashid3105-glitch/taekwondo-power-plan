@@ -88,6 +88,11 @@ Score range per category: 1-5 (1=needs work, 5=excellent). Each category has 3-4
 
 Write ALL content in ${lang}.
 
+Adapt your language to the athlete's age:
+- Age under 16: Write like you're talking to a young person. Short sentences. Simple words. Use "you" warmly. No clinical terms. Examples: say "staying calm" not "emotional regulation", say "when you mess up" not "performance errors", say "stay focused" not "maintain attentional control".
+- Age 16 and above: Friendly but more mature tone. Still avoid jargon. Practical, direct, motivating.
+If no age is provided, default to the age 16+ style.
+
 Return a JSON object:
 {
   "summary": "2-3 sentence overview of their mental state",
