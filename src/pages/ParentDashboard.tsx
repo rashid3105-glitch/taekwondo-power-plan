@@ -158,9 +158,8 @@ export default function ParentDashboard() {
             {/* Header */}
             <Card className="p-4 flex items-center gap-3">
               <AvatarImg
-                src={a.profile.avatar_url}
-                fallbackText={a.profile.display_name}
-                className="h-14 w-14 rounded-full"
+                avatarUrl={a.profile.avatar_url}
+                className="h-14 w-14 rounded-full object-cover border-2 border-border"
               />
               <div className="flex-1">
                 <div className="font-bold">{a.profile.display_name}</div>
