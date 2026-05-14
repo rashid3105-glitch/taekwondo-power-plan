@@ -651,6 +651,11 @@ export default function ProfileSetup() {
           <PublicProfileSettings />
         </div>
 
+        {(!age || parseInt(age, 10) < 18) && (
+          <div className="mt-6">
+            <ParentInviteSection />
+          </div>
+        )}
         <PasskeySettings />
 
         <AccountDangerZone />
