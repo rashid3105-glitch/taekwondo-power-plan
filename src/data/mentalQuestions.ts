@@ -27,6 +27,10 @@ export const adultQuestions: MentalQuestion[] = [
       de: "Wenn das Training extrem hart wird, dann...",
       ar: "عندما يصبح التدريب صعبًا للغاية، أنا..."
     },
+    variants: [
+      { en: "Rate how you handle yourself when training gets brutal...", da: "Hvad sker der indeni, når træningen er på grænsen?", sv: "Vad händer inuti dig när träningen är på gränsen?", de: "Was passiert in dir wenn das Training an die Grenze geht?", ar: "كيف تتعامل مع نفسك عندما يكون التدريب على حافة القدرة؟" },
+      { en: "Your coach pushes you past your comfort zone. You...", da: "Træneren presser dig ud over din komfortzone. Du...", sv: "Tränaren pressar dig utanför din komfortzon. Du...", de: "Dein Trainer drückt dich über deine Komfortzone. Du...", ar: "مدربك يدفعك خارج منطقة الراحة. أنت..." },
+    ],
     options: [
       { value: 1, label: { en: "Usually quit or give up", da: "Giver jeg normalt op", sv: "Ger jag oftast upp", de: "Gebe ich normalerweise auf", ar: "عادة أستسلم" } },
       { value: 2, label: { en: "Struggle and often stop early", da: "Kæmper og stopper ofte tidligt", sv: "Kämpar och slutar ofta tidigt", de: "Kämpfe und höre oft früh auf", ar: "أعاني وغالبًا أتوقف مبكرًا" } },
