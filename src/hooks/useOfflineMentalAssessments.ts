@@ -198,7 +198,7 @@ export function useOfflineMentalAssessments() {
       const advice = (data as any)?.advice ?? null;
       await supabase
         .from("mental_assessments")
-        .update({ ai_advice: advice as any })
+        .update({ ai_advice: advice ? JSON.stringify(advice) : null } as any)
         .eq("id", id);
       const updated: CachedAssessment = { ...target, ai_advice: advice };
       await putCachedAssessment(updated);
