@@ -309,48 +309,113 @@ export function PostCompetitionReflection({ competition, upcomingCompetitions, o
       {step === 1 && (
         <div className="space-y-5">
           <h3 className="font-semibold text-sm">{t("reflectionStepRatings")}</h3>
-          <p className="text-xs text-muted-foreground -mt-2">{t("reflectionRatingsHint")}</p>
           {ratingKeys.map((key) => (
             <div key={key} className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="font-medium text-foreground">{t(`reflectionRating_${key}` as any)}</span>
-                <Badge variant="secondary" className="tabular-nums">{ratings[key]}/10</Badge>
+              <div className="text-sm font-medium text-foreground">{t(`reflectionRating_${key}` as any)}</div>
+              <div className="grid grid-cols-5 gap-1.5">
+                {[1,2,3,4,5,6,7,8,9,10].map((v) => (
+                  <button
+                    key={v}
+                    type="button"
+                    onClick={() => setRatings({ ...ratings, [key]: v })}
+                    className={cn(
+                      "h-10 rounded-lg border-2 text-sm font-semibold transition-all",
+                      ratings[key] === v
+                        ? "border-primary bg-primary/15 text-primary"
+                        : "border-border bg-background text-muted-foreground hover:border-primary/50"
+                    )}
+                  >
+                    {v}
+                  </button>
+                ))}
               </div>
-              <Slider
-                value={[ratings[key]]}
-                onValueChange={(v) => setRatings({ ...ratings, [key]: v[0] })}
-                min={1} max={10} step={1}
-                className="touch-pan-y"
-              />
-              <div className="flex justify-between text-[10px] text-muted-foreground">
-                <span>1 · {t("reflectionRatingPoor")}</span>
-                <span>10 · {t("reflectionRatingExcellent")}</span>
+              <div className="flex justify-between text-[10px] text-muted-foreground px-0.5">
+                <span>{t("reflectionRatingPoor")}</span>
+                <span>{t("reflectionRatingExcellent")}</span>
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* Step 2 — Guided reflection */}
+      {/* Step 2 — Checklist reflection */}
       {step === 2 && (
-        <div className="space-y-4">
+        <div className="space-y-5">
           <h3 className="font-semibold text-sm">{t("reflectionStepReflect")}</h3>
-          {reflectionPrompts.map((key) => (
-            <div key={key}>
-              <Label className="text-xs">{t(`reflectionPrompt_${key}` as any)}</Label>
-              <Textarea
-                value={reflectionAnswers[key]}
-                onChange={(e) => setReflectionAnswers({ ...reflectionAnswers, [key]: e.target.value.slice(0, 280) })}
-                rows={2}
-                maxLength={280}
-                placeholder={t(`reflectionPlaceholder_${key}` as any)}
-                className="resize-none"
-              />
-              <div className="text-[10px] text-muted-foreground text-right mt-0.5">
-                {reflectionAnswers[key].length} / 280
-              </div>
+
+          {/* Went well */}
+          <div className="space-y-2">
+            <div className="text-sm font-medium text-foreground flex items-center gap-2">
+              <span className="text-green-500">✓</span> {t("reflectionWentWellTitle")}
             </div>
-          ))}
+            <div className="space-y-1.5">
+              {WENT_WELL_OPTIONS.map((opt) => {
+                const key = `wentWell_${opt}`;
+                const checked = checkedWentWell.includes(opt);
+                return (
+                  <button
+                    key={opt}
+                    type="button"
+                    onClick={() => setCheckedWentWell(prev =>
+                      checked ? prev.filter(x => x !== opt) : prev.length < 5 ? [...prev, opt] : prev
+                    )}
+                    className={cn(
+                      "w-full text-left rounded-xl border-2 px-3 py-2.5 text-sm transition-all",
+                      checked
+                        ? "border-green-500 bg-green-500/10 text-foreground font-medium"
+                        : "border-border bg-background text-muted-foreground hover:border-green-500/50"
+                    )}
+                  >
+                    {t(key as any)}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Work on */}
+          <div className="space-y-2">
+            <div className="text-sm font-medium text-foreground flex items-center gap-2">
+              <span className="text-primary">→</span> {t("reflectionWorkOnTitle")}
+            </div>
+            <div className="space-y-1.5">
+              {WORK_ON_OPTIONS.map((opt) => {
+                const key = `workOn_${opt}`;
+                const checked = checkedWorkOn.includes(opt);
+                return (
+                  <button
+                    key={opt}
+                    type="button"
+                    onClick={() => setCheckedWorkOn(prev =>
+                      checked ? prev.filter(x => x !== opt) : prev.length < 5 ? [...prev, opt] : prev
+                    )}
+                    className={cn(
+                      "w-full text-left rounded-xl border-2 px-3 py-2.5 text-sm transition-all",
+                      checked
+                        ? "border-primary bg-primary/10 text-foreground font-medium"
+                        : "border-border bg-background text-muted-foreground hover:border-primary/50"
+                    )}
+                  >
+                    {t(key as any)}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Overall note */}
+          <div className="space-y-1.5">
+            <div className="text-sm font-medium text-foreground">{t("reflectionOverallNote")}</div>
+            <Textarea
+              value={overallNote}
+              onChange={(e) => setOverallNote(e.target.value.slice(0, 400))}
+              rows={3}
+              maxLength={400}
+              placeholder={t("reflectionOverallNotePlaceholder")}
+              className="resize-none"
+            />
+            <div className="text-[10px] text-muted-foreground text-right">{overallNote.length}/400</div>
+          </div>
         </div>
       )}
 
