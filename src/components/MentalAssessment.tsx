@@ -384,6 +384,18 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
   const questions = getQuestionsForAge(profile?.age);
   const txt = translations[l];
 
+  // Pick a random variant per question on each fresh assessment
+  const questionTexts = useMemo(() => {
+    return questions.map((q) => {
+      if (q.variants && q.variants.length > 0) {
+        const pool = [q.text, ...q.variants];
+        return pool[Math.floor(Math.random() * pool.length)];
+      }
+      return q.text;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [questions]);
+
   const getOverallLabel = (score: number) => {
     if (score >= 25) return txt.overallExcellent;
     if (score >= 20) return txt.overallGood;
