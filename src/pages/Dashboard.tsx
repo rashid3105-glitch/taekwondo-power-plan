@@ -33,6 +33,7 @@ import { RecoveryTile } from "@/components/RecoveryTile";
 import { ReflectionPromptCard } from "@/components/ReflectionPromptCard";
 import { EnablePasskeyCard } from "@/components/EnablePasskeyCard";
 import { Calendar as CalendarIcon, Sparkles, ArrowLeft, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useEntitlements, useAthleteModuleAccess } from "@/hooks/useEntitlements";
 import type { LockedModule } from "@/lib/entitlements";
 import { FeatureEmptyState } from "@/components/FeatureEmptyState";
@@ -125,6 +126,18 @@ export default function Dashboard() {
     });
   }
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isOnline, setIsOnline] = useState(typeof navigator !== "undefined" ? navigator.onLine : true);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, locale } = useLanguage();
@@ -683,11 +696,19 @@ export default function Dashboard() {
 
             {/* Greeting line — bigger profile picture */}
             <div className="flex items-center gap-3 px-1">
-              <AvatarImg
-                avatarUrl={profile?.avatar_url}
-                className="h-16 w-16 sm:h-20 sm:w-20 rounded-full object-cover border-2 border-border shrink-0"
-                fallbackClassName="h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-muted flex items-center justify-center border-2 border-border shrink-0"
-              />
+              <div className="relative shrink-0">
+                <AvatarImg
+                  avatarUrl={profile?.avatar_url}
+                  className="h-16 w-16 sm:h-20 sm:w-20 rounded-full object-cover border-2 border-border"
+                  fallbackClassName="h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-muted flex items-center justify-center border-2 border-border"
+                />
+                <span
+                  className={cn(
+                    "absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-background",
+                    isOnline ? "bg-green-500" : "bg-destructive"
+                  )}
+                />
+              </div>
               <div className="min-w-0">
                 {(() => {
                   const fullName = profile?.display_name?.trim() || "";
