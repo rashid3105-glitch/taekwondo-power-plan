@@ -14,6 +14,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import type { Locale } from "@/i18n/translations";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { AccountDangerZone } from "@/components/AccountDangerZone";
+import { ParentInviteSection } from "@/components/ParentInviteSection";
 import { PasskeySettings } from "@/components/PasskeySettings";
 import { PublicProfileSettings } from "@/components/profile/PublicProfileSettings";
 
