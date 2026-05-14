@@ -112,6 +112,17 @@ Deno.serve(async (req) => {
       if (v !== undefined) updateData[k] = v;
     }
 
+    // Disallow self-assignment of arbitrary club_id via this endpoint.
+    // Club membership must be set via the invite/coach approval flow
+    // (apply_invite_to_my_profile + admin_approve_with_invite). Allow null
+    // (leaving a club) but reject any attempt to set/change to a UUID.
+    if (Object.prototype.hasOwnProperty.call(updateData, "club_id") && updateData.club_id !== null) {
+      return new Response(
+        JSON.stringify({ error: "club_id cannot be set directly; use an invite code" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
     const { data: updatedProfile, error: updateError } = await adminClient
       .from("profiles")
       .update(updateData)
