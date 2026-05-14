@@ -138,6 +138,10 @@ export const adultQuestions: MentalQuestion[] = [
       de: "Die Nacht vor einem Wettkampf, mein Schlaf ist...",
       ar: "في الليلة السابقة للمنافسة، نومي..."
     },
+    variants: [
+      { en: "How well do you actually sleep the night before fight day?", da: "Hvor godt sover du faktisk natten før kampdag?", sv: "Hur väl sover du faktiskt natten före tävlingsdagen?", de: "Wie gut schläfst du wirklich in der Nacht vor dem Wettkampftag?", ar: "كم تنام جيدًا فعلاً في الليلة السابقة ليوم القتال؟" },
+      { en: "Comp tomorrow. You're in bed. What happens?", da: "Stævne i morgen. Du ligger i sengen. Hvad sker der?", sv: "Tävling imorgon. Du ligger i sängen. Vad händer?", de: "Wettkampf morgen. Du liegst im Bett. Was passiert?", ar: "منافسة غدًا. أنت في السرير. ماذا يحدث؟" },
+    ],
     options: [
       { value: 1, label: { en: "Terrible — I barely sleep, mind races all night", da: "Forfærdelig — jeg sover næsten ikke, tankerne kører hele natten", sv: "Hemsk — jag sover knappt, tankarna rusar hela natten", de: "Schrecklich — ich schlafe kaum, Gedanken rasen die ganze Nacht", ar: "فظيع — بالكاد أنام، أفكاري تتسارع طوال الليل" } },
       { value: 2, label: { en: "Restless, I wake up multiple times", da: "Urolig, jeg vågner flere gange", sv: "Rastlös, jag vaknar flera gånger", de: "Unruhig, ich wache mehrmals auf", ar: "مضطرب، أستيقظ عدة مرات" } },
