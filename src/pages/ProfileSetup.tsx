@@ -127,6 +127,8 @@ export default function ProfileSetup() {
           setGalLicenseExpires(profileData.gal_license_expires_at || "");
           setHasMyFightBook(!!profileData.has_myfightbook);
           setMyFightBookExpires(profileData.myfightbook_expires_at || "");
+          setTkdStartDate(profileData.tkd_start_date || "");
+          setBirthDate(profileData.birth_date || "");
           
         }
       } catch (err: any) {
