@@ -553,24 +553,18 @@ export default function ProfileSetup() {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3 sm:gap-4">
-            <div>
-              <Label htmlFor="belt">{t("beltLevel")}</Label>
-              <select
-                id="belt"
-                value={belt}
-                onChange={(e) => setBelt(e.target.value)}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                {BELT_LEVELS.map((b) => (
-                  <option key={b} value={b}>{t(b)} {t("belt")}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <Label htmlFor="exp">{t("yearsOfExperience")}</Label>
-              <Input id="exp" type="number" inputMode="numeric" value={experience} onChange={(e) => setExperience(e.target.value)} placeholder="3" />
-            </div>
+          <div>
+            <Label htmlFor="belt">{t("beltLevel")}</Label>
+            <select
+              id="belt"
+              value={belt}
+              onChange={(e) => setBelt(e.target.value)}
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              {BELT_LEVELS.map((b) => (
+                <option key={b} value={b}>{t(b)} {t("belt")}</option>
+              ))}
+            </select>
           </div>
 
           <div className="rounded-lg border border-border bg-muted/20 p-3 space-y-3">
