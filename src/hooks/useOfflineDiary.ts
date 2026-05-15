@@ -117,6 +117,10 @@ export function useOfflineDiary() {
       if (navigator.onLine) {
         const r = await syncDiary();
         if (r.flushed > 0) setEntries(await listCachedEntries(userId));
+        // Fire-and-forget coach notification
+        supabase.functions.invoke("notify-coaches-athlete-activity", {
+          body: { activity_type: "diary" },
+        }).catch(() => {});
       }
     },
     [userId],
