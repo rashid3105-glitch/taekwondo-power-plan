@@ -69,6 +69,10 @@ export async function syncDiary(): Promise<DiarySyncResult> {
             pending: false,
           });
           await remapLocalId(intent.key, newId);
+          // Notify coaches — fire and forget, never blocks diary save
+          supabase.functions.invoke("notify-coaches-athlete-activity", {
+            body: { activity_type: "diary" },
+          }).catch(() => {});
         } else if (intent.op === "update") {
           const id = intent.server_id || intent.key;
           const { data, error } = await supabase
