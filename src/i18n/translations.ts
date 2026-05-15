@@ -2064,6 +2064,8 @@ const translations = {
     changelogEntry112: "Competition reflection redesigned — ratings now use tap-to-select cards instead of sliders, and the reflection step is now a simple checklist (what went well / what to work on) plus one text box",
     changelogEntry113: "Post-competition action plan simplified — now shows a 1-2 sentence summary, up to 2 strengths, up to 2 focus areas each with a single practical tip, and one clear next goal",
     changelogEntry114: "Mental assessment questions now rotate between different phrasings each time you start — so you actually think about each question instead of answering on autopilot. AI advice now adapts its language to your age: simpler for under 16, more direct for adults",
+    changelog_2026_05_15: "May 15, 2026",
+    changelogEntry116: "Coaches now receive an email notification when an athlete saves a diary entry or completes a competition reflection — max one notification per athlete per 24 hours",
     changelog_2026_05_14b: "May 14, 2026",
     changelogEntry115: "Parent/guardian portal: under-18 athletes can now invite a parent with permanent read-only access to training plans, competition results, and attendance — diary and mental data remain private to the athlete",
     parentPortalTitle: "Parent Access",
