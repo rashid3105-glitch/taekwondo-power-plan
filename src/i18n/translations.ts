@@ -13164,6 +13164,8 @@ const translations = {
     changelogEntry112: "Stævneevaluering redesignet — vurderinger bruker nå klikkbare kort i stedet for skyveknapper, og refleksjonssteget er nå en enkel sjekkliste (hva gikk bra / hva bør jobbes med) pluss ett tekstfelt",
     changelogEntry113: "Handlingsplan etter stævne forenklet — viser nå 1-2 setningers sammendrag, opptil 2 styrker, opptil 2 fokusområder med ett praktisk tips hver, og ett tydelig neste mål",
     changelogEntry114: "Mentale vurderingsspørsmål roterer nå mellom ulike formuleringer hver gang du starter — slik at du faktisk tenker over hvert spørsmål i stedet for å svare på autopilot. AI-råd tilpasser nå språket sitt til alderen din: enklere for under 16, mer direkte for voksne",
+    changelog_2026_05_15: "15. mai 2026",
+    changelogEntry116: "Trenere mottar nå et e-postvarsel når en utøver lagrer et dagbokinnlegg eller fullfører en stevneevaluering — maks ett varsel per utøver per 24 timer",
     changelog_2026_05_14b: "14. mai 2026",
     changelogEntry115: "Foreldreportal: utøvere under 18 kan nå invitere en forelder med permanent lesetilgang til treningsplaner, konkurranseresultater og oppmøte — dagbok og mentale data forblir private for utøveren",
     parentPortalTitle: "Foreldretilgang",
