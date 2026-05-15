@@ -14,6 +14,7 @@ interface LinkedParent {
   id: string;
   parent_user_id: string;
   display_name?: string;
+  linked_at?: string;
 }
 
 export function ParentInviteSection() {
@@ -26,6 +27,7 @@ export function ParentInviteSection() {
   const [parents, setParents] = useState<LinkedParent[]>([]);
   const [onCooldown, setOnCooldown] = useState(false);
   const [cooldownUntil, setCooldownUntil] = useState<Date | null>(null);
+  const isFull = parents.length >= 2;
 
   const inviteUrl = code ? `https://sportstalent.dk/parent-join/${code}` : "";
   const shareMessage = code
@@ -69,7 +71,7 @@ export function ParentInviteSection() {
       // Load linked parents
       const { data: links } = await supabase
         .from("parent_athletes" as any)
-        .select("id, parent_user_id")
+        .select("id, parent_user_id, created_at")
         .eq("athlete_id", user.id);
       if (links && links.length > 0) {
         const ids = (links as any[]).map((l) => l.parent_user_id);
@@ -83,6 +85,7 @@ export function ParentInviteSection() {
             id: l.id,
             parent_user_id: l.parent_user_id,
             display_name: nameMap.get(l.parent_user_id) || "—",
+            linked_at: l.created_at,
           })),
         );
       }
@@ -135,11 +138,16 @@ export function ParentInviteSection() {
       </div>
       <p className="text-xs text-muted-foreground">{t("parentPortalDesc")}</p>
 
-      {!code && !onCooldown && (
+      {!code && !onCooldown && !isFull && (
         <Button size="sm" onClick={generate} disabled={loading} className="w-full gap-2">
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Users className="h-4 w-4" />}
           {t("parentGenerateLink")}
         </Button>
+      )}
+      {!code && !onCooldown && isFull && (
+        <div className="rounded-lg bg-muted/50 px-3 py-2 text-xs text-muted-foreground text-center">
+          {t("parentMaxReached")}
+        </div>
       )}
       {!code && onCooldown && cooldownUntil && (
         <div className="rounded-lg bg-muted/50 px-3 py-2 text-xs text-muted-foreground text-center space-y-1">
@@ -175,7 +183,14 @@ export function ParentInviteSection() {
           <div className="text-xs font-semibold text-muted-foreground">{t("parentActiveParents")}</div>
           {parents.map((p) => (
             <div key={p.id} className="flex items-center justify-between rounded-lg bg-muted/40 px-3 py-2">
-              <span className="text-sm">{p.display_name}</span>
+              <div>
+                <div className="text-sm font-medium">{p.display_name}</div>
+                {p.linked_at && (
+                  <div className="text-[10px] text-muted-foreground">
+                    {t("parentLinkedSince")} {new Date(p.linked_at).toLocaleDateString()}
+                  </div>
+                )}
+              </div>
               <Button type="button" size="sm" variant="ghost" onClick={() => removeParent(p.id)} className="h-7 gap-1 text-destructive">
                 <Trash2 className="h-3.5 w-3.5" /> {t("parentRemoveAccess")}
               </Button>
