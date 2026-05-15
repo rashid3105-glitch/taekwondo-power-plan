@@ -173,6 +173,13 @@ export function useOfflineCompetitionReflections() {
       if (navigator.onLine) {
         const r = await syncCompetitionReflections();
         await recountPending();
+        // Fire-and-forget coach notification
+        supabase.functions.invoke("notify-coaches-athlete-activity", {
+          body: {
+            activity_type: "competition_reflection",
+            competition_name: input.competition_name || undefined,
+          },
+        }).catch(() => {});
         if (r.flushed > 0) {
           const fresh = await listCachedReflections(userId);
           setReflections(fresh);
