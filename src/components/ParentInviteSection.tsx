@@ -49,6 +49,23 @@ export function ParentInviteSection() {
         .maybeSingle();
       if (existing && (existing as any).code) setCode((existing as any).code);
 
+      const { data: recentUsed } = await supabase
+        .from("parent_invites" as any)
+        .select("used_at")
+        .eq("athlete_id", user.id)
+        .not("used_at", "is", null)
+        .order("used_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (recentUsed && (recentUsed as any).used_at) {
+        const usedAt = new Date((recentUsed as any).used_at);
+        const until = new Date(usedAt.getTime() + 60 * 60 * 1000);
+        if (until > new Date()) {
+          setOnCooldown(true);
+          setCooldownUntil(until);
+        }
+      }
+
       // Load linked parents
       const { data: links } = await supabase
         .from("parent_athletes" as any)
