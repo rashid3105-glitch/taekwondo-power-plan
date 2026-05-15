@@ -13169,6 +13169,8 @@ const translations = {
     parentConfirmDesc: "Du er allerede innlogget. Bekreft for å koble kontoen din til denne utøveren.",
     loginToLinkParent: "Logg inn for å koble kontoen din",
     parentLinkCooldown: "Vent litt før du genererer en ny lenke",
+    parentLinkedSince: "Koblet siden",
+    parentMaxReached: "Maks 2 foreldre koblet. Fjern én for å generere en ny invitasjon.",
     parentLinkCooldownDesc: "En ny invitasjonslenke kan genereres etter {{time}}",
     parentLinkSingleUse: "Denne lenken kan kun brukes én gang og utløper umiddelbart etter bruk",
     parentDashboardTitle: "Foreldredashboard",
