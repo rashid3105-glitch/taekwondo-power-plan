@@ -3,10 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { Loader2, LogOut, Trophy, Calendar, ClipboardList, Check, X } from "lucide-react";
+import { Loader2, LogOut, Trophy, Calendar, ClipboardList, Check, X, Settings, ChevronDown } from "lucide-react";
 import { AvatarImg } from "@/components/AvatarImg";
+import { cn } from "@/lib/utils";
+import { toast } from "@/hooks/use-toast";
 
 interface AthleteProfile {
   user_id: string;
@@ -14,6 +18,8 @@ interface AthleteProfile {
   belt_level: string | null;
   avatar_url: string | null;
   weekly_schedule: any;
+  country: string | null;
+  club_name?: string | null;
 }
 
 interface PlanRow {
@@ -47,6 +53,10 @@ export default function ParentDashboard() {
   const { t } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [athletes, setAthletes] = useState<AthleteData[]>([]);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [displayName, setDisplayName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -55,6 +65,17 @@ export default function ParentDashboard() {
         navigate("/auth");
         return;
       }
+
+      const { data: myProfile } = await supabase
+        .from("profiles")
+        .select("display_name, phone")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (myProfile) {
+        setDisplayName((myProfile as any).display_name || "");
+        setPhone((myProfile as any).phone || "");
+      }
+
       const { data: links } = await supabase
         .from("parent_athletes" as any)
         .select("athlete_id")
@@ -69,7 +90,7 @@ export default function ParentDashboard() {
         const [profileRes, planRes, compsRes, logsRes] = await Promise.all([
           supabase
             .from("profiles")
-            .select("user_id, display_name, belt_level, avatar_url, weekly_schedule")
+            .select("user_id, display_name, belt_level, avatar_url, weekly_schedule, country, club_id, clubs(name)")
             .eq("user_id", aid)
             .maybeSingle(),
           supabase
@@ -92,7 +113,6 @@ export default function ParentDashboard() {
             .limit(200),
         ]);
 
-        // Aggregate workout_logs into per-day attendance
         const map = new Map<string, boolean>();
         ((logsRes.data as WorkoutLogDay[] | null) || []).forEach((row) => {
           const prev = map.get(row.logged_date) ?? false;
@@ -107,8 +127,17 @@ export default function ParentDashboard() {
         const rate = totalDays > 0 ? Math.round((completedDays / totalDays) * 100) : 0;
 
         if (profileRes.data) {
+          const p: any = profileRes.data;
           results.push({
-            profile: profileRes.data as AthleteProfile,
+            profile: {
+              user_id: p.user_id,
+              display_name: p.display_name,
+              belt_level: p.belt_level,
+              avatar_url: p.avatar_url,
+              weekly_schedule: p.weekly_schedule,
+              country: p.country,
+              club_name: p.clubs?.name ?? null,
+            },
             plan: (planRes.data as PlanRow | null) || null,
             competitions: (compsRes.data as CompetitionRow[]) || [],
             attendance: dayList,
@@ -120,6 +149,24 @@ export default function ParentDashboard() {
       setLoading(false);
     })();
   }, [navigate]);
+
+  const saveSettings = async () => {
+    setSaving(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { error } = await supabase.from("profiles").update({
+        display_name: displayName.trim(),
+        phone: phone.trim(),
+      } as any).eq("user_id", user.id);
+      if (error) throw error;
+      toast({ title: t("profileSaved") || "Saved" });
+    } catch (e: any) {
+      toast({ title: e.message || "Error", variant: "destructive" });
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const signOut = async () => {
     await supabase.auth.signOut();
@@ -161,9 +208,14 @@ export default function ParentDashboard() {
                 avatarUrl={a.profile.avatar_url}
                 className="h-14 w-14 rounded-full object-cover border-2 border-border"
               />
-              <div className="flex-1">
-                <div className="font-bold">{a.profile.display_name}</div>
+              <div className="flex-1 min-w-0">
+                <div className="font-bold truncate">{a.profile.display_name}</div>
                 <div className="text-xs text-muted-foreground capitalize">{a.profile.belt_level}</div>
+                {(a.profile.club_name || a.profile.country) && (
+                  <div className="text-xs text-muted-foreground truncate">
+                    {[a.profile.club_name, a.profile.country].filter(Boolean).join(" · ")}
+                  </div>
+                )}
               </div>
               <span className="rounded-full bg-primary/10 text-primary px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide">
                 {t("parentViewBadge")}
@@ -262,6 +314,35 @@ export default function ParentDashboard() {
             </Card>
           </div>
         ))}
+
+        {/* Account settings */}
+        <Card className="p-4 space-y-3">
+          <button
+            onClick={() => setSettingsOpen((o) => !o)}
+            className="w-full flex items-center justify-between text-sm font-semibold text-foreground"
+          >
+            <span className="flex items-center gap-2">
+              <Settings className="h-4 w-4" />
+              {t("accountSettings") || "Account settings"}
+            </span>
+            <ChevronDown className={cn("h-4 w-4 transition-transform", settingsOpen && "rotate-180")} />
+          </button>
+          {settingsOpen && (
+            <div className="space-y-3 pt-1">
+              <div className="space-y-1">
+                <Label>{t("displayName") || "Name"}</Label>
+                <Input value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
+              </div>
+              <div className="space-y-1">
+                <Label>{t("phone") || "Phone"}</Label>
+                <Input type="tel" inputMode="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
+              </div>
+              <Button size="sm" onClick={saveSettings} disabled={saving} className="w-full">
+                {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : t("save") || "Save"}
+              </Button>
+            </div>
+          )}
+        </Card>
 
         <p className="text-xs text-muted-foreground text-center pt-4">{t("parentReadOnlyNote")}</p>
       </div>
