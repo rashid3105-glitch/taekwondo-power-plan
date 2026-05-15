@@ -69,6 +69,38 @@ export default function Diary() {
   useEffect(() => { localStorage.setItem("diary-view", viewMode); }, [viewMode]);
   useEffect(() => { localStorage.setItem("diary-range", dateRange); }, [dateRange]);
 
+  const [recording, setRecording] = useState(false);
+  const recognitionRef = useRef<any>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+
+  const toggleRecording = () => {
+    if (recording) {
+      recognitionRef.current?.stop();
+      setRecording(false);
+      return;
+    }
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast({ title: t("diaryRecordNotSupported"), variant: "destructive" });
+      return;
+    }
+    const rec = new SpeechRecognition();
+    rec.lang = "da-DK";
+    rec.continuous = true;
+    rec.interimResults = false;
+    rec.onresult = (e: any) => {
+      const transcript = Array.from(e.results)
+        .map((r: any) => r[0].transcript)
+        .join(" ");
+      setContent((prev) => (prev ? prev + " " + transcript : transcript).trim());
+    };
+    rec.onerror = () => setRecording(false);
+    rec.onend = () => setRecording(false);
+    rec.start();
+    recognitionRef.current = rec;
+    setRecording(true);
+  };
+
   useEffect(() => {
     void (async () => {
       const { data: { user } } = await supabase.auth.getUser();
