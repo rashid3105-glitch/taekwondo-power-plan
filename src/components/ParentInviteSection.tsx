@@ -135,12 +135,19 @@ export function ParentInviteSection() {
       </div>
       <p className="text-xs text-muted-foreground">{t("parentPortalDesc")}</p>
 
-      {!code ? (
+      {!code && !onCooldown && (
         <Button size="sm" onClick={generate} disabled={loading} className="w-full gap-2">
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Users className="h-4 w-4" />}
           {t("parentGenerateLink")}
         </Button>
-      ) : (
+      )}
+      {!code && onCooldown && cooldownUntil && (
+        <div className="rounded-lg bg-muted/50 px-3 py-2 text-xs text-muted-foreground text-center space-y-1">
+          <p className="font-medium">{t("parentLinkCooldown")}</p>
+          <p>{t("parentLinkCooldownDesc").replace("{{time}}", cooldownUntil.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }))}</p>
+        </div>
+      )}
+      {code && (
         <>
           <Input readOnly value={inviteUrl} className="font-mono text-xs" onFocus={(e) => e.target.select()} />
           <div className="grid grid-cols-3 gap-2">
@@ -159,6 +166,7 @@ export function ParentInviteSection() {
               </a>
             </Button>
           </div>
+          <p className="text-[10px] text-muted-foreground text-center">{t("parentLinkSingleUse")}</p>
         </>
       )}
 
