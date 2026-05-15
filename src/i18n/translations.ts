@@ -10939,6 +10939,8 @@ const translations = {
     parentConfirmDesc: "أنت مسجل الدخول بالفعل. أكّد لربط حسابك بهذا الرياضي.",
     loginToLinkParent: "سجّل الدخول لربط حسابك",
     parentLinkCooldown: "يرجى الانتظار قبل إنشاء رابط جديد",
+    parentLinkedSince: "مرتبط منذ",
+    parentMaxReached: "تم ربط 2 من أولياء الأمور كحد أقصى. احذف أحدهم لإنشاء دعوة جديدة.",
     parentLinkCooldownDesc: "يمكن إنشاء رابط دعوة جديد بعد {{time}}",
     parentLinkSingleUse: "يمكن استخدام هذا الرابط مرة واحدة فقط وينتهي فور استخدامه",
     parentDashboardTitle: "لوحة تحكم ولي الأمر",
