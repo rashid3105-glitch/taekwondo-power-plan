@@ -8728,6 +8728,8 @@ const translations = {
     changelogEntry112: "Wettkampfreflexion neu gestaltet — Bewertungen verwenden jetzt tippbare Karten statt Schieberegler, und der Reflexionsschritt ist jetzt eine einfache Checkliste (was gut lief / woran zu arbeiten ist) plus ein Textfeld",
     changelogEntry113: "Aktionsplan nach dem Wettkampf vereinfacht — zeigt jetzt eine 1-2 Sätze Zusammenfassung, bis zu 2 Stärken, bis zu 2 Fokusgebiete jeweils mit einem praktischen Tipp, und ein klares nächstes Ziel",
     changelogEntry114: "Mentale Bewertungsfragen wechseln jetzt bei jedem Start zwischen verschiedenen Formulierungen — damit du wirklich über jede Frage nachdenkst statt auf Autopilot zu antworten. KI-Ratschläge passen jetzt ihre Sprache deinem Alter an: einfacher für unter 16, direkter für Erwachsene",
+    changelog_2026_05_15: "15. Mai 2026",
+    changelogEntry116: "Trainer erhalten jetzt eine E-Mail-Benachrichtigung wenn ein Athlet einen Tagebucheintrag speichert oder eine Wettkampfreflexion abschließt — max. eine Benachrichtigung pro Athlet pro 24 Stunden",
     changelog_2026_05_14b: "14. Mai 2026",
     changelogEntry115: "Elternportal: Athleten unter 18 können jetzt einem Elternteil dauerhaften Lesezugriff auf Trainingspläne, Wettkampfergebnisse und Anwesenheit gewähren — Tagebuch und mentale Daten bleiben privat",
     parentPortalTitle: "Elternzugang",
