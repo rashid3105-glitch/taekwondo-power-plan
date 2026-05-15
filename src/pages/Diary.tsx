@@ -315,14 +315,29 @@ export default function Diary() {
 
             <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-auto h-11" />
 
-            <Textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder={t("diaryPlaceholder")}
-              rows={4}
-              maxLength={5000}
-              className="resize-none"
-            />
+            <div className="relative">
+              <Textarea
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                placeholder={t("diaryPlaceholder")}
+                rows={4}
+                maxLength={5000}
+                className="resize-none pr-12"
+              />
+              <button
+                type="button"
+                onClick={toggleRecording}
+                className={cn(
+                  "absolute bottom-2 right-2 h-8 w-8 rounded-full flex items-center justify-center transition-colors",
+                  recording
+                    ? "bg-destructive text-destructive-foreground animate-pulse"
+                    : "bg-muted text-muted-foreground hover:text-foreground"
+                )}
+                title={recording ? t("diaryRecording") : t("diaryRecordNote")}
+              >
+                {recording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+              </button>
+            </div>
 
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
