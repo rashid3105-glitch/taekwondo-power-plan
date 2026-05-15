@@ -43,15 +43,16 @@ Deno.serve(async (req) => {
   const userClient = createClient(supabaseUrl, supabaseAnonKey, {
     global: { headers: { Authorization: authHeader } },
   })
-  const { data: claimsData, error: claimsError } = await userClient.auth.getClaims(
-    authHeader.replace('Bearer ', '')
-  )
-  if (claimsError || !claimsData?.claims?.sub) {
+  const token = authHeader.replace('Bearer ', '')
+  const { data: userData, error: userError } = await userClient.auth.getUser(token)
+  if (userError || !userData?.user) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {
       status: 401,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   }
+  const callerUserId = userData.user.id
+  const callerEmail = userData.user.email
   const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
 
   if (!supabaseUrl || !supabaseServiceKey) {
@@ -136,10 +137,9 @@ Deno.serve(async (req) => {
   // Security: if template has no fixed `to`, restrict non-admin callers
   // to only send emails to their own address.
   if (!template.to && recipientEmail) {
-    const callerEmail = claimsData.claims.email as string | undefined
     if (callerEmail?.toLowerCase() !== recipientEmail.toLowerCase()) {
       // Check if caller is admin
-      const { data: isAdmin } = await userClient.rpc('is_admin', { _user_id: claimsData.claims.sub })
+      const { data: isAdmin } = await userClient.rpc('is_admin', { _user_id: callerUserId })
       if (!isAdmin) {
         return new Response(
           JSON.stringify({ error: 'You can only send emails to your own address' }),

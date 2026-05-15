@@ -1,7 +1,12 @@
 // Notifies all coaches in the athlete's club when the athlete saves a diary
 // entry or completes a competition reflection. Enforces a 24h cooldown per
 // athlete per activity type by checking email_send_log metadata.
+// Sends emails directly via Resend (bypasses send-transactional-email's
+// per-user auth restriction since this is a server-to-server notification).
 import { createClient } from "npm:@supabase/supabase-js@2";
+import * as React from "npm:react@18.3.1";
+import { renderAsync } from "npm:@react-email/components@0.0.22";
+import { TEMPLATES } from "../_shared/transactional-email-templates/registry.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -75,73 +80,91 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Find approved coaches in the same club
-    const { data: roleRows } = await admin
-      .from("user_roles")
-      .select("user_id")
-      .eq("role", "coach");
-    const coachIds = (roleRows || []).map((r: any) => r.user_id);
-    if (coachIds.length === 0) {
-      return new Response(JSON.stringify({ queued: 0, reason: "no_coaches" }), {
+    // Find coaches: profiles in this club who are referenced as coach_id
+    // by other profiles in the same club.
+    const { data: athleteProfiles } = await admin
+      .from("profiles")
+      .select("coach_id")
+      .eq("club_id", clubId)
+      .not("coach_id", "is", null);
+
+    const coachIdSet = new Set(
+      (athleteProfiles || []).map((r: any) => r.coach_id).filter(Boolean),
+    );
+    const coachUserIds = Array.from(coachIdSet) as string[];
+
+    if (coachUserIds.length === 0) {
+      return new Response(JSON.stringify({ queued: 0, reason: "no_coaches_found" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
     const { data: coachProfiles } = await admin
       .from("profiles")
       .select("user_id, display_name")
-      .in("user_id", coachIds)
-      .eq("club_id", clubId)
-      .eq("is_approved", true);
+      .in("user_id", coachUserIds)
+      .eq("is_approved", true)
+      .neq("user_id", athleteUserId);
 
     if (!coachProfiles || coachProfiles.length === 0) {
-      return new Response(JSON.stringify({ queued: 0, reason: "no_club_coaches" }), {
+      return new Response(JSON.stringify({ queued: 0, reason: "no_approved_coaches" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const dayBucket = new Date().toISOString().slice(0, 10);
+    const resendKey = Deno.env.get("RESEND_API_KEY");
+    if (!resendKey) {
+      console.error("RESEND_API_KEY not set");
+      return new Response(JSON.stringify({ queued: 0, reason: "missing_resend_key" }), {
+        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const templateEntry = TEMPLATES["athlete-activity-notification"];
+    const templateData = { athleteName, activityType, competitionName };
+    const html = await renderAsync(
+      React.createElement(templateEntry.component, templateData),
+    );
+    const subject = typeof templateEntry.subject === "function"
+      ? templateEntry.subject(templateData)
+      : templateEntry.subject;
+
     let queued = 0;
     for (const coach of coachProfiles) {
       const { data: au } = await admin.auth.admin.getUserById(coach.user_id);
       const coachEmail = au?.user?.email;
       if (!coachEmail) continue;
 
-      const idemKey = `athlete-activity-${athleteUserId}-${activityType}-${coach.user_id}-${dayBucket}`;
-
-      // Pre-insert log row carrying metadata (so cooldown lookup matches even
-      // before the queue dispatcher runs). The send function will append its
-      // own 'pending'/'sent' rows; this 'queued' row is only used by us.
-      await admin.from("email_send_log").insert({
-        template_name: "athlete-activity-notification",
-        recipient_email: coachEmail,
-        status: "pending",
-        metadata: {
-          athlete_user_id: athleteUserId,
-          activity_type: activityType,
-          coach_user_id: coach.user_id,
-          source: "notify-coaches-athlete-activity",
-        },
-      });
-
-      const resp = await fetch(`${supabaseUrl}/functions/v1/send-transactional-email`, {
+      const resendRes = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {
+          "Authorization": `Bearer ${resendKey}`,
           "Content-Type": "application/json",
-          Authorization: authHeader,
-          apikey: anonKey,
         },
         body: JSON.stringify({
-          templateName: "athlete-activity-notification",
-          recipientEmail: coachEmail,
-          idempotencyKey: idemKey,
-          templateData: {
-            athleteName,
-            activityType,
-            competitionName,
-          },
+          from: "Sportstalent.dk <noreply@sportstalent.dk>",
+          to: [coachEmail],
+          subject,
+          html,
         }),
       });
-      if (resp.ok) queued++;
+
+      if (resendRes.ok) {
+        queued++;
+        await admin.from("email_send_log").insert({
+          template_name: "athlete-activity-notification",
+          recipient_email: coachEmail,
+          status: "sent",
+          metadata: {
+            athlete_user_id: athleteUserId,
+            activity_type: activityType,
+            coach_user_id: coach.user_id,
+          },
+        }).then(() => {}, () => {});
+      } else {
+        const err = await resendRes.text();
+        console.error("Resend error", { coachEmail, err });
+      }
     }
 
     return new Response(JSON.stringify({ queued }), {
