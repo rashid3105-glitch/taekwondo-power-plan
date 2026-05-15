@@ -154,12 +154,15 @@ export default function Diary() {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const confirmDelete = async () => {
+    if (!deleteConfirmId) return;
     try {
-      await removeEntry(id);
+      await removeEntry(deleteConfirmId);
       toast({ title: t("diaryDeleted") });
     } catch (e: any) {
       toast({ title: t("error"), description: e.message, variant: "destructive" });
+    } finally {
+      setDeleteConfirmId(null);
     }
   };
 
