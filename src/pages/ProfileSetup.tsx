@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useAvatarUrl } from "@/hooks/useAvatarUrl";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -73,6 +73,8 @@ export default function ProfileSetup() {
   const [galLicenseExpires, setGalLicenseExpires] = useState("");
   const [hasMyFightBook, setHasMyFightBook] = useState(false);
   const [myFightBookExpires, setMyFightBookExpires] = useState("");
+  const [tkdStartDate, setTkdStartDate] = useState("");
+  const [birthDate, setBirthDate] = useState("");
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -80,6 +82,34 @@ export default function ProfileSetup() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, locale, setLocale } = useLanguage();
+
+  const isBirthdayToday = useMemo(() => {
+    if (!birthDate) return false;
+    const today = new Date();
+    const bd = new Date(birthDate);
+    return bd.getDate() === today.getDate() && bd.getMonth() === today.getMonth();
+  }, [birthDate]);
+
+  const derivedAge = useMemo(() => {
+    if (!birthDate) return age;
+    const today = new Date();
+    const bd = new Date(birthDate);
+    let a = today.getFullYear() - bd.getFullYear();
+    const m = today.getMonth() - bd.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < bd.getDate())) a--;
+    return a > 0 ? String(a) : "";
+  }, [birthDate, age]);
+
+  const derivedExperience = useMemo(() => {
+    if (!tkdStartDate) return experience;
+    const start = new Date(tkdStartDate);
+    const today = new Date();
+    const years = today.getFullYear() - start.getFullYear();
+    const m = today.getMonth() - start.getMonth();
+    const adj = m < 0 || (m === 0 && today.getDate() < start.getDate()) ? 1 : 0;
+    const y = Math.max(0, years - adj);
+    return y > 0 ? String(y) : "0";
+  }, [tkdStartDate, experience]);
 
   useEffect(() => {
     const loadProfileSetupData = async () => {
@@ -94,7 +124,7 @@ export default function ProfileSetup() {
           supabase.from("clubs" as any).select("id, name").order("name"),
           supabase
             .from("profiles")
-            .select("age, weight_kg, belt_level, experience_years, discipline, goals, weekly_schedule, program_weeks, current_injury, avatar_url, club_id, country, custom_calories, default_locale, gal_license, gal_license_expires_at, has_myfightbook, myfightbook_expires_at")
+            .select("age, weight_kg, belt_level, experience_years, discipline, goals, weekly_schedule, program_weeks, current_injury, avatar_url, club_id, country, custom_calories, default_locale, gal_license, gal_license_expires_at, has_myfightbook, myfightbook_expires_at, tkd_start_date, birth_date")
             .eq("user_id", user.id)
             .maybeSingle(),
         ]);
@@ -125,6 +155,8 @@ export default function ProfileSetup() {
           setGalLicenseExpires(profileData.gal_license_expires_at || "");
           setHasMyFightBook(!!profileData.has_myfightbook);
           setMyFightBookExpires(profileData.myfightbook_expires_at || "");
+          setTkdStartDate(profileData.tkd_start_date || "");
+          setBirthDate(profileData.birth_date || "");
           
         }
       } catch (err: any) {
@@ -278,10 +310,10 @@ export default function ProfileSetup() {
       const cleanAvatarUrl = avatarUrl ? avatarUrl.split("?")[0] : null;
 
       const payload = {
-        age: age ? parseInt(age) : null,
+        age: derivedAge ? parseInt(derivedAge) : null,
         weight_kg: weight ? parseFloat(weight) : null,
         belt_level: belt,
-        experience_years: experience ? parseInt(experience) : null,
+        experience_years: derivedExperience ? parseInt(derivedExperience) : null,
         tkd_sessions_per_week: tkdCount,
         goals,
         weekly_schedule: schedule,
@@ -296,7 +328,8 @@ export default function ProfileSetup() {
         gal_license_expires_at: galLicenseExpires || null,
         has_myfightbook: hasMyFightBook,
         myfightbook_expires_at: hasMyFightBook && myFightBookExpires ? myFightBookExpires : null,
-        
+        tkd_start_date: tkdStartDate || null,
+        birth_date: birthDate || null,
         avatar_url: cleanAvatarUrl,
       };
 
@@ -463,15 +496,47 @@ export default function ProfileSetup() {
             </select>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
-              <Label htmlFor="age">{t("age")}</Label>
-              <Input id="age" type="number" inputMode="numeric" value={age} onChange={(e) => setAge(e.target.value)} placeholder="25" />
+              <Label htmlFor="birthDate">{t("birthDate")}</Label>
+              <p className="text-xs text-muted-foreground mb-1">{t("birthDateHint")}</p>
+              <Input
+                id="birthDate"
+                type="date"
+                value={birthDate}
+                onChange={(e) => setBirthDate(e.target.value)}
+                max={new Date().toISOString().split("T")[0]}
+              />
+              {birthDate && derivedAge && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  {t("profileAge")}: <span className="font-semibold text-foreground">{derivedAge} {t("years")}</span>
+                  {isBirthdayToday && (
+                    <span className="ml-2 text-primary font-semibold">🎂 {t("happyBirthday")}</span>
+                  )}
+                </p>
+              )}
             </div>
             <div>
-              <Label htmlFor="weight">{t("weightKg")}</Label>
-              <Input id="weight" type="number" inputMode="decimal" step="0.1" value={weight} onChange={(e) => setWeight(e.target.value)} placeholder="70" />
+              <Label htmlFor="tkdStartDate">{t("tkdStartDate")}</Label>
+              <p className="text-xs text-muted-foreground mb-1">{t("tkdStartDateHint")}</p>
+              <Input
+                id="tkdStartDate"
+                type="date"
+                value={tkdStartDate}
+                onChange={(e) => setTkdStartDate(e.target.value)}
+                max={new Date().toISOString().split("T")[0]}
+              />
+              {tkdStartDate && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  {t("profileExperience")}: <span className="font-semibold text-foreground">{derivedExperience} {t("years")}</span>
+                </p>
+              )}
             </div>
+          </div>
+
+          <div>
+            <Label htmlFor="weight">{t("weightKg")}</Label>
+            <Input id="weight" type="number" inputMode="decimal" step="0.1" value={weight} onChange={(e) => setWeight(e.target.value)} placeholder="70" />
           </div>
 
           <div>
@@ -488,24 +553,18 @@ export default function ProfileSetup() {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3 sm:gap-4">
-            <div>
-              <Label htmlFor="belt">{t("beltLevel")}</Label>
-              <select
-                id="belt"
-                value={belt}
-                onChange={(e) => setBelt(e.target.value)}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                {BELT_LEVELS.map((b) => (
-                  <option key={b} value={b}>{t(b)} {t("belt")}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <Label htmlFor="exp">{t("yearsOfExperience")}</Label>
-              <Input id="exp" type="number" inputMode="numeric" value={experience} onChange={(e) => setExperience(e.target.value)} placeholder="3" />
-            </div>
+          <div>
+            <Label htmlFor="belt">{t("beltLevel")}</Label>
+            <select
+              id="belt"
+              value={belt}
+              onChange={(e) => setBelt(e.target.value)}
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              {BELT_LEVELS.map((b) => (
+                <option key={b} value={b}>{t(b)} {t("belt")}</option>
+              ))}
+            </select>
           </div>
 
           <div className="rounded-lg border border-border bg-muted/20 p-3 space-y-3">
@@ -651,7 +710,7 @@ export default function ProfileSetup() {
           <PublicProfileSettings />
         </div>
 
-        {(!age || parseInt(age, 10) < 18) && (
+        {(!derivedAge || parseInt(derivedAge, 10) < 18) && (
           <div className="mt-6">
             <ParentInviteSection />
           </div>

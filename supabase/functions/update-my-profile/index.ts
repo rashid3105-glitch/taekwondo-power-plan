@@ -43,6 +43,8 @@ const UpdateProfileSchema = z.object({
   gal_license_expires_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
   has_myfightbook: z.boolean().optional(),
   myfightbook_expires_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
+  tkd_start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
+  birth_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
   avatar_url: z
     .string()
     .max(500)
