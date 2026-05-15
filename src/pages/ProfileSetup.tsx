@@ -73,6 +73,8 @@ export default function ProfileSetup() {
   const [galLicenseExpires, setGalLicenseExpires] = useState("");
   const [hasMyFightBook, setHasMyFightBook] = useState(false);
   const [myFightBookExpires, setMyFightBookExpires] = useState("");
+  const [tkdStartDate, setTkdStartDate] = useState("");
+  const [birthDate, setBirthDate] = useState("");
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
