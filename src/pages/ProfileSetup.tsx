@@ -135,6 +135,10 @@ export default function ProfileSetup() {
         setClubs((clubsRes.data ?? []) as unknown as ClubOption[]);
 
         const profileData = profileRes.data as any;
+        if (profileData?.is_parent === true) {
+          navigate("/parent-dashboard");
+          return;
+        }
         if (profileData) {
           setAge(profileData.age?.toString() || "");
           setWeight(profileData.weight_kg?.toString() || "");

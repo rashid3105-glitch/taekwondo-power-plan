@@ -24,6 +24,8 @@ export function ParentInviteSection() {
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [parents, setParents] = useState<LinkedParent[]>([]);
+  const [onCooldown, setOnCooldown] = useState(false);
+  const [cooldownUntil, setCooldownUntil] = useState<Date | null>(null);
 
   const inviteUrl = code ? `https://sportstalent.dk/parent-join/${code}` : "";
   const shareMessage = code
@@ -46,6 +48,23 @@ export function ParentInviteSection() {
         .limit(1)
         .maybeSingle();
       if (existing && (existing as any).code) setCode((existing as any).code);
+
+      const { data: recentUsed } = await supabase
+        .from("parent_invites" as any)
+        .select("used_at")
+        .eq("athlete_id", user.id)
+        .not("used_at", "is", null)
+        .order("used_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (recentUsed && (recentUsed as any).used_at) {
+        const usedAt = new Date((recentUsed as any).used_at);
+        const until = new Date(usedAt.getTime() + 60 * 60 * 1000);
+        if (until > new Date()) {
+          setOnCooldown(true);
+          setCooldownUntil(until);
+        }
+      }
 
       // Load linked parents
       const { data: links } = await supabase
@@ -72,6 +91,10 @@ export function ParentInviteSection() {
 
   const generate = async () => {
     if (!userId) return;
+    if (onCooldown) {
+      toast({ title: t("parentLinkCooldown"), variant: "destructive" });
+      return;
+    }
     setLoading(true);
     try {
       const newCode = generateCode();
@@ -112,12 +135,19 @@ export function ParentInviteSection() {
       </div>
       <p className="text-xs text-muted-foreground">{t("parentPortalDesc")}</p>
 
-      {!code ? (
+      {!code && !onCooldown && (
         <Button size="sm" onClick={generate} disabled={loading} className="w-full gap-2">
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Users className="h-4 w-4" />}
           {t("parentGenerateLink")}
         </Button>
-      ) : (
+      )}
+      {!code && onCooldown && cooldownUntil && (
+        <div className="rounded-lg bg-muted/50 px-3 py-2 text-xs text-muted-foreground text-center space-y-1">
+          <p className="font-medium">{t("parentLinkCooldown")}</p>
+          <p>{t("parentLinkCooldownDesc").replace("{{time}}", cooldownUntil.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }))}</p>
+        </div>
+      )}
+      {code && (
         <>
           <Input readOnly value={inviteUrl} className="font-mono text-xs" onFocus={(e) => e.target.select()} />
           <div className="grid grid-cols-3 gap-2">
@@ -136,6 +166,7 @@ export function ParentInviteSection() {
               </a>
             </Button>
           </div>
+          <p className="text-[10px] text-muted-foreground text-center">{t("parentLinkSingleUse")}</p>
         </>
       )}
 
