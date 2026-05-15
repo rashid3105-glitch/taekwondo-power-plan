@@ -83,6 +83,34 @@ export default function ProfileSetup() {
   const { toast } = useToast();
   const { t, locale, setLocale } = useLanguage();
 
+  const isBirthdayToday = useMemo(() => {
+    if (!birthDate) return false;
+    const today = new Date();
+    const bd = new Date(birthDate);
+    return bd.getDate() === today.getDate() && bd.getMonth() === today.getMonth();
+  }, [birthDate]);
+
+  const derivedAge = useMemo(() => {
+    if (!birthDate) return age;
+    const today = new Date();
+    const bd = new Date(birthDate);
+    let a = today.getFullYear() - bd.getFullYear();
+    const m = today.getMonth() - bd.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < bd.getDate())) a--;
+    return a > 0 ? String(a) : "";
+  }, [birthDate, age]);
+
+  const derivedExperience = useMemo(() => {
+    if (!tkdStartDate) return experience;
+    const start = new Date(tkdStartDate);
+    const today = new Date();
+    const years = today.getFullYear() - start.getFullYear();
+    const m = today.getMonth() - start.getMonth();
+    const adj = m < 0 || (m === 0 && today.getDate() < start.getDate()) ? 1 : 0;
+    const y = Math.max(0, years - adj);
+    return y > 0 ? String(y) : "0";
+  }, [tkdStartDate, experience]);
+
   useEffect(() => {
     const loadProfileSetupData = async () => {
       try {
