@@ -101,15 +101,27 @@ export default function ParentJoin() {
       });
       if (error) throw error;
       const userId = data.user?.id;
-      if (!userId) throw new Error("Signup failed");
+      if (!userId) throw new Error("Signup failed — no user ID returned");
 
-      await supabase.from("profiles").upsert({
-        user_id: userId,
-        display_name: `${firstName.trim()} ${lastName.trim()}`.trim(),
-        phone: phone.trim(),
-        is_parent: true,
-        onboarding_complete: true,
-      } as any, { onConflict: "user_id" });
+      const displayName = `${firstName.trim()} ${lastName.trim()}`.trim();
+
+      let upsertError: any = null;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        if (attempt > 0) await new Promise((r) => setTimeout(r, 500));
+        const { error: upErr } = await supabase.from("profiles").upsert(
+          {
+            user_id: userId,
+            display_name: displayName,
+            phone: phone.trim(),
+            is_parent: true,
+            onboarding_complete: true,
+          } as any,
+          { onConflict: "user_id" },
+        );
+        if (!upErr) { upsertError = null; break; }
+        upsertError = upErr;
+      }
+      if (upsertError) console.warn("Profile upsert warning:", upsertError.message);
 
       await acceptInvite();
       toast({ title: t("parentJoinSuccess") });
