@@ -183,7 +183,14 @@ export function ParentInviteSection() {
           <div className="text-xs font-semibold text-muted-foreground">{t("parentActiveParents")}</div>
           {parents.map((p) => (
             <div key={p.id} className="flex items-center justify-between rounded-lg bg-muted/40 px-3 py-2">
-              <span className="text-sm">{p.display_name}</span>
+              <div>
+                <div className="text-sm font-medium">{p.display_name}</div>
+                {p.linked_at && (
+                  <div className="text-[10px] text-muted-foreground">
+                    {t("parentLinkedSince")} {new Date(p.linked_at).toLocaleDateString()}
+                  </div>
+                )}
+              </div>
               <Button type="button" size="sm" variant="ghost" onClick={() => removeParent(p.id)} className="h-7 gap-1 text-destructive">
                 <Trash2 className="h-3.5 w-3.5" /> {t("parentRemoveAccess")}
               </Button>
