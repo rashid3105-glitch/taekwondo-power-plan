@@ -14,6 +14,7 @@ interface LinkedParent {
   id: string;
   parent_user_id: string;
   display_name?: string;
+  linked_at?: string;
 }
 
 export function ParentInviteSection() {
