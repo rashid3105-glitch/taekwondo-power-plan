@@ -6526,6 +6526,8 @@ const translations = {
     changelogEntry112: "Tävlingsutvärdering omdesignad — betyg använder nu klickbara kort istället för reglage, och reflektionssteget är nu en enkel checklista (vad gick bra / vad att jobba på) plus ett textfält",
     changelogEntry113: "Handlingsplan efter tävling förenklad — visar nu 1-2 meningars sammanfattning, upp till 2 styrkor, upp till 2 fokusområden med ett praktiskt tips vardera, och ett tydligt nästa mål",
     changelogEntry114: "Mentala bedömningsfrågor roterar nu mellan olika formuleringar varje gång du startar — så att du faktiskt tänker på varje fråga istället för att svara på autopilot. AI-råd anpassar nu sitt språk till din ålder: enklare för under 16, mer direkt för vuxna",
+    changelog_2026_05_15: "15 maj 2026",
+    changelogEntry116: "Tränare får nu ett e-postmeddelande när en atlet sparar ett dagboksinlägg eller slutför en tävlingsutvärdering — max ett meddelande per atlet per 24 timmar",
     changelog_2026_05_14b: "14 maj 2026",
     changelogEntry115: "Föräldraport: atleter under 18 kan nu bjuda in en förälder med permanent läsåtkomst till träningsplaner, tävlingsresultat och närvaro — dagbok och mentala data förblir privata för atleten",
     parentPortalTitle: "Föräldraåtkomst",
