@@ -328,7 +328,8 @@ export default function ProfileSetup() {
         gal_license_expires_at: galLicenseExpires || null,
         has_myfightbook: hasMyFightBook,
         myfightbook_expires_at: hasMyFightBook && myFightBookExpires ? myFightBookExpires : null,
-        
+        tkd_start_date: tkdStartDate || null,
+        birth_date: birthDate || null,
         avatar_url: cleanAvatarUrl,
       };
 
