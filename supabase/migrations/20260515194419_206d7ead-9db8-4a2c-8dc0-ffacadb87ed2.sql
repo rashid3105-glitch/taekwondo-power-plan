@@ -1,0 +1,1 @@
+DELETE FROM public.email_send_log WHERE template_name = 'athlete-activity-notification' AND status = 'pending';
