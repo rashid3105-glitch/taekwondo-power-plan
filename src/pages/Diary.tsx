@@ -1,4 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { AppFooter } from "@/components/AppFooter";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,7 +15,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import {
   Zap, ArrowLeft, Plus, Trash2, Edit2, Save, X, SmilePlus,
   Frown, Meh, Smile, Laugh, BatteryLow, BatteryMedium, BatteryFull,
-  Search, ChevronDown, ChevronRight, Filter,
+  Search, ChevronDown, ChevronRight, Filter, Mic, MicOff,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Watermark } from "@/components/Watermark";
@@ -63,6 +68,38 @@ export default function Diary() {
 
   useEffect(() => { localStorage.setItem("diary-view", viewMode); }, [viewMode]);
   useEffect(() => { localStorage.setItem("diary-range", dateRange); }, [dateRange]);
+
+  const [recording, setRecording] = useState(false);
+  const recognitionRef = useRef<any>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+
+  const toggleRecording = () => {
+    if (recording) {
+      recognitionRef.current?.stop();
+      setRecording(false);
+      return;
+    }
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast({ title: t("diaryRecordNotSupported"), variant: "destructive" });
+      return;
+    }
+    const rec = new SpeechRecognition();
+    rec.lang = "da-DK";
+    rec.continuous = true;
+    rec.interimResults = false;
+    rec.onresult = (e: any) => {
+      const transcript = Array.from(e.results)
+        .map((r: any) => r[0].transcript)
+        .join(" ");
+      setContent((prev) => (prev ? prev + " " + transcript : transcript).trim());
+    };
+    rec.onerror = () => setRecording(false);
+    rec.onend = () => setRecording(false);
+    rec.start();
+    recognitionRef.current = rec;
+    setRecording(true);
+  };
 
   useEffect(() => {
     void (async () => {
@@ -117,12 +154,15 @@ export default function Diary() {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const confirmDelete = async () => {
+    if (!deleteConfirmId) return;
     try {
-      await removeEntry(id);
+      await removeEntry(deleteConfirmId);
       toast({ title: t("diaryDeleted") });
     } catch (e: any) {
       toast({ title: t("error"), description: e.message, variant: "destructive" });
+    } finally {
+      setDeleteConfirmId(null);
     }
   };
 
@@ -275,14 +315,29 @@ export default function Diary() {
 
             <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-auto h-11" />
 
-            <Textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder={t("diaryPlaceholder")}
-              rows={4}
-              maxLength={5000}
-              className="resize-none"
-            />
+            <div className="relative">
+              <Textarea
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                placeholder={t("diaryPlaceholder")}
+                rows={4}
+                maxLength={5000}
+                className="resize-none pr-12"
+              />
+              <button
+                type="button"
+                onClick={toggleRecording}
+                className={cn(
+                  "absolute bottom-2 right-2 h-8 w-8 rounded-full flex items-center justify-center transition-colors",
+                  recording
+                    ? "bg-destructive text-destructive-foreground animate-pulse"
+                    : "bg-muted text-muted-foreground hover:text-foreground"
+                )}
+                title={recording ? t("diaryRecording") : t("diaryRecordNote")}
+              >
+                {recording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+              </button>
+            </div>
 
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
@@ -542,7 +597,7 @@ export default function Diary() {
                           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => startEdit(entry)}>
                             <Edit2 className="h-3.5 w-3.5" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleDelete(entry.id)}>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => setDeleteConfirmId(entry.id)}>
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>
                         </div>
@@ -564,6 +619,20 @@ export default function Diary() {
           })
         )}
       </main>
+      <AlertDialog open={!!deleteConfirmId} onOpenChange={(o) => { if (!o) setDeleteConfirmId(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("diaryDeleteConfirmTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>{t("diaryDeleteConfirmDesc")}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              {t("delete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <AppFooter />
     </div>
   );
