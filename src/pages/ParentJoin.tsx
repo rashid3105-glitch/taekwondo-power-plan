@@ -86,44 +86,26 @@ export default function ParentJoin() {
     if (!code || !validateSignup()) return;
     setSubmitting(true);
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email: email.trim(),
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/parent-dashboard`,
-          data: {
-            first_name: firstName.trim(),
-            last_name: lastName.trim(),
-            phone: phone.trim(),
-            is_parent: true,
-          },
+      const { data, error } = await supabase.functions.invoke("parent-signup", {
+        body: {
+          code,
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+          password,
         },
       });
       if (error) throw error;
-      const userId = data.user?.id;
-      if (!userId) throw new Error("Signup failed — no user ID returned");
+      if (!data?.ok) throw new Error(data?.error || "signup_failed");
 
-      const displayName = `${firstName.trim()} ${lastName.trim()}`.trim();
+      // Establish session for the auto-confirmed user
+      const { error: signInErr } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+      if (signInErr) throw signInErr;
 
-      let upsertError: any = null;
-      for (let attempt = 0; attempt < 3; attempt++) {
-        if (attempt > 0) await new Promise((r) => setTimeout(r, 500));
-        const { error: upErr } = await supabase.from("profiles").upsert(
-          {
-            user_id: userId,
-            display_name: displayName,
-            phone: phone.trim(),
-            is_parent: true,
-            onboarding_complete: true,
-          } as any,
-          { onConflict: "user_id" },
-        );
-        if (!upErr) { upsertError = null; break; }
-        upsertError = upErr;
-      }
-      if (upsertError) console.warn("Profile upsert warning:", upsertError.message);
-
-      await acceptInvite();
       toast({ title: t("parentJoinSuccess") });
       navigate("/parent-dashboard");
     } catch (e: any) {
