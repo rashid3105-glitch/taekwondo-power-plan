@@ -1177,6 +1177,7 @@ export type Database = {
           athlete_code: string | null
           avatar_url: string | null
           belt_level: string
+          birth_date: string | null
           club_id: string | null
           coach_athlete_count_band: string | null
           coach_club_name: string | null
@@ -1216,6 +1217,7 @@ export type Database = {
           public_show_videos: boolean
           rejection_reason: string | null
           tkd_sessions_per_week: number
+          tkd_start_date: string | null
           updated_at: string
           user_id: string
           weekly_schedule: Json | null
@@ -1226,6 +1228,7 @@ export type Database = {
           athlete_code?: string | null
           avatar_url?: string | null
           belt_level?: string
+          birth_date?: string | null
           club_id?: string | null
           coach_athlete_count_band?: string | null
           coach_club_name?: string | null
@@ -1265,6 +1268,7 @@ export type Database = {
           public_show_videos?: boolean
           rejection_reason?: string | null
           tkd_sessions_per_week?: number
+          tkd_start_date?: string | null
           updated_at?: string
           user_id: string
           weekly_schedule?: Json | null
@@ -1275,6 +1279,7 @@ export type Database = {
           athlete_code?: string | null
           avatar_url?: string | null
           belt_level?: string
+          birth_date?: string | null
           club_id?: string | null
           coach_athlete_count_band?: string | null
           coach_club_name?: string | null
@@ -1314,6 +1319,7 @@ export type Database = {
           public_show_videos?: boolean
           rejection_reason?: string | null
           tkd_sessions_per_week?: number
+          tkd_start_date?: string | null
           updated_at?: string
           user_id?: string
           weekly_schedule?: Json | null
