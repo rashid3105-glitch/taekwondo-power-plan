@@ -1210,6 +1210,7 @@ export type Database = {
           payment_status: string
           pending_coach_id: string | null
           pending_invite_code: string | null
+          phone: string | null
           program_weeks: number | null
           public_show_achievements: boolean
           public_show_competitions: boolean
@@ -1261,6 +1262,7 @@ export type Database = {
           payment_status?: string
           pending_coach_id?: string | null
           pending_invite_code?: string | null
+          phone?: string | null
           program_weeks?: number | null
           public_show_achievements?: boolean
           public_show_competitions?: boolean
@@ -1312,6 +1314,7 @@ export type Database = {
           payment_status?: string
           pending_coach_id?: string | null
           pending_invite_code?: string | null
+          phone?: string | null
           program_weeks?: number | null
           public_show_achievements?: boolean
           public_show_competitions?: boolean
