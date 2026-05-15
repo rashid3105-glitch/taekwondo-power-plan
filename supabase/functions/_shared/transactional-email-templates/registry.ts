@@ -14,6 +14,7 @@ import { template as eventReminder } from './event-reminder.tsx'
 import { template as coachProfileReady } from './coach-profile-ready.tsx'
 import { template as coachWeeklyDigest } from './coach-weekly-digest.tsx'
 import { template as coachMessage } from './coach-message.tsx'
+import { template as athleteActivityNotification } from './athlete-activity-notification.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'new-user-notification': newUserNotification,
@@ -21,4 +22,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'coach-profile-ready': coachProfileReady,
   'coach-weekly-digest': coachWeeklyDigest,
   'coach-message': coachMessage,
+  'athlete-activity-notification': athleteActivityNotification,
 }
