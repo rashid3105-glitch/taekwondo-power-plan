@@ -8737,6 +8737,8 @@ const translations = {
     parentConfirmDesc: "Du bist bereits eingeloggt. Bestätige um dein Konto mit diesem Athleten zu verknüpfen.",
     loginToLinkParent: "Einloggen um dein Konto zu verknüpfen",
     parentLinkCooldown: "Bitte warte bevor du einen neuen Link erstellst",
+    parentLinkedSince: "Verknüpft seit",
+    parentMaxReached: "Maximal 2 Elternteile verknüpft. Entferne eines um eine neue Einladung zu erstellen.",
     parentLinkCooldownDesc: "Ein neuer Einladungslink kann nach {{time}} erstellt werden",
     parentLinkSingleUse: "Dieser Link kann nur einmal verwendet werden und läuft sofort nach der Verwendung ab",
     parentDashboardTitle: "Eltern-Dashboard",
