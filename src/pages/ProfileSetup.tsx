@@ -310,10 +310,10 @@ export default function ProfileSetup() {
       const cleanAvatarUrl = avatarUrl ? avatarUrl.split("?")[0] : null;
 
       const payload = {
-        age: age ? parseInt(age) : null,
+        age: derivedAge ? parseInt(derivedAge) : null,
         weight_kg: weight ? parseFloat(weight) : null,
         belt_level: belt,
-        experience_years: experience ? parseInt(experience) : null,
+        experience_years: derivedExperience ? parseInt(derivedExperience) : null,
         tkd_sessions_per_week: tkdCount,
         goals,
         weekly_schedule: schedule,
