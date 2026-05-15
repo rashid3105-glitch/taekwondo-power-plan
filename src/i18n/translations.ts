@@ -4291,6 +4291,8 @@ const translations = {
     parentConfirmDesc: "Du er allerede logget ind. Bekræft for at tilknytte din konto til denne atlet.",
     loginToLinkParent: "Log ind for at tilknytte din konto",
     parentLinkCooldown: "Vent venligst inden du genererer et nyt link",
+    parentLinkedSince: "Tilknyttet siden",
+    parentMaxReached: "Maks. 2 forældre er tilknyttet. Fjern én for at generere en ny invitation.",
     parentLinkCooldownDesc: "Et nyt invite-link kan genereres efter {{time}}",
     parentLinkSingleUse: "Dette link kan kun bruges én gang og udløber straks efter brug",
     parentDashboardTitle: "Forældre-overblik",
