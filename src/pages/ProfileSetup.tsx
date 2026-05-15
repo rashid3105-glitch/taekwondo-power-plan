@@ -496,15 +496,47 @@ export default function ProfileSetup() {
             </select>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
-              <Label htmlFor="age">{t("age")}</Label>
-              <Input id="age" type="number" inputMode="numeric" value={age} onChange={(e) => setAge(e.target.value)} placeholder="25" />
+              <Label htmlFor="birthDate">{t("birthDate")}</Label>
+              <p className="text-xs text-muted-foreground mb-1">{t("birthDateHint")}</p>
+              <Input
+                id="birthDate"
+                type="date"
+                value={birthDate}
+                onChange={(e) => setBirthDate(e.target.value)}
+                max={new Date().toISOString().split("T")[0]}
+              />
+              {birthDate && derivedAge && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  {t("profileAge")}: <span className="font-semibold text-foreground">{derivedAge} {t("years")}</span>
+                  {isBirthdayToday && (
+                    <span className="ml-2 text-primary font-semibold">🎂 {t("happyBirthday")}</span>
+                  )}
+                </p>
+              )}
             </div>
             <div>
-              <Label htmlFor="weight">{t("weightKg")}</Label>
-              <Input id="weight" type="number" inputMode="decimal" step="0.1" value={weight} onChange={(e) => setWeight(e.target.value)} placeholder="70" />
+              <Label htmlFor="tkdStartDate">{t("tkdStartDate")}</Label>
+              <p className="text-xs text-muted-foreground mb-1">{t("tkdStartDateHint")}</p>
+              <Input
+                id="tkdStartDate"
+                type="date"
+                value={tkdStartDate}
+                onChange={(e) => setTkdStartDate(e.target.value)}
+                max={new Date().toISOString().split("T")[0]}
+              />
+              {tkdStartDate && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  {t("profileExperience")}: <span className="font-semibold text-foreground">{derivedExperience} {t("years")}</span>
+                </p>
+              )}
             </div>
+          </div>
+
+          <div>
+            <Label htmlFor="weight">{t("weightKg")}</Label>
+            <Input id="weight" type="number" inputMode="decimal" step="0.1" value={weight} onChange={(e) => setWeight(e.target.value)} placeholder="70" />
           </div>
 
           <div>
