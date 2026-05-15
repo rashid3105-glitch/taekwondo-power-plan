@@ -91,6 +91,10 @@ export function ParentInviteSection() {
 
   const generate = async () => {
     if (!userId) return;
+    if (onCooldown) {
+      toast({ title: t("parentLinkCooldown"), variant: "destructive" });
+      return;
+    }
     setLoading(true);
     try {
       const newCode = generateCode();
