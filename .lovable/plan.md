@@ -1,48 +1,45 @@
 ## Root cause
 
-Two real bugs combine to break the parent signup:
+The `parent-signup` edge function upserts a `phone` column into `profiles`, but that column doesn't exist. PostgREST returns:
 
-1. **No session after `auth.signUp`.** Email confirmation is required (per project policy), so `signUp` returns a user but no session. `auth.uid()` is `null` on the immediately-following RPC call → `accept_parent_invite` returns `not_authenticated`. The client-side `profiles.upsert` also silently fails RLS.
-2. **Wrong column name in the RPC.** It sets `onboarding_complete = true`, but the actual column is `onboarding_completed`. So even if auth worked, the RPC would error before flipping `is_approved`. And the `handle_new_user` trigger doesn't set `is_parent` or `is_approved`, so the parent ends up in the admin approval queue.
+```
+500 {"error":"Could not find the 'phone' column of 'profiles' in the schema cache"}
+```
 
-## Plan
+By that point the auth user is already created, so any retry hits `"A user with this email address has already been registered"`. The client surfaces only the generic `FunctionsHttpError` message ("Edge Function returned a non-2xx status code"), hiding the real reason.
 
-### 1. New edge function `parent-signup` (service role, public, no JWT)
+## Fix plan
 
-A single transactional endpoint that does everything server-side, bypassing the email-confirmation race:
+### 1. `supabase/functions/parent-signup/index.ts`
+- Remove `phone` from the `profiles` upsert. Phone is already saved in `auth.users.user_metadata` via `createUser`, which is sufficient.
+- If `createUser` returns "already registered", attempt to look up the existing user by email and, if `is_parent` is true OR they have no profile, treat it as a recoverable case: re-run profile upsert + invite link, return `{ ok: true }`. This makes the broken account self-heal on next attempt.
+- After a successful `createUser`, wrap the remaining steps in try/catch and on failure call `admin.auth.admin.deleteUser(userId)` so a partial failure doesn't leave an orphan auth user.
 
-Inputs: `code`, `firstName`, `lastName`, `email`, `phone`, `password`.
+### 2. `src/pages/ParentJoin.tsx` — show the real error
+Replace `if (error) throw error;` with code that reads the response body from `FunctionsHttpError`:
 
-Steps:
-- Validate inputs (zod, password strength server-side).
-- Look up invite: `code`, `used_at IS NULL`, `expires_at > now()`. Reject otherwise.
-- Create the auth user via admin API with `email_confirm: true` and metadata `{ first_name, last_name, phone, is_parent: true }`.
-- Upsert `profiles`: `display_name`, `phone`, `is_parent = true`, `is_approved = true`, `onboarding_completed = true`. (Service role bypasses RLS and the `club_id` guard.)
-- Mark invite used (`used_at`, `parent_user_id`) and insert `parent_athletes` link (idempotent).
-- Return `{ ok: true }` (or structured error).
+```ts
+if (error) {
+  let msg = error.message;
+  try { const body = await (error as any).context?.json?.(); if (body?.error) msg = body.error; } catch {}
+  throw new Error(msg);
+}
+```
 
-### 2. Fix `accept_parent_invite` RPC (migration)
+So users see "A user with this email address has already been registered" instead of the generic message.
 
-Replace `onboarding_complete` with `onboarding_completed` so the already-logged-in "confirm" path also works correctly.
+### 3. Repair the stuck account `farooq.rashid@signicat.com` (migration)
+One-off SQL to fix the existing broken parent so they can sign in and use the dashboard:
 
-### 3. Update `src/pages/ParentJoin.tsx`
-
-- `handleSignup` → call `supabase.functions.invoke("parent-signup", { body: { code, firstName, lastName, email, phone, password } })` instead of doing `signUp` + `upsert` + RPC client-side.
-- On success, call `signInWithPassword` with the same email/password to establish the session (works because the user is now auto-confirmed), then `navigate("/parent-dashboard")`.
-- Remove the 3-attempt upsert retry loop (no longer needed).
-- `phase === "confirm"` (already-logged-in) and `phase === "login"` paths keep using the RPC — they already have a session, and the RPC fix handles them.
+- Update their `profiles` row: `is_parent=true, is_approved=true, onboarding_completed=true`.
+- Insert a `parent_athletes` link to the athlete that owned the invite they redeemed (look up via the most recent `parent_invites` for that athlete, or — if the invite is still unused — mark it used and set `parent_user_id` to this user).
 
 ### 4. Verification
+- Curl `parent-signup` with a fresh invite + new email → expect `200 {ok:true}`, profile flipped, invite used, link inserted.
+- Curl again with same email → recovery branch should also return `200`.
+- In the UI, retry with the existing `farooq.rashid@signicat.com` account: signin path links them and lands on `/parent-dashboard`; if they try the signup path, the toast now shows the real "already registered" message.
 
-- New parent signup via invite link → no admin approval needed, lands directly on `/parent-dashboard`.
-- Already-logged-in user opens link → confirm button links the athlete.
-- Existing user opens link in `login` phase → logs in, links athlete.
-- `AdminApproval` pending list stays empty for parents (already filters `is_parent`).
-
-## Files
-
-- `supabase/functions/parent-signup/index.ts` (new)
-- `supabase/migrations/<new>.sql` — `CREATE OR REPLACE FUNCTION public.accept_parent_invite` with `onboarding_completed`
-- `src/pages/ParentJoin.tsx` — rewire `handleSignup`
-
-No changes to `ParentInviteSection`, RLS policies, or the admin queue.
+## Files changed
+- `supabase/functions/parent-signup/index.ts` — drop `phone` from upsert, add already-registered recovery, rollback on partial failure.
+- `src/pages/ParentJoin.tsx` — extract real error body from `FunctionsHttpError` in `handleSignup`.
+- New migration — repair the one stuck parent account.

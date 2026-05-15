@@ -42,7 +42,9 @@ Deno.serve(async (req) => {
 
     const displayName = `${firstName} ${lastName}`.trim();
 
-    // 2. Create auth user (auto-confirmed)
+    // 2. Create auth user (auto-confirmed). If already exists, recover.
+    let userId: string | null = null;
+    let createdNow = false;
     const { data: created, error: createErr } = await admin.auth.admin.createUser({
       email,
       password,
@@ -55,36 +57,74 @@ Deno.serve(async (req) => {
         is_parent: true,
       },
     });
-    if (createErr || !created.user) {
-      return json({ error: createErr?.message || "signup_failed" }, 400);
-    }
-    const userId = created.user.id;
 
-    // 3. Upsert profile (handle_new_user trigger may have inserted a row)
+    if (createErr || !created?.user) {
+      const msg = (createErr?.message || "").toLowerCase();
+      const alreadyExists = msg.includes("already") || msg.includes("registered");
+      if (!alreadyExists) {
+        return json({ error: createErr?.message || "signup_failed" }, 400);
+      }
+      // Recovery: find existing user by email
+      const { data: list, error: listErr } = await admin.auth.admin.listUsers({
+        page: 1,
+        perPage: 200,
+      });
+      if (listErr) return json({ error: listErr.message }, 500);
+      const existing = list?.users?.find((u) => (u.email || "").toLowerCase() === email);
+      if (!existing) return json({ error: "already_registered" }, 400);
+      // Verify the password matches before re-using the account
+      const anonClient = createClient(
+        Deno.env.get("SUPABASE_URL")!,
+        Deno.env.get("SUPABASE_ANON_KEY")!,
+        { auth: { persistSession: false } },
+      );
+      const { error: signInErr } = await anonClient.auth.signInWithPassword({ email, password });
+      if (signInErr) return json({ error: "already_registered" }, 400);
+      userId = existing.id;
+    } else {
+      userId = created.user.id;
+      createdNow = true;
+    }
+
+    // 3. Upsert profile (no `phone` column on profiles — phone lives in user_metadata)
     const { error: profErr } = await admin
       .from("profiles")
       .upsert(
         {
           user_id: userId,
           display_name: displayName,
-          phone,
           is_parent: true,
           is_approved: true,
           onboarding_completed: true,
         },
         { onConflict: "user_id" },
       );
-    if (profErr) return json({ error: profErr.message }, 500);
+    if (profErr) {
+      if (createdNow && userId) {
+        try { await admin.auth.admin.deleteUser(userId); } catch {}
+      }
+      return json({ error: profErr.message }, 500);
+    }
 
     // 4. Mark invite used and link parent_athletes
-    await admin
+    const { error: invUpdErr } = await admin
       .from("parent_invites")
       .update({ used_at: new Date().toISOString(), parent_user_id: userId })
       .eq("id", invite.id);
+    if (invUpdErr) {
+      if (createdNow && userId) {
+        try { await admin.auth.admin.deleteUser(userId); } catch {}
+      }
+      return json({ error: invUpdErr.message }, 500);
+    }
 
-    await admin
+    const { error: linkErr } = await admin
       .from("parent_athletes")
-      .insert({ parent_user_id: userId, athlete_id: invite.athlete_id });
+      .upsert(
+        { parent_user_id: userId, athlete_id: invite.athlete_id },
+        { onConflict: "parent_user_id,athlete_id", ignoreDuplicates: true },
+      );
+    if (linkErr) return json({ error: linkErr.message }, 500);
 
     return json({ ok: true, athlete_id: invite.athlete_id });
   } catch (e) {

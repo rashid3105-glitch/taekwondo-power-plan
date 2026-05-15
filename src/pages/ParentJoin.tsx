@@ -96,7 +96,14 @@ export default function ParentJoin() {
           password,
         },
       });
-      if (error) throw error;
+      if (error) {
+        let msg = error.message;
+        try {
+          const respBody = await (error as any).context?.json?.();
+          if (respBody?.error) msg = respBody.error;
+        } catch {}
+        throw new Error(msg);
+      }
       if (!data?.ok) throw new Error(data?.error || "signup_failed");
 
       // Establish session for the auto-confirmed user
