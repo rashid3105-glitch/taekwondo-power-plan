@@ -86,15 +86,30 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { data: athleteProfiles } = await admin
+    // Find coaches: query coach_athletes for coaches who have athletes in this club
+    const { data: clubAthletes } = await admin
       .from("profiles")
+      .select("user_id")
+      .eq("club_id", clubId);
+
+    const clubAthleteIds = (clubAthletes || []).map((r: any) => r.user_id);
+
+    if (clubAthleteIds.length === 0) {
+      return new Response(JSON.stringify({ queued: 0, reason: "no_athletes_in_club" }), {
+        headers: { ...cors, "Content-Type": "application/json" },
+      });
+    }
+
+    const { data: coachRows } = await admin
+      .from("coach_athletes")
       .select("coach_id")
-      .eq("club_id", clubId)
-      .not("coach_id", "is", null);
+      .in("athlete_id", clubAthleteIds);
+
     const coachIdSet = new Set(
-      (athleteProfiles || []).map((r: any) => r.coach_id).filter(Boolean),
+      (coachRows || []).map((r: any) => r.coach_id).filter(Boolean),
     );
     const coachUserIds = Array.from(coachIdSet) as string[];
+
     if (coachUserIds.length === 0) {
       return new Response(JSON.stringify({ queued: 0, reason: "no_coaches_found" }), {
         headers: { ...cors, "Content-Type": "application/json" },
