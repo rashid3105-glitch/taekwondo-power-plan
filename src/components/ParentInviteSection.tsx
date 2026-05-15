@@ -138,11 +138,16 @@ export function ParentInviteSection() {
       </div>
       <p className="text-xs text-muted-foreground">{t("parentPortalDesc")}</p>
 
-      {!code && !onCooldown && (
+      {!code && !onCooldown && !isFull && (
         <Button size="sm" onClick={generate} disabled={loading} className="w-full gap-2">
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Users className="h-4 w-4" />}
           {t("parentGenerateLink")}
         </Button>
+      )}
+      {!code && !onCooldown && isFull && (
+        <div className="rounded-lg bg-muted/50 px-3 py-2 text-xs text-muted-foreground text-center">
+          {t("parentMaxReached")}
+        </div>
       )}
       {!code && onCooldown && cooldownUntil && (
         <div className="rounded-lg bg-muted/50 px-3 py-2 text-xs text-muted-foreground text-center space-y-1">
