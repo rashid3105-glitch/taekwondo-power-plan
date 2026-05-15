@@ -27,6 +27,7 @@ export function ParentInviteSection() {
   const [parents, setParents] = useState<LinkedParent[]>([]);
   const [onCooldown, setOnCooldown] = useState(false);
   const [cooldownUntil, setCooldownUntil] = useState<Date | null>(null);
+  const isFull = parents.length >= 2;
 
   const inviteUrl = code ? `https://sportstalent.dk/parent-join/${code}` : "";
   const shareMessage = code
