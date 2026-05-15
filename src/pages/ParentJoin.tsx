@@ -2,16 +2,21 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Users, Clock } from "lucide-react";
+import { validatePassword } from "@/lib/passwordValidation";
 
 interface InviteInfo {
   valid: boolean;
   athlete_name?: string;
   athlete_belt?: string;
 }
+
+type Phase = "signup" | "login" | "confirm";
 
 export default function ParentJoin() {
   const { code } = useParams<{ code: string }>();
@@ -21,7 +26,15 @@ export default function ParentJoin() {
   const [info, setInfo] = useState<InviteInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [signedIn, setSignedIn] = useState<boolean | null>(null);
+  const [phase, setPhase] = useState<Phase>("signup");
+
+  // form state
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     (async () => {
@@ -30,19 +43,100 @@ export default function ParentJoin() {
         supabase.auth.getUser(),
       ]);
       setInfo((inv as any) || { valid: false });
-      setSignedIn(!!user);
+      setPhase(user ? "confirm" : "signup");
       setLoading(false);
     })();
   }, [code]);
 
-  const accept = async () => {
+  const acceptInvite = async () => {
+    const { data, error } = await supabase.rpc("accept_parent_invite" as any, { _code: code });
+    if (error) throw error;
+    const res = data as any;
+    if (!res?.ok) throw new Error(res?.error || "Failed");
+  };
+
+  const handleConfirm = async () => {
     if (!code) return;
     setSubmitting(true);
     try {
-      const { data, error } = await supabase.rpc("accept_parent_invite" as any, { _code: code });
+      await acceptInvite();
+      toast({ title: t("parentJoinSuccess") });
+      navigate("/parent-dashboard");
+    } catch (e: any) {
+      toast({ title: e.message || "Error", variant: "destructive" });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const validateSignup = () => {
+    const e: Record<string, string> = {};
+    if (!firstName.trim()) e.firstName = t("required" as any) || "Required";
+    if (!lastName.trim()) e.lastName = t("required" as any) || "Required";
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = t("invalidEmail" as any) || "Invalid email";
+    if (!phone.trim()) e.phone = t("required" as any) || "Required";
+    const pw = validatePassword(password);
+    if (!pw.ok) e.password = t(pw.messageKey as any) || "Password too weak";
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const handleSignup = async (ev: React.FormEvent) => {
+    ev.preventDefault();
+    if (!code || !validateSignup()) return;
+    setSubmitting(true);
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/parent-dashboard`,
+          data: {
+            first_name: firstName.trim(),
+            last_name: lastName.trim(),
+            phone: phone.trim(),
+            is_parent: true,
+          },
+        },
+      });
       if (error) throw error;
-      const res = data as any;
-      if (!res?.ok) throw new Error(res?.error || "Failed");
+      const userId = data.user?.id;
+      if (!userId) throw new Error("Signup failed");
+
+      await supabase.from("profiles").upsert({
+        user_id: userId,
+        display_name: `${firstName.trim()} ${lastName.trim()}`.trim(),
+        phone: phone.trim(),
+        is_parent: true,
+        onboarding_complete: true,
+      } as any, { onConflict: "user_id" });
+
+      await acceptInvite();
+      toast({ title: t("parentJoinSuccess") });
+      navigate("/parent-dashboard");
+    } catch (e: any) {
+      toast({ title: e.message || "Error", variant: "destructive" });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const validateLogin = () => {
+    const e: Record<string, string> = {};
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = t("invalidEmail" as any) || "Invalid email";
+    if (!password) e.password = t("required" as any) || "Required";
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const handleLogin = async (ev: React.FormEvent) => {
+    ev.preventDefault();
+    if (!code || !validateLogin()) return;
+    setSubmitting(true);
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+      if (error) throw error;
+      await acceptInvite();
       toast({ title: t("parentJoinSuccess") });
       navigate("/parent-dashboard");
     } catch (e: any) {
@@ -61,7 +155,7 @@ export default function ParentJoin() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4">
+    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-sm space-y-6">
         <div className="flex justify-end">
           <LanguageSwitcher />
@@ -80,46 +174,112 @@ export default function ParentJoin() {
         )}
 
         {info?.valid && (
-          <div className="text-center space-y-5">
-            <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mx-auto">
-              <Users className="h-8 w-8 text-primary" />
-            </div>
-            <div>
-              <h1 className="text-xl font-extrabold">
-                {t("parentJoinTitle")} {info.athlete_name}
-              </h1>
-              {info.athlete_belt && (
-                <p className="text-sm text-muted-foreground capitalize mt-1">{info.athlete_belt}</p>
-              )}
+          <>
+            <div className="text-center space-y-3">
+              <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mx-auto">
+                <Users className="h-8 w-8 text-primary" />
+              </div>
+              <div>
+                <h1 className="text-xl font-extrabold">
+                  {t("parentJoinTitle")} {info.athlete_name}
+                </h1>
+                {info.athlete_belt && (
+                  <p className="text-sm text-muted-foreground capitalize mt-1">{info.athlete_belt}</p>
+                )}
+              </div>
             </div>
 
-            {signedIn ? (
-              <div className="space-y-2">
-                <Button onClick={accept} disabled={submitting} className="w-full">
+            {phase === "confirm" && (
+              <div className="space-y-3">
+                <p className="text-sm text-muted-foreground text-center">{t("parentConfirmDesc")}</p>
+                <Button onClick={handleConfirm} disabled={submitting} className="w-full">
                   {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t("parentJoinConfirm")}
                 </Button>
                 <Button onClick={() => navigate("/")} variant="ghost" className="w-full">
                   {t("noThanks")}
                 </Button>
               </div>
-            ) : (
-              <div className="space-y-2">
-                <Button
-                  onClick={() => navigate(`/auth?tab=signup&redirect=${encodeURIComponent(`/parent-join/${code}`)}`)}
-                  className="w-full"
-                >
-                  {t("joinSignupCta")}
-                </Button>
-                <Button
-                  onClick={() => navigate(`/auth?tab=signin&redirect=${encodeURIComponent(`/parent-join/${code}`)}`)}
-                  variant="outline"
-                  className="w-full"
-                >
-                  {t("joinLoginCta")}
-                </Button>
-              </div>
             )}
-          </div>
+
+            {phase === "signup" && (
+              <form onSubmit={handleSignup} className="space-y-3">
+                <p className="text-sm text-muted-foreground text-center">{t("parentSignupDesc")}</p>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1">
+                    <Label htmlFor="firstName">{t("firstName" as any) || "First name"}</Label>
+                    <Input id="firstName" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                    {errors.firstName && <p className="text-xs text-destructive">{errors.firstName}</p>}
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="lastName">{t("lastName" as any) || "Last name"}</Label>
+                    <Input id="lastName" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+                    {errors.lastName && <p className="text-xs text-destructive">{errors.lastName}</p>}
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <Label htmlFor="email">{t("email" as any) || "Email"}</Label>
+                  <Input id="email" type="email" inputMode="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                  {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
+                </div>
+
+                <div className="space-y-1">
+                  <Label htmlFor="phone">{t("phone" as any) || "Phone"}</Label>
+                  <Input id="phone" type="tel" inputMode="tel" autoComplete="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                  {errors.phone && <p className="text-xs text-destructive">{errors.phone}</p>}
+                </div>
+
+                <div className="space-y-1">
+                  <Label htmlFor="password">{t("password" as any) || "Password"}</Label>
+                  <Input id="password" type="password" autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                  {errors.password && <p className="text-xs text-destructive">{errors.password}</p>}
+                </div>
+
+                <Button type="submit" disabled={submitting} className="w-full">
+                  {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t("createAccount")}
+                </Button>
+
+                <button
+                  type="button"
+                  onClick={() => { setErrors({}); setPhase("login"); }}
+                  className="block w-full text-center text-sm text-primary hover:underline"
+                >
+                  {t("alreadyHaveAccount")}
+                </button>
+              </form>
+            )}
+
+            {phase === "login" && (
+              <form onSubmit={handleLogin} className="space-y-3">
+                <p className="text-sm text-muted-foreground text-center">{t("loginToLinkParent")}</p>
+
+                <div className="space-y-1">
+                  <Label htmlFor="loginEmail">{t("email" as any) || "Email"}</Label>
+                  <Input id="loginEmail" type="email" inputMode="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                  {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
+                </div>
+
+                <div className="space-y-1">
+                  <Label htmlFor="loginPassword">{t("password" as any) || "Password"}</Label>
+                  <Input id="loginPassword" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                  {errors.password && <p className="text-xs text-destructive">{errors.password}</p>}
+                </div>
+
+                <Button type="submit" disabled={submitting} className="w-full">
+                  {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t("joinLoginCta")}
+                </Button>
+
+                <button
+                  type="button"
+                  onClick={() => { setErrors({}); setPhase("signup"); }}
+                  className="block w-full text-center text-sm text-primary hover:underline"
+                >
+                  {t("noAccountYet")}
+                </button>
+              </form>
+            )}
+          </>
         )}
       </div>
     </div>
