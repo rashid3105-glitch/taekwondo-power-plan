@@ -320,7 +320,7 @@ export default function ProfileSetup() {
         program_weeks: programWeeks,
         current_injury: currentInjury || null,
         discipline,
-        club_id: clubId || null,
+        // club_id is managed via invite code flow (apply_invite_to_my_profile), not editable here
         country: country || null,
         custom_calories: customCalories ? parseInt(customCalories) : null,
         default_locale: defaultLocale || null,
