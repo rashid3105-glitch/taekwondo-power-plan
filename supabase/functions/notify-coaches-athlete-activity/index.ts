@@ -1,11 +1,7 @@
 // Notifies all coaches in the athlete's club when the athlete saves a diary
 // entry or completes a competition reflection. Enforces a 24h cooldown per
 // athlete per activity type by checking email_send_log metadata.
-// Sends emails directly via Resend (bypasses send-transactional-email's
-// per-user auth restriction since this is a server-to-server notification).
 import { createClient } from "npm:@supabase/supabase-js@2";
-import * as React from "npm:react@18.3.1";
-import { renderAsync } from "npm:@react-email/components@0.0.22";
 import { TEMPLATES } from "../_shared/transactional-email-templates/registry.ts";
 
 const corsHeaders = {
