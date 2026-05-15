@@ -109,19 +109,14 @@ Deno.serve(async (req) => {
       });
     }
 
-    const resendKey = Deno.env.get("RESEND_API_KEY");
-    if (!resendKey) {
-      console.error("RESEND_API_KEY not set");
-      return new Response(JSON.stringify({ queued: 0, reason: "missing_resend_key" }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    const templateEntry = TEMPLATES["athlete-activity-notification"];
+    if (!templateEntry) {
+      return new Response(JSON.stringify({ queued: 0, reason: "template_not_found" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const templateEntry = TEMPLATES["athlete-activity-notification"];
     const templateData = { athleteName, activityType, competitionName };
-    const html = await renderAsync(
-      React.createElement(templateEntry.component, templateData),
-    );
     const subject = typeof templateEntry.subject === "function"
       ? templateEntry.subject(templateData)
       : templateEntry.subject;
@@ -132,21 +127,18 @@ Deno.serve(async (req) => {
       const coachEmail = au?.user?.email;
       if (!coachEmail) continue;
 
-      const resendRes = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${resendKey}`,
-          "Content-Type": "application/json",
+      const idemKey = `athlete-activity-${athleteUserId}-${activityType}-${coach.user_id}-${new Date().toISOString().slice(0, 10)}`;
+
+      const { error: emailErr } = await admin.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "athlete-activity-notification",
+          recipientEmail: coachEmail,
+          idempotencyKey: idemKey,
+          templateData,
         },
-        body: JSON.stringify({
-          from: "Sportstalent.dk <noreply@sportstalent.dk>",
-          to: [coachEmail],
-          subject,
-          html,
-        }),
       });
 
-      if (resendRes.ok) {
+      if (!emailErr) {
         queued++;
         await admin.from("email_send_log").insert({
           template_name: "athlete-activity-notification",
@@ -159,8 +151,7 @@ Deno.serve(async (req) => {
           },
         }).then(() => {}, () => {});
       } else {
-        const err = await resendRes.text();
-        console.error("Resend error", { coachEmail, err });
+        console.error("send-transactional-email error", { coachEmail, emailErr });
       }
     }
 
