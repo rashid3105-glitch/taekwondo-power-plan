@@ -70,7 +70,7 @@ export function ParentInviteSection() {
       // Load linked parents
       const { data: links } = await supabase
         .from("parent_athletes" as any)
-        .select("id, parent_user_id")
+        .select("id, parent_user_id, created_at")
         .eq("athlete_id", user.id);
       if (links && links.length > 0) {
         const ids = (links as any[]).map((l) => l.parent_user_id);
@@ -84,6 +84,7 @@ export function ParentInviteSection() {
             id: l.id,
             parent_user_id: l.parent_user_id,
             display_name: nameMap.get(l.parent_user_id) || "—",
+            linked_at: l.created_at,
           })),
         );
       }
