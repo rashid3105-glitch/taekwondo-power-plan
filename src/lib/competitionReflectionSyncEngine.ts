@@ -88,6 +88,13 @@ export async function syncCompetitionReflections(): Promise<ReflectionSyncResult
           pending: false,
         });
         await removeReflectionIntent(intent.key);
+        // Notify coaches — fire and forget
+        supabase.functions.invoke("notify-coaches-athlete-activity", {
+          body: {
+            activity_type: "competition_reflection",
+            competition_name: intent.competition_name || "",
+          },
+        }).catch(() => {});
         result.flushed += 1;
       } catch (e: any) {
         result.failed += 1;
