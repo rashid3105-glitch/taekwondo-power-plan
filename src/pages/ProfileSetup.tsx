@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useAvatarUrl } from "@/hooks/useAvatarUrl";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
