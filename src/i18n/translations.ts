@@ -2079,6 +2079,8 @@ const translations = {
     parentConfirmDesc: "You are already logged in. Confirm to link your account to this athlete.",
     loginToLinkParent: "Log in to link your account",
     parentLinkCooldown: "Please wait before generating a new link",
+    parentLinkedSince: "Linked since",
+    parentMaxReached: "Maximum 2 parents linked. Remove one to generate a new invite.",
     parentLinkCooldownDesc: "A new invite link can be generated after {{time}}",
     parentLinkSingleUse: "This link can only be used once and expires immediately after use",
     parentDashboardTitle: "Parent Dashboard",
