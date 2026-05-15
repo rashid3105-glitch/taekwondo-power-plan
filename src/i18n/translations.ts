@@ -6537,6 +6537,8 @@ const translations = {
     parentConfirmDesc: "Du är redan inloggad. Bekräfta för att länka ditt konto till denna atlet.",
     loginToLinkParent: "Logga in för att länka ditt konto",
     parentLinkCooldown: "Vänta innan du genererar en ny länk",
+    parentLinkedSince: "Länkad sedan",
+    parentMaxReached: "Max 2 föräldrar länkade. Ta bort en för att generera en ny inbjudan.",
     parentLinkCooldownDesc: "En ny inbjudningslänk kan genereras efter {{time}}",
     parentLinkSingleUse: "Denna länk kan bara användas en gång och upphör omedelbart efter användning",
     parentDashboardTitle: "Föräldraöversikt",
