@@ -52,6 +52,8 @@ interface PendingUser {
   country?: string | null;
   current_injury?: string | null;
   last_seen_at?: string | null;
+  birth_date?: string | null;
+  tkd_start_date?: string | null;
 }
 
 export default function AdminApproval() {
@@ -120,7 +122,7 @@ export default function AdminApproval() {
     const [profilesRes, emailsRes, plansRes, rolesRes, coachAthletesRes, clubsRes] = await Promise.all([
       supabase
         .from("profiles")
-        .select("user_id, display_name, created_at, is_approved, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, payment_status, payment_date, is_demo, demo_full_access, demo_expires_at, club_id, discipline, country, current_injury, last_seen_at")
+        .select("user_id, display_name, created_at, is_approved, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, payment_status, payment_date, is_demo, demo_full_access, demo_expires_at, club_id, discipline, country, current_injury, last_seen_at, birth_date, tkd_start_date")
         .or("is_parent.is.null,is_parent.eq.false")
         .order("created_at", { ascending: false }),
       supabase.functions.invoke("get-admin-users"),
@@ -356,6 +358,26 @@ export default function AdminApproval() {
     }
   };
 
+  const calcAge = (birthDate: string): number | null => {
+    if (!birthDate) return null;
+    const today = new Date();
+    const bd = new Date(birthDate);
+    let age = today.getFullYear() - bd.getFullYear();
+    const m = today.getMonth() - bd.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < bd.getDate())) age--;
+    return age > 0 ? age : null;
+  };
+
+  const calcExperience = (startDate: string): number | null => {
+    if (!startDate) return null;
+    const today = new Date();
+    const start = new Date(startDate);
+    let years = today.getFullYear() - start.getFullYear();
+    const m = today.getMonth() - start.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < start.getDate())) years--;
+    return years >= 0 ? years : 0;
+  };
+
   const openEditDialog = (u: PendingUser) => {
     setEditForm({
       display_name: u.display_name || "",
@@ -368,6 +390,8 @@ export default function AdminApproval() {
       country: u.country || "",
       current_injury: u.current_injury || "",
       club_id: u.club_id || "",
+      birth_date: u.birth_date || "",
+      tkd_start_date: u.tkd_start_date || "",
     });
     setEditingUser(u);
   };
@@ -381,9 +405,11 @@ export default function AdminApproval() {
         belt_level: editForm.belt_level,
         discipline: editForm.discipline,
         tkd_sessions_per_week: Number(editForm.tkd_sessions_per_week) || 3,
-        age: editForm.age ? Number(editForm.age) : null,
+        age: editForm.birth_date ? calcAge(editForm.birth_date) : (editForm.age ? Number(editForm.age) : null),
         weight_kg: editForm.weight_kg ? Number(editForm.weight_kg) : null,
-        experience_years: editForm.experience_years ? Number(editForm.experience_years) : null,
+        experience_years: editForm.tkd_start_date ? calcExperience(editForm.tkd_start_date) : (editForm.experience_years ? Number(editForm.experience_years) : null),
+        birth_date: editForm.birth_date || null,
+        tkd_start_date: editForm.tkd_start_date || null,
         country: editForm.country || null,
         current_injury: editForm.current_injury || null,
         club_id: editForm.club_id || null,
@@ -984,17 +1010,28 @@ export default function AdminApproval() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label>Age</Label>
-                <Input type="number" inputMode="numeric" value={editForm.age || ""} onChange={(e) => setEditForm(f => ({ ...f, age: e.target.value }))} />
+                <Label>{t("birthDate") || "Date of birth"}</Label>
+                <p className="text-xs text-muted-foreground">{t("birthDateHint") || "Used to calculate age automatically"}</p>
+                <Input
+                  type="date"
+                  value={editForm.birth_date || ""}
+                  onChange={(e) => setEditForm(f => ({ ...f, birth_date: e.target.value }))}
+                  max={new Date().toISOString().split("T")[0]}
+                />
+                {editForm.birth_date && calcAge(editForm.birth_date) !== null && (
+                  <p className="text-xs text-muted-foreground">
+                    {t("profileAge") || "Age"}: <span className="font-semibold text-foreground">{calcAge(editForm.birth_date)} {t("years") || "years"}</span>
+                  </p>
+                )}
               </div>
               <div className="space-y-2">
-                <Label>Weight (kg)</Label>
+                <Label>{t("weightKg") || "Weight (kg)"}</Label>
                 <Input type="number" inputMode="decimal" value={editForm.weight_kg || ""} onChange={(e) => setEditForm(f => ({ ...f, weight_kg: e.target.value }))} />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label>Belt Level</Label>
+                <Label>{t("beltLevel") || "Belt Level"}</Label>
                 <Select value={editForm.belt_level || "white"} onValueChange={(v) => setEditForm(f => ({ ...f, belt_level: v }))}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
@@ -1005,8 +1042,19 @@ export default function AdminApproval() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Experience (years)</Label>
-                <Input type="number" inputMode="numeric" value={editForm.experience_years || ""} onChange={(e) => setEditForm(f => ({ ...f, experience_years: e.target.value }))} />
+                <Label>{t("tkdStartDate") || "Started taekwondo"}</Label>
+                <p className="text-xs text-muted-foreground">{t("tkdStartDateHint") || "Used to calculate experience automatically"}</p>
+                <Input
+                  type="date"
+                  value={editForm.tkd_start_date || ""}
+                  onChange={(e) => setEditForm(f => ({ ...f, tkd_start_date: e.target.value }))}
+                  max={new Date().toISOString().split("T")[0]}
+                />
+                {editForm.tkd_start_date && calcExperience(editForm.tkd_start_date) !== null && (
+                  <p className="text-xs text-muted-foreground">
+                    {t("profileExperience") || "Experience"}: <span className="font-semibold text-foreground">{calcExperience(editForm.tkd_start_date)} {t("years") || "years"}</span>
+                  </p>
+                )}
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
