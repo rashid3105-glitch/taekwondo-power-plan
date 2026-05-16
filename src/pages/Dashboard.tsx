@@ -42,6 +42,7 @@ import { HubTodayHero } from "@/components/hub/HubTodayHero";
 // HubDailyQuote removed from dashboard.
 import { HubNextEvent } from "@/components/hub/HubNextEvent";
 import { HubRecoveryStrip } from "@/components/hub/HubRecoveryStrip";
+import { SeasonCalendarMini } from "@/components/hub/SeasonCalendarMini";
 import { HubPinnedModules } from "@/components/hub/HubPinnedModules";
 import { HubOtherModules } from "@/components/hub/HubOtherModules";
 import { HubReadinessBanner } from "@/components/hub/HubReadinessBanner";
