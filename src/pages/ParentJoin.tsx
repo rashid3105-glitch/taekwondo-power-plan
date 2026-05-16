@@ -228,8 +228,28 @@ export default function ParentJoin() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label htmlFor="phone">{t("phone" as any) || "Phone"}</Label>
-                  <Input id="phone" type="tel" inputMode="tel" autoComplete="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                  <Label htmlFor="phone">{t("phoneNumber" as any) || "Phone number"}</Label>
+                  <div className="flex gap-2">
+                    <select
+                      aria-label={t("phoneCountryCode" as any) || "Country code"}
+                      value={phoneCountryCode}
+                      onChange={(e) => setPhoneCountryCode(e.target.value)}
+                      className="h-10 w-28 flex-shrink-0 rounded-md border border-input bg-background px-2 text-sm"
+                    >
+                      {PHONE_CODES.map(({ code, flag, country }) => (
+                        <option key={code + country} value={code}>{flag} {code}</option>
+                      ))}
+                    </select>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      inputMode="tel"
+                      autoComplete="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value.replace(/[^0-9\s\-\+\(\)]/g, ""))}
+                      className="flex-1"
+                    />
+                  </div>
                   {errors.phone && <p className="text-xs text-destructive">{errors.phone}</p>}
                 </div>
 
