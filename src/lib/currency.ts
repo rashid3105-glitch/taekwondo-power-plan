@@ -105,6 +105,7 @@ function perMonth(locale: string): string {
   if (locale.startsWith("no") || locale.startsWith("nb")) return "/md";
   if (locale.startsWith("de")) return "/Mon.";
   if (locale.startsWith("ar")) return "/شهر";
+  if (locale.startsWith("fa")) return "/ماه";
   return "/mo";
 }
 
@@ -114,6 +115,7 @@ function perYear(locale: string): string {
   if (locale.startsWith("no") || locale.startsWith("nb")) return "/år";
   if (locale.startsWith("de")) return "/Jahr";
   if (locale.startsWith("ar")) return "/سنة";
+  if (locale.startsWith("fa")) return "/سال";
   return "/yr";
 }
 

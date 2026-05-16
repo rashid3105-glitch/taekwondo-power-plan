@@ -55,7 +55,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         if (isLocale(dl)) {
           setLocaleState(dl);
           localStorage.setItem("tkd-lang", dl);
-          document.documentElement.dir = dRTL_LOCALES.includes(l) ? "rtl" : "ltr";
+          document.documentElement.dir = RTL_LOCALES.includes(dl) ? "rtl" : "ltr";
           document.documentElement.lang = dl;
         }
       } catch {
