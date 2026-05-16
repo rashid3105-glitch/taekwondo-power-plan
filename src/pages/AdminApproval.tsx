@@ -1015,6 +1015,29 @@ export default function AdminApproval() {
               <Label>Display Name</Label>
               <Input value={editForm.display_name || ""} onChange={(e) => setEditForm(f => ({ ...f, display_name: e.target.value }))} />
             </div>
+            <div className="space-y-2">
+              <Label>{t("phoneNumber") || "Phone number"}</Label>
+              <div className="flex gap-2">
+                <select
+                  aria-label={t("phoneCountryCode") || "Country code"}
+                  value={editForm.phone_country_code || "+45"}
+                  onChange={(e) => setEditForm(f => ({ ...f, phone_country_code: e.target.value }))}
+                  className="h-10 w-28 flex-shrink-0 rounded-md border border-input bg-background px-2 text-sm"
+                >
+                  {PHONE_CODES.map(({ code, flag, country }) => (
+                    <option key={code + country} value={code}>{flag} {code}</option>
+                  ))}
+                </select>
+                <Input
+                  type="tel"
+                  inputMode="tel"
+                  value={editForm.phone || ""}
+                  onChange={(e) => setEditForm(f => ({ ...f, phone: e.target.value.replace(/[^0-9\s\-\+\(\)]/g, "") }))}
+                  placeholder="12 34 56 78"
+                  className="flex-1"
+                />
+              </div>
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label>{t("birthDate") || "Date of birth"}</Label>
