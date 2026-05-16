@@ -417,6 +417,8 @@ export default function AdminApproval() {
         country: editForm.country || null,
         current_injury: editForm.current_injury || null,
         club_id: editForm.club_id || null,
+        phone: editForm.phone?.trim() || null,
+        phone_country_code: editForm.phone_country_code || "+45",
       };
       const { error } = await supabase.from("profiles").update(updateData).eq("user_id", editingUser.user_id);
       if (error) throw error;
