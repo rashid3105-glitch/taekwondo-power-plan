@@ -84,7 +84,18 @@ serve(async (req) => {
       customerId = customers.data[0].id;
     }
 
-    const origin = req.headers.get("origin") || "https://taekwondo-power-plan.lovable.app";
+    // SECURITY: never trust the inbound Origin header for post-payment redirects.
+    // Pick from a server-side allowlist so an attacker cannot point success_url
+    // at a phishing site by forging Origin in a direct HTTP call.
+    const ALLOWED_ORIGINS = new Set([
+      "https://sportstalent.dk",
+      "https://www.sportstalent.dk",
+      "https://taekwondo-power-plan.lovable.app",
+    ]);
+    const requestedOrigin = req.headers.get("origin") || "";
+    const origin = ALLOWED_ORIGINS.has(requestedOrigin)
+      ? requestedOrigin
+      : "https://sportstalent.dk";
 
     const session = await stripe.checkout.sessions.create({
       customer: customerId,

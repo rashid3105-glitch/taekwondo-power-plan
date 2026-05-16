@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { checkAIEntitlement } from "../_shared/checkEntitlement.ts";
+import { sanitizePromptText, asUserDataBlock } from "../_shared/sanitizePrompt.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -105,12 +106,13 @@ IMPORTANT: ALL text content MUST be written in ${lang}.`;
     const discipline = profile?.discipline || 'sparring';
     const isSparring = discipline === 'sparring';
 
+    const safeInjury = sanitizePromptText(injury, 800);
     const userPrompt = `Create a rehabilitation plan for a taekwondo ${isSparring ? 'SPARRING' : 'POOMSAE'} athlete with the following injury:
 
-Injury: ${injury}
-${profile?.age ? `Age: ${profile.age}` : ''}
-${profile?.belt_level ? `Belt level: ${profile.belt_level}` : ''}
-${profile?.experience_years ? `Years of experience: ${profile.experience_years}` : ''}
+${asUserDataBlock("ATHLETE-REPORTED INJURY", safeInjury, 800)}
+${profile?.age ? `Age: ${Number(profile.age) || ''}` : ''}
+${profile?.belt_level ? `Belt level: ${sanitizePromptText(profile.belt_level, 30)}` : ''}
+${profile?.experience_years ? `Years of experience: ${Number(profile.experience_years) || ''}` : ''}
 
 ${isSparring
   ? `Focus on muscle/tendon tear rehabilitation with progressive return-to-sport protocols specific to taekwondo sparring demands (kicking, footwork, explosive movements, impact absorption).`
