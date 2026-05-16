@@ -308,6 +308,10 @@ export default function CoachDashboard() {
             <span className="text-sm sm:text-base font-extrabold text-foreground">{t("coachDashboard")}</span>
           </div>
           <div className="flex items-center gap-1">
+            <Button variant="ghost" size="sm" onClick={() => navigate("/coach/season-calendar")} className="gap-1">
+              <CalendarRange className="h-4 w-4" />
+              <span className="hidden sm:inline">{t("seasonCalendar")}</span>
+            </Button>
             <MessagesIcon isCoach />
             <LanguageSwitcher />
           </div>
