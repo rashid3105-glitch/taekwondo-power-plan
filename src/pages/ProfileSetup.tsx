@@ -127,7 +127,7 @@ export default function ProfileSetup() {
           supabase.from("clubs" as any).select("id, name").order("name"),
           supabase
             .from("profiles")
-            .select("age, weight_kg, belt_level, experience_years, discipline, goals, weekly_schedule, program_weeks, current_injury, avatar_url, club_id, country, custom_calories, default_locale, gal_license, gal_license_expires_at, has_myfightbook, myfightbook_expires_at, tkd_start_date, birth_date, is_parent")
+            .select("age, weight_kg, belt_level, experience_years, discipline, goals, weekly_schedule, program_weeks, current_injury, avatar_url, club_id, country, custom_calories, default_locale, gal_license, gal_license_expires_at, has_myfightbook, myfightbook_expires_at, tkd_start_date, birth_date, is_parent, phone, phone_country_code")
             .eq("user_id", user.id)
             .maybeSingle(),
         ]);
