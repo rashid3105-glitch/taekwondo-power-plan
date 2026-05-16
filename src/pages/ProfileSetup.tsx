@@ -20,6 +20,7 @@ import { PublicProfileSettings } from "@/components/profile/PublicProfileSetting
 
 
 import { COUNTRIES } from "@/data/countries";
+import { PHONE_CODES } from "@/data/phoneCodes";
 
 const BELT_LEVELS = ["white", "yellow", "green", "blue", "red", "black"];
 const GOAL_OPTIONS = [
@@ -67,6 +68,8 @@ export default function ProfileSetup() {
   const [clubs, setClubs] = useState<ClubOption[]>([]);
   const [clubId, setClubId] = useState("");
   const [country, setCountry] = useState("");
+  const [phone, setPhone] = useState("");
+  const [phoneCountryCode, setPhoneCountryCode] = useState("+45");
   const [customCalories, setCustomCalories] = useState("");
   const [defaultLocale, setDefaultLocale] = useState<Locale | "">("");
   const [galLicense, setGalLicense] = useState("");
@@ -124,7 +127,7 @@ export default function ProfileSetup() {
           supabase.from("clubs" as any).select("id, name").order("name"),
           supabase
             .from("profiles")
-            .select("age, weight_kg, belt_level, experience_years, discipline, goals, weekly_schedule, program_weeks, current_injury, avatar_url, club_id, country, custom_calories, default_locale, gal_license, gal_license_expires_at, has_myfightbook, myfightbook_expires_at, tkd_start_date, birth_date, is_parent")
+            .select("age, weight_kg, belt_level, experience_years, discipline, goals, weekly_schedule, program_weeks, current_injury, avatar_url, club_id, country, custom_calories, default_locale, gal_license, gal_license_expires_at, has_myfightbook, myfightbook_expires_at, tkd_start_date, birth_date, is_parent, phone, phone_country_code")
             .eq("user_id", user.id)
             .maybeSingle(),
         ]);
@@ -153,6 +156,8 @@ export default function ProfileSetup() {
           setSavedAvatarUrl(profileData.avatar_url || null);
           setClubId(profileData.club_id || "");
           setCountry(profileData.country || "");
+          setPhone((profileData as any).phone || "");
+          setPhoneCountryCode((profileData as any).phone_country_code || "+45");
           setCustomCalories(profileData.custom_calories?.toString() || "");
           setDefaultLocale((profileData.default_locale as Locale) || "");
           setGalLicense(profileData.gal_license || "");
@@ -326,6 +331,8 @@ export default function ProfileSetup() {
         discipline,
         // club_id is managed via invite code flow (apply_invite_to_my_profile), not editable here
         country: country || null,
+        phone: phone.trim() || null,
+        phone_country_code: phoneCountryCode || "+45",
         custom_calories: customCalories ? parseInt(customCalories) : null,
         default_locale: defaultLocale || null,
         gal_license: galLicense.trim() || null,
@@ -542,6 +549,33 @@ export default function ProfileSetup() {
           <div>
             <Label htmlFor="weight">{t("weightKg")}</Label>
             <Input id="weight" type="number" inputMode="decimal" step="0.1" value={weight} onChange={(e) => setWeight(e.target.value)} placeholder="70" />
+          </div>
+
+          <div>
+            <Label htmlFor="phone">{t("phoneNumber") || "Phone number"}</Label>
+            <div className="flex gap-2">
+              <select
+                id="phoneCode"
+                aria-label={t("phoneCountryCode") || "Country code"}
+                value={phoneCountryCode}
+                onChange={(e) => setPhoneCountryCode(e.target.value)}
+                className="h-10 w-28 flex-shrink-0 rounded-md border border-input bg-background px-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                {PHONE_CODES.map(({ code, flag, country }) => (
+                  <option key={code + country} value={code}>{flag} {code}</option>
+                ))}
+              </select>
+              <Input
+                id="phone"
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value.replace(/[^0-9\s\-\+\(\)]/g, ""))}
+                placeholder="12 34 56 78"
+                className="flex-1"
+              />
+            </div>
           </div>
 
           <div>

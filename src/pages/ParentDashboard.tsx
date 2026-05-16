@@ -11,6 +11,7 @@ import { Loader2, LogOut, Trophy, Calendar, ClipboardList, Check, X, Settings, C
 import { AvatarImg } from "@/components/AvatarImg";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
+import { PHONE_CODES } from "@/data/phoneCodes";
 
 interface AthleteProfile {
   user_id: string;
@@ -56,6 +57,7 @@ export default function ParentDashboard() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [displayName, setDisplayName] = useState("");
   const [phone, setPhone] = useState("");
+  const [phoneCountryCode, setPhoneCountryCode] = useState("+45");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -68,12 +70,13 @@ export default function ParentDashboard() {
 
       const { data: myProfile } = await supabase
         .from("profiles")
-        .select("display_name, phone")
+        .select("display_name, phone, phone_country_code")
         .eq("user_id", user.id)
         .maybeSingle();
       if (myProfile) {
         setDisplayName((myProfile as any).display_name || "");
         setPhone((myProfile as any).phone || "");
+        setPhoneCountryCode((myProfile as any).phone_country_code || "+45");
       }
 
       const { data: links } = await supabase
@@ -158,6 +161,7 @@ export default function ParentDashboard() {
       const { error } = await supabase.from("profiles").update({
         display_name: displayName.trim(),
         phone: phone.trim(),
+        phone_country_code: phoneCountryCode || "+45",
       } as any).eq("user_id", user.id);
       if (error) throw error;
       toast({ title: t("profileSaved") || "Saved" });
@@ -334,8 +338,20 @@ export default function ParentDashboard() {
                 <Input value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
               </div>
               <div className="space-y-1">
-                <Label>{t("phone") || "Phone"}</Label>
-                <Input type="tel" inputMode="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                <Label>{t("phoneNumber" as any) || "Phone number"}</Label>
+                <div className="flex gap-2">
+                  <select
+                    aria-label={t("phoneCountryCode" as any) || "Country code"}
+                    value={phoneCountryCode}
+                    onChange={(e) => setPhoneCountryCode(e.target.value)}
+                    className="h-10 w-28 flex-shrink-0 rounded-md border border-input bg-background px-2 text-sm"
+                  >
+                    {PHONE_CODES.map(({ code, flag, country }) => (
+                      <option key={code + country} value={code}>{flag} {code}</option>
+                    ))}
+                  </select>
+                  <Input type="tel" inputMode="tel" value={phone} onChange={(e) => setPhone(e.target.value.replace(/[^0-9\s\-\+\(\)]/g, ""))} className="flex-1" />
+                </div>
               </div>
               <Button size="sm" onClick={saveSettings} disabled={saving} className="w-full">
                 {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : t("save") || "Save"}

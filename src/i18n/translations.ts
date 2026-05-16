@@ -2271,6 +2271,8 @@ const translations = {
     rehabTempo: "Tempo",
     rehabDeleteTitle: "Delete recovery plan?",
     rehabDeleteDesc: "This will permanently remove the plan. You can always generate a new one.",
+    phoneNumber: "Phone number",
+    phoneCountryCode: "Country code",
   },
   da: {
     defaultLanguage: "Standardsprog",
@@ -4530,6 +4532,8 @@ const translations = {
     rehabTempo: "Tempo",
     rehabDeleteTitle: "Slet genoptræningsplan?",
     rehabDeleteDesc: "Dette fjerner planen permanent. Du kan altid generere en ny.",
+    phoneNumber: "Telefonnummer",
+    phoneCountryCode: "Landekode",
   },
   sv: {
     defaultLanguage: "Standardspråk",
@@ -6788,6 +6792,8 @@ const translations = {
     rehabTempo: "Tempo",
     rehabDeleteTitle: "Radera rehabiliteringsplanen?",
     rehabDeleteDesc: "Detta tar bort planen permanent. Du kan alltid skapa en ny.",
+    phoneNumber: "Telefonnummer",
+    phoneCountryCode: "Landskod",
   },
   de: {
     defaultLanguage: "Standardsprache",
@@ -8996,6 +9002,8 @@ const translations = {
     rehabTempo: "Tempo",
     rehabDeleteTitle: "Genesungsplan löschen?",
     rehabDeleteDesc: "Damit wird der Plan dauerhaft entfernt. Du kannst jederzeit einen neuen erstellen.",
+    phoneNumber: "Telefonnummer",
+    phoneCountryCode: "Ländervorwahl",
   },
 
   ar: {
@@ -11205,6 +11213,8 @@ const translations = {
     rehabTempo: "الإيقاع",
     rehabDeleteTitle: "حذف خطة التعافي؟",
     rehabDeleteDesc: "سيؤدي هذا إلى إزالة الخطة نهائياً. يمكنك دائماً إنشاء خطة جديدة.",
+    phoneNumber: "رقم الهاتف",
+    phoneCountryCode: "رمز البلد",
   },
   no: {
     onbWelcomeTitle: "Velkommen til Sportstalent",
@@ -13463,11 +13473,51 @@ const translations = {
     rehabTempo: "Tempo",
     rehabDeleteTitle: "Slette rehabiliteringsplanen?",
     rehabDeleteDesc: "Dette fjerner planen permanent. Du kan alltid lage en ny.",
+    phoneNumber: "Telefonnummer",
+    phoneCountryCode: "Landkode",
   },
 } as const;
 
 export type TranslationKey = keyof typeof translations.en;
-// Farsi/Persian: UI strings fall back to English until translated. AI-generated
-// plans (training, nutrition, mental, rehab) are produced in Farsi server-side.
-(translations as unknown as Record<string, typeof translations.en>).fa = translations.en;
+
+// Farsi/Persian: curated core UI pack; everything else falls back to English.
+// AI-generated plans (training, nutrition, mental, rehab) are produced in
+// Farsi server-side regardless of UI string coverage.
+const faOverrides: Partial<Record<TranslationKey, string>> = {
+  // Navigation / core
+  diary: "دفترچه",
+  plan: "برنامه",
+  profile: "پروفایل",
+  coach: "مربی",
+  athlete: "ورزشکار",
+  belt: "کمربند",
+  nutrition: "تغذیه",
+  rehab: "بازتوانی",
+  mental: "ذهنی",
+  progress: "پیشرفت",
+  library: "کتابخانه",
+  // Actions
+  save: "ذخیره",
+  cancel: "لغو",
+  delete: "حذف",
+  add: "افزودن",
+  back: "بازگشت",
+  next: "بعدی",
+  // Auth
+  email: "ایمیل",
+  password: "رمز عبور",
+  createAccount: "ایجاد حساب",
+  // Profile fields
+  phoneNumber: "شماره تلفن",
+  phoneCountryCode: "کد کشور",
+  country: "کشور",
+  weightKg: "وزن (کیلوگرم)",
+  beltLevel: "سطح کمربند",
+  loading: "در حال بارگذاری...",
+} as const;
+
+(translations as unknown as Record<string, Record<string, string>>).fa = {
+  ...(translations.en as unknown as Record<string, string>),
+  ...(faOverrides as Record<string, string>),
+};
 export default translations;

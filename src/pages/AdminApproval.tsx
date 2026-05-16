@@ -16,6 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { format } from "date-fns";
 import { COUNTRIES } from "@/data/countries";
+import { PHONE_CODES } from "@/data/phoneCodes";
 import { AnnouncementEditor } from "@/components/admin/AnnouncementEditor";
 
 interface UserPlan {
@@ -54,6 +55,8 @@ interface PendingUser {
   last_seen_at?: string | null;
   birth_date?: string | null;
   tkd_start_date?: string | null;
+  phone?: string | null;
+  phone_country_code?: string | null;
 }
 
 export default function AdminApproval() {
@@ -122,7 +125,7 @@ export default function AdminApproval() {
     const [profilesRes, emailsRes, plansRes, rolesRes, coachAthletesRes, clubsRes] = await Promise.all([
       supabase
         .from("profiles")
-        .select("user_id, display_name, created_at, is_approved, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, payment_status, payment_date, is_demo, demo_full_access, demo_expires_at, club_id, discipline, country, current_injury, last_seen_at, birth_date, tkd_start_date")
+        .select("user_id, display_name, created_at, is_approved, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, payment_status, payment_date, is_demo, demo_full_access, demo_expires_at, club_id, discipline, country, current_injury, last_seen_at, birth_date, tkd_start_date, phone, phone_country_code")
         .or("is_parent.is.null,is_parent.eq.false")
         .order("created_at", { ascending: false }),
       supabase.functions.invoke("get-admin-users"),
@@ -392,6 +395,8 @@ export default function AdminApproval() {
       club_id: u.club_id || "",
       birth_date: u.birth_date || "",
       tkd_start_date: u.tkd_start_date || "",
+      phone: u.phone || "",
+      phone_country_code: u.phone_country_code || "+45",
     });
     setEditingUser(u);
   };
@@ -413,6 +418,8 @@ export default function AdminApproval() {
         country: editForm.country || null,
         current_injury: editForm.current_injury || null,
         club_id: editForm.club_id || null,
+        phone: editForm.phone?.trim() || null,
+        phone_country_code: editForm.phone_country_code || "+45",
       };
       const { error } = await supabase.from("profiles").update(updateData).eq("user_id", editingUser.user_id);
       if (error) throw error;
@@ -1007,6 +1014,29 @@ export default function AdminApproval() {
             <div className="space-y-2">
               <Label>Display Name</Label>
               <Input value={editForm.display_name || ""} onChange={(e) => setEditForm(f => ({ ...f, display_name: e.target.value }))} />
+            </div>
+            <div className="space-y-2">
+              <Label>{t("phoneNumber") || "Phone number"}</Label>
+              <div className="flex gap-2">
+                <select
+                  aria-label={t("phoneCountryCode") || "Country code"}
+                  value={editForm.phone_country_code || "+45"}
+                  onChange={(e) => setEditForm(f => ({ ...f, phone_country_code: e.target.value }))}
+                  className="h-10 w-28 flex-shrink-0 rounded-md border border-input bg-background px-2 text-sm"
+                >
+                  {PHONE_CODES.map(({ code, flag, country }) => (
+                    <option key={code + country} value={code}>{flag} {code}</option>
+                  ))}
+                </select>
+                <Input
+                  type="tel"
+                  inputMode="tel"
+                  value={editForm.phone || ""}
+                  onChange={(e) => setEditForm(f => ({ ...f, phone: e.target.value.replace(/[^0-9\s\-\+\(\)]/g, "") }))}
+                  placeholder="12 34 56 78"
+                  className="flex-1"
+                />
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
