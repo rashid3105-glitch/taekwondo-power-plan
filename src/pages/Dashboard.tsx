@@ -749,6 +749,15 @@ export default function Dashboard() {
             {/* 2. Next event countdown */}
             <HubNextEvent event={nextEvent} />
 
+            {clubSeason?.plan && (
+              <SeasonCalendarMini
+                seasonPlan={clubSeason.plan}
+                phases={clubSeason.phases}
+                template={clubSeason.template}
+                fullLink={isCoach ? "/coach/season-calendar" : "#"}
+              />
+            )}
+
             {/* 3. Recovery strip */}
             {!isDemo && <HubRecoveryStrip />}
 
