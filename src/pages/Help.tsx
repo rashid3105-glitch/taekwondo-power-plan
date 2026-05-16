@@ -15,7 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
 type TopicKey =
-  | "helpProfile" | "helpSeasonPlan" | "helpWearables" | "helpCoachFeedback"
+  | "helpProfile" | "helpSeasonPlan" | "helpSeasonCalendar" | "helpWearables" | "helpCoachFeedback"
   | "helpMatchAnalysis" | "helpMatchReport" | "helpTrainingPlan" | "helpPhysicalTesting" | "helpProgress"
   | "helpNutrition" | "helpRehabPlan" | "helpMentalPlan" | "helpLibrary" | "helpDiary"
   | "helpReflection" | "helpParentPortal"
