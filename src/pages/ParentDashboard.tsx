@@ -334,6 +334,15 @@ export default function ParentDashboard() {
                 </ul>
               )}
             </Card>
+
+            {a.season?.plan && (
+              <SeasonCalendarMini
+                seasonPlan={a.season.plan}
+                phases={a.season.phases}
+                template={a.season.template}
+                fullLink="#"
+              />
+            )}
           </div>
         ))}
 
