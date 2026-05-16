@@ -13479,7 +13479,64 @@ const translations = {
 } as const;
 
 export type TranslationKey = keyof typeof translations.en;
-// Farsi/Persian: UI strings fall back to English until translated. AI-generated
-// plans (training, nutrition, mental, rehab) are produced in Farsi server-side.
-(translations as unknown as Record<string, typeof translations.en>).fa = translations.en;
+
+// Farsi/Persian: curated core UI pack; everything else falls back to English.
+// AI-generated plans (training, nutrition, mental, rehab) are produced in
+// Farsi server-side regardless of UI string coverage.
+const faOverrides: Partial<Record<TranslationKey, string>> = {
+  // Navigation / core
+  dashboard: "داشبورد",
+  diary: "دفترچه",
+  training: "تمرین",
+  plan: "برنامه",
+  profile: "پروفایل",
+  settings: "تنظیمات",
+  coach: "مربی",
+  athlete: "ورزشکار",
+  competition: "مسابقه",
+  belt: "کمربند",
+  nutrition: "تغذیه",
+  rehab: "بازتوانی",
+  mental: "ذهنی",
+  progress: "پیشرفت",
+  library: "کتابخانه",
+  messages: "پیام‌ها",
+  health: "سلامتی",
+  // Actions
+  save: "ذخیره",
+  cancel: "لغو",
+  delete: "حذف",
+  edit: "ویرایش",
+  add: "افزودن",
+  create: "ایجاد",
+  back: "بازگشت",
+  next: "بعدی",
+  submit: "ارسال",
+  confirm: "تأیید",
+  close: "بستن",
+  // Auth
+  login: "ورود",
+  logout: "خروج",
+  signup: "ثبت نام",
+  email: "ایمیل",
+  password: "رمز عبور",
+  createAccount: "ایجاد حساب",
+  // Profile fields
+  phoneNumber: "شماره تلفن",
+  phoneCountryCode: "کد کشور",
+  country: "کشور",
+  weightKg: "وزن (کیلوگرم)",
+  beltLevel: "سطح کمربند",
+  // Common labels
+  loading: "در حال بارگذاری...",
+  required: "الزامی",
+  optional: "اختیاری",
+  yes: "بله",
+  no: "خیر",
+} as const;
+
+(translations as unknown as Record<string, Record<string, string>>).fa = {
+  ...(translations.en as unknown as Record<string, string>),
+  ...(faOverrides as Record<string, string>),
+};
 export default translations;
