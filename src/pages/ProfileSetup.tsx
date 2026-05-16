@@ -552,6 +552,33 @@ export default function ProfileSetup() {
           </div>
 
           <div>
+            <Label htmlFor="phone">{t("phoneNumber") || "Phone number"}</Label>
+            <div className="flex gap-2">
+              <select
+                id="phoneCode"
+                aria-label={t("phoneCountryCode") || "Country code"}
+                value={phoneCountryCode}
+                onChange={(e) => setPhoneCountryCode(e.target.value)}
+                className="h-10 w-28 flex-shrink-0 rounded-md border border-input bg-background px-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                {PHONE_CODES.map(({ code, flag, country }) => (
+                  <option key={code + country} value={code}>{flag} {code}</option>
+                ))}
+              </select>
+              <Input
+                id="phone"
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value.replace(/[^0-9\s\-\+\(\)]/g, ""))}
+                placeholder="12 34 56 78"
+                className="flex-1"
+              />
+            </div>
+          </div>
+
+          <div>
             <Label htmlFor="customCalories">{t("dailyCalorieTarget")}</Label>
             <p className="text-xs text-muted-foreground mb-1">{t("dailyCalorieHint")}</p>
             <Input
