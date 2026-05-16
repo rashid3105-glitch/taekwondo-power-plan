@@ -394,6 +394,8 @@ export default function AdminApproval() {
       club_id: u.club_id || "",
       birth_date: u.birth_date || "",
       tkd_start_date: u.tkd_start_date || "",
+      phone: u.phone || "",
+      phone_country_code: u.phone_country_code || "+45",
     });
     setEditingUser(u);
   };
