@@ -245,6 +245,17 @@
   transform: scaleX(-1);
 }
 
+/* Opt-in flip utility for custom icons/illustrations */
+[dir="rtl"] .rtl-flip {
+  transform: scaleX(-1);
+}
+
+/* RTL form fields should align text to the right */
+[dir="rtl"] input,
+[dir="rtl"] textarea {
+  text-align: right;
+}
+
 /* Search icons positioned with left-* need to flip to right */
 [dir="rtl"] .absolute.left-3 {
   left: auto;
