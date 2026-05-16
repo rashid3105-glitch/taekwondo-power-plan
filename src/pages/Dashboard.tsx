@@ -102,6 +102,7 @@ export default function Dashboard() {
   const [rehabPlans, setRehabPlans] = useState<RehabPlanRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [nextEvent, setNextEvent] = useState<{ name: string; event_date: string; location: string | null; priority: string } | null>(null);
+  const [clubSeason, setClubSeason] = useState<{ plan: any; phases: any[]; template: any[] } | null>(null);
   type TabKey = "hub" | "plan" | "rehab" | "mental" | "progress" | "nutrition" | "testing";
   const VALID_TABS: TabKey[] = ["hub", "plan", "rehab", "mental", "progress", "nutrition", "testing"];
   const [searchParams, setSearchParams] = useSearchParams();
