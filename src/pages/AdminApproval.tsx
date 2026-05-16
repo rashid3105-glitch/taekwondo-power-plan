@@ -54,6 +54,8 @@ interface PendingUser {
   last_seen_at?: string | null;
   birth_date?: string | null;
   tkd_start_date?: string | null;
+  phone?: string | null;
+  phone_country_code?: string | null;
 }
 
 export default function AdminApproval() {
