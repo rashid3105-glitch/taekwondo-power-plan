@@ -49,7 +49,7 @@ serve(async (req) => {
       }
     }
 
-    const lang = language === "da" ? "Danish" : language === "sv" ? "Swedish" : language === "de" ? "German" : language === "ar" ? "Arabic" : language === "fa" ? "Persian (Farsi)" : language === "no" ? "Norwegian (Bokmål)" : "English";
+    const lang = language === "da" ? "Danish" : language === "sv" ? "Swedish" : language === "de" ? "German" : language === "ar" ? "Arabic" : language === "es" ? "Spanish (Castilian)" : language === "no" ? "Norwegian (Bokmål)" : "English";
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
