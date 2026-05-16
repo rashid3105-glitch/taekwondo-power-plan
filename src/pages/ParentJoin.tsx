@@ -94,7 +94,7 @@ export default function ParentJoin() {
           firstName: firstName.trim(),
           lastName: lastName.trim(),
           email: email.trim(),
-          phone: phone.trim(),
+          phone: `${phoneCountryCode} ${phone.trim()}`.trim(),
           password,
         },
       });
