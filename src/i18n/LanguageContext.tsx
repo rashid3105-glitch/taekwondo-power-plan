@@ -10,8 +10,8 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | null>(null);
 
-const SUPPORTED: Locale[] = ["en", "da", "sv", "de", "ar", "no", "fa"];
-const RTL_LOCALES: Locale[] = ["ar", "fa"];
+const SUPPORTED: Locale[] = ["en", "da", "sv", "de", "ar", "no", "es"];
+const RTL_LOCALES: Locale[] = ["ar"];
 const isLocale = (v: unknown): v is Locale =>
   typeof v === "string" && (SUPPORTED as string[]).includes(v);
 

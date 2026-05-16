@@ -2445,7 +2445,7 @@ const exercisesData: Record<string, ExerciseBase> = {
   },
 };
 
-type Locale = "en" | "da" | "sv" | "de" | "ar" | "no" | "fa";
+type Locale = "en" | "da" | "sv" | "de" | "ar" | "no" | "es";
 
 function resolveExercise(base: ExerciseBase, locale: Locale): Exercise {
   // Per-locale lookup with graceful fallback. Norwegian falls back to Danish

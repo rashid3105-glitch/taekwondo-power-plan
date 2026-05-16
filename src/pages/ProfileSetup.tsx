@@ -489,7 +489,7 @@ export default function ProfileSetup() {
               <option value="no">🇳🇴 Norsk</option>
               <option value="de">🇩🇪 Deutsch</option>
               <option value="ar">🇸🇦 العربية</option>
-              <option value="fa">🇮🇷 فارسی</option>
+              <option value="es">🇪🇸 Español</option>
             </select>
           </div>
 

@@ -1,4 +1,4 @@
-type LocaleKey = "da" | "sv" | "de" | "ar" | "no" | "fa";
+type LocaleKey = "da" | "sv" | "de" | "ar" | "no" | "es";
 
 export interface HiitInterval {
   name: string;
