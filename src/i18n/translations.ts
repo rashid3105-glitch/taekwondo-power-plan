@@ -2271,6 +2271,8 @@ const translations = {
     rehabTempo: "Tempo",
     rehabDeleteTitle: "Delete recovery plan?",
     rehabDeleteDesc: "This will permanently remove the plan. You can always generate a new one.",
+    phoneNumber: "Phone number",
+    phoneCountryCode: "Country code",
   },
   da: {
     defaultLanguage: "Standardsprog",
