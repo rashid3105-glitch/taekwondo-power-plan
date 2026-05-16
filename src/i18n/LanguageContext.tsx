@@ -28,13 +28,13 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const setLocale = useCallback((l: Locale) => {
     setLocaleState(l);
     localStorage.setItem("tkd-lang", l);
-    document.documentElement.dir = l === "ar" ? "rtl" : "ltr";
+    document.documentElement.dir = RTL_LOCALES.includes(l) ? "rtl" : "ltr";
     document.documentElement.lang = l;
   }, []);
 
   // Set initial dir and lang on mount
   useEffect(() => {
-    document.documentElement.dir = locale === "ar" ? "rtl" : "ltr";
+    document.documentElement.dir = RTL_LOCALES.includes(locale) ? "rtl" : "ltr";
     document.documentElement.lang = locale;
   }, [locale]);
 
@@ -55,7 +55,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         if (isLocale(dl)) {
           setLocaleState(dl);
           localStorage.setItem("tkd-lang", dl);
-          document.documentElement.dir = dl === "ar" ? "rtl" : "ltr";
+          document.documentElement.dir = dRTL_LOCALES.includes(l) ? "rtl" : "ltr";
           document.documentElement.lang = dl;
         }
       } catch {
