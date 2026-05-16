@@ -6792,6 +6792,8 @@ const translations = {
     rehabTempo: "Tempo",
     rehabDeleteTitle: "Radera rehabiliteringsplanen?",
     rehabDeleteDesc: "Detta tar bort planen permanent. Du kan alltid skapa en ny.",
+    phoneNumber: "Telefonnummer",
+    phoneCountryCode: "Landskod",
   },
   de: {
     defaultLanguage: "Standardsprache",
