@@ -1,45 +1,43 @@
-# Plan: Phone Fields + Farsi Translation Pass
+## Goal
+Stop coaches (and any future shared-club SELECT) from being able to read administrative/billing fields on athlete profile rows. These fields are not needed for coaching.
 
-## Already done (prior turn)
-- `fa` added to `Locale` type, `SUPPORTED`, `RTL_LOCALES`
-- LanguageContext sets `dir="rtl"` for both `ar` and `fa`
-- LanguageSwitcher shows 🇮🇷 فارسی
-- AI plan generators (training/nutrition/mental/rehab/match) output Persian when `language === "fa"`
-- Update-my-profile zod schema accepts `fa`
-- Currency/day-name helpers include Persian
+## Fields being moved out of `public.profiles`
+- `is_approved`
+- `payment_status`
+- `payment_date`
+- `demo_full_access`
+- `demo_expires_at`
+- `rejection_reason`
+- `pending_invite_code`
+- `pending_coach_id`
 
-Today Farsi UI strings fall back to English via:
-`(translations as unknown as Record<string, typeof translations.en>).fa = translations.en;`
+`is_demo`, `club_id`, `phone`, `birth_date`, `weight_kg`, `gal_license` stay on `profiles` (coaching-relevant or already needed for shared club logic).
 
-## What this request adds
+## Database migration
+1. Create `public.profiles_sensitive` (PK = `user_id`, one row per profile, the 8 columns above + `created_at`/`updated_at`).
+2. Backfill from `profiles`.
+3. RLS:
+   - Owner: SELECT own row.
+   - Admin: SELECT / UPDATE / INSERT any row.
+   - No coach access. No parent access. Edge functions use service role (bypasses RLS).
+4. Trigger on `profiles` AFTER INSERT → seed `profiles_sensitive`.
+5. Drop the 8 columns from `profiles`.
+6. Update `handle_new_user` (signup trigger) to also insert into `profiles_sensitive`.
+7. Update `get_profile_protected_fields`, `admin_approve_with_invite`, `admin_reject_with_reason`, `apply_invite_to_my_profile`, `accept_parent_invite` (if it touches `is_approved`) to read/write `profiles_sensitive`.
+8. Update `profiles` UPDATE policies to drop the now-irrelevant column-equality clauses that referenced the moved fields.
 
-### A. Phone number support (mechanical, ship now)
-1. **Migration** — add `profiles.phone text` and `profiles.phone_country_code text default '+45'`.
-2. **New file** `src/data/phoneCodes.ts` — exported `PHONE_CODES` array (16 countries).
-3. **`src/pages/ProfileSetup.tsx`** — `phone` + `phoneCountryCode` state, load in `loadProfileSetupData`, include in submit payload, two-field UI (Select + Input) inserted after weight / before club.
-4. **`src/pages/AdminApproval.tsx`** — extend `PendingUser`, select query, edit dialog UI, `saveEditUser` payload.
-5. **`src/pages/ParentJoin.tsx`** — split existing phone input into country-code Select + number Input.
-6. **`src/pages/ParentDashboard.tsx`** — same split in account settings.
-7. **`supabase/functions/update-my-profile/index.ts`** — extend Zod schema with `phone` and `phone_country_code`.
-8. **Translation keys** `phoneNumber` and `phoneCountryCode` added to all 7 locales (en/da/sv/de/ar/no/fa).
+## Code updates (~21 files)
+- **Edge functions** (use service role, just swap table name in queries):
+  - `update-my-profile`, `create-athlete`, `check-subscription`, `parent-signup`, `bootstrap-coach-trial`, `cleanup-demo-users`, `recompute-form-curve`, `notify-coaches-athlete-activity`, `dispatch-scheduled-pushes`, `_shared/checkEntitlement.ts`
+- **Client** (read own row from `profiles_sensitive`, or admin reads from there):
+  - `Dashboard.tsx`, `PendingApproval.tsx`, `ProfileSetup.tsx`, `Onboarding.tsx`, `Auth.tsx`, `Pricing.tsx`, `AdminApproval.tsx`, `AdminPayments.tsx`, `useEntitlements.ts`, `coach/PendingAthletesSection.tsx`
+- `src/integrations/supabase/types.ts` regenerates automatically.
 
-### B. RTL polish (small)
-- `src/index.css` — add `[dir="rtl"] .rtl-flip { transform: scaleX(-1); }` and right-align inputs/textareas under RTL.
-- `src/pages/Dashboard.tsx` — verify header rows use `gap-*` (not `space-x-*`) so RTL flows naturally; only adjust rows that actually break.
+## Verification
+- Typecheck.
+- Smoke-test: signup creates both rows, owner reads own status, admin approval flow still works, coach view does not expose the dropped columns (they no longer exist on the row).
 
-### C. Full Farsi UI translation — needs your call
+## Risk
+Medium-high — touches the signup/approval/payment paths. Mitigation: keep the migration backward-permissive (don't drop columns on profiles until step 5, run in a single transaction with backfill, so a failure rolls back).
 
-The translations file has **~2,000 UI keys**. Producing a complete, high-quality Persian translation object in one pass means:
-- Massive generated output (the file would grow by roughly the size of the English block again, ~6–7k lines).
-- Real risk of awkward/incorrect Persian for domain-specific TKD terminology (belt levels, sparring drills, periodization phases, mental-skills jargon). Bulk-AI Persian for niche sports vocabulary is hit-or-miss.
-- Long single-turn execution, hard for you to review.
-
-Three realistic options — pick one:
-
-**Option 1 — Curated core pack (recommended).** I translate ~150–250 high-traffic keys properly to Persian: nav (dashboard, diary, training, plan, profile, settings, coach, athlete, competition, belt, save/cancel/delete/edit, login/logout, etc.), readiness/diary/mental UI, common buttons/labels, errors. Everything else keeps the English fallback. This gives a usable Persian experience without flooding the file with low-confidence translations. ~1 hour of work, clean output.
-
-**Option 2 — Full bulk Farsi pass.** I generate a complete `fa: { ... }` block for every key in `translations.en`. You should expect to revise a meaningful percentage afterwards. Removes the English fallback line. Very large diff.
-
-**Option 3 — Defer Farsi UI.** Ship only sections A + B now; do Farsi UI later in dedicated passes per surface (e.g. "translate the Diary page", "translate the Coach dashboard").
-
-Tell me 1, 2, or 3 and I'll execute. If you don't specify, I'll proceed with **Option 1** plus all of sections A and B.
+Approve and I'll execute the migration then update each file.
