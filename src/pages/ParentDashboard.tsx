@@ -70,12 +70,13 @@ export default function ParentDashboard() {
 
       const { data: myProfile } = await supabase
         .from("profiles")
-        .select("display_name, phone")
+        .select("display_name, phone, phone_country_code")
         .eq("user_id", user.id)
         .maybeSingle();
       if (myProfile) {
         setDisplayName((myProfile as any).display_name || "");
         setPhone((myProfile as any).phone || "");
+        setPhoneCountryCode((myProfile as any).phone_country_code || "+45");
       }
 
       const { data: links } = await supabase
