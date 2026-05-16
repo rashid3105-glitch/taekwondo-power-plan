@@ -132,6 +132,21 @@ export default function ParentDashboard() {
 
         if (profileRes.data) {
           const p: any = profileRes.data;
+          let season: AthleteData["season"] = null;
+          if (p.club_id) {
+            try {
+              const { data: seasonRow } = await (supabase.from as any)("club_season_plans")
+                .select("*, club_season_phases(*), club_season_day_templates(*)")
+                .eq("club_id", p.club_id).eq("is_active", true).maybeSingle();
+              if (seasonRow) {
+                season = {
+                  plan: seasonRow,
+                  phases: seasonRow.club_season_phases || [],
+                  template: seasonRow.club_season_day_templates || [],
+                };
+              }
+            } catch { /* missing tables */ }
+          }
           results.push({
             profile: {
               user_id: p.user_id,
@@ -146,6 +161,7 @@ export default function ParentDashboard() {
             competitions: (compsRes.data as CompetitionRow[]) || [],
             attendance: dayList,
             attendanceRate: rate,
+            season,
           });
         }
       }
