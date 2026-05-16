@@ -9002,6 +9002,8 @@ const translations = {
     rehabTempo: "Tempo",
     rehabDeleteTitle: "Genesungsplan löschen?",
     rehabDeleteDesc: "Damit wird der Plan dauerhaft entfernt. Du kannst jederzeit einen neuen erstellen.",
+    phoneNumber: "Telefonnummer",
+    phoneCountryCode: "Ländervorwahl",
   },
 
   ar: {
