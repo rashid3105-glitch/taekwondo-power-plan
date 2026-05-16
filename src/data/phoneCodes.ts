@@ -1,0 +1,18 @@
+export const PHONE_CODES = [
+  { code: "+45", flag: "🇩🇰", country: "Denmark" },
+  { code: "+46", flag: "🇸🇪", country: "Sweden" },
+  { code: "+47", flag: "🇳🇴", country: "Norway" },
+  { code: "+49", flag: "🇩🇪", country: "Germany" },
+  { code: "+44", flag: "🇬🇧", country: "United Kingdom" },
+  { code: "+1", flag: "🇺🇸", country: "United States" },
+  { code: "+98", flag: "🇮🇷", country: "Iran" },
+  { code: "+966", flag: "🇸🇦", country: "Saudi Arabia" },
+  { code: "+971", flag: "🇦🇪", country: "UAE" },
+  { code: "+20", flag: "🇪🇬", country: "Egypt" },
+  { code: "+33", flag: "🇫🇷", country: "France" },
+  { code: "+31", flag: "🇳🇱", country: "Netherlands" },
+  { code: "+34", flag: "🇪🇸", country: "Spain" },
+  { code: "+39", flag: "🇮🇹", country: "Italy" },
+  { code: "+90", flag: "🇹🇷", country: "Turkey" },
+  { code: "+82", flag: "🇰🇷", country: "South Korea" },
+] as const;
