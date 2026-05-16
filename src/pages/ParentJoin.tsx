@@ -34,6 +34,7 @@ export default function ParentJoin() {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [phoneCountryCode, setPhoneCountryCode] = useState("+45");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
 
