@@ -148,6 +148,7 @@ serve(async (req) => {
       : language === "de" ? "German"
       : language === "ar" ? "Arabic"
       : language === "no" ? "Norwegian Bokmål"
+      : language === "fa" ? "Persian (Farsi)"
       : "English";
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");

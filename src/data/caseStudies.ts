@@ -1,6 +1,6 @@
 import { TrendingUp, TrendingDown, Activity, Timer, Clock, Users, Shield, Award, Target, Zap, Heart, BarChart3, type LucideIcon } from "lucide-react";
 
-export type Locale = "en" | "da" | "sv" | "de" | "ar" | "no";
+export type Locale = "en" | "da" | "sv" | "de" | "ar" | "no" | "fa";
 type LangText = { en: string } & Partial<Record<Exclude<Locale, "en">, string>>;
 
 export interface CaseStory {

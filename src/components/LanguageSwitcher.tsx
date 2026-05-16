@@ -10,6 +10,7 @@ const FLAGS: Record<Locale, { emoji: string; label: string }> = {
   no: { emoji: "🇳🇴", label: "Norsk" },
   de: { emoji: "🇩🇪", label: "Deutsch" },
   ar: { emoji: "🇸🇦", label: "العربية" },
+  fa: { emoji: "🇮🇷", label: "فارسی" },
 };
 
 export function LanguageSwitcher({ className }: { className?: string }) {

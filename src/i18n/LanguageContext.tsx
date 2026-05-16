@@ -10,7 +10,8 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | null>(null);
 
-const SUPPORTED: Locale[] = ["en", "da", "sv", "de", "ar", "no"];
+const SUPPORTED: Locale[] = ["en", "da", "sv", "de", "ar", "no", "fa"];
+const RTL_LOCALES: Locale[] = ["ar", "fa"];
 const isLocale = (v: unknown): v is Locale =>
   typeof v === "string" && (SUPPORTED as string[]).includes(v);
 
@@ -27,13 +28,13 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const setLocale = useCallback((l: Locale) => {
     setLocaleState(l);
     localStorage.setItem("tkd-lang", l);
-    document.documentElement.dir = l === "ar" ? "rtl" : "ltr";
+    document.documentElement.dir = RTL_LOCALES.includes(l) ? "rtl" : "ltr";
     document.documentElement.lang = l;
   }, []);
 
   // Set initial dir and lang on mount
   useEffect(() => {
-    document.documentElement.dir = locale === "ar" ? "rtl" : "ltr";
+    document.documentElement.dir = RTL_LOCALES.includes(locale) ? "rtl" : "ltr";
     document.documentElement.lang = locale;
   }, [locale]);
 
@@ -54,7 +55,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         if (isLocale(dl)) {
           setLocaleState(dl);
           localStorage.setItem("tkd-lang", dl);
-          document.documentElement.dir = dl === "ar" ? "rtl" : "ltr";
+          document.documentElement.dir = RTL_LOCALES.includes(dl) ? "rtl" : "ltr";
           document.documentElement.lang = dl;
         }
       } catch {
