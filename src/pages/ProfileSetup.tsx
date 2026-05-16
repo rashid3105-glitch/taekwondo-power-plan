@@ -156,6 +156,8 @@ export default function ProfileSetup() {
           setSavedAvatarUrl(profileData.avatar_url || null);
           setClubId(profileData.club_id || "");
           setCountry(profileData.country || "");
+          setPhone((profileData as any).phone || "");
+          setPhoneCountryCode((profileData as any).phone_country_code || "+45");
           setCustomCalories(profileData.custom_calories?.toString() || "");
           setDefaultLocale((profileData.default_locale as Locale) || "");
           setGalLicense(profileData.gal_license || "");
