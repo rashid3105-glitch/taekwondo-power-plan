@@ -13469,5 +13469,5 @@ const translations = {
 export type TranslationKey = keyof typeof translations.en;
 // Farsi/Persian: UI strings fall back to English until translated. AI-generated
 // plans (training, nutrition, mental, rehab) are produced in Farsi server-side.
-(translations as Record<string, typeof translations.en>).fa = translations.en;
+(translations as unknown as Record<string, typeof translations.en>).fa = translations.en;
 export default translations;

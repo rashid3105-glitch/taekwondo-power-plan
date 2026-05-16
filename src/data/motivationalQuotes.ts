@@ -2,10 +2,10 @@
 // the same quote shows for the whole day across sessions/devices.
 // Translations live alongside each quote to avoid runtime translation calls.
 
-export type Locale = "en" | "da" | "sv" | "de" | "ar" | "no";
+export type Locale = "en" | "da" | "sv" | "de" | "ar" | "no" | "fa";
 
 export interface Quote {
-  text: Record<Locale, string>;
+  text: { en: string } & Partial<Record<Exclude<Locale, "en">, string>>;
   author: string;
 }
 
