@@ -358,6 +358,26 @@ export default function AdminApproval() {
     }
   };
 
+  const calcAge = (birthDate: string): number | null => {
+    if (!birthDate) return null;
+    const today = new Date();
+    const bd = new Date(birthDate);
+    let age = today.getFullYear() - bd.getFullYear();
+    const m = today.getMonth() - bd.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < bd.getDate())) age--;
+    return age > 0 ? age : null;
+  };
+
+  const calcExperience = (startDate: string): number | null => {
+    if (!startDate) return null;
+    const today = new Date();
+    const start = new Date(startDate);
+    let years = today.getFullYear() - start.getFullYear();
+    const m = today.getMonth() - start.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < start.getDate())) years--;
+    return years >= 0 ? years : 0;
+  };
+
   const openEditDialog = (u: PendingUser) => {
     setEditForm({
       display_name: u.display_name || "",
@@ -370,6 +390,8 @@ export default function AdminApproval() {
       country: u.country || "",
       current_injury: u.current_injury || "",
       club_id: u.club_id || "",
+      birth_date: u.birth_date || "",
+      tkd_start_date: u.tkd_start_date || "",
     });
     setEditingUser(u);
   };
