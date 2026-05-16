@@ -990,4 +990,4 @@ const ar: CLStrings = {
     "منصة التدريب المصممة لأندية التايكوندو. أدر القائمة، تابع الجاهزية، ابنِ خططاً مرحلية وأرسل تقارير أسبوعية — كل ذلك في مكان واحد.",
 };
 
-export const COACH_LANDING_STRINGS: Record<Locale, CLStrings> = { en, da, sv, no, de, ar };
+export const COACH_LANDING_STRINGS: Record<Locale, CLStrings> = { en, da, sv, no, de, ar, fa: en };
