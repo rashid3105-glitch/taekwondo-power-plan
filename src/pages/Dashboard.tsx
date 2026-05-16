@@ -352,6 +352,19 @@ export default function Dashboard() {
         .eq("id", profileData.club_id)
         .maybeSingle();
       setClubName((clubData as { name?: string } | null)?.name || "");
+      // Active club season (read-only mini calendar on hub)
+      try {
+        const { data: seasonRow } = await (supabase.from as any)("club_season_plans")
+          .select("*, club_season_phases(*), club_season_day_templates(*)")
+          .eq("club_id", profileData.club_id).eq("is_active", true).maybeSingle();
+        if (seasonRow) {
+          setClubSeason({
+            plan: seasonRow,
+            phases: seasonRow.club_season_phases || [],
+            template: seasonRow.club_season_day_templates || [],
+          });
+        }
+      } catch { /* table may not exist yet */ }
       setIsPaid(profileData.payment_status === "paid");
       if (profileData.is_demo && profileData.payment_status !== "paid") {
         setIsDemo(true);
