@@ -47,6 +47,7 @@ interface AthleteData {
   competitions: CompetitionRow[];
   attendance: { date: string; completed: boolean }[];
   attendanceRate: number;
+  season?: { plan: any; phases: any[]; template: any[] } | null;
 }
 
 export default function ParentDashboard() {
