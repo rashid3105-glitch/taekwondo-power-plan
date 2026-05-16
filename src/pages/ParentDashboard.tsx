@@ -161,6 +161,7 @@ export default function ParentDashboard() {
       const { error } = await supabase.from("profiles").update({
         display_name: displayName.trim(),
         phone: phone.trim(),
+        phone_country_code: phoneCountryCode || "+45",
       } as any).eq("user_id", user.id);
       if (error) throw error;
       toast({ title: t("profileSaved") || "Saved" });
