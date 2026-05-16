@@ -52,6 +52,8 @@ interface PendingUser {
   country?: string | null;
   current_injury?: string | null;
   last_seen_at?: string | null;
+  birth_date?: string | null;
+  tkd_start_date?: string | null;
 }
 
 export default function AdminApproval() {
