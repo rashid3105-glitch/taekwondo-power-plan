@@ -57,6 +57,7 @@ export default function ParentDashboard() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [displayName, setDisplayName] = useState("");
   const [phone, setPhone] = useState("");
+  const [phoneCountryCode, setPhoneCountryCode] = useState("+45");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
