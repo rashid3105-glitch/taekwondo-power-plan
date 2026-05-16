@@ -45,6 +45,8 @@ const UpdateProfileSchema = z.object({
   myfightbook_expires_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
   tkd_start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
   birth_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
+  phone: z.string().max(40).nullable().optional(),
+  phone_country_code: z.string().max(8).nullable().optional(),
   avatar_url: z
     .string()
     .max(500)
