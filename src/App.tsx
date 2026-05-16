@@ -26,6 +26,7 @@ import AdminApproval from "./pages/AdminApproval";
 import AdminModuleAccess from "./pages/AdminModuleAccess";
 import CoachDashboard from "./pages/CoachDashboard";
 import CoachAthleteOverview from "./pages/CoachAthleteOverview";
+import SeasonCalendar from "./pages/SeasonCalendar";
 import Pricing from "./pages/Pricing";
 import SubscriptionSettings from "./pages/SubscriptionSettings";
 import Help from "./pages/Help";
@@ -105,6 +106,7 @@ const AnimatedRoutes = () => {
         <Route path="/admin/clubs" element={<Page><AdminClubs /></Page>} />
         <Route path="/coach" element={<Page><CoachDashboard /></Page>} />
         <Route path="/coach/athlete/:athleteId" element={<Page><CoachAthleteOverview /></Page>} />
+        <Route path="/coach/season-calendar" element={<Page><SeasonCalendar /></Page>} />
         <Route path="/pricing" element={<Page><Pricing /></Page>} />
         <Route path="/settings/subscription" element={<Page><SubscriptionSettings /></Page>} />
         <Route path="/help" element={<Page><Help /></Page>} />

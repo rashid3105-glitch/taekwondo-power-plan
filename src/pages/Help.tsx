@@ -15,7 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
 type TopicKey =
-  | "helpProfile" | "helpSeasonPlan" | "helpWearables" | "helpCoachFeedback"
+  | "helpProfile" | "helpSeasonPlan" | "helpSeasonCalendar" | "helpWearables" | "helpCoachFeedback"
   | "helpMatchAnalysis" | "helpMatchReport" | "helpTrainingPlan" | "helpPhysicalTesting" | "helpProgress"
   | "helpNutrition" | "helpRehabPlan" | "helpMentalPlan" | "helpLibrary" | "helpDiary"
   | "helpReflection" | "helpParentPortal"
@@ -44,6 +44,7 @@ const TOPICS: Record<TopicKey, Topic> = {
   helpStudentProgress: { key: "helpStudentProgress", icon: BarChart3 },
   helpChat: { key: "helpChat", icon: MessageCircle, isNew: true },
   helpWeeklyReport: { key: "helpWeeklyReport", icon: FileText, isNew: true },
+  helpSeasonCalendar: { key: "helpSeasonCalendar", icon: CalendarRange, isNew: true },
 };
 
 type SectionDef = {
@@ -92,7 +93,7 @@ const SECTIONS: SectionDef[] = [
     chipBg: "bg-tab-progress",
     chipFg: "text-white",
     accent: "bg-tab-progress",
-    topics: ["helpAddStudents", "helpStudentProgress", "helpCoachFeedback", "helpChat", "helpWeeklyReport"],
+    topics: ["helpAddStudents", "helpStudentProgress", "helpSeasonCalendar", "helpCoachFeedback", "helpChat", "helpWeeklyReport"],
   },
   {
     id: "account",
@@ -430,6 +431,7 @@ export default function Help() {
 }
 
 const CHANGELOG: { dateKey: string; entries: string[] }[] = [
+  { dateKey: "changelog_2026_05_17", entries: ["changelogEntry117"] },
   { dateKey: "changelog_2026_05_15", entries: ["changelogEntry116"] },
   { dateKey: "changelog_2026_05_14b", entries: ["changelogEntry115"] },
   { dateKey: "changelog_2026_05_14", entries: ["changelogEntry112", "changelogEntry113", "changelogEntry114"] },

@@ -33,7 +33,7 @@ import { CoachBulkCreateCompetitionDialog } from "@/components/coach/CoachBulkCr
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   ArrowLeft, Loader2, Zap, User, Users, NotebookPen, UserCog,
-  Frown, Meh, Smile, Laugh, BatteryLow, BatteryMedium, BatteryFull, MessageSquare, Bell, Search, Send, Building,
+  Frown, Meh, Smile, Laugh, BatteryLow, BatteryMedium, BatteryFull, MessageSquare, Bell, Search, Send, Building, CalendarRange,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MessagesIcon } from "@/components/chat/MessagesIcon";
@@ -308,6 +308,10 @@ export default function CoachDashboard() {
             <span className="text-sm sm:text-base font-extrabold text-foreground">{t("coachDashboard")}</span>
           </div>
           <div className="flex items-center gap-1">
+            <Button variant="ghost" size="sm" onClick={() => navigate("/coach/season-calendar")} className="gap-1">
+              <CalendarRange className="h-4 w-4" />
+              <span className="hidden sm:inline">{t("seasonCalendar")}</span>
+            </Button>
             <MessagesIcon isCoach />
             <LanguageSwitcher />
           </div>

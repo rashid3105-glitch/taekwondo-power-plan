@@ -213,6 +213,44 @@ export type Database = {
         }
         Relationships: []
       }
+      club_athlete_season_overrides: {
+        Row: {
+          athlete_id: string
+          created_at: string
+          id: string
+          notes: string | null
+          override_date: string
+          season_plan_id: string
+          session_type: string | null
+        }
+        Insert: {
+          athlete_id: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          override_date: string
+          season_plan_id: string
+          session_type?: string | null
+        }
+        Update: {
+          athlete_id?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          override_date?: string
+          season_plan_id?: string
+          session_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "club_athlete_season_overrides_season_plan_id_fkey"
+            columns: ["season_plan_id"]
+            isOneToOne: false
+            referencedRelation: "club_season_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       club_module_defaults: {
         Row: {
           club_id: string
@@ -238,6 +276,126 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "club_module_defaults_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      club_season_day_templates: {
+        Row: {
+          day_of_week: number
+          id: string
+          location: string | null
+          notes: string | null
+          season_plan_id: string
+          session_type: string
+        }
+        Insert: {
+          day_of_week: number
+          id?: string
+          location?: string | null
+          notes?: string | null
+          season_plan_id: string
+          session_type?: string
+        }
+        Update: {
+          day_of_week?: number
+          id?: string
+          location?: string | null
+          notes?: string | null
+          season_plan_id?: string
+          session_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "club_season_day_templates_season_plan_id_fkey"
+            columns: ["season_plan_id"]
+            isOneToOne: false
+            referencedRelation: "club_season_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      club_season_phases: {
+        Row: {
+          color: string
+          created_at: string
+          end_week: number
+          focus_label: string | null
+          id: string
+          name: string
+          season_plan_id: string
+          sort_order: number
+          start_week: number
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          end_week: number
+          focus_label?: string | null
+          id?: string
+          name: string
+          season_plan_id: string
+          sort_order?: number
+          start_week: number
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          end_week?: number
+          focus_label?: string | null
+          id?: string
+          name?: string
+          season_plan_id?: string
+          sort_order?: number
+          start_week?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "club_season_phases_season_plan_id_fkey"
+            columns: ["season_plan_id"]
+            isOneToOne: false
+            referencedRelation: "club_season_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      club_season_plans: {
+        Row: {
+          club_id: string
+          created_at: string
+          created_by: string
+          end_date: string
+          id: string
+          is_active: boolean
+          name: string
+          start_date: string
+        }
+        Insert: {
+          club_id: string
+          created_at?: string
+          created_by: string
+          end_date: string
+          id?: string
+          is_active?: boolean
+          name: string
+          start_date: string
+        }
+        Update: {
+          club_id?: string
+          created_at?: string
+          created_by?: string
+          end_date?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          start_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "club_season_plans_club_id_fkey"
             columns: ["club_id"]
             isOneToOne: false
             referencedRelation: "clubs"

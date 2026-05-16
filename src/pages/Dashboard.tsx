@@ -42,6 +42,7 @@ import { HubTodayHero } from "@/components/hub/HubTodayHero";
 // HubDailyQuote removed from dashboard.
 import { HubNextEvent } from "@/components/hub/HubNextEvent";
 import { HubRecoveryStrip } from "@/components/hub/HubRecoveryStrip";
+import { SeasonCalendarMini } from "@/components/hub/SeasonCalendarMini";
 import { HubPinnedModules } from "@/components/hub/HubPinnedModules";
 import { HubOtherModules } from "@/components/hub/HubOtherModules";
 import { HubReadinessBanner } from "@/components/hub/HubReadinessBanner";
@@ -102,6 +103,7 @@ export default function Dashboard() {
   const [rehabPlans, setRehabPlans] = useState<RehabPlanRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [nextEvent, setNextEvent] = useState<{ name: string; event_date: string; location: string | null; priority: string } | null>(null);
+  const [clubSeason, setClubSeason] = useState<{ plan: any; phases: any[]; template: any[] } | null>(null);
   type TabKey = "hub" | "plan" | "rehab" | "mental" | "progress" | "nutrition" | "testing";
   const VALID_TABS: TabKey[] = ["hub", "plan", "rehab", "mental", "progress", "nutrition", "testing"];
   const [searchParams, setSearchParams] = useSearchParams();
@@ -350,6 +352,19 @@ export default function Dashboard() {
         .eq("id", profileData.club_id)
         .maybeSingle();
       setClubName((clubData as { name?: string } | null)?.name || "");
+      // Active club season (read-only mini calendar on hub)
+      try {
+        const { data: seasonRow } = await (supabase.from as any)("club_season_plans")
+          .select("*, club_season_phases(*), club_season_day_templates(*)")
+          .eq("club_id", profileData.club_id).eq("is_active", true).maybeSingle();
+        if (seasonRow) {
+          setClubSeason({
+            plan: seasonRow,
+            phases: seasonRow.club_season_phases || [],
+            template: seasonRow.club_season_day_templates || [],
+          });
+        }
+      } catch { /* table may not exist yet */ }
       setIsPaid(profileData.payment_status === "paid");
       if (profileData.is_demo && profileData.payment_status !== "paid") {
         setIsDemo(true);
@@ -746,6 +761,15 @@ export default function Dashboard() {
 
             {/* 2. Next event countdown */}
             <HubNextEvent event={nextEvent} />
+
+            {clubSeason?.plan && (
+              <SeasonCalendarMini
+                seasonPlan={clubSeason.plan}
+                phases={clubSeason.phases}
+                template={clubSeason.template}
+                fullLink={isCoach ? "/coach/season-calendar" : "#"}
+              />
+            )}
 
             {/* 3. Recovery strip */}
             {!isDemo && <HubRecoveryStrip />}
