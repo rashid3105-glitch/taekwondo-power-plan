@@ -1010,17 +1010,28 @@ export default function AdminApproval() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label>Age</Label>
-                <Input type="number" inputMode="numeric" value={editForm.age || ""} onChange={(e) => setEditForm(f => ({ ...f, age: e.target.value }))} />
+                <Label>{t("birthDate") || "Date of birth"}</Label>
+                <p className="text-xs text-muted-foreground">{t("birthDateHint") || "Used to calculate age automatically"}</p>
+                <Input
+                  type="date"
+                  value={editForm.birth_date || ""}
+                  onChange={(e) => setEditForm(f => ({ ...f, birth_date: e.target.value }))}
+                  max={new Date().toISOString().split("T")[0]}
+                />
+                {editForm.birth_date && calcAge(editForm.birth_date) !== null && (
+                  <p className="text-xs text-muted-foreground">
+                    {t("profileAge") || "Age"}: <span className="font-semibold text-foreground">{calcAge(editForm.birth_date)} {t("years") || "years"}</span>
+                  </p>
+                )}
               </div>
               <div className="space-y-2">
-                <Label>Weight (kg)</Label>
+                <Label>{t("weightKg") || "Weight (kg)"}</Label>
                 <Input type="number" inputMode="decimal" value={editForm.weight_kg || ""} onChange={(e) => setEditForm(f => ({ ...f, weight_kg: e.target.value }))} />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label>Belt Level</Label>
+                <Label>{t("beltLevel") || "Belt Level"}</Label>
                 <Select value={editForm.belt_level || "white"} onValueChange={(v) => setEditForm(f => ({ ...f, belt_level: v }))}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
@@ -1031,8 +1042,19 @@ export default function AdminApproval() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Experience (years)</Label>
-                <Input type="number" inputMode="numeric" value={editForm.experience_years || ""} onChange={(e) => setEditForm(f => ({ ...f, experience_years: e.target.value }))} />
+                <Label>{t("tkdStartDate") || "Started taekwondo"}</Label>
+                <p className="text-xs text-muted-foreground">{t("tkdStartDateHint") || "Used to calculate experience automatically"}</p>
+                <Input
+                  type="date"
+                  value={editForm.tkd_start_date || ""}
+                  onChange={(e) => setEditForm(f => ({ ...f, tkd_start_date: e.target.value }))}
+                  max={new Date().toISOString().split("T")[0]}
+                />
+                {editForm.tkd_start_date && calcExperience(editForm.tkd_start_date) !== null && (
+                  <p className="text-xs text-muted-foreground">
+                    {t("profileExperience") || "Experience"}: <span className="font-semibold text-foreground">{calcExperience(editForm.tkd_start_date)} {t("years") || "years"}</span>
+                  </p>
+                )}
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
