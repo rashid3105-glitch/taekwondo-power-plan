@@ -1,4 +1,4 @@
-export type Locale = "en" | "da" | "sv" | "de" | "ar" | "no";
+export type Locale = "en" | "da" | "sv" | "de" | "ar" | "no" | "fa";
 
 const translations = {
   en: {
@@ -13467,4 +13467,7 @@ const translations = {
 } as const;
 
 export type TranslationKey = keyof typeof translations.en;
+// Farsi/Persian: UI strings fall back to English until translated. AI-generated
+// plans (training, nutrition, mental, rehab) are produced in Farsi server-side.
+(translations as Record<string, typeof translations.en>).fa = translations.en;
 export default translations;
