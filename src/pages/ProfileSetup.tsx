@@ -20,6 +20,7 @@ import { PublicProfileSettings } from "@/components/profile/PublicProfileSetting
 
 
 import { COUNTRIES } from "@/data/countries";
+import { PHONE_CODES } from "@/data/phoneCodes";
 
 const BELT_LEVELS = ["white", "yellow", "green", "blue", "red", "black"];
 const GOAL_OPTIONS = [
