@@ -11,6 +11,7 @@ import { Loader2, LogOut, Trophy, Calendar, ClipboardList, Check, X, Settings, C
 import { AvatarImg } from "@/components/AvatarImg";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
+import { SeasonCalendarMini } from "@/components/hub/SeasonCalendarMini";
 import { PHONE_CODES } from "@/data/phoneCodes";
 
 interface AthleteProfile {
