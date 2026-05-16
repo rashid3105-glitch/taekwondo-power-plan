@@ -331,6 +331,8 @@ export default function ProfileSetup() {
         discipline,
         // club_id is managed via invite code flow (apply_invite_to_my_profile), not editable here
         country: country || null,
+        phone: phone.trim() || null,
+        phone_country_code: phoneCountryCode || "+45",
         custom_calories: customCalories ? parseInt(customCalories) : null,
         default_locale: defaultLocale || null,
         gal_license: galLicense.trim() || null,
