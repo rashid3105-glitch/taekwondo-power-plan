@@ -13473,6 +13473,8 @@ const translations = {
     rehabTempo: "Tempo",
     rehabDeleteTitle: "Slette rehabiliteringsplanen?",
     rehabDeleteDesc: "Dette fjerner planen permanent. Du kan alltid lage en ny.",
+    phoneNumber: "Telefonnummer",
+    phoneCountryCode: "Landkode",
   },
 } as const;
 
