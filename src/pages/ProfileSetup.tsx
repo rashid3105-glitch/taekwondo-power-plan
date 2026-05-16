@@ -68,6 +68,8 @@ export default function ProfileSetup() {
   const [clubs, setClubs] = useState<ClubOption[]>([]);
   const [clubId, setClubId] = useState("");
   const [country, setCountry] = useState("");
+  const [phone, setPhone] = useState("");
+  const [phoneCountryCode, setPhoneCountryCode] = useState("+45");
   const [customCalories, setCustomCalories] = useState("");
   const [defaultLocale, setDefaultLocale] = useState<Locale | "">("");
   const [galLicense, setGalLicense] = useState("");
