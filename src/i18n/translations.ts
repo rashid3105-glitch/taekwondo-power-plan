@@ -11213,6 +11213,8 @@ const translations = {
     rehabTempo: "الإيقاع",
     rehabDeleteTitle: "حذف خطة التعافي؟",
     rehabDeleteDesc: "سيؤدي هذا إلى إزالة الخطة نهائياً. يمكنك دائماً إنشاء خطة جديدة.",
+    phoneNumber: "رقم الهاتف",
+    phoneCountryCode: "رمز البلد",
   },
   no: {
     onbWelcomeTitle: "Velkommen til Sportstalent",
