@@ -4532,6 +4532,8 @@ const translations = {
     rehabTempo: "Tempo",
     rehabDeleteTitle: "Slet genoptræningsplan?",
     rehabDeleteDesc: "Dette fjerner planen permanent. Du kan altid generere en ny.",
+    phoneNumber: "Telefonnummer",
+    phoneCountryCode: "Landekode",
   },
   sv: {
     defaultLanguage: "Standardspråk",
