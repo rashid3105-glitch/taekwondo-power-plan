@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { checkAIEntitlement } from "../_shared/checkEntitlement.ts";
+import { sanitizePromptText, asUserDataBlock } from "../_shared/sanitizePrompt.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -111,19 +112,26 @@ Return a JSON object:
 
 Return ONLY valid JSON, no markdown fences.`;
 
+    // Build a safe textual rendering of the answers map rather than dumping JSON.
+    const safeAnswersText = answers && typeof answers === "object" && !Array.isArray(answers)
+      ? Object.entries(answers as Record<string, unknown>)
+          .slice(0, 50)
+          .map(([k, v]) => `- ${sanitizePromptText(k, 60)}: ${sanitizePromptText(v, 400)}`)
+          .join("\n")
+      : "(no detailed answers)";
+
     const userPrompt = `Assessment results for a taekwondo ${isSparring ? 'sparring' : 'poomsae'} athlete:
 - Discipline: ${isSparring ? 'Sparring (Fighter)' : 'Poomsae (Forms)'}
-- Belt level: ${profile?.belt_level || "not specified"}
-- Experience: ${profile?.experience_years || "not specified"} years
-- Age: ${profile?.age || "not specified"}
+- Belt level: ${sanitizePromptText(profile?.belt_level, 30) || "not specified"}
+- Experience: ${Number(profile?.experience_years) || "not specified"} years
+- Age: ${Number(profile?.age) || "not specified"}
 
 Category scores (1-5 scale):
-${Object.entries(scores).map(([k, v]) => `- ${k}: ${v}/5`).join("\n")}
+${Object.entries(scores).map(([k, v]) => `- ${sanitizePromptText(k, 60)}: ${Number(v) || 0}/5`).join("\n")}
 
-Total score: ${totalScore}/30
+Total score: ${Number(totalScore) || 0}/30
 
-Detailed answers:
-${JSON.stringify(answers, null, 2)}
+${asUserDataBlock("DETAILED ATHLETE ANSWERS", safeAnswersText, 6000)}
 
 Provide personalized mental performance advice focusing on their weakest areas, tailored to ${isSparring ? 'sparring competition' : 'poomsae performance'}.`;
 
