@@ -5,7 +5,7 @@
 
 // (no default-export import needed)
 
-type Locale = "en" | "da" | "sv" | "de" | "ar" | "no" | "fa";
+type Locale = "en" | "da" | "sv" | "de" | "ar" | "no" | "es";
 
 // ---------- Day-of-week translation ----------
 
@@ -16,7 +16,7 @@ const DAY_NAMES: Record<Locale, string[]> = {
   sv: ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag", "Söndag"],
   de: ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"],
   ar: ["الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت", "الأحد"],
-  fa: ["دوشنبه", "سه‌شنبه", "چهارشنبه", "پنجشنبه", "جمعه", "شنبه", "یکشنبه"],
+  es: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
 };
 
 // Build a reverse index: any localized day name → canonical 0..6 index.
@@ -67,7 +67,7 @@ let indexBuilt = false;
 function buildIndex() {
   if (indexBuilt) return;
   indexBuilt = true;
-  const locales: Locale[] = ["en", "da", "sv", "de", "ar", "no", "fa"];
+  const locales: Locale[] = ["en", "da", "sv", "de", "ar", "no", "es"];
   const previous = (globalThis as any).__exerciseLocaleSnapshot__;
   for (const loc of locales) {
     setExerciseLocale(loc);

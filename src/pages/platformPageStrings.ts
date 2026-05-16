@@ -798,5 +798,5 @@ export const platformStrings: Record<Locale, typeof en> = {
   de,
   ar,
   no,
-  fa: en,
+  es: en,
 };
