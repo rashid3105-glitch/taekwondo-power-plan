@@ -1,0 +1,1 @@
+UPDATE public.profiles SET default_locale = 'en' WHERE default_locale = 'fa';
