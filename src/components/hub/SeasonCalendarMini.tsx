@@ -9,6 +9,7 @@ import {
   type AthleteSeasonOverride,
   addDays,
   dayOfWeekMon0,
+  isoWeekNumber,
   phaseForWeek,
   resolveSessionForDate,
   seasonWeekNumber,
@@ -69,7 +70,7 @@ export function SeasonCalendarMini({
         {weeks.map(({ wStart, days, wkNum, phase }) => (
           <div key={wStart} className="space-y-1">
             <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-muted-foreground">
-              <span>{t("seasonWeek")} {wkNum}</span>
+              <span>{t("seasonWeek")} {isoWeekNumber(wStart)}</span>
               {phase && (
                 <span
                   className="px-1.5 py-0.5 rounded text-[10px] font-semibold"

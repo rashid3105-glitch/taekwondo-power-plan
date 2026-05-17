@@ -317,20 +317,24 @@ export default function SeasonCalendar() {
               <Card className="p-4 space-y-3">
                 <h2 className="font-semibold text-sm">{t("seasonPhase")}</h2>
                 <div className="space-y-2">
-                  {phases.map((p) => (
-                    <div key={p.id} className="flex items-center justify-between gap-2 text-xs">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <span className="h-3 w-3 rounded shrink-0" style={{ backgroundColor: p.color }} />
-                        <div className="min-w-0">
-                          <div className="font-semibold truncate">{p.name}</div>
-                          <div className="text-muted-foreground">W{p.start_week}–W{p.end_week}</div>
+                  {phases.map((p) => {
+                    const isoStart = isoWeekNumber(addDays(selectedPlan!.start_date, (p.start_week - 1) * 7));
+                    const isoEnd = isoWeekNumber(addDays(selectedPlan!.start_date, (p.end_week - 1) * 7));
+                    return (
+                      <div key={p.id} className="flex items-center justify-between gap-2 text-xs">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="h-3 w-3 rounded shrink-0" style={{ backgroundColor: p.color }} />
+                          <div className="min-w-0">
+                            <div className="font-semibold truncate">{p.name}</div>
+                            <div className="text-muted-foreground">Uge {isoStart}–{isoEnd}</div>
+                          </div>
                         </div>
+                        <Button size="icon" variant="ghost" onClick={() => deletePhase(p.id)} className="h-7 w-7">
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
                       </div>
-                      <Button size="icon" variant="ghost" onClick={() => deletePhase(p.id)} className="h-7 w-7">
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
                 <div className="space-y-2 border-t border-border pt-3">
                   <Input placeholder={t("seasonPhase")} value={phaseForm.name} onChange={(e) => setPhaseForm({ ...phaseForm, name: e.target.value })} />
@@ -429,7 +433,7 @@ export default function SeasonCalendar() {
                             )}
                             <tr key={r.iso} className={cn("border-b border-border/40", sessionRowClass(r.type))}
                                 style={r.phase ? { borderLeft: `4px solid ${r.phase.color}` } : undefined}>
-                              <td className="p-2 font-mono">{r.weekNum}</td>
+                              <td className="p-2 font-mono">{isoWeekNumber(r.iso)}</td>
                               <td className="p-2 font-mono">{r.iso}</td>
                               <td className="p-2">{DAY_KEYS[dayOfWeekMon0(r.iso)]}</td>
                               <td className="p-2 text-muted-foreground truncate max-w-32">{r.phase?.name ?? ""}</td>
