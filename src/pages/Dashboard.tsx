@@ -826,6 +826,25 @@ export default function Dashboard() {
             </div>
           </div>
 
+        ) : activeTab === "calendar" ? (
+          <>
+            <BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />
+            {!clubSeason?.plan ? (
+              <div className="rounded-xl border border-border bg-card p-8 text-center space-y-3">
+                <div className="mx-auto h-12 w-12 rounded-full bg-muted flex items-center justify-center">
+                  <CalendarRange className="h-5 w-5 text-muted-foreground" />
+                </div>
+                <h3 className="font-bold text-foreground">{t("seasonCalendar")}</h3>
+                <p className="text-sm text-muted-foreground">{t("seasonNoCalendarYet")}</p>
+              </div>
+            ) : (
+              <SeasonCalendarView
+                seasonPlan={clubSeason.plan}
+                phases={clubSeason.phases}
+                template={clubSeason.template}
+              />
+            )}
+          </>
         ) : activeTab === "progress" ? (
           <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isTabModuleDisabled("progress") ? renderModuleDisabledState() : isDemo ? renderDemoLockedState("progress") : <ProgressDashboard onGoToPlan={() => handleTabChange("plan")} />}</>
         ) : activeTab === "nutrition" ? (
