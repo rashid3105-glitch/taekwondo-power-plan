@@ -459,6 +459,50 @@ export default function SeasonCalendar() {
                           </button>
                         );
                       })}
+                      {phaseForm.focus_tags
+                        .filter((v) => !PHASE_FOCUS_TAGS.some((m) => m.value === v))
+                        .map((custom) => (
+                          <button key={custom} type="button"
+                            onClick={() => setPhaseForm({
+                              ...phaseForm,
+                              focus_tags: phaseForm.focus_tags.filter((x) => x !== custom),
+                            })}
+                            className="text-[11px] px-2 py-1 rounded-full border bg-primary text-primary-foreground border-primary inline-flex items-center gap-1"
+                            title={t("remove") || "Remove"}
+                          >
+                            {custom}
+                            <span className="opacity-70">×</span>
+                          </button>
+                        ))}
+                    </div>
+                    <div className="flex gap-1 pt-1">
+                      <Input
+                        placeholder={t("seasonPhaseFocusTagCustomPlaceholder") || "Egen tag…"}
+                        value={customTagInput}
+                        onChange={(e) => setCustomTagInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            const v = customTagInput.trim().slice(0, 32);
+                            if (v && !phaseForm.focus_tags.includes(v)) {
+                              setPhaseForm({ ...phaseForm, focus_tags: [...phaseForm.focus_tags, v] });
+                            }
+                            setCustomTagInput("");
+                          }
+                        }}
+                        className="h-8 text-xs"
+                      />
+                      <Button size="sm" variant="outline" type="button"
+                        onClick={() => {
+                          const v = customTagInput.trim().slice(0, 32);
+                          if (v && !phaseForm.focus_tags.includes(v)) {
+                            setPhaseForm({ ...phaseForm, focus_tags: [...phaseForm.focus_tags, v] });
+                          }
+                          setCustomTagInput("");
+                        }}
+                      >
+                        <Plus className="h-3 w-3" />
+                      </Button>
                     </div>
                   </div>
                   <Button size="sm" className="w-full" onClick={addPhase}><Plus className="h-3 w-3 mr-1" />{t("seasonPhaseAdd")}</Button>
