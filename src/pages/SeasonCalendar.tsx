@@ -451,25 +451,7 @@ export default function SeasonCalendar() {
     setOverrides((prev) => prev.filter((o) => o.id !== id));
   }
 
-  // Build the row list for the main calendar
-  const calendarRows = useMemo(() => {
-    if (!selectedPlan) return [];
-    const compSet = new Set(
-      selectedAthleteId
-        ? competitions.filter((c) => c.user_id === selectedAthleteId).map((c) => c.event_date)
-        : competitions.map((c) => c.event_date),
-    );
-    const rows: { iso: string; weekNum: number; phase: ClubSeasonPhase | null; type: SessionType; isComp: boolean; fromOverride: boolean; location: string | null }[] = [];
-    const total = daysBetween(selectedPlan.start_date, selectedPlan.end_date);
-    for (let i = 0; i <= total; i++) {
-      const iso = addDays(selectedPlan.start_date, i);
-      const wk = seasonWeekNumber(selectedPlan.start_date, iso);
-      const ph = phaseForWeek(phases, wk);
-      const r = resolveSessionForDate(iso, template, overrides, compSet);
-      rows.push({ iso, weekNum: wk, phase: ph, type: r.type, isComp: r.isCompetition, fromOverride: r.fromOverride, location: r.location });
-    }
-    return rows;
-  }, [selectedPlan, phases, template, overrides, competitions, selectedAthleteId]);
+  // (legacy calendarRows removed — monthly grid is rendered directly)
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
