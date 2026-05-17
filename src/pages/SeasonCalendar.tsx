@@ -670,14 +670,11 @@ export default function SeasonCalendar() {
                                 <td colSpan={6} className="p-2 text-xs" style={{ color: r.phase.color }}>
                                   <div className="flex flex-wrap items-center gap-2">
                                     <span className="font-bold uppercase">{r.phase.name}{r.phase.focus_label ? ` — ${r.phase.focus_label}` : ""}</span>
-                                    {(r.phase.focus_tags ?? []).map((tag) => {
-                                      const meta = PHASE_FOCUS_TAGS.find((m) => m.value === tag);
-                                      return (
-                                        <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full font-semibold" style={{ background: `${r.phase!.color}25`, color: r.phase!.color }}>
-                                          {meta ? t(meta.labelKey as any) : tag}
-                                        </span>
-                                      );
-                                    })}
+                                    {(r.phase.focus_tags ?? []).map((tag) => (
+                                      <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full font-semibold" style={{ background: `${r.phase!.color}25`, color: r.phase!.color }}>
+                                        {tagLabel(tag)}
+                                      </span>
+                                    ))}
                                   </div>
                                 </td>
                               </tr>
