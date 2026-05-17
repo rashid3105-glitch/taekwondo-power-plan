@@ -40,6 +40,8 @@ interface AthleteRow { user_id: string; display_name: string; }
 interface CompetitionRow { id: string; name: string; event_date: string; user_id: string; }
 
 const DAY_KEYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const MONTH_NAMES = ["Januar","Februar","Marts","April","Maj","Juni","Juli","August","September","Oktober","November","December"];
+const DAY_LABELS = ["Ma","Ti","On","To","Fr","Lø","Sø"];
 
 export default function SeasonCalendar() {
   const navigate = useNavigate();
