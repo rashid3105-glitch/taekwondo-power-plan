@@ -1,10 +1,12 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
 import {
   type ClubSeasonPlan, type ClubSeasonPhase, type ClubSeasonDayTemplate,
+  type AthleteSeasonOverride, type SessionType,
   PHASE_FOCUS_TAGS,
   dayOfWeekMon0, phaseForWeek, seasonWeekNumber,
   resolveSessionForDate, sessionLabelKey, sessionRowClass,
@@ -23,6 +25,38 @@ const MONTH_NAMES = ["Januar","Februar","Marts","April","Maj","Juni","Juli","Aug
 export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
   const { t } = useLanguage();
   const today = new Date().toISOString().slice(0, 10);
+
+  const [competitionDates, setCompetitionDates] = useState<Set<string>>(new Set());
+  const [overrides, setOverrides] = useState<AthleteSeasonOverride[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const [compsRes, ovRes] = await Promise.all([
+        supabase
+          .from("competitions")
+          .select("event_date")
+          .eq("user_id", user.id)
+          .gte("event_date", seasonPlan.start_date)
+          .lte("event_date", seasonPlan.end_date),
+        supabase
+          .from("club_athlete_season_overrides")
+          .select("*")
+          .eq("season_plan_id", seasonPlan.id)
+          .eq("athlete_id", user.id),
+      ]);
+      if (cancelled) return;
+      setCompetitionDates(new Set((compsRes.data ?? []).map((c: any) => c.event_date as string)));
+      setOverrides(((ovRes.data ?? []) as any[]).map((o) => ({
+        ...o,
+        session_type: o.session_type as SessionType | null,
+      })) as AthleteSeasonOverride[]);
+    })();
+    return () => { cancelled = true; };
+  }, [seasonPlan.id, seasonPlan.start_date, seasonPlan.end_date]);
+
 
   const [viewYear, setViewYear] = useState(() => new Date().getFullYear());
   const [viewMonth, setViewMonth] = useState(() => new Date().getMonth());
@@ -112,7 +146,7 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
 
             const inSeason = iso >= seasonPlan.start_date && iso <= seasonPlan.end_date;
             const isToday = iso === today;
-            const s = inSeason ? resolveSessionForDate(iso, template, [], new Set()) : null;
+            const s = inSeason ? resolveSessionForDate(iso, template, overrides, competitionDates) : null;
             const wkNum = inSeason ? seasonWeekNumber(seasonPlan.start_date, iso) : null;
             const phase = wkNum ? phaseForWeek(phases, wkNum) : null;
 
