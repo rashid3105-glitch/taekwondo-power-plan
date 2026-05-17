@@ -163,6 +163,21 @@ export default function SeasonCalendar() {
     toast({ title: t("seasonNewPlan"), description: data.name });
   }
 
+  async function deletePlan() {
+    if (!selectedPlan) return;
+    if (!window.confirm(`${t("seasonDeletePlanConfirm") || "Delete this season plan? This cannot be undone."}\n\n${selectedPlan.name}`)) return;
+    const id = selectedPlan.id;
+    await (supabase.from as any)("club_athlete_season_overrides").delete().eq("season_plan_id", id);
+    await (supabase.from as any)("club_season_day_templates").delete().eq("season_plan_id", id);
+    await (supabase.from as any)("club_season_phases").delete().eq("season_plan_id", id);
+    const { error } = await (supabase.from as any)("club_season_plans").delete().eq("id", id);
+    if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
+    const remaining = plans.filter((p) => p.id !== id);
+    setPlans(remaining);
+    setSelectedPlanId(remaining[0]?.id ?? null);
+    toast({ title: t("seasonPlanDeleted") || "Season plan deleted" });
+  }
+
   async function addPhase() {
     if (!selectedPlanId || !phaseForm.name) return;
     const { data, error } = await (supabase.from as any)("club_season_phases")
@@ -277,14 +292,21 @@ export default function SeasonCalendar() {
               </Dialog>
             </div>
             {plans.length > 0 ? (
-              <Select value={selectedPlanId ?? ""} onValueChange={setSelectedPlanId}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {plans.map((p) => (
-                    <SelectItem key={p.id} value={p.id}>{p.name}{p.is_active ? " ●" : ""}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="flex items-center gap-2">
+                <Select value={selectedPlanId ?? ""} onValueChange={setSelectedPlanId}>
+                  <SelectTrigger className="flex-1"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {plans.map((p) => (
+                      <SelectItem key={p.id} value={p.id}>{p.name}{p.is_active ? " ●" : ""}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {selectedPlan && (
+                  <Button size="icon" variant="ghost" onClick={deletePlan} className="h-9 w-9 text-destructive hover:text-destructive shrink-0" title={t("seasonDeletePlan") || "Delete plan"}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
             ) : (
               <p className="text-xs text-muted-foreground">—</p>
             )}
