@@ -738,6 +738,63 @@ export default function SeasonCalendar() {
           table { font-size: 10px !important; }
         }
       `}</style>
+
+      <Dialog open={tagEditorOpen} onOpenChange={setTagEditorOpen}>
+        <DialogContent className="max-w-md w-[95vw] max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{t("seasonPhaseFocusTagsEdit") || "Rediger tags"}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            <p className="text-xs text-muted-foreground">
+              {t("seasonPhaseFocusTagsEditHint") || "Omdøb eller skjul tags. Eksisterende faser bevarer deres tags."}
+            </p>
+            {(() => {
+              const usedCustoms = Array.from(new Set(phases.flatMap((p) => p.focus_tags ?? []))).filter(
+                (v) => !PHASE_FOCUS_TAGS.some((m) => m.value === v),
+              );
+              const allValues = [...PHASE_FOCUS_TAGS.map((m) => m.value), ...usedCustoms];
+              return allValues.map((value) => {
+                const preset = PHASE_FOCUS_TAGS.find((m) => m.value === value);
+                const fallback = preset ? t(preset.labelKey as any) : value;
+                const current = tagCatalog.labels[value] ?? "";
+                const hidden = tagCatalog.hidden.includes(value);
+                return (
+                  <div key={value} className="flex items-center gap-2">
+                    <Input
+                      placeholder={fallback}
+                      value={current}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        const labels = { ...tagCatalog.labels };
+                        if (v.trim()) labels[value] = v;
+                        else delete labels[value];
+                        persistCatalog({ ...tagCatalog, labels });
+                      }}
+                      className={cn("h-9 text-sm flex-1", hidden && "opacity-50 line-through")}
+                    />
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={hidden ? "outline" : "ghost"}
+                      onClick={() => {
+                        const set = new Set(tagCatalog.hidden);
+                        if (hidden) set.delete(value); else set.add(value);
+                        persistCatalog({ ...tagCatalog, hidden: Array.from(set) });
+                      }}
+                      className="shrink-0"
+                    >
+                      {hidden ? (t("show") || "Vis") : (t("hide") || "Skjul")}
+                    </Button>
+                  </div>
+                );
+              });
+            })()}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setTagEditorOpen(false)}>{t("close") || "Luk"}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
