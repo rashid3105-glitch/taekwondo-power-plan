@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import {
   type ClubSeasonPlan, type ClubSeasonPhase, type ClubSeasonDayTemplate,
+  PHASE_FOCUS_TAGS,
   dayOfWeekMon0, phaseForWeek, seasonWeekNumber,
   resolveSessionForDate, sessionLabelKey, sessionRowClass,
 } from "@/lib/seasonCalendar";
