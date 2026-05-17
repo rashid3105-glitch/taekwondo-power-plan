@@ -100,7 +100,42 @@ export default function SeasonCalendar() {
   const [visibleAthleteIds, setVisibleAthleteIds] = useState<Set<string>>(new Set());
   const [savingVisibility, setSavingVisibility] = useState(false);
 
+  // Technique library + week focus state
+  const [techniques, setTechniques] = useState<{ id: string; name: string; category: string; discipline: string }[]>([]);
+  const [newTechName, setNewTechName] = useState("");
+  const [newTechCategory, setNewTechCategory] = useState("attack");
+  const [newTechDiscipline, setNewTechDiscipline] = useState("both");
+  const [showTechForm, setShowTechForm] = useState(false);
+  const [weekFocusMap, setWeekFocusMap] = useState<Map<number, { id?: string; technique_ids: string[]; coach_note: string }>>(new Map());
+  const [athleteFocusMap, setAthleteFocusMap] = useState<Map<string, string[]>>(new Map());
+
+  // Monthly calendar view state
+  const [viewYear, setViewYear] = useState(() => new Date().getFullYear());
+  const [viewMonth, setViewMonth] = useState(() => new Date().getMonth());
+  const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
+
+  const todayIso = new Date().toISOString().slice(0, 10);
+
   const selectedPlan = useMemo(() => plans.find((p) => p.id === selectedPlanId) ?? null, [plans, selectedPlanId]);
+
+  const compDateSet = useMemo(() => new Set(
+    selectedAthleteId
+      ? competitions.filter((c) => c.user_id === selectedAthleteId).map((c) => c.event_date)
+      : competitions.map((c) => c.event_date),
+  ), [competitions, selectedAthleteId]);
+
+  const calendarDays = useMemo(() => {
+    const days: (string | null)[] = [];
+    const d = new Date(viewYear, viewMonth, 1);
+    const firstDow = ((d.getDay() + 6) % 7);
+    for (let i = 0; i < firstDow; i++) days.push(null);
+    while (d.getMonth() === viewMonth) {
+      days.push(d.toISOString().slice(0, 10));
+      d.setDate(d.getDate() + 1);
+    }
+    while (days.length % 7 !== 0) days.push(null);
+    return days;
+  }, [viewYear, viewMonth]);
 
   // Default phase form ISO weeks to plan's first ISO week when plan changes.
   useEffect(() => {
