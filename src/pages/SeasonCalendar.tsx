@@ -374,15 +374,27 @@ export default function SeasonCalendar() {
                     const isoStart = isoWeekNumber(addDays(selectedPlan!.start_date, (p.start_week - 1) * 7));
                     const isoEnd = isoWeekNumber(addDays(selectedPlan!.start_date, (p.end_week - 1) * 7));
                     return (
-                      <div key={p.id} className="flex items-center justify-between gap-2 text-xs">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <span className="h-3 w-3 rounded shrink-0" style={{ backgroundColor: p.color }} />
-                          <div className="min-w-0">
+                      <div key={p.id} className="flex items-start justify-between gap-2 text-xs">
+                        <div className="flex items-start gap-2 min-w-0 flex-1">
+                          <span className="h-3 w-3 rounded shrink-0 mt-0.5" style={{ backgroundColor: p.color }} />
+                          <div className="min-w-0 space-y-1">
                             <div className="font-semibold truncate">{p.name}</div>
                             <div className="text-muted-foreground">Uge {isoStart}–{isoEnd}</div>
+                            {(p.focus_tags ?? []).length > 0 && (
+                              <div className="flex flex-wrap gap-1 pt-0.5">
+                                {(p.focus_tags ?? []).map((tag) => {
+                                  const meta = PHASE_FOCUS_TAGS.find((m) => m.value === tag);
+                                  return (
+                                    <span key={tag} className="text-[9px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground border border-border">
+                                      {meta ? t(meta.labelKey as any) : tag}
+                                    </span>
+                                  );
+                                })}
+                              </div>
+                            )}
                           </div>
                         </div>
-                        <Button size="icon" variant="ghost" onClick={() => deletePhase(p.id)} className="h-7 w-7">
+                        <Button size="icon" variant="ghost" onClick={() => deletePhase(p.id)} className="h-7 w-7 shrink-0">
                           <Trash2 className="h-3 w-3" />
                         </Button>
                       </div>
