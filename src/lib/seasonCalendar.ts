@@ -23,10 +23,23 @@ export interface ClubSeasonPhase {
   name: string;
   focus_label: string | null;
   color: string; // hex #rrggbb
-  start_week: number; // 1-indexed
+  start_week: number; // 1-indexed (season-relative)
   end_week: number;
   sort_order: number;
+  focus_tags: string[];
 }
+
+/** Catalogue of training focus tags for season phases. i18n keys live in translations.ts. */
+export const PHASE_FOCUS_TAGS = [
+  { value: "technique",         labelKey: "phaseFocusTechnique" },
+  { value: "conditioning",      labelKey: "phaseFocusConditioning" },
+  { value: "sparring",          labelKey: "phaseFocusSparring" },
+  { value: "strength",          labelKey: "phaseFocusStrength" },
+  { value: "competition_prep",  labelKey: "phaseFocusCompetitionPrep" },
+  { value: "recovery",          labelKey: "phaseFocusRecovery" },
+  { value: "mental",            labelKey: "phaseFocusMental" },
+] as const;
+export type PhaseFocusTag = typeof PHASE_FOCUS_TAGS[number]["value"];
 
 export interface ClubSeasonDayTemplate {
   id: string;
