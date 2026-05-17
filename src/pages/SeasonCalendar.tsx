@@ -67,6 +67,34 @@ export default function SeasonCalendar() {
   });
   const [customTagInput, setCustomTagInput] = useState("");
 
+  // Per-club tag catalog overrides (rename + hide). Stored locally.
+  // Old phases keep their raw `focus_tags` values; this only affects rendering + which chips appear.
+  type TagCatalog = { labels: Record<string, string>; hidden: string[] };
+  const [tagCatalog, setTagCatalog] = useState<TagCatalog>({ labels: {}, hidden: [] });
+  const [tagEditorOpen, setTagEditorOpen] = useState(false);
+
+  useEffect(() => {
+    if (!clubId) return;
+    try {
+      const raw = localStorage.getItem(`season-tag-catalog:${clubId}`);
+      if (raw) setTagCatalog(JSON.parse(raw));
+      else setTagCatalog({ labels: {}, hidden: [] });
+    } catch { /* ignore */ }
+  }, [clubId]);
+
+  function persistCatalog(next: TagCatalog) {
+    setTagCatalog(next);
+    if (clubId) {
+      try { localStorage.setItem(`season-tag-catalog:${clubId}`, JSON.stringify(next)); } catch { /* ignore */ }
+    }
+  }
+
+  function tagLabel(value: string): string {
+    if (tagCatalog.labels[value]) return tagCatalog.labels[value];
+    const preset = PHASE_FOCUS_TAGS.find((m) => m.value === value);
+    return preset ? t(preset.labelKey as any) : value;
+  }
+
   const [overrideForm, setOverrideForm] = useState({ date: "", session_type: "rest" as SessionType, notes: "" });
 
   const [visibleAthleteIds, setVisibleAthleteIds] = useState<Set<string>>(new Set());
@@ -398,21 +426,18 @@ export default function SeasonCalendar() {
                             <div className="text-muted-foreground">Uge {isoStart}–{isoEnd}</div>
                             {(p.focus_tags ?? []).length > 0 && (
                               <div className="flex flex-wrap gap-1 pt-0.5">
-                                {(p.focus_tags ?? []).map((tag) => {
-                                  const meta = PHASE_FOCUS_TAGS.find((m) => m.value === tag);
-                                  return (
-                                    <button
-                                      key={tag}
-                                      type="button"
-                                      onClick={() => removePhaseTag(p.id, tag)}
-                                      title={t("remove") || "Remove"}
-                                      className="text-[9px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground border border-border inline-flex items-center gap-1 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/40 transition-colors"
-                                    >
-                                      {meta ? t(meta.labelKey as any) : tag}
-                                      <span className="opacity-60">×</span>
-                                    </button>
-                                  );
-                                })}
+                                {(p.focus_tags ?? []).map((tag) => (
+                                  <button
+                                    key={tag}
+                                    type="button"
+                                    onClick={() => removePhaseTag(p.id, tag)}
+                                    title={t("remove") || "Remove"}
+                                    className="text-[9px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground border border-border inline-flex items-center gap-1 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/40 transition-colors"
+                                  >
+                                    {tagLabel(tag)}
+                                    <span className="opacity-60">×</span>
+                                  </button>
+                                ))}
                               </div>
                             )}
                           </div>
@@ -452,29 +477,36 @@ export default function SeasonCalendar() {
                     <p className="text-[10px] text-muted-foreground">{t("seasonPhaseWeekHint") || "ISO-ugenumre, fx 47–50"}</p>
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-[10px] uppercase tracking-wide text-muted-foreground">{t("seasonPhaseFocusTags") || "Træningsfokus"}</Label>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-[10px] uppercase tracking-wide text-muted-foreground">{t("seasonPhaseFocusTags") || "Træningsfokus"}</Label>
+                      <button type="button" onClick={() => setTagEditorOpen(true)} className="text-[10px] underline text-muted-foreground hover:text-foreground">
+                        {t("seasonPhaseFocusTagsEdit") || "Rediger tags"}
+                      </button>
+                    </div>
                     <div className="flex flex-wrap gap-1">
-                      {PHASE_FOCUS_TAGS.map((tag) => {
-                        const active = phaseForm.focus_tags.includes(tag.value);
-                        return (
-                          <button key={tag.value} type="button"
-                            onClick={() => setPhaseForm({
-                              ...phaseForm,
-                              focus_tags: active
-                                ? phaseForm.focus_tags.filter((x) => x !== tag.value)
-                                : [...phaseForm.focus_tags, tag.value],
-                            })}
-                            className={cn(
-                              "text-[11px] px-2 py-1 rounded-full border transition-colors",
-                              active
-                                ? "bg-primary text-primary-foreground border-primary"
-                                : "bg-muted/40 border-border text-muted-foreground hover:bg-muted",
-                            )}
-                          >
-                            {t(tag.labelKey as any)}
-                          </button>
-                        );
-                      })}
+                      {PHASE_FOCUS_TAGS
+                        .filter((tag) => !tagCatalog.hidden.includes(tag.value))
+                        .map((tag) => {
+                          const active = phaseForm.focus_tags.includes(tag.value);
+                          return (
+                            <button key={tag.value} type="button"
+                              onClick={() => setPhaseForm({
+                                ...phaseForm,
+                                focus_tags: active
+                                  ? phaseForm.focus_tags.filter((x) => x !== tag.value)
+                                  : [...phaseForm.focus_tags, tag.value],
+                              })}
+                              className={cn(
+                                "text-[11px] px-2 py-1 rounded-full border transition-colors",
+                                active
+                                  ? "bg-primary text-primary-foreground border-primary"
+                                  : "bg-muted/40 border-border text-muted-foreground hover:bg-muted",
+                              )}
+                            >
+                              {tagLabel(tag.value)}
+                            </button>
+                          );
+                        })}
                       {phaseForm.focus_tags
                         .filter((v) => !PHASE_FOCUS_TAGS.some((m) => m.value === v))
                         .map((custom) => (
@@ -486,7 +518,7 @@ export default function SeasonCalendar() {
                             className="text-[11px] px-2 py-1 rounded-full border bg-primary text-primary-foreground border-primary inline-flex items-center gap-1"
                             title={t("remove") || "Remove"}
                           >
-                            {custom}
+                            {tagLabel(custom)}
                             <span className="opacity-70">×</span>
                           </button>
                         ))}
@@ -638,14 +670,11 @@ export default function SeasonCalendar() {
                                 <td colSpan={6} className="p-2 text-xs" style={{ color: r.phase.color }}>
                                   <div className="flex flex-wrap items-center gap-2">
                                     <span className="font-bold uppercase">{r.phase.name}{r.phase.focus_label ? ` — ${r.phase.focus_label}` : ""}</span>
-                                    {(r.phase.focus_tags ?? []).map((tag) => {
-                                      const meta = PHASE_FOCUS_TAGS.find((m) => m.value === tag);
-                                      return (
-                                        <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full font-semibold" style={{ background: `${r.phase!.color}25`, color: r.phase!.color }}>
-                                          {meta ? t(meta.labelKey as any) : tag}
-                                        </span>
-                                      );
-                                    })}
+                                    {(r.phase.focus_tags ?? []).map((tag) => (
+                                      <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full font-semibold" style={{ background: `${r.phase!.color}25`, color: r.phase!.color }}>
+                                        {tagLabel(tag)}
+                                      </span>
+                                    ))}
                                   </div>
                                 </td>
                               </tr>
@@ -709,6 +738,63 @@ export default function SeasonCalendar() {
           table { font-size: 10px !important; }
         }
       `}</style>
+
+      <Dialog open={tagEditorOpen} onOpenChange={setTagEditorOpen}>
+        <DialogContent className="max-w-md w-[95vw] max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{t("seasonPhaseFocusTagsEdit") || "Rediger tags"}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            <p className="text-xs text-muted-foreground">
+              {t("seasonPhaseFocusTagsEditHint") || "Omdøb eller skjul tags. Eksisterende faser bevarer deres tags."}
+            </p>
+            {(() => {
+              const usedCustoms = Array.from(new Set(phases.flatMap((p) => p.focus_tags ?? []))).filter(
+                (v) => !PHASE_FOCUS_TAGS.some((m) => m.value === v),
+              );
+              const allValues = [...PHASE_FOCUS_TAGS.map((m) => m.value), ...usedCustoms];
+              return allValues.map((value) => {
+                const preset = PHASE_FOCUS_TAGS.find((m) => m.value === value);
+                const fallback = preset ? t(preset.labelKey as any) : value;
+                const current = tagCatalog.labels[value] ?? "";
+                const hidden = tagCatalog.hidden.includes(value);
+                return (
+                  <div key={value} className="flex items-center gap-2">
+                    <Input
+                      placeholder={fallback}
+                      value={current}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        const labels = { ...tagCatalog.labels };
+                        if (v.trim()) labels[value] = v;
+                        else delete labels[value];
+                        persistCatalog({ ...tagCatalog, labels });
+                      }}
+                      className={cn("h-9 text-sm flex-1", hidden && "opacity-50 line-through")}
+                    />
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={hidden ? "outline" : "ghost"}
+                      onClick={() => {
+                        const set = new Set(tagCatalog.hidden);
+                        if (hidden) set.delete(value); else set.add(value);
+                        persistCatalog({ ...tagCatalog, hidden: Array.from(set) });
+                      }}
+                      className="shrink-0"
+                    >
+                      {hidden ? (t("show") || "Vis") : (t("hide") || "Skjul")}
+                    </Button>
+                  </div>
+                );
+              });
+            })()}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setTagEditorOpen(false)}>{t("close") || "Luk"}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
