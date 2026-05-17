@@ -292,14 +292,21 @@ export default function SeasonCalendar() {
               </Dialog>
             </div>
             {plans.length > 0 ? (
-              <Select value={selectedPlanId ?? ""} onValueChange={setSelectedPlanId}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {plans.map((p) => (
-                    <SelectItem key={p.id} value={p.id}>{p.name}{p.is_active ? " ●" : ""}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="flex items-center gap-2">
+                <Select value={selectedPlanId ?? ""} onValueChange={setSelectedPlanId}>
+                  <SelectTrigger className="flex-1"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {plans.map((p) => (
+                      <SelectItem key={p.id} value={p.id}>{p.name}{p.is_active ? " ●" : ""}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {selectedPlan && (
+                  <Button size="icon" variant="ghost" onClick={deletePlan} className="h-9 w-9 text-destructive hover:text-destructive shrink-0" title={t("seasonDeletePlan") || "Delete plan"}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
             ) : (
               <p className="text-xs text-muted-foreground">—</p>
             )}
