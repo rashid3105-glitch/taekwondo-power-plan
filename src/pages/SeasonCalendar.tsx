@@ -182,17 +182,32 @@ export default function SeasonCalendar() {
   useEffect(() => {
     if (!selectedPlanId) {
       setPhases([]); setTemplate([]); setOverrides([]); setCompetitions([]); setVisibleAthleteIds(new Set());
+      setWeekFocusMap(new Map()); setAthleteFocusMap(new Map());
       return;
     }
     (async () => {
-      const [phRes, tplRes, visRes] = await Promise.all([
+      const [phRes, tplRes, visRes, focusRes, athFocusRes] = await Promise.all([
         (supabase.from as any)("club_season_phases").select("*").eq("season_plan_id", selectedPlanId).order("start_week"),
         (supabase.from as any)("club_season_day_templates").select("*").eq("season_plan_id", selectedPlanId).order("day_of_week"),
         (supabase.from as any)("club_season_plan_visibility").select("athlete_id").eq("season_plan_id", selectedPlanId),
+        (supabase.from as any)("club_week_technique_focus").select("id, season_week, technique_ids, coach_note").eq("season_plan_id", selectedPlanId),
+        (supabase.from as any)("athlete_week_technique_focus").select("athlete_id, season_week, technique_ids").eq("season_plan_id", selectedPlanId),
       ]);
       setPhases((phRes.data ?? []) as ClubSeasonPhase[]);
       setTemplate((tplRes.data ?? []) as ClubSeasonDayTemplate[]);
       setVisibleAthleteIds(new Set(((visRes.data ?? []) as any[]).map((r) => r.athlete_id)));
+
+      const fm = new Map<number, { id?: string; technique_ids: string[]; coach_note: string }>();
+      for (const row of (focusRes.data ?? []) as any[]) {
+        fm.set(row.season_week, { id: row.id, technique_ids: row.technique_ids ?? [], coach_note: row.coach_note ?? "" });
+      }
+      setWeekFocusMap(fm);
+
+      const afm = new Map<string, string[]>();
+      for (const row of (athFocusRes.data ?? []) as any[]) {
+        afm.set(`${row.season_week}:${row.athlete_id}`, row.technique_ids ?? []);
+      }
+      setAthleteFocusMap(afm);
 
       // Competitions of all club athletes within plan range
       const plan = plans.find((p) => p.id === selectedPlanId);
