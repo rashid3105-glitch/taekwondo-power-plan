@@ -238,7 +238,85 @@ export default function SeasonCalendar() {
     toast({ title: t("seasonVisibilitySaved") });
   }
 
-  // Load overrides when athlete or plan changes
+  // Load techniques whenever club changes
+  useEffect(() => {
+    if (!clubId) { setTechniques([]); return; }
+    (async () => {
+      const { data } = await (supabase.from as any)("club_techniques")
+        .select("id, name, category, discipline").eq("club_id", clubId).order("category").order("name");
+      setTechniques((data ?? []) as any[]);
+    })();
+  }, [clubId]);
+
+  async function addTechnique() {
+    if (!clubId || !newTechName.trim()) return;
+    const { data, error } = await (supabase.from as any)("club_techniques").insert({
+      club_id: clubId, name: newTechName.trim(), category: newTechCategory,
+      discipline: newTechDiscipline, created_by: userId,
+    }).select().single();
+    if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
+    setTechniques((prev) => [...prev, data as any].sort((a, b) => a.name.localeCompare(b.name)));
+    setNewTechName("");
+    setShowTechForm(false);
+  }
+
+  async function deleteTechnique(id: string) {
+    await (supabase.from as any)("club_techniques").delete().eq("id", id);
+    setTechniques((prev) => prev.filter((tt) => tt.id !== id));
+  }
+
+  async function saveWeekFocus(seasonWeek: number) {
+    if (!selectedPlanId || !userId) return;
+    const current = weekFocusMap.get(seasonWeek) ?? { technique_ids: [], coach_note: "" };
+    const { data } = await (supabase.from as any)("club_week_technique_focus").upsert({
+      ...(current.id ? { id: current.id } : {}),
+      season_plan_id: selectedPlanId,
+      season_week: seasonWeek,
+      technique_ids: current.technique_ids,
+      coach_note: current.coach_note,
+      created_by: userId,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: "season_plan_id,season_week" }).select().single();
+    if (data) {
+      setWeekFocusMap((prev) => new Map(prev).set(seasonWeek, { id: data.id, technique_ids: data.technique_ids ?? [], coach_note: data.coach_note ?? "" }));
+    }
+    toast({ title: t("seasonTechFocusSaved") || "Teknikfokus gemt" });
+  }
+
+  async function saveAthleteFocus(seasonWeek: number, athleteId: string, techIds: string[]) {
+    if (!selectedPlanId || !userId) return;
+    await (supabase.from as any)("athlete_week_technique_focus").upsert({
+      season_plan_id: selectedPlanId,
+      athlete_id: athleteId,
+      season_week: seasonWeek,
+      technique_ids: techIds,
+      created_by: userId,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: "season_plan_id,athlete_id,season_week" });
+    setAthleteFocusMap((prev) => {
+      const next = new Map(prev);
+      next.set(`${seasonWeek}:${athleteId}`, techIds);
+      return next;
+    });
+  }
+
+  function getAiHint(seasonWeek: number): { text: string; variant: 'pre' | 'comp' | 'recovery' | 'base' } | null {
+    if (!selectedPlan || competitions.length === 0) return null;
+    const weekStartIso = addDays(selectedPlan.start_date, (seasonWeek - 1) * 7);
+    const weekEndIso = addDays(weekStartIso, 6);
+    const inWeekComps = competitions.filter((c) => c.event_date >= weekStartIso && c.event_date <= weekEndIso);
+    if (inWeekComps.length > 0) return { text: t("seasonAiHintCompWeek") || "Stævneuge: Let polering + mentalt fokus. Ingen ny teknik.", variant: 'comp' };
+    const recentComp = competitions.filter((c) => c.event_date < weekStartIso).sort((a, b) => b.event_date.localeCompare(a.event_date))[0];
+    if (recentComp) {
+      const daysSince = Math.round((new Date(weekStartIso).getTime() - new Date(recentComp.event_date).getTime()) / 86400000);
+      if (daysSince <= 14) return { text: t("seasonAiHintRecovery") || "Efter stævne: Teknisk gennemgang + korrektioner.", variant: 'recovery' };
+    }
+    const upcoming = competitions.filter((c) => c.event_date >= weekStartIso).sort((a, b) => a.event_date.localeCompare(b.event_date))[0];
+    if (!upcoming) return { text: t("seasonAiHintBase") || "Teknisk grundtræning og konditionel base.", variant: 'base' };
+    const daysTo = Math.round((new Date(upcoming.event_date).getTime() - new Date(weekStartIso).getTime()) / 86400000);
+    if (daysTo <= 21) return { text: `${t("seasonAiHintPreComp") || "Specifik stævneteknik + reaktionstræning"} — ${daysTo} ${t("days") || "dage"} ${t("toCompetition") || "til stævne"}`, variant: 'pre' };
+    return { text: t("seasonAiHintBase") || "Teknisk grundtræning og konditionel base.", variant: 'base' };
+  }
   useEffect(() => {
     if (!selectedPlanId || !selectedAthleteId) { setOverrides([]); return; }
     (async () => {
