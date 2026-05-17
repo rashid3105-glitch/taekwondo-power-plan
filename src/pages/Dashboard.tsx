@@ -42,7 +42,7 @@ import { HubTodayHero } from "@/components/hub/HubTodayHero";
 // HubDailyQuote removed from dashboard.
 import { HubNextEvent } from "@/components/hub/HubNextEvent";
 import { HubRecoveryStrip } from "@/components/hub/HubRecoveryStrip";
-import { SeasonCalendarMini } from "@/components/hub/SeasonCalendarMini";
+import { SeasonCalendarView } from "@/components/hub/SeasonCalendarView";
 import { HubPinnedModules } from "@/components/hub/HubPinnedModules";
 import { HubOtherModules } from "@/components/hub/HubOtherModules";
 import { HubReadinessBanner } from "@/components/hub/HubReadinessBanner";
@@ -104,8 +104,8 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [nextEvent, setNextEvent] = useState<{ name: string; event_date: string; location: string | null; priority: string } | null>(null);
   const [clubSeason, setClubSeason] = useState<{ plan: any; phases: any[]; template: any[] } | null>(null);
-  type TabKey = "hub" | "plan" | "rehab" | "mental" | "progress" | "nutrition" | "testing";
-  const VALID_TABS: TabKey[] = ["hub", "plan", "rehab", "mental", "progress", "nutrition", "testing"];
+  type TabKey = "hub" | "plan" | "rehab" | "mental" | "progress" | "nutrition" | "testing" | "calendar";
+  const VALID_TABS: TabKey[] = ["hub", "plan", "rehab", "mental", "progress", "nutrition", "testing", "calendar"];
   const [searchParams, setSearchParams] = useSearchParams();
   const initialTab = (() => {
     const t = searchParams.get("tab") as TabKey | null;
@@ -261,6 +261,7 @@ export default function Dashboard() {
   const NAV_ITEMS: { tab: typeof activeTab; icon: typeof Home; labelKey: string; color: string }[] = [
     { tab: "hub", icon: Home, labelKey: "hubWelcome", color: "text-primary" },
     { tab: "plan", icon: Zap, labelKey: "plan", color: "text-tab-plan" },
+    { tab: "calendar", icon: CalendarRange, labelKey: "seasonCalendar", color: "text-primary" },
     { tab: "progress", icon: BarChart3, labelKey: "progress", color: "text-tab-progress" },
     { tab: "nutrition", icon: Apple, labelKey: "nutrition", color: "text-tab-nutrition" },
     { tab: "rehab", icon: Heart, labelKey: "injuryRehabPlan", color: "text-tab-rehab" },
@@ -352,17 +353,21 @@ export default function Dashboard() {
         .eq("id", profileData.club_id)
         .maybeSingle();
       setClubName((clubData as { name?: string } | null)?.name || "");
-      // Active club season (read-only mini calendar on hub)
+      // Active club season (read-only). Only show if athlete is in visibility list OR is the creator.
       try {
         const { data: seasonRow } = await (supabase.from as any)("club_season_plans")
           .select("*, club_season_phases(*), club_season_day_templates(*)")
           .eq("club_id", profileData.club_id).eq("is_active", true).maybeSingle();
         if (seasonRow) {
-          setClubSeason({
-            plan: seasonRow,
-            phases: seasonRow.club_season_phases || [],
-            template: seasonRow.club_season_day_templates || [],
-          });
+          const { data: visCheck } = await (supabase.from as any)("club_season_plan_visibility")
+            .select("id").eq("season_plan_id", seasonRow.id).eq("athlete_id", user.id).maybeSingle();
+          if (visCheck || seasonRow.created_by === user.id) {
+            setClubSeason({
+              plan: seasonRow,
+              phases: seasonRow.club_season_phases || [],
+              template: seasonRow.club_season_day_templates || [],
+            });
+          }
         }
       } catch { /* table may not exist yet */ }
       setIsPaid(profileData.payment_status === "paid");
@@ -616,7 +621,7 @@ export default function Dashboard() {
             const items = [
               { key: "hjem-rehab-unlock", label: "Hjem", icon: Home, active: activeTab === "hub", dot: true, onClick: () => handleTabChange("hub") },
               { key: "plan", label: "Plan", icon: CalendarIcon, active: activeTab === "plan", dot: false, onClick: () => handleTabChange("plan") },
-              { key: "drills", label: "Drills", icon: Swords, active: false, dot: true, onClick: () => navigate("/library") },
+              { key: "calendar", label: t("seasonCalendar") || "Kalender", icon: CalendarRange, active: activeTab === "calendar", dot: false, onClick: () => handleTabChange("calendar") },
               { key: "fremgang", label: "Fremgang", icon: BarChart3, active: activeTab === "progress", dot: false, onClick: () => handleTabChange("progress") },
               { key: "profil", label: "Profil", icon: User, active: false, dot: false, onClick: () => navigate("/profile-setup") },
             ];
@@ -762,14 +767,6 @@ export default function Dashboard() {
             {/* 2. Next event countdown */}
             <HubNextEvent event={nextEvent} />
 
-            {clubSeason?.plan && (
-              <SeasonCalendarMini
-                seasonPlan={clubSeason.plan}
-                phases={clubSeason.phases}
-                template={clubSeason.template}
-                fullLink={isCoach ? "/coach/season-calendar" : "#"}
-              />
-            )}
 
             {/* 3. Recovery strip */}
             {!isDemo && <HubRecoveryStrip />}
