@@ -98,6 +98,44 @@ export type Database = {
         }
         Relationships: []
       }
+      athlete_week_technique_focus: {
+        Row: {
+          athlete_id: string
+          created_by: string | null
+          id: string
+          season_plan_id: string
+          season_week: number
+          technique_ids: string[]
+          updated_at: string
+        }
+        Insert: {
+          athlete_id: string
+          created_by?: string | null
+          id?: string
+          season_plan_id: string
+          season_week: number
+          technique_ids?: string[]
+          updated_at?: string
+        }
+        Update: {
+          athlete_id?: string
+          created_by?: string | null
+          id?: string
+          season_plan_id?: string
+          season_week?: number
+          technique_ids?: string[]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "athlete_week_technique_focus_season_plan_id_fkey"
+            columns: ["season_plan_id"]
+            isOneToOne: false
+            referencedRelation: "club_season_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chat_messages: {
         Row: {
           attachment_path: string | null
@@ -431,6 +469,82 @@ export type Database = {
             columns: ["club_id"]
             isOneToOne: false
             referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      club_techniques: {
+        Row: {
+          category: string
+          club_id: string
+          created_at: string
+          created_by: string | null
+          discipline: string
+          id: string
+          name: string
+        }
+        Insert: {
+          category?: string
+          club_id: string
+          created_at?: string
+          created_by?: string | null
+          discipline?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          category?: string
+          club_id?: string
+          created_at?: string
+          created_by?: string | null
+          discipline?: string
+          id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "club_techniques_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      club_week_technique_focus: {
+        Row: {
+          coach_note: string | null
+          created_by: string | null
+          id: string
+          season_plan_id: string
+          season_week: number
+          technique_ids: string[]
+          updated_at: string
+        }
+        Insert: {
+          coach_note?: string | null
+          created_by?: string | null
+          id?: string
+          season_plan_id: string
+          season_week: number
+          technique_ids?: string[]
+          updated_at?: string
+        }
+        Update: {
+          coach_note?: string | null
+          created_by?: string | null
+          id?: string
+          season_plan_id?: string
+          season_week?: number
+          technique_ids?: string[]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "club_week_technique_focus_season_plan_id_fkey"
+            columns: ["season_plan_id"]
+            isOneToOne: false
+            referencedRelation: "club_season_plans"
             referencedColumns: ["id"]
           },
         ]

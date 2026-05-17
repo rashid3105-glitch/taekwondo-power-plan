@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { toast } from "@/hooks/use-toast";
-import { ArrowLeft, Loader2, Plus, Printer, Trash2, CalendarRange, Eye } from "lucide-react";
+import { ArrowLeft, Loader2, Plus, Printer, Trash2, CalendarRange, Eye, ChevronLeft, ChevronRight, ChevronDown, Target, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   type ClubSeasonPlan,
@@ -40,6 +40,8 @@ interface AthleteRow { user_id: string; display_name: string; }
 interface CompetitionRow { id: string; name: string; event_date: string; user_id: string; }
 
 const DAY_KEYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const MONTH_NAMES = ["Januar","Februar","Marts","April","Maj","Juni","Juli","August","September","Oktober","November","December"];
+const DAY_LABELS = ["Ma","Ti","On","To","Fr","Lø","Sø"];
 
 export default function SeasonCalendar() {
   const navigate = useNavigate();
@@ -100,7 +102,42 @@ export default function SeasonCalendar() {
   const [visibleAthleteIds, setVisibleAthleteIds] = useState<Set<string>>(new Set());
   const [savingVisibility, setSavingVisibility] = useState(false);
 
+  // Technique library + week focus state
+  const [techniques, setTechniques] = useState<{ id: string; name: string; category: string; discipline: string }[]>([]);
+  const [newTechName, setNewTechName] = useState("");
+  const [newTechCategory, setNewTechCategory] = useState("attack");
+  const [newTechDiscipline, setNewTechDiscipline] = useState("both");
+  const [showTechForm, setShowTechForm] = useState(false);
+  const [weekFocusMap, setWeekFocusMap] = useState<Map<number, { id?: string; technique_ids: string[]; coach_note: string }>>(new Map());
+  const [athleteFocusMap, setAthleteFocusMap] = useState<Map<string, string[]>>(new Map());
+
+  // Monthly calendar view state
+  const [viewYear, setViewYear] = useState(() => new Date().getFullYear());
+  const [viewMonth, setViewMonth] = useState(() => new Date().getMonth());
+  const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
+
+  const todayIso = new Date().toISOString().slice(0, 10);
+
   const selectedPlan = useMemo(() => plans.find((p) => p.id === selectedPlanId) ?? null, [plans, selectedPlanId]);
+
+  const compDateSet = useMemo(() => new Set(
+    selectedAthleteId
+      ? competitions.filter((c) => c.user_id === selectedAthleteId).map((c) => c.event_date)
+      : competitions.map((c) => c.event_date),
+  ), [competitions, selectedAthleteId]);
+
+  const calendarDays = useMemo(() => {
+    const days: (string | null)[] = [];
+    const d = new Date(viewYear, viewMonth, 1);
+    const firstDow = ((d.getDay() + 6) % 7);
+    for (let i = 0; i < firstDow; i++) days.push(null);
+    while (d.getMonth() === viewMonth) {
+      days.push(d.toISOString().slice(0, 10));
+      d.setDate(d.getDate() + 1);
+    }
+    while (days.length % 7 !== 0) days.push(null);
+    return days;
+  }, [viewYear, viewMonth]);
 
   // Default phase form ISO weeks to plan's first ISO week when plan changes.
   useEffect(() => {
@@ -147,17 +184,32 @@ export default function SeasonCalendar() {
   useEffect(() => {
     if (!selectedPlanId) {
       setPhases([]); setTemplate([]); setOverrides([]); setCompetitions([]); setVisibleAthleteIds(new Set());
+      setWeekFocusMap(new Map()); setAthleteFocusMap(new Map());
       return;
     }
     (async () => {
-      const [phRes, tplRes, visRes] = await Promise.all([
+      const [phRes, tplRes, visRes, focusRes, athFocusRes] = await Promise.all([
         (supabase.from as any)("club_season_phases").select("*").eq("season_plan_id", selectedPlanId).order("start_week"),
         (supabase.from as any)("club_season_day_templates").select("*").eq("season_plan_id", selectedPlanId).order("day_of_week"),
         (supabase.from as any)("club_season_plan_visibility").select("athlete_id").eq("season_plan_id", selectedPlanId),
+        (supabase.from as any)("club_week_technique_focus").select("id, season_week, technique_ids, coach_note").eq("season_plan_id", selectedPlanId),
+        (supabase.from as any)("athlete_week_technique_focus").select("athlete_id, season_week, technique_ids").eq("season_plan_id", selectedPlanId),
       ]);
       setPhases((phRes.data ?? []) as ClubSeasonPhase[]);
       setTemplate((tplRes.data ?? []) as ClubSeasonDayTemplate[]);
       setVisibleAthleteIds(new Set(((visRes.data ?? []) as any[]).map((r) => r.athlete_id)));
+
+      const fm = new Map<number, { id?: string; technique_ids: string[]; coach_note: string }>();
+      for (const row of (focusRes.data ?? []) as any[]) {
+        fm.set(row.season_week, { id: row.id, technique_ids: row.technique_ids ?? [], coach_note: row.coach_note ?? "" });
+      }
+      setWeekFocusMap(fm);
+
+      const afm = new Map<string, string[]>();
+      for (const row of (athFocusRes.data ?? []) as any[]) {
+        afm.set(`${row.season_week}:${row.athlete_id}`, row.technique_ids ?? []);
+      }
+      setAthleteFocusMap(afm);
 
       // Competitions of all club athletes within plan range
       const plan = plans.find((p) => p.id === selectedPlanId);
@@ -188,7 +240,85 @@ export default function SeasonCalendar() {
     toast({ title: t("seasonVisibilitySaved") });
   }
 
-  // Load overrides when athlete or plan changes
+  // Load techniques whenever club changes
+  useEffect(() => {
+    if (!clubId) { setTechniques([]); return; }
+    (async () => {
+      const { data } = await (supabase.from as any)("club_techniques")
+        .select("id, name, category, discipline").eq("club_id", clubId).order("category").order("name");
+      setTechniques((data ?? []) as any[]);
+    })();
+  }, [clubId]);
+
+  async function addTechnique() {
+    if (!clubId || !newTechName.trim()) return;
+    const { data, error } = await (supabase.from as any)("club_techniques").insert({
+      club_id: clubId, name: newTechName.trim(), category: newTechCategory,
+      discipline: newTechDiscipline, created_by: userId,
+    }).select().single();
+    if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
+    setTechniques((prev) => [...prev, data as any].sort((a, b) => a.name.localeCompare(b.name)));
+    setNewTechName("");
+    setShowTechForm(false);
+  }
+
+  async function deleteTechnique(id: string) {
+    await (supabase.from as any)("club_techniques").delete().eq("id", id);
+    setTechniques((prev) => prev.filter((tt) => tt.id !== id));
+  }
+
+  async function saveWeekFocus(seasonWeek: number) {
+    if (!selectedPlanId || !userId) return;
+    const current = weekFocusMap.get(seasonWeek) ?? { technique_ids: [], coach_note: "" };
+    const { data } = await (supabase.from as any)("club_week_technique_focus").upsert({
+      ...(current.id ? { id: current.id } : {}),
+      season_plan_id: selectedPlanId,
+      season_week: seasonWeek,
+      technique_ids: current.technique_ids,
+      coach_note: current.coach_note,
+      created_by: userId,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: "season_plan_id,season_week" }).select().single();
+    if (data) {
+      setWeekFocusMap((prev) => new Map(prev).set(seasonWeek, { id: data.id, technique_ids: data.technique_ids ?? [], coach_note: data.coach_note ?? "" }));
+    }
+    toast({ title: t("seasonTechFocusSaved") || "Teknikfokus gemt" });
+  }
+
+  async function saveAthleteFocus(seasonWeek: number, athleteId: string, techIds: string[]) {
+    if (!selectedPlanId || !userId) return;
+    await (supabase.from as any)("athlete_week_technique_focus").upsert({
+      season_plan_id: selectedPlanId,
+      athlete_id: athleteId,
+      season_week: seasonWeek,
+      technique_ids: techIds,
+      created_by: userId,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: "season_plan_id,athlete_id,season_week" });
+    setAthleteFocusMap((prev) => {
+      const next = new Map(prev);
+      next.set(`${seasonWeek}:${athleteId}`, techIds);
+      return next;
+    });
+  }
+
+  function getAiHint(seasonWeek: number): { text: string; variant: 'pre' | 'comp' | 'recovery' | 'base' } | null {
+    if (!selectedPlan || competitions.length === 0) return null;
+    const weekStartIso = addDays(selectedPlan.start_date, (seasonWeek - 1) * 7);
+    const weekEndIso = addDays(weekStartIso, 6);
+    const inWeekComps = competitions.filter((c) => c.event_date >= weekStartIso && c.event_date <= weekEndIso);
+    if (inWeekComps.length > 0) return { text: t("seasonAiHintCompWeek") || "Stævneuge: Let polering + mentalt fokus. Ingen ny teknik.", variant: 'comp' };
+    const recentComp = competitions.filter((c) => c.event_date < weekStartIso).sort((a, b) => b.event_date.localeCompare(a.event_date))[0];
+    if (recentComp) {
+      const daysSince = Math.round((new Date(weekStartIso).getTime() - new Date(recentComp.event_date).getTime()) / 86400000);
+      if (daysSince <= 14) return { text: t("seasonAiHintRecovery") || "Efter stævne: Teknisk gennemgang + korrektioner.", variant: 'recovery' };
+    }
+    const upcoming = competitions.filter((c) => c.event_date >= weekStartIso).sort((a, b) => a.event_date.localeCompare(b.event_date))[0];
+    if (!upcoming) return { text: t("seasonAiHintBase") || "Teknisk grundtræning og konditionel base.", variant: 'base' };
+    const daysTo = Math.round((new Date(upcoming.event_date).getTime() - new Date(weekStartIso).getTime()) / 86400000);
+    if (daysTo <= 21) return { text: `${t("seasonAiHintPreComp") || "Specifik stævneteknik + reaktionstræning"} — ${daysTo} ${t("days") || "dage"} ${t("toCompetition") || "til stævne"}`, variant: 'pre' };
+    return { text: t("seasonAiHintBase") || "Teknisk grundtræning og konditionel base.", variant: 'base' };
+  }
   useEffect(() => {
     if (!selectedPlanId || !selectedAthleteId) { setOverrides([]); return; }
     (async () => {
@@ -321,25 +451,7 @@ export default function SeasonCalendar() {
     setOverrides((prev) => prev.filter((o) => o.id !== id));
   }
 
-  // Build the row list for the main calendar
-  const calendarRows = useMemo(() => {
-    if (!selectedPlan) return [];
-    const compSet = new Set(
-      selectedAthleteId
-        ? competitions.filter((c) => c.user_id === selectedAthleteId).map((c) => c.event_date)
-        : competitions.map((c) => c.event_date),
-    );
-    const rows: { iso: string; weekNum: number; phase: ClubSeasonPhase | null; type: SessionType; isComp: boolean; fromOverride: boolean; location: string | null }[] = [];
-    const total = daysBetween(selectedPlan.start_date, selectedPlan.end_date);
-    for (let i = 0; i <= total; i++) {
-      const iso = addDays(selectedPlan.start_date, i);
-      const wk = seasonWeekNumber(selectedPlan.start_date, iso);
-      const ph = phaseForWeek(phases, wk);
-      const r = resolveSessionForDate(iso, template, overrides, compSet);
-      rows.push({ iso, weekNum: wk, phase: ph, type: r.type, isComp: r.isCompetition, fromOverride: r.fromOverride, location: r.location });
-    }
-    return rows;
-  }, [selectedPlan, phases, template, overrides, competitions, selectedAthleteId]);
+  // (legacy calendarRows removed — monthly grid is rendered directly)
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
@@ -628,6 +740,99 @@ export default function SeasonCalendar() {
                   {t("seasonVisibilitySave")}
                 </Button>
               </Card>
+
+              {/* Technique library */}
+              <Card className="p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <h2 className="font-semibold text-sm">🥋 {t("seasonTechniqueLibrary") || "Teknikbibliotek"}</h2>
+                  <Button size="sm" variant="ghost" onClick={() => setShowTechForm((f) => !f)}>
+                    <Plus className="h-3 w-3" />
+                  </Button>
+                </div>
+                {showTechForm && (
+                  <div className="space-y-2 border border-border rounded-lg p-3 bg-muted/20">
+                    <Input placeholder={t("seasonTechniqueName") || "Tekniknavn"} value={newTechName} onChange={(e) => setNewTechName(e.target.value)} className="h-8 text-xs" />
+                    <Select value={newTechCategory} onValueChange={setNewTechCategory}>
+                      <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="attack">{t("seasonCatAttack") || "Angreb"}</SelectItem>
+                        <SelectItem value="defence">{t("seasonCatDefence") || "Forsvar"}</SelectItem>
+                        <SelectItem value="combo">{t("seasonCatCombo") || "Kombination"}</SelectItem>
+                        <SelectItem value="poomsae">{t("seasonCatPoomsae") || "Poomsae"}</SelectItem>
+                        <SelectItem value="fitness">{t("seasonCatFitness") || "Kondition"}</SelectItem>
+                        <SelectItem value="other">{t("seasonCatOther") || "Andet"}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Select value={newTechDiscipline} onValueChange={setNewTechDiscipline}>
+                      <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="both">{t("seasonDisciplineBoth") || "Begge"}</SelectItem>
+                        <SelectItem value="kyorugi">{t("seasonDisciplineKyorugi") || "Kyorugi"}</SelectItem>
+                        <SelectItem value="poomsae">{t("seasonDisciplinePoomsae") || "Poomsae"}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button size="sm" className="w-full" onClick={addTechnique}>{t("seasonPhaseAdd") || "Tilføj"}</Button>
+                  </div>
+                )}
+                <div className="space-y-1 max-h-48 overflow-y-auto">
+                  {["attack", "defence", "combo", "poomsae", "fitness", "other"].map((cat) => {
+                    const catTechs = techniques.filter((tt) => tt.category === cat);
+                    if (catTechs.length === 0) return null;
+                    const labelKey = `seasonCat${cat.charAt(0).toUpperCase() + cat.slice(1)}` as any;
+                    return (
+                      <div key={cat}>
+                        <div className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider py-1">{t(labelKey) || cat}</div>
+                        {catTechs.map((tech) => (
+                          <div key={tech.id} className="flex items-center justify-between gap-1 text-xs py-0.5">
+                            <span className="truncate">{tech.name}</span>
+                            <Button size="icon" variant="ghost" className="h-5 w-5 shrink-0" onClick={() => deleteTechnique(tech.id)}>
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })}
+                  {techniques.length === 0 && (
+                    <p className="text-xs text-muted-foreground italic">{t("seasonNoTechniques") || "Ingen teknikker endnu"}</p>
+                  )}
+                </div>
+              </Card>
+
+              {/* Weekly template editor (collapsible) */}
+              <details className="group">
+                <summary className="cursor-pointer list-none">
+                  <Card className="p-4">
+                    <div className="flex items-center justify-between">
+                      <h2 className="font-semibold text-sm">📅 {t("seasonWeeklyTemplate") || "Ugentlig skabelon"}</h2>
+                      <ChevronDown className="h-4 w-4 text-muted-foreground group-open:rotate-180 transition-transform" />
+                    </div>
+                  </Card>
+                </summary>
+                <Card className="p-4 space-y-2 -mt-1 rounded-t-none border-t-0">
+                  <div className="grid grid-cols-1 gap-2">
+                    {Array.from({ length: 7 }, (_, d) => {
+                      const row = template.find((tt) => tt.day_of_week === d);
+                      return (
+                        <div key={d} className="border border-border rounded p-2 space-y-2">
+                          <div className="text-xs font-bold uppercase">{DAY_KEYS[d]}</div>
+                          <Select value={row?.session_type ?? "rest"} onValueChange={(v) => updateTemplate(d, { session_type: v as SessionType })}>
+                            <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              {SESSION_TYPES.map((s) => <SelectItem key={s} value={s}>{t(sessionLabelKey(s) as any)}</SelectItem>)}
+                            </SelectContent>
+                          </Select>
+                          <Input
+                            className="h-8 text-xs" placeholder="Location"
+                            defaultValue={row?.location ?? ""}
+                            onBlur={(e) => updateTemplate(d, { location: e.target.value })}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </Card>
+              </details>
             </>
           )}
         </aside>
@@ -646,84 +851,212 @@ export default function SeasonCalendar() {
                 <p className="text-sm">{selectedPlan.start_date} → {selectedPlan.end_date}</p>
               </div>
 
+              {/* Monthly calendar grid */}
               <Card className="overflow-hidden">
-                <div className="max-h-[60vh] overflow-y-auto print:max-h-none print:overflow-visible">
-                  <table className="w-full text-xs">
-                    <thead className="sticky top-0 bg-card border-b border-border">
-                      <tr>
-                        <th className="text-left p-2">{t("seasonWeek")}</th>
-                        <th className="text-left p-2">Date</th>
-                        <th className="text-left p-2">Day</th>
-                        <th className="text-left p-2">{t("seasonPhase")}</th>
-                        <th className="text-left p-2">Type</th>
-                        <th className="text-left p-2">Location</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {calendarRows.map((r, idx) => {
-                        const prevPhase = idx > 0 ? calendarRows[idx - 1].phase : null;
-                        const phaseChanged = r.phase?.id !== prevPhase?.id;
-                        return (
-                          <Fragment key={r.iso}>
-                            {phaseChanged && r.phase && (
-                              <tr className="border-y" style={{ background: `${r.phase.color}15` }}>
-                                <td colSpan={6} className="p-2 text-xs" style={{ color: r.phase.color }}>
-                                  <div className="flex flex-wrap items-center gap-2">
-                                    <span className="font-bold uppercase">{r.phase.name}{r.phase.focus_label ? ` — ${r.phase.focus_label}` : ""}</span>
-                                    {(r.phase.focus_tags ?? []).map((tag) => (
-                                      <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full font-semibold" style={{ background: `${r.phase!.color}25`, color: r.phase!.color }}>
-                                        {tagLabel(tag)}
-                                      </span>
-                                    ))}
-                                  </div>
-                                </td>
-                              </tr>
-                            )}
-                            <tr className={cn("border-b border-border/40", sessionRowClass(r.type))}
-                                style={r.phase ? { borderLeft: `4px solid ${r.phase.color}` } : undefined}>
-                              <td className="p-2 font-mono">{isoWeekNumber(r.iso)}</td>
-                              <td className="p-2 font-mono">{r.iso}</td>
-                              <td className="p-2">{DAY_KEYS[dayOfWeekMon0(r.iso)]}</td>
-                              <td className="p-2 text-muted-foreground truncate max-w-32">{r.phase?.name ?? ""}</td>
-                              <td className="p-2 font-semibold">
-                                {t(sessionLabelKey(r.type) as any)}
-                                {r.fromOverride && <Badge variant="outline" className="ml-1 text-[9px]">★</Badge>}
-                              </td>
-                              <td className="p-2 text-muted-foreground">{r.location ?? ""}</td>
-                            </tr>
-                          </Fragment>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => {
+                    if (viewMonth === 0) { setViewMonth(11); setViewYear((y) => y - 1); }
+                    else setViewMonth((m) => m - 1);
+                  }}><ChevronLeft className="h-4 w-4" /></Button>
+                  <span className="font-semibold text-sm">{MONTH_NAMES[viewMonth]} {viewYear}</span>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => {
+                    if (viewMonth === 11) { setViewMonth(0); setViewYear((y) => y + 1); }
+                    else setViewMonth((m) => m + 1);
+                  }}><ChevronRight className="h-4 w-4" /></Button>
                 </div>
-              </Card>
 
-              {/* Weekly template editor */}
-              <Card className="p-4 space-y-3 print:hidden">
-                <h2 className="font-semibold text-sm">Weekly template</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
-                  {Array.from({ length: 7 }, (_, d) => {
-                    const row = template.find((t) => t.day_of_week === d);
+                <div className="grid grid-cols-7 border-b border-border">
+                  {DAY_LABELS.map((d) => (
+                    <div key={d} className="text-center py-1.5 text-[11px] font-semibold text-muted-foreground">{d}</div>
+                  ))}
+                </div>
+
+                <div className="grid grid-cols-7">
+                  {calendarDays.map((iso, i) => {
+                    if (!iso) return <div key={`e${i}`} className="min-h-[46px] border-b border-r border-border/30 bg-muted/20" />;
+                    const inSeason = iso >= selectedPlan.start_date && iso <= selectedPlan.end_date;
+                    const isToday = iso === todayIso;
+                    const wk = inSeason ? seasonWeekNumber(selectedPlan.start_date, iso) : null;
+                    const phase = wk ? phaseForWeek(phases, wk) : null;
+                    const s = inSeason ? resolveSessionForDate(iso, template, overrides, compDateSet) : null;
+                    const isSelected = wk !== null && wk === selectedWeek;
+                    const hasFocus = wk !== null && (weekFocusMap.get(wk)?.technique_ids?.length ?? 0) > 0;
                     return (
-                      <div key={d} className="border border-border rounded p-2 space-y-2">
-                        <div className="text-xs font-bold uppercase">{DAY_KEYS[d]}</div>
-                        <Select value={row?.session_type ?? "rest"} onValueChange={(v) => updateTemplate(d, { session_type: v as SessionType })}>
-                          <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
-                          <SelectContent>
-                            {SESSION_TYPES.map((s) => <SelectItem key={s} value={s}>{t(sessionLabelKey(s) as any)}</SelectItem>)}
-                          </SelectContent>
-                        </Select>
-                        <Input
-                          className="h-8 text-xs" placeholder="Location"
-                          defaultValue={row?.location ?? ""}
-                          onBlur={(e) => updateTemplate(d, { location: e.target.value })}
-                        />
+                      <div
+                        key={iso}
+                        onClick={() => inSeason && wk && setSelectedWeek(wk === selectedWeek ? null : wk)}
+                        className={cn(
+                          "min-h-[46px] border-b border-r border-border/30 p-1 flex flex-col cursor-pointer transition-colors",
+                          !inSeason && "opacity-25 cursor-default",
+                          isSelected && "ring-2 ring-inset ring-primary",
+                          s && inSeason ? sessionRowClass(s.type) : "",
+                        )}
+                        style={phase && inSeason ? { borderBottom: `2px solid ${phase.color}50` } : undefined}
+                      >
+                        <span className={cn(
+                          "text-[11px] font-semibold self-start rounded-full w-5 h-5 flex items-center justify-center",
+                          isToday ? "bg-primary text-primary-foreground" : "text-muted-foreground",
+                        )}>
+                          {new Date(iso + "T00:00:00").getDate()}
+                        </span>
+                        {s && s.type !== "rest" && inSeason && (
+                          <span className="text-[9px] font-bold mt-auto leading-tight">{t(sessionLabelKey(s.type) as any)}</span>
+                        )}
+                        {hasFocus && inSeason && (
+                          <span className="text-[8px] text-primary font-bold leading-tight">🎯</span>
+                        )}
                       </div>
                     );
                   })}
                 </div>
               </Card>
+
+              {/* Week detail panel */}
+              {selectedWeek !== null && (() => {
+                const sw = selectedWeek;
+                const weekStart = addDays(selectedPlan.start_date, (sw - 1) * 7);
+                const weekEnd = addDays(weekStart, 6);
+                const focus = weekFocusMap.get(sw) ?? { technique_ids: [], coach_note: "" };
+                const hint = getAiHint(sw);
+                const teamTechs = techniques.filter((tt) => focus.technique_ids.includes(tt.id));
+
+                return (
+                  <Card className="overflow-hidden">
+                    <div className="px-4 py-3 border-b border-border flex items-center gap-3 flex-wrap">
+                      <Target className="h-4 w-4 text-primary" />
+                      <span className="font-semibold text-sm">{t("seasonWeek")} {sw} · {weekStart} – {weekEnd}</span>
+                    </div>
+
+                    {hint && (
+                      <div className={cn("px-4 py-2 border-b text-sm flex gap-2 items-start", {
+                        'bg-amber-50 border-amber-200 text-amber-800': hint.variant === 'pre',
+                        'bg-red-50 border-red-200 text-red-800': hint.variant === 'comp',
+                        'bg-emerald-50 border-emerald-200 text-emerald-800': hint.variant === 'recovery',
+                        'bg-blue-50 border-blue-200 text-blue-800': hint.variant === 'base',
+                      })}>
+                        <Sparkles className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+                        <span className="text-[12px]"><strong>{t("seasonAiSuggestion") || "AI-forslag"}:</strong> {hint.text}</span>
+                      </div>
+                    )}
+
+                    <div className="p-4 space-y-4">
+                      {/* Team focus */}
+                      <div>
+                        <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                          👥 {t("seasonTeamFocus") || "Hold-fokus"} (1–3)
+                        </div>
+                        <div className="flex flex-wrap gap-2 mb-2">
+                          {teamTechs.map((tech) => (
+                            <span key={tech.id} className="flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-primary">
+                              <button onClick={() => {
+                                const updated = { ...focus, technique_ids: focus.technique_ids.filter((id) => id !== tech.id) };
+                                setWeekFocusMap((prev) => new Map(prev).set(sw, updated));
+                              }} className="opacity-50 hover:opacity-100">✕</button>
+                              {tech.name}
+                            </span>
+                          ))}
+                          {focus.technique_ids.length < 3 && (
+                            <select
+                              className="text-xs px-3 py-1 rounded-full border-2 border-dashed border-border text-muted-foreground bg-transparent cursor-pointer"
+                              value=""
+                              onChange={(e) => {
+                                if (!e.target.value || focus.technique_ids.includes(e.target.value)) return;
+                                const updated = { ...focus, technique_ids: [...focus.technique_ids, e.target.value] };
+                                setWeekFocusMap((prev) => new Map(prev).set(sw, updated));
+                              }}
+                            >
+                              <option value="">＋ {t("seasonAddTechnique") || "Tilføj teknik"}</option>
+                              {techniques.filter((tt) => !focus.technique_ids.includes(tt.id)).map((tt) => (
+                                <option key={tt.id} value={tt.id}>{tt.name}</option>
+                              ))}
+                            </select>
+                          )}
+                        </div>
+                        <input
+                          className="w-full text-sm border border-border rounded-lg px-3 py-2 bg-muted/30 focus:outline-none focus:border-primary"
+                          placeholder={t("seasonTeamNote") || "Note til holdet (valgfri)..."}
+                          value={focus.coach_note}
+                          onChange={(e) => setWeekFocusMap((prev) => new Map(prev).set(sw, { ...focus, coach_note: e.target.value }))}
+                        />
+                        <Button size="sm" className="mt-2" onClick={() => saveWeekFocus(sw)}>
+                          {t("save") || "Gem"}
+                        </Button>
+                      </div>
+
+                      <div className="h-px bg-border" />
+
+                      {/* Individual athlete overrides */}
+                      <div>
+                        <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                          🎯 {t("seasonIndividualFocus") || "Individuelle afvigelser"} (max 2)
+                        </div>
+                        {athletes.map((athlete) => {
+                          const key = `${sw}:${athlete.user_id}`;
+                          const athTechIds = athleteFocusMap.get(key) ?? [];
+                          const athTechs = techniques.filter((tt) => athTechIds.includes(tt.id));
+                          if (athTechIds.length === 0) {
+                            return (
+                              <div key={athlete.user_id} className="flex items-center gap-2 py-1">
+                                <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center text-[9px] font-bold">{athlete.display_name.slice(0, 2).toUpperCase()}</div>
+                                <span className="text-xs text-muted-foreground">{athlete.display_name}</span>
+                                <select
+                                  className="text-[11px] border border-dashed border-border rounded-full px-2 py-0.5 bg-transparent text-muted-foreground cursor-pointer ml-auto"
+                                  value=""
+                                  onChange={(e) => {
+                                    if (!e.target.value) return;
+                                    const updated = [...athTechIds, e.target.value];
+                                    saveAthleteFocus(sw, athlete.user_id, updated);
+                                  }}
+                                >
+                                  <option value="">＋ {t("seasonAddTechnique") || "Tilføj"}</option>
+                                  {techniques.filter((tt) => !focus.technique_ids.includes(tt.id)).map((tt) => (
+                                    <option key={tt.id} value={tt.id}>{tt.name}</option>
+                                  ))}
+                                </select>
+                              </div>
+                            );
+                          }
+                          return (
+                            <div key={athlete.user_id} className="bg-muted/30 border border-border rounded-lg p-3 mb-2 space-y-2">
+                              <div className="flex items-center gap-2">
+                                <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center text-[9px] font-bold">{athlete.display_name.slice(0, 2).toUpperCase()}</div>
+                                <span className="text-xs font-medium">{athlete.display_name}</span>
+                              </div>
+                              <div className="flex flex-wrap gap-1.5">
+                                {athTechs.map((tech) => (
+                                  <span key={tech.id} className="flex items-center gap-1 text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-violet-100 border border-violet-300 text-violet-700">
+                                    <button onClick={() => {
+                                      const updated = athTechIds.filter((id) => id !== tech.id);
+                                      saveAthleteFocus(sw, athlete.user_id, updated);
+                                    }} className="opacity-50 hover:opacity-100">✕</button>
+                                    {tech.name}
+                                  </span>
+                                ))}
+                                {athTechIds.length < 2 && (
+                                  <select
+                                    className="text-[11px] border border-dashed border-border rounded-full px-2 py-0.5 bg-transparent text-muted-foreground cursor-pointer"
+                                    value=""
+                                    onChange={(e) => {
+                                      if (!e.target.value || athTechIds.includes(e.target.value)) return;
+                                      const updated = [...athTechIds, e.target.value];
+                                      saveAthleteFocus(sw, athlete.user_id, updated);
+                                    }}
+                                  >
+                                    <option value="">＋ {t("seasonAddTechnique") || "Tilføj"}</option>
+                                    {techniques.filter((tt) => !athTechIds.includes(tt.id)).map((tt) => (
+                                      <option key={tt.id} value={tt.id}>{tt.name}</option>
+                                    ))}
+                                  </select>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </Card>
+                );
+              })()}
             </>
           )}
         </section>
