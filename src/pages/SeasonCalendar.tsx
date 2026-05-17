@@ -65,6 +65,7 @@ export default function SeasonCalendar() {
     start_iso_week: 1, end_iso_week: 4,
     focus_tags: [] as string[],
   });
+  const [customTagInput, setCustomTagInput] = useState("");
 
   const [overrideForm, setOverrideForm] = useState({ date: "", session_type: "rest" as SessionType, notes: "" });
 
