@@ -1,43 +1,55 @@
-## Goal
-Stop coaches (and any future shared-club SELECT) from being able to read administrative/billing fields on athlete profile rows. These fields are not needed for coaching.
+## Mål
 
-## Fields being moved out of `public.profiles`
-- `is_approved`
-- `payment_status`
-- `payment_date`
-- `demo_full_access`
-- `demo_expires_at`
-- `rejection_reason`
-- `pending_invite_code`
-- `pending_coach_id`
+1. **Fejlfix**: Når man indtaster en fases uger, skal de svare til ISO-ugenumre (samme som vises i kalenderen). I dag tolkes inputtet som "sæson-uger" (1 = første uge i planen), så hvis du skriver `47–50` rammer det helt forkerte uger.
+2. **Ny funktion**: Hver fase får en eller flere **træningsfokus-tags** (fx Teknik, Kondition, Sparring, Styrke, Sparringskampe, Restitution) som vises i fase-banner og i kalenderen.
 
-`is_demo`, `club_id`, `phone`, `birth_date`, `weight_kg`, `gal_license` stay on `profiles` (coaching-relevant or already needed for shared club logic).
+---
 
-## Database migration
-1. Create `public.profiles_sensitive` (PK = `user_id`, one row per profile, the 8 columns above + `created_at`/`updated_at`).
-2. Backfill from `profiles`.
-3. RLS:
-   - Owner: SELECT own row.
-   - Admin: SELECT / UPDATE / INSERT any row.
-   - No coach access. No parent access. Edge functions use service role (bypasses RLS).
-4. Trigger on `profiles` AFTER INSERT → seed `profiles_sensitive`.
-5. Drop the 8 columns from `profiles`.
-6. Update `handle_new_user` (signup trigger) to also insert into `profiles_sensitive`.
-7. Update `get_profile_protected_fields`, `admin_approve_with_invite`, `admin_reject_with_reason`, `apply_invite_to_my_profile`, `accept_parent_invite` (if it touches `is_approved`) to read/write `profiles_sensitive`.
-8. Update `profiles` UPDATE policies to drop the now-irrelevant column-equality clauses that referenced the moved fields.
+## Ændringer
 
-## Code updates (~21 files)
-- **Edge functions** (use service role, just swap table name in queries):
-  - `update-my-profile`, `create-athlete`, `check-subscription`, `parent-signup`, `bootstrap-coach-trial`, `cleanup-demo-users`, `recompute-form-curve`, `notify-coaches-athlete-activity`, `dispatch-scheduled-pushes`, `_shared/checkEntitlement.ts`
-- **Client** (read own row from `profiles_sensitive`, or admin reads from there):
-  - `Dashboard.tsx`, `PendingApproval.tsx`, `ProfileSetup.tsx`, `Onboarding.tsx`, `Auth.tsx`, `Pricing.tsx`, `AdminApproval.tsx`, `AdminPayments.tsx`, `useEntitlements.ts`, `coach/PendingAthletesSection.tsx`
-- `src/integrations/supabase/types.ts` regenerates automatically.
+### 1. Database (migration)
 
-## Verification
-- Typecheck.
-- Smoke-test: signup creates both rows, owner reads own status, admin approval flow still works, coach view does not expose the dropped columns (they no longer exist on the row).
+Tilføj kolonne `focus_tags text[] NOT NULL DEFAULT '{}'` til `club_season_phases`.
 
-## Risk
-Medium-high — touches the signup/approval/payment paths. Mitigation: keep the migration backward-permissive (don't drop columns on profiles until step 5, run in a single transaction with backfill, so a failure rolls back).
+### 2. `src/lib/seasonCalendar.ts`
 
-Approve and I'll execute the migration then update each file.
+- Tilføj `focus_tags: string[]` til `ClubSeasonPhase`-typen.
+- Eksportér konstant `PHASE_FOCUS_TAGS` med standardvalg: `tkd_technique`, `conditioning`, `sparring`, `strength`, `competition_prep`, `recovery`, `mental`.
+- Tilføj hjælpefunktioner:
+  - `isoWeekToSeasonWeek(seasonStart, isoWeek, year)` – konverterer et ISO-ugenummer (med år) til sæson-uge.
+  - `seasonWeekToIsoWeek(seasonStart, seasonWeek)` – returnerer `{ isoWeek, year }`.
+
+### 3. `src/pages/SeasonCalendar.tsx` – Fase-editor
+
+**Fejlfix:**
+- Erstat de to tal-inputs (`start_week` / `end_week`) med et **ISO-uge interval**: to inputs `Fra uge` og `Til uge` (ISO), evt. med automatisk år-detektion ud fra planens datoer.
+- Ved gem: konvertér ISO-uge → sæson-uge (1-baseret offset fra `plan.start_date`) og gem i `start_week` / `end_week` som i dag. Validér at intervallet ligger inden for planen.
+- I fase-listen vises stadig ISO-ugenumre (det er allerede korrekt), men nu stemmer input og visning overens.
+
+**Ny: fokus-tags pr. fase:**
+- I "Tilføj fase"-formularen: multi-select chips med `PHASE_FOCUS_TAGS` (i18n labels), valgfri.
+- I fase-listen i sidebar: vis valgte tags som små badges under fasenavnet.
+- I kalender-tabellens fase-banner-række (linje 486-491): vis tags ud for fasenavnet.
+
+### 4. `src/components/hub/SeasonCalendarView.tsx` (athlete view)
+
+I `currentPhase`-banneret: vis fokus-tags som badges under fokus-label.
+
+### 5. `src/i18n/translations.ts`
+
+Tilføj nøgler på alle 7 sprog:
+- `seasonPhaseFocusTags` ("Træningsfokus")
+- `phaseFocusTechnique`, `phaseFocusConditioning`, `phaseFocusSparring`, `phaseFocusStrength`, `phaseFocusCompetitionPrep`, `phaseFocusRecovery`, `phaseFocusMental`
+- `seasonPhaseWeekHint` ("ISO-ugenumre, fx 47–50")
+- `seasonPhaseWeekOutOfRange` ("Ugerne skal ligge inden for sæsonen")
+
+### 6. Changelog-entry
+
+I `translations.ts` changelog-array tilføjes "Sæsonkalender: fasens uge-input bruger nu ISO-ugenumre der stemmer med visningen, og hver fase kan markeres med træningsfokus-tags (teknik, kondition, sparring, styrke, m.fl.)" på alle sprog.
+
+---
+
+## Out of scope
+
+- Egen ugeskabelon pr. fase (du valgte kun tags).
+- AI-plan integration med tags (kan tilføjes senere).

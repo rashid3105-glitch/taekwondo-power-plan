@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -21,10 +21,14 @@ import {
   type SessionType,
   SESSION_TYPES,
   PHASE_PALETTE,
+  PHASE_FOCUS_TAGS,
   addDays,
   dayOfWeekMon0,
   daysBetween,
   isoWeekNumber,
+  isoWeekYear,
+  isoWeekToSeasonWeek,
+  seasonWeekToIso,
   phaseForWeek,
   resolveSessionForDate,
   seasonWeekNumber,
@@ -57,7 +61,9 @@ export default function SeasonCalendar() {
   const [newPlan, setNewPlan] = useState({ name: "", start_date: "", end_date: "" });
 
   const [phaseForm, setPhaseForm] = useState({
-    name: "", focus_label: "", color: PHASE_PALETTE[0].value, start_week: 1, end_week: 4,
+    name: "", focus_label: "", color: PHASE_PALETTE[0].value,
+    start_iso_week: 1, end_iso_week: 4,
+    focus_tags: [] as string[],
   });
 
   const [overrideForm, setOverrideForm] = useState({ date: "", session_type: "rest" as SessionType, notes: "" });
@@ -66,6 +72,13 @@ export default function SeasonCalendar() {
   const [savingVisibility, setSavingVisibility] = useState(false);
 
   const selectedPlan = useMemo(() => plans.find((p) => p.id === selectedPlanId) ?? null, [plans, selectedPlanId]);
+
+  // Default phase form ISO weeks to plan's first ISO week when plan changes.
+  useEffect(() => {
+    if (!selectedPlan) return;
+    const firstIso = isoWeekNumber(selectedPlan.start_date);
+    setPhaseForm((prev) => ({ ...prev, start_iso_week: firstIso, end_iso_week: firstIso }));
+  }, [selectedPlan?.id]);
 
   useEffect(() => {
     (async () => {
@@ -198,13 +211,41 @@ export default function SeasonCalendar() {
   }
 
   async function addPhase() {
-    if (!selectedPlanId || !phaseForm.name) return;
+    if (!selectedPlanId || !selectedPlan || !phaseForm.name) return;
+    // Convert ISO week input → season-week (1-based). Auto-detect year from the plan's range.
+    const startYear = isoWeekYear(selectedPlan.start_date);
+    const endYear = isoWeekYear(selectedPlan.end_date);
+    // Pick the year in [startYear..endYear] where the chosen ISO week lands inside the plan.
+    function resolveSeasonWeek(isoWeek: number): number | null {
+      for (let y = startYear; y <= endYear; y++) {
+        const sw = isoWeekToSeasonWeek(selectedPlan!.start_date, y, isoWeek);
+        const totalWeeks = Math.floor(daysBetween(selectedPlan!.start_date, selectedPlan!.end_date) / 7) + 1;
+        if (sw >= 1 && sw <= totalWeeks) return sw;
+      }
+      return null;
+    }
+    const startSeasonWeek = resolveSeasonWeek(phaseForm.start_iso_week);
+    const endSeasonWeek = resolveSeasonWeek(phaseForm.end_iso_week);
+    if (startSeasonWeek == null || endSeasonWeek == null || endSeasonWeek < startSeasonWeek) {
+      toast({ title: t("seasonPhase"), description: t("seasonPhaseWeekOutOfRange") || "Weeks must fall inside the season", variant: "destructive" });
+      return;
+    }
     const { data, error } = await (supabase.from as any)("club_season_phases")
-      .insert({ ...phaseForm, season_plan_id: selectedPlanId, sort_order: phases.length })
+      .insert({
+        season_plan_id: selectedPlanId,
+        name: phaseForm.name,
+        focus_label: phaseForm.focus_label || null,
+        color: phaseForm.color,
+        start_week: startSeasonWeek,
+        end_week: endSeasonWeek,
+        focus_tags: phaseForm.focus_tags,
+        sort_order: phases.length,
+      })
       .select().single();
     if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
     setPhases((prev) => [...prev, data as ClubSeasonPhase].sort((a, b) => a.start_week - b.start_week));
-    setPhaseForm({ name: "", focus_label: "", color: PHASE_PALETTE[0].value, start_week: 1, end_week: 4 });
+    const firstIso = isoWeekNumber(selectedPlan.start_date);
+    setPhaseForm({ name: "", focus_label: "", color: PHASE_PALETTE[0].value, start_iso_week: firstIso, end_iso_week: firstIso, focus_tags: [] });
   }
 
   async function deletePhase(id: string) {
@@ -340,15 +381,27 @@ export default function SeasonCalendar() {
                     const isoStart = isoWeekNumber(addDays(selectedPlan!.start_date, (p.start_week - 1) * 7));
                     const isoEnd = isoWeekNumber(addDays(selectedPlan!.start_date, (p.end_week - 1) * 7));
                     return (
-                      <div key={p.id} className="flex items-center justify-between gap-2 text-xs">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <span className="h-3 w-3 rounded shrink-0" style={{ backgroundColor: p.color }} />
-                          <div className="min-w-0">
+                      <div key={p.id} className="flex items-start justify-between gap-2 text-xs">
+                        <div className="flex items-start gap-2 min-w-0 flex-1">
+                          <span className="h-3 w-3 rounded shrink-0 mt-0.5" style={{ backgroundColor: p.color }} />
+                          <div className="min-w-0 space-y-1">
                             <div className="font-semibold truncate">{p.name}</div>
                             <div className="text-muted-foreground">Uge {isoStart}–{isoEnd}</div>
+                            {(p.focus_tags ?? []).length > 0 && (
+                              <div className="flex flex-wrap gap-1 pt-0.5">
+                                {(p.focus_tags ?? []).map((tag) => {
+                                  const meta = PHASE_FOCUS_TAGS.find((m) => m.value === tag);
+                                  return (
+                                    <span key={tag} className="text-[9px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground border border-border">
+                                      {meta ? t(meta.labelKey as any) : tag}
+                                    </span>
+                                  );
+                                })}
+                              </div>
+                            )}
                           </div>
                         </div>
-                        <Button size="icon" variant="ghost" onClick={() => deletePhase(p.id)} className="h-7 w-7">
+                        <Button size="icon" variant="ghost" onClick={() => deletePhase(p.id)} className="h-7 w-7 shrink-0">
                           <Trash2 className="h-3 w-3" />
                         </Button>
                       </div>
@@ -367,9 +420,46 @@ export default function SeasonCalendar() {
                       />
                     ))}
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Input type="number" min={1} value={phaseForm.start_week} onChange={(e) => setPhaseForm({ ...phaseForm, start_week: parseInt(e.target.value) || 1 })} />
-                    <Input type="number" min={1} value={phaseForm.end_week} onChange={(e) => setPhaseForm({ ...phaseForm, end_week: parseInt(e.target.value) || 1 })} />
+                  <div className="space-y-1">
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <Label className="text-[10px] uppercase tracking-wide text-muted-foreground">{t("seasonPhaseFromIsoWeek") || "Fra ISO-uge"}</Label>
+                        <Input type="number" min={1} max={53} inputMode="numeric" value={phaseForm.start_iso_week}
+                          onChange={(e) => setPhaseForm({ ...phaseForm, start_iso_week: parseInt(e.target.value) || 1 })} />
+                      </div>
+                      <div>
+                        <Label className="text-[10px] uppercase tracking-wide text-muted-foreground">{t("seasonPhaseToIsoWeek") || "Til ISO-uge"}</Label>
+                        <Input type="number" min={1} max={53} inputMode="numeric" value={phaseForm.end_iso_week}
+                          onChange={(e) => setPhaseForm({ ...phaseForm, end_iso_week: parseInt(e.target.value) || 1 })} />
+                      </div>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground">{t("seasonPhaseWeekHint") || "ISO-ugenumre, fx 47–50"}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[10px] uppercase tracking-wide text-muted-foreground">{t("seasonPhaseFocusTags") || "Træningsfokus"}</Label>
+                    <div className="flex flex-wrap gap-1">
+                      {PHASE_FOCUS_TAGS.map((tag) => {
+                        const active = phaseForm.focus_tags.includes(tag.value);
+                        return (
+                          <button key={tag.value} type="button"
+                            onClick={() => setPhaseForm({
+                              ...phaseForm,
+                              focus_tags: active
+                                ? phaseForm.focus_tags.filter((x) => x !== tag.value)
+                                : [...phaseForm.focus_tags, tag.value],
+                            })}
+                            className={cn(
+                              "text-[11px] px-2 py-1 rounded-full border transition-colors",
+                              active
+                                ? "bg-primary text-primary-foreground border-primary"
+                                : "bg-muted/40 border-border text-muted-foreground hover:bg-muted",
+                            )}
+                          >
+                            {t(tag.labelKey as any)}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
                   <Button size="sm" className="w-full" onClick={addPhase}><Plus className="h-3 w-3 mr-1" />{t("seasonPhaseAdd")}</Button>
                 </div>
@@ -482,15 +572,25 @@ export default function SeasonCalendar() {
                         const prevPhase = idx > 0 ? calendarRows[idx - 1].phase : null;
                         const phaseChanged = r.phase?.id !== prevPhase?.id;
                         return (
-                          <>
+                          <Fragment key={r.iso}>
                             {phaseChanged && r.phase && (
-                              <tr key={`ph-${r.iso}`} className="border-y" style={{ background: `${r.phase.color}15` }}>
-                                <td colSpan={6} className="p-2 font-bold uppercase text-xs" style={{ color: r.phase.color }}>
-                                  {r.phase.name}{r.phase.focus_label ? ` — ${r.phase.focus_label}` : ""}
+                              <tr className="border-y" style={{ background: `${r.phase.color}15` }}>
+                                <td colSpan={6} className="p-2 text-xs" style={{ color: r.phase.color }}>
+                                  <div className="flex flex-wrap items-center gap-2">
+                                    <span className="font-bold uppercase">{r.phase.name}{r.phase.focus_label ? ` — ${r.phase.focus_label}` : ""}</span>
+                                    {(r.phase.focus_tags ?? []).map((tag) => {
+                                      const meta = PHASE_FOCUS_TAGS.find((m) => m.value === tag);
+                                      return (
+                                        <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full font-semibold" style={{ background: `${r.phase!.color}25`, color: r.phase!.color }}>
+                                          {meta ? t(meta.labelKey as any) : tag}
+                                        </span>
+                                      );
+                                    })}
+                                  </div>
                                 </td>
                               </tr>
                             )}
-                            <tr key={r.iso} className={cn("border-b border-border/40", sessionRowClass(r.type))}
+                            <tr className={cn("border-b border-border/40", sessionRowClass(r.type))}
                                 style={r.phase ? { borderLeft: `4px solid ${r.phase.color}` } : undefined}>
                               <td className="p-2 font-mono">{isoWeekNumber(r.iso)}</td>
                               <td className="p-2 font-mono">{r.iso}</td>
@@ -502,7 +602,7 @@ export default function SeasonCalendar() {
                               </td>
                               <td className="p-2 text-muted-foreground">{r.location ?? ""}</td>
                             </tr>
-                          </>
+                          </Fragment>
                         );
                       })}
                     </tbody>

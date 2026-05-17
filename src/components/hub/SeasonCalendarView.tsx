@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import {
   type ClubSeasonPlan, type ClubSeasonPhase, type ClubSeasonDayTemplate,
+  PHASE_FOCUS_TAGS,
   dayOfWeekMon0, phaseForWeek, seasonWeekNumber,
   resolveSessionForDate, sessionLabelKey, sessionRowClass,
 } from "@/lib/seasonCalendar";
@@ -59,15 +60,28 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
     <div className="space-y-3">
       {currentPhase && (
         <div
-          className="rounded-xl px-4 py-2.5 flex items-center gap-3"
+          className="rounded-xl px-4 py-2.5 flex items-start gap-3"
           style={{ background: `${currentPhase.color}18`, borderLeft: `4px solid ${currentPhase.color}` }}
         >
-          <div>
+          <div className="space-y-1">
             <p className="text-xs font-semibold" style={{ color: currentPhase.color }}>
               {t("seasonCurrentPhase")}: {currentPhase.name}
             </p>
             {currentPhase.focus_label && (
               <p className="text-xs text-muted-foreground">{currentPhase.focus_label}</p>
+            )}
+            {(currentPhase.focus_tags ?? []).length > 0 && (
+              <div className="flex flex-wrap gap-1 pt-0.5">
+                {(currentPhase.focus_tags ?? []).map((tag) => {
+                  const meta = PHASE_FOCUS_TAGS.find((m) => m.value === tag);
+                  return (
+                    <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full font-semibold"
+                      style={{ background: `${currentPhase.color}25`, color: currentPhase.color }}>
+                      {meta ? t(meta.labelKey as any) : tag}
+                    </span>
+                  );
+                })}
+              </div>
             )}
           </div>
         </div>

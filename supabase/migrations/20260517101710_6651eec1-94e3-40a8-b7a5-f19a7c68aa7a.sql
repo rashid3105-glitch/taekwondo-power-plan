@@ -1,0 +1,1 @@
+ALTER TABLE public.club_season_phases ADD COLUMN IF NOT EXISTS focus_tags text[] NOT NULL DEFAULT '{}';
