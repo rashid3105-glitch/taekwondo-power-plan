@@ -125,6 +125,38 @@ export function seasonWeekNumber(seasonStart: string, iso: string): number {
   return Math.floor(daysBetween(seasonStart, iso) / 7) + 1;
 }
 
+/** ISO year for a given date (Monday-of-week's Thursday rule). */
+export function isoWeekYear(iso: string): number {
+  const d = new Date(iso + "T00:00:00");
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() + 3 - ((d.getDay() + 6) % 7));
+  return d.getFullYear();
+}
+
+/** Returns ISO Monday-anchored date (yyyy-mm-dd) for a given ISO week + year. */
+export function dateOfIsoWeek(isoYear: number, isoWeek: number): string {
+  // Jan 4 is always in ISO week 1.
+  const jan4 = new Date(isoYear, 0, 4);
+  const jan4Dow = (jan4.getDay() + 6) % 7; // 0=Mon
+  const week1Monday = new Date(jan4);
+  week1Monday.setDate(jan4.getDate() - jan4Dow);
+  const target = new Date(week1Monday);
+  target.setDate(week1Monday.getDate() + (isoWeek - 1) * 7);
+  return target.toISOString().slice(0, 10);
+}
+
+/** Convert an ISO week (+year) to a season-week index (1-based). May be <1 or >totalWeeks. */
+export function isoWeekToSeasonWeek(seasonStart: string, isoYear: number, isoWeek: number): number {
+  const monday = dateOfIsoWeek(isoYear, isoWeek);
+  return seasonWeekNumber(seasonStart, monday);
+}
+
+/** Convert a season-week index (1-based) back to its ISO week + year. */
+export function seasonWeekToIso(seasonStart: string, seasonWeek: number): { isoWeek: number; isoYear: number } {
+  const iso = addDays(seasonStart, (seasonWeek - 1) * 7);
+  return { isoWeek: isoWeekNumber(iso), isoYear: isoWeekYear(iso) };
+}
+
 /** Find phase covering this season week. */
 export function phaseForWeek(phases: ClubSeasonPhase[], weekNumber: number): ClubSeasonPhase | null {
   return phases.find((p) => p.start_week <= weekNumber && p.end_week >= weekNumber) ?? null;
