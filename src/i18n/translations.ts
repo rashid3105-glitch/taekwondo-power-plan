@@ -1406,6 +1406,7 @@ const translations = {
     helpSeasonCalendar: "Season Calendar (Coach)",
     changelog_2026_05_17: "May 17, 2026",
     changelogEntry117: "Season Calendar: coaches can now create a periodized season plan with phases, a weekly session template, and per-athlete overrides — athletes and parents see the team schedule as a read-only calendar, and AI training plans now adapt to the current season phase",
+    changelogEntry118: "Season Calendar: phase week input now uses ISO week numbers that match the calendar display, and each phase can be tagged with training focus areas (technique, conditioning, sparring, strength, competition prep, recovery, mental)",
     // Season planner
     hubSeasonTitle: "Season Plan",
     hubSeasonDesc: "Map your full competition season with periodization phases and peak windows",
@@ -3706,6 +3707,7 @@ const translations = {
     helpSeasonCalendar: "Sæsonkalender (Træner)",
     changelog_2026_05_17: "17. maj 2026",
     changelogEntry117: "Sæsonkalender: trænere kan nu oprette en periodiseret sæsonplan med faser, en ugentlig skabelon og individuelle atlet-afvigelser — atleter og forældre ser holdkalenderen som en læse-visning, og AI-træningsplaner tilpasser sig nu den aktuelle sæsonfase",
+    changelogEntry118: "Sæsonkalender: fasens uge-input bruger nu ISO-ugenumre der stemmer med visningen, og hver fase kan markeres med træningsfokus-tags (teknik, kondition, sparring, styrke, konkurrenceforberedelse, restitution, mental)",
     // Season planner
     hubSeasonTitle: "Sæsonplan",
     hubSeasonDesc: "Planlæg hele konkurrencesæsonen med periodiseringsfaser og peak-vinduer",
@@ -5999,6 +6001,7 @@ const translations = {
     helpSeasonCalendar: "Säsongskalender (Tränare)",
     changelog_2026_05_17: "17 maj 2026",
     changelogEntry117: "Säsongskalender: tränare kan nu skapa en periodiserad säsongsplan med faser, en veckovis sessionsmall och individuella avvikelser per atlet — atleter och föräldrar ser lagets schema som en skrivskyddad kalender, och AI-träningsplaner anpassas nu till den aktuella säsongsfasen",
+    changelogEntry118: "Säsongskalender: fasens veckoinmatning använder nu ISO-veckonummer som matchar visningen, och varje fas kan märkas med träningsfokus (teknik, kondition, sparring, styrka, tävlingsförberedelse, återhämtning, mentalt)",
     // Season planner
     hubSeasonTitle: "Säsongsplan",
     hubSeasonDesc: "Planera hela tävlingssäsongen med periodiseringsfaser och topp-fönster",
@@ -8246,6 +8249,7 @@ const translations = {
     helpSeasonCalendar: "Saisonkalender (Trainer)",
     changelog_2026_05_17: "17. Mai 2026",
     changelogEntry117: "Saisonkalender: Trainer können jetzt einen periodisierten Saisonplan mit Phasen, einer wöchentlichen Sitzungsvorlage und individuellen Athleten-Abweichungen erstellen — Athleten und Eltern sehen den Teamplan als schreibgeschützten Kalender, und KI-Trainingspläne passen sich jetzt der aktuellen Saisonphase an",
+    changelogEntry118: "Saisonkalender: Wocheneingabe der Phase nutzt jetzt ISO-Wochennummern, die mit der Anzeige übereinstimmen, und jede Phase kann mit Trainingsfokus-Tags (Technik, Kondition, Sparring, Kraft, Wettkampfvorbereitung, Erholung, Mental) versehen werden",
     // Season planner
     hubSeasonTitle: "Saisonplan",
     hubSeasonDesc: "Planen Sie die gesamte Wettkampfsaison mit Periodisierungsphasen und Höhepunkt-Fenstern",
@@ -10496,6 +10500,7 @@ const translations = {
     helpSeasonCalendar: "تقويم الموسم (المدرب)",
     changelog_2026_05_17: "17 مايو 2026",
     changelogEntry117: "تقويم الموسم: يمكن للمدربين الآن إنشاء خطة موسم دورية مع مراحل وقالب جلسة أسبوعي وانحرافات فردية لكل رياضي — يرى الرياضيون وأولياء الأمور جدول الفريق كتقويم للقراءة فقط، وتتكيف خطط التدريب بالذكاء الاصطناعي الآن مع مرحلة الموسم الحالية",
+    changelogEntry118: "تقويم الموسم: يستخدم إدخال أسبوع المرحلة الآن أرقام أسابيع ISO المطابقة للعرض، ويمكن وسم كل مرحلة بمجالات تركيز تدريبي (تقنية، لياقة، قتال تجريبي، قوة، تحضير المنافسة، استشفاء، ذهني)",
     // Season planner
     hubSeasonTitle: "خطة الموسم",
     hubSeasonDesc: "خطط لموسم البطولات بالكامل مع مراحل التدريب الدوري ونوافذ الذروة",
@@ -12772,6 +12777,7 @@ const translations = {
     helpSeasonCalendar: "Sesongkalender (Trener)",
     changelog_2026_05_17: "17. mai 2026",
     changelogEntry117: "Sesongkalender: trenere kan nå opprette en periodisert sesongplan med faser, en ukentlig øktmal og individuelle avvik per utøver — utøvere og foreldre ser lagplanen som en skrivebeskyttet kalender, og AI-treningsplaner tilpasser seg nå den gjeldende sesongfasen",
+    changelogEntry118: "Sesongkalender: faseukeinndata bruker nå ISO-ukenumre som samsvarer med visningen, og hver fase kan merkes med treningsfokus-tagger (teknikk, kondisjon, sparring, styrke, konkurranseforberedelse, restitusjon, mentalt)",
     // Season planner
     hubSeasonTitle: "Sesongplan",
     hubSeasonDesc: "Planlegg hele konkurransesesongen med periodiseringsfaser og peak-vinduer",
@@ -13918,6 +13924,7 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   helpSeasonCalendar: "Calendario de temporada (Entrenador)",
   changelog_2026_05_17: "17 de mayo de 2026",
   changelogEntry117: "Calendario de temporada: los entrenadores ahora pueden crear un plan de temporada periodizado con fases, una plantilla de sesión semanal y desviaciones individuales por atleta — los atletas y padres ven el horario del equipo como un calendario de solo lectura, y los planes de entrenamiento de IA ahora se adaptan a la fase de temporada actual",
+  changelogEntry118: "Calendario de temporada: la entrada de semana de fase ahora usa números de semana ISO que coinciden con la visualización, y cada fase puede etiquetarse con áreas de enfoque de entrenamiento (técnica, condición, sparring, fuerza, preparación de competición, recuperación, mental)",
 
 
   // ===== Hub / Dashboard =====
