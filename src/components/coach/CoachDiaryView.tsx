@@ -291,7 +291,7 @@ export function CoachDiaryView({ entries }: Props) {
                           </Button>
                         )}
                       </div>
-                      <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed break-words overflow-wrap-anywhere min-w-0">{entry.content}</p>
+                      <p className="text-sm text-foreground leading-relaxed break-all min-w-0 overflow-hidden" style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere", wordBreak: "break-word" }}>{entry.content}</p>
                       {entry.tags && entry.tags.length > 0 && (
                         <div className="flex flex-wrap gap-1">
                           {entry.tags.map((tag) => (
