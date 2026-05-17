@@ -756,9 +756,99 @@ export default function SeasonCalendar() {
                   {t("seasonVisibilitySave")}
                 </Button>
               </Card>
-            </>
-          )}
-        </aside>
+
+              {/* Technique library */}
+              <Card className="p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <h2 className="font-semibold text-sm">🥋 {t("seasonTechniqueLibrary") || "Teknikbibliotek"}</h2>
+                  <Button size="sm" variant="ghost" onClick={() => setShowTechForm((f) => !f)}>
+                    <Plus className="h-3 w-3" />
+                  </Button>
+                </div>
+                {showTechForm && (
+                  <div className="space-y-2 border border-border rounded-lg p-3 bg-muted/20">
+                    <Input placeholder={t("seasonTechniqueName") || "Tekniknavn"} value={newTechName} onChange={(e) => setNewTechName(e.target.value)} className="h-8 text-xs" />
+                    <Select value={newTechCategory} onValueChange={setNewTechCategory}>
+                      <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="attack">{t("seasonCatAttack") || "Angreb"}</SelectItem>
+                        <SelectItem value="defence">{t("seasonCatDefence") || "Forsvar"}</SelectItem>
+                        <SelectItem value="combo">{t("seasonCatCombo") || "Kombination"}</SelectItem>
+                        <SelectItem value="poomsae">{t("seasonCatPoomsae") || "Poomsae"}</SelectItem>
+                        <SelectItem value="fitness">{t("seasonCatFitness") || "Kondition"}</SelectItem>
+                        <SelectItem value="other">{t("seasonCatOther") || "Andet"}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Select value={newTechDiscipline} onValueChange={setNewTechDiscipline}>
+                      <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="both">{t("seasonDisciplineBoth") || "Begge"}</SelectItem>
+                        <SelectItem value="kyorugi">{t("seasonDisciplineKyorugi") || "Kyorugi"}</SelectItem>
+                        <SelectItem value="poomsae">{t("seasonDisciplinePoomsae") || "Poomsae"}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button size="sm" className="w-full" onClick={addTechnique}>{t("seasonPhaseAdd") || "Tilføj"}</Button>
+                  </div>
+                )}
+                <div className="space-y-1 max-h-48 overflow-y-auto">
+                  {["attack", "defence", "combo", "poomsae", "fitness", "other"].map((cat) => {
+                    const catTechs = techniques.filter((tt) => tt.category === cat);
+                    if (catTechs.length === 0) return null;
+                    const labelKey = `seasonCat${cat.charAt(0).toUpperCase() + cat.slice(1)}` as any;
+                    return (
+                      <div key={cat}>
+                        <div className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider py-1">{t(labelKey) || cat}</div>
+                        {catTechs.map((tech) => (
+                          <div key={tech.id} className="flex items-center justify-between gap-1 text-xs py-0.5">
+                            <span className="truncate">{tech.name}</span>
+                            <Button size="icon" variant="ghost" className="h-5 w-5 shrink-0" onClick={() => deleteTechnique(tech.id)}>
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })}
+                  {techniques.length === 0 && (
+                    <p className="text-xs text-muted-foreground italic">{t("seasonNoTechniques") || "Ingen teknikker endnu"}</p>
+                  )}
+                </div>
+              </Card>
+
+              {/* Weekly template editor (collapsible) */}
+              <details className="group">
+                <summary className="cursor-pointer list-none">
+                  <Card className="p-4">
+                    <div className="flex items-center justify-between">
+                      <h2 className="font-semibold text-sm">📅 {t("seasonWeeklyTemplate") || "Ugentlig skabelon"}</h2>
+                      <ChevronDown className="h-4 w-4 text-muted-foreground group-open:rotate-180 transition-transform" />
+                    </div>
+                  </Card>
+                </summary>
+                <Card className="p-4 space-y-2 -mt-1 rounded-t-none border-t-0">
+                  <div className="grid grid-cols-1 gap-2">
+                    {Array.from({ length: 7 }, (_, d) => {
+                      const row = template.find((tt) => tt.day_of_week === d);
+                      return (
+                        <div key={d} className="border border-border rounded p-2 space-y-2">
+                          <div className="text-xs font-bold uppercase">{DAY_KEYS[d]}</div>
+                          <Select value={row?.session_type ?? "rest"} onValueChange={(v) => updateTemplate(d, { session_type: v as SessionType })}>
+                            <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              {SESSION_TYPES.map((s) => <SelectItem key={s} value={s}>{t(sessionLabelKey(s) as any)}</SelectItem>)}
+                            </SelectContent>
+                          </Select>
+                          <Input
+                            className="h-8 text-xs" placeholder="Location"
+                            defaultValue={row?.location ?? ""}
+                            onBlur={(e) => updateTemplate(d, { location: e.target.value })}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </Card>
+              </details>
 
         {/* Main */}
         <section className="space-y-4">
