@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { toast } from "@/hooks/use-toast";
-import { ArrowLeft, Loader2, Plus, Printer, Trash2, CalendarRange } from "lucide-react";
+import { ArrowLeft, Loader2, Plus, Printer, Trash2, CalendarRange, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   type ClubSeasonPlan,
@@ -62,6 +62,9 @@ export default function SeasonCalendar() {
 
   const [overrideForm, setOverrideForm] = useState({ date: "", session_type: "rest" as SessionType, notes: "" });
 
+  const [visibleAthleteIds, setVisibleAthleteIds] = useState<Set<string>>(new Set());
+  const [savingVisibility, setSavingVisibility] = useState(false);
+
   const selectedPlan = useMemo(() => plans.find((p) => p.id === selectedPlanId) ?? null, [plans, selectedPlanId]);
 
   useEffect(() => {
@@ -101,16 +104,18 @@ export default function SeasonCalendar() {
   // Load phases / template / overrides / competitions whenever plan changes
   useEffect(() => {
     if (!selectedPlanId) {
-      setPhases([]); setTemplate([]); setOverrides([]); setCompetitions([]);
+      setPhases([]); setTemplate([]); setOverrides([]); setCompetitions([]); setVisibleAthleteIds(new Set());
       return;
     }
     (async () => {
-      const [phRes, tplRes] = await Promise.all([
+      const [phRes, tplRes, visRes] = await Promise.all([
         (supabase.from as any)("club_season_phases").select("*").eq("season_plan_id", selectedPlanId).order("start_week"),
         (supabase.from as any)("club_season_day_templates").select("*").eq("season_plan_id", selectedPlanId).order("day_of_week"),
+        (supabase.from as any)("club_season_plan_visibility").select("athlete_id").eq("season_plan_id", selectedPlanId),
       ]);
       setPhases((phRes.data ?? []) as ClubSeasonPhase[]);
       setTemplate((tplRes.data ?? []) as ClubSeasonDayTemplate[]);
+      setVisibleAthleteIds(new Set(((visRes.data ?? []) as any[]).map((r) => r.athlete_id)));
 
       // Competitions of all club athletes within plan range
       const plan = plans.find((p) => p.id === selectedPlanId);
@@ -126,6 +131,20 @@ export default function SeasonCalendar() {
       }
     })();
   }, [selectedPlanId, plans, athletes]);
+
+  async function saveVisibility() {
+    if (!selectedPlanId) return;
+    setSavingVisibility(true);
+    await (supabase.from as any)("club_season_plan_visibility").delete().eq("season_plan_id", selectedPlanId);
+    const rows = Array.from(visibleAthleteIds).map((athlete_id) => ({
+      season_plan_id: selectedPlanId, athlete_id,
+    }));
+    if (rows.length > 0) {
+      await (supabase.from as any)("club_season_plan_visibility").insert(rows);
+    }
+    setSavingVisibility(false);
+    toast({ title: t("seasonVisibilitySaved") });
+  }
 
   // Load overrides when athlete or plan changes
   useEffect(() => {
@@ -386,6 +405,46 @@ export default function SeasonCalendar() {
                     </div>
                   </>
                 )}
+              </Card>
+
+              <Card className="p-4 space-y-3">
+                <div className="flex items-center gap-2">
+                  <Eye className="h-4 w-4 text-muted-foreground" />
+                  <h2 className="font-semibold text-sm">{t("seasonVisibility")}</h2>
+                </div>
+                <p className="text-xs text-muted-foreground">{t("seasonVisibilityDesc")}</p>
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {athletes.map((a) => (
+                    <label key={a.user_id} className="flex items-center justify-between gap-2 cursor-pointer rounded-lg border border-border px-3 py-2 hover:bg-accent/30 transition-colors">
+                      <div className="flex items-center gap-2">
+                        <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center text-[10px] font-semibold">
+                          {a.display_name.slice(0, 2).toUpperCase()}
+                        </div>
+                        <span className="text-sm">{a.display_name}</span>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={visibleAthleteIds.has(a.user_id)}
+                        onChange={(e) => {
+                          setVisibleAthleteIds((prev) => {
+                            const next = new Set(prev);
+                            if (e.target.checked) next.add(a.user_id);
+                            else next.delete(a.user_id);
+                            return next;
+                          });
+                        }}
+                        className="h-4 w-4"
+                      />
+                    </label>
+                  ))}
+                  {athletes.length === 0 && (
+                    <p className="text-xs text-muted-foreground">—</p>
+                  )}
+                </div>
+                <Button size="sm" className="w-full" onClick={saveVisibility} disabled={savingVisibility}>
+                  {savingVisibility ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : null}
+                  {t("seasonVisibilitySave")}
+                </Button>
               </Card>
             </>
           )}
