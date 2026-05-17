@@ -362,6 +362,35 @@ export type Database = {
           },
         ]
       }
+      club_season_plan_visibility: {
+        Row: {
+          athlete_id: string
+          created_at: string
+          id: string
+          season_plan_id: string
+        }
+        Insert: {
+          athlete_id: string
+          created_at?: string
+          id?: string
+          season_plan_id: string
+        }
+        Update: {
+          athlete_id?: string
+          created_at?: string
+          id?: string
+          season_plan_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "club_season_plan_visibility_season_plan_id_fkey"
+            columns: ["season_plan_id"]
+            isOneToOne: false
+            referencedRelation: "club_season_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       club_season_plans: {
         Row: {
           club_id: string
