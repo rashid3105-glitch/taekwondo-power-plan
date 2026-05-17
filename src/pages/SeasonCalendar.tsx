@@ -867,84 +867,212 @@ export default function SeasonCalendar() {
                 <p className="text-sm">{selectedPlan.start_date} → {selectedPlan.end_date}</p>
               </div>
 
+              {/* Monthly calendar grid */}
               <Card className="overflow-hidden">
-                <div className="max-h-[60vh] overflow-y-auto print:max-h-none print:overflow-visible">
-                  <table className="w-full text-xs">
-                    <thead className="sticky top-0 bg-card border-b border-border">
-                      <tr>
-                        <th className="text-left p-2">{t("seasonWeek")}</th>
-                        <th className="text-left p-2">Date</th>
-                        <th className="text-left p-2">Day</th>
-                        <th className="text-left p-2">{t("seasonPhase")}</th>
-                        <th className="text-left p-2">Type</th>
-                        <th className="text-left p-2">Location</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {calendarRows.map((r, idx) => {
-                        const prevPhase = idx > 0 ? calendarRows[idx - 1].phase : null;
-                        const phaseChanged = r.phase?.id !== prevPhase?.id;
-                        return (
-                          <Fragment key={r.iso}>
-                            {phaseChanged && r.phase && (
-                              <tr className="border-y" style={{ background: `${r.phase.color}15` }}>
-                                <td colSpan={6} className="p-2 text-xs" style={{ color: r.phase.color }}>
-                                  <div className="flex flex-wrap items-center gap-2">
-                                    <span className="font-bold uppercase">{r.phase.name}{r.phase.focus_label ? ` — ${r.phase.focus_label}` : ""}</span>
-                                    {(r.phase.focus_tags ?? []).map((tag) => (
-                                      <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full font-semibold" style={{ background: `${r.phase!.color}25`, color: r.phase!.color }}>
-                                        {tagLabel(tag)}
-                                      </span>
-                                    ))}
-                                  </div>
-                                </td>
-                              </tr>
-                            )}
-                            <tr className={cn("border-b border-border/40", sessionRowClass(r.type))}
-                                style={r.phase ? { borderLeft: `4px solid ${r.phase.color}` } : undefined}>
-                              <td className="p-2 font-mono">{isoWeekNumber(r.iso)}</td>
-                              <td className="p-2 font-mono">{r.iso}</td>
-                              <td className="p-2">{DAY_KEYS[dayOfWeekMon0(r.iso)]}</td>
-                              <td className="p-2 text-muted-foreground truncate max-w-32">{r.phase?.name ?? ""}</td>
-                              <td className="p-2 font-semibold">
-                                {t(sessionLabelKey(r.type) as any)}
-                                {r.fromOverride && <Badge variant="outline" className="ml-1 text-[9px]">★</Badge>}
-                              </td>
-                              <td className="p-2 text-muted-foreground">{r.location ?? ""}</td>
-                            </tr>
-                          </Fragment>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => {
+                    if (viewMonth === 0) { setViewMonth(11); setViewYear((y) => y - 1); }
+                    else setViewMonth((m) => m - 1);
+                  }}><ChevronLeft className="h-4 w-4" /></Button>
+                  <span className="font-semibold text-sm">{MONTH_NAMES[viewMonth]} {viewYear}</span>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => {
+                    if (viewMonth === 11) { setViewMonth(0); setViewYear((y) => y + 1); }
+                    else setViewMonth((m) => m + 1);
+                  }}><ChevronRight className="h-4 w-4" /></Button>
                 </div>
-              </Card>
 
-              {/* Weekly template editor */}
-              <Card className="p-4 space-y-3 print:hidden">
-                <h2 className="font-semibold text-sm">Weekly template</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
-                  {Array.from({ length: 7 }, (_, d) => {
-                    const row = template.find((t) => t.day_of_week === d);
+                <div className="grid grid-cols-7 border-b border-border">
+                  {DAY_LABELS.map((d) => (
+                    <div key={d} className="text-center py-1.5 text-[11px] font-semibold text-muted-foreground">{d}</div>
+                  ))}
+                </div>
+
+                <div className="grid grid-cols-7">
+                  {calendarDays.map((iso, i) => {
+                    if (!iso) return <div key={`e${i}`} className="min-h-[46px] border-b border-r border-border/30 bg-muted/20" />;
+                    const inSeason = iso >= selectedPlan.start_date && iso <= selectedPlan.end_date;
+                    const isToday = iso === todayIso;
+                    const wk = inSeason ? seasonWeekNumber(selectedPlan.start_date, iso) : null;
+                    const phase = wk ? phaseForWeek(phases, wk) : null;
+                    const s = inSeason ? resolveSessionForDate(iso, template, overrides, compDateSet) : null;
+                    const isSelected = wk !== null && wk === selectedWeek;
+                    const hasFocus = wk !== null && (weekFocusMap.get(wk)?.technique_ids?.length ?? 0) > 0;
                     return (
-                      <div key={d} className="border border-border rounded p-2 space-y-2">
-                        <div className="text-xs font-bold uppercase">{DAY_KEYS[d]}</div>
-                        <Select value={row?.session_type ?? "rest"} onValueChange={(v) => updateTemplate(d, { session_type: v as SessionType })}>
-                          <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
-                          <SelectContent>
-                            {SESSION_TYPES.map((s) => <SelectItem key={s} value={s}>{t(sessionLabelKey(s) as any)}</SelectItem>)}
-                          </SelectContent>
-                        </Select>
-                        <Input
-                          className="h-8 text-xs" placeholder="Location"
-                          defaultValue={row?.location ?? ""}
-                          onBlur={(e) => updateTemplate(d, { location: e.target.value })}
-                        />
+                      <div
+                        key={iso}
+                        onClick={() => inSeason && wk && setSelectedWeek(wk === selectedWeek ? null : wk)}
+                        className={cn(
+                          "min-h-[46px] border-b border-r border-border/30 p-1 flex flex-col cursor-pointer transition-colors",
+                          !inSeason && "opacity-25 cursor-default",
+                          isSelected && "ring-2 ring-inset ring-primary",
+                          s && inSeason ? sessionRowClass(s.type) : "",
+                        )}
+                        style={phase && inSeason ? { borderBottom: `2px solid ${phase.color}50` } : undefined}
+                      >
+                        <span className={cn(
+                          "text-[11px] font-semibold self-start rounded-full w-5 h-5 flex items-center justify-center",
+                          isToday ? "bg-primary text-primary-foreground" : "text-muted-foreground",
+                        )}>
+                          {new Date(iso + "T00:00:00").getDate()}
+                        </span>
+                        {s && s.type !== "rest" && inSeason && (
+                          <span className="text-[9px] font-bold mt-auto leading-tight">{t(sessionLabelKey(s.type) as any)}</span>
+                        )}
+                        {hasFocus && inSeason && (
+                          <span className="text-[8px] text-primary font-bold leading-tight">🎯</span>
+                        )}
                       </div>
                     );
                   })}
                 </div>
               </Card>
+
+              {/* Week detail panel */}
+              {selectedWeek !== null && (() => {
+                const sw = selectedWeek;
+                const weekStart = addDays(selectedPlan.start_date, (sw - 1) * 7);
+                const weekEnd = addDays(weekStart, 6);
+                const focus = weekFocusMap.get(sw) ?? { technique_ids: [], coach_note: "" };
+                const hint = getAiHint(sw);
+                const teamTechs = techniques.filter((tt) => focus.technique_ids.includes(tt.id));
+
+                return (
+                  <Card className="overflow-hidden">
+                    <div className="px-4 py-3 border-b border-border flex items-center gap-3 flex-wrap">
+                      <Target className="h-4 w-4 text-primary" />
+                      <span className="font-semibold text-sm">{t("seasonWeek")} {sw} · {weekStart} – {weekEnd}</span>
+                    </div>
+
+                    {hint && (
+                      <div className={cn("px-4 py-2 border-b text-sm flex gap-2 items-start", {
+                        'bg-amber-50 border-amber-200 text-amber-800': hint.variant === 'pre',
+                        'bg-red-50 border-red-200 text-red-800': hint.variant === 'comp',
+                        'bg-emerald-50 border-emerald-200 text-emerald-800': hint.variant === 'recovery',
+                        'bg-blue-50 border-blue-200 text-blue-800': hint.variant === 'base',
+                      })}>
+                        <Sparkles className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+                        <span className="text-[12px]"><strong>{t("seasonAiSuggestion") || "AI-forslag"}:</strong> {hint.text}</span>
+                      </div>
+                    )}
+
+                    <div className="p-4 space-y-4">
+                      {/* Team focus */}
+                      <div>
+                        <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                          👥 {t("seasonTeamFocus") || "Hold-fokus"} (1–3)
+                        </div>
+                        <div className="flex flex-wrap gap-2 mb-2">
+                          {teamTechs.map((tech) => (
+                            <span key={tech.id} className="flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-primary">
+                              <button onClick={() => {
+                                const updated = { ...focus, technique_ids: focus.technique_ids.filter((id) => id !== tech.id) };
+                                setWeekFocusMap((prev) => new Map(prev).set(sw, updated));
+                              }} className="opacity-50 hover:opacity-100">✕</button>
+                              {tech.name}
+                            </span>
+                          ))}
+                          {focus.technique_ids.length < 3 && (
+                            <select
+                              className="text-xs px-3 py-1 rounded-full border-2 border-dashed border-border text-muted-foreground bg-transparent cursor-pointer"
+                              value=""
+                              onChange={(e) => {
+                                if (!e.target.value || focus.technique_ids.includes(e.target.value)) return;
+                                const updated = { ...focus, technique_ids: [...focus.technique_ids, e.target.value] };
+                                setWeekFocusMap((prev) => new Map(prev).set(sw, updated));
+                              }}
+                            >
+                              <option value="">＋ {t("seasonAddTechnique") || "Tilføj teknik"}</option>
+                              {techniques.filter((tt) => !focus.technique_ids.includes(tt.id)).map((tt) => (
+                                <option key={tt.id} value={tt.id}>{tt.name}</option>
+                              ))}
+                            </select>
+                          )}
+                        </div>
+                        <input
+                          className="w-full text-sm border border-border rounded-lg px-3 py-2 bg-muted/30 focus:outline-none focus:border-primary"
+                          placeholder={t("seasonTeamNote") || "Note til holdet (valgfri)..."}
+                          value={focus.coach_note}
+                          onChange={(e) => setWeekFocusMap((prev) => new Map(prev).set(sw, { ...focus, coach_note: e.target.value }))}
+                        />
+                        <Button size="sm" className="mt-2" onClick={() => saveWeekFocus(sw)}>
+                          {t("save") || "Gem"}
+                        </Button>
+                      </div>
+
+                      <div className="h-px bg-border" />
+
+                      {/* Individual athlete overrides */}
+                      <div>
+                        <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                          🎯 {t("seasonIndividualFocus") || "Individuelle afvigelser"} (max 2)
+                        </div>
+                        {athletes.map((athlete) => {
+                          const key = `${sw}:${athlete.user_id}`;
+                          const athTechIds = athleteFocusMap.get(key) ?? [];
+                          const athTechs = techniques.filter((tt) => athTechIds.includes(tt.id));
+                          if (athTechIds.length === 0) {
+                            return (
+                              <div key={athlete.user_id} className="flex items-center gap-2 py-1">
+                                <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center text-[9px] font-bold">{athlete.display_name.slice(0, 2).toUpperCase()}</div>
+                                <span className="text-xs text-muted-foreground">{athlete.display_name}</span>
+                                <select
+                                  className="text-[11px] border border-dashed border-border rounded-full px-2 py-0.5 bg-transparent text-muted-foreground cursor-pointer ml-auto"
+                                  value=""
+                                  onChange={(e) => {
+                                    if (!e.target.value) return;
+                                    const updated = [...athTechIds, e.target.value];
+                                    saveAthleteFocus(sw, athlete.user_id, updated);
+                                  }}
+                                >
+                                  <option value="">＋ {t("seasonAddTechnique") || "Tilføj"}</option>
+                                  {techniques.filter((tt) => !focus.technique_ids.includes(tt.id)).map((tt) => (
+                                    <option key={tt.id} value={tt.id}>{tt.name}</option>
+                                  ))}
+                                </select>
+                              </div>
+                            );
+                          }
+                          return (
+                            <div key={athlete.user_id} className="bg-muted/30 border border-border rounded-lg p-3 mb-2 space-y-2">
+                              <div className="flex items-center gap-2">
+                                <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center text-[9px] font-bold">{athlete.display_name.slice(0, 2).toUpperCase()}</div>
+                                <span className="text-xs font-medium">{athlete.display_name}</span>
+                              </div>
+                              <div className="flex flex-wrap gap-1.5">
+                                {athTechs.map((tech) => (
+                                  <span key={tech.id} className="flex items-center gap-1 text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-violet-100 border border-violet-300 text-violet-700">
+                                    <button onClick={() => {
+                                      const updated = athTechIds.filter((id) => id !== tech.id);
+                                      saveAthleteFocus(sw, athlete.user_id, updated);
+                                    }} className="opacity-50 hover:opacity-100">✕</button>
+                                    {tech.name}
+                                  </span>
+                                ))}
+                                {athTechIds.length < 2 && (
+                                  <select
+                                    className="text-[11px] border border-dashed border-border rounded-full px-2 py-0.5 bg-transparent text-muted-foreground cursor-pointer"
+                                    value=""
+                                    onChange={(e) => {
+                                      if (!e.target.value || athTechIds.includes(e.target.value)) return;
+                                      const updated = [...athTechIds, e.target.value];
+                                      saveAthleteFocus(sw, athlete.user_id, updated);
+                                    }}
+                                  >
+                                    <option value="">＋ {t("seasonAddTechnique") || "Tilføj"}</option>
+                                    {techniques.filter((tt) => !athTechIds.includes(tt.id)).map((tt) => (
+                                      <option key={tt.id} value={tt.id}>{tt.name}</option>
+                                    ))}
+                                  </select>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </Card>
+                );
+              })()}
             </>
           )}
         </section>
