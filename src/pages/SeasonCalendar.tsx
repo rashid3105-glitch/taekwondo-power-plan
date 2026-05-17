@@ -401,9 +401,16 @@ export default function SeasonCalendar() {
                                 {(p.focus_tags ?? []).map((tag) => {
                                   const meta = PHASE_FOCUS_TAGS.find((m) => m.value === tag);
                                   return (
-                                    <span key={tag} className="text-[9px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground border border-border">
+                                    <button
+                                      key={tag}
+                                      type="button"
+                                      onClick={() => removePhaseTag(p.id, tag)}
+                                      title={t("remove") || "Remove"}
+                                      className="text-[9px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground border border-border inline-flex items-center gap-1 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/40 transition-colors"
+                                    >
                                       {meta ? t(meta.labelKey as any) : tag}
-                                    </span>
+                                      <span className="opacity-60">×</span>
+                                    </button>
                                   );
                                 })}
                               </div>
