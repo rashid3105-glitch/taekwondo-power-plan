@@ -73,6 +73,13 @@ export default function SeasonCalendar() {
 
   const selectedPlan = useMemo(() => plans.find((p) => p.id === selectedPlanId) ?? null, [plans, selectedPlanId]);
 
+  // Default phase form ISO weeks to plan's first ISO week when plan changes.
+  useEffect(() => {
+    if (!selectedPlan) return;
+    const firstIso = isoWeekNumber(selectedPlan.start_date);
+    setPhaseForm((prev) => ({ ...prev, start_iso_week: firstIso, end_iso_week: firstIso }));
+  }, [selectedPlan?.id]);
+
   useEffect(() => {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
