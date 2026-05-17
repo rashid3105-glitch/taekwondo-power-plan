@@ -26,6 +26,38 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
   const { t } = useLanguage();
   const today = new Date().toISOString().slice(0, 10);
 
+  const [competitionDates, setCompetitionDates] = useState<Set<string>>(new Set());
+  const [overrides, setOverrides] = useState<AthleteSeasonOverride[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const [compsRes, ovRes] = await Promise.all([
+        supabase
+          .from("competitions")
+          .select("event_date")
+          .eq("user_id", user.id)
+          .gte("event_date", seasonPlan.start_date)
+          .lte("event_date", seasonPlan.end_date),
+        supabase
+          .from("club_athlete_season_overrides")
+          .select("*")
+          .eq("season_plan_id", seasonPlan.id)
+          .eq("athlete_id", user.id),
+      ]);
+      if (cancelled) return;
+      setCompetitionDates(new Set((compsRes.data ?? []).map((c: any) => c.event_date as string)));
+      setOverrides(((ovRes.data ?? []) as any[]).map((o) => ({
+        ...o,
+        session_type: o.session_type as SessionType | null,
+      })) as AthleteSeasonOverride[]);
+    })();
+    return () => { cancelled = true; };
+  }, [seasonPlan.id, seasonPlan.start_date, seasonPlan.end_date]);
+
+
   const [viewYear, setViewYear] = useState(() => new Date().getFullYear());
   const [viewMonth, setViewMonth] = useState(() => new Date().getMonth());
 
