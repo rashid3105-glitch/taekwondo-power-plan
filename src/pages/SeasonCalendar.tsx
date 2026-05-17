@@ -61,7 +61,9 @@ export default function SeasonCalendar() {
   const [newPlan, setNewPlan] = useState({ name: "", start_date: "", end_date: "" });
 
   const [phaseForm, setPhaseForm] = useState({
-    name: "", focus_label: "", color: PHASE_PALETTE[0].value, start_week: 1, end_week: 4,
+    name: "", focus_label: "", color: PHASE_PALETTE[0].value,
+    start_iso_week: 1, end_iso_week: 4,
+    focus_tags: [] as string[],
   });
 
   const [overrideForm, setOverrideForm] = useState({ date: "", session_type: "rest" as SessionType, notes: "" });
