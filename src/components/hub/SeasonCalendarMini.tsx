@@ -9,6 +9,7 @@ import {
   type AthleteSeasonOverride,
   addDays,
   dayOfWeekMon0,
+  isoWeekNumber,
   phaseForWeek,
   resolveSessionForDate,
   seasonWeekNumber,
