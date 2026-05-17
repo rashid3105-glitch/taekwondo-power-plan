@@ -324,6 +324,7 @@ export type Database = {
           created_at: string
           end_week: number
           focus_label: string | null
+          focus_tags: string[]
           id: string
           name: string
           season_plan_id: string
@@ -335,6 +336,7 @@ export type Database = {
           created_at?: string
           end_week: number
           focus_label?: string | null
+          focus_tags?: string[]
           id?: string
           name: string
           season_plan_id: string
@@ -346,6 +348,7 @@ export type Database = {
           created_at?: string
           end_week?: number
           focus_label?: string | null
+          focus_tags?: string[]
           id?: string
           name?: string
           season_plan_id?: string
