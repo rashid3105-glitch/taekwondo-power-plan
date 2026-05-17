@@ -572,15 +572,25 @@ export default function SeasonCalendar() {
                         const prevPhase = idx > 0 ? calendarRows[idx - 1].phase : null;
                         const phaseChanged = r.phase?.id !== prevPhase?.id;
                         return (
-                          <>
+                          <Fragment key={r.iso}>
                             {phaseChanged && r.phase && (
-                              <tr key={`ph-${r.iso}`} className="border-y" style={{ background: `${r.phase.color}15` }}>
-                                <td colSpan={6} className="p-2 font-bold uppercase text-xs" style={{ color: r.phase.color }}>
-                                  {r.phase.name}{r.phase.focus_label ? ` — ${r.phase.focus_label}` : ""}
+                              <tr className="border-y" style={{ background: `${r.phase.color}15` }}>
+                                <td colSpan={6} className="p-2 text-xs" style={{ color: r.phase.color }}>
+                                  <div className="flex flex-wrap items-center gap-2">
+                                    <span className="font-bold uppercase">{r.phase.name}{r.phase.focus_label ? ` — ${r.phase.focus_label}` : ""}</span>
+                                    {(r.phase.focus_tags ?? []).map((tag) => {
+                                      const meta = PHASE_FOCUS_TAGS.find((m) => m.value === tag);
+                                      return (
+                                        <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full font-semibold" style={{ background: `${r.phase!.color}25`, color: r.phase!.color }}>
+                                          {meta ? t(meta.labelKey as any) : tag}
+                                        </span>
+                                      );
+                                    })}
+                                  </div>
                                 </td>
                               </tr>
                             )}
-                            <tr key={r.iso} className={cn("border-b border-border/40", sessionRowClass(r.type))}
+                            <tr className={cn("border-b border-border/40", sessionRowClass(r.type))}
                                 style={r.phase ? { borderLeft: `4px solid ${r.phase.color}` } : undefined}>
                               <td className="p-2 font-mono">{isoWeekNumber(r.iso)}</td>
                               <td className="p-2 font-mono">{r.iso}</td>
@@ -592,7 +602,7 @@ export default function SeasonCalendar() {
                               </td>
                               <td className="p-2 text-muted-foreground">{r.location ?? ""}</td>
                             </tr>
-                          </>
+                          </Fragment>
                         );
                       })}
                     </tbody>
