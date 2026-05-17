@@ -146,7 +146,7 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
 
             const inSeason = iso >= seasonPlan.start_date && iso <= seasonPlan.end_date;
             const isToday = iso === today;
-            const s = inSeason ? resolveSessionForDate(iso, template, [], new Set()) : null;
+            const s = inSeason ? resolveSessionForDate(iso, template, overrides, competitionDates) : null;
             const wkNum = inSeason ? seasonWeekNumber(seasonPlan.start_date, iso) : null;
             const phase = wkNum ? phaseForWeek(phases, wkNum) : null;
 
