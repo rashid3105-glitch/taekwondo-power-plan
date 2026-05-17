@@ -426,21 +426,18 @@ export default function SeasonCalendar() {
                             <div className="text-muted-foreground">Uge {isoStart}–{isoEnd}</div>
                             {(p.focus_tags ?? []).length > 0 && (
                               <div className="flex flex-wrap gap-1 pt-0.5">
-                                {(p.focus_tags ?? []).map((tag) => {
-                                  const meta = PHASE_FOCUS_TAGS.find((m) => m.value === tag);
-                                  return (
-                                    <button
-                                      key={tag}
-                                      type="button"
-                                      onClick={() => removePhaseTag(p.id, tag)}
-                                      title={t("remove") || "Remove"}
-                                      className="text-[9px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground border border-border inline-flex items-center gap-1 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/40 transition-colors"
-                                    >
-                                      {meta ? t(meta.labelKey as any) : tag}
-                                      <span className="opacity-60">×</span>
-                                    </button>
-                                  );
-                                })}
+                                {(p.focus_tags ?? []).map((tag) => (
+                                  <button
+                                    key={tag}
+                                    type="button"
+                                    onClick={() => removePhaseTag(p.id, tag)}
+                                    title={t("remove") || "Remove"}
+                                    className="text-[9px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground border border-border inline-flex items-center gap-1 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/40 transition-colors"
+                                  >
+                                    {tagLabel(tag)}
+                                    <span className="opacity-60">×</span>
+                                  </button>
+                                ))}
                               </div>
                             )}
                           </div>
