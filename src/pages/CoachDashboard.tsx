@@ -722,7 +722,7 @@ export default function CoachDashboard() {
         </Dialog>
 
         <Dialog open={!!diaryAthleteId} onOpenChange={(open) => { if (!open) setDiaryAthleteId(null); }}>
-          <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+          <DialogContent className="max-w-lg w-[95vw] max-h-[85vh] overflow-y-auto overflow-x-hidden">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <NotebookPen className="h-5 w-5" /> {diaryAthleteName} — {t("diary")}

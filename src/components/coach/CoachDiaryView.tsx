@@ -263,7 +263,7 @@ export function CoachDiaryView({ entries }: Props) {
                               <span className={MOOD_COLORS[(entry.mood || 3) - 1]}><EntryMood className="h-3 w-3 inline" /></span>
                               <span className="text-primary"><EntryEnergy className="h-3 w-3 inline" /></span>
                             </div>
-                            <p className="text-sm text-foreground line-clamp-1 mt-0.5">{entry.content}</p>
+                            <p className="text-sm text-foreground line-clamp-2 mt-0.5 break-words min-w-0">{entry.content}</p>
                           </div>
                           <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
                         </div>
@@ -291,7 +291,7 @@ export function CoachDiaryView({ entries }: Props) {
                           </Button>
                         )}
                       </div>
-                      <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">{entry.content}</p>
+                      <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed break-words overflow-wrap-anywhere min-w-0">{entry.content}</p>
                       {entry.tags && entry.tags.length > 0 && (
                         <div className="flex flex-wrap gap-1">
                           {entry.tags.map((tag) => (
