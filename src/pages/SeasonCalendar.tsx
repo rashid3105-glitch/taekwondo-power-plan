@@ -429,7 +429,7 @@ export default function SeasonCalendar() {
                             )}
                             <tr key={r.iso} className={cn("border-b border-border/40", sessionRowClass(r.type))}
                                 style={r.phase ? { borderLeft: `4px solid ${r.phase.color}` } : undefined}>
-                              <td className="p-2 font-mono">{r.weekNum}</td>
+                              <td className="p-2 font-mono">{isoWeekNumber(r.iso)}</td>
                               <td className="p-2 font-mono">{r.iso}</td>
                               <td className="p-2">{DAY_KEYS[dayOfWeekMon0(r.iso)]}</td>
                               <td className="p-2 text-muted-foreground truncate max-w-32">{r.phase?.name ?? ""}</td>
