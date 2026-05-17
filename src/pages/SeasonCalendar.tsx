@@ -254,6 +254,14 @@ export default function SeasonCalendar() {
     setPhases((prev) => prev.filter((p) => p.id !== id));
   }
 
+  async function removePhaseTag(phaseId: string, tag: string) {
+    const phase = phases.find((p) => p.id === phaseId);
+    if (!phase) return;
+    const next = (phase.focus_tags ?? []).filter((x) => x !== tag);
+    setPhases((prev) => prev.map((p) => (p.id === phaseId ? { ...p, focus_tags: next } : p)));
+    await (supabase.from as any)("club_season_phases").update({ focus_tags: next }).eq("id", phaseId);
+  }
+
   async function updateTemplate(day: number, patch: Partial<ClubSeasonDayTemplate>) {
     const row = template.find((t) => t.day_of_week === day);
     if (!row) return;
