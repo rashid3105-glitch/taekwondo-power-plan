@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { toast } from "@/hooks/use-toast";
-import { ArrowLeft, Loader2, Plus, Printer, Trash2, CalendarRange, Eye } from "lucide-react";
+import { ArrowLeft, Loader2, Plus, Printer, Trash2, CalendarRange, Eye, ChevronLeft, ChevronRight, ChevronDown, Target, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   type ClubSeasonPlan,
