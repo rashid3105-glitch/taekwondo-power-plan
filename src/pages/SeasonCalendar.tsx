@@ -849,6 +849,9 @@ export default function SeasonCalendar() {
                   </div>
                 </Card>
               </details>
+            </>
+          )}
+        </aside>
 
         {/* Main */}
         <section className="space-y-4">
