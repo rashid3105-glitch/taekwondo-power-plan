@@ -401,9 +401,46 @@ export default function SeasonCalendar() {
                       />
                     ))}
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Input type="number" min={1} value={phaseForm.start_week} onChange={(e) => setPhaseForm({ ...phaseForm, start_week: parseInt(e.target.value) || 1 })} />
-                    <Input type="number" min={1} value={phaseForm.end_week} onChange={(e) => setPhaseForm({ ...phaseForm, end_week: parseInt(e.target.value) || 1 })} />
+                  <div className="space-y-1">
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <Label className="text-[10px] uppercase tracking-wide text-muted-foreground">{t("seasonPhaseFromIsoWeek") || "Fra ISO-uge"}</Label>
+                        <Input type="number" min={1} max={53} inputMode="numeric" value={phaseForm.start_iso_week}
+                          onChange={(e) => setPhaseForm({ ...phaseForm, start_iso_week: parseInt(e.target.value) || 1 })} />
+                      </div>
+                      <div>
+                        <Label className="text-[10px] uppercase tracking-wide text-muted-foreground">{t("seasonPhaseToIsoWeek") || "Til ISO-uge"}</Label>
+                        <Input type="number" min={1} max={53} inputMode="numeric" value={phaseForm.end_iso_week}
+                          onChange={(e) => setPhaseForm({ ...phaseForm, end_iso_week: parseInt(e.target.value) || 1 })} />
+                      </div>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground">{t("seasonPhaseWeekHint") || "ISO-ugenumre, fx 47–50"}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[10px] uppercase tracking-wide text-muted-foreground">{t("seasonPhaseFocusTags") || "Træningsfokus"}</Label>
+                    <div className="flex flex-wrap gap-1">
+                      {PHASE_FOCUS_TAGS.map((tag) => {
+                        const active = phaseForm.focus_tags.includes(tag.value);
+                        return (
+                          <button key={tag.value} type="button"
+                            onClick={() => setPhaseForm({
+                              ...phaseForm,
+                              focus_tags: active
+                                ? phaseForm.focus_tags.filter((x) => x !== tag.value)
+                                : [...phaseForm.focus_tags, tag.value],
+                            })}
+                            className={cn(
+                              "text-[11px] px-2 py-1 rounded-full border transition-colors",
+                              active
+                                ? "bg-primary text-primary-foreground border-primary"
+                                : "bg-muted/40 border-border text-muted-foreground hover:bg-muted",
+                            )}
+                          >
+                            {t(tag.labelKey as any)}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
                   <Button size="sm" className="w-full" onClick={addPhase}><Plus className="h-3 w-3 mr-1" />{t("seasonPhaseAdd")}</Button>
                 </div>
