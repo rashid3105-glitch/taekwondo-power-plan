@@ -92,9 +92,9 @@ export function CoachDiaryView({ entries }: Props) {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 min-w-0 max-w-full">
       {/* Filter bar */}
-      <div className="rounded-xl border border-border bg-card p-3 space-y-2">
+      <div className="rounded-xl border border-border bg-card p-3 space-y-2 min-w-0 max-w-full overflow-x-hidden">
         <div className="flex items-center gap-2">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -209,7 +209,7 @@ export function CoachDiaryView({ entries }: Props) {
               ? !collapsedMonths.has(`__open:${monthKey}`)
               : monthKey !== monthKeyToday && !collapsedMonths.has(`__open:${monthKey}`);
             return (
-              <div key={monthKey} className="space-y-2">
+              <div key={monthKey} className="space-y-2 min-w-0 max-w-full">
                 <button
                   onClick={() => {
                     setCollapsedMonths((prev) => {
@@ -272,7 +272,7 @@ export function CoachDiaryView({ entries }: Props) {
                   }
 
                   return (
-                    <div key={entry.id} className={`rounded-xl border ${meta.border} bg-card p-3 sm:p-4 space-y-2`}>
+                    <div key={entry.id} className={`rounded-xl border ${meta.border} bg-card p-3 sm:p-4 space-y-2 min-w-0 max-w-full overflow-hidden`}>
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${meta.bg} ${meta.color}`}>
                           <Icon className="h-3 w-3" />
