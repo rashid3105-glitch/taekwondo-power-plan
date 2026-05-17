@@ -477,29 +477,36 @@ export default function SeasonCalendar() {
                     <p className="text-[10px] text-muted-foreground">{t("seasonPhaseWeekHint") || "ISO-ugenumre, fx 47–50"}</p>
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-[10px] uppercase tracking-wide text-muted-foreground">{t("seasonPhaseFocusTags") || "Træningsfokus"}</Label>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-[10px] uppercase tracking-wide text-muted-foreground">{t("seasonPhaseFocusTags") || "Træningsfokus"}</Label>
+                      <button type="button" onClick={() => setTagEditorOpen(true)} className="text-[10px] underline text-muted-foreground hover:text-foreground">
+                        {t("seasonPhaseFocusTagsEdit") || "Rediger tags"}
+                      </button>
+                    </div>
                     <div className="flex flex-wrap gap-1">
-                      {PHASE_FOCUS_TAGS.map((tag) => {
-                        const active = phaseForm.focus_tags.includes(tag.value);
-                        return (
-                          <button key={tag.value} type="button"
-                            onClick={() => setPhaseForm({
-                              ...phaseForm,
-                              focus_tags: active
-                                ? phaseForm.focus_tags.filter((x) => x !== tag.value)
-                                : [...phaseForm.focus_tags, tag.value],
-                            })}
-                            className={cn(
-                              "text-[11px] px-2 py-1 rounded-full border transition-colors",
-                              active
-                                ? "bg-primary text-primary-foreground border-primary"
-                                : "bg-muted/40 border-border text-muted-foreground hover:bg-muted",
-                            )}
-                          >
-                            {t(tag.labelKey as any)}
-                          </button>
-                        );
-                      })}
+                      {PHASE_FOCUS_TAGS
+                        .filter((tag) => !tagCatalog.hidden.includes(tag.value))
+                        .map((tag) => {
+                          const active = phaseForm.focus_tags.includes(tag.value);
+                          return (
+                            <button key={tag.value} type="button"
+                              onClick={() => setPhaseForm({
+                                ...phaseForm,
+                                focus_tags: active
+                                  ? phaseForm.focus_tags.filter((x) => x !== tag.value)
+                                  : [...phaseForm.focus_tags, tag.value],
+                              })}
+                              className={cn(
+                                "text-[11px] px-2 py-1 rounded-full border transition-colors",
+                                active
+                                  ? "bg-primary text-primary-foreground border-primary"
+                                  : "bg-muted/40 border-border text-muted-foreground hover:bg-muted",
+                              )}
+                            >
+                              {tagLabel(tag.value)}
+                            </button>
+                          );
+                        })}
                       {phaseForm.focus_tags
                         .filter((v) => !PHASE_FOCUS_TAGS.some((m) => m.value === v))
                         .map((custom) => (
@@ -511,7 +518,7 @@ export default function SeasonCalendar() {
                             className="text-[11px] px-2 py-1 rounded-full border bg-primary text-primary-foreground border-primary inline-flex items-center gap-1"
                             title={t("remove") || "Remove"}
                           >
-                            {custom}
+                            {tagLabel(custom)}
                             <span className="opacity-70">×</span>
                           </button>
                         ))}
