@@ -67,6 +67,34 @@ export default function SeasonCalendar() {
   });
   const [customTagInput, setCustomTagInput] = useState("");
 
+  // Per-club tag catalog overrides (rename + hide). Stored locally.
+  // Old phases keep their raw `focus_tags` values; this only affects rendering + which chips appear.
+  type TagCatalog = { labels: Record<string, string>; hidden: string[] };
+  const [tagCatalog, setTagCatalog] = useState<TagCatalog>({ labels: {}, hidden: [] });
+  const [tagEditorOpen, setTagEditorOpen] = useState(false);
+
+  useEffect(() => {
+    if (!clubId) return;
+    try {
+      const raw = localStorage.getItem(`season-tag-catalog:${clubId}`);
+      if (raw) setTagCatalog(JSON.parse(raw));
+      else setTagCatalog({ labels: {}, hidden: [] });
+    } catch { /* ignore */ }
+  }, [clubId]);
+
+  function persistCatalog(next: TagCatalog) {
+    setTagCatalog(next);
+    if (clubId) {
+      try { localStorage.setItem(`season-tag-catalog:${clubId}`, JSON.stringify(next)); } catch { /* ignore */ }
+    }
+  }
+
+  function tagLabel(value: string): string {
+    if (tagCatalog.labels[value]) return tagCatalog.labels[value];
+    const preset = PHASE_FOCUS_TAGS.find((m) => m.value === value);
+    return preset ? t(preset.labelKey as any) : value;
+  }
+
   const [overrideForm, setOverrideForm] = useState({ date: "", session_type: "rest" as SessionType, notes: "" });
 
   const [visibleAthleteIds, setVisibleAthleteIds] = useState<Set<string>>(new Set());
