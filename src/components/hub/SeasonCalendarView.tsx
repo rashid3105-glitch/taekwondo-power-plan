@@ -318,13 +318,20 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
 
       <div className="flex flex-wrap gap-3 px-1">
         {[
-          { type: "tkd", color: "#3b82f6", bgClass: "bg-primary/10" },
-          { type: "gym", color: "#10b981", bgClass: "bg-emerald-500/10" },
-          { type: "stævne", color: "#ef4444", bgClass: "bg-destructive/15" },
+          { type: "tkd" as SessionType,     size: 5 },
+          { type: "gym" as SessionType,     size: 5 },
+          { type: "stævne" as SessionType,  size: 7 },
         ].map(item => (
           <div key={item.type} className="flex items-center gap-1.5">
-            <span className={cn("w-3 h-3 rounded-sm", item.bgClass)} style={{ border: `1px solid ${item.color}` }} />
-            <span className="text-xs text-muted-foreground">{t(sessionLabelKey(item.type as any) as any)}</span>
+            <span
+              className="rounded-full flex-shrink-0"
+              style={{
+                width: item.size,
+                height: item.size,
+                backgroundColor: sessionDotColor(item.type),
+              }}
+            />
+            <span className="text-xs text-muted-foreground">{t(sessionLabelKey(item.type) as any)}</span>
           </div>
         ))}
       </div>
