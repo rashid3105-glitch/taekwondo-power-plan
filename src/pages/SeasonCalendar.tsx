@@ -64,7 +64,8 @@ export default function SeasonCalendar() {
 
   const [phaseForm, setPhaseForm] = useState({
     name: "", focus_label: "", color: PHASE_PALETTE[0].value,
-    start_iso_week: 1, end_iso_week: 4,
+    start_date: "",
+    end_date: "",
     focus_tags: [] as string[],
   });
   const [customTagInput, setCustomTagInput] = useState("");
