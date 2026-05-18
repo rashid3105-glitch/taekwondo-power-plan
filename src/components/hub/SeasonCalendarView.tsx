@@ -22,19 +22,24 @@ interface Props {
 const DAY_LABELS_SHORT = ["Ma", "Ti", "On", "To", "Fr", "Lø", "Sø"];
 const MONTH_NAMES = ["Januar","Februar","Marts","April","Maj","Juni","Juli","August","September","Oktober","November","December"];
 
+type WeekFocus = { teamTechIds: string[]; teamNote: string; athleteTechIds: string[] };
+
 export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
   const { t } = useLanguage();
   const today = new Date().toISOString().slice(0, 10);
 
   const [competitionDates, setCompetitionDates] = useState<Set<string>>(new Set());
   const [overrides, setOverrides] = useState<AthleteSeasonOverride[]>([]);
+  const [weekFocusMap, setWeekFocusMap] = useState<Map<number, WeekFocus>>(new Map());
+  const [techMap, setTechMap] = useState<Map<string, { name: string; category: string }>>(new Map());
+  const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const [compsRes, ovRes] = await Promise.all([
+      const [compsRes, ovRes, techFocusRes, athTechRes] = await Promise.all([
         supabase
           .from("competitions")
           .select("event_date")
@@ -46,6 +51,13 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
           .select("*")
           .eq("season_plan_id", seasonPlan.id)
           .eq("athlete_id", user.id),
+        (supabase.from as any)("club_week_technique_focus")
+          .select("season_week, technique_ids, coach_note")
+          .eq("season_plan_id", seasonPlan.id),
+        (supabase.from as any)("athlete_week_technique_focus")
+          .select("season_week, technique_ids")
+          .eq("season_plan_id", seasonPlan.id)
+          .eq("athlete_id", user.id),
       ]);
       if (cancelled) return;
       setCompetitionDates(new Set((compsRes.data ?? []).map((c: any) => c.event_date as string)));
@@ -53,6 +65,31 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
         ...o,
         session_type: o.session_type as SessionType | null,
       })) as AthleteSeasonOverride[]);
+
+      const allTechIds = [
+        ...((techFocusRes.data ?? []) as any[]).flatMap((r: any) => r.technique_ids ?? []),
+        ...((athTechRes.data ?? []) as any[]).flatMap((r: any) => r.technique_ids ?? []),
+      ];
+      const uniqueTechIds = [...new Set(allTechIds)];
+      const tm = new Map<string, { name: string; category: string }>();
+      if (uniqueTechIds.length > 0) {
+        const { data: techs } = await (supabase.from as any)("club_techniques")
+          .select("id, name, category").in("id", uniqueTechIds);
+        for (const tt of (techs ?? []) as any[]) tm.set(tt.id, { name: tt.name, category: tt.category });
+      }
+
+      const wfm = new Map<number, WeekFocus>();
+      for (const row of (techFocusRes.data ?? []) as any[]) {
+        wfm.set(row.season_week, { teamTechIds: row.technique_ids ?? [], teamNote: row.coach_note ?? "", athleteTechIds: [] });
+      }
+      for (const row of (athTechRes.data ?? []) as any[]) {
+        const existing = wfm.get(row.season_week) ?? { teamTechIds: [], teamNote: "", athleteTechIds: [] };
+        wfm.set(row.season_week, { ...existing, athleteTechIds: row.technique_ids ?? [] });
+      }
+
+      if (cancelled) return;
+      setWeekFocusMap(wfm);
+      setTechMap(tm);
     })();
     return () => { cancelled = true; };
   }, [seasonPlan.id, seasonPlan.start_date, seasonPlan.end_date]);
@@ -149,13 +186,20 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
             const s = inSeason ? resolveSessionForDate(iso, template, overrides, competitionDates) : null;
             const wkNum = inSeason ? seasonWeekNumber(seasonPlan.start_date, iso) : null;
             const phase = wkNum ? phaseForWeek(phases, wkNum) : null;
+            const hasFocus = wkNum !== null && (weekFocusMap.get(wkNum)?.teamTechIds?.length ?? 0) > 0;
+            const isSelected = wkNum !== null && wkNum === selectedWeek;
 
             return (
               <div
                 key={iso}
+                onClick={() => {
+                  if (!inSeason || !wkNum) return;
+                  setSelectedWeek(prev => prev === wkNum ? null : wkNum);
+                }}
                 className={cn(
-                  "min-h-14 border-b border-r border-border/30 p-1.5 flex flex-col",
-                  !inSeason && "opacity-30",
+                  "min-h-14 border-b border-r border-border/30 p-1.5 flex flex-col cursor-pointer transition-colors hover:bg-muted/30",
+                  !inSeason && "opacity-30 cursor-default pointer-events-none",
+                  isSelected && "ring-2 ring-inset ring-primary",
                   s ? sessionRowClass(s.type) : "",
                 )}
                 style={phase && inSeason ? { borderBottom: `2px solid ${phase.color}40` } : undefined}
@@ -173,11 +217,82 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
                     {t(sessionLabelKey(s.type) as any)}
                   </span>
                 )}
+                {hasFocus && inSeason && (
+                  <span className="text-[8px] text-primary font-bold leading-tight">🎯</span>
+                )}
               </div>
             );
           })}
         </div>
       </Card>
+
+      {selectedWeek !== null && (() => {
+        const focus = weekFocusMap.get(selectedWeek);
+        const teamTechs = (focus?.teamTechIds ?? []).map(id => techMap.get(id)).filter(Boolean) as { name: string; category: string }[];
+        const athTechs = (focus?.athleteTechIds ?? []).map(id => techMap.get(id)).filter(Boolean) as { name: string; category: string }[];
+        const startMs = new Date(seasonPlan.start_date + "T00:00:00").getTime();
+        const wkStart = new Date(startMs + (selectedWeek - 1) * 7 * 86400000).toISOString().slice(0, 10);
+        const wkEnd = new Date(startMs + ((selectedWeek - 1) * 7 + 6) * 86400000).toISOString().slice(0, 10);
+
+        if (!focus || (teamTechs.length === 0 && athTechs.length === 0)) {
+          return (
+            <Card className="p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-sm font-semibold">🎯 {t("seasonWeek") || "Uge"} {selectedWeek}</span>
+                <span className="text-xs text-muted-foreground">{wkStart} – {wkEnd}</span>
+              </div>
+              <p className="text-xs text-muted-foreground italic">{t("seasonNoTechniquesFocus") || "Ingen teknikfokus sat for denne uge."}</p>
+            </Card>
+          );
+        }
+
+        return (
+          <Card className="overflow-hidden">
+            <div className="px-4 py-3 border-b border-border flex items-center gap-3 flex-wrap">
+              <span className="text-sm font-semibold">🎯 {t("seasonWeek") || "Uge"} {selectedWeek}</span>
+              <span className="text-xs text-muted-foreground">{wkStart} – {wkEnd}</span>
+            </div>
+
+            <div className="p-4 space-y-4">
+              {teamTechs.length > 0 && (
+                <div>
+                  <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                    👥 {t("seasonTeamFocus") || "Hold-fokus"}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {teamTechs.map((tech, i) => (
+                      <span key={i} className="text-xs font-medium px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-primary">
+                        {tech.name}
+                      </span>
+                    ))}
+                  </div>
+                  {focus.teamNote && (
+                    <p className="text-xs text-muted-foreground mt-2 italic">"{focus.teamNote}"</p>
+                  )}
+                </div>
+              )}
+
+              {athTechs.length > 0 && (
+                <>
+                  {teamTechs.length > 0 && <div className="h-px bg-border" />}
+                  <div>
+                    <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                      🎯 {t("seasonIndividualFocus") || "Din individuelle fokus"}
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {athTechs.map((tech, i) => (
+                        <span key={i} className="text-xs font-medium px-3 py-1 rounded-full bg-violet-100 border border-violet-300 text-violet-700">
+                          {tech.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </Card>
+        );
+      })()}
 
       <div className="flex flex-wrap gap-3 px-1">
         {[
