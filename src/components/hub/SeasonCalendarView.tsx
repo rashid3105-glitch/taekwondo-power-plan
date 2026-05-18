@@ -184,7 +184,14 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
 
             const inSeason = iso >= seasonPlan.start_date && iso <= seasonPlan.end_date;
             const isToday = iso === today;
-            const s = inSeason ? resolveSessionForDate(iso, template, overrides, competitionDates) : null;
+            const sessions = inSeason
+              ? resolveSessionsForDate(iso, template, overrides, competitionDates)
+              : [];
+            const s = sessions[0] ?? null;
+            const isCompetition = sessions.some((ss) => ss.type === "stævne");
+            const dotTypes = [...new Set(
+              sessions.filter(ss => ss.type !== "rest").map(ss => ss.type)
+            )].slice(0, 3);
             const wkNum = inSeason ? seasonWeekNumber(seasonPlan.start_date, iso) : null;
             const phase = wkNum ? phaseForWeek(phases, wkNum) : null;
             const hasFocus = wkNum !== null && (weekFocusMap.get(wkNum)?.teamTechIds?.length ?? 0) > 0;
@@ -201,22 +208,36 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
                   "min-h-14 border-b border-r border-border/30 p-1.5 flex flex-col cursor-pointer transition-colors hover:bg-muted/30",
                   !inSeason && "opacity-30 cursor-default pointer-events-none",
                   isSelected && "ring-2 ring-inset ring-primary",
-                  s ? sessionRowClass(s.type) : "",
+                  isCompetition ? "bg-destructive/15" : "",
                 )}
                 style={phase && inSeason ? { borderBottom: `2px solid ${phase.color}40` } : undefined}
               >
                 <span
                   className={cn(
                     "text-[11px] font-semibold self-start rounded-full w-5 h-5 flex items-center justify-center",
-                    isToday ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+                    isToday
+                      ? "bg-primary text-primary-foreground"
+                      : isCompetition
+                        ? "bg-destructive/15 text-destructive"
+                        : "text-muted-foreground"
                   )}
                 >
                   {new Date(iso + "T00:00:00").getDate()}
                 </span>
-                {s && s.type !== "rest" && (
-                  <span className="text-[10px] font-semibold mt-auto leading-tight">
-                    {t(sessionLabelKey(s.type) as any)}
-                  </span>
+                {dotTypes.length > 0 && (
+                  <div className="flex gap-0.5 mt-auto pt-0.5 justify-center">
+                    {dotTypes.map((type) => (
+                      <span
+                        key={type}
+                        className="rounded-full flex-shrink-0"
+                        style={{
+                          width: type === "stævne" ? "7px" : "5px",
+                          height: type === "stævne" ? "7px" : "5px",
+                          backgroundColor: sessionDotColor(type),
+                        }}
+                      />
+                    ))}
+                  </div>
                 )}
                 {hasFocus && inSeason && (
                   <span className="text-[8px] text-primary font-bold leading-tight">🎯</span>
