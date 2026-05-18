@@ -621,7 +621,7 @@ export default function Dashboard() {
             const items = [
               { key: "hjem-rehab-unlock", label: "Hjem", icon: Home, active: activeTab === "hub", dot: true, onClick: () => handleTabChange("hub") },
               { key: "plan", label: "Plan", icon: CalendarIcon, active: activeTab === "plan", dot: false, onClick: () => handleTabChange("plan") },
-              { key: "calendar", label: t("seasonCalendar") || "Kalender", icon: CalendarRange, active: activeTab === "calendar", dot: false, onClick: () => handleTabChange("calendar") },
+              { key: "calendar-dots-v1", label: t("seasonCalendar") || "Kalender", icon: CalendarRange, active: activeTab === "calendar", dot: true, onClick: () => handleTabChange("calendar") },
               { key: "fremgang", label: "Fremgang", icon: BarChart3, active: activeTab === "progress", dot: false, onClick: () => handleTabChange("progress") },
               { key: "profil", label: "Profil", icon: User, active: false, dot: false, onClick: () => navigate("/profile-setup") },
             ];

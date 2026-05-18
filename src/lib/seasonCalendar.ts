@@ -185,3 +185,41 @@ export function resolveSessionForDate(
     isCompetition: false,
   };
 }
+
+/** Returns ALL sessions scheduled for a date (template can have >1 entry per day_of_week). */
+export function resolveSessionsForDate(
+  iso: string,
+  template: ClubSeasonDayTemplate[],
+  overrides: AthleteSeasonOverride[],
+  competitionDates: Set<string>,
+): { type: SessionType; location: string | null; fromOverride: boolean; isCompetition: boolean }[] {
+  const ov = overrides.find((o) => o.override_date === iso);
+  if (ov?.session_type) {
+    return [{ type: ov.session_type, location: null, fromOverride: true, isCompetition: ov.session_type === "stævne" }];
+  }
+  if (competitionDates.has(iso)) {
+    return [{ type: "stævne", location: null, fromOverride: false, isCompetition: true }];
+  }
+  const dow = dayOfWeekMon0(iso);
+  const matches = template.filter((d) => d.day_of_week === dow && d.session_type !== "rest");
+  if (matches.length === 0) {
+    const t = template.find((d) => d.day_of_week === dow);
+    return [{ type: (t?.session_type as SessionType) ?? "rest", location: t?.location ?? null, fromOverride: false, isCompetition: false }];
+  }
+  return matches.map((t) => ({
+    type: t.session_type as SessionType,
+    location: t.location ?? null,
+    fromOverride: false,
+    isCompetition: false,
+  }));
+}
+
+export function sessionDotColor(t: SessionType | null | undefined): string {
+  switch (t) {
+    case "tkd":     return "#3b82f6";
+    case "gym":
+    case "styrke":  return "#10b981";
+    case "stævne":  return "#ef4444";
+    default:        return "transparent";
+  }
+}

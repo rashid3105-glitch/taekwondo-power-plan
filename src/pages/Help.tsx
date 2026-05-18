@@ -239,6 +239,28 @@ export default function Help() {
             <div className="space-y-2 text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
               {tr(`${topic.key}Steps`)}
             </div>
+            {topic.key === "helpSeasonCalendar" && (
+              <div className="mt-4 rounded-lg border border-border bg-muted/30 p-3 space-y-2">
+                <p className="text-xs font-semibold text-foreground">Dag-prikker / Day dots</p>
+                <div className="flex flex-wrap gap-3">
+                  <div className="flex items-center gap-1.5">
+                    <span className="rounded-full" style={{ width: 5, height: 5, backgroundColor: "#3b82f6" }} />
+                    <span className="text-xs text-muted-foreground">TKD</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="rounded-full" style={{ width: 5, height: 5, backgroundColor: "#10b981" }} />
+                    <span className="text-xs text-muted-foreground">Gym / Styrke</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="rounded-full" style={{ width: 7, height: 7, backgroundColor: "#ef4444" }} />
+                    <span className="text-xs text-muted-foreground">Stævne</span>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Hver dag viser farvede prikker for den planlagte session. Dage med flere sessioner (fx både TKD og styrke) viser flere prikker side om side.
+                </p>
+              </div>
+            )}
           </div>
         )}
       </div>
