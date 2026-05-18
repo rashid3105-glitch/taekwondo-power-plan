@@ -359,9 +359,18 @@ export default function Dashboard() {
           .select("*, club_season_phases(*), club_season_day_templates(*)")
           .eq("club_id", profileData.club_id).eq("is_active", true).maybeSingle();
         if (seasonRow) {
-          const { data: visCheck } = await (supabase.from as any)("club_season_plan_visibility")
-            .select("id").eq("season_plan_id", seasonRow.id).eq("athlete_id", user.id).maybeSingle();
-          if (visCheck || seasonRow.created_by === user.id) {
+          // Show to everyone in the club by default (opt-out model)
+          // Only hide if coach has explicitly set visibility AND the athlete is not included
+          const { data: visRows } = await (supabase.from as any)("club_season_plan_visibility")
+            .select("athlete_id")
+            .eq("season_plan_id", seasonRow.id);
+
+          const hasAnyVisibilitySet = visRows && visRows.length > 0;
+          const athleteIsIncluded = visRows?.some((v: any) => v.athlete_id === user.id) || seasonRow.created_by === user.id;
+
+          // If no visibility rows exist at all, show to everyone
+          // If visibility rows exist, only show to included athletes
+          if (!hasAnyVisibilitySet || athleteIsIncluded) {
             setClubSeason({
               plan: seasonRow,
               phases: seasonRow.club_season_phases || [],
