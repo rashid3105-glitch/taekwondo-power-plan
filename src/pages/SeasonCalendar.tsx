@@ -143,8 +143,11 @@ export default function SeasonCalendar() {
   // Default phase form ISO weeks to plan's first ISO week when plan changes.
   useEffect(() => {
     if (!selectedPlan) return;
-    const firstIso = isoWeekNumber(selectedPlan.start_date);
-    setPhaseForm((prev) => ({ ...prev, start_iso_week: firstIso, end_iso_week: firstIso }));
+    setPhaseForm((prev) => ({
+      ...prev,
+      start_date: selectedPlan.start_date,
+      end_date: addDays(selectedPlan.start_date, 27),
+    }));
   }, [selectedPlan?.id]);
 
   useEffect(() => {
