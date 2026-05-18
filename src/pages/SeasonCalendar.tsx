@@ -588,17 +588,39 @@ export default function SeasonCalendar() {
                   <div className="space-y-1">
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <Label className="text-[10px] uppercase tracking-wide text-muted-foreground">{t("seasonPhaseFromIsoWeek") || "Fra ISO-uge"}</Label>
-                        <Input type="number" min={1} max={53} inputMode="numeric" value={phaseForm.start_iso_week}
-                          onChange={(e) => setPhaseForm({ ...phaseForm, start_iso_week: parseInt(e.target.value) || 1 })} />
+                        <Label className="text-[10px] uppercase tracking-wide text-muted-foreground">Fra dato</Label>
+                        <Input
+                          type="date"
+                          value={phaseForm.start_date}
+                          min={selectedPlan.start_date}
+                          max={selectedPlan.end_date}
+                          onChange={(e) => setPhaseForm({ ...phaseForm, start_date: e.target.value })}
+                        />
+                        {phaseForm.start_date && (
+                          <p className="text-[10px] text-muted-foreground mt-0.5">
+                            Sæsonuge {seasonWeekNumber(selectedPlan.start_date, phaseForm.start_date)}
+                          </p>
+                        )}
                       </div>
                       <div>
-                        <Label className="text-[10px] uppercase tracking-wide text-muted-foreground">{t("seasonPhaseToIsoWeek") || "Til ISO-uge"}</Label>
-                        <Input type="number" min={1} max={53} inputMode="numeric" value={phaseForm.end_iso_week}
-                          onChange={(e) => setPhaseForm({ ...phaseForm, end_iso_week: parseInt(e.target.value) || 1 })} />
+                        <Label className="text-[10px] uppercase tracking-wide text-muted-foreground">Til dato</Label>
+                        <Input
+                          type="date"
+                          value={phaseForm.end_date}
+                          min={phaseForm.start_date || selectedPlan.start_date}
+                          max={selectedPlan.end_date}
+                          onChange={(e) => setPhaseForm({ ...phaseForm, end_date: e.target.value })}
+                        />
+                        {phaseForm.end_date && (
+                          <p className="text-[10px] text-muted-foreground mt-0.5">
+                            Sæsonuge {seasonWeekNumber(selectedPlan.start_date, phaseForm.end_date)}
+                          </p>
+                        )}
                       </div>
                     </div>
-                    <p className="text-[10px] text-muted-foreground">{t("seasonPhaseWeekHint") || "ISO-ugenumre, fx 47–50"}</p>
+                    <p className="text-[10px] text-muted-foreground">
+                      Inden for sæsonen: {selectedPlan.start_date} – {selectedPlan.end_date}
+                    </p>
                   </div>
                   <div className="space-y-1">
                     <div className="flex items-center justify-between">
