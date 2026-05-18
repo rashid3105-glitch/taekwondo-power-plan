@@ -9,7 +9,8 @@ import {
   type AthleteSeasonOverride, type SessionType,
   PHASE_FOCUS_TAGS,
   dayOfWeekMon0, phaseForWeek, seasonWeekNumber,
-  resolveSessionForDate, sessionLabelKey, sessionRowClass,
+  resolveSessionForDate, resolveSessionsForDate, sessionDotColor,
+  sessionLabelKey, sessionRowClass,
 } from "@/lib/seasonCalendar";
 import { cn } from "@/lib/utils";
 
