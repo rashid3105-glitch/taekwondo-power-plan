@@ -235,7 +235,7 @@ export default function Help() {
           )}
           style={{ borderTopColor: "currentColor" }}
           >
-            <div className="h-1 -mt-4 -mx-5 mb-4 rounded-t-xl" />
+            <div className={cn("h-1 -mt-4 -mx-5 mb-4 rounded-t-xl", section.accent)} />
             <div className="space-y-2 text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
               {tr(`${topic.key}Steps`)}
             </div>
