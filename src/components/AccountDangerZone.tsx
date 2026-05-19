@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { AlertTriangle, Download, Trash2, Loader2 } from "lucide-react";
+import { AlertTriangle, Download, Trash2, Loader2, ChevronDown } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+
 import {
   AlertDialog,
   AlertDialogAction,
