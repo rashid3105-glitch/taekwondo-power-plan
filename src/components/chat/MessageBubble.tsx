@@ -8,6 +8,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import type { ChatMessage } from "@/lib/chatApi";
@@ -36,6 +46,7 @@ export function MessageBubble({
   const isVideo = message.attachment_type?.startsWith("video/");
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(message.body);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const time = new Date(message.created_at).toLocaleTimeString([], {
     hour: "2-digit",
@@ -95,7 +106,7 @@ export function MessageBubble({
                 )}
                 {onDelete && (
                   <DropdownMenuItem
-                    onClick={onDelete}
+                    onClick={(e) => { e.preventDefault(); setConfirmDelete(true); }}
                     className="text-destructive focus:text-destructive"
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
@@ -128,6 +139,26 @@ export function MessageBubble({
         {time}
         {message.edited_at && <span className="ml-1">(redigeret)</span>}
       </span>
+
+      <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Slet besked?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Beskeden slettes permanent for alle deltagere.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuller</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => { setConfirmDelete(false); onDelete?.(); }}
+            >
+              Slet
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

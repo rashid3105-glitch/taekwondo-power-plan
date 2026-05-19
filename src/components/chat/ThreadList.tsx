@@ -1,34 +1,114 @@
 import { useState, useEffect } from "react";
-import { Search, Users } from "lucide-react";
+import { Search, Users, Archive, ArchiveRestore } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { AvatarImg } from "@/components/AvatarImg";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
-import type { ChatThread } from "@/lib/chatApi";
+import { archiveThread, unarchiveThread, type ChatThread } from "@/lib/chatApi";
+import { toast } from "sonner";
 
 interface Props {
   threads: ChatThread[];
   selectedId?: string | null;
   onSelect: (t: ChatThread) => void;
   loading?: boolean;
+  onRefresh?: () => void;
 }
 
-export function ThreadList({ threads, selectedId, onSelect, loading }: Props) {
+export function ThreadList({ threads, selectedId, onSelect, loading, onRefresh }: Props) {
   const [meId, setMeId] = useState<string | null>(null);
   const [filter, setFilter] = useState("");
+  const [showArchived, setShowArchived] = useState(false);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => setMeId(user?.id ?? null));
   }, []);
 
-  const filtered = threads.filter((t) => {
+  const matchesFilter = (t: ChatThread) => {
     if (!filter.trim()) return true;
     const q = filter.toLowerCase();
     const title = t.kind === "group"
       ? t.title || ""
       : t.members.find((m) => m.user_id !== meId)?.display_name || "";
     return title.toLowerCase().includes(q);
-  });
+  };
+
+  const activeThreads = threads.filter((t: any) => !t.archived_at).filter(matchesFilter);
+  const archivedThreads = threads.filter((t: any) => t.archived_at).filter(matchesFilter);
+
+  const handleArchive = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    try {
+      await archiveThread(id);
+      onRefresh?.();
+    } catch (err: any) {
+      toast.error(err?.message || "Kunne ikke arkivere");
+    }
+  };
+
+  const handleUnarchive = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    try {
+      await unarchiveThread(id);
+      onRefresh?.();
+    } catch (err: any) {
+      toast.error(err?.message || "Kunne ikke gendanne");
+    }
+  };
+
+  const renderRow = (t: ChatThread, archived: boolean) => {
+    const other = t.members.find((m) => m.user_id !== meId);
+    const title = t.kind === "group" ? (t.title || "Gruppe") : (other?.display_name || "Samtale");
+    const preview = t.last_message?.body
+      ? t.last_message.body
+      : t.last_message?.attachment_path
+        ? "📎 Vedhæftning"
+        : "Ingen beskeder";
+    const unread = t.unread_count ?? 0;
+    return (
+      <div key={t.id} className={cn("relative group", archived && "opacity-60")}>
+        <button
+          onClick={() => onSelect(t)}
+          className={cn(
+            "w-full flex items-center gap-3 px-3 py-3 pr-10 border-b border-border text-left hover:bg-muted/50 transition",
+            selectedId === t.id && "bg-muted",
+          )}
+        >
+          {t.kind === "group" ? (
+            <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center shrink-0">
+              <Users className="h-5 w-5 text-muted-foreground" />
+            </div>
+          ) : (
+            <AvatarImg
+              avatarUrl={other?.avatar_url}
+              className="h-10 w-10 rounded-full object-cover shrink-0"
+            />
+          )}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <span className={cn("text-sm truncate flex-1", unread > 0 && !archived && "font-semibold")}>
+                {title}
+              </span>
+              {unread > 0 && !archived && (
+                <span className="bg-primary text-primary-foreground text-[10px] font-bold rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center">
+                  {unread}
+                </span>
+              )}
+            </div>
+            <div className="text-xs text-muted-foreground truncate">{preview}</div>
+          </div>
+        </button>
+        <button
+          className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity p-1.5 rounded text-muted-foreground hover:text-foreground hover:bg-muted"
+          onClick={(e) => (archived ? handleUnarchive(e, t.id) : handleArchive(e, t.id))}
+          title={archived ? "Gendan samtale" : "Arkivér samtale"}
+          aria-label={archived ? "Gendan samtale" : "Arkivér samtale"}
+        >
+          {archived ? <ArchiveRestore className="h-4 w-4" /> : <Archive className="h-4 w-4" />}
+        </button>
+      </div>
+    );
+  };
 
   return (
     <div className="flex flex-col h-full bg-card">
@@ -47,55 +127,22 @@ export function ThreadList({ threads, selectedId, onSelect, loading }: Props) {
         {loading && threads.length === 0 && (
           <div className="text-center text-xs text-muted-foreground py-6">Indlæser…</div>
         )}
-        {!loading && filtered.length === 0 && (
+        {!loading && activeThreads.length === 0 && (
           <div className="text-center text-xs text-muted-foreground py-12 px-4">
             Ingen samtaler endnu. Start en ved at vælge en kontakt.
           </div>
         )}
-        {filtered.map((t) => {
-          const other = t.members.find((m) => m.user_id !== meId);
-          const title = t.kind === "group" ? (t.title || "Gruppe") : (other?.display_name || "Samtale");
-          const preview = t.last_message?.body
-            ? t.last_message.body
-            : t.last_message?.attachment_path
-              ? "📎 Vedhæftning"
-              : "Ingen beskeder";
-          const unread = t.unread_count ?? 0;
-          return (
-            <button
-              key={t.id}
-              onClick={() => onSelect(t)}
-              className={cn(
-                "w-full flex items-center gap-3 px-3 py-3 border-b border-border text-left hover:bg-muted/50 transition",
-                selectedId === t.id && "bg-muted",
-              )}
-            >
-              {t.kind === "group" ? (
-                <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center shrink-0">
-                  <Users className="h-5 w-5 text-muted-foreground" />
-                </div>
-              ) : (
-                <AvatarImg
-                  avatarUrl={other?.avatar_url}
-                  className="h-10 w-10 rounded-full object-cover shrink-0"
-                />
-              )}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className={cn("text-sm truncate flex-1", unread > 0 && "font-semibold")}>
-                    {title}
-                  </span>
-                  {unread > 0 && (
-                    <span className="bg-primary text-primary-foreground text-[10px] font-bold rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center">
-                      {unread}
-                    </span>
-                  )}
-                </div>
-                <div className="text-xs text-muted-foreground truncate">{preview}</div>
-              </div>
-            </button>
-          );
-        })}
+        {activeThreads.map((t) => renderRow(t, false))}
+
+        {archivedThreads.length > 0 && (
+          <button
+            className="w-full text-xs text-muted-foreground py-3 hover:text-foreground text-center border-t border-border"
+            onClick={() => setShowArchived((s) => !s)}
+          >
+            {showArchived ? "Skjul arkiv" : `Vis arkiv (${archivedThreads.length})`}
+          </button>
+        )}
+        {showArchived && archivedThreads.map((t) => renderRow(t, true))}
       </div>
     </div>
   );

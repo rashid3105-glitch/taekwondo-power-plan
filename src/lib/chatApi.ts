@@ -201,7 +201,7 @@ export async function softDeleteMessage(id: string) {
 }
 
 export async function getChattableContacts(): Promise<
-  Array<{ user_id: string; display_name: string; avatar_url: string | null; role: "coach" | "athlete" }>
+  Array<{ user_id: string; display_name: string; avatar_url: string | null; role: "coach" | "athlete" | "parent"; is_parent: boolean }>
 > {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return [];
@@ -237,20 +237,80 @@ export async function getChattableContacts(): Promise<
   }
 
   const ids = Array.from(new Set([...athleteIds, ...coachIds, ...clubMateIds]));
-  if (ids.length === 0) return [];
 
-  const { data: profiles } = await supabase
-    .from("profiles")
-    .select("user_id, display_name, avatar_url")
-    .in("user_id", ids);
+  const { data: profiles } = ids.length === 0
+    ? { data: [] as Array<{ user_id: string; display_name: string | null; avatar_url: string | null }> }
+    : await supabase
+        .from("profiles")
+        .select("user_id, display_name, avatar_url")
+        .in("user_id", ids);
+
+  // Also include parents linked to athletes I coach
+  let parentIds: string[] = [];
+  if (athleteIds.length > 0) {
+    const { data: parentLinks } = await supabase
+      .from("parent_athletes")
+      .select("parent_user_id")
+      .in("athlete_id", athleteIds);
+    parentIds = (parentLinks ?? []).map((p: any) => p.parent_user_id);
+  }
+  // Also include my own parents (if I'm an athlete)
+  const { data: myParentLinks } = await supabase
+    .from("parent_athletes")
+    .select("parent_user_id")
+    .eq("athlete_id", user.id);
+  const myParentIds = (myParentLinks ?? []).map((p: any) => p.parent_user_id);
+
+  const allParentIds = Array.from(new Set([...parentIds, ...myParentIds])).filter((id) => id !== user.id);
+
+  let parentProfiles: Array<{ user_id: string; display_name: string | null; avatar_url: string | null }> = [];
+  if (allParentIds.length > 0) {
+    const { data: pp } = await supabase
+      .from("profiles")
+      .select("user_id, display_name, avatar_url")
+      .in("user_id", allParentIds);
+    parentProfiles = (pp ?? []) as typeof parentProfiles;
+  }
 
   const coachIdSet = new Set(coachIds);
-  return (profiles ?? [])
+
+  const regularContacts = (profiles ?? []).map((p) => ({
+    user_id: p.user_id,
+    display_name: p.display_name || "Unknown",
+    avatar_url: p.avatar_url,
+    role: coachIdSet.has(p.user_id) ? ("coach" as const) : ("athlete" as const),
+    is_parent: false,
+  }));
+
+  const parentContacts = parentProfiles
+    .filter((p) => !ids.includes(p.user_id))
     .map((p) => ({
       user_id: p.user_id,
-      display_name: p.display_name || "Unknown",
+      display_name: `${p.display_name || "Unknown"} (P)`,
       avatar_url: p.avatar_url,
-      role: coachIdSet.has(p.user_id) ? ("coach" as const) : ("athlete" as const),
-    }))
-    .sort((a, b) => a.display_name.localeCompare(b.display_name));
+      role: "parent" as const,
+      is_parent: true,
+    }));
+
+  return [...regularContacts, ...parentContacts].sort((a, b) =>
+    a.display_name.localeCompare(b.display_name),
+  );
+}
+
+export async function archiveThread(threadId: string): Promise<void> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("not_authenticated");
+  const { error } = await supabase
+    .from("chat_threads")
+    .update({ archived_at: new Date().toISOString(), archived_by: user.id } as any)
+    .eq("id", threadId);
+  if (error) throw error;
+}
+
+export async function unarchiveThread(threadId: string): Promise<void> {
+  const { error } = await supabase
+    .from("chat_threads")
+    .update({ archived_at: null, archived_by: null } as any)
+    .eq("id", threadId);
+  if (error) throw error;
 }

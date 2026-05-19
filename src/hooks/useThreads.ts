@@ -48,7 +48,9 @@ export function useThreads() {
     };
   }, [refresh]);
 
-  const totalUnread = threads.reduce((sum, t) => sum + (t.unread_count ?? 0), 0);
+  const totalUnread = threads
+    .filter((t: any) => !t.archived_at)
+    .reduce((sum, t) => sum + (t.unread_count ?? 0), 0);
 
   return { threads, loading, refresh, totalUnread };
 }
