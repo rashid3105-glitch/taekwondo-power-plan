@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Activity, Footprints, RefreshCw, Info } from "lucide-react";
+import { ArrowLeft, Activity, Footprints, RefreshCw, Info, FileDown } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PageMeta } from "@/components/PageMeta";
 import {
@@ -12,12 +12,14 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip as RTooltip, ResponsiveContainer, Legend,
 } from "recharts";
 import { healthNorms, compareToBand } from "@/lib/healthNorms";
+import { getAgeNorms, classify } from "@/lib/healthAgeNorms";
 import { Moon, HeartPulse, Waves, Heart } from "lucide-react";
 import { ManualHealthEntryCard } from "@/components/health/ManualHealthEntryCard";
 import { HealthSourceGuide } from "@/components/health/HealthSourceGuide";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { haptics } from "@/lib/haptics";
+import jsPDF from "jspdf";
 
 interface DailyRow {
   summary_date: string;
