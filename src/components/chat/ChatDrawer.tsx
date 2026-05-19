@@ -7,7 +7,6 @@ import { ThreadList } from "./ThreadList";
 import { Conversation } from "./Conversation";
 import { StartChatPicker } from "./StartChatPicker";
 import { NewGroupDialog } from "./NewGroupDialog";
-import { useNavigate } from "react-router-dom";
 import type { ChatThread } from "@/lib/chatApi";
 
 interface Props {
@@ -21,7 +20,6 @@ export function ChatDrawer({ open, onOpenChange, isCoach }: Props) {
   const [active, setActive] = useState<ChatThread | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [groupOpen, setGroupOpen] = useState(false);
-  const navigate = useNavigate();
 
   const onStarted = async (id: string) => {
     await refresh();
@@ -35,7 +33,7 @@ export function ChatDrawer({ open, onOpenChange, isCoach }: Props) {
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent side="right" className="w-full sm:max-w-md p-0 flex flex-col">
-          <div className="flex items-center justify-between gap-2 px-3 py-2 border-b border-border bg-card">
+          <div className="flex items-center justify-between gap-2 pl-3 pr-12 py-2 border-b border-border bg-card">
             {active ? (
               <Button variant="ghost" size="icon" onClick={() => setActive(null)}>
                 <ArrowLeft className="h-4 w-4" />
@@ -52,16 +50,6 @@ export function ChatDrawer({ open, onOpenChange, isCoach }: Props) {
                 )}
                 <Button variant="ghost" size="icon" onClick={() => setPickerOpen(true)} aria-label="Ny samtale">
                   <Plus className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    onOpenChange(false);
-                    navigate("/messages");
-                  }}
-                >
-                  Åbn
                 </Button>
               </div>
             )}
