@@ -1,32 +1,32 @@
-## Why the season calendar doesn't update with competitions
+## Goal
 
-`SeasonCalendarView` (`src/components/hub/SeasonCalendarView.tsx`) is the component used both on the athlete Dashboard "calendar" tab and the hub. When it resolves what to show for each day, it calls:
+Show each user's last activity timestamp directly on the admin user card (not only as a hover tooltip on the green/grey online dot).
 
-```ts
-resolveSessionForDate(iso, template, [], new Set())
-```
+## Source of data
 
-The 3rd arg (athlete overrides) and 4th arg (competition dates) are **hardcoded empty**. So even when an athlete adds a competition in `/competitions`, the season calendar has no idea it exists — it just falls back to the weekly template (tkd / gym / rest).
+- `profiles.last_seen_at` is already selected in `AdminApproval.tsx` (line 128) and used today only for the online indicator (line 513–515).
+- No backend / migration changes needed. (Optionally we could also fetch `auth.users.last_sign_in_at` via `get-admin-users`, but `last_seen_at` is more meaningful — it tracks actual app usage, not just login — and is already available.)
 
-The data is already in the `competitions` table (RLS already lets the athlete read their own rows), it is simply never fetched here.
+## Change
 
-## Fix plan
+In `src/pages/AdminApproval.tsx`, on each user card add a small muted line such as:
 
-1. **`SeasonCalendarView.tsx`** — load the user's competitions and their personal season overrides once on mount, then feed them into `resolveSessionForDate`.
-   - New `useEffect` that calls:
-     - `supabase.from("competitions").select("event_date").eq("user_id", uid)` filtered to the season window (`>= seasonPlan.start_date` and `<= seasonPlan.end_date`).
-     - `supabase.from("club_athlete_season_overrides").select("*").eq("season_plan_id", seasonPlan.id).eq("athlete_id", uid)` so coach-set overrides also render.
-   - Store as `competitionDates: Set<string>` and `overrides: AthleteSeasonOverride[]` in component state.
-   - Pass both into `resolveSessionForDate(iso, template, overrides, competitionDates)` in the day-cell render.
-2. **Current phase banner** — unchanged.
-3. **Calendar day cell** — when `s.isCompetition` is true, the existing `sessionRowClass("stævne")` already paints the red tint and the label "Stævne" will be shown via `sessionLabelKey`.
-4. **Reactivity** — keep it simple: refetch when `seasonPlan.id` changes. (No realtime subscription needed; competitions don't change often and the dashboard remounts the view on tab switch.)
+- Online now → "Online nu"
+- Seen within 24h → "Sidst set: 2 t siden"
+- Older → "Sidst set: 19. maj 2026, 14:32"
+- Never → "Aldrig logget ind"
 
-## Out of scope (not asked for)
+Format with a tiny helper (relative for <24h, absolute date+time otherwise) using the current locale. Place it just under the display name / role badges so it's scannable without hovering.
 
-- No change to `SeasonCalendar.tsx` (coach editor), `seasonCalendar.ts` helpers, or DB schema.
-- No new tag/focus behavior.
+Keep the existing green/grey dot as-is.
 
-## Files to edit
+## Scope
 
-- `src/components/hub/SeasonCalendarView.tsx` — add competition + override fetch and pass into `resolveSessionForDate`.
+- One file edited: `src/pages/AdminApproval.tsx`
+- No DB migration, no edge function changes, no new translations strings required beyond a short label (add to `src/i18n/translations.ts` if you want it localized in DA/EN/SV/DE/AR/NO/FA — otherwise Danish-only inline is fine; confirm preference).
+
+## Open question
+
+Do you want the label localized across all 7 app languages, or just Danish for now?
+
+just Danish for now
