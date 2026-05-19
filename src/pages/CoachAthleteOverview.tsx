@@ -135,9 +135,27 @@ export default function CoachAthleteOverview() {
     setAthlete(p);
     setPlans((plansRes.data as AthletePlan[]) || []);
     setRehabPlans((rehabRes.data as RehabPlan[]) || []);
+
+    // Load linked parents (RLS allows coaches to read for their athletes)
+    const { data: links } = await supabase
+      .from("parent_athletes" as any)
+      .select("parent_user_id")
+      .eq("athlete_id", athleteId);
+    const parentIds = ((links as any[]) || []).map((l) => l.parent_user_id);
+    if (parentIds.length > 0) {
+      const { data: parentProfiles } = await supabase
+        .from("profiles")
+        .select("user_id, display_name")
+        .in("user_id", parentIds);
+      setParents((parentProfiles as any[]) || []);
+    } else {
+      setParents([]);
+    }
+
     setAuthorized(true);
     setLoading(false);
   }
+
 
   async function openDiary() {
     if (!athleteId) return;
