@@ -201,7 +201,7 @@ export async function softDeleteMessage(id: string) {
 }
 
 export async function getChattableContacts(): Promise<
-  Array<{ user_id: string; display_name: string; avatar_url: string | null; role: "coach" | "athlete" }>
+  Array<{ user_id: string; display_name: string; avatar_url: string | null; role: "coach" | "athlete" | "parent"; is_parent: boolean }>
 > {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return [];
