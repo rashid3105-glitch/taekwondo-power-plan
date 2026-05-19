@@ -175,7 +175,7 @@ export default function Health() {
         { label: "Status", w: 16 },
       ];
       let x = margin;
-      doc.setFillColor(240); doc.rect(margin, y - 4, maxW, 6, "F");
+      doc.setFillColor(240, 240, 240); doc.rect(margin, y - 4, maxW, 6, "F");
       cols.forEach(c => { doc.text(c.label, x + 1, y); x += c.w; });
       y += 4;
       doc.setFont("helvetica", "normal");
