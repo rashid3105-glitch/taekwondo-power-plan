@@ -21,7 +21,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import type { ChatMessage } from "@/lib/chatApi";
-import type { ChatMessage } from "@/lib/chatApi";
 
 interface Props {
   message: ChatMessage;
