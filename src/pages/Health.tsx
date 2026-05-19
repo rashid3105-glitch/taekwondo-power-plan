@@ -33,10 +33,11 @@ interface DailyRow {
 
 export default function Health() {
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const [loaded, setLoaded] = useState(false);
   const [steps, setSteps] = useState<DailyRow[]>([]);
   const [syncing, setSyncing] = useState(false);
+  const [reporting, setReporting] = useState(false);
   const [show, setShow] = useState({ steps: true, sleep: true, rhr: true, hrv: true });
 
   async function runResync({ silent }: { silent: boolean }) {
