@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { AlertTriangle, Download, Trash2, Loader2 } from "lucide-react";
+import { AlertTriangle, Download, Trash2, Loader2, ChevronDown } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -72,11 +74,16 @@ export function AccountDangerZone() {
   };
 
   return (
-    <div className="mt-10 rounded-xl border-2 border-destructive/30 bg-destructive/5 p-5 space-y-4">
-      <div className="flex items-center gap-2 text-destructive">
-        <AlertTriangle className="h-5 w-5" />
-        <h3 className="font-bold text-base">{t("dangerZone")}</h3>
-      </div>
+    <Collapsible className="mt-10 rounded-xl border-2 border-destructive/30 bg-destructive/5">
+      <CollapsibleTrigger className="flex w-full items-center justify-between gap-2 p-5 text-destructive group">
+        <div className="flex items-center gap-2">
+          <AlertTriangle className="h-5 w-5" />
+          <h3 className="font-bold text-base">{t("dangerZone")}</h3>
+        </div>
+        <ChevronDown className="h-5 w-5 transition-transform group-data-[state=open]:rotate-180" />
+      </CollapsibleTrigger>
+      <CollapsibleContent className="px-5 pb-5 space-y-4">
+
 
       {/* Export data */}
       <div className="space-y-2">
@@ -134,6 +141,8 @@ export function AccountDangerZone() {
           </AlertDialogContent>
         </AlertDialog>
       </div>
-    </div>
+      </CollapsibleContent>
+    </Collapsible>
   );
+
 }

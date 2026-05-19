@@ -10,8 +10,9 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   ArrowLeft, Loader2, Heart, Building, NotebookPen,
-  LayoutDashboard, UserCog,
+  LayoutDashboard, UserCog, Users,
 } from "lucide-react";
+
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { CoachAthleteDetail } from "@/components/CoachAthleteDetail";
@@ -71,6 +72,8 @@ export default function CoachAthleteOverview() {
   const [diaryOpen, setDiaryOpen] = useState(false);
   const [diaryEntries, setDiaryEntries] = useState<any[]>([]);
   const [diaryLoading, setDiaryLoading] = useState(false);
+  const [parents, setParents] = useState<{ user_id: string; display_name: string | null }[]>([]);
+
 
   const tabParam = (searchParams.get("tab") as TabKey) || "overview";
   const activeTab: TabKey = TABS.includes(tabParam) ? tabParam : "overview";
@@ -132,9 +135,27 @@ export default function CoachAthleteOverview() {
     setAthlete(p);
     setPlans((plansRes.data as AthletePlan[]) || []);
     setRehabPlans((rehabRes.data as RehabPlan[]) || []);
+
+    // Load linked parents (RLS allows coaches to read for their athletes)
+    const { data: links } = await supabase
+      .from("parent_athletes" as any)
+      .select("parent_user_id")
+      .eq("athlete_id", athleteId);
+    const parentIds = ((links as any[]) || []).map((l) => l.parent_user_id);
+    if (parentIds.length > 0) {
+      const { data: parentProfiles } = await supabase
+        .from("profiles")
+        .select("user_id, display_name")
+        .in("user_id", parentIds);
+      setParents((parentProfiles as any[]) || []);
+    } else {
+      setParents([]);
+    }
+
     setAuthorized(true);
     setLoading(false);
   }
+
 
   async function openDiary() {
     if (!athleteId) return;
@@ -211,13 +232,24 @@ export default function CoachAthleteOverview() {
                   </Badge>
                 )}
               </div>
-              <div className="mt-2">
+              <div className="mt-2 flex items-center gap-2 flex-wrap">
                 <CoachAvatarUpload
                   athleteId={athlete.user_id}
                   hasAvatar={!!athlete.avatar_url}
                   onUploaded={(url) => setAthlete({ ...athlete, avatar_url: url })}
                 />
+                {parents.length > 0 && (
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <Users className="h-3.5 w-3.5 text-muted-foreground" />
+                    {parents.map((p) => (
+                      <Badge key={p.user_id} variant="secondary" className="text-[10px]">
+                        {p.display_name || "—"}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
               </div>
+
             </div>
           </div>
         </div>
