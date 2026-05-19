@@ -141,6 +141,8 @@ export function AccountDangerZone() {
           </AlertDialogContent>
         </AlertDialog>
       </div>
-    </div>
+      </CollapsibleContent>
+    </Collapsible>
   );
+
 }
