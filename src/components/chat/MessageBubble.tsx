@@ -106,7 +106,7 @@ export function MessageBubble({
                 )}
                 {onDelete && (
                   <DropdownMenuItem
-                    onClick={onDelete}
+                    onClick={(e) => { e.preventDefault(); setConfirmDelete(true); }}
                     className="text-destructive focus:text-destructive"
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
