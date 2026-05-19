@@ -66,6 +66,17 @@ export function Conversation({ thread, onBack }: Props) {
             </div>
           )}
         </div>
+        {thread.kind === "group" && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setAddOpen(true)}
+            aria-label="Tilføj personer"
+            title="Tilføj personer"
+          >
+            <UserPlus className="h-4 w-4" />
+          </Button>
+        )}
       </div>
 
       <ScrollArea className="flex-1">
