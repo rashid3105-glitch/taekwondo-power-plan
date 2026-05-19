@@ -139,6 +139,26 @@ export function MessageBubble({
         {time}
         {message.edited_at && <span className="ml-1">(redigeret)</span>}
       </span>
+
+      <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Slet besked?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Beskeden slettes permanent for alle deltagere.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuller</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => { setConfirmDelete(false); onDelete?.(); }}
+            >
+              Slet
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
