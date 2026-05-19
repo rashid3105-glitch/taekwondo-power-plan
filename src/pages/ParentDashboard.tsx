@@ -65,6 +65,7 @@ export default function ParentDashboard() {
   const [phone, setPhone] = useState("");
   const [phoneCountryCode, setPhoneCountryCode] = useState("+45");
   const [saving, setSaving] = useState(false);
+  const [openPlanAthleteId, setOpenPlanAthleteId] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
