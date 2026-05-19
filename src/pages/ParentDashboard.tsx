@@ -26,8 +26,11 @@ interface AthleteProfile {
 }
 
 interface PlanRow {
+  id: string;
   name: string;
   is_active: boolean;
+  plan_data: any;
+  created_at: string;
 }
 
 interface CompetitionRow {
