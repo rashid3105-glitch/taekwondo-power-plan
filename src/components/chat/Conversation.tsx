@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Users } from "lucide-react";
+import { ArrowLeft, Users, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AvatarImg } from "@/components/AvatarImg";
 import { useMessages } from "@/hooks/useMessages";
 import { MessageBubble } from "./MessageBubble";
 import { MessageComposer } from "./MessageComposer";
+import { AddMembersDialog } from "./AddMembersDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { editMessage, softDeleteMessage, type ChatThread } from "@/lib/chatApi";
 import { toast } from "sonner";
@@ -19,6 +20,7 @@ export function Conversation({ thread, onBack }: Props) {
   const { messages, loading, refresh } = useMessages(thread.id);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [meId, setMeId] = useState<string | null>(null);
+  const [addOpen, setAddOpen] = useState(false);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => setMeId(user?.id ?? null));
