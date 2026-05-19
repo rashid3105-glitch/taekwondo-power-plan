@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import { SeasonCalendarMini } from "@/components/hub/SeasonCalendarMini";
 import { PHONE_CODES } from "@/data/phoneCodes";
+import { PlanViewDialog } from "@/components/PlanViewDialog";
 
 interface AthleteProfile {
   user_id: string;
