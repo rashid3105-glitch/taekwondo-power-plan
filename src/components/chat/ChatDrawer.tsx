@@ -20,7 +20,6 @@ export function ChatDrawer({ open, onOpenChange, isCoach }: Props) {
   const [active, setActive] = useState<ChatThread | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [groupOpen, setGroupOpen] = useState(false);
-  const navigate = useNavigate();
 
   const onStarted = async (id: string) => {
     await refresh();
