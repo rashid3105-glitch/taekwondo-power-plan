@@ -104,7 +104,7 @@ export default function ParentDashboard() {
             .maybeSingle(),
           supabase
             .from("training_plans")
-            .select("name, is_active")
+            .select("id, name, is_active, plan_data, created_at")
             .eq("user_id", aid)
             .eq("is_active", true)
             .maybeSingle(),
