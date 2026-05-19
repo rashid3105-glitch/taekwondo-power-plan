@@ -74,6 +74,7 @@ export function ChatDrawer({ open, onOpenChange, isCoach }: Props) {
                 threads={threads}
                 loading={loading}
                 onSelect={setActive}
+                onRefresh={refresh}
               />
             )}
           </div>
