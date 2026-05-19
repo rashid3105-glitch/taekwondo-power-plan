@@ -75,6 +75,168 @@ export default function Health() {
     await runResync({ silent: false });
   }
 
+  async function downloadAIReport() {
+    if (reporting) return;
+    if (steps.length === 0) {
+      toast.error(t("healthReportNoData" as any) || "No health data to report on yet.");
+      return;
+    }
+    setReporting(true);
+    haptics.tap();
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) { toast.error(t("healthResyncError")); return; }
+
+      // Pull profile age
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("age, birth_date, display_name")
+        .eq("user_id", session.user.id)
+        .maybeSingle();
+      let age: number | null = (profile?.age as number | null) ?? null;
+      if (age == null && profile?.birth_date) {
+        const b = new Date(profile.birth_date as string);
+        if (!isNaN(b.getTime())) {
+          const diff = Date.now() - b.getTime();
+          age = Math.floor(diff / (365.25 * 86400 * 1000));
+        }
+      }
+      const norms = getAgeNorms(age);
+
+      // Last 14 days window
+      const cutoff = new Date(Date.now() - 14 * 86400_000).toISOString().slice(0, 10);
+      const last14 = steps.filter(r => r.summary_date >= cutoff);
+
+      const avg = (vals: (number | null)[]) => {
+        const ns = vals.filter((v): v is number => v != null && Number.isFinite(v));
+        return ns.length ? Math.round((ns.reduce((a, b) => a + b, 0) / ns.length) * 10) / 10 : null;
+      };
+      const last = (vals: (number | null)[]) => {
+        for (let i = vals.length - 1; i >= 0; i--) if (vals[i] != null) return Number(vals[i]);
+        return null;
+      };
+
+      const stepsVals = last14.map(r => r.steps);
+      const sleepVals = last14.map(r => r.sleep_minutes != null ? Math.round((r.sleep_minutes / 60) * 10) / 10 : null);
+      const rhrVals = last14.map(r => r.resting_hr);
+      const hrvVals = last14.map(r => r.hrv_rmssd);
+
+      const stepsAvg = avg(stepsVals);
+      const sleepAvg = avg(sleepVals);
+      const rhrAvg = avg(rhrVals);
+      const hrvAvg = avg(hrvVals);
+
+      const metrics = [
+        { name: "Steps", unit: "", avg14: stepsAvg, last: last(stepsVals), daysWithData: stepsVals.filter(v => v != null && v > 0).length, ageNorm: norms.steps, verdict: classify(stepsAvg ?? undefined, norms.steps.bandLow, norms.steps.bandHigh) },
+        { name: "Sleep", unit: "h", avg14: sleepAvg, last: last(sleepVals), daysWithData: sleepVals.filter(v => v != null).length, ageNorm: norms.sleep, verdict: classify(sleepAvg ?? undefined, norms.sleep.bandLow, norms.sleep.bandHigh) },
+        { name: "Resting HR", unit: " bpm", avg14: rhrAvg, last: last(rhrVals), daysWithData: rhrVals.filter(v => v != null).length, ageNorm: norms.rhr, verdict: classify(rhrAvg ?? undefined, norms.rhr.bandLow, norms.rhr.bandHigh) },
+        { name: "HRV (RMSSD)", unit: " ms", avg14: hrvAvg, last: last(hrvVals), daysWithData: hrvVals.filter(v => v != null).length, ageNorm: norms.hrv, verdict: classify(hrvAvg ?? undefined, norms.hrv.bandLow, norms.hrv.bandHigh) },
+      ];
+
+      const { data: aiData, error: aiError } = await supabase.functions.invoke("generate-health-report", {
+        body: { age, ageLabel: norms.ageLabel, metrics, language: locale },
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      if (aiError) throw aiError;
+      const report = (aiData as any)?.report || {};
+
+      // Build PDF
+      const doc = new jsPDF();
+      const pageW = doc.internal.pageSize.getWidth();
+      const pageH = doc.internal.pageSize.getHeight();
+      const margin = 15;
+      const maxW = pageW - margin * 2;
+      let y = 18;
+      const ensure = (need: number) => { if (y + need > pageH - 15) { doc.addPage(); y = 18; } };
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(18);
+      doc.text("Health Report — Last 14 Days", margin, y); y += 8;
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.setTextColor(110);
+      const subject = profile?.display_name ? String(profile.display_name) : "Athlete";
+      doc.text(`${subject}  •  Age ${age ?? "—"} (peer ${norms.ageLabel})  •  Generated ${new Date().toLocaleDateString(locale)}`, margin, y);
+      y += 8;
+      doc.setTextColor(0);
+
+      // Metrics table
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.text("14-day averages vs. age-matched norms", margin, y); y += 6;
+
+      doc.setFontSize(9);
+      const cols = [
+        { label: "Metric", w: 38 },
+        { label: "14-d avg", w: 28 },
+        { label: "Latest", w: 24 },
+        { label: "Days", w: 14 },
+        { label: "Peer norm (band / target)", w: 60 },
+        { label: "Status", w: 16 },
+      ];
+      let x = margin;
+      doc.setFillColor(240); doc.rect(margin, y - 4, maxW, 6, "F");
+      cols.forEach(c => { doc.text(c.label, x + 1, y); x += c.w; });
+      y += 4;
+      doc.setFont("helvetica", "normal");
+
+      const fmt = (v: number | null, unit: string) => v == null ? "—" : `${v}${unit}`;
+      const verdictLabel: Record<string, string> = { in: "OK", low: "Low", high: "High" };
+      metrics.forEach(m => {
+        ensure(8);
+        x = margin;
+        doc.setTextColor(0);
+        const norm = `${m.ageNorm.bandLow}–${m.ageNorm.bandHigh}${m.unit} / ${m.ageNorm.target}${m.unit}`;
+        const row = [m.name, fmt(m.avg14, m.unit), fmt(m.last, m.unit), String(m.daysWithData), norm, m.verdict ? verdictLabel[m.verdict] : "—"];
+        if (m.verdict === "in") doc.setTextColor(20, 130, 60);
+        else if (m.verdict) doc.setTextColor(190, 90, 30);
+        row.forEach((cell, i) => {
+          if (i !== 5) doc.setTextColor(0);
+          doc.text(cell, x + 1, y + 4);
+          x += cols[i].w;
+        });
+        y += 6;
+        doc.setDrawColor(230); doc.line(margin, y, margin + maxW, y);
+        y += 1;
+      });
+      doc.setTextColor(0);
+      y += 4;
+
+      const writeSection = (title: string, body: string | string[]) => {
+        ensure(14);
+        doc.setFont("helvetica", "bold"); doc.setFontSize(12);
+        doc.text(title, margin, y); y += 5;
+        doc.setFont("helvetica", "normal"); doc.setFontSize(10);
+        const items = Array.isArray(body) ? body : [body];
+        items.filter(Boolean).forEach(item => {
+          const lines = doc.splitTextToSize(`• ${item}`, maxW);
+          ensure(lines.length * 5 + 2);
+          doc.text(lines, margin, y);
+          y += lines.length * 5 + 1;
+        });
+        y += 3;
+      };
+
+      if (report.summary) writeSection("Summary", [report.summary]);
+      if (Array.isArray(report.highlights) && report.highlights.length) writeSection("Key findings", report.highlights);
+      if (Array.isArray(report.recommendations) && report.recommendations.length) writeSection("Recommendations", report.recommendations);
+      if (Array.isArray(report.watchOuts) && report.watchOuts.length) writeSection("Watch-outs", report.watchOuts);
+
+      ensure(10);
+      doc.setFontSize(8); doc.setTextColor(130);
+      const disclaimer = "Norms are general-population reference ranges (NSF sleep, AHA resting HR, RMSSD HRV literature). Trained athletes often sit below the RHR band and above the HRV band — that is usually a positive sign. This report is informational, not medical advice.";
+      doc.text(doc.splitTextToSize(disclaimer, maxW), margin, y);
+
+      doc.save(`health-report-${new Date().toISOString().slice(0, 10)}.pdf`);
+      toast.success(t("healthReportReady" as any) || "Health report downloaded.");
+    } catch (e) {
+      console.error("downloadAIReport failed", e);
+      toast.error(t("healthReportError" as any) || "Could not generate report.");
+    } finally {
+      setReporting(false);
+    }
+  }
+
   async function load() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { navigate("/auth"); return; }
