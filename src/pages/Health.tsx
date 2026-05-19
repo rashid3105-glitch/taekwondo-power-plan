@@ -444,6 +444,15 @@ export default function Health() {
           <RefreshCw className={`h-4 w-4 mr-2 ${syncing ? "animate-spin" : ""}`} />
           {t("healthResyncButton")}
         </Button>
+        <Button
+          size="sm"
+          onClick={downloadAIReport}
+          disabled={reporting || steps.length === 0}
+          className="h-11 sm:h-9 shrink-0"
+        >
+          <FileDown className={`h-4 w-4 mr-2 ${reporting ? "animate-pulse" : ""}`} />
+          {reporting ? (t("healthReportLoading" as any) || "Generating…") : (t("healthReportButton" as any) || "AI 14-day report")}
+        </Button>
       </div>
       <p className="text-xs text-muted-foreground mb-6">
         {t("healthResyncHint")}
