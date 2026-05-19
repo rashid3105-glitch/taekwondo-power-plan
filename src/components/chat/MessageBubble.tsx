@@ -46,6 +46,7 @@ export function MessageBubble({
   const isVideo = message.attachment_type?.startsWith("video/");
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(message.body);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const time = new Date(message.created_at).toLocaleTimeString([], {
     hour: "2-digit",
