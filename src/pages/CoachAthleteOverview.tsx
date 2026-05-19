@@ -10,8 +10,9 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   ArrowLeft, Loader2, Heart, Building, NotebookPen,
-  LayoutDashboard, UserCog,
+  LayoutDashboard, UserCog, Users,
 } from "lucide-react";
+
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { CoachAthleteDetail } from "@/components/CoachAthleteDetail";
