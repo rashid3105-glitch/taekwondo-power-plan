@@ -269,11 +269,33 @@ export default function ParentDashboard() {
                       ),
                     )}
                   </div>
+                  {a.plan.plan_data && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setOpenPlanAthleteId(a.profile.user_id)}
+                      className="w-full"
+                    >
+                      {t("parentViewFullPlan") || "View full plan"}
+                    </Button>
+                  )}
                 </>
               ) : (
                 <p className="text-sm text-muted-foreground">{t("parentNoPlan")}</p>
               )}
             </Card>
+            {a.plan?.plan_data && (
+              <PlanViewDialog
+                open={openPlanAthleteId === a.profile.user_id}
+                onOpenChange={(o) => setOpenPlanAthleteId(o ? a.profile.user_id : null)}
+                plan={{
+                  id: a.plan.id,
+                  name: a.plan.name,
+                  plan_data: a.plan.plan_data,
+                  created_at: a.plan.created_at,
+                }}
+              />
+            )}
 
             {/* Competitions */}
             <Card className="p-4 space-y-3">
