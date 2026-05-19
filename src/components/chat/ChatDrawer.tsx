@@ -7,7 +7,6 @@ import { ThreadList } from "./ThreadList";
 import { Conversation } from "./Conversation";
 import { StartChatPicker } from "./StartChatPicker";
 import { NewGroupDialog } from "./NewGroupDialog";
-import { useNavigate } from "react-router-dom";
 import type { ChatThread } from "@/lib/chatApi";
 
 interface Props {
