@@ -726,19 +726,6 @@ export default function ProfileSetup() {
             </div>
           </div>
 
-          <div>
-            <Label htmlFor="injury">{t("currentInjury")}</Label>
-            <p className="text-xs text-muted-foreground mb-2">
-              {t("currentInjuryHint")}
-            </p>
-            <Input
-              id="injury"
-              value={currentInjury}
-              onChange={(e) => setCurrentInjury(e.target.value)}
-              placeholder={t("injuryPlaceholder")}
-              maxLength={200}
-            />
-          </div>
 
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? t("saving") : t("saveProfileContinue")}
