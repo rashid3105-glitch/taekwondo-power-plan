@@ -542,7 +542,21 @@ export default function AdminApproval() {
                 )}
                 {u.belt_level && <span className="text-[10px] text-muted-foreground capitalize">• {u.belt_level}</span>}
                 {u.age && <span className="text-[10px] text-muted-foreground">• {u.age}y</span>}
+                {(() => {
+                  if (!u.last_seen_at) {
+                    return <span className="text-[10px] text-muted-foreground">• Aldrig logget ind</span>;
+                  }
+                  const diffMs = Date.now() - new Date(u.last_seen_at).getTime();
+                  const diffMin = Math.floor(diffMs / 60000);
+                  if (diffMin < 5) return <span className="text-[10px] text-green-500">• Online nu</span>;
+                  let label: string;
+                  if (diffMin < 60) label = `${diffMin} min siden`;
+                  else if (diffMin < 60 * 24) label = `${Math.floor(diffMin / 60)} t siden`;
+                  else label = new Date(u.last_seen_at).toLocaleString("da-DK", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+                  return <span className="text-[10px] text-muted-foreground">• Sidst set: {label}</span>;
+                })()}
               </div>
+
             </div>
           </CollapsibleTrigger>
           <div className="flex items-center gap-1 shrink-0">
