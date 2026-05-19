@@ -38,6 +38,14 @@ export interface ChatMessage {
   edited_at: string | null;
 }
 
+export async function addGroupMember(threadId: string, userId: string) {
+  const { error } = await supabase.rpc("add_chat_group_member", {
+    _thread: threadId,
+    _user: userId,
+  });
+  if (error) throw error;
+}
+
 export async function editMessage(id: string, newBody: string) {
   const { error } = await supabase.rpc("edit_chat_message", { _id: id, _body: newBody });
   if (error) throw error;
