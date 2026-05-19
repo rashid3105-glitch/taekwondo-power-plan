@@ -122,6 +122,14 @@ export function Conversation({ thread, onBack }: Props) {
       </ScrollArea>
 
       <MessageComposer threadId={thread.id} />
+
+      <AddMembersDialog
+        open={addOpen}
+        onOpenChange={setAddOpen}
+        threadId={thread.id}
+        existingMemberIds={thread.members.map((m) => m.user_id)}
+        onAdded={refresh}
+      />
     </div>
   );
 }
