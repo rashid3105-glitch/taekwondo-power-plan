@@ -232,13 +232,24 @@ export default function CoachAthleteOverview() {
                   </Badge>
                 )}
               </div>
-              <div className="mt-2">
+              <div className="mt-2 flex items-center gap-2 flex-wrap">
                 <CoachAvatarUpload
                   athleteId={athlete.user_id}
                   hasAvatar={!!athlete.avatar_url}
                   onUploaded={(url) => setAthlete({ ...athlete, avatar_url: url })}
                 />
+                {parents.length > 0 && (
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <Users className="h-3.5 w-3.5 text-muted-foreground" />
+                    {parents.map((p) => (
+                      <Badge key={p.user_id} variant="secondary" className="text-[10px]">
+                        {p.display_name || "—"}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
               </div>
+
             </div>
           </div>
         </div>
