@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import { SeasonCalendarMini } from "@/components/hub/SeasonCalendarMini";
 import { PHONE_CODES } from "@/data/phoneCodes";
+import { PlanViewDialog } from "@/components/PlanViewDialog";
 
 interface AthleteProfile {
   user_id: string;
@@ -25,8 +26,11 @@ interface AthleteProfile {
 }
 
 interface PlanRow {
+  id: string;
   name: string;
   is_active: boolean;
+  plan_data: any;
+  created_at: string;
 }
 
 interface CompetitionRow {
@@ -61,6 +65,7 @@ export default function ParentDashboard() {
   const [phone, setPhone] = useState("");
   const [phoneCountryCode, setPhoneCountryCode] = useState("+45");
   const [saving, setSaving] = useState(false);
+  const [openPlanAthleteId, setOpenPlanAthleteId] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -100,7 +105,7 @@ export default function ParentDashboard() {
             .maybeSingle(),
           supabase
             .from("training_plans")
-            .select("name, is_active")
+            .select("id, name, is_active, plan_data, created_at")
             .eq("user_id", aid)
             .eq("is_active", true)
             .maybeSingle(),
@@ -265,11 +270,33 @@ export default function ParentDashboard() {
                       ),
                     )}
                   </div>
+                  {a.plan.plan_data && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setOpenPlanAthleteId(a.profile.user_id)}
+                      className="w-full"
+                    >
+                      {t("parentViewFullPlan") || "View full plan"}
+                    </Button>
+                  )}
                 </>
               ) : (
                 <p className="text-sm text-muted-foreground">{t("parentNoPlan")}</p>
               )}
             </Card>
+            {a.plan?.plan_data && (
+              <PlanViewDialog
+                open={openPlanAthleteId === a.profile.user_id}
+                onOpenChange={(o) => setOpenPlanAthleteId(o ? a.profile.user_id : null)}
+                plan={{
+                  id: a.plan.id,
+                  name: a.plan.name,
+                  plan_data: a.plan.plan_data,
+                  created_at: a.plan.created_at,
+                }}
+              />
+            )}
 
             {/* Competitions */}
             <Card className="p-4 space-y-3">
