@@ -262,7 +262,7 @@ export async function getChattableContacts(): Promise<
       .in("athlete_id", athleteIds);
     parentIds = (parentLinks ?? []).map((p: any) => p.parent_user_id);
   }
-  // Also include parents linked to any athlete in my club
+  // Also include parents linked to any athlete in my club (RLS allows coaches/admins)
   let clubParentIds: string[] = [];
   if (clubMateIds.length > 0) {
     const { data: clubParentLinks } = await supabase
@@ -278,22 +278,8 @@ export async function getChattableContacts(): Promise<
     .eq("athlete_id", user.id);
   const myParentIds = (myParentLinks ?? []).map((p: any) => p.parent_user_id);
 
-  // If I'm an admin, include all parents in the system
-  let adminParentIds: string[] = [];
-  const { data: myRoles } = await supabase
-    .from("user_roles")
-    .select("role")
-    .eq("user_id", user.id);
-  const isAdmin = (myRoles ?? []).some((r: any) => r.role === "admin");
-  if (isAdmin) {
-    const { data: allParentLinks } = await supabase
-      .from("parent_athletes")
-      .select("parent_user_id");
-    adminParentIds = (allParentLinks ?? []).map((p: any) => p.parent_user_id);
-  }
-
   const allParentIds = Array.from(
-    new Set([...parentIds, ...clubParentIds, ...myParentIds, ...adminParentIds]),
+    new Set([...parentIds, ...clubParentIds, ...myParentIds]),
   ).filter((id) => id !== user.id);
 
   let parentProfiles: Array<{ user_id: string; display_name: string | null; avatar_url: string | null }> = [];
