@@ -16,8 +16,11 @@ export function MessageComposer({ threadId, onSent }: Props) {
   const [file, setFile] = useState<File | null>(null);
   const [sending, setSending] = useState(false);
   const [recording, setRecording] = useState(false);
+  const [showEmoji, setShowEmoji] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<any>(null);
+
+  const EMOJIS = ["👍", "❤️", "🔥", "💪", "🥋", "🎯", "👏", "😄", "🙏", "✅"];
 
   const handleFile = (f: File | null) => {
     if (!f) return setFile(null);
