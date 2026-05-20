@@ -24,10 +24,37 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
   const scrollRef = useRef<HTMLDivElement>(null);
   const [meId, setMeId] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
+  const [partnerReadAt, setPartnerReadAt] = useState<string | null>(null);
+  const [reactions, setReactions] = useState<Record<string, { emoji: string; count: number; byMe: boolean }[]>>({});
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => setMeId(user?.id ?? null));
   }, []);
+
+  useEffect(() => {
+    if (thread.kind !== "direct" || !meId) return;
+    const partner = thread.members.find((m) => m.user_id !== meId);
+    setPartnerReadAt((partner as any)?.last_read_at ?? null);
+  }, [thread, meId]);
+
+  const loadReactions = async () => {
+    if (!messages.length) return;
+    const ids = messages.map((m) => m.id);
+    const { data } = await supabase
+      .from("chat_reactions")
+      .select("message_id, emoji, user_id")
+      .in("message_id", ids);
+    if (!data) return;
+    const { data: { user } } = await supabase.auth.getUser();
+    const map: Record<string, Record<string, { emoji: string; count: number; byMe: boolean }>> = {};
+    for (const r of data as any[]) {
+      if (!map[r.message_id]) map[r.message_id] = {};
+      if (!map[r.message_id][r.emoji]) map[r.message_id][r.emoji] = { emoji: r.emoji, count: 0, byMe: false };
+      map[r.message_id][r.emoji].count++;
+      if (r.user_id === user?.id) map[r.message_id][r.emoji].byMe = true;
+    }
+    setReactions(Object.fromEntries(Object.entries(map).map(([k, v]) => [k, Object.values(v)])));
+  };
 
   useEffect(() => {
     // Scroll to bottom on new messages
@@ -35,6 +62,10 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
       const el = scrollRef.current;
       if (el) el.scrollTop = el.scrollHeight;
     });
+    if (meId && messages.length > 0) {
+      markThreadRead(thread.id).catch(() => {});
+    }
+    loadReactions();
   }, [messages.length]);
 
   const otherMembers = thread.members.filter((m) => m.user_id !== meId);
