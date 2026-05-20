@@ -17,6 +17,8 @@ import { AccountDangerZone } from "@/components/AccountDangerZone";
 import { ParentInviteSection } from "@/components/ParentInviteSection";
 import { PasskeySettings } from "@/components/PasskeySettings";
 import { PublicProfileSettings } from "@/components/profile/PublicProfileSettings";
+import { Switch } from "@/components/ui/switch";
+import { isPushSupported, getCurrentSubscriptionStatus, subscribeToPush, unsubscribeFromPush } from "@/lib/pushNotifications";
 
 
 import { COUNTRIES } from "@/data/countries";
