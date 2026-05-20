@@ -378,6 +378,30 @@ export async function getChattableContacts(): Promise<
   );
 }
 
+export async function addReaction(messageId: string, emoji: string): Promise<void> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("not_authenticated");
+  const { error } = await supabase
+    .from("chat_reactions")
+    .upsert(
+      { message_id: messageId, user_id: user.id, emoji },
+      { onConflict: "message_id,user_id,emoji" },
+    );
+  if (error) throw error;
+}
+
+export async function removeReaction(messageId: string, emoji: string): Promise<void> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+  const { error } = await supabase
+    .from("chat_reactions")
+    .delete()
+    .eq("message_id", messageId)
+    .eq("user_id", user.id)
+    .eq("emoji", emoji);
+  if (error) throw error;
+}
+
 export async function archiveThread(threadId: string): Promise<void> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("not_authenticated");

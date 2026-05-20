@@ -8,7 +8,7 @@ import { MessageBubble } from "./MessageBubble";
 import { MessageComposer } from "./MessageComposer";
 import { AddMembersDialog } from "./AddMembersDialog";
 import { supabase } from "@/integrations/supabase/client";
-import { editMessage, softDeleteMessage, type ChatThread } from "@/lib/chatApi";
+import { editMessage, softDeleteMessage, markThreadRead, addReaction, removeReaction, type ChatThread } from "@/lib/chatApi";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -24,10 +24,37 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
   const scrollRef = useRef<HTMLDivElement>(null);
   const [meId, setMeId] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
+  const [partnerReadAt, setPartnerReadAt] = useState<string | null>(null);
+  const [reactions, setReactions] = useState<Record<string, { emoji: string; count: number; byMe: boolean }[]>>({});
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => setMeId(user?.id ?? null));
   }, []);
+
+  useEffect(() => {
+    if (thread.kind !== "direct" || !meId) return;
+    const partner = thread.members.find((m) => m.user_id !== meId);
+    setPartnerReadAt((partner as any)?.last_read_at ?? null);
+  }, [thread, meId]);
+
+  const loadReactions = async () => {
+    if (!messages.length) return;
+    const ids = messages.map((m) => m.id);
+    const { data } = await supabase
+      .from("chat_reactions")
+      .select("message_id, emoji, user_id")
+      .in("message_id", ids);
+    if (!data) return;
+    const { data: { user } } = await supabase.auth.getUser();
+    const map: Record<string, Record<string, { emoji: string; count: number; byMe: boolean }>> = {};
+    for (const r of data as any[]) {
+      if (!map[r.message_id]) map[r.message_id] = {};
+      if (!map[r.message_id][r.emoji]) map[r.message_id][r.emoji] = { emoji: r.emoji, count: 0, byMe: false };
+      map[r.message_id][r.emoji].count++;
+      if (r.user_id === user?.id) map[r.message_id][r.emoji].byMe = true;
+    }
+    setReactions(Object.fromEntries(Object.entries(map).map(([k, v]) => [k, Object.values(v)])));
+  };
 
   useEffect(() => {
     // Scroll to bottom on new messages
@@ -35,6 +62,10 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
       const el = scrollRef.current;
       if (el) el.scrollTop = el.scrollHeight;
     });
+    if (meId && messages.length > 0) {
+      markThreadRead(thread.id).catch(() => {});
+    }
+    loadReactions();
   }, [messages.length]);
 
   const otherMembers = thread.members.filter((m) => m.user_id !== meId);
@@ -109,36 +140,76 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
               Ingen beskeder endnu. Sig hej 👋
             </div>
           )}
-          {messages.map((m, i) => {
-            const prev = messages[i - 1];
-            const senderChanged = !prev || prev.sender_id !== m.sender_id;
-            return (
-              <MessageBubble
-                key={m.id}
-                message={m}
-                isOwn={m.sender_id === meId}
-                senderName={memberMap.get(m.sender_id)?.display_name}
-                senderAvatar={memberMap.get(m.sender_id)?.avatar_url ?? null}
-                showSender={thread.kind === "group" && senderChanged}
-                onDelete={async () => {
-                  try {
-                    await softDeleteMessage(m.id);
-                    await refresh();
-                  } catch (e: any) {
-                    toast.error(e?.message ?? "Kunne ikke slette");
-                  }
-                }}
-                onEdit={async (newBody) => {
-                  try {
-                    await editMessage(m.id, newBody);
-                    await refresh();
-                  } catch (e: any) {
-                    toast.error(e?.message ?? "Kunne ikke redigere");
-                  }
-                }}
-              />
-            );
-          })}
+          {(() => {
+            const ownFlags = messages.map((m) => m.sender_id === meId);
+            const lastOwnIdx = ownFlags.lastIndexOf(true);
+            return messages.map((m, i) => {
+              const prev = messages[i - 1];
+              const senderChanged = !prev || prev.sender_id !== m.sender_id;
+              const showRead =
+                thread.kind === "direct" &&
+                i === lastOwnIdx &&
+                partnerReadAt &&
+                partnerReadAt >= m.created_at;
+              const partner = thread.members.find((p) => p.user_id !== meId);
+              return (
+                <div key={m.id}>
+                  <MessageBubble
+                    message={m}
+                    isOwn={m.sender_id === meId}
+                    senderName={memberMap.get(m.sender_id)?.display_name}
+                    senderAvatar={memberMap.get(m.sender_id)?.avatar_url ?? null}
+                    showSender={thread.kind === "group" && senderChanged}
+                    reactions={reactions[m.id] ?? []}
+                    onReact={async (emoji) => {
+                      const existing = reactions[m.id]?.find((r) => r.emoji === emoji && r.byMe);
+                      try {
+                        if (existing) await removeReaction(m.id, emoji);
+                        else await addReaction(m.id, emoji);
+                        await loadReactions();
+                      } catch (e: any) {
+                        toast.error(e?.message ?? "Kunne ikke reagere");
+                      }
+                    }}
+                    onDelete={async () => {
+                      try {
+                        await softDeleteMessage(m.id);
+                        await refresh();
+                      } catch (e: any) {
+                        toast.error(e?.message ?? "Kunne ikke slette");
+                      }
+                    }}
+                    onEdit={async (newBody) => {
+                      try {
+                        await editMessage(m.id, newBody);
+                        await refresh();
+                      } catch (e: any) {
+                        toast.error(e?.message ?? "Kunne ikke redigere");
+                      }
+                    }}
+                  />
+                  {showRead && (
+                    <div className="flex justify-end pr-1 -mt-1 mb-1">
+                      <div className="flex items-center gap-1">
+                        {(partner as any)?.avatar_url ? (
+                          <img
+                            src={(partner as any).avatar_url}
+                            className="h-4 w-4 rounded-full object-cover"
+                            alt=""
+                          />
+                        ) : (
+                          <div className="h-4 w-4 rounded-full bg-muted flex items-center justify-center text-[8px] font-bold text-muted-foreground">
+                            {((partner as any)?.display_name || "?").slice(0, 1).toUpperCase()}
+                          </div>
+                        )}
+                        <span className="text-[10px] text-muted-foreground">Set</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            });
+          })()}
         </div>
       </ScrollArea>
 

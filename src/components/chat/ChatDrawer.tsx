@@ -32,8 +32,8 @@ export function ChatDrawer({ open, onOpenChange, isCoach }: Props) {
   return (
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent side="right" className="w-full sm:max-w-md p-0 flex flex-col">
-          <div className="flex items-center justify-between gap-2 pl-3 pr-12 py-2 border-b border-border bg-card">
+        <SheetContent side="right" className="w-full sm:max-w-md p-0 flex flex-col h-[100dvh] max-h-[100dvh]">
+          <div className="flex items-center justify-between gap-2 pl-3 pr-12 py-2 border-b border-border bg-card pt-safe">
             {active ? (
               <Button variant="ghost" size="icon" onClick={() => setActive(null)}>
                 <ArrowLeft className="h-4 w-4" />
