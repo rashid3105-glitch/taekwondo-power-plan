@@ -9274,6 +9274,12 @@ const translations = {
     rehabDeleteDesc: "Damit wird der Plan dauerhaft entfernt. Du kannst jederzeit einen neuen erstellen.",
     phoneNumber: "Telefonnummer",
     phoneCountryCode: "Ländervorwahl",
+    pushNotifications: "Push-Benachrichtigungen",
+    pushNotificationsTitle: "Benachrichtigungen erhalten",
+    pushNotificationsDesc: "Benachrichtigungen über neue Chat-Nachrichten und Aktivitäten",
+    pushEnabled: "Benachrichtigungen aktiviert ✓",
+    pushDisabled: "Benachrichtigungen deaktiviert",
+    pushDenied: "Benachrichtigungen wurden im Browser abgelehnt",
   },
 
   ar: {
