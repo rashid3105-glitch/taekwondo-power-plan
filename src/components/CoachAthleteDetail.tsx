@@ -17,6 +17,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { SendReminderDialog } from "@/components/SendReminderDialog";
 import { ReminderHistory } from "@/components/ReminderHistory";
 import { CoachNotes } from "@/components/coach/CoachNotes";
+import { AssignCoachCard } from "@/components/coach/AssignCoachCard";
 import { AthleteRecoveryTrend } from "@/components/coach/AthleteRecoveryTrend";
 import { CoachAthleteMental } from "@/components/coach/CoachAthleteMental";
 import { CoachAthleteReflections } from "@/components/coach/CoachAthleteReflections";
@@ -280,6 +281,8 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
         <h3 className="font-bold text-foreground">{athlete.display_name}</h3>
         <SendReminderDialog athleteId={athlete.user_id} athleteName={athlete.display_name} />
       </div>
+
+      <AssignCoachCard athleteId={athlete.user_id} onChanged={onRefresh} />
 
       <Tabs defaultValue="profile" className="w-full">
         <TabsList className="w-full grid grid-cols-4 h-auto p-1">
