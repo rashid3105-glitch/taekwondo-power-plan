@@ -78,26 +78,17 @@ Deno.serve(async (req) => {
 
       const otherIds = user_ids.filter((id) => id !== callerId);
       if (otherIds.length > 0) {
-        // Caller must be a coach
-        const { data: hasCoach } = await supa.rpc("has_role", {
-          _user_id: callerId,
-          _role: "coach",
-        });
         const { data: isAdmin } = await supa.rpc("is_admin", { _user_id: callerId });
-        if (!hasCoach && !isAdmin) {
-          return jsonResponse({ error: "Forbidden" }, 403);
-        }
         if (!isAdmin) {
-          // Every other recipient must be an explicitly linked athlete
-          const { data: links } = await supa
-            .from("coach_athletes")
-            .select("athlete_id")
-            .eq("coach_id", callerId)
-            .in("athlete_id", otherIds);
-          const linkedSet = new Set((links || []).map((l: any) => l.athlete_id));
-          const unauthorized = otherIds.filter((id) => !linkedSet.has(id));
-          if (unauthorized.length > 0) {
-            return jsonResponse({ error: "Forbidden — recipient not linked" }, 403);
+          // Allow if caller can chat with every recipient
+          // (coach-athlete link in either direction, or same club).
+          const checks = await Promise.all(
+            otherIds.map((id) =>
+              supa.rpc("can_chat_with", { _a: callerId, _b: id }).then((r) => !!r.data),
+            ),
+          );
+          if (checks.some((ok) => !ok)) {
+            return jsonResponse({ error: "Forbidden — recipient not reachable" }, 403);
           }
         }
       }
