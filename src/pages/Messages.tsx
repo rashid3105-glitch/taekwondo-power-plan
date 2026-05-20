@@ -121,7 +121,12 @@ export default function Messages() {
                   <div className="truncate text-xs text-muted-foreground">Luk når du er færdig</div>
                 </div>
               </div>
-              <Button variant="secondary" size="sm" onClick={() => setActive(null)} aria-label="Luk chat">
+              <Button
+                size="sm"
+                onClick={() => setActive(null)}
+                aria-label="Luk chat"
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
                 <X className="h-4 w-4" />
                 <span>Luk</span>
               </Button>
