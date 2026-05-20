@@ -8376,6 +8376,10 @@ const translations = {
     changelog_2026_05_17: "17. Mai 2026",
     changelogEntry117: "Saisonkalender: Trainer können jetzt einen periodisierten Saisonplan mit Phasen, einer wöchentlichen Sitzungsvorlage und individuellen Athleten-Abweichungen erstellen — Athleten und Eltern sehen den Teamplan als schreibgeschützten Kalender, und KI-Trainingspläne passen sich jetzt der aktuellen Saisonphase an",
     changelogEntry118: "Saisonkalender: Wocheneingabe der Phase nutzt jetzt ISO-Wochennummern, die mit der Anzeige übereinstimmen, und jede Phase kann mit Trainingsfokus-Tags (Technik, Kondition, Sparring, Kraft, Wettkampfvorbereitung, Erholung, Mental) versehen werden",
+    changelog_2026_05_21: "21. Mai 2026",
+    changelogEntry119: "Chat: Eltern können jetzt zu Gruppenunterhaltungen hinzugefügt werden — angezeigt als Name (P). Unterhaltungen archivieren und eigene Nachrichten löschen.",
+    changelogEntry120: "Chat: Ungelesen-Badge auf dem Chat-Button, Lesebestätigungen in Direktnachrichten, Emoji-Reaktionen per Langdruck, Spracheingabe, Absender-Avatare.",
+    changelogEntry121: "Push-Benachrichtigungen: In deinem Profil aktivieren, um Benachrichtigungen über neue Chat-Nachrichten und Trainer-Hinweise zu erhalten.",
     // Season planner
     hubSeasonTitle: "Saisonplan",
     hubSeasonDesc: "Planen Sie die gesamte Wettkampfsaison mit Periodisierungsphasen und Höhepunkt-Fenstern",
