@@ -132,7 +132,6 @@ export default function Messages() {
                 <Conversation
                   thread={active}
                   onBack={() => setActive(null)}
-                  onExit={() => setActive(null)}
                   variant="floating"
                 />
               )}
