@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Plus, Users, ArrowLeft } from "lucide-react";
+import { Plus, Users, ArrowLeft, X } from "lucide-react";
 import { useThreads } from "@/hooks/useThreads";
 import { ThreadList } from "./ThreadList";
 import { Conversation } from "./Conversation";
@@ -32,28 +32,46 @@ export function ChatDrawer({ open, onOpenChange, isCoach }: Props) {
   return (
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent side="right" className="w-full sm:max-w-md p-0 flex flex-col h-[100dvh] max-h-[100dvh]">
-          <div className="flex items-center justify-between gap-2 pl-3 pr-12 py-2 border-b border-border bg-card pt-safe">
+        {/* hideClose removes the absolute-positioned default X that lands in the iPhone safe area */}
+        <SheetContent
+          side="right"
+          hideClose
+          className="w-full sm:max-w-md p-0 flex flex-col"
+          style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
+        >
+          {/* Our own header — full control over placement */}
+          <div className="flex items-center gap-2 px-3 py-2 border-b border-border bg-card">
+            {/* Left: back arrow when in a conversation */}
             {active ? (
-              <Button variant="ghost" size="icon" onClick={() => setActive(null)}>
-                <ArrowLeft className="h-4 w-4" />
+              <Button variant="ghost" size="icon" onClick={() => setActive(null)} aria-label="Tilbage">
+                <ArrowLeft className="h-5 w-5" />
               </Button>
             ) : (
-              <span className="text-sm font-extrabold">Beskeder</span>
+              <span className="text-sm font-extrabold flex-1">Beskeder</span>
             )}
-            {!active && (
-              <div className="flex items-center gap-1">
-                {isCoach && (
-                  <Button variant="ghost" size="icon" onClick={() => setGroupOpen(true)} aria-label="Ny gruppe">
-                    <Users className="h-4 w-4" />
-                  </Button>
-                )}
+
+            {/* Middle spacer when in conversation */}
+            {active && <span className="flex-1 text-sm font-semibold truncate" />}
+
+            {/* Right: action buttons */}
+            <div className="flex items-center gap-1 ml-auto">
+              {!active && isCoach && (
+                <Button variant="ghost" size="icon" onClick={() => setGroupOpen(true)} aria-label="Ny gruppe">
+                  <Users className="h-4 w-4" />
+                </Button>
+              )}
+              {!active && (
                 <Button variant="ghost" size="icon" onClick={() => setPickerOpen(true)} aria-label="Ny samtale">
                   <Plus className="h-4 w-4" />
                 </Button>
-              </div>
-            )}
+              )}
+              {/* Close — always visible, always in our header, never behind safe area */}
+              <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} aria-label="Luk">
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
           </div>
+
           <div className="flex-1 overflow-hidden">
             {active ? (
               <Conversation thread={active} onBack={() => setActive(null)} />
