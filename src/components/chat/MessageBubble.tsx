@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { MoreHorizontal, Pencil, Trash2, Check, X } from "lucide-react";
 import { useChatAttachmentUrl } from "@/hooks/useChatAttachmentUrl";
 import { cn } from "@/lib/utils";
