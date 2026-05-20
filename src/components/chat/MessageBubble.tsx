@@ -44,6 +44,8 @@ export function MessageBubble({
   senderAvatar,
   onDelete,
   onEdit,
+  reactions = [],
+  onReact,
 }: Props) {
   const url = useChatAttachmentUrl(message.attachment_path);
   const isImage = message.attachment_type?.startsWith("image/");
