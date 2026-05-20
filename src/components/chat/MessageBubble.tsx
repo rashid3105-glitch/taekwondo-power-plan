@@ -53,6 +53,16 @@ export function MessageBubble({
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(message.body);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const REACTION_EMOJIS = ["👍", "❤️", "😂", "😮", "🔥", "💪"];
+
+  const handleTouchStart = () => {
+    longPressTimer.current = setTimeout(() => setShowPicker(true), 500);
+  };
+  const handleTouchEnd = () => {
+    if (longPressTimer.current) clearTimeout(longPressTimer.current);
+  };
 
   const time = new Date(message.created_at).toLocaleTimeString([], {
     hour: "2-digit",
