@@ -281,6 +281,8 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
         <SendReminderDialog athleteId={athlete.user_id} athleteName={athlete.display_name} />
       </div>
 
+      <AssignCoachCard athleteId={athlete.user_id} onChanged={onRefresh} />
+
       <Tabs defaultValue="profile" className="w-full">
         <TabsList className="w-full grid grid-cols-4 h-auto p-1">
           <TabsTrigger value="profile" className="flex flex-col gap-0.5 py-2 px-1 text-[11px] sm:text-xs sm:flex-row sm:gap-1.5">
