@@ -26,6 +26,7 @@ interface Props {
   message: ChatMessage;
   isOwn: boolean;
   senderName?: string;
+  senderAvatar?: string | null;
   showSender?: boolean;
   onDelete?: () => void;
   onEdit?: (newBody: string) => void;
@@ -38,6 +39,7 @@ export function MessageBubble({
   isOwn,
   senderName,
   showSender,
+  senderAvatar,
   onDelete,
   onEdit,
 }: Props) {
