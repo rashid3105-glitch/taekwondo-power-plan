@@ -515,6 +515,21 @@ export default function ProfileSetup() {
             </select>
           </div>
 
+          {pushSupported && (
+            <div className="space-y-2">
+              <Label>{t("pushNotifications")}</Label>
+              <div className="flex items-center justify-between rounded-xl border border-border bg-muted/30 px-4 py-3">
+                <div className="space-y-0.5">
+                  <p className="text-sm font-medium">{t("pushNotificationsTitle")}</p>
+                  <p className="text-xs text-muted-foreground">{t("pushNotificationsDesc")}</p>
+                </div>
+                <Switch checked={pushEnabled} onCheckedChange={handlePushToggle} />
+              </div>
+            </div>
+          )}
+
+
+
           <div>
             <Label htmlFor="club">{t("club")}</Label>
             <select
