@@ -6094,6 +6094,10 @@ const translations = {
     changelog_2026_05_17: "17 maj 2026",
     changelogEntry117: "Säsongskalender: tränare kan nu skapa en periodiserad säsongsplan med faser, en veckovis sessionsmall och individuella avvikelser per atlet — atleter och föräldrar ser lagets schema som en skrivskyddad kalender, och AI-träningsplaner anpassas nu till den aktuella säsongsfasen",
     changelogEntry118: "Säsongskalender: fasens veckoinmatning använder nu ISO-veckonummer som matchar visningen, och varje fas kan märkas med träningsfokus (teknik, kondition, sparring, styrka, tävlingsförberedelse, återhämtning, mentalt)",
+    changelog_2026_05_21: "21 maj 2026",
+    changelogEntry119: "Chat: föräldrar kan nu läggas till i gruppkonversationer — visas som Namn (P). Arkivera konversationer med en knapp och radera dina egna meddelanden.",
+    changelogEntry120: "Chat: oläst-badge på chattknappen, läskvitton i direktmeddelanden, emoji-reaktioner med långtryckning, röst-till-text, avsändaravatarer.",
+    changelogEntry121: "Push-notifikationer: aktivera i din profil för att få aviseringar om nya chattmeddelanden och tränarnotiser om dagboksinlägg.",
     // Season planner
     hubSeasonTitle: "Säsongsplan",
     hubSeasonDesc: "Planera hela tävlingssäsongen med periodiseringsfaser och topp-fönster",
