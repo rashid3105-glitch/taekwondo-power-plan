@@ -88,7 +88,17 @@ export function MessageBubble({
           </div>
         </div>
       ) : (
-        <div className="flex items-end gap-1">
+        <div className="flex items-end gap-1.5">
+          {/* Avatar for other people's messages */}
+          {!isOwn && (
+            <div className="h-7 w-7 rounded-full flex-shrink-0 overflow-hidden bg-muted flex items-center justify-center text-[10px] font-semibold text-muted-foreground self-end mb-0.5">
+              {senderAvatar ? (
+                <img src={senderAvatar} alt={senderName || ""} className="h-full w-full object-cover" />
+              ) : (
+                <span>{(senderName || "?").slice(0, 2).toUpperCase()}</span>
+              )}
+            </div>
+          )}
           {isOwn && (onEdit || onDelete) && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
