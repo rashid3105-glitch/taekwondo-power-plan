@@ -765,8 +765,13 @@ export default function AdminApproval() {
           )}
           {/* Coach assignment */}
           {!u.isCoach && (
-            <div className="flex items-center gap-2 pt-1 border-t border-border mt-2">
+            <div className="flex items-center gap-2 pt-1 border-t border-border mt-2 flex-wrap">
               <Users className="h-3 w-3 text-muted-foreground" />
+              {u.coachName && (
+                <span className="text-[10px] text-muted-foreground">
+                  <span className="font-medium">{t("currentCoach") || "Træner"}:</span> {u.coachName}
+                </span>
+              )}
               <span className="text-[10px] text-muted-foreground">{t("assignToCoach")}:</span>
               <Select
                 value={u.coachId || "none"}
