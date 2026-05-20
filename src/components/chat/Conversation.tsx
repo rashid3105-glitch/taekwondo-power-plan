@@ -87,9 +87,8 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
         )}
         {onExit && (
           <Button
-            variant="secondary"
             size="sm"
-            className="shrink-0"
+            className="shrink-0 bg-destructive text-destructive-foreground hover:bg-destructive/90"
             onClick={onExit}
             aria-label="Luk chat"
             title="Luk chat"
