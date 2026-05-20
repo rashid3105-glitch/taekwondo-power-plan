@@ -1431,6 +1431,10 @@ const translations = {
     changelog_2026_05_17: "May 17, 2026",
     changelogEntry117: "Season Calendar: coaches can now create a periodized season plan with phases, a weekly session template, and per-athlete overrides — athletes and parents see the team schedule as a read-only calendar, and AI training plans now adapt to the current season phase",
     changelogEntry118: "Season Calendar: phase week input now uses ISO week numbers that match the calendar display, and each phase can be tagged with training focus areas (technique, conditioning, sparring, strength, competition prep, recovery, mental)",
+    changelog_2026_05_21: "May 21, 2026",
+    changelogEntry119: "Chat: parents can now be added to group conversations — shown as Name (P). Archive conversations with a swipe button, and delete your own messages.",
+    changelogEntry120: "Chat: unread badge on chat button, read receipts in direct messages, emoji reactions with long-press, voice-to-text input, sender avatars.",
+    changelogEntry121: "Push notifications: enable in your profile to receive alerts for new chat messages and coach notifications for diary entries.",
     // Season planner
     hubSeasonTitle: "Season Plan",
     hubSeasonDesc: "Map your full competition season with periodization phases and peak windows",
