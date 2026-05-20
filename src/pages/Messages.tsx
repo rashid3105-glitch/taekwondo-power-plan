@@ -10,6 +10,7 @@ import { StartChatPicker } from "@/components/chat/StartChatPicker";
 import { NewGroupDialog } from "@/components/chat/NewGroupDialog";
 import { listThreads, type ChatThread } from "@/lib/chatApi";
 import { PageMeta } from "@/components/PageMeta";
+import { useIosKeyboard } from "@/hooks/useIosKeyboard";
 
 export default function Messages() {
   const navigate = useNavigate();
