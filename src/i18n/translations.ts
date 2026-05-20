@@ -13883,6 +13883,12 @@ const translations = {
     rehabDeleteDesc: "Dette fjerner planen permanent. Du kan alltid lage en ny.",
     phoneNumber: "Telefonnummer",
     phoneCountryCode: "Landkode",
+    pushNotifications: "Push-varsler",
+    pushNotificationsTitle: "Motta varsler",
+    pushNotificationsDesc: "Bli varslet om nye chatmeldinger og aktivitet",
+    pushEnabled: "Varsler aktivert ✓",
+    pushDisabled: "Varsler deaktivert",
+    pushDenied: "Varsler ble avvist i nettleseren",
   },
 } as const;
 
