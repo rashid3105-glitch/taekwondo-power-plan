@@ -224,7 +224,7 @@
   }
   /* Guarantees clearance from iOS status bar even when env() is 0 */
   .pt-safe-min {
-    padding-top: max(env(safe-area-inset-top), 44px);
+    padding-top: max(env(safe-area-inset-top), 54px);
   }
   .pl-safe {
     padding-left: max(env(safe-area-inset-left), 0px);
