@@ -275,13 +275,25 @@ export async function getChattableContacts(): Promise<
     clubMateIds = (mates ?? []).map((m) => m.user_id);
   }
 
-  // Always fetch all club members directly (most reliable path)
+  // Determine which club_id to use — own profile first, then fall back to coach's club
+  let effectiveClubId: string | null = me?.club_id ?? null;
+
+  if (!effectiveClubId && coachIds.length > 0) {
+    // Athlete has no club_id — use the first coach's club_id
+    const { data: coachProfile } = await supabase
+      .from("profiles")
+      .select("club_id")
+      .eq("user_id", coachIds[0])
+      .maybeSingle();
+    effectiveClubId = (coachProfile as any)?.club_id ?? null;
+  }
+
   let clubProfiles: Array<{ user_id: string; display_name: string | null; avatar_url: string | null }> = [];
-  if (me?.club_id) {
+  if (effectiveClubId) {
     const { data: cp } = await supabase
       .from("profiles")
       .select("user_id, display_name, avatar_url")
-      .eq("club_id", me.club_id)
+      .eq("club_id", effectiveClubId)
       .eq("is_approved", true)
       .neq("user_id", user.id);
     clubProfiles = (cp ?? []) as typeof clubProfiles;
