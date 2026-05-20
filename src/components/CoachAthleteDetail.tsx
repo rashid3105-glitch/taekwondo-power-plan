@@ -17,6 +17,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { SendReminderDialog } from "@/components/SendReminderDialog";
 import { ReminderHistory } from "@/components/ReminderHistory";
 import { CoachNotes } from "@/components/coach/CoachNotes";
+import { AssignCoachCard } from "@/components/coach/AssignCoachCard";
 import { AthleteRecoveryTrend } from "@/components/coach/AthleteRecoveryTrend";
 import { CoachAthleteMental } from "@/components/coach/CoachAthleteMental";
 import { CoachAthleteReflections } from "@/components/coach/CoachAthleteReflections";
