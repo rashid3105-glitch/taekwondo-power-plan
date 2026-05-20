@@ -106,6 +106,7 @@ export default function Messages() {
       <Sheet open={!!active && isMobileView} onOpenChange={(open) => !open && setActive(null)}>
         <SheetContent
           side="bottom"
+          hideClose
           className="h-[100dvh] rounded-none border-0 p-0 pt-safe-min pb-safe sm:max-w-none"
         >
           <div className="flex h-full min-h-0 flex-col bg-card">
