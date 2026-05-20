@@ -30,6 +30,8 @@ interface Props {
   showSender?: boolean;
   onDelete?: () => void;
   onEdit?: (newBody: string) => void;
+  reactions?: { emoji: string; count: number; byMe: boolean }[];
+  onReact?: (emoji: string) => void;
 }
 
 const EDIT_WINDOW_MS = 60_000;
