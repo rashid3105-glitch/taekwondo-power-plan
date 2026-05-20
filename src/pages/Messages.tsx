@@ -74,10 +74,10 @@ export default function Messages() {
         </div>
       </header>
 
-      <main className="container max-w-5xl mx-auto flex-1 w-full">
-        <div className="grid md:grid-cols-[320px_1fr] h-[calc(100vh-56px)] border-x border-border">
+      <main className="container max-w-5xl mx-auto flex-1 w-full min-h-0">
+        <div className="grid md:grid-cols-[320px_1fr] h-full min-h-0 border-x border-border">
           {/* Mobile: show one pane at a time */}
-          <div className={`${active ? "hidden md:block" : "block"} border-r border-border h-full`}>
+          <div className={`${active ? "hidden md:block" : "block"} border-r border-border h-full min-h-0`}>
             <ThreadList
               threads={threads}
               loading={loading}
@@ -85,9 +85,13 @@ export default function Messages() {
               onSelect={setActive}
             />
           </div>
-          <div className={`${active ? "block" : "hidden md:block"} h-full`}>
+          <div className={`${active ? "block" : "hidden md:block"} h-full min-h-0`}>
             {active ? (
-              <Conversation thread={active} onBack={() => setActive(null)} />
+              <Conversation
+                thread={active}
+                onBack={() => setActive(null)}
+                onExit={() => navigate("/dashboard")}
+              />
             ) : (
               <div className="flex items-center justify-center h-full text-sm text-muted-foreground p-6 text-center">
                 Vælg en samtale eller start en ny.
