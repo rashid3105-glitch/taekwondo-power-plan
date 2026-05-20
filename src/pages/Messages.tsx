@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, MessageCircle, Plus, Users, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { NewGroupDialog } from "@/components/chat/NewGroupDialog";
 import { listThreads, type ChatThread } from "@/lib/chatApi";
 import { PageMeta } from "@/components/PageMeta";
 import { useIosKeyboard } from "@/hooks/useIosKeyboard";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function Messages() {
   const navigate = useNavigate();
@@ -20,8 +21,8 @@ export default function Messages() {
   const [isCoach, setIsCoach] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [groupOpen, setGroupOpen] = useState(false);
+  const isMobileView = useIsMobile();
   useIosKeyboard();
-  const isMobileView = useMemo(() => typeof window !== "undefined" ? window.matchMedia("(max-width: 767px)").matches : false, []);
 
   useEffect(() => {
     (async () => {
