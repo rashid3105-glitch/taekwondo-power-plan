@@ -13898,6 +13898,12 @@ export type TranslationKey = keyof typeof translations.en;
 // AI-generated plans (training, nutrition, mental, rehab) are produced in
 // Spanish server-side regardless of UI string coverage.
 const esOverrides: Partial<Record<TranslationKey, string>> = {
+  pushNotifications: "Notificaciones push",
+  pushNotificationsTitle: "Recibir notificaciones",
+  pushNotificationsDesc: "Recibe notificaciones sobre nuevos mensajes de chat y actividad",
+  pushEnabled: "Notificaciones activadas ✓",
+  pushDisabled: "Notificaciones desactivadas",
+  pushDenied: "Las notificaciones fueron rechazadas en el navegador",
   // ===== Landing page =====
   landingV2MetaTitle: "Sportstalent.dk — Plataforma de Taekwondo",
   landingV2MetaDesc: "La mejor plataforma para atletas y entrenadores de taekwondo — planificación de entrenamientos, progreso, mentalidad y más",
