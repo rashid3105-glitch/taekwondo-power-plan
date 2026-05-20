@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Send, Image, X, Mic, MicOff } from "lucide-react";
+import { Send, Image, X, Mic, MicOff, Smile } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
@@ -16,8 +16,11 @@ export function MessageComposer({ threadId, onSent }: Props) {
   const [file, setFile] = useState<File | null>(null);
   const [sending, setSending] = useState(false);
   const [recording, setRecording] = useState(false);
+  const [showEmoji, setShowEmoji] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<any>(null);
+
+  const EMOJIS = ["👍", "❤️", "🔥", "💪", "🥋", "🎯", "👏", "😄", "🙏", "✅"];
 
   const handleFile = (f: File | null) => {
     if (!f) return setFile(null);
@@ -67,6 +70,7 @@ export function MessageComposer({ threadId, onSent }: Props) {
       recognitionRef.current?.stop();
       setRecording(false);
     }
+    setShowEmoji(false);
     setSending(true);
     try {
       await sendMessage({ threadId, body, file });
@@ -82,7 +86,7 @@ export function MessageComposer({ threadId, onSent }: Props) {
   };
 
   return (
-    <div className="border-t border-border bg-card p-2 pb-safe">
+    <div className="border-t border-border bg-card p-2 pb-safe relative">
       {file && (
         <div className="flex items-center gap-2 mb-2 text-xs bg-muted rounded-md px-2 py-1">
           <Image className="h-3 w-3" />
@@ -124,10 +128,37 @@ export function MessageComposer({ threadId, onSent }: Props) {
               : "text-muted-foreground hover:text-foreground"
           )}
           onClick={toggleRecording}
-          aria-label={recording ? "Stop optagelse" : "Indstal besked"}
+          aria-label={recording ? "Stop optagelse" : "Indtal besked"}
         >
           {recording ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
         </Button>
+        {/* Emoji picker toggle */}
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-9 w-9 text-muted-foreground hover:text-foreground flex-shrink-0"
+          onClick={() => setShowEmoji((s) => !s)}
+          aria-label="Emoji"
+        >
+          <Smile className="h-5 w-5" />
+        </Button>
+        {showEmoji && (
+          <div className="absolute bottom-16 left-2 z-20 flex flex-wrap gap-1 p-2 bg-card border border-border rounded-lg shadow-lg max-w-[260px]">
+            {EMOJIS.map((e) => (
+              <button
+                key={e}
+                onClick={() => {
+                  setBody((b) => b + e);
+                  setShowEmoji(false);
+                }}
+                className="h-9 w-9 text-lg hover:bg-muted rounded"
+              >
+                {e}
+              </button>
+            ))}
+          </div>
+        )}
         {/* Text input */}
         <Textarea
           value={body}
