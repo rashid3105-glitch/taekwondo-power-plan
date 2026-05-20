@@ -2336,6 +2336,12 @@ const translations = {
     rehabDeleteDesc: "This will permanently remove the plan. You can always generate a new one.",
     phoneNumber: "Phone number",
     phoneCountryCode: "Country code",
+    pushNotifications: "Push notifications",
+    pushNotificationsTitle: "Receive notifications",
+    pushNotificationsDesc: "Get notified about new chat messages and activity",
+    pushEnabled: "Notifications enabled ✓",
+    pushDisabled: "Notifications disabled",
+    pushDenied: "Notifications were denied in the browser",
   },
   da: {
     defaultLanguage: "Standardsprog",
