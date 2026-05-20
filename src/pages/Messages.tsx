@@ -19,6 +19,7 @@ export default function Messages() {
   const [isCoach, setIsCoach] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [groupOpen, setGroupOpen] = useState(false);
+  useIosKeyboard();
 
   useEffect(() => {
     (async () => {
