@@ -294,7 +294,6 @@ export async function getChattableContacts(): Promise<
       .from("profiles")
       .select("user_id, display_name, avatar_url")
       .eq("club_id", effectiveClubId)
-      .eq("is_approved", true)
       .neq("user_id", user.id);
     clubProfiles = (cp ?? []) as typeof clubProfiles;
   }
