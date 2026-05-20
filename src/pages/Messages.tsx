@@ -53,7 +53,7 @@ export default function Messages() {
   return (
     <div className="h-[100dvh] overflow-hidden bg-background flex flex-col">
       <PageMeta title="Beskeder" description="Chat med din coach og dit hold" noindex />
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10 pt-safe">
+      <header className="border-b border-border bg-card sticky top-0 z-10 pt-safe-min">
         <div className="container max-w-5xl mx-auto px-3 py-3 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
