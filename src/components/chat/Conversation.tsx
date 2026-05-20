@@ -140,36 +140,76 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
               Ingen beskeder endnu. Sig hej 👋
             </div>
           )}
-          {messages.map((m, i) => {
-            const prev = messages[i - 1];
-            const senderChanged = !prev || prev.sender_id !== m.sender_id;
-            return (
-              <MessageBubble
-                key={m.id}
-                message={m}
-                isOwn={m.sender_id === meId}
-                senderName={memberMap.get(m.sender_id)?.display_name}
-                senderAvatar={memberMap.get(m.sender_id)?.avatar_url ?? null}
-                showSender={thread.kind === "group" && senderChanged}
-                onDelete={async () => {
-                  try {
-                    await softDeleteMessage(m.id);
-                    await refresh();
-                  } catch (e: any) {
-                    toast.error(e?.message ?? "Kunne ikke slette");
-                  }
-                }}
-                onEdit={async (newBody) => {
-                  try {
-                    await editMessage(m.id, newBody);
-                    await refresh();
-                  } catch (e: any) {
-                    toast.error(e?.message ?? "Kunne ikke redigere");
-                  }
-                }}
-              />
-            );
-          })}
+          {(() => {
+            const ownFlags = messages.map((m) => m.sender_id === meId);
+            const lastOwnIdx = ownFlags.lastIndexOf(true);
+            return messages.map((m, i) => {
+              const prev = messages[i - 1];
+              const senderChanged = !prev || prev.sender_id !== m.sender_id;
+              const showRead =
+                thread.kind === "direct" &&
+                i === lastOwnIdx &&
+                partnerReadAt &&
+                partnerReadAt >= m.created_at;
+              const partner = thread.members.find((p) => p.user_id !== meId);
+              return (
+                <div key={m.id}>
+                  <MessageBubble
+                    message={m}
+                    isOwn={m.sender_id === meId}
+                    senderName={memberMap.get(m.sender_id)?.display_name}
+                    senderAvatar={memberMap.get(m.sender_id)?.avatar_url ?? null}
+                    showSender={thread.kind === "group" && senderChanged}
+                    reactions={reactions[m.id] ?? []}
+                    onReact={async (emoji) => {
+                      const existing = reactions[m.id]?.find((r) => r.emoji === emoji && r.byMe);
+                      try {
+                        if (existing) await removeReaction(m.id, emoji);
+                        else await addReaction(m.id, emoji);
+                        await loadReactions();
+                      } catch (e: any) {
+                        toast.error(e?.message ?? "Kunne ikke reagere");
+                      }
+                    }}
+                    onDelete={async () => {
+                      try {
+                        await softDeleteMessage(m.id);
+                        await refresh();
+                      } catch (e: any) {
+                        toast.error(e?.message ?? "Kunne ikke slette");
+                      }
+                    }}
+                    onEdit={async (newBody) => {
+                      try {
+                        await editMessage(m.id, newBody);
+                        await refresh();
+                      } catch (e: any) {
+                        toast.error(e?.message ?? "Kunne ikke redigere");
+                      }
+                    }}
+                  />
+                  {showRead && (
+                    <div className="flex justify-end pr-1 -mt-1 mb-1">
+                      <div className="flex items-center gap-1">
+                        {(partner as any)?.avatar_url ? (
+                          <img
+                            src={(partner as any).avatar_url}
+                            className="h-4 w-4 rounded-full object-cover"
+                            alt=""
+                          />
+                        ) : (
+                          <div className="h-4 w-4 rounded-full bg-muted flex items-center justify-center text-[8px] font-bold text-muted-foreground">
+                            {((partner as any)?.display_name || "?").slice(0, 1).toUpperCase()}
+                          </div>
+                        )}
+                        <span className="text-[10px] text-muted-foreground">Set</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            });
+          })()}
         </div>
       </ScrollArea>
 
