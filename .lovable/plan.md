@@ -1,62 +1,48 @@
-## Real fix: let coaches/admins read parent links for their athletes
+## Goal
 
-### Root cause (verified)
+Make it easy to assign or reassign a coach to an athlete from two places:
 
-`parent_athletes` SELECT policy:
-```
-parent_user_id = auth.uid() OR athlete_id = auth.uid()
-```
-Coaches and admins are blocked. So `getChattableContacts()` (and the recently-added club/admin parent queries) silently return empty arrays for Farooq, and Laila Rashid never appears in "Tilføj personer".
+1. **Admin → Approval list** (already exists; verify still rendering for all athletes)
+2. **Coach → Athlete page → Manage tab** (currently missing — add it)
 
-### Fix — DB migration
+## Background
 
-Add two SELECT policies to `parent_athletes`:
+The assign-coach dropdown today only lives in `src/pages/AdminApproval.tsx` (lines 766–793). It uses the existing `reassignAthlete(athleteId, coachId | null)` helper that updates `coach_athletes` for that athlete. Since coach-created athletes are now auto-approved, they no longer appear in the "Pending" list — but the Approval list filter does include approved athletes (filter "approved" or "all"), so the control is still reachable there. We'll just make sure the filter default surfaces it clearly.
 
-1. **Coach of the athlete**
-```sql
-CREATE POLICY "Coaches read parent links for their athletes"
-ON public.parent_athletes
-FOR SELECT
-TO authenticated
-USING (
-  EXISTS (
-    SELECT 1 FROM public.coach_athletes ca
-    WHERE ca.coach_id = auth.uid()
-      AND ca.athlete_id = parent_athletes.athlete_id
-  )
-);
-```
+The Coach Athlete Overview page (`src/pages/CoachAthleteOverview.tsx`) renders `CoachAthleteDetail` inside the "manage" tab but that component currently has no coach reassignment UI.
 
-2. **Club coach / admin** (same club as the athlete, has coach or admin role)
-```sql
-CREATE POLICY "Club coaches read parent links for clubmates"
-ON public.parent_athletes
-FOR SELECT
-TO authenticated
-USING (
-  (has_role(auth.uid(), 'coach'::app_role) OR has_role(auth.uid(), 'admin'::app_role))
-  AND users_share_club(auth.uid(), parent_athletes.athlete_id)
-);
-```
+## Changes
 
-These mirror the patterns already used on `diary_entries`, `competitions`, etc., so no new privilege surface.
+### 1. `src/components/CoachAthleteDetail.tsx` — add Assign Coach card
 
-### Code revert
+At the top of the Manage tab content, add a small card:
 
-Once RLS allows it, the `getChattableContacts()` changes I added last turn (clubmate parents, admin-all-parents block, extra `user_roles` query) become unnecessary. Revert `src/lib/chatApi.ts` to its previous shape — just `athleteIds`-based `parentIds` + `myParentIds`. Cleaner, fewer queries.
+- Shows **current coach** name (from `coach_athletes` → coach profile)
+- A `Select` listing all coaches in the same club (queried from `profiles` joined with `user_roles` where role = 'coach' and same `club_id` as the athlete)
+- On change, call an edge function `reassign-athlete-coach` (new, service-role) that:
+  - Deletes existing `coach_athletes` row(s) for that athlete
+  - Inserts a new `coach_athletes` row with the chosen `coach_id` (or leaves empty if "No coach")
+- Only visible to users with `admin` role OR the athlete's current coach (so a coach can hand off to another coach in their club). Non-admin non-current-coach see read-only "Current coach: X".
 
-### Verification after migration
+Reuse i18n keys already present: `assignToCoach`, `currentCoach`, `selectCoach`, `noCoach`, `reassignCoach`.
 
-Run as Farooq:
-```sql
-select parent_user_id, athlete_id from parent_athletes
-where athlete_id in (select athlete_id from coach_athletes where coach_id = auth.uid());
-```
-Should return Laila → Kian. Then reopen "Tilføj personer" in any group — Laila Rashid should appear in the **Forældre** section.
+### 2. New edge function `supabase/functions/reassign-athlete-coach/index.ts`
 
-### Files
+Service-role function. Input: `{ athlete_id, coach_id | null }`. Auth: caller must be admin OR currently assigned coach of that athlete. Performs delete + optional insert in `coach_athletes`.
 
-- New migration: `supabase/migrations/<ts>_parent_athletes_coach_select.sql`
-- `src/lib/chatApi.ts` — revert the clubmate/admin parent expansion added last turn.
+Config: add `verify_jwt = true` block in `supabase/config.toml` (default, no change needed).
 
-No UI changes.
+### 3. `src/pages/AdminApproval.tsx` — minor
+
+No structural change. The dropdown already renders for every non-coach user regardless of `is_approved`. Confirm by selecting "Approved" or "All" in the status filter.
+
+## Out of scope
+
+- No DB schema changes (uses existing `coach_athletes` table and policies).
+- No changes to Squad Overview row actions.
+
+## Technical notes
+
+- Coach list query: `profiles` filtered by `club_id = athlete.club_id`, joined with `user_roles` where `role = 'coach'`.
+- Permission check in edge function uses `has_role(auth.uid(), 'admin')` and a lookup in `coach_athletes` for current coach.
+- After successful reassignment, call `onRefresh()` so the Manage tab re-fetches.
