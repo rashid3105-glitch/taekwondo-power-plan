@@ -144,12 +144,35 @@ export function MessageBubble({
           )}
           <div
             className={cn(
-              "rounded-2xl px-3 py-2 text-sm break-words",
+              "relative rounded-2xl px-3 py-2 text-sm break-words",
               isOwn
                 ? "bg-primary text-primary-foreground rounded-br-sm"
                 : "bg-muted text-foreground rounded-bl-sm",
             )}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+            onTouchMove={handleTouchEnd}
+            onMouseEnter={() => onReact && setShowPicker(true)}
+            onMouseLeave={() => setShowPicker(false)}
           >
+            {showPicker && onReact && (
+              <div
+                className={cn(
+                  "absolute z-20 flex gap-1 bg-card border border-border rounded-2xl shadow-lg px-2 py-1.5 -top-10",
+                  isOwn ? "right-0" : "left-0",
+                )}
+              >
+                {REACTION_EMOJIS.map((e) => (
+                  <button
+                    key={e}
+                    onClick={() => { onReact?.(e); setShowPicker(false); }}
+                    className="text-lg hover:scale-125 transition-transform"
+                  >
+                    {e}
+                  </button>
+                ))}
+              </div>
+            )}
             {url && isImage && (
               <img src={url} alt="" className="rounded-lg max-h-60 mb-1 object-cover" />
             )}
@@ -158,6 +181,26 @@ export function MessageBubble({
             )}
             {message.body && <div className="whitespace-pre-wrap">{message.body}</div>}
           </div>
+        </div>
+      )}
+
+      {reactions && reactions.length > 0 && (
+        <div className={cn("flex flex-wrap gap-1 mt-0.5", isOwn ? "justify-end" : "justify-start")}>
+          {reactions.map((r) => (
+            <button
+              key={r.emoji}
+              onClick={() => onReact?.(r.emoji)}
+              className={cn(
+                "flex items-center gap-0.5 rounded-full border px-1.5 py-0.5 text-xs transition-colors",
+                r.byMe
+                  ? "bg-primary/15 border-primary/40 text-primary"
+                  : "bg-muted border-border text-muted-foreground hover:bg-muted/80",
+              )}
+            >
+              <span>{r.emoji}</span>
+              <span className="font-semibold">{r.count}</span>
+            </button>
+          ))}
         </div>
       )}
 
