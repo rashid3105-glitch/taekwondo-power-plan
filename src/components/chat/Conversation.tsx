@@ -78,6 +78,17 @@ export function Conversation({ thread, onBack, onExit }: Props) {
             <UserPlus className="h-4 w-4" />
           </Button>
         )}
+        {onExit && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onExit}
+            aria-label="Luk chat"
+            title="Luk chat"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        )}
       </div>
 
       <ScrollArea className="flex-1">
