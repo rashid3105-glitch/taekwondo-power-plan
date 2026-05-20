@@ -221,6 +221,29 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Also send push notification to coaches who have push subscriptions
+    const coachUserIdsForPush = coachProfiles.map((c: any) => c.user_id);
+    if (coachUserIdsForPush.length > 0) {
+      const pushTitle = activityType === "diary"
+        ? `${athleteName} har lavet et dagbogsindlæg`
+        : `${athleteName} har afsluttet en stævne-evaluering`;
+      const pushBody = activityType === "diary"
+        ? "Tryk for at læse indlægget"
+        : `${competitionName ? `Stævne: ${competitionName}` : "Tryk for at se evalueringen"}`;
+
+      await admin.functions.invoke("send-push", {
+        body: {
+          user_ids: coachUserIdsForPush,
+          title: pushTitle,
+          body: pushBody,
+          url: "/coach",
+          tag: `activity-${athleteUserId}-${activityType}`,
+          category: "diary",
+        },
+      }).catch(() => {});
+    }
+
+
     return new Response(JSON.stringify({ queued }), {
       headers: { ...cors, "Content-Type": "application/json" },
     });

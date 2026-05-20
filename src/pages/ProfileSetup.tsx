@@ -17,6 +17,8 @@ import { AccountDangerZone } from "@/components/AccountDangerZone";
 import { ParentInviteSection } from "@/components/ParentInviteSection";
 import { PasskeySettings } from "@/components/PasskeySettings";
 import { PublicProfileSettings } from "@/components/profile/PublicProfileSettings";
+import { Switch } from "@/components/ui/switch";
+import { isPushSupported, getCurrentSubscriptionStatus, subscribeToPush, unsubscribeFromPush } from "@/lib/pushNotifications";
 
 
 import { COUNTRIES } from "@/data/countries";
@@ -81,6 +83,8 @@ export default function ProfileSetup() {
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [pushEnabled, setPushEnabled] = useState(false);
+  const [pushSupported, setPushSupported] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -176,7 +180,25 @@ export default function ProfileSetup() {
     };
 
     loadProfileSetupData();
+
+    setPushSupported(isPushSupported());
+    if (isPushSupported()) {
+      getCurrentSubscriptionStatus().then(setPushEnabled);
+    }
   }, [navigate, t, toast]);
+
+  const handlePushToggle = async (enabled: boolean) => {
+    if (enabled) {
+      const ok = await subscribeToPush();
+      setPushEnabled(ok);
+      if (!ok) toast({ title: t("pushDenied"), variant: "destructive" });
+      else toast({ title: t("pushEnabled") });
+    } else {
+      await unsubscribeFromPush();
+      setPushEnabled(false);
+      toast({ title: t("pushDisabled") });
+    }
+  };
 
   const toggleGoal = (goal: string) => {
     setGoals((prev) =>
@@ -492,6 +514,21 @@ export default function ProfileSetup() {
               <option value="es">🇪🇸 Español</option>
             </select>
           </div>
+
+          {pushSupported && (
+            <div className="space-y-2">
+              <Label>{t("pushNotifications")}</Label>
+              <div className="flex items-center justify-between rounded-xl border border-border bg-muted/30 px-4 py-3">
+                <div className="space-y-0.5">
+                  <p className="text-sm font-medium">{t("pushNotificationsTitle")}</p>
+                  <p className="text-xs text-muted-foreground">{t("pushNotificationsDesc")}</p>
+                </div>
+                <Switch checked={pushEnabled} onCheckedChange={handlePushToggle} />
+              </div>
+            </div>
+          )}
+
+
 
           <div>
             <Label htmlFor="club">{t("club")}</Label>

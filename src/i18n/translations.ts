@@ -2336,6 +2336,12 @@ const translations = {
     rehabDeleteDesc: "This will permanently remove the plan. You can always generate a new one.",
     phoneNumber: "Phone number",
     phoneCountryCode: "Country code",
+    pushNotifications: "Push notifications",
+    pushNotificationsTitle: "Receive notifications",
+    pushNotificationsDesc: "Get notified about new chat messages and activity",
+    pushEnabled: "Notifications enabled ✓",
+    pushDisabled: "Notifications disabled",
+    pushDenied: "Notifications were denied in the browser",
   },
   da: {
     defaultLanguage: "Standardsprog",
@@ -4660,6 +4666,12 @@ const translations = {
     rehabDeleteDesc: "Dette fjerner planen permanent. Du kan altid generere en ny.",
     phoneNumber: "Telefonnummer",
     phoneCountryCode: "Landekode",
+    pushNotifications: "Push-notifikationer",
+    pushNotificationsTitle: "Modtag notifikationer",
+    pushNotificationsDesc: "Få besked om nye chatbeskeder og aktivitet",
+    pushEnabled: "Notifikationer aktiveret ✓",
+    pushDisabled: "Notifikationer deaktiveret",
+    pushDenied: "Notifikationer blev afvist i browseren",
   },
   sv: {
     defaultLanguage: "Standardspråk",
@@ -6983,6 +6995,12 @@ const translations = {
     rehabDeleteDesc: "Detta tar bort planen permanent. Du kan alltid skapa en ny.",
     phoneNumber: "Telefonnummer",
     phoneCountryCode: "Landskod",
+    pushNotifications: "Push-notifikationer",
+    pushNotificationsTitle: "Ta emot notifikationer",
+    pushNotificationsDesc: "Få meddelanden om nya chattmeddelanden och aktivitet",
+    pushEnabled: "Notifikationer aktiverade ✓",
+    pushDisabled: "Notifikationer inaktiverade",
+    pushDenied: "Notifikationer nekades i webbläsaren",
   },
   de: {
     defaultLanguage: "Standardsprache",
@@ -9256,6 +9274,12 @@ const translations = {
     rehabDeleteDesc: "Damit wird der Plan dauerhaft entfernt. Du kannst jederzeit einen neuen erstellen.",
     phoneNumber: "Telefonnummer",
     phoneCountryCode: "Ländervorwahl",
+    pushNotifications: "Push-Benachrichtigungen",
+    pushNotificationsTitle: "Benachrichtigungen erhalten",
+    pushNotificationsDesc: "Benachrichtigungen über neue Chat-Nachrichten und Aktivitäten",
+    pushEnabled: "Benachrichtigungen aktiviert ✓",
+    pushDisabled: "Benachrichtigungen deaktiviert",
+    pushDenied: "Benachrichtigungen wurden im Browser abgelehnt",
   },
 
   ar: {
@@ -11530,6 +11554,12 @@ const translations = {
     rehabDeleteDesc: "سيؤدي هذا إلى إزالة الخطة نهائياً. يمكنك دائماً إنشاء خطة جديدة.",
     phoneNumber: "رقم الهاتف",
     phoneCountryCode: "رمز البلد",
+    pushNotifications: "إشعارات الدفع",
+    pushNotificationsTitle: "تلقي الإشعارات",
+    pushNotificationsDesc: "احصل على إشعارات حول رسائل الدردشة الجديدة والنشاط",
+    pushEnabled: "تم تفعيل الإشعارات ✓",
+    pushDisabled: "تم تعطيل الإشعارات",
+    pushDenied: "تم رفض الإشعارات في المتصفح",
   },
   no: {
     onbWelcomeTitle: "Velkommen til Sportstalent",
@@ -13853,6 +13883,12 @@ const translations = {
     rehabDeleteDesc: "Dette fjerner planen permanent. Du kan alltid lage en ny.",
     phoneNumber: "Telefonnummer",
     phoneCountryCode: "Landkode",
+    pushNotifications: "Push-varsler",
+    pushNotificationsTitle: "Motta varsler",
+    pushNotificationsDesc: "Bli varslet om nye chatmeldinger og aktivitet",
+    pushEnabled: "Varsler aktivert ✓",
+    pushDisabled: "Varsler deaktivert",
+    pushDenied: "Varsler ble avvist i nettleseren",
   },
 } as const;
 
@@ -13862,6 +13898,12 @@ export type TranslationKey = keyof typeof translations.en;
 // AI-generated plans (training, nutrition, mental, rehab) are produced in
 // Spanish server-side regardless of UI string coverage.
 const esOverrides: Partial<Record<TranslationKey, string>> = {
+  pushNotifications: "Notificaciones push",
+  pushNotificationsTitle: "Recibir notificaciones",
+  pushNotificationsDesc: "Recibe notificaciones sobre nuevos mensajes de chat y actividad",
+  pushEnabled: "Notificaciones activadas ✓",
+  pushDisabled: "Notificaciones desactivadas",
+  pushDenied: "Las notificaciones fueron rechazadas en el navegador",
   // ===== Landing page =====
   landingV2MetaTitle: "Sportstalent.dk — Plataforma de Taekwondo",
   landingV2MetaDesc: "La mejor plataforma para atletas y entrenadores de taekwondo — planificación de entrenamientos, progreso, mentalidad y más",
