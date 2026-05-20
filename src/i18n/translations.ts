@@ -4666,6 +4666,12 @@ const translations = {
     rehabDeleteDesc: "Dette fjerner planen permanent. Du kan altid generere en ny.",
     phoneNumber: "Telefonnummer",
     phoneCountryCode: "Landekode",
+    pushNotifications: "Push-notifikationer",
+    pushNotificationsTitle: "Modtag notifikationer",
+    pushNotificationsDesc: "Få besked om nye chatbeskeder og aktivitet",
+    pushEnabled: "Notifikationer aktiveret ✓",
+    pushDisabled: "Notifikationer deaktiveret",
+    pushDenied: "Notifikationer blev afvist i browseren",
   },
   sv: {
     defaultLanguage: "Standardspråk",
