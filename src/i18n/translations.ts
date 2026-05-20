@@ -6995,6 +6995,12 @@ const translations = {
     rehabDeleteDesc: "Detta tar bort planen permanent. Du kan alltid skapa en ny.",
     phoneNumber: "Telefonnummer",
     phoneCountryCode: "Landskod",
+    pushNotifications: "Push-notifikationer",
+    pushNotificationsTitle: "Ta emot notifikationer",
+    pushNotificationsDesc: "Få meddelanden om nya chattmeddelanden och aktivitet",
+    pushEnabled: "Notifikationer aktiverade ✓",
+    pushDisabled: "Notifikationer inaktiverade",
+    pushDenied: "Notifikationer nekades i webbläsaren",
   },
   de: {
     defaultLanguage: "Standardsprache",
