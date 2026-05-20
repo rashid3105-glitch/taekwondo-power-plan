@@ -14,9 +14,10 @@ import { toast } from "sonner";
 interface Props {
   thread: ChatThread;
   onBack?: () => void;
+  onExit?: () => void;
 }
 
-export function Conversation({ thread, onBack }: Props) {
+export function Conversation({ thread, onBack, onExit }: Props) {
   const { messages, loading, refresh } = useMessages(thread.id);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [meId, setMeId] = useState<string | null>(null);
