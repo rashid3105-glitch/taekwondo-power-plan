@@ -118,7 +118,7 @@ export function MessageBubble({
           )}
           <div
             className={cn(
-              "max-w-[78%] rounded-2xl px-3 py-2 text-sm break-words",
+              "rounded-2xl px-3 py-2 text-sm break-words",
               isOwn
                 ? "bg-primary text-primary-foreground rounded-br-sm"
                 : "bg-muted text-foreground rounded-bl-sm",
