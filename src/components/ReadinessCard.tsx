@@ -40,6 +40,17 @@ export function ReadinessCard() {
   // Auto-prefill from wearable summary (yesterday's sleep + HRV).
   const [prefilledFromWatch, setPrefilledFromWatch] = useState(false);
   const [hrvFromWatch, setHrvFromWatch] = useState<number | null>(null);
+  const [dismissed, setDismissed] = useState(() => {
+    const key = `readiness_dismissed_${new Date().toISOString().slice(0, 10)}`;
+    return sessionStorage.getItem(key) === "true";
+  });
+
+  const handleDismiss = () => {
+    const key = `readiness_dismissed_${new Date().toISOString().slice(0, 10)}`;
+    sessionStorage.setItem(key, "true");
+    setDismissed(true);
+  };
+
 
   const TIER = {
     green: { label: t("readinessTierGreen"), icon: CheckCircle2, color: "text-emerald-500", bg: "bg-emerald-500/10 border-emerald-500/30" },
