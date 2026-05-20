@@ -9,15 +9,17 @@ import { MessageComposer } from "./MessageComposer";
 import { AddMembersDialog } from "./AddMembersDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { editMessage, softDeleteMessage, type ChatThread } from "@/lib/chatApi";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 interface Props {
   thread: ChatThread;
   onBack?: () => void;
   onExit?: () => void;
+  variant?: "pane" | "floating";
 }
 
-export function Conversation({ thread, onBack, onExit }: Props) {
+export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props) {
   const { messages, loading, refresh } = useMessages(thread.id);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [meId, setMeId] = useState<string | null>(null);
@@ -45,8 +47,13 @@ export function Conversation({ thread, onBack, onExit }: Props) {
   const memberMap = new Map(thread.members.map((m) => [m.user_id, m]));
 
   return (
-    <div className="flex flex-col h-full bg-background min-h-0">
-      <div className="flex items-center gap-2 px-3 py-2 border-b border-border bg-card">
+    <div className={cn("flex flex-col h-full bg-background min-h-0", variant === "floating" && "bg-card")}>
+      <div
+        className={cn(
+          "sticky top-0 z-10 flex items-center gap-2 border-b border-border bg-card px-3 py-2",
+          variant === "floating" && "px-4 py-3"
+        )}
+      >
         {onBack && (
           <Button variant="ghost" size="icon" onClick={onBack} aria-label="Tilbage">
             <ArrowLeft className="h-4 w-4" />
@@ -80,13 +87,15 @@ export function Conversation({ thread, onBack, onExit }: Props) {
         )}
         {onExit && (
           <Button
-            variant="ghost"
-            size="icon"
+            variant="secondary"
+            size="sm"
+            className="shrink-0"
             onClick={onExit}
             aria-label="Luk chat"
             title="Luk chat"
           >
             <X className="h-4 w-4" />
+            <span>Luk</span>
           </Button>
         )}
       </div>

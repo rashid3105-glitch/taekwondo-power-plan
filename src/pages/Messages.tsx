@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus, Users } from "lucide-react";
+import { ArrowLeft, MessageCircle, Plus, Users, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
 import { useThreads } from "@/hooks/useThreads";
 import { ThreadList } from "@/components/chat/ThreadList";
@@ -11,6 +12,7 @@ import { NewGroupDialog } from "@/components/chat/NewGroupDialog";
 import { listThreads, type ChatThread } from "@/lib/chatApi";
 import { PageMeta } from "@/components/PageMeta";
 import { useIosKeyboard } from "@/hooks/useIosKeyboard";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function Messages() {
   const navigate = useNavigate();
@@ -19,6 +21,7 @@ export default function Messages() {
   const [isCoach, setIsCoach] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [groupOpen, setGroupOpen] = useState(false);
+  const isMobileView = useIsMobile();
   useIosKeyboard();
 
   useEffect(() => {
@@ -51,9 +54,9 @@ export default function Messages() {
   }, [threads, active]);
 
   return (
-    <div className="h-[100dvh] overflow-hidden bg-background flex flex-col">
+    <div className="min-h-[100dvh] bg-background flex flex-col">
       <PageMeta title="Beskeder" description="Chat med din coach og dit hold" noindex />
-      <header className="border-b border-border bg-card sticky top-0 z-10 pt-safe-min">
+      <header className="border-b border-border bg-card sticky top-0 z-10 pt-safe-min md:pt-safe">
         <div className="container max-w-5xl mx-auto px-3 py-3 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
@@ -77,7 +80,7 @@ export default function Messages() {
       <main className="container max-w-5xl mx-auto flex-1 w-full min-h-0">
         <div className="grid md:grid-cols-[320px_1fr] h-full min-h-0 border-x border-border">
           {/* Mobile: show one pane at a time */}
-          <div className={`${active ? "hidden md:block" : "block"} border-r border-border h-full min-h-0`}>
+          <div className={`${active ? "block md:block" : "block"} border-r border-border h-full min-h-0`}>
             <ThreadList
               threads={threads}
               loading={loading}
@@ -85,7 +88,7 @@ export default function Messages() {
               onSelect={setActive}
             />
           </div>
-          <div className={`${active ? "block" : "hidden md:block"} h-full min-h-0`}>
+          <div className="hidden md:block h-full min-h-0">
             {active ? (
               <Conversation
                 thread={active}
@@ -100,6 +103,42 @@ export default function Messages() {
           </div>
         </div>
       </main>
+
+      <Sheet open={!!active && isMobileView} onOpenChange={(open) => !open && setActive(null)}>
+        <SheetContent
+          side="bottom"
+          hideClose
+          className="h-[100dvh] rounded-none border-0 p-0 pt-safe-min pb-safe sm:max-w-none"
+        >
+          <div className="flex h-full min-h-0 flex-col bg-card">
+            <div className="flex items-center justify-between border-b border-border px-4 py-3">
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
+                  <MessageCircle className="h-4 w-4" />
+                </div>
+                <div className="min-w-0">
+                  <div className="truncate text-sm font-semibold">Beskeder</div>
+                  <div className="truncate text-xs text-muted-foreground">Luk når du er færdig</div>
+                </div>
+              </div>
+              <Button variant="secondary" size="sm" onClick={() => setActive(null)} aria-label="Luk chat">
+                <X className="h-4 w-4" />
+                <span>Luk</span>
+              </Button>
+            </div>
+
+            <div className="min-h-0 flex-1">
+              {active && (
+                <Conversation
+                  thread={active}
+                  onBack={() => setActive(null)}
+                  variant="floating"
+                />
+              )}
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
 
       <StartChatPicker open={pickerOpen} onOpenChange={setPickerOpen} onStarted={onStarted} />
       <NewGroupDialog open={groupOpen} onOpenChange={setGroupOpen} onCreated={onStarted} />
