@@ -11554,6 +11554,12 @@ const translations = {
     rehabDeleteDesc: "سيؤدي هذا إلى إزالة الخطة نهائياً. يمكنك دائماً إنشاء خطة جديدة.",
     phoneNumber: "رقم الهاتف",
     phoneCountryCode: "رمز البلد",
+    pushNotifications: "إشعارات الدفع",
+    pushNotificationsTitle: "تلقي الإشعارات",
+    pushNotificationsDesc: "احصل على إشعارات حول رسائل الدردشة الجديدة والنشاط",
+    pushEnabled: "تم تفعيل الإشعارات ✓",
+    pushDisabled: "تم تعطيل الإشعارات",
+    pushDenied: "تم رفض الإشعارات في المتصفح",
   },
   no: {
     onbWelcomeTitle: "Velkommen til Sportstalent",
