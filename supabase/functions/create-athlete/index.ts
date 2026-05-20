@@ -104,7 +104,7 @@ Deno.serve(async (req) => {
     // require admin approval before they can use the system.
     const profileUpdates: Record<string, any> = {
       club_id: coachProfile.club_id,
-      is_approved: !!isAdmin,
+      is_approved: true,
     };
     if (age != null && typeof age === "number" && age >= 5 && age <= 99) profileUpdates.age = age;
     if (belt_level && typeof belt_level === "string") profileUpdates.belt_level = belt_level;
