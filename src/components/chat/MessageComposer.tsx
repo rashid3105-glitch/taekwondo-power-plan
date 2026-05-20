@@ -167,6 +167,13 @@ export function MessageComposer({ threadId, onSent }: Props) {
           rows={1}
           maxLength={2000}
           className="min-h-[44px] max-h-32 flex-1 resize-none"
+          onFocus={(e) => {
+            // Give iOS keyboard time to animate in, then keep the input visible.
+            const el = e.currentTarget;
+            setTimeout(() => {
+              el.scrollIntoView({ block: "end", behavior: "smooth" });
+            }, 250);
+          }}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();

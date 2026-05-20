@@ -1,76 +1,32 @@
-## Diagnosis
+## Problem
 
-Kian (athlete, no `coach`/`admin` role) is in club `4b827e40…`. He has one coach assigned. From the live network traffic I captured during his session:
+On the iPhone app (Capacitor), two issues on `/messages`:
 
-- `GET profiles?select=display_name&user_id=eq.<coachId>` → **HTTP 406 / 0 rows**
-- `GET profiles?select=user_id,display_name,avatar_url&user_id=in.(coachId, kian)` → only Kian, **coach row missing**
-- The one existing direct thread with the coach is `archived_at` set (the coach archived it from her side); it shows up only under "Vis arkiv" in the thread list.
+1. **No way to exit the chat.** When a conversation is open on mobile, `src/pages/Messages.tsx` hides the thread-list pane and shows `Conversation`. The page header (with the ArrowLeft → `/dashboard`) is `sticky top-0`, but the main grid uses `h-[calc(100vh-56px)]` which on iOS WebView doesn't subtract the dynamic safe area / status-bar overlay correctly. The result: the page header is pushed off-screen or obscured by the status bar, and the only remaining back arrow lives inside `Conversation` and is `md:hidden`-conditioned to return to the thread list — never to leave the chat page entirely.
 
-### Root cause: `profiles` RLS
+2. **Layout jumps on input focus.** Tapping the `Textarea` in `MessageComposer` triggers the iOS keyboard. Because the page uses `100vh` (static viewport height) and the composer/list rely on `flex-1` + `ScrollArea`, the keyboard pushes/resizes the whole page: the sticky header scrolls away, the message list collapses, and the composer drifts. There is no Capacitor Keyboard handling and no `100dvh` / `--app-height` strategy.
 
-Current SELECT policies on `public.profiles`:
+## Fix
 
-```
-auth.uid() = user_id           -- own profile
-is_admin(auth.uid())           -- admins
-EXISTS coach_athletes …        -- coaches see their athletes
-is_parent_of(auth.uid(), …)    -- parents see linked athletes
-```
+### 1. Always-visible exit from a conversation on mobile
 
-There is **no policy** that lets an athlete read another club member's profile — not even their assigned coach. So in `getChattableContacts()`:
+In `src/components/chat/Conversation.tsx`, change the back-button behavior so on mobile it does two jobs depending on context:
+- If invoked from `Messages.tsx` (page), tapping back should navigate out to `/dashboard` (close the chat entirely), not just clear the active thread.
+- Solution: add a second button — a **Close (X)** icon next to the existing ArrowLeft — that calls a new optional `onExit` prop. `Messages.tsx` passes `onExit={() => navigate("/dashboard")}`. ArrowLeft still calls `onBack` (back to thread list). Both are visible on mobile, hidden on `md:`.
+- Also drop the `md:hidden` on the ArrowLeft so the back affordance is always there on the conversation header (consistent UX), and add `pt-safe` to the conversation header so it sits below the iOS status bar even if the page header is clipped.
 
-- `clubMateIds` query → 0 rows
-- `clubProfiles` query → 0 rows
-- `linkedProfiles` lookup for `coachIds` → 0 rows (coach profile filtered out)
+### 2. Stable layout when the keyboard opens
 
-Result: Kian's "Tilføj personer" / new-chat picker is empty, and he has no way to start a conversation. The earlier `chatApi` changes can't work without a corresponding RLS grant.
+- In `src/pages/Messages.tsx`, replace `h-[calc(100vh-56px)]` with `h-[calc(100dvh-56px)]` and add `min-h-0` on the grid + child panes so flex children don't overflow. Use `dvh` so iOS Safari/WebView shrinks the area when the keyboard appears instead of pushing the whole page up.
+- Set the outer wrapper to `h-[100dvh] overflow-hidden` (replacing `min-h-screen`) so the page itself never scrolls — only the message `ScrollArea` does. This stops the sticky header from disappearing on focus.
+- In `src/components/chat/MessageComposer.tsx`, keep `pb-safe` and add a small `onFocus` handler that scrolls the latest message into view after the keyboard animation (`setTimeout(..., 250)`), so the newest messages stay visible above the keyboard.
+- Install and wire the Capacitor Keyboard plugin lightly: in `src/main.tsx` (or a small `useIosKeyboard` hook called from `Messages.tsx`), if `Capacitor.isNativePlatform()`, set `Keyboard.setResizeMode({ mode: 'native' })` and `setScroll({ isDisabled: true })`. This makes iOS resize the WebView itself instead of scrolling the page, which combined with `100dvh` removes the "screen changes format" jump.
 
-### Secondary issue: archived thread
+### Files touched
+- `src/pages/Messages.tsx` — `100dvh`, `overflow-hidden`, pass `onExit` to `Conversation`, optional `useIosKeyboard` hook.
+- `src/components/chat/Conversation.tsx` — add `onExit` prop, render Close (X) button on mobile, `pt-safe` on header, always-visible ArrowLeft.
+- `src/components/chat/MessageComposer.tsx` — onFocus scroll-into-view nudge.
+- New `src/hooks/useIosKeyboard.ts` (optional, ~15 lines) — Capacitor Keyboard config; no-op on web.
+- `package.json` — add `@capacitor/keyboard` if not already present (verify before installing).
 
-When the coach archived the thread, `chat_threads.archived_at` and `archived_by` got set on the row itself, so the thread is bucketed under "Vis arkiv" for **both** sides. Kian's existing conversation is technically reachable (he can still POST to it — `chat_messages` INSERT only checks `is_chat_thread_member`), but it's hidden in the archive collapsible. Not the primary block, but worth fixing.
-
-## Plan
-
-### 1. DB migration — add a club-mate SELECT policy on `profiles`
-
-```sql
-CREATE POLICY "Club members can view each other's profiles"
-ON public.profiles
-FOR SELECT
-TO authenticated
-USING (users_share_club(auth.uid(), user_id));
-```
-
-`users_share_club` is already used on `diary_entries`, `competitions`, `form_curve_weekly`, `health_data`, etc., so this matches the established privacy boundary (same club = visible). It exposes `display_name` + `avatar_url` to clubmates, which is required for chat, squad views, and parent lookups; we already assume this elsewhere.
-
-No schema change, no data migration.
-
-### 2. Frontend — surface archived-by-other-side threads as active
-
-In `src/components/chat/ThreadList.tsx`, change the filter so an archived thread is only treated as archived **for the person who archived it**. For everyone else it stays in the active list:
-
-```ts
-const isArchivedForMe = (t: any) => t.archived_at && t.archived_by === currentUserId;
-const activeThreads   = threads.filter(t => !isArchivedForMe(t)).filter(matchesFilter);
-const archivedThreads = threads.filter(t =>  isArchivedForMe(t)).filter(matchesFilter);
-```
-
-This requires passing/reading the current `user.id` in `ThreadList` (already available via `supabase.auth.getUser()` or pass-through prop). One-liner change in `useThreads.ts` `totalUnread` to match.
-
-### 3. No changes to `chatApi.ts`
-
-The earlier club-member expansion in `getChattableContacts` becomes effective the moment policy (1) ships — no code change needed.
-
-## Verification
-
-After the migration, run as Kian:
-```sql
-SELECT user_id, display_name FROM profiles WHERE club_id = '4b827e40-…';
-```
-Should return all clubmates (incl. his coach). His new-chat picker should then list them.
-
-Reopen Kian's existing direct thread — it should appear in the active list (since he didn't archive it) and accept new messages.
-
-## Out of scope
-- No changes to chat_messages, chat_threads, or coach_athletes RLS.
-- No backfill or data migration.
+No backend, schema, or business-logic changes. Purely presentation + native-shell behavior.

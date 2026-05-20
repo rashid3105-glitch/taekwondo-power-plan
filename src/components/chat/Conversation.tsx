@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Users, UserPlus } from "lucide-react";
+import { ArrowLeft, Users, UserPlus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AvatarImg } from "@/components/AvatarImg";
@@ -14,9 +14,10 @@ import { toast } from "sonner";
 interface Props {
   thread: ChatThread;
   onBack?: () => void;
+  onExit?: () => void;
 }
 
-export function Conversation({ thread, onBack }: Props) {
+export function Conversation({ thread, onBack, onExit }: Props) {
   const { messages, loading, refresh } = useMessages(thread.id);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [meId, setMeId] = useState<string | null>(null);
@@ -44,10 +45,10 @@ export function Conversation({ thread, onBack }: Props) {
   const memberMap = new Map(thread.members.map((m) => [m.user_id, m]));
 
   return (
-    <div className="flex flex-col h-full bg-background">
+    <div className="flex flex-col h-full bg-background min-h-0">
       <div className="flex items-center gap-2 px-3 py-2 border-b border-border bg-card">
         {onBack && (
-          <Button variant="ghost" size="icon" onClick={onBack} className="md:hidden">
+          <Button variant="ghost" size="icon" onClick={onBack} aria-label="Tilbage">
             <ArrowLeft className="h-4 w-4" />
           </Button>
         )}
@@ -75,6 +76,17 @@ export function Conversation({ thread, onBack }: Props) {
             title="Tilføj personer"
           >
             <UserPlus className="h-4 w-4" />
+          </Button>
+        )}
+        {onExit && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onExit}
+            aria-label="Luk chat"
+            title="Luk chat"
+          >
+            <X className="h-4 w-4" />
           </Button>
         )}
       </div>
