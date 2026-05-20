@@ -33,8 +33,11 @@ export function ThreadList({ threads, selectedId, onSelect, loading, onRefresh }
     return title.toLowerCase().includes(q);
   };
 
-  const activeThreads = threads.filter((t: any) => !t.archived_at).filter(matchesFilter);
-  const archivedThreads = threads.filter((t: any) => t.archived_at).filter(matchesFilter);
+  // A thread is only "archived" for the person who archived it.
+  // The other participants still see it as an active conversation.
+  const isArchivedForMe = (t: any) => !!t.archived_at && t.archived_by === meId;
+  const activeThreads = threads.filter((t: any) => !isArchivedForMe(t)).filter(matchesFilter);
+  const archivedThreads = threads.filter((t: any) => isArchivedForMe(t)).filter(matchesFilter);
 
   const handleArchive = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
