@@ -83,6 +83,8 @@ export default function ProfileSetup() {
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [pushEnabled, setPushEnabled] = useState(false);
+  const [pushSupported, setPushSupported] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
