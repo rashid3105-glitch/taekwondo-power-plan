@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -39,6 +40,17 @@ export function ReadinessCard() {
   // Auto-prefill from wearable summary (yesterday's sleep + HRV).
   const [prefilledFromWatch, setPrefilledFromWatch] = useState(false);
   const [hrvFromWatch, setHrvFromWatch] = useState<number | null>(null);
+  const [dismissed, setDismissed] = useState(() => {
+    const key = `readiness_dismissed_${new Date().toISOString().slice(0, 10)}`;
+    return sessionStorage.getItem(key) === "true";
+  });
+
+  const handleDismiss = () => {
+    const key = `readiness_dismissed_${new Date().toISOString().slice(0, 10)}`;
+    sessionStorage.setItem(key, "true");
+    setDismissed(true);
+  };
+
 
   const TIER = {
     green: { label: t("readinessTierGreen"), icon: CheckCircle2, color: "text-emerald-500", bg: "bg-emerald-500/10 border-emerald-500/30" },
@@ -185,18 +197,37 @@ export function ReadinessCard() {
     } catch { /* no-op */ }
   }
 
+  if (dismissed) return null;
+
   if (!open) {
     return (
-      <Card className="border-2 border-primary/40 bg-primary/5">
-        <CardContent className="pt-4 pb-4 flex items-center gap-3">
-          <Sun className="h-6 w-6 text-primary flex-shrink-0" />
-          <div className="flex-1">
-            <div className="text-sm font-semibold">{t("readinessMorningTitle")}</div>
-            <div className="text-xs text-muted-foreground">{t("readinessMorningDesc")}</div>
-          </div>
-          <Button size="sm" onClick={openForm}>{t("readinessStart")}</Button>
-        </CardContent>
-      </Card>
+      <AnimatePresence>
+        <motion.div
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={{ left: 0, right: 0.3 }}
+          dragDirectionLock
+          onDragEnd={(_, info) => {
+            if (info.offset.x > 80) handleDismiss();
+          }}
+          animate={{ x: 0, opacity: 1 }}
+          exit={{ x: 300, opacity: 0 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          style={{ touchAction: "pan-y" }}
+          className="cursor-grab active:cursor-grabbing"
+        >
+          <Card className="border-2 border-primary/40 bg-primary/5 select-none">
+            <CardContent className="pt-4 pb-4 flex items-center gap-3">
+              <Sun className="h-6 w-6 text-primary flex-shrink-0" />
+              <div className="flex-1">
+                <div className="text-sm font-semibold">{t("readinessMorningTitle")}</div>
+                <div className="text-xs text-muted-foreground">{t("readinessMorningDesc")}</div>
+              </div>
+              <Button size="sm" onClick={openForm}>{t("readinessStart")}</Button>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </AnimatePresence>
     );
   }
 
