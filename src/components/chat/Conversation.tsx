@@ -98,6 +98,7 @@ export function Conversation({ thread, onBack }: Props) {
                 message={m}
                 isOwn={m.sender_id === meId}
                 senderName={memberMap.get(m.sender_id)?.display_name}
+                senderAvatar={memberMap.get(m.sender_id)?.avatar_url ?? null}
                 showSender={thread.kind === "group" && senderChanged}
                 onDelete={async () => {
                   try {

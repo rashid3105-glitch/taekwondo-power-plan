@@ -1,11 +1,10 @@
 import { useState, useRef } from "react";
-import { Send, Paperclip, X, Smile } from "lucide-react";
+import { Send, Image, X, Mic, MicOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { sendMessage, MAX_ATTACHMENT_BYTES } from "@/lib/chatApi";
-
-const EMOJIS = ["👍", "❤️", "🔥", "💪", "🥋", "🎯", "👏", "😄", "🙏", "✅"];
+import { cn } from "@/lib/utils";
 
 interface Props {
   threadId: string;
@@ -16,8 +15,9 @@ export function MessageComposer({ threadId, onSent }: Props) {
   const [body, setBody] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [sending, setSending] = useState(false);
-  const [showEmoji, setShowEmoji] = useState(false);
+  const [recording, setRecording] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const recognitionRef = useRef<any>(null);
 
   const handleFile = (f: File | null) => {
     if (!f) return setFile(null);
@@ -32,8 +32,41 @@ export function MessageComposer({ threadId, onSent }: Props) {
     setFile(f);
   };
 
+  const toggleRecording = () => {
+    if (recording) {
+      recognitionRef.current?.stop();
+      setRecording(false);
+      return;
+    }
+    const SpeechRecognition =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast.error("Stemmeoptager understøttes ikke i denne browser");
+      return;
+    }
+    const rec = new SpeechRecognition();
+    rec.lang = "da-DK";
+    rec.continuous = true;
+    rec.interimResults = false;
+    rec.onresult = (e: any) => {
+      const transcript = Array.from(e.results)
+        .map((r: any) => r[0].transcript)
+        .join(" ");
+      setBody((prev) => (prev ? prev + " " + transcript : transcript).trim());
+    };
+    rec.onerror = () => setRecording(false);
+    rec.onend = () => setRecording(false);
+    rec.start();
+    recognitionRef.current = rec;
+    setRecording(true);
+  };
+
   const send = async () => {
     if (!body.trim() && !file) return;
+    if (recording) {
+      recognitionRef.current?.stop();
+      setRecording(false);
+    }
     setSending(true);
     try {
       await sendMessage({ threadId, body, file });
@@ -52,7 +85,7 @@ export function MessageComposer({ threadId, onSent }: Props) {
     <div className="border-t border-border bg-card p-2 pb-safe">
       {file && (
         <div className="flex items-center gap-2 mb-2 text-xs bg-muted rounded-md px-2 py-1">
-          <Paperclip className="h-3 w-3" />
+          <Image className="h-3 w-3" />
           <span className="truncate flex-1">{file.name}</span>
           <span className="text-muted-foreground">{(file.size / 1024).toFixed(0)} KB</span>
           <button onClick={() => setFile(null)} className="text-muted-foreground hover:text-foreground">
@@ -60,23 +93,7 @@ export function MessageComposer({ threadId, onSent }: Props) {
           </button>
         </div>
       )}
-      {showEmoji && (
-        <div className="flex flex-wrap gap-1 mb-2 p-2 bg-muted rounded-md">
-          {EMOJIS.map((e) => (
-            <button
-              key={e}
-              onClick={() => {
-                setBody((b) => b + e);
-                setShowEmoji(false);
-              }}
-              className="h-9 w-9 text-lg hover:bg-background rounded"
-            >
-              {e}
-            </button>
-          ))}
-        </div>
-      )}
-      <div className="flex items-end gap-2">
+      <div className="flex items-end gap-1.5">
         <input
           ref={fileRef}
           type="file"
@@ -84,28 +101,38 @@ export function MessageComposer({ threadId, onSent }: Props) {
           className="hidden"
           onChange={(e) => handleFile(e.target.files?.[0] ?? null)}
         />
+        {/* Image attach */}
         <Button
           type="button"
           variant="ghost"
           size="icon"
+          className="h-9 w-9 text-muted-foreground hover:text-foreground flex-shrink-0"
           onClick={() => fileRef.current?.click()}
-          aria-label="Vedhæft"
+          aria-label="Vedhæft billede"
         >
-          <Paperclip className="h-5 w-5" />
+          <Image className="h-5 w-5" />
         </Button>
+        {/* Mic — voice to text */}
         <Button
           type="button"
           variant="ghost"
           size="icon"
-          onClick={() => setShowEmoji((s) => !s)}
-          aria-label="Emoji"
+          className={cn(
+            "h-9 w-9 flex-shrink-0 transition-colors",
+            recording
+              ? "text-destructive animate-pulse"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+          onClick={toggleRecording}
+          aria-label={recording ? "Stop optagelse" : "Indstal besked"}
         >
-          <Smile className="h-5 w-5" />
+          {recording ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
         </Button>
+        {/* Text input */}
         <Textarea
           value={body}
           onChange={(e) => setBody(e.target.value)}
-          placeholder="Skriv en besked…"
+          placeholder={recording ? "Optager…" : "Skriv en besked…"}
           rows={1}
           maxLength={2000}
           className="min-h-[44px] max-h-32 flex-1 resize-none"
@@ -116,9 +143,11 @@ export function MessageComposer({ threadId, onSent }: Props) {
             }
           }}
         />
+        {/* Send */}
         <Button
           type="button"
           size="icon"
+          className="h-9 w-9 flex-shrink-0"
           onClick={send}
           disabled={sending || (!body.trim() && !file)}
           aria-label="Send"
