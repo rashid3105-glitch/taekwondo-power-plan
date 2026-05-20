@@ -199,6 +199,8 @@ export default function ProfileSetup() {
       toast({ title: t("pushDisabled") });
     }
   };
+
+  const toggleGoal = (goal: string) => {
     setGoals((prev) =>
       prev.includes(goal) ? prev.filter((g) => g !== goal) : [...prev, goal]
     );
