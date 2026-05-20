@@ -14159,6 +14159,10 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   changelog_2026_05_17: "17 de mayo de 2026",
   changelogEntry117: "Calendario de temporada: los entrenadores ahora pueden crear un plan de temporada periodizado con fases, una plantilla de sesión semanal y desviaciones individuales por atleta — los atletas y padres ven el horario del equipo como un calendario de solo lectura, y los planes de entrenamiento de IA ahora se adaptan a la fase de temporada actual",
   changelogEntry118: "Calendario de temporada: la entrada de semana de fase ahora usa números de semana ISO que coinciden con la visualización, y cada fase puede etiquetarse con áreas de enfoque de entrenamiento (técnica, condición, sparring, fuerza, preparación de competición, recuperación, mental)",
+  changelog_2026_05_21: "21 de mayo de 2026",
+  changelogEntry119: "Chat: los padres ahora pueden añadirse a conversaciones de grupo — se muestran como Nombre (P). Archiva conversaciones y elimina tus propios mensajes.",
+  changelogEntry120: "Chat: badge de no leído en el botón de chat, confirmaciones de lectura en mensajes directos, reacciones emoji con pulsación larga, entrada de voz, avatares de remitente.",
+  changelogEntry121: "Notificaciones push: actívalas en tu perfil para recibir alertas de nuevos mensajes de chat y notificaciones del entrenador sobre entradas del diario.",
 
 
   // ===== Hub / Dashboard =====
