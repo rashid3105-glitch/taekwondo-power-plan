@@ -275,14 +275,34 @@ export async function getChattableContacts(): Promise<
     clubMateIds = (mates ?? []).map((m) => m.user_id);
   }
 
+  // Always fetch all club members directly (most reliable path)
+  let clubProfiles: Array<{ user_id: string; display_name: string | null; avatar_url: string | null }> = [];
+  if (me?.club_id) {
+    const { data: cp } = await supabase
+      .from("profiles")
+      .select("user_id, display_name, avatar_url")
+      .eq("club_id", me.club_id)
+      .eq("is_approved", true)
+      .neq("user_id", user.id);
+    clubProfiles = (cp ?? []) as typeof clubProfiles;
+  }
+
   const ids = Array.from(new Set([...athleteIds, ...coachIds, ...clubMateIds]));
 
-  const { data: profiles } = ids.length === 0
+  // Merge: club profiles take priority, supplement with coach/athlete links
+  const { data: linkedProfiles } = ids.length === 0
     ? { data: [] as Array<{ user_id: string; display_name: string | null; avatar_url: string | null }> }
     : await supabase
         .from("profiles")
         .select("user_id, display_name, avatar_url")
         .in("user_id", ids);
+
+  // Combine and deduplicate by user_id — club profiles + linked profiles
+  const profileMap = new Map<string, { user_id: string; display_name: string | null; avatar_url: string | null }>();
+  for (const p of [...(linkedProfiles ?? []), ...clubProfiles]) {
+    profileMap.set(p.user_id, p);
+  }
+  const profiles = Array.from(profileMap.values());
 
   // Also include parents linked to athletes I coach
   let parentIds: string[] = [];
