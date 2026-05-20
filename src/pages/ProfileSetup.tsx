@@ -180,9 +180,25 @@ export default function ProfileSetup() {
     };
 
     loadProfileSetupData();
+
+    setPushSupported(isPushSupported());
+    if (isPushSupported()) {
+      getCurrentSubscriptionStatus().then(setPushEnabled);
+    }
   }, [navigate, t, toast]);
 
-  const toggleGoal = (goal: string) => {
+  const handlePushToggle = async (enabled: boolean) => {
+    if (enabled) {
+      const ok = await subscribeToPush();
+      setPushEnabled(ok);
+      if (!ok) toast({ title: t("pushDenied"), variant: "destructive" });
+      else toast({ title: t("pushEnabled") });
+    } else {
+      await unsubscribeFromPush();
+      setPushEnabled(false);
+      toast({ title: t("pushDisabled") });
+    }
+  };
     setGoals((prev) =>
       prev.includes(goal) ? prev.filter((g) => g !== goal) : [...prev, goal]
     );
