@@ -127,10 +127,37 @@ export function MessageComposer({ threadId, onSent }: Props) {
               : "text-muted-foreground hover:text-foreground"
           )}
           onClick={toggleRecording}
-          aria-label={recording ? "Stop optagelse" : "Indstal besked"}
+          aria-label={recording ? "Stop optagelse" : "Indtal besked"}
         >
           {recording ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
         </Button>
+        {/* Emoji picker toggle */}
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-9 w-9 text-muted-foreground hover:text-foreground flex-shrink-0"
+          onClick={() => setShowEmoji((s) => !s)}
+          aria-label="Emoji"
+        >
+          <Smile className="h-5 w-5" />
+        </Button>
+        {showEmoji && (
+          <div className="absolute bottom-16 left-2 z-20 flex flex-wrap gap-1 p-2 bg-card border border-border rounded-lg shadow-lg max-w-[260px]">
+            {EMOJIS.map((e) => (
+              <button
+                key={e}
+                onClick={() => {
+                  setBody((b) => b + e);
+                  setShowEmoji(false);
+                }}
+                className="h-9 w-9 text-lg hover:bg-muted rounded"
+              >
+                {e}
+              </button>
+            ))}
+          </div>
+        )}
         {/* Text input */}
         <Textarea
           value={body}
