@@ -70,6 +70,7 @@ export function MessageComposer({ threadId, onSent }: Props) {
       recognitionRef.current?.stop();
       setRecording(false);
     }
+    setShowEmoji(false);
     setSending(true);
     try {
       await sendMessage({ threadId, body, file });
@@ -85,7 +86,7 @@ export function MessageComposer({ threadId, onSent }: Props) {
   };
 
   return (
-    <div className="border-t border-border bg-card p-2 pb-safe">
+    <div className="border-t border-border bg-card p-2 pb-safe relative">
       {file && (
         <div className="flex items-center gap-2 mb-2 text-xs bg-muted rounded-md px-2 py-1">
           <Image className="h-3 w-3" />
