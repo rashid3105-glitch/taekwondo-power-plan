@@ -765,7 +765,7 @@ export default function Health() {
         </CardContent>
       </Card>
 
-      {!loaded && <p className="text-center text-sm text-muted-foreground py-6">Loading…</p>}
+      {!loaded && <p className="text-center text-sm text-muted-foreground py-6">{t("healthLoading")}</p>}
     </div>
     </TooltipProvider>
   );
