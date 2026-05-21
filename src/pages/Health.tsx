@@ -522,7 +522,7 @@ export default function Health() {
         <CardContent className="space-y-3">
           <div className="flex flex-wrap gap-2">
             {([
-              { key: "steps", color: "hsl(var(--primary))", label: t("healthStepsTitle") },
+              { key: "steps", color: "hsl(280, 70%, 55%)", label: t("healthStepsTitle") },
               { key: "sleep", color: "hsl(220, 70%, 55%)", label: t("healthSleepTitle") },
               { key: "rhr", color: "hsl(0, 75%, 55%)", label: t("healthRhrTitle") },
               { key: "hrv", color: "hsl(160, 75%, 45%)", label: t("healthHrvTitle") },
@@ -551,7 +551,7 @@ export default function Health() {
                 <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} unit="%" />
                 <RTooltip contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", fontSize: 11 }} />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
-                {show.steps && <Line type="monotone" dataKey="Steps" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} connectNulls />}
+                {show.steps && <Line type="monotone" dataKey="Steps" stroke="hsl(280, 70%, 55%)" strokeWidth={2} dot={false} connectNulls />}
                 {show.sleep && <Line type="monotone" dataKey="Sleep" stroke="hsl(220, 70%, 55%)" strokeWidth={2} dot={false} connectNulls />}
                 {show.rhr && <Line type="monotone" dataKey="RHR" stroke="hsl(0, 75%, 55%)" strokeWidth={2} dot={false} connectNulls />}
                 {show.hrv && <Line type="monotone" dataKey="HRV" stroke="hsl(160, 75%, 45%)" strokeWidth={2} dot={false} connectNulls />}
