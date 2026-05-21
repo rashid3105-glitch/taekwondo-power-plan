@@ -238,7 +238,7 @@ export default function Health() {
       doc.text(doc.splitTextToSize(disclaimer, maxW), margin, y);
 
       doc.save(`health-report-${new Date().toISOString().slice(0, 10)}.pdf`);
-      toast.success(t("healthReportReady" as any) || "Health report downloaded.");
+      toast.success(t("healthReportReady"));
     } catch (e) {
       console.error("downloadAIReport failed", e);
       toast.error(t("healthReportError" as any) || "Could not generate report.");
