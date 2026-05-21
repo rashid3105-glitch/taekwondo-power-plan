@@ -545,7 +545,7 @@ export default function Health() {
             </ResponsiveContainer>
           </div>
           <p className="text-[11px] text-muted-foreground">
-            Values normalized 0–100% within the 7-day window so all metrics share one axis.
+            {t("healthNormNote")}
           </p>
         </CardContent>
       </Card>
