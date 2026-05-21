@@ -14681,6 +14681,23 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   composerTitle: "Redactar mensaje",
   coachRecoveryTrendTitle: "Recuperación (7d)",
   coachRecoveryLowFlag: "Señal baja de recuperación — considera reducir la carga de hoy.",
+  healthWhyTitle: "Por qué importan estos números",
+  healthWhySleep: "Sueño — Durante el sueño tu cuerpo repara músculos y almacena energía. 7–9 horas te ayudan a entrenar más duro mañana.",
+  healthWhyRhr: "FCR — Una frecuencia cardíaca en reposo más baja significa que tu corazón trabaja eficientemente. Verla bajar con el tiempo es una gran señal de mejora física.",
+  healthWhyHrv: "HRV — HRV mide qué tan bien se recupera tu cuerpo del estrés. Un número más alto significa que estás listo para rendir.",
+  healthWhySteps: "Pasos — El movimiento diario fuera del entrenamiento mantiene tu cuerpo activo y apoya la recuperación.",
+  healthNormNote: "Valores normalizados 0-100% dentro de la ventana de 7 días para que todas las métricas compartan un eje.",
+  healthReportButton: "Informe IA 14 días",
+  healthReportLoading: "Generando…",
+  healthReportReady: "Informe de salud descargado.",
+  healthReportError: "No se pudo generar el informe.",
+  healthReportNoData: "Aún no hay datos de salud para reportar.",
+  healthLoading: "Cargando…",
+  healthPdfTitle: "Informe de salud — Últimos 14 días",
+  healthPdfAverages: "Promedios de 14 días vs. normas por edad",
+  healthPdfKeyFindings: "Hallazgos clave",
+  healthPdfRecommendations: "Recomendaciones",
+  healthPdfWatchOuts: "Alertas",
 } as const;
 
 (translations as unknown as Record<string, Record<string, string>>).es = {
