@@ -141,6 +141,15 @@ export default function Health() {
       if (aiError) throw aiError;
       const report = (aiData as any)?.report || {};
 
+      const pdfLabels = {
+        title: t("healthPdfTitle"),
+        averages: t("healthPdfAverages"),
+        summary: t("recoverySummary" as any) || "Summary",
+        keyFindings: t("healthPdfKeyFindings"),
+        recommendations: t("healthPdfRecommendations"),
+        watchOuts: t("healthPdfWatchOuts"),
+      };
+
       // Build PDF
       const doc = new jsPDF();
       const pageW = doc.internal.pageSize.getWidth();
@@ -152,7 +161,7 @@ export default function Health() {
 
       doc.setFont("helvetica", "bold");
       doc.setFontSize(18);
-      doc.text("Health Report — Last 14 Days", margin, y); y += 8;
+      doc.text(pdfLabels.title, margin, y); y += 8;
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
       doc.setTextColor(110);
