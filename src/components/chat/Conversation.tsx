@@ -240,6 +240,81 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
         existingMemberIds={thread.members.map((m) => m.user_id)}
         onAdded={refresh}
       />
+
+      {thread.kind === "group" && membersOpen && (
+        <div className="absolute inset-0 z-20 flex flex-col bg-background">
+          <div className="flex items-center gap-2 border-b border-border bg-card px-3 py-2">
+            <Button variant="ghost" size="icon" onClick={() => setMembersOpen(false)} aria-label="Luk">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-semibold">Gruppemedlemmer</div>
+              <div className="text-[11px] text-muted-foreground">{thread.members.length} personer</div>
+            </div>
+          </div>
+
+          <ScrollArea className="flex-1">
+            <div className="p-3 space-y-1">
+              {thread.members.map((member) => {
+                const isSelf = member.user_id === meId;
+                const canRemove = isCreator || isSelf;
+                const removeLabel = isSelf ? "Forlad gruppe" : "Fjern fra gruppe";
+                return (
+                  <div
+                    key={member.user_id}
+                    className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-muted/50 transition-colors"
+                  >
+                    <AvatarImg
+                      avatarUrl={(member as any).avatar_url ?? null}
+                      className="h-8 w-8 rounded-full object-cover flex-shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium truncate">
+                        {(member as any).display_name || "Ukendt"}
+                        {isSelf && <span className="ml-1.5 text-[10px] text-muted-foreground">(dig)</span>}
+                      </div>
+                      {(member as any).is_parent && (
+                        <div className="text-[10px] text-amber-600">Forælder</div>
+                      )}
+                    </div>
+                    {canRemove && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className={cn(
+                          "text-xs h-7 px-2 shrink-0",
+                          isSelf ? "text-destructive hover:text-destructive hover:bg-destructive/10"
+                                 : "text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                        )}
+                        disabled={removingId === member.user_id}
+                        onClick={async () => {
+                          setRemovingId(member.user_id);
+                          try {
+                            await removeThreadMember(thread.id, member.user_id);
+                            if (isSelf) {
+                              setMembersOpen(false);
+                              onBack?.();
+                            } else {
+                              await refresh();
+                              toast.success(`${(member as any).display_name || "Personen"} er fjernet fra gruppen`);
+                            }
+                          } catch (e: any) {
+                            toast.error(e?.message ?? "Kunne ikke fjerne");
+                          } finally {
+                            setRemovingId(null);
+                          }
+                        }}
+                      >
+                        {removingId === member.user_id ? "…" : removeLabel}
+                      </Button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </ScrollArea>
+        </div>
+      )}
     </div>
   );
 }
