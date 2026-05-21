@@ -462,7 +462,7 @@ export default function Health() {
             className="h-11 sm:h-9"
           >
             <FileDown className={`h-4 w-4 mr-2 ${reporting ? "animate-pulse" : ""}`} />
-            {reporting ? (t("healthReportLoading" as any) || "Generating…") : (t("healthReportButton" as any) || "AI 14-day report")}
+            {reporting ? t("healthReportLoading") : t("healthReportButton")}
           </Button>
         </div>
       </div>
