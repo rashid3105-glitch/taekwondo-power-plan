@@ -227,10 +227,10 @@ export default function Health() {
         y += 3;
       };
 
-      if (report.summary) writeSection("Summary", [report.summary]);
-      if (Array.isArray(report.highlights) && report.highlights.length) writeSection("Key findings", report.highlights);
-      if (Array.isArray(report.recommendations) && report.recommendations.length) writeSection("Recommendations", report.recommendations);
-      if (Array.isArray(report.watchOuts) && report.watchOuts.length) writeSection("Watch-outs", report.watchOuts);
+      if (report.summary) writeSection(pdfLabels.summary, [report.summary]);
+      if (Array.isArray(report.highlights) && report.highlights.length) writeSection(pdfLabels.keyFindings, report.highlights);
+      if (Array.isArray(report.recommendations) && report.recommendations.length) writeSection(pdfLabels.recommendations, report.recommendations);
+      if (Array.isArray(report.watchOuts) && report.watchOuts.length) writeSection(pdfLabels.watchOuts, report.watchOuts);
 
       ensure(10);
       doc.setFontSize(8); doc.setTextColor(130);
