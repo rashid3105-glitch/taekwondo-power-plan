@@ -173,7 +173,7 @@ export default function Health() {
       // Metrics table
       doc.setFont("helvetica", "bold");
       doc.setFontSize(12);
-      doc.text("14-day averages vs. age-matched norms", margin, y); y += 6;
+      doc.text(pdfLabels.averages, margin, y); y += 6;
 
       doc.setFontSize(9);
       const cols = [
