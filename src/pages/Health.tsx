@@ -79,7 +79,7 @@ export default function Health() {
   async function downloadAIReport() {
     if (reporting) return;
     if (steps.length === 0) {
-      toast.error(t("healthReportNoData" as any) || "No health data to report on yet.");
+      toast.error(t("healthReportNoData"));
       return;
     }
     setReporting(true);
