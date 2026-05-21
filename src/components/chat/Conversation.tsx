@@ -26,10 +26,25 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
   const [addOpen, setAddOpen] = useState(false);
   const [partnerReadAt, setPartnerReadAt] = useState<string | null>(null);
   const [reactions, setReactions] = useState<Record<string, { emoji: string; count: number; byMe: boolean }[]>>({});
+  const [membersOpen, setMembersOpen] = useState(false);
+  const [removingId, setRemovingId] = useState<string | null>(null);
+  const [isCreator, setIsCreator] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => setMeId(user?.id ?? null));
-  }, []);
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setMeId(user?.id ?? null);
+      if (user && thread.kind === "group") {
+        supabase
+          .from("chat_threads")
+          .select("created_by")
+          .eq("id", thread.id)
+          .maybeSingle()
+          .then(({ data }) => {
+            setIsCreator((data as any)?.created_by === user.id);
+          });
+      }
+    });
+  }, [thread.id, thread.kind]);
 
   useEffect(() => {
     if (thread.kind !== "direct" || !meId) return;
