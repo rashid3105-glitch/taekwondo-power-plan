@@ -8,7 +8,7 @@ import { MessageBubble } from "./MessageBubble";
 import { MessageComposer } from "./MessageComposer";
 import { AddMembersDialog } from "./AddMembersDialog";
 import { supabase } from "@/integrations/supabase/client";
-import { editMessage, softDeleteMessage, markThreadRead, addReaction, removeReaction, type ChatThread } from "@/lib/chatApi";
+import { editMessage, softDeleteMessage, markThreadRead, addReaction, removeReaction, removeThreadMember, type ChatThread } from "@/lib/chatApi";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
