@@ -112,11 +112,14 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
         ) : (
           <AvatarImg avatarUrl={headerAvatar} className="h-9 w-9 rounded-full object-cover" />
         )}
-        <div className="flex-1 min-w-0">
+        <div
+          className={cn("flex-1 min-w-0", thread.kind === "group" && "cursor-pointer")}
+          onClick={() => thread.kind === "group" && setMembersOpen(true)}
+        >
           <div className="text-sm font-semibold truncate">{headerTitle}</div>
           {thread.kind === "group" && (
-            <div className="text-[11px] text-muted-foreground truncate">
-              {thread.members.length} medlemmer
+            <div className="text-[11px] text-muted-foreground truncate underline-offset-2 hover:underline">
+              {thread.members.length} medlemmer — tryk for at se
             </div>
           )}
         </div>
