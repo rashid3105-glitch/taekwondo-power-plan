@@ -234,6 +234,32 @@
   }
 }
 
+/* ===== iOS / Android standalone (PWA + Capacitor) safe-area =====
+   When the app runs without browser chrome (Home-screen install,
+   native shell), the system status bar and home indicator overlap
+   the viewport. Pad the body so every page — even ones without a
+   sticky header that already handles pt-safe — clears the notch /
+   Dynamic Island and the home indicator. Sticky headers stay glued
+   to the viewport edge because position:sticky is viewport-relative;
+   their own pt-safe keeps their content below the status bar. */
+@media (display-mode: standalone), (display-mode: fullscreen), (display-mode: minimal-ui) {
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* Capacitor native shell exposes this class on <html> */
+html.capacitor body,
+body.capacitor {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
 /* ===== RTL (Arabic) Global Fixes ===== */
 
 /* Flex & grid: auto-reverse row direction */
