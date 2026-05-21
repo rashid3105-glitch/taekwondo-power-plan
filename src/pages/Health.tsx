@@ -241,7 +241,7 @@ export default function Health() {
       toast.success(t("healthReportReady"));
     } catch (e) {
       console.error("downloadAIReport failed", e);
-      toast.error(t("healthReportError" as any) || "Could not generate report.");
+      toast.error(t("healthReportError"));
     } finally {
       setReporting(false);
     }
