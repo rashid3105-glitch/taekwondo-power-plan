@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Brain, Apple, Heart, ClipboardList, CalendarRange, BookOpen, Lock } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -8,9 +9,22 @@ interface Props {
   onTab: (tab: "mental" | "nutrition" | "rehab" | "testing") => void;
 }
 
+const SEEN_KEY = "hub_module_seen_v1";
+
+function getSeen(): Record<string, boolean> {
+  try { return JSON.parse(localStorage.getItem(SEEN_KEY) || "{}"); } catch { return {}; }
+}
+
 export function HubOtherModules({ isDemo, isLocked, onTab }: Props) {
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const [seen, setSeen] = useState<Record<string, boolean>>(getSeen);
+
+  const markSeen = (key: string) => {
+    const next = { ...seen, [key]: true };
+    setSeen(next);
+    try { localStorage.setItem(SEEN_KEY, JSON.stringify(next)); } catch { /* ignore */ }
+  };
 
   const chips = [
     { key: "mental", icon: Brain, label: t("mental"), color: "text-tab-mental", bg: "bg-tab-mental/10 border-tab-mental/30", onClick: () => onTab("mental"), locked: isDemo, hasNew: false },
@@ -29,18 +43,23 @@ export function HubOtherModules({ isDemo, isLocked, onTab }: Props) {
       <div className="flex gap-2 overflow-x-auto pb-1 -mx-3 px-3 sm:mx-0 sm:px-0 sm:flex-wrap">
         {chips.map((chip) => {
           const Icon = chip.icon;
+          const showDot = chip.hasNew && !chip.locked && !seen[chip.key];
           return (
             <button
               key={chip.key}
               type="button"
-              onClick={() => !chip.locked && chip.onClick()}
+              onClick={() => {
+                if (chip.locked) return;
+                markSeen(chip.key);
+                chip.onClick();
+              }}
               disabled={chip.locked}
               className={`relative shrink-0 inline-flex items-center gap-1.5 rounded-full border px-3 py-2 text-xs font-semibold transition-colors ${chip.bg} ${chip.color} ${chip.locked ? "opacity-60" : "hover:opacity-90"}`}
             >
               <Icon className="h-3.5 w-3.5" />
               {chip.label}
               {chip.locked && <Lock className="h-3 w-3 ml-0.5" />}
-              {chip.hasNew && !chip.locked && (
+              {showDot && (
                 <span
                   aria-label="new"
                   className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-destructive"
