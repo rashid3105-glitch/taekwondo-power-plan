@@ -8,7 +8,7 @@ import { MessageBubble } from "./MessageBubble";
 import { MessageComposer } from "./MessageComposer";
 import { AddMembersDialog } from "./AddMembersDialog";
 import { supabase } from "@/integrations/supabase/client";
-import { editMessage, softDeleteMessage, markThreadRead, addReaction, removeReaction, type ChatThread } from "@/lib/chatApi";
+import { editMessage, softDeleteMessage, markThreadRead, addReaction, removeReaction, removeThreadMember, type ChatThread } from "@/lib/chatApi";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -26,10 +26,25 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
   const [addOpen, setAddOpen] = useState(false);
   const [partnerReadAt, setPartnerReadAt] = useState<string | null>(null);
   const [reactions, setReactions] = useState<Record<string, { emoji: string; count: number; byMe: boolean }[]>>({});
+  const [membersOpen, setMembersOpen] = useState(false);
+  const [removingId, setRemovingId] = useState<string | null>(null);
+  const [isCreator, setIsCreator] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => setMeId(user?.id ?? null));
-  }, []);
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setMeId(user?.id ?? null);
+      if (user && thread.kind === "group") {
+        supabase
+          .from("chat_threads")
+          .select("created_by")
+          .eq("id", thread.id)
+          .maybeSingle()
+          .then(({ data }) => {
+            setIsCreator((data as any)?.created_by === user.id);
+          });
+      }
+    });
+  }, [thread.id, thread.kind]);
 
   useEffect(() => {
     if (thread.kind !== "direct" || !meId) return;
@@ -78,7 +93,7 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
   const memberMap = new Map(thread.members.map((m) => [m.user_id, m]));
 
   return (
-    <div className={cn("flex flex-col h-full bg-background min-h-0", variant === "floating" && "bg-card")}>
+    <div className={cn("relative flex flex-col h-full bg-background min-h-0", variant === "floating" && "bg-card")}>
       <div
         className={cn(
           "sticky top-0 z-10 flex items-center gap-2 border-b border-border bg-card px-3 py-2",
@@ -97,11 +112,14 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
         ) : (
           <AvatarImg avatarUrl={headerAvatar} className="h-9 w-9 rounded-full object-cover" />
         )}
-        <div className="flex-1 min-w-0">
+        <div
+          className={cn("flex-1 min-w-0", thread.kind === "group" && "cursor-pointer")}
+          onClick={() => thread.kind === "group" && setMembersOpen(true)}
+        >
           <div className="text-sm font-semibold truncate">{headerTitle}</div>
           {thread.kind === "group" && (
-            <div className="text-[11px] text-muted-foreground truncate">
-              {thread.members.length} medlemmer
+            <div className="text-[11px] text-muted-foreground truncate underline-offset-2 hover:underline">
+              {thread.members.length} medlemmer — tryk for at se
             </div>
           )}
         </div>
@@ -222,6 +240,81 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
         existingMemberIds={thread.members.map((m) => m.user_id)}
         onAdded={refresh}
       />
+
+      {thread.kind === "group" && membersOpen && (
+        <div className="absolute inset-0 z-20 flex flex-col bg-background">
+          <div className="flex items-center gap-2 border-b border-border bg-card px-3 py-2">
+            <Button variant="ghost" size="icon" onClick={() => setMembersOpen(false)} aria-label="Luk">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-semibold">Gruppemedlemmer</div>
+              <div className="text-[11px] text-muted-foreground">{thread.members.length} personer</div>
+            </div>
+          </div>
+
+          <ScrollArea className="flex-1">
+            <div className="p-3 space-y-1">
+              {thread.members.map((member) => {
+                const isSelf = member.user_id === meId;
+                const canRemove = isCreator || isSelf;
+                const removeLabel = isSelf ? "Forlad gruppe" : "Fjern fra gruppe";
+                return (
+                  <div
+                    key={member.user_id}
+                    className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-muted/50 transition-colors"
+                  >
+                    <AvatarImg
+                      avatarUrl={(member as any).avatar_url ?? null}
+                      className="h-8 w-8 rounded-full object-cover flex-shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium truncate">
+                        {(member as any).display_name || "Ukendt"}
+                        {isSelf && <span className="ml-1.5 text-[10px] text-muted-foreground">(dig)</span>}
+                      </div>
+                      {(member as any).is_parent && (
+                        <div className="text-[10px] text-amber-600">Forælder</div>
+                      )}
+                    </div>
+                    {canRemove && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className={cn(
+                          "text-xs h-7 px-2 shrink-0",
+                          isSelf ? "text-destructive hover:text-destructive hover:bg-destructive/10"
+                                 : "text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                        )}
+                        disabled={removingId === member.user_id}
+                        onClick={async () => {
+                          setRemovingId(member.user_id);
+                          try {
+                            await removeThreadMember(thread.id, member.user_id);
+                            if (isSelf) {
+                              setMembersOpen(false);
+                              onBack?.();
+                            } else {
+                              await refresh();
+                              toast.success(`${(member as any).display_name || "Personen"} er fjernet fra gruppen`);
+                            }
+                          } catch (e: any) {
+                            toast.error(e?.message ?? "Kunne ikke fjerne");
+                          } finally {
+                            setRemovingId(null);
+                          }
+                        }}
+                      >
+                        {removingId === member.user_id ? "…" : removeLabel}
+                      </Button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </ScrollArea>
+        </div>
+      )}
     </div>
   );
 }
