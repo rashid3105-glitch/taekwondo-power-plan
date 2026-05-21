@@ -43,20 +43,5 @@ export function HubReadinessBanner() {
 
   if (!checked || !show) return null;
 
-  return (
-    <div className="relative">
-      <button
-        type="button"
-        aria-label={t("dismiss") || "Dismiss"}
-        onClick={() => {
-          try { localStorage.setItem(dismissKey, "1"); } catch { /* ignore */ }
-          setShow(false);
-        }}
-        className="absolute top-2 right-2 z-10 inline-flex h-7 w-7 items-center justify-center rounded-full bg-background/70 text-muted-foreground hover:text-foreground"
-      >
-        <X className="h-4 w-4" />
-      </button>
-      <ReadinessCard />
-    </div>
-  );
+  return <ReadinessCard />;
 }
