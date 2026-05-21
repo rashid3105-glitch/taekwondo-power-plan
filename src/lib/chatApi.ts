@@ -419,3 +419,21 @@ export async function unarchiveThread(threadId: string): Promise<void> {
     .eq("id", threadId);
   if (error) throw error;
 }
+
+export async function removeThreadMember(threadId: string, userId: string): Promise<void> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("not_authenticated");
+  const { data: thread } = await supabase
+    .from("chat_threads")
+    .select("created_by")
+    .eq("id", threadId)
+    .maybeSingle();
+  const isCreator = (thread as any)?.created_by === user.id;
+  const isSelf = userId === user.id;
+  if (!isCreator && !isSelf) throw new Error("not_authorized");
+  await supabase
+    .from("chat_thread_members")
+    .delete()
+    .eq("thread_id", threadId)
+    .eq("user_id", userId);
+}
