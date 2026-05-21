@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Activity, Footprints, RefreshCw, Info, FileDown } from "lucide-react";
+import { ArrowLeft, Activity, Footprints, RefreshCw, Info, FileDown, ChevronDown } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PageMeta } from "@/components/PageMeta";
 import {
@@ -39,6 +39,7 @@ export default function Health() {
   const [syncing, setSyncing] = useState(false);
   const [reporting, setReporting] = useState(false);
   const [show, setShow] = useState({ steps: true, sleep: true, rhr: true, hrv: true });
+  const [whyOpen, setWhyOpen] = useState(false);
 
   async function runResync({ silent }: { silent: boolean }) {
     if (syncing) return;
@@ -78,7 +79,7 @@ export default function Health() {
   async function downloadAIReport() {
     if (reporting) return;
     if (steps.length === 0) {
-      toast.error(t("healthReportNoData" as any) || "No health data to report on yet.");
+      toast.error(t("healthReportNoData"));
       return;
     }
     setReporting(true);
@@ -140,6 +141,15 @@ export default function Health() {
       if (aiError) throw aiError;
       const report = (aiData as any)?.report || {};
 
+      const pdfLabels = {
+        title: t("healthPdfTitle"),
+        averages: t("healthPdfAverages"),
+        summary: t("recoverySummary" as any) || "Summary",
+        keyFindings: t("healthPdfKeyFindings"),
+        recommendations: t("healthPdfRecommendations"),
+        watchOuts: t("healthPdfWatchOuts"),
+      };
+
       // Build PDF
       const doc = new jsPDF();
       const pageW = doc.internal.pageSize.getWidth();
@@ -151,7 +161,7 @@ export default function Health() {
 
       doc.setFont("helvetica", "bold");
       doc.setFontSize(18);
-      doc.text("Health Report — Last 14 Days", margin, y); y += 8;
+      doc.text(pdfLabels.title, margin, y); y += 8;
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
       doc.setTextColor(110);
@@ -163,7 +173,7 @@ export default function Health() {
       // Metrics table
       doc.setFont("helvetica", "bold");
       doc.setFontSize(12);
-      doc.text("14-day averages vs. age-matched norms", margin, y); y += 6;
+      doc.text(pdfLabels.averages, margin, y); y += 6;
 
       doc.setFontSize(9);
       const cols = [
@@ -217,10 +227,10 @@ export default function Health() {
         y += 3;
       };
 
-      if (report.summary) writeSection("Summary", [report.summary]);
-      if (Array.isArray(report.highlights) && report.highlights.length) writeSection("Key findings", report.highlights);
-      if (Array.isArray(report.recommendations) && report.recommendations.length) writeSection("Recommendations", report.recommendations);
-      if (Array.isArray(report.watchOuts) && report.watchOuts.length) writeSection("Watch-outs", report.watchOuts);
+      if (report.summary) writeSection(pdfLabels.summary, [report.summary]);
+      if (Array.isArray(report.highlights) && report.highlights.length) writeSection(pdfLabels.keyFindings, report.highlights);
+      if (Array.isArray(report.recommendations) && report.recommendations.length) writeSection(pdfLabels.recommendations, report.recommendations);
+      if (Array.isArray(report.watchOuts) && report.watchOuts.length) writeSection(pdfLabels.watchOuts, report.watchOuts);
 
       ensure(10);
       doc.setFontSize(8); doc.setTextColor(130);
@@ -228,10 +238,10 @@ export default function Health() {
       doc.text(doc.splitTextToSize(disclaimer, maxW), margin, y);
 
       doc.save(`health-report-${new Date().toISOString().slice(0, 10)}.pdf`);
-      toast.success(t("healthReportReady" as any) || "Health report downloaded.");
+      toast.success(t("healthReportReady"));
     } catch (e) {
       console.error("downloadAIReport failed", e);
-      toast.error(t("healthReportError" as any) || "Could not generate report.");
+      toast.error(t("healthReportError"));
     } finally {
       setReporting(false);
     }
@@ -452,7 +462,7 @@ export default function Health() {
             className="h-11 sm:h-9"
           >
             <FileDown className={`h-4 w-4 mr-2 ${reporting ? "animate-pulse" : ""}`} />
-            {reporting ? (t("healthReportLoading" as any) || "Generating…") : (t("healthReportButton" as any) || "AI 14-day report")}
+            {reporting ? t("healthReportLoading") : t("healthReportButton")}
           </Button>
         </div>
       </div>
@@ -462,28 +472,42 @@ export default function Health() {
 
       {/* Why these metrics matter */}
       <Card className="mb-4 border-primary/30 bg-primary/5">
-        <CardContent className="pt-4 pb-4">
-          <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
-            <Activity className="h-4 w-4 text-primary" />
-            {t("healthWhyTitle" as any) || "Why these numbers matter"}
-          </h3>
-          <ul className="space-y-2.5">
-            {[
-              { icon: Moon, label: t("recoverySleep"), text: "Sleep is when your body repairs muscles and stores energy. 7–9 hours helps you train harder tomorrow." },
-              { icon: Heart, label: t("recoveryRhr"), text: "A lower resting heart rate means your heart is working efficiently. Seeing it drop over time is a great sign of improving fitness." },
-              { icon: Activity, label: "HRV", text: "HRV measures how well your body recovers from stress. A higher number means you're ready to perform." },
-              { icon: Footprints, label: "Steps", text: "Daily movement outside training keeps your body active and supports recovery." },
-            ].map(({ icon: Icon, label, text }) => (
-              <li key={label} className="flex gap-2.5 items-start">
-                <Icon className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                <p className="text-xs text-foreground leading-relaxed">
-                  <span className="font-bold">{label}</span>
-                  <span className="text-muted-foreground"> — {text}</span>
-                </p>
-              </li>
-            ))}
-          </ul>
-        </CardContent>
+        <button
+          type="button"
+          className="w-full"
+          onClick={() => setWhyOpen(o => !o)}
+        >
+          <CardContent className="pt-4 pb-4 flex items-center justify-between">
+            <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+              <Activity className="h-4 w-4 text-primary" />
+              {t("healthWhyTitle")}
+            </h3>
+            <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${whyOpen ? "rotate-180" : ""}`} />
+          </CardContent>
+        </button>
+        {whyOpen && (
+          <CardContent className="pt-0 pb-4">
+            <ul className="space-y-2.5">
+              {[
+                { icon: Moon, text: t("healthWhySleep") },
+                { icon: Heart, text: t("healthWhyRhr") },
+                { icon: Activity, text: t("healthWhyHrv") },
+                { icon: Footprints, text: t("healthWhySteps") },
+              ].map(({ icon: Icon, text }) => {
+                const [label, ...rest] = text.split(" — ");
+                return (
+                  <li key={label} className="flex gap-2.5 items-start">
+                    <Icon className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                    <p className="text-xs text-foreground leading-relaxed">
+                      <span className="font-bold">{label}</span>
+                      {rest.length > 0 && <span className="text-muted-foreground"> — {rest.join(" — ")}</span>}
+                    </p>
+                  </li>
+                );
+              })}
+            </ul>
+          </CardContent>
+        )}
       </Card>
 
       {/* Manual entry */}
@@ -535,7 +559,7 @@ export default function Health() {
             </ResponsiveContainer>
           </div>
           <p className="text-[11px] text-muted-foreground">
-            Values normalized 0–100% within the 7-day window so all metrics share one axis.
+            {t("healthNormNote")}
           </p>
         </CardContent>
       </Card>
@@ -755,7 +779,7 @@ export default function Health() {
         </CardContent>
       </Card>
 
-      {!loaded && <p className="text-center text-sm text-muted-foreground py-6">Loading…</p>}
+      {!loaded && <p className="text-center text-sm text-muted-foreground py-6">{t("healthLoading")}</p>}
     </div>
     </TooltipProvider>
   );
