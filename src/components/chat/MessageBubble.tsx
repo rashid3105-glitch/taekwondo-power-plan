@@ -54,6 +54,7 @@ export function MessageBubble({
   const [draft, setDraft] = useState(message.body);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const REACTION_EMOJIS = ["👍", "❤️", "😂", "😮", "🔥", "💪"];
 
@@ -106,11 +107,16 @@ export function MessageBubble({
           {/* Avatar for other people's messages */}
           {!isOwn && (
             <div className="h-7 w-7 rounded-full flex-shrink-0 overflow-hidden bg-muted flex items-center justify-center text-[10px] font-semibold text-muted-foreground self-end mb-0.5">
-              {senderAvatar ? (
-                <img src={senderAvatar} alt={senderName || ""} className="h-full w-full object-cover" />
-              ) : (
-                <span>{(senderName || "?").slice(0, 2).toUpperCase()}</span>
-              )}
+            {senderAvatar && !avatarError ? (
+              <img
+                src={senderAvatar}
+                alt={senderName || ""}
+                className="h-full w-full object-cover"
+                onError={() => setAvatarError(true)}
+              />
+            ) : (
+              <span>{(senderName || "?").slice(0, 2).toUpperCase()}</span>
+            )}
             </div>
           )}
           {isOwn && (onEdit || onDelete) && (
