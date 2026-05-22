@@ -12490,6 +12490,8 @@ const translations = {
     minutesShort: "MIN",
     pinnedModules: "Festede moduler",
     allModules: "Alle moduler",
+    customizePins: "Tilpass",
+    customizePinsDesc: "Velg opptil 4 moduler som skal vises på forsiden.",
     otherModules: "Øvrige moduler",
     metricsUpdated: "metrics oppdatert",
     clipsReady: "klipp klare",
