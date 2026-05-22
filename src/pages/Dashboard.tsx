@@ -225,6 +225,18 @@ export default function Dashboard() {
     setActiveTab(tab);
     setMenuOpen(false);
   };
+  const ALL_PINNABLE = [
+    { key: "plan",         icon: Zap,           labelKey: "plan",            color: "text-tab-plan",      onClick: () => handleTabChange("plan") },
+    { key: "progress",     icon: BarChart3,     labelKey: "progress",        color: "text-tab-progress",  onClick: () => handleTabChange("progress") },
+    { key: "competitions", icon: Trophy,        labelKey: "competitions",    color: "text-explosive",     onClick: () => navigate("/competitions") },
+    { key: "mental",       icon: Brain,         labelKey: "mental",          color: "text-tab-mental",    onClick: () => handleTabChange("mental") },
+    { key: "nutrition",    icon: Apple,         labelKey: "nutrition",       color: "text-tab-nutrition", onClick: () => handleTabChange("nutrition") },
+    { key: "rehab",        icon: Heart,         labelKey: "injuryRehabPlan", color: "text-tab-rehab",     onClick: () => handleTabChange("rehab") },
+    { key: "diary",        icon: NotebookPen,   labelKey: "diary",           color: "text-primary",       onClick: () => navigate("/diary") },
+    { key: "testing",      icon: ClipboardList, labelKey: "testing",         color: "text-primary",       onClick: () => handleTabChange("testing") },
+    { key: "calendar",     icon: CalendarIcon,  labelKey: "seasonCalendar",  color: "text-primary",       onClick: () => handleTabChange("calendar") },
+    { key: "match",        icon: VideoIcon,     labelKey: "hubMatchTitle",   color: "text-primary",       onClick: () => navigate("/match-analysis/me") },
+  ] as const;
   const renderDemoLockedState = (featureKey: string) => (
     <div className="rounded-xl border border-border bg-card p-8 sm:p-10 text-center shadow-card space-y-4">
       <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-secondary">
