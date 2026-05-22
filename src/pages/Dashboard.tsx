@@ -314,7 +314,7 @@ export default function Dashboard() {
 
     // Check coach role
     const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", user.id);
-    if (roles?.some((r: any) => r.role === "coach")) setIsCoach(true);
+    if (roles?.some((r: any) => r.role === "coach")) { setIsCoach(true); setCoachAthleteMode("coach"); }
 
     // Check if user has a coach assigned
     const { data: coachLink } = await supabase.from("coach_athletes").select("coach_id").eq("athlete_id", user.id).limit(1);
