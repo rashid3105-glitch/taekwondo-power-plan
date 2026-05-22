@@ -44,7 +44,7 @@ import { HubTodayHero } from "@/components/hub/HubTodayHero";
 import { HubNextEvent } from "@/components/hub/HubNextEvent";
 import { HubRecoveryStrip } from "@/components/hub/HubRecoveryStrip";
 import { SeasonCalendarView } from "@/components/hub/SeasonCalendarView";
-import { HubPinnedModules } from "@/components/hub/HubPinnedModules";
+
 import { HubOtherModules } from "@/components/hub/HubOtherModules";
 import { HubReadinessBanner } from "@/components/hub/HubReadinessBanner";
 import { InviteWelcomeBanner } from "@/components/hub/InviteWelcomeBanner";
