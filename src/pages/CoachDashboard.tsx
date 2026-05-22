@@ -319,6 +319,15 @@ export default function CoachDashboard() {
       </header>
 
       <main className="container max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
+        <div className="flex justify-end mb-2">
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground border border-border rounded-full px-3 py-1.5 transition-colors"
+          >
+            <User className="h-3.5 w-3.5" />
+            {t("coachSwitchToAthlete") || "Se min atlet-visning"}
+          </button>
+        </div>
         {coachUserId && (
           <Tabs defaultValue="squad" className="space-y-4">
             <div className="flex items-center justify-between gap-2 flex-wrap">

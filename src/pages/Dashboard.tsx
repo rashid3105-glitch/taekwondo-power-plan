@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain, Clock, Apple, Home, Lock, NotebookPen, AlertTriangle, ClipboardList, HelpCircle, Trash2, Menu, Video as VideoIcon, CalendarRange, Watch, Swords } from "lucide-react";
+import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain, Clock, Apple, Home, Lock, NotebookPen, AlertTriangle, ClipboardList, HelpCircle, Trash2, Menu, Video as VideoIcon, CalendarRange, Watch, Swords, Trophy, MessageCircle } from "lucide-react";
+import { ChatDrawer } from "@/components/chat/ChatDrawer";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
@@ -129,6 +130,8 @@ export default function Dashboard() {
   }
   const [menuOpen, setMenuOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(typeof navigator !== "undefined" ? navigator.onLine : true);
+  const [coachAthleteMode, setCoachAthleteMode] = useState<"coach" | "athlete">("athlete");
+  const [chatOpen, setChatOpen] = useState(false);
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -311,7 +314,7 @@ export default function Dashboard() {
 
     // Check coach role
     const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", user.id);
-    if (roles?.some((r: any) => r.role === "coach")) setIsCoach(true);
+    if (roles?.some((r: any) => r.role === "coach")) { setIsCoach(true); setCoachAthleteMode("coach"); }
 
     // Check if user has a coach assigned
     const { data: coachLink } = await supabase.from("coach_athletes").select("coach_id").eq("athlete_id", user.id).limit(1);
@@ -521,6 +524,21 @@ export default function Dashboard() {
             <div className="flex items-center gap-2">
               <LanguageSwitcher />
               <EventRemindersDropdown />
+              <button
+                onClick={() => navigate("/profile-setup")}
+                className="relative shrink-0"
+                aria-label={t("profile")}
+              >
+                <AvatarImg
+                  avatarUrl={profile?.avatar_url}
+                  className="h-8 w-8 rounded-full object-cover border border-border"
+                  fallbackClassName="h-8 w-8 rounded-full bg-muted flex items-center justify-center border border-border"
+                />
+                <span className={cn(
+                  "absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-background",
+                  isOnline ? "bg-green-500" : "bg-destructive"
+                )} />
+              </button>
               <Button variant="ghost" size="icon" onClick={() => setMenuOpen(true)}>
                 <Menu className="h-5 w-5" />
               </Button>
@@ -625,40 +643,36 @@ export default function Dashboard() {
       {/* Mobile bottom nav — 5 tabs */}
       <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-card/95 backdrop-blur-sm sm:hidden pb-safe">
         <div className="flex items-stretch justify-around px-1 pt-1.5">
-          {(() => {
-            // Lazy import lucide icons here to keep diff tight
-            const items = [
-              { key: "hjem-rehab-unlock", label: "Hjem", icon: Home, active: activeTab === "hub", dot: true, onClick: () => handleTabChange("hub") },
-              { key: "plan", label: "Plan", icon: CalendarIcon, active: activeTab === "plan", dot: false, onClick: () => handleTabChange("plan") },
-              { key: "calendar-dots-v1", label: t("seasonCalendar") || "Kalender", icon: CalendarRange, active: activeTab === "calendar", dot: true, onClick: () => handleTabChange("calendar") },
-              { key: "fremgang", label: "Fremgang", icon: BarChart3, active: activeTab === "progress", dot: false, onClick: () => handleTabChange("progress") },
-              { key: "profil", label: "Profil", icon: User, active: false, dot: false, onClick: () => navigate("/profile-setup") },
-            ];
-            return items.map(({ key, label, icon: Icon, active, dot, onClick }) => (
-              <button
-                key={key}
-                onClick={() => {
-                  if (dot) markDotSeen(key);
-                  import("@/lib/haptics").then((h) => h.tap()).catch(() => { /* ignore */ });
-                  onClick();
-                }}
-                aria-current={active ? "page" : undefined}
-                aria-label={label}
-                className={`relative flex flex-1 min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg px-1 py-1.5 transition-colors ${
-                  active ? "text-destructive" : "text-muted-foreground"
-                } active:scale-95`}
-                style={{ minHeight: 48 }}
-              >
-                <div className="relative">
-                  <Icon className="h-5 w-5" />
-                  {dot && !seenDots.has(key) && (
-                    <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-destructive border border-card" />
-                  )}
-                </div>
-                <span className="text-[9px] font-semibold uppercase tracking-wide leading-tight truncate max-w-full">{label}</span>
-              </button>
-            ));
-          })()}
+          {(coachAthleteMode === "coach" && isCoach ? [
+            { key: "coach-hold", label: t("coachNav") || "Hold", icon: Users, active: false, onClick: () => navigate("/coach") },
+            { key: "coach-traening", label: t("train") || "Træning", icon: CalendarRange, active: false, onClick: () => navigate("/coach/season-calendar") },
+            { key: "coach-staevner", label: t("competitions") || "Stævner", icon: Trophy, active: false, onClick: () => navigate("/coach/competitions") },
+            { key: "coach-beskeder", label: t("chat") || "Beskeder", icon: MessageCircle, active: chatOpen, onClick: () => setChatOpen(true) },
+            { key: "coach-mig", label: t("coachSwitchToAthlete") || "Mig", icon: User, active: false, onClick: () => setCoachAthleteMode("athlete") },
+          ] : [
+            { key: "idag", label: t("today") || "I dag", icon: Home, active: activeTab === "hub", onClick: () => handleTabChange("hub") },
+            { key: "traen", label: t("train") || "Træn", icon: Zap, active: activeTab === "plan", onClick: () => handleTabChange("plan") },
+            { key: "kalender", label: t("seasonCalendar") || "Kalender", icon: CalendarRange, active: activeTab === "calendar", onClick: () => handleTabChange("calendar") },
+            { key: "dagbog", label: t("diary") || "Dagbog", icon: NotebookPen, active: false, onClick: () => navigate("/diary") },
+            { key: "chat", label: t("chat") || "Chat", icon: MessageCircle, active: chatOpen, onClick: () => setChatOpen(true) },
+          ]).map(({ key, label, icon: Icon, active, onClick }) => (
+            <button
+              key={key}
+              onClick={() => {
+                import("@/lib/haptics").then(h => h.tap()).catch(() => {});
+                onClick();
+              }}
+              aria-label={label}
+              className={cn(
+                "relative flex flex-1 min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg px-1 py-1.5 transition-colors active:scale-95",
+                active ? "text-primary" : "text-muted-foreground"
+              )}
+              style={{ minHeight: 48 }}
+            >
+              <Icon className="h-5 w-5" />
+              <span className="text-[9px] font-semibold uppercase tracking-wide leading-tight truncate max-w-full">{label}</span>
+            </button>
+          ))}
         </div>
       </nav>
 
@@ -1029,6 +1043,22 @@ export default function Dashboard() {
             {activePlan ? (
               <div className="space-y-2">
                 <AIPlanCard plan={activePlan} />
+                <div className="grid grid-cols-2 gap-3 mt-2">
+                  <button
+                    onClick={() => handleTabChange("rehab")}
+                    className="flex items-center gap-2 rounded-xl border border-border bg-card p-3 text-left hover:bg-accent/30 transition-colors"
+                  >
+                    <Heart className="h-4 w-4 text-destructive shrink-0" />
+                    <span className="text-xs font-semibold truncate">{t("injuryRehabPlan")}</span>
+                  </button>
+                  <button
+                    onClick={() => navigate("/library")}
+                    className="flex items-center gap-2 rounded-xl border border-border bg-card p-3 text-left hover:bg-accent/30 transition-colors"
+                  >
+                    <BookOpen className="h-4 w-4 text-primary shrink-0" />
+                    <span className="text-xs font-semibold truncate">{t("library")}</span>
+                  </button>
+                </div>
                 {(!hasCoach || isPaid) && (
                   <div className="flex justify-end">
                     <AlertDialog>
@@ -1138,6 +1168,7 @@ export default function Dashboard() {
           </>
         )}
       </main>
+      <ChatDrawer open={chatOpen} onOpenChange={setChatOpen} isCoach={isCoach} />
       <AppFooter />
     </div>
   );

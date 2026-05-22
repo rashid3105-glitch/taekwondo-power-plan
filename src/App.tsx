@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { LanguageProvider } from "@/i18n/LanguageContext";
-import { FloatingChatButton } from "@/components/chat/FloatingChatButton";
+
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { SplashScreen } from "@/components/SplashScreen";
 import Index from "./pages/Index";
@@ -26,6 +26,7 @@ import AdminApproval from "./pages/AdminApproval";
 import AdminModuleAccess from "./pages/AdminModuleAccess";
 import CoachDashboard from "./pages/CoachDashboard";
 import CoachAthleteOverview from "./pages/CoachAthleteOverview";
+import CoachCompetitions from "./pages/CoachCompetitions";
 import SeasonCalendar from "./pages/SeasonCalendar";
 import Pricing from "./pages/Pricing";
 import SubscriptionSettings from "./pages/SubscriptionSettings";
@@ -106,6 +107,7 @@ const AnimatedRoutes = () => {
         <Route path="/admin/clubs" element={<Page><AdminClubs /></Page>} />
         <Route path="/coach" element={<Page><CoachDashboard /></Page>} />
         <Route path="/coach/athlete/:athleteId" element={<Page><CoachAthleteOverview /></Page>} />
+        <Route path="/coach/competitions" element={<Page><CoachCompetitions /></Page>} />
         <Route path="/coach/season-calendar" element={<Page><SeasonCalendar /></Page>} />
         <Route path="/pricing" element={<Page><Pricing /></Page>} />
         <Route path="/settings/subscription" element={<Page><SubscriptionSettings /></Page>} />
@@ -156,7 +158,7 @@ const App = () => {
           <BrowserRouter>
             <OfflineBanner />
             <AnimatedRoutes />
-            <FloatingChatButton />
+            
           </BrowserRouter>
         </TooltipProvider>
       </LanguageProvider>
