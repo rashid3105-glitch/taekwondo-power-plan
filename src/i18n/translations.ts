@@ -10146,6 +10146,8 @@ const translations = {
     minutesShort: "دقائق",
     pinnedModules: "الوحدات المثبتة",
     allModules: "جميع الوحدات",
+    customizePins: "تخصيص",
+    customizePinsDesc: "اختر ما يصل إلى 4 وحدات لعرضها على شاشتك الرئيسية.",
     otherModules: "وحدات أخرى",
     metricsUpdated: "مؤشرات محدثة",
     clipsReady: "مقاطع جاهزة",
