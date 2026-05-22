@@ -784,6 +784,8 @@ const translations = {
     minutesShort: "MIN",
     pinnedModules: "Pinned modules",
     allModules: "All modules",
+    customizePins: "Customize",
+    customizePinsDesc: "Choose up to 4 modules to show on your home screen.",
     otherModules: "Other modules",
     metricsUpdated: "metrics updated",
     clipsReady: "clips ready",
