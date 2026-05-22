@@ -130,7 +130,15 @@ export default function Dashboard() {
   }
   const [menuOpen, setMenuOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(typeof navigator !== "undefined" ? navigator.onLine : true);
-  const [coachAthleteMode, setCoachAthleteMode] = useState<"coach" | "athlete">("athlete");
+  const [coachAthleteMode, setCoachAthleteModeState] = useState<"coach" | "athlete">(() => {
+    if (typeof window === "undefined") return "athlete";
+    const stored = localStorage.getItem("tkd-coach-mode");
+    return stored === "coach" || stored === "athlete" ? stored : "athlete";
+  });
+  const setCoachAthleteMode = (mode: "coach" | "athlete") => {
+    try { localStorage.setItem("tkd-coach-mode", mode); } catch { /* ignore */ }
+    setCoachAthleteModeState(mode);
+  };
   const [chatOpen, setChatOpen] = useState(false);
   const [showMentalReminder, setShowMentalReminder] = useState(false);
 
