@@ -20,6 +20,7 @@ import { RehabPlanCard } from "@/components/RehabPlanCard";
 import { MedicalDocumentTranslator } from "@/components/MedicalDocumentTranslator";
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useCoachMode } from "@/contexts/CoachModeContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { MentalAssessment } from "@/components/MentalAssessment";
 import { ProgressDashboard } from "@/components/ProgressDashboard";
