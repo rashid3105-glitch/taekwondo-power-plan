@@ -552,17 +552,25 @@ export default function Dashboard() {
               <span className="text-sm sm:text-base font-extrabold text-foreground">SPORTSTALENT</span>
             </div>
             <div className="flex items-center gap-2">
-              {isCoach && coachAthleteMode === "athlete" && (
+              {isCoach && (
                 <button
                   onClick={() => {
                     import("@/lib/haptics").then(h => h.tap()).catch(() => {});
-                    setCoachAthleteMode("coach");
+                    setCoachAthleteMode(coachAthleteMode === "coach" ? "athlete" : "coach");
                   }}
-                  className="flex items-center gap-1.5 rounded-full border border-border bg-muted px-2.5 py-1.5 text-xs font-semibold text-foreground hover:bg-accent transition-colors cursor-pointer"
-                  aria-label={t("coachDashboard") || "Coach"}
+                  className={cn(
+                    "flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold transition-colors shrink-0",
+                    coachAthleteMode === "coach"
+                      ? "border-primary/40 bg-primary/10 text-primary"
+                      : "border-border bg-muted text-muted-foreground hover:text-foreground"
+                  )}
+                  aria-label={coachAthleteMode === "coach" ? "Skift til atlet-visning" : "Skift til træner-visning"}
                 >
-                  <Users className="h-3.5 w-3.5" />
-                  <span>{t("coachDashboard") || "Coach"}</span>
+                  {coachAthleteMode === "coach" ? (
+                    <><Users className="h-3 w-3" /> Hold</>
+                  ) : (
+                    <><Users className="h-3 w-3" /> Træner</>
+                  )}
                 </button>
               )}
               <LanguageSwitcher />
