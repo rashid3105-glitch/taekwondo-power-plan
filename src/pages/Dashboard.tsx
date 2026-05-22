@@ -1043,6 +1043,22 @@ export default function Dashboard() {
             {activePlan ? (
               <div className="space-y-2">
                 <AIPlanCard plan={activePlan} />
+                <div className="grid grid-cols-2 gap-3 mt-2">
+                  <button
+                    onClick={() => handleTabChange("rehab")}
+                    className="flex items-center gap-2 rounded-xl border border-border bg-card p-3 text-left hover:bg-accent/30 transition-colors"
+                  >
+                    <Heart className="h-4 w-4 text-destructive shrink-0" />
+                    <span className="text-xs font-semibold truncate">{t("injuryRehabPlan")}</span>
+                  </button>
+                  <button
+                    onClick={() => navigate("/library")}
+                    className="flex items-center gap-2 rounded-xl border border-border bg-card p-3 text-left hover:bg-accent/30 transition-colors"
+                  >
+                    <BookOpen className="h-4 w-4 text-primary shrink-0" />
+                    <span className="text-xs font-semibold truncate">{t("library")}</span>
+                  </button>
+                </div>
                 {(!hasCoach || isPaid) && (
                   <div className="flex justify-end">
                     <AlertDialog>
