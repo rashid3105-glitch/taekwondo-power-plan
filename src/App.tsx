@@ -152,17 +152,17 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
-        <CoachModeProvider>
-          <TooltipProvider>
-            {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
+        <TooltipProvider>
+          {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <CoachModeProvider>
               <OfflineBanner />
               <AnimatedRoutes />
-            </BrowserRouter>
-          </TooltipProvider>
-        </CoachModeProvider>
+            </CoachModeProvider>
+          </BrowserRouter>
+        </TooltipProvider>
       </LanguageProvider>
     </QueryClientProvider>
   );
