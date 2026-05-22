@@ -515,6 +515,7 @@ const translations = {
 
     // Help
     helpTitle: "How to Use SPORTSTALENT",
+    
     helpSubtitle: "Step-by-step guides to get the most out of the app",
     helpSearchPlaceholder: "Search help topics…",
     helpNoResults: "No matching topics found",
@@ -12221,6 +12222,7 @@ const translations = {
 
     // Help
     helpTitle: "Slik bruker du SPORTSTALENT",
+    
     helpSubtitle: "Trin-for-trin guides til at få mest ut av appen",
     helpSearchPlaceholder: "Søk i hjelpeemner…",
     helpNoResults: "Ingen treff",
@@ -14084,6 +14086,7 @@ export type TranslationKey = keyof typeof translations.en;
 // AI-generated plans (training, nutrition, mental, rehab) are produced in
 // Spanish server-side regardless of UI string coverage.
 const esOverrides: Partial<Record<TranslationKey, string>> = {
+  
   pushNotifications: "Notificaciones push",
   pushNotificationsTitle: "Recibir notificaciones",
   pushNotificationsDesc: "Recibe notificaciones sobre nuevos mensajes de chat y actividad",
