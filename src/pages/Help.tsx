@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import {
   UserCircle, ClipboardList, HeartPulse, Brain, Users, BarChart3, Clock, ChevronDown,
   Activity, Apple, TrendingUp, BookOpen, BookHeart, Download, Video, CalendarRange,
-  MessageSquare, MessageCircle, NotebookPen, Search, X, Dumbbell, Heart, Sparkles, UserCog, Settings, FileText,
+  MessageSquare, MessageCircle, NotebookPen, Search, X, Dumbbell, Heart, Sparkles, UserCog, Settings, FileText, ArrowLeft,
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PublicNav } from "@/components/PublicNav";
@@ -127,6 +127,7 @@ export default function Help() {
   const [activeTopic, setActiveTopic] = useState<TopicKey | null>(null);
   const [query, setQuery] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showAllChangelog, setShowAllChangelog] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -134,11 +135,16 @@ export default function Help() {
     let cancelled = false;
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user || cancelled) return;
+      if (cancelled) return;
+      setIsLoggedIn(!!user);
+      if (!user) return;
       const { data } = await supabase.rpc("is_admin", { _user_id: user.id });
       if (!cancelled && data === true) setIsAdmin(true);
     })();
-    return () => { cancelled = true; };
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      setIsLoggedIn(!!session?.user);
+    });
+    return () => { cancelled = true; sub.subscription.unsubscribe(); };
   }, []);
 
   // Translation helper with safe fallback for new section keys
@@ -275,7 +281,19 @@ export default function Help() {
 
       {/* Hero */}
       <div className="px-4 py-8">
-        <div className="mx-auto max-w-3xl space-y-2 text-center">
+        <div className="mx-auto max-w-3xl space-y-3 text-center">
+          {isLoggedIn && (
+            <div className="flex justify-center">
+              <button
+                type="button"
+                onClick={() => navigate("/dashboard")}
+                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-muted transition-colors shadow-sm"
+              >
+                <ArrowLeft className="h-3.5 w-3.5" />
+                {t("backToDashboard")}
+              </button>
+            </div>
+          )}
           <h1 className="text-3xl sm:text-4xl font-extrabold text-foreground">{t("helpTitle")}</h1>
           <p className="text-muted-foreground">{t("helpSubtitle")}</p>
         </div>
