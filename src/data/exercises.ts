@@ -2716,7 +2716,7 @@ const exercisesData: Record<string, ExerciseBase> = {
       whyItMatters: "Forbedrer direkte lyskens fleksibilitet for høye spark.",
     },
   },
-  thoracicRotation: {
+  thoracicRotationFloor: {
     id: "thoracic-rotation-floor",
     category: "mobility",
     muscleGroups: ["back", "core"],
