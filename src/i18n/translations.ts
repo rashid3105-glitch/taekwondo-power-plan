@@ -3154,6 +3154,8 @@ const translations = {
     minutesShort: "MIN",
     pinnedModules: "Fastgjorte moduler",
     allModules: "Alle moduler",
+    customizePins: "Tilpas",
+    customizePinsDesc: "Vælg op til 4 moduler der skal vises på din forside.",
     otherModules: "Øvrige moduler",
     metricsUpdated: "metrics opdateret",
     clipsReady: "klip klar",
