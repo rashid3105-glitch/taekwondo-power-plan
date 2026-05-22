@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { LanguageProvider } from "@/i18n/LanguageContext";
+import { CoachModeProvider, useCoachMode } from "@/contexts/CoachModeContext";
 
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { SplashScreen } from "@/components/SplashScreen";
@@ -74,11 +75,23 @@ const pageTransition = prefersReducedMotion
       transition: { duration: 0.18, ease: "easeOut" as const },
     };
 
-const Page = ({ children }: { children: React.ReactNode }) => (
-  <motion.div {...pageTransition} style={{ minHeight: "100%" }}>
-    {children}
-  </motion.div>
-);
+const Page = ({ children }: { children: React.ReactNode }) => {
+  const location = useLocation();
+  const { isCoachMode } = useCoachMode();
+
+  const isCoachRoute = location.pathname.startsWith("/coach");
+  const shouldBeDark = isCoachMode || isCoachRoute;
+
+  return (
+    <motion.div
+      {...pageTransition}
+      style={{ minHeight: "100%" }}
+      className={shouldBeDark ? "coach-mode" : undefined}
+    >
+      {children}
+    </motion.div>
+  );
+};
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -151,19 +164,21 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
-        <TooltipProvider>
-          {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <OfflineBanner />
-            <AnimatedRoutes />
-            
-          </BrowserRouter>
-        </TooltipProvider>
+        <CoachModeProvider>
+          <TooltipProvider>
+            {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <OfflineBanner />
+              <AnimatedRoutes />
+            </BrowserRouter>
+          </TooltipProvider>
+        </CoachModeProvider>
       </LanguageProvider>
     </QueryClientProvider>
   );
 };
 
 export default App;
+
