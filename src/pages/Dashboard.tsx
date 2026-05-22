@@ -524,6 +524,21 @@ export default function Dashboard() {
             <div className="flex items-center gap-2">
               <LanguageSwitcher />
               <EventRemindersDropdown />
+              <button
+                onClick={() => navigate("/profile-setup")}
+                className="relative shrink-0"
+                aria-label={t("profile")}
+              >
+                <AvatarImg
+                  avatarUrl={profile?.avatar_url}
+                  className="h-8 w-8 rounded-full object-cover border border-border"
+                  fallbackClassName="h-8 w-8 rounded-full bg-muted flex items-center justify-center border border-border"
+                />
+                <span className={cn(
+                  "absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-background",
+                  isOnline ? "bg-green-500" : "bg-destructive"
+                )} />
+              </button>
               <Button variant="ghost" size="icon" onClick={() => setMenuOpen(true)}>
                 <Menu className="h-5 w-5" />
               </Button>
