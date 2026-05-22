@@ -537,6 +537,19 @@ export default function Dashboard() {
               <span className="text-sm sm:text-base font-extrabold text-foreground">SPORTSTALENT</span>
             </div>
             <div className="flex items-center gap-2">
+              {isCoach && coachAthleteMode === "athlete" && (
+                <button
+                  onClick={() => {
+                    import("@/lib/haptics").then(h => h.tap()).catch(() => {});
+                    setCoachAthleteMode("coach");
+                  }}
+                  className="flex items-center gap-1.5 rounded-full border border-border bg-muted px-2.5 py-1.5 text-xs font-semibold text-foreground hover:bg-accent transition-colors cursor-pointer"
+                  aria-label={t("coachDashboard") || "Coach"}
+                >
+                  <Users className="h-3.5 w-3.5" />
+                  <span>{t("coachDashboard") || "Coach"}</span>
+                </button>
+              )}
               <LanguageSwitcher />
               <EventRemindersDropdown />
               <button
