@@ -130,7 +130,15 @@ export default function Dashboard() {
   }
   const [menuOpen, setMenuOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(typeof navigator !== "undefined" ? navigator.onLine : true);
-  const [coachAthleteMode, setCoachAthleteMode] = useState<"coach" | "athlete">("athlete");
+  const [coachAthleteMode, setCoachAthleteModeState] = useState<"coach" | "athlete">(() => {
+    if (typeof window === "undefined") return "athlete";
+    const stored = localStorage.getItem("tkd-coach-mode");
+    return stored === "coach" || stored === "athlete" ? stored : "athlete";
+  });
+  const setCoachAthleteMode = (mode: "coach" | "athlete") => {
+    try { localStorage.setItem("tkd-coach-mode", mode); } catch { /* ignore */ }
+    setCoachAthleteModeState(mode);
+  };
   const [chatOpen, setChatOpen] = useState(false);
   const [showMentalReminder, setShowMentalReminder] = useState(false);
 
@@ -315,7 +323,14 @@ export default function Dashboard() {
 
     // Check coach role
     const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", user.id);
-    if (roles?.some((r: any) => r.role === "coach")) { setIsCoach(true); setCoachAthleteMode("coach"); }
+    const coachOrAdmin = roles?.some((r: any) => r.role === "coach" || r.role === "admin");
+    if (coachOrAdmin) {
+      setIsCoach(true);
+      // Only auto-flip to coach mode on first load (no stored preference)
+      if (typeof window !== "undefined" && !localStorage.getItem("tkd-coach-mode")) {
+        setCoachAthleteMode("coach");
+      }
+    }
 
     // Check if user has a coach assigned
     const { data: coachLink } = await supabase.from("coach_athletes").select("coach_id").eq("athlete_id", user.id).limit(1);
