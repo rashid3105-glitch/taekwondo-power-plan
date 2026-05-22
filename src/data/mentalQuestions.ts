@@ -388,6 +388,95 @@ export const adultQuestions: MentalQuestion[] = [
       { value: 5, label: { en: "I have a structured plan with short and long-term goals", da: "Jeg har en struktureret plan med kort- og langsigtede mål", sv: "Jag har en strukturerad plan med kort- och långsiktiga mål", de: "Ich habe einen strukturierten Plan mit kurz- und langfristigen Zielen", ar: "لدي خطة منظمة بأهداف قصيرة وطويلة المدى" } },
     ],
   },
+  // Fatigue & Motivation
+  {
+    id: "fm1",
+    category: "fatigueMotivation",
+    text: {
+      en: "How tired do you feel going into training this week?",
+      da: "Hvor træt føler du dig inden denne uges træning?",
+      sv: "Hur trött känner du dig inför veckans träning?",
+      de: "Wie müde fühlst du dich in dieser Woche beim Training?",
+      ar: "كم تشعر بالتعب قبل تدريب هذا الأسبوع؟",
+    },
+    variants: [
+      { en: "Rate your energy tank right now — how full is it?", da: "Vurder din energitank nu — hvor fuld er den?", sv: "Betygsätt din energitank nu — hur full är den?", de: "Bewerte deinen Energietank jetzt — wie voll ist er?", ar: "قيّم خزان طاقتك الآن — كم هو ممتلئ؟" },
+      { en: "Honestly — how is your body holding up this week?", da: "Ærligt talt — hvordan holder din krop den her uge?", sv: "Ärligt — hur håller sig din kropp den här veckan?", de: "Ehrlich — wie hält dein Körper diese Woche durch?", ar: "بصدق — كيف يتحمل جسمك هذا الأسبوع؟" },
+    ],
+    options: [
+      { value: 1, label: { en: "Exhausted — I can barely function", da: "Udmattet — jeg kan næppe fungere", sv: "Utmattad — jag kan knappt fungera", de: "Erschöpft — ich kann kaum funktionieren", ar: "منهك تمامًا — بالكاد أستطيع العمل" } },
+      { value: 2, label: { en: "Very tired — my body feels heavy and slow", da: "Meget træt — min krop føles tung og langsom", sv: "Väldigt trött — min kropp känns tung och långsam", de: "Sehr müde — mein Körper fühlt sich schwer und langsam an", ar: "متعب جدًا — جسمي يشعر بثقل وبطء" } },
+      { value: 3, label: { en: "Somewhat tired but I can still train", da: "Noget træt, men jeg kan stadig træne", sv: "Lite trött men jag kan fortfarande träna", de: "Etwas müde, aber ich kann noch trainieren", ar: "متعب نوعًا ما لكنني أستطيع التدريب" } },
+      { value: 4, label: { en: "Good energy — I feel fresh and ready", da: "God energi — jeg føler mig frisk og klar", sv: "Bra energi — jag känner mig fräsch och redo", de: "Gute Energie — ich fühle mich frisch und bereit", ar: "طاقة جيدة — أشعر بالانتعاش والاستعداد" } },
+      { value: 5, label: { en: "Full tank — I feel the best I have in weeks", da: "Fuld tank — jeg har det bedre end i ugevis", sv: "Full tank — jag mår bättre än på veckor", de: "Voller Tank — ich fühle mich so gut wie seit Wochen nicht", ar: "خزان ممتلئ — أشعر بأفضل حال منذ أسابيع" } },
+    ],
+  },
+  {
+    id: "fm2",
+    category: "fatigueMotivation",
+    text: {
+      en: "When I think about my training goals right now, I feel...",
+      da: "Når jeg tænker på mine træningsmål lige nu, føler jeg mig...",
+      sv: "När jag tänker på mina träningsmål just nu, känner jag mig...",
+      de: "Wenn ich jetzt an meine Trainingsziele denke, fühle ich mich...",
+      ar: "عندما أفكر في أهدافي التدريبية الآن، أشعر..."
+    },
+    variants: [
+      { en: "Do your goals still excite you or do they feel like a burden?", da: "Begejstrer dine mål dig stadig, eller føles de som en byrde?", sv: "Engagerar dina mål dig fortfarande eller känns de som en börda?", de: "Begeistern dich deine Ziele noch oder fühlen sie sich wie eine Last an?", ar: "هل لا تزال أهدافك تثيرك أم أنها تبدو كعبء؟" },
+      { en: "What's your gut feeling about your training right now?", da: "Hvad er din mavefornemmelse om din træning lige nu?", sv: "Vad är din känsla för din träning just nu?", de: "Was ist dein Bauchgefühl für dein Training gerade?", ar: "ما هو شعورك الحدسي تجاه تدريبك الآن؟" },
+    ],
+    options: [
+      { value: 1, label: { en: "My goals feel meaningless right now", da: "Mine mål føles meningsløse lige nu", sv: "Mina mål känns meningslösa just nu", de: "Meine Ziele fühlen sich gerade bedeutungslos an", ar: "أهدافي تبدو بلا معنى الآن" } },
+      { value: 2, label: { en: "Disconnected — I'm going through the motions", da: "Afkoblet — jeg går bare igennem bevægelserne", sv: "Frånkopplad — jag bara går igenom rörelserna", de: "Abgekoppelt — ich gehe nur durch die Bewegungen", ar: "منفصل — أؤدي الحركات فقط" } },
+      { value: 3, label: { en: "Neutral — I'm not inspired but not giving up", da: "Neutral — jeg er ikke inspireret men giver ikke op", sv: "Neutral — jag är inte inspirerad men ger inte upp", de: "Neutral — ich bin nicht inspiriert, gebe aber nicht auf", ar: "محايد — لست ملهمًا لكنني لا أستسلم" } },
+      { value: 4, label: { en: "Engaged — my goals feel relevant and motivating", da: "Engageret — mine mål føles relevante og motiverende", sv: "Engagerad — mina mål känns relevanta och motiverande", de: "Engagiert — meine Ziele fühlen sich relevant und motivierend an", ar: "مشارك — أهدافي تبدو ذات صلة ومحفزة" } },
+      { value: 5, label: { en: "On fire — I know exactly why I train and I can't wait", da: "I flammer — jeg ved præcis hvorfor jeg træner og kan ikke vente", sv: "I brand — jag vet exakt varför jag tränar och kan inte vänta", de: "Brennend — ich weiß genau warum ich trainiere und kann es kaum erwarten", ar: "متحمس — أعرف بالضبط لماذا أتدرب ولا أستطيع الانتظار" } },
+    ],
+  },
+  {
+    id: "fm3",
+    category: "fatigueMotivation",
+    text: {
+      en: "How has your sleep and recovery been this week?",
+      da: "Hvordan har din søvn og restitution været denne uge?",
+      sv: "Hur har din sömn och återhämtning varit den här veckan?",
+      de: "Wie war dein Schlaf und deine Erholung diese Woche?",
+      ar: "كيف كان نومك وتعافيك هذا الأسبوع؟"
+    },
+    variants: [
+      { en: "Is your body getting enough time to rebuild between sessions?", da: "Får din krop nok tid til at genopbygge mellem sessionerne?", sv: "Får din kropp tillräckligt med tid att återuppbygga sig mellan passen?", de: "Bekommt dein Körper genug Zeit um sich zwischen den Einheiten zu regenerieren?", ar: "هل يحصل جسمك على وقت كافٍ للتعافي بين الجلسات؟" },
+      { en: "Describe your recovery game this week in one answer:", da: "Beskriv dit restitutionsspil denne uge med ét svar:", sv: "Beskriv din återhämtning den här veckan med ett svar:", de: "Beschreibe deine Erholung diese Woche in einer Antwort:", ar: "صِف تعافيك هذا الأسبوع بإجابة واحدة:" },
+    ],
+    options: [
+      { value: 1, label: { en: "Poor sleep, no recovery routines, feeling wrecked", da: "Dårlig søvn, ingen restitutionsrutiner, føler mig ødelagt", sv: "Dålig sömn, inga återhämtningsrutiner, känner mig förstörd", de: "Schlechter Schlaf, keine Erholungsroutinen, fühle mich kaputt", ar: "نوم سيئ، لا روتين للتعافي، أشعر بالإنهاك" } },
+      { value: 2, label: { en: "Broken sleep, some soreness, not recovering well", da: "Afbrudt søvn, lidt ømhed, restituerer ikke godt", sv: "Bruten sömn, lite ömhet, återhämtar mig inte bra", de: "Unterbrochener Schlaf, etwas Muskelkater, erhole mich nicht gut", ar: "نوم متقطع، بعض الألم، لا أتعافى بشكل جيد" } },
+      { value: 3, label: { en: "Okay sleep, some recovery but not optimal", da: "Okay søvn, noget restitution men ikke optimalt", sv: "Okej sömn, viss återhämtning men inte optimal", de: "Okay Schlaf, etwas Erholung aber nicht optimal", ar: "نوم مقبول، بعض التعافي لكن ليس مثالياً" } },
+      { value: 4, label: { en: "Good sleep, body feels fresh between sessions", da: "God søvn, kroppen føles frisk mellem sessionerne", sv: "Bra sömn, kroppen känns fräsch mellan passen", de: "Guter Schlaf, Körper fühlt sich frisch zwischen den Einheiten an", ar: "نوم جيد، الجسم يشعر بالانتعاش بين الجلسات" } },
+      { value: 5, label: { en: "Excellent sleep + active recovery — I feel supercharged", da: "Fremragende søvn + aktiv restitution — jeg føler mig supersuppleret", sv: "Utmärkt sömn + aktiv återhämtning — jag känner mig superladdad", de: "Ausgezeichneter Schlaf + aktive Erholung — ich fühle mich aufgeladen", ar: "نوم ممتاز + تعافٍ نشط — أشعر بطاقة فائقة" } },
+    ],
+  },
+  {
+    id: "fm4",
+    category: "fatigueMotivation",
+    text: {
+      en: "Right now, how much do you genuinely want to be at training?",
+      da: "Lige nu, hvor meget vil du egentlig gerne være til træning?",
+      sv: "Just nu, hur mycket vill du verkligen vara på träning?",
+      de: "Gerade jetzt, wie sehr möchtest du wirklich beim Training sein?",
+      ar: "الآن، كم تريد حقًا أن تكون في التدريب؟"
+    },
+    variants: [
+      { en: "If training was optional today, would you still show up?", da: "Hvis træning var valgfrit i dag, ville du stadig møde op?", sv: "Om träningen var frivillig idag, skulle du ändå dyka upp?", de: "Wenn das Training heute optional wäre, würdest du trotzdem kommen?", ar: "إذا كان التدريب اختياريًا اليوم، هل ستحضر رغم ذلك؟" },
+      { en: "Be honest — what's pulling you toward or away from the mat today?", da: "Vær ærlig — hvad trækker dig mod eller væk fra måtten i dag?", sv: "Var ärlig — vad drar dig mot eller ifrån mattan idag?", de: "Sei ehrlich — was zieht dich heute zur Matte hin oder davon weg?", ar: "كن صادقًا — ما الذي يجذبك نحو الحلبة أو يبعدك عنها اليوم؟" },
+    ],
+    options: [
+      { value: 1, label: { en: "I really don't want to be here — I'm just going through the motions", da: "Jeg vil virkelig ikke være her — jeg går bare igennem bevægelserne", sv: "Jag vill verkligen inte vara här — jag bara går igenom rörelserna", de: "Ich will wirklich nicht hier sein — ich gehe nur durch die Bewegungen", ar: "لا أريد حقًا أن أكون هنا — أؤدي الحركات فقط" } },
+      { value: 2, label: { en: "Forced myself to come — motivation is at a low point", da: "Tvang mig selv til at komme — motivationen er på et lavpunkt", sv: "Tvingade mig att komma — motivationen är på ett lågt punkt", de: "Zwang mich zu kommen — Motivation ist auf einem Tiefpunkt", ar: "أجبرت نفسي على الحضور — الحافز في أدنى مستوياته" } },
+      { value: 3, label: { en: "I'm here, I'll do my best — but the spark isn't there today", da: "Jeg er her, jeg gør mit bedste — men gnisten er ikke der i dag", sv: "Jag är här, gör mitt bästa — men gnistan är inte där idag", de: "Ich bin hier, gebe mein Bestes — aber der Funke ist heute nicht da", ar: "أنا هنا، سأبذل قصارى جهدي — لكن الشرارة ليست هناك اليوم" } },
+      { value: 4, label: { en: "I want to be here and I'm ready to work hard", da: "Jeg vil gerne være her og er klar til at arbejde hårdt", sv: "Jag vill vara här och är redo att jobba hårt", de: "Ich möchte hier sein und bin bereit hart zu arbeiten", ar: "أريد أن أكون هنا وأنا مستعد للعمل بجد" } },
+      { value: 5, label: { en: "This is exactly where I want to be — let's go!", da: "Det er præcis her jeg vil være — lad os komme i gang!", sv: "Det är precis här jag vill vara — sätt igång!", de: "Genau hier möchte ich sein — los geht's!", ar: "هذا هو بالضبط المكان الذي أريد أن أكون فيه — هيا نبدأ!" } },
+    ],
+  },
 ];
 
 /** Junior questions (age < 15) — simpler language, relatable scenarios */
@@ -738,6 +827,79 @@ export const juniorQuestions: MentalQuestion[] = [
       { value: 3, label: { en: "Yes, I want to get the next belt", da: "Ja, jeg vil gerne have næste bælte", sv: "Ja, jag vill ta nästa bälte", de: "Ja, ich möchte den nächsten Gürtel bekommen", ar: "نعم، أريد الحصول على الحزام التالي" } },
       { value: 4, label: { en: "Yes, I have clear goals and I work towards them", da: "Ja, jeg har klare mål og arbejder hen imod dem", sv: "Ja, jag har tydliga mål och jobbar mot dem", de: "Ja, ich habe klare Ziele und arbeite darauf hin", ar: "نعم، لدي أهداف واضحة وأعمل نحوها" } },
       { value: 5, label: { en: "Yes! I dream big and train hard to get there!", da: "Ja! Jeg drømmer stort og træner hårdt for at nå dertil!", sv: "Ja! Jag drömmer stort och tränar hårt för att nå dit!", de: "Ja! Ich träume groß und trainiere hart um es zu schaffen!", ar: "نعم! أحلم بالكبير وأتدرب بجد للوصول!" } },
+    ],
+  },
+  // Fatigue & Motivation
+  {
+    id: "fm1",
+    category: "fatigueMotivation",
+    text: {
+      en: "How tired does your body feel today?",
+      da: "Hvor træt føles din krop i dag?",
+      sv: "Hur trött känns din kropp idag?",
+      de: "Wie müde fühlt sich dein Körper heute an?",
+      ar: "كم يشعر جسمك بالتعب اليوم؟"
+    },
+    options: [
+      { value: 1, label: { en: "Super tired — I can barely move", da: "Super træt — jeg kan næsten ikke bevæge mig", sv: "Superledd — jag kan knappt röra mig", de: "Super müde — ich kann mich kaum bewegen", ar: "متعب جداً — بالكاد أستطيع الحركة" } },
+      { value: 2, label: { en: "Pretty tired — my legs feel heavy", da: "Ret træt — mine ben føles tunge", sv: "Ganska trött — mina ben känns tunga", de: "Ziemlich müde — meine Beine fühlen sich schwer an", ar: "متعب نسبياً — ساقاي تشعران بثقل" } },
+      { value: 3, label: { en: "A little tired but I can still train", da: "Lidt træt, men kan stadig træne", sv: "Lite trött men kan fortfarande träna", de: "Ein wenig müde aber ich kann noch trainieren", ar: "متعب قليلاً لكنني أستطيع التدريب" } },
+      { value: 4, label: { en: "Good — I have lots of energy!", da: "God — jeg har masser af energi!", sv: "Bra — jag har massor av energi!", de: "Gut — ich habe viel Energie!", ar: "بخير — لدي الكثير من الطاقة!" } },
+      { value: 5, label: { en: "Amazing — I feel like I can do anything!", da: "Fantastisk — jeg føler jeg kan gøre alt!", sv: "Fantastisk — jag känner att jag kan göra vad som helst!", de: "Fantastisch — ich fühle ich kann alles tun!", ar: "رائع — أشعر أنني أستطيع فعل أي شيء!" } },
+    ],
+  },
+  {
+    id: "fm2",
+    category: "fatigueMotivation",
+    text: {
+      en: "Do you feel like going to taekwondo training today?",
+      da: "Har du lyst til at tage til taekwondo-træning i dag?",
+      sv: "Vill du gå på taekwondoträning idag?",
+      de: "Hast du Lust heute zum Taekwondo-Training zu gehen?",
+      ar: "هل تشعر بالرغبة في الذهاب لتدريب التايكوندو اليوم؟"
+    },
+    options: [
+      { value: 1, label: { en: "No, I really don't want to go", da: "Nej, jeg har virkelig ikke lyst til at tage afsted", sv: "Nej, jag vill verkligen inte gå", de: "Nein, ich möchte wirklich nicht gehen", ar: "لا، لا أريد الذهاب حقًا" } },
+      { value: 2, label: { en: "Not really, but I'll go anyway", da: "Ikke rigtig, men jeg tager afsted alligevel", sv: "Inte riktigt, men jag går ändå", de: "Nicht wirklich, aber ich gehe trotzdem", ar: "ليس حقًا، لكنني سأذهب على أي حال" } },
+      { value: 3, label: { en: "Kind of — I feel okay about it", da: "Lidt — det er okay", sv: "Lite — det känns okej", de: "Ein bisschen — ich fühle mich okay dabei", ar: "نوعًا ما — أشعر بأنه مقبول" } },
+      { value: 4, label: { en: "Yes, I'm looking forward to it!", da: "Ja, jeg glæder mig!", sv: "Ja, jag ser fram emot det!", de: "Ja, ich freue mich darauf!", ar: "نعم، أتطلع إليه!" } },
+      { value: 5, label: { en: "YES! I love taekwondo and I can't wait!", da: "JA! Jeg elsker taekwondo og kan ikke vente!", sv: "JA! Jag älskar taekwondo och kan inte vänta!", de: "JA! Ich liebe Taekwondo und kann es kaum erwarten!", ar: "نعم! أحب التايكوندو ولا أستطيع الانتظار!" } },
+    ],
+  },
+  {
+    id: "fm3",
+    category: "fatigueMotivation",
+    text: {
+      en: "How well did you sleep last night?",
+      da: "Hvor godt sov du i nat?",
+      sv: "Hur bra sov du i natt?",
+      de: "Wie gut hast du letzte Nacht geschlafen?",
+      ar: "كيف كان نومك الليلة الماضية؟"
+    },
+    options: [
+      { value: 1, label: { en: "Really badly — I'm very tired today", da: "Rigtig dårligt — jeg er meget træt i dag", sv: "Riktigt dåligt — jag är väldigt trött idag", de: "Richtig schlecht — ich bin heute sehr müde", ar: "بشكل سيئ جداً — أنا متعب جداً اليوم" } },
+      { value: 2, label: { en: "Not so great — I woke up a lot", da: "Ikke så godt — jeg vågnede mange gange", sv: "Inte så bra — jag vaknade mycket", de: "Nicht so gut — ich bin oft aufgewacht", ar: "ليس جيدًا — استيقظت كثيرًا" } },
+      { value: 3, label: { en: "Okay I guess", da: "Okay tror jeg", sv: "Okej antar jag", de: "Okay glaube ich", ar: "مقبول على ما أعتقد" } },
+      { value: 4, label: { en: "Pretty good — I feel rested", da: "Ret godt — jeg føler mig udhvilet", sv: "Ganska bra — jag känner mig utvilad", de: "Ziemlich gut — ich fühle mich ausgeruht", ar: "جيد نسبياً — أشعر بالراحة" } },
+      { value: 5, label: { en: "Amazing sleep — I feel super fresh!", da: "Fantastisk søvn — jeg er super frisk!", sv: "Fantastisk sömn — jag är superfräsch!", de: "Fantastischer Schlaf — ich bin super frisch!", ar: "نوم رائع — أشعر بانتعاش فائق!" } },
+    ],
+  },
+  {
+    id: "fm4",
+    category: "fatigueMotivation",
+    text: {
+      en: "If you could skip training today with no consequences, would you?",
+      da: "Hvis du kunne springe træning over i dag uden konsekvenser, ville du?",
+      sv: "Om du kunde hoppa över träning idag utan konsekvenser, skulle du?",
+      de: "Wenn du heute das Training ohne Konsequenzen überspringen könntest, würdest du?",
+      ar: "إذا استطعت تخطي التدريب اليوم دون عواقب، هل ستفعل؟"
+    },
+    options: [
+      { value: 1, label: { en: "Yes, definitely — I really don't want to train", da: "Ja, bestemt — jeg har virkelig ikke lyst til at træne", sv: "Ja definitivt — jag vill verkligen inte träna", de: "Ja definitiv — ich möchte wirklich nicht trainieren", ar: "نعم بالتأكيد — لا أريد التدريب حقًا" } },
+      { value: 2, label: { en: "Probably yes", da: "Sandsynligvis ja", sv: "Troligtvis ja", de: "Wahrscheinlich ja", ar: "على الأرجح نعم" } },
+      { value: 3, label: { en: "I'm not sure", da: "Jeg er ikke sikker", sv: "Jag är inte säker", de: "Ich bin nicht sicher", ar: "لست متأكدًا" } },
+      { value: 4, label: { en: "No, I want to train!", da: "Nej, jeg vil gerne træne!", sv: "Nej, jag vill träna!", de: "Nein, ich möchte trainieren!", ar: "لا، أريد التدريب!" } },
+      { value: 5, label: { en: "No way! Training is the best part of my day!", da: "Nej da! Træning er det bedste ved min dag!", sv: "Inte alls! Träning är det bästa med min dag!", de: "Auf keinen Fall! Training ist der beste Teil meines Tages!", ar: "لا أبدًا! التدريب هو أفضل جزء في يومي!" } },
     ],
   },
 ];

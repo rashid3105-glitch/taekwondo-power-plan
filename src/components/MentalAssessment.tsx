@@ -57,6 +57,7 @@ const categoryIcons: Record<string, React.ReactNode> = {
   recoveryFromLoss: <RefreshCw className="h-4 w-4" />,
   confidence: <Flame className="h-4 w-4" />,
   motivation: <Trophy className="h-4 w-4" />,
+  fatigueMotivation: <Flame className="h-4 w-4" />,
 };
 
 const categoryLabels: Record<string, Record<SupportedLocale, string>> = {
@@ -66,6 +67,7 @@ const categoryLabels: Record<string, Record<SupportedLocale, string>> = {
   recoveryFromLoss: { en: "Recovery from Loss", da: "Håndtering af nederlag", sv: "Återhämtning efter förlust", de: "Erholung nach Niederlagen", ar: "التعافي من الخسارة", no: "Håndtering av nederlag" },
   confidence: { en: "Confidence", da: "Selvtillid", sv: "Självförtroende", de: "Selbstvertrauen", ar: "الثقة بالنفس", no: "Selvtillit" },
   motivation: { en: "Motivation", da: "Motivation", sv: "Motivation", de: "Motivation", ar: "التحفيز", no: "Motivasjon" },
+  fatigueMotivation: { en: "Fatigue & Motivation", da: "Træthed & Motivation", sv: "Trötthet & Motivation", de: "Müdigkeit & Motivation", ar: "التعب والتحفيز", no: "Tretthet & Motivasjon" },
 };
 
 interface Assessment {
