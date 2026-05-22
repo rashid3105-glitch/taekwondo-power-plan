@@ -132,6 +132,7 @@ export default function Dashboard() {
   const [isOnline, setIsOnline] = useState(typeof navigator !== "undefined" ? navigator.onLine : true);
   const [coachAthleteMode, setCoachAthleteMode] = useState<"coach" | "athlete">("athlete");
   const [chatOpen, setChatOpen] = useState(false);
+  const [showMentalReminder, setShowMentalReminder] = useState(false);
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -420,6 +421,20 @@ export default function Dashboard() {
       .limit(1)
       .maybeSingle();
     setNextEvent((nextComp as any) || null);
+
+    // Monthly mental assessment reminder
+    try {
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      const { data: lastMental } = await supabase
+        .from("mental_assessments")
+        .select("created_at")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      const isDue = !lastMental || (lastMental as any).created_at < thirtyDaysAgo;
+      setShowMentalReminder(isDue && isModuleEnabled("mental"));
+    } catch { /* ignore */ }
 
     setLoading(false);
   };
@@ -740,6 +755,20 @@ export default function Dashboard() {
           <div className="space-y-4">
             {/* Conditional readiness banner (top of scrollable content) */}
             {!isDemo && <HubReadinessBanner />}
+
+            {showMentalReminder && (
+              <div
+                className="flex items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 p-3 cursor-pointer hover:bg-primary/10 transition-colors"
+                onClick={() => handleTabChange("mental")}
+              >
+                <Brain className="h-5 w-5 text-primary shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-foreground">{t("mentalReminderTitle") || "Månedlig mental gennemgang"}</p>
+                  <p className="text-xs text-muted-foreground">{t("mentalReminderDesc") || "Det er over 30 dage siden din sidste vurdering — tager under 2 min"}</p>
+                </div>
+                <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+              </div>
+            )}
 
             {/* Greeting line — bigger profile picture */}
             <div className="flex items-center gap-3 px-1">

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -29,11 +30,8 @@ interface CompGroup {
   participants: { user_id: string; athlete_name: string; result: string | null }[];
 }
 
-// fallback helper: t() returns the key string when no translation exists
 function tx(value: string, fallback: string) {
-  // if t returned the key literally, use fallback
   if (!value || value === fallback) return fallback;
-  // heuristic: missing keys look like camelCase identifiers
   if (/^[a-z][a-zA-Z]+$/.test(value) && value.length > 6) return fallback;
   return value;
 }
@@ -66,10 +64,14 @@ function groupComps(list: Comp[]): CompGroup[] {
 
 export default function CoachCompetitions() {
   const { t } = useLanguage();
+  const { toast } = useToast();
   const navigate = useNavigate();
   const [comps, setComps] = useState<Comp[]>([]);
+  const [myAthletes, setMyAthletes] = useState<{ user_id: string; display_name: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [openGroup, setOpenGroup] = useState<CompGroup | null>(null);
+  const [addingId, setAddingId] = useState<string | null>(null);
+  const [removingId, setRemovingId] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -80,6 +82,7 @@ export default function CoachCompetitions() {
       if (!athleteIds.length) { setLoading(false); return; }
       const { data: profiles } = await supabase.from("profiles").select("user_id, display_name").in("user_id", athleteIds);
       const nameMap = new Map((profiles ?? []).map((p: any) => [p.user_id, p.display_name]));
+      setMyAthletes((profiles ?? []).map((p: any) => ({ user_id: p.user_id, display_name: p.display_name || "—" })));
       const { data: competitions } = await supabase.from("competitions").select("id, name, event_date, location, user_id, priority, result").in("user_id", athleteIds).order("event_date", { ascending: true });
       setComps(((competitions ?? []) as any[]).map((c: any) => ({ ...c, athlete_name: nameMap.get(c.user_id) || "—" })));
       setLoading(false);
@@ -101,6 +104,56 @@ export default function CoachCompetitions() {
   const labelNone = tx(t("noCompetitions") as string, "Ingen stævner registreret endnu");
   const labelAthletes = tx(t("athletes") as string, "atleter");
   const labelParticipants = tx(t("participants") as string, "Deltagere");
+  const labelRemove = tx(t("removeParticipant") as string, "Fjern");
+  const labelAddSection = tx(t("addParticipant") as string, "Tilføj atlet");
+
+  const getCompId = (group: CompGroup, userId: string): string | null => {
+    const match = comps.find(c =>
+      c.user_id === userId &&
+      c.name.trim().toLowerCase() === group.name.trim().toLowerCase() &&
+      c.event_date === group.event_date
+    );
+    return match?.id ?? null;
+  };
+
+  const addAthleteToComp = async (group: CompGroup, athleteId: string) => {
+    setAddingId(athleteId);
+    try {
+      const { data, error } = await supabase.from("competitions").insert({
+        user_id: athleteId,
+        name: group.name,
+        event_date: group.event_date,
+        location: group.location,
+        priority: group.priority,
+        result: null,
+      } as any).select("id").single();
+      if (error) throw error;
+      const athleteName = myAthletes.find(a => a.user_id === athleteId)?.display_name || "—";
+      const newId = (data as any)?.id || crypto.randomUUID();
+      setComps(prev => [...prev, { id: newId, name: group.name, event_date: group.event_date, location: group.location, user_id: athleteId, athlete_name: athleteName, priority: group.priority, result: null }]);
+      setOpenGroup(prev => prev ? { ...prev, participants: [...prev.participants, { user_id: athleteId, athlete_name: athleteName, result: null }] } : prev);
+    } catch (e: any) {
+      toast({ title: "Fejl", description: e.message, variant: "destructive" });
+    } finally {
+      setAddingId(null);
+    }
+  };
+
+  const removeAthleteFromComp = async (group: CompGroup, userId: string) => {
+    const compId = getCompId(group, userId);
+    if (!compId) return;
+    setRemovingId(userId);
+    try {
+      const { error } = await supabase.from("competitions").delete().eq("id", compId);
+      if (error) throw error;
+      setComps(prev => prev.filter(c => c.id !== compId));
+      setOpenGroup(prev => prev ? { ...prev, participants: prev.participants.filter(p => p.user_id !== userId) } : prev);
+    } catch (e: any) {
+      toast({ title: "Fejl", description: e.message, variant: "destructive" });
+    } finally {
+      setRemovingId(null);
+    }
+  };
 
   const renderCard = (g: CompGroup, isPast: boolean) => (
     <button
@@ -139,6 +192,10 @@ export default function CoachCompetitions() {
       </Card>
     </button>
   );
+
+  const notYetIn = openGroup
+    ? myAthletes.filter(a => !new Set(openGroup.participants.map(p => p.user_id)).has(a.user_id))
+    : [];
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -199,10 +256,41 @@ export default function CoachCompetitions() {
                     .map((p) => (
                       <div key={p.user_id} className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-muted/50">
                         <span className="text-sm font-medium truncate">{p.athlete_name}</span>
-                        {p.result && <Badge variant="outline" className="text-[10px]">{p.result}</Badge>}
+                        <div className="flex items-center gap-2 shrink-0">
+                          {p.result && <Badge variant="outline" className="text-[10px]">{p.result}</Badge>}
+                          <button
+                            onClick={() => removeAthleteFromComp(openGroup, p.user_id)}
+                            disabled={removingId === p.user_id}
+                            className="text-xs text-destructive hover:text-destructive/80 px-2 py-0.5 rounded border border-destructive/30 hover:bg-destructive/10 transition-colors disabled:opacity-50"
+                          >
+                            {removingId === p.user_id ? "…" : labelRemove}
+                          </button>
+                        </div>
                       </div>
                     ))}
                 </div>
+
+                {notYetIn.length > 0 && (
+                  <div className="mt-4">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                      {labelAddSection}
+                    </p>
+                    <div className="space-y-1.5">
+                      {[...notYetIn].sort((a, b) => a.display_name.localeCompare(b.display_name)).map(a => (
+                        <div key={a.user_id} className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-dashed border-border">
+                          <span className="text-sm text-muted-foreground truncate">{a.display_name}</span>
+                          <button
+                            onClick={() => addAthleteToComp(openGroup, a.user_id)}
+                            disabled={addingId === a.user_id}
+                            className="text-xs text-primary hover:text-primary/80 px-2 py-0.5 rounded border border-primary/30 hover:bg-primary/10 transition-colors disabled:opacity-50 shrink-0"
+                          >
+                            {addingId === a.user_id ? "…" : `+ ${labelAddSection}`}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </>
           )}
