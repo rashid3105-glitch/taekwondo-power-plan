@@ -130,6 +130,8 @@ export default function Dashboard() {
   }
   const [menuOpen, setMenuOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(typeof navigator !== "undefined" ? navigator.onLine : true);
+  const [coachAthleteMode, setCoachAthleteMode] = useState<"coach" | "athlete">("athlete");
+  const [chatOpen, setChatOpen] = useState(false);
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
