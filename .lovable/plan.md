@@ -1,26 +1,19 @@
-# Add "Back to dashboard" on Help page when logged in
+# Help page: "Back to dashboard" when logged in
 
 ## Problem
-`/help` renders `PublicNav` regardless of auth state, so signed-in users have no in-app way to return to their dashboard (only the browser back button).
+`/help` (and other public pages using `PublicNav`) shows a "Sign in" button regardless of auth state. Signed-in users have no in-app way back to their dashboard.
 
 ## Change
-In `src/pages/Help.tsx`:
-- Check the current Supabase session (via `supabase.auth.getSession` + `onAuthStateChange`, matching the pattern used elsewhere).
-- If a session exists, render a small "Back to dashboard" button (ArrowLeft icon + `t("backToDashboard")`) near the top of the hero, navigating to `/dashboard` (or `/coach` if the user is a coach — simplest: always `/dashboard`, which already routes coaches correctly).
-- If no session, keep current behavior (PublicNav only).
+Update `src/components/PublicNav.tsx`:
+- Track session via `supabase.auth.getSession()` + `onAuthStateChange` subscription.
+- When a session exists, replace the "Sign in" button (desktop + mobile menu) with a "Back to dashboard" button that navigates to `/dashboard` (Dashboard already redirects coaches/parents appropriately).
+- When no session, keep current "Sign in" behavior.
+
+This fixes Help and every other public page using `PublicNav` in one place.
 
 ## Translations
-Add `backToDashboard` to `src/i18n/translations.ts` for all 7 locales:
-- en: "Back to dashboard"
-- da: "Tilbage til dashboard"
-- sv: "Tillbaka till dashboard"
-- de: "Zurück zum Dashboard"
-- ar: "العودة إلى لوحة التحكم"
-- no: "Tilbake til dashbordet"
-- es: "Volver al panel"
+Add `backToDashboard` to `src/i18n/translations.ts` for all 7 locales (en, da, sv, de, ar, no, es).
 
 ## Files
-- `src/pages/Help.tsx`
+- `src/components/PublicNav.tsx`
 - `src/i18n/translations.ts`
-
-No other changes.
