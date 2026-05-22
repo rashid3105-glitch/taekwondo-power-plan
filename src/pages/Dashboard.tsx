@@ -639,12 +639,6 @@ export default function Dashboard() {
               <Watch className="h-4 w-4 shrink-0" />
               <span>{t("healthPageTitle" as any) || "Health"}</span>
             </button>
-            {isCoach && (
-              <button onClick={() => { setMenuOpen(false); navigate("/coach"); }} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer">
-                <Users className="h-4 w-4 shrink-0" />
-                <span>{t("coachDashboard") || "Coach"}</span>
-              </button>
-            )}
             {isAdmin && (
               <button onClick={() => { setMenuOpen(false); navigate("/admin/approval"); }} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer">
                 <Shield className="h-4 w-4 shrink-0" />
