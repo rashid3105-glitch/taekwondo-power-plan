@@ -880,22 +880,50 @@ export default function Dashboard() {
             {/* Optional reflection prompt */}
             {!isDemo && <ReflectionPromptCard />}
 
-            {/* 4. Pinned modules */}
-            <HubPinnedModules
-              hasActivePlan={!!activePlan}
-              activePlanWeek={null}
-              metricsUpdated={0}
-              nextEventName={nextEvent?.name ?? null}
-              nextEventDate={nextEvent?.event_date ?? null}
-              matchClipsCount={0}
-              isDemo={isDemo}
-              isLocked={(mod) => isModuleLocked(mod) || (mod === "match_analysis" && !isModuleEnabled("video"))}
-              onTab={(tab) => handleTabChange(tab)}
-              onAllModules={() => {
-                const el = document.getElementById("hub-other-modules");
-                el?.scrollIntoView({ behavior: "smooth", block: "start" });
-              }}
-            />
+            {/* 4. Pinned modules — customizable */}
+            <section>
+              <div className="flex items-center justify-between mb-2 px-1">
+                <h3 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                  {t("pinnedModules")}
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setPinsEditorOpen(true)}
+                  className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Pencil className="h-3 w-3" />
+                  <span>{t("customizePins") || "Tilpas"}</span>
+                </button>
+              </div>
+              <div className="grid gap-3 grid-cols-2">
+                {pinnedKeys
+                  .map(k => ALL_PINNABLE.find(m => m.key === k))
+                  .filter(Boolean)
+                  .slice(0, 4)
+                  .map((mod) => {
+                    const Icon = mod!.icon;
+                    const locked = isDemo && !["plan"].includes(mod!.key);
+                    return (
+                      <button
+                        key={mod!.key}
+                        type="button"
+                        onClick={() => !locked && mod!.onClick()}
+                        disabled={locked}
+                        className={cn(
+                          "group relative overflow-hidden rounded-2xl border border-border bg-card/80 backdrop-blur-sm p-4 shadow-card text-left transition-all",
+                          locked ? "opacity-60 cursor-not-allowed" : "hover:border-primary/30 hover:-translate-y-0.5"
+                        )}
+                      >
+                        <div className={cn("flex h-9 w-9 items-center justify-center rounded-xl bg-muted/60 mb-2")}>
+                          <Icon className={cn("h-4 w-4", mod!.color)} />
+                          {locked && <Lock className="absolute right-3 top-3 h-3 w-3 text-muted-foreground" />}
+                        </div>
+                        <p className="text-sm font-bold text-foreground tracking-tight truncate">{t(mod!.labelKey as any)}</p>
+                      </button>
+                    );
+                  })}
+              </div>
+            </section>
 
             {/* 5. Other modules chips */}
             <HubOtherModules
