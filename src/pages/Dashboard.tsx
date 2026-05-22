@@ -643,40 +643,36 @@ export default function Dashboard() {
       {/* Mobile bottom nav — 5 tabs */}
       <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-card/95 backdrop-blur-sm sm:hidden pb-safe">
         <div className="flex items-stretch justify-around px-1 pt-1.5">
-          {(() => {
-            // Lazy import lucide icons here to keep diff tight
-            const items = [
-              { key: "hjem-rehab-unlock", label: "Hjem", icon: Home, active: activeTab === "hub", dot: true, onClick: () => handleTabChange("hub") },
-              { key: "plan", label: "Plan", icon: CalendarIcon, active: activeTab === "plan", dot: false, onClick: () => handleTabChange("plan") },
-              { key: "calendar-dots-v1", label: t("seasonCalendar") || "Kalender", icon: CalendarRange, active: activeTab === "calendar", dot: true, onClick: () => handleTabChange("calendar") },
-              { key: "fremgang", label: "Fremgang", icon: BarChart3, active: activeTab === "progress", dot: false, onClick: () => handleTabChange("progress") },
-              { key: "profil", label: "Profil", icon: User, active: false, dot: false, onClick: () => navigate("/profile-setup") },
-            ];
-            return items.map(({ key, label, icon: Icon, active, dot, onClick }) => (
-              <button
-                key={key}
-                onClick={() => {
-                  if (dot) markDotSeen(key);
-                  import("@/lib/haptics").then((h) => h.tap()).catch(() => { /* ignore */ });
-                  onClick();
-                }}
-                aria-current={active ? "page" : undefined}
-                aria-label={label}
-                className={`relative flex flex-1 min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg px-1 py-1.5 transition-colors ${
-                  active ? "text-destructive" : "text-muted-foreground"
-                } active:scale-95`}
-                style={{ minHeight: 48 }}
-              >
-                <div className="relative">
-                  <Icon className="h-5 w-5" />
-                  {dot && !seenDots.has(key) && (
-                    <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-destructive border border-card" />
-                  )}
-                </div>
-                <span className="text-[9px] font-semibold uppercase tracking-wide leading-tight truncate max-w-full">{label}</span>
-              </button>
-            ));
-          })()}
+          {(coachAthleteMode === "coach" && isCoach ? [
+            { key: "coach-hold", label: t("coachNav") || "Hold", icon: Users, active: false, onClick: () => navigate("/coach") },
+            { key: "coach-traening", label: t("train") || "Træning", icon: CalendarRange, active: false, onClick: () => navigate("/coach/season-calendar") },
+            { key: "coach-staevner", label: t("competitions") || "Stævner", icon: Trophy, active: false, onClick: () => navigate("/coach/competitions") },
+            { key: "coach-beskeder", label: t("chat") || "Beskeder", icon: MessageCircle, active: chatOpen, onClick: () => setChatOpen(true) },
+            { key: "coach-mig", label: t("coachSwitchToAthlete") || "Mig", icon: User, active: false, onClick: () => setCoachAthleteMode("athlete") },
+          ] : [
+            { key: "idag", label: t("today") || "I dag", icon: Home, active: activeTab === "hub", onClick: () => handleTabChange("hub") },
+            { key: "traen", label: t("train") || "Træn", icon: Zap, active: activeTab === "plan", onClick: () => handleTabChange("plan") },
+            { key: "kalender", label: t("seasonCalendar") || "Kalender", icon: CalendarRange, active: activeTab === "calendar", onClick: () => handleTabChange("calendar") },
+            { key: "dagbog", label: t("diary") || "Dagbog", icon: NotebookPen, active: false, onClick: () => navigate("/diary") },
+            { key: "chat", label: t("chat") || "Chat", icon: MessageCircle, active: chatOpen, onClick: () => setChatOpen(true) },
+          ]).map(({ key, label, icon: Icon, active, onClick }) => (
+            <button
+              key={key}
+              onClick={() => {
+                import("@/lib/haptics").then(h => h.tap()).catch(() => {});
+                onClick();
+              }}
+              aria-label={label}
+              className={cn(
+                "relative flex flex-1 min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg px-1 py-1.5 transition-colors active:scale-95",
+                active ? "text-primary" : "text-muted-foreground"
+              )}
+              style={{ minHeight: 48 }}
+            >
+              <Icon className="h-5 w-5" />
+              <span className="text-[9px] font-semibold uppercase tracking-wide leading-tight truncate max-w-full">{label}</span>
+            </button>
+          ))}
         </div>
       </nav>
 
