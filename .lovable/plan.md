@@ -1,27 +1,29 @@
-# Fix language override behavior
+# Restore the coach ⇄ athlete switcher in athlete mode
 
-## What's happening
+## What's missing
 
-In your screenshot the switcher actually shows **🇩🇰 Dansk**, not English. That's because `LanguageContext` currently *re-applies* `profiles.default_locale` on every fresh session, overwriting whatever you picked in the switcher last time. So if your profile `default_locale = "da"`, every reload snaps you back to Danish even after you switched to English.
+When the nav redesign landed (message #1973–1974), only **one direction** got a visible toggle:
 
-UI labels themselves (`Programperiodisering`, `VOLUMEN`, `Aktiver påmindelser`, …) are correctly translated in all 7 locale blocks — they just render in Danish because the active locale got reset to `da`.
+- **Coach mode bottom nav** has a 5th tab `Mig` → `setCoachAthleteMode("athlete")`. ✅
+- **Athlete mode bottom nav** has no equivalent button back to coach. ❌
 
-## Change
+The side-menu still has a `Coach` entry, but it just `navigate("/coach")` — it doesn't flip `coachAthleteMode` and isn't where you put it before. That's why it feels gone.
 
-**Rule going forward:** the user's last switcher selection wins. `default_locale` is only a seed for users who never touched the switcher. English is the final fallback.
+## Fix
 
-### `src/i18n/LanguageContext.tsx`
-- On mount, read `localStorage["tkd-lang"]`. If present and valid → use it; never override.
-- Only when `localStorage["tkd-lang"]` is absent, fetch `profiles.default_locale` and apply it (and persist it to localStorage so it stays sticky from then on).
-- If neither exists → `"en"`.
-- Remove the `appliedForSessionRef` re-apply-on-every-session logic; replace with one-shot seeding.
-- Keep `SIGNED_OUT` behavior: clear the "seeded" flag so a different user signing in on the same browser gets their own default_locale seeded once.
+Add a small **"Coach" pill** in the dashboard header (visible only when `isCoach`) that toggles `coachAthleteMode` back to `"coach"`. Mirrors the coach-mode `Mig` tab — symmetrical, always reachable, no nav reshuffle needed.
 
-### `.lovable/memory/features/default-language.md`
-Update to reflect: switcher selection is authoritative; `default_locale` only seeds first-ever load; fallback English.
+### `src/pages/Dashboard.tsx`
+- In the header's right-side button group (next to `LanguageSwitcher` / avatar / Menu), insert a button rendered only when `isCoach && coachAthleteMode === "athlete"`:
+  - Icon: `Users` (lucide, already imported).
+  - Label: `t("coachDashboard")` (key already exists in all 7 locales).
+  - `onClick`: `setCoachAthleteMode("coach")` + haptic tap.
+  - Styled as a compact rounded pill so it fits the header on the 730px viewport: `flex items-center gap-1.5 rounded-full border border-border bg-muted px-2.5 py-1.5 text-xs font-semibold hover:bg-accent`.
+- Remove the now-redundant `Coach → /coach` button in the slide-out menu (lines 629–634). The header pill replaces it; the bottom-nav already takes coaches into the coach surface.
 
-## Out of scope (call out to user)
+### No other files
+- Bottom nav, `CoachDashboard.tsx`, translations, RLS — all untouched.
+- The pill flips state in place; coach-mode bottom nav then takes over and exposes Hold / Træning / Stævner / Beskeder / Mig as before.
 
-AI-generated plan content visible in the screenshot — phase titles like *"Anatomisk Tilpasning & Ledstabilitet"*, descriptions, and the plan name *"Eksplosiv Veteran…"* — are stored in the database in whatever language the plan was generated in. Switching the UI to English will **not** retranslate existing saved plans; the user would need to regenerate the plan in English. Strings like `Generated`, `Logging for`, `Active`, `PDF` etc. are already English from i18n and will display correctly once the locale fix lands.
-
-No other files need changes; all UI keys shown in the screenshot already exist in the `en` block (verified: `periodizationTitle`, `periodizationSubtitle`, `enableReminders`, `addToCalendar`, `keyChanges`, plus `volumeLabel`/`intensityLabel`).
+## Out of scope
+Re-architecting the menu or the coach landing route — not needed for the switcher to reappear.
