@@ -21,9 +21,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     return isLocale(saved) ? saved : "en";
   });
 
-  // Track the session for which we already applied the user's default_locale,
-  // so we re-apply it once per fresh session (login / page reload after auth).
-  const appliedForSessionRef = useRef<string | null>(null);
+  // Track which user IDs we've already seeded so a different account signing
+  // in on the same browser gets their default_locale applied once.
+  const seededUsersRef = useRef<Set<string>>(new Set());
 
   const setLocale = useCallback((l: Locale) => {
     setLocaleState(l);
@@ -38,13 +38,16 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = locale;
   }, [locale]);
 
-  // On every fresh session (sign-in or app load while signed in), reset to
-  // the user's saved default_locale. Mid-session changes via the switcher
-  // remain in effect until the next reload / new session.
+  // Seed locale from profiles.default_locale ONLY when the user has no saved
+  // selection in localStorage. The switcher selection is authoritative once
+  // it exists — we never overwrite it on subsequent sessions. Final fallback
+  // is English.
   useEffect(() => {
-    const applyDefault = async (userId: string) => {
-      if (appliedForSessionRef.current === userId) return;
-      appliedForSessionRef.current = userId;
+    const seedDefault = async (userId: string) => {
+      if (seededUsersRef.current.has(userId)) return;
+      seededUsersRef.current.add(userId);
+      // Respect existing switcher selection — do not override.
+      if (localStorage.getItem("tkd-lang")) return;
       try {
         const { data } = await supabase
           .from("profiles")
@@ -52,29 +55,27 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
           .eq("user_id", userId)
           .maybeSingle();
         const dl = (data as any)?.default_locale;
-        if (isLocale(dl)) {
-          setLocaleState(dl);
-          localStorage.setItem("tkd-lang", dl);
-          document.documentElement.dir = RTL_LOCALES.includes(dl) ? "rtl" : "ltr";
-          document.documentElement.lang = dl;
-        }
+        const next: Locale = isLocale(dl) ? dl : "en";
+        setLocaleState(next);
+        localStorage.setItem("tkd-lang", next);
+        document.documentElement.dir = RTL_LOCALES.includes(next) ? "rtl" : "ltr";
+        document.documentElement.lang = next;
       } catch {
         // Non-critical
       }
     };
 
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) applyDefault(session.user.id);
+      if (session?.user) seedDefault(session.user.id);
     });
 
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_OUT") {
-        appliedForSessionRef.current = null;
+        seededUsersRef.current.clear();
         return;
       }
       if (session?.user) {
-        // Defer to avoid running supabase calls inside the auth callback.
-        setTimeout(() => applyDefault(session.user!.id), 0);
+        setTimeout(() => seedDefault(session.user!.id), 0);
       }
     });
 
