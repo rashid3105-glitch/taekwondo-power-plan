@@ -422,6 +422,20 @@ export default function Dashboard() {
       .maybeSingle();
     setNextEvent((nextComp as any) || null);
 
+    // Monthly mental assessment reminder
+    try {
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      const { data: lastMental } = await supabase
+        .from("mental_assessments")
+        .select("created_at")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      const isDue = !lastMental || (lastMental as any).created_at < thirtyDaysAgo;
+      setShowMentalReminder(isDue && isModuleEnabled("mental"));
+    } catch { /* ignore */ }
+
     setLoading(false);
   };
 
