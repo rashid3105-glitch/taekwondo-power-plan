@@ -515,6 +515,7 @@ const translations = {
 
     // Help
     helpTitle: "How to Use SPORTSTALENT",
+    backToDashboard: "Back to dashboard",
     helpSubtitle: "Step-by-step guides to get the most out of the app",
     helpSearchPlaceholder: "Search help topics…",
     helpNoResults: "No matching topics found",
@@ -2885,6 +2886,7 @@ const translations = {
 
     // Help
     helpTitle: "Sådan bruger du SPORTSTALENT",
+    backToDashboard: "Tilbage til dashboard",
     helpSubtitle: "Trin-for-trin guides til at få mest ud af appen",
     helpSearchPlaceholder: "Søg i hjælpeemner…",
     helpNoResults: "Ingen emner matcher",
@@ -5240,6 +5242,7 @@ const translations = {
 
     // Help
     helpTitle: "Hur man använder SPORTSTALENT",
+    backToDashboard: "Tillbaka till dashboard",
     helpSubtitle: "Steg-för-steg-guider för att få ut det mesta av appen",
     helpSearchPlaceholder: "Sök i hjälpämnen…",
     helpNoResults: "Inga matchande ämnen",
@@ -7574,6 +7577,7 @@ const translations = {
     paypalReference: "Geben Sie Ihre E-Mail als Referenz an",
     adminPayments: "Zahlungen",
     helpTitle: "So nutzen Sie SPORTSTALENT",
+    backToDashboard: "Zurück zum Dashboard",
     helpSubtitle: "Schritt-für-Schritt-Anleitungen, um das Beste aus der App herauszuholen",
     helpSearchPlaceholder: "Hilfethemen durchsuchen…",
     helpNoResults: "Keine passenden Themen",
@@ -9886,6 +9890,7 @@ const translations = {
     paypalReference: "قم بتضمين بريدك الإلكتروني كمرجع",
     adminPayments: "المدفوعات",
     helpTitle: "كيفية استخدام SPORTSTALENT",
+    backToDashboard: "العودة إلى لوحة التحكم",
     helpSubtitle: "أدلة خطوة بخطوة لتحقيق أقصى استفادة من التطبيق",
     helpSearchPlaceholder: "ابحث في مواضيع المساعدة…",
     helpNoResults: "لا توجد مواضيع مطابقة",
@@ -12221,6 +12226,7 @@ const translations = {
 
     // Help
     helpTitle: "Slik bruker du SPORTSTALENT",
+    backToDashboard: "Tilbake til dashbordet",
     helpSubtitle: "Trin-for-trin guides til at få mest ut av appen",
     helpSearchPlaceholder: "Søk i hjelpeemner…",
     helpNoResults: "Ingen treff",
@@ -14084,6 +14090,7 @@ export type TranslationKey = keyof typeof translations.en;
 // AI-generated plans (training, nutrition, mental, rehab) are produced in
 // Spanish server-side regardless of UI string coverage.
 const esOverrides: Partial<Record<TranslationKey, string>> = {
+  backToDashboard: "Volver al panel",
   pushNotifications: "Notificaciones push",
   pushNotificationsTitle: "Recibir notificaciones",
   pushNotificationsDesc: "Recibe notificaciones sobre nuevos mensajes de chat y actividad",
