@@ -5509,6 +5509,8 @@ const translations = {
     minutesShort: "MIN",
     pinnedModules: "Fästade moduler",
     allModules: "Alla moduler",
+    customizePins: "Anpassa",
+    customizePinsDesc: "Välj upp till 4 moduler att visa på startsidan.",
     otherModules: "Övriga moduler",
     metricsUpdated: "mätvärden uppdaterade",
     clipsReady: "klipp klara",
