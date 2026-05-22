@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { type Exercise, CATEGORY_LABELS } from "@/data/exercises";
 import { cn } from "@/lib/utils";
-import { ChevronDown, ChevronUp, ShieldAlert, Target } from "lucide-react";
+import { ChevronDown, ChevronUp, ShieldAlert, Target, CheckCircle2 } from "lucide-react";
 import { MuscleGroupBadges } from "./MuscleIcon";
 import { ExerciseIllustration } from "./ExerciseIllustration";
 import { getExerciseGoals, getRiskLevel, RISK_STYLES } from "@/lib/exerciseClassification";
@@ -20,6 +20,14 @@ const RISK_LABEL_KEY: Record<string, TranslationKey> = {
   low: "riskLow",
   medium: "riskMedium",
   high: "riskHigh",
+};
+
+const CUES_KEY: Record<string, TranslationKey> = {
+  power: "cuesPower",
+  speed: "cuesSpeed",
+  strength: "cuesStrength",
+  mobility: "cuesMobility",
+  plyometric: "cuesPlyometric",
 };
 
 const CATEGORY_DOT: Record<string, string> = {
@@ -90,15 +98,32 @@ export function ExerciseCard({ exercise, index }: ExerciseCardProps) {
 
           {/* Embedded YouTube short-form demo */}
           {exercise.videoId && (
-            <div className="rounded-lg overflow-hidden border border-border bg-black aspect-video">
-              <iframe
-                src={`https://www.youtube-nocookie.com/embed/${exercise.videoId}?rel=0&modestbranding=1`}
-                title={`${exercise.name} — ${t("videoDemo")}`}
-                loading="lazy"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="w-full h-full"
-              />
+            <div className="space-y-2">
+              <div className="rounded-lg overflow-hidden border border-border bg-black aspect-video">
+                <iframe
+                  src={`https://www.youtube-nocookie.com/embed/${exercise.videoId}?rel=0&modestbranding=1`}
+                  title={`${exercise.name} — ${t("videoDemo")}`}
+                  loading="lazy"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="w-full h-full"
+                />
+              </div>
+              {CUES_KEY[exercise.category] && (
+                <div className="rounded-md border border-border bg-muted/50 p-3 space-y-1.5">
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold flex items-center gap-1">
+                    <CheckCircle2 className="h-3 w-3" /> {t("formCuesLabel")}
+                  </p>
+                  <ul className="space-y-1">
+                    {t(CUES_KEY[exercise.category]).split("\n").map((cue, i) => (
+                      <li key={i} className="text-xs text-foreground/90 flex gap-2">
+                        <span className="text-primary mt-0.5">•</span>
+                        <span>{cue}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           )}
 
