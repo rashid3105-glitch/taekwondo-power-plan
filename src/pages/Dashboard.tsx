@@ -141,6 +141,18 @@ export default function Dashboard() {
   };
   const [chatOpen, setChatOpen] = useState(false);
   const [showMentalReminder, setShowMentalReminder] = useState(false);
+  const [pinsEditorOpen, setPinsEditorOpen] = useState(false);
+  const DEFAULT_PINS = ["plan", "progress", "competitions", "match"];
+  const [pinnedKeys, setPinnedKeys] = useState<string[]>(() => {
+    try {
+      const raw = localStorage.getItem("hub_pinned_modules");
+      return raw ? JSON.parse(raw) : DEFAULT_PINS;
+    } catch { return DEFAULT_PINS; }
+  });
+  const savePins = (keys: string[]) => {
+    setPinnedKeys(keys);
+    try { localStorage.setItem("hub_pinned_modules", JSON.stringify(keys)); } catch { /* ignore */ }
+  };
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
