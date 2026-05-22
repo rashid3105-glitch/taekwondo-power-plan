@@ -1279,6 +1279,55 @@ export default function Dashboard() {
           </>
         )}
       </main>
+      {/* Pin editor */}
+      {pinsEditorOpen && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={() => setPinsEditorOpen(false)}>
+          <div className="w-full max-w-sm bg-card rounded-2xl shadow-xl border border-border overflow-hidden" onClick={e => e.stopPropagation()}>
+            <div className="px-4 py-3 border-b border-border flex items-center justify-between">
+              <h2 className="font-bold text-sm">{t("customizePins") || "Tilpas fastgjorte moduler"}</h2>
+              <button onClick={() => setPinsEditorOpen(false)} className="text-muted-foreground hover:text-foreground">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <p className="text-xs text-muted-foreground px-4 pt-3">{t("customizePinsDesc") || "Vælg op til 4 moduler der skal vises på din forside."}</p>
+            <div className="p-4 space-y-1.5 max-h-80 overflow-y-auto">
+              {ALL_PINNABLE.map(mod => {
+                const Icon = mod.icon;
+                const checked = pinnedKeys.includes(mod.key);
+                const maxReached = pinnedKeys.length >= 4 && !checked;
+                return (
+                  <label key={mod.key} className={cn(
+                    "flex items-center gap-3 rounded-xl border px-3 py-2.5 cursor-pointer transition-colors",
+                    checked ? "border-primary/40 bg-primary/5" : "border-border hover:bg-muted/40",
+                    maxReached && "opacity-40 cursor-not-allowed"
+                  )}>
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      disabled={maxReached}
+                      onChange={() => {
+                        if (checked) {
+                          savePins(pinnedKeys.filter(k => k !== mod.key));
+                        } else if (!maxReached) {
+                          savePins([...pinnedKeys, mod.key]);
+                        }
+                      }}
+                      className="h-4 w-4 accent-primary"
+                    />
+                    <Icon className={cn("h-4 w-4 shrink-0", mod.color)} />
+                    <span className="text-sm font-medium">{t(mod.labelKey as any)}</span>
+                  </label>
+                );
+              })}
+            </div>
+            <div className="px-4 pb-4 pt-2">
+              <button onClick={() => setPinsEditorOpen(false)} className="w-full rounded-xl bg-primary text-primary-foreground py-2.5 text-sm font-semibold">
+                {t("save") || "Gem"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <ChatDrawer open={chatOpen} onOpenChange={setChatOpen} isCoach={isCoach} />
       <AppFooter />
     </div>
