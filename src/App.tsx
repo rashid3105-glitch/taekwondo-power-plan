@@ -26,6 +26,7 @@ import AdminApproval from "./pages/AdminApproval";
 import AdminModuleAccess from "./pages/AdminModuleAccess";
 import CoachDashboard from "./pages/CoachDashboard";
 import CoachAthleteOverview from "./pages/CoachAthleteOverview";
+import CoachCompetitions from "./pages/CoachCompetitions";
 import SeasonCalendar from "./pages/SeasonCalendar";
 import Pricing from "./pages/Pricing";
 import SubscriptionSettings from "./pages/SubscriptionSettings";
