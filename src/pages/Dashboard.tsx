@@ -1168,6 +1168,7 @@ export default function Dashboard() {
           </>
         )}
       </main>
+      <ChatDrawer open={chatOpen} onOpenChange={setChatOpen} isCoach={isCoach} />
       <AppFooter />
     </div>
   );
