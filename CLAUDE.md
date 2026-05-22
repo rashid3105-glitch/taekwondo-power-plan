@@ -30,6 +30,8 @@
 - Dashboard: src/pages/Dashboard.tsx
 - Chat: src/components/chat/ + src/lib/chatApi.ts
 - Translations: src/i18n/translations.ts (Locale type: "en"|"da"|"sv"|"de"|"ar"|"no"|"es")
+  - Farsi (fa) was removed — do NOT add it back
+  - RTL languages: ar only
 - Season calendar coach: src/pages/SeasonCalendar.tsx
 - Season calendar athlete: src/components/hub/SeasonCalendarView.tsx
 - Season lib: src/lib/seasonCalendar.ts
