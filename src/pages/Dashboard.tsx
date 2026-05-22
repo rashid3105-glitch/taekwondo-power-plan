@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain, Clock, Apple, Home, Lock, NotebookPen, AlertTriangle, ClipboardList, HelpCircle, Trash2, Menu, Video as VideoIcon, CalendarRange, Watch, Swords, Trophy, MessageCircle } from "lucide-react";
+import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain, Clock, Apple, Home, Lock, NotebookPen, AlertTriangle, ClipboardList, HelpCircle, Trash2, Menu, Video as VideoIcon, CalendarRange, Watch, Swords, Trophy, MessageCircle, Pencil, X } from "lucide-react";
 import { ChatDrawer } from "@/components/chat/ChatDrawer";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -44,7 +44,7 @@ import { HubTodayHero } from "@/components/hub/HubTodayHero";
 import { HubNextEvent } from "@/components/hub/HubNextEvent";
 import { HubRecoveryStrip } from "@/components/hub/HubRecoveryStrip";
 import { SeasonCalendarView } from "@/components/hub/SeasonCalendarView";
-import { HubPinnedModules } from "@/components/hub/HubPinnedModules";
+
 import { HubOtherModules } from "@/components/hub/HubOtherModules";
 import { HubReadinessBanner } from "@/components/hub/HubReadinessBanner";
 import { InviteWelcomeBanner } from "@/components/hub/InviteWelcomeBanner";
@@ -141,6 +141,18 @@ export default function Dashboard() {
   };
   const [chatOpen, setChatOpen] = useState(false);
   const [showMentalReminder, setShowMentalReminder] = useState(false);
+  const [pinsEditorOpen, setPinsEditorOpen] = useState(false);
+  const DEFAULT_PINS = ["plan", "progress", "competitions", "match"];
+  const [pinnedKeys, setPinnedKeys] = useState<string[]>(() => {
+    try {
+      const raw = localStorage.getItem("hub_pinned_modules");
+      return raw ? JSON.parse(raw) : DEFAULT_PINS;
+    } catch { return DEFAULT_PINS; }
+  });
+  const savePins = (keys: string[]) => {
+    setPinnedKeys(keys);
+    try { localStorage.setItem("hub_pinned_modules", JSON.stringify(keys)); } catch { /* ignore */ }
+  };
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -213,6 +225,18 @@ export default function Dashboard() {
     setActiveTab(tab);
     setMenuOpen(false);
   };
+  const ALL_PINNABLE = [
+    { key: "plan",         icon: Zap,           labelKey: "plan",            color: "text-tab-plan",      onClick: () => handleTabChange("plan") },
+    { key: "progress",     icon: BarChart3,     labelKey: "progress",        color: "text-tab-progress",  onClick: () => handleTabChange("progress") },
+    { key: "competitions", icon: Trophy,        labelKey: "competitions",    color: "text-explosive",     onClick: () => navigate("/competitions") },
+    { key: "mental",       icon: Brain,         labelKey: "mental",          color: "text-tab-mental",    onClick: () => handleTabChange("mental") },
+    { key: "nutrition",    icon: Apple,         labelKey: "nutrition",       color: "text-tab-nutrition", onClick: () => handleTabChange("nutrition") },
+    { key: "rehab",        icon: Heart,         labelKey: "injuryRehabPlan", color: "text-tab-rehab",     onClick: () => handleTabChange("rehab") },
+    { key: "diary",        icon: NotebookPen,   labelKey: "diary",           color: "text-primary",       onClick: () => navigate("/diary") },
+    { key: "testing",      icon: ClipboardList, labelKey: "testing",         color: "text-primary",       onClick: () => handleTabChange("testing") },
+    { key: "calendar",     icon: CalendarIcon,  labelKey: "seasonCalendar",  color: "text-primary",       onClick: () => handleTabChange("calendar") },
+    { key: "match",        icon: VideoIcon,     labelKey: "hubMatchTitle",   color: "text-primary",       onClick: () => navigate("/match-analysis/me") },
+  ] as const;
   const renderDemoLockedState = (featureKey: string) => (
     <div className="rounded-xl border border-border bg-card p-8 sm:p-10 text-center shadow-card space-y-4">
       <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-secondary">
@@ -856,22 +880,50 @@ export default function Dashboard() {
             {/* Optional reflection prompt */}
             {!isDemo && <ReflectionPromptCard />}
 
-            {/* 4. Pinned modules */}
-            <HubPinnedModules
-              hasActivePlan={!!activePlan}
-              activePlanWeek={null}
-              metricsUpdated={0}
-              nextEventName={nextEvent?.name ?? null}
-              nextEventDate={nextEvent?.event_date ?? null}
-              matchClipsCount={0}
-              isDemo={isDemo}
-              isLocked={(mod) => isModuleLocked(mod) || (mod === "match_analysis" && !isModuleEnabled("video"))}
-              onTab={(tab) => handleTabChange(tab)}
-              onAllModules={() => {
-                const el = document.getElementById("hub-other-modules");
-                el?.scrollIntoView({ behavior: "smooth", block: "start" });
-              }}
-            />
+            {/* 4. Pinned modules — customizable */}
+            <section>
+              <div className="flex items-center justify-between mb-2 px-1">
+                <h3 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                  {t("pinnedModules")}
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setPinsEditorOpen(true)}
+                  className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Pencil className="h-3 w-3" />
+                  <span>{t("customizePins") || "Tilpas"}</span>
+                </button>
+              </div>
+              <div className="grid gap-3 grid-cols-2">
+                {pinnedKeys
+                  .map(k => ALL_PINNABLE.find(m => m.key === k))
+                  .filter(Boolean)
+                  .slice(0, 4)
+                  .map((mod) => {
+                    const Icon = mod!.icon;
+                    const locked = isDemo && !["plan"].includes(mod!.key);
+                    return (
+                      <button
+                        key={mod!.key}
+                        type="button"
+                        onClick={() => !locked && mod!.onClick()}
+                        disabled={locked}
+                        className={cn(
+                          "group relative overflow-hidden rounded-2xl border border-border bg-card/80 backdrop-blur-sm p-4 shadow-card text-left transition-all",
+                          locked ? "opacity-60 cursor-not-allowed" : "hover:border-primary/30 hover:-translate-y-0.5"
+                        )}
+                      >
+                        <div className={cn("flex h-9 w-9 items-center justify-center rounded-xl bg-muted/60 mb-2")}>
+                          <Icon className={cn("h-4 w-4", mod!.color)} />
+                          {locked && <Lock className="absolute right-3 top-3 h-3 w-3 text-muted-foreground" />}
+                        </div>
+                        <p className="text-sm font-bold text-foreground tracking-tight truncate">{t(mod!.labelKey as any)}</p>
+                      </button>
+                    );
+                  })}
+              </div>
+            </section>
 
             {/* 5. Other modules chips */}
             <HubOtherModules
@@ -1227,6 +1279,55 @@ export default function Dashboard() {
           </>
         )}
       </main>
+      {/* Pin editor */}
+      {pinsEditorOpen && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={() => setPinsEditorOpen(false)}>
+          <div className="w-full max-w-sm bg-card rounded-2xl shadow-xl border border-border overflow-hidden" onClick={e => e.stopPropagation()}>
+            <div className="px-4 py-3 border-b border-border flex items-center justify-between">
+              <h2 className="font-bold text-sm">{t("customizePins") || "Tilpas fastgjorte moduler"}</h2>
+              <button onClick={() => setPinsEditorOpen(false)} className="text-muted-foreground hover:text-foreground">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <p className="text-xs text-muted-foreground px-4 pt-3">{t("customizePinsDesc") || "Vælg op til 4 moduler der skal vises på din forside."}</p>
+            <div className="p-4 space-y-1.5 max-h-80 overflow-y-auto">
+              {ALL_PINNABLE.map(mod => {
+                const Icon = mod.icon;
+                const checked = pinnedKeys.includes(mod.key);
+                const maxReached = pinnedKeys.length >= 4 && !checked;
+                return (
+                  <label key={mod.key} className={cn(
+                    "flex items-center gap-3 rounded-xl border px-3 py-2.5 cursor-pointer transition-colors",
+                    checked ? "border-primary/40 bg-primary/5" : "border-border hover:bg-muted/40",
+                    maxReached && "opacity-40 cursor-not-allowed"
+                  )}>
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      disabled={maxReached}
+                      onChange={() => {
+                        if (checked) {
+                          savePins(pinnedKeys.filter(k => k !== mod.key));
+                        } else if (!maxReached) {
+                          savePins([...pinnedKeys, mod.key]);
+                        }
+                      }}
+                      className="h-4 w-4 accent-primary"
+                    />
+                    <Icon className={cn("h-4 w-4 shrink-0", mod.color)} />
+                    <span className="text-sm font-medium">{t(mod.labelKey as any)}</span>
+                  </label>
+                );
+              })}
+            </div>
+            <div className="px-4 pb-4 pt-2">
+              <button onClick={() => setPinsEditorOpen(false)} className="w-full rounded-xl bg-primary text-primary-foreground py-2.5 text-sm font-semibold">
+                {t("save") || "Gem"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <ChatDrawer open={chatOpen} onOpenChange={setChatOpen} isCoach={isCoach} />
       <AppFooter />
     </div>

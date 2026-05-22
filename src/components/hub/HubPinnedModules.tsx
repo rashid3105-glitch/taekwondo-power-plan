@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Zap, BarChart3, Trophy, Video as VideoIcon, Lock } from "lucide-react";
+import { Zap, BarChart3, Trophy, Video as VideoIcon, Lock, Pencil } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
   matchClipsCount?: number;
   isDemo: boolean;
   isLocked: (mod: "competitions" | "match_analysis") => boolean;
-  onAllModules: () => void;
+  onEditPins: () => void;
   onTab: (tab: "plan" | "progress") => void;
 }
 
@@ -24,7 +24,7 @@ export function HubPinnedModules({
   matchClipsCount,
   isDemo,
   isLocked,
-  onAllModules,
+  onEditPins,
   onTab,
 }: Props) {
   const { t } = useLanguage();
@@ -103,10 +103,12 @@ export function HubPinnedModules({
         </h3>
         <button
           type="button"
-          onClick={onAllModules}
-          className="text-xs font-semibold text-destructive hover:underline"
+          onClick={onEditPins}
+          className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+          aria-label="Tilpas fastgjorte moduler"
         >
-          {t("allModules")} →
+          <Pencil className="h-3 w-3" />
+          <span>{t("customizePins") || "Tilpas"}</span>
         </button>
       </div>
       <div className="grid gap-3 grid-cols-2">
