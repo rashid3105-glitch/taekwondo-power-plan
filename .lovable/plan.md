@@ -1,48 +1,27 @@
-## Problem
+# Fix language override behavior
 
-On `/coach/competitions`, each athlete's entry for the same competition (e.g. "Riga open" on 29.8.2026) renders as a separate card. The list is dominated by duplicates and the "UPCOMINGCOMPETITIONS" header also reads as one unbroken token (missing space/translation).
+## What's happening
 
-## Fix
+In your screenshot the switcher actually shows **🇩🇰 Dansk**, not English. That's because `LanguageContext` currently *re-applies* `profiles.default_locale` on every fresh session, overwriting whatever you picked in the switcher last time. So if your profile `default_locale = "da"`, every reload snaps you back to Danish even after you switched to English.
 
-Refactor `src/pages/CoachCompetitions.tsx` so each unique competition appears **once**, with a count of participating athletes. Tapping a card opens a sheet/dialog listing the athletes.
+UI labels themselves (`Programperiodisering`, `VOLUMEN`, `Aktiver påmindelser`, …) are correctly translated in all 7 locale blocks — they just render in Danish because the active locale got reset to `da`.
 
-### 1. Group competitions
+## Change
 
-Group by a key of `name + event_date + (location ?? "")` (case-insensitive name). For each group keep:
-- `name`, `event_date`, `location`, `priority` (highest among entries: A > B > C)
-- `participants`: array of `{ user_id, athlete_name, result }`
+**Rule going forward:** the user's last switcher selection wins. `default_locale` is only a seed for users who never touched the switcher. English is the final fallback.
 
-Apply grouping to both `upcoming` and `past` lists.
+### `src/i18n/LanguageContext.tsx`
+- On mount, read `localStorage["tkd-lang"]`. If present and valid → use it; never override.
+- Only when `localStorage["tkd-lang"]` is absent, fetch `profiles.default_locale` and apply it (and persist it to localStorage so it stays sticky from then on).
+- If neither exists → `"en"`.
+- Remove the `appliedForSessionRef` re-apply-on-every-session logic; replace with one-shot seeding.
+- Keep `SIGNED_OUT` behavior: clear the "seeded" flag so a different user signing in on the same browser gets their own default_locale seeded once.
 
-### 2. Card UI
+### `.lovable/memory/features/default-language.md`
+Update to reflect: switcher selection is authoritative; `default_locale` only seeds first-ever load; fallback English.
 
-Each grouped card shows:
-- Competition name
-- Date + location (right side, as today)
-- Small badge: `{n} atleter` (use existing `athletes` translation key or fallback)
-- Avatar stack / "+N" if many — keep it lightweight: just the count badge for v1
-- Tap target → opens a bottom Sheet (mobile-friendly) listing participants with name and, for past comps, their result
+## Out of scope (call out to user)
 
-Remove the per-athlete subtitle line.
+AI-generated plan content visible in the screenshot — phase titles like *"Anatomisk Tilpasning & Ledstabilitet"*, descriptions, and the plan name *"Eksplosiv Veteran…"* — are stored in the database in whatever language the plan was generated in. Switching the UI to English will **not** retranslate existing saved plans; the user would need to regenerate the plan in English. Strings like `Generated`, `Logging for`, `Active`, `PDF` etc. are already English from i18n and will display correctly once the locale fix lands.
 
-### 3. Participants sheet
-
-Use shadcn `Sheet` (side="bottom") containing:
-- Header: competition name + date + location
-- Scrollable list of participants (name, result badge if any)
-- Closes on backdrop tap
-
-### 4. Header label fix
-
-The screenshot shows `UPCOMINGCOMPETITIONS` glued together because `uppercase tracking-wide` is applied to the literal string `t("upcomingCompetitions") || "Kommende stævner"`. The string itself is fine ("Kommende stævner"), but the EN translation `upcomingCompetitions` likely returns `"UpcomingCompetitions"` (camelCase fallback). I will verify the translation key exists and, if missing, fall back to `"Kommende stævner"` / `"Upcoming competitions"` (with a space) in code, and also add proper keys if absent.
-
-### Out of scope
-
-- No DB changes; this is purely presentational grouping on the client.
-- Athlete-facing `Competitions.tsx` is untouched.
-- No change to how competitions are created.
-
-### Files
-
-- `src/pages/CoachCompetitions.tsx` — grouping logic, new card layout, Sheet for participants.
-- `src/i18n/translations.ts` — add `participants` / `athletesCount` key if needed (7 languages), only if existing key is missing.
+No other files need changes; all UI keys shown in the screenshot already exist in the `en` block (verified: `periodizationTitle`, `periodizationSubtitle`, `enableReminders`, `addToCalendar`, `keyChanges`, plus `volumeLabel`/`intensityLabel`).
