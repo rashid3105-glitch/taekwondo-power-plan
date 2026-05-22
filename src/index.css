@@ -79,6 +79,45 @@
     --light-muted: 215 25% 95%;
     --light-muted-foreground: 220 12% 42%;
   }
+
+  body.coach-mode {
+    --background: 222 30% 10%;
+    --foreground: 210 30% 95%;
+
+    --card: 222 30% 14%;
+    --card-foreground: 210 30% 95%;
+
+    --popover: 222 30% 14%;
+    --popover-foreground: 210 30% 95%;
+
+    --primary: 222 95% 56%;
+    --primary-foreground: 210 40% 99%;
+
+    --secondary: 222 25% 18%;
+    --secondary-foreground: 210 30% 90%;
+
+    --muted: 222 25% 16%;
+    --muted-foreground: 220 12% 60%;
+
+    --accent: 80 90% 50%;
+    --accent-foreground: 222 35% 12%;
+
+    --destructive: 0 78% 52%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 222 20% 22%;
+    --input: 222 20% 22%;
+    --ring: 222 95% 56%;
+
+    --sidebar-background: 222 30% 12%;
+    --sidebar-foreground: 210 30% 95%;
+    --sidebar-primary: 222 95% 56%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 222 25% 18%;
+    --sidebar-accent-foreground: 210 30% 95%;
+    --sidebar-border: 222 20% 22%;
+    --sidebar-ring: 222 95% 56%;
+  }
 }
 
 /* Light content sections — override semantic tokens locally */

@@ -20,6 +20,7 @@ import { RehabPlanCard } from "@/components/RehabPlanCard";
 import { MedicalDocumentTranslator } from "@/components/MedicalDocumentTranslator";
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useCoachMode } from "@/contexts/CoachModeContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { MentalAssessment } from "@/components/MentalAssessment";
 import { ProgressDashboard } from "@/components/ProgressDashboard";
@@ -130,15 +131,9 @@ export default function Dashboard() {
   }
   const [menuOpen, setMenuOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(typeof navigator !== "undefined" ? navigator.onLine : true);
-  const [coachAthleteMode, setCoachAthleteModeState] = useState<"coach" | "athlete">(() => {
-    if (typeof window === "undefined") return "athlete";
-    const stored = localStorage.getItem("tkd-coach-mode");
-    return stored === "coach" || stored === "athlete" ? stored : "athlete";
-  });
-  const setCoachAthleteMode = (mode: "coach" | "athlete") => {
-    try { localStorage.setItem("tkd-coach-mode", mode); } catch { /* ignore */ }
-    setCoachAthleteModeState(mode);
-  };
+  const { isCoachMode, setCoachMode } = useCoachMode();
+  const coachAthleteMode = isCoachMode ? "coach" : "athlete";
+  const setCoachAthleteMode = (mode: "coach" | "athlete") => setCoachMode(mode === "coach");
   const [chatOpen, setChatOpen] = useState(false);
   const [showMentalReminder, setShowMentalReminder] = useState(false);
   const [pinsEditorOpen, setPinsEditorOpen] = useState(false);

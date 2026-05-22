@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { LanguageProvider } from "@/i18n/LanguageContext";
+import { CoachModeProvider } from "@/contexts/CoachModeContext";
 
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { SplashScreen } from "@/components/SplashScreen";
@@ -156,9 +157,10 @@ const App = () => {
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <OfflineBanner />
-            <AnimatedRoutes />
-            
+            <CoachModeProvider>
+              <OfflineBanner />
+              <AnimatedRoutes />
+            </CoachModeProvider>
           </BrowserRouter>
         </TooltipProvider>
       </LanguageProvider>
@@ -167,3 +169,4 @@ const App = () => {
 };
 
 export default App;
+
