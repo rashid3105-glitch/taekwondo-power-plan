@@ -1,29 +1,48 @@
-# Restore the coach ⇄ athlete switcher in athlete mode
+# Why the pill is missing
 
-## What's missing
+The pill code is in place (`src/pages/Dashboard.tsx` lines 540–552) and renders when `isCoach && coachAthleteMode === "athlete"`. The reason you don't see it is that **`isCoach` is `false` for your account on the Dashboard page**, even though `CoachDashboard.tsx` treats you as a coach.
 
-When the nav redesign landed (message #1973–1974), only **one direction** got a visible toggle:
+Mismatch in role detection:
 
-- **Coach mode bottom nav** has a 5th tab `Mig` → `setCoachAthleteMode("athlete")`. ✅
-- **Athlete mode bottom nav** has no equivalent button back to coach. ❌
+- **`CoachDashboard.tsx` line 161** — coach OR admin counts as coach:
+  ```ts
+  const isCoach = userRoles.some(r => r === "coach" || r === "admin");
+  ```
+- **`Dashboard.tsx` line 318** — only `"coach"` counts:
+  ```ts
+  if (roles?.some(r => r.role === "coach")) { setIsCoach(true); ... }
+  ```
 
-The side-menu still has a `Coach` entry, but it just `navigate("/coach")` — it doesn't flip `coachAthleteMode` and isn't where you put it before. That's why it feels gone.
+So if your `user_roles` row is `admin` (or you reached `/dashboard` via something that didn't trigger the coach path), `isCoach` stays `false` and the pill is hidden.
 
-## Fix
+A second smaller issue: line 318 also force-flips `coachAthleteMode` to `"coach"` on every load. That's fine for the bottom-nav, but it means once you press "Mig" and switch to athlete, the next page refresh kicks you back to coach mode without ever letting the pill be visible across reloads. We'll persist the chosen mode.
 
-Add a small **"Coach" pill** in the dashboard header (visible only when `isCoach`) that toggles `coachAthleteMode` back to `"coach"`. Mirrors the coach-mode `Mig` tab — symmetrical, always reachable, no nav reshuffle needed.
+# Fix
 
-### `src/pages/Dashboard.tsx`
-- In the header's right-side button group (next to `LanguageSwitcher` / avatar / Menu), insert a button rendered only when `isCoach && coachAthleteMode === "athlete"`:
-  - Icon: `Users` (lucide, already imported).
-  - Label: `t("coachDashboard")` (key already exists in all 7 locales).
-  - `onClick`: `setCoachAthleteMode("coach")` + haptic tap.
-  - Styled as a compact rounded pill so it fits the header on the 730px viewport: `flex items-center gap-1.5 rounded-full border border-border bg-muted px-2.5 py-1.5 text-xs font-semibold hover:bg-accent`.
-- Remove the now-redundant `Coach → /coach` button in the slide-out menu (lines 629–634). The header pill replaces it; the bottom-nav already takes coaches into the coach surface.
+Single file: `src/pages/Dashboard.tsx`.
 
-### No other files
-- Bottom nav, `CoachDashboard.tsx`, translations, RLS — all untouched.
-- The pill flips state in place; coach-mode bottom nav then takes over and exposes Hold / Træning / Stævner / Beskeder / Mig as before.
+1. **Align role detection with `CoachDashboard.tsx`** (line 317–318):
+   ```ts
+   const { data: roles } = await supabase
+     .from("user_roles").select("role").eq("user_id", user.id);
+   const coachOrAdmin = roles?.some(r => r.role === "coach" || r.role === "admin");
+   if (coachOrAdmin) setIsCoach(true);
+   ```
+   Remove the unconditional `setCoachAthleteMode("coach")` from this branch.
 
-## Out of scope
-Re-architecting the menu or the coach landing route — not needed for the switcher to reappear.
+2. **Persist the chosen mode** so the pill toggle survives reloads:
+   - Initial state reads `localStorage.getItem("tkd-coach-mode")` (fallback `"athlete"` for non-coaches, `"coach"` for coaches on first load).
+   - Both setters (the `Mig` bottom-nav button at line 673 and the header pill onClick at line 544) write the new value to `localStorage`.
+
+3. No changes to the pill JSX, translations, bottom-nav layout, or any other file.
+
+# Verification
+
+- Log in as an account whose `user_roles.role = "admin"` → land on `/dashboard` → the Coach pill should appear in the header next to the language switcher.
+- Log in as a coach → press `Mig` in coach-mode bottom nav → land on athlete `/dashboard` → pill appears → refresh → still in athlete mode, pill still visible.
+- Non-coach athlete account → no pill (unchanged behaviour).
+
+# Out of scope
+
+- Migrating `coachAthleteMode` to a shared context.
+- Any change to `CoachDashboard.tsx`, bottom-nav structure, or RLS.
