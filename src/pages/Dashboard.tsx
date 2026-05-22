@@ -323,7 +323,14 @@ export default function Dashboard() {
 
     // Check coach role
     const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", user.id);
-    if (roles?.some((r: any) => r.role === "coach")) { setIsCoach(true); setCoachAthleteMode("coach"); }
+    const coachOrAdmin = roles?.some((r: any) => r.role === "coach" || r.role === "admin");
+    if (coachOrAdmin) {
+      setIsCoach(true);
+      // Only auto-flip to coach mode on first load (no stored preference)
+      if (typeof window !== "undefined" && !localStorage.getItem("tkd-coach-mode")) {
+        setCoachAthleteMode("coach");
+      }
+    }
 
     // Check if user has a coach assigned
     const { data: coachLink } = await supabase.from("coach_athletes").select("coach_id").eq("athlete_id", user.id).limit(1);
