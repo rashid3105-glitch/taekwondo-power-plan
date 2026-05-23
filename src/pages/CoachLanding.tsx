@@ -179,6 +179,9 @@ function Hero() {
           <p className={`mt-6 text-base sm:text-lg max-w-xl ${body}`} style={{ color: C.text, opacity: 0.75 }}>
             {cl.heroDesc}
           </p>
+          {cl.heroPrice && (
+            <p className="mt-2 text-sm font-semibold text-primary">{cl.heroPrice}</p>
+          )}
           <div className={`mt-8 flex flex-col sm:flex-row gap-3 ${body}`}>
             <Link
               to="/auth?tab=signup"
@@ -195,6 +198,17 @@ function Hero() {
               {cl.heroCtaSecondary}
             </a>
           </div>
+          {cl.heroLeadMagnet && (
+            <a
+              href="https://sportstalent.dk/praestationens-fundament.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground underline underline-offset-4 transition-colors"
+            >
+              <span>📥</span>
+              <span>{cl.heroLeadMagnet}</span>
+            </a>
+          )}
           <p className={`mt-4 text-xs ${body}`} style={{ color: C.muted }}>
             {cl.heroFinePrint}
           </p>

@@ -15,6 +15,9 @@ export type CLStrings = {
   heroCtaPrimary: string;
   heroCtaSecondary: string;
   heroFinePrint: string;
+  heroPrice: string;
+  heroLeadMagnet: string;
+  heroLeadMagnetCta: string;
 
   mockSquadPulse: string;
   mockWeek: string;
@@ -87,18 +90,21 @@ const en: CLStrings = {
   navGetStarted: "Get Started",
 
   heroBadge: "BUILT FOR TAEKWONDO COACHES",
-  heroTitle: "Coach Every Athlete",
+  heroTitle: "You have 15 athletes.",
   heroPhrases: [
-    "Like You Have More Time.",
-    "Like You Have More Staff.",
-    "Like You've Seen It All Before.",
-    "Like Your Best Season Starts Now.",
+    "You have time for 3.",
+    "Sportstalent changes that.",
+    "Every athlete. Every week.",
+    "Your best season starts now.",
   ],
   heroDesc:
-    "Sportstalent brings together 20 years of taekwondo coaching knowledge into one platform — so every athlete in your club gets the attention they deserve, and you spend less time on admin.",
-  heroCtaPrimary: "Start Free",
+    "Sportstalent gives every athlete in your club a personalised training plan, readiness tracking and competition prep — automatically. So you coach. Not administrate.",
+  heroCtaPrimary: "Start Free — No Card Needed",
   heroCtaSecondary: "See How It Works",
-  heroFinePrint: "Free for clubs under 10 athletes during a trial period · No credit card needed",
+  heroFinePrint: "Free for clubs under 10 athletes · No credit card · Cancel anytime",
+  heroPrice: "From €4.99/month per athlete",
+  heroLeadMagnet: "Free guide: How to keep your athletes motivated all season →",
+  heroLeadMagnetCta: "Download free (PDF)",
 
   mockSquadPulse: "Squad Pulse",
   mockWeek: "Week 14 · 18 athletes",
@@ -247,18 +253,21 @@ const da: CLStrings = {
   navGetStarted: "Kom i gang",
 
   heroBadge: "BYGGET TIL TAEKWONDO-TRÆNERE",
-  heroTitle: "Træn alle atleter",
+  heroTitle: "Du har 15 atleter.",
   heroPhrases: [
-    "Som havde du mere tid.",
-    "Som havde du flere hænder.",
-    "Som havde du set det hele før.",
-    "Som starter din bedste sæson nu.",
+    "Du har tid til 3.",
+    "Sportstalent ændrer det.",
+    "Alle atleter. Hver uge.",
+    "Din bedste sæson starter nu.",
   ],
   heroDesc:
-    "Sportstalent samler 20 års taekwondo-trænererfaring i én platform — så alle atleter i klubben får den opmærksomhed, de fortjener, og du bruger mindre tid på administration.",
-  heroCtaPrimary: "Start gratis",
+    "Sportstalent giver alle atleter i din klub en personlig træningsplan, parathedsmåling og konkurrenceforberedelse — automatisk. Så du træner. Ikke administrerer.",
+  heroCtaPrimary: "Start gratis — intet kreditkort",
   heroCtaSecondary: "Se hvordan det virker",
-  heroFinePrint: "Gratis for klubber under 10 atleter i en prøveperiode · Intet kreditkort kræves",
+  heroFinePrint: "Gratis for klubber under 10 atleter · Ingen binding · Opsig når som helst",
+  heroPrice: "Fra 37 kr/md pr. atlet",
+  heroLeadMagnet: "Gratis guide: Sådan holder du dine udøvere motiverede hele sæsonen →",
+  heroLeadMagnetCta: "Download gratis (PDF)",
 
   mockSquadPulse: "Holdets puls",
   mockWeek: "Uge 14 · 18 atleter",
@@ -407,18 +416,21 @@ const sv: CLStrings = {
   navGetStarted: "Kom igång",
 
   heroBadge: "BYGGD FÖR TAEKWONDO-TRÄNARE",
-  heroTitle: "Träna varje atlet",
+  heroTitle: "Du har 15 atleter.",
   heroPhrases: [
-    "Som om du hade mer tid.",
-    "Som om du hade fler händer.",
-    "Som om du sett allt förut.",
-    "Som om din bästa säsong börjar nu.",
+    "Du hinner med 3.",
+    "Sportstalent ändrar det.",
+    "Alla atleter. Varje vecka.",
+    "Din bästa säsong börjar nu.",
   ],
   heroDesc:
-    "Sportstalent samlar 20 års taekwondo-träning i en plattform — så att varje atlet i din klubb får den uppmärksamhet de förtjänar och du lägger mindre tid på administration.",
-  heroCtaPrimary: "Börja gratis",
+    "Sportstalent ger varje atlet i din klubb en personlig träningsplan, beredskapsmätning och tävlingsförberedelse — automatiskt. Så att du tränar. Inte administrerar.",
+  heroCtaPrimary: "Börja gratis — inget kort",
   heroCtaSecondary: "Se hur det fungerar",
-  heroFinePrint: "Gratis för klubbar under 10 atleter under en provperiod · Inget kreditkort krävs",
+  heroFinePrint: "Gratis för klubbar under 10 atleter · Ingen bindning · Avsluta när som helst",
+  heroPrice: "Från €4,99/mån per atlet",
+  heroLeadMagnet: "Gratis guide: Hur du håller dina utövare motiverade hela säsongen →",
+  heroLeadMagnetCta: "Ladda ner gratis (PDF)",
 
   mockSquadPulse: "Lagets puls",
   mockWeek: "Vecka 14 · 18 atleter",
@@ -555,18 +567,21 @@ const no: CLStrings = {
   navGetStarted: "Kom i gang",
 
   heroBadge: "BYGD FOR TAEKWONDO-TRENERE",
-  heroTitle: "Tren hver utøver",
+  heroTitle: "Du har 15 utøvere.",
   heroPhrases: [
-    "Som om du hadde mer tid.",
-    "Som om du hadde flere hender.",
-    "Som om du hadde sett alt før.",
-    "Som om din beste sesong starter nå.",
+    "Du har tid til 3.",
+    "Sportstalent endrer det.",
+    "Alle utøvere. Hver uke.",
+    "Din beste sesong starter nå.",
   ],
   heroDesc:
-    "Sportstalent samler 20 års taekwondo-trenerkunnskap i én plattform — slik at hver utøver i klubben får oppmerksomheten de fortjener, og du bruker mindre tid på administrasjon.",
-  heroCtaPrimary: "Start gratis",
+    "Sportstalent gir hver utøver i klubben en personlig treningsplan, beredskapsmåling og konkurranseforberedelse — automatisk. Slik at du trener. Ikke administrerer.",
+  heroCtaPrimary: "Start gratis — intet kort",
   heroCtaSecondary: "Se hvordan det fungerer",
-  heroFinePrint: "Gratis for klubber under 10 utøvere i en prøveperiode · Ingen kortinformasjon nødvendig",
+  heroFinePrint: "Gratis for klubber under 10 utøvere · Ingen binding · Avslutt når som helst",
+  heroPrice: "Fra €4,99/mnd per utøver",
+  heroLeadMagnet: "Gratis guide: Slik holder du utøverne motiverte hele sesongen →",
+  heroLeadMagnetCta: "Last ned gratis (PDF)",
 
   mockSquadPulse: "Lagets puls",
   mockWeek: "Uke 14 · 18 utøvere",
@@ -703,18 +718,21 @@ const de: CLStrings = {
   navGetStarted: "Loslegen",
 
   heroBadge: "GEBAUT FÜR TAEKWONDO-TRAINER",
-  heroTitle: "Trainiere jeden Athleten",
+  heroTitle: "Du hast 15 Athleten.",
   heroPhrases: [
-    "Als hättest du mehr Zeit.",
-    "Als hättest du mehr Personal.",
-    "Als hättest du alles schon gesehen.",
-    "Als startet deine beste Saison jetzt.",
+    "Du hast Zeit für 3.",
+    "Sportstalent ändert das.",
+    "Jeder Athlet. Jede Woche.",
+    "Deine beste Saison beginnt jetzt.",
   ],
   heroDesc:
-    "Sportstalent vereint 20 Jahre Taekwondo-Trainingswissen in einer Plattform — damit jeder Athlet im Verein die Aufmerksamkeit bekommt, die er verdient, und du weniger Zeit mit Verwaltung verbringst.",
-  heroCtaPrimary: "Kostenlos starten",
+    "Sportstalent gibt jedem Athleten in deinem Verein einen personalisierten Trainingsplan, Bereitschaftsverfolgung und Wettkampfvorbereitung — automatisch. Damit du trainierst. Nicht administrierst.",
+  heroCtaPrimary: "Kostenlos starten — keine Kreditkarte",
   heroCtaSecondary: "So funktioniert es",
-  heroFinePrint: "Kostenlos für Vereine unter 10 Athleten · Keine Kreditkarte nötig",
+  heroFinePrint: "Kostenlos für Vereine unter 10 Athleten · Keine Bindung · Jederzeit kündbar",
+  heroPrice: "Ab €4,99/Monat pro Athlet",
+  heroLeadMagnet: "Gratis-Guide: So hältst du deine Athleten die ganze Saison motiviert →",
+  heroLeadMagnetCta: "Kostenlos herunterladen (PDF)",
 
   mockSquadPulse: "Team-Puls",
   mockWeek: "Woche 14 · 18 Athleten",
@@ -851,18 +869,21 @@ const ar: CLStrings = {
   navGetStarted: "ابدأ الآن",
 
   heroBadge: "مصمم لمدربي التايكوندو",
-  heroTitle: "درّب كل رياضي",
+  heroTitle: "لديك 15 رياضياً.",
   heroPhrases: [
-    "وكأن لديك وقتاً أطول.",
-    "وكأن لديك فريقاً أكبر.",
-    "وكأنك رأيت كل شيء من قبل.",
-    "وكأن أفضل موسم لك يبدأ الآن.",
+    "لديك وقت لـ 3 فقط.",
+    "Sportstalent يغيّر ذلك.",
+    "كل رياضي. كل أسبوع.",
+    "موسمك الأفضل يبدأ الآن.",
   ],
   heroDesc:
-    "يجمع Sportstalent عشرين عاماً من خبرة تدريب التايكوندو في منصة واحدة — ليحصل كل رياضي في ناديك على الاهتمام الذي يستحقه، مع تقليل وقت الإدارة.",
-  heroCtaPrimary: "ابدأ مجاناً",
+    "يمنح Sportstalent كل رياضي في ناديك خطة تدريب شخصية ومتابعة الجاهزية والتحضير للمنافسات — تلقائياً. لتركّز على التدريب. لا الإدارة.",
+  heroCtaPrimary: "ابدأ مجاناً — بدون بطاقة",
   heroCtaSecondary: "شاهد كيف يعمل",
-  heroFinePrint: "مجاني للأندية أقل من 10 رياضيين · لا حاجة لبطاقة ائتمان",
+  heroFinePrint: "مجاني للأندية أقل من 10 رياضيين · بدون التزام · ألغِ في أي وقت",
+  heroPrice: "من €4.99/شهر لكل رياضي",
+  heroLeadMagnet: "دليل مجاني: كيف تحافظ على تحفيز رياضييك طوال الموسم ←",
+  heroLeadMagnetCta: "تحميل مجاناً (PDF)",
 
   mockSquadPulse: "نبض الفريق",
   mockWeek: "الأسبوع 14 · 18 رياضي",
@@ -999,18 +1020,21 @@ const es: CLStrings = {
   navGetStarted: "Empezar",
 
   heroBadge: "Creado para entrenadores de taekwondo",
-  heroTitle: "Entrena a cada atleta",
+  heroTitle: "Tienes 15 atletas.",
   heroPhrases: [
-    "como si tuvieras más personal.",
-    "como si tuvieras un equipo detrás.",
-    "como si lo hubieras visto todo antes.",
-    "como si tu mejor temporada empezara ahora.",
+    "Tienes tiempo para 3.",
+    "Sportstalent cambia eso.",
+    "Cada atleta. Cada semana.",
+    "Tu mejor temporada empieza ahora.",
   ],
   heroDesc:
-    "Sportstalent reúne 20 años de conocimiento en entrenamiento de taekwondo en una sola plataforma — para que cada atleta de tu club reciba la atención que merece y tú dediques menos tiempo a tareas administrativas.",
-  heroCtaPrimary: "Empieza gratis",
+    "Sportstalent da a cada atleta de tu club un plan de entrenamiento personalizado, seguimiento de preparación y preparación para competiciones — automáticamente. Para que entrenes. No administres.",
+  heroCtaPrimary: "Empieza gratis — sin tarjeta",
   heroCtaSecondary: "Ver cómo funciona",
-  heroFinePrint: "Gratis para clubs de menos de 10 atletas durante el periodo de prueba · Sin tarjeta de crédito",
+  heroFinePrint: "Gratis para clubs de menos de 10 atletas · Sin compromiso · Cancela cuando quieras",
+  heroPrice: "Desde €4,99/mes por atleta",
+  heroLeadMagnet: "Guía gratuita: Cómo mantener motivados a tus atletas toda la temporada →",
+  heroLeadMagnetCta: "Descargar gratis (PDF)",
 
   mockSquadPulse: "Pulso del equipo",
   mockWeek: "Semana 14 · 18 atletas",
