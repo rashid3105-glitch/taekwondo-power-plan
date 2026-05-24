@@ -135,9 +135,21 @@ export default function Diary() {
   useEffect(() => {
     void (async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) navigate("/auth");
+      if (!user) { navigate("/auth"); return; }
+      const { data } = await supabase
+        .from("profiles")
+        .select("weight_kg")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if ((data as any)?.weight_kg) setAthleteWeight(Number((data as any).weight_kg));
     })();
   }, [navigate]);
+
+  // Derived running calcs
+  const runDistNum = parseFloat(runDistanceKm) || 0;
+  const runTotalSec = (parseInt(runDurationMin) || 0) * 60 + (parseInt(runDurationSec) || 0);
+  const runPace = runDistNum > 0 && runTotalSec > 0 ? calcPace(runDistNum, runTotalSec) : 0;
+  const runCalories = runDistNum > 0 && runTotalSec > 0 ? calcCalories(runDistNum, runTotalSec, athleteWeight) : 0;
 
   const resetForm = () => {
     setDate(new Date().toISOString().slice(0, 10));
@@ -146,6 +158,9 @@ export default function Diary() {
     setEnergy(3);
     setTags([]);
     setEntryType("general");
+    setRunDistanceKm("");
+    setRunDurationMin("");
+    setRunDurationSec("");
     setEditingId(null);
     setShowForm(false);
   };
@@ -157,6 +172,16 @@ export default function Diary() {
     setEnergy(entry.energy);
     setTags(entry.tags || []);
     setEntryType(entry.entry_type || "general");
+    if (entry.entry_type === "running") {
+      setRunDistanceKm(entry.run_distance_km?.toString() ?? "");
+      const dur = entry.run_duration_seconds ?? 0;
+      setRunDurationMin(Math.floor(dur / 60).toString());
+      setRunDurationSec((dur % 60).toString());
+    } else {
+      setRunDistanceKm("");
+      setRunDurationMin("");
+      setRunDurationSec("");
+    }
     setEditingId(entry.id);
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -174,6 +199,10 @@ export default function Diary() {
       energy,
       tags,
       entry_type: entryType,
+      run_distance_km: entryType === "running" && runDistNum > 0 ? runDistNum : null,
+      run_duration_seconds: entryType === "running" && runTotalSec > 0 ? runTotalSec : null,
+      run_pace_seconds_per_km: entryType === "running" && runPace > 0 ? runPace : null,
+      run_calories: entryType === "running" && runCalories > 0 ? runCalories : null,
     };
     try {
       if (editingId) await updateEntry(editingId, payload);
