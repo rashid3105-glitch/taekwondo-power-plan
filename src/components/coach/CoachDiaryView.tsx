@@ -292,6 +292,26 @@ export function CoachDiaryView({ entries }: Props) {
                         )}
                       </div>
                       <p className="text-sm text-foreground leading-relaxed break-all min-w-0 overflow-hidden" style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere", wordBreak: "break-word" }}>{entry.content}</p>
+                      {entry.entry_type === "running" && entry.run_distance_km && (
+                        <div className="grid grid-cols-3 gap-2">
+                          <div className="rounded-lg bg-muted/50 p-2.5 text-center">
+                            <div className="text-sm font-bold">{entry.run_distance_km} km</div>
+                            <div className="text-[10px] text-muted-foreground">{t("runDistanceKm")}</div>
+                          </div>
+                          {entry.run_pace_seconds_per_km && (
+                            <div className="rounded-lg bg-muted/50 p-2.5 text-center">
+                              <div className="text-sm font-bold">{formatPace(entry.run_pace_seconds_per_km)}/km</div>
+                              <div className="text-[10px] text-muted-foreground">{t("runPace")}</div>
+                            </div>
+                          )}
+                          {entry.run_calories && (
+                            <div className="rounded-lg bg-emerald-500/10 p-2.5 text-center">
+                              <div className="text-sm font-bold text-emerald-600">{entry.run_calories} kcal</div>
+                              <div className="text-[10px] text-muted-foreground">{t("runCalories")}</div>
+                            </div>
+                          )}
+                        </div>
+                      )}
                       {entry.tags && entry.tags.length > 0 && (
                         <div className="flex flex-wrap gap-1">
                           {entry.tags.map((tag) => (
