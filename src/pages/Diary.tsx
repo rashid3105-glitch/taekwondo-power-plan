@@ -81,6 +81,12 @@ export default function Diary() {
   const [tags, setTags] = useState<string[]>([]);
   const [entryType, setEntryType] = useState<DiaryEntryType>("general");
 
+  // Running entry state
+  const [runDistanceKm, setRunDistanceKm] = useState<string>("");
+  const [runDurationMin, setRunDurationMin] = useState<string>("");
+  const [runDurationSec, setRunDurationSec] = useState<string>("");
+  const [athleteWeight, setAthleteWeight] = useState<number>(70);
+
   // Filters
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<DiaryEntryType | "all">("all");
