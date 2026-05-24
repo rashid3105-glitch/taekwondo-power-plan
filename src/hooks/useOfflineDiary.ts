@@ -22,6 +22,10 @@ interface NewEntry {
   energy: number;
   tags: string[];
   entry_type: DiaryEntryType;
+  run_distance_km?: number | null;
+  run_duration_seconds?: number | null;
+  run_pace_seconds_per_km?: number | null;
+  run_calories?: number | null;
 }
 
 function uuid() {
