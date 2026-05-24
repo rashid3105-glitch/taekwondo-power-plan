@@ -92,7 +92,11 @@ export async function syncDiary(): Promise<DiarySyncResult> {
               energy: intent.energy,
               tags: intent.tags,
               entry_type: intent.entry_type,
-            })
+              run_distance_km: intent.run_distance_km ?? null,
+              run_duration_seconds: intent.run_duration_seconds ?? null,
+              run_pace_seconds_per_km: intent.run_pace_seconds_per_km ?? null,
+              run_calories: intent.run_calories ?? null,
+            } as any)
             .eq("id", id)
             .select()
             .single();
@@ -106,6 +110,10 @@ export async function syncDiary(): Promise<DiarySyncResult> {
             energy: (data as any).energy,
             tags: ((data as any).tags as string[]) || [],
             entry_type: ((data as any).entry_type as any) || "general",
+            run_distance_km: (data as any).run_distance_km ?? null,
+            run_duration_seconds: (data as any).run_duration_seconds ?? null,
+            run_pace_seconds_per_km: (data as any).run_pace_seconds_per_km ?? null,
+            run_calories: (data as any).run_calories ?? null,
             created_at: (data as any).created_at,
             updated_at: (data as any).updated_at,
             pending: false,
