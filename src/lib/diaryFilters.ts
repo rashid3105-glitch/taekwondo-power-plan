@@ -2,7 +2,7 @@
 // Used by both the athlete diary page and the coach's diary view of an athlete.
 
 import {
-  Dumbbell, Trophy, Heart, Brain, Bandage, NotebookPen,
+  Dumbbell, Trophy, Heart, Brain, Bandage, NotebookPen, Footprints,
 } from "lucide-react";
 import type { DiaryEntryType } from "@/lib/diaryOfflineDB";
 
