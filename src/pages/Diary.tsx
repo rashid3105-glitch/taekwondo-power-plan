@@ -375,6 +375,75 @@ export default function Diary() {
 
             <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-auto h-11" />
 
+            {entryType === "running" && (
+              <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-3">
+                <h3 className="text-xs font-bold text-emerald-600 uppercase tracking-wide flex items-center gap-2">
+                  <Footprints className="h-3.5 w-3.5" /> {t("runDetails")}
+                </h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-muted-foreground">{t("runDistance")}</label>
+                    <Input
+                      type="number"
+                      inputMode="decimal"
+                      min="0"
+                      step="0.1"
+                      value={runDistanceKm}
+                      onChange={(e) => setRunDistanceKm(e.target.value)}
+                      placeholder="5.0"
+                      className="h-10"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-muted-foreground">{t("runDuration")}</label>
+                    <div className="flex gap-1 items-center">
+                      <Input
+                        type="number"
+                        inputMode="numeric"
+                        min="0"
+                        max="300"
+                        value={runDurationMin}
+                        onChange={(e) => setRunDurationMin(e.target.value)}
+                        placeholder="25"
+                        className="h-10 w-16 text-center"
+                      />
+                      <span className="text-xs text-muted-foreground">min</span>
+                      <Input
+                        type="number"
+                        inputMode="numeric"
+                        min="0"
+                        max="59"
+                        value={runDurationSec}
+                        onChange={(e) => setRunDurationSec(e.target.value)}
+                        placeholder="00"
+                        className="h-10 w-14 text-center"
+                      />
+                      <span className="text-xs text-muted-foreground">sek</span>
+                    </div>
+                  </div>
+                </div>
+                {runPace > 0 && (
+                  <div className="grid grid-cols-3 gap-2 pt-1">
+                    <div className="rounded-lg bg-card border border-border p-2.5 text-center">
+                      <div className="text-lg font-bold text-foreground">{formatPace(runPace)}</div>
+                      <div className="text-[10px] text-muted-foreground uppercase tracking-wide">{t("runPace")}</div>
+                    </div>
+                    <div className="rounded-lg bg-card border border-border p-2.5 text-center">
+                      <div className="text-lg font-bold text-foreground">{runDistNum.toFixed(1)}</div>
+                      <div className="text-[10px] text-muted-foreground uppercase tracking-wide">{t("runDistanceKm")}</div>
+                    </div>
+                    <div className="rounded-lg bg-card border border-border p-2.5 text-center">
+                      <div className="text-lg font-bold text-emerald-500">{runCalories}</div>
+                      <div className="text-[10px] text-muted-foreground uppercase tracking-wide">{t("runCalories")}</div>
+                    </div>
+                  </div>
+                )}
+                {athleteWeight === 70 && (
+                  <p className="text-[10px] text-muted-foreground italic">{t("runCaloriesNote")}</p>
+                )}
+              </div>
+            )}
+
             <div className="relative">
               <Textarea
                 value={content}
