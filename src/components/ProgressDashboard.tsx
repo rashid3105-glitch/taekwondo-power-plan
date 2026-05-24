@@ -521,6 +521,9 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
 
       {/* Physical Test Progress */}
       <PhysicalTestProgress />
+
+      {/* Running summary (last 30 days) */}
+      <RunningStatsCard />
     </div>
   );
 }
