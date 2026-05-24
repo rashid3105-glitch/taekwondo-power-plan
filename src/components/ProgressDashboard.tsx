@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Loader2, BarChart3, TrendingUp, Target, Calendar, Zap, Brain, ClipboardList, Filter } from "lucide-react";
 import { PhysicalTestProgress } from "@/components/PhysicalTestProgress";
+import { RunningStatsCard } from "@/components/RunningStatsCard";
 import { FormCurveChart } from "@/components/FormCurveChart";
 import { RecoveryProgressSection } from "@/components/progress/RecoveryProgressSection";
 import {
