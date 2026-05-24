@@ -39,6 +39,31 @@ const ENERGY_LABELS = ["Drained", "Low", "Moderate", "High", "Peak"];
 
 const PRESET_TAGS = ["competition", "recovery", "technique", "sparring", "strength", "cardio", "flexibility", "mindset"];
 
+// Pure pace formatter: seconds/km -> "m:ss"
+function formatPace(secondsPerKm: number): string {
+  const m = Math.floor(secondsPerKm / 60);
+  const s = secondsPerKm % 60;
+  return `${m}:${s.toString().padStart(2, "0")}`;
+}
+
+// MET-based calorie estimator
+function calcCalories(distKm: number, durationSec: number, weightKg: number): number {
+  if (distKm <= 0 || durationSec <= 0) return 0;
+  const speedKmh = distKm / (durationSec / 3600);
+  let met = 8;
+  if (speedKmh < 7) met = 7;
+  else if (speedKmh < 9) met = 8;
+  else if (speedKmh < 11) met = 10;
+  else if (speedKmh < 13) met = 11.5;
+  else met = 13.5;
+  return Math.round(met * weightKg * (durationSec / 3600));
+}
+
+function calcPace(distKm: number, durationSec: number): number {
+  if (distKm <= 0) return 0;
+  return Math.round(durationSec / distKm);
+}
+
 export default function Diary() {
   const navigate = useNavigate();
   const { toast } = useToast();
