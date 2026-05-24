@@ -15,7 +15,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import {
   Zap, ArrowLeft, Plus, Trash2, Edit2, Save, X, SmilePlus,
   Frown, Meh, Smile, Laugh, BatteryLow, BatteryMedium, BatteryFull,
-  Search, ChevronDown, ChevronRight, Filter, Mic, MicOff,
+  Search, ChevronDown, ChevronRight, Filter, Mic, MicOff, Footprints,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Watermark } from "@/components/Watermark";
@@ -39,6 +39,31 @@ const ENERGY_LABELS = ["Drained", "Low", "Moderate", "High", "Peak"];
 
 const PRESET_TAGS = ["competition", "recovery", "technique", "sparring", "strength", "cardio", "flexibility", "mindset"];
 
+// Pure pace formatter: seconds/km -> "m:ss"
+function formatPace(secondsPerKm: number): string {
+  const m = Math.floor(secondsPerKm / 60);
+  const s = secondsPerKm % 60;
+  return `${m}:${s.toString().padStart(2, "0")}`;
+}
+
+// MET-based calorie estimator
+function calcCalories(distKm: number, durationSec: number, weightKg: number): number {
+  if (distKm <= 0 || durationSec <= 0) return 0;
+  const speedKmh = distKm / (durationSec / 3600);
+  let met = 8;
+  if (speedKmh < 7) met = 7;
+  else if (speedKmh < 9) met = 8;
+  else if (speedKmh < 11) met = 10;
+  else if (speedKmh < 13) met = 11.5;
+  else met = 13.5;
+  return Math.round(met * weightKg * (durationSec / 3600));
+}
+
+function calcPace(distKm: number, durationSec: number): number {
+  if (distKm <= 0) return 0;
+  return Math.round(durationSec / distKm);
+}
+
 export default function Diary() {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -55,6 +80,12 @@ export default function Diary() {
   const [energy, setEnergy] = useState(3);
   const [tags, setTags] = useState<string[]>([]);
   const [entryType, setEntryType] = useState<DiaryEntryType>("general");
+
+  // Running entry state
+  const [runDistanceKm, setRunDistanceKm] = useState<string>("");
+  const [runDurationMin, setRunDurationMin] = useState<string>("");
+  const [runDurationSec, setRunDurationSec] = useState<string>("");
+  const [athleteWeight, setAthleteWeight] = useState<number>(70);
 
   // Filters
   const [search, setSearch] = useState("");
@@ -104,9 +135,21 @@ export default function Diary() {
   useEffect(() => {
     void (async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) navigate("/auth");
+      if (!user) { navigate("/auth"); return; }
+      const { data } = await supabase
+        .from("profiles")
+        .select("weight_kg")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if ((data as any)?.weight_kg) setAthleteWeight(Number((data as any).weight_kg));
     })();
   }, [navigate]);
+
+  // Derived running calcs
+  const runDistNum = parseFloat(runDistanceKm) || 0;
+  const runTotalSec = (parseInt(runDurationMin) || 0) * 60 + (parseInt(runDurationSec) || 0);
+  const runPace = runDistNum > 0 && runTotalSec > 0 ? calcPace(runDistNum, runTotalSec) : 0;
+  const runCalories = runDistNum > 0 && runTotalSec > 0 ? calcCalories(runDistNum, runTotalSec, athleteWeight) : 0;
 
   const resetForm = () => {
     setDate(new Date().toISOString().slice(0, 10));
@@ -115,6 +158,9 @@ export default function Diary() {
     setEnergy(3);
     setTags([]);
     setEntryType("general");
+    setRunDistanceKm("");
+    setRunDurationMin("");
+    setRunDurationSec("");
     setEditingId(null);
     setShowForm(false);
   };
@@ -126,6 +172,16 @@ export default function Diary() {
     setEnergy(entry.energy);
     setTags(entry.tags || []);
     setEntryType(entry.entry_type || "general");
+    if (entry.entry_type === "running") {
+      setRunDistanceKm(entry.run_distance_km?.toString() ?? "");
+      const dur = entry.run_duration_seconds ?? 0;
+      setRunDurationMin(Math.floor(dur / 60).toString());
+      setRunDurationSec((dur % 60).toString());
+    } else {
+      setRunDistanceKm("");
+      setRunDurationMin("");
+      setRunDurationSec("");
+    }
     setEditingId(entry.id);
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -143,6 +199,10 @@ export default function Diary() {
       energy,
       tags,
       entry_type: entryType,
+      run_distance_km: entryType === "running" && runDistNum > 0 ? runDistNum : null,
+      run_duration_seconds: entryType === "running" && runTotalSec > 0 ? runTotalSec : null,
+      run_pace_seconds_per_km: entryType === "running" && runPace > 0 ? runPace : null,
+      run_calories: entryType === "running" && runCalories > 0 ? runCalories : null,
     };
     try {
       if (editingId) await updateEntry(editingId, payload);
@@ -314,6 +374,75 @@ export default function Diary() {
             </div>
 
             <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-auto h-11" />
+
+            {entryType === "running" && (
+              <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-3">
+                <h3 className="text-xs font-bold text-emerald-600 uppercase tracking-wide flex items-center gap-2">
+                  <Footprints className="h-3.5 w-3.5" /> {t("runDetails")}
+                </h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-muted-foreground">{t("runDistance")}</label>
+                    <Input
+                      type="number"
+                      inputMode="decimal"
+                      min="0"
+                      step="0.1"
+                      value={runDistanceKm}
+                      onChange={(e) => setRunDistanceKm(e.target.value)}
+                      placeholder="5.0"
+                      className="h-10"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-muted-foreground">{t("runDuration")}</label>
+                    <div className="flex gap-1 items-center">
+                      <Input
+                        type="number"
+                        inputMode="numeric"
+                        min="0"
+                        max="300"
+                        value={runDurationMin}
+                        onChange={(e) => setRunDurationMin(e.target.value)}
+                        placeholder="25"
+                        className="h-10 w-16 text-center"
+                      />
+                      <span className="text-xs text-muted-foreground">min</span>
+                      <Input
+                        type="number"
+                        inputMode="numeric"
+                        min="0"
+                        max="59"
+                        value={runDurationSec}
+                        onChange={(e) => setRunDurationSec(e.target.value)}
+                        placeholder="00"
+                        className="h-10 w-14 text-center"
+                      />
+                      <span className="text-xs text-muted-foreground">sek</span>
+                    </div>
+                  </div>
+                </div>
+                {runPace > 0 && (
+                  <div className="grid grid-cols-3 gap-2 pt-1">
+                    <div className="rounded-lg bg-card border border-border p-2.5 text-center">
+                      <div className="text-lg font-bold text-foreground">{formatPace(runPace)}</div>
+                      <div className="text-[10px] text-muted-foreground uppercase tracking-wide">{t("runPace")}</div>
+                    </div>
+                    <div className="rounded-lg bg-card border border-border p-2.5 text-center">
+                      <div className="text-lg font-bold text-foreground">{runDistNum.toFixed(1)}</div>
+                      <div className="text-[10px] text-muted-foreground uppercase tracking-wide">{t("runDistanceKm")}</div>
+                    </div>
+                    <div className="rounded-lg bg-card border border-border p-2.5 text-center">
+                      <div className="text-lg font-bold text-emerald-500">{runCalories}</div>
+                      <div className="text-[10px] text-muted-foreground uppercase tracking-wide">{t("runCalories")}</div>
+                    </div>
+                  </div>
+                )}
+                {athleteWeight === 70 && (
+                  <p className="text-[10px] text-muted-foreground italic">{t("runCaloriesNote")}</p>
+                )}
+              </div>
+            )}
 
             <div className="relative">
               <Textarea
@@ -603,6 +732,26 @@ export default function Diary() {
                         </div>
                       </div>
                       <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">{entry.content}</p>
+                      {entry.entry_type === "running" && entry.run_distance_km && (
+                        <div className="grid grid-cols-3 gap-2">
+                          <div className="rounded-lg bg-muted/50 p-2.5 text-center">
+                            <div className="text-sm font-bold">{entry.run_distance_km} km</div>
+                            <div className="text-[10px] text-muted-foreground">{t("runDistanceKm")}</div>
+                          </div>
+                          {entry.run_pace_seconds_per_km && (
+                            <div className="rounded-lg bg-muted/50 p-2.5 text-center">
+                              <div className="text-sm font-bold">{formatPace(entry.run_pace_seconds_per_km)}/km</div>
+                              <div className="text-[10px] text-muted-foreground">{t("runPace")}</div>
+                            </div>
+                          )}
+                          {entry.run_calories && (
+                            <div className="rounded-lg bg-emerald-500/10 p-2.5 text-center">
+                              <div className="text-sm font-bold text-emerald-600">{entry.run_calories} kcal</div>
+                              <div className="text-[10px] text-muted-foreground">{t("runCalories")}</div>
+                            </div>
+                          )}
+                        </div>
+                      )}
                       {entry.tags && entry.tags.length > 0 && (
                         <div className="flex flex-wrap gap-1">
                           {entry.tags.map((tag) => (

@@ -22,6 +22,10 @@ interface NewEntry {
   energy: number;
   tags: string[];
   entry_type: DiaryEntryType;
+  run_distance_km?: number | null;
+  run_duration_seconds?: number | null;
+  run_pace_seconds_per_km?: number | null;
+  run_calories?: number | null;
 }
 
 function uuid() {
@@ -60,6 +64,10 @@ export function useOfflineDiary() {
           energy: e.energy,
           tags: (e.tags as string[]) || [],
           entry_type: (e.entry_type as DiaryEntryType) || "general",
+          run_distance_km: e.run_distance_km ?? null,
+          run_duration_seconds: e.run_duration_seconds ?? null,
+          run_pace_seconds_per_km: e.run_pace_seconds_per_km ?? null,
+          run_calories: e.run_calories ?? null,
           created_at: e.created_at,
           updated_at: e.updated_at,
           pending: false,
@@ -101,6 +109,10 @@ export function useOfflineDiary() {
         energy: input.energy,
         tags: input.tags,
         entry_type: input.entry_type,
+        run_distance_km: input.run_distance_km ?? null,
+        run_duration_seconds: input.run_duration_seconds ?? null,
+        run_pace_seconds_per_km: input.run_pace_seconds_per_km ?? null,
+        run_calories: input.run_calories ?? null,
         created_at: now,
         updated_at: now,
         pending: true,
@@ -143,6 +155,10 @@ export function useOfflineDiary() {
         energy: input.energy,
         tags: input.tags,
         entry_type: input.entry_type,
+        run_distance_km: input.run_distance_km ?? null,
+        run_duration_seconds: input.run_duration_seconds ?? null,
+        run_pace_seconds_per_km: input.run_pace_seconds_per_km ?? null,
+        run_calories: input.run_calories ?? null,
         created_at: existing?.created_at || now,
         updated_at: now,
         pending: true,

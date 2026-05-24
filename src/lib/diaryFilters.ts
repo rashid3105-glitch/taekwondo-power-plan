@@ -2,7 +2,7 @@
 // Used by both the athlete diary page and the coach's diary view of an athlete.
 
 import {
-  Dumbbell, Trophy, Heart, Brain, Bandage, NotebookPen,
+  Dumbbell, Trophy, Heart, Brain, Bandage, NotebookPen, Footprints,
 } from "lucide-react";
 import type { DiaryEntryType } from "@/lib/diaryOfflineDB";
 
@@ -17,6 +17,10 @@ export interface DiaryEntryLike {
   energy: number;
   tags: string[];
   entry_type?: DiaryEntryType | null;
+  run_distance_km?: number | null;
+  run_duration_seconds?: number | null;
+  run_pace_seconds_per_km?: number | null;
+  run_calories?: number | null;
 }
 
 export interface TypeMeta {
@@ -35,6 +39,7 @@ export const ENTRY_TYPES: TypeMeta[] = [
   { value: "recovery", i18nKey: "diaryTypeRecovery", Icon: Heart, color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/40" },
   { value: "mental", i18nKey: "diaryTypeMental", Icon: Brain, color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/40" },
   { value: "injury", i18nKey: "diaryTypeInjury", Icon: Bandage, color: "text-destructive", bg: "bg-destructive/10", border: "border-destructive/40" },
+  { value: "running", i18nKey: "diaryTypeRunning", Icon: Footprints, color: "text-emerald-500", bg: "bg-emerald-500/10", border: "border-emerald-500/30" },
 ];
 
 export const typeMeta = (t: DiaryEntryType | null | undefined): TypeMeta =>

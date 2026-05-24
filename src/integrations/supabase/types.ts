@@ -953,6 +953,10 @@ export type Database = {
           entry_type: string
           id: string
           mood: number
+          run_calories: number | null
+          run_distance_km: number | null
+          run_duration_seconds: number | null
+          run_pace_seconds_per_km: number | null
           tags: string[]
           updated_at: string
           user_id: string
@@ -965,6 +969,10 @@ export type Database = {
           entry_type?: string
           id?: string
           mood?: number
+          run_calories?: number | null
+          run_distance_km?: number | null
+          run_duration_seconds?: number | null
+          run_pace_seconds_per_km?: number | null
           tags?: string[]
           updated_at?: string
           user_id: string
@@ -977,6 +985,10 @@ export type Database = {
           entry_type?: string
           id?: string
           mood?: number
+          run_calories?: number | null
+          run_distance_km?: number | null
+          run_duration_seconds?: number | null
+          run_pace_seconds_per_km?: number | null
           tags?: string[]
           updated_at?: string
           user_id?: string

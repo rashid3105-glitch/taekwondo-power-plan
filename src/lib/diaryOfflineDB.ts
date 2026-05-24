@@ -5,7 +5,7 @@ const DB_NAME = "diary-offline";
 const DB_VERSION = 2;
 
 export type DiaryOp = "create" | "update" | "delete";
-export type DiaryEntryType = "general" | "training" | "competition" | "recovery" | "mental" | "injury";
+export type DiaryEntryType = "general" | "training" | "competition" | "recovery" | "mental" | "injury" | "running";
 
 export interface DiaryOutboxIntent {
   // Local id (uuid). For "create" intents this is also used as a placeholder
@@ -21,6 +21,10 @@ export interface DiaryOutboxIntent {
   energy: number;
   tags: string[];
   entry_type: DiaryEntryType;
+  run_distance_km?: number | null;
+  run_duration_seconds?: number | null;
+  run_pace_seconds_per_km?: number | null;
+  run_calories?: number | null;
   queued_at: number;
 }
 
@@ -33,6 +37,10 @@ export interface CachedDiaryEntry {
   energy: number;
   tags: string[];
   entry_type: DiaryEntryType;
+  run_distance_km?: number | null;
+  run_duration_seconds?: number | null;
+  run_pace_seconds_per_km?: number | null;
+  run_calories?: number | null;
   created_at: string;
   updated_at: string;
   // true when this row only exists locally and has not been pushed yet.
