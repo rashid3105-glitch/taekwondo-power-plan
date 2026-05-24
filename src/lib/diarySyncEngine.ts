@@ -49,7 +49,11 @@ export async function syncDiary(): Promise<DiarySyncResult> {
               energy: intent.energy,
               tags: intent.tags,
               entry_type: intent.entry_type,
-            })
+              run_distance_km: intent.run_distance_km ?? null,
+              run_duration_seconds: intent.run_duration_seconds ?? null,
+              run_pace_seconds_per_km: intent.run_pace_seconds_per_km ?? null,
+              run_calories: intent.run_calories ?? null,
+            } as any)
             .select()
             .single();
           if (error) throw error;
