@@ -27,6 +27,12 @@ const ENERGY_LABELS = ["Drained", "Low", "Moderate", "High", "Peak"];
 
 const PAGE_SIZE = 20;
 
+function formatPace(secondsPerKm: number): string {
+  const m = Math.floor(secondsPerKm / 60);
+  const s = secondsPerKm % 60;
+  return `${m}:${s.toString().padStart(2, "0")}`;
+}
+
 interface Props {
   entries: DiaryEntryLike[];
 }
