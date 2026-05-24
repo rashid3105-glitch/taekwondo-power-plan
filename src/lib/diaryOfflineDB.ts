@@ -5,7 +5,7 @@ const DB_NAME = "diary-offline";
 const DB_VERSION = 2;
 
 export type DiaryOp = "create" | "update" | "delete";
-export type DiaryEntryType = "general" | "training" | "competition" | "recovery" | "mental" | "injury";
+export type DiaryEntryType = "general" | "training" | "competition" | "recovery" | "mental" | "injury" | "running";
 
 export interface DiaryOutboxIntent {
   // Local id (uuid). For "create" intents this is also used as a placeholder
