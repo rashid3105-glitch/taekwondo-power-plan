@@ -35,6 +35,7 @@ export const ENTRY_TYPES: TypeMeta[] = [
   { value: "recovery", i18nKey: "diaryTypeRecovery", Icon: Heart, color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/40" },
   { value: "mental", i18nKey: "diaryTypeMental", Icon: Brain, color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/40" },
   { value: "injury", i18nKey: "diaryTypeInjury", Icon: Bandage, color: "text-destructive", bg: "bg-destructive/10", border: "border-destructive/40" },
+  { value: "running", i18nKey: "diaryTypeRunning", Icon: Footprints, color: "text-emerald-500", bg: "bg-emerald-500/10", border: "border-emerald-500/30" },
 ];
 
 export const typeMeta = (t: DiaryEntryType | null | undefined): TypeMeta =>
