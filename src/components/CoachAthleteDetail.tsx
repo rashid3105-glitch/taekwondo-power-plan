@@ -22,6 +22,7 @@ import { AthleteRecoveryTrend } from "@/components/coach/AthleteRecoveryTrend";
 import { CoachAthleteMental } from "@/components/coach/CoachAthleteMental";
 import { CoachAthleteReflections } from "@/components/coach/CoachAthleteReflections";
 import { PhysicalTestComparison } from "@/components/coach/PhysicalTestComparison";
+import { AthleteRunningProgress } from "@/components/coach/AthleteRunningProgress";
 import { FormCurveChart } from "@/components/FormCurveChart";
 import { useNavigate } from "react-router-dom";
 import { Video as VideoIcon } from "lucide-react";
@@ -599,6 +600,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
         </TabsContent>
 
         <TabsContent value="performance" className="space-y-4 mt-3">
+          <AthleteRunningProgress athleteId={athlete.user_id} />
           <FormCurveChart userId={athlete.user_id} />
           <PhysicalTestComparison athleteId={athlete.user_id} />
           <PhysicalTesting mode="coach" athleteId={athlete.user_id} athleteName={athlete.display_name} />
