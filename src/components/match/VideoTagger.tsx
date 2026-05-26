@@ -509,12 +509,32 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <Label className="text-xs">{t("matchTechnique")}</Label>
+                    <div className="flex items-center justify-between gap-1">
+                      <Label className="text-xs">{t("matchTechnique")}</Label>
+                      {isCoach && clubId && (
+                        <button
+                          type="button"
+                          onClick={() => setTechDialogOpen(true)}
+                          className="text-[10px] text-primary hover:underline inline-flex items-center gap-1"
+                        >
+                          <Settings2 className="h-3 w-3" />
+                          {t("matchManageTechniques")}
+                        </button>
+                      )}
+                    </div>
                     <Select value={technique} onValueChange={setTechnique}>
                       <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         {techList.map((tech) => (
                           <SelectItem key={tech.key} value={tech.key}>{t(tech.labelKey as any)}</SelectItem>
+                        ))}
+                        {clubTechs.length > 0 && (
+                          <div className="px-2 py-1 text-[10px] uppercase tracking-wider text-muted-foreground border-t mt-1 pt-2">
+                            {t("matchClubTechniques")}
+                          </div>
+                        )}
+                        {clubTechs.map((ct) => (
+                          <SelectItem key={ct.id} value={ct.name}>{ct.name}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
