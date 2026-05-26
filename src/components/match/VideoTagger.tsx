@@ -12,6 +12,8 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { techniquesFor, OUTCOMES, SIDES, type Discipline } from "@/lib/tkdTechniques";
 import { MatchSummary } from "./MatchSummary";
 import { MatchReportButton } from "./MatchReportButton";
+import { ClubTechniquesDialog, type ClubTechnique } from "./ClubTechniquesDialog";
+import { Settings2 } from "lucide-react";
 import {
   getCachedVideo, queueTagInsert, queueTagDelete, listPendingTagInsertsForVideo,
   removePendingTagInsert, makeTempId, type PendingTagInsert,
@@ -84,6 +86,11 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
   const [sharing, setSharing] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  // Club-defined techniques
+  const [clubId, setClubId] = useState<string | null>(null);
+  const [clubTechs, setClubTechs] = useState<ClubTechnique[]>([]);
+  const [techDialogOpen, setTechDialogOpen] = useState(false);
+
   const techList = useMemo(() => techniquesFor(video.discipline), [video.discipline]);
 
   useEffect(() => {
@@ -109,7 +116,7 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
     if (!user) return;
     const { data } = await supabase
       .from("profiles")
-      .select("display_name, belt_level, weight_kg")
+      .select("display_name, belt_level, weight_kg, club_id")
       .eq("user_id", user.id)
       .maybeSingle();
     if (data) {
@@ -118,7 +125,19 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
         belt_level: (data as any).belt_level || null,
         weight_category: (data as any).weight_kg ? `${(data as any).weight_kg} kg` : null,
       });
+      const cid = (data as any).club_id as string | null;
+      setClubId(cid);
+      if (cid) void loadClubTechs(cid);
     }
+  }
+
+  async function loadClubTechs(cid: string) {
+    const { data } = await (supabase.from as any)("club_techniques")
+      .select("id, name, category, discipline")
+      .eq("club_id", cid)
+      .in("discipline", [video.discipline, "both"])
+      .order("name");
+    setClubTechs((data ?? []) as ClubTechnique[]);
   }
 
   async function load() {
@@ -490,12 +509,32 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <Label className="text-xs">{t("matchTechnique")}</Label>
+                    <div className="flex items-center justify-between gap-1">
+                      <Label className="text-xs">{t("matchTechnique")}</Label>
+                      {isCoach && clubId && (
+                        <button
+                          type="button"
+                          onClick={() => setTechDialogOpen(true)}
+                          className="text-[10px] text-primary hover:underline inline-flex items-center gap-1"
+                        >
+                          <Settings2 className="h-3 w-3" />
+                          {t("matchManageTechniques")}
+                        </button>
+                      )}
+                    </div>
                     <Select value={technique} onValueChange={setTechnique}>
                       <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         {techList.map((tech) => (
                           <SelectItem key={tech.key} value={tech.key}>{t(tech.labelKey as any)}</SelectItem>
+                        ))}
+                        {clubTechs.length > 0 && (
+                          <div className="px-2 py-1 text-[10px] uppercase tracking-wider text-muted-foreground border-t mt-1 pt-2">
+                            {t("matchClubTechniques")}
+                          </div>
+                        )}
+                        {clubTechs.map((ct) => (
+                          <SelectItem key={ct.id} value={ct.name}>{ct.name}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -555,6 +594,7 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
               ) : (
                 tags.map((tag) => {
                   const techDef = techList.find((x) => x.key === tag.technique);
+                  const techLabel = techDef ? t(techDef.labelKey as any) : tag.technique;
                   return (
                     <button
                       key={tag.id}
@@ -562,7 +602,7 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
                       className="w-full flex items-center gap-2 px-2 py-1.5 rounded hover:bg-muted text-left text-xs group"
                     >
                       <span className="font-mono text-primary font-bold w-12">{fmt(tag.timestamp_seconds)}</span>
-                      <span className="font-medium">{techDef ? t(techDef.labelKey as any) : tag.technique}</span>
+                      <span className="font-medium">{techLabel}</span>
                       {tag.side !== "n/a" && (
                         <Badge variant="outline" className="text-[9px] h-4">
                           {tag.side === "left" ? "L" : "R"}
@@ -623,6 +663,15 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
         profile={myProfile}
       />
       {tags.length > 0 && <MatchSummary tags={tags} discipline={video.discipline} />}
+      {isCoach && clubId && (
+        <ClubTechniquesDialog
+          open={techDialogOpen}
+          onOpenChange={setTechDialogOpen}
+          clubId={clubId}
+          discipline={video.discipline}
+          onChanged={() => { if (clubId) void loadClubTechs(clubId); }}
+        />
+      )}
     </div>
   );
 }
