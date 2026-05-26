@@ -1,46 +1,33 @@
-## Skabeloner til evalueringsskemaer
+## Hvor bygges evalueringsskemaer?
 
-### Database
-Ny tabel `survey_templates`:
-- `id, coach_id, club_id, title, description, allow_anonymous`
-- `questions jsonb` (snapshot af spørgsmål inkl. type, position, scale_max, mc_options, required)
-- `is_shared_with_club boolean default true` ← delt som standard
-- `archived_at timestamptz null` ← sættes ved arkivering
-- `created_at, updated_at`
+- **Trænere**: Bunden af coach-bottom-nav → ikonet **Evalueringer** (ClipboardList) → `/coach/surveys`. Her opretter du nye skemaer, ser svar og styrer skabeloner (aktive/arkiv).
+- **Atleter**: Hub → "Andre moduler" → kortet **Evalueringer** → `/surveys`. Her udfyldes skemaer (med valg om anonymitet, hvis træneren har tilladt det).
 
-**GRANTs:** `authenticated` SELECT/INSERT/UPDATE/DELETE; `service_role` ALL.
+## Fejlen: `infinite recursion detected in policy for relation "surveys"`
 
-**RLS:**
-- Coach: fuld CRUD på egne skabeloner
-- Klub-coaches: SELECT hvor `is_shared_with_club = true` AND samme `club_id` AND `archived_at IS NULL`
-- Arkiverede skabeloner: kun synlige for ejer (under "Arkiv"-fane)
+### Årsag
+RLS-loop mellem to tabeller:
 
-**Auto-sletning efter 90 dage:**
-- pg_cron job (dagligt) → `DELETE FROM survey_templates WHERE archived_at IS NOT NULL AND archived_at < now() - interval '90 days'`
-- Sættes op via `supabase--insert` (bruger projekt-specifik URL/key)
+- `surveys` SELECT-policy (atleter) laver `EXISTS (SELECT 1 FROM survey_recipients ...)`.
+- `survey_recipients` har en `FOR ALL`-policy for coaches der laver `EXISTS (SELECT 1 FROM surveys ...)`.
 
-### API (`src/lib/surveysApi.ts`)
-- `listTemplates({ includeArchived })` — egne aktive + klub-delte aktive (+ egne arkiverede hvis flag)
-- `saveAsTemplate(surveyId, { shareWithClub = true })` — kopierer survey + spørgsmål
-- `createTemplate(payload)` / `updateTemplate(id, payload)`
-- `archiveTemplate(id)` — sætter `archived_at = now()`
-- `unarchiveTemplate(id)` — sætter `archived_at = null`
-- `deleteTemplate(id)` — manuel sletning
-- `createSurveyFromTemplate(templateId, { target_scope, deadline, recipients })`
+Når atlet læser `surveys`, kalder Postgres `survey_recipients`-policies, som kalder `surveys`-policy igen → uendelig rekursion.
 
-### UI (`src/pages/CoachSurveys.tsx`)
-- Ny tab **"Skabeloner"** med to under-faner: *Aktive* og *Arkiv*
-- Skabelonkort viser: titel, antal spørgsmål, badge "Delt i klub" / "Privat", ejer-navn
-- Aktive skabelon-handlinger: **Brug**, **Rediger**, **Arkivér**, toggle deling
-- Arkiverede skabelon-handlinger: **Gendan**, **Slet nu**, samt countdown "Slettes om X dage"
-- I SurveyBuilder: knap **"Gem som skabelon"** (checkbox "Del med klub-coaches" — tjekket som default)
-- I "Opret nyt skema": knap **"Start fra skabelon"** → modal med søgbar liste → prefill builder
+### Fix (migration)
+Brug den eksisterende SECURITY DEFINER-funktion `public.is_survey_target(_survey_id, _user_id)` i atlet-policy'en, så Postgres ikke evaluerer `survey_recipients` RLS rekursivt.
 
-### Oversættelser (alle 7 sprog)
-~15 nye nøgler: `templates, useTemplate, saveAsTemplate, startFromTemplate, shareWithClub, sharedInClub, privateTemplate, archive, archived, unarchive, deleteNow, autoDeletesIn, daysLeft, archivedTemplates, activeTemplates`
+```sql
+DROP POLICY "Athletes view targeted surveys" ON public.surveys;
 
-### Scope (Fase 1)
-- Ingen versionering (skabelon = snapshot)
-- Ingen platform-wide bibliotek (kun egne + klub)
-- Ændring af skabelon påvirker ikke allerede oprettede surveys
-- Ingen email-notifikation før auto-sletning (vises i UI)
+CREATE POLICY "Athletes view targeted surveys"
+ON public.surveys
+FOR SELECT
+TO authenticated
+USING (public.is_survey_target(id, auth.uid()));
+```
+
+Coach-policy (`auth.uid() = coach_id`) er uændret. Ingen ændringer i kode, types eller UI.
+
+### Verifikation
+- Genåbn `/surveys` som atlet — listen loader uden fejl.
+- Coach kan stadig se/oprette/redigere egne skemaer på `/coach/surveys`.
