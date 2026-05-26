@@ -663,6 +663,15 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
         profile={myProfile}
       />
       {tags.length > 0 && <MatchSummary tags={tags} discipline={video.discipline} />}
+      {isCoach && clubId && (
+        <ClubTechniquesDialog
+          open={techDialogOpen}
+          onOpenChange={setTechDialogOpen}
+          clubId={clubId}
+          discipline={video.discipline}
+          onChanged={() => { if (clubId) void loadClubTechs(clubId); }}
+        />
+      )}
     </div>
   );
 }
