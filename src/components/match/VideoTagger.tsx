@@ -594,6 +594,7 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
               ) : (
                 tags.map((tag) => {
                   const techDef = techList.find((x) => x.key === tag.technique);
+                  const techLabel = techDef ? t(techDef.labelKey as any) : tag.technique;
                   return (
                     <button
                       key={tag.id}
