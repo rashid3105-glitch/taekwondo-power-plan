@@ -602,7 +602,7 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
                       className="w-full flex items-center gap-2 px-2 py-1.5 rounded hover:bg-muted text-left text-xs group"
                     >
                       <span className="font-mono text-primary font-bold w-12">{fmt(tag.timestamp_seconds)}</span>
-                      <span className="font-medium">{techDef ? t(techDef.labelKey as any) : tag.technique}</span>
+                      <span className="font-medium">{techLabel}</span>
                       {tag.side !== "n/a" && (
                         <Badge variant="outline" className="text-[9px] h-4">
                           {tag.side === "left" ? "L" : "R"}
