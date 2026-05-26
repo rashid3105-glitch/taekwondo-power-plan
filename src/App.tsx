@@ -60,6 +60,8 @@ import ParentJoin from "./pages/ParentJoin";
 import ParentDashboard from "./pages/ParentDashboard";
 import { UpgradeGate } from "@/components/UpgradeGate";
 import { AIAssistant } from "@/components/AIAssistant";
+import CoachSurveys from "./pages/CoachSurveys";
+import AthleteSurveys from "./pages/AthleteSurveys";
 
 const AI_ASSISTANT_HIDDEN_PATHS = new Set([
   "/", "/v2", "/v1", "/auth", "/reset-password", "/pricing",
@@ -125,6 +127,8 @@ const AnimatedRoutes = () => {
         <Route path="/coach/athlete/:athleteId" element={<Page><CoachAthleteOverview /></Page>} />
         <Route path="/coach/competitions" element={<Page><CoachCompetitions /></Page>} />
         <Route path="/coach/season-calendar" element={<Page><SeasonCalendar /></Page>} />
+        <Route path="/coach/surveys" element={<Page><CoachSurveys /></Page>} />
+        <Route path="/surveys" element={<Page><AthleteSurveys /></Page>} />
         <Route path="/pricing" element={<Page><Pricing /></Page>} />
         <Route path="/settings/subscription" element={<Page><SubscriptionSettings /></Page>} />
         <Route path="/help" element={<Page><Help /></Page>} />
