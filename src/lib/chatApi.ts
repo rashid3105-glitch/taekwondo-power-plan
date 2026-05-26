@@ -113,10 +113,10 @@ export async function listThreads(): Promise<ChatThread[]> {
   // Resolve member display names from profiles
   const userIds = Array.from(new Set((membersRes.data ?? []).map((m) => m.user_id)));
   const { data: profiles } = await supabase
-    .from("profiles")
+    .from("club_directory" as any)
     .select("user_id, display_name, avatar_url")
     .in("user_id", userIds);
-  const profileMap = new Map((profiles ?? []).map((p) => [p.user_id, p]));
+  const profileMap = new Map(((profiles ?? []) as any[]).map((p: any) => [p.user_id, p]));
 
   const lastMsgByThread = new Map<string, any>();
   (lastMsgRes.data ?? []).forEach((m: any) => {
