@@ -60,6 +60,8 @@ import ParentJoin from "./pages/ParentJoin";
 import ParentDashboard from "./pages/ParentDashboard";
 import { UpgradeGate } from "@/components/UpgradeGate";
 import { AIAssistant } from "@/components/AIAssistant";
+import CoachSurveys from "./pages/CoachSurveys";
+import AthleteSurveys from "./pages/AthleteSurveys";
 
 const AI_ASSISTANT_HIDDEN_PATHS = new Set([
   "/", "/v2", "/v1", "/auth", "/reset-password", "/pricing",
