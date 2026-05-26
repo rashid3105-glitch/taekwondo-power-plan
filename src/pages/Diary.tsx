@@ -368,21 +368,25 @@ export default function Diary() {
               <div className="flex flex-wrap gap-1.5">
                 {ENTRY_TYPES.map((meta) => {
                   const Icon = meta.Icon;
-                  const active = entryType === meta.value;
+                  const active = entryTypes.includes(meta.value);
                   return (
                     <button
                       key={meta.value}
-                      onClick={() => setEntryType(meta.value)}
+                      onClick={() => toggleEntryType(meta.value)}
                       className={`flex items-center gap-1.5 rounded-full px-3 h-9 text-xs font-semibold border transition-colors cursor-pointer ${
                         active ? `${meta.bg} ${meta.border} ${meta.color}` : "border-border text-muted-foreground hover:text-foreground"
                       }`}
                     >
                       <Icon className="h-3.5 w-3.5" />
                       {t(meta.i18nKey)}
+                      {active && entryTypes.length > 1 && <span className="ml-0.5 opacity-60">✓</span>}
                     </button>
                   );
                 })}
               </div>
+              {entryTypes.length > 1 && (
+                <p className="text-[10px] text-muted-foreground">{entryTypes.length} {t("diaryMultipleTypes")}</p>
+              )}
             </div>
 
             <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-auto h-11" />
