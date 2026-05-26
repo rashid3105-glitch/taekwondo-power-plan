@@ -59,6 +59,21 @@ import Messages from "./pages/Messages";
 import ParentJoin from "./pages/ParentJoin";
 import ParentDashboard from "./pages/ParentDashboard";
 import { UpgradeGate } from "@/components/UpgradeGate";
+import { AIAssistant } from "@/components/AIAssistant";
+
+const AI_ASSISTANT_HIDDEN_PATHS = new Set([
+  "/", "/v2", "/v1", "/auth", "/reset-password", "/pricing",
+  "/help", "/about", "/contact", "/privacy", "/unsubscribe",
+  "/signup/coach", "/methodology", "/programs", "/taekwondo-training-program",
+]);
+const AI_ASSISTANT_HIDDEN_PREFIXES = [
+  "/platform/", "/features/", "/match/share/", "/athlete/",
+  "/join/", "/parent-join/", "/invite/",
+];
+const shouldShowAIAssistant = (pathname: string) => {
+  if (AI_ASSISTANT_HIDDEN_PATHS.has(pathname)) return false;
+  return !AI_ASSISTANT_HIDDEN_PREFIXES.some((p) => pathname.startsWith(p));
+};
 
 const queryClient = new QueryClient();
 
@@ -142,6 +157,7 @@ const AnimatedRoutes = () => {
         <Route path="/progress" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<Page><NotFound /></Page>} />
       </Routes>
+      {shouldShowAIAssistant(location.pathname) && <AIAssistant />}
     </AnimatePresence>
   );
 };

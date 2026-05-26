@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_assistant_logs: {
+        Row: {
+          answer: string
+          created_at: string
+          id: string
+          question: string
+          shared_with_coach: boolean
+          user_id: string
+        }
+        Insert: {
+          answer: string
+          created_at?: string
+          id?: string
+          question: string
+          shared_with_coach?: boolean
+          user_id: string
+        }
+        Update: {
+          answer?: string
+          created_at?: string
+          id?: string
+          question?: string
+          shared_with_coach?: boolean
+          user_id?: string
+        }
+        Relationships: []
+      }
       athlete_achievements: {
         Row: {
           created_at: string
