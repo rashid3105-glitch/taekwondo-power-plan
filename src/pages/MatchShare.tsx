@@ -38,6 +38,8 @@ export default function MatchShare() {
   const [video, setVideo] = useState<SharedVideo | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [tags, setTags] = useState<SharedTag[]>([]);
+  const [aspectRatio, setAspectRatio] = useState<number>(16 / 9);
+  const [speed, setSpeed] = useState<number>(1);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
