@@ -86,6 +86,11 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
   const [sharing, setSharing] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  // Club-defined techniques
+  const [clubId, setClubId] = useState<string | null>(null);
+  const [clubTechs, setClubTechs] = useState<ClubTechnique[]>([]);
+  const [techDialogOpen, setTechDialogOpen] = useState(false);
+
   const techList = useMemo(() => techniquesFor(video.discipline), [video.discipline]);
 
   useEffect(() => {
