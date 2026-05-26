@@ -12,6 +12,8 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { techniquesFor, OUTCOMES, SIDES, type Discipline } from "@/lib/tkdTechniques";
 import { MatchSummary } from "./MatchSummary";
 import { MatchReportButton } from "./MatchReportButton";
+import { ClubTechniquesDialog, type ClubTechnique } from "./ClubTechniquesDialog";
+import { Settings2 } from "lucide-react";
 import {
   getCachedVideo, queueTagInsert, queueTagDelete, listPendingTagInsertsForVideo,
   removePendingTagInsert, makeTempId, type PendingTagInsert,
