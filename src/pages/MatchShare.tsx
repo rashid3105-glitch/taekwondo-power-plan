@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Loader2, Video as VideoIcon, AlertTriangle } from "lucide-react";
 // Uses design tokens (text-warning fallback to text-primary). Removed hardcoded amber-500.
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -38,6 +39,8 @@ export default function MatchShare() {
   const [video, setVideo] = useState<SharedVideo | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [tags, setTags] = useState<SharedTag[]>([]);
+  const [aspectRatio, setAspectRatio] = useState<number>(16 / 9);
+  const [speed, setSpeed] = useState<number>(1);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -115,7 +118,44 @@ export default function MatchShare() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {videoUrl && (
-                  <video ref={videoRef} src={videoUrl} controls className="w-full rounded-lg border border-border bg-black" preload="metadata" />
+                  <div className="space-y-2">
+                    <video
+                      ref={videoRef}
+                      src={videoUrl}
+                      controls
+                      playsInline
+                      className="w-full max-h-[70vh] object-contain rounded-lg border border-border bg-black"
+                      style={{ aspectRatio: String(aspectRatio) }}
+                      preload="metadata"
+                      onLoadedMetadata={(e) => {
+                        const v = e.target as HTMLVideoElement;
+                        if (v.videoWidth > 0 && v.videoHeight > 0) {
+                          setAspectRatio(v.videoWidth / v.videoHeight);
+                        }
+                        try { v.playbackRate = speed; } catch {}
+                      }}
+                    />
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-[11px] uppercase tracking-wider text-muted-foreground mr-1">
+                        {t("matchPlaybackSpeed")}
+                      </span>
+                      {[0.25, 0.5, 1, 1.5, 2].map((r) => (
+                        <Button
+                          key={r}
+                          type="button"
+                          size="sm"
+                          variant={speed === r ? "default" : "outline"}
+                          className="h-7 px-2 text-xs"
+                          onClick={() => {
+                            setSpeed(r);
+                            if (videoRef.current) videoRef.current.playbackRate = r;
+                          }}
+                        >
+                          {r === 1 ? t("matchSpeedNormal") : `${r}×`}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
                 )}
                 <div>
                   <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
