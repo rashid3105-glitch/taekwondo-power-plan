@@ -1,33 +1,27 @@
-## Hvor bygges evalueringsskemaer?
+## Problem
+1. Videoafspilleren bruger en fast højde `h-[400px]` med `object-contain`, så portræt-/kvadratiske klip får store sorte bjælker og landskabsklip vises forvrænget/uoptimalt (det er det, der ses på skærmbilledet).
+2. Der findes ingen knapper til at ændre afspilningshastighed.
 
-- **Trænere**: Bunden af coach-bottom-nav → ikonet **Evalueringer** (ClipboardList) → `/coach/surveys`. Her opretter du nye skemaer, ser svar og styrer skabeloner (aktive/arkiv).
-- **Atleter**: Hub → "Andre moduler" → kortet **Evalueringer** → `/surveys`. Her udfyldes skemaer (med valg om anonymitet, hvis træneren har tilladt det).
+Berørte filer:
+- `src/components/match/VideoTagger.tsx` (coach + athlete view)
+- `src/pages/MatchShare.tsx` (offentlig share-side)
 
-## Fejlen: `infinite recursion detected in policy for relation "surveys"`
+## Løsning
 
-### Årsag
-RLS-loop mellem to tabeller:
+### 1. Tilpas afspilleren til videoens format
+- Fjern fast `h-[400px]`.
+- Indfang `videoWidth`/`videoHeight` i `onLoadedMetadata` og sæt `aspectRatio` inline på `<video>` (fallback `16/9` indtil metadata er hentet).
+- Begræns højden så den ikke fylder hele skærmen på desktop: `max-h-[70vh]` + `w-full`, beholder `object-contain` og sort baggrund som sikker fallback.
+- Samme behandling i `MatchShare.tsx`.
 
-- `surveys` SELECT-policy (atleter) laver `EXISTS (SELECT 1 FROM survey_recipients ...)`.
-- `survey_recipients` har en `FOR ALL`-policy for coaches der laver `EXISTS (SELECT 1 FROM surveys ...)`.
+### 2. Hastighedskontrol (0.25× / 0.5× / 1× / 1.5× / 2×)
+- Lille toolbar lige under videoen i både `VideoTagger` og `MatchShare`:
+  - Label `t("matchPlaybackSpeed")` ("Hastighed" / "Speed" osv.)
+  - 5 små `Button variant="outline" size="sm"`-knapper; aktiv hastighed får `variant="default"`.
+  - Klik sætter `videoRef.current.playbackRate = rate` og opdaterer lokal `speed` state.
+- Behold valgt hastighed når kilde-URL'en re-loades (sæt `playbackRate` igen i `onLoadedMetadata`).
+- Tilføj 2 oversættelsesnøgler (`matchPlaybackSpeed`, `matchSpeedNormal`) til alle 7 sprog i `src/i18n/translations.ts`. Tal-labels (0.25× osv.) er sprogneutrale og hardcodes som strings.
 
-Når atlet læser `surveys`, kalder Postgres `survey_recipients`-policies, som kalder `surveys`-policy igen → uendelig rekursion.
-
-### Fix (migration)
-Brug den eksisterende SECURITY DEFINER-funktion `public.is_survey_target(_survey_id, _user_id)` i atlet-policy'en, så Postgres ikke evaluerer `survey_recipients` RLS rekursivt.
-
-```sql
-DROP POLICY "Athletes view targeted surveys" ON public.surveys;
-
-CREATE POLICY "Athletes view targeted surveys"
-ON public.surveys
-FOR SELECT
-TO authenticated
-USING (public.is_survey_target(id, auth.uid()));
-```
-
-Coach-policy (`auth.uid() = coach_id`) er uændret. Ingen ændringer i kode, types eller UI.
-
-### Verifikation
-- Genåbn `/surveys` som atlet — listen loader uden fejl.
-- Coach kan stadig se/oprette/redigere egne skemaer på `/coach/surveys`.
+## Out of scope
+- Ingen ændringer i tagging-logik, share-flow eller datamodel.
+- Ingen ny ikonografi / design-redesign — kun layout-fix + lille toolbar med eksisterende `Button`-komponent og semantiske tokens.
