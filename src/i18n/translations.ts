@@ -14956,6 +14956,17 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   healthPdfRecommendations: "Recomendaciones",
    healthPdfWatchOuts: "Alertas",
    runningProgress: "Progreso de carrera",
+   aiAssistantTitle: "Asistente de Entrenamiento IA",
+   aiAssistantSubtitle: "Entrenamiento · Lesiones · La app",
+   aiAssistantOpen: "Abrir asistente IA",
+   aiAssistantWelcome: "¿En qué puedo ayudarte?",
+   aiAssistantPlaceholder: "Haz una pregunta...",
+   aiAssistantThinking: "Pensando...",
+   aiAssistantError: "Lo siento, algo salió mal. Inténtalo de nuevo.",
+   aiShareWithCoach: "Compartir con entrenador",
+   aiSuggest1: "Me torcí el tobillo — ¿qué hago?",
+   aiSuggest2: "¿Cómo genero un plan de entrenamiento?",
+   aiSuggest3: "¿Qué como el día antes de la competición?",
 } as const;
 
 (translations as unknown as Record<string, Record<string, string>>).es = {
