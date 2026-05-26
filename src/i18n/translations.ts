@@ -10296,6 +10296,7 @@ const translations = {
     diaryTypeMental: "ذهني",
     diaryTypeInjury: "إصابة",
     diaryTypeRunning: "الجري",
+    diaryMultipleTypes: "أنواع تدريب محددة",
     runDetails: "بيانات الجري",
     runDistance: "المسافة (كم)",
     runDistanceKm: "المسافة",
