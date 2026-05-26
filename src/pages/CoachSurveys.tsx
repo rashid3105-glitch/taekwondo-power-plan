@@ -329,7 +329,7 @@ function TemplateCard({ tpl, onUse, onEdit, onArchive, onToggleShare }: {
       </div>
       <div className="flex gap-2">
         <Button size="sm" className="flex-1" onClick={onUse}>{t("surveyUseTemplate")}</Button>
-        <Button size="sm" variant="outline" onClick={onEdit}>{t("edit")}</Button>
+        <Button size="sm" variant="outline" onClick={onEdit}>{t("editAction")}</Button>
         <Button size="sm" variant="ghost" onClick={onArchive}>
           <Archive className="h-4 w-4" />
         </Button>
@@ -424,7 +424,7 @@ function TemplateEditor({ template, onClose, onSaved }: {
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader><DialogTitle>{t("edit")} — {t("surveyTemplates")}</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>{t("editAction")} — {t("surveyTemplates")}</DialogTitle></DialogHeader>
         <div className="space-y-4">
           <div>
             <Label>{t("surveyFormTitle")}</Label>
