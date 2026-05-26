@@ -116,7 +116,7 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
     if (!user) return;
     const { data } = await supabase
       .from("profiles")
-      .select("display_name, belt_level, weight_kg")
+      .select("display_name, belt_level, weight_kg, club_id")
       .eq("user_id", user.id)
       .maybeSingle();
     if (data) {
@@ -125,7 +125,19 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
         belt_level: (data as any).belt_level || null,
         weight_category: (data as any).weight_kg ? `${(data as any).weight_kg} kg` : null,
       });
+      const cid = (data as any).club_id as string | null;
+      setClubId(cid);
+      if (cid) void loadClubTechs(cid);
     }
+  }
+
+  async function loadClubTechs(cid: string) {
+    const { data } = await (supabase.from as any)("club_techniques")
+      .select("id, name, category, discipline")
+      .eq("club_id", cid)
+      .in("discipline", [video.discipline, "both"])
+      .order("name");
+    setClubTechs((data ?? []) as ClubTechnique[]);
   }
 
   async function load() {
