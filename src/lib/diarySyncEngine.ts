@@ -113,6 +113,7 @@ export async function syncDiary(): Promise<DiarySyncResult> {
             energy: (data as any).energy,
             tags: ((data as any).tags as string[]) || [],
             entry_type: ((data as any).entry_type as any) || "general",
+            entry_types: ((data as any).entry_types as string[] | null) ?? null,
             run_distance_km: (data as any).run_distance_km ?? null,
             run_duration_seconds: (data as any).run_duration_seconds ?? null,
             run_pace_seconds_per_km: (data as any).run_pace_seconds_per_km ?? null,
