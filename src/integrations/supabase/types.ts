@@ -2234,6 +2234,48 @@ export type Database = {
           },
         ]
       }
+      survey_templates: {
+        Row: {
+          allow_anonymous: boolean
+          archived_at: string | null
+          club_id: string | null
+          coach_id: string
+          created_at: string
+          description: string | null
+          id: string
+          is_shared_with_club: boolean
+          questions: Json
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          allow_anonymous?: boolean
+          archived_at?: string | null
+          club_id?: string | null
+          coach_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_shared_with_club?: boolean
+          questions?: Json
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          allow_anonymous?: boolean
+          archived_at?: string | null
+          club_id?: string | null
+          coach_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_shared_with_club?: boolean
+          questions?: Json
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       surveys: {
         Row: {
           allow_anonymous: boolean
@@ -2850,6 +2892,7 @@ export type Database = {
       }
       apply_invite_to_my_profile: { Args: { _code: string }; Returns: Json }
       can_chat_with: { Args: { _a: string; _b: string }; Returns: boolean }
+      cleanup_archived_survey_templates: { Args: never; Returns: undefined }
       club_shares_coach_notes: { Args: { _club_id: string }; Returns: boolean }
       compute_form_curve: {
         Args: { _user_id: string; _weeks?: number }
