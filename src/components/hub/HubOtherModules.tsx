@@ -33,6 +33,7 @@ export function HubOtherModules({ isDemo, isLocked, onTab }: Props) {
     { key: "testing", icon: ClipboardList, label: t("testing"), color: "text-primary", bg: "bg-primary/10 border-primary/30", onClick: () => onTab("testing"), locked: isDemo || isLocked("testing"), hasNew: false },
     { key: "season", icon: CalendarRange, label: t("hubSeasonTitle"), color: "text-primary", bg: "bg-primary/10 border-primary/30", onClick: () => navigate("/season"), locked: isDemo || isLocked("season_plan"), hasNew: false },
     { key: "library", icon: BookOpen, label: t("hubLibraryTitle"), color: "text-primary", bg: "bg-primary/10 border-primary/30", onClick: () => navigate("/library"), locked: isDemo || isLocked("library"), hasNew: false },
+    { key: "surveys", icon: FileText, label: t("surveysTitle"), color: "text-primary", bg: "bg-primary/10 border-primary/30", onClick: () => navigate("/surveys"), locked: false, hasNew: true },
   ];
 
   return (
