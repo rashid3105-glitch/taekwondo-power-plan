@@ -209,11 +209,12 @@ export default function Diary() {
       mood,
       energy,
       tags,
-      entry_type: entryType,
-      run_distance_km: entryType === "running" && runDistNum > 0 ? runDistNum : null,
-      run_duration_seconds: entryType === "running" && runTotalSec > 0 ? runTotalSec : null,
-      run_pace_seconds_per_km: entryType === "running" && runPace > 0 ? runPace : null,
-      run_calories: entryType === "running" && runCalories > 0 ? runCalories : null,
+      entry_type: entryTypes[0],
+      entry_types: entryTypes,
+      run_distance_km: entryTypes.includes("running") && runDistNum > 0 ? runDistNum : null,
+      run_duration_seconds: entryTypes.includes("running") && runTotalSec > 0 ? runTotalSec : null,
+      run_pace_seconds_per_km: entryTypes.includes("running") && runPace > 0 ? runPace : null,
+      run_calories: entryTypes.includes("running") && runCalories > 0 ? runCalories : null,
     };
     try {
       if (editingId) await updateEntry(editingId, payload);
