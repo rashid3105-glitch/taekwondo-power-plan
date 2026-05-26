@@ -79,7 +79,17 @@ export default function Diary() {
   const [mood, setMood] = useState(3);
   const [energy, setEnergy] = useState(3);
   const [tags, setTags] = useState<string[]>([]);
-  const [entryType, setEntryType] = useState<DiaryEntryType>("general");
+  const [entryTypes, setEntryTypes] = useState<DiaryEntryType[]>(["general"]);
+
+  const toggleEntryType = (type: DiaryEntryType) => {
+    setEntryTypes((prev) => {
+      if (prev.includes(type)) {
+        if (prev.length === 1) return prev;
+        return prev.filter((t) => t !== type);
+      }
+      return [...prev, type];
+    });
+  };
 
   // Running entry state
   const [runDistanceKm, setRunDistanceKm] = useState<string>("");
