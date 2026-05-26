@@ -14252,6 +14252,17 @@ const translations = {
     healthPdfKeyFindings: "Viktigste funn",
     healthPdfRecommendations: "Anbefalinger",
     healthPdfWatchOuts: "Vær oppmerksom på",
+    aiAssistantTitle: "AI Treningsassistent",
+    aiAssistantSubtitle: "Trening · Skader · Appen",
+    aiAssistantOpen: "Åpne AI-assistent",
+    aiAssistantWelcome: "Hva kan jeg hjelpe deg med?",
+    aiAssistantPlaceholder: "Still et spørsmål...",
+    aiAssistantThinking: "Tenker...",
+    aiAssistantError: "Beklager, noe gikk galt. Prøv igjen.",
+    aiShareWithCoach: "Del med trener",
+    aiSuggest1: "Jeg vrikket ankelen — hva gjør jeg?",
+    aiSuggest2: "Hvordan genererer jeg en treningsplan?",
+    aiSuggest3: "Hva spiser jeg dagen før stevne?",
   },
 } as const;
 
