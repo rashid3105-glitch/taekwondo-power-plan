@@ -65,6 +65,7 @@ export function useOfflineDiary() {
           energy: e.energy,
           tags: (e.tags as string[]) || [],
           entry_type: (e.entry_type as DiaryEntryType) || "general",
+          entry_types: (e.entry_types as string[] | null) ?? null,
           run_distance_km: e.run_distance_km ?? null,
           run_duration_seconds: e.run_duration_seconds ?? null,
           run_pace_seconds_per_km: e.run_pace_seconds_per_km ?? null,
