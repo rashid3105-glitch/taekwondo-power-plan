@@ -9518,6 +9518,17 @@ const translations = {
     healthPdfKeyFindings: "Wichtigste Erkenntnisse",
     healthPdfRecommendations: "Empfehlungen",
     healthPdfWatchOuts: "Zu beachten",
+    aiAssistantTitle: "KI Trainingsassistent",
+    aiAssistantSubtitle: "Training · Verletzungen · App",
+    aiAssistantOpen: "KI-Assistent öffnen",
+    aiAssistantWelcome: "Womit kann ich dir helfen?",
+    aiAssistantPlaceholder: "Frage stellen...",
+    aiAssistantThinking: "Denkt nach...",
+    aiAssistantError: "Entschuldigung, etwas ist schiefgelaufen. Versuche es erneut.",
+    aiShareWithCoach: "Mit Trainer teilen",
+    aiSuggest1: "Ich habe mir den Knöchel umgeknickt — was tun?",
+    aiSuggest2: "Wie erstelle ich einen Trainingsplan?",
+    aiSuggest3: "Was esse ich am Tag vor dem Wettkampf?",
   },
 
   ar: {
