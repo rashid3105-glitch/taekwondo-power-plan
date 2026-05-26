@@ -754,7 +754,7 @@ export default function Diary() {
                         </div>
                       </div>
                       <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">{entry.content}</p>
-                      {entry.entry_type === "running" && entry.run_distance_km && (
+                      {((entry.entry_types?.includes("running")) || entry.entry_type === "running") && entry.run_distance_km && (
                         <div className="grid grid-cols-3 gap-2">
                           <div className="rounded-lg bg-muted/50 p-2.5 text-center">
                             <div className="text-sm font-bold">{entry.run_distance_km} km</div>
