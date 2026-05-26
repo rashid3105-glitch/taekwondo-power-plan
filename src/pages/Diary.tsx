@@ -712,10 +712,16 @@ export default function Diary() {
                     <div key={entry.id} className={`rounded-xl border ${meta.border} bg-card p-4 sm:p-5 shadow-card space-y-2`}>
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${meta.bg} ${meta.color}`}>
-                            <Icon className="h-3 w-3" />
-                            {t(meta.i18nKey)}
-                          </span>
+                          {(entry.entry_types && entry.entry_types.length > 1 ? entry.entry_types : [entry.entry_type || "general"]).map((type) => {
+                            const m = typeMeta(type as DiaryEntryType);
+                            const TIcon = m.Icon;
+                            return (
+                              <span key={type} className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${m.bg} ${m.color}`}>
+                                <TIcon className="h-3 w-3" />
+                                {t(m.i18nKey)}
+                              </span>
+                            );
+                          })}
                           <span className="text-xs font-bold text-muted-foreground">
                             {new Date(entry.entry_date + "T00:00:00").toLocaleDateString(undefined, {
                               weekday: "short", day: "numeric", month: "short", year: "numeric",
