@@ -74,7 +74,10 @@ export function filterEntries<E extends DiaryEntryLike>(
   const cutoff = opts.dateRange === "all" ? null : new Date(now.getTime() - parseInt(opts.dateRange) * 86400000);
   const q = opts.search.trim().toLowerCase();
   return entries.filter((e) => {
-    if (opts.typeFilter !== "all" && (e.entry_type || "general") !== opts.typeFilter) return false;
+    if (opts.typeFilter !== "all") {
+      const types = e.entry_types && e.entry_types.length > 0 ? e.entry_types : [e.entry_type || "general"];
+      if (!types.includes(opts.typeFilter)) return false;
+    }
     if (opts.tagFilter && !(e.tags || []).includes(opts.tagFilter)) return false;
     if (cutoff) {
       const d = new Date(e.entry_date + "T00:00:00");
