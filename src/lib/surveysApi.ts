@@ -207,3 +207,121 @@ export async function fetchSurveyResults(survey_id: string): Promise<{
     responder_names,
   };
 }
+
+// =====================================================================
+// Survey templates
+// =====================================================================
+
+export interface TemplateQuestion {
+  type: SurveyQuestionType;
+  question_text: string;
+  required: boolean;
+  scale_max: number | null;
+  mc_options: string[] | null;
+}
+
+export interface SurveyTemplate {
+  id: string;
+  coach_id: string;
+  club_id: string | null;
+  title: string;
+  description: string | null;
+  allow_anonymous: boolean;
+  questions: TemplateQuestion[];
+  is_shared_with_club: boolean;
+  archived_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export async function listTemplates(opts?: { includeArchived?: boolean }): Promise<SurveyTemplate[]> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+  let q = supabase.from("survey_templates" as any).select("*");
+  if (!opts?.includeArchived) q = q.is("archived_at", null);
+  const { data, error } = await q.order("updated_at", { ascending: false });
+  if (error) throw error;
+  return (data || []) as any as SurveyTemplate[];
+}
+
+export async function listArchivedTemplates(): Promise<SurveyTemplate[]> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+  const { data, error } = await supabase
+    .from("survey_templates" as any)
+    .select("*")
+    .eq("coach_id", user.id)
+    .not("archived_at", "is", null)
+    .order("archived_at", { ascending: false });
+  if (error) throw error;
+  return (data || []) as any as SurveyTemplate[];
+}
+
+export async function saveAsTemplate(input: {
+  title: string;
+  description: string | null;
+  allow_anonymous: boolean;
+  questions: TemplateQuestion[];
+  is_shared_with_club: boolean;
+}): Promise<string> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("not_authenticated");
+  const { data: profile } = await supabase
+    .from("profiles").select("club_id").eq("user_id", user.id).maybeSingle();
+  const club_id = (profile as any)?.club_id ?? null;
+  const { data, error } = await supabase
+    .from("survey_templates" as any)
+    .insert({
+      coach_id: user.id,
+      club_id,
+      title: input.title,
+      description: input.description,
+      allow_anonymous: input.allow_anonymous,
+      questions: input.questions as any,
+      is_shared_with_club: input.is_shared_with_club,
+    } as any)
+    .select()
+    .single();
+  if (error) throw error;
+  return (data as any).id as string;
+}
+
+export async function updateTemplate(id: string, patch: Partial<{
+  title: string;
+  description: string | null;
+  allow_anonymous: boolean;
+  questions: TemplateQuestion[];
+  is_shared_with_club: boolean;
+}>): Promise<void> {
+  const { error } = await supabase.from("survey_templates" as any).update(patch as any).eq("id", id);
+  if (error) throw error;
+}
+
+export async function archiveTemplate(id: string): Promise<void> {
+  const { error } = await supabase
+    .from("survey_templates" as any)
+    .update({ archived_at: new Date().toISOString() } as any)
+    .eq("id", id);
+  if (error) throw error;
+}
+
+export async function unarchiveTemplate(id: string): Promise<void> {
+  const { error } = await supabase
+    .from("survey_templates" as any)
+    .update({ archived_at: null } as any)
+    .eq("id", id);
+  if (error) throw error;
+}
+
+export async function deleteTemplate(id: string): Promise<void> {
+  const { error } = await supabase.from("survey_templates" as any).delete().eq("id", id);
+  if (error) throw error;
+}
+
+export async function fetchTemplate(id: string): Promise<SurveyTemplate | null> {
+  const { data, error } = await supabase
+    .from("survey_templates" as any).select("*").eq("id", id).maybeSingle();
+  if (error) throw error;
+  return (data as any) || null;
+}
+
