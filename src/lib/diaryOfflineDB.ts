@@ -21,6 +21,7 @@ export interface DiaryOutboxIntent {
   energy: number;
   tags: string[];
   entry_type: DiaryEntryType;
+  entry_types?: string[] | null;
   run_distance_km?: number | null;
   run_duration_seconds?: number | null;
   run_pace_seconds_per_km?: number | null;
