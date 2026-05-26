@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Loader2, Video as VideoIcon, AlertTriangle } from "lucide-react";
 // Uses design tokens (text-warning fallback to text-primary). Removed hardcoded amber-500.
 import { useLanguage } from "@/i18n/LanguageContext";
