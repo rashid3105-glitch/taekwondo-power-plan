@@ -390,11 +390,16 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
                   {...({ "webkit-playsinline": "true" } as any)}
                   x-webkit-airplay="allow"
                   controlsList="nodownload"
-                  className="w-full h-[400px] object-contain rounded-lg border border-border bg-black"
+                  className="w-full max-h-[70vh] object-contain rounded-lg border border-border bg-black"
+                  style={{ aspectRatio: String(aspectRatio) }}
                   preload="metadata"
                   onLoadedMetadata={(e) => {
                     const v = e.target as HTMLVideoElement;
                     if (Number.isFinite(v.duration) && v.duration > 0) setDuration(v.duration);
+                    if (v.videoWidth > 0 && v.videoHeight > 0) {
+                      setAspectRatio(v.videoWidth / v.videoHeight);
+                    }
+                    try { v.playbackRate = speed; } catch {}
                     // Restore playback position if we had one (e.g. signed URL refreshed).
                     if (lastTimeRef.current > 0 && Math.abs(v.currentTime - lastTimeRef.current) > 0.25) {
                       try { v.currentTime = lastTimeRef.current; } catch {}
@@ -410,6 +415,26 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
                     lastTimeRef.current = (e.target as HTMLVideoElement).currentTime;
                   }}
                 />
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="text-[11px] uppercase tracking-wider text-muted-foreground mr-1">
+                    {t("matchPlaybackSpeed")}
+                  </span>
+                  {[0.25, 0.5, 1, 1.5, 2].map((r) => (
+                    <Button
+                      key={r}
+                      type="button"
+                      size="sm"
+                      variant={speed === r ? "default" : "outline"}
+                      className="h-7 px-2 text-xs"
+                      onClick={() => {
+                        setSpeed(r);
+                        if (videoRef.current) videoRef.current.playbackRate = r;
+                      }}
+                    >
+                      {r === 1 ? t("matchSpeedNormal") : `${r}×`}
+                    </Button>
+                  ))}
+                </div>
                 {/* Clickable timeline markers */}
                 {duration > 0 && (
                   <div className="relative h-7 mt-1">
