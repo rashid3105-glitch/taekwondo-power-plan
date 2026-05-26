@@ -12663,6 +12663,7 @@ const translations = {
     diaryTypeMental: "Mentalt",
     diaryTypeInjury: "Skade",
     diaryTypeRunning: "Løpetur",
+    diaryMultipleTypes: "treningstyper valgt",
     runDetails: "Løpedata",
     runDistance: "Distanse (km)",
     runDistanceKm: "Distanse",
