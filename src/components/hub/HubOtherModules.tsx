@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Brain, Apple, Heart, ClipboardList, CalendarRange, BookOpen, Lock } from "lucide-react";
+import { Brain, Apple, Heart, ClipboardList, CalendarRange, BookOpen, Lock, FileText } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 interface Props {
