@@ -162,7 +162,7 @@ export default function PublicAthlete() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <PageMeta title={title} description={description} canonical={canonical} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/<\//g, '<\\/') }} />
 
       <div className="flex-1 max-w-3xl w-full mx-auto p-4 md:p-6 space-y-5">
         {/* Header */}
