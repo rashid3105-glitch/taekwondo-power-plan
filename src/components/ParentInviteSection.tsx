@@ -76,7 +76,7 @@ export function ParentInviteSection() {
       if (links && links.length > 0) {
         const ids = (links as any[]).map((l) => l.parent_user_id);
         const { data: profiles } = await supabase
-          .from("profiles")
+          .from("club_directory" as any)
           .select("user_id, display_name")
           .in("user_id", ids);
         const nameMap = new Map((profiles || []).map((p: any) => [p.user_id, p.display_name]));
