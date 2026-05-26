@@ -52,7 +52,7 @@ export function DiaryComments({ entryId, canComment = false }: DiaryCommentsProp
       let coachNames: Record<string, string> = {};
       if (coachIds.length > 0) {
         const { data: profiles } = await supabase
-          .from("profiles")
+          .from("club_directory" as any)
           .select("user_id, display_name")
           .in("user_id", coachIds);
         if (profiles) {

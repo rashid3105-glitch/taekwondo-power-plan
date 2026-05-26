@@ -2531,7 +2531,44 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      club_directory: {
+        Row: {
+          avatar_url: string | null
+          belt_level: string | null
+          club_id: string | null
+          country: string | null
+          discipline: string | null
+          display_name: string | null
+          user_id: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          belt_level?: string | null
+          club_id?: string | null
+          country?: string | null
+          discipline?: string | null
+          display_name?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          belt_level?: string | null
+          club_id?: string | null
+          country?: string | null
+          discipline?: string | null
+          display_name?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       accept_parent_invite: { Args: { _code: string }; Returns: Json }

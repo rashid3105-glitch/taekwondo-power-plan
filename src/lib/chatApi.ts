@@ -113,10 +113,10 @@ export async function listThreads(): Promise<ChatThread[]> {
   // Resolve member display names from profiles
   const userIds = Array.from(new Set((membersRes.data ?? []).map((m) => m.user_id)));
   const { data: profiles } = await supabase
-    .from("profiles")
+    .from("club_directory" as any)
     .select("user_id, display_name, avatar_url")
     .in("user_id", userIds);
-  const profileMap = new Map((profiles ?? []).map((p) => [p.user_id, p]));
+  const profileMap = new Map(((profiles ?? []) as any[]).map((p: any) => [p.user_id, p]));
 
   const lastMsgByThread = new Map<string, any>();
   (lastMsgRes.data ?? []).forEach((m: any) => {
@@ -268,11 +268,11 @@ export async function getChattableContacts(): Promise<
   let clubMateIds: string[] = [];
   if (me?.club_id) {
     const { data: mates } = await supabase
-      .from("profiles")
+      .from("club_directory" as any)
       .select("user_id")
       .eq("club_id", me.club_id)
       .neq("user_id", user.id);
-    clubMateIds = (mates ?? []).map((m) => m.user_id);
+    clubMateIds = ((mates ?? []) as any[]).map((m: any) => m.user_id);
   }
 
   // Determine which club_id to use — own profile first, then fall back to coach's club
@@ -281,7 +281,7 @@ export async function getChattableContacts(): Promise<
   if (!effectiveClubId && coachIds.length > 0) {
     // Athlete has no club_id — use the first coach's club_id
     const { data: coachProfile } = await supabase
-      .from("profiles")
+      .from("club_directory" as any)
       .select("club_id")
       .eq("user_id", coachIds[0])
       .maybeSingle();
@@ -291,11 +291,11 @@ export async function getChattableContacts(): Promise<
   let clubProfiles: Array<{ user_id: string; display_name: string | null; avatar_url: string | null }> = [];
   if (effectiveClubId) {
     const { data: cp } = await supabase
-      .from("profiles")
+      .from("club_directory" as any)
       .select("user_id, display_name, avatar_url")
       .eq("club_id", effectiveClubId)
       .neq("user_id", user.id);
-    clubProfiles = (cp ?? []) as typeof clubProfiles;
+    clubProfiles = ((cp ?? []) as any[]) as typeof clubProfiles;
   }
 
   const ids = Array.from(new Set([...athleteIds, ...coachIds, ...clubMateIds]));
@@ -304,14 +304,14 @@ export async function getChattableContacts(): Promise<
   const { data: linkedProfiles } = ids.length === 0
     ? { data: [] as Array<{ user_id: string; display_name: string | null; avatar_url: string | null }> }
     : await supabase
-        .from("profiles")
+        .from("club_directory" as any)
         .select("user_id, display_name, avatar_url")
         .in("user_id", ids);
 
   // Combine and deduplicate by user_id — club profiles + linked profiles
   const profileMap = new Map<string, { user_id: string; display_name: string | null; avatar_url: string | null }>();
-  for (const p of [...(linkedProfiles ?? []), ...clubProfiles]) {
-    profileMap.set(p.user_id, p);
+  for (const p of [...((linkedProfiles ?? []) as any[]), ...clubProfiles]) {
+    profileMap.set((p as any).user_id, p as any);
   }
   const profiles = Array.from(profileMap.values());
 
