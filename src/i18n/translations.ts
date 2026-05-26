@@ -857,6 +857,7 @@ const translations = {
     diaryTypeMental: "Mental",
     diaryTypeInjury: "Injury",
     diaryTypeRunning: "Running",
+    diaryMultipleTypes: "multiple training types selected",
     runDetails: "Run data",
     runDistance: "Distance (km)",
     runDistanceKm: "Distance",
