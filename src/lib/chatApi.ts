@@ -310,8 +310,8 @@ export async function getChattableContacts(): Promise<
 
   // Combine and deduplicate by user_id — club profiles + linked profiles
   const profileMap = new Map<string, { user_id: string; display_name: string | null; avatar_url: string | null }>();
-  for (const p of [...(linkedProfiles ?? []), ...clubProfiles]) {
-    profileMap.set(p.user_id, p);
+  for (const p of [...((linkedProfiles ?? []) as any[]), ...clubProfiles]) {
+    profileMap.set((p as any).user_id, p as any);
   }
   const profiles = Array.from(profileMap.values());
 
