@@ -203,6 +203,7 @@ Provide a detailed WT performance report.`;
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
         ],
+        response_format: { type: "json_object" },
       }),
     });
 
@@ -223,15 +224,51 @@ Provide a detailed WT performance report.`;
     let content = data.choices?.[0]?.message?.content || "";
     content = content.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
 
+    // Extract outermost JSON object in case the model added stray prose
+    const firstBrace = content.indexOf("{");
+    const lastBrace = content.lastIndexOf("}");
+    if (firstBrace > 0 || lastBrace < content.length - 1) {
+      if (firstBrace !== -1 && lastBrace > firstBrace) {
+        content = content.slice(firstBrace, lastBrace + 1);
+      }
+    }
+
+    function tryRepairJson(s: string): string {
+      let out = s;
+      // Remove trailing commas before } or ]
+      out = out.replace(/,(\s*[}\]])/g, "$1");
+      // Fix pattern: "value"\n    ,\n    { → "value" },\n    { (missing closing brace before comma between objects)
+      out = out.replace(/("[^"\n]*"|true|false|null|\d)(\s*)\n(\s*),(\s*)\n(\s*)\{/g, "$1\n$3},$4\n$5{");
+      // Fix pattern: "value"  , {  →  "value" }, {
+      out = out.replace(/("[^"\n]*"|true|false|null|\d)(\s*),(\s*)\{/g, (m, v, s1, s2) => {
+        // Only if not already inside a key context — heuristic: surrounded by object items
+        return `${v}${s1}},${s2}{`;
+      });
+      // Balance braces/brackets if truncated
+      const opens = (out.match(/\{/g) || []).length;
+      const closes = (out.match(/\}/g) || []).length;
+      if (opens > closes) out += "}".repeat(opens - closes);
+      const opensB = (out.match(/\[/g) || []).length;
+      const closesB = (out.match(/\]/g) || []).length;
+      if (opensB > closesB) out += "]".repeat(opensB - closesB);
+      return out;
+    }
+
     let report;
     try {
       report = JSON.parse(content);
     } catch {
-      console.error("Failed to parse AI response:", content);
-      return new Response(JSON.stringify({ error: "Failed to parse AI response" }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      try {
+        report = JSON.parse(tryRepairJson(content));
+        console.warn("Repaired malformed AI JSON");
+      } catch {
+        console.error("Failed to parse AI response:", content);
+        return new Response(JSON.stringify({ error: "Failed to parse AI response" }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
     }
+
 
     return new Response(JSON.stringify({ success: true, report }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
