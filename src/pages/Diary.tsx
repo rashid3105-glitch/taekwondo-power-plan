@@ -167,7 +167,7 @@ export default function Diary() {
     setMood(3);
     setEnergy(3);
     setTags([]);
-    setEntryType("general");
+    setEntryTypes(["general"]);
     setRunDistanceKm("");
     setRunDurationMin("");
     setRunDurationSec("");
