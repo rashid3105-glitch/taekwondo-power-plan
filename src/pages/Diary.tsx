@@ -391,7 +391,7 @@ export default function Diary() {
 
             <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-auto h-11" />
 
-            {entryType === "running" && (
+            {entryTypes.includes("running") && (
               <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-3">
                 <h3 className="text-xs font-bold text-emerald-600 uppercase tracking-wide flex items-center gap-2">
                   <Footprints className="h-3.5 w-3.5" /> {t("runDetails")}
