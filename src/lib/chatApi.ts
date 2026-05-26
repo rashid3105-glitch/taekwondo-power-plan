@@ -268,11 +268,11 @@ export async function getChattableContacts(): Promise<
   let clubMateIds: string[] = [];
   if (me?.club_id) {
     const { data: mates } = await supabase
-      .from("profiles")
+      .from("club_directory" as any)
       .select("user_id")
       .eq("club_id", me.club_id)
       .neq("user_id", user.id);
-    clubMateIds = (mates ?? []).map((m) => m.user_id);
+    clubMateIds = ((mates ?? []) as any[]).map((m: any) => m.user_id);
   }
 
   // Determine which club_id to use — own profile first, then fall back to coach's club
@@ -281,7 +281,7 @@ export async function getChattableContacts(): Promise<
   if (!effectiveClubId && coachIds.length > 0) {
     // Athlete has no club_id — use the first coach's club_id
     const { data: coachProfile } = await supabase
-      .from("profiles")
+      .from("club_directory" as any)
       .select("club_id")
       .eq("user_id", coachIds[0])
       .maybeSingle();
@@ -291,11 +291,11 @@ export async function getChattableContacts(): Promise<
   let clubProfiles: Array<{ user_id: string; display_name: string | null; avatar_url: string | null }> = [];
   if (effectiveClubId) {
     const { data: cp } = await supabase
-      .from("profiles")
+      .from("club_directory" as any)
       .select("user_id, display_name, avatar_url")
       .eq("club_id", effectiveClubId)
       .neq("user_id", user.id);
-    clubProfiles = (cp ?? []) as typeof clubProfiles;
+    clubProfiles = ((cp ?? []) as any[]) as typeof clubProfiles;
   }
 
   const ids = Array.from(new Set([...athleteIds, ...coachIds, ...clubMateIds]));
