@@ -1,0 +1,1 @@
+ALTER TABLE public.diary_entries ADD COLUMN IF NOT EXISTS entry_types text[] DEFAULT NULL;

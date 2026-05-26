@@ -79,7 +79,17 @@ export default function Diary() {
   const [mood, setMood] = useState(3);
   const [energy, setEnergy] = useState(3);
   const [tags, setTags] = useState<string[]>([]);
-  const [entryType, setEntryType] = useState<DiaryEntryType>("general");
+  const [entryTypes, setEntryTypes] = useState<DiaryEntryType[]>(["general"]);
+
+  const toggleEntryType = (type: DiaryEntryType) => {
+    setEntryTypes((prev) => {
+      if (prev.includes(type)) {
+        if (prev.length === 1) return prev;
+        return prev.filter((t) => t !== type);
+      }
+      return [...prev, type];
+    });
+  };
 
   // Running entry state
   const [runDistanceKm, setRunDistanceKm] = useState<string>("");
@@ -157,7 +167,7 @@ export default function Diary() {
     setMood(3);
     setEnergy(3);
     setTags([]);
-    setEntryType("general");
+    setEntryTypes(["general"]);
     setRunDistanceKm("");
     setRunDurationMin("");
     setRunDurationSec("");
@@ -171,8 +181,9 @@ export default function Diary() {
     setMood(entry.mood);
     setEnergy(entry.energy);
     setTags(entry.tags || []);
-    setEntryType(entry.entry_type || "general");
-    if (entry.entry_type === "running") {
+    setEntryTypes(entry.entry_types && entry.entry_types.length > 0 ? (entry.entry_types as DiaryEntryType[]) : [entry.entry_type || "general"]);
+    const types = entry.entry_types && entry.entry_types.length > 0 ? entry.entry_types : [entry.entry_type || "general"];
+    if (types.includes("running")) {
       setRunDistanceKm(entry.run_distance_km?.toString() ?? "");
       const dur = entry.run_duration_seconds ?? 0;
       setRunDurationMin(Math.floor(dur / 60).toString());
@@ -198,11 +209,12 @@ export default function Diary() {
       mood,
       energy,
       tags,
-      entry_type: entryType,
-      run_distance_km: entryType === "running" && runDistNum > 0 ? runDistNum : null,
-      run_duration_seconds: entryType === "running" && runTotalSec > 0 ? runTotalSec : null,
-      run_pace_seconds_per_km: entryType === "running" && runPace > 0 ? runPace : null,
-      run_calories: entryType === "running" && runCalories > 0 ? runCalories : null,
+      entry_type: entryTypes[0],
+      entry_types: entryTypes,
+      run_distance_km: entryTypes.includes("running") && runDistNum > 0 ? runDistNum : null,
+      run_duration_seconds: entryTypes.includes("running") && runTotalSec > 0 ? runTotalSec : null,
+      run_pace_seconds_per_km: entryTypes.includes("running") && runPace > 0 ? runPace : null,
+      run_calories: entryTypes.includes("running") && runCalories > 0 ? runCalories : null,
     };
     try {
       if (editingId) await updateEntry(editingId, payload);
@@ -299,7 +311,7 @@ export default function Diary() {
     );
   }
 
-  const TypeIcon = typeMeta(entryType).Icon;
+  const TypeIcon = typeMeta(entryTypes[0]).Icon;
 
   return (
     <div className="min-h-screen bg-background relative">
@@ -356,26 +368,30 @@ export default function Diary() {
               <div className="flex flex-wrap gap-1.5">
                 {ENTRY_TYPES.map((meta) => {
                   const Icon = meta.Icon;
-                  const active = entryType === meta.value;
+                  const active = entryTypes.includes(meta.value);
                   return (
                     <button
                       key={meta.value}
-                      onClick={() => setEntryType(meta.value)}
+                      onClick={() => toggleEntryType(meta.value)}
                       className={`flex items-center gap-1.5 rounded-full px-3 h-9 text-xs font-semibold border transition-colors cursor-pointer ${
                         active ? `${meta.bg} ${meta.border} ${meta.color}` : "border-border text-muted-foreground hover:text-foreground"
                       }`}
                     >
                       <Icon className="h-3.5 w-3.5" />
                       {t(meta.i18nKey)}
+                      {active && entryTypes.length > 1 && <span className="ml-0.5 opacity-60">✓</span>}
                     </button>
                   );
                 })}
               </div>
+              {entryTypes.length > 1 && (
+                <p className="text-[10px] text-muted-foreground">{entryTypes.length} {t("diaryMultipleTypes")}</p>
+              )}
             </div>
 
             <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-auto h-11" />
 
-            {entryType === "running" && (
+            {entryTypes.includes("running") && (
               <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-3">
                 <h3 className="text-xs font-bold text-emerald-600 uppercase tracking-wide flex items-center gap-2">
                   <Footprints className="h-3.5 w-3.5" /> {t("runDetails")}
@@ -696,10 +712,16 @@ export default function Diary() {
                     <div key={entry.id} className={`rounded-xl border ${meta.border} bg-card p-4 sm:p-5 shadow-card space-y-2`}>
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${meta.bg} ${meta.color}`}>
-                            <Icon className="h-3 w-3" />
-                            {t(meta.i18nKey)}
-                          </span>
+                          {(entry.entry_types && entry.entry_types.length > 1 ? entry.entry_types : [entry.entry_type || "general"]).map((type) => {
+                            const m = typeMeta(type as DiaryEntryType);
+                            const TIcon = m.Icon;
+                            return (
+                              <span key={type} className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${m.bg} ${m.color}`}>
+                                <TIcon className="h-3 w-3" />
+                                {t(m.i18nKey)}
+                              </span>
+                            );
+                          })}
                           <span className="text-xs font-bold text-muted-foreground">
                             {new Date(entry.entry_date + "T00:00:00").toLocaleDateString(undefined, {
                               weekday: "short", day: "numeric", month: "short", year: "numeric",
@@ -732,7 +754,7 @@ export default function Diary() {
                         </div>
                       </div>
                       <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">{entry.content}</p>
-                      {entry.entry_type === "running" && entry.run_distance_km && (
+                      {((entry.entry_types?.includes("running")) || entry.entry_type === "running") && entry.run_distance_km && (
                         <div className="grid grid-cols-3 gap-2">
                           <div className="rounded-lg bg-muted/50 p-2.5 text-center">
                             <div className="text-sm font-bold">{entry.run_distance_km} km</div>

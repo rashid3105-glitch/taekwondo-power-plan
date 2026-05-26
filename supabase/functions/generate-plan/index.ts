@@ -62,6 +62,8 @@ serve(async (req) => {
 - Slow-tempo strength work for movement quality`;
 
     const systemPrompt = `You are an expert strength & conditioning coach specializing in taekwondo athletic performance. You create training programs for ${isSparring ? 'SPARRING (fighter)' : 'POOMSAE (forms)'} athletes.
+Write ALL instructions in plain, everyday language that a teenager can understand.
+Avoid sports science jargon, Latin muscle names, and technical terminology. Instead of "eccentric contraction", say "the lowering phase". Instead of "hip flexion ROM", say "how high you can kick". Instead of "periodized mesocycle", say "this block of training". Keep exercise descriptions short and practical — what to do, how to do it, why it helps for taekwondo.
 
 ${disciplineContext}
 
