@@ -311,7 +311,7 @@ export default function Diary() {
     );
   }
 
-  const TypeIcon = typeMeta(entryType).Icon;
+  const TypeIcon = typeMeta(entryTypes[0]).Icon;
 
   return (
     <div className="min-h-screen bg-background relative">
