@@ -69,6 +69,8 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
   const lastTimeRef = useRef<number>(0);
   const wasPlayingRef = useRef<boolean>(false);
   const [duration, setDuration] = useState<number>(video.duration_seconds || 0);
+  const [aspectRatio, setAspectRatio] = useState<number>(16 / 9);
+  const [speed, setSpeed] = useState<number>(1);
   const [hoverTag, setHoverTag] = useState<MatchTag | null>(null);
   const [myProfile, setMyProfile] = useState<{ display_name: string; belt_level?: string | null; weight_category?: string | null } | null>(null);
 
