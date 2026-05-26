@@ -2042,6 +2042,240 @@ export type Database = {
         }
         Relationships: []
       }
+      survey_anonymous_history: {
+        Row: {
+          athlete_id: string
+          created_at: string
+          id: string
+          response_id: string
+          survey_id: string
+        }
+        Insert: {
+          athlete_id: string
+          created_at?: string
+          id?: string
+          response_id: string
+          survey_id: string
+        }
+        Update: {
+          athlete_id?: string
+          created_at?: string
+          id?: string
+          response_id?: string
+          survey_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "survey_anonymous_history_response_id_fkey"
+            columns: ["response_id"]
+            isOneToOne: true
+            referencedRelation: "survey_responses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "survey_anonymous_history_survey_id_fkey"
+            columns: ["survey_id"]
+            isOneToOne: false
+            referencedRelation: "surveys"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      survey_answers: {
+        Row: {
+          answer_bool: boolean | null
+          answer_choice: string | null
+          answer_number: number | null
+          answer_text: string | null
+          created_at: string
+          id: string
+          question_id: string
+          response_id: string
+        }
+        Insert: {
+          answer_bool?: boolean | null
+          answer_choice?: string | null
+          answer_number?: number | null
+          answer_text?: string | null
+          created_at?: string
+          id?: string
+          question_id: string
+          response_id: string
+        }
+        Update: {
+          answer_bool?: boolean | null
+          answer_choice?: string | null
+          answer_number?: number | null
+          answer_text?: string | null
+          created_at?: string
+          id?: string
+          question_id?: string
+          response_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "survey_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "survey_questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "survey_answers_response_id_fkey"
+            columns: ["response_id"]
+            isOneToOne: false
+            referencedRelation: "survey_responses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      survey_questions: {
+        Row: {
+          created_at: string
+          id: string
+          mc_options: Json | null
+          position: number
+          question_text: string
+          required: boolean
+          scale_max: number | null
+          survey_id: string
+          type: Database["public"]["Enums"]["survey_question_type"]
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          mc_options?: Json | null
+          position?: number
+          question_text: string
+          required?: boolean
+          scale_max?: number | null
+          survey_id: string
+          type: Database["public"]["Enums"]["survey_question_type"]
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          mc_options?: Json | null
+          position?: number
+          question_text?: string
+          required?: boolean
+          scale_max?: number | null
+          survey_id?: string
+          type?: Database["public"]["Enums"]["survey_question_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "survey_questions_survey_id_fkey"
+            columns: ["survey_id"]
+            isOneToOne: false
+            referencedRelation: "surveys"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      survey_recipients: {
+        Row: {
+          athlete_id: string
+          created_at: string
+          id: string
+          survey_id: string
+        }
+        Insert: {
+          athlete_id: string
+          created_at?: string
+          id?: string
+          survey_id: string
+        }
+        Update: {
+          athlete_id?: string
+          created_at?: string
+          id?: string
+          survey_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "survey_recipients_survey_id_fkey"
+            columns: ["survey_id"]
+            isOneToOne: false
+            referencedRelation: "surveys"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      survey_responses: {
+        Row: {
+          athlete_id: string | null
+          id: string
+          is_anonymous: boolean
+          submitted_at: string
+          survey_id: string
+        }
+        Insert: {
+          athlete_id?: string | null
+          id?: string
+          is_anonymous?: boolean
+          submitted_at?: string
+          survey_id: string
+        }
+        Update: {
+          athlete_id?: string | null
+          id?: string
+          is_anonymous?: boolean
+          submitted_at?: string
+          survey_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "survey_responses_survey_id_fkey"
+            columns: ["survey_id"]
+            isOneToOne: false
+            referencedRelation: "surveys"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      surveys: {
+        Row: {
+          allow_anonymous: boolean
+          club_id: string | null
+          coach_id: string
+          created_at: string
+          deadline: string | null
+          description: string | null
+          id: string
+          published_at: string | null
+          target_scope: Database["public"]["Enums"]["survey_target_scope"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          allow_anonymous?: boolean
+          club_id?: string | null
+          coach_id: string
+          created_at?: string
+          deadline?: string | null
+          description?: string | null
+          id?: string
+          published_at?: string | null
+          target_scope?: Database["public"]["Enums"]["survey_target_scope"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          allow_anonymous?: boolean
+          club_id?: string | null
+          coach_id?: string
+          created_at?: string
+          deadline?: string | null
+          description?: string | null
+          id?: string
+          published_at?: string | null
+          target_scope?: Database["public"]["Enums"]["survey_target_scope"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       training_plans: {
         Row: {
           created_at: string
@@ -2712,6 +2946,10 @@ export type Database = {
         Args: { _athlete: string; _parent: string }
         Returns: boolean
       }
+      is_survey_target: {
+        Args: { _survey_id: string; _user_id: string }
+        Returns: boolean
+      }
       lookup_athlete_by_code: { Args: { _code: string }; Returns: string }
       mark_chat_thread_read: {
         Args: { _thread_id: string }
@@ -2757,6 +2995,10 @@ export type Database = {
         Returns: undefined
       }
       start_direct_thread: { Args: { _other_user: string }; Returns: string }
+      submit_survey: {
+        Args: { _answers: Json; _is_anonymous: boolean; _survey_id: string }
+        Returns: string
+      }
       users_share_club: {
         Args: { _first_user_id: string; _second_user_id: string }
         Returns: boolean
@@ -2764,6 +3006,8 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "coach" | "user"
+      survey_question_type: "text" | "scale" | "mc" | "yesno"
+      survey_target_scope: "club" | "selected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2892,6 +3136,8 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "coach", "user"],
+      survey_question_type: ["text", "scale", "mc", "yesno"],
+      survey_target_scope: ["club", "selected"],
     },
   },
 } as const
