@@ -181,8 +181,9 @@ export default function Diary() {
     setMood(entry.mood);
     setEnergy(entry.energy);
     setTags(entry.tags || []);
-    setEntryType(entry.entry_type || "general");
-    if (entry.entry_type === "running") {
+    setEntryTypes(entry.entry_types && entry.entry_types.length > 0 ? (entry.entry_types as DiaryEntryType[]) : [entry.entry_type || "general"]);
+    const types = entry.entry_types && entry.entry_types.length > 0 ? entry.entry_types : [entry.entry_type || "general"];
+    if (types.includes("running")) {
       setRunDistanceKm(entry.run_distance_km?.toString() ?? "");
       const dur = entry.run_duration_seconds ?? 0;
       setRunDurationMin(Math.floor(dur / 60).toString());
