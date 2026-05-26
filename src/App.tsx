@@ -157,6 +157,7 @@ const AnimatedRoutes = () => {
         <Route path="/progress" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<Page><NotFound /></Page>} />
       </Routes>
+      {shouldShowAIAssistant(location.pathname) && <AIAssistant />}
     </AnimatePresence>
   );
 };
