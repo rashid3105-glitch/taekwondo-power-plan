@@ -304,7 +304,7 @@ export async function getChattableContacts(): Promise<
   const { data: linkedProfiles } = ids.length === 0
     ? { data: [] as Array<{ user_id: string; display_name: string | null; avatar_url: string | null }> }
     : await supabase
-        .from("profiles")
+        .from("club_directory" as any)
         .select("user_id, display_name, avatar_url")
         .in("user_id", ids);
 
