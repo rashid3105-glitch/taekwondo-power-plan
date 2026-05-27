@@ -292,21 +292,8 @@ export default function Health() {
 
   useEffect(() => { void load(); }, []);
 
-  // Auto-sync from iPhone on page open, throttled to once / 15 min per device
-  useEffect(() => {
-    let cancelled = false;
-    const THROTTLE_MS = 15 * 60 * 1000;
-    try {
-      const last = Number(localStorage.getItem("health:lastAutoSync") || 0);
-      if (Date.now() - last < THROTTLE_MS) return;
-    } catch {}
-    const timer = setTimeout(() => {
-      if (cancelled) return;
-      void runResync({ silent: true });
-    }, 800);
-    return () => { cancelled = true; clearTimeout(timer); };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+
+
 
   const stepData = useMemo(() => steps.map(r => ({
     date: r.summary_date.slice(5),
