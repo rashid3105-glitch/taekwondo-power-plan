@@ -52,7 +52,7 @@ export default function Health() {
     haptics.tap();
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { toast.error(t("healthResyncError")); return; }
+      if (!session) { toast.error(t("healthReportNoData")); return; }
 
       // Pull profile age
       const { data: profile } = await supabase
