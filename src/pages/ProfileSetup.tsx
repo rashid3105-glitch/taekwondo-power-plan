@@ -85,6 +85,8 @@ export default function ProfileSetup() {
   const [initialLoading, setInitialLoading] = useState(true);
   const [pushEnabled, setPushEnabled] = useState(false);
   const [pushSupported, setPushSupported] = useState(false);
+  const [tokenCopied, setTokenCopied] = useState(false);
+  const isIOS = typeof navigator !== "undefined" && /iPhone|iPad|iPod/.test(navigator.userAgent);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
