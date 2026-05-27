@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Activity, Footprints, RefreshCw, Info, FileDown, ChevronDown } from "lucide-react";
+import { ArrowLeft, Activity, Footprints, RefreshCw, Info, FileDown, ChevronDown, Smartphone } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PageMeta } from "@/components/PageMeta";
 import {
@@ -445,6 +445,15 @@ export default function Health() {
           </p>
         </div>
         <div className="flex flex-col gap-2 shrink-0">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate("/health/sync-setup")}
+            className="h-11 sm:h-9 gap-2"
+          >
+            <Smartphone className="h-4 w-4" />
+            {t("healthSyncSetupCta" as any)}
+          </Button>
           <Button
             variant="outline"
             size="sm"
