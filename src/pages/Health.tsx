@@ -36,7 +36,6 @@ export default function Health() {
   const { t, locale } = useLanguage();
   const [loaded, setLoaded] = useState(false);
   const [steps, setSteps] = useState<DailyRow[]>([]);
-  const [syncing, setSyncing] = useState(false);
   const [reporting, setReporting] = useState(false);
   const [show, setShow] = useState({ steps: true, sleep: true, rhr: true, hrv: true });
   const [whyOpen, setWhyOpen] = useState(false);
