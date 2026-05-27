@@ -131,16 +131,9 @@ Deno.serve(async (req) => {
       else console.error("upsert failed for", date, error);
     }
 
-    // Fire-and-forget resync into wearable_daily_summary
-    fetch(`${SUPABASE_URL}/functions/v1/resync-health`, {
-      method: "POST",
-      headers: {
-        Authorization: authHeader,
-        "Content-Type": "application/json",
-        apikey: ANON_KEY,
-      },
-      body: JSON.stringify({ days: 30 }),
-    }).catch(() => {});
+    // Baselines + wearable_daily_summary are refreshed automatically by the
+    // mirror_health_data_to_summary trigger on each health_data upsert.
+
 
     return new Response(
       JSON.stringify({ success: true, received: capped.length, upserted, athlete_id: user.id }),

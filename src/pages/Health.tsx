@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Activity, Footprints, RefreshCw, Info, FileDown, ChevronDown, Smartphone } from "lucide-react";
+import { ArrowLeft, Activity, Footprints, Info, FileDown, ChevronDown, Smartphone } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PageMeta } from "@/components/PageMeta";
 import {
@@ -36,45 +36,11 @@ export default function Health() {
   const { t, locale } = useLanguage();
   const [loaded, setLoaded] = useState(false);
   const [steps, setSteps] = useState<DailyRow[]>([]);
-  const [syncing, setSyncing] = useState(false);
   const [reporting, setReporting] = useState(false);
   const [show, setShow] = useState({ steps: true, sleep: true, rhr: true, hrv: true });
   const [whyOpen, setWhyOpen] = useState(false);
 
-  async function runResync({ silent }: { silent: boolean }) {
-    if (syncing) return;
-    // Require an authenticated session — the edge function rejects anon calls.
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      if (!silent) toast.error(t("healthResyncError"));
-      return;
-    }
-    setSyncing(true);
-    if (!silent) haptics.tap();
-    try {
-      const { data, error } = await supabase.functions.invoke("resync-health", {
-        body: {},
-        headers: { Authorization: `Bearer ${session.access_token}` },
-      });
-      if (error) throw error;
-      if (!silent) {
-        const n = (data as { days_synced?: number })?.days_synced ?? 0;
-        const msg = (t("healthResyncSuccess")).replace("{n}", String(n));
-        toast.success(msg);
-      }
-      try { localStorage.setItem("health:lastAutoSync", String(Date.now())); } catch {}
-      await load();
-    } catch (e) {
-      console.error("resync-health failed", e);
-      if (!silent) toast.error(t("healthResyncError"));
-    } finally {
-      setSyncing(false);
-    }
-  }
 
-  async function handleResync() {
-    await runResync({ silent: false });
-  }
 
   async function downloadAIReport() {
     if (reporting) return;
@@ -86,7 +52,7 @@ export default function Health() {
     haptics.tap();
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { toast.error(t("healthResyncError")); return; }
+      if (!session) { toast.error(t("healthReportNoData")); return; }
 
       // Pull profile age
       const { data: profile } = await supabase
@@ -326,21 +292,8 @@ export default function Health() {
 
   useEffect(() => { void load(); }, []);
 
-  // Auto-sync from iPhone on page open, throttled to once / 15 min per device
-  useEffect(() => {
-    let cancelled = false;
-    const THROTTLE_MS = 15 * 60 * 1000;
-    try {
-      const last = Number(localStorage.getItem("health:lastAutoSync") || 0);
-      if (Date.now() - last < THROTTLE_MS) return;
-    } catch {}
-    const timer = setTimeout(() => {
-      if (cancelled) return;
-      void runResync({ silent: true });
-    }, 800);
-    return () => { cancelled = true; clearTimeout(timer); };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+
+
 
   const stepData = useMemo(() => steps.map(r => ({
     date: r.summary_date.slice(5),
@@ -455,16 +408,6 @@ export default function Health() {
             {t("healthSyncSetupCta" as any)}
           </Button>
           <Button
-            variant="outline"
-            size="sm"
-            onClick={handleResync}
-            disabled={syncing}
-            className="h-11 sm:h-9"
-          >
-            <RefreshCw className={`h-4 w-4 mr-2 ${syncing ? "animate-spin" : ""}`} />
-            {t("healthResyncButton")}
-          </Button>
-          <Button
             size="sm"
             onClick={downloadAIReport}
             disabled={reporting || steps.length === 0}
@@ -475,9 +418,8 @@ export default function Health() {
           </Button>
         </div>
       </div>
-      <p className="text-xs text-muted-foreground mb-6">
-        {t("healthResyncHint")}
-      </p>
+
+
 
       {/* Why these metrics matter */}
       <Card className="mb-4 border-primary/30 bg-primary/5">
