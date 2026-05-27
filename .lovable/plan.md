@@ -1,44 +1,22 @@
-## Mål
+# Remove HealthBridge re-sync
 
-Coachen skal kunne tilføje, redigere og slette sine egne teknikker i den dropdown der vises på skærmbilledet (sparring- og poomsae-listen i video-tagging).
+The "Re-sync from iPhone" button on `/health` and its hint text reference the deprecated HealthBridge sync. The new iOS Shortcut → `sync-health-data` pipeline replaces it. Baselines are still refreshed automatically via the existing `mirror_health_data_to_summary` DB trigger (which calls `recompute_wearable_summary` on every `health_data` insert/update), so removing the `resync-health` call is safe.
 
-## Tilgang
+## Changes
 
-- Genbrug den eksisterende tabel `public.club_techniques` (samme der bruges i Sæson-kalenderen) — ingen migration nødvendig.
-- Adgang via eksisterende RLS: alle klubbens coaches kan tilføje/redigere/slette, alle klubbens atleter kan læse.
-- Indbyggede TKD-teknikker (Rundspark, Bagspark osv.) **bevares** og vises altid øverst som låste standardværdier. Klubbens egne teknikker tilføjes under en separator nederst i samme dropdown.
+**`src/pages/Health.tsx`**
+- Remove `runResync`, `handleResync`, the `syncing` state, the `RefreshCw` import, and the auto-sync-on-mount block (lines ~334–339 reading `health:lastAutoSync`).
+- Remove the "Re-sync from iPhone" `<Button>` (line 460) and the `healthResyncHint` paragraph (line 479).
+- Keep "Opsæt iPhone Sync" and "AI rapport" buttons, and the `healthResyncError` toast usage inside `downloadAIReport` — replace that toast with `t("healthReportNoData")` or a generic auth error so the deprecated key can be removed.
 
-## Ændringer
+**`supabase/functions/sync-health-data/index.ts`**
+- Drop the fire-and-forget `fetch(.../resync-health)` block (lines 134–143). The `mirror_health_data_to_summary` trigger already updates `wearable_daily_summary` + 7-day baselines on each upsert.
 
-### 1. `src/components/match/VideoTagger.tsx`
+**`src/i18n/translations.ts`** (all 7 locales: en, da, sv, de, ar, no, es)
+- Remove keys: `healthResyncButton`, `healthResyncHint`, `healthResyncSuccess`, `healthResyncError`.
+- Leave `changelogEntry93` text intact (historical record).
 
-- Hent profil → `club_id`, derefter `club_techniques` filtreret på `club_id` + `discipline IN (video.discipline, 'both')`, sorteret alfabetisk.
-- Udvid `<Select>` til at vise to grupper:
-  - **Standard** (indbyggede, oversatte labels — gemmes ved `key` som i dag)
-  - **Klubbens teknikker** (gemmes ved `name` som tekst)
-- Når et tag vises, slå op i begge lister; ukendte værdier vises som rå tekst (bagudkompatibelt).
-- Når `isCoach`: lille blyantsknap ved siden af dropdown'en åbner ny dialog.
-- Rundspark ændres til cirkelspark
-- Bagspark til bagudspark
-
-### 2. Ny `src/components/match/ClubTechniquesDialog.tsx`
-
-- Liste over klubbens egne teknikker for den aktuelle disciplin (sparring/poomsae).
-- Felter pr. række: navn, kategori (attack/defense/transition), disciplin (sparring/poomsae/begge).
-- Tilføj-knap øverst, blyant/skraldespand pr. række, bekræft før sletning.
-- Bruger direkte `supabase.from("club_techniques")` — RLS sikrer adgang.
-- Når dialogen lukkes, re-fetcher VideoTagger sin liste.
-
-### 3. Offentlig delings-side (`MatchShare.tsx`)
-
-- Viser allerede rå `tag.technique` som fallback når key ikke kendes → custom teknikker virker automatisk uden backend-ændringer.
-
-### 4. Oversættelser
-
-~7 nye nøgler i `src/i18n/translations.ts` for alle 7 sprog (manage teknikker, klubbens teknikker, standard, tilføj, navn, ingen endnu, slet-bekræftelse).
-
-## Out of scope
-
-- Ingen schema-ændringer eller edge function-ændringer.
-- Indbyggede teknikker kan ikke redigeres/slettes (kun klubbens egne).
-- Ingen ændringer i offline-cache for video tagging.
+## Verification
+- `/health` still loads, charts render, manual entry + AI report + iPhone Sync setup buttons still work.
+- New iOS Shortcut POST still upserts `health_data`; baselines refresh via DB trigger.
+- No remaining references to `resync-health` or `healthResync*` in `src/` or `supabase/`.
