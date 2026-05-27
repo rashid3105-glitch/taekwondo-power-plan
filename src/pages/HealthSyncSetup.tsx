@@ -7,7 +7,7 @@ import { ArrowLeft, Check, Smartphone, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // ← Replace this with your real iCloud Shortcut link after creating it in the Shortcuts app
-const SHORTCUT_ICLOUD_URL = "https://www.icloud.com/shortcuts/REPLACE_WITH_YOUR_SHORTCUT_ID";
+const SHORTCUT_ICLOUD_URL = "https://www.icloud.com/shortcuts/5ae8d26b8ddb4a10a86c1cba1406933e";
 
 export default function HealthSyncSetup() {
   const navigate = useNavigate();
