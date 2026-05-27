@@ -40,40 +40,7 @@ export default function Health() {
   const [show, setShow] = useState({ steps: true, sleep: true, rhr: true, hrv: true });
   const [whyOpen, setWhyOpen] = useState(false);
 
-  async function runResync({ silent }: { silent: boolean }) {
-    if (syncing) return;
-    // Require an authenticated session — the edge function rejects anon calls.
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      if (!silent) toast.error(t("healthResyncError"));
-      return;
-    }
-    setSyncing(true);
-    if (!silent) haptics.tap();
-    try {
-      const { data, error } = await supabase.functions.invoke("resync-health", {
-        body: {},
-        headers: { Authorization: `Bearer ${session.access_token}` },
-      });
-      if (error) throw error;
-      if (!silent) {
-        const n = (data as { days_synced?: number })?.days_synced ?? 0;
-        const msg = (t("healthResyncSuccess")).replace("{n}", String(n));
-        toast.success(msg);
-      }
-      try { localStorage.setItem("health:lastAutoSync", String(Date.now())); } catch {}
-      await load();
-    } catch (e) {
-      console.error("resync-health failed", e);
-      if (!silent) toast.error(t("healthResyncError"));
-    } finally {
-      setSyncing(false);
-    }
-  }
 
-  async function handleResync() {
-    await runResync({ silent: false });
-  }
 
   async function downloadAIReport() {
     if (reporting) return;
