@@ -2150,7 +2150,6 @@ const translations = {
     healthSyncDone: "Done!",
     healthSyncTokenWarning: "Keep this key private — it gives access to your account",
     healthSyncCopyToContinue: "Copy the key to continue",
-    healthSyncTokenCopied: "Copied to clipboard",
     healthSyncShortcutStep1: "Open the Shortcuts app",
     healthSyncShortcutStep1Desc: "Find the red icon with a white infinity symbol on your iPhone",
     healthSyncShortcutStep2: "Tap + top right",
