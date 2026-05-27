@@ -203,17 +203,14 @@ export default function ProfileSetup() {
   };
 
   const copyHealthSyncToken = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session?.access_token) {
-      toast({ title: t("error"), description: "Ikke logget ind", variant: "destructive" });
-      return;
-    }
-    await navigator.clipboard.writeText(session.access_token);
+    const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL ?? "";
+    const tokenUrl = `${SUPABASE_URL}/functions/v1/get-health-token`;
+    await navigator.clipboard.writeText(tokenUrl);
     setTokenCopied(true);
     setTimeout(() => setTokenCopied(false), 3000);
     toast({
-      title: t("healthSyncTokenCopied" as any) || "Token kopieret ✓",
-      description: t("healthSyncTokenDesc" as any) || "Indsæt det i din Sportstalent Health Shortcut på iPhone",
+      title: t("healthSyncTokenCopied" as any) || "URL kopieret ✓",
+      description: "Indsæt URL'en i din Sportstalent Health Shortcut",
     });
   };
 
