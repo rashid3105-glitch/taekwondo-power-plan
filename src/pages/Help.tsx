@@ -19,7 +19,8 @@ type TopicKey =
   | "helpMatchAnalysis" | "helpMatchReport" | "helpTrainingPlan" | "helpPhysicalTesting" | "helpProgress"
   | "helpNutrition" | "helpRehabPlan" | "helpMentalPlan" | "helpLibrary" | "helpDiary"
   | "helpReflection" | "helpParentPortal"
-  | "helpAddStudents" | "helpStudentProgress" | "helpChat" | "helpWeeklyReport";
+  | "helpAddStudents" | "helpStudentProgress" | "helpChat" | "helpWeeklyReport"
+  | "helpRoles" | "helpRoleSwitcher";
 
 type Topic = { key: TopicKey; icon: typeof UserCircle; isNew?: boolean };
 
@@ -45,6 +46,8 @@ const TOPICS: Record<TopicKey, Topic> = {
   helpChat: { key: "helpChat", icon: MessageCircle, isNew: true },
   helpWeeklyReport: { key: "helpWeeklyReport", icon: FileText, isNew: true },
   helpSeasonCalendar: { key: "helpSeasonCalendar", icon: CalendarRange, isNew: true },
+  helpRoles: { key: "helpRoles", icon: UserCircle, isNew: true },
+  helpRoleSwitcher: { key: "helpRoleSwitcher", icon: Settings, isNew: true },
 };
 
 type SectionDef = {
@@ -102,7 +105,7 @@ const SECTIONS: SectionDef[] = [
     chipBg: "bg-tab-nutrition",
     chipFg: "text-white",
     accent: "bg-tab-nutrition",
-    topics: ["helpProfile", "helpLibrary", "helpParentPortal"],
+    topics: ["helpProfile", "helpLibrary", "helpParentPortal", "helpRoles", "helpRoleSwitcher"],
   },
 ];
 
@@ -471,6 +474,7 @@ export default function Help() {
 }
 
 const CHANGELOG: { dateKey: string; entries: string[] }[] = [
+  { dateKey: "changelog_2026_05_28", entries: ["changelogEntry122", "changelogEntry123", "changelogEntry124", "changelogEntry125"] },
   { dateKey: "changelog_2026_05_21", entries: ["changelogEntry119", "changelogEntry120", "changelogEntry121"] },
   { dateKey: "changelog_2026_05_17", entries: ["changelogEntry117"] },
   { dateKey: "changelog_2026_05_15", entries: ["changelogEntry116"] },
