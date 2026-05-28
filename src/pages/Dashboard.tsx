@@ -926,8 +926,8 @@ export default function Dashboard() {
             {/* 3. Recovery strip — hidden behind feature flag (kan genaktiveres) */}
             {SHOW_LEGACY_HUB_SECTIONS && !isDemo && <HubRecoveryStrip />}
 
-            {/* Optional reflection prompt */}
-            {!isDemo && <ReflectionPromptCard />}
+            {/* Optional reflection prompt — hidden behind feature flag */}
+            {SHOW_LEGACY_HUB_SECTIONS && !isDemo && <ReflectionPromptCard />}
 
             {/* 4. Pinned modules — hidden behind feature flag (kan genaktiveres) */}
             {SHOW_LEGACY_HUB_SECTIONS && (
