@@ -22,7 +22,13 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const authHeader = req.headers.get("Authorization");
+    const body = await req.json();
+
+    // Accept token from body if Authorization header is missing or invalid
+    let authHeader = req.headers.get("Authorization");
+    if (!authHeader && body.token) {
+      authHeader = `Bearer ${body.token}`;
+    }
     if (!authHeader?.startsWith("Bearer ")) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: cors });
     }
@@ -39,8 +45,6 @@ Deno.serve(async (req) => {
     if (authErr || !user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: cors });
     }
-
-    const body = await req.json();
     let records: RawRecord[] = [];
 
     if (body.records && Array.isArray(body.records)) {
