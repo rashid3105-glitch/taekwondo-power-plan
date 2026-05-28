@@ -986,32 +986,19 @@ export default function Dashboard() {
             )}
 
 
-            {/* Demoted: passkey */}
-            {!isDemo && <EnablePasskeyCard />}
+            {/* Demoted: passkey — hidden behind feature flag */}
+            {SHOW_LEGACY_HUB_SECTIONS && !isDemo && <EnablePasskeyCard />}
 
-            {/* Diary entry point */}
-            {isModuleEnabled("diary") && (
-              <button
-                onClick={() => navigate("/diary")}
-                className="w-full flex items-center gap-3 rounded-xl border border-border bg-card p-4 shadow-card text-left hover:bg-accent/30 transition-colors"
-              >
-                <div className="h-10 w-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                  <NotebookPen className="h-5 w-5" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold text-foreground">{t("diary") || "Dagbog"}</div>
-                  <div className="text-xs text-muted-foreground truncate">{t("diaryDesc") || "Dine noter og træningsdagbog"}</div>
-                </div>
-                <ChevronRight className="h-4 w-4 text-muted-foreground" />
-              </button>
+            {/* Diary entry point removed from hub — available via floating UI / bottom nav */}
+
+            {/* Profile quick-link — hidden behind feature flag (reachable via header avatar) */}
+            {SHOW_LEGACY_HUB_SECTIONS && (
+              <div className="flex justify-center pt-2">
+                <Button variant="outline" size="sm" onClick={() => navigate("/profile-setup")}>
+                  <User className="h-4 w-4 mr-1" /> {t("profile")}
+                </Button>
+              </div>
             )}
-
-            {/* Quick link */}
-            <div className="flex justify-center pt-2">
-              <Button variant="outline" size="sm" onClick={() => navigate("/profile-setup")}>
-                <User className="h-4 w-4 mr-1" /> {t("profile")}
-              </Button>
-            </div>
           </div>
 
         ) : activeTab === "calendar" ? (
