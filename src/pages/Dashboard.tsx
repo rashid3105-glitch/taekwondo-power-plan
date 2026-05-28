@@ -21,6 +21,7 @@ import { MedicalDocumentTranslator } from "@/components/MedicalDocumentTranslato
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useCoachMode } from "@/contexts/CoachModeContext";
+import { useRole } from "@/contexts/RoleContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { MentalAssessment } from "@/components/MentalAssessment";
 import { ProgressDashboard } from "@/components/ProgressDashboard";
