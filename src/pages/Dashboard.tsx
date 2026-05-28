@@ -49,6 +49,7 @@ import { SeasonCalendarView } from "@/components/hub/SeasonCalendarView";
 import { HubOtherModules } from "@/components/hub/HubOtherModules";
 import { HubReadinessBanner } from "@/components/hub/HubReadinessBanner";
 import { InviteWelcomeBanner } from "@/components/hub/InviteWelcomeBanner";
+import { AthleteDashboard } from "@/components/hub/AthleteDashboard";
 import { useOfflineProfile } from "@/hooks/useOfflineProfile";
 import { useOfflinePlan } from "@/hooks/useOfflinePlan";
 
@@ -859,6 +860,9 @@ export default function Dashboard() {
                 })()}
               </div>
             </div>
+
+            {/* Athlete role dashboard (only when activeRole === 'athlete') */}
+            <AthleteDashboard />
 
             {/* 1. Today's session hero */}
             <HubTodayHero
