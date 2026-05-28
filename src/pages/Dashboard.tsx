@@ -50,6 +50,8 @@ import { HubOtherModules } from "@/components/hub/HubOtherModules";
 import { HubReadinessBanner } from "@/components/hub/HubReadinessBanner";
 import { InviteWelcomeBanner } from "@/components/hub/InviteWelcomeBanner";
 import { AthleteDashboard } from "@/components/hub/AthleteDashboard";
+import { CoachDashboard } from "@/components/hub/CoachDashboard";
+
 import { useOfflineProfile } from "@/hooks/useOfflineProfile";
 import { useOfflinePlan } from "@/hooks/useOfflinePlan";
 
