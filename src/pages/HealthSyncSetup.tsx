@@ -251,6 +251,54 @@ export default function HealthSyncSetup() {
           )}
         </Card>
 
+        {/* Debug sync */}
+        <Card className="w-full p-4">
+          <div className="flex items-start gap-3 mb-3">
+            <AlertTriangle className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-semibold">Debug sync</p>
+              <p className="text-xs text-muted-foreground">
+                Sender én dummy-record (1234 skridt i dag) direkte til
+                sync-endpointet med din session. Returnerer den 200 og
+                <code className="mx-1">upserted: 1</code>, så virker endpointet
+                — fejlen ligger så i Shortcut'ens opsætning.
+              </p>
+            </div>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full"
+            onClick={runDebugSync}
+            disabled={debugLoading}
+          >
+            {debugLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+            Send dummy record
+          </Button>
+          {debugResult && (
+            <div className="mt-3 space-y-2">
+              <div className="flex items-center gap-2 text-xs">
+                <span className="font-semibold">Status:</span>
+                <span
+                  className={cn(
+                    "px-2 py-0.5 rounded font-mono",
+                    debugResult.status === 200
+                      ? "bg-emerald-500/15 text-emerald-600"
+                      : "bg-destructive/15 text-destructive"
+                  )}
+                >
+                  {debugResult.status || "ERR"}
+                </span>
+              </div>
+              <pre className="text-[11px] bg-muted/50 rounded p-2 whitespace-pre-wrap break-all leading-tight max-h-48 overflow-auto">
+                {debugResult.body}
+              </pre>
+            </div>
+          )}
+        </Card>
+
+
+
         {/* Copy buttons */}
         <Card className="w-full p-4 space-y-3">
           <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide">
