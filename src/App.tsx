@@ -46,7 +46,7 @@ import Programs from "./pages/Programs";
 import Contact from "./pages/Contact";
 import Kostplan from "./pages/Kostplan";
 import Health from "./pages/Health";
-import HealthSyncSetup from "./pages/HealthSyncSetup";
+
 import Competitions from "./pages/Competitions";
 import CompetitionReflection from "./pages/CompetitionReflection";
 import PublicAthlete from "./pages/PublicAthlete";
