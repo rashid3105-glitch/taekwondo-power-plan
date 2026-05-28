@@ -3,12 +3,18 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useRole } from "@/contexts/RoleContext";
 import { useThreads } from "@/hooks/useThreads";
-import { Calendar, NotebookPen, MessageCircle, Play, BookOpen, ChevronRight, Flame, Dumbbell, Award } from "lucide-react";
+import { Calendar, NotebookPen, MessageCircle, Play, BookOpen, ChevronRight, Flame, Dumbbell, Trophy } from "lucide-react";
 
 interface NextSession {
   date: string;
   type: string;
   duration: string;
+}
+
+interface NextCompetition {
+  name: string;
+  date: string;
+  location?: string;
 }
 
 interface Stats {
@@ -28,6 +34,7 @@ export function AthleteDashboard() {
   const { totalUnread } = useThreads();
 
   const [nextSession, setNextSession] = useState<NextSession | null>(null);
+  const [nextCompetition, setNextCompetition] = useState<NextCompetition | null>(null);
   const [stats, setStats] = useState<Stats>({ streak: 0, sessions: 0, belt: "—" });
 
   useEffect(() => {
@@ -44,6 +51,26 @@ export function AthleteDashboard() {
         .select("belt_level")
         .eq("user_id", user.id)
         .maybeSingle();
+
+      // Next competition
+      const todayIso = new Date().toISOString().slice(0, 10);
+      const { data: comp } = await supabase
+        .from("competitions")
+        .select("name, event_date, location")
+        .eq("user_id", user.id)
+        .gte("event_date", todayIso)
+        .order("event_date", { ascending: true })
+        .limit(1)
+        .maybeSingle();
+
+      if (comp && mounted) {
+        const dt = new Date(comp.event_date + "T00:00:00");
+        setNextCompetition({
+          name: comp.name,
+          date: dt.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" }),
+          location: comp.location || undefined,
+        });
+      }
 
       // Active plan -> infer next session
       const { data: plan } = await supabase
@@ -137,14 +164,32 @@ export function AthleteDashboard() {
         )}
       </section>
 
-      {/* 2. Stats — belt midlertidigt skjult (kan tilføjes igen) */}
+      {/* 2. Next competition */}
+      <section className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+        <div className="flex items-center gap-2 mb-2">
+          <Trophy className="h-4 w-4" style={accentStyle} />
+          <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/60">Næste stævne</h3>
+        </div>
+        {nextCompetition ? (
+          <div>
+            <p className="text-sm font-semibold text-white">{nextCompetition.name}</p>
+            <p className="text-xs text-white/60 mt-1">
+              {nextCompetition.date}{nextCompetition.location ? ` · ${nextCompetition.location}` : ""}
+            </p>
+          </div>
+        ) : (
+          <p className="text-sm text-white/60">Ingen kommende stævner</p>
+        )}
+      </section>
+
+      {/* 3. Stats — belt midlertidigt skjult (kan tilføjes igen) */}
       <section className="grid grid-cols-2 gap-3">
         <StatTile icon={<Flame className="h-4 w-4" />} value={stats.streak} label="Streak" accentStyle={accentStyle} />
         <StatTile icon={<Dumbbell className="h-4 w-4" />} value={stats.sessions} label="Sessioner" accentStyle={accentStyle} />
         {/* <StatTile icon={<Award className="h-4 w-4" />} value={stats.belt} label="Bælte" accentStyle={accentStyle} small /> */}
       </section>
 
-      {/* 3. Diary */}
+      {/* 4. Diary */}
       <section
         className="rounded-xl border p-4 flex items-center gap-3 cursor-pointer hover:bg-white/[0.05] transition-colors"
         style={accentBg}
@@ -161,7 +206,7 @@ export function AthleteDashboard() {
       </section>
 
 
-      {/* 4. Messages */}
+      {/* 5. Messages */}
       <section className="rounded-xl border border-white/10 bg-white/[0.03] p-4 flex items-center gap-3">
         <div className="h-9 w-9 rounded-lg bg-white/[0.06] flex items-center justify-center relative">
           <MessageCircle className="h-4 w-4" style={accentStyle} />
@@ -190,7 +235,7 @@ export function AthleteDashboard() {
         </button>
       </section>
 
-      {/* 5. Quick access */}
+      {/* 6. Quick access */}
       <section className="grid grid-cols-2 gap-3">
         <button
           type="button"
