@@ -56,6 +56,11 @@ import { CoachDashboard } from "@/components/hub/CoachDashboard";
 import { useOfflineProfile } from "@/hooks/useOfflineProfile";
 import { useOfflinePlan } from "@/hooks/useOfflinePlan";
 
+// Feature flag — sæt til true for at genaktivere de gamle hub-sektioner
+// (Restitution-strip, Fastgjorte moduler, Øvrige moduler chips)
+const SHOW_LEGACY_HUB_SECTIONS = false;
+
+
 interface Profile {
   display_name: string;
   age: number | null;
