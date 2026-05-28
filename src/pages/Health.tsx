@@ -420,11 +420,12 @@ export default function Health() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => navigate("/health/sync-setup")}
+            onClick={forceResync}
+            disabled={resyncing}
             className="h-11 sm:h-9 gap-2"
           >
-            <Smartphone className="h-4 w-4" />
-            {t("healthSyncSetupCta" as any)}
+            <Activity className={`h-4 w-4 ${resyncing ? "animate-pulse" : ""}`} />
+            {resyncing ? t("healthForceSyncRunning") : t("healthForceSync")}
           </Button>
           <Button
             size="sm"
