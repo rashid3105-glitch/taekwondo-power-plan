@@ -171,6 +171,7 @@ export default function Dashboard() {
   const { isModuleEnabled } = useAthleteModuleAccess();
   const { isFromCache: profileFromCache, cachedAt: profileCachedAt } = useOfflineProfile();
   const { plan: offlinePlan, online: planOnline } = useOfflinePlan();
+  const { roles, activeRole, setActiveRole } = useRole();
 
   // Sync activeTab → URL ?tab= so browser back/refresh works.
   useEffect(() => {
