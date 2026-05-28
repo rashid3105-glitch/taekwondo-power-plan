@@ -8,6 +8,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { CoachModeProvider } from "@/contexts/CoachModeContext";
 import { RoleProvider } from "@/contexts/RoleContext";
+import { ThemeSync } from "@/contexts/ThemeSync";
 
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { SplashScreen } from "@/components/SplashScreen";
@@ -181,6 +182,7 @@ const App = () => {
           <Sonner />
           <BrowserRouter>
             <RoleProvider>
+              <ThemeSync />
               <CoachModeProvider>
                 <OfflineBanner />
                 <AnimatedRoutes />

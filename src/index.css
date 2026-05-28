@@ -161,6 +161,7 @@
     -webkit-tap-highlight-color: transparent;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    transition: color 0.3s ease;
   }
 
   /* Kill the blue tap flash everywhere — feels instantly more native */
