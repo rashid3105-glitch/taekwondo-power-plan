@@ -41,7 +41,42 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json();
-    const records: RawRecord[] = body.records ?? [];
+    let records: RawRecord[] = [];
+
+    if (body.records && Array.isArray(body.records)) {
+      records = body.records;
+    } else {
+      const today = new Date().toISOString().slice(0, 10);
+
+      if (body.steps != null) records.push({
+        metric_type: "StepCount",
+        value: Number(body.steps),
+        unit: "count",
+        start_date: body.steps_date ?? today,
+      });
+
+      if (body.resting_hr != null) records.push({
+        metric_type: "RestingHeartRate",
+        value: Number(body.resting_hr),
+        unit: "count/min",
+        start_date: body.resting_hr_date ?? today,
+      });
+
+      if (body.hrv != null) records.push({
+        metric_type: "HeartRateVariabilitySDNN",
+        value: Number(body.hrv),
+        unit: "ms",
+        start_date: body.hrv_date ?? today,
+      });
+
+      if (body.sleep_hours != null) records.push({
+        metric_type: "SleepAnalysis",
+        value: Number(body.sleep_hours),
+        unit: "hr",
+        start_date: body.sleep_date ?? today,
+      });
+    }
+
     if (!records.length) {
       return new Response(JSON.stringify({ error: "No records" }), { status: 400, headers: cors });
     }
