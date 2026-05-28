@@ -57,12 +57,63 @@ export default function HealthSyncSetup() {
     | { ok: false; message: string }
     | null
   >(null);
+  const [debugLoading, setDebugLoading] = useState(false);
+  const [debugResult, setDebugResult] = useState<
+    | { status: number; body: string }
+    | null
+  >(null);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (data.user?.email) setUserEmail(data.user.email);
     });
   }, []);
+
+  const runDebugSync = async () => {
+    setDebugLoading(true);
+    setDebugResult(null);
+    try {
+      const { data: sess } = await supabase.auth.getSession();
+      const token = sess.session?.access_token;
+      if (!token) {
+        setDebugResult({ status: 0, body: "Ingen aktiv session — log ind igen." });
+        return;
+      }
+      const today = new Date().toISOString();
+      const payload = {
+        records: [
+          {
+            metric_type: "StepCount",
+            value: 1234,
+            start_date: today,
+            unit: "count",
+            source_name: "debug-button",
+          },
+        ],
+      };
+      const res = await fetch(SYNC_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: ANON_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+      const text = await res.text();
+      let pretty = text;
+      try {
+        pretty = JSON.stringify(JSON.parse(text), null, 2);
+      } catch {
+        /* keep raw */
+      }
+      setDebugResult({ status: res.status, body: pretty });
+    } catch (e: any) {
+      setDebugResult({ status: 0, body: `Netværksfejl: ${String(e?.message || e)}` });
+    } finally {
+      setDebugLoading(false);
+    }
+  };
 
   const handleInstall = () => {
     window.open(SHORTCUT_ICLOUD_URL, "_blank");
