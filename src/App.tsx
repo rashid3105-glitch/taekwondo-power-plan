@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-route
 import { AnimatePresence, motion } from "framer-motion";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { CoachModeProvider } from "@/contexts/CoachModeContext";
+import { RoleProvider } from "@/contexts/RoleContext";
 
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { SplashScreen } from "@/components/SplashScreen";
@@ -179,10 +180,12 @@ const App = () => {
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <CoachModeProvider>
-              <OfflineBanner />
-              <AnimatedRoutes />
-            </CoachModeProvider>
+            <RoleProvider>
+              <CoachModeProvider>
+                <OfflineBanner />
+                <AnimatedRoutes />
+              </CoachModeProvider>
+            </RoleProvider>
           </BrowserRouter>
         </TooltipProvider>
       </LanguageProvider>
