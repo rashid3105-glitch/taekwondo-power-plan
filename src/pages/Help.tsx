@@ -19,7 +19,8 @@ type TopicKey =
   | "helpMatchAnalysis" | "helpMatchReport" | "helpTrainingPlan" | "helpPhysicalTesting" | "helpProgress"
   | "helpNutrition" | "helpRehabPlan" | "helpMentalPlan" | "helpLibrary" | "helpDiary"
   | "helpReflection" | "helpParentPortal"
-  | "helpAddStudents" | "helpStudentProgress" | "helpChat" | "helpWeeklyReport";
+  | "helpAddStudents" | "helpStudentProgress" | "helpChat" | "helpWeeklyReport"
+  | "helpRoles" | "helpRoleSwitcher";
 
 type Topic = { key: TopicKey; icon: typeof UserCircle; isNew?: boolean };
 
@@ -45,6 +46,8 @@ const TOPICS: Record<TopicKey, Topic> = {
   helpChat: { key: "helpChat", icon: MessageCircle, isNew: true },
   helpWeeklyReport: { key: "helpWeeklyReport", icon: FileText, isNew: true },
   helpSeasonCalendar: { key: "helpSeasonCalendar", icon: CalendarRange, isNew: true },
+  helpRoles: { key: "helpRoles", icon: UserCircle, isNew: true },
+  helpRoleSwitcher: { key: "helpRoleSwitcher", icon: Settings, isNew: true },
 };
 
 type SectionDef = {
