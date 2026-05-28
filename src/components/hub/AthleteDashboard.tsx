@@ -149,11 +149,13 @@ export function AthleteDashboard() {
         className="rounded-xl border p-4 flex items-center gap-3 cursor-pointer hover:bg-white/[0.05] transition-colors"
         style={accentBg}
         onClick={() => navigate("/diary")}
-      >
-        <div className="h-9 w-9 rounded-lg flex items-center justify-center" style={{ backgroundColor: "hsl(var(--accent) / 0.18)" }}>
-          <NotebookPen className="h-4 w-4" style={accentStyle} />
-        </div>
-        <div className="flex-1 min-w-0">
+      {/* 2. Stats — belt midlertidigt skjult (kan tilføjes igen) */}
+      <section className="grid grid-cols-2 gap-3">
+        <StatTile icon={<Flame className="h-4 w-4" />} value={stats.streak} label="Streak" accentStyle={accentStyle} />
+        <StatTile icon={<Dumbbell className="h-4 w-4" />} value={stats.sessions} label="Sessioner" accentStyle={accentStyle} />
+        {/* <StatTile icon={<Award className="h-4 w-4" />} value={stats.belt} label="Bælte" accentStyle={accentStyle} small /> */}
+      </section>
+
           <p className="text-sm font-semibold text-white">Skriv i dagbog</p>
           <p className="text-xs text-white/60">Reflekter over dag</p>
         </div>
