@@ -57,12 +57,63 @@ export default function HealthSyncSetup() {
     | { ok: false; message: string }
     | null
   >(null);
+  const [debugLoading, setDebugLoading] = useState(false);
+  const [debugResult, setDebugResult] = useState<
+    | { status: number; body: string }
+    | null
+  >(null);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (data.user?.email) setUserEmail(data.user.email);
     });
   }, []);
+
+  const runDebugSync = async () => {
+    setDebugLoading(true);
+    setDebugResult(null);
+    try {
+      const { data: sess } = await supabase.auth.getSession();
+      const token = sess.session?.access_token;
+      if (!token) {
+        setDebugResult({ status: 0, body: "Ingen aktiv session — log ind igen." });
+        return;
+      }
+      const today = new Date().toISOString();
+      const payload = {
+        records: [
+          {
+            metric_type: "StepCount",
+            value: 1234,
+            start_date: today,
+            unit: "count",
+            source_name: "debug-button",
+          },
+        ],
+      };
+      const res = await fetch(SYNC_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: ANON_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+      const text = await res.text();
+      let pretty = text;
+      try {
+        pretty = JSON.stringify(JSON.parse(text), null, 2);
+      } catch {
+        /* keep raw */
+      }
+      setDebugResult({ status: res.status, body: pretty });
+    } catch (e: any) {
+      setDebugResult({ status: 0, body: `Netværksfejl: ${String(e?.message || e)}` });
+    } finally {
+      setDebugLoading(false);
+    }
+  };
 
   const handleInstall = () => {
     window.open(SHORTCUT_ICLOUD_URL, "_blank");
@@ -199,6 +250,54 @@ export default function HealthSyncSetup() {
             </div>
           )}
         </Card>
+
+        {/* Debug sync */}
+        <Card className="w-full p-4">
+          <div className="flex items-start gap-3 mb-3">
+            <AlertTriangle className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-semibold">Debug sync</p>
+              <p className="text-xs text-muted-foreground">
+                Sender én dummy-record (1234 skridt i dag) direkte til
+                sync-endpointet med din session. Returnerer den 200 og
+                <code className="mx-1">upserted: 1</code>, så virker endpointet
+                — fejlen ligger så i Shortcut'ens opsætning.
+              </p>
+            </div>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full"
+            onClick={runDebugSync}
+            disabled={debugLoading}
+          >
+            {debugLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+            Send dummy record
+          </Button>
+          {debugResult && (
+            <div className="mt-3 space-y-2">
+              <div className="flex items-center gap-2 text-xs">
+                <span className="font-semibold">Status:</span>
+                <span
+                  className={cn(
+                    "px-2 py-0.5 rounded font-mono",
+                    debugResult.status === 200
+                      ? "bg-emerald-500/15 text-emerald-600"
+                      : "bg-destructive/15 text-destructive"
+                  )}
+                >
+                  {debugResult.status || "ERR"}
+                </span>
+              </div>
+              <pre className="text-[11px] bg-muted/50 rounded p-2 whitespace-pre-wrap break-all leading-tight max-h-48 overflow-auto">
+                {debugResult.body}
+              </pre>
+            </div>
+          )}
+        </Card>
+
+
 
         {/* Copy buttons */}
         <Card className="w-full p-4 space-y-3">
