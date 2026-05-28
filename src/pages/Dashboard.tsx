@@ -21,6 +21,7 @@ import { MedicalDocumentTranslator } from "@/components/MedicalDocumentTranslato
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useCoachMode } from "@/contexts/CoachModeContext";
+import { useRole } from "@/contexts/RoleContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { MentalAssessment } from "@/components/MentalAssessment";
 import { ProgressDashboard } from "@/components/ProgressDashboard";
@@ -170,6 +171,7 @@ export default function Dashboard() {
   const { isModuleEnabled } = useAthleteModuleAccess();
   const { isFromCache: profileFromCache, cachedAt: profileCachedAt } = useOfflineProfile();
   const { plan: offlinePlan, online: planOnline } = useOfflinePlan();
+  const { roles, activeRole, setActiveRole } = useRole();
 
   // Sync activeTab → URL ?tab= so browser back/refresh works.
   useEffect(() => {
@@ -862,6 +864,42 @@ export default function Dashboard() {
                 })()}
               </div>
             </div>
+
+            {/* Role switcher pill — only when user has multiple roles */}
+            {roles.length > 1 && (
+              <div className="flex justify-center px-1">
+                <div className="inline-flex rounded-full border border-white/10 bg-white/[0.04] p-1">
+                  <button
+                    type="button"
+                    onClick={() => setActiveRole("athlete")}
+                    className={cn(
+                      "flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition-colors duration-200",
+                      activeRole === "athlete"
+                        ? "text-black"
+                        : "text-white/50 hover:text-white/80"
+                    )}
+                    style={activeRole === "athlete" ? { backgroundColor: "hsl(var(--accent))" } : undefined}
+                  >
+                    <span>🥋</span>
+                    <span>Atlet</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveRole("coach")}
+                    className={cn(
+                      "flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition-colors duration-200",
+                      activeRole === "coach"
+                        ? "text-black"
+                        : "text-white/50 hover:text-white/80"
+                    )}
+                    style={activeRole === "coach" ? { backgroundColor: "hsl(var(--accent))" } : undefined}
+                  >
+                    <span>⭐</span>
+                    <span>Coach</span>
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Role-based dashboards */}
             <AthleteDashboard />
