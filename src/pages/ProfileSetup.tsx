@@ -202,17 +202,6 @@ export default function ProfileSetup() {
     }
   };
 
-  const copyHealthSyncToken = async () => {
-    const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL ?? "";
-    const tokenUrl = `${SUPABASE_URL}/functions/v1/get-health-token`;
-    await navigator.clipboard.writeText(tokenUrl);
-    setTokenCopied(true);
-    setTimeout(() => setTokenCopied(false), 3000);
-    toast({
-      title: t("healthSyncTokenCopied" as any) || "URL kopieret ✓",
-      description: "Indsæt URL'en i din Sportstalent Health Shortcut",
-    });
-  };
 
   const toggleGoal = (goal: string) => {
     setGoals((prev) =>
