@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Zap, Camera, Loader2, Home, Smartphone, Copy, Check } from "lucide-react";
+import { Zap, Camera, Loader2, Home } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekSchedulePicker";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -85,8 +85,8 @@ export default function ProfileSetup() {
   const [initialLoading, setInitialLoading] = useState(true);
   const [pushEnabled, setPushEnabled] = useState(false);
   const [pushSupported, setPushSupported] = useState(false);
-  const [tokenCopied, setTokenCopied] = useState(false);
-  const isIOS = typeof navigator !== "undefined" && /iPhone|iPad|iPod/.test(navigator.userAgent);
+  
+  
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -202,17 +202,6 @@ export default function ProfileSetup() {
     }
   };
 
-  const copyHealthSyncToken = async () => {
-    const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL ?? "";
-    const tokenUrl = `${SUPABASE_URL}/functions/v1/get-health-token`;
-    await navigator.clipboard.writeText(tokenUrl);
-    setTokenCopied(true);
-    setTimeout(() => setTokenCopied(false), 3000);
-    toast({
-      title: t("healthSyncTokenCopied" as any) || "URL kopieret ✓",
-      description: "Indsæt URL'en i din Sportstalent Health Shortcut",
-    });
-  };
 
   const toggleGoal = (goal: string) => {
     setGoals((prev) =>
@@ -542,30 +531,6 @@ export default function ProfileSetup() {
             </div>
           )}
 
-          {isIOS && (
-            <div className="space-y-2">
-              <Label>{t("healthSyncTitle" as any) || "iPhone Health Sync"}</Label>
-              <div className="flex items-start gap-3 rounded-xl border border-border bg-muted/30 px-4 py-3">
-                <Smartphone className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                <div className="space-y-2 flex-1">
-                  <p className="text-sm font-medium">{t("healthSyncTitle" as any) || "Synk Apple Health til Sportstalent"}</p>
-                  <p className="text-xs text-muted-foreground">{t("healthSyncDesc" as any) || "Kopiér din sync-nøgle og indsæt den i Sportstalent Health Shortcut'en på din iPhone."}</p>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={copyHealthSyncToken}
-                    className="gap-2"
-                  >
-                    {tokenCopied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
-                    {tokenCopied
-                      ? (t("healthSyncTokenCopied" as any) || "Kopieret!")
-                      : (t("healthSyncCopyToken" as any) || "Kopiér sync-nøgle")}
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
 
 
 
