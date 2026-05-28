@@ -15536,6 +15536,9 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   changelogEntry123: "Tema de color dinámico: acento azul para modo atleta, acento naranja para modo entrenador",
   changelogEntry124: "Selector de rol para usuarios con ambos roles de atleta y entrenador",
   changelogEntry125: "Rol y elección activa guardados en el perfil de usuario para persistencia entre sesiones",
+  changelog_2026_05_29: "29 de mayo de 2026",
+  changelogEntry126: "Tarjeta de próxima competición mostrada en la pantalla de inicio del atleta",
+  changelogEntry127: "Pantalla de inicio simplificada — módulos antiguos ocultos tras un feature flag",
 
   // ===== Hub / Dashboard =====
   hubWelcome: "Inicio",
