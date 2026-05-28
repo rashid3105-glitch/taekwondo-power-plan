@@ -1,38 +1,25 @@
+## Problem
 
-## Mål
-Tilføj en "Debug sync"-knap i `HealthSyncSetup.tsx`, så vi kan isolere om problemet sidder i Shortcut'en eller i selve `sync-health-data`-endpointet.
+Ændringerne i `AthleteDashboard.tsx` slog godt nok igennem (skærmbilledet viser det nye "I DAG"-kort og "NÆSTE BEGIVENHED" med live nedtælling). Men `src/pages/Dashboard.tsx` renderer selv en stribe ekstra kort **under** `<AthleteDashboard />` på hub-tab'en — så Dagbog-kortet (og naboerne) er der stadig. De blev aldrig flyttet ind i AthleteDashboard.
 
-## Hvad bygges
+Konkret står der mellem `<AthleteDashboard />` (linje 913) og bunden af hub-tab'en:
 
-I `src/pages/HealthSyncSetup.tsx`, lige under det eksisterende "Test forbindelse"-card, tilføjes et nyt card "Debug sync":
+- linje 930: `<ReflectionPromptCard />`
+- linje 990: `<EnablePasskeyCard />`
+- linje 993–1007: standalone "Dagbog"-knap (`NotebookPen`-ikon, "Noter, humør og energi fra hver træning") — det er det kort du ser på skærmbilledet
+- linje 1010–1014: "Profil"-genvejsknap
 
-1. **Knap: "Send dummy record"**
-   - Henter først en frisk session-token via `supabase.auth.getSession()` (samme bruger er allerede logget ind, så ingen kodeord-prompt nødvendig).
-   - POST'er til `SYNC_URL` med:
-     - Headers: `Content-Type: application/json`, `apikey: ANON_KEY`, `Authorization: Bearer <session.access_token>`
-     - Body: én dummy `StepCount`-record dateret i dag:
-       ```json
-       { "records": [
-         { "metric_type": "StepCount", "value": 1234,
-           "start_date": "<today ISO>", "unit": "count",
-           "source_name": "debug-button" }
-       ] }
-       ```
+## Plan
 
-2. **Vis i UI'et**
-   - HTTP-statuskode (badge — grøn ved 200, rød ved øvrigt)
-   - Rå response-body i `<pre>` med `whitespace-pre-wrap break-all text-[11px]`
-   - Loading-spinner mens kaldet kører
-   - Kort hjælpetekst: "Hvis denne returnerer 200 og `upserted: 1`, så virker endpointet — så ligger fejlen i Shortcut'ens opsætning."
+1. **Fjern Dagbog-knappen i `Dashboard.tsx`** (linje 993–1007). Dagbogen findes allerede via bundnavigation/floating UI, så den hører ikke til forsiden.
 
-3. **State**
-   - `debugLoading: boolean`
-   - `debugResult: { status: number; body: string } | null`
+2. **Skjul de øvrige legacy-kort bag den eksisterende `SHOW_LEGACY_HUB_SECTIONS`-feature-flag** så de kan vækkes igen senere uden permanent sletning:
+   - `<ReflectionPromptCard />`
+   - `<EnablePasskeyCard />`
+   - "Profil"-genvejsknappen i bunden (`/profile-setup` nås allerede via avatar i headeren)
 
-## Hvad røres ikke
-- Ingen ændringer i edge functions (`sync-health-data` er bekræftet korrekt).
-- Ingen ændringer i database eller andre filer.
-- Ingen i18n — siden er pt. dansk-hardcoded, samme stil bevares.
+3. Ingen ændringer i `AthleteDashboard.tsx`, `CoachDashboard.tsx`, `Help.tsx` eller changelog.
 
-## Teknisk note
-- Dummy-recorden vil oprette/opdatere en række i `health_data` for i dag med `steps = 1234`. Det er forventet — vi kan se det blive overskrevet næste gang Shortcut'en synker rigtige data.
+## Resultat
+
+Hub-tab'en viser kun det nye `<AthleteDashboard />` (eller `<CoachDashboard />`) og intet andet derunder. Skærmbilledet ender med kun 2 kort: "I DAG" og "NÆSTE BEGIVENHED".
