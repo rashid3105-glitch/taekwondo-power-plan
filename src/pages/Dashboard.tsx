@@ -861,6 +861,9 @@ export default function Dashboard() {
               </div>
             </div>
 
+            {/* Athlete role dashboard (only when activeRole === 'athlete') */}
+            <AthleteDashboard />
+
             {/* 1. Today's session hero */}
             <HubTodayHero
               activePlan={activePlan}
