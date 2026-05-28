@@ -37,8 +37,27 @@ export default function Health() {
   const [loaded, setLoaded] = useState(false);
   const [steps, setSteps] = useState<DailyRow[]>([]);
   const [reporting, setReporting] = useState(false);
+  const [resyncing, setResyncing] = useState(false);
   const [show, setShow] = useState({ steps: true, sleep: true, rhr: true, hrv: true });
   const [whyOpen, setWhyOpen] = useState(false);
+
+  async function forceResync() {
+    if (resyncing) return;
+    setResyncing(true);
+    haptics.tap();
+    try {
+      const { data, error } = await supabase.functions.invoke("resync-health", { body: { days: 30 } });
+      if (error) throw error;
+      const n = (data as any)?.days_synced ?? 0;
+      toast.success(t("healthForceSyncDone").replace("{n}", String(n)));
+      setTimeout(() => window.location.reload(), 600);
+    } catch (e) {
+      console.error(e);
+      toast.error(t("healthForceSyncFailed"));
+    } finally {
+      setResyncing(false);
+    }
+  }
 
 
 
