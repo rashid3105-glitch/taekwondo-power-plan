@@ -1557,6 +1557,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          active_role: string | null
           age: number | null
           athlete_code: string | null
           avatar_url: string | null
@@ -1602,6 +1603,7 @@ export type Database = {
           public_show_prs: boolean
           public_show_videos: boolean
           rejection_reason: string | null
+          roles: string[] | null
           tkd_sessions_per_week: number
           tkd_start_date: string | null
           updated_at: string
@@ -1610,6 +1612,7 @@ export type Database = {
           weight_kg: number | null
         }
         Insert: {
+          active_role?: string | null
           age?: number | null
           athlete_code?: string | null
           avatar_url?: string | null
@@ -1655,6 +1658,7 @@ export type Database = {
           public_show_prs?: boolean
           public_show_videos?: boolean
           rejection_reason?: string | null
+          roles?: string[] | null
           tkd_sessions_per_week?: number
           tkd_start_date?: string | null
           updated_at?: string
@@ -1663,6 +1667,7 @@ export type Database = {
           weight_kg?: number | null
         }
         Update: {
+          active_role?: string | null
           age?: number | null
           athlete_code?: string | null
           avatar_url?: string | null
@@ -1708,6 +1713,7 @@ export type Database = {
           public_show_prs?: boolean
           public_show_videos?: boolean
           rejection_reason?: string | null
+          roles?: string[] | null
           tkd_sessions_per_week?: number
           tkd_start_date?: string | null
           updated_at?: string
