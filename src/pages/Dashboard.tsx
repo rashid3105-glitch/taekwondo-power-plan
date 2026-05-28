@@ -56,6 +56,11 @@ import { CoachDashboard } from "@/components/hub/CoachDashboard";
 import { useOfflineProfile } from "@/hooks/useOfflineProfile";
 import { useOfflinePlan } from "@/hooks/useOfflinePlan";
 
+// Feature flag — sæt til true for at genaktivere de gamle hub-sektioner
+// (Restitution-strip, Fastgjorte moduler, Øvrige moduler chips)
+const SHOW_LEGACY_HUB_SECTIONS = false;
+
+
 interface Profile {
   display_name: string;
   age: number | null;
@@ -918,63 +923,68 @@ export default function Dashboard() {
             <HubNextEvent event={nextEvent} />
 
 
-            {/* 3. Recovery strip */}
-            {!isDemo && <HubRecoveryStrip />}
+            {/* 3. Recovery strip — hidden behind feature flag (kan genaktiveres) */}
+            {SHOW_LEGACY_HUB_SECTIONS && !isDemo && <HubRecoveryStrip />}
 
             {/* Optional reflection prompt */}
             {!isDemo && <ReflectionPromptCard />}
 
-            {/* 4. Pinned modules — customizable */}
-            <section>
-              <div className="flex items-center justify-between mb-2 px-1">
-                <h3 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                  {t("pinnedModules")}
-                </h3>
-                <button
-                  type="button"
-                  onClick={() => setPinsEditorOpen(true)}
-                  className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <Pencil className="h-3 w-3" />
-                  <span>{t("customizePins") || "Tilpas"}</span>
-                </button>
-              </div>
-              <div className="grid gap-3 grid-cols-2">
-                {pinnedKeys
-                  .map(k => ALL_PINNABLE.find(m => m.key === k))
-                  .filter(Boolean)
-                  .slice(0, 4)
-                  .map((mod) => {
-                    const Icon = mod!.icon;
-                    const locked = isDemo && !["plan"].includes(mod!.key);
-                    return (
-                      <button
-                        key={mod!.key}
-                        type="button"
-                        onClick={() => !locked && mod!.onClick()}
-                        disabled={locked}
-                        className={cn(
-                          "group relative overflow-hidden rounded-2xl border border-border bg-card/80 backdrop-blur-sm p-4 shadow-card text-left transition-all",
-                          locked ? "opacity-60 cursor-not-allowed" : "hover:border-primary/30 hover:-translate-y-0.5"
-                        )}
-                      >
-                        <div className={cn("flex h-9 w-9 items-center justify-center rounded-xl bg-muted/60 mb-2")}>
-                          <Icon className={cn("h-4 w-4", mod!.color)} />
-                          {locked && <Lock className="absolute right-3 top-3 h-3 w-3 text-muted-foreground" />}
-                        </div>
-                        <p className="text-sm font-bold text-foreground tracking-tight truncate">{t(mod!.labelKey as any)}</p>
-                      </button>
-                    );
-                  })}
-              </div>
-            </section>
+            {/* 4. Pinned modules — hidden behind feature flag (kan genaktiveres) */}
+            {SHOW_LEGACY_HUB_SECTIONS && (
+              <section>
+                <div className="flex items-center justify-between mb-2 px-1">
+                  <h3 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                    {t("pinnedModules")}
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => setPinsEditorOpen(true)}
+                    className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <Pencil className="h-3 w-3" />
+                    <span>{t("customizePins") || "Tilpas"}</span>
+                  </button>
+                </div>
+                <div className="grid gap-3 grid-cols-2">
+                  {pinnedKeys
+                    .map(k => ALL_PINNABLE.find(m => m.key === k))
+                    .filter(Boolean)
+                    .slice(0, 4)
+                    .map((mod) => {
+                      const Icon = mod!.icon;
+                      const locked = isDemo && !["plan"].includes(mod!.key);
+                      return (
+                        <button
+                          key={mod!.key}
+                          type="button"
+                          onClick={() => !locked && mod!.onClick()}
+                          disabled={locked}
+                          className={cn(
+                            "group relative overflow-hidden rounded-2xl border border-border bg-card/80 backdrop-blur-sm p-4 shadow-card text-left transition-all",
+                            locked ? "opacity-60 cursor-not-allowed" : "hover:border-primary/30 hover:-translate-y-0.5"
+                          )}
+                        >
+                          <div className={cn("flex h-9 w-9 items-center justify-center rounded-xl bg-muted/60 mb-2")}>
+                            <Icon className={cn("h-4 w-4", mod!.color)} />
+                            {locked && <Lock className="absolute right-3 top-3 h-3 w-3 text-muted-foreground" />}
+                          </div>
+                          <p className="text-sm font-bold text-foreground tracking-tight truncate">{t(mod!.labelKey as any)}</p>
+                        </button>
+                      );
+                    })}
+                </div>
+              </section>
+            )}
 
-            {/* 5. Other modules chips */}
-            <HubOtherModules
-              isDemo={isDemo}
-              isLocked={(mod) => isModuleLocked(mod) || (mod === "rehab" && !isModuleEnabled("rehab")) || (mod === "testing" && !isModuleEnabled("testing"))}
-              onTab={(tab) => handleTabChange(tab)}
-            />
+            {/* 5. Other modules chips — hidden behind feature flag (kan genaktiveres) */}
+            {SHOW_LEGACY_HUB_SECTIONS && (
+              <HubOtherModules
+                isDemo={isDemo}
+                isLocked={(mod) => isModuleLocked(mod) || (mod === "rehab" && !isModuleEnabled("rehab")) || (mod === "testing" && !isModuleEnabled("testing"))}
+                onTab={(tab) => handleTabChange(tab)}
+              />
+            )}
+
 
             {/* Demoted: passkey */}
             {!isDemo && <EnablePasskeyCard />}
