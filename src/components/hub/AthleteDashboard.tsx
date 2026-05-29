@@ -354,3 +354,19 @@ function CountBox({
     </div>
   );
 }
+
+function SkeletonBlock({ className = "" }: { className?: string }) {
+  return <div className={`bg-white/10 animate-pulse rounded-xl ${className}`} />;
+}
+
+export function EmptyState({
+  icon, text, sub,
+}: { icon: React.ReactNode; text: string; sub?: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-4 gap-1.5">
+      {icon}
+      <p className="text-[13px] text-white text-center">{text}</p>
+      {sub && <p className="text-[11px] text-white/50 text-center">{sub}</p>}
+    </div>
+  );
+}
