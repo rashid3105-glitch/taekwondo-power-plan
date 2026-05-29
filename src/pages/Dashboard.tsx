@@ -23,6 +23,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useCoachMode } from "@/contexts/CoachModeContext";
 import { useRole } from "@/contexts/RoleContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import Help from "@/pages/Help";
 import { MentalAssessment } from "@/components/MentalAssessment";
 import { ProgressDashboard } from "@/components/ProgressDashboard";
 import { NutritionPlan } from "@/components/NutritionPlan";
