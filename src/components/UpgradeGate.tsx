@@ -1,24 +1,63 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Lock, Sparkles } from "lucide-react";
+import { Lock, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useEntitlements } from "@/hooks/useEntitlements";
 import { LockedModule } from "@/lib/entitlements";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Props {
   module: LockedModule;
   children: ReactNode;
 }
 
+// Map LockedModule -> athlete_modules module-keys that grant access
+const COACH_MODULE_KEYS: Record<LockedModule, string[]> = {
+  rehab: ["rehab"],
+  testing: ["testing"],
+  match_analysis: ["video"],
+  competitions: ["compete"],
+  season_plan: ["plan"],
+  library: ["plan", "library"],
+};
+
 export function UpgradeGate({ module, children }: Props) {
   const { isLocked, loading } = useEntitlements();
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const [coachGranted, setCoachGranted] = useState<boolean | null>(null);
 
-  if (loading) return null;
-  if (!isLocked(module)) return <>{children}</>;
+  useEffect(() => {
+    (async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) { setCoachGranted(false); return; }
+        const keys = COACH_MODULE_KEYS[module] ?? [];
+        if (keys.length === 0) { setCoachGranted(false); return; }
+        const { data } = await supabase
+          .from("athlete_modules" as any)
+          .select("module, enabled")
+          .eq("athlete_id", user.id)
+          .eq("enabled", true)
+          .in("module", keys);
+        setCoachGranted(!!data && (data as any[]).length > 0);
+      } catch {
+        setCoachGranted(false);
+      }
+    })();
+  }, [module]);
+
+  if (loading || coachGranted === null) {
+    return (
+      <div className="min-h-[40vh] flex items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (coachGranted || !isLocked(module)) return <>{children}</>;
 
   return (
     <div className="min-h-[60vh] flex items-center justify-center p-4">
