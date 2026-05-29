@@ -1162,21 +1162,13 @@ export default function Dashboard() {
                       )}
                     </div>
                   </div>
-                  {hasCoach && !isPaid ? (
-                    <span className="text-xs text-accent font-semibold flex items-center gap-1">
-                      <Lock className="h-3.5 w-3.5" /> {coachName
-                        ? (t("coachManagedActionNamed") || "").replace("{{coach}}", coachName)
-                        : t("coachManagedAction")}
-                    </span>
-                  ) : (
-                    <Button onClick={generatePlan} disabled={generating} size="sm" className="w-full sm:w-auto">
-                      {generating ? (
-                        <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
-                      ) : (
-                        <><Plus className="h-4 w-4 mr-1" /> {t("generatePlan")}</>
-                      )}
-                    </Button>
-                  )}
+                  <Button onClick={generatePlan} disabled={generating} size="sm" className="w-full sm:w-auto">
+                    {generating ? (
+                      <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
+                    ) : (
+                      <><Plus className="h-4 w-4 mr-1" /> {t("generatePlan")}</>
+                    )}
+                  </Button>
                 </div>
               </div>
             )}
