@@ -198,8 +198,8 @@ export function AthleteDashboard() {
         <section
           role="button"
           tabIndex={0}
-          onClick={() => navigate("/plan")}
-          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate("/plan"); } }}
+          onClick={() => navigate("/dashboard?tab=plan")}
+          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate("/dashboard?tab=plan"); } }}
           className="rounded-xl border border-white/10 bg-white/[0.03] p-4 cursor-pointer hover:bg-white/[0.05] transition-colors"
           style={accentLeftBorder}
         >
