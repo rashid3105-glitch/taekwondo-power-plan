@@ -304,7 +304,7 @@ export default function Dashboard() {
     { tab: "plan", icon: Zap, labelKey: "plan", color: "text-tab-plan" },
     { tab: "calendar", icon: CalendarRange, labelKey: "seasonCalendar", color: "text-primary" },
     { tab: "progress", icon: BarChart3, labelKey: "progress", color: "text-tab-progress" },
-    { tab: "nutrition", icon: Apple, labelKey: "nutrition", color: "text-tab-nutrition" },
+    
     { tab: "rehab", icon: Heart, labelKey: "injuryRehabPlan", color: "text-tab-rehab" },
     { tab: "mental", icon: Brain, labelKey: "mental", color: "text-tab-mental" },
     { tab: "testing", icon: ClipboardList, labelKey: "testing", color: "text-primary" },
