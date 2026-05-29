@@ -16,6 +16,9 @@ const inputCls = "bg-white/[0.04] border-white/10 text-white placeholder:text-wh
 
 const ALLOWED_EXT = ["jpg", "jpeg", "png", "webp", "gif"];
 
+interface LicenseField { id: string; field_name: string; sort_order: number; }
+interface LicenseValue { value?: string | null; expires_at?: string | null; }
+
 export default function ProfileEdit() {
   const navigate = useNavigate();
   const { t } = useLanguage();
@@ -35,6 +38,12 @@ export default function ProfileEdit() {
   const [pendingPreview, setPendingPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  const [isCoach, setIsCoach] = useState(false);
+  const [licenseFieldsOwnerId, setLicenseFieldsOwnerId] = useState<string | null>(null);
+  const [licenseFields, setLicenseFields] = useState<LicenseField[]>([]);
+  const [licenseValues, setLicenseValues] = useState<Record<string, LicenseValue>>({});
+  const [newFieldName, setNewFieldName] = useState("");
+
   const signedExisting = useAvatarUrl(avatarUrl);
   const displayedAvatar = pendingPreview || signedExisting;
 
@@ -48,7 +57,7 @@ export default function ProfileEdit() {
       setUserId(user.id);
       const { data: p } = await supabase
         .from("profiles")
-        .select("display_name, birth_date, belt_level, weight_kg, discipline, goals, avatar_url")
+        .select("display_name, birth_date, belt_level, weight_kg, discipline, goals, avatar_url, roles, license_values")
         .eq("user_id", user.id)
         .maybeSingle();
       if (p) {
@@ -59,10 +68,35 @@ export default function ProfileEdit() {
         setDiscipline(p.discipline ?? "sparring");
         setGoalsText(Array.isArray(p.goals) ? p.goals.join(", ") : "");
         setAvatarUrl(p.avatar_url ?? null);
+        setLicenseValues(((p as any).license_values ?? {}) as Record<string, LicenseValue>);
       }
+
+      const roles: string[] = (p as any)?.roles ?? [];
+      const userIsCoach = roles.includes("coach");
+      setIsCoach(userIsCoach);
+
+      const { data: ca } = await supabase
+        .from("coach_athletes")
+        .select("coach_id")
+        .eq("athlete_id", user.id)
+        .limit(1)
+        .maybeSingle();
+      const ownerId = ca?.coach_id ?? (userIsCoach ? user.id : null);
+      setLicenseFieldsOwnerId(ownerId);
+
+      if (ownerId) {
+        const { data: lf } = await supabase
+          .from("coach_license_fields")
+          .select("id, field_name, sort_order")
+          .eq("coach_id", ownerId)
+          .order("sort_order", { ascending: true });
+        setLicenseFields((lf ?? []) as LicenseField[]);
+      }
+
       setLoading(false);
     })();
   }, [navigate]);
+
 
   useEffect(() => {
     return () => {
@@ -153,6 +187,18 @@ export default function ProfileEdit() {
       const goals = goalsText.split(",").map((g) => g.trim()).filter(Boolean);
       const weight = weightKg ? parseFloat(weightKg) : null;
 
+      // Clean license values: only persist entries for known fields, drop empties.
+      const cleanedLicenseValues: Record<string, LicenseValue> = {};
+      for (const f of licenseFields) {
+        const v = licenseValues[f.id];
+        if (!v) continue;
+        const val = (v.value ?? "").trim();
+        const exp = v.expires_at && /^\d{4}-\d{2}-\d{2}$/.test(v.expires_at) ? v.expires_at : null;
+        if (val || exp) {
+          cleanedLicenseValues[f.id] = { value: val || null, expires_at: exp };
+        }
+      }
+
       const body: Record<string, unknown> = {
         display_name: displayName || null,
         birth_date: birthDate || null,
@@ -160,8 +206,10 @@ export default function ProfileEdit() {
         weight_kg: weight,
         discipline,
         goals,
+        license_values: cleanedLicenseValues,
       };
       if (newAvatarPath) body.avatar_url = newAvatarPath;
+
 
       const { error } = await supabase.functions.invoke("update-my-profile", { body });
       if (error) throw error;
@@ -190,6 +238,49 @@ export default function ProfileEdit() {
     const ok = await handleSave();
     if (ok) toast.success("Profil gemt");
   };
+
+  const updateLicenseValue = (fieldId: string, patch: Partial<LicenseValue>) => {
+    setLicenseValues((prev) => ({ ...prev, [fieldId]: { ...prev[fieldId], ...patch } }));
+  };
+
+  const addLicenseField = async () => {
+    if (!isCoach || !userId) return;
+    const name = newFieldName.trim();
+    if (!name) return;
+    if (licenseFields.length >= 3) {
+      toast.error("Maks 3 felter");
+      return;
+    }
+    const sort_order = licenseFields.length;
+    const { data, error } = await supabase
+      .from("coach_license_fields")
+      .insert({ coach_id: userId, field_name: name, sort_order } as any)
+      .select("id, field_name, sort_order")
+      .single();
+    if (error || !data) {
+      toast.error("Kunne ikke tilføje felt");
+      return;
+    }
+    setLicenseFields((arr) => [...arr, data as LicenseField]);
+    setNewFieldName("");
+  };
+
+  const removeLicenseField = async (id: string) => {
+    if (!isCoach) return;
+    const prev = licenseFields;
+    setLicenseFields((arr) => arr.filter((f) => f.id !== id));
+    setLicenseValues((vals) => {
+      const next = { ...vals };
+      delete next[id];
+      return next;
+    });
+    const { error } = await supabase.from("coach_license_fields").delete().eq("id", id);
+    if (error) {
+      toast.error("Kunne ikke slette");
+      setLicenseFields(prev);
+    }
+  };
+
 
   if (loading) {
     return (
@@ -315,6 +406,91 @@ export default function ProfileEdit() {
             </Field>
           </div>
         </div>
+
+        {(licenseFieldsOwnerId || isCoach) && (
+
+          <div className={cardCls}>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className={sectionTitleCls + " mb-0"}>{t("profileLicensesTitle" as any)}</h2>
+            </div>
+
+            {licenseFields.length === 0 && !isCoach && (
+              <p className="text-sm text-white/50 py-2">
+                {t("profileLicensesNoFields" as any)}
+              </p>
+            )}
+
+            <div className="space-y-4">
+              {licenseFields.map((f) => {
+                const v = licenseValues[f.id] || {};
+                return (
+                  <div key={f.id} className="rounded-lg border border-white/10 bg-white/[0.02] p-3 space-y-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-xs uppercase tracking-wider text-white/55 truncate">{f.field_name}</p>
+                      {isCoach && (
+                        <button
+                          type="button"
+                          onClick={() => removeLicenseField(f.id)}
+                          className="text-xs text-white/40 hover:text-red-400 px-2 py-1"
+                          aria-label="Fjern felt"
+                        >
+                          Fjern
+                        </button>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <Field label="Værdi / nummer">
+                        <Input
+                          className={inputCls}
+                          value={v.value ?? ""}
+                          onChange={(e) => updateLicenseValue(f.id, { value: e.target.value })}
+                          placeholder="f.eks. DTaF-12345"
+                        />
+                      </Field>
+                      <Field label={t("profileLicenseExpires" as any)}>
+                        <Input
+                          type="date"
+                          className={inputCls}
+                          value={v.expires_at ?? ""}
+                          onChange={(e) => updateLicenseValue(f.id, { expires_at: e.target.value || null })}
+                        />
+                      </Field>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {isCoach && licenseFields.length < 3 && (
+              <div className="mt-4 flex gap-2">
+                <Input
+                  className={inputCls}
+                  value={newFieldName}
+                  onChange={(e) => setNewFieldName(e.target.value)}
+                  placeholder="Nyt feltnavn (f.eks. GAL-licens)"
+                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addLicenseField(); } }}
+                />
+                <Button
+                  type="button"
+                  onClick={addLicenseField}
+                  disabled={!newFieldName.trim()}
+                  className="text-black font-medium shrink-0"
+                  style={{ backgroundColor: "var(--accent-hex)" }}
+                >
+                  Tilføj
+                </Button>
+              </div>
+            )}
+
+            <p className="text-xs text-white/40 pt-3">
+              {isCoach
+                ? "Du definerer selv hvilke licens- og registreringsfelter der vises."
+                : t("profileLicensesFooter" as any)}
+            </p>
+          </div>
+        )}
+
+
 
         <div className={cardCls}>
           <h2 className={sectionTitleCls}>{t("profileGoalsTitle" as any)}</h2>

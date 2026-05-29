@@ -95,12 +95,16 @@ export default function Profile() {
         .limit(1)
         .maybeSingle();
 
+      const roles: string[] = (prof as any)?.roles ?? [];
+      const isCoach = roles.includes("coach");
+      const fieldsOwner = ca?.coach_id ?? (isCoach ? user.id : null);
+
       let fields: LicenseField[] = [];
-      if (ca?.coach_id) {
+      if (fieldsOwner) {
         const { data: lf } = await supabase
           .from("coach_license_fields")
           .select("id, field_name, sort_order")
-          .eq("coach_id", ca.coach_id)
+          .eq("coach_id", fieldsOwner)
           .order("sort_order", { ascending: true })
           .limit(3);
         fields = lf || [];
@@ -121,8 +125,9 @@ export default function Profile() {
         license_values: p?.license_values ?? {},
         email: user.email ?? null,
       });
-      setHasCoach(!!ca?.coach_id);
+      setHasCoach(!!fieldsOwner);
       setLicenseFields(fields);
+
       setLoading(false);
     })();
     return () => { mounted = false; };

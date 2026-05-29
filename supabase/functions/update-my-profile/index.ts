@@ -49,6 +49,14 @@ const UpdateProfileSchema = z.object({
   birth_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
   phone: z.string().max(40).nullable().optional(),
   phone_country_code: z.string().max(8).nullable().optional(),
+  license_values: z
+    .record(
+      z.object({
+        value: z.string().max(200).nullable().optional(),
+        expires_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
+      }),
+    )
+    .optional(),
   avatar_url: z
     .string()
     .max(500)
@@ -64,6 +72,7 @@ const UpdateProfileSchema = z.object({
       { message: "avatar_url must match {uuid}/avatar.{jpg|jpeg|png|webp|gif}" }
     ),
 });
+
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
