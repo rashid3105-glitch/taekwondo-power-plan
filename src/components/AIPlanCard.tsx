@@ -22,6 +22,7 @@ import { TrainingReminder } from "@/components/TrainingReminder";
 import { normalizeDaySessions, type PlanSession } from "@/lib/planSessionUtils";
 import { localizeDayOfWeek, localizeExerciseName } from "@/lib/planTranslation";
 import { PlanProgramGrid } from "@/components/plan/PlanProgramGrid";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 const CATEGORY_DOT: Record<string, string> = {
   power: "bg-accent",
@@ -243,10 +244,10 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
     return 6;
   })();
   const [viewMode, setViewMode] = useState<"program" | "week">(() => {
-    if (typeof window === "undefined") return programWeeks > 1 ? "program" : "week";
+    if (typeof window === "undefined") return "week";
     const saved = localStorage.getItem("planViewMode");
     if (saved === "program" || saved === "week") return saved;
-    return programWeeks > 1 ? "program" : "week";
+    return "week";
   });
   const [selectedWeek, setSelectedWeek] = useState(0);
   const schedule = localPlanData?.weeklySchedule || [];
@@ -395,11 +396,6 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
           <span className="text-xs bg-speed/20 text-speed px-2 py-1 rounded-full font-semibold">Active</span>
         </div>
       </div>
-
-      {/* Periodization timeline (above the weekly schedule) */}
-      {periodization.length > 0 && (
-        <PeriodizationView periodization={periodization} programWeeks={plan.plan_data?.programWeeks} />
-      )}
 
       {/* View toggle */}
       {programWeeks > 1 && (
@@ -615,6 +611,19 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
               }
             }}
           />
+
+          {/* Periodization (collapsed at bottom) */}
+          {periodization.length > 0 && (
+            <Collapsible defaultOpen={false}>
+              <CollapsibleTrigger className="flex w-full items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-white hover:bg-white/[0.05] transition-colors">
+                {t("periodizationTitle") || "Programperiodisering"}
+                <ChevronDown className="h-4 w-4 text-white/50 transition-transform [[data-state=open]>&]:rotate-180" />
+              </CollapsibleTrigger>
+              <CollapsibleContent className="mt-2">
+                <PeriodizationView periodization={periodization} programWeeks={plan.plan_data?.programWeeks} />
+              </CollapsibleContent>
+            </Collapsible>
+          )}
         </>
     </div>
   );
