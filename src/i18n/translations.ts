@@ -14272,6 +14272,8 @@ const translations = {
     changelog_2026_05_29: "29. mai 2026",
     changelogEntry126: "Neste stevne vises nå på utøverens startside",
     changelogEntry127: "Startsiden ryddet — gamle moduler skjult bak et funksjonsflagg",
+    changelogEntry128: "Videoanalyse lagt til som egen fane i utøverens bunnavigasjon",
+    changelogEntry129: "Snarveien på startsiden åpner nå videoanalyse direkte fra startvisningen",
     hubSeasonTitle: "Sesongplan",
     hubSeasonDesc: "Planlegg hele konkurransesesongen med periodiseringsfaser og peak-vinduer",
     seasonPlannerTitle: "Sesongplanlegger",
