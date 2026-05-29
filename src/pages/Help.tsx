@@ -441,9 +441,16 @@ export default function Help() {
                         });
                     return (
                       <>
-                        {visible.map(({ dateKey, entries }) => (
+                        {visible.map(({ dateKey, entries, build }) => (
                           <div key={dateKey} className="rounded-xl border border-border bg-card px-5 py-4 space-y-3 shadow-sm">
-                            <h3 className="text-sm font-bold text-foreground">{t(dateKey as Parameters<typeof t>[0])}</h3>
+                            <div className="flex items-center justify-between gap-3 flex-wrap">
+                              <h3 className="text-sm font-bold text-foreground">{t(dateKey as Parameters<typeof t>[0])}</h3>
+                              {build && (
+                                <span className="text-[10px] font-mono font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/15 text-primary border border-primary/30">
+                                  {build}
+                                </span>
+                              )}
+                            </div>
                             <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-5">
                               {entries.map((e) => (
                                 <li key={e}>{t(e as Parameters<typeof t>[0])}</li>
