@@ -46,20 +46,22 @@ export default function Profile() {
       if (!user) {
         navigate("/auth");
         return;
-      }
       const { data: prof } = await supabase
         .from("profiles")
-        .select("display_name, avatar_url, sport, club_name, roles, created_at")
+        .select("display_name, avatar_url, sport, club_id, roles, created_at, clubs:club_id(name)")
         .eq("user_id", user.id)
         .maybeSingle();
       if (!mounted) return;
+      const clubName = (prof as any)?.clubs?.name ?? null;
       setData({
         display_name: (prof as any)?.display_name ?? null,
         avatar_url: (prof as any)?.avatar_url ?? null,
         sport: (prof as any)?.sport ?? null,
-        club_name: (prof as any)?.club_name ?? null,
+        club_name: clubName,
         roles: (prof as any)?.roles ?? null,
         created_at: (prof as any)?.created_at ?? user.created_at ?? null,
+        email: user.email ?? null,
+      });
         email: user.email ?? null,
       });
       setLoading(false);
