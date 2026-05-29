@@ -135,6 +135,7 @@ export function AthleteDashboard() {
       if (!mounted) return;
       setTodaySession(today);
       setStats({ streak, sessions: dates.length });
+      setIsLoading(false);
     })();
 
     return () => { mounted = false; };
