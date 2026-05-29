@@ -67,8 +67,8 @@ export default function ProfileEdit() {
           birth_date: birthDate || null,
           belt_level: beltLevel || null,
           weight_kg: weight,
-          sport,
           discipline,
+
           goals,
         },
       });
