@@ -125,6 +125,33 @@ export type Database = {
         }
         Relationships: []
       }
+      athlete_modules: {
+        Row: {
+          athlete_id: string
+          coach_id: string
+          created_at: string | null
+          enabled: boolean
+          id: string
+          module_key: string
+        }
+        Insert: {
+          athlete_id: string
+          coach_id: string
+          created_at?: string | null
+          enabled?: boolean
+          id?: string
+          module_key: string
+        }
+        Update: {
+          athlete_id?: string
+          coach_id?: string
+          created_at?: string | null
+          enabled?: boolean
+          id?: string
+          module_key?: string
+        }
+        Relationships: []
+      }
       athlete_week_technique_focus: {
         Row: {
           athlete_id: string
