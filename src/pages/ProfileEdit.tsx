@@ -239,6 +239,49 @@ export default function ProfileEdit() {
     if (ok) toast.success("Profil gemt");
   };
 
+  const updateLicenseValue = (fieldId: string, patch: Partial<LicenseValue>) => {
+    setLicenseValues((prev) => ({ ...prev, [fieldId]: { ...prev[fieldId], ...patch } }));
+  };
+
+  const addLicenseField = async () => {
+    if (!isCoach || !userId) return;
+    const name = newFieldName.trim();
+    if (!name) return;
+    if (licenseFields.length >= 3) {
+      toast.error("Maks 3 felter");
+      return;
+    }
+    const sort_order = licenseFields.length;
+    const { data, error } = await supabase
+      .from("coach_license_fields")
+      .insert({ coach_id: userId, field_name: name, sort_order } as any)
+      .select("id, field_name, sort_order")
+      .single();
+    if (error || !data) {
+      toast.error("Kunne ikke tilføje felt");
+      return;
+    }
+    setLicenseFields((arr) => [...arr, data as LicenseField]);
+    setNewFieldName("");
+  };
+
+  const removeLicenseField = async (id: string) => {
+    if (!isCoach) return;
+    const prev = licenseFields;
+    setLicenseFields((arr) => arr.filter((f) => f.id !== id));
+    setLicenseValues((vals) => {
+      const next = { ...vals };
+      delete next[id];
+      return next;
+    });
+    const { error } = await supabase.from("coach_license_fields").delete().eq("id", id);
+    if (error) {
+      toast.error("Kunne ikke slette");
+      setLicenseFields(prev);
+    }
+  };
+
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center text-white" style={{ backgroundColor: "#0a0a0a" }}>
