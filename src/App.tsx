@@ -19,6 +19,7 @@ import FeatureDetail from "./pages/FeatureDetail";
 import PlatformPage from "./pages/PlatformPage";
 import Auth from "./pages/Auth";
 import ProfileSetup from "./pages/ProfileSetup";
+import Profile from "./pages/Profile";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
 import Library from "./pages/Library";
