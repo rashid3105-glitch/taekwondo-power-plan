@@ -1,7 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Pencil, Download, KeyRound, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { LogOut, Pencil, Download, KeyRound, Trash2, ChevronLeft } from "lucide-react";
+import { PageMeta } from "@/components/PageMeta";
+import { AppFooter } from "@/components/AppFooter";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface LicenseField {
   id: string;
@@ -44,15 +51,6 @@ function calcAge(birth: string | null): number | null {
   return age;
 }
 
-function roleLabel(roles: string[] | null | undefined): string {
-  const r = roles || [];
-  const hasA = r.includes("athlete");
-  const hasC = r.includes("coach");
-  if (hasA && hasC) return "Begge";
-  if (hasC) return "Coach";
-  return "Atlet";
-}
-
 function daysUntil(dateStr?: string): number | null {
   if (!dateStr) return null;
   const d = new Date(dateStr);
@@ -62,15 +60,16 @@ function daysUntil(dateStr?: string): number | null {
   return Math.floor(ms / (1000 * 60 * 60 * 24));
 }
 
-function fmtDate(dateStr?: string): string {
+function fmtDate(dateStr: string | undefined, locale: string): string {
   if (!dateStr) return "—";
   const d = new Date(dateStr);
   if (isNaN(d.getTime())) return "—";
-  return d.toLocaleDateString("da-DK", { day: "numeric", month: "short", year: "numeric" });
+  return d.toLocaleDateString(locale || "da-DK", { day: "numeric", month: "short", year: "numeric" });
 }
 
 export default function Profile() {
   const navigate = useNavigate();
+  const { t, locale } = useLanguage();
   const [data, setData] = useState<ProfileData | null>(null);
   const [licenseFields, setLicenseFields] = useState<LicenseField[]>([]);
   const [hasCoach, setHasCoach] = useState(false);
@@ -123,6 +122,7 @@ export default function Profile() {
         license_values: p?.license_values ?? {},
         email: user.email ?? null,
       });
+      setHasCoach(!!ca?.coach_id);
       setLicenseFields(fields);
       setLoading(false);
     })();
@@ -140,232 +140,241 @@ export default function Profile() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `profil-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `profile-${new Date().toISOString().slice(0, 10)}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
 
+  const roleLabel = (() => {
+    const r = data?.roles || [];
+    const hasA = r.includes("athlete");
+    const hasC = r.includes("coach");
+    if (hasA && hasC) return t("profileRoleBoth" as any);
+    if (hasC) return t("profileRoleCoach" as any);
+    return t("profileRoleAthlete" as any);
+  })();
+
   const age = calcAge(data?.birth_date ?? null);
-  const role = roleLabel(data?.roles);
   const discipline = data?.discipline || "sparring";
   const goals = data?.goals || [];
 
   return (
-    <div className="min-h-screen p-4 space-y-4" style={{ backgroundColor: "#0a0a0a" }}>
-      {/* Header */}
-      <section className="rounded-[14px] border border-white/10 bg-white/[0.03] p-4 relative">
-        <button
-          type="button"
-          onClick={() => navigate("/profile-setup")}
-          className="absolute top-3 right-3 h-9 w-9 rounded-full bg-white/[0.06] flex items-center justify-center text-white/80 hover:bg-white/[0.1] transition-colors"
-          aria-label="Rediger profil"
-        >
-          <Pencil size={15} />
-        </button>
+    <div className="min-h-screen bg-background">
+      <PageMeta
+        title={`${t("profileTitle" as any)} · Sportstalent`}
+        description={t("profileMetaDesc" as any)}
+        noindex
+      />
+      <div className="mx-auto max-w-2xl px-4 py-6 space-y-6">
+        <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="-ml-2">
+          <ChevronLeft className="h-4 w-4 mr-1" />
+          {t("profileBack" as any)}
+        </Button>
 
-        <div className="flex items-start gap-4">
-          <div
-            className="h-16 w-16 rounded-full flex items-center justify-center overflow-hidden shrink-0"
-            style={{ backgroundColor: "var(--accent-hex)" }}
-          >
-            {data?.avatar_url ? (
-              <img src={data.avatar_url} alt={data.display_name || "avatar"} className="h-full w-full object-cover" />
-            ) : (
-              <span className="text-xl font-extrabold text-black">{initialsOf(data?.display_name)}</span>
-            )}
-          </div>
-          <div className="flex-1 min-w-0 pr-10">
-            <h1 className="text-[16px] font-bold text-white truncate">
-              {loading ? "—" : (data?.display_name || "Uden navn")}
-            </h1>
-            <p className="text-[12px] text-white/55 mt-0.5 truncate">{data?.club_name || "Ingen klub"}</p>
+        {/* Header card */}
+        <Card>
+          <CardContent className="p-5 sm:p-6 relative">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate("/profile-setup")}
+              className="absolute top-3 right-3 h-9 w-9 rounded-full"
+              aria-label={t("profileEdit" as any)}
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
 
-            <div className="grid grid-cols-2 gap-x-3 gap-y-2 mt-3">
-              <MetaCell label="Fødselsdato" value={data?.birth_date ? `${fmtDate(data.birth_date)}${age != null ? ` (${age})` : ""}` : "—"} />
-              <MetaCell label="Bæltegrad" value={data?.belt_level || "—"} />
-              <MetaCell label="Højde" value="—" />
-              <MetaCell label="Vægt" value={data?.weight_kg ? `${data.weight_kg} kg` : "—"} />
-            </div>
-          </div>
-        </div>
-      </section>
+            <div className="flex items-start gap-4">
+              <div className="h-16 w-16 rounded-full overflow-hidden shrink-0 bg-primary text-primary-foreground flex items-center justify-center">
+                {data?.avatar_url ? (
+                  <img src={data.avatar_url} alt={data.display_name || "avatar"} className="h-full w-full object-cover" />
+                ) : (
+                  <span className="text-xl font-bold">{initialsOf(data?.display_name)}</span>
+                )}
+              </div>
+              <div className="flex-1 min-w-0 pr-10">
+                <h1 className="text-base font-semibold text-foreground truncate">
+                  {loading ? "—" : (data?.display_name || t("profileNoName" as any))}
+                </h1>
+                <p className="text-sm text-muted-foreground mt-0.5 truncate">
+                  {data?.club_name || t("profileNoClub" as any)}
+                </p>
 
-      {/* Sport & disciplin */}
-      <Section title="Sport & disciplin">
-        <Row label="Sport" value="Taekwondo" />
-        <div className="px-4 py-3 border-t border-white/10">
-          <p className="text-[11px] uppercase tracking-widest text-white/35 mb-2">Disciplin</p>
-          <div className="flex gap-2">
-            {["sparring", "poomsae"].map((d) => {
-              const active = discipline === d;
-              return (
-                <span
-                  key={d}
-                  className="px-3 py-1.5 rounded-full text-[12px] font-semibold capitalize"
-                  style={
-                    active
-                      ? { backgroundColor: "var(--accent-hex)", color: "#000" }
-                      : { backgroundColor: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.5)" }
-                  }
-                >
-                  {d}
-                </span>
-              );
-            })}
-          </div>
-        </div>
-        <div className="px-4 py-3 border-t border-white/10 flex items-center justify-between">
-          <p className="text-[11px] uppercase tracking-widest text-white/35">Rolle</p>
-          <span
-            className="px-2.5 py-0.5 rounded-md text-[11px] font-bold"
-            style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
-          >
-            {role}
-          </span>
-        </div>
-      </Section>
-
-      {/* Licenser & registreringer */}
-      <Section title="Licenser & registreringer">
-        {!hasCoach || licenseFields.length === 0 ? (
-          <div className="px-4 py-6 text-center text-white/40 text-[13px]">
-            {hasCoach ? "Din coach har ikke defineret felter endnu." : "Ingen coach tilknyttet."}
-          </div>
-        ) : (
-          licenseFields.map((f, idx) => {
-            const v = data?.license_values?.[f.id];
-            const defined = !!v?.value;
-            const dleft = daysUntil(v?.expires_at);
-            const expired = dleft !== null && dleft < 0;
-            const soon = dleft !== null && dleft >= 0 && dleft <= 30;
-            const ok = dleft !== null && dleft > 30;
-
-            let badgeBg = "rgba(255,255,255,0.08)";
-            let badgeColor = "rgba(255,255,255,0.5)";
-            let badgeText = "—";
-            let dateColor = "rgba(255,255,255,0.55)";
-            let borderColor = "";
-            if (defined) {
-              if (expired) { badgeBg = "#f87171"; badgeColor = "#000"; badgeText = "Udløbet"; dateColor = "#f87171"; borderColor = "rgba(248,113,113,0.2)"; }
-              else if (soon) { badgeBg = "#F5A623"; badgeColor = "#000"; badgeText = "Udløber snart"; dateColor = "#F5A623"; borderColor = "rgba(245,166,35,0.2)"; }
-              else if (ok) { badgeBg = "#22c55e"; badgeColor = "#000"; badgeText = "Aktiv"; }
-              else { badgeText = "Aktiv"; badgeBg = "#22c55e"; badgeColor = "#000"; }
-            }
-
-            return (
-              <div
-                key={f.id}
-                className={`px-4 py-3 ${idx > 0 ? "border-t border-white/10" : ""}`}
-                style={borderColor ? { borderLeft: `2px solid ${borderColor}` } : undefined}
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="text-[11px] uppercase tracking-widest text-white/35">{f.field_name}</p>
-                    {defined ? (
-                      <>
-                        <p className="text-[14px] text-white mt-1 truncate">{v?.value}</p>
-                        <p className="text-[12px] mt-0.5" style={{ color: dateColor }}>
-                          Udløber: {fmtDate(v?.expires_at)}
-                        </p>
-                      </>
-                    ) : (
-                      <p className="text-[13px] text-white/40 mt-1 italic">Ikke defineret af coach</p>
-                    )}
-                  </div>
-                  {defined && (
-                    <span
-                      className="px-2 py-0.5 rounded-md text-[10px] font-bold shrink-0"
-                      style={{ backgroundColor: badgeBg, color: badgeColor }}
-                    >
-                      {badgeText}
-                    </span>
-                  )}
+                <div className="grid grid-cols-2 gap-x-4 gap-y-3 mt-4">
+                  <MetaCell
+                    label={t("profileBirthDate" as any)}
+                    value={data?.birth_date ? `${fmtDate(data.birth_date, locale)}${age != null ? ` (${age})` : ""}` : "—"}
+                  />
+                  <MetaCell label={t("profileBeltLevel" as any)} value={data?.belt_level || "—"} />
+                  <MetaCell label={t("profileHeight" as any)} value="—" />
+                  <MetaCell label={t("profileWeight" as any)} value={data?.weight_kg ? `${data.weight_kg} kg` : "—"} />
                 </div>
               </div>
-            );
-          })
-        )}
-        <div className="px-4 py-3 border-t border-white/10 bg-white/[0.02]">
-          <p className="text-[11px] text-white/45 leading-relaxed">
-            Din coach definerer hvilke registreringsfelter der er relevante.
-          </p>
-        </div>
-      </Section>
-
-      {/* Mine mål */}
-      <Section title="Mine mål">
-        <div className="px-4 py-3">
-          {goals.length === 0 ? (
-            <p className="text-[13px] text-white/40">Ingen mål valgt endnu.</p>
-          ) : (
-            <div className="flex flex-wrap gap-1.5">
-              {goals.map((g) => (
-                <span
-                  key={g}
-                  className="px-2.5 py-1 rounded-full text-[11px] font-semibold"
-                  style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
-                >
-                  {g}
-                </span>
-              ))}
             </div>
-          )}
-        </div>
-      </Section>
+          </CardContent>
+        </Card>
 
-      {/* Konto */}
-      <Section title="Konto">
-        <Row label="Email" value={data?.email || "—"} />
-        <ActionRow
-          icon={<KeyRound size={15} />}
-          label="Skift adgangskode"
-          onClick={() => navigate("/change-password")}
-        />
-        <ActionRow
-          icon={<Download size={15} />}
-          label="Download mine data"
-          onClick={handleExport}
-        />
-        <ActionRow
-          icon={<Trash2 size={15} />}
-          label="Slet konto"
-          sub="Download dine data først"
-          danger
-          onClick={() => navigate("/delete-account")}
-        />
-      </Section>
+        {/* Sport & discipline */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">{t("profileSportDiscipline" as any)}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-0">
+            <Row label={t("profileSport" as any)} value="Taekwondo" />
+            <Separator />
+            <div className="py-3">
+              <p className="text-xs text-muted-foreground mb-2">{t("profileDiscipline" as any)}</p>
+              <div className="flex gap-2">
+                {["sparring", "poomsae"].map((d) => {
+                  const active = discipline === d;
+                  return (
+                    <Badge
+                      key={d}
+                      variant={active ? "default" : "secondary"}
+                      className="capitalize px-3 py-1"
+                    >
+                      {d}
+                    </Badge>
+                  );
+                })}
+              </div>
+            </div>
+            <Separator />
+            <div className="flex items-center justify-between py-3">
+              <p className="text-sm text-muted-foreground">{t("profileRole" as any)}</p>
+              <Badge variant="default">{roleLabel}</Badge>
+            </div>
+          </CardContent>
+        </Card>
 
-      {/* Log ud */}
-      <button
-        type="button"
-        onClick={handleLogout}
-        className="w-full h-11 rounded-xl bg-destructive text-destructive-foreground font-semibold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
-      >
-        <LogOut size={16} />
-        Log ud
-      </button>
-    </div>
-  );
-}
+        {/* Licenses & registrations */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">{t("profileLicensesTitle" as any)}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-0">
+            {!hasCoach || licenseFields.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-6">
+                {hasCoach ? t("profileLicensesNoFields" as any) : t("profileLicensesNoCoach" as any)}
+              </p>
+            ) : (
+              licenseFields.map((f, idx) => {
+                const v = data?.license_values?.[f.id];
+                const defined = !!v?.value;
+                const dleft = daysUntil(v?.expires_at);
+                const expired = dleft !== null && dleft < 0;
+                const soon = dleft !== null && dleft >= 0 && dleft <= 30;
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <section>
-      <p className="text-[11px] uppercase tracking-widest text-white/35 mb-2 px-1">{title}</p>
-      <div className="rounded-[14px] border border-white/10 bg-white/[0.03] overflow-hidden">
-        {children}
+                let badgeText = "";
+                let badgeVariant: "default" | "secondary" | "destructive" | "outline" = "secondary";
+                if (defined) {
+                  if (expired) { badgeText = t("profileLicenseExpired" as any); badgeVariant = "destructive"; }
+                  else if (soon) { badgeText = t("profileLicenseExpiringSoon" as any); badgeVariant = "outline"; }
+                  else { badgeText = t("profileLicenseActive" as any); badgeVariant = "default"; }
+                }
+
+                return (
+                  <div key={f.id}>
+                    {idx > 0 && <Separator />}
+                    <div className="flex items-start justify-between gap-3 py-3">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs text-muted-foreground">{f.field_name}</p>
+                        {defined ? (
+                          <>
+                            <p className="text-sm text-foreground mt-1 truncate">{v?.value}</p>
+                            <p className={`text-xs mt-0.5 ${expired ? "text-destructive" : "text-muted-foreground"}`}>
+                              {t("profileLicenseExpires" as any)}: {fmtDate(v?.expires_at, locale)}
+                            </p>
+                          </>
+                        ) : (
+                          <p className="text-sm text-muted-foreground italic mt-1">
+                            {t("profileLicenseNotDefined" as any)}
+                          </p>
+                        )}
+                      </div>
+                      {defined && <Badge variant={badgeVariant} className="shrink-0">{badgeText}</Badge>}
+                    </div>
+                  </div>
+                );
+              })
+            )}
+            <Separator />
+            <p className="text-xs text-muted-foreground pt-3">
+              {t("profileLicensesFooter" as any)}
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Goals */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">{t("profileGoalsTitle" as any)}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {goals.length === 0 ? (
+              <p className="text-sm text-muted-foreground">{t("profileGoalsEmpty" as any)}</p>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {goals.map((g) => (
+                  <Badge key={g} variant="secondary">{g}</Badge>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Account */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">{t("profileAccountTitle" as any)}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-0">
+            <Row label={t("profileAccountEmail" as any)} value={data?.email || "—"} />
+            <Separator />
+            <ActionRow
+              icon={<KeyRound className="h-4 w-4" />}
+              label={t("profileChangePassword" as any)}
+              onClick={() => navigate("/change-password")}
+            />
+            <Separator />
+            <ActionRow
+              icon={<Download className="h-4 w-4" />}
+              label={t("profileExportData" as any)}
+              onClick={handleExport}
+            />
+            <Separator />
+            <ActionRow
+              icon={<Trash2 className="h-4 w-4" />}
+              label={t("profileDeleteAccount" as any)}
+              sub={t("profileDeleteAccountSub" as any)}
+              danger
+              onClick={() => navigate("/delete-account")}
+            />
+          </CardContent>
+        </Card>
+
+        <Button
+          variant="destructive"
+          className="w-full h-11"
+          onClick={handleLogout}
+        >
+          <LogOut className="h-4 w-4 mr-2" />
+          {t("profileLogout" as any)}
+        </Button>
       </div>
-    </section>
+      <AppFooter />
+    </div>
   );
 }
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between gap-3 px-4 py-3">
-      <p className="text-[11px] uppercase tracking-widest text-white/35">{label}</p>
-      <p className="text-[13px] text-white/85 truncate">{value}</p>
+    <div className="flex items-center justify-between gap-3 py-3">
+      <p className="text-sm text-muted-foreground">{label}</p>
+      <p className="text-sm text-foreground truncate">{value}</p>
     </div>
   );
 }
@@ -377,17 +386,14 @@ function ActionRow({
     <button
       type="button"
       onClick={onClick}
-      className="w-full flex items-center gap-3 px-4 py-3 border-t border-white/10 hover:bg-white/[0.04] transition-colors text-left"
+      className="w-full flex items-center gap-3 py-3 hover:bg-muted/40 transition-colors text-left rounded-md -mx-2 px-2"
     >
-      <div
-        className="h-8 w-8 rounded-lg bg-white/[0.06] flex items-center justify-center shrink-0"
-        style={{ color: danger ? "#f87171" : "var(--accent-hex)" }}
-      >
+      <div className={`h-8 w-8 rounded-md bg-muted flex items-center justify-center shrink-0 ${danger ? "text-destructive" : "text-primary"}`}>
         {icon}
       </div>
       <div className="flex-1 min-w-0">
-        <p className={`text-[13px] font-semibold ${danger ? "text-[#f87171]" : "text-white"}`}>{label}</p>
-        {sub && <p className="text-[11px] text-white/40 mt-0.5">{sub}</p>}
+        <p className={`text-sm font-medium ${danger ? "text-destructive" : "text-foreground"}`}>{label}</p>
+        {sub && <p className="text-xs text-muted-foreground mt-0.5">{sub}</p>}
       </div>
     </button>
   );
@@ -396,8 +402,8 @@ function ActionRow({
 function MetaCell({ label, value }: { label: string; value: string }) {
   return (
     <div className="min-w-0">
-      <p className="text-[10px] uppercase tracking-wider text-white/35">{label}</p>
-      <p className="text-[12px] text-white/85 truncate">{value}</p>
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className="text-sm text-foreground truncate mt-0.5">{value}</p>
     </div>
   );
 }
