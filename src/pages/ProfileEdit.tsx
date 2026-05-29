@@ -118,19 +118,6 @@ export default function ProfileEdit() {
     return path;
   };
 
-  const uploadAvatarIfNeeded = async (): Promise<string | null> => {
-    if (!pendingFile || !userId) return null;
-    const rawExt = (pendingFile.name.split(".").pop() || "jpg").toLowerCase();
-    const ext = rawExt === "jpeg" ? "jpg" : rawExt;
-    const path = `${userId}/avatar.${ext}`;
-    const contentType = pendingFile.type || `image/${ext === "jpg" ? "jpeg" : ext}`;
-    const { error } = await supabase.storage
-      .from("avatars")
-      .upload(path, pendingFile, { upsert: true, contentType });
-    if (error) throw error;
-    return path;
-  };
-
   const handleSave = async (): Promise<boolean> => {
     setSaving(true);
     try {
