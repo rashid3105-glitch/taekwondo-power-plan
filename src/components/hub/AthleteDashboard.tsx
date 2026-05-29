@@ -151,8 +151,8 @@ export function AthleteDashboard() {
 
   if (activeRole !== "athlete") return null;
 
-  const accentStyle = { color: "hsl(var(--accent))" } as const;
-  const accentLeftBorder = { borderLeft: "3px solid hsl(var(--accent))" } as const;
+  const accentStyle = { color: "var(--accent-hex)" } as const;
+  const accentLeftBorder = { borderLeft: "3px solid var(--accent-hex)" } as const;
 
   return (
     <div
@@ -176,7 +176,7 @@ export function AthleteDashboard() {
               type="button"
               onClick={() => navigate("/dashboard?tab=plan")}
               className="shrink-0 inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-lg"
-              style={{ backgroundColor: "hsl(var(--accent))", color: "#000" }}
+              style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
             >
               <Play className="h-3 w-3" fill="currentColor" /> Start
             </button>
@@ -244,7 +244,7 @@ export function AthleteDashboard() {
           {totalUnread > 0 && (
             <span
               className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center text-black"
-              style={{ backgroundColor: "hsl(var(--accent))" }}
+              style={{ backgroundColor: "var(--accent-hex)" }}
             >
               {totalUnread}
             </span>
@@ -260,7 +260,7 @@ export function AthleteDashboard() {
           type="button"
           onClick={() => navigate("/messages")}
           className="text-xs font-semibold px-3 py-1.5 rounded-lg"
-          style={{ backgroundColor: "hsl(var(--accent))", color: "#000" }}
+          style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
         >
           Se beskeder
         </button>
@@ -272,7 +272,7 @@ export function AthleteDashboard() {
           type="button"
           onClick={() => navigate("/dashboard?tab=plan")}
           className="rounded-xl p-4 flex items-center gap-2 font-semibold text-sm"
-          style={{ backgroundColor: "hsl(var(--accent))", color: "#000" }}
+          style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
         >
           <Play className="h-4 w-4" />
           Log session
