@@ -31,7 +31,7 @@ const WEEKDAYS_DA = ["SØNDAG", "MANDAG", "TIRSDAG", "ONSDAG", "TORSDAG", "FREDA
  * Dark surface using semantic background + --accent CSS variable for highlights.
  */
 export function AthleteDashboard() {
-  const { activeRole } = useRole();
+  const { role: activeRole } = useRole();
   const navigate = useNavigate();
   const { totalUnread } = useThreads();
 

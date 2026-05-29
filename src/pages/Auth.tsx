@@ -39,11 +39,9 @@ export default function AuthPage() {
   const [wantsDemo, setWantsDemo] = useState(false);
   const [passkeyAvailable, setPasskeyAvailable] = useState(false);
   const [passkeyLoading, setPasskeyLoading] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<"athlete" | "coach">("athlete");
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
-  const { setActiveRole } = useRole();
 
   // Read redirect param so we can send user back after login
   const redirectTo = new URLSearchParams(window.location.search).get("redirect");
@@ -86,22 +84,6 @@ export default function AuthPage() {
       if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        try {
-          const { data: { user } } = await supabase.auth.getUser();
-          if (user) {
-            const { data: prof } = await supabase
-              .from("profiles")
-              .select("roles")
-              .eq("user_id", user.id)
-              .maybeSingle();
-            const roles = (prof?.roles as string[] | null) ?? [];
-            if (roles.length > 1 && roles.includes(selectedRole)) {
-              await setActiveRole(selectedRole);
-            }
-          }
-        } catch (e) {
-          console.error("Failed to apply selected role", e);
-        }
         const pendingInvite = sessionStorage.getItem("pending_invite_code");
         if (pendingInvite) {
           sessionStorage.removeItem("pending_invite_code");
@@ -440,34 +422,8 @@ export default function AuthPage() {
               </div>
             )}
 
-            {isLogin && (
-              <div className="space-y-1.5 pt-1">
-                <p className="text-[11px] font-medium text-muted-foreground">{t("logInAs") ?? "Log ind som"}</p>
-                <div className="grid grid-cols-2 gap-2">
-                  {([
-                    { key: "athlete", label: "🥋 Atlet" },
-                    { key: "coach", label: "⭐ Coach" },
-                  ] as const).map((opt) => {
-                    const active = selectedRole === opt.key;
-                    return (
-                      <button
-                        key={opt.key}
-                        type="button"
-                        onClick={() => { haptics.tap(); setSelectedRole(opt.key); }}
-                        className={`h-10 rounded-full text-xs font-semibold transition-colors border ${
-                          active
-                            ? "bg-primary text-primary-foreground border-transparent"
-                            : "bg-transparent text-muted-foreground border-border/60 hover:border-border"
-                        }`}
-                        aria-pressed={active}
-                      >
-                        {opt.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+
+
 
 
 
