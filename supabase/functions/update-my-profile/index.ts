@@ -18,8 +18,10 @@ const DayScheduleSchema = z.object({
 });
 
 const UpdateProfileSchema = z.object({
+  display_name: z.string().max(100).nullable().optional(),
   age: z.number().int().min(5).max(99).nullable().optional(),
   weight_kg: z.number().min(20).max(300).nullable().optional(),
+  height_cm: z.number().min(50).max(250).nullable().optional(),
   belt_level: z.string().min(1).max(20).optional(),
   experience_years: z.number().int().min(0).max(80).nullable().optional(),
   tkd_sessions_per_week: z.number().int().min(0).max(14).optional(),
