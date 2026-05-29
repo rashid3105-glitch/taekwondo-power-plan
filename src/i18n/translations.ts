@@ -15761,6 +15761,8 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   changelog_2026_05_29: "29 de mayo de 2026",
   changelogEntry126: "Tarjeta de próxima competición mostrada en la pantalla de inicio del atleta",
   changelogEntry127: "Pantalla de inicio simplificada — módulos antiguos ocultos tras un feature flag",
+  changelogEntry128: "Análisis de video añadido como pestaña dedicada en la navegación inferior del atleta",
+  changelogEntry129: "El acceso directo del panel ahora abre el análisis de video desde la pantalla principal",
 
   // ===== Hub / Dashboard =====
   hubWelcome: "Inicio",
