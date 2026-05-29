@@ -453,7 +453,7 @@ export default function AuthPage() {
                       <button
                         key={opt.key}
                         type="button"
-                        onClick={() => { haptics.light(); setSelectedRole(opt.key); }}
+                        onClick={() => { haptics.tap(); setSelectedRole(opt.key); }}
                         className={`h-10 rounded-full text-xs font-semibold transition-colors border ${
                           active
                             ? "bg-primary text-primary-foreground border-transparent"
