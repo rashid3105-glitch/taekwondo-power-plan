@@ -898,10 +898,10 @@ export default function AdminApproval() {
           ].map(stat => {
             const Icon = stat.icon;
             return (
-              <div key={stat.label} className="rounded-xl border border-border bg-card p-3 text-center space-y-1">
+              <div key={stat.label} className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-center space-y-1">
                 <Icon className={`h-4 w-4 mx-auto ${stat.color}`} />
-                <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{stat.label}</p>
+                <p className="text-2xl font-bold text-white">{stat.value}</p>
+                <p className="text-[10px] text-white/60 uppercase tracking-wider">{stat.label}</p>
               </div>
             );
           })}
