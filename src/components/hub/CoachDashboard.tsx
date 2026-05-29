@@ -22,7 +22,7 @@ interface InactiveAthlete {
  * Dark surface using semantic background + --accent CSS variable for highlights.
  */
 export function CoachDashboard() {
-  const { activeRole } = useRole();
+  const { role: activeRole } = useRole();
   const navigate = useNavigate();
 
   const [stats, setStats] = useState<CoachStats>({ totalAthletes: 0, sessionsThisWeek: 0, activePlans: 0 });
