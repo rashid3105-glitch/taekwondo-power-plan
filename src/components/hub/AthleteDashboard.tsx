@@ -3,7 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useRole } from "@/contexts/RoleContext";
 import { useThreads } from "@/hooks/useThreads";
-import { Calendar, MessageCircle, Play, BookOpen, Flame, Dumbbell, Trophy, NotebookPen, CalendarX } from "lucide-react";
+import { Calendar, MessageCircle, Play, BookOpen, Trophy, NotebookPen, CalendarX, Book } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface TodaySession {
   weekdayLabel: string;
@@ -18,17 +24,25 @@ interface NextCompetition {
   location?: string;
 }
 
-interface Stats {
-  streak: number;
-  sessions: number;
+interface DiaryComment {
+  id: string;
+  content: string;
+  created_at: string;
+}
+
+interface LatestDiary {
+  id: string;
+  entry_date: string;
+  created_at: string;
+  content: string;
+  comments: DiaryComment[];
 }
 
 const WEEKDAYS_DA = ["SØNDAG", "MANDAG", "TIRSDAG", "ONSDAG", "TORSDAG", "FREDAG", "LØRDAG"];
 
 /**
  * Self-contained athlete home dashboard.
- * Rendered only when activeRole === "athlete".
- * Dark surface using semantic background + --accent CSS variable for highlights.
+ * Rendered only when role === "athlete".
  */
 export function AthleteDashboard() {
   const { role: activeRole } = useRole();
@@ -37,11 +51,13 @@ export function AthleteDashboard() {
 
   const [todaySession, setTodaySession] = useState<TodaySession | null>(null);
   const [nextCompetition, setNextCompetition] = useState<NextCompetition | null>(null);
-  const [stats, setStats] = useState<Stats>({ streak: 0, sessions: 0 });
+  const [latestDiary, setLatestDiary] = useState<LatestDiary | null>(null);
+  const [diaryLoading, setDiaryLoading] = useState(true);
+  const [diaryOpen, setDiaryOpen] = useState(false);
   const [now, setNow] = useState(() => new Date());
   const [isLoading, setIsLoading] = useState(true);
 
-  // Live countdown tick — every minute
+  // Live countdown tick
   useEffect(() => {
     if (!nextCompetition) return;
     const id = setInterval(() => setNow(new Date()), 60_000);
@@ -87,7 +103,7 @@ export function AthleteDashboard() {
 
       const days: any[] = (plan?.plan_data as any)?.days || (plan?.plan_data as any)?.week || [];
       const todayDow = new Date().getDay();
-      const todayIdx = (todayDow + 6) % 7; // Monday=0
+      const todayIdx = (todayDow + 6) % 7;
       let today: TodaySession | null = null;
       if (Array.isArray(days) && days.length > 0) {
         const d: any = days[todayIdx];
@@ -110,32 +126,36 @@ export function AthleteDashboard() {
         }
       }
 
-      // Sessions count + streak from workout_logs (completed)
-      const { data: logs } = await supabase
-        .from("workout_logs")
-        .select("logged_date, completed")
-        .eq("user_id", user.id)
-        .eq("completed", true)
-        .order("logged_date", { ascending: false })
-        .limit(500);
-
-      const dates = Array.from(new Set((logs || []).map((l: any) => l.logged_date)));
-      let streak = 0;
-      const todayDate = new Date();
-      todayDate.setHours(0, 0, 0, 0);
-      for (let i = 0; i < dates.length; i++) {
-        const expected = new Date(todayDate);
-        expected.setDate(todayDate.getDate() - i);
-        const iso = expected.toISOString().slice(0, 10);
-        if (dates.includes(iso)) streak++;
-        else if (i === 0) continue;
-        else break;
-      }
-
       if (!mounted) return;
       setTodaySession(today);
-      setStats({ streak, sessions: dates.length });
       setIsLoading(false);
+
+      // Latest diary entry + comments
+      const { data: entry } = await supabase
+        .from("diary_entries")
+        .select("id, entry_date, created_at, content")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (entry && mounted) {
+        const { data: cmts } = await supabase
+          .from("diary_comments")
+          .select("id, content, created_at")
+          .eq("diary_entry_id", entry.id)
+          .order("created_at", { ascending: true });
+        if (mounted) {
+          setLatestDiary({
+            id: entry.id,
+            entry_date: entry.entry_date,
+            created_at: entry.created_at,
+            content: entry.content || "",
+            comments: (cmts || []) as DiaryComment[],
+          });
+        }
+      }
+      if (mounted) setDiaryLoading(false);
     })();
 
     return () => { mounted = false; };
@@ -156,17 +176,31 @@ export function AthleteDashboard() {
   const accentStyle = { color: "var(--accent-hex)" } as const;
   const accentLeftBorder = { borderLeft: "3px solid var(--accent-hex)" } as const;
 
+  const hasCoachComments = !!latestDiary && latestDiary.comments.length > 0;
+  const diaryDateLabel = latestDiary
+    ? new Date(latestDiary.entry_date + "T00:00:00").toLocaleDateString(undefined, {
+        weekday: "short", day: "numeric", month: "short",
+      })
+    : "";
+  const diaryPreview = latestDiary
+    ? (latestDiary.content || "").trim().split("\n").slice(0, 2).join(" ").slice(0, 140)
+    : "";
+
   return (
     <div
       className="space-y-4 rounded-2xl p-4"
       style={{ backgroundColor: "#0a0a0a" }}
     >
-      {/* 1. TODAY card */}
+      {/* 1. TODAY card — fully clickable */}
       {isLoading ? (
         <SkeletonBlock className="h-[112px]" />
       ) : (
         <section
-          className="rounded-xl border border-white/10 bg-white/[0.03] p-4"
+          role="button"
+          tabIndex={0}
+          onClick={() => navigate("/plan")}
+          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate("/plan"); } }}
+          className="rounded-xl border border-white/10 bg-white/[0.03] p-4 cursor-pointer hover:bg-white/[0.05] transition-colors"
           style={accentLeftBorder}
         >
           <div className="flex items-start justify-between gap-3 mb-2">
@@ -177,14 +211,12 @@ export function AthleteDashboard() {
               </h3>
             </div>
             {todaySession && (
-              <button
-                type="button"
-                onClick={() => navigate("/dashboard?tab=plan")}
+              <span
                 className="shrink-0 inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-lg"
                 style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
               >
                 <Play className="h-3 w-3" fill="currentColor" /> Start
-              </button>
+              </span>
             )}
           </div>
           {todaySession ? (
@@ -213,12 +245,16 @@ export function AthleteDashboard() {
         </section>
       )}
 
-      {/* 2. Next event with countdown */}
+      {/* 2. Next event — fully clickable */}
       {isLoading ? (
         <SkeletonBlock className="h-[140px]" />
       ) : (
         <section
-          className="rounded-xl border border-white/10 bg-white/[0.03] p-4"
+          role="button"
+          tabIndex={0}
+          onClick={() => navigate("/competitions")}
+          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate("/competitions"); } }}
+          className="rounded-xl border border-white/10 bg-white/[0.03] p-4 cursor-pointer hover:bg-white/[0.05] transition-colors"
           style={accentLeftBorder}
         >
           <div className="flex items-center gap-2 mb-2">
@@ -249,16 +285,40 @@ export function AthleteDashboard() {
         </section>
       )}
 
-      {/* 3. Stats */}
-      {isLoading ? (
-        <div className="grid grid-cols-2 gap-3">
-          <SkeletonBlock className="h-[88px]" />
-          <SkeletonBlock className="h-[88px]" />
-        </div>
+      {/* 3. Latest diary entry */}
+      {diaryLoading ? (
+        <SkeletonBlock className="h-[96px]" />
+      ) : latestDiary ? (
+        <section
+          role="button"
+          tabIndex={0}
+          onClick={() => setDiaryOpen(true)}
+          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setDiaryOpen(true); } }}
+          className="relative rounded-xl border border-white/10 bg-white/[0.03] p-4 cursor-pointer hover:bg-white/[0.05] transition-colors"
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <NotebookPen className="h-4 w-4" style={accentStyle} />
+            <h3 className="text-[11px] font-bold uppercase tracking-wider" style={accentStyle}>
+              Seneste dagbogsopslag
+            </h3>
+            {hasCoachComments && (
+              <span
+                aria-label="Coach-kommentar"
+                className="ml-auto h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.7)]"
+              />
+            )}
+          </div>
+          <p className="text-[11px] text-white/50">{diaryDateLabel}</p>
+          <p className="text-sm text-white mt-1 line-clamp-2">
+            {diaryPreview || <span className="text-white/50 italic">(tomt opslag)</span>}
+          </p>
+        </section>
       ) : (
-        <section className="grid grid-cols-2 gap-3">
-          <StatTile icon={<Flame className="h-4 w-4" />} value={stats.streak} label="Streak" accentStyle={accentStyle} />
-          <StatTile icon={<Dumbbell className="h-4 w-4" />} value={stats.sessions} label="Sessioner" accentStyle={accentStyle} />
+        <section className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+          <EmptyState
+            icon={<Book size={24} style={accentStyle} />}
+            text="Ingen dagbogsopslag endnu"
+          />
         </section>
       )}
 
@@ -298,8 +358,6 @@ export function AthleteDashboard() {
         </section>
       )}
 
-
-
       {/* 5. Quick access */}
       <section className="grid grid-cols-2 gap-3">
         <button
@@ -328,18 +386,52 @@ export function AthleteDashboard() {
           Skriv i dagbogen
         </button>
       </section>
-    </div>
-  );
-}
 
-function StatTile({
-  icon, value, label, accentStyle, small,
-}: { icon: React.ReactNode; value: string | number; label: string; accentStyle: React.CSSProperties; small?: boolean }) {
-  return (
-    <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-center">
-      <div className="flex items-center justify-center mb-1" style={accentStyle}>{icon}</div>
-      <div className={small ? "text-sm font-bold text-white capitalize truncate" : "text-xl font-bold text-white"}>{value}</div>
-      <div className="text-[10px] uppercase tracking-wider text-white/50 mt-0.5">{label}</div>
+      {/* Diary read-only modal */}
+      <Dialog open={diaryOpen} onOpenChange={setDiaryOpen}>
+        <DialogContent className="max-w-md bg-[#0a0a0a] border-white/10 text-white">
+          <DialogHeader>
+            <DialogTitle className="text-white">{diaryDateLabel || "Dagbogsopslag"}</DialogTitle>
+          </DialogHeader>
+          {latestDiary && (
+            <div className="space-y-4">
+              <p className="text-sm text-white whitespace-pre-wrap">
+                {latestDiary.content || <span className="text-white/50 italic">(tomt opslag)</span>}
+              </p>
+
+              {latestDiary.comments.length > 0 && (
+                <div className="space-y-2 pt-2 border-t border-white/10">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-white/50">
+                    Coach-kommentarer
+                  </p>
+                  {latestDiary.comments.map((c) => (
+                    <div
+                      key={c.id}
+                      className="rounded-lg border border-white/10 bg-white/[0.04] p-3"
+                    >
+                      <p className="text-[10px] text-white/40 mb-1">
+                        {new Date(c.created_at).toLocaleDateString(undefined, {
+                          day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
+                        })}
+                      </p>
+                      <p className="text-sm text-white whitespace-pre-wrap">{c.content}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <button
+                type="button"
+                onClick={() => { setDiaryOpen(false); navigate("/diary"); }}
+                className="w-full rounded-xl p-3 font-semibold text-sm"
+                style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
+              >
+                Åbn i dagbog
+              </button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
