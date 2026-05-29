@@ -62,8 +62,6 @@ export default function Profile() {
         created_at: (prof as any)?.created_at ?? user.created_at ?? null,
         email: user.email ?? null,
       });
-        email: user.email ?? null,
-      });
       setLoading(false);
     })();
     return () => { mounted = false; };
