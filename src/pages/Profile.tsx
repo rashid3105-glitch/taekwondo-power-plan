@@ -153,7 +153,7 @@ export default function Profile() {
   const age = calcAge(data?.birth_date ?? null);
   const role = roleLabel(data?.roles);
   const discipline = data?.discipline || "sparring";
-  const goals = data?.training_goals || [];
+  const goals = data?.goals || [];
 
   return (
     <div className="min-h-screen p-4 space-y-4" style={{ backgroundColor: "#0a0a0a" }}>
