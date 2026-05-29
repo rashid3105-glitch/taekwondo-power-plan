@@ -140,6 +140,7 @@ export default function Dashboard() {
     });
   }
   const [menuOpen, setMenuOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(typeof navigator !== "undefined" ? navigator.onLine : true);
   const { isCoachMode, setCoachMode } = useCoachMode();
   const coachAthleteMode = isCoachMode ? "coach" : "athlete";
