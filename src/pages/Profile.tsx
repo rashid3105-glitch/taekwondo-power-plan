@@ -45,7 +45,7 @@ export default function Profile() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         navigate("/auth");
-        return;
+      }
       const { data: prof } = await supabase
         .from("profiles")
         .select("display_name, avatar_url, sport, club_id, roles, created_at, clubs:club_id(name)")
