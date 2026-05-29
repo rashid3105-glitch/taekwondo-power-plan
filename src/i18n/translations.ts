@@ -4061,6 +4061,8 @@ const translations = {
     changelog_2026_05_29: "29. maj 2026",
     changelogEntry126: "Næste stævne vises nu på atlet-forsiden",
     changelogEntry127: "Forsiden er ryddet — gamle moduler skjult bag en feature flag",
+    changelogEntry128: "Video-analyse er tilføjet som dedikeret fane i atletens bundnavigation",
+    changelogEntry129: "Genvej på forsiden åbner nu video-analyse direkte fra startskærmen",
     hubSeasonTitle: "Sæsonplan",
     hubSeasonDesc: "Planlæg hele konkurrencesæsonen med periodiseringsfaser og peak-vinduer",
     seasonPlannerTitle: "Sæsonplanlægger",
