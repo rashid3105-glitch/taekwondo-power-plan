@@ -17,7 +17,6 @@ interface LicenseValue {
 interface ProfileData {
   display_name: string | null;
   avatar_url: string | null;
-  sport: string | null;
   discipline: string | null;
   club_name: string | null;
   roles: string[] | null;
