@@ -5,6 +5,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { LogOut, Pencil, Download, KeyRound, Trash2, ChevronLeft } from "lucide-react";
 import { PageMeta } from "@/components/PageMeta";
 import { AppFooter } from "@/components/AppFooter";
@@ -161,7 +172,7 @@ export default function Profile() {
   const goals = data?.goals || [];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background theme-light-section">
       <PageMeta
         title={`${t("profileTitle" as any)} · Sportstalent`}
         description={t("profileMetaDesc" as any)}
@@ -346,13 +357,42 @@ export default function Profile() {
               onClick={handleExport}
             />
             <Separator />
-            <ActionRow
-              icon={<Trash2 className="h-4 w-4" />}
-              label={t("profileDeleteAccount" as any)}
-              sub={t("profileDeleteAccountSub" as any)}
-              danger
-              onClick={() => navigate("/delete-account")}
-            />
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <button
+                  type="button"
+                  className="w-full flex items-center gap-3 py-3 hover:bg-muted/40 transition-colors text-left rounded-md -mx-2 px-2"
+                >
+                  <div className="h-8 w-8 rounded-md bg-muted flex items-center justify-center shrink-0 text-destructive">
+                    <Trash2 className="h-4 w-4" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-destructive">{t("profileDeleteAccount" as any)}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{t("profileDeleteAccountSub" as any)}</p>
+                  </div>
+                </button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{t("deleteAccountConfirmTitle" as any)}</AlertDialogTitle>
+                  <AlertDialogDescription className="space-y-2">
+                    <span className="block">{t("deleteAccountConfirmDesc" as any)}</span>
+                    <span className="block font-semibold text-destructive">{t("deleteAccountIrreversible" as any)}</span>
+                    <span className="block">{t("deleteAccountExportFirst" as any)}</span>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>{t("cancel" as any)}</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => navigate("/delete-account")}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    {t("profileDeleteAccount" as any)}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
           </CardContent>
         </Card>
 
