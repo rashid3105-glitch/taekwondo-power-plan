@@ -480,8 +480,10 @@ export default function Help() {
   );
 }
 
-const CHANGELOG: { dateKey: string; entries: string[] }[] = [
-  { dateKey: "changelog_2026_05_29", entries: ["changelogEntry126", "changelogEntry127"] },
+// Build numbers start at v1.0.0 on 2026-05-29 (first build with semantic versioning).
+// MINOR bumps for new features, PATCH bumps for small tweaks/fixes. Older releases left unversioned.
+const CHANGELOG: { dateKey: string; entries: string[]; build?: string }[] = [
+  { dateKey: "changelog_2026_05_29", entries: ["changelogEntry126", "changelogEntry127", "changelogEntry128", "changelogEntry129"], build: "v1.0.0" },
   { dateKey: "changelog_2026_05_28", entries: ["changelogEntry122", "changelogEntry123", "changelogEntry124", "changelogEntry125"] },
   { dateKey: "changelog_2026_05_21", entries: ["changelogEntry119", "changelogEntry120", "changelogEntry121"] },
   { dateKey: "changelog_2026_05_17", entries: ["changelogEntry117"] },
