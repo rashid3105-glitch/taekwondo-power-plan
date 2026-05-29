@@ -120,9 +120,8 @@ export default function Profile() {
         roles: p?.roles ?? null,
         birth_date: p?.birth_date ?? null,
         belt_level: p?.belt_level ?? null,
-        height_cm: p?.height_cm ?? null,
         weight_kg: p?.weight_kg ?? null,
-        training_goals: p?.training_goals ?? null,
+        goals: p?.goals ?? null,
         license_values: p?.license_values ?? {},
         email: user.email ?? null,
       });
