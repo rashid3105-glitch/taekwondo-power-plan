@@ -157,37 +157,50 @@ export default function ProfileEdit() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const uploadAvatarIfNeeded = async (): Promise<string | null> => {
-    if (!pendingFile || !userId) return null;
-    const rawExt = (pendingFile.name.split(".").pop() || "jpg").toLowerCase();
-    const ext = rawExt === "jpeg" ? "jpg" : rawExt;
-    const path = `${userId}/avatar.${ext}`;
-    const contentType = pendingFile.type || `image/${ext === "jpg" ? "jpeg" : ext}`;
-    const { error } = await supabase.storage
-      .from("avatars")
-      .upload(path, pendingFile, { upsert: true, contentType });
-    if (error) {
-      console.error("Avatar upload failed:", error);
-      throw new Error(`Billede kunne ikke uploades: ${error.message}`);
-    }
-    return path;
-  };
-
   const handleSave = async (): Promise<boolean> => {
     setSaving(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("Not authenticated");
 
-      let newAvatarPath: string | null = null;
-      if (pendingFile) {
-        newAvatarPath = await uploadAvatarIfNeeded();
+      // 1. Upload avatar direkte til storage og profiles (bypass edge function)
+      if (pendingFile && userId) {
+        const rawExt = (pendingFile.name.split(".").pop() || "jpg").toLowerCase();
+        const ext = rawExt === "jpeg" ? "jpg" : rawExt;
+        const path = `${userId}/avatar.${ext}`;
+        const contentType = pendingFile.type || `image/${ext === "jpg" ? "jpeg" : ext}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("avatars")
+          .upload(path, pendingFile, { upsert: true, contentType });
+
+        if (uploadError) {
+          toast.error(`Billede kunne ikke uploades: ${uploadError.message}`);
+          setSaving(false);
+          return false;
+        }
+
+        const { error: avatarSaveError } = await supabase
+          .from("profiles")
+          .update({ avatar_url: path } as any)
+          .eq("user_id", userId);
+
+        if (avatarSaveError) {
+          toast.error(`Avatar kunne ikke gemmes: ${avatarSaveError.message}`);
+          setSaving(false);
+          return false;
+        }
+
+        setAvatarUrl(path);
+        setPendingFile(null);
+        if (pendingPreview) URL.revokeObjectURL(pendingPreview);
+        setPendingPreview(null);
       }
 
+      // 2. Gem resten af profilen via edge function (uden avatar_url)
       const goals = goalsText.split(",").map((g) => g.trim()).filter(Boolean);
       const weight = weightKg ? parseFloat(weightKg) : null;
 
-      // Clean license values: only persist entries for known fields, drop empties.
       const cleanedLicenseValues: Record<string, LicenseValue> = {};
       for (const f of licenseFields) {
         const v = licenseValues[f.id];
@@ -208,26 +221,24 @@ export default function ProfileEdit() {
         goals,
         license_values: cleanedLicenseValues,
       };
-      if (newAvatarPath) body.avatar_url = newAvatarPath;
 
-
-      const { error } = await supabase.functions.invoke("update-my-profile", { body });
-      if (error) throw error;
-
-      if (newAvatarPath) {
-        setAvatarUrl(newAvatarPath);
-        setPendingFile(null);
-        if (pendingPreview) URL.revokeObjectURL(pendingPreview);
-        setPendingPreview(null);
+      const { error: profileError } = await supabase.functions.invoke("update-my-profile", { body });
+      if (profileError) {
+        const msg = (profileError as any)?.context?.error || profileError.message || "Profil kunne ikke gemmes";
+        toast.error(msg);
+        setSaving(false);
+        return false;
       }
+
       return true;
     } catch (e: any) {
-      toast.error(e?.message || "Fejl");
+      toast.error(e?.message || "Ukendt fejl");
       return false;
     } finally {
       setSaving(false);
     }
   };
+
 
   const handleBack = async () => {
     const ok = await handleSave();
