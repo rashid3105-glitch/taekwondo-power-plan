@@ -39,6 +39,7 @@ export function AthleteDashboard() {
   const [nextCompetition, setNextCompetition] = useState<NextCompetition | null>(null);
   const [stats, setStats] = useState<Stats>({ streak: 0, sessions: 0 });
   const [now, setNow] = useState(() => new Date());
+  const [isLoading, setIsLoading] = useState(true);
 
   // Live countdown tick — every minute
   useEffect(() => {
