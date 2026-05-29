@@ -139,8 +139,14 @@
 }
 
 @layer base {
-  * {
+  *, *::before, *::after {
     @apply border-border;
+    box-sizing: border-box;
+  }
+
+  img, video, svg, canvas {
+    max-width: 100%;
+    height: auto;
   }
 
   html, body {
