@@ -73,7 +73,9 @@ interface ExerciseBase {
   no: ExerciseLocalized;
 }
 
-const exercisesData: Record<string, ExerciseBase> = {
+import { exercisesAdditional } from "./exercisesAdditional";
+
+const exercisesDataBase: Record<string, ExerciseBase> = {
   trapBarDeadlift: {
     id: "trap-bar-deadlift",
     category: "power",
