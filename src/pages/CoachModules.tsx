@@ -254,7 +254,7 @@ export default function CoachModules() {
                 </select>
               </label>
 
-              <div className="space-y-3 pt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                 {athleteLoading ? ATHLETE_MODULES.map((m) => (
                   <div key={m.key} className="h-20 bg-white/10 animate-pulse rounded-xl" />
                 )) : ATHLETE_MODULES.map((m) => {
