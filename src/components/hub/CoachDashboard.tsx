@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useRole } from "@/contexts/RoleContext";
-import { Users, AlertTriangle, Dumbbell, FileText, Send, ChevronRight, CalendarDays } from "lucide-react";
+import { Users, AlertTriangle, Dumbbell, FileText, Send, ChevronRight, CalendarDays, CheckCircle } from "lucide-react";
+import { EmptyState } from "./AthleteDashboard";
 
 interface CoachStats {
   totalAthletes: number;
