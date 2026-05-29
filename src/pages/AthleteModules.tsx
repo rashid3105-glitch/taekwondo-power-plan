@@ -4,6 +4,17 @@ import { ATHLETE_MODULES } from "@/config/modules";
 import { ChevronRight, Lock, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+const MODULE_ROUTES: Record<string, string> = {
+  plan:      '/dashboard',
+  progress:  '/dashboard',
+  compete:   '/competitions',
+  chat:      '/messages',
+  mental:    '/dashboard',
+  nutrition: '/kostplan',
+  rehab:     '/dashboard',
+  video:     '/match-analysis/me',
+};
+
 export default function AthleteModules() {
   const navigate = useNavigate();
   const [enabledKeys, setEnabledKeys] = useState<Set<string>>(new Set());
@@ -74,14 +85,20 @@ export default function AthleteModules() {
           ATHLETE_MODULES.map((m) => {
             const enabled = enabledKeys.has(m.key);
             const Icon = m.icon;
+            const route = MODULE_ROUTES[m.key];
+            const clickable = enabled && !!route;
             return (
               <div
                 key={m.key}
+                role={clickable ? "button" : undefined}
+                tabIndex={clickable ? 0 : undefined}
+                onClick={clickable ? () => navigate(route) : undefined}
+                onKeyDown={clickable ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate(route); } } : undefined}
                 className={`flex items-center gap-4 rounded-xl border p-4 transition-colors ${
                   enabled
                     ? "border-white/10 bg-white/[0.03]"
                     : "border-white/5 bg-white/[0.02] opacity-60"
-                }`}
+                } ${clickable ? "cursor-pointer hover:bg-white/[0.06] active:scale-[0.99]" : "cursor-default"}`}
               >
                 <div
                   className="h-10 w-10 rounded-lg flex items-center justify-center shrink-0"
