@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useRole } from "@/contexts/RoleContext";
 import { useThreads } from "@/hooks/useThreads";
-import { Calendar, MessageCircle, Play, BookOpen, Trophy, NotebookPen, CalendarX, Book } from "lucide-react";
+import { Calendar, MessageCircle, Play, BookOpen, Trophy, NotebookPen, CalendarX, Book, Video } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -371,11 +371,11 @@ export function AthleteDashboard() {
         </button>
         <button
           type="button"
-          onClick={() => navigate("/library")}
+          onClick={() => navigate("/match-analysis/me")}
           className="rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white"
         >
-          <BookOpen className="h-4 w-4" style={accentStyle} />
-          Se øvelser
+          <Video className="h-4 w-4" style={accentStyle} />
+          Video-analyse
         </button>
         <button
           type="button"
