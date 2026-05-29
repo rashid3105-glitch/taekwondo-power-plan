@@ -20,6 +20,8 @@ import PlatformPage from "./pages/PlatformPage";
 import Auth from "./pages/Auth";
 import ProfileSetup from "./pages/ProfileSetup";
 import Profile from "./pages/Profile";
+import AthleteModules from "./pages/AthleteModules";
+import CoachModules from "./pages/CoachModules";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
 import Library from "./pages/Library";
@@ -140,6 +142,8 @@ const AnimatedRoutes = () => {
         <Route path="/install" element={<Navigate to="/kostplan" replace />} />
         <Route path="/profile-setup" element={<Page><ProfileSetup /></Page>} />
         <Route path="/profile" element={<Page><Profile /></Page>} />
+        <Route path="/moduler" element={<Page><AthleteModules /></Page>} />
+        <Route path="/hold/moduler" element={<Page><CoachModules /></Page>} />
         <Route path="/onboarding" element={<Page><Onboarding /></Page>} />
         <Route path="/health" element={<Page><Health /></Page>} />
         <Route path="/health/sync-setup" element={<Navigate to="/health" replace />} />
