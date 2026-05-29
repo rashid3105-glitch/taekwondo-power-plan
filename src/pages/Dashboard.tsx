@@ -913,14 +913,17 @@ export default function Dashboard() {
             <AthleteDashboard />
             <CoachDashboard />
 
-            {/* 1. Today's session hero */}
-            <HubTodayHero
-              activePlan={activePlan}
-              onGoToPlan={() => handleTabChange("plan")}
-            />
+            {/* 1. Today's session hero — hidden behind feature flag (erstattet af AthleteDashboard) */}
+            {SHOW_LEGACY_HUB_SECTIONS && (
+              <HubTodayHero
+                activePlan={activePlan}
+                onGoToPlan={() => handleTabChange("plan")}
+              />
+            )}
 
-            {/* 2. Next event countdown */}
-            <HubNextEvent event={nextEvent} />
+            {/* 2. Next event countdown — hidden behind feature flag (erstattet af AthleteDashboard) */}
+            {SHOW_LEGACY_HUB_SECTIONS && <HubNextEvent event={nextEvent} />}
+
 
 
             {/* 3. Recovery strip — hidden behind feature flag (kan genaktiveres) */}
