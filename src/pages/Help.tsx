@@ -441,9 +441,16 @@ export default function Help() {
                         });
                     return (
                       <>
-                        {visible.map(({ dateKey, entries }) => (
+                        {visible.map(({ dateKey, entries, build }) => (
                           <div key={dateKey} className="rounded-xl border border-border bg-card px-5 py-4 space-y-3 shadow-sm">
-                            <h3 className="text-sm font-bold text-foreground">{t(dateKey as Parameters<typeof t>[0])}</h3>
+                            <div className="flex items-center justify-between gap-3 flex-wrap">
+                              <h3 className="text-sm font-bold text-foreground">{t(dateKey as Parameters<typeof t>[0])}</h3>
+                              {build && (
+                                <span className="text-[10px] font-mono font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/15 text-primary border border-primary/30">
+                                  {build}
+                                </span>
+                              )}
+                            </div>
                             <ul className="space-y-1.5 text-sm text-muted-foreground list-disc pl-5">
                               {entries.map((e) => (
                                 <li key={e}>{t(e as Parameters<typeof t>[0])}</li>
@@ -473,8 +480,10 @@ export default function Help() {
   );
 }
 
-const CHANGELOG: { dateKey: string; entries: string[] }[] = [
-  { dateKey: "changelog_2026_05_29", entries: ["changelogEntry126", "changelogEntry127"] },
+// Build numbers start at v1.0.0 on 2026-05-29 (first build with semantic versioning).
+// MINOR bumps for new features, PATCH bumps for small tweaks/fixes. Older releases left unversioned.
+const CHANGELOG: { dateKey: string; entries: string[]; build?: string }[] = [
+  { dateKey: "changelog_2026_05_29", entries: ["changelogEntry126", "changelogEntry127", "changelogEntry128", "changelogEntry129"], build: "v1.0.0" },
   { dateKey: "changelog_2026_05_28", entries: ["changelogEntry122", "changelogEntry123", "changelogEntry124", "changelogEntry125"] },
   { dateKey: "changelog_2026_05_21", entries: ["changelogEntry119", "changelogEntry120", "changelogEntry121"] },
   { dateKey: "changelog_2026_05_17", entries: ["changelogEntry117"] },
