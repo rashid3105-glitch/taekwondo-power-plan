@@ -188,7 +188,7 @@ export default function Profile() {
             <div className="grid grid-cols-2 gap-x-3 gap-y-2 mt-3">
               <MetaCell label="Fødselsdato" value={data?.birth_date ? `${fmtDate(data.birth_date)}${age != null ? ` (${age})` : ""}` : "—"} />
               <MetaCell label="Bæltegrad" value={data?.belt_level || "—"} />
-              <MetaCell label="Højde" value={data?.height_cm ? `${data.height_cm} cm` : "—"} />
+              <MetaCell label="Højde" value="—" />
               <MetaCell label="Vægt" value={data?.weight_kg ? `${data.weight_kg} kg` : "—"} />
             </div>
           </div>
