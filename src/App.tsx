@@ -19,6 +19,7 @@ import FeatureDetail from "./pages/FeatureDetail";
 import PlatformPage from "./pages/PlatformPage";
 import Auth from "./pages/Auth";
 import ProfileSetup from "./pages/ProfileSetup";
+import Profile from "./pages/Profile";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
 import Library from "./pages/Library";
@@ -138,6 +139,7 @@ const AnimatedRoutes = () => {
         <Route path="/kostplan" element={<Page><Kostplan /></Page>} />
         <Route path="/install" element={<Navigate to="/kostplan" replace />} />
         <Route path="/profile-setup" element={<Page><ProfileSetup /></Page>} />
+        <Route path="/profile" element={<Page><Profile /></Page>} />
         <Route path="/onboarding" element={<Page><Onboarding /></Page>} />
         <Route path="/health" element={<Page><Health /></Page>} />
         <Route path="/health/sync-setup" element={<Navigate to="/health" replace />} />

@@ -217,6 +217,33 @@
 }
 
 @layer utilities {
+  .text-heading {
+    font-size: 22px;
+    font-weight: 800;
+    color: white;
+  }
+  .text-subheading {
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+  }
+  .text-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .text-body {
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.85);
+  }
+  .text-caption {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+
   .text-gradient-energy {
     background: var(--gradient-energy);
     -webkit-background-clip: text;
