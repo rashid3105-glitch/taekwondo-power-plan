@@ -711,10 +711,10 @@ export default function Dashboard() {
               <button onClick={() => { setMenuOpen(false); navigate("/admin/approval"); }} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer">
                 <Shield className="h-4 w-4 shrink-0" />
                 <span>{t("admin")}</span>
-              </button>
-            )}
-            <button onClick={() => { setMenuOpen(false); navigate("/help"); }} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer">
+            <button onClick={() => { setMenuOpen(false); setHelpOpen(true); }} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer">
               <HelpCircle className="h-4 w-4 shrink-0" />
+              <span>{t("helpTitle")}</span>
+            </button>
               <span>{t("helpTitle")}</span>
             </button>
 
