@@ -140,7 +140,7 @@ const AnimatedRoutes = () => {
         <Route path="/help" element={<Page><Help /></Page>} />
         <Route path="/kostplan" element={<Page><Kostplan /></Page>} />
         <Route path="/install" element={<Navigate to="/kostplan" replace />} />
-        <Route path="/profile-setup" element={<Page><ProfileSetup /></Page>} />
+        <Route path="/profile-setup" element={<Navigate to="/profile" replace />} />
         <Route path="/profile" element={<Page><Profile /></Page>} />
         <Route path="/moduler" element={<Page><AthleteModules /></Page>} />
         <Route path="/hold/moduler" element={<Page><CoachModules /></Page>} />
