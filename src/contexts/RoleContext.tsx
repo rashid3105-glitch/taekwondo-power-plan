@@ -1,38 +1,29 @@
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
+export type Role = "athlete" | "coach";
+
 type RoleContextValue = {
-  roles: string[];
-  activeRole: string;
-  setActiveRole: (role: string) => Promise<void>;
+  role: Role;
   loading: boolean;
 };
-
-const LS_KEY = "active_role";
-const DEFAULT_ROLE = "athlete";
 
 const RoleContext = createContext<RoleContextValue | undefined>(undefined);
 
 export function RoleProvider({ children }: { children: ReactNode }) {
-  const [roles, setRoles] = useState<string[]>([DEFAULT_ROLE]);
-  const [activeRole, setActiveRoleState] = useState<string>(
-    () => (typeof window !== "undefined" && localStorage.getItem(LS_KEY)) || DEFAULT_ROLE
-  );
+  const [role, setRole] = useState<Role>("athlete");
   const [loading, setLoading] = useState(true);
 
   const loadFromProfile = useCallback(async (userId: string) => {
     const { data, error } = await supabase
       .from("profiles")
-      .select("roles, active_role")
+      .select("role")
       .eq("user_id", userId)
       .maybeSingle();
 
     if (!error && data) {
-      const r = (data.roles as string[] | null) ?? [DEFAULT_ROLE];
-      const a = (data.active_role as string | null) ?? r[0] ?? DEFAULT_ROLE;
-      setRoles(r.length ? r : [DEFAULT_ROLE]);
-      setActiveRoleState(a);
-      try { localStorage.setItem(LS_KEY, a); } catch {}
+      const r = ((data as any).role as string | null) ?? "athlete";
+      setRole(r === "coach" ? "coach" : "athlete");
     }
     setLoading(false);
   }, []);
@@ -54,8 +45,7 @@ export function RoleProvider({ children }: { children: ReactNode }) {
       if (session?.user) {
         loadFromProfile(session.user.id);
       } else {
-        setRoles([DEFAULT_ROLE]);
-        setActiveRoleState(DEFAULT_ROLE);
+        setRole("athlete");
         setLoading(false);
       }
     });
@@ -66,20 +56,8 @@ export function RoleProvider({ children }: { children: ReactNode }) {
     };
   }, [loadFromProfile]);
 
-  const setActiveRole = useCallback(async (role: string) => {
-    setActiveRoleState(role);
-    try { localStorage.setItem(LS_KEY, role); } catch {}
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      await supabase
-        .from("profiles")
-        .update({ active_role: role })
-        .eq("user_id", user.id);
-    }
-  }, []);
-
   return (
-    <RoleContext.Provider value={{ roles, activeRole, setActiveRole, loading }}>
+    <RoleContext.Provider value={{ role, loading }}>
       {children}
     </RoleContext.Provider>
   );
