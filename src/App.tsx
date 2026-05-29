@@ -146,6 +146,10 @@ const AnimatedRoutes = () => {
         <Route path="/install" element={<Navigate to="/kostplan" replace />} />
         <Route path="/profile-setup" element={<Navigate to="/profile" replace />} />
         <Route path="/profile" element={<Page><Profile /></Page>} />
+        <Route path="/profile-edit" element={<Page><ProfileEdit /></Page>} />
+        <Route path="/change-password" element={<Page><ChangePassword /></Page>} />
+        <Route path="/delete-account" element={<Page><DeleteAccount /></Page>} />
+
         <Route path="/moduler" element={<Page><AthleteModules /></Page>} />
         <Route path="/hold/moduler" element={<Page><CoachModules /></Page>} />
         <Route path="/onboarding" element={<Page><Onboarding /></Page>} />
