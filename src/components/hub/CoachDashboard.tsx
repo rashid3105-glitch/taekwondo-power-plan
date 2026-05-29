@@ -122,7 +122,7 @@ export function CoachDashboard() {
 
   if (activeRole !== "coach") return null;
 
-  const accentStyle = { color: "hsl(var(--accent))" } as const;
+  const accentStyle = { color: "var(--accent-hex)" } as const;
   const accentBg = { backgroundColor: "hsl(var(--accent) / 0.12)", borderColor: "hsl(var(--accent) / 0.35)" } as const;
 
   return (
@@ -194,7 +194,7 @@ export function CoachDashboard() {
           type="button"
           onClick={() => navigate("/coach/season-calendar")}
           className="rounded-xl p-4 flex items-center gap-2 font-semibold text-sm"
-          style={{ backgroundColor: "hsl(var(--accent))", color: "#000" }}
+          style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
         >
           <CalendarDays className="h-4 w-4" />
           Træningsplaner
