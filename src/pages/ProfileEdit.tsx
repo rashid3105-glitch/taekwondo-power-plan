@@ -405,8 +405,10 @@ export default function ProfileEdit() {
               </div>
             </Field>
           </div>
+        </div>
 
         {(licenseFieldsOwnerId || isCoach) && (
+
           <div className={cardCls}>
             <div className="flex items-center justify-between mb-4">
               <h2 className={sectionTitleCls + " mb-0"}>{t("profileLicensesTitle" as any)}</h2>
