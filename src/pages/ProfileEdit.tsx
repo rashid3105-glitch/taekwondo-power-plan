@@ -163,7 +163,10 @@ export default function ProfileEdit() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("Not authenticated");
 
-      // 1. Upload avatar direkte til storage og profiles (bypass edge function)
+      // 1. Upload avatar til storage (RLS tillader bruger at uploade i egen mappe).
+      //    Selve persistens af avatar_url på profiles sker via edge function neden for,
+      //    så vi går igennem service role og undgår tavse RLS-fejl på profiles UPDATE.
+      let newAvatarPath: string | null = null;
       if (pendingFile && userId) {
         const rawExt = (pendingFile.name.split(".").pop() || "jpg").toLowerCase();
         const ext = rawExt === "jpeg" ? "jpg" : rawExt;
@@ -179,25 +182,10 @@ export default function ProfileEdit() {
           setSaving(false);
           return false;
         }
-
-        const { error: avatarSaveError } = await supabase
-          .from("profiles")
-          .update({ avatar_url: path } as any)
-          .eq("user_id", userId);
-
-        if (avatarSaveError) {
-          toast.error(`Avatar kunne ikke gemmes: ${avatarSaveError.message}`);
-          setSaving(false);
-          return false;
-        }
-
-        setAvatarUrl(path);
-        setPendingFile(null);
-        if (pendingPreview) URL.revokeObjectURL(pendingPreview);
-        setPendingPreview(null);
+        newAvatarPath = path;
       }
 
-      // 2. Gem resten af profilen via edge function (uden avatar_url)
+      // 2. Gem profilen (inkl. avatar_url) via edge function — service role bypasser RLS.
       const goals = goalsText.split(",").map((g) => g.trim()).filter(Boolean);
       const weight = weightKg ? parseFloat(weightKg) : null;
 
@@ -221,13 +209,40 @@ export default function ProfileEdit() {
         goals,
         license_values: cleanedLicenseValues,
       };
+      if (newAvatarPath) {
+        body.avatar_url = newAvatarPath;
+      }
 
-      const { error: profileError } = await supabase.functions.invoke("update-my-profile", { body });
-      if (profileError) {
-        const msg = (profileError as any)?.context?.error || profileError.message || "Profil kunne ikke gemmes";
+      const { data: fnData, error: profileError } = await supabase.functions.invoke("update-my-profile", { body });
+      if (profileError || !(fnData as any)?.success) {
+        const msg =
+          (profileError as any)?.context?.error ||
+          profileError?.message ||
+          (fnData as any)?.error ||
+          "Profil kunne ikke gemmes";
         toast.error(msg);
         setSaving(false);
         return false;
+      }
+
+      // 3. Verificér mod databasen at avatar_url faktisk blev gemt, så vi aldrig
+      //    viser en falsk "Profil gemt" mens billedet ikke er persistet.
+      if (newAvatarPath) {
+        const { data: verify } = await supabase
+          .from("profiles")
+          .select("avatar_url")
+          .eq("user_id", userId)
+          .maybeSingle();
+        if (!verify || verify.avatar_url !== newAvatarPath) {
+          toast.error("Profilbillede kunne ikke gemmes på profilen");
+          setSaving(false);
+          return false;
+        }
+        // Cache-bust så ny avatar ses med det samme overalt
+        setAvatarUrl(`${newAvatarPath}?t=${Date.now()}`);
+        setPendingFile(null);
+        if (pendingPreview) URL.revokeObjectURL(pendingPreview);
+        setPendingPreview(null);
       }
 
       return true;

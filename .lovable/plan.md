@@ -1,53 +1,50 @@
-## Problem
-`src/pages/Profile.tsx` blev bygget som en standalone "design"-side med hardcoded farver (`#0a0a0a`, `bg-white/[0.03]`, `var(--accent-hex)`), custom rounded `[14px]` korthylstre og dansk hardcoded tekst. Det matcher ikke mønstret fra Health, Diary, SubscriptionSettings, Help m.fl., som alle bruger:
+# Plan for stabil profilbillede-upload
 
-- `min-h-screen bg-background` (semantiske tokens — ikke hex)
-- Centreret container `mx-auto max-w-2xl px-4 py-6` (eller py-8)
-- Tilbage-knap øverst (`Button variant="ghost"` + `ChevronLeft`/`ArrowLeft`)
-- shadcn `<Card> / <CardHeader> / <CardTitle> / <CardContent>` til sektioner
-- `<PageMeta>` for title/description
-- `<AppFooter />` og evt. `<Watermark />` i bunden
-- Oversættelser via `useLanguage()` + `t(...)` — aldrig hardcodede strenge
+## Mål
+Lave en samlet, robust løsning så profilbilleder både:
+- uploades korrekt
+- gemmes korrekt på profilen
+- vises korrekt på alle relevante sider
+- overlever refresh, navigation og cache
 
-## Plan
-Refaktorér `src/pages/Profile.tsx` så den følger de øvrige authenticated sider. Kun præsentation ændres — data-hentningen (profiles, coach_athletes, coach_license_fields, license_values) bevares som den er nu.
+## Arbejde jeg vil udføre
 
-### Layout-skelet
-```tsx
-<div className="min-h-screen bg-background">
-  <PageMeta title="Min profil" description="..." />
-  <div className="mx-auto max-w-2xl px-4 py-6 space-y-6">
-    <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
-      <ChevronLeft className="h-4 w-4 mr-1" /> Tilbage
-    </Button>
-    <Card> … profil-header … </Card>
-    <Card> … Sport & disciplin … </Card>
-    <Card> … Licenser & registreringer … </Card>
-    <Card> … Mine mål … </Card>
-    <Card> … Konto … </Card>
-    <Button variant="destructive" className="w-full">Log ud</Button>
-  </div>
-  <AppFooter />
-</div>
-```
+### 1. Samle avatar-strategien til én konsistent model
+- Gennemgå og rette mismatch mellem nuværende public/private bucket-logik.
+- Vælge én entydig lagringsform for `profiles.avatar_url` og bruge den samme overalt.
+- Fjerne forskelle mellem `ProfileEdit`, `ProfileSetup`, `useAvatarUrl`, `AvatarImg`, `Profile` og andre avatar-forbrugere.
 
-### Konkrete ændringer
-1. Fjern `style={{ backgroundColor: "#0a0a0a" }}` → brug `bg-background`.
-2. Fjern alle `bg-white/[0.03] border-white/10 rounded-[14px]` wrappers → erstat med `<Card>` + `<CardHeader><CardTitle>...</CardTitle></CardHeader><CardContent>`.
-3. Fjern `var(--accent-hex)` inline-styles. Brug semantiske Tailwind-tokens: `bg-primary text-primary-foreground` (aktive pills/badges), `text-muted-foreground` (labels), `border-border` (delerlinjer), `text-destructive` (slet/log ud).
-4. Erstat custom `Section/Row/ActionRow/MetaCell` helpers — Row/MetaCell kan beholdes, men de skal bruge `text-muted-foreground` og `text-foreground` i stedet for `text-white/35` / `text-white/85`. Section-wrapper droppes til fordel for shadcn Card.
-5. Tilføj `<PageMeta>` + `<AppFooter />` (som Health/Diary).
-6. Tilføj tilbage-knap øverst.
-7. Erstat hardcoded danske strenge med `t("...")`-kald. Tilføj nye nøgler i `src/i18n/translations.ts` for alle 7 sprog (en, da, sv, de, ar, no, es) — påkrævede nøgler:
-   - `profileTitle`, `profileNoClub`, `profileNoName`, `profileBirthDate`, `profileBeltLevel`, `profileHeight`, `profileWeight`, `profileSportDiscipline`, `profileSport`, `profileDiscipline`, `profileRole`, `profileRoleAthlete`, `profileRoleCoach`, `profileRoleBoth`, `profileLicensesTitle`, `profileLicensesNoCoach`, `profileLicensesNoFields`, `profileLicensesFooter`, `profileLicenseActive`, `profileLicenseExpiringSoon`, `profileLicenseExpired`, `profileLicenseExpires`, `profileLicenseNotDefined`, `profileGoalsTitle`, `profileGoalsEmpty`, `profileAccountTitle`, `profileAccountEmail`, `profileChangePassword`, `profileExportData`, `profileDeleteAccount`, `profileDeleteAccountSub`, `profileLogout`, `profileBack`, `profileEdit`.
-8. Behold den eksisterende Supabase-query (med `coach_club_name` fallback og uden `sport`-kolonnen), så data fortsat vises.
+### 2. Gøre save-flowet robust i `ProfileEdit`
+- Skille upload, profil-opdatering og øvrig profilgemning tydeligt ad.
+- Sikre at avatar-upload kun markeres som succes, når både storage og `profiles.avatar_url` faktisk er opdateret.
+- Tilføje klar fejlhåndtering for hver fase, så en skjult DB/RLS-fejl ikke ender som falsk “Profil gemt”.
+- Bevare nuværende øvrige profilgemning uden at bryde coach/licensfelter.
 
-### Filer der røres
-- `src/pages/Profile.tsx` (refaktor)
-- `src/i18n/translations.ts` (nye nøgler × 7 sprog)
+### 3. Validere og rette backend-reglerne
+- Gennemgå eksisterende storage policies for `avatars` og rette manglende eller modstridende regler.
+- Gennemgå om `profiles`-updatepolitikken reelt tillader brugerens egen opdatering af `avatar_url`.
+- Tilføje migration kun hvor det er nødvendigt for en stabil løsning.
 
-### Det jeg IKKE rører
-- Datahentning og felter
-- Routing (`/profile-setup` → `/profile` redirect står)
-- Profile.tsx-funktionaliteten (eksport, logout, navigation til change-password/delete-account)
-- `coach_license_fields`-tabel og migration
+### 4. Ensrette visning af avatar på tværs af appen
+- Sørge for at profilside, dashboard, coach-visninger og fælles avatar-komponent bruger samme URL-opløsning.
+- Fjerne nuværende inkonsistens hvor nogle steder viser rå sti, andre public URL, og andre signeret/public logik.
+- Sikre cache-busting efter upload, så nyt billede vises med det samme.
+
+### 5. Verificere end-to-end
+- Teste flowet: vælg billede → gem → refresh → gå til andre sider → bekræft at billedet stadig vises.
+- Kontrollere at der ikke længere kommer “success” når `avatar_url` stadig er `null`.
+- Kontrollere at eksisterende brugere med gamle avatar-formater stadig vises korrekt.
+
+## Tekniske detaljer
+- Fokusfiler bliver primært:
+  - `src/pages/ProfileEdit.tsx`
+  - `src/pages/ProfileSetup.tsx`
+  - `src/hooks/useAvatarUrl.ts`
+  - `src/components/AvatarImg.tsx`
+  - relevante migrations under `supabase/migrations`
+- Jeg forventer også at verificere avatar-forbrug i:
+  - `src/pages/Profile.tsx`
+  - evt. offentlige/coach-relaterede avatarvisninger
+
+## Forventet resultat
+Efter ændringen skal profilbillede-upload virke stabilt for både nye uploads og eksisterende profiler, uden falske succesbeskeder og uden forskellig opførsel mellem sider.
