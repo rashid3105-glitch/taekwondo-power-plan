@@ -145,8 +145,9 @@ export default function ProfileEdit() {
           <h2 className={sectionTitleCls}>{t("profileSportDiscipline" as any)}</h2>
           <div className="space-y-4">
             <Field label={t("profileSport" as any)}>
-              <Input className={inputCls} value={sport} onChange={(e) => setSport(e.target.value)} />
+              <Input className={inputCls} value="Taekwondo" disabled />
             </Field>
+
             <Field label={t("profileDiscipline" as any)}>
               <div className="flex gap-2">
                 {["sparring", "poomsae"].map((d) => {
