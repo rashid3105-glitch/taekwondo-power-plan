@@ -730,6 +730,16 @@ export default function Dashboard() {
         </SheetContent>
       </Sheet>
 
+      {/* Help Sheet */}
+      <Sheet open={helpOpen} onOpenChange={setHelpOpen}>
+        <SheetContent side="bottom" className="h-[90vh] overflow-y-auto p-0">
+          <SheetHeader className="sr-only">
+            <SheetTitle>{t("helpTitle")}</SheetTitle>
+          </SheetHeader>
+          <Help />
+        </SheetContent>
+      </Sheet>
+
       {/* Mobile bottom nav — 5 tabs */}
       <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-card/95 backdrop-blur-sm sm:hidden pb-safe">
         <div className="flex items-stretch justify-around px-1 pt-1.5">
