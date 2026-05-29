@@ -16,16 +16,43 @@ export default function AthleteModules() {
         setLoading(false);
         return;
       }
-      const { data } = await supabase
-        .from("athlete_modules")
-        .select("module_key, enabled")
-        .eq("athlete_id", user.id);
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("club_id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      const clubId = (profile as any)?.club_id ?? null;
+
+      const [defaultsRes, overridesRes] = await Promise.all([
+        clubId
+          ? supabase
+              .from("club_module_defaults" as any)
+              .select("module, enabled")
+              .eq("club_id", clubId)
+          : Promise.resolve({ data: [] as any[] }),
+        supabase
+          .from("athlete_module_overrides" as any)
+          .select("module, enabled")
+          .eq("user_id", user.id),
+      ]);
+
+      const clubMap: Record<string, boolean> = {};
+      (((defaultsRes as any).data) ?? []).forEach((r: any) => { clubMap[r.module] = !!r.enabled; });
+      const ovMap: Record<string, boolean> = {};
+      (((overridesRes as any).data) ?? []).forEach((r: any) => { ovMap[r.module] = !!r.enabled; });
+
       const set = new Set<string>();
-      (data ?? []).forEach((r: any) => { if (r.enabled) set.add(r.module_key); });
+      ATHLETE_MODULES.forEach((m) => {
+        const resolved = ovMap[m.key] !== undefined
+          ? ovMap[m.key]
+          : (clubMap[m.key] !== undefined ? clubMap[m.key] : true);
+        if (resolved) set.add(m.key);
+      });
       setEnabledKeys(set);
       setLoading(false);
     })();
   }, []);
+
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
