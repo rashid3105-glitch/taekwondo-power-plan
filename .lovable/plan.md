@@ -1,48 +1,53 @@
-## Mål
-Coach skal kunne vælge moduler både **pr. atlet** (eksisterende) og **for hele klubben på én gang**.
+## Problem
+`src/pages/Profile.tsx` blev bygget som en standalone "design"-side med hardcoded farver (`#0a0a0a`, `bg-white/[0.03]`, `var(--accent-hex)`), custom rounded `[14px]` korthylstre og dansk hardcoded tekst. Det matcher ikke mønstret fra Health, Diary, SubscriptionSettings, Help m.fl., som alle bruger:
 
-## UI — `src/pages/CoachModules.tsx`
-Tilføj en tab-switch øverst:
-- **"Hele klubben"** (default) — én liste med 8 moduler + Switch. Gemmes som klub-standard.
-- **"Pr. atlet"** — nuværende flow med atlet-dropdown + overrides.
+- `min-h-screen bg-background` (semantiske tokens — ikke hex)
+- Centreret container `mx-auto max-w-2xl px-4 py-6` (eller py-8)
+- Tilbage-knap øverst (`Button variant="ghost"` + `ChevronLeft`/`ArrowLeft`)
+- shadcn `<Card> / <CardHeader> / <CardTitle> / <CardContent>` til sektioner
+- `<PageMeta>` for title/description
+- `<AppFooter />` og evt. `<Watermark />` i bunden
+- Oversættelser via `useLanguage()` + `t(...)` — aldrig hardcodede strenge
 
-Visuel hint pr. atlet: hvis modul har en override afvigende fra klub-standard, vis lille label "Overstyret" ved siden af Switch. Knap "Nulstil til klub" fjerner override.
+## Plan
+Refaktorér `src/pages/Profile.tsx` så den følger de øvrige authenticated sider. Kun præsentation ændres — data-hentningen (profiles, coach_athletes, coach_license_fields, license_values) bevares som den er nu.
 
-## Database
-Brug eksisterende tabeller (oprettet i migration `20260513133019`):
-- `club_module_defaults (club_id, module, enabled)` — klub-niveau
-- `athlete_module_overrides (user_id, module, enabled)` — pr. atlet
-
-I dag tillader RLS kun admin at skrive. **Ny migration** der tilføjer coach-policies:
-```sql
--- Coaches kan styre defaults for deres egen klub
-CREATE POLICY "Coaches manage own club module defaults"
-  ON public.club_module_defaults FOR ALL
-  USING (has_role(auth.uid(),'coach') AND EXISTS (
-    SELECT 1 FROM profiles WHERE user_id = auth.uid() AND club_id = club_module_defaults.club_id))
-  WITH CHECK (same);
-
--- Coaches kan styre overrides for atleter i deres klub
-CREATE POLICY "Coaches manage athlete overrides in club"
-  ON public.athlete_module_overrides FOR ALL
-  USING (has_role(auth.uid(),'coach') AND users_share_club(auth.uid(), user_id))
-  WITH CHECK (same);
+### Layout-skelet
+```tsx
+<div className="min-h-screen bg-background">
+  <PageMeta title="Min profil" description="..." />
+  <div className="mx-auto max-w-2xl px-4 py-6 space-y-6">
+    <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
+      <ChevronLeft className="h-4 w-4 mr-1" /> Tilbage
+    </Button>
+    <Card> … profil-header … </Card>
+    <Card> … Sport & disciplin … </Card>
+    <Card> … Licenser & registreringer … </Card>
+    <Card> … Mine mål … </Card>
+    <Card> … Konto … </Card>
+    <Button variant="destructive" className="w-full">Log ud</Button>
+  </div>
+  <AppFooter />
+</div>
 ```
 
-## Athlete-side — `src/pages/AthleteModules.tsx`
-Nu læses kun `athlete_modules`. Skift til samme resolution som `useAthleteModuleAccess`:
-1. `athlete_module_overrides` (hvis findes) →
-2. `club_module_defaults` (hvis findes) →
-3. default = true.
+### Konkrete ændringer
+1. Fjern `style={{ backgroundColor: "#0a0a0a" }}` → brug `bg-background`.
+2. Fjern alle `bg-white/[0.03] border-white/10 rounded-[14px]` wrappers → erstat med `<Card>` + `<CardHeader><CardTitle>...</CardTitle></CardHeader><CardContent>`.
+3. Fjern `var(--accent-hex)` inline-styles. Brug semantiske Tailwind-tokens: `bg-primary text-primary-foreground` (aktive pills/badges), `text-muted-foreground` (labels), `border-border` (delerlinjer), `text-destructive` (slet/log ud).
+4. Erstat custom `Section/Row/ActionRow/MetaCell` helpers — Row/MetaCell kan beholdes, men de skal bruge `text-muted-foreground` og `text-foreground` i stedet for `text-white/35` / `text-white/85`. Section-wrapper droppes til fordel for shadcn Card.
+5. Tilføj `<PageMeta>` + `<AppFooter />` (som Health/Diary).
+6. Tilføj tilbage-knap øverst.
+7. Erstat hardcoded danske strenge med `t("...")`-kald. Tilføj nye nøgler i `src/i18n/translations.ts` for alle 7 sprog (en, da, sv, de, ar, no, es) — påkrævede nøgler:
+   - `profileTitle`, `profileNoClub`, `profileNoName`, `profileBirthDate`, `profileBeltLevel`, `profileHeight`, `profileWeight`, `profileSportDiscipline`, `profileSport`, `profileDiscipline`, `profileRole`, `profileRoleAthlete`, `profileRoleCoach`, `profileRoleBoth`, `profileLicensesTitle`, `profileLicensesNoCoach`, `profileLicensesNoFields`, `profileLicensesFooter`, `profileLicenseActive`, `profileLicenseExpiringSoon`, `profileLicenseExpired`, `profileLicenseExpires`, `profileLicenseNotDefined`, `profileGoalsTitle`, `profileGoalsEmpty`, `profileAccountTitle`, `profileAccountEmail`, `profileChangePassword`, `profileExportData`, `profileDeleteAccount`, `profileDeleteAccountSub`, `profileLogout`, `profileBack`, `profileEdit`.
+8. Behold den eksisterende Supabase-query (med `coach_club_name` fallback og uden `sport`-kolonnen), så data fortsat vises.
 
-Drop afhængighed af `athlete_modules` (gammel coach-tabel) — eller behold som tredje fallback hvis du vil bevare data fra forrige commit. Anbefaling: skift helt til de nye tabeller for konsistens med admin-siden.
+### Filer der røres
+- `src/pages/Profile.tsx` (refaktor)
+- `src/i18n/translations.ts` (nye nøgler × 7 sprog)
 
-## Detaljer
-- Klub-id hentes fra `profiles.club_id` for coachen ved mount.
-- Hvis coach ikke har en `club_id`: vis fejlbesked og skjul "Hele klubben"-fanen.
-- Upsert mod `(club_id, module)` hhv. `(user_id, module)`.
-- Toast på fejl, optimistisk UI-update som i dag.
-
-## Ingen ændringer
-- `Help.tsx`, changelog, sidemenu — uændret.
-- `useAthleteModuleAccess` — fungerer allerede korrekt.
+### Det jeg IKKE rører
+- Datahentning og felter
+- Routing (`/profile-setup` → `/profile` redirect står)
+- Profile.tsx-funktionaliteten (eksport, logout, navigation til change-password/delete-account)
+- `coach_license_fields`-tabel og migration
