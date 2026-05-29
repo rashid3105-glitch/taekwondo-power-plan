@@ -122,7 +122,8 @@ export default function AthleteModules() {
                 {enabled && <ChevronRight className="h-5 w-5 text-white/40 shrink-0" />}
               </div>
             );
-          })
+          })}
+          </div>
         )}
       </main>
     </div>
