@@ -85,7 +85,6 @@ export default function Profile() {
         return;
       }
       const { data: prof } = await supabase
-      const { data: prof } = await supabase
         .from("profiles")
         .select("display_name, avatar_url, discipline, club_id, coach_club_name, roles, birth_date, belt_level, weight_kg, goals, license_values, clubs:club_id(name)")
         .eq("user_id", user.id)
