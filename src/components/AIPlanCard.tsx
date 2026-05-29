@@ -397,11 +397,6 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
         </div>
       </div>
 
-      {/* Periodization timeline (above the weekly schedule) */}
-      {periodization.length > 0 && (
-        <PeriodizationView periodization={periodization} programWeeks={plan.plan_data?.programWeeks} />
-      )}
-
       {/* View toggle */}
       {programWeeks > 1 && (
         <div className="flex gap-1 rounded-lg border border-border bg-secondary/30 p-0.5 w-fit">
