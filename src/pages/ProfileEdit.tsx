@@ -167,7 +167,7 @@ export default function ProfileEdit() {
 
   const handleSaveClick = async () => {
     const ok = await handleSave();
-    if (ok) toast.success(t("profileSaved" as any) || "Gemt");
+    if (ok) toast.success("Profil gemt");
   };
 
   if (loading) {
