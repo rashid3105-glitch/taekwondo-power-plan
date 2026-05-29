@@ -440,6 +440,37 @@ export default function AuthPage() {
               </div>
             )}
 
+            {isLogin && (
+              <div className="space-y-1.5 pt-1">
+                <p className="text-[11px] font-medium text-muted-foreground">{t("logInAs") ?? "Log ind som"}</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {([
+                    { key: "athlete", label: "🥋 Atlet" },
+                    { key: "coach", label: "⭐ Coach" },
+                  ] as const).map((opt) => {
+                    const active = selectedRole === opt.key;
+                    return (
+                      <button
+                        key={opt.key}
+                        type="button"
+                        onClick={() => { haptics.light(); setSelectedRole(opt.key); }}
+                        className={`h-10 rounded-full text-xs font-semibold transition-colors border ${
+                          active
+                            ? "bg-primary text-primary-foreground border-transparent"
+                            : "bg-transparent text-muted-foreground border-border/60 hover:border-border"
+                        }`}
+                        aria-pressed={active}
+                      >
+                        {opt.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+
+
             <Button
               type="submit"
               className="w-full h-11 font-bold text-sm shadow-glow rounded-xl relative overflow-hidden group"
