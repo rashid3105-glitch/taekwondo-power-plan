@@ -19,6 +19,7 @@ import {
   signInWithPasskey,
 } from "@/lib/passkeys";
 import { haptics } from "@/lib/haptics";
+import { useRole } from "@/contexts/RoleContext";
 
 const features = [
   { icon: Zap, labelKey: "pricingFeatureAiPlans" as const },
