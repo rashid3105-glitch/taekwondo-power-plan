@@ -187,6 +187,18 @@ export default function ProfileEdit() {
       const goals = goalsText.split(",").map((g) => g.trim()).filter(Boolean);
       const weight = weightKg ? parseFloat(weightKg) : null;
 
+      // Clean license values: only persist entries for known fields, drop empties.
+      const cleanedLicenseValues: Record<string, LicenseValue> = {};
+      for (const f of licenseFields) {
+        const v = licenseValues[f.id];
+        if (!v) continue;
+        const val = (v.value ?? "").trim();
+        const exp = v.expires_at && /^\d{4}-\d{2}-\d{2}$/.test(v.expires_at) ? v.expires_at : null;
+        if (val || exp) {
+          cleanedLicenseValues[f.id] = { value: val || null, expires_at: exp };
+        }
+      }
+
       const body: Record<string, unknown> = {
         display_name: displayName || null,
         birth_date: birthDate || null,
@@ -194,8 +206,10 @@ export default function ProfileEdit() {
         weight_kg: weight,
         discipline,
         goals,
+        license_values: cleanedLicenseValues,
       };
       if (newAvatarPath) body.avatar_url = newAvatarPath;
+
 
       const { error } = await supabase.functions.invoke("update-my-profile", { body });
       if (error) throw error;
