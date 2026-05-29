@@ -762,6 +762,7 @@ export default function Dashboard() {
             { key: "traen", label: t("train") || "Træn", icon: Zap, active: activeTab === "plan", onClick: () => handleTabChange("plan") },
             { key: "kalender", label: t("seasonCalendar") || "Kalender", icon: CalendarRange, active: activeTab === "calendar", onClick: () => handleTabChange("calendar") },
             { key: "dagbog", label: t("diary") || "Dagbog", icon: NotebookPen, active: false, onClick: () => navigate("/diary") },
+            { key: "video", label: t("hubMatchTitle") || "Video", icon: VideoIcon, active: false, onClick: () => navigate("/match-analysis/me") },
             { key: "chat", label: t("chat") || "Chat", icon: MessageCircle, active: chatOpen, onClick: () => setChatOpen(true) },
           ]).map(({ key, label, icon: Icon, active, onClick }) => (
             <button
