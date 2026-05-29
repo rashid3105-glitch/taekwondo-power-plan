@@ -9173,6 +9173,8 @@ const translations = {
     changelog_2026_05_29: "29. Mai 2026",
     changelogEntry126: "Nächster Wettkampf jetzt auf dem Athleten-Startbildschirm sichtbar",
     changelogEntry127: "Startseite aufgeräumt — alte Module hinter einem Feature-Flag versteckt",
+    changelogEntry128: "Videoanalyse als eigener Tab in der Athleten-Unternavigation hinzugefügt",
+    changelogEntry129: "Verknüpfung auf der Startseite öffnet die Videoanalyse jetzt direkt",
     hubSeasonTitle: "Saisonplan",
     hubSeasonDesc: "Planen Sie die gesamte Wettkampfsaison mit Periodisierungsphasen und Höhepunkt-Fenstern",
     seasonPlannerTitle: "Saisonplaner",
