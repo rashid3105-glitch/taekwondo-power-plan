@@ -694,6 +694,17 @@ export default function Dashboard() {
               <Watch className="h-4 w-4 shrink-0" />
               <span>{t("healthPageTitle" as any) || "Health"}</span>
             </button>
+            {coachAthleteMode === "coach" && isCoach ? (
+              <button onClick={() => { setMenuOpen(false); navigate("/hold/moduler"); }} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer">
+                <Settings className="h-4 w-4 shrink-0" />
+                <span>Administrer moduler</span>
+              </button>
+            ) : (
+              <button onClick={() => { setMenuOpen(false); navigate("/moduler"); }} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer">
+                <LayoutGrid className="h-4 w-4 shrink-0" />
+                <span>Moduler</span>
+              </button>
+            )}
             {isAdmin && (
               <button onClick={() => { setMenuOpen(false); navigate("/admin/approval"); }} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer">
                 <Shield className="h-4 w-4 shrink-0" />
