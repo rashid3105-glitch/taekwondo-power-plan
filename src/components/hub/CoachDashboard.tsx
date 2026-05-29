@@ -240,3 +240,7 @@ function StatTile({
     </div>
   );
 }
+
+function SkeletonBlock({ className = "" }: { className?: string }) {
+  return <div className={`bg-white/10 animate-pulse rounded-xl ${className}`} />;
+}
