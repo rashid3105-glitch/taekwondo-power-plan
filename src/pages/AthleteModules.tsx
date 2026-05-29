@@ -4,6 +4,17 @@ import { ATHLETE_MODULES } from "@/config/modules";
 import { ChevronRight, Lock, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+const MODULE_ROUTES: Record<string, string> = {
+  plan:      '/dashboard',
+  progress:  '/dashboard',
+  compete:   '/competitions',
+  chat:      '/messages',
+  mental:    '/dashboard',
+  nutrition: '/kostplan',
+  rehab:     '/dashboard',
+  video:     '/match-analysis/me',
+};
+
 export default function AthleteModules() {
   const navigate = useNavigate();
   const [enabledKeys, setEnabledKeys] = useState<Set<string>>(new Set());
