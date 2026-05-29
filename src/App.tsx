@@ -182,8 +182,8 @@ const App = () => {
           <Sonner />
           <BrowserRouter>
             <RoleProvider>
-              <ThemeSync />
               <CoachModeProvider>
+                <ThemeSync />
                 <OfflineBanner />
                 <AnimatedRoutes />
               </CoachModeProvider>
