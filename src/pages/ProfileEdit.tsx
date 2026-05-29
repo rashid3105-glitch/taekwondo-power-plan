@@ -23,9 +23,9 @@ export default function ProfileEdit() {
   const [birthDate, setBirthDate] = useState("");
   const [beltLevel, setBeltLevel] = useState("");
   const [weightKg, setWeightKg] = useState<string>("");
-  const [sport, setSport] = useState("Taekwondo");
   const [discipline, setDiscipline] = useState("sparring");
   const [goalsText, setGoalsText] = useState("");
+
 
   useEffect(() => {
     (async () => {
