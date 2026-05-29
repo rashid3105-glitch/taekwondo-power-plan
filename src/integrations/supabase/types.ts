@@ -1655,6 +1655,7 @@ export type Database = {
           public_show_prs: boolean
           public_show_videos: boolean
           rejection_reason: string | null
+          role: string
           roles: string[] | null
           tkd_sessions_per_week: number
           tkd_start_date: string | null
@@ -1711,6 +1712,7 @@ export type Database = {
           public_show_prs?: boolean
           public_show_videos?: boolean
           rejection_reason?: string | null
+          role?: string
           roles?: string[] | null
           tkd_sessions_per_week?: number
           tkd_start_date?: string | null
@@ -1767,6 +1769,7 @@ export type Database = {
           public_show_prs?: boolean
           public_show_videos?: boolean
           rejection_reason?: string | null
+          role?: string
           roles?: string[] | null
           tkd_sessions_per_week?: number
           tkd_start_date?: string | null
