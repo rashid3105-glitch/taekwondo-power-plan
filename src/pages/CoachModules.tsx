@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ATHLETE_MODULES } from "@/config/modules";
-import { ArrowLeft, RotateCcw } from "lucide-react";
+import { ArrowLeft, RotateCcw, Pencil, Trash2, Plus, Check, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
