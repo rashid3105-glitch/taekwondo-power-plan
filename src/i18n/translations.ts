@@ -1475,6 +1475,8 @@ const translations = {
     changelog_2026_05_29: "May 29, 2026",
     changelogEntry126: "Next competition card shown on the athlete home screen",
     changelogEntry127: "Home screen cleaned up — legacy modules hidden behind a feature flag",
+    changelogEntry128: "Video analysis added as a dedicated tab in the athlete bottom navigation",
+    changelogEntry129: "Dashboard shortcut now opens video analysis directly from the home view",
     hubSeasonTitle: "Season Plan",
     hubSeasonDesc: "Map your full competition season with periodization phases and peak windows",
     seasonPlannerTitle: "Season Planner",
