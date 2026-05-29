@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useRole } from "@/contexts/RoleContext";
 import { useThreads } from "@/hooks/useThreads";
-import { Calendar, MessageCircle, Play, BookOpen, Flame, Dumbbell, Trophy } from "lucide-react";
+import { Calendar, MessageCircle, Play, BookOpen, Flame, Dumbbell, Trophy, NotebookPen } from "lucide-react";
 
 interface TodaySession {
   weekdayLabel: string;
@@ -284,6 +284,14 @@ export function AthleteDashboard() {
         >
           <BookOpen className="h-4 w-4" style={accentStyle} />
           Se øvelser
+        </button>
+        <button
+          type="button"
+          onClick={() => navigate("/diary")}
+          className="col-span-2 rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white"
+        >
+          <NotebookPen className="h-4 w-4" style={accentStyle} />
+          Skriv i dagbogen
         </button>
       </section>
     </div>
