@@ -83,7 +83,7 @@ export default function AthleteModules() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          ATHLETE_MODULES.map((m) => {
+          {ATHLETE_MODULES.map((m) => {
             const enabled = enabledKeys.has(m.key);
             const Icon = m.icon;
             const route = MODULE_ROUTES[m.key];
