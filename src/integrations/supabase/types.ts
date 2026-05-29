@@ -757,6 +757,30 @@ export type Database = {
           },
         ]
       }
+      coach_license_fields: {
+        Row: {
+          coach_id: string
+          created_at: string
+          field_name: string
+          id: string
+          sort_order: number
+        }
+        Insert: {
+          coach_id: string
+          created_at?: string
+          field_name: string
+          id?: string
+          sort_order?: number
+        }
+        Update: {
+          coach_id?: string
+          created_at?: string
+          field_name?: string
+          id?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
       coach_messages: {
         Row: {
           athlete_id: string
@@ -1614,6 +1638,7 @@ export type Database = {
           is_parent: boolean
           is_public: boolean
           last_seen_at: string | null
+          license_values: Json
           myfightbook_expires_at: string | null
           onboarding_completed: boolean
           owns_wearable: boolean
@@ -1669,6 +1694,7 @@ export type Database = {
           is_parent?: boolean
           is_public?: boolean
           last_seen_at?: string | null
+          license_values?: Json
           myfightbook_expires_at?: string | null
           onboarding_completed?: boolean
           owns_wearable?: boolean
@@ -1724,6 +1750,7 @@ export type Database = {
           is_parent?: boolean
           is_public?: boolean
           last_seen_at?: string | null
+          license_values?: Json
           myfightbook_expires_at?: string | null
           onboarding_completed?: boolean
           owns_wearable?: boolean
