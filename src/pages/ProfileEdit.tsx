@@ -242,22 +242,24 @@ export default function ProfileEdit() {
             <Field label={t("profileNoName" as any) || "Navn"}>
               <Input className={inputCls} value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
             </Field>
-            <Field label={t("profileBirthDate" as any)}>
-              <Input type="date" className={inputCls} value={birthDate} onChange={(e) => setBirthDate(e.target.value)} />
-            </Field>
-            <Field label={t("profileBeltLevel" as any)}>
-              <Input className={inputCls} value={beltLevel} onChange={(e) => setBeltLevel(e.target.value)} placeholder="e.g. 1. dan" />
-            </Field>
-            <Field label={t("profileWeight" as any)}>
-              <Input
-                type="number"
-                inputMode="decimal"
-                className={inputCls}
-                value={weightKg}
-                onChange={(e) => setWeightKg(e.target.value)}
-                placeholder="kg"
-              />
-            </Field>
+            <div className="grid grid-cols-2 gap-4">
+              <Field label={t("profileBirthDate" as any)}>
+                <Input type="date" className={inputCls} value={birthDate} onChange={(e) => setBirthDate(e.target.value)} />
+              </Field>
+              <Field label={t("profileBeltLevel" as any)}>
+                <Input className={inputCls} value={beltLevel} onChange={(e) => setBeltLevel(e.target.value)} placeholder="e.g. 1. dan" />
+              </Field>
+              <Field label={t("profileWeight" as any)}>
+                <Input
+                  type="number"
+                  inputMode="decimal"
+                  className={inputCls}
+                  value={weightKg}
+                  onChange={(e) => setWeightKg(e.target.value)}
+                  placeholder="kg"
+                />
+              </Field>
+            </div>
           </div>
         </div>
 
