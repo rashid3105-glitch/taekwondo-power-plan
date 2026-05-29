@@ -178,7 +178,14 @@ export default function Dashboard() {
   const { isModuleEnabled } = useAthleteModuleAccess();
   const { isFromCache: profileFromCache, cachedAt: profileCachedAt } = useOfflineProfile();
   const { plan: offlinePlan, online: planOnline } = useOfflinePlan();
-  const { roles, activeRole, setActiveRole } = useRole();
+  const { role } = useRole();
+
+  // Coaches go straight to their own dashboard — no role toggle.
+  useEffect(() => {
+    if (role === "coach") {
+      navigate("/coach", { replace: true });
+    }
+  }, [role, navigate]);
 
   // Sync activeTab → URL ?tab= so browser back/refresh works.
   useEffect(() => {
