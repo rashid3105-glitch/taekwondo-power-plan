@@ -17,7 +17,6 @@ interface LicenseValue {
 interface ProfileData {
   display_name: string | null;
   avatar_url: string | null;
-  sport: string | null;
   discipline: string | null;
   club_name: string | null;
   roles: string[] | null;
@@ -87,7 +86,7 @@ export default function Profile() {
       }
       const { data: prof } = await supabase
         .from("profiles")
-        .select("display_name, avatar_url, sport, discipline, club_id, roles, birth_date, belt_level, weight_kg, goals, license_values, clubs:club_id(name)")
+        .select("display_name, avatar_url, discipline, club_id, coach_club_name, roles, birth_date, belt_level, weight_kg, goals, license_values, clubs:club_id(name)")
         .eq("user_id", user.id)
         .maybeSingle();
 
@@ -114,9 +113,8 @@ export default function Profile() {
       setData({
         display_name: p?.display_name ?? null,
         avatar_url: p?.avatar_url ?? null,
-        sport: p?.sport ?? null,
         discipline: p?.discipline ?? null,
-        club_name: p?.clubs?.name ?? null,
+        club_name: p?.clubs?.name ?? p?.coach_club_name ?? null,
         roles: p?.roles ?? null,
         birth_date: p?.birth_date ?? null,
         belt_level: p?.belt_level ?? null,
@@ -125,7 +123,6 @@ export default function Profile() {
         license_values: p?.license_values ?? {},
         email: user.email ?? null,
       });
-      setHasCoach(!!ca?.coach_id);
       setLicenseFields(fields);
       setLoading(false);
     })();
@@ -197,7 +194,7 @@ export default function Profile() {
 
       {/* Sport & disciplin */}
       <Section title="Sport & disciplin">
-        <Row label="Sport" value={data?.sport || "Taekwondo"} />
+        <Row label="Sport" value="Taekwondo" />
         <div className="px-4 py-3 border-t border-white/10">
           <p className="text-[11px] uppercase tracking-widest text-white/35 mb-2">Disciplin</p>
           <div className="flex gap-2">
