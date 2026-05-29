@@ -37,6 +37,9 @@ export default function ProfileEdit() {
       const { data: p } = await supabase
         .from("profiles")
         .select("display_name, birth_date, belt_level, weight_kg, sport, discipline, goals")
+      const { data: p } = await supabase
+        .from("profiles")
+        .select("display_name, birth_date, belt_level, weight_kg, discipline, goals")
         .eq("user_id", user.id)
         .maybeSingle();
       if (p) {
@@ -44,12 +47,10 @@ export default function ProfileEdit() {
         setBirthDate(p.birth_date ?? "");
         setBeltLevel(p.belt_level ?? "");
         setWeightKg(p.weight_kg != null ? String(p.weight_kg) : "");
-        setSport((p as any).sport ?? "Taekwondo");
         setDiscipline(p.discipline ?? "sparring");
         setGoalsText(Array.isArray(p.goals) ? p.goals.join(", ") : "");
       }
-      setLoading(false);
-    })();
+
   }, [navigate]);
 
   const handleSave = async () => {
