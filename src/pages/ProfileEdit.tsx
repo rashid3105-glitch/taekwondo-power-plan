@@ -70,19 +70,31 @@ export default function ProfileEdit() {
     };
   }, [pendingPreview]);
 
-  const handlePickFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePickFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const ext = (file.name.split(".").pop() || "").toLowerCase();
     if (!ALLOWED_EXT.includes(ext)) {
-      toast.error("Brug JPG, PNG, WEBP eller GIF");
+      toast.error("Kun JPG, PNG, WEBP eller GIF er tilladt");
       if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
     if (file.size > 10 * 1024 * 1024) {
-      toast.error("Billede må højst være 10 MB");
+      toast.error("Billedet er for stort — maks 10 MB");
       if (fileInputRef.current) fileInputRef.current.value = "";
       return;
+    }
+    try {
+      const bmp = await createImageBitmap(file);
+      const tooBig = bmp.width > 2000 || bmp.height > 2000;
+      bmp.close?.();
+      if (tooBig) {
+        toast.error("Billedet er for stort — maks 2000×2000 pixels");
+        if (fileInputRef.current) fileInputRef.current.value = "";
+        return;
+      }
+    } catch {
+      // ignore dimension check failures, proceed
     }
     if (pendingPreview) URL.revokeObjectURL(pendingPreview);
     setPendingFile(file);
@@ -99,7 +111,10 @@ export default function ProfileEdit() {
     const { error } = await supabase.storage
       .from("avatars")
       .upload(path, pendingFile, { upsert: true, contentType });
-    if (error) throw error;
+    if (error) {
+      console.error("Avatar upload failed:", error);
+      throw new Error(`Billede kunne ikke uploades: ${error.message}`);
+    }
     return path;
   };
 
@@ -152,7 +167,7 @@ export default function ProfileEdit() {
 
   const handleSaveClick = async () => {
     const ok = await handleSave();
-    if (ok) toast.success(t("profileSaved" as any) || "Gemt");
+    if (ok) toast.success("Profil gemt");
   };
 
   if (loading) {
