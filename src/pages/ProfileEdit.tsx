@@ -16,6 +16,9 @@ const inputCls = "bg-white/[0.04] border-white/10 text-white placeholder:text-wh
 
 const ALLOWED_EXT = ["jpg", "jpeg", "png", "webp", "gif"];
 
+interface LicenseField { id: string; field_name: string; sort_order: number; }
+interface LicenseValue { value?: string | null; expires_at?: string | null; }
+
 export default function ProfileEdit() {
   const navigate = useNavigate();
   const { t } = useLanguage();
@@ -35,6 +38,12 @@ export default function ProfileEdit() {
   const [pendingPreview, setPendingPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  const [isCoach, setIsCoach] = useState(false);
+  const [licenseFieldsOwnerId, setLicenseFieldsOwnerId] = useState<string | null>(null);
+  const [licenseFields, setLicenseFields] = useState<LicenseField[]>([]);
+  const [licenseValues, setLicenseValues] = useState<Record<string, LicenseValue>>({});
+  const [newFieldName, setNewFieldName] = useState("");
+
   const signedExisting = useAvatarUrl(avatarUrl);
   const displayedAvatar = pendingPreview || signedExisting;
 
@@ -48,7 +57,7 @@ export default function ProfileEdit() {
       setUserId(user.id);
       const { data: p } = await supabase
         .from("profiles")
-        .select("display_name, birth_date, belt_level, weight_kg, discipline, goals, avatar_url")
+        .select("display_name, birth_date, belt_level, weight_kg, discipline, goals, avatar_url, roles, license_values")
         .eq("user_id", user.id)
         .maybeSingle();
       if (p) {
@@ -59,10 +68,35 @@ export default function ProfileEdit() {
         setDiscipline(p.discipline ?? "sparring");
         setGoalsText(Array.isArray(p.goals) ? p.goals.join(", ") : "");
         setAvatarUrl(p.avatar_url ?? null);
+        setLicenseValues(((p as any).license_values ?? {}) as Record<string, LicenseValue>);
       }
+
+      const roles: string[] = (p as any)?.roles ?? [];
+      const userIsCoach = roles.includes("coach");
+      setIsCoach(userIsCoach);
+
+      const { data: ca } = await supabase
+        .from("coach_athletes")
+        .select("coach_id")
+        .eq("athlete_id", user.id)
+        .limit(1)
+        .maybeSingle();
+      const ownerId = ca?.coach_id ?? (userIsCoach ? user.id : null);
+      setLicenseFieldsOwnerId(ownerId);
+
+      if (ownerId) {
+        const { data: lf } = await supabase
+          .from("coach_license_fields")
+          .select("id, field_name, sort_order")
+          .eq("coach_id", ownerId)
+          .order("sort_order", { ascending: true });
+        setLicenseFields((lf ?? []) as LicenseField[]);
+      }
+
       setLoading(false);
     })();
   }, [navigate]);
+
 
   useEffect(() => {
     return () => {
