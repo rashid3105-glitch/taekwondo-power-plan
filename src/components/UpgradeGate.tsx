@@ -38,10 +38,10 @@ export function UpgradeGate({ module, children }: Props) {
         if (keys.length === 0) { setCoachGranted(false); return; }
         const { data } = await supabase
           .from("athlete_modules" as any)
-          .select("module, enabled")
+          .select("module_key, enabled")
           .eq("athlete_id", user.id)
           .eq("enabled", true)
-          .in("module", keys);
+          .in("module_key", keys);
         setCoachGranted(!!data && (data as any[]).length > 0);
       } catch {
         setCoachGranted(false);
