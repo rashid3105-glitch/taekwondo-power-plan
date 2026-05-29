@@ -570,7 +570,7 @@ export default function Dashboard() {
   const activePlan = plans.find((p) => p.is_active);
 
   return (
-    <div className="min-h-screen bg-background pb-16 sm:pb-0 relative">
+    <div className="min-h-screen pb-16 sm:pb-0 relative" style={{ backgroundColor: "#0a0a0a" }}>
       <Watermark />
       {/* Header */}
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10 pt-safe">
@@ -886,7 +886,7 @@ export default function Dashboard() {
                         ? "text-black"
                         : "text-white/50 hover:text-white/80"
                     )}
-                    style={activeRole === "athlete" ? { backgroundColor: "hsl(var(--accent))" } : undefined}
+                    style={activeRole === "athlete" ? { backgroundColor: "var(--accent-hex)" } : undefined}
                   >
                     <span>🥋</span>
                     <span>Atlet</span>
@@ -900,7 +900,7 @@ export default function Dashboard() {
                         ? "text-black"
                         : "text-white/50 hover:text-white/80"
                     )}
-                    style={activeRole === "coach" ? { backgroundColor: "hsl(var(--accent))" } : undefined}
+                    style={activeRole === "coach" ? { backgroundColor: "var(--accent-hex)" } : undefined}
                   >
                     <span>⭐</span>
                     <span>Coach</span>
