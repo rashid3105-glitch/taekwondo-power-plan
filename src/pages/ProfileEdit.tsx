@@ -84,21 +84,42 @@ export default function ProfileEdit() {
       if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
+    // Auto-downscale large images (most phone photos are >2000px) to stay
+    // within the server-side limit instead of rejecting them.
+    let processed: Blob = file;
     try {
       const bmp = await createImageBitmap(file);
-      const tooBig = bmp.width > 2000 || bmp.height > 2000;
-      bmp.close?.();
-      if (tooBig) {
-        toast.error("Billedet er for stort — maks 2000×2000 pixels");
-        if (fileInputRef.current) fileInputRef.current.value = "";
-        return;
+      const MAX = 1600;
+      if (bmp.width > MAX || bmp.height > MAX) {
+        const scale = Math.min(MAX / bmp.width, MAX / bmp.height);
+        const w = Math.round(bmp.width * scale);
+        const h = Math.round(bmp.height * scale);
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(bmp, 0, 0, w, h);
+          const blob: Blob | null = await new Promise((resolve) =>
+            canvas.toBlob((b) => resolve(b), "image/jpeg", 0.9),
+          );
+          if (blob) processed = blob;
+        }
       }
+      bmp.close?.();
     } catch {
-      // ignore dimension check failures, proceed
+      // ignore — fall back to original file
     }
+
+    const safeName = ext === "jpeg" ? "avatar.jpg" : `avatar.${ext}`;
+    const safeType = processed.type || file.type || "image/jpeg";
+    const resized = processed instanceof File
+      ? processed
+      : new File([processed], safeName, { type: safeType });
+
     if (pendingPreview) URL.revokeObjectURL(pendingPreview);
-    setPendingFile(file);
-    setPendingPreview(URL.createObjectURL(file));
+    setPendingFile(resized);
+    setPendingPreview(URL.createObjectURL(resized));
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
