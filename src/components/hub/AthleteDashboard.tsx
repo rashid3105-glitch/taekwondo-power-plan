@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useRole } from "@/contexts/RoleContext";
 import { useThreads } from "@/hooks/useThreads";
-import { Calendar, MessageCircle, Play, BookOpen, Flame, Dumbbell, Trophy, NotebookPen } from "lucide-react";
+import { Calendar, MessageCircle, Play, BookOpen, Flame, Dumbbell, Trophy, NotebookPen, CalendarX } from "lucide-react";
 
 interface TodaySession {
   weekdayLabel: string;
@@ -39,6 +39,7 @@ export function AthleteDashboard() {
   const [nextCompetition, setNextCompetition] = useState<NextCompetition | null>(null);
   const [stats, setStats] = useState<Stats>({ streak: 0, sessions: 0 });
   const [now, setNow] = useState(() => new Date());
+  const [isLoading, setIsLoading] = useState(true);
 
   // Live countdown tick — every minute
   useEffect(() => {
@@ -134,6 +135,7 @@ export function AthleteDashboard() {
       if (!mounted) return;
       setTodaySession(today);
       setStats({ streak, sessions: dates.length });
+      setIsLoading(false);
     })();
 
     return () => { mounted = false; };
@@ -160,111 +162,143 @@ export function AthleteDashboard() {
       style={{ backgroundColor: "#0a0a0a" }}
     >
       {/* 1. TODAY card */}
-      <section
-        className="rounded-xl border border-white/10 bg-white/[0.03] p-4"
-        style={accentLeftBorder}
-      >
-        <div className="flex items-start justify-between gap-3 mb-2">
-          <div className="flex items-center gap-2 min-w-0">
-            <Calendar className="h-4 w-4 shrink-0" style={accentStyle} />
-            <h3 className="text-[11px] font-bold uppercase tracking-wider truncate" style={accentStyle}>
-              I DAG · {WEEKDAYS_DA[new Date().getDay()]}
-            </h3>
-          </div>
-          {todaySession && (
-            <button
-              type="button"
-              onClick={() => navigate("/dashboard?tab=plan")}
-              className="shrink-0 inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-lg"
-              style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
-            >
-              <Play className="h-3 w-3" fill="currentColor" /> Start
-            </button>
-          )}
-        </div>
-        {todaySession ? (
-          <div>
-            <p className="text-sm font-semibold text-white">{todaySession.type}</p>
-            {todaySession.tags.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mt-2">
-                {todaySession.tags.map((tag, i) => (
-                  <span
-                    key={i}
-                    className="text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-md bg-white/[0.06] text-white/70"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
+      {isLoading ? (
+        <SkeletonBlock className="h-[112px]" />
+      ) : (
+        <section
+          className="rounded-xl border border-white/10 bg-white/[0.03] p-4"
+          style={accentLeftBorder}
+        >
+          <div className="flex items-start justify-between gap-3 mb-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <Calendar className="h-4 w-4 shrink-0" style={accentStyle} />
+              <h3 className="text-[11px] font-bold uppercase tracking-wider truncate" style={accentStyle}>
+                I DAG · {WEEKDAYS_DA[new Date().getDay()]}
+              </h3>
+            </div>
+            {todaySession && (
+              <button
+                type="button"
+                onClick={() => navigate("/dashboard?tab=plan")}
+                className="shrink-0 inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-lg"
+                style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
+              >
+                <Play className="h-3 w-3" fill="currentColor" /> Start
+              </button>
             )}
           </div>
-        ) : (
-          <p className="text-sm text-white/60">Ingen træning i dag</p>
-        )}
-      </section>
+          {todaySession ? (
+            <div>
+              <p className="text-sm font-semibold text-white">{todaySession.type}</p>
+              {todaySession.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {todaySession.tags.map((tag, i) => (
+                    <span
+                      key={i}
+                      className="text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-md bg-white/[0.06] text-white/70"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            <EmptyState
+              icon={<CalendarX size={24} style={accentStyle} />}
+              text="Ingen træning planlagt i dag"
+              sub="Tjek din træningsplan"
+            />
+          )}
+        </section>
+      )}
 
       {/* 2. Next event with countdown */}
-      <section
-        className="rounded-xl border border-white/10 bg-white/[0.03] p-4"
-        style={accentLeftBorder}
-      >
-        <div className="flex items-center gap-2 mb-2">
-          <Trophy className="h-4 w-4" style={accentStyle} />
-          <h3 className="text-[11px] font-bold uppercase tracking-wider" style={accentStyle}>
-            Næste begivenhed
-          </h3>
-        </div>
-        {nextCompetition && countdown ? (
-          <div>
-            <p className="text-sm font-semibold text-white">{nextCompetition.name}</p>
-            <p className="text-xs text-white/60 mt-1">
-              {nextCompetition.dateLabel}{nextCompetition.location ? ` · ${nextCompetition.location}` : ""}
-            </p>
-            <div className="grid grid-cols-3 gap-2 mt-3">
-              <CountBox value={countdown.days} label="DAGE" accentStyle={accentStyle} />
-              <CountBox value={countdown.hours} label="TIMER" accentStyle={accentStyle} />
-              <CountBox value={countdown.minutes} label="MIN" accentStyle={accentStyle} />
-            </div>
+      {isLoading ? (
+        <SkeletonBlock className="h-[140px]" />
+      ) : (
+        <section
+          className="rounded-xl border border-white/10 bg-white/[0.03] p-4"
+          style={accentLeftBorder}
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <Trophy className="h-4 w-4" style={accentStyle} />
+            <h3 className="text-[11px] font-bold uppercase tracking-wider" style={accentStyle}>
+              Næste begivenhed
+            </h3>
           </div>
-        ) : (
-          <p className="text-sm text-white/60">Ingen kommende begivenheder</p>
-        )}
-      </section>
+          {nextCompetition && countdown ? (
+            <div>
+              <p className="text-sm font-semibold text-white">{nextCompetition.name}</p>
+              <p className="text-xs text-white/60 mt-1">
+                {nextCompetition.dateLabel}{nextCompetition.location ? ` · ${nextCompetition.location}` : ""}
+              </p>
+              <div className="grid grid-cols-3 gap-2 mt-3">
+                <CountBox value={countdown.days} label="DAGE" accentStyle={accentStyle} />
+                <CountBox value={countdown.hours} label="TIMER" accentStyle={accentStyle} />
+                <CountBox value={countdown.minutes} label="MIN" accentStyle={accentStyle} />
+              </div>
+            </div>
+          ) : (
+            <EmptyState
+              icon={<Trophy size={24} style={accentStyle} />}
+              text="Ingen kommende stævner"
+              sub="Tilføj dit næste stævne"
+            />
+          )}
+        </section>
+      )}
 
       {/* 3. Stats */}
-      <section className="grid grid-cols-2 gap-3">
-        <StatTile icon={<Flame className="h-4 w-4" />} value={stats.streak} label="Streak" accentStyle={accentStyle} />
-        <StatTile icon={<Dumbbell className="h-4 w-4" />} value={stats.sessions} label="Sessioner" accentStyle={accentStyle} />
-      </section>
+      {isLoading ? (
+        <div className="grid grid-cols-2 gap-3">
+          <SkeletonBlock className="h-[88px]" />
+          <SkeletonBlock className="h-[88px]" />
+        </div>
+      ) : (
+        <section className="grid grid-cols-2 gap-3">
+          <StatTile icon={<Flame className="h-4 w-4" />} value={stats.streak} label="Streak" accentStyle={accentStyle} />
+          <StatTile icon={<Dumbbell className="h-4 w-4" />} value={stats.sessions} label="Sessioner" accentStyle={accentStyle} />
+        </section>
+      )}
 
       {/* 4. Messages */}
-      <section className="rounded-xl border border-white/10 bg-white/[0.03] p-4 flex items-center gap-3">
-        <div className="h-9 w-9 rounded-lg bg-white/[0.06] flex items-center justify-center relative">
-          <MessageCircle className="h-4 w-4" style={accentStyle} />
-          {totalUnread > 0 && (
+      {isLoading ? (
+        <SkeletonBlock className="h-[72px]" />
+      ) : totalUnread > 0 ? (
+        <section className="rounded-xl border border-white/10 bg-white/[0.03] p-4 flex items-center gap-3">
+          <div className="h-9 w-9 rounded-lg bg-white/[0.06] flex items-center justify-center relative">
+            <MessageCircle className="h-4 w-4" style={accentStyle} />
             <span
               className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center text-black"
               style={{ backgroundColor: "var(--accent-hex)" }}
             >
               {totalUnread}
             </span>
-          )}
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-white">
-            {totalUnread > 0 ? `${totalUnread} ulæste beskeder` : "Ingen nye beskeder"}
-          </p>
-          <p className="text-xs text-white/60">Fra din coach</p>
-        </div>
-        <button
-          type="button"
-          onClick={() => navigate("/messages")}
-          className="text-xs font-semibold px-3 py-1.5 rounded-lg"
-          style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
-        >
-          Se beskeder
-        </button>
-      </section>
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-white">{totalUnread} ulæste beskeder</p>
+            <p className="text-xs text-white/60">Fra din coach</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => navigate("/messages")}
+            className="text-xs font-semibold px-3 py-1.5 rounded-lg"
+            style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
+          >
+            Se beskeder
+          </button>
+        </section>
+      ) : (
+        <section className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+          <EmptyState
+            icon={<MessageCircle size={24} style={accentStyle} />}
+            text="Ingen nye beskeder"
+          />
+        </section>
+      )}
+
+
 
       {/* 5. Quick access */}
       <section className="grid grid-cols-2 gap-3">
@@ -317,6 +351,22 @@ function CountBox({
     <div className="rounded-lg bg-white/[0.04] border border-white/10 py-2 text-center">
       <div className="text-xl font-bold tabular-nums" style={accentStyle}>{value}</div>
       <div className="text-[9px] uppercase tracking-wider text-white/50 mt-0.5">{label}</div>
+    </div>
+  );
+}
+
+function SkeletonBlock({ className = "" }: { className?: string }) {
+  return <div className={`bg-white/10 animate-pulse rounded-xl ${className}`} />;
+}
+
+export function EmptyState({
+  icon, text, sub,
+}: { icon: React.ReactNode; text: string; sub?: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-4 gap-1.5">
+      {icon}
+      <p className="text-[13px] text-white text-center">{text}</p>
+      {sub && <p className="text-[11px] text-white/50 text-center">{sub}</p>}
     </div>
   );
 }

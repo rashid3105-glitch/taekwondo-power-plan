@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useRole } from "@/contexts/RoleContext";
-import { Users, AlertTriangle, Dumbbell, FileText, Send, ChevronRight, CalendarDays } from "lucide-react";
+import { Users, AlertTriangle, Dumbbell, FileText, Send, ChevronRight, CalendarDays, CheckCircle } from "lucide-react";
+import { EmptyState } from "./AthleteDashboard";
 
 interface CoachStats {
   totalAthletes: number;
@@ -131,62 +132,78 @@ export function CoachDashboard() {
       style={{ backgroundColor: "#0a0a0a" }}
     >
       {/* 1. Atletoverblik */}
-      <section className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
-        <div className="flex items-center gap-2 mb-2">
-          <Users className="h-4 w-4" style={accentStyle} />
-          <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/60">Atletoverblik</h3>
-        </div>
-        {loading ? (
-          <p className="text-sm text-white/60">Henter data…</p>
-        ) : (
+      {loading ? (
+        <SkeletonBlock className="h-[96px]" />
+      ) : (
+        <section className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Users className="h-4 w-4" style={accentStyle} />
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/60">Atletoverblik</h3>
+          </div>
           <div>
             <p className="text-2xl font-bold text-white">{stats.totalAthletes}</p>
             <p className="text-xs text-white/60 mt-1">
               {stats.totalAthletes === 1 ? "aktiv atlet" : "aktive atleter"} tilknyttet
             </p>
           </div>
-        )}
-      </section>
+        </section>
+      )}
 
       {/* 2. Inaktive atleter */}
-      <section
-        className={`rounded-xl border p-4 ${inactiveAthletes.length > 0 ? "border-destructive/30 bg-destructive/5" : "border-white/10 bg-white/[0.03]"}`}
-      >
-        <div className="flex items-center gap-2 mb-2">
-          {inactiveAthletes.length > 0 ? (
-            <AlertTriangle className="h-4 w-4 text-destructive" />
-          ) : (
-            <CalendarDays className="h-4 w-4" style={accentStyle} />
-          )}
-          <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/60">Inaktive atleter</h3>
-        </div>
-        {inactiveAthletes.length > 0 ? (
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-semibold text-destructive">
-                {inactiveAthletes.length} {inactiveAthletes.length === 1 ? "atlet" : "atleter"} uden træning i 7+ dage
-              </p>
-              <p className="text-xs text-white/60 mt-1">Tjek op på dem</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => navigate("/coach")}
-              className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-destructive/20 text-destructive hover:bg-destructive/30 transition-colors"
-            >
-              Se hvem
-            </button>
+      {loading ? (
+        <SkeletonBlock className="h-[96px]" />
+      ) : (
+        <section
+          className={`rounded-xl border p-4 ${inactiveAthletes.length > 0 ? "border-destructive/30 bg-destructive/5" : "border-white/10 bg-white/[0.03]"}`}
+        >
+          <div className="flex items-center gap-2 mb-2">
+            {inactiveAthletes.length > 0 ? (
+              <AlertTriangle className="h-4 w-4 text-destructive" />
+            ) : (
+              <CalendarDays className="h-4 w-4" style={accentStyle} />
+            )}
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/60">Inaktive atleter</h3>
           </div>
-        ) : (
-          <p className="text-sm text-white/80">Alle atleter er aktive</p>
-        )}
-      </section>
+          {inactiveAthletes.length > 0 ? (
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-destructive">
+                  {inactiveAthletes.length} {inactiveAthletes.length === 1 ? "atlet" : "atleter"} uden træning i 7+ dage
+                </p>
+                <p className="text-xs text-white/60 mt-1">Tjek op på dem</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => navigate("/coach")}
+                className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-destructive/20 text-destructive hover:bg-destructive/30 transition-colors"
+              >
+                Se hvem
+              </button>
+            </div>
+          ) : (
+            <EmptyState
+              icon={<CheckCircle size={24} className="text-emerald-400" />}
+              text="Alle atleter er aktive"
+            />
+          )}
+        </section>
+      )}
 
       {/* 3. Holdstatistik */}
-      <section className="grid grid-cols-3 gap-3">
-        <StatTile icon={<Users className="h-4 w-4" />} value={stats.totalAthletes} label="Atleter" accentStyle={accentStyle} />
-        <StatTile icon={<Dumbbell className="h-4 w-4" />} value={stats.sessionsThisWeek} label="Sessioner i ugen" accentStyle={accentStyle} />
-        <StatTile icon={<FileText className="h-4 w-4" />} value={stats.activePlans} label="Aktive planer" accentStyle={accentStyle} />
-      </section>
+      {loading ? (
+        <div className="grid grid-cols-3 gap-3">
+          <SkeletonBlock className="h-[88px]" />
+          <SkeletonBlock className="h-[88px]" />
+          <SkeletonBlock className="h-[88px]" />
+        </div>
+      ) : (
+        <section className="grid grid-cols-3 gap-3">
+          <StatTile icon={<Users className="h-4 w-4" />} value={stats.totalAthletes} label="Atleter" accentStyle={accentStyle} />
+          <StatTile icon={<Dumbbell className="h-4 w-4" />} value={stats.sessionsThisWeek} label="Sessioner i ugen" accentStyle={accentStyle} />
+          <StatTile icon={<FileText className="h-4 w-4" />} value={stats.activePlans} label="Aktive planer" accentStyle={accentStyle} />
+        </section>
+      )}
+
 
       {/* 4. Hurtig adgang */}
       <section className="grid grid-cols-2 gap-3">
@@ -222,4 +239,8 @@ function StatTile({
       <div className="text-[10px] uppercase tracking-wider text-white/50 mt-0.5">{label}</div>
     </div>
   );
+}
+
+function SkeletonBlock({ className = "" }: { className?: string }) {
+  return <div className={`bg-white/10 animate-pulse rounded-xl ${className}`} />;
 }
