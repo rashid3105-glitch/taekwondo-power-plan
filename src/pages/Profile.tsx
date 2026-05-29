@@ -87,7 +87,7 @@ export default function Profile() {
       }
       const { data: prof } = await supabase
         .from("profiles")
-        .select("display_name, avatar_url, sport, discipline, club_id, roles, birth_date, belt_level, height_cm, weight_kg, training_goals, license_values, clubs:club_id(name)")
+        .select("display_name, avatar_url, sport, discipline, club_id, roles, birth_date, belt_level, weight_kg, goals, license_values, clubs:club_id(name)")
         .eq("user_id", user.id)
         .maybeSingle();
 
