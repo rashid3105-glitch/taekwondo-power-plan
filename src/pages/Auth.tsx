@@ -84,22 +84,6 @@ export default function AuthPage() {
       if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        try {
-          const { data: { user } } = await supabase.auth.getUser();
-          if (user) {
-            const { data: prof } = await supabase
-              .from("profiles")
-              .select("roles")
-              .eq("user_id", user.id)
-              .maybeSingle();
-            const roles = (prof?.roles as string[] | null) ?? [];
-            if (roles.length > 1 && roles.includes(selectedRole)) {
-              await setActiveRole(selectedRole);
-            }
-          }
-        } catch (e) {
-          console.error("Failed to apply selected role", e);
-        }
         const pendingInvite = sessionStorage.getItem("pending_invite_code");
         if (pendingInvite) {
           sessionStorage.removeItem("pending_invite_code");
