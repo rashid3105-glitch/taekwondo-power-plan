@@ -1,17 +1,20 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ChevronLeft, Save, Loader2 } from "lucide-react";
+import { ChevronLeft, Save, Loader2, Camera, User as UserIcon } from "lucide-react";
 import { PageMeta } from "@/components/PageMeta";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useAvatarUrl } from "@/hooks/useAvatarUrl";
 import { toast } from "sonner";
 
 const cardCls = "rounded-xl bg-white/[0.03] border border-white/10 p-5 sm:p-6";
 const sectionTitleCls = "text-xs uppercase tracking-wider text-white/35 mb-4";
 const inputCls = "bg-white/[0.04] border-white/10 text-white placeholder:text-white/30 focus-visible:ring-white/20";
+
+const ALLOWED_EXT = ["jpg", "jpeg", "png", "webp", "gif"];
 
 export default function ProfileEdit() {
   const navigate = useNavigate();
@@ -19,6 +22,7 @@ export default function ProfileEdit() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
+  const [userId, setUserId] = useState<string>("");
   const [displayName, setDisplayName] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const [beltLevel, setBeltLevel] = useState("");
@@ -26,6 +30,13 @@ export default function ProfileEdit() {
   const [discipline, setDiscipline] = useState("sparring");
   const [goalsText, setGoalsText] = useState("");
 
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [pendingPreview, setPendingPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const signedExisting = useAvatarUrl(avatarUrl);
+  const displayedAvatar = pendingPreview || signedExisting;
 
   useEffect(() => {
     (async () => {
@@ -34,9 +45,10 @@ export default function ProfileEdit() {
         navigate("/auth");
         return;
       }
+      setUserId(user.id);
       const { data: p } = await supabase
         .from("profiles")
-        .select("display_name, birth_date, belt_level, weight_kg, discipline, goals")
+        .select("display_name, birth_date, belt_level, weight_kg, discipline, goals, avatar_url")
         .eq("user_id", user.id)
         .maybeSingle();
       if (p) {
@@ -46,39 +58,101 @@ export default function ProfileEdit() {
         setWeightKg(p.weight_kg != null ? String(p.weight_kg) : "");
         setDiscipline(p.discipline ?? "sparring");
         setGoalsText(Array.isArray(p.goals) ? p.goals.join(", ") : "");
+        setAvatarUrl(p.avatar_url ?? null);
       }
       setLoading(false);
     })();
   }, [navigate]);
 
+  useEffect(() => {
+    return () => {
+      if (pendingPreview) URL.revokeObjectURL(pendingPreview);
+    };
+  }, [pendingPreview]);
 
-  const handleSave = async () => {
+  const handlePickFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const ext = (file.name.split(".").pop() || "").toLowerCase();
+    if (!ALLOWED_EXT.includes(ext)) {
+      toast.error("Brug JPG, PNG, WEBP eller GIF");
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Billede må højst være 10 MB");
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+    if (pendingPreview) URL.revokeObjectURL(pendingPreview);
+    setPendingFile(file);
+    setPendingPreview(URL.createObjectURL(file));
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const uploadAvatarIfNeeded = async (): Promise<string | null> => {
+    if (!pendingFile || !userId) return null;
+    const rawExt = (pendingFile.name.split(".").pop() || "jpg").toLowerCase();
+    const ext = rawExt === "jpeg" ? "jpg" : rawExt;
+    const path = `${userId}/avatar.${ext}`;
+    const contentType = pendingFile.type || `image/${ext === "jpg" ? "jpeg" : ext}`;
+    const { error } = await supabase.storage
+      .from("avatars")
+      .upload(path, pendingFile, { upsert: true, contentType });
+    if (error) throw error;
+    return path;
+  };
+
+  const handleSave = async (): Promise<boolean> => {
     setSaving(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("Not authenticated");
+
+      let newAvatarPath: string | null = null;
+      if (pendingFile) {
+        newAvatarPath = await uploadAvatarIfNeeded();
+      }
+
       const goals = goalsText.split(",").map((g) => g.trim()).filter(Boolean);
       const weight = weightKg ? parseFloat(weightKg) : null;
 
-      const { error } = await supabase.functions.invoke("update-my-profile", {
-        body: {
-          display_name: displayName || null,
-          birth_date: birthDate || null,
-          belt_level: beltLevel || null,
-          weight_kg: weight,
-          discipline,
+      const body: Record<string, unknown> = {
+        display_name: displayName || null,
+        birth_date: birthDate || null,
+        belt_level: beltLevel || null,
+        weight_kg: weight,
+        discipline,
+        goals,
+      };
+      if (newAvatarPath) body.avatar_url = newAvatarPath;
 
-          goals,
-        },
-      });
+      const { error } = await supabase.functions.invoke("update-my-profile", { body });
       if (error) throw error;
-      toast.success(t("profileSaved" as any) || "Gemt");
-      navigate("/profile");
+
+      if (newAvatarPath) {
+        setAvatarUrl(newAvatarPath);
+        setPendingFile(null);
+        if (pendingPreview) URL.revokeObjectURL(pendingPreview);
+        setPendingPreview(null);
+      }
+      return true;
     } catch (e: any) {
       toast.error(e?.message || "Fejl");
+      return false;
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleBack = async () => {
+    const ok = await handleSave();
+    if (ok) navigate("/dashboard");
+  };
+
+  const handleSaveClick = async () => {
+    const ok = await handleSave();
+    if (ok) toast.success(t("profileSaved" as any) || "Gemt");
   };
 
   if (loading) {
@@ -97,7 +171,8 @@ export default function ProfileEdit() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate("/profile")}
+            onClick={handleBack}
+            disabled={saving}
             className="-ml-2 text-white/70 hover:text-white hover:bg-white/5"
           >
             <ChevronLeft className="h-4 w-4 mr-1" />
@@ -105,7 +180,7 @@ export default function ProfileEdit() {
           </Button>
           <Button
             size="sm"
-            onClick={handleSave}
+            onClick={handleSaveClick}
             disabled={saving}
             className="text-black font-medium"
             style={{ backgroundColor: "var(--accent-hex)" }}
@@ -117,6 +192,37 @@ export default function ProfileEdit() {
 
         <div className={cardCls}>
           <h2 className={sectionTitleCls}>{t("profileTitle" as any)}</h2>
+
+          <div className="flex justify-center mb-6">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              className="hidden"
+              onChange={handlePickFile}
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="relative group rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
+              aria-label="Skift profilbillede"
+            >
+              <div className="h-24 w-24 rounded-full overflow-hidden border-2 border-white/15 bg-white/[0.04] flex items-center justify-center">
+                {displayedAvatar ? (
+                  <img src={displayedAvatar} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <UserIcon className="h-10 w-10 text-white/40" />
+                )}
+              </div>
+              <span
+                className="absolute bottom-0 right-0 h-8 w-8 rounded-full flex items-center justify-center border-2 border-[#0a0a0a]"
+                style={{ backgroundColor: "var(--accent-hex)" }}
+              >
+                <Camera className="h-4 w-4 text-black" />
+              </span>
+            </button>
+          </div>
+
           <div className="space-y-4">
             <Field label={t("profileNoName" as any) || "Navn"}>
               <Input className={inputCls} value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
