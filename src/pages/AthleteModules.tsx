@@ -74,15 +74,16 @@ export default function AthleteModules() {
         <h1 className="text-heading">Moduler</h1>
       </header>
 
-      <main className="max-w-2xl mx-auto px-4 py-6 space-y-3">
+      <main className="max-w-2xl mx-auto px-4 py-6">
         {loading ? (
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {ATHLETE_MODULES.map((m) => (
               <div key={m.key} className="h-20 bg-white/10 animate-pulse rounded-xl" />
             ))}
           </div>
         ) : (
-          ATHLETE_MODULES.map((m) => {
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {ATHLETE_MODULES.map((m) => {
             const enabled = enabledKeys.has(m.key);
             const Icon = m.icon;
             const route = MODULE_ROUTES[m.key];
@@ -121,7 +122,8 @@ export default function AthleteModules() {
                 {enabled && <ChevronRight className="h-5 w-5 text-white/40 shrink-0" />}
               </div>
             );
-          })
+          })}
+          </div>
         )}
       </main>
     </div>

@@ -641,7 +641,7 @@ export default function Dashboard() {
 
       {/* Side Menu Sheet */}
       <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-        <SheetContent side="right" className="w-72 bg-card border-border p-0 flex flex-col">
+        <SheetContent side="right" className="w-72 max-w-[85vw] bg-card border-border p-0 flex flex-col">
           <SheetHeader className="px-5 pt-5 pb-3">
             <SheetTitle className="sr-only">{t("menu") || "Menu"}</SheetTitle>
             <div className="flex items-center gap-3">
