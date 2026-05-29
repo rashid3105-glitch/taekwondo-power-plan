@@ -167,11 +167,21 @@ export default function ProfileEdit() {
       //    Selve persistens af avatar_url på profiles sker via edge function neden for,
       //    så vi går igennem service role og undgår tavse RLS-fejl på profiles UPDATE.
       let newAvatarPath: string | null = null;
+      let avatarExtToPersist: string | null = null;
       if (pendingFile && userId) {
         const rawExt = (pendingFile.name.split(".").pop() || "jpg").toLowerCase();
         const ext = rawExt === "jpeg" ? "jpg" : rawExt;
         const path = `${userId}/avatar.${ext}`;
         const contentType = pendingFile.type || `image/${ext === "jpg" ? "jpeg" : ext}`;
+
+        avatarExtToPersist = ext;
+
+        const cleanupExts = ["jpg", "jpeg", "png", "webp", "gif"].filter((candidate) => candidate !== ext);
+        await Promise.all(
+          cleanupExts.map((candidate) =>
+            supabase.storage.from("avatars").remove([`${userId}/avatar.${candidate}`]).catch(() => ({ error: null }))
+          )
+        );
 
         const { error: uploadError } = await supabase.storage
           .from("avatars")
@@ -237,6 +247,14 @@ export default function ProfileEdit() {
           toast.error("Profilbillede kunne ikke gemmes på profilen");
           setSaving(false);
           return false;
+        }
+        if (avatarExtToPersist) {
+          const { data: assetCheck } = supabase.storage.from("avatars").getPublicUrl(newAvatarPath);
+          if (!assetCheck?.publicUrl) {
+            toast.error("Profilbillede blev gemt, men kunne ikke læses tilbage");
+            setSaving(false);
+            return false;
+          }
         }
         // Cache-bust så ny avatar ses med det samme overalt
         setAvatarUrl(`${newAvatarPath}?t=${Date.now()}`);

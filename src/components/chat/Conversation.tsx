@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AvatarImg } from "@/components/AvatarImg";
 import { useMessages } from "@/hooks/useMessages";
+import { useAvatarUrl } from "@/hooks/useAvatarUrl";
 import { MessageBubble } from "./MessageBubble";
 import { MessageComposer } from "./MessageComposer";
 import { AddMembersDialog } from "./AddMembersDialog";
@@ -29,6 +30,7 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
   const [membersOpen, setMembersOpen] = useState(false);
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [isCreator, setIsCreator] = useState(false);
+  const partnerAvatarUrl = useAvatarUrl((thread as any)?.partner?.avatar_url);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -209,9 +211,9 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
                   {showRead && (
                     <div className="flex justify-end pr-1 -mt-1 mb-1">
                       <div className="flex items-center gap-1">
-                        {(partner as any)?.avatar_url ? (
+                        {partnerAvatarUrl ? (
                           <img
-                            src={(partner as any).avatar_url}
+                            src={partnerAvatarUrl}
                             className="h-4 w-4 rounded-full object-cover"
                             alt=""
                           />

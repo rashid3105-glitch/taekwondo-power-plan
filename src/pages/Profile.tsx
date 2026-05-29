@@ -8,6 +8,7 @@ import { LogOut, Pencil, Download, KeyRound, Trash2, ChevronLeft } from "lucide-
 import { PageMeta } from "@/components/PageMeta";
 import { AppFooter } from "@/components/AppFooter";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useAvatarUrl } from "@/hooks/useAvatarUrl";
 
 interface LicenseField {
   id: string;
@@ -73,6 +74,7 @@ export default function Profile() {
   const [licenseFields, setLicenseFields] = useState<LicenseField[]>([]);
   const [hasCoach, setHasCoach] = useState(false);
   const [loading, setLoading] = useState(true);
+  const avatarDisplayUrl = useAvatarUrl(data?.avatar_url);
 
   useEffect(() => {
     let mounted = true;
@@ -199,8 +201,8 @@ export default function Profile() {
               className="h-16 w-16 rounded-full overflow-hidden shrink-0 flex items-center justify-center text-black"
               style={{ backgroundColor: "var(--accent-hex)" }}
             >
-              {data?.avatar_url ? (
-                <img src={data.avatar_url} alt={data.display_name || "avatar"} className="h-full w-full object-cover" />
+              {avatarDisplayUrl ? (
+                <img src={avatarDisplayUrl} alt={data?.display_name || "avatar"} className="h-full w-full object-cover" />
               ) : (
                 <span className="text-xl font-bold">{initialsOf(data?.display_name)}</span>
               )}
