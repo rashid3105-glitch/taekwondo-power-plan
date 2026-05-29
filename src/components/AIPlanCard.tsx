@@ -244,10 +244,10 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
     return 6;
   })();
   const [viewMode, setViewMode] = useState<"program" | "week">(() => {
-    if (typeof window === "undefined") return programWeeks > 1 ? "program" : "week";
+    if (typeof window === "undefined") return "week";
     const saved = localStorage.getItem("planViewMode");
     if (saved === "program" || saved === "week") return saved;
-    return programWeeks > 1 ? "program" : "week";
+    return "week";
   });
   const [selectedWeek, setSelectedWeek] = useState(0);
   const schedule = localPlanData?.weeklySchedule || [];
