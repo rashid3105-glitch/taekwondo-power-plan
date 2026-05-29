@@ -6640,6 +6640,8 @@ const translations = {
     changelog_2026_05_29: "29 maj 2026",
     changelogEntry126: "Nästa tävling visas nu på atletens startskärm",
     changelogEntry127: "Startsidan rensad — gamla moduler dolda bakom en feature flag",
+    changelogEntry128: "Videoanalys tillagd som egen flik i atletens bottennavigering",
+    changelogEntry129: "Genvägen på startsidan öppnar nu videoanalys direkt från startvyn",
     hubSeasonTitle: "Säsongsplan",
     hubSeasonDesc: "Planera hela tävlingssäsongen med periodiseringsfaser och topp-fönster",
     seasonPlannerTitle: "Säsongsplanerare",
