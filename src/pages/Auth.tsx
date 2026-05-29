@@ -39,11 +39,9 @@ export default function AuthPage() {
   const [wantsDemo, setWantsDemo] = useState(false);
   const [passkeyAvailable, setPasskeyAvailable] = useState(false);
   const [passkeyLoading, setPasskeyLoading] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<"athlete" | "coach">("athlete");
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
-  const { setActiveRole } = useRole();
 
   // Read redirect param so we can send user back after login
   const redirectTo = new URLSearchParams(window.location.search).get("redirect");
