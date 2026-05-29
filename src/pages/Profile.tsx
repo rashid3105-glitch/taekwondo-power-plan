@@ -23,9 +23,8 @@ interface ProfileData {
   roles: string[] | null;
   birth_date: string | null;
   belt_level: string | null;
-  height_cm: number | null;
   weight_kg: number | null;
-  training_goals: string[] | null;
+  goals: string[] | null;
   license_values: Record<string, LicenseValue> | null;
   email: string | null;
 }
