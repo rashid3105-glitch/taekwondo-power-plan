@@ -194,7 +194,7 @@ export default function Profile() {
 
       {/* Sport & disciplin */}
       <Section title="Sport & disciplin">
-        <Row label="Sport" value={data?.sport || "Taekwondo"} />
+        <Row label="Sport" value="Taekwondo" />
         <div className="px-4 py-3 border-t border-white/10">
           <p className="text-[11px] uppercase tracking-widest text-white/35 mb-2">Disciplin</p>
           <div className="flex gap-2">
