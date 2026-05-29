@@ -611,6 +611,19 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
               }
             }}
           />
+
+          {/* Periodization (collapsed at bottom) */}
+          {periodization.length > 0 && (
+            <Collapsible defaultOpen={false}>
+              <CollapsibleTrigger className="flex w-full items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-white hover:bg-white/[0.05] transition-colors">
+                {t("periodizationTitle") || "Programperiodisering"}
+                <ChevronDown className="h-4 w-4 text-white/50 transition-transform [[data-state=open]>&]:rotate-180" />
+              </CollapsibleTrigger>
+              <CollapsibleContent className="mt-2">
+                <PeriodizationView periodization={periodization} programWeeks={plan.plan_data?.programWeeks} />
+              </CollapsibleContent>
+            </Collapsible>
+          )}
         </>
     </div>
   );
