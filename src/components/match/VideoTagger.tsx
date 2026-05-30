@@ -91,6 +91,141 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
   const [clubTechs, setClubTechs] = useState<ClubTechnique[]>([]);
   const [techDialogOpen, setTechDialogOpen] = useState(false);
 
+  // Frame stepping
+  const FPS = 30;
+  const FRAME = 1 / FPS;
+  function stepFrame(dir: 1 | -1) {
+    if (!videoRef.current) return;
+    videoRef.current.pause();
+    videoRef.current.currentTime = Math.max(0, Math.min(duration || videoRef.current.duration || 0, videoRef.current.currentTime + dir * FRAME));
+  }
+
+  // Annotation state
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [drawMode, setDrawMode] = useState(false);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [currentPath, setCurrentPath] = useState<[number, number][]>([]);
+  const [savedPaths, setSavedPaths] = useState<{ points: [number, number][]; color: string }[]>([]);
+  const DRAW_COLOR = "#ef4444";
+
+  const clearCanvas = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    ctx?.clearRect(0, 0, canvas.width, canvas.height);
+  };
+
+  const redrawCanvas = (paths: { points: [number, number][]; color: string }[]) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const path of paths) {
+      if (!path.points?.length) continue;
+      ctx.beginPath();
+      ctx.strokeStyle = path.color ?? DRAW_COLOR;
+      ctx.lineWidth = 3;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.moveTo(path.points[0][0] * canvas.width, path.points[0][1] * canvas.height);
+      for (const [x, y] of path.points.slice(1)) {
+        ctx.lineTo(x * canvas.width, y * canvas.height);
+      }
+      ctx.stroke();
+    }
+  };
+
+  const loadAnnotations = async () => {
+    if (!videoRef.current) return;
+    const ts = Math.round(videoRef.current.currentTime * 10) / 10;
+    const { data } = await (supabase.from as any)("video_annotations")
+      .select("paths, color")
+      .eq("video_id", video.id)
+      .gte("timestamp_seconds", ts - 2)
+      .lte("timestamp_seconds", ts + 2)
+      .order("created_at", { ascending: false })
+      .limit(1);
+    if (data?.[0]) {
+      const paths = (data[0].paths as any[]).map((p: any) => ({ points: p.points, color: p.color ?? DRAW_COLOR }));
+      setSavedPaths(paths);
+      redrawCanvas(paths);
+    } else {
+      setSavedPaths([]);
+      clearCanvas();
+    }
+  };
+
+  const getCanvasPos = (e: React.MouseEvent | React.TouchEvent, canvas: HTMLCanvasElement): [number, number] => {
+    const rect = canvas.getBoundingClientRect();
+    const clientX = "touches" in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
+    const clientY = "touches" in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
+    return [(clientX - rect.left) / rect.width, (clientY - rect.top) / rect.height];
+  };
+
+  const startDraw = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!drawMode || !canvasRef.current) return;
+    e.preventDefault();
+    setIsDrawing(true);
+    const pos = getCanvasPos(e, canvasRef.current);
+    setCurrentPath([pos]);
+  };
+
+  const draw = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!isDrawing || !drawMode || !canvasRef.current) return;
+    e.preventDefault();
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const pos = getCanvasPos(e, canvas);
+    setCurrentPath((prev) => {
+      const next = [...prev, pos];
+      if (prev.length > 0) {
+        ctx.beginPath();
+        ctx.strokeStyle = DRAW_COLOR;
+        ctx.lineWidth = 3;
+        ctx.lineCap = "round";
+        ctx.moveTo(prev[prev.length - 1][0] * canvas.width, prev[prev.length - 1][1] * canvas.height);
+        ctx.lineTo(pos[0] * canvas.width, pos[1] * canvas.height);
+        ctx.stroke();
+      }
+      return next;
+    });
+  };
+
+  const endDraw = async () => {
+    if (!isDrawing || !drawMode) return;
+    setIsDrawing(false);
+    if (currentPath.length < 2) {
+      setCurrentPath([]);
+      return;
+    }
+    const newPath = { points: currentPath, color: DRAW_COLOR };
+    const allPaths = [...savedPaths, newPath];
+    setSavedPaths(allPaths);
+    setCurrentPath([]);
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user || !videoRef.current) return;
+    const ts = Math.round(videoRef.current.currentTime * 10) / 10;
+    await (supabase.from as any)("video_annotations").insert({
+      video_id: video.id,
+      created_by: user.id,
+      timestamp_seconds: ts,
+      paths: allPaths,
+      color: DRAW_COLOR,
+      expires_at: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString(),
+    });
+  };
+
+  const clearAnnotations = async () => {
+    setSavedPaths([]);
+    clearCanvas();
+    await (supabase.from as any)("video_annotations")
+      .delete()
+      .eq("video_id", video.id);
+  };
+
   const techList = useMemo(() => techniquesFor(video.discipline), [video.discipline]);
 
   useEffect(() => {
