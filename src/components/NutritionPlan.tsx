@@ -147,7 +147,7 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
     setGenerating(true);
     try {
       const { data, error } = await supabase.functions.invoke("generate-nutrition-plan", {
-        body: { profile, goals: selectedGoals, language: locale, custom_calories: profile?.custom_calories || null },
+        body: { profile: { ...profile, age }, goals: selectedGoals, language: locale, custom_calories: profile?.custom_calories || null },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
