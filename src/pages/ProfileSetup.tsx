@@ -560,6 +560,11 @@ export default function ProfileSetup() {
                 onChange={(e) => setBirthDate(e.target.value)}
                 max={new Date().toISOString().split("T")[0]}
               />
+              {birthDate && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  {t("age") || "Alder"}: {Math.floor((Date.now() - new Date(birthDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000))} {t("years") || "år"}
+                </p>
+              )}
               {birthDate && derivedAge && (
                 <p className="text-xs text-muted-foreground mt-1">
                   {t("profileAge")}: <span className="font-semibold text-foreground">{derivedAge} {t("years")}</span>
