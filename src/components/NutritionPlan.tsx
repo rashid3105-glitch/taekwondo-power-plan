@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { Loader2, Apple, AlertTriangle, Droplets, Pill, Utensils, Flame, ChevronDown, ChevronUp, Download } from "lucide-react";
+import { Loader2, Apple, AlertTriangle, Droplets, Pill, Utensils, Flame, ChevronDown, ChevronUp, Download, Trash2 } from "lucide-react";
 import jsPDF from "jspdf";
 import { getMealImage } from "@/data/recipeImages";
 
