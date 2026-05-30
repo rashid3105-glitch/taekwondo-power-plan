@@ -145,10 +145,20 @@ export default function Library() {
         )}
 
         {section === "nutrition" && nutritionView === "planner" && (
-          <NutritionPlan profile={profile} />
+          <div className="space-y-4">
+            <DailyNutritionDashboard calorieTarget={profile?.custom_calories ?? null} />
+            <NutritionPlan profile={profile} />
+          </div>
         )}
         {section === "nutrition" && nutritionView === "logger" && (
-          <FoodScanner />
+          <div className="space-y-4">
+            <DailyNutritionDashboard
+              key={loggerRefresh}
+              calorieTarget={profile?.custom_calories ?? null}
+              refreshKey={loggerRefresh}
+            />
+            <FoodScanner onLogged={() => setLoggerRefresh((n) => n + 1)} />
+          </div>
         )}
         {section === "nutrition" && nutritionView === "recipes" && (
           <NutritionLibrary />
