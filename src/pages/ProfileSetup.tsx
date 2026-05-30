@@ -804,8 +804,8 @@ export default function ProfileSetup() {
           </div>
 
 
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? t("saving") : t("saveProfileContinue")}
+          <Button type="submit" className="w-full" disabled={loading || uploading}>
+            {uploading ? t("saving") : loading ? t("saving") : t("saveProfileContinue")}
           </Button>
         </form>
 
