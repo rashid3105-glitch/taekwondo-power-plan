@@ -537,44 +537,86 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
             ) : videoSrc ? (
               <div className="space-y-2">
                 <div className="flex justify-center bg-black rounded-lg border border-border overflow-hidden">
-                  <video
-                    ref={videoRef}
-                    src={videoSrc}
-                    controls
-                    playsInline
-                    {...({ "webkit-playsinline": "true" } as any)}
-                    x-webkit-airplay="allow"
-                    controlsList="nodownload"
-                    className="max-h-[70vh] max-w-full h-auto w-auto object-contain"
-                    style={{ aspectRatio: String(aspectRatio) }}
-                    preload="metadata"
-                    onLoadedMetadata={(e) => {
-                      const v = e.target as HTMLVideoElement;
-                      if (Number.isFinite(v.duration) && v.duration > 0) setDuration(v.duration);
-                      if (v.videoWidth > 0 && v.videoHeight > 0) {
-                        setAspectRatio(v.videoWidth / v.videoHeight);
-                      }
-                      try { v.playbackRate = speed; } catch {}
-                      // Restore playback position if we had one (e.g. signed URL refreshed).
-                      if (lastTimeRef.current > 0 && Math.abs(v.currentTime - lastTimeRef.current) > 0.25) {
-                        try { v.currentTime = lastTimeRef.current; } catch {}
-                      }
-                      if (wasPlayingRef.current) {
-                        void v.play().catch(() => {});
-                      }
-                    }}
-                    onTimeUpdate={(e) => { lastTimeRef.current = (e.target as HTMLVideoElement).currentTime; }}
-                    onPlay={() => { wasPlayingRef.current = true; }}
-                    onPause={(e) => {
-                      wasPlayingRef.current = false;
-                      lastTimeRef.current = (e.target as HTMLVideoElement).currentTime;
-                    }}
-                  />
+                  <div className="relative inline-block">
+                    <video
+                      ref={videoRef}
+                      src={videoSrc}
+                      controls
+                      playsInline
+                      tabIndex={0}
+                      {...({ "webkit-playsinline": "true" } as any)}
+                      x-webkit-airplay="allow"
+                      controlsList="nodownload"
+                      className="max-h-[70vh] max-w-full h-auto w-auto object-contain block"
+                      style={{ aspectRatio: String(aspectRatio) }}
+                      preload="metadata"
+                      onKeyDown={(e) => {
+                        if (e.key === "ArrowLeft") { e.preventDefault(); stepFrame(-1); }
+                        if (e.key === "ArrowRight") { e.preventDefault(); stepFrame(1); }
+                      }}
+                      onLoadedMetadata={(e) => {
+                        const v = e.target as HTMLVideoElement;
+                        if (Number.isFinite(v.duration) && v.duration > 0) setDuration(v.duration);
+                        if (v.videoWidth > 0 && v.videoHeight > 0) {
+                          setAspectRatio(v.videoWidth / v.videoHeight);
+                        }
+                        try { v.playbackRate = speed; } catch {}
+                        if (lastTimeRef.current > 0 && Math.abs(v.currentTime - lastTimeRef.current) > 0.25) {
+                          try { v.currentTime = lastTimeRef.current; } catch {}
+                        }
+                        if (wasPlayingRef.current) {
+                          void v.play().catch(() => {});
+                        }
+                      }}
+                      onTimeUpdate={(e) => { lastTimeRef.current = (e.target as HTMLVideoElement).currentTime; }}
+                      onPlay={() => { wasPlayingRef.current = true; }}
+                      onPause={(e) => {
+                        wasPlayingRef.current = false;
+                        lastTimeRef.current = (e.target as HTMLVideoElement).currentTime;
+                      }}
+                    />
+                    <canvas
+                      ref={canvasRef}
+                      width={800}
+                      height={Math.round(800 / aspectRatio)}
+                      onMouseDown={startDraw}
+                      onMouseMove={draw}
+                      onMouseUp={endDraw}
+                      onMouseLeave={endDraw}
+                      onTouchStart={startDraw}
+                      onTouchMove={draw}
+                      onTouchEnd={endDraw}
+                      className="absolute inset-0 w-full h-full"
+                      style={{
+                        cursor: drawMode ? "crosshair" : "default",
+                        pointerEvents: drawMode ? "all" : "none",
+                        touchAction: drawMode ? "none" : "auto",
+                      }}
+                    />
+                  </div>
                 </div>
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <span className="text-[11px] uppercase tracking-wider text-muted-foreground mr-1">
                     {t("matchPlaybackSpeed")}
                   </span>
+                  <Button
+                    type="button" size="sm" variant="outline"
+                    className="h-7 px-2 text-xs"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => stepFrame(-1)}
+                    title="Forrige frame (←)"
+                  >
+                    ⏮
+                  </Button>
+                  <Button
+                    type="button" size="sm" variant="outline"
+                    className="h-7 px-2 text-xs"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => stepFrame(1)}
+                    title="Næste frame (→)"
+                  >
+                    ⏭
+                  </Button>
                   {[0.25, 0.5, 1, 1.5, 2].map((r) => (
                     <Button
                       key={r}
@@ -591,6 +633,35 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
                     </Button>
                   ))}
                 </div>
+                {isCoach && (
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={drawMode ? "default" : "outline"}
+                      className={`h-7 px-3 text-xs gap-1.5 ${drawMode ? "bg-red-500 hover:bg-red-600 border-red-500 text-white" : ""}`}
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => {
+                        setDrawMode((d) => !d);
+                        if (!drawMode) void loadAnnotations();
+                      }}
+                    >
+                      ✏️ {drawMode ? t("annotationModeOn") : t("annotationMode")}
+                    </Button>
+                    {savedPaths.length > 0 && (
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        className="h-7 px-3 text-xs gap-1.5"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={clearAnnotations}
+                      >
+                        🗑 {t("annotationClear")}
+                      </Button>
+                    )}
+                  </div>
+                )}
                 {/* Clickable timeline markers */}
                 {duration > 0 && (
                   <div className="relative h-7 mt-1">
