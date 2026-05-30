@@ -381,6 +381,25 @@ export default function ProfileSetup() {
         return;
       }
 
+      // Verificér at avatar_url faktisk blev persisteret på profilen,
+      // så vi aldrig viser "Profil gemt" mens billedet er faldet på gulvet.
+      if (cleanAvatarUrl) {
+        const { data: verify } = await supabase
+          .from("profiles")
+          .select("avatar_url")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        if (!verify || verify.avatar_url !== cleanAvatarUrl) {
+          console.error("Avatar verification failed", { expected: cleanAvatarUrl, got: verify?.avatar_url });
+          toast({
+            title: t("error"),
+            description: "Profilbillede kunne ikke gemmes på profilen — prøv igen.",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+
       setSavedAvatarUrl(cleanAvatarUrl);
       toast({ title: t("profileSaved") });
 

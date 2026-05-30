@@ -61,7 +61,7 @@ export default function Library() {
       const { data } = await supabase
         .from("profiles")
         .select("age, weight_kg, belt_level, discipline, tkd_sessions_per_week, experience_years, current_injury, custom_calories, birth_date")
-        .eq("id", user.id)
+        .eq("user_id", user.id)
         .maybeSingle();
       if (data && data.age == null && data.birth_date) {
         const bd = new Date(data.birth_date);
