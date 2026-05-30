@@ -90,7 +90,7 @@ Rules:
 - Keep bullets under 22 words each.
 - Do not diagnose medical conditions.`;
 
-    const userPrompt = `Athlete age: ${age ?? "unknown"} (peer group ${ageLabel}).
+    const userPrompt = `Athlete age: ${age == null ? "unknown" : Number(age)} (peer group ${safeAgeLabel}).
 Last 14 days summary:
 ${lines}
 
