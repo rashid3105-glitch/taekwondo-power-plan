@@ -7,6 +7,7 @@ import { MentalLibrary } from "@/components/MentalLibrary";
 import { NutritionLibrary } from "@/components/NutritionLibrary";
 import { NutritionPlan } from "@/components/NutritionPlan";
 import { FoodScanner } from "@/components/FoodScanner";
+import { DailyNutritionDashboard } from "@/components/DailyNutritionDashboard";
 import { TestLibrary } from "@/components/TestLibrary";
 import { HiitLibrary } from "@/components/HiitLibrary";
 import { Dumbbell, Brain, UtensilsCrossed, ClipboardList, ArrowLeft, BookOpen, Zap, ChefHat, Camera } from "lucide-react";
