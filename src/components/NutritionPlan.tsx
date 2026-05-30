@@ -28,6 +28,7 @@ interface NutritionPlanProps {
     experience_years: number | null;
     current_injury: string | null;
     custom_calories?: number | null;
+    birth_date?: string | null;
   } | null;
   readOnly?: boolean;
   userId?: string;
