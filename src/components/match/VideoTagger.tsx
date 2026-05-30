@@ -91,6 +91,141 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
   const [clubTechs, setClubTechs] = useState<ClubTechnique[]>([]);
   const [techDialogOpen, setTechDialogOpen] = useState(false);
 
+  // Frame stepping
+  const FPS = 30;
+  const FRAME = 1 / FPS;
+  function stepFrame(dir: 1 | -1) {
+    if (!videoRef.current) return;
+    videoRef.current.pause();
+    videoRef.current.currentTime = Math.max(0, Math.min(duration || videoRef.current.duration || 0, videoRef.current.currentTime + dir * FRAME));
+  }
+
+  // Annotation state
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [drawMode, setDrawMode] = useState(false);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [currentPath, setCurrentPath] = useState<[number, number][]>([]);
+  const [savedPaths, setSavedPaths] = useState<{ points: [number, number][]; color: string }[]>([]);
+  const DRAW_COLOR = "#ef4444";
+
+  const clearCanvas = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    ctx?.clearRect(0, 0, canvas.width, canvas.height);
+  };
+
+  const redrawCanvas = (paths: { points: [number, number][]; color: string }[]) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const path of paths) {
+      if (!path.points?.length) continue;
+      ctx.beginPath();
+      ctx.strokeStyle = path.color ?? DRAW_COLOR;
+      ctx.lineWidth = 3;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.moveTo(path.points[0][0] * canvas.width, path.points[0][1] * canvas.height);
+      for (const [x, y] of path.points.slice(1)) {
+        ctx.lineTo(x * canvas.width, y * canvas.height);
+      }
+      ctx.stroke();
+    }
+  };
+
+  const loadAnnotations = async () => {
+    if (!videoRef.current) return;
+    const ts = Math.round(videoRef.current.currentTime * 10) / 10;
+    const { data } = await (supabase.from as any)("video_annotations")
+      .select("paths, color")
+      .eq("video_id", video.id)
+      .gte("timestamp_seconds", ts - 2)
+      .lte("timestamp_seconds", ts + 2)
+      .order("created_at", { ascending: false })
+      .limit(1);
+    if (data?.[0]) {
+      const paths = (data[0].paths as any[]).map((p: any) => ({ points: p.points, color: p.color ?? DRAW_COLOR }));
+      setSavedPaths(paths);
+      redrawCanvas(paths);
+    } else {
+      setSavedPaths([]);
+      clearCanvas();
+    }
+  };
+
+  const getCanvasPos = (e: React.MouseEvent | React.TouchEvent, canvas: HTMLCanvasElement): [number, number] => {
+    const rect = canvas.getBoundingClientRect();
+    const clientX = "touches" in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
+    const clientY = "touches" in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
+    return [(clientX - rect.left) / rect.width, (clientY - rect.top) / rect.height];
+  };
+
+  const startDraw = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!drawMode || !canvasRef.current) return;
+    e.preventDefault();
+    setIsDrawing(true);
+    const pos = getCanvasPos(e, canvasRef.current);
+    setCurrentPath([pos]);
+  };
+
+  const draw = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!isDrawing || !drawMode || !canvasRef.current) return;
+    e.preventDefault();
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const pos = getCanvasPos(e, canvas);
+    setCurrentPath((prev) => {
+      const next = [...prev, pos];
+      if (prev.length > 0) {
+        ctx.beginPath();
+        ctx.strokeStyle = DRAW_COLOR;
+        ctx.lineWidth = 3;
+        ctx.lineCap = "round";
+        ctx.moveTo(prev[prev.length - 1][0] * canvas.width, prev[prev.length - 1][1] * canvas.height);
+        ctx.lineTo(pos[0] * canvas.width, pos[1] * canvas.height);
+        ctx.stroke();
+      }
+      return next;
+    });
+  };
+
+  const endDraw = async () => {
+    if (!isDrawing || !drawMode) return;
+    setIsDrawing(false);
+    if (currentPath.length < 2) {
+      setCurrentPath([]);
+      return;
+    }
+    const newPath = { points: currentPath, color: DRAW_COLOR };
+    const allPaths = [...savedPaths, newPath];
+    setSavedPaths(allPaths);
+    setCurrentPath([]);
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user || !videoRef.current) return;
+    const ts = Math.round(videoRef.current.currentTime * 10) / 10;
+    await (supabase.from as any)("video_annotations").insert({
+      video_id: video.id,
+      created_by: user.id,
+      timestamp_seconds: ts,
+      paths: allPaths,
+      color: DRAW_COLOR,
+      expires_at: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString(),
+    });
+  };
+
+  const clearAnnotations = async () => {
+    setSavedPaths([]);
+    clearCanvas();
+    await (supabase.from as any)("video_annotations")
+      .delete()
+      .eq("video_id", video.id);
+  };
+
   const techList = useMemo(() => techniquesFor(video.discipline), [video.discipline]);
 
   useEffect(() => {
@@ -402,44 +537,86 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
             ) : videoSrc ? (
               <div className="space-y-2">
                 <div className="flex justify-center bg-black rounded-lg border border-border overflow-hidden">
-                  <video
-                    ref={videoRef}
-                    src={videoSrc}
-                    controls
-                    playsInline
-                    {...({ "webkit-playsinline": "true" } as any)}
-                    x-webkit-airplay="allow"
-                    controlsList="nodownload"
-                    className="max-h-[70vh] max-w-full h-auto w-auto object-contain"
-                    style={{ aspectRatio: String(aspectRatio) }}
-                    preload="metadata"
-                    onLoadedMetadata={(e) => {
-                      const v = e.target as HTMLVideoElement;
-                      if (Number.isFinite(v.duration) && v.duration > 0) setDuration(v.duration);
-                      if (v.videoWidth > 0 && v.videoHeight > 0) {
-                        setAspectRatio(v.videoWidth / v.videoHeight);
-                      }
-                      try { v.playbackRate = speed; } catch {}
-                      // Restore playback position if we had one (e.g. signed URL refreshed).
-                      if (lastTimeRef.current > 0 && Math.abs(v.currentTime - lastTimeRef.current) > 0.25) {
-                        try { v.currentTime = lastTimeRef.current; } catch {}
-                      }
-                      if (wasPlayingRef.current) {
-                        void v.play().catch(() => {});
-                      }
-                    }}
-                    onTimeUpdate={(e) => { lastTimeRef.current = (e.target as HTMLVideoElement).currentTime; }}
-                    onPlay={() => { wasPlayingRef.current = true; }}
-                    onPause={(e) => {
-                      wasPlayingRef.current = false;
-                      lastTimeRef.current = (e.target as HTMLVideoElement).currentTime;
-                    }}
-                  />
+                  <div className="relative inline-block">
+                    <video
+                      ref={videoRef}
+                      src={videoSrc}
+                      controls
+                      playsInline
+                      tabIndex={0}
+                      {...({ "webkit-playsinline": "true" } as any)}
+                      x-webkit-airplay="allow"
+                      controlsList="nodownload"
+                      className="max-h-[70vh] max-w-full h-auto w-auto object-contain block"
+                      style={{ aspectRatio: String(aspectRatio) }}
+                      preload="metadata"
+                      onKeyDown={(e) => {
+                        if (e.key === "ArrowLeft") { e.preventDefault(); stepFrame(-1); }
+                        if (e.key === "ArrowRight") { e.preventDefault(); stepFrame(1); }
+                      }}
+                      onLoadedMetadata={(e) => {
+                        const v = e.target as HTMLVideoElement;
+                        if (Number.isFinite(v.duration) && v.duration > 0) setDuration(v.duration);
+                        if (v.videoWidth > 0 && v.videoHeight > 0) {
+                          setAspectRatio(v.videoWidth / v.videoHeight);
+                        }
+                        try { v.playbackRate = speed; } catch {}
+                        if (lastTimeRef.current > 0 && Math.abs(v.currentTime - lastTimeRef.current) > 0.25) {
+                          try { v.currentTime = lastTimeRef.current; } catch {}
+                        }
+                        if (wasPlayingRef.current) {
+                          void v.play().catch(() => {});
+                        }
+                      }}
+                      onTimeUpdate={(e) => { lastTimeRef.current = (e.target as HTMLVideoElement).currentTime; }}
+                      onPlay={() => { wasPlayingRef.current = true; }}
+                      onPause={(e) => {
+                        wasPlayingRef.current = false;
+                        lastTimeRef.current = (e.target as HTMLVideoElement).currentTime;
+                      }}
+                    />
+                    <canvas
+                      ref={canvasRef}
+                      width={800}
+                      height={Math.round(800 / aspectRatio)}
+                      onMouseDown={startDraw}
+                      onMouseMove={draw}
+                      onMouseUp={endDraw}
+                      onMouseLeave={endDraw}
+                      onTouchStart={startDraw}
+                      onTouchMove={draw}
+                      onTouchEnd={endDraw}
+                      className="absolute inset-0 w-full h-full"
+                      style={{
+                        cursor: drawMode ? "crosshair" : "default",
+                        pointerEvents: drawMode ? "all" : "none",
+                        touchAction: drawMode ? "none" : "auto",
+                      }}
+                    />
+                  </div>
                 </div>
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <span className="text-[11px] uppercase tracking-wider text-muted-foreground mr-1">
                     {t("matchPlaybackSpeed")}
                   </span>
+                  <Button
+                    type="button" size="sm" variant="outline"
+                    className="h-7 px-2 text-xs"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => stepFrame(-1)}
+                    title="Forrige frame (←)"
+                  >
+                    ⏮
+                  </Button>
+                  <Button
+                    type="button" size="sm" variant="outline"
+                    className="h-7 px-2 text-xs"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => stepFrame(1)}
+                    title="Næste frame (→)"
+                  >
+                    ⏭
+                  </Button>
                   {[0.25, 0.5, 1, 1.5, 2].map((r) => (
                     <Button
                       key={r}
@@ -456,6 +633,35 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
                     </Button>
                   ))}
                 </div>
+                {isCoach && (
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={drawMode ? "default" : "outline"}
+                      className={`h-7 px-3 text-xs gap-1.5 ${drawMode ? "bg-red-500 hover:bg-red-600 border-red-500 text-white" : ""}`}
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => {
+                        setDrawMode((d) => !d);
+                        if (!drawMode) void loadAnnotations();
+                      }}
+                    >
+                      ✏️ {drawMode ? t("annotationModeOn") : t("annotationMode")}
+                    </Button>
+                    {savedPaths.length > 0 && (
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        className="h-7 px-3 text-xs gap-1.5"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={clearAnnotations}
+                      >
+                        🗑 {t("annotationClear")}
+                      </Button>
+                    )}
+                  </div>
+                )}
                 {/* Clickable timeline markers */}
                 {duration > 0 && (
                   <div className="relative h-7 mt-1">
