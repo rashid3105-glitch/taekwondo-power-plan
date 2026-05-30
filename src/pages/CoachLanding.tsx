@@ -491,15 +491,23 @@ function StoryRows() {
 }
 
 /* ───────────────── Pricing ───────────────── */
-const FALLBACK_PRICES = ["49", "99", "399", "699", "999"];
-const POPULAR_INDEX = 2;
+const POPULAR_INDEX = 1;
 
 function PricingTeaser() {
   const cl = useCL();
+  const trialBadge = cl.pricingSub.split("·")[0].trim();
   return (
     <section id="pricing" className="mx-auto max-w-6xl px-5 py-20 lg:py-28">
       <h2 className={`${headline} text-4xl sm:text-5xl mb-3 text-center`} style={{ color: C.text }}>{cl.pricingTitle}</h2>
-      <p className={`text-center text-sm mb-12 ${body}`} style={{ color: C.muted }}>{cl.pricingSub}</p>
+      <p className={`text-center text-sm mb-6 ${body}`} style={{ color: C.muted }}>{cl.pricingSub}</p>
+      <div className="flex justify-center mb-10">
+        <span
+          className={`inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-semibold ${body}`}
+          style={{ background: `${C.red}1A`, border: `1px solid ${C.red}`, color: C.red }}
+        >
+          ✨ {trialBadge}
+        </span>
+      </div>
       <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
         {cl.tiers.map((tier, idx) => {
           const popular = idx === POPULAR_INDEX;
@@ -515,11 +523,7 @@ function PricingTeaser() {
                 </span>
               )}
               <div className={`${headline} text-2xl`} style={{ color: C.text }}>{tier.name}</div>
-              <div className={`text-xs uppercase tracking-wider mt-3 ${body}`} style={{ color: C.muted }}>{cl.fromLabel}</div>
-              <div className={`${headline} text-4xl mt-1 mb-2`} style={{ color: C.text }}>
-                {(cl.prices ?? FALLBACK_PRICES)[idx]} <span className="text-xl" style={{ color: C.muted }}>{cl.perMonth}</span>
-              </div>
-              <p className={`text-xs mb-5 ${body}`} style={{ color: C.muted }}>{tier.desc}</p>
+              <p className={`text-xs mt-2 mb-5 ${body}`} style={{ color: C.muted }}>{tier.desc}</p>
               <ul className={`space-y-2 mb-7 text-sm ${body}`} style={{ color: C.text }}>
                 {tier.features.map((f) => (
                   <li key={f} className="flex gap-2">
@@ -528,22 +532,20 @@ function PricingTeaser() {
                   </li>
                 ))}
               </ul>
-              <Link
-                to="/auth?tab=signup"
+              <a
+                href={`mailto:Farooq@Sportstalent.dk?subject=${encodeURIComponent(`Pricing inquiry — ${tier.name}`)}`}
                 className={`inline-flex w-full items-center justify-center gap-2 rounded-md px-4 py-3 text-sm font-bold ${body}`}
                 style={popular ? { background: C.red, color: "#FFFFFF" } : { border: `1px solid ${C.border}`, color: C.text }}
               >
                 {tier.cta} <ArrowRight className="h-4 w-4" />
-              </Link>
+              </a>
             </div>
           );
         })}
       </div>
       <p className={`text-center text-xs mt-8 ${body}`} style={{ color: C.muted }}>
         {cl.pricingFootnoteLead}{" "}
-        <Link to="/pricing" className="underline" style={{ color: C.text }}>{cl.pricingFootnoteLink}</Link>
-        {" · "}{cl.pricingFootnoteFedLead}{" "}
-        <Link to="/contact" className="underline" style={{ color: C.text }}>{cl.pricingFootnoteContact}</Link>.
+        <a href="mailto:Farooq@Sportstalent.dk" className="underline" style={{ color: C.text }}>{cl.pricingFootnoteContact}</a>
       </p>
     </section>
   );

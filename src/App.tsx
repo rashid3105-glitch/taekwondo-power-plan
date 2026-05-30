@@ -139,7 +139,9 @@ const AnimatedRoutes = () => {
         <Route path="/coach/season-calendar" element={<Page><SeasonCalendar /></Page>} />
         <Route path="/coach/surveys" element={<Page><CoachSurveys /></Page>} />
         <Route path="/surveys" element={<Page><AthleteSurveys /></Page>} />
-        <Route path="/pricing" element={<Page><Pricing /></Page>} />
+        <Route path="/pricing" element={<Navigate to="/#pricing" replace />} />
+        {/* Pricing page hidden — uncomment to restore */}
+        {/* <Route path="/pricing" element={<Page><Pricing /></Page>} /> */}
         <Route path="/settings/subscription" element={<Page><SubscriptionSettings /></Page>} />
         <Route path="/help" element={<Page><Help /></Page>} />
         <Route path="/kostplan" element={<Page><Kostplan /></Page>} />
