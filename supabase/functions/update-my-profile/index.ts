@@ -63,7 +63,12 @@ const UpdateProfileSchema = z.object({
     .nullable()
     .optional()
     .transform((v) => {
-      if (v == null) return null;
+      // CRITICAL: undefined means the client did not send this field, so we
+      // must leave the existing avatar_url untouched. Converting undefined to
+      // null here would silently wipe the user's profile picture on any
+      // subsequent profile save that doesn't re-upload the photo.
+      if (v === undefined) return undefined;
+      if (v === null) return null;
       const trimmed = v.trim();
       return trimmed === "" ? null : trimmed;
     })

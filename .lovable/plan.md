@@ -1,30 +1,26 @@
-## Goal
-Make the profile picture persist reliably after saving and navigating away, with the smallest safe fix.
+# Plan
 
-## What I found
-- The backend is healthy.
-- Your profile row currently has `avatar_url = null`.
-- The storage file does exist in the `avatars` bucket for your user.
-- That means the image upload succeeded, but the profile record did not keep the image path.
-- The current `ProfileSetup.tsx` flow uploads the image first and only saves `avatar_url` later when the main profile form is submitted.
-- While that upload is running, the Save button is still enabled because it only depends on `loading`, not `uploading`.
-- If Save is pressed before the upload finishes, the form submits `avatar_url: null`, so the profile saves successfully but without the image. That matches your symptom exactly: image appears briefly, then disappears after navigation/reload.
-- The previous “fix” only added a verification read after save. It did not fix this race condition.
+Jeg vil rette profilbillede-fejlen i det flow, der faktisk bruges nu.
 
-## Plan
-1. Update `src/pages/ProfileSetup.tsx` so the profile form cannot be submitted while the avatar upload is still in progress.
-2. Make the save path use the final uploaded avatar path reliably, so it never sends `null` when an upload is still pending.
-3. Keep the existing verification step, but make its error handling clearer around avatar persistence.
-4. Validate the result by checking that:
-   - the profile row contains the avatar path after save
-   - the dashboard/front page still reads the avatar from the profile row after navigation
+## Hvad der er galt
+- Din app sender ikke længere brugeren gennem den gamle `ProfileSetup`-skærm ved profilredigering.
+- Ruten `/profile-setup` redirecter nu til `/profile`, og selve redigeringen sker i `src/pages/ProfileEdit.tsx`.
+- De tidligere fixes blev derfor lagt det forkerte sted.
+- Runtime-signalerne viser også mismatch: previewet viser billedet lokalt og toast siger “Profil gemt”, men den efterfølgende profil-fetch har stadig `avatar_url: null`, så derfor forsvinder billedet overalt bagefter.
 
-## Technical details
-- Primary file: `src/pages/ProfileSetup.tsx`
-- Likely change set:
-  - disable submit when `uploading || loading`
-  - guard `handleSubmit` from running during upload
-  - ensure avatar state used in payload is the completed uploaded path only
-- No database migration needed.
-- No backend schema change needed.
-- The display/render side (`useAvatarUrl`, dashboard/profile readers) looks consistent once `profiles.avatar_url` is actually populated.
+## Jeg vil ændre
+1. Gennemgå og rette gemmelogikken i `src/pages/ProfileEdit.tsx`, så success kun vises når `avatar_url` faktisk er persisteret korrekt.
+2. Sikre at navigationen fra dashboard/profil ikke fortsat sender brugeren gennem det gamle `/profile-setup`-spor, hvis det skaber forkert forventning eller forkert save-path.
+3. Tilføje målrettet fejlhåndtering/logik i `ProfileEdit`, så et uploadet billede ikke bare bliver et lokalt preview uden database-opdatering.
+4. Validere efter rettelsen ved at følge samme kæde som i din fejlrapport: vælg billede → gem → navigér væk → bekræft at `profiles.avatar_url` ikke længere er `null` og at avatar vises i profil og dashboard.
+
+## Teknisk fokus
+- `src/pages/ProfileEdit.tsx`
+- `src/App.tsx`
+- Eventuelt mindre justering i fælles avatar-visning kun hvis nødvendigt efter validering
+- Ingen databaseændring planlagt med den evidens jeg har nu
+
+## Forventet resultat
+- Billedet bliver ikke kun vist lokalt i redigeringen.
+- Når du har gemt, findes billedestien også i profil-data.
+- Samme avatar vises bagefter i profilheader, dashboard og andre steder der læser `avatar_url`.
