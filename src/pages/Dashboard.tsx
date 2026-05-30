@@ -321,7 +321,7 @@ export default function Dashboard() {
     { tab: "rehab", icon: Heart, labelKey: "injuryRehabPlan", color: "text-tab-rehab" },
     { tab: "mental", icon: Brain, labelKey: "mental", color: "text-tab-mental" },
     { tab: "testing", icon: ClipboardList, labelKey: "testing", color: "text-primary" },
-    { tab: "nutrition", icon: Apple, labelKey: "nutrition", color: "text-tab-nutrition" },
+    
   ];
 
   useEffect(() => {
