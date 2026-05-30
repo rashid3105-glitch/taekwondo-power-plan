@@ -7,6 +7,7 @@ import { MentalLibrary } from "@/components/MentalLibrary";
 import { NutritionLibrary } from "@/components/NutritionLibrary";
 import { NutritionPlan } from "@/components/NutritionPlan";
 import { FoodScanner } from "@/components/FoodScanner";
+import { DailyNutritionDashboard } from "@/components/DailyNutritionDashboard";
 import { TestLibrary } from "@/components/TestLibrary";
 import { HiitLibrary } from "@/components/HiitLibrary";
 import { Dumbbell, Brain, UtensilsCrossed, ClipboardList, ArrowLeft, BookOpen, Zap, ChefHat, Camera } from "lucide-react";
@@ -50,6 +51,7 @@ export default function Library() {
 
   const [nutritionView, setNutritionView] = useState<NutritionView>("home");
   const [profile, setProfile] = useState<any>(null);
+  const [loggerRefresh, setLoggerRefresh] = useState(0);
 
   useEffect(() => {
     if (section !== "nutrition") return;
@@ -144,10 +146,20 @@ export default function Library() {
         )}
 
         {section === "nutrition" && nutritionView === "planner" && (
-          <NutritionPlan profile={profile} />
+          <div className="space-y-4">
+            <DailyNutritionDashboard calorieTarget={profile?.custom_calories ?? null} />
+            <NutritionPlan profile={profile} />
+          </div>
         )}
         {section === "nutrition" && nutritionView === "logger" && (
-          <FoodScanner />
+          <div className="space-y-4">
+            <DailyNutritionDashboard
+              key={loggerRefresh}
+              calorieTarget={profile?.custom_calories ?? null}
+              refreshKey={loggerRefresh}
+            />
+            <FoodScanner onLogged={() => setLoggerRefresh((n) => n + 1)} />
+          </div>
         )}
         {section === "nutrition" && nutritionView === "recipes" && (
           <NutritionLibrary />

@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { Loader2, Apple, AlertTriangle, Droplets, Pill, Utensils, Flame, ChevronDown, ChevronUp, Download } from "lucide-react";
+import { Loader2, Apple, AlertTriangle, Droplets, Pill, Utensils, Flame, ChevronDown, ChevronUp, Download, Trash2 } from "lucide-react";
 import jsPDF from "jspdf";
 import { getMealImage } from "@/data/recipeImages";
 
@@ -126,7 +126,10 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
   );
 
   const generatePlan = async () => {
-    if (!profile) return;
+    if (!profile || profile.age == null || profile.weight_kg == null) {
+      toast({ title: t("error"), description: t("profileRequired") || "Udfyld din profil (alder og vægt) først", variant: "destructive" });
+      return;
+    }
     if (selectedGoals.length === 0) {
       toast({ title: t("error"), description: t("selectNutritionGoals"), variant: "destructive" });
       return;
@@ -138,14 +141,37 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
+      if (!data?.plan) throw new Error("No plan returned");
       setPlan(data.plan);
       const id = await savePlan(data.plan, selectedGoals, customCalories ? parseInt(customCalories) : null, savedPlanId);
       if (id) setSavedPlanId(id);
       toast({ title: t("nutritionPlanGenerated") });
     } catch (err: any) {
-      toast({ title: t("error"), description: err.message, variant: "destructive" });
+      console.error("generate-nutrition-plan failed", err);
+      toast({ title: t("error"), description: err?.message || "Generation failed", variant: "destructive" });
     } finally {
       setGenerating(false);
+    }
+  };
+
+  const deletePlan = async () => {
+    if (!savedPlanId) {
+      setPlan(null);
+      return;
+    }
+    if (!window.confirm(t("deletePlanConfirm") || "Slet plan?")) return;
+    try {
+      const { error } = await supabase
+        .from("nutrition_plans")
+        .update({ is_active: false })
+        .eq("id", savedPlanId);
+      if (error) throw error;
+      setPlan(null);
+      setSavedPlanId(null);
+      setSelectedGoals([]);
+      toast({ title: t("planDeleted") || "Plan slettet" });
+    } catch (err: any) {
+      toast({ title: t("error"), description: err?.message, variant: "destructive" });
     }
   };
 
@@ -396,11 +422,18 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
 
           {/* Overview */}
           <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-foreground">{plan.planName}</h3>
-              <Button variant="outline" size="sm" onClick={downloadPDF}>
-                <Download className="h-4 w-4 mr-1" /> PDF
-              </Button>
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="font-bold text-foreground truncate">{plan.planName}</h3>
+              <div className="flex items-center gap-2 shrink-0">
+                <Button variant="outline" size="sm" onClick={downloadPDF}>
+                  <Download className="h-4 w-4 mr-1" /> PDF
+                </Button>
+                {!readOnly && (
+                  <Button variant="outline" size="sm" onClick={deletePlan} className="text-destructive hover:text-destructive">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="rounded-lg bg-muted/50 p-3 text-center">

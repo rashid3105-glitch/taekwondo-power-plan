@@ -1,40 +1,44 @@
-## Mål
+## Svar på dine spørgsmål
 
-Ernæring skal være et kort i **Biblioteket** (det erstatter ikke "Opskrifter"-kortet — det *er* det nuværende "Ernæring"-kort, men det skal nu åbne en undermenu med 3 valg i stedet for at gå direkte til opskrifter):
+**Det grafiske overblik (kalorie-ring, makro-bars, "Dagens måltider")** kom **ikke** med. Det billede er fra en mockup/marketing-side — der findes pt. kun selve foto-scanneren (`FoodScanner`), som logger måltider til `nutrition_logs`, men der er **ingen UI** der viser dagens samlede kalorier/protein/kulhydrater/fedt eller en liste over dagens måltider. Det skal bygges.
 
-1. **Kostplanlægger** — den AI-genererede kostplan (`NutritionPlan`)
-2. **Madregistrering** — AI-madscanner + log (`FoodScanner`)
-3. **Opskrifter** — den nuværende opskriftsbibliotek (`NutritionLibrary`)
+**Generate-knappen** fejler stille hvis `profile` er `null` (linje 129: `if (!profile) return;`). I `Library.tsx` hentes profilen kun når brugeren er logget ind, og hvis kaldet returnerer en tom profil eller endnu ikke er færdig, sker der ingenting når man trykker — ingen toast, ingen feedback.
 
-## Ændringer
+**Sletteknap** findes ikke i dag — der er `generatePlan` (som overskriver eksisterende plan via `savePlan(..., savedPlanId)`), men ingen måde at fjerne planen og starte forfra.
 
-### 1) `src/pages/Library.tsx`
-Erstat `{section === "nutrition" && <NutritionLibrary />}` med en lille intern view-state der viser:
-- **home**: 3 kort (Kostplanlægger, Madregistrering, Opskrifter) — samme kort-stil som `LibraryChooser`
-- **planner**: `<NutritionPlan profile={profile} />` med tilbage-knap
-- **scanner**: `<FoodScanner />` med tilbage-knap
-- **recipes**: `<NutritionLibrary />` med tilbage-knap
+---
 
-Profil hentes via `supabase.auth.getUser()` + `profiles` opslag (samme mønster som andre steder), eller vi importerer en eksisterende hook hvis tilgængelig.
+## Hvad jeg vil bygge
 
-Ikoner: `ChefHat` (Kostplanlægger), `Camera` (Madregistrering), `BookOpen` (Opskrifter).
+### 1) Sletteknap i `NutritionPlan.tsx`
+- Tilføj en `Trash2`-knap øverst i den genererede plan (ved siden af PDF-knappen).
+- Klik → bekræftelses-dialog → sætter `is_active = false` på `nutrition_plans`-rækken (samme mønster som vi bruger andre steder), rydder `plan`, `savedPlanId`, `selectedGoals` lokalt, og viser toast "Plan slettet".
+- Skjules hvis `readOnly`.
 
-### 2) `src/pages/Dashboard.tsx`
-- Fjern den `Ernæring`-nav-entry vi tilføjede til side-menuen (den hører nu under Bibliotek).
-- Behold `activeTab === "nutrition"`-branchen som den er (bruges stadig fra `HubOtherModules`-chippen "Kost") — eller alternativt få chippen til at navigere til `/library/nutrition` så vi har ét sted for ernæring. **Anbefaling:** lad "Kost"-chippen i hub navigere til `/library/nutrition` og fjern hele `nutrition`-tab-branchen for at undgå to indgange. Det giver én klar sti: **Hub → Kost-chip → Bibliotek-ernæring → 3 kort**, og **Side-menu → Bibliotek → Ernæring → 3 kort**.
+### 2) Fix generate-knap
+- Vis tydelig fejl-toast hvis `profile` mangler i stedet for silent return ("Udfyld din profil først — alder og vægt skal være sat").
+- Vis loading-state mens profilen hentes i `Library.tsx` (lille spinner i Kostplanlægger-view), så knappen ikke kan trykkes uden data.
+- Tilføj ekstra logging i edge-function-kald for at fange evt. AI-gateway-fejl.
 
-### 3) `src/components/hub/HubOtherModules.tsx`
-Ændre `nutrition`-chippen så den i stedet for `onTab("nutrition")` kalder `navigate("/library/nutrition")`.
+### 3) Dagligt makro-overblik (nyt komponent)
+Tilføj `<DailyNutritionDashboard />` der vises **øverst** i både Kostplanlægger- og Madregistrering-undermenuen. Indeholder:
 
-### 4) Oversættelser (`src/i18n/translations.ts`)
-Tilføj 3 nye nøgler på alle 7 sprog:
-- `libNutritionPlannerLabel` / `…Desc` — "Kostplanlægger" / "Din personlige AI-kostplan"
-- `libNutritionLoggerLabel` / `…Desc` — "Madregistrering" / "Scan og log dine måltider med AI"
-- `libNutritionRecipesLabel` / `…Desc` — "Opskrifter" / "Sund mad tilpasset taekwondo-atleter"
+- **Kalorie-ring** (SVG, simpel donut): `forbrugt / mål` — mål taget fra `profile.custom_calories` eller den aktive plans `dailyCalorieEstimate`.
+- **3 makro-bars**: Protein / Kulhydrater / Fedt med `forbrugt / mål g`. Mål udledes fra planens `macroSplit` (procent → gram).
+- **"Dagens måltider"-liste**: rækker fra `nutrition_logs` for `date = today`, med navn, kalorier, protein. Tap på række → mulighed for at slette (long-press eller swipe). Bruger eksisterende ikon-mønster (Apple/Sun/Leaf efter måltid).
+- Realtime: re-fetch ved mount + når `FoodScanner.onLogged` fyrer.
 
-## Resultat
+Dette giver det visuelle dashboard fra dit screenshot, baseret på data der allerede ligger i databasen.
 
-- Bibliotek-siden viser "Ernæring"-kortet (uændret label/farve).
-- Tap på kortet → 3 undervalg.
-- Tap på Madregistrering → FoodScanner åbner direkte, kamera er ét tap væk.
-- "Kost"-chippen i hub leder samme sted hen, så der kun er ét nutrition-flow at vedligeholde.
+### 4) Oversættelser
+Tilføj nøgler på alle 7 sprog: `deletePlan`, `deletePlanConfirm`, `planDeleted`, `profileRequired`, `todayMeals`, `dailyTarget`, `consumed`, `remaining`.
+
+## Filer der ændres
+
+- `src/components/NutritionPlan.tsx` — sletteknap, fix generate-flow
+- `src/components/DailyNutritionDashboard.tsx` — **ny** (ring + makro-bars + dagens måltider)
+- `src/components/FoodScanner.tsx` — kald `onLogged` callback (findes allerede) så dashboard refresher
+- `src/pages/Library.tsx` — render `<DailyNutritionDashboard />` øverst i `planner`- og `logger`-views; loading-spinner mens profil hentes
+- `src/i18n/translations.ts` — 8 nye nøgler × 7 sprog
+
+Ingen database-ændringer — alt bruger eksisterende `nutrition_plans` og `nutrition_logs` tabeller.
