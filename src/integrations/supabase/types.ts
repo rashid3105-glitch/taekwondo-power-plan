@@ -2618,6 +2618,47 @@ export type Database = {
         }
         Relationships: []
       }
+      video_annotations: {
+        Row: {
+          color: string
+          created_at: string
+          created_by: string
+          expires_at: string
+          id: string
+          paths: Json
+          timestamp_seconds: number
+          video_id: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          created_by: string
+          expires_at?: string
+          id?: string
+          paths?: Json
+          timestamp_seconds: number
+          video_id: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          created_by?: string
+          expires_at?: string
+          id?: string
+          paths?: Json
+          timestamp_seconds?: number
+          video_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_annotations_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "match_videos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       waitlist: {
         Row: {
           club: string | null
