@@ -126,7 +126,10 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
   );
 
   const generatePlan = async () => {
-    if (!profile) return;
+    if (!profile || profile.age == null || profile.weight_kg == null) {
+      toast({ title: t("error"), description: t("profileRequired") || "Udfyld din profil (alder og vægt) først", variant: "destructive" });
+      return;
+    }
     if (selectedGoals.length === 0) {
       toast({ title: t("error"), description: t("selectNutritionGoals"), variant: "destructive" });
       return;
@@ -138,14 +141,37 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
+      if (!data?.plan) throw new Error("No plan returned");
       setPlan(data.plan);
       const id = await savePlan(data.plan, selectedGoals, customCalories ? parseInt(customCalories) : null, savedPlanId);
       if (id) setSavedPlanId(id);
       toast({ title: t("nutritionPlanGenerated") });
     } catch (err: any) {
-      toast({ title: t("error"), description: err.message, variant: "destructive" });
+      console.error("generate-nutrition-plan failed", err);
+      toast({ title: t("error"), description: err?.message || "Generation failed", variant: "destructive" });
     } finally {
       setGenerating(false);
+    }
+  };
+
+  const deletePlan = async () => {
+    if (!savedPlanId) {
+      setPlan(null);
+      return;
+    }
+    if (!window.confirm(t("deletePlanConfirm") || "Slet plan?")) return;
+    try {
+      const { error } = await supabase
+        .from("nutrition_plans")
+        .update({ is_active: false })
+        .eq("id", savedPlanId);
+      if (error) throw error;
+      setPlan(null);
+      setSavedPlanId(null);
+      setSelectedGoals([]);
+      toast({ title: t("planDeleted") || "Plan slettet" });
+    } catch (err: any) {
+      toast({ title: t("error"), description: err?.message, variant: "destructive" });
     }
   };
 
