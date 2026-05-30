@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain, Clock, Apple, Home, Lock, NotebookPen, AlertTriangle, ClipboardList, HelpCircle, Trash2, Menu, Video as VideoIcon, CalendarRange, Watch, Swords, Trophy, MessageCircle, Pencil, X, LayoutGrid, Settings } from "lucide-react";
+import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain, Clock, Apple, Home, Lock, NotebookPen, AlertTriangle, ClipboardList, HelpCircle, Trash2, Menu, Video as VideoIcon, CalendarRange, Watch, Swords, Trophy, MessageCircle, Pencil, X, LayoutGrid, Settings, Camera } from "lucide-react";
 import { ChatDrawer } from "@/components/chat/ChatDrawer";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -27,6 +27,9 @@ import Help from "@/pages/Help";
 import { MentalAssessment } from "@/components/MentalAssessment";
 import { ProgressDashboard } from "@/components/ProgressDashboard";
 import { NutritionPlan } from "@/components/NutritionPlan";
+import { NutritionLibrary } from "@/components/NutritionLibrary";
+import { FoodScanner } from "@/components/FoodScanner";
+import { Card } from "@/components/ui/card";
 import { AppFooter } from "@/components/AppFooter";
 import { Watermark } from "@/components/Watermark";
 import { PhysicalTesting } from "@/components/PhysicalTesting";
@@ -124,6 +127,7 @@ export default function Dashboard() {
     return t && VALID_TABS.includes(t) ? t : "hub";
   })();
   const [activeTab, setActiveTab] = useState<TabKey>(initialTab);
+  const [nutritionView, setNutritionView] = useState<"home" | "planner" | "recipes">("home");
   const [seenDots, setSeenDots] = useState<Set<string>>(() => {
     try {
       const raw = localStorage.getItem("navDots_seen");
@@ -1000,7 +1004,61 @@ export default function Dashboard() {
         ) : activeTab === "progress" ? (
           <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isTabModuleDisabled("progress") ? renderModuleDisabledState() : isDemo ? renderDemoLockedState("progress") : <ProgressDashboard onGoToPlan={() => handleTabChange("plan")} />}</>
         ) : activeTab === "nutrition" ? (
-          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isTabModuleDisabled("nutrition") ? renderModuleDisabledState() : isDemo ? renderDemoLockedState("nutrition") : <NutritionPlan profile={profile} readOnly={hasCoach && !isPaid} />}</>
+          <>
+            <BackToHub onBack={() => { setNutritionView("home"); handleTabChange("hub"); }} label={t("back") || "Back"} />
+            {isTabModuleDisabled("nutrition") ? renderModuleDisabledState() : isDemo ? renderDemoLockedState("nutrition") : (
+              nutritionView === "home" ? (
+                <div className="space-y-4">
+                  <Card
+                    className="p-4 cursor-pointer hover:border-primary/40 transition-colors"
+                    onClick={() => setNutritionView("planner")}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
+                        <Camera className="h-5 w-5 text-emerald-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-bold">{t("nutritionPlannerTitle") || "Kostplanlægger & madregistrering"}</p>
+                        <p className="text-xs text-muted-foreground">{t("nutritionPlannerDesc") || "AI madscanner, log måltider og se dagens kalorier"}</p>
+                      </div>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground ml-auto shrink-0" />
+                    </div>
+                  </Card>
+                  <Card
+                    className="p-4 cursor-pointer hover:border-primary/40 transition-colors"
+                    onClick={() => setNutritionView("recipes")}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0">
+                        <BookOpen className="h-5 w-5 text-amber-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-bold">{t("nutritionRecipesTitle") || "Alle opskrifter"}</p>
+                        <p className="text-xs text-muted-foreground">{t("nutritionRecipesDesc") || "Sund mad tilpasset taekwondo-atleter"}</p>
+                      </div>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground ml-auto shrink-0" />
+                    </div>
+                  </Card>
+                </div>
+              ) : nutritionView === "planner" ? (
+                <div className="space-y-4">
+                  <button onClick={() => setNutritionView("home")} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+                    <ArrowLeft className="h-4 w-4" /> {t("back") || "Tilbage"}
+                  </button>
+                  <h2 className="font-bold">{t("nutritionPlannerTitle") || "Kostplanlægger & madregistrering"}</h2>
+                  <FoodScanner />
+                  <NutritionPlan profile={profile} readOnly={hasCoach && !isPaid} />
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <button onClick={() => setNutritionView("home")} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+                    <ArrowLeft className="h-4 w-4" /> {t("back") || "Tilbage"}
+                  </button>
+                  <NutritionLibrary />
+                </div>
+              )
+            )}
+          </>
         ) : activeTab === "mental" ? (
           <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isTabModuleDisabled("mental") ? renderModuleDisabledState() : isDemo ? renderDemoLockedState("mental") : <MentalAssessment profile={profile} />}</>
         ) : activeTab === "testing" ? (

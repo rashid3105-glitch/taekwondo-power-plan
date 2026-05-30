@@ -1477,6 +1477,51 @@ export type Database = {
         }
         Relationships: []
       }
+      nutrition_logs: {
+        Row: {
+          calories: number | null
+          carbs_g: number | null
+          created_at: string
+          date: string
+          fat_g: number | null
+          id: string
+          logged_at: string
+          meal_name: string | null
+          portion: string | null
+          protein_g: number | null
+          source: string
+          user_id: string
+        }
+        Insert: {
+          calories?: number | null
+          carbs_g?: number | null
+          created_at?: string
+          date?: string
+          fat_g?: number | null
+          id?: string
+          logged_at?: string
+          meal_name?: string | null
+          portion?: string | null
+          protein_g?: number | null
+          source?: string
+          user_id: string
+        }
+        Update: {
+          calories?: number | null
+          carbs_g?: number | null
+          created_at?: string
+          date?: string
+          fat_g?: number | null
+          id?: string
+          logged_at?: string
+          meal_name?: string | null
+          portion?: string | null
+          protein_g?: number | null
+          source?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       nutrition_plans: {
         Row: {
           created_at: string
