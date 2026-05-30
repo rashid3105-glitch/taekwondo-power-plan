@@ -51,6 +51,7 @@ export default function Library() {
 
   const [nutritionView, setNutritionView] = useState<NutritionView>("home");
   const [profile, setProfile] = useState<any>(null);
+  const [loggerRefresh, setLoggerRefresh] = useState(0);
 
   useEffect(() => {
     if (section !== "nutrition") return;
