@@ -1,44 +1,19 @@
-## Svar på dine spørgsmål
+## Problem
 
-**Det grafiske overblik (kalorie-ring, makro-bars, "Dagens måltider")** kom **ikke** med. Det billede er fra en mockup/marketing-side — der findes pt. kun selve foto-scanneren (`FoodScanner`), som logger måltider til `nutrition_logs`, men der er **ingen UI** der viser dagens samlede kalorier/protein/kulhydrater/fedt eller en liste over dagens måltider. Det skal bygges.
+`ProfileEdit.tsx` gemmer kun `birth_date` — ikke `age`-kolonnen. Når du udfylder profilen den vej, forbliver `profiles.age = null`.
 
-**Generate-knappen** fejler stille hvis `profile` er `null` (linje 129: `if (!profile) return;`). I `Library.tsx` hentes profilen kun når brugeren er logget ind, og hvis kaldet returnerer en tom profil eller endnu ikke er færdig, sker der ingenting når man trykker — ingen toast, ingen feedback.
+`Library.tsx` henter kun `age` (ikke `birth_date`) og sender det videre til `NutritionPlan`. `NutritionPlan.generatePlan` afviser med fejlen "Udfyld din profil (alder og vægt) først" når `profile.age == null`.
 
-**Sletteknap** findes ikke i dag — der er `generatePlan` (som overskriver eksisterende plan via `savePlan(..., savedPlanId)`), men ingen måde at fjerne planen og starte forfra.
+Derfor: alderen vises ikke, og knappen fejler — selvom din fødselsdato er gemt.
 
----
+## Fix
 
-## Hvad jeg vil bygge
+1. **`src/pages/Library.tsx`** — udvid select til også at hente `birth_date`, og udled `age` fra `birth_date` hvis `age` mangler, før profile sættes i state.
 
-### 1) Sletteknap i `NutritionPlan.tsx`
-- Tilføj en `Trash2`-knap øverst i den genererede plan (ved siden af PDF-knappen).
-- Klik → bekræftelses-dialog → sætter `is_active = false` på `nutrition_plans`-rækken (samme mønster som vi bruger andre steder), rydder `plan`, `savedPlanId`, `selectedGoals` lokalt, og viser toast "Plan slettet".
-- Skjules hvis `readOnly`.
+2. **`src/pages/Dashboard.tsx`** — samme: sørg for at det `profile`-objekt der sendes til `<NutritionPlan>` har `age` udledt fra `birth_date` som fallback.
 
-### 2) Fix generate-knap
-- Vis tydelig fejl-toast hvis `profile` mangler i stedet for silent return ("Udfyld din profil først — alder og vægt skal være sat").
-- Vis loading-state mens profilen hentes i `Library.tsx` (lille spinner i Kostplanlægger-view), så knappen ikke kan trykkes uden data.
-- Tilføj ekstra logging i edge-function-kald for at fange evt. AI-gateway-fejl.
+3. **`src/components/NutritionPlan.tsx`** — defensiv: i `generatePlan`, hvis `profile.age` mangler men `profile.birth_date` findes, udled alder lokalt i stedet for at fejle.
 
-### 3) Dagligt makro-overblik (nyt komponent)
-Tilføj `<DailyNutritionDashboard />` der vises **øverst** i både Kostplanlægger- og Madregistrering-undermenuen. Indeholder:
+4. **(Anbefalet oprydning, valgfri)** — `ProfileEdit.tsx` kunne også selv gemme udledt `age` sammen med `birth_date` så DB-kolonnen holdes synkroniseret. Siger til hvis du vil have det med.
 
-- **Kalorie-ring** (SVG, simpel donut): `forbrugt / mål` — mål taget fra `profile.custom_calories` eller den aktive plans `dailyCalorieEstimate`.
-- **3 makro-bars**: Protein / Kulhydrater / Fedt med `forbrugt / mål g`. Mål udledes fra planens `macroSplit` (procent → gram).
-- **"Dagens måltider"-liste**: rækker fra `nutrition_logs` for `date = today`, med navn, kalorier, protein. Tap på række → mulighed for at slette (long-press eller swipe). Bruger eksisterende ikon-mønster (Apple/Sun/Leaf efter måltid).
-- Realtime: re-fetch ved mount + når `FoodScanner.onLogged` fyrer.
-
-Dette giver det visuelle dashboard fra dit screenshot, baseret på data der allerede ligger i databasen.
-
-### 4) Oversættelser
-Tilføj nøgler på alle 7 sprog: `deletePlan`, `deletePlanConfirm`, `planDeleted`, `profileRequired`, `todayMeals`, `dailyTarget`, `consumed`, `remaining`.
-
-## Filer der ændres
-
-- `src/components/NutritionPlan.tsx` — sletteknap, fix generate-flow
-- `src/components/DailyNutritionDashboard.tsx` — **ny** (ring + makro-bars + dagens måltider)
-- `src/components/FoodScanner.tsx` — kald `onLogged` callback (findes allerede) så dashboard refresher
-- `src/pages/Library.tsx` — render `<DailyNutritionDashboard />` øverst i `planner`- og `logger`-views; loading-spinner mens profil hentes
-- `src/i18n/translations.ts` — 8 nye nøgler × 7 sprog
-
-Ingen database-ændringer — alt bruger eksisterende `nutrition_plans` og `nutrition_logs` tabeller.
+Ingen DB-ændringer. Ingen nye oversættelser.

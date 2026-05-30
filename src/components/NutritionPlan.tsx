@@ -28,6 +28,7 @@ interface NutritionPlanProps {
     experience_years: number | null;
     current_injury: string | null;
     custom_calories?: number | null;
+    birth_date?: string | null;
   } | null;
   readOnly?: boolean;
   userId?: string;
@@ -126,7 +127,16 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
   );
 
   const generatePlan = async () => {
-    if (!profile || profile.age == null || profile.weight_kg == null) {
+    let age = profile?.age ?? null;
+    if (profile && age == null && profile.birth_date) {
+      const bd = new Date(profile.birth_date);
+      const today = new Date();
+      let a = today.getFullYear() - bd.getFullYear();
+      const m = today.getMonth() - bd.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < bd.getDate())) a--;
+      if (a > 0) age = a;
+    }
+    if (!profile || age == null || profile.weight_kg == null) {
       toast({ title: t("error"), description: t("profileRequired") || "Udfyld din profil (alder og vægt) først", variant: "destructive" });
       return;
     }
@@ -137,7 +147,7 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
     setGenerating(true);
     try {
       const { data, error } = await supabase.functions.invoke("generate-nutrition-plan", {
-        body: { profile, goals: selectedGoals, language: locale, custom_calories: profile?.custom_calories || null },
+        body: { profile: { ...profile, age }, goals: selectedGoals, language: locale, custom_calories: profile?.custom_calories || null },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
