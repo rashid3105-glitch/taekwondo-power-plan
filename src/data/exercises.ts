@@ -3099,6 +3099,8 @@ function resolveExercise(base: ExerciseBase, locale: Locale): Exercise {
   };
 }
 
+const exercisesData: Record<string, ExerciseBase> = { ...exercisesDataBase, ...(exercisesAdditional as Record<string, ExerciseBase>) };
+
 let currentLocale: Locale = "en";
 
 export function setExerciseLocale(locale: Locale) {
