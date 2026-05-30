@@ -150,6 +150,7 @@ export default function Dashboard() {
   const coachAthleteMode = isCoachMode ? "coach" : "athlete";
   const setCoachAthleteMode = (mode: "coach" | "athlete") => setCoachMode(mode === "coach");
   const [chatOpen, setChatOpen] = useState(false);
+  const [isBirthday, setIsBirthday] = useState(false);
   const [showMentalReminder, setShowMentalReminder] = useState(false);
   const [pinsEditorOpen, setPinsEditorOpen] = useState(false);
   const DEFAULT_PINS = ["plan", "progress", "competitions", "match"];
@@ -408,6 +409,13 @@ export default function Dashboard() {
         return;
       }
       setProfile(profileData as Profile);
+      if (profileData?.birth_date) {
+        const today = new Date();
+        const bday = new Date(profileData.birth_date);
+        if (today.getDate() === bday.getDate() && today.getMonth() === bday.getMonth()) {
+          setIsBirthday(true);
+        }
+      }
       try { localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify(profileData)); } catch { /* quota */ }
       const { data: clubData } = await supabase
         .from("clubs" as any)
@@ -831,6 +839,19 @@ export default function Dashboard() {
         )}
         {activeTab === "hub" ? (
           <div className="space-y-4">
+            {isBirthday && (
+              <div className="rounded-2xl bg-gradient-to-r from-amber-500/20 via-primary/20 to-amber-500/20 border border-amber-500/30 px-4 py-4 flex items-center gap-3">
+                <span className="text-3xl">🎂</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-foreground">
+                    {t("birthdayTitle") || `Tillykke med fødselsdagen, ${profile?.display_name?.split(" ")[0] ?? ""}!`}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {t("birthdayDesc") || "Nyd din dag — og måske en ekstra snack i dag 😄"}
+                  </p>
+                </div>
+              </div>
+            )}
             {/* Conditional readiness banner (top of scrollable content) */}
             {!isDemo && <HubReadinessBanner />}
 
