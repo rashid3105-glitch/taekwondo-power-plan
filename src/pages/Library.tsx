@@ -60,9 +60,17 @@ export default function Library() {
       if (!user) return;
       const { data } = await supabase
         .from("profiles")
-        .select("age, weight_kg, belt_level, discipline, tkd_sessions_per_week, experience_years, current_injury, custom_calories")
+        .select("age, weight_kg, belt_level, discipline, tkd_sessions_per_week, experience_years, current_injury, custom_calories, birth_date")
         .eq("id", user.id)
         .maybeSingle();
+      if (data && data.age == null && data.birth_date) {
+        const bd = new Date(data.birth_date);
+        const today = new Date();
+        let a = today.getFullYear() - bd.getFullYear();
+        const m = today.getMonth() - bd.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < bd.getDate())) a--;
+        if (a > 0) data.age = a;
+      }
       setProfile(data);
     })();
   }, [section]);
