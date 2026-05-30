@@ -1,23 +1,30 @@
-# Plan
+## Goal
+Make the profile picture persist reliably after saving and navigating away, with the smallest safe fix.
 
-Jeg retter de to konkrete fejl uden at udvide scope.
+## What I found
+- The backend is healthy.
+- Your profile row currently has `avatar_url = null`.
+- The storage file does exist in the `avatars` bucket for your user.
+- That means the image upload succeeded, but the profile record did not keep the image path.
+- The current `ProfileSetup.tsx` flow uploads the image first and only saves `avatar_url` later when the main profile form is submitted.
+- While that upload is running, the Save button is still enabled because it only depends on `loading`, not `uploading`.
+- If Save is pressed before the upload finishes, the form submits `avatar_url: null`, so the profile saves successfully but without the image. That matches your symptom exactly: image appears briefly, then disappears after navigation/reload.
+- The previous “fix” only added a verification read after save. It did not fix this race condition.
 
-## 1. Ret ernæringsfejlen der stadig siger alder/vægt mangler
-- Opdatere `src/pages/Library.tsx`, så profilopslaget bruger den rigtige nøgle (`user_id`) i stedet for `id`.
-- Beholde fallback-logikken for alder ud fra `birth_date`, så ernæringsplanen virker, selv hvis `age`-kolonnen ikke er udfyldt.
-- Verificere at `NutritionPlan` dermed modtager reel profil-data og ikke falder tilbage til fejltost.
+## Plan
+1. Update `src/pages/ProfileSetup.tsx` so the profile form cannot be submitted while the avatar upload is still in progress.
+2. Make the save path use the final uploaded avatar path reliably, so it never sends `null` when an upload is still pending.
+3. Keep the existing verification step, but make its error handling clearer around avatar persistence.
+4. Validate the result by checking that:
+   - the profile row contains the avatar path after save
+   - the dashboard/front page still reads the avatar from the profile row after navigation
 
-## 2. Ret profilbillede der ikke gemmer
-- Gennemgå og justere `src/pages/ProfileSetup.tsx`, så avatar-flowet ikke kun viser lokal preview, men også ender i et vedvarende gemt `avatar_url`-felt efter save.
-- Sikre at gem-flowet håndterer samme robusthed som det eksisterende `ProfileEdit`-flow: korrekt path, korrekt persistens via `update-my-profile`, og tydelig state-opdatering efter succes.
-- Kontrollere om problemet er, at billedet uploades men ikke verificeres/persistes, eller at det gemmes men UI ikke loader den gemte værdi korrekt efter navigation.
-
-## 3. Hurtig validering efter rettelser
-- Bekræfte at ernæringsknappen ikke længere stopper på “Udfyld din profil …”, når profil har fødselsdato og vægt.
-- Bekræfte at profilbilledet stadig vises efter save/reload og ikke kun som midlertidig preview.
-
-## Tekniske detaljer
-- Berørte filer forventes primært at være:
-  - `src/pages/Library.tsx`
-  - `src/pages/ProfileSetup.tsx`
-- Jeg ændrer ikke backend-schema eller andre features, medmindre en lille eksisterende flow-justering er nødvendig for at få gemning til at fungere korrekt.
+## Technical details
+- Primary file: `src/pages/ProfileSetup.tsx`
+- Likely change set:
+  - disable submit when `uploading || loading`
+  - guard `handleSubmit` from running during upload
+  - ensure avatar state used in payload is the completed uploaded path only
+- No database migration needed.
+- No backend schema change needed.
+- The display/render side (`useAvatarUrl`, dashboard/profile readers) looks consistent once `profiles.avatar_url` is actually populated.

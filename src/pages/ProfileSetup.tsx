@@ -329,6 +329,18 @@ export default function ProfileSetup() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Prevent saving while the avatar is still uploading — otherwise the
+    // profile would be saved with the old/null avatar_url and the picture
+    // is silently lost after navigation.
+    if (uploading) {
+      toast({
+        title: t("uploadFailed"),
+        description: "Vent til profilbilledet er færdig-uploadet før du gemmer.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -792,8 +804,8 @@ export default function ProfileSetup() {
           </div>
 
 
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? t("saving") : t("saveProfileContinue")}
+          <Button type="submit" className="w-full" disabled={loading || uploading}>
+            {uploading ? t("saving") : loading ? t("saving") : t("saveProfileContinue")}
           </Button>
         </form>
 
