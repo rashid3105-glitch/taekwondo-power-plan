@@ -41,8 +41,25 @@ export function FoodScanner({ onLogged }: Props) {
     if (!image) return;
     setScanning(true);
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      let weight = 70;
+      let age = 25;
+      if (user) {
+        const { data: profileData } = await supabase
+          .from("profiles")
+          .select("weight_kg, birth_date")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        const profileWeight = (profileData as any)?.weight_kg;
+        const birthDate = (profileData as any)?.birth_date;
+        if (profileWeight != null) weight = profileWeight;
+        if (birthDate) {
+          age = Math.floor((Date.now() - new Date(birthDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+        }
+      }
+
       const { data, error } = await supabase.functions.invoke("scan-food", {
-        body: { image },
+        body: { image, weight, age },
       });
       if (error) throw error;
       if ((data as any)?.error) {

@@ -6,7 +6,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const SYSTEM = `You are a sports-nutrition vision assistant. Analyse the food image and return ONLY a single JSON object — no prose, no markdown fences.
+const buildSystemPrompt = (age: number, weight: number) => `You are a sports-nutrition vision assistant. The athlete is ${age} years old and weighs ${weight}kg. Use this to estimate appropriate portion sizes and calorie needs. Analyse the food image and return ONLY a single JSON object — no prose, no markdown fences.
 Fields (all required):
 {
   "name": string (dish name in Danish),
@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { image } = await req.json() as { image?: string };
+    const { image, age, weight } = await req.json() as { image?: string; age?: number; weight?: number };
     if (!image || typeof image !== "string" || !image.startsWith("data:image/")) {
       return new Response(JSON.stringify({ error: "invalid_image" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -68,7 +68,7 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         model: "google/gemini-2.5-flash",
         messages: [
-          { role: "system", content: SYSTEM },
+          { role: "system", content: buildSystemPrompt(age ?? 25, weight ?? 70) },
           {
             role: "user",
             content: [
