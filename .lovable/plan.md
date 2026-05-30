@@ -1,19 +1,23 @@
-## Problem
+# Plan
 
-`ProfileEdit.tsx` gemmer kun `birth_date` — ikke `age`-kolonnen. Når du udfylder profilen den vej, forbliver `profiles.age = null`.
+Jeg retter de to konkrete fejl uden at udvide scope.
 
-`Library.tsx` henter kun `age` (ikke `birth_date`) og sender det videre til `NutritionPlan`. `NutritionPlan.generatePlan` afviser med fejlen "Udfyld din profil (alder og vægt) først" når `profile.age == null`.
+## 1. Ret ernæringsfejlen der stadig siger alder/vægt mangler
+- Opdatere `src/pages/Library.tsx`, så profilopslaget bruger den rigtige nøgle (`user_id`) i stedet for `id`.
+- Beholde fallback-logikken for alder ud fra `birth_date`, så ernæringsplanen virker, selv hvis `age`-kolonnen ikke er udfyldt.
+- Verificere at `NutritionPlan` dermed modtager reel profil-data og ikke falder tilbage til fejltost.
 
-Derfor: alderen vises ikke, og knappen fejler — selvom din fødselsdato er gemt.
+## 2. Ret profilbillede der ikke gemmer
+- Gennemgå og justere `src/pages/ProfileSetup.tsx`, så avatar-flowet ikke kun viser lokal preview, men også ender i et vedvarende gemt `avatar_url`-felt efter save.
+- Sikre at gem-flowet håndterer samme robusthed som det eksisterende `ProfileEdit`-flow: korrekt path, korrekt persistens via `update-my-profile`, og tydelig state-opdatering efter succes.
+- Kontrollere om problemet er, at billedet uploades men ikke verificeres/persistes, eller at det gemmes men UI ikke loader den gemte værdi korrekt efter navigation.
 
-## Fix
+## 3. Hurtig validering efter rettelser
+- Bekræfte at ernæringsknappen ikke længere stopper på “Udfyld din profil …”, når profil har fødselsdato og vægt.
+- Bekræfte at profilbilledet stadig vises efter save/reload og ikke kun som midlertidig preview.
 
-1. **`src/pages/Library.tsx`** — udvid select til også at hente `birth_date`, og udled `age` fra `birth_date` hvis `age` mangler, før profile sættes i state.
-
-2. **`src/pages/Dashboard.tsx`** — samme: sørg for at det `profile`-objekt der sendes til `<NutritionPlan>` har `age` udledt fra `birth_date` som fallback.
-
-3. **`src/components/NutritionPlan.tsx`** — defensiv: i `generatePlan`, hvis `profile.age` mangler men `profile.birth_date` findes, udled alder lokalt i stedet for at fejle.
-
-4. **(Anbefalet oprydning, valgfri)** — `ProfileEdit.tsx` kunne også selv gemme udledt `age` sammen med `birth_date` så DB-kolonnen holdes synkroniseret. Siger til hvis du vil have det med.
-
-Ingen DB-ændringer. Ingen nye oversættelser.
+## Tekniske detaljer
+- Berørte filer forventes primært at være:
+  - `src/pages/Library.tsx`
+  - `src/pages/ProfileSetup.tsx`
+- Jeg ændrer ikke backend-schema eller andre features, medmindre en lille eksisterende flow-justering er nødvendig for at få gemning til at fungere korrekt.
