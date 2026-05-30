@@ -408,6 +408,14 @@ export default function Dashboard() {
         navigate("/profile-setup");
         return;
       }
+      if (profileData && (profileData as any).age == null && profileData?.birth_date) {
+        const bd = new Date(profileData.birth_date);
+        const today = new Date();
+        let a = today.getFullYear() - bd.getFullYear();
+        const m = today.getMonth() - bd.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < bd.getDate())) a--;
+        if (a > 0) (profileData as any).age = a;
+      }
       setProfile(profileData as Profile);
       if (profileData?.birth_date) {
         const today = new Date();
