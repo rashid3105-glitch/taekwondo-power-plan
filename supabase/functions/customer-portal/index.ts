@@ -34,7 +34,15 @@ serve(async (req) => {
     const customers = await stripe.customers.list({ email: userData.user.email, limit: 1 });
     if (customers.data.length === 0) throw new Error("No Stripe customer found");
 
-    const origin = req.headers.get("origin") || "https://taekwondo-power-plan.lovable.app";
+    const ALLOWED_ORIGINS = new Set([
+      "https://sportstalent.dk",
+      "https://www.sportstalent.dk",
+      "https://taekwondo-power-plan.lovable.app",
+    ]);
+    const requestedOrigin = req.headers.get("origin") || "";
+    const origin = ALLOWED_ORIGINS.has(requestedOrigin)
+      ? requestedOrigin
+      : "https://sportstalent.dk";
     const portalSession = await stripe.billingPortal.sessions.create({
       customer: customers.data[0].id,
       return_url: `${origin}/pricing`,

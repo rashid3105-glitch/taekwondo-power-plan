@@ -3,6 +3,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { z } from "https://esm.sh/zod@3.23.8";
 import { checkAIEntitlement } from "../_shared/checkEntitlement.ts";
+import { sanitizePromptText } from "../_shared/sanitizePrompt.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -46,8 +47,8 @@ Deno.serve(async (req) => {
 
     const apiKey = Deno.env.get("LOVABLE_API_KEY")!;
     const prompt = `You are a TKD performance coach. Generate a JSON peaking and weight-cut plan.
-Athlete: age ${prof?.age ?? "?"}, ${prof?.belt_level ?? "?"} belt, discipline ${prof?.discipline ?? "sparring"}.
-Current weight: ${currentKg} kg. Target: ${targetKg} kg. Days to event: ${daysToEvent}. Priority: ${comp.priority}.
+Athlete: age ${prof?.age ? Number(prof.age) : "?"}, ${sanitizePromptText(prof?.belt_level ?? "?", 30)} belt, discipline ${sanitizePromptText(prof?.discipline ?? "sparring", 30)}.
+Current weight: ${currentKg} kg. Target: ${targetKg} kg. Days to event: ${daysToEvent}. Priority: ${sanitizePromptText(comp.priority, 20)}.
 Return strict JSON: { "taperSummary": string (2-3 sentences), "weeklyTaper": [{"week": number, "focus": string, "volumeChange": string, "intensity": string}], "weightCut": [{"day": number, "targetKg": number, "calorieAdjustment": string, "fluid": string}], "nutritionAdjustments": { "dailyCalories": number, "carbCycling": string, "hydration": string }, "peakDayProtocol": string }.
 Keep it concise. No markdown, only JSON.`;
 

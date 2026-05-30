@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { checkAIEntitlement } from "../_shared/checkEntitlement.ts";
+import { sanitizePromptText } from "../_shared/sanitizePrompt.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -63,11 +64,15 @@ serve(async (req) => {
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
     const lines = metrics.map((m) => {
-      const avg = m.avg14 == null ? "no data" : `${m.avg14}${m.unit}`;
-      const last = m.last == null ? "no data" : `${m.last}${m.unit}`;
-      const norm = `peer band ${m.ageNorm.bandLow}–${m.ageNorm.bandHigh}${m.unit} (target ${m.ageNorm.target}${m.unit})`;
-      return `- ${m.name}: 14-day avg ${avg}, latest ${last}, ${m.daysWithData} days logged. ${norm}. Verdict: ${m.verdict ?? "unknown"}.`;
+      const unit = sanitizePromptText(m.unit, 20);
+      const name = sanitizePromptText(m.name, 60);
+      const verdict = sanitizePromptText(m.verdict ?? "unknown", 20);
+      const avg = m.avg14 == null ? "no data" : `${Number(m.avg14)}${unit}`;
+      const last = m.last == null ? "no data" : `${Number(m.last)}${unit}`;
+      const norm = `peer band ${Number(m.ageNorm.bandLow)}–${Number(m.ageNorm.bandHigh)}${unit} (target ${Number(m.ageNorm.target)}${unit})`;
+      return `- ${name}: 14-day avg ${avg}, latest ${last}, ${Number(m.daysWithData)} days logged. ${norm}. Verdict: ${verdict}.`;
     }).join("\n");
+    const safeAgeLabel = sanitizePromptText(ageLabel, 40);
 
     const systemPrompt = `You are a sports-science recovery analyst. Write a short, factual health report for a taekwondo athlete based on 14 days of wearable data compared to age-matched general-population norms (NSF sleep guidelines, AHA resting HR, RMSSD HRV reference). Respond in ${lang}.
 
@@ -85,7 +90,7 @@ Rules:
 - Keep bullets under 22 words each.
 - Do not diagnose medical conditions.`;
 
-    const userPrompt = `Athlete age: ${age ?? "unknown"} (peer group ${ageLabel}).
+    const userPrompt = `Athlete age: ${age == null ? "unknown" : Number(age)} (peer group ${safeAgeLabel}).
 Last 14 days summary:
 ${lines}
 
