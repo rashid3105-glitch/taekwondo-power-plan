@@ -422,11 +422,18 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
 
           {/* Overview */}
           <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-foreground">{plan.planName}</h3>
-              <Button variant="outline" size="sm" onClick={downloadPDF}>
-                <Download className="h-4 w-4 mr-1" /> PDF
-              </Button>
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="font-bold text-foreground truncate">{plan.planName}</h3>
+              <div className="flex items-center gap-2 shrink-0">
+                <Button variant="outline" size="sm" onClick={downloadPDF}>
+                  <Download className="h-4 w-4 mr-1" /> PDF
+                </Button>
+                {!readOnly && (
+                  <Button variant="outline" size="sm" onClick={deletePlan} className="text-destructive hover:text-destructive">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="rounded-lg bg-muted/50 p-3 text-center">
