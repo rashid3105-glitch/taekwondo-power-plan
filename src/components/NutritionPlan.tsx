@@ -127,7 +127,16 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
   );
 
   const generatePlan = async () => {
-    if (!profile || profile.age == null || profile.weight_kg == null) {
+    let age = profile?.age ?? null;
+    if (profile && age == null && profile.birth_date) {
+      const bd = new Date(profile.birth_date);
+      const today = new Date();
+      let a = today.getFullYear() - bd.getFullYear();
+      const m = today.getMonth() - bd.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < bd.getDate())) a--;
+      if (a > 0) age = a;
+    }
+    if (!profile || age == null || profile.weight_kg == null) {
       toast({ title: t("error"), description: t("profileRequired") || "Udfyld din profil (alder og vægt) først", variant: "destructive" });
       return;
     }
