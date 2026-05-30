@@ -1,24 +1,19 @@
-## Mål
-Tilføj en sjette fane "Video" til atlet-bundnavigationen, der linker til `/match-analysis/me`.
+## Problem
 
-## Ændringer
+The new dashboard side menu in `src/pages/Dashboard.tsx` has no "Ernæring" item, so the FoodScanner (which lives inside `activeTab === "nutrition"`) is unreachable. The Bibliotek → "Ernæring & opskrifter" link goes to `/library` → recipes only.
 
-**Fil:** `src/pages/Dashboard.tsx` (linje 760-765)
+## Change
 
-Tilføj ny entry i atlet-arrayet for bundnavigationen mellem "Dagbog" og "Chat":
+Add a single nav entry to `NAV_ITEMS` in `src/pages/Dashboard.tsx` (~line 315):
 
 ```ts
-{ key: "video", label: t("hubMatchTitle") || "Video", icon: VideoIcon, active: false, onClick: () => navigate("/match-analysis/me") },
+{ tab: "nutrition", icon: Apple, labelKey: "nutrition", color: "text-tab-nutrition" },
 ```
 
-- Icon: `Video` fra lucide-react (alias `VideoIcon` — allerede importeret i filen, ellers tilføj import)
-- Label: bruger eksisterende oversættelsesnøgle `hubMatchTitle` (findes på alle 7 sprog)
-- Kun atletens egen video-side `/match-analysis/me`
+Place it after `testing` (so order becomes: Hjem, Plan, Sæsonkalender, Fremgang, Skade, Mental, Test, **Ernæring**, Bibliotek).
 
-## Layout-justering
-Med 6 faner på smalle skærme bliver hver fane ~16% bred. Den eksisterende styling (`flex-1 min-w-0`, `text-[9px]`, `truncate`) håndterer det allerede — labels forkortes automatisk. Ingen yderligere CSS-ændringer nødvendige.
+`Apple` icon is already imported (used in the existing nutrition bottom-tab definition at line 251). Translation key `nutrition` already exists in all 7 languages. No other files need changes — the existing `activeTab === "nutrition"` branch at line 1006 already renders the home view with the Kostplanlægger card (which contains FoodScanner) and the Opskrifter card.
 
-## Ikke i scope
-- Coach-baren ændres ikke
-- Ingen ændring af eksisterende hub-tiles eller modul-chips
-- Ingen nye oversættelsesnøgler
+## Result
+
+Open side menu → tap "Ernæring" → see two cards → tap "Kostplanlægger & madregistrering" → FoodScanner appears at top.
