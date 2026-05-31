@@ -920,7 +920,7 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
         profile={myProfile}
       />
       {tags.length > 0 && <MatchSummary tags={tags} discipline={video.discipline} />}
-      {isCoach && clubId && (
+      {isOwner && clubId && (
         <ClubTechniquesDialog
           open={techDialogOpen}
           onOpenChange={setTechDialogOpen}
