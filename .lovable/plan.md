@@ -1,26 +1,38 @@
-# Plan
+## Mål
+Atleten som videoen tilhører (`match_videos.athlete_id = auth.uid()`) får samme redigeringsrettigheder som coachen til **tags, noter og tegninger** på den video. Sletning af selve videoen forbliver coach-only. Klubkammerater og offentlige share-link-besøgende forbliver read-only.
 
-Jeg vil rette profilbillede-fejlen i det flow, der faktisk bruges nu.
+## Ændringer
 
-## Hvad der er galt
-- Din app sender ikke længere brugeren gennem den gamle `ProfileSetup`-skærm ved profilredigering.
-- Ruten `/profile-setup` redirecter nu til `/profile`, og selve redigeringen sker i `src/pages/ProfileEdit.tsx`.
-- De tidligere fixes blev derfor lagt det forkerte sted.
-- Runtime-signalerne viser også mismatch: previewet viser billedet lokalt og toast siger “Profil gemt”, men den efterfølgende profil-fetch har stadig `avatar_url: null`, så derfor forsvinder billedet overalt bagefter.
+### 1. Database — udvid RLS-policies
+Tilføj INSERT/UPDATE/DELETE policies så athlete-ejeren kan skrive:
 
-## Jeg vil ændre
-1. Gennemgå og rette gemmelogikken i `src/pages/ProfileEdit.tsx`, så success kun vises når `avatar_url` faktisk er persisteret korrekt.
-2. Sikre at navigationen fra dashboard/profil ikke fortsat sender brugeren gennem det gamle `/profile-setup`-spor, hvis det skaber forkert forventning eller forkert save-path.
-3. Tilføje målrettet fejlhåndtering/logik i `ProfileEdit`, så et uploadet billede ikke bare bliver et lokalt preview uden database-opdatering.
-4. Validere efter rettelsen ved at følge samme kæde som i din fejlrapport: vælg billede → gem → navigér væk → bekræft at `profiles.avatar_url` ikke længere er `null` og at avatar vises i profil og dashboard.
+- **`match_tags`** — ny policy "Athlete can manage tags on own videos" (ALL) hvor `match_videos.athlete_id = auth.uid()`.
+- **`video_annotations`** (tegninger) — udvid "Coaches manage annotations": tillad også athlete-ejer at INSERT/UPDATE/DELETE rækker på egne videoer (via lookup i `match_videos.athlete_id`). `created_by` sættes stadig til `auth.uid()`.
+- **`video_notes`** — eksisterende policy `auth.uid() = user_id` er allerede pr. bruger; ingen ændring nødvendig (hver bruger ser/redigerer sine egne noter). Tilføj dog en SELECT-policy så coach kan se athletes noter på egne match-videoer (collaborative review).
 
-## Teknisk fokus
-- `src/pages/ProfileEdit.tsx`
-- `src/App.tsx`
-- Eventuelt mindre justering i fælles avatar-visning kun hvis nødvendigt efter validering
-- Ingen databaseændring planlagt med den evidens jeg har nu
+### 2. Frontend — `src/pages/MatchAnalysis.tsx`
+Skift gating fra `isCoach && activeVideo.coach_id === me` til en bredere `canEdit`:
+```ts
+const canEdit = (isCoach && activeVideo.coach_id === me)
+             || activeVideo.athlete_id === me;
+```
+Send `canEdit` videre som `isCoach`-prop til `VideoTagger` (alternativt omdøb propen til `canEdit` for klarhed).
 
-## Forventet resultat
-- Billedet bliver ikke kun vist lokalt i redigeringen.
-- Når du har gemt, findes billedestien også i profil-data.
-- Samme avatar vises bagefter i profilheader, dashboard og andre steder der læser `avatar_url`.
+### 3. Frontend — `src/components/match/VideoTagger.tsx`
+- Omdøb `isCoach` prop til `canEdit` (intern brug) men bevar den nuværende edit-UI.
+- **Skjul stadig coach-only handlinger** der ikke skal være athlete-tilgængelige:
+  - Slet video-knap → kun hvis `video.coach_id === me` (faktisk coach-ejer).
+  - Del/revoke share-link → kun coach-ejer.
+- Alle andre kontroller (tilføj tag, rediger tag, slet eget tag, tegne-værktøj, scrubber-noter) bliver synlige for `canEdit`.
+
+### 4. `VideoNotes.tsx` / `VideoScrubber.tsx`
+Ingen ændringer — de bruger allerede `auth.uid()` til at gemme noter/annoteringer.
+
+## Out of scope
+- Public share-link viewers forbliver read-only (`MatchShare.tsx` rører vi ikke).
+- Klubkammerater (andre atleter i samme klub) får ikke redigeringsret.
+- Sletning af videoer og share-token-håndtering forbliver coach-only.
+
+## Tekniske noter
+- Migration kører kun policy-tilføjelser; ingen schema-ændringer.
+- Bagudkompatibelt: coach-flow er uændret.

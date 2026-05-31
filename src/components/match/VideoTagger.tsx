@@ -54,13 +54,15 @@ interface MatchTag {
 interface VideoTaggerProps {
   video: MatchVideo;
   isCoach: boolean;
+  /** True only for the actual video owner (coach). Gates destructive/share actions. */
+  isOwner?: boolean;
   isOffline?: boolean;
   isCached?: boolean;
   onChanged?: () => void;
   onDeleted?: () => void;
 }
 
-export function VideoTagger({ video, isCoach, isOffline = false, isCached = false, onChanged, onDeleted }: VideoTaggerProps) {
+export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false, isCached = false, onChanged, onDeleted }: VideoTaggerProps) {
   const { toast } = useToast();
   const { t } = useLanguage();
   const [videoSrc, setVideoSrc] = useState<string | null>(null);
@@ -530,7 +532,7 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
                 {video.match_date && <Badge variant="outline" className="text-[10px]">{video.match_date}</Badge>}
               </div>
             </div>
-            {isCoach && !onlineActionsDisabled && (
+            {isOwner && !onlineActionsDisabled && (
               <div className="flex gap-2">
                 {video.share_token ? (
                   <Button size="sm" variant="outline" onClick={revokeShare} disabled={sharing}>
@@ -758,7 +760,7 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
                   <div>
                     <div className="flex items-center justify-between gap-1">
                       <Label className="text-xs">{t("matchTechnique")}</Label>
-                      {isCoach && clubId && (
+                      {isOwner && clubId && (
                         <button
                           type="button"
                           onClick={() => setTechDialogOpen(true)}
@@ -918,7 +920,7 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
         profile={myProfile}
       />
       {tags.length > 0 && <MatchSummary tags={tags} discipline={video.discipline} />}
-      {isCoach && clubId && (
+      {isOwner && clubId && (
         <ClubTechniquesDialog
           open={techDialogOpen}
           onOpenChange={setTechDialogOpen}
