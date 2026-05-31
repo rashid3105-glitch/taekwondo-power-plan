@@ -96,10 +96,40 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
   // Frame stepping
   const FPS = 30;
   const FRAME = 1 / FPS;
-  function stepFrame(dir: 1 | -1) {
+  const [currentFrame, setCurrentFrame] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const totalFrames = Math.max(0, Math.floor((duration || 0) * FPS));
+
+  // Per-user notes
+  const { notes, reload: reloadNotes } = useVideoNotes(video.id);
+  const [noteEditorOpen, setNoteEditorOpen] = useState(false);
+  const [noteFrame, setNoteFrame] = useState(0);
+
+  function stepFrame(dir: number) {
     if (!videoRef.current) return;
     videoRef.current.pause();
-    videoRef.current.currentTime = Math.max(0, Math.min(duration || videoRef.current.duration || 0, videoRef.current.currentTime + dir * FRAME));
+    videoRef.current.currentTime = Math.max(
+      0,
+      Math.min(duration || videoRef.current.duration || 0, videoRef.current.currentTime + dir * FRAME),
+    );
+  }
+
+  function seekToFrame(frame: number) {
+    if (!videoRef.current) return;
+    videoRef.current.currentTime = Math.max(0, Math.min(duration || videoRef.current.duration || 0, frame / FPS));
+  }
+
+  function togglePlay() {
+    const v = videoRef.current;
+    if (!v) return;
+    if (v.paused) void v.play();
+    else v.pause();
+  }
+
+  function openNoteEditor() {
+    setNoteFrame(currentFrame);
+    if (videoRef.current) videoRef.current.pause();
+    setNoteEditorOpen(true);
   }
 
   // Annotation state
