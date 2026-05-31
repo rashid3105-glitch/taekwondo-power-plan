@@ -18,6 +18,8 @@ import {
   getCachedVideo, queueTagInsert, queueTagDelete, listPendingTagInsertsForVideo,
   removePendingTagInsert, makeTempId, type PendingTagInsert,
 } from "@/lib/matchOfflineDB";
+import { VideoScrubber } from "./VideoScrubber";
+import { NoteEditor, NotesList, NoteOverlayMarkers, useVideoNotes } from "./VideoNotes";
 
 interface MatchVideo {
   id: string;
