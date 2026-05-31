@@ -54,13 +54,15 @@ interface MatchTag {
 interface VideoTaggerProps {
   video: MatchVideo;
   isCoach: boolean;
+  /** True only for the actual video owner (coach). Gates destructive/share actions. */
+  isOwner?: boolean;
   isOffline?: boolean;
   isCached?: boolean;
   onChanged?: () => void;
   onDeleted?: () => void;
 }
 
-export function VideoTagger({ video, isCoach, isOffline = false, isCached = false, onChanged, onDeleted }: VideoTaggerProps) {
+export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false, isCached = false, onChanged, onDeleted }: VideoTaggerProps) {
   const { toast } = useToast();
   const { t } = useLanguage();
   const [videoSrc, setVideoSrc] = useState<string | null>(null);
