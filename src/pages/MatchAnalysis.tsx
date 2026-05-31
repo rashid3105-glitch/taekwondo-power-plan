@@ -523,7 +523,8 @@ export default function MatchAnalysis() {
               {activeVideo && !activeVideo.__pending && (
                 <VideoTagger
                   video={activeVideo}
-                  isCoach={isCoach && activeVideo.coach_id === me}
+                  isCoach={(isCoach && activeVideo.coach_id === me) || activeVideo.athlete_id === me}
+                  isOwner={isCoach && activeVideo.coach_id === me}
                   isOffline={!offline.online}
                   isCached={offline.cachedIds.has(activeVideo.id)}
                   onChanged={() => { void offline.refresh(); }}
