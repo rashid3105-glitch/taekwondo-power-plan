@@ -2659,6 +2659,36 @@ export type Database = {
           },
         ]
       }
+      video_notes: {
+        Row: {
+          created_at: string
+          frame_number: number
+          id: string
+          note_text: string | null
+          tags: string[] | null
+          user_id: string
+          video_id: string
+        }
+        Insert: {
+          created_at?: string
+          frame_number: number
+          id?: string
+          note_text?: string | null
+          tags?: string[] | null
+          user_id: string
+          video_id: string
+        }
+        Update: {
+          created_at?: string
+          frame_number?: number
+          id?: string
+          note_text?: string | null
+          tags?: string[] | null
+          user_id?: string
+          video_id?: string
+        }
+        Relationships: []
+      }
       waitlist: {
         Row: {
           club: string | null
