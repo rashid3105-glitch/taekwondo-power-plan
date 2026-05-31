@@ -760,7 +760,7 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
                   <div>
                     <div className="flex items-center justify-between gap-1">
                       <Label className="text-xs">{t("matchTechnique")}</Label>
-                      {isCoach && clubId && (
+                      {isOwner && clubId && (
                         <button
                           type="button"
                           onClick={() => setTechDialogOpen(true)}
