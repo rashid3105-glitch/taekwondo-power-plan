@@ -886,6 +886,14 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
               )}
             </div>
           </div>
+
+          {/* Personal notes list */}
+          <div className="pt-2 border-t border-white/10">
+            <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+              {t("videoNoteAdd")} ({notes.length})
+            </div>
+            <NotesList notes={notes} onJump={seekToFrame} onDeleted={() => void reloadNotes()} />
+          </div>
         </CardContent>
       </Card>
 
