@@ -600,10 +600,15 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
                           void v.play().catch(() => {});
                         }
                       }}
-                      onTimeUpdate={(e) => { lastTimeRef.current = (e.target as HTMLVideoElement).currentTime; }}
-                      onPlay={() => { wasPlayingRef.current = true; }}
+                      onTimeUpdate={(e) => {
+                        const v = e.target as HTMLVideoElement;
+                        lastTimeRef.current = v.currentTime;
+                        setCurrentFrame(Math.round(v.currentTime * FPS));
+                      }}
+                      onPlay={() => { wasPlayingRef.current = true; setIsPlaying(true); }}
                       onPause={(e) => {
                         wasPlayingRef.current = false;
+                        setIsPlaying(false);
                         lastTimeRef.current = (e.target as HTMLVideoElement).currentTime;
                       }}
                     />
@@ -625,46 +630,48 @@ export function VideoTagger({ video, isCoach, isOffline = false, isCached = fals
                         touchAction: drawMode ? "none" : "auto",
                       }}
                     />
+                    {/* Note markers overlay */}
+                    <div className="absolute inset-0 pointer-events-none">
+                      <NoteOverlayMarkers notes={notes} totalFrames={totalFrames} onJump={seekToFrame} />
+                    </div>
+                    {/* + Add note button */}
+                    <button
+                      type="button"
+                      onClick={openNoteEditor}
+                      className="absolute bottom-3 right-3 px-3 h-9 rounded-full text-xs font-semibold text-black shadow-lg flex items-center gap-1 z-10"
+                      style={{ background: "#F5A623" }}
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                      {t("videoNoteAdd")}
+                    </button>
                   </div>
                 </div>
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="text-[11px] uppercase tracking-wider text-muted-foreground mr-1">
-                    {t("matchPlaybackSpeed")}
-                  </span>
-                  <Button
-                    type="button" size="sm" variant="outline"
-                    className="h-7 px-2 text-xs"
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={() => stepFrame(-1)}
-                    title="Forrige frame (←)"
-                  >
-                    ⏮
-                  </Button>
-                  <Button
-                    type="button" size="sm" variant="outline"
-                    className="h-7 px-2 text-xs"
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={() => stepFrame(1)}
-                    title="Næste frame (→)"
-                  >
-                    ⏭
-                  </Button>
-                  {[0.25, 0.5, 1, 1.5, 2].map((r) => (
-                    <Button
-                      key={r}
-                      type="button"
-                      size="sm"
-                      variant={speed === r ? "default" : "outline"}
-                      className="h-7 px-2 text-xs"
-                      onClick={() => {
-                        setSpeed(r);
-                        if (videoRef.current) videoRef.current.playbackRate = r;
-                      }}
-                    >
-                      {r === 1 ? t("matchSpeedNormal") : `${r}×`}
-                    </Button>
-                  ))}
-                </div>
+
+                {/* New tick-scrubber with controls + speed pills */}
+                <VideoScrubber
+                  currentFrame={currentFrame}
+                  totalFrames={totalFrames}
+                  isPlaying={isPlaying}
+                  speed={speed}
+                  noteFrames={notes.map((n) => n.frame_number)}
+                  onSeek={seekToFrame}
+                  onStep={(d) => stepFrame(d)}
+                  onTogglePlay={togglePlay}
+                  onSpeed={(s) => {
+                    setSpeed(s);
+                    if (videoRef.current) videoRef.current.playbackRate = s;
+                  }}
+                />
+
+                {/* Note editor panel */}
+                {noteEditorOpen && (
+                  <NoteEditor
+                    videoId={video.id}
+                    frameNumber={noteFrame}
+                    onClose={() => setNoteEditorOpen(false)}
+                    onSaved={() => void reloadNotes()}
+                  />
+                )}
                 {isCoach && (
                   <div className="flex items-center gap-2 flex-wrap">
                     <Button
