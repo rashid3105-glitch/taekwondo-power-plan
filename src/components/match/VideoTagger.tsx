@@ -532,7 +532,7 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
                 {video.match_date && <Badge variant="outline" className="text-[10px]">{video.match_date}</Badge>}
               </div>
             </div>
-            {isCoach && !onlineActionsDisabled && (
+            {isOwner && !onlineActionsDisabled && (
               <div className="flex gap-2">
                 {video.share_token ? (
                   <Button size="sm" variant="outline" onClick={revokeShare} disabled={sharing}>
