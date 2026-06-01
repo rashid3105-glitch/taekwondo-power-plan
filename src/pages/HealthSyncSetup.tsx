@@ -2,16 +2,22 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Check, Copy, Smartphone, Heart, Download, KeyRound, Mail, Activity, Sparkles, Loader2 } from "lucide-react";
+import { ArrowLeft, Check, Copy, Smartphone, Heart, Wrench, KeyRound, Mail, Activity, Sparkles, Loader2, ShieldCheck } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PageMeta } from "@/components/PageMeta";
 import { toast } from "sonner";
 import { haptics } from "@/lib/haptics";
 
-// Public iCloud link to the Sportstalent iOS Shortcut.
-// Update this constant if the shortcut is re-published.
-const SHORTCUT_URL = "https://www.icloud.com/shortcuts/sportstalent-health-sync";
 const SYNC_ENDPOINT = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/health-sync-simple`;
+
+const JSON_BODY_TEMPLATE = `{
+  "email": "DIN_EMAIL",
+  "password": "DIN_ADGANGSKODE",
+  "steps": [Skridt-variabel],
+  "resting_hr": [Hvilepuls-variabel],
+  "hrv": [HRV-variabel],
+  "sleep_hours": [Søvn-variabel]
+}`;
 
 const TOTAL_STEPS = 8;
 
@@ -169,21 +175,26 @@ export default function HealthSyncSetup() {
         )}
 
         {step === 2 && (
-          <StepCard icon={<Download className="h-6 w-6" />} title={t("healthSetupS3Title")}>
+          <StepCard icon={<Wrench className="h-6 w-6" />} title={t("healthSetupS3Title")}>
             <p className="text-sm text-muted-foreground leading-relaxed">{t("healthSetupS3Body")}</p>
-            <a
-              href={SHORTCUT_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block"
-              onClick={() => haptics.tap()}
-            >
-              <Button className="w-full h-11">
-                <Download className="h-4 w-4 mr-2" />
-                {t("healthSetupOpenShortcut")}
-              </Button>
-            </a>
-            <CopyField label="URL" value={SHORTCUT_URL} onCopy={copyValue} />
+            <ol className="space-y-2 text-sm">
+              {[1, 2, 3, 4, 5].map((n) => (
+                <li key={n} className="flex gap-3">
+                  <span className="shrink-0 h-6 w-6 rounded-full bg-primary/15 text-primary text-xs font-semibold flex items-center justify-center">
+                    {n}
+                  </span>
+                  <span className="text-muted-foreground leading-relaxed">
+                    {t(`healthSetupS3Step${n}` as any)}
+                  </span>
+                </li>
+              ))}
+            </ol>
+            <CopyField label={t("healthSetupEndpointLabel")} value={SYNC_ENDPOINT} onCopy={copyValue} />
+            <CopyField label={t("healthSetupS3JsonLabel" as any)} value={JSON_BODY_TEMPLATE} onCopy={copyValue} />
+            <div className="flex gap-2 items-start rounded-lg border border-border bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
+              <ShieldCheck className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+              <span>{t("healthSetupS3SecurityNote" as any)}</span>
+            </div>
           </StepCard>
         )}
 
