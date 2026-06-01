@@ -175,21 +175,26 @@ export default function HealthSyncSetup() {
         )}
 
         {step === 2 && (
-          <StepCard icon={<Download className="h-6 w-6" />} title={t("healthSetupS3Title")}>
+          <StepCard icon={<Wrench className="h-6 w-6" />} title={t("healthSetupS3Title")}>
             <p className="text-sm text-muted-foreground leading-relaxed">{t("healthSetupS3Body")}</p>
-            <a
-              href={SHORTCUT_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block"
-              onClick={() => haptics.tap()}
-            >
-              <Button className="w-full h-11">
-                <Download className="h-4 w-4 mr-2" />
-                {t("healthSetupOpenShortcut")}
-              </Button>
-            </a>
-            <CopyField label="URL" value={SHORTCUT_URL} onCopy={copyValue} />
+            <ol className="space-y-2 text-sm">
+              {[1, 2, 3, 4, 5].map((n) => (
+                <li key={n} className="flex gap-3">
+                  <span className="shrink-0 h-6 w-6 rounded-full bg-primary/15 text-primary text-xs font-semibold flex items-center justify-center">
+                    {n}
+                  </span>
+                  <span className="text-muted-foreground leading-relaxed">
+                    {t(`healthSetupS3Step${n}` as any)}
+                  </span>
+                </li>
+              ))}
+            </ol>
+            <CopyField label={t("healthSetupEndpointLabel")} value={SYNC_ENDPOINT} onCopy={copyValue} />
+            <CopyField label={t("healthSetupS3JsonLabel" as any)} value={JSON_BODY_TEMPLATE} onCopy={copyValue} />
+            <div className="flex gap-2 items-start rounded-lg border border-border bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
+              <ShieldCheck className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+              <span>{t("healthSetupS3SecurityNote" as any)}</span>
+            </div>
           </StepCard>
         )}
 
