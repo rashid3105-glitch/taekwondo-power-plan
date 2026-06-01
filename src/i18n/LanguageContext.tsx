@@ -8,7 +8,7 @@ interface LanguageContextType {
   t: (key: TranslationKey | (string & {})) => string;
 }
 
-const LanguageContext = createContext<LanguageContextType | null>(null);
+export const LanguageContext = createContext<LanguageContextType | null>(null);
 
 const SUPPORTED: Locale[] = ["en", "da", "sv", "de", "ar", "no", "es"];
 const RTL_LOCALES: Locale[] = ["ar"];
