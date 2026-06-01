@@ -55,6 +55,7 @@ import Programs from "./pages/Programs";
 import Contact from "./pages/Contact";
 import Kostplan from "./pages/Kostplan";
 import Health from "./pages/Health";
+import HealthSyncSetup from "./pages/HealthSyncSetup";
 
 import Competitions from "./pages/Competitions";
 import CompetitionReflection from "./pages/CompetitionReflection";
@@ -156,7 +157,7 @@ const AnimatedRoutes = () => {
         <Route path="/hold/moduler" element={<Page><CoachModules /></Page>} />
         <Route path="/onboarding" element={<Page><Onboarding /></Page>} />
         <Route path="/health" element={<Page><Health /></Page>} />
-        <Route path="/health/sync-setup" element={<Navigate to="/health" replace />} />
+        <Route path="/health/sync-setup" element={<Page><HealthSyncSetup /></Page>} />
         <Route path="/wearables" element={<Navigate to="/health" replace />} />
         <Route path="/wearables/sync" element={<Navigate to="/health" replace />} />
         <Route path="/dashboard" element={<Page><Dashboard /></Page>} />
