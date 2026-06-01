@@ -79,7 +79,7 @@ export default function HealthSyncSetup() {
 
     while (Date.now() < deadline) {
       const { data } = await supabase
-        .from("daily_health" as any)
+        .from("wearable_daily_summary")
         .select("summary_date,updated_at")
         .eq("user_id", uid)
         .gte("updated_at", since)
