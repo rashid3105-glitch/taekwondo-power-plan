@@ -2,16 +2,22 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Check, Copy, Smartphone, Heart, Download, KeyRound, Mail, Activity, Sparkles, Loader2 } from "lucide-react";
+import { ArrowLeft, Check, Copy, Smartphone, Heart, Wrench, KeyRound, Mail, Activity, Sparkles, Loader2, ShieldCheck } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PageMeta } from "@/components/PageMeta";
 import { toast } from "sonner";
 import { haptics } from "@/lib/haptics";
 
-// Public iCloud link to the Sportstalent iOS Shortcut.
-// Update this constant if the shortcut is re-published.
-const SHORTCUT_URL = "https://www.icloud.com/shortcuts/sportstalent-health-sync";
 const SYNC_ENDPOINT = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/health-sync-simple`;
+
+const JSON_BODY_TEMPLATE = `{
+  "email": "DIN_EMAIL",
+  "password": "DIN_ADGANGSKODE",
+  "steps": [Skridt-variabel],
+  "resting_hr": [Hvilepuls-variabel],
+  "hrv": [HRV-variabel],
+  "sleep_hours": [Søvn-variabel]
+}`;
 
 const TOTAL_STEPS = 8;
 
