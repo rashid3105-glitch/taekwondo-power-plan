@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { LogOut, Pencil, Download, KeyRound, Trash2, ChevronLeft } from "lucide-react";
+import { LogOut, Pencil, Download, KeyRound, Trash2, ChevronLeft, Apple, Smartphone } from "lucide-react";
 import { PageMeta } from "@/components/PageMeta";
 import { AppFooter } from "@/components/AppFooter";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -342,6 +342,24 @@ export default function Profile() {
               ))}
             </div>
           )}
+        </div>
+
+        {/* Health & devices */}
+        <div className={cardCls}>
+          <h2 className={sectionTitleCls}>{t("profileHealthSectionTitle" as any)}</h2>
+          <ActionRow
+            icon={<Apple className="h-4 w-4" />}
+            label={t("profileHealthAppleTitle" as any)}
+            sub={t("profileHealthAppleDesc" as any)}
+            onClick={() => navigate("/health/sync-setup")}
+          />
+          <Separator className="bg-white/10" />
+          <ActionRow
+            icon={<Smartphone className="h-4 w-4" />}
+            label={t("profileHealthAndroidTitle" as any)}
+            sub={t("profileHealthAndroidDesc" as any)}
+            onClick={() => navigate("/health/sync-setup-android")}
+          />
         </div>
 
         {/* Account */}

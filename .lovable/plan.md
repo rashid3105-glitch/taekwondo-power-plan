@@ -1,47 +1,49 @@
+## Svar på spørgsmål
+
+Genvejen (`/health/sync-setup`) er i øjeblikket en **orphan route** — den findes i `App.tsx` og `HealthSyncSetup.tsx`, men der er **intet link til den nogen steder i UI'en**. Brugeren skal selv kende URL'en. Det skal vi rette.
+
 ## Mål
 
-Opret `src/pages/HealthSyncSetup.tsx` som en interaktiv 8-trins guide, der hjælper iPhone-brugere med at sætte deres Apple Health → Sportstalent sync op via iOS Shortcuts. Den originale kode er tabt i historikken, så den bygges fra bunden, men matcher den eksisterende arkitektur så intet andet går i stykker.
+1. Tilføj synlige indgange til Health-opsætning under **Profil**.
+2. Lav en **Android Health Connect placeholder-side** parallelt med iPhone-guiden, så strukturen er klar når Android-opsætningen bygges.
 
-## Tilpasninger til eksisterende kodebase
+## Ændringer
 
-For at undgå at ødelægge andet:
+### 1. Ny side: `src/pages/HealthSyncSetupAndroid.tsx`
+Placeholder med samme dark cockpit-stil som iPhone-guiden:
+- `PageMeta` (noindex), tilbage-knap til `/profile`.
+- Stor ikon (Smartphone fra lucide), titel "Android Health Connect", undertitel "Kommer snart".
+- Info-kort der forklarer at Android-opsætningen er under udvikling og linker til iPhone-guiden hvis brugeren har en iPhone.
+- "Giv mig besked når den er klar"-knap → mailto eller toast (vi bruger toast: "Vi giver besked når Android er klar").
+- Alt i `t()` med nye keys for alle 7 sprog.
 
-- **Route**: i `src/App.tsx` linje 159 redirecter `/health/sync-setup` i dag til `/health`. Den redirect erstattes med `<Route path="/health/sync-setup" element={<Page><HealthSyncSetup /></Page>} />` + lazy/eager import af den nye side. Ingen andre routes røres.
-- **Sync-backend**: Bruger den eksisterende `health-sync-simple` edge function (email + password + step/sleep/hr/hrv felter). Guiden viser brugerens email + Supabase project URL (`VITE_SUPABASE_URL`) som copy-værdier, så Shortcut'en kan kalde funktionen.
-- **Auth**: Henter session via `supabase.auth.getUser()` ved mount for at autofill email; hvis ikke logget ind → redirect til `/auth?redirect=/health/sync-setup` (matcher mønster fra mem://tech/navigation-patterns).
-- **Tilbage-knap** på trin 0 går til `/health` (ikke history.back, så deep links virker).
-- **Design tokens**: bruger semantiske Tailwind tokens (`bg-card`, `text-foreground`, `border-border`, `text-primary`) – ingen hardcoded farver. Følger dark cockpit-temaet for authenticated sider (mem://style/aesthetic).
-- **Mobil baseline**: `h-11` knapper/inputs, `pt-safe`, sonner toast top-center bruges allerede globalt, haptics via `@/lib/haptics` på copy/next.
-- **i18n**: Tekster wraps i `t()` fra `useLanguage()`. Nye keys tilføjes for alle 7 sprog (en, da, sv, de, ar, no, es) i `src/i18n/translations.ts`. Ingen hardcoded engelsk.
-- **PageMeta**: `<PageMeta title="..." noindex />` (auth-only side).
-- **Help.tsx + changelog**: opdateres med ny entry "Health sync setup wizard for iPhone".
+### 2. Ny route i `src/App.tsx`
+Tilføj `<Route path="/health/sync-setup-android" element={<Page><HealthSyncSetupAndroid /></Page>} />` lige under den eksisterende iPhone-route. Lazy/eager import matcher iPhone-importen.
 
-## Indhold af de 8 trin
+### 3. Ny sektion i `src/pages/Profile.tsx`
+Tilføj en "Sundhed & enheder"-blok i action-listen (mellem `change-password` og `Download`), med to knapper:
+- **Apple Health (iPhone)** → `/health/sync-setup` — Apple-ikon (lucide `Apple`).
+- **Google Fit / Health Connect (Android)** → `/health/sync-setup-android` — vises med "Kommer snart" badge (lucide `Smartphone`).
 
-1. **Velkomst** – forklaring + krav (iPhone iOS 15+, Apple Health aktiv).
-2. **Åbn Genveje-appen** – iOS mockup illustration, link til App Store hvis ikke installeret.
-3. **Tilføj Sportstalent Shortcut** – knap "Åbn Shortcut" (deep link `shortcuts://...` til offentlig iCloud-link) + copy-fallback.
-4. **Indtast din email** – viser brugerens email med one-tap copy.
-5. **Indtast dit password** – sikkerheds-notice + copy af endpoint URL.
-6. **Tillad sundhedsdata-adgang** – screenshot/mockup af iOS permissions.
-7. **Test sync nu** – knap der kører Shortcut + viser "venter på data" status (poller `daily_health` for nyeste række via supabase i 30 sek).
-8. **Færdig** – grøn success state, link videre til `/health`, samt "Automatiser daglig kørsel" tip (Personal Automation kl. 07:00).
+Stilen matcher de eksisterende `ActionRow`-knapper i Profile. Ingen ændring af eksisterende knapper.
 
-## UI-komponenter
+### 4. Translations
+Nye keys i `src/i18n/translations.ts` for alle 7 sprog (en, da, sv, de, ar, no, es):
+- `profileHealthSectionTitle` — "Sundhed & enheder"
+- `profileHealthAppleTitle`, `profileHealthAppleDesc`
+- `profileHealthAndroidTitle`, `profileHealthAndroidDesc`
+- `healthAndroidComingSoonTitle`, `healthAndroidComingSoonBody`
+- `healthAndroidNotifyMe`, `healthAndroidNotifyToast`
+- `comingSoonBadge` — "Kommer snart"
 
-- Top: progress bar (8 segmenter, fyldt op til aktuelt trin) + "Trin X af 8".
-- Body: ét kort pr. trin med iOS-stil mockup (rendret som styled div, ikke billede), instruktion, og evt. copy-felt.
-- Footer (sticky): "← Tilbage" + "Næste trin →" (Tilbage på trin 0 = `/health`, Næste skjult på trin 7).
-- Copy-knapper: `navigator.clipboard.writeText` + haptics + sonner toast "Kopieret".
+### 5. Changelog
+`changelogEntry131` i alle 7 sprog + entry i `src/pages/Help.tsx`: "Health-opsætning er nu tilgængelig under Profil; Android Health Connect kommer snart."
 
-## Filer der ændres
+## Uden for scope
+- Ingen ændring af `HealthSyncSetup.tsx` (iPhone-guiden), `Health.tsx`, edge functions eller DB.
+- Ingen reel Android-implementering — kun placeholder.
+- Ingen ændring af bottom nav.
 
-- **Ny**: `src/pages/HealthSyncSetup.tsx`
-- **Edit**: `src/App.tsx` (linje 57 import + linje 159 route)
-- **Edit**: `src/i18n/translations.ts` (nye `healthSetup*` keys × 7 sprog)
-- **Edit**: `src/pages/Help.tsx` (ny FAQ-entry + changelog)
-
-## Ud af scope
-
-- Ingen ændring af `Health.tsx`, edge functions, DB schema eller `HealthSourceGuide`.
-- Ingen ny shortcut-fil – guiden refererer til den eksisterende iCloud-link (placeholder konstant øverst i komponenten, så den let kan opdateres).
+## Tekniske noter
+- Profile-knappen til Android er **ikke disabled** — den navigerer til placeholder-siden så brugeren ser status og kan tilmelde sig notifikation.
+- `Apple`-ikonet findes i lucide-react; falder ellers tilbage til `Heart`.
