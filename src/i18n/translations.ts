@@ -2514,6 +2514,7 @@ const translations = {
     healthSetupS3Note: "Shortcuts opens and asks for your Sportstalent email and password the first time — enter them and tap Add Shortcut.",
     healthSetupS4Title: "Run automatically every morning",
     healthSetupS4Body: "Open Shortcuts → Automation tab → + → Time of Day → 07:00, Daily → choose 'Run Immediately' → pick the 'Sportstalent sync' shortcut.",
+    healthSetupS4Important: "Important: without this automation, the sync won't run on its own — you'll have to open the shortcut manually every day.",
     healthSetupS5Title: "Test & finish",
     healthSetupS5Body: "Run the shortcut once in Shortcuts, then tap Test sync here to confirm your data arrives.",
     healthSetupTestSync: "Test sync",
