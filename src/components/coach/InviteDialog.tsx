@@ -54,7 +54,7 @@ export function InviteDialog({ coachId, clubId, pendingCount, approvedCount }: P
         const newCode = generateCode();
         const { error } = await supabase.from("coach_invites" as any).insert({
           coach_id: coachId,
-          club_id: clubId,
+          club_id: effectiveClubId,
           code: newCode,
         });
         if (error) throw error;
@@ -84,7 +84,7 @@ export function InviteDialog({ coachId, clubId, pendingCount, approvedCount }: P
       const newCode = generateCode();
       const { error } = await supabase.from("coach_invites" as any).insert({
         coach_id: coachId,
-        club_id: clubId,
+        club_id: effectiveClubId,
         code: newCode,
       });
       if (error) throw error;
