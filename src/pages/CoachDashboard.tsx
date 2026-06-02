@@ -320,12 +320,12 @@ export default function CoachDashboard() {
 
       <main className="container max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {coachUserId && (
-          <Tabs defaultValue="squad" className="space-y-4">
+          <Tabs defaultValue="today" className="space-y-4">
             <div className="flex items-center justify-between gap-2 flex-wrap">
               <div className="-mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto scrollbar-none w-full sm:w-auto">
                 <TabsList className="w-max">
-                  <TabsTrigger value="squad">{t("squadTab")}</TabsTrigger>
                   <TabsTrigger value="today">{t("todayTab")}</TabsTrigger>
+                  <TabsTrigger value="squad">{t("squadTab")}</TabsTrigger>
                   <TabsTrigger value="messages">{t("messagesTab")}</TabsTrigger>
                 </TabsList>
               </div>
