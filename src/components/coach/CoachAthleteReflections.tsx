@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { ReflectionTrendChart } from "@/components/ReflectionTrendChart";
 import { CoachCreateCompetitionDialog } from "@/components/coach/CoachCreateCompetitionDialog";
 import { CoachManualReflectionDialog } from "@/components/coach/CoachManualReflectionDialog";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 
 type SupportedLocale = "en" | "da" | "sv" | "de" | "ar" | "no";
 
