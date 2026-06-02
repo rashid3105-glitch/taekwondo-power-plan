@@ -541,6 +541,7 @@ function SurveyBuilder({ initial, onClose, onSaved, onOpenPickTemplate }: {
   onOpenPickTemplate: () => void;
 }) {
   const { t } = useLanguage();
+  const { activeClubId } = useActiveClub();
   const [title, setTitle] = useState(initial?.title || "");
   const [description, setDescription] = useState(initial?.description || "");
   const [allowAnon, setAllowAnon] = useState(initial?.allow_anonymous ?? false);
