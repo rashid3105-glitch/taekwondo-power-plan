@@ -254,9 +254,9 @@ export default function CoachDashboard() {
           .order("created_at", { ascending: false }),
       ]);
 
-      // Restrict managed athletes to those sharing the coach's club
+      // Restrict managed athletes to those who hold an active membership in this club.
       const sameClubProfiles = (((profilesRes.data || []) as any[])
-        .filter((athlete) => clubId && athlete.club_id === clubId)
+        .filter((athlete) => clubId && (clubMembershipIds.has(athlete.user_id) || athlete.club_id === clubId))
         .map((athlete) => ({
           ...athlete,
           club_name: athlete.club_id ? clubMap.get(athlete.club_id) || null : null,
