@@ -2,30 +2,19 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Check, Copy, Smartphone, Heart, Wrench, KeyRound, Mail, Activity, Sparkles, Loader2, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Check, Download, Smartphone, Heart, Activity, Sparkles, Loader2 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PageMeta } from "@/components/PageMeta";
 import { toast } from "sonner";
 import { haptics } from "@/lib/haptics";
 
-const SYNC_ENDPOINT = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/health-sync-simple`;
-
-const JSON_BODY_TEMPLATE = `{
-  "email": "DIN_EMAIL",
-  "password": "DIN_ADGANGSKODE",
-  "steps": [Skridt-variabel],
-  "resting_hr": [Hvilepuls-variabel],
-  "hrv": [HRV-variabel],
-  "sleep_hours": [Søvn-variabel]
-}`;
-
-const TOTAL_STEPS = 8;
+const SHORTCUT_URL = "/sportstalent-sync.shortcut";
+const TOTAL_STEPS = 4;
 
 export default function HealthSyncSetup() {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const [step, setStep] = useState(0);
-  const [email, setEmail] = useState("");
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState<"idle" | "success" | "timeout">("idle");
 
@@ -34,21 +23,9 @@ export default function HealthSyncSetup() {
       const { data } = await supabase.auth.getUser();
       if (!data.user) {
         navigate("/auth?redirect=/health/sync-setup", { replace: true });
-        return;
       }
-      setEmail(data.user.email ?? "");
     })();
   }, [navigate]);
-
-  async function copyValue(value: string) {
-    try {
-      await navigator.clipboard.writeText(value);
-      haptics.tap();
-      toast.success(t("healthSetupCopied"));
-    } catch {
-      toast.error("Copy failed");
-    }
-  }
 
   function goNext() {
     haptics.tap();
@@ -78,7 +55,6 @@ export default function HealthSyncSetup() {
       return;
     }
 
-    // baseline timestamp
     const since = new Date(Date.now() - 60_000).toISOString();
     const deadline = Date.now() + 30_000;
     let success = false;
@@ -129,7 +105,7 @@ export default function HealthSyncSetup() {
           </button>
           <div className="flex-1 min-w-0">
             <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
-              {t("healthSetupStepOf").replace("{n}", String(step + 1))}
+              {t("healthSetupStepOf").replace("{n}", String(step + 1)).replace("8", String(TOTAL_STEPS))}
             </div>
             <h1 className="text-base font-semibold truncate">{t("healthSetupTitle")}</h1>
           </div>
@@ -143,7 +119,13 @@ export default function HealthSyncSetup() {
       </header>
 
       {/* Body */}
-      <main className="flex-1 px-4 py-6">
+      <main className="flex-1 px-4 py-6 space-y-4">
+        {/* Native app banner (always visible) */}
+        <div className="max-w-md mx-auto rounded-xl border border-primary/30 bg-primary/5 px-3 py-2.5 text-xs text-muted-foreground leading-relaxed flex gap-2">
+          <Sparkles className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+          <span>{t("healthSetupNativeAppBanner")}</span>
+        </div>
+
         {step === 0 && (
           <StepCard icon={<Sparkles className="h-6 w-6" />} title={t("healthSetupS1Title")}>
             <p className="text-sm text-muted-foreground leading-relaxed">{t("healthSetupS1Body")}</p>
@@ -157,62 +139,22 @@ export default function HealthSyncSetup() {
         )}
 
         {step === 1 && (
-          <StepCard icon={<Smartphone className="h-6 w-6" />} title={t("healthSetupS2Title")}>
-            <p className="text-sm text-muted-foreground leading-relaxed">{t("healthSetupS2Body")}</p>
-            <IPhoneFrame>
-              <div className="flex items-center justify-center h-full">
-                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-pink-500 to-violet-600 shadow-lg flex items-center justify-center">
-                  <div className="grid grid-cols-2 gap-1.5">
-                    <div className="w-4 h-4 rounded bg-white/90" />
-                    <div className="w-4 h-4 rounded bg-white/60" />
-                    <div className="w-4 h-4 rounded bg-white/60" />
-                    <div className="w-4 h-4 rounded bg-white/90" />
-                  </div>
-                </div>
-              </div>
-            </IPhoneFrame>
+          <StepCard icon={<Download className="h-6 w-6" />} title={t("healthSetupS2NewTitle")}>
+            <p className="text-sm text-muted-foreground leading-relaxed">{t("healthSetupS2NewBody")}</p>
+            <a
+              href={SHORTCUT_URL}
+              download
+              onClick={() => haptics.tap()}
+              className="w-full inline-flex items-center justify-center gap-2 h-12 rounded-lg bg-primary text-primary-foreground font-semibold hover:bg-primary/90 active:scale-[0.99] transition"
+            >
+              <Download className="h-5 w-5" />
+              {t("healthSetupS2DownloadBtn")}
+            </a>
+            <p className="text-xs text-muted-foreground text-center">{t("healthSetupS2SafariNote")}</p>
           </StepCard>
         )}
 
         {step === 2 && (
-          <StepCard icon={<Wrench className="h-6 w-6" />} title={t("healthSetupS3Title")}>
-            <p className="text-sm text-muted-foreground leading-relaxed">{t("healthSetupS3Body")}</p>
-            <ol className="space-y-2 text-sm">
-              {[1, 2, 3, 4, 5].map((n) => (
-                <li key={n} className="flex gap-3">
-                  <span className="shrink-0 h-6 w-6 rounded-full bg-primary/15 text-primary text-xs font-semibold flex items-center justify-center">
-                    {n}
-                  </span>
-                  <span className="text-muted-foreground leading-relaxed">
-                    {t(`healthSetupS3Step${n}` as any)}
-                  </span>
-                </li>
-              ))}
-            </ol>
-            <CopyField label={t("healthSetupEndpointLabel")} value={SYNC_ENDPOINT} onCopy={copyValue} />
-            <CopyField label={t("healthSetupS3JsonLabel" as any)} value={JSON_BODY_TEMPLATE} onCopy={copyValue} />
-            <div className="flex gap-2 items-start rounded-lg border border-border bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
-              <ShieldCheck className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-              <span>{t("healthSetupS3SecurityNote" as any)}</span>
-            </div>
-          </StepCard>
-        )}
-
-        {step === 3 && (
-          <StepCard icon={<Mail className="h-6 w-6" />} title={t("healthSetupS4Title")}>
-            <p className="text-sm text-muted-foreground leading-relaxed">{t("healthSetupS4Body")}</p>
-            <CopyField label={t("healthSetupEmailLabel")} value={email || "…"} onCopy={copyValue} />
-          </StepCard>
-        )}
-
-        {step === 4 && (
-          <StepCard icon={<KeyRound className="h-6 w-6" />} title={t("healthSetupS5Title")}>
-            <p className="text-sm text-muted-foreground leading-relaxed">{t("healthSetupS5Body")}</p>
-            <CopyField label={t("healthSetupEndpointLabel")} value={SYNC_ENDPOINT} onCopy={copyValue} />
-          </StepCard>
-        )}
-
-        {step === 5 && (
           <StepCard icon={<Heart className="h-6 w-6" />} title={t("healthSetupS6Title")}>
             <p className="text-sm text-muted-foreground leading-relaxed">{t("healthSetupS6Body")}</p>
             <IPhoneFrame>
@@ -230,14 +172,10 @@ export default function HealthSyncSetup() {
           </StepCard>
         )}
 
-        {step === 6 && (
+        {step === 3 && (
           <StepCard icon={<Activity className="h-6 w-6" />} title={t("healthSetupS7Title")}>
             <p className="text-sm text-muted-foreground leading-relaxed">{t("healthSetupS7Body")}</p>
-            <Button
-              className="w-full h-11"
-              onClick={runTest}
-              disabled={testing}
-            >
+            <Button className="w-full h-11" onClick={runTest} disabled={testing}>
               {testing ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -251,10 +189,15 @@ export default function HealthSyncSetup() {
               )}
             </Button>
             {testResult === "success" && (
-              <div className="rounded-lg border border-primary/40 bg-primary/10 px-3 py-2 text-sm flex items-center gap-2">
-                <Check className="h-4 w-4 text-primary" />
-                {t("healthSetupTestSuccess")}
-              </div>
+              <>
+                <div className="rounded-lg border border-primary/40 bg-primary/10 px-3 py-2 text-sm flex items-center gap-2">
+                  <Check className="h-4 w-4 text-primary" />
+                  {t("healthSetupTestSuccess")}
+                </div>
+                <Button variant="outline" className="w-full h-11" onClick={() => navigate("/health")}>
+                  {t("healthSetupFinish")}
+                </Button>
+              </>
             )}
             {testResult === "timeout" && (
               <div className="rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
@@ -263,24 +206,10 @@ export default function HealthSyncSetup() {
             )}
           </StepCard>
         )}
-
-        {step === 7 && (
-          <StepCard icon={<Check className="h-6 w-6" />} title={t("healthSetupS8Title")}>
-            <div className="flex items-center justify-center py-2">
-              <div className="h-16 w-16 rounded-full bg-primary/15 flex items-center justify-center">
-                <Check className="h-8 w-8 text-primary" />
-              </div>
-            </div>
-            <p className="text-sm text-muted-foreground leading-relaxed">{t("healthSetupS8Body")}</p>
-            <Button className="w-full h-11" onClick={() => navigate("/health")}>
-              {t("healthSetupFinish")}
-            </Button>
-          </StepCard>
-        )}
       </main>
 
       {/* Footer */}
-      {step < 7 && (
+      {step < TOTAL_STEPS - 1 && (
         <div className="px-4 pb-4 pt-2 border-t border-border/60 flex gap-3 bg-background">
           <Button variant="outline" className="flex-1 h-11" onClick={goBack}>
             ← {t("healthSetupBack")}
@@ -304,22 +233,6 @@ function StepCard({ icon, title, children }: { icon: React.ReactNode; title: str
         <h2 className="text-lg font-semibold">{title}</h2>
       </div>
       {children}
-    </div>
-  );
-}
-
-function CopyField({ label, value, onCopy }: { label: string; value: string; onCopy: (v: string) => void }) {
-  return (
-    <div className="space-y-1.5">
-      <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</div>
-      <button
-        type="button"
-        onClick={() => onCopy(value)}
-        className="w-full flex items-center justify-between gap-3 rounded-lg border border-border bg-muted/30 px-3 py-2.5 text-left hover:bg-muted/50 active:scale-[0.99] transition"
-      >
-        <span className="text-sm font-mono truncate">{value}</span>
-        <Copy className="h-4 w-4 text-muted-foreground shrink-0" />
-      </button>
     </div>
   );
 }
