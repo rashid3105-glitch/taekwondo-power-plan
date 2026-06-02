@@ -66,7 +66,7 @@ export function AthleteRunningProgress({ athleteId }: Props) {
 
   const METRICS: { key: Metric; label: string; color: string; format: (v: number) => string }[] = [
     { key: "distance", label: t("runDistanceKm") || "Distance", color: "#10b981", format: (v) => `${v.toFixed(1)} km` },
-    { key: "pace", label: t("runPace") || "Pace", color: "#3b82f6", format: (v) => `${formatPace(v)}/km` },
+    { key: "pace", label: t("runPace") || "Pace", color: "var(--accent-hex)", format: (v) => `${formatPace(v)}/km` },
     { key: "calories", label: t("runCalories") || "Kalorier", color: "#f59e0b", format: (v) => `${v} kcal` },
   ];
 
@@ -86,8 +86,8 @@ export function AthleteRunningProgress({ athleteId }: Props) {
           <div className="text-sm font-bold text-emerald-600">{totalDistance.toFixed(1)} km</div>
           <div className="text-[10px] text-muted-foreground">{t("runTotalDistance") || "Total distance"}</div>
         </div>
-        <div className="rounded-lg bg-blue-500/10 p-2.5 text-center">
-          <div className="text-sm font-bold text-blue-600">{bestPace !== Infinity ? formatPace(bestPace) : "-"}/km</div>
+        <div className="rounded-lg bg-primary/10 p-2.5 text-center">
+          <div className="text-sm font-bold text-primary">{bestPace !== Infinity ? formatPace(bestPace) : "-"}/km</div>
           <div className="text-[10px] text-muted-foreground">{t("runBestPace") || "Bedste pace"}</div>
         </div>
         <div className="rounded-lg bg-amber-500/10 p-2.5 text-center">

@@ -612,6 +612,20 @@ export default function Dashboard() {
             </div>
             <div className="flex items-center gap-2">
               <LanguageSwitcher />
+              {isCoach && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => { markDotSeen("coach_season_cal_header"); navigate("/coach/season-calendar"); }}
+                  aria-label={t("seasonCalendar") || "Sæsonkalender"}
+                  className="relative"
+                >
+                  <CalendarRange className="h-5 w-5" />
+                  {!seenDots.has("coach_season_cal_header") && (
+                    <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-destructive animate-pulse" />
+                  )}
+                </Button>
+              )}
               <EventRemindersDropdown />
               <button
                 onClick={() => navigate("/profile-setup")}
@@ -694,6 +708,30 @@ export default function Dashboard() {
 
             <Separator className="my-2" />
 
+            {/* Messages (chat) */}
+            <button
+              onClick={() => { setMenuOpen(false); setChatOpen(true); }}
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
+            >
+              <MessageCircle className="h-4 w-4 shrink-0" />
+              <span>{t("chat") || "Beskeder"}</span>
+            </button>
+
+            {isCoach && (
+              <button
+                onClick={() => { setMenuOpen(false); markDotSeen("coach_dashboard_menu"); navigate("/coach"); }}
+                className="relative flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
+              >
+                <span className="relative inline-flex">
+                  <LayoutGrid className="h-4 w-4 shrink-0" />
+                  {!seenDots.has("coach_dashboard_menu") && (
+                    <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-destructive ring-2 ring-background" aria-hidden="true" />
+                  )}
+                </span>
+                <span>{t("coachDashboard") || "Coach Dashboard"}</span>
+              </button>
+            )}
+
             {/* Utilities */}
             <button onClick={() => { setMenuOpen(false); navigate("/profile-setup"); }} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer">
               <User className="h-4 w-4 shrink-0" />
@@ -758,15 +796,13 @@ export default function Dashboard() {
             { key: "coach-traening", label: t("train") || "Træning", icon: CalendarRange, active: false, onClick: () => navigate("/coach/season-calendar") },
             { key: "coach-staevner", label: t("competitions") || "Stævner", icon: Trophy, active: false, onClick: () => navigate("/coach/competitions") },
             { key: "coach-surveys", label: t("surveysTitle") || "Evalueringer", icon: ClipboardList, active: false, onClick: () => navigate("/coach/surveys") },
-            { key: "coach-beskeder", label: t("chat") || "Beskeder", icon: MessageCircle, active: chatOpen, onClick: () => setChatOpen(true) },
-            
+
           ] : [
             { key: "idag", label: t("today") || "I dag", icon: Home, active: activeTab === "hub", onClick: () => handleTabChange("hub") },
             { key: "traen", label: t("train") || "Træn", icon: Zap, active: activeTab === "plan", onClick: () => handleTabChange("plan") },
             { key: "kalender", label: t("seasonCalendar") || "Kalender", icon: CalendarRange, active: activeTab === "calendar", onClick: () => handleTabChange("calendar") },
             { key: "dagbog", label: t("diary") || "Dagbog", icon: NotebookPen, active: false, onClick: () => navigate("/diary") },
             { key: "video", label: t("hubMatchTitle") || "Video", icon: VideoIcon, active: false, onClick: () => navigate("/match-analysis/me") },
-            { key: "chat", label: t("chat") || "Chat", icon: MessageCircle, active: chatOpen, onClick: () => setChatOpen(true) },
           ]).map(({ key, label, icon: Icon, active, onClick }) => (
             <button
               key={key}
@@ -1255,22 +1291,6 @@ export default function Dashboard() {
             {activePlan ? (
               <div className="space-y-2">
                 <AIPlanCard plan={activePlan} />
-                <div className="grid grid-cols-2 gap-3 mt-2">
-                  <button
-                    onClick={() => handleTabChange("rehab")}
-                    className="flex items-center gap-2 rounded-xl border border-border bg-card p-3 text-left hover:bg-accent/30 transition-colors"
-                  >
-                    <Heart className="h-4 w-4 text-destructive shrink-0" />
-                    <span className="text-xs font-semibold truncate">{t("injuryRehabPlan")}</span>
-                  </button>
-                  <button
-                    onClick={() => navigate("/match-analysis/me")}
-                    className="flex items-center gap-2 rounded-xl border border-border bg-card p-3 text-left hover:bg-accent/30 transition-colors"
-                  >
-                    <VideoIcon className="h-4 w-4 text-primary shrink-0" />
-                    <span className="text-xs font-semibold truncate">{t("hubMatchTitle")}</span>
-                  </button>
-                </div>
               </div>
             ) : (!hasCoach || isPaid) ? (
               <FeatureEmptyState
