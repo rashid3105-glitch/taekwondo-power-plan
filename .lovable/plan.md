@@ -1,48 +1,70 @@
+# Option A + C — Hostet Genvej nu, native app senere
 
-## Problem
-`SHORTCUT_URL` i `src/pages/HealthSyncSetup.tsx` peger på `https://www.icloud.com/shortcuts/sportstalent-health-sync` — den genvej findes ikke på iCloud, så Apple svarer "Ikke fundet". Vi kan ikke publicere en rigtig genvej fra koden; den skal bygges manuelt i Genveje-appen på en iPhone/Mac.
+## Strategi
+- **Nu (Option A):** Erstat den komplekse byggevejledning med én download-knap til en færdig `.shortcut`-fil. To taps + email/kode én gang.
+- **Sigt (Option C):** Marker tydeligt at native Apple Health-integration kommer i juli 2026 med native appen, så brugere ved hvorfor "midlertidig" løsning er OK.
 
-## Løsning
-Skift trin 3 fra "hent genvej" til en indbygget byggevejledning, så brugeren selv kan oprette genvejen én gang. Den eksisterende test-sync på trin 7 bekræfter at den virker.
+## Hvad du (Rashid) skal levere én gang
+1. På din iPhone: byg genvejen i Genveje-appen efter den eksisterende 5-trins opskrift (Find sundhedssampler × Skridt/Hvilepuls/HRV/Søvn → Hent indhold fra URL → POST til `health-sync-simple`).
+2. Brug **"Spørg hver gang"** for `email` og `password` — iOS prompter brugeren første gang og husker svarene.
+3. Tilføj automation: "Hver dag kl. 07:00 → Kør genvej, spørg ikke".
+4. Eksportér som `sportstalent-sync.shortcut` og send filen til mig.
 
-## Ændringer
+Indtil filen er klar peger knappen på `/sportstalent-sync.shortcut` (404). Du kan også uploade den via Lovable-filupload bagefter — ingen kodeændring nødvendig.
+
+## Kodeændringer
 
 ### 1. `src/pages/HealthSyncSetup.tsx`
-- Fjern konstanten `SHORTCUT_URL` og knappen "Åbn genvej" + tilhørende CopyField.
-- Behold `SYNC_ENDPOINT`.
-- Omskriv **Trin 3 (`step === 2`)** til "Byg din genvej i Genveje-appen":
-  - Kort intro: "Vi bruger Apples Genveje-app. Du bygger den én gang — tager ~3 minutter."
-  - Nummereret liste med handlinger:
-    1. Åbn **Genveje**-appen → tryk **+** for ny genvej.
-    2. Tilføj handling **Find sundhedssampler** → vælg **Skridt**, sidste 1 dag.
-    3. Gentag for **Hvilepuls**, **Hjertefrekvensvariabilitet (HRV)**, **Søvnanalyse** (sengetid).
-    4. Tilføj **Hent indhold fra URL** → vælg `SYNC_ENDPOINT` (kopiknap), metode **POST**, header `Content-Type: application/json`, body som JSON med `email`, `password`, `steps`, `resting_hr`, `hrv`, `sleep_hours`.
-    5. Navngiv genvejen "Sportstalent Sync" og tilføj **Automation** → "Hver dag kl. 07:00 → Kør genvej".
-  - CopyField til `SYNC_ENDPOINT` + CopyField til en JSON-body-skabelon (foruddefineret eksempel).
-  - Lille info-boks: "Din email + adgangskode bruges kun til at logge ind sikkert. Gemmes lokalt på din iPhone i Genveje."
+Reducér fra 8 → **4 trin**: intro · hent genvej · tillad Apple Health · test & færdig.
 
-### 2. Trin-tæller
-Bibehold `TOTAL_STEPS = 8` (intro, app, byg-guide, email, endpoint, HealthKit-tilladelser, test, færdig). Rækkefølgen er allerede korrekt — kun indholdet på trin 3 ændres.
+Trin 2 (nuværende "byg genvej") bliver:
+- Stor primær-knap "Tilføj genvej til iPhone" → `<a href="/sportstalent-sync.shortcut" download>`.
+- Kort tekst: "iOS åbner Genveje-appen. Tryk Tilføj genvej, indtast din Sportstalent-email og adgangskode én gang — så husker iPhone dem."
+- Lille fodnote: "Skal åbnes på iPhone i Safari."
 
-### 3. Oversættelser (`src/i18n/translations.ts`)
-Tilføj/opdater for alle 7 sprog (en, da, sv, de, ar, no, es):
-- `healthSetupS3Title` → "Byg din genvej" (DA)
-- `healthSetupS3Body` → ny kort intro
-- `healthSetupS3Step1` … `healthSetupS3Step5` → de 5 handlinger
-- `healthSetupS3JsonLabel` → "JSON-body (kopiér ind i Genveje)"
-- `healthSetupS3SecurityNote` → kort tryghedstekst
-- Fjern brug af `healthSetupOpenShortcut` (lad nøglen blive, men ubrugt — sikker fallback).
+Fjern:
+- `JSON_BODY_TEMPLATE`, `SYNC_ENDPOINT`-konstanten (kun brugt i guide).
+- Hele 5-trins byggevejledning + JSON CopyField + security-note blokken.
+- Email-trin (S4) og Endpoint-trin (S5) — ikke længere relevante, brugeren indtaster i iOS prompt.
+- Ikoner: `Wrench`, `Mail`, `KeyRound`, `Copy` (CopyField bruges ikke mere), `ShieldCheck`.
+
+Behold:
+- Intro (S1), HealthKit-tilladelser illustration (S6 → ny S3), Test & færdig (S7+S8 slået sammen → ny S4).
+
+Tilføj **info-banner** øverst på trin 1: "Midlertidig løsning indtil native iPhone-app i juli 2026 — så bliver opsætning automatisk."
+
+### 2. `public/sportstalent-sync.shortcut`
+Tom placeholder indtil du uploader. Vite serverer statiske filer i `public/` som de er — `.shortcut` MIME håndteres af iOS via URL-extension.
+
+### 3. `src/i18n/translations.ts` — alle 7 sprog (en/da/sv/de/ar/no/es)
+**Tilføj nye nøgler:**
+- `healthSetupNativeAppBanner` → "Midlertidig løsning. Native iPhone-app klar juli 2026 — så bliver opsætning automatisk."
+- `healthSetupS2NewTitle` → "Hent genvejen"
+- `healthSetupS2NewBody` → "iOS åbner Genveje-appen. Tryk Tilføj genvej og indtast din email + adgangskode én gang."
+- `healthSetupS2DownloadBtn` → "Tilføj genvej til iPhone"
+- `healthSetupS2SafariNote` → "Skal åbnes på iPhone i Safari."
+
+**Genbruges:** `healthSetupS6Title/Body` (HealthKit tilladelser), `healthSetupS7*` (test), `healthSetupS8*` (færdig). Bliver til S3 og S4 i ny rækkefølge.
+
+**Lader stå (ubrugt, sikker fallback):** `healthSetupS3Step1..5`, `healthSetupS3JsonLabel`, `healthSetupS3SecurityNote`, `healthSetupS3Body`, `healthSetupS3Title`, `healthSetupS4Title/Body`, `healthSetupS5Title/Body`, `healthSetupOpenShortcut`.
 
 ### 4. Changelog
-Tilføj `changelogEntry132` i alle 7 sprog + i `src/pages/Help.tsx` under v1.0.1: "Apple Health-opsætning bruger nu en indbygget byggevejledning i stedet for et eksternt iCloud-link."
+`changelogEntry133` i alle 7 sprog + linje i `src/pages/Help.tsx` v1.0.1:
+- DA: "Apple Health-opsætning er nu ét tap: hent genvejen, indtast email og adgangskode én gang."
 
 ## Uden for scope
+- Edge function `health-sync-simple` — uændret (samme kontrakt).
 - `HealthSyncSetupAndroid.tsx` — uændret.
-- `health-sync-simple` edge function — uændret (kontrakten er allerede `email`+`password`+felter).
-- Ingen DB-ændringer, ingen ny ikon-pakke, ingen routing-ændringer.
+- Ingen DB-ændringer, ingen routing-ændringer, intet auth.
+- Native app-arbejdet — separat spor, kun annonceret som banner.
 
 ## Verifikation efter implementering
-1. Bygger uden TS-fejl.
-2. Navigér til `/health/sync-setup` → trin 3 viser de 5 handlinger + 2 copy-felter, ingen død iCloud-knap.
-3. Kopiér endpoint + JSON og bekræft korrekt indhold.
-4. Trin 7 test-sync uændret og kalder stadig `wearable_daily_summary`-poll.
+1. TS bygger uden fejl.
+2. `/health/sync-setup` viser 4 trin, progress-bar 25%→100%.
+3. Trin 1 viser native-app banner.
+4. Trin 2 har én download-knap, ingen JSON, ingen byggevejledning.
+5. På iPhone Safari: tap knappen → Genveje-appen åbner med "Tilføj genvej" når filen er uploadet.
+6. Test-trin lyser stadig grønt når wearable_daily_summary opdateres.
+
+## Næste skridt efter implementering
+Du bygger og eksporterer `.shortcut`-filen og uploader den til `public/sportstalent-sync.shortcut`.
