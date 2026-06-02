@@ -82,7 +82,7 @@ export default function CoachModules() {
       }
       setBootLoading(false);
     })();
-  }, []);
+  }, [activeClubId]);
 
   useEffect(() => {
     if (!selectedAthlete) return;
