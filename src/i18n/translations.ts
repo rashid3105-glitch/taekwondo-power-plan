@@ -2537,6 +2537,7 @@ const translations = {
     changelogEntry131: "Health setup is now available under Profile; Android Health Connect placeholder added",
     changelogEntry132: "Apple Health setup now uses a built-in build-it-yourself guide instead of an external iCloud link",
     changelogEntry133: "Apple Health setup is now one tap: download the shortcut and enter your email and password once",
+    changelogEntry134: "Apple Health sync is now one tap — add the shortcut directly from iCloud and auto-sync every morning.",
     healthReportLoading: "Generating…",
     healthReportReady: "Health report downloaded.",
     healthReportError: "Could not generate report.",
