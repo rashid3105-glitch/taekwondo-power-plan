@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import { Copy, Mail, MessageCircle, RefreshCw, UserPlus } from "lucide-react";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 
 const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const generateCode = () =>
