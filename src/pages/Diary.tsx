@@ -69,6 +69,7 @@ export default function Diary() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
+  const { activeClubId } = useActiveClub();
 
   const { entries, loading, createEntry, updateEntry, removeEntry } = useOfflineDiary();
   const [showForm, setShowForm] = useState(false);
