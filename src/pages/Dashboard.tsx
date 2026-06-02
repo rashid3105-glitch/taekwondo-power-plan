@@ -616,7 +616,7 @@ export default function Dashboard() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => navigate("/coach/season-calendar")}
+                  onClick={() => { markDotSeen("coach_season_cal_header"); navigate("/coach/season-calendar"); }}
                   aria-label={t("seasonCalendar") || "Sæsonkalender"}
                   className="relative"
                 >
