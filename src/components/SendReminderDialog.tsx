@@ -57,6 +57,7 @@ export function SendReminderDialog({ athleteId, athleteName, athleteEmail }: Sen
         title: title.trim(),
         event_date: eventDate,
         message: message.trim(),
+        ...(activeClubId ? { club_id: activeClubId } : {}),
       });
       if (error) throw error;
 
