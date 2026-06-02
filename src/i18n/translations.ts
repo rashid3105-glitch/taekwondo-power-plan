@@ -13115,6 +13115,7 @@ const translations = {
     changelogEntry131: "إعداد الصحة متاح الآن ضمن الملف الشخصي؛ تمت إضافة عنصر Android Health Connect",
     changelogEntry132: "أصبح إعداد Apple Health يستخدم دليل بناء مدمجًا بدلًا من رابط iCloud خارجي",
     changelogEntry133: "إعداد Apple Health أصبح ضغطة واحدة: نزّل الاختصار وأدخل البريد وكلمة المرور مرة واحدة",
+    changelogEntry134: "مزامنة Apple Health أصبحت ضغطة واحدة — أضف الاختصار مباشرة من iCloud وزامن تلقائيًا كل صباح.",
     healthReportLoading: "جارٍ الإنشاء…",
     healthReportReady: "تم تنزيل تقرير الصحة.",
     healthReportError: "تعذّر إنشاء التقرير.",
