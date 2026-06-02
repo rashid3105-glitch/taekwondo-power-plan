@@ -708,6 +708,30 @@ export default function Dashboard() {
 
             <Separator className="my-2" />
 
+            {/* Messages (chat) */}
+            <button
+              onClick={() => { setMenuOpen(false); setChatOpen(true); }}
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
+            >
+              <MessageCircle className="h-4 w-4 shrink-0" />
+              <span>{t("chat") || "Beskeder"}</span>
+            </button>
+
+            {isCoach && (
+              <button
+                onClick={() => { setMenuOpen(false); markDotSeen("coach_dashboard_menu"); navigate("/coach"); }}
+                className="relative flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
+              >
+                <span className="relative inline-flex">
+                  <LayoutGrid className="h-4 w-4 shrink-0" />
+                  {!seenDots.has("coach_dashboard_menu") && (
+                    <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-destructive ring-2 ring-background" aria-hidden="true" />
+                  )}
+                </span>
+                <span>{t("coachDashboard") || "Coach Dashboard"}</span>
+              </button>
+            )}
+
             {/* Utilities */}
             <button onClick={() => { setMenuOpen(false); navigate("/profile-setup"); }} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer">
               <User className="h-4 w-4 shrink-0" />
