@@ -22,6 +22,8 @@ interface Props {
 
 export function InviteDialog({ coachId, clubId, pendingCount, approvedCount }: Props) {
   const { t } = useLanguage();
+  const { activeClubId } = useActiveClub();
+  const effectiveClubId = activeClubId ?? clubId;
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [code, setCode] = useState<string>("");
