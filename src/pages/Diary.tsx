@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 import {
   Zap, ArrowLeft, Plus, Trash2, Edit2, Save, X, SmilePlus,
   Frown, Meh, Smile, Laugh, BatteryLow, BatteryMedium, BatteryFull,
