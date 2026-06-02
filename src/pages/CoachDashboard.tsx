@@ -34,9 +34,12 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import {
   ArrowLeft, Loader2, Zap, User, Users, NotebookPen, UserCog,
   Frown, Meh, Smile, Laugh, BatteryLow, BatteryMedium, BatteryFull, MessageSquare, Bell, Search, Send, Building, CalendarRange,
+  Menu, Trophy, ClipboardList, MessageCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MessagesIcon } from "@/components/chat/MessagesIcon";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Separator } from "@/components/ui/separator";
 
 interface AthleteProfile {
   user_id: string;
@@ -94,6 +97,7 @@ interface DiaryEntry {
 }
 
 export default function CoachDashboard() {
+  const [menuOpen, setMenuOpen] = useState(false);
   const [athletes, setAthletes] = useState<AthleteProfile[]>([]);
   const [clubAthletes, setClubAthletes] = useState<AthleteProfile[]>([]);
   const [plans, setPlans] = useState<AthletePlan[]>([]);
@@ -314,9 +318,45 @@ export default function CoachDashboard() {
             </Button>
             <MessagesIcon isCoach />
             <LanguageSwitcher />
+            <Button variant="ghost" size="icon" onClick={() => setMenuOpen(true)}>
+              <Menu className="h-5 w-5" />
+            </Button>
           </div>
         </div>
       </header>
+
+      {/* Side Menu Sheet */}
+      <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+        <SheetContent side="right" className="w-72 max-w-[85vw] bg-card border-border p-0 flex flex-col">
+          <SheetHeader className="px-5 pt-5 pb-3">
+            <SheetTitle>{t("menu") || "Menu"}</SheetTitle>
+          </SheetHeader>
+          <Separator />
+          <nav className="flex-1 overflow-y-auto py-2 px-2">
+            {[
+              { key: "coach-hold", label: t("coachNav") || "Hold", icon: Users, onClick: () => { setMenuOpen(false); navigate("/coach"); } },
+              { key: "coach-traening", label: t("train") || "Træning", icon: CalendarRange, onClick: () => { setMenuOpen(false); navigate("/coach/season-calendar"); } },
+              { key: "coach-staevner", label: t("competitions") || "Stævner", icon: Trophy, onClick: () => { setMenuOpen(false); navigate("/coach/competitions"); } },
+              { key: "coach-surveys", label: t("surveysTitle") || "Evalueringer", icon: ClipboardList, onClick: () => { setMenuOpen(false); navigate("/coach/surveys"); } },
+              { key: "coach-beskeder", label: t("chat") || "Beskeder", icon: MessageCircle, onClick: () => { setMenuOpen(false); navigate("/dashboard"); } },
+            ].map(({ key, label, icon: Icon, onClick }) => (
+              <button
+                key={key}
+                onClick={onClick}
+                className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
+              >
+                <Icon className="h-4 w-4 shrink-0" />
+                <span className="truncate">{label}</span>
+              </button>
+            ))}
+            <Separator className="my-2" />
+            <button onClick={() => { setMenuOpen(false); navigate("/dashboard"); }} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer">
+              <User className="h-4 w-4 shrink-0" />
+              <span>{t("athleteMode") || "Athlete view"}</span>
+            </button>
+          </nav>
+        </SheetContent>
+      </Sheet>
 
       <main className="container max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {coachUserId && (
