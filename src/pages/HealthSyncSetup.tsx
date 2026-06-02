@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Check, Download, Smartphone, Heart, Activity, Sparkles, Loader2, Clock } from "lucide-react";
+import { ArrowLeft, Check, Download, Smartphone, Heart, Activity, Sparkles, Loader2, Clock, AlertCircle } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PageMeta } from "@/components/PageMeta";
 import { toast } from "sonner";
@@ -168,6 +168,10 @@ export default function HealthSyncSetup() {
         {step === 3 && (
           <StepCard icon={<Clock className="h-6 w-6" />} title={t("healthSetupS4Title")}>
             <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{t("healthSetupS4Body")}</p>
+            <div className="rounded-lg border border-primary/40 bg-primary/10 px-3 py-2.5 text-sm flex gap-2">
+              <AlertCircle className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+              <span className="leading-relaxed">{t("healthSetupS4Important")}</span>
+            </div>
             <IPhoneFrame>
               <div className="p-4 space-y-2 text-xs">
                 <div className="flex items-center justify-between bg-muted/40 rounded-lg px-3 py-2">
