@@ -54,6 +54,7 @@ export async function syncDiary(): Promise<DiarySyncResult> {
               run_duration_seconds: intent.run_duration_seconds ?? null,
               run_pace_seconds_per_km: intent.run_pace_seconds_per_km ?? null,
               run_calories: intent.run_calories ?? null,
+              ...(intent.club_id ? { club_id: intent.club_id } : {}),
             } as any)
             .select()
             .single();
