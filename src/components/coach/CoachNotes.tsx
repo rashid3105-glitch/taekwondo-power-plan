@@ -20,6 +20,7 @@ interface SharedNote {
 
 export function CoachNotes({ athleteId }: Props) {
   const { t } = useLanguage();
+  const { activeClubId } = useActiveClub();
   const { toast } = useToast();
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(true);
