@@ -15,16 +15,15 @@ export function RoleProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const loadFromProfile = useCallback(async (userId: string) => {
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("user_id", userId)
-      .maybeSingle();
-
-    if (!error && data) {
-      const r = ((data as any).role as string | null) ?? "athlete";
-      setRole(r === "coach" ? "coach" : "athlete");
-    }
+    // Coach role lives in user_roles (profiles.role is unreliable). Check both for safety.
+    const [{ data: rolesRows }, { data: profileRow }] = await Promise.all([
+      supabase.from("user_roles").select("role").eq("user_id", userId),
+      supabase.from("profiles").select("role").eq("user_id", userId).maybeSingle(),
+    ]);
+    const isCoach =
+      (rolesRows?.some((r: any) => r.role === "coach" || r.role === "admin") ?? false) ||
+      (profileRow as any)?.role === "coach";
+    setRole(isCoach ? "coach" : "athlete");
     setLoading(false);
   }, []);
 
