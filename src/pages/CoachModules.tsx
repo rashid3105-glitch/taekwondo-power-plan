@@ -5,6 +5,7 @@ import { ArrowLeft, RotateCcw, Pencil, Trash2, Plus, Check, X } from "lucide-rea
 import { useNavigate } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 
 interface AthleteOption { id: string; name: string; }
 type Tab = "club" | "athlete";
