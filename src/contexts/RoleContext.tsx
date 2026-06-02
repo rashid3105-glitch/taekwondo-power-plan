@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useActiveClub } from "./ActiveClubContext";
 
 export type Role = "athlete" | "coach";
 
@@ -12,9 +13,11 @@ type RoleContextValue = {
 const RoleContext = createContext<RoleContextValue | undefined>(undefined);
 
 export function RoleProvider({ children }: { children: ReactNode }) {
-  const [role, setRole] = useState<Role>("athlete");
-  const [hasCoachRole, setHasCoachRole] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [profileRole, setProfileRole] = useState<Role>("athlete");
+  const [profileHasCoach, setProfileHasCoach] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(true);
+
+  const { memberships, activeMembership, loading: clubLoading } = useActiveClub();
 
   const loadFromProfile = useCallback(async (userId: string) => {
     const { data, error } = await supabase
@@ -25,11 +28,11 @@ export function RoleProvider({ children }: { children: ReactNode }) {
 
     if (!error && data) {
       const r = ((data as any).role as string | null) ?? "athlete";
-      setRole(r === "coach" ? "coach" : "athlete");
+      setProfileRole(r === "coach" ? "coach" : "athlete");
       const roles = ((data as any).roles as string[] | null) ?? [];
-      setHasCoachRole(r === "coach" || (Array.isArray(roles) && roles.includes("coach")));
+      setProfileHasCoach(r === "coach" || (Array.isArray(roles) && roles.includes("coach")));
     }
-    setLoading(false);
+    setProfileLoading(false);
   }, []);
 
   useEffect(() => {
@@ -40,7 +43,7 @@ export function RoleProvider({ children }: { children: ReactNode }) {
       if (session?.user) {
         loadFromProfile(session.user.id);
       } else {
-        setLoading(false);
+        setProfileLoading(false);
       }
     });
 
@@ -49,9 +52,9 @@ export function RoleProvider({ children }: { children: ReactNode }) {
       if (session?.user) {
         loadFromProfile(session.user.id);
       } else {
-        setRole("athlete");
-        setHasCoachRole(false);
-        setLoading(false);
+        setProfileRole("athlete");
+        setProfileHasCoach(false);
+        setProfileLoading(false);
       }
     });
 
@@ -61,8 +64,22 @@ export function RoleProvider({ children }: { children: ReactNode }) {
     };
   }, [loadFromProfile]);
 
+  // Multi-club: derive role from the active membership. Single/zero membership:
+  // preserve previous behavior exactly (read from profiles.role + profiles.roles).
+  let role: Role = profileRole;
+  if (memberships.length > 1 && activeMembership) {
+    role = activeMembership.role_in_club === "coach" || activeMembership.role_in_club === "admin"
+      ? "coach"
+      : "athlete";
+  }
+
+  // hasCoachRole stays true if ANY membership is coach/admin OR profile.roles includes coach.
+  const hasCoachRole =
+    profileHasCoach ||
+    memberships.some((m) => m.role_in_club === "coach" || m.role_in_club === "admin");
+
   return (
-    <RoleContext.Provider value={{ role, hasCoachRole, loading }}>
+    <RoleContext.Provider value={{ role, hasCoachRole, loading: profileLoading || clubLoading }}>
       {children}
     </RoleContext.Provider>
   );
