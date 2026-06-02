@@ -217,6 +217,7 @@ export default function Diary() {
       run_duration_seconds: entryTypes.includes("running") && runTotalSec > 0 ? runTotalSec : null,
       run_pace_seconds_per_km: entryTypes.includes("running") && runPace > 0 ? runPace : null,
       run_calories: entryTypes.includes("running") && runCalories > 0 ? runCalories : null,
+      club_id: activeClubId ?? null,
     };
     try {
       if (editingId) await updateEntry(editingId, payload);
