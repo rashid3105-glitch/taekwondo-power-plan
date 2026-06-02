@@ -10495,6 +10495,7 @@ const translations = {
     changelogEntry131: "Gesundheits-Einrichtung jetzt unter Profil; Android Health Connect Platzhalter hinzugefügt",
     changelogEntry132: "Apple-Health-Einrichtung nutzt jetzt eine eingebaute Bauanleitung statt eines externen iCloud-Links",
     changelogEntry133: "Apple-Health-Einrichtung ist jetzt ein Tipp: Kurzbefehl laden und E-Mail und Passwort einmal eingeben",
+    changelogEntry134: "Apple-Health-Sync ist jetzt ein Tipp — füge den Kurzbefehl direkt aus iCloud hinzu und synchronisiere automatisch jeden Morgen.",
     healthReportLoading: "Wird erstellt…",
     healthReportReady: "Gesundheitsbericht heruntergeladen.",
     healthReportError: "Bericht konnte nicht erstellt werden.",
