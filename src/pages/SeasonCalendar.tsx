@@ -164,7 +164,7 @@ export default function SeasonCalendar() {
       if (!isCoach) { navigate("/dashboard"); return; }
 
       const { data: profile } = await supabase.from("profiles").select("club_id").eq("user_id", user.id).single();
-      const cid = (profile as any)?.club_id ?? null;
+      const cid = activeClubId ?? ((profile as any)?.club_id ?? null);
       setClubId(cid);
       if (!cid) { setLoading(false); return; }
 
@@ -184,7 +184,7 @@ export default function SeasonCalendar() {
 
       setLoading(false);
     })();
-  }, [navigate]);
+  }, [navigate, activeClubId]);
 
   // Load phases / template / overrides / competitions whenever plan changes
   useEffect(() => {
