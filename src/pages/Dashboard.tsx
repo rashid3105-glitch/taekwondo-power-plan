@@ -185,8 +185,12 @@ export default function Dashboard() {
   const { plan: offlinePlan, online: planOnline } = useOfflinePlan();
   const { role } = useRole();
 
-  // Coaches can freely access the athlete dashboard via the side menu / athlete view.
-  // (Previously this force-redirected to /coach which caused a redirect loop.)
+  // Coaches go straight to their own dashboard — no role toggle.
+  useEffect(() => {
+    if (role === "coach") {
+      navigate("/coach", { replace: true });
+    }
+  }, [role, navigate]);
 
   // Sync activeTab → URL ?tab= so browser back/refresh works.
   useEffect(() => {
@@ -660,7 +664,6 @@ export default function Dashboard() {
 
           {/* Navigation */}
           <nav className="flex-1 overflow-y-auto py-2 px-2">
-            {/* Athlete dashboard nav — always shown on /dashboard */}
             {NAV_ITEMS.map(({ tab, icon: Icon, labelKey, color }) => {
               const locked = isDemoLockedTab(tab);
               const active = activeTab === tab;
@@ -688,33 +691,6 @@ export default function Dashboard() {
               <span className="truncate">{t("library")}</span>
               {isDemo && <Lock className="h-3 w-3 ms-auto shrink-0" />}
             </button>
-
-            {/* Coach quick-links — shown below athlete nav when user is a coach */}
-            {isCoach && (
-              <>
-                <Separator className="my-2" />
-                <div className="px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">
-                  {t("coachNav") || "Coach"}
-                </div>
-                {[
-                  { key: "coach-hold", label: t("coachNav") || "Hold", icon: Users, onClick: () => { setMenuOpen(false); navigate("/coach"); } },
-                  { key: "coach-traening", label: t("train") || "Træning", icon: CalendarRange, onClick: () => { setMenuOpen(false); navigate("/coach/season-calendar"); } },
-                  { key: "coach-staevner", label: t("competitions") || "Stævner", icon: Trophy, onClick: () => { setMenuOpen(false); navigate("/coach/competitions"); } },
-                  { key: "coach-surveys", label: t("surveysTitle") || "Evalueringer", icon: ClipboardList, onClick: () => { setMenuOpen(false); navigate("/coach/surveys"); } },
-                  { key: "coach-beskeder", label: t("chat") || "Beskeder", icon: MessageCircle, onClick: () => { setMenuOpen(false); setChatOpen(true); } },
-                ].map(({ key, label, icon: Icon, onClick }) => (
-                  <button
-                    key={key}
-                    onClick={onClick}
-                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
-                  >
-                    <Icon className="h-4 w-4 shrink-0" />
-                    <span className="truncate">{label}</span>
-                  </button>
-                ))}
-              </>
-            )}
-
 
             <Separator className="my-2" />
 
@@ -777,7 +753,14 @@ export default function Dashboard() {
       {/* Mobile bottom nav — 5 tabs */}
       <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-card/95 backdrop-blur-sm sm:hidden pb-safe">
         <div className="flex items-stretch justify-around px-1 pt-1.5">
-          {([
+          {(coachAthleteMode === "coach" && isCoach ? [
+            { key: "coach-hold", label: t("coachNav") || "Hold", icon: Users, active: false, onClick: () => navigate("/coach") },
+            { key: "coach-traening", label: t("train") || "Træning", icon: CalendarRange, active: false, onClick: () => navigate("/coach/season-calendar") },
+            { key: "coach-staevner", label: t("competitions") || "Stævner", icon: Trophy, active: false, onClick: () => navigate("/coach/competitions") },
+            { key: "coach-surveys", label: t("surveysTitle") || "Evalueringer", icon: ClipboardList, active: false, onClick: () => navigate("/coach/surveys") },
+            { key: "coach-beskeder", label: t("chat") || "Beskeder", icon: MessageCircle, active: chatOpen, onClick: () => setChatOpen(true) },
+            
+          ] : [
             { key: "idag", label: t("today") || "I dag", icon: Home, active: activeTab === "hub", onClick: () => handleTabChange("hub") },
             { key: "traen", label: t("train") || "Træn", icon: Zap, active: activeTab === "plan", onClick: () => handleTabChange("plan") },
             { key: "kalender", label: t("seasonCalendar") || "Kalender", icon: CalendarRange, active: activeTab === "calendar", onClick: () => handleTabChange("calendar") },
