@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogT
 import { Badge } from "@/components/ui/badge";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { toast } from "@/hooks/use-toast";
 import { ArrowLeft, Loader2, Plus, Printer, Trash2, CalendarRange, Eye, ChevronLeft, ChevronRight, ChevronDown, Target, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -45,6 +46,7 @@ const DAY_LABELS = ["Ma","Ti","On","To","Fr","Lø","Sø"];
 
 export default function SeasonCalendar() {
   const navigate = useNavigate();
+  const { activeClubId } = useActiveClub();
   const { t } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
@@ -162,7 +164,7 @@ export default function SeasonCalendar() {
       if (!isCoach) { navigate("/dashboard"); return; }
 
       const { data: profile } = await supabase.from("profiles").select("club_id").eq("user_id", user.id).single();
-      const cid = (profile as any)?.club_id ?? null;
+      const cid = activeClubId ?? ((profile as any)?.club_id ?? null);
       setClubId(cid);
       if (!cid) { setLoading(false); return; }
 
@@ -182,7 +184,7 @@ export default function SeasonCalendar() {
 
       setLoading(false);
     })();
-  }, [navigate]);
+  }, [navigate, activeClubId]);
 
   // Load phases / template / overrides / competitions whenever plan changes
   useEffect(() => {

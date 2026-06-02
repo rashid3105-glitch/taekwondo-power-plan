@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { Bell, Loader2 } from "lucide-react";
 
 interface SendReminderDialogProps {
@@ -18,6 +19,7 @@ interface SendReminderDialogProps {
 export function SendReminderDialog({ athleteId, athleteName, athleteEmail }: SendReminderDialogProps) {
   const { toast } = useToast();
   const { t } = useLanguage();
+  const { activeClubId } = useActiveClub();
   const [open, setOpen] = useState(false);
   const [sending, setSending] = useState(false);
   const [title, setTitle] = useState("");
@@ -55,6 +57,7 @@ export function SendReminderDialog({ athleteId, athleteName, athleteEmail }: Sen
         title: title.trim(),
         event_date: eventDate,
         message: message.trim(),
+        ...(activeClubId ? { club_id: activeClubId } : {}),
       });
       if (error) throw error;
 

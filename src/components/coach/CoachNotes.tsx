@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Loader2, NotebookPen, Users } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 
 interface Props {
   athleteId: string;
@@ -19,6 +20,7 @@ interface SharedNote {
 
 export function CoachNotes({ athleteId }: Props) {
   const { t } = useLanguage();
+  const { activeClubId } = useActiveClub();
   const { toast } = useToast();
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(true);
@@ -42,13 +44,13 @@ export function CoachNotes({ athleteId }: Props) {
         .maybeSingle();
       setContent(((own as any)?.content as string) || "");
 
-      // 2. Check if this coach's club has sharing enabled
+      // 2. Check if this coach's club (active membership) has sharing enabled
       const { data: myProfile } = await supabase
         .from("profiles")
         .select("club_id")
         .eq("user_id", user.id)
         .maybeSingle();
-      const myClubId = (myProfile as any)?.club_id as string | null;
+      const myClubId = activeClubId ?? ((myProfile as any)?.club_id as string | null);
 
       if (myClubId) {
         const { data: club } = await supabase
@@ -87,18 +89,17 @@ export function CoachNotes({ athleteId }: Props) {
 
       setLoading(false);
     })();
-  }, [athleteId]);
+  }, [athleteId, activeClubId]);
 
   const save = async () => {
     if (!coachId) return;
     setSaving(true);
     try {
+      const row: any = { coach_id: coachId, athlete_id: athleteId, content: content.slice(0, 5000) };
+      if (activeClubId) row.club_id = activeClubId;
       const { error } = await supabase
         .from("coach_athlete_notes" as any)
-        .upsert(
-          { coach_id: coachId, athlete_id: athleteId, content: content.slice(0, 5000) },
-          { onConflict: "coach_id,athlete_id" },
-        );
+        .upsert(row, { onConflict: "coach_id,athlete_id" });
       if (error) throw error;
       toast({ title: t("notesSaved") });
     } catch (err: any) {

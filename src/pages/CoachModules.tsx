@@ -5,12 +5,14 @@ import { ArrowLeft, RotateCcw, Pencil, Trash2, Plus, Check, X } from "lucide-rea
 import { useNavigate } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 
 interface AthleteOption { id: string; name: string; }
 type Tab = "club" | "athlete";
 
 export default function CoachModules() {
   const navigate = useNavigate();
+  const { activeClubId } = useActiveClub();
   const [tab, setTab] = useState<Tab>("club");
 
   const [coachId, setCoachId] = useState<string | null>(null);
@@ -37,7 +39,7 @@ export default function CoachModules() {
         .select("club_id")
         .eq("user_id", user.id)
         .maybeSingle();
-      const cid = (profile as any)?.club_id ?? null;
+      const cid = activeClubId ?? ((profile as any)?.club_id ?? null);
       setClubId(cid);
 
       // Club defaults
@@ -80,7 +82,7 @@ export default function CoachModules() {
       }
       setBootLoading(false);
     })();
-  }, []);
+  }, [activeClubId]);
 
   useEffect(() => {
     if (!selectedAthlete) return;

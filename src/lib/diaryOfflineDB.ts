@@ -26,6 +26,8 @@ export interface DiaryOutboxIntent {
   run_duration_seconds?: number | null;
   run_pace_seconds_per_km?: number | null;
   run_calories?: number | null;
+  /** Active club at time of write (Phase 3 multi-club). Optional — null/undefined is harmless. */
+  club_id?: string | null;
   queued_at: number;
 }
 

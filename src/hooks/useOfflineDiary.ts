@@ -27,6 +27,7 @@ interface NewEntry {
   run_duration_seconds?: number | null;
   run_pace_seconds_per_km?: number | null;
   run_calories?: number | null;
+  club_id?: string | null;
 }
 
 function uuid() {

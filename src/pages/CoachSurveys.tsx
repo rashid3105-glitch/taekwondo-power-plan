@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { supabase } from "@/integrations/supabase/client";
 import {
   fetchCoachSurveys, createSurvey, deleteSurvey, fetchSurvey, fetchSurveyResults,
@@ -541,6 +542,7 @@ function SurveyBuilder({ initial, onClose, onSaved, onOpenPickTemplate }: {
   onOpenPickTemplate: () => void;
 }) {
   const { t } = useLanguage();
+  const { activeClubId } = useActiveClub();
   const [title, setTitle] = useState(initial?.title || "");
   const [description, setDescription] = useState(initial?.description || "");
   const [allowAnon, setAllowAnon] = useState(initial?.allow_anonymous ?? false);
@@ -567,13 +569,13 @@ function SurveyBuilder({ initial, onClose, onSaved, onOpenPickTemplate }: {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       const { data: profile } = await supabase.from("profiles").select("club_id").eq("user_id", user.id).maybeSingle();
-      const clubId = (profile as any)?.club_id;
+      const clubId = activeClubId ?? (profile as any)?.club_id;
       if (!clubId) return;
       const { data } = await supabase.rpc("get_club_member_profiles", { _club_id: clubId });
       const filtered = (data || []).filter((p: any) => p.user_id !== user.id);
       setAthletes(filtered.map((p: any) => ({ user_id: p.user_id, display_name: p.display_name || "" })));
     })();
-  }, []);
+  }, [activeClubId]);
 
   const buildTemplateQuestions = (): TemplateQuestion[] => {
     const valid = questions.filter((q) => q.question_text.trim().length > 0);

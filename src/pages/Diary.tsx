@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 import {
   Zap, ArrowLeft, Plus, Trash2, Edit2, Save, X, SmilePlus,
   Frown, Meh, Smile, Laugh, BatteryLow, BatteryMedium, BatteryFull,
@@ -68,6 +69,7 @@ export default function Diary() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
+  const { activeClubId } = useActiveClub();
 
   const { entries, loading, createEntry, updateEntry, removeEntry } = useOfflineDiary();
   const [showForm, setShowForm] = useState(false);
@@ -215,6 +217,7 @@ export default function Diary() {
       run_duration_seconds: entryTypes.includes("running") && runTotalSec > 0 ? runTotalSec : null,
       run_pace_seconds_per_km: entryTypes.includes("running") && runPace > 0 ? runPace : null,
       run_calories: entryTypes.includes("running") && runCalories > 0 ? runCalories : null,
+      club_id: activeClubId ?? null,
     };
     try {
       if (editingId) await updateEntry(editingId, payload);

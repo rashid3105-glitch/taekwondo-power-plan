@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ATHLETE_MODULES } from "@/config/modules";
 import { ChevronRight, Lock, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 
 const MODULE_ROUTES: Record<string, string> = {
   plan:      '/dashboard',
@@ -17,6 +18,7 @@ const MODULE_ROUTES: Record<string, string> = {
 
 export default function AthleteModules() {
   const navigate = useNavigate();
+  const { activeClubId } = useActiveClub();
   const [enabledKeys, setEnabledKeys] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
 
@@ -32,7 +34,7 @@ export default function AthleteModules() {
         .select("club_id")
         .eq("user_id", user.id)
         .maybeSingle();
-      const clubId = (profile as any)?.club_id ?? null;
+      const clubId = activeClubId ?? ((profile as any)?.club_id ?? null);
 
       const [defaultsRes, overridesRes] = await Promise.all([
         clubId
@@ -62,7 +64,7 @@ export default function AthleteModules() {
       setEnabledKeys(set);
       setLoading(false);
     })();
-  }, []);
+  }, [activeClubId]);
 
 
   return (

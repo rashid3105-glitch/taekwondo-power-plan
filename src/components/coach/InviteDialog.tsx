@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import { Copy, Mail, MessageCircle, RefreshCw, UserPlus } from "lucide-react";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 
 const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const generateCode = () =>
@@ -21,6 +22,8 @@ interface Props {
 
 export function InviteDialog({ coachId, clubId, pendingCount, approvedCount }: Props) {
   const { t } = useLanguage();
+  const { activeClubId } = useActiveClub();
+  const effectiveClubId = activeClubId ?? clubId;
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [code, setCode] = useState<string>("");
@@ -51,7 +54,7 @@ export function InviteDialog({ coachId, clubId, pendingCount, approvedCount }: P
         const newCode = generateCode();
         const { error } = await supabase.from("coach_invites" as any).insert({
           coach_id: coachId,
-          club_id: clubId,
+          club_id: effectiveClubId,
           code: newCode,
         });
         if (error) throw error;
@@ -81,7 +84,7 @@ export function InviteDialog({ coachId, clubId, pendingCount, approvedCount }: P
       const newCode = generateCode();
       const { error } = await supabase.from("coach_invites" as any).insert({
         coach_id: coachId,
-        club_id: clubId,
+        club_id: effectiveClubId,
         code: newCode,
       });
       if (error) throw error;

@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { ReflectionTrendChart } from "@/components/ReflectionTrendChart";
 import { CoachCreateCompetitionDialog } from "@/components/coach/CoachCreateCompetitionDialog";
 import { CoachManualReflectionDialog } from "@/components/coach/CoachManualReflectionDialog";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 
 type SupportedLocale = "en" | "da" | "sv" | "de" | "ar" | "no";
 
@@ -64,6 +65,7 @@ interface Props {
 export function CoachAthleteReflections({ athleteId, athleteName }: Props) {
   const { t, locale } = useLanguage();
   const { toast } = useToast();
+  const { activeClubId } = useActiveClub();
   const l = (locale as SupportedLocale) || "en";
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState<Reflection[]>([]);
@@ -139,12 +141,11 @@ export function CoachAthleteReflections({ athleteId, athleteName }: Props) {
     const content = (drafts[reflectionId] ?? "").slice(0, 5000);
     setSavingId(reflectionId);
     try {
+      const row: any = { reflection_id: reflectionId, coach_id: coachId, athlete_id: athleteId, content };
+      if (activeClubId) row.club_id = activeClubId;
       const { error } = await supabase
         .from("coach_reflection_comments" as any)
-        .upsert(
-          { reflection_id: reflectionId, coach_id: coachId, athlete_id: athleteId, content },
-          { onConflict: "reflection_id,coach_id" },
-        );
+        .upsert(row, { onConflict: "reflection_id,coach_id" });
       if (error) throw error;
       setComments((prev) => ({
         ...prev,
