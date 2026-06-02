@@ -15767,6 +15767,7 @@ const translations = {
     healthSetupS3Note: "Snarveier åpnes og spør om Sportstalent-e-posten og passordet ditt første gang — skriv dem inn og trykk Legg til snarvei.",
     healthSetupS4Title: "Kjør automatisk hver morgen",
     healthSetupS4Body: "Åpne Snarveier → fanen Automatisering → + → Tid på dagen → 07:00, Daglig → velg 'Kjør med en gang' → velg snarveien 'Sportstalent sync'.",
+    healthSetupS4Important: "Viktig: uten denne automatiseringen kjører ikke synkroniseringen automatisk — da må du åpne snarveien manuelt hver dag.",
     healthSetupS5Title: "Test & ferdig",
     healthSetupS5Body: "Kjør snarveien én gang i Snarveier, og trykk så Test sync her for å bekrefte at dataene kommer inn.",
     healthSetupTestSync: "Test sync",
