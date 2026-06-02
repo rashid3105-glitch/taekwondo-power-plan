@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { supabase } from "@/integrations/supabase/client";
 import {
   fetchCoachSurveys, createSurvey, deleteSurvey, fetchSurvey, fetchSurveyResults,
