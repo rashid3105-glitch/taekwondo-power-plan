@@ -30,7 +30,7 @@ export function ThemeSync() {
       root.style.setProperty("--accent-foreground", "0 0% 0%");
       root.style.setProperty("--accent-hex", "#00C2FF");
     }
-  }, [role, isCoachMode, isCoachRoute]);
+  }, [role, hasCoachRole, isCoachMode, isCoachRoute]);
 
   return null;
 }
