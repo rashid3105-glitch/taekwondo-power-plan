@@ -612,6 +612,20 @@ export default function Dashboard() {
             </div>
             <div className="flex items-center gap-2">
               <LanguageSwitcher />
+              {isCoach && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => navigate("/coach/season-calendar")}
+                  aria-label={t("seasonCalendar") || "Sæsonkalender"}
+                  className="relative"
+                >
+                  <CalendarRange className="h-5 w-5" />
+                  {!seenDots.has("coach_season_cal_header") && (
+                    <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-destructive animate-pulse" />
+                  )}
+                </Button>
+              )}
               <EventRemindersDropdown />
               <button
                 onClick={() => navigate("/profile-setup")}
