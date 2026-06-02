@@ -185,12 +185,8 @@ export default function Dashboard() {
   const { plan: offlinePlan, online: planOnline } = useOfflinePlan();
   const { role } = useRole();
 
-  // Coaches go straight to their own dashboard — no role toggle.
-  useEffect(() => {
-    if (role === "coach") {
-      navigate("/coach", { replace: true });
-    }
-  }, [role, navigate]);
+  // Coaches can freely access the athlete dashboard via the side menu / athlete view.
+  // (Previously this force-redirected to /coach which caused a redirect loop.)
 
   // Sync activeTab → URL ?tab= so browser back/refresh works.
   useEffect(() => {
