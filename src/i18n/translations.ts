@@ -7855,6 +7855,7 @@ const translations = {
     healthSetupS3Note: "Genvägar öppnas och frågar efter din Sportstalent-e-post och lösenord första gången — ange dem och tryck Lägg till genväg.",
     healthSetupS4Title: "Kör automatiskt varje morgon",
     healthSetupS4Body: "Öppna Genvägar → fliken Automation → + → Tid på dygnet → 07.00, Dagligen → välj 'Kör direkt' → välj genvägen 'Sportstalent sync'.",
+    healthSetupS4Important: "Viktigt: utan denna automation körs synkroniseringen inte automatiskt — då måste du öppna genvägen manuellt varje dag.",
     healthSetupS5Title: "Testa & klart",
     healthSetupS5Body: "Kör genvägen en gång i Genvägar och tryck sedan Test sync här för att bekräfta att dina data kommer in.",
     healthSetupTestSync: "Test sync",
