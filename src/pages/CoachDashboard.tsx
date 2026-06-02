@@ -97,6 +97,7 @@ interface DiaryEntry {
 }
 
 export default function CoachDashboard() {
+  const [menuOpen, setMenuOpen] = useState(false);
   const [athletes, setAthletes] = useState<AthleteProfile[]>([]);
   const [clubAthletes, setClubAthletes] = useState<AthleteProfile[]>([]);
   const [plans, setPlans] = useState<AthletePlan[]>([]);
