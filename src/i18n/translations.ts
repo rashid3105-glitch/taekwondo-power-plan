@@ -5185,6 +5185,7 @@ const translations = {
     healthSetupS3Note: "Genveje åbner og spørger om din Sportstalent-email og adgangskode første gang — indtast dem og tryk Tilføj genvej.",
     healthSetupS4Title: "Kør automatisk hver morgen",
     healthSetupS4Body: "Åbn Genveje → fanen Automatisering → + → Klokkeslæt → 07.00, Dagligt → vælg 'Kør straks' → vælg genvejen 'Sportstalent sync'.",
+    healthSetupS4Important: "Vigtigt: uden denne automatisering kører synkroniseringen ikke automatisk — så skal du åbne genvejen manuelt hver dag.",
     healthSetupS5Title: "Test & færdig",
     healthSetupS5Body: "Kør genvejen én gang i Genveje, og tryk så Test sync her for at bekræfte at dine data kommer ind.",
     healthSetupTestSync: "Test sync",
