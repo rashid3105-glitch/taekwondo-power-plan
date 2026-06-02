@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Check, Download, Smartphone, Heart, Activity, Sparkles, Loader2, Clock } from "lucide-react";
+import { ArrowLeft, Check, Download, Smartphone, Heart, Activity, Sparkles, Loader2, Clock, AlertCircle } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PageMeta } from "@/components/PageMeta";
 import { toast } from "sonner";
