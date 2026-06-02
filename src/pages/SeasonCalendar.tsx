@@ -966,7 +966,7 @@ export default function SeasonCalendar() {
                         'bg-amber-50 border-amber-200 text-amber-800': hint.variant === 'pre',
                         'bg-red-50 border-red-200 text-red-800': hint.variant === 'comp',
                         'bg-emerald-50 border-emerald-200 text-emerald-800': hint.variant === 'recovery',
-                        'bg-blue-50 border-blue-200 text-blue-800': hint.variant === 'base',
+                        'bg-primary/10 border-primary/30 text-primary': hint.variant === 'base',
                       })}>
                         <Sparkles className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
                         <span className="text-[12px]"><strong>{t("seasonAiSuggestion") || "AI-forslag"}:</strong> {hint.text}</span>
