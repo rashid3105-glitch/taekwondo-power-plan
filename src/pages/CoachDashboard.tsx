@@ -34,9 +34,12 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import {
   ArrowLeft, Loader2, Zap, User, Users, NotebookPen, UserCog,
   Frown, Meh, Smile, Laugh, BatteryLow, BatteryMedium, BatteryFull, MessageSquare, Bell, Search, Send, Building, CalendarRange,
+  Menu, Trophy, ClipboardList, MessageCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MessagesIcon } from "@/components/chat/MessagesIcon";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Separator } from "@/components/ui/separator";
 
 interface AthleteProfile {
   user_id: string;
