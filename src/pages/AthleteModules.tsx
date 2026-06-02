@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ATHLETE_MODULES } from "@/config/modules";
 import { ChevronRight, Lock, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 
 const MODULE_ROUTES: Record<string, string> = {
   plan:      '/dashboard',
