@@ -89,18 +89,17 @@ export function CoachNotes({ athleteId }: Props) {
 
       setLoading(false);
     })();
-  }, [athleteId]);
+  }, [athleteId, activeClubId]);
 
   const save = async () => {
     if (!coachId) return;
     setSaving(true);
     try {
+      const row: any = { coach_id: coachId, athlete_id: athleteId, content: content.slice(0, 5000) };
+      if (activeClubId) row.club_id = activeClubId;
       const { error } = await supabase
         .from("coach_athlete_notes" as any)
-        .upsert(
-          { coach_id: coachId, athlete_id: athleteId, content: content.slice(0, 5000) },
-          { onConflict: "coach_id,athlete_id" },
-        );
+        .upsert(row, { onConflict: "coach_id,athlete_id" });
       if (error) throw error;
       toast({ title: t("notesSaved") });
     } catch (err: any) {
