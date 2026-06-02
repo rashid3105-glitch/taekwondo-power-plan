@@ -19,6 +19,7 @@ interface SendReminderDialogProps {
 export function SendReminderDialog({ athleteId, athleteName, athleteEmail }: SendReminderDialogProps) {
   const { toast } = useToast();
   const { t } = useLanguage();
+  const { activeClubId } = useActiveClub();
   const [open, setOpen] = useState(false);
   const [sending, setSending] = useState(false);
   const [title, setTitle] = useState("");
