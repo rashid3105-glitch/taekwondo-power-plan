@@ -2685,6 +2685,9 @@ const translations = {
     videoNoteTagStrength: "Strength",
     videoNoteTagDefense: "Defense",
     videoNotePlaceholder: "Write your observation…",
+    activeClub: "Active club",
+    switchClub: "Switch club",
+    changelogEntry136: "Multi-club support: members of more than one club now see a club switcher in the header to toggle between clubs; users in a single club see no change.",
   },
   da: {
     defaultLanguage: "Standardsprog",
@@ -5357,6 +5360,9 @@ const translations = {
     videoNoteTagStrength: "Styrke",
     videoNoteTagDefense: "Forsvar",
     videoNotePlaceholder: "Skriv din observation…",
+    activeClub: "Aktiv klub",
+    switchClub: "Skift klub",
+    changelogEntry136: "Multi-klub-understøttelse: brugere med flere klubmedlemskaber kan nu skifte klub via en vælger i headeren; enkelt-klub-brugere oplever ingen ændring.",
   },
   sv: {
     defaultLanguage: "Standardspråk",
@@ -8028,6 +8034,9 @@ const translations = {
     videoNoteTagStrength: "Styrka",
     videoNoteTagDefense: "Försvar",
     videoNotePlaceholder: "Skriv din observation…",
+    activeClub: "Aktiv klubb",
+    switchClub: "Byt klubb",
+    changelogEntry136: "Stöd för flera klubbar: medlemmar i fler än en klubb ser nu en klubbväljare i sidhuvudet; medlemmar i en enda klubb ser ingen skillnad.",
   },
   de: {
     defaultLanguage: "Standardsprache",
@@ -10649,6 +10658,9 @@ const translations = {
     videoNoteTagStrength: "Kraft",
     videoNoteTagDefense: "Verteidigung",
     videoNotePlaceholder: "Beobachtung notieren…",
+    activeClub: "Aktiver Verein",
+    switchClub: "Verein wechseln",
+    changelogEntry136: "Multi-Vereins-Unterstützung: Mitglieder mehrerer Vereine sehen jetzt eine Vereinsauswahl im Header; Nutzer in nur einem Verein bemerken keine Änderung.",
   },
 
   ar: {
@@ -13271,6 +13283,9 @@ const translations = {
     videoNoteTagStrength: "قوة",
     videoNoteTagDefense: "دفاع",
     videoNotePlaceholder: "اكتب ملاحظتك…",
+    activeClub: "النادي النشط",
+    switchClub: "تبديل النادي",
+    changelogEntry136: "دعم متعدد الأندية: يمكن للأعضاء في أكثر من نادٍ التبديل بينها عبر محدد في الرأس؛ المستخدمون في نادٍ واحد لا يلاحظون أي تغيير.",
   },
   no: {
     onbWelcomeTitle: "Velkommen til Sportstalent",
@@ -15943,6 +15958,9 @@ const translations = {
     videoNoteTagStrength: "Styrke",
     videoNoteTagDefense: "Forsvar",
     videoNotePlaceholder: "Skriv observasjonen din…",
+    activeClub: "Aktiv klubb",
+    switchClub: "Bytt klubb",
+    changelogEntry136: "Støtte for flere klubber: medlemmer i flere klubber ser nå en klubbvelger i toppen; brukere med kun én klubb merker ingen forskjell.",
   },
 } as const;
 
@@ -16877,5 +16895,8 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   helpRolesSteps: "Un usuario puede tener el rol de Atleta, Entrenador o ambos.\n\n1. El rol se establece al crear la cuenta y se puede cambiar en la configuración del perfil.\n2. La interfaz de la app y el tema de color se adaptan automáticamente a tu rol activo.\n3. Los atletas ven un panel centrado en el entrenamiento con la siguiente sesión, estadísticas, diario y acceso rápido.\n4. Los entrenadores ven una vista general del equipo con número de atletas, alertas de inactividad, estadísticas del equipo y herramientas de entrenamiento.",
   helpRoleSwitcherTitle: "Cambiar rol",
   helpRoleSwitcherSteps: "Si tienes ambos roles, aparece un interruptor de píldora en la parte superior de la pantalla de inicio.\n\n1. Toca 'Atleta' o 'Entrenador' para cambiar entre vistas.\n2. Tu elección se guarda en tu perfil y se recuerda para el próximo inicio de sesión.\n3. El tema de color cambia al instante: acento azul para modo atleta, acento naranja para modo entrenador.\n4. Todos los paneles, navegación y funciones se actualizan para coincidir con tu rol seleccionado.",
+  activeClub: "Club activo",
+  switchClub: "Cambiar club",
+  changelogEntry136: "Soporte multi-club: los miembros de más de un club ahora ven un selector de club en la cabecera; los usuarios con un solo club no notan ningún cambio.",
 };
 export default translations;
