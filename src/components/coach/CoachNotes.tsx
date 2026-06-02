@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Loader2, NotebookPen, Users } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 
 interface Props {
   athleteId: string;
