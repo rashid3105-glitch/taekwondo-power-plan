@@ -129,7 +129,20 @@ export default function AuthPage() {
         navigate(redirectTo ? `/onboarding?redirect=${encodeURIComponent(redirectTo)}` : "/onboarding");
       }
     } catch (err: any) {
-      toast({ title: t("error"), description: err.message, variant: "destructive" });
+      const msg = String(err?.message ?? "");
+      // Preview iframe's fetch proxy occasionally drops Supabase auth POSTs
+      // with "TypeError: Load failed" (especially in Safari). Give the user
+      // an actionable hint instead of a cryptic error.
+      const isPreviewProxyFailure =
+        msg.toLowerCase().includes("load failed") ||
+        msg.toLowerCase().includes("failed to fetch");
+      toast({
+        title: t("error"),
+        description: isPreviewProxyFailure
+          ? "Netværksfejl i preview. Prøv at åbne siden i en ny fane eller på sportstalent.dk."
+          : msg,
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
