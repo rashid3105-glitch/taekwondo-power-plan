@@ -16782,6 +16782,7 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   changelogEntry131: "La configuración de salud ahora está en Perfil; añadido el placeholder de Android Health Connect",
     changelogEntry132: "La configuración de Apple Health ahora usa una guía integrada en vez de un enlace iCloud externo",
     changelogEntry133: "La configuración de Apple Health ahora es un toque: descarga el atajo e introduce tu correo y contraseña una vez",
+    changelogEntry134: "La sincronización de Apple Health es ahora un toque — añade el atajo directamente desde iCloud y sincroniza automáticamente cada mañana.",
   healthReportLoading: "Generando…",
   healthReportReady: "Informe de salud descargado.",
   healthReportError: "No se pudo generar el informe.",
