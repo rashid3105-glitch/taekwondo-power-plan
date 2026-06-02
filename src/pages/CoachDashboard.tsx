@@ -137,10 +137,23 @@ export default function CoachDashboard() {
   const { toast } = useToast();
   const { t, locale } = useLanguage();
   const isMobile = useIsMobile();
+  const { activeClubId, memberships } = useActiveClub();
 
   useEffect(() => {
     checkRoleAndLoad();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Re-run loadAthletes when the active club changes (only matters for multi-club coaches).
+  useEffect(() => {
+    if (!coachUserId || !activeClubId) return;
+    // Skip the very first load — checkRoleAndLoad already triggered it.
+    if (activeClubId === coachClubId) return;
+    setCoachClubId(activeClubId);
+    setLoading(true);
+    loadAthletes(coachUserId, activeClubId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeClubId]);
 
   const checkRoleAndLoad = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -185,7 +198,11 @@ export default function CoachDashboard() {
       .single();
     if (clubData?.max_athletes) setMaxAthletes(clubData.max_athletes);
 
-    await loadAthletes(user.id, coachClubId);
+    // Multi-club: prefer the active membership's club. For single-membership coaches
+    // activeClubId === coachClubId so behavior is identical.
+    const effectiveClubId = activeClubId || coachClubId;
+    setCoachClubId(effectiveClubId);
+    await loadAthletes(user.id, effectiveClubId);
   };
 
   const loadAthletes = async (currentUserId?: string, currentClubId?: string) => {
@@ -201,6 +218,19 @@ export default function CoachDashboard() {
     const clubMap = new Map<string, string>(
       ((clubsRes.data as unknown as { id: string; name: string }[] | null) ?? []).map((club) => [club.id, club.name])
     );
+
+    // Membership-based filter: athletes whose active membership puts them in this club.
+    // For a coach in only one club this is identical to the old `athlete.club_id === clubId` filter
+    // because club_memberships was backfilled from profiles.club_id.
+    let clubMembershipIds = new Set<string>();
+    if (clubId) {
+      const { data: memberRows } = await supabase
+        .from("club_memberships" as any)
+        .select("user_id")
+        .eq("club_id", clubId)
+        .eq("status", "active");
+      clubMembershipIds = new Set(((memberRows as any[]) ?? []).map((r) => r.user_id as string));
+    }
 
     if (athleteIds.length === 0) {
       setAthletes([]);
