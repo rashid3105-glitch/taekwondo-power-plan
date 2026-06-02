@@ -13096,6 +13096,7 @@ const translations = {
     healthSetupS3Note: "ستفتح الاختصارات وتطلب بريدك الإلكتروني وكلمة المرور لـ Sportstalent في المرة الأولى — أدخلهما واضغط إضافة الاختصار.",
     healthSetupS4Title: "تشغيل تلقائي كل صباح",
     healthSetupS4Body: "افتح الاختصارات → علامة الأتمتة → + → وقت اليوم → 07:00، يوميًا → اختر 'تشغيل فورًا' → اختر اختصار 'Sportstalent sync'.",
+    healthSetupS4Important: "مهم: بدون هذه الأتمتة لن تعمل المزامنة تلقائيًا — ستحتاج إلى فتح الاختصار يدويًا كل يوم.",
     healthSetupS5Title: "اختبار وإنهاء",
     healthSetupS5Body: "شغّل الاختصار مرة في الاختصارات، ثم اضغط Test sync هنا للتأكيد أن بياناتك تصل.",
     healthSetupTestSync: "Test sync",
