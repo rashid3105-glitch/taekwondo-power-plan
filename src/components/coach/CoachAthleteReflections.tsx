@@ -141,12 +141,11 @@ export function CoachAthleteReflections({ athleteId, athleteName }: Props) {
     const content = (drafts[reflectionId] ?? "").slice(0, 5000);
     setSavingId(reflectionId);
     try {
+      const row: any = { reflection_id: reflectionId, coach_id: coachId, athlete_id: athleteId, content };
+      if (activeClubId) row.club_id = activeClubId;
       const { error } = await supabase
         .from("coach_reflection_comments" as any)
-        .upsert(
-          { reflection_id: reflectionId, coach_id: coachId, athlete_id: athleteId, content },
-          { onConflict: "reflection_id,coach_id" },
-        );
+        .upsert(row, { onConflict: "reflection_id,coach_id" });
       if (error) throw error;
       setComments((prev) => ({
         ...prev,
