@@ -664,33 +664,57 @@ export default function Dashboard() {
 
           {/* Navigation */}
           <nav className="flex-1 overflow-y-auto py-2 px-2">
-            {NAV_ITEMS.map(({ tab, icon: Icon, labelKey, color }) => {
-              const locked = isDemoLockedTab(tab);
-              const active = activeTab === tab;
-              return (
+            {coachAthleteMode === "coach" && isCoach ? (
+              <>
+                {[
+                  { key: "coach-hold", label: t("coachNav") || "Hold", icon: Users, onClick: () => { setMenuOpen(false); navigate("/coach"); } },
+                  { key: "coach-traening", label: t("train") || "Træning", icon: CalendarRange, onClick: () => { setMenuOpen(false); navigate("/coach/season-calendar"); } },
+                  { key: "coach-staevner", label: t("competitions") || "Stævner", icon: Trophy, onClick: () => { setMenuOpen(false); navigate("/coach/competitions"); } },
+                  { key: "coach-surveys", label: t("surveysTitle") || "Evalueringer", icon: ClipboardList, onClick: () => { setMenuOpen(false); navigate("/coach/surveys"); } },
+                  { key: "coach-beskeder", label: t("chat") || "Beskeder", icon: MessageCircle, onClick: () => { setMenuOpen(false); setChatOpen(true); } },
+                ].map(({ key, label, icon: Icon, onClick }) => (
+                  <button
+                    key={key}
+                    onClick={onClick}
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
+                  >
+                    <Icon className="h-4 w-4 shrink-0" />
+                    <span className="truncate">{label}</span>
+                  </button>
+                ))}
+              </>
+            ) : (
+              <>
+                {NAV_ITEMS.map(({ tab, icon: Icon, labelKey, color }) => {
+                  const locked = isDemoLockedTab(tab);
+                  const active = activeTab === tab;
+                  return (
+                    <button
+                      key={tab}
+                      onClick={() => handleTabChange(tab)}
+                      disabled={locked}
+                      className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
+                        active ? `${color} bg-accent font-semibold` : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                      } ${locked ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+                    >
+                      <Icon className="h-4 w-4 shrink-0" />
+                      <span className="truncate">{t(labelKey)}</span>
+                      {locked && <Lock className="h-3 w-3 ms-auto shrink-0" />}
+                    </button>
+                  );
+                })}
                 <button
-                  key={tab}
-                  onClick={() => handleTabChange(tab)}
-                  disabled={locked}
-                  className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
-                    active ? `${color} bg-accent font-semibold` : "text-muted-foreground hover:bg-accent hover:text-foreground"
-                  } ${locked ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+                  onClick={() => { setMenuOpen(false); navigate("/library"); }}
+                  disabled={isDemo}
+                  className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors text-muted-foreground hover:bg-accent hover:text-foreground ${isDemo ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
                 >
-                  <Icon className="h-4 w-4 shrink-0" />
-                  <span className="truncate">{t(labelKey)}</span>
-                  {locked && <Lock className="h-3 w-3 ms-auto shrink-0" />}
+                  <BookOpen className="h-4 w-4 shrink-0" />
+                  <span className="truncate">{t("library")}</span>
+                  {isDemo && <Lock className="h-3 w-3 ms-auto shrink-0" />}
                 </button>
-              );
-            })}
-            <button
-              onClick={() => { setMenuOpen(false); navigate("/library"); }}
-              disabled={isDemo}
-              className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors text-muted-foreground hover:bg-accent hover:text-foreground ${isDemo ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
-            >
-              <BookOpen className="h-4 w-4 shrink-0" />
-              <span className="truncate">{t("library")}</span>
-              {isDemo && <Lock className="h-3 w-3 ms-auto shrink-0" />}
-            </button>
+              </>
+            )}
+
 
             <Separator className="my-2" />
 
