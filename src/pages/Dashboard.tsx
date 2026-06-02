@@ -612,7 +612,7 @@ export default function Dashboard() {
             </div>
             <div className="flex items-center gap-2">
               <LanguageSwitcher />
-              {isCoach && (
+              {isCoach && activeTab === "calendar" && (
                 <Button
                   variant="ghost"
                   size="icon"
