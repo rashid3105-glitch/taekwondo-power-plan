@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useRole } from "@/contexts/RoleContext";
 import { useThreads } from "@/hooks/useThreads";
-import { Calendar, MessageCircle, Play, BookOpen, Trophy, NotebookPen, CalendarX, Book, Video } from "lucide-react";
+import { Calendar, MessageCircle, Play, BookOpen, Trophy, NotebookPen, CalendarX, Book, Video, BarChart3 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -362,12 +362,12 @@ export function AthleteDashboard() {
       <section className="grid grid-cols-2 gap-3">
         <button
           type="button"
-          onClick={() => navigate("/dashboard?tab=plan")}
+          onClick={() => navigate("/dashboard?tab=progress")}
           className="rounded-xl p-4 flex items-center gap-2 font-semibold text-sm"
           style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
         >
-          <Play className="h-4 w-4" />
-          Log session
+          <BarChart3 className="h-4 w-4" />
+          Fremgang
         </button>
         <button
           type="button"
