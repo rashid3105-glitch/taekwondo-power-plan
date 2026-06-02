@@ -5207,6 +5207,7 @@ const translations = {
     changelogEntry131: "Sundhedsopsætning ligger nu under Profil; Android Health Connect-placeholder tilføjet",
     changelogEntry132: "Apple Health-opsætning bruger nu en indbygget byggevejledning i stedet for et eksternt iCloud-link",
     changelogEntry133: "Apple Health-opsætning er nu ét tap: hent genvejen og indtast email og adgangskode én gang",
+    changelogEntry134: "Apple Health-sync er nu ét tap — tilføj genvejen direkte fra iCloud og synk automatisk hver morgen.",
     healthReportLoading: "Genererer…",
     healthReportReady: "Sundhedsrapport hentet.",
     healthReportError: "Kunne ikke generere rapport.",
