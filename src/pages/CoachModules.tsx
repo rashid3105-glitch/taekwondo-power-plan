@@ -12,6 +12,7 @@ type Tab = "club" | "athlete";
 
 export default function CoachModules() {
   const navigate = useNavigate();
+  const { activeClubId } = useActiveClub();
   const [tab, setTab] = useState<Tab>("club");
 
   const [coachId, setCoachId] = useState<string | null>(null);
@@ -38,7 +39,7 @@ export default function CoachModules() {
         .select("club_id")
         .eq("user_id", user.id)
         .maybeSingle();
-      const cid = (profile as any)?.club_id ?? null;
+      const cid = activeClubId ?? ((profile as any)?.club_id ?? null);
       setClubId(cid);
 
       // Club defaults
