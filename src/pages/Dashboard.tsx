@@ -23,6 +23,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useCoachMode } from "@/contexts/CoachModeContext";
 import { useRole } from "@/contexts/RoleContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { ClubSwitcher } from "@/components/ClubSwitcher";
 import Help from "@/pages/Help";
 import { MentalAssessment } from "@/components/MentalAssessment";
 import { ProgressDashboard } from "@/components/ProgressDashboard";
@@ -611,6 +612,7 @@ export default function Dashboard() {
               <span className="text-sm sm:text-base font-extrabold text-foreground">SPORTSTALENT</span>
             </div>
             <div className="flex items-center gap-2">
+              <ClubSwitcher />
               <LanguageSwitcher />
               {isCoach && activeTab === "calendar" && (
                 <Button

@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { ClubSwitcher } from "@/components/ClubSwitcher";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { CoachAthleteDetail } from "@/components/CoachAthleteDetail";
 import { AvatarImg } from "@/components/AvatarImg";
 
@@ -313,6 +315,7 @@ export default function CoachDashboard() {
               <span className="hidden sm:inline">{t("seasonCalendar")}</span>
             </Button>
             <MessagesIcon isCoach />
+            <ClubSwitcher />
             <LanguageSwitcher />
           </div>
         </div>
