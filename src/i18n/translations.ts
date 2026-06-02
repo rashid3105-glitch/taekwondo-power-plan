@@ -10475,6 +10475,7 @@ const translations = {
     healthSetupS3Note: "Kurzbefehle öffnet sich und fragt beim ersten Mal nach deiner Sportstalent-E-Mail und deinem Passwort — gib sie ein und tippe auf Kurzbefehl hinzufügen.",
     healthSetupS4Title: "Jeden Morgen automatisch ausführen",
     healthSetupS4Body: "Öffne Kurzbefehle → Tab Automation → + → Tageszeit → 07:00, Täglich → wähle 'Sofort ausführen' → wähle den Kurzbefehl 'Sportstalent sync'.",
+    healthSetupS4Important: "Wichtig: Ohne diese Automation läuft die Synchronisierung nicht von selbst — du musst den Kurzbefehl dann jeden Tag manuell öffnen.",
     healthSetupS5Title: "Testen & fertig",
     healthSetupS5Body: "Führe den Kurzbefehl einmal in der Kurzbefehle-App aus und tippe dann hier auf Test sync, um zu bestätigen, dass deine Daten ankommen.",
     healthSetupTestSync: "Test sync",
