@@ -717,6 +717,7 @@ export default function CoachDashboard() {
                       title: reminderTitle.trim(),
                       event_date: reminderDate,
                       message: reminderMessage.trim(),
+                      ...(activeClubId ? { club_id: activeClubId } : {}),
                     }));
                     const { data: insertedRows, error } = await supabase
                       .from("event_reminders")
