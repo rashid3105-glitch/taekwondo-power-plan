@@ -777,14 +777,7 @@ export default function Dashboard() {
       {/* Mobile bottom nav — 5 tabs */}
       <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-card/95 backdrop-blur-sm sm:hidden pb-safe">
         <div className="flex items-stretch justify-around px-1 pt-1.5">
-          {(coachAthleteMode === "coach" && isCoach ? [
-            { key: "coach-hold", label: t("coachNav") || "Hold", icon: Users, active: false, onClick: () => navigate("/coach") },
-            { key: "coach-traening", label: t("train") || "Træning", icon: CalendarRange, active: false, onClick: () => navigate("/coach/season-calendar") },
-            { key: "coach-staevner", label: t("competitions") || "Stævner", icon: Trophy, active: false, onClick: () => navigate("/coach/competitions") },
-            { key: "coach-surveys", label: t("surveysTitle") || "Evalueringer", icon: ClipboardList, active: false, onClick: () => navigate("/coach/surveys") },
-            { key: "coach-beskeder", label: t("chat") || "Beskeder", icon: MessageCircle, active: chatOpen, onClick: () => setChatOpen(true) },
-            
-          ] : [
+          {([
             { key: "idag", label: t("today") || "I dag", icon: Home, active: activeTab === "hub", onClick: () => handleTabChange("hub") },
             { key: "traen", label: t("train") || "Træn", icon: Zap, active: activeTab === "plan", onClick: () => handleTabChange("plan") },
             { key: "kalender", label: t("seasonCalendar") || "Kalender", icon: CalendarRange, active: activeTab === "calendar", onClick: () => handleTabChange("calendar") },
