@@ -3,11 +3,11 @@ import { useCoachMode } from "./CoachModeContext";
 import { useRole } from "./RoleContext";
 
 export function ThemeSync() {
-  const { role } = useRole();
+  const { role, hasCoachRole } = useRole();
   const { isCoachMode, isCoachRoute } = useCoachMode();
 
   useEffect(() => {
-    const shouldUseCoachTheme = isCoachMode || isCoachRoute || role === "coach";
+    const shouldUseCoachTheme = isCoachMode || isCoachRoute || role === "coach" || hasCoachRole;
     const root = document.documentElement;
 
     root.style.transition = "color 0.3s ease";
