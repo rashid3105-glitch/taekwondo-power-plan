@@ -65,6 +65,7 @@ interface Props {
 export function CoachAthleteReflections({ athleteId, athleteName }: Props) {
   const { t, locale } = useLanguage();
   const { toast } = useToast();
+  const { activeClubId } = useActiveClub();
   const l = (locale as SupportedLocale) || "en";
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState<Reflection[]>([]);
