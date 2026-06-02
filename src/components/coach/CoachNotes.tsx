@@ -44,13 +44,13 @@ export function CoachNotes({ athleteId }: Props) {
         .maybeSingle();
       setContent(((own as any)?.content as string) || "");
 
-      // 2. Check if this coach's club has sharing enabled
+      // 2. Check if this coach's club (active membership) has sharing enabled
       const { data: myProfile } = await supabase
         .from("profiles")
         .select("club_id")
         .eq("user_id", user.id)
         .maybeSingle();
-      const myClubId = (myProfile as any)?.club_id as string | null;
+      const myClubId = activeClubId ?? ((myProfile as any)?.club_id as string | null);
 
       if (myClubId) {
         const { data: club } = await supabase
