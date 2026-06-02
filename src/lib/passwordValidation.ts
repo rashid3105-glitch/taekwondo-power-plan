@@ -9,18 +9,12 @@ export type PasswordValidationResult = {
 };
 
 /**
- * A password is considered acceptable when it has:
- *  - at least 8 characters
- *  - at least one letter (any unicode letter)
- *  - at least one digit
+ * A password is considered acceptable when it has at least 8 characters.
+ * All character types are allowed — unicode letters (incl. æ/ø/å), digits,
+ * symbols, emoji — to avoid surprising users who use Nordic letters.
  */
 export function validatePassword(pw: string): PasswordValidationResult {
   if (typeof pw !== "string" || pw.length < 8) {
-    return { ok: false, messageKey: "passwordTooWeak" };
-  }
-  const hasLetter = /\p{L}/u.test(pw);
-  const hasDigit = /\d/.test(pw);
-  if (!hasLetter || !hasDigit) {
     return { ok: false, messageKey: "passwordTooWeak" };
   }
   return { ok: true, messageKey: "" };
