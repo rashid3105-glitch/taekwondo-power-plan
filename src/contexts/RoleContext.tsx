@@ -65,6 +65,6 @@ export function RoleProvider({ children }: { children: ReactNode }) {
 
 export function useRole() {
   const ctx = useContext(RoleContext);
-  if (!ctx) throw new Error("useRole must be used within a RoleProvider");
+  if (!ctx) return { role: "athlete" as Role, loading: false };
   return ctx;
 }
