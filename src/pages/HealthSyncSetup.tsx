@@ -2,14 +2,14 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Check, Download, Smartphone, Heart, Activity, Sparkles, Loader2 } from "lucide-react";
+import { ArrowLeft, Check, Download, Smartphone, Heart, Activity, Sparkles, Loader2, Clock } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PageMeta } from "@/components/PageMeta";
 import { toast } from "sonner";
 import { haptics } from "@/lib/haptics";
 
-const SHORTCUT_URL = "/sportstalent-sync.shortcut";
-const TOTAL_STEPS = 4;
+const ICLOUD_SHORTCUT_URL = "https://www.icloud.com/shortcuts/1bdc7a3a38bf4e679a4d1a2c0f92cf2b";
+const TOTAL_STEPS = 5;
 
 export default function HealthSyncSetup() {
   const navigate = useNavigate();
@@ -105,7 +105,7 @@ export default function HealthSyncSetup() {
           </button>
           <div className="flex-1 min-w-0">
             <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
-              {t("healthSetupStepOf").replace("{n}", String(step + 1)).replace("8", String(TOTAL_STEPS))}
+              {t("healthSetupStepOf").replace("{n}", String(step + 1))}
             </div>
             <h1 className="text-base font-semibold truncate">{t("healthSetupTitle")}</h1>
           </div>
@@ -120,7 +120,6 @@ export default function HealthSyncSetup() {
 
       {/* Body */}
       <main className="flex-1 px-4 py-6 space-y-4">
-        {/* Native app banner (always visible) */}
         <div className="max-w-md mx-auto rounded-xl border border-primary/30 bg-primary/5 px-3 py-2.5 text-xs text-muted-foreground leading-relaxed flex gap-2">
           <Sparkles className="h-4 w-4 text-primary shrink-0 mt-0.5" />
           <span>{t("healthSetupNativeAppBanner")}</span>
@@ -139,42 +138,54 @@ export default function HealthSyncSetup() {
         )}
 
         {step === 1 && (
-          <StepCard icon={<Download className="h-6 w-6" />} title={t("healthSetupS2NewTitle")}>
-            <p className="text-sm text-muted-foreground leading-relaxed">{t("healthSetupS2NewBody")}</p>
-            <a
-              href={SHORTCUT_URL}
-              download
-              onClick={() => haptics.tap()}
-              className="w-full inline-flex items-center justify-center gap-2 h-12 rounded-lg bg-primary text-primary-foreground font-semibold hover:bg-primary/90 active:scale-[0.99] transition"
-            >
-              <Download className="h-5 w-5" />
-              {t("healthSetupS2DownloadBtn")}
-            </a>
-            <p className="text-xs text-muted-foreground text-center">{t("healthSetupS2SafariNote")}</p>
-          </StepCard>
-        )}
-
-        {step === 2 && (
-          <StepCard icon={<Heart className="h-6 w-6" />} title={t("healthSetupS6Title")}>
-            <p className="text-sm text-muted-foreground leading-relaxed">{t("healthSetupS6Body")}</p>
+          <StepCard icon={<Smartphone className="h-6 w-6" />} title={t("healthSetupS2Title")}>
+            <p className="text-sm text-muted-foreground leading-relaxed">{t("healthSetupS2Body")}</p>
             <IPhoneFrame>
-              <div className="p-4 space-y-2 text-xs">
-                {["Steps", "Sleep", "Resting HR", "HRV"].map((l) => (
-                  <div key={l} className="flex items-center justify-between bg-muted/40 rounded-lg px-3 py-2">
-                    <span>{l}</span>
-                    <div className="w-9 h-5 rounded-full bg-primary relative">
-                      <div className="absolute right-0.5 top-0.5 w-4 h-4 rounded-full bg-white" />
-                    </div>
-                  </div>
-                ))}
+              <div className="flex flex-col items-center justify-center h-full gap-3 text-center px-6">
+                <Smartphone className="h-12 w-12 text-primary" />
               </div>
             </IPhoneFrame>
           </StepCard>
         )}
 
+        {step === 2 && (
+          <StepCard icon={<Download className="h-6 w-6" />} title={t("healthSetupS3Title")}>
+            <p className="text-sm text-muted-foreground leading-relaxed">{t("healthSetupS3Body")}</p>
+            <button
+              onClick={() => {
+                haptics.tap();
+                window.open(ICLOUD_SHORTCUT_URL, "_blank", "noopener");
+              }}
+              className="w-full inline-flex items-center justify-center gap-2 h-12 rounded-lg bg-primary text-primary-foreground font-semibold hover:bg-primary/90 active:scale-[0.99] transition"
+            >
+              <Download className="h-5 w-5" />
+              {t("healthSetupS3Btn")}
+            </button>
+            <p className="text-xs text-muted-foreground leading-relaxed">{t("healthSetupS3Note")}</p>
+          </StepCard>
+        )}
+
         {step === 3 && (
-          <StepCard icon={<Activity className="h-6 w-6" />} title={t("healthSetupS7Title")}>
-            <p className="text-sm text-muted-foreground leading-relaxed">{t("healthSetupS7Body")}</p>
+          <StepCard icon={<Clock className="h-6 w-6" />} title={t("healthSetupS4Title")}>
+            <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{t("healthSetupS4Body")}</p>
+            <IPhoneFrame>
+              <div className="p-4 space-y-2 text-xs">
+                <div className="flex items-center justify-between bg-muted/40 rounded-lg px-3 py-2">
+                  <span>07:00</span>
+                  <span className="text-muted-foreground">Daily</span>
+                </div>
+                <div className="flex items-center justify-between bg-muted/40 rounded-lg px-3 py-2">
+                  <span>Sportstalent sync</span>
+                  <Check className="h-3 w-3 text-primary" />
+                </div>
+              </div>
+            </IPhoneFrame>
+          </StepCard>
+        )}
+
+        {step === 4 && (
+          <StepCard icon={<Activity className="h-6 w-6" />} title={t("healthSetupS5Title")}>
+            <p className="text-sm text-muted-foreground leading-relaxed">{t("healthSetupS5Body")}</p>
             <Button className="w-full h-11" onClick={runTest} disabled={testing}>
               {testing ? (
                 <>
