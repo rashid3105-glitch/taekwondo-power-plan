@@ -16765,6 +16765,7 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   healthSetupS3Note: "Atajos se abrirá y pedirá tu correo y contraseña de Sportstalent la primera vez — introdúcelos y toca Añadir atajo.",
   healthSetupS4Title: "Ejecutar automáticamente cada mañana",
   healthSetupS4Body: "Abre Atajos → pestaña Automatización → + → Hora del día → 07:00, Diariamente → elige 'Ejecutar al instante' → selecciona el atajo 'Sportstalent sync'.",
+  healthSetupS4Important: "Importante: sin esta automatización la sincronización no se ejecutará sola — tendrás que abrir el atajo manualmente cada día.",
   healthSetupS5Title: "Probar y terminar",
   healthSetupS5Body: "Ejecuta el atajo una vez en Atajos y luego toca Test sync aquí para confirmar que tus datos llegan.",
   healthSetupTestSync: "Test sync",
