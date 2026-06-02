@@ -5,6 +5,7 @@ export type Role = "athlete" | "coach";
 
 type RoleContextValue = {
   role: Role;
+  hasCoachRole: boolean;
   loading: boolean;
 };
 
@@ -12,18 +13,21 @@ const RoleContext = createContext<RoleContextValue | undefined>(undefined);
 
 export function RoleProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<Role>("athlete");
+  const [hasCoachRole, setHasCoachRole] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const loadFromProfile = useCallback(async (userId: string) => {
     const { data, error } = await supabase
       .from("profiles")
-      .select("role")
+      .select("role, roles")
       .eq("user_id", userId)
       .maybeSingle();
 
     if (!error && data) {
       const r = ((data as any).role as string | null) ?? "athlete";
       setRole(r === "coach" ? "coach" : "athlete");
+      const roles = ((data as any).roles as string[] | null) ?? [];
+      setHasCoachRole(r === "coach" || (Array.isArray(roles) && roles.includes("coach")));
     }
     setLoading(false);
   }, []);
@@ -46,6 +50,7 @@ export function RoleProvider({ children }: { children: ReactNode }) {
         loadFromProfile(session.user.id);
       } else {
         setRole("athlete");
+        setHasCoachRole(false);
         setLoading(false);
       }
     });
@@ -57,7 +62,7 @@ export function RoleProvider({ children }: { children: ReactNode }) {
   }, [loadFromProfile]);
 
   return (
-    <RoleContext.Provider value={{ role, loading }}>
+    <RoleContext.Provider value={{ role, hasCoachRole, loading }}>
       {children}
     </RoleContext.Provider>
   );
@@ -65,6 +70,6 @@ export function RoleProvider({ children }: { children: ReactNode }) {
 
 export function useRole() {
   const ctx = useContext(RoleContext);
-  if (!ctx) return { role: "athlete" as Role, loading: false };
+  if (!ctx) return { role: "athlete" as Role, hasCoachRole: false, loading: false };
   return ctx;
 }
