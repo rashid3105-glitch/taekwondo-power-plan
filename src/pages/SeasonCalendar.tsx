@@ -46,6 +46,7 @@ const DAY_LABELS = ["Ma","Ti","On","To","Fr","Lø","Sø"];
 
 export default function SeasonCalendar() {
   const navigate = useNavigate();
+  const { activeClubId } = useActiveClub();
   const { t } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
