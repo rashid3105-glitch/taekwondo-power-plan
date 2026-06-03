@@ -19,7 +19,7 @@ export function ClubSwitcher() {
   return (
     <Select value={activeClubId ?? undefined} onValueChange={setActiveClubId}>
       <SelectTrigger
-        className="h-9 w-auto min-w-[140px] gap-1.5 border-border bg-card/60 text-xs"
+        className="h-9 min-w-[180px] gap-1.5 border-border bg-card/60 text-xs"
         aria-label={t("switchClub")}
       >
         <Building className="h-3.5 w-3.5 text-muted-foreground" />
