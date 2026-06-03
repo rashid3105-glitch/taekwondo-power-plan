@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { FormCurveChart } from "@/components/FormCurveChart";
 import { AthleteRecoveryTrend } from "@/components/coach/AthleteRecoveryTrend";
 import { PhysicalTestComparison } from "@/components/coach/PhysicalTestComparison";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 
 interface Props {
   athleteId: string;
