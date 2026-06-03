@@ -64,6 +64,7 @@ export default function CoachAthleteOverview() {
   const { toast } = useToast();
   const { t } = useLanguage();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { activeClubId } = useActiveClub();
 
   const [loading, setLoading] = useState(true);
   const [authorized, setAuthorized] = useState(false);
@@ -87,7 +88,8 @@ export default function CoachAthleteOverview() {
   useEffect(() => {
     void load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [athleteId]);
+  }, [athleteId, activeClubId]);
+
 
   async function load() {
     setLoading(true);
