@@ -330,24 +330,26 @@ export default function CoachDashboard() {
       <Watermark />
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10 pt-safe">
         <div className="container max-w-4xl mx-auto px-3 sm:px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
+          <div className="flex items-center gap-2 min-w-0">
+            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
               <ArrowLeft className="h-4 w-4" />
             </Button>
-            <div className="h-8 w-8 rounded-lg bg-gradient-energy flex items-center justify-center">
+            <div className="h-8 w-8 rounded-lg bg-gradient-energy flex items-center justify-center shrink-0">
               <Zap className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="text-sm sm:text-base font-extrabold text-foreground">{t("coachDashboard")}</span>
+            <span className="text-sm sm:text-base font-extrabold text-foreground truncate">{t("coachDashboard")}</span>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 shrink-0">
             <Button variant="ghost" size="sm" onClick={() => navigate("/coach/season-calendar")} className="gap-1">
               <CalendarRange className="h-4 w-4" />
               <span className="hidden sm:inline">{t("seasonCalendar")}</span>
             </Button>
             <MessagesIcon isCoach />
-            <ClubSwitcher />
             <LanguageSwitcher />
           </div>
+        </div>
+        <div className="container max-w-4xl mx-auto px-3 sm:px-4 pb-2 flex justify-end">
+          <ClubSwitcher />
         </div>
       </header>
 
