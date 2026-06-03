@@ -25,6 +25,7 @@ const COACH_MODULE_KEYS: Record<LockedModule, string[]> = {
 
 export function UpgradeGate({ module, children }: Props) {
   const { isLocked, loading } = useEntitlements();
+  const { isModuleEnabled, loading: moduleAccessLoading } = useAthleteModuleAccess();
   const navigate = useNavigate();
   const { t } = useLanguage();
   const [coachGranted, setCoachGranted] = useState<boolean | null>(null);
@@ -49,7 +50,7 @@ export function UpgradeGate({ module, children }: Props) {
     })();
   }, [module]);
 
-  if (loading || coachGranted === null) {
+  if (loading || moduleAccessLoading || coachGranted === null) {
     return (
       <div className="min-h-[40vh] flex items-center justify-center">
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -57,7 +58,11 @@ export function UpgradeGate({ module, children }: Props) {
     );
   }
 
-  if (coachGranted || !isLocked(module)) return <>{children}</>;
+  // Club-level grant: if the module is enabled via club_module_defaults or
+  // athlete_module_overrides, the athlete has access regardless of personal tier.
+  const clubGranted = (COACH_MODULE_KEYS[module] ?? []).some((k) => isModuleEnabled(k));
+
+  if (coachGranted || clubGranted || !isLocked(module)) return <>{children}</>;
 
   return (
     <div className="min-h-[60vh] flex items-center justify-center p-4">
