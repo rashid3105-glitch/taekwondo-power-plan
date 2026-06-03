@@ -171,14 +171,17 @@ export default function CoachAthleteOverview() {
     if (!athleteId) return;
     setDiaryOpen(true);
     setDiaryLoading(true);
-    const { data } = await supabase
+    let q: any = supabase
       .from("diary_entries")
-      .select("id, entry_date, content, mood, energy, tags, entry_type")
+      .select("id, entry_date, content, mood, energy, tags, entry_type, club_id")
       .eq("user_id", athleteId)
       .order("entry_date", { ascending: false });
+    if (activeClubId) q = q.eq("club_id", activeClubId);
+    const { data } = await q;
     setDiaryEntries(data || []);
     setDiaryLoading(false);
   }
+
 
   if (loading || !athlete || !authorized) {
     return (
