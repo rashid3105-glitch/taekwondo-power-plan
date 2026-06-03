@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Lock, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useEntitlements } from "@/hooks/useEntitlements";
+import { useEntitlements, useAthleteModuleAccess } from "@/hooks/useEntitlements";
 import { LockedModule } from "@/lib/entitlements";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
