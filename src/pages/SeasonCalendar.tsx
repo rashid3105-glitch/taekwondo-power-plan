@@ -474,18 +474,19 @@ export default function SeasonCalendar() {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card/50 sticky top-0 z-10 pt-safe print:hidden">
-        <div className="container max-w-7xl mx-auto px-3 sm:px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/coach")}>
+        <div className="container max-w-7xl mx-auto px-3 sm:px-4 py-3 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <Button variant="ghost" size="icon" onClick={() => navigate("/")} className="shrink-0">
               <ArrowLeft className="h-4 w-4" />
             </Button>
-            <CalendarRange className="h-5 w-5 text-primary" />
-            <span className="font-extrabold">{t("seasonCalendar")}</span>
+            <CalendarRange className="h-5 w-5 text-primary shrink-0" />
+            <span className="font-extrabold truncate">{t("seasonCalendar")}</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0 min-w-0">
             {selectedPlan && (
               <Button variant="outline" size="sm" onClick={() => window.print()}>
-                <Printer className="h-4 w-4 mr-1" /> {t("seasonPrint")}
+                <Printer className="h-4 w-4" />
+                <span className="hidden sm:inline ml-1">{t("seasonPrint")}</span>
               </Button>
             )}
             <LanguageSwitcher />

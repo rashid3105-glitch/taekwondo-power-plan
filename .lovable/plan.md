@@ -1,34 +1,45 @@
-## Mål
-Du sidder fast på login i preview, selvom serveren godkender dit password (auth-loggene viser status 200 for rashid3105@gmail.com kl. 21:39:02 og 21:39:49). Det betyder at fejlen ligger i klienten *efter* `signInWithPassword` returnerer — sandsynligvis et opfølgende kald der fejler med `TypeError: Load failed` og blokerer navigationen til `/dashboard`.
+## Problem 1: "Stuck" on coach dashboards
 
-## Diagnose-trin (først, ingen kode-ændringer)
-1. Åbn preview-URL'en i en **ny browser-fane** (ikke iframe). Hvis login virker dér, er det bekræftet at det er Lovable preview-iframens fetch-proxy der dræber Supabase-kald — det er en kendt preview-begrænsning, især i Safari.
-2. Hvis #1 også fejler: åbn DevTools → Network, log ind, og find det første røde kald efter `POST /auth/v1/token`. Send mig navnet, så fikser jeg det.
+Den admin/coach-bruger har `role === "coach"` (via active membership). I `src/pages/Dashboard.tsx` linje 190–194 redirecter `/dashboard` automatisk en coach til `/coach`. Pilen tilbage i `CoachDashboard` peger på `/dashboard` → loop. Pilen i `SeasonCalendar` peger på `/coach`, så man kan ikke komme videre til forsiden derfra heller.
 
-## Hvis fejlen ligger i koden (sandsynlige kandidater)
-Gennemgang af `src/pages/Auth.tsx` viser at `handleSubmit` kalder `navigate("/dashboard")` direkte efter login uden at vente på at sessionen er fuldt etableret. Hvis et af følgende fail'er på Dashboard-mount inden React har en gyldig session, kan UI'et hænge:
+**Fix:** Lad tilbage-pilen på begge coach-sider gå direkte til forsiden `/` i stedet.
 
-- `useEntitlements` / `check-subscription` edge function
-- `ActiveClubProvider` der henter `club_memberships` (ny i Fase 3)
-- `useOfflineProfile` / `update-my-profile`
-- `health-sync-simple` (kun iOS)
+- `src/pages/CoachDashboard.tsx` (linje 334): `navigate("/dashboard")` → `navigate("/")`
+- `src/pages/SeasonCalendar.tsx` (linje 479): `navigate("/coach")` → `navigate("/")`
 
-### Ændringer (kun hvis trin 1 viser det er kode-fejl, ikke preview-proxy)
+(Vi rører IKKE redirect-logikken i Dashboard.tsx — den er korrekt for en ren coach.)
 
-**A) `src/pages/Auth.tsx`** — gør login-flowet robust:
-   - Erstat den direkte `navigate()` med en `await supabase.auth.getSession()`-poll (max 1s) før redirect, så React-kontekster når at se sessionen.
-   - Wrap `signInWithPassword` med en eksplicit error-toast hvis kaldet kaster `TypeError: Load failed` (preview-proxy fejl) med besked om at åbne i ny fane.
+## Problem 2: ClubSwitcher skal under overskriften
 
-**B) `src/contexts/ActiveClubContext.tsx`** — defensiv loading:
-   - Hvis `club_memberships`-fetch fejler, sæt `loading = false` og `memberships = []` i stedet for at hænge i loading. Det forhindrer at hele appen freezes hvis et enkelt kald fejler i preview.
+I `CoachDashboard.tsx` ligger `<ClubSwitcher />` i højre side af header-rækken sammen med Trænings-/Beskeder-/Sprog-knapper, hvilket gør rækken overfyldt på mobil.
 
-**C) Console-fejl `TypeError: Load failed`**:
-   - Find afsenderen via tilføjelse af `console.error("source:", err)` i de 3-4 mest sandsynlige fetch-steder, så vi kan se hvilket kald der bryder.
+**Fix i `src/pages/CoachDashboard.tsx` header-blokken (linje 331–352):**
 
-## Hvad jeg IKKE rører
-- RLS, migrations, edge functions (medmindre #1 + Network-tab peger entydigt derhen)
-- Selve `signInWithPassword`-kaldet
-- Supabase-klient-konfigurationen
+- Behold række 1 = tilbage-pil + ikon + "Træner Dashboard" + (sæsonkalender-knap, beskeder, sprogvælger).
+- Fjern `<ClubSwitcher />` fra række 1.
+- Tilføj en række 2 under titel-rækken (stadig inden i `<header>`), som kun rendres når brugeren har >1 medlemskab — `ClubSwitcher`-komponenten self-skjuler allerede ved ≤1, så vi placerer den bare i en `flex justify-end` wrapper med lidt top-margin: `<div className="px-3 sm:px-4 pb-2 flex justify-end"><ClubSwitcher /></div>`.
+- Gør samtidig switcherens trigger lidt bredere (`min-w-[180px]`) så klubnavnet ikke trunkeres til "UC…".
 
-## Næste skridt
-Først: prøv at åbne https://id-preview--a65f5c86-1a84-4640-b139-4767189347ea.lovable.app/auth i en **ny fane** (ikke i Lovable-editoren) og fortæl mig om login virker dér. Det afgør om vi skal fikse kode (A+B+C) eller om det er en ren preview-iframe-begrænsning der ikke kan løses uden at publicere.
+**Lille justering i `src/components/ClubSwitcher.tsx`:**
+- Ændr `min-w-[140px]` → `min-w-[180px]` og fjern `w-auto` så den ikke shrinker.
+
+## Problem 3: SeasonCalendar header skubbet til venstre / out of bounds
+
+I `src/pages/SeasonCalendar.tsx` linje 477 bruger headeren `justify-between` med titel + "Udskriv / Eksporter PDF"-knap + `LanguageSwitcher`. På mobil (402 px) bliver indholdet bredere end viewport → højre side klippes/ skubbes ud.
+
+**Fix i header-blokken (linje 476–494):**
+
+- Tilføj `min-w-0` på begge inner-divs så de må shrinke.
+- Gør titel-spannet til `truncate`.
+- På mobil: vis kun printer-ikon uden tekst — `<Printer />` med `<span className="hidden sm:inline ml-1">{t("seasonPrint")}</span>`.
+- Konsistens med Coach-dashboard: lad tilbage-pilen pege på `/` (se Problem 1).
+
+Ingen ændringer i forretningslogik, RLS, edge functions eller oversættelser. Ingen changelog-opdatering (lille bugfix + layout-justering).
+
+## Tekniske ændringer (filer)
+
+```text
+src/pages/CoachDashboard.tsx   — back-nav til "/", flyt ClubSwitcher til ny række under titel
+src/pages/SeasonCalendar.tsx   — back-nav til "/", header min-w-0 + truncate + print-knap kun ikon på mobil
+src/components/ClubSwitcher.tsx — min-w-[180px], fjern w-auto for at undgå "UC…" trunkering
+```
