@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { FormCurveChart } from "@/components/FormCurveChart";
 import { AthleteRecoveryTrend } from "@/components/coach/AthleteRecoveryTrend";
 import { PhysicalTestComparison } from "@/components/coach/PhysicalTestComparison";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 
 interface Props {
   athleteId: string;
@@ -54,6 +55,7 @@ function startOfWeek(d: Date): Date {
 export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerWeek = 0 }: Props) {
   const { t, locale } = useLanguage();
   const navigate = useNavigate();
+  const { activeClubId } = useActiveClub();
   const [loading, setLoading] = useState(true);
   const [sessions, setSessions] = useState<SessionBucket[]>([]);
   const [upcoming, setUpcoming] = useState<UpcomingComp[]>([]);
@@ -65,7 +67,8 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
   useEffect(() => {
     void load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [athleteId]);
+  }, [athleteId, activeClubId]);
+
 
   async function load() {
     setLoading(true);
@@ -87,12 +90,17 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
         .gte("event_date", today.toISOString().slice(0, 10))
         .order("event_date", { ascending: true })
         .limit(3),
-      supabase
-        .from("diary_entries")
-        .select("entry_date, mood, energy")
-        .eq("user_id", athleteId)
-        .gte("entry_date", isoStart)
-        .order("entry_date", { ascending: false }),
+      (() => {
+        let q: any = supabase
+          .from("diary_entries")
+          .select("entry_date, mood, energy")
+          .eq("user_id", athleteId)
+          .gte("entry_date", isoStart)
+          .order("entry_date", { ascending: false });
+        if (activeClubId) q = q.eq("club_id", activeClubId);
+        return q;
+      })(),
+
       supabase
         .from("readiness_checkins")
         .select("score, checkin_date")
