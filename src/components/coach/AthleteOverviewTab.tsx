@@ -90,12 +90,17 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
         .gte("event_date", today.toISOString().slice(0, 10))
         .order("event_date", { ascending: true })
         .limit(3),
-      supabase
-        .from("diary_entries")
-        .select("entry_date, mood, energy")
-        .eq("user_id", athleteId)
-        .gte("entry_date", isoStart)
-        .order("entry_date", { ascending: false }),
+      (() => {
+        let q: any = supabase
+          .from("diary_entries")
+          .select("entry_date, mood, energy")
+          .eq("user_id", athleteId)
+          .gte("entry_date", isoStart)
+          .order("entry_date", { ascending: false });
+        if (activeClubId) q = q.eq("club_id", activeClubId);
+        return q;
+      })(),
+
       supabase
         .from("readiness_checkins")
         .select("score, checkin_date")
