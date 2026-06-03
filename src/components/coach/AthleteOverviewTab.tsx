@@ -55,6 +55,7 @@ function startOfWeek(d: Date): Date {
 export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerWeek = 0 }: Props) {
   const { t, locale } = useLanguage();
   const navigate = useNavigate();
+  const { activeClubId } = useActiveClub();
   const [loading, setLoading] = useState(true);
   const [sessions, setSessions] = useState<SessionBucket[]>([]);
   const [upcoming, setUpcoming] = useState<UpcomingComp[]>([]);
@@ -66,7 +67,8 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
   useEffect(() => {
     void load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [athleteId]);
+  }, [athleteId, activeClubId]);
+
 
   async function load() {
     setLoading(true);
