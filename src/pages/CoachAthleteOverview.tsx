@@ -104,24 +104,31 @@ export default function CoachAthleteOverview() {
       return;
     }
 
+    let plansQ: any = supabase
+      .from("training_plans")
+      .select("id, name, plan_data, is_active, created_at, user_id")
+      .eq("user_id", athleteId)
+      .order("created_at", { ascending: false });
+    if (activeClubId) plansQ = plansQ.eq("club_id", activeClubId);
+
+    let rehabQ: any = supabase
+      .from("rehab_plans")
+      .select("id, name, plan_data, is_active, created_at, user_id, injury_description")
+      .eq("user_id", athleteId)
+      .order("created_at", { ascending: false });
+    if (activeClubId) rehabQ = rehabQ.eq("club_id", activeClubId);
+
     const [profileRes, plansRes, rehabRes, clubsRes] = await Promise.all([
       supabase
         .from("profiles")
         .select("user_id, display_name, athlete_code, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, current_injury, program_weeks, weekly_schedule, avatar_url, discipline, club_id, country, gal_license, gal_license_expires_at, has_myfightbook, myfightbook_expires_at")
         .eq("user_id", athleteId)
         .maybeSingle(),
-      supabase
-        .from("training_plans")
-        .select("id, name, plan_data, is_active, created_at, user_id")
-        .eq("user_id", athleteId)
-        .order("created_at", { ascending: false }),
-      supabase
-        .from("rehab_plans")
-        .select("id, name, plan_data, is_active, created_at, user_id, injury_description")
-        .eq("user_id", athleteId)
-        .order("created_at", { ascending: false }),
+      plansQ,
+      rehabQ,
       supabase.from("clubs" as any).select("id, name"),
     ]);
+
 
     const p = profileRes.data as AthleteProfile | null;
     if (!p) {
