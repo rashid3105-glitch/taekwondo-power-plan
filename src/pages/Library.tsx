@@ -10,6 +10,7 @@ import { FoodScanner } from "@/components/FoodScanner";
 import { DailyNutritionDashboard } from "@/components/DailyNutritionDashboard";
 import { TestLibrary } from "@/components/TestLibrary";
 import { HiitLibrary } from "@/components/HiitLibrary";
+import { SupplementChecker } from "@/components/SupplementChecker";
 import { Dumbbell, Brain, UtensilsCrossed, ClipboardList, ArrowLeft, BookOpen, Zap, ChefHat, Camera, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
