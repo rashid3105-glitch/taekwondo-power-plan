@@ -191,6 +191,43 @@ export function CoachAthleteReflections({ athleteId, athleteName }: Props) {
     }
   }
 
+  async function requestEvaluation(competitionId: string) {
+    if (!coachId) return;
+    if (requestedIds.has(competitionId)) {
+      toast({ title: t("evaluationAlreadyRequested") });
+      return;
+    }
+    setRequestingId(competitionId);
+    try {
+      // Re-check for an existing request (no unique constraint in DB)
+      const { data: existing } = await supabase
+        .from("competition_reflection_requests")
+        .select("id")
+        .eq("competition_id", competitionId)
+        .eq("athlete_id", athleteId)
+        .limit(1);
+      if (existing && existing.length > 0) {
+        setRequestedIds((prev) => new Set(prev).add(competitionId));
+        toast({ title: t("evaluationAlreadyRequested") });
+        return;
+      }
+      const row: any = {
+        competition_id: competitionId,
+        athlete_id: athleteId,
+        coach_id: coachId,
+      };
+      if (activeClubId) row.club_id = activeClubId;
+      const { error } = await supabase.from("competition_reflection_requests").insert(row);
+      if (error) throw error;
+      setRequestedIds((prev) => new Set(prev).add(competitionId));
+      toast({ title: t("evaluationRequestSent") });
+    } catch (e: any) {
+      toast({ title: t("error"), description: e.message, variant: "destructive" });
+    } finally {
+      setRequestingId(null);
+    }
+  }
+
   if (loading) {
     return (
       <div className="rounded-xl border border-border bg-card p-4 shadow-card flex items-center gap-2 text-xs text-muted-foreground">
