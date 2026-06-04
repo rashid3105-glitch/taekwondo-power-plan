@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { AppFooter } from "@/components/AppFooter";
 import { Watermark } from "@/components/Watermark";
-import { Dumbbell, Brain, UtensilsCrossed, ClipboardList, ArrowLeft, BookOpen, Zap } from "lucide-react";
+import { Dumbbell, Brain, UtensilsCrossed, ClipboardList, ArrowLeft, BookOpen, Zap, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { TranslationKey } from "@/i18n/translations";
@@ -53,6 +53,14 @@ const libraries: {
     icon: Zap,
     color: "text-destructive",
     bgClass: "bg-destructive/10 border-destructive/20 hover:border-destructive/40",
+  },
+  {
+    id: "supplement",
+    labelKey: "libSupplementLabel",
+    descKey: "libSupplementDesc",
+    icon: ShieldCheck,
+    color: "text-emerald-500",
+    bgClass: "bg-emerald-500/10 border-emerald-500/20 hover:border-emerald-500/40",
   },
 ];
 

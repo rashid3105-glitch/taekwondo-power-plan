@@ -10,7 +10,8 @@ import { FoodScanner } from "@/components/FoodScanner";
 import { DailyNutritionDashboard } from "@/components/DailyNutritionDashboard";
 import { TestLibrary } from "@/components/TestLibrary";
 import { HiitLibrary } from "@/components/HiitLibrary";
-import { Dumbbell, Brain, UtensilsCrossed, ClipboardList, ArrowLeft, BookOpen, Zap, ChefHat, Camera } from "lucide-react";
+import { SupplementChecker } from "@/components/SupplementChecker";
+import { Dumbbell, Brain, UtensilsCrossed, ClipboardList, ArrowLeft, BookOpen, Zap, ChefHat, Camera, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,6 +23,7 @@ const TITLE_KEYS: Record<string, TranslationKey> = {
   nutrition: "hubNutritionTitle",
   testing: "libTestingLabel",
   hiit: "libHiitLabel",
+  supplement: "libSupplementLabel",
 };
 
 const ICONS: Record<string, typeof Dumbbell> = {
@@ -30,6 +32,7 @@ const ICONS: Record<string, typeof Dumbbell> = {
   nutrition: UtensilsCrossed,
   testing: ClipboardList,
   hiit: Zap,
+  supplement: ShieldCheck,
 };
 
 const COLORS: Record<string, string> = {
@@ -38,6 +41,7 @@ const COLORS: Record<string, string> = {
   nutrition: "text-tab-nutrition",
   testing: "text-primary",
   hiit: "text-destructive",
+  supplement: "text-emerald-500",
 };
 
 type NutritionView = "home" | "planner" | "logger" | "recipes";
@@ -132,6 +136,7 @@ export default function Library() {
         {section === "mental" && <MentalLibrary />}
         {section === "testing" && <TestLibrary />}
         {section === "hiit" && <HiitLibrary />}
+        {section === "supplement" && <SupplementChecker />}
 
         {section === "nutrition" && nutritionView === "home" && (
           <div className="grid gap-4">

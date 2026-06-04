@@ -718,11 +718,16 @@ export default function Dashboard() {
               );
             })}
             <button
-              onClick={() => { setMenuOpen(false); navigate("/library"); }}
+              onClick={() => { setMenuOpen(false); markDotSeen("library_supplement_intro"); navigate("/library"); }}
               disabled={isDemo}
               className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors text-muted-foreground hover:bg-accent hover:text-foreground ${isDemo ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
             >
-              <BookOpen className="h-4 w-4 shrink-0" />
+              <span className="relative inline-flex">
+                <BookOpen className="h-4 w-4 shrink-0" />
+                {!seenDots.has("library_supplement_intro") && !isDemo && (
+                  <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-destructive ring-2 ring-background" aria-hidden="true" />
+                )}
+              </span>
               <span className="truncate">{t("library")}</span>
               {isDemo && <Lock className="h-3 w-3 ms-auto shrink-0" />}
             </button>
