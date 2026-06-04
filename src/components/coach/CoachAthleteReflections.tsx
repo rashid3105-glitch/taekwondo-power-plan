@@ -122,7 +122,7 @@ export function CoachAthleteReflections({ athleteId, athleteName }: Props) {
           .from("competitions")
           .select("id, name, event_date")
           .eq("user_id", athleteId)
-          .lt("event_date", todayIso)
+          .lte("event_date", todayIso)
           .order("event_date", { ascending: false })
           .limit(20),
         supabase

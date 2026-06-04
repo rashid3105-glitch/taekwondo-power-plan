@@ -39,7 +39,7 @@ export function ReflectionPromptCard() {
           .select("id, name, event_date, result")
           .eq("user_id", user.id)
           .gte("event_date", cutoff)
-          .lt("event_date", today)
+          .lte("event_date", today)
           .order("event_date", { ascending: false })
           .limit(5),
         supabase
