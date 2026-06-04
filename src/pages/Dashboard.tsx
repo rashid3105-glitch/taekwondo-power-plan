@@ -21,6 +21,7 @@ import { MedicalDocumentTranslator } from "@/components/MedicalDocumentTranslato
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useCoachMode } from "@/contexts/CoachModeContext";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { useRole } from "@/contexts/RoleContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ClubSwitcher } from "@/components/ClubSwitcher";
@@ -185,13 +186,18 @@ export default function Dashboard() {
   const { isFromCache: profileFromCache, cachedAt: profileCachedAt } = useOfflineProfile();
   const { plan: offlinePlan, online: planOnline } = useOfflinePlan();
   const { role } = useRole();
+  const { memberships, activeMembership, loading: activeClubLoading } = useActiveClub();
 
   // Coaches go straight to their own dashboard — no role toggle.
   useEffect(() => {
-    if (role === "coach") {
+    if (activeClubLoading) return;
+    const isActiveCoachClub = activeMembership
+      ? activeMembership.role_in_club === "coach" || activeMembership.role_in_club === "admin"
+      : memberships.length <= 1 && role === "coach";
+    if (isActiveCoachClub) {
       navigate("/coach", { replace: true });
     }
-  }, [role, navigate]);
+  }, [role, memberships.length, activeMembership, activeClubLoading, navigate]);
 
   // Sync activeTab → URL ?tab= so browser back/refresh works.
   useEffect(() => {
