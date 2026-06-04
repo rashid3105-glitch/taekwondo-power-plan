@@ -184,25 +184,39 @@ export function SupplementChecker() {
         ) : (
           <>
             <input
-              ref={inputRef}
+              ref={cameraInputRef}
               type="file"
               accept="image/*"
               capture="environment"
               className="hidden"
               onChange={(e) => e.target.files?.[0] && handleImage(e.target.files[0])}
             />
+            <input
+              ref={galleryInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => e.target.files?.[0] && handleImage(e.target.files[0])}
+            />
             {!image ? (
-              <button
-                onClick={() => inputRef.current?.click()}
-                className="w-full flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 py-8 hover:bg-primary/10 transition-colors"
-              >
-                <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center">
-                  <Camera className="h-6 w-6 text-primary" />
+              <div className="space-y-2">
+                <div className="rounded-2xl border-2 border-dashed border-border bg-muted/40 py-6 px-4 flex flex-col items-center justify-center gap-2">
+                  <div className="h-12 w-12 rounded-2xl bg-primary/15 flex items-center justify-center">
+                    <Camera className="h-6 w-6 text-primary" />
+                  </div>
+                  <p className="text-sm font-semibold text-foreground text-center">
+                    {t("supplementTakePhoto") || "Tag billede af etiketten eller vælg fra galleri"}
+                  </p>
                 </div>
-                <p className="text-sm font-semibold text-foreground px-4 text-center">
-                  {t("supplementTakePhoto") || "Tag billede af etiketten eller vælg fra galleri"}
-                </p>
-              </button>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button type="button" variant="outline" className="gap-2" onClick={() => cameraInputRef.current?.click()}>
+                    <Camera className="h-4 w-4" /> {t("supplementCamera") || "Kamera"}
+                  </Button>
+                  <Button type="button" variant="outline" className="gap-2" onClick={() => galleryInputRef.current?.click()}>
+                    <Pill className="h-4 w-4" /> {t("supplementGallery") || "Galleri"}
+                  </Button>
+                </div>
+              </div>
             ) : (
               <div className="relative rounded-2xl overflow-hidden">
                 <img src={image} alt="" className="w-full max-h-64 object-cover rounded-2xl" />
