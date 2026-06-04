@@ -232,13 +232,17 @@ export function SupplementChecker() {
 
       {/* Result */}
       {result && (
-        <Card className={cn("p-4 space-y-3 border-2", flagStyles[result.flag_status].border, flagStyles[result.flag_status].bg)}>
+        <Card className={cn("p-4 space-y-3 border-2 bg-card", flagStyles[result.flag_status].border)}>
           <div className="flex items-start gap-3">
             {(() => { const Icon = flagStyles[result.flag_status].icon; return <Icon className={cn("h-8 w-8 shrink-0", flagStyles[result.flag_status].text)} />; })()}
             <div className="flex-1 min-w-0">
-              <p className={cn("font-extrabold text-base", flagStyles[result.flag_status].text)}>{flagLabel(result.flag_status)}</p>
+              <p className="font-extrabold text-base text-foreground">{flagLabel(result.flag_status)}</p>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className={cn("inline-block h-2 w-2 rounded-full", result.flag_status === "green" ? "bg-emerald-500" : result.flag_status === "yellow" ? "bg-amber-500" : "bg-red-500")} />
+                <span className={cn("text-xs font-bold uppercase", flagStyles[result.flag_status].text)}>{result.flag_status}</span>
+              </div>
               {result.product_name && (
-                <p className="text-sm font-semibold text-foreground truncate">{result.product_name}</p>
+                <p className="text-sm font-semibold text-foreground truncate mt-1">{result.product_name}</p>
               )}
             </div>
           </div>
@@ -249,21 +253,21 @@ export function SupplementChecker() {
                 {t("supplementSubstances") || "Stoffer"}
               </p>
               {result.substances.map((s, i) => (
-                <div key={i} className={cn("rounded-lg border p-2 bg-background/60", flagStyles[s.flag].border)}>
+                <div key={i} className={cn("rounded-lg border p-2 bg-background", flagStyles[s.flag].border)}>
                   <div className="flex items-center justify-between gap-2">
                     <span className="font-semibold text-sm text-foreground">{s.navn}</span>
-                    <span className={cn("text-xs font-bold uppercase", flagStyles[s.flag].text)}>
+                    <span className={cn("text-xs font-bold uppercase shrink-0", flagStyles[s.flag].text)}>
                       {s.kategori ? `${s.kategori} · ` : ""}{s.flag}
                     </span>
                   </div>
-                  {s.note && <p className="text-xs text-muted-foreground mt-1">{s.note}</p>}
+                  {s.note && <p className="text-xs text-foreground/80 mt-1">{s.note}</p>}
                 </div>
               ))}
             </div>
           )}
 
           {result.summary && (
-            <div className="rounded-lg bg-background/60 border border-border p-3 text-sm text-foreground whitespace-pre-wrap">
+            <div className="rounded-lg bg-background border border-border p-3 text-sm text-foreground whitespace-pre-wrap leading-relaxed">
               {result.summary}
             </div>
           )}
