@@ -82,6 +82,9 @@ export function CoachAthleteReflections({ athleteId, athleteName }: Props) {
   const [savingId, setSavingId] = useState<string | null>(null);
   const [coachId, setCoachId] = useState<string | null>(null);
   const [reloadTick, setReloadTick] = useState(0);
+  const [pastComps, setPastComps] = useState<PastComp[]>([]);
+  const [requestedIds, setRequestedIds] = useState<Set<string>>(new Set());
+  const [requestingId, setRequestingId] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
