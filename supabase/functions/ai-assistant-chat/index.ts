@@ -1,6 +1,7 @@
 // AI Assistant chat — proxies user messages to Lovable AI Gateway.
 // Uses LOVABLE_API_KEY server-side so no client secret is exposed.
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { sanitizePromptText } from "../_shared/sanitizePrompt.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
