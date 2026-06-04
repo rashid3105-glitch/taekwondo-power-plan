@@ -140,7 +140,7 @@ export function SupplementChecker() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="theme-light-section relative z-10 space-y-4">
       <Card className="p-4 space-y-3">
         <div className="flex items-center gap-2">
           <Pill className="h-5 w-5 text-primary" />
@@ -157,7 +157,7 @@ export function SupplementChecker() {
             onClick={() => { setMode("text"); setResult(null); }}
             className={cn(
               "flex items-center justify-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
-              mode === "text" ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:bg-accent"
+              mode === "text" ? "border-primary bg-primary/10 text-foreground" : "border-border bg-background text-foreground hover:bg-secondary"
             )}
           >
             <Type className="h-4 w-4" /> {t("supplementModeText") || "Tekst"}
@@ -167,7 +167,7 @@ export function SupplementChecker() {
             onClick={() => { setMode("image"); setResult(null); }}
             className={cn(
               "flex items-center justify-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
-              mode === "image" ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:bg-accent"
+              mode === "image" ? "border-primary bg-primary/10 text-foreground" : "border-border bg-background text-foreground hover:bg-secondary"
             )}
           >
             <Camera className="h-4 w-4" /> {t("supplementModeImage") || "Billede"}
@@ -200,7 +200,7 @@ export function SupplementChecker() {
             />
             {!image ? (
               <div className="space-y-2">
-                <div className="rounded-2xl border-2 border-dashed border-border bg-muted/40 py-6 px-4 flex flex-col items-center justify-center gap-2">
+                <div className="rounded-2xl border-2 border-dashed border-border bg-background py-6 px-4 flex flex-col items-center justify-center gap-2">
                   <div className="h-12 w-12 rounded-2xl bg-primary/15 flex items-center justify-center">
                     <Camera className="h-6 w-6 text-primary" />
                   </div>
