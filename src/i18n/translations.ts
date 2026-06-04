@@ -8065,6 +8065,8 @@ const translations = {
     activeClub: "Aktiv klubb",
     switchClub: "Byt klubb",
     changelogEntry136: "Stöd för flera klubbar: medlemmar i fler än en klubb ser nu en klubbväljare i sidhuvudet; medlemmar i en enda klubb ser ingen skillnad.",
+    changelog_2026_06_04: "4 juni 2026",
+    changelogEntry137: "Idrottare kan nu öppna Skaderehabilitering från sidomenyn igen.",
   },
   de: {
     defaultLanguage: "Standardsprache",
