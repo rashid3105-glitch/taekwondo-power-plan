@@ -1137,34 +1137,32 @@ export default function Dashboard() {
         ) : activeTab === "rehab" ? (
           <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isTabModuleDisabled("rehab") ? renderModuleDisabledState() : isDemo ? renderDemoLockedState("injuryRehabPlan") : isModuleLocked("rehab") ? renderTierLockedState("injuryRehabPlan") : (
           <>
-            {/* Rehab Plan Generator */}
-            {(!hasCoach || isPaid) && (
-              <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
-                <div className="flex items-center gap-2">
-                  <Heart className="h-5 w-5 text-destructive" />
-                  <h3 className="font-bold text-foreground">{t("injuryRehabPlan")}</h3>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  {t("rehabDescription")}
-                </p>
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <Input
-                    value={rehabInjury}
-                    onChange={(e) => setRehabInjury(e.target.value)}
-                    placeholder={t("rehabPlaceholder")}
-                    maxLength={200}
-                    className="flex-1"
-                  />
-                  <Button onClick={generateRehabPlan} disabled={generatingRehab || !rehabInjury.trim()} size="sm" className="w-full sm:w-auto">
-                    {generatingRehab ? (
-                      <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
-                    ) : (
-                      <><Heart className="h-4 w-4 mr-1" /> {t("generateRehabPlan")}</>
-                    )}
-                  </Button>
-                </div>
+            {/* Rehab Plan Generator — always available when module is enabled */}
+            <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
+              <div className="flex items-center gap-2">
+                <Heart className="h-5 w-5 text-destructive" />
+                <h3 className="font-bold text-foreground">{t("injuryRehabPlan")}</h3>
               </div>
-            )}
+              <p className="text-xs text-muted-foreground">
+                {t("rehabDescription")}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Input
+                  value={rehabInjury}
+                  onChange={(e) => setRehabInjury(e.target.value)}
+                  placeholder={t("rehabPlaceholder")}
+                  maxLength={200}
+                  className="flex-1"
+                />
+                <Button onClick={generateRehabPlan} disabled={generatingRehab || !rehabInjury.trim()} size="sm" className="w-full sm:w-auto">
+                  {generatingRehab ? (
+                    <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
+                  ) : (
+                    <><Heart className="h-4 w-4 mr-1" /> {t("generateRehabPlan")}</>
+                  )}
+                </Button>
+              </div>
+            </div>
 
             {/* Rehab plan result */}
             {rehabPlan && (
