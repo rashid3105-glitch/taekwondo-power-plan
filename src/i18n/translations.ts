@@ -2696,6 +2696,8 @@ const translations = {
     activeClub: "Active club",
     switchClub: "Switch club",
     changelogEntry136: "Multi-club support: members of more than one club now see a club switcher in the header to toggle between clubs; users in a single club see no change.",
+    changelog_2026_06_04: "June 4, 2026",
+    changelogEntry137: "Athletes can now open the Injury Rehab plan again from the side menu.",
   },
   da: {
     defaultLanguage: "Standardsprog",
@@ -5379,6 +5381,8 @@ const translations = {
     activeClub: "Aktiv klub",
     switchClub: "Skift klub",
     changelogEntry136: "Multi-klub-understøttelse: brugere med flere klubmedlemskaber kan nu skifte klub via en vælger i headeren; enkelt-klub-brugere oplever ingen ændring.",
+    changelog_2026_06_04: "4. juni 2026",
+    changelogEntry137: "Atleter kan nu åbne Skade-genoptræning fra sidemenuen igen.",
   },
   sv: {
     defaultLanguage: "Standardspråk",
@@ -8061,6 +8065,8 @@ const translations = {
     activeClub: "Aktiv klubb",
     switchClub: "Byt klubb",
     changelogEntry136: "Stöd för flera klubbar: medlemmar i fler än en klubb ser nu en klubbväljare i sidhuvudet; medlemmar i en enda klubb ser ingen skillnad.",
+    changelog_2026_06_04: "4 juni 2026",
+    changelogEntry137: "Idrottare kan nu öppna Skaderehabilitering från sidomenyn igen.",
   },
   de: {
     defaultLanguage: "Standardsprache",
@@ -10693,6 +10699,8 @@ const translations = {
     activeClub: "Aktiver Verein",
     switchClub: "Verein wechseln",
     changelogEntry136: "Multi-Vereins-Unterstützung: Mitglieder mehrerer Vereine sehen jetzt eine Vereinsauswahl im Header; Nutzer in nur einem Verein bemerken keine Änderung.",
+    changelog_2026_06_04: "4. Juni 2026",
+    changelogEntry137: "Athleten können den Verletzungs-Reha-Plan jetzt wieder über das Seitenmenü öffnen.",
   },
 
   ar: {
@@ -13326,6 +13334,8 @@ const translations = {
     activeClub: "النادي النشط",
     switchClub: "تبديل النادي",
     changelogEntry136: "دعم متعدد الأندية: يمكن للأعضاء في أكثر من نادٍ التبديل بينها عبر محدد في الرأس؛ المستخدمون في نادٍ واحد لا يلاحظون أي تغيير.",
+    changelog_2026_06_04: "4 يونيو 2026",
+    changelogEntry137: "يمكن للرياضيين الآن فتح خطة إعادة تأهيل الإصابة مرة أخرى من القائمة الجانبية.",
   },
   no: {
     onbWelcomeTitle: "Velkommen til Sportstalent",
@@ -16009,6 +16019,8 @@ const translations = {
     activeClub: "Aktiv klubb",
     switchClub: "Bytt klubb",
     changelogEntry136: "Støtte for flere klubber: medlemmer i flere klubber ser nå en klubbvelger i toppen; brukere med kun én klubb merker ingen forskjell.",
+    changelog_2026_06_04: "4. juni 2026",
+    changelogEntry137: "Utøvere kan nå åpne Skade-rehabilitering fra sidemenyen igjen.",
   },
 } as const;
 
@@ -16946,5 +16958,7 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   activeClub: "Club activo",
   switchClub: "Cambiar club",
   changelogEntry136: "Soporte multi-club: los miembros de más de un club ahora ven un selector de club en la cabecera; los usuarios con un solo club no notan ningún cambio.",
+  changelog_2026_06_04: "4 de junio de 2026",
+  changelogEntry137: "Los atletas ahora pueden volver a abrir el plan de rehabilitación de lesiones desde el menú lateral.",
 };
 export default translations;
