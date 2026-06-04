@@ -88,7 +88,33 @@ export default function CoachCompetitions() {
       const nameMap = new Map((profiles ?? []).map((p: any) => [p.user_id, p.display_name]));
       setMyAthletes((profiles ?? []).map((p: any) => ({ user_id: p.user_id, display_name: p.display_name || "—" })));
       const { data: competitions } = await supabase.from("competitions").select("id, name, event_date, location, user_id, priority, result").in("user_id", athleteIds).order("event_date", { ascending: true });
-      setComps(((competitions ?? []) as any[]).map((c: any) => ({ ...c, athlete_name: nameMap.get(c.user_id) || "—" })));
+      const compsList = ((competitions ?? []) as any[]).map((c: any) => ({ ...c, athlete_name: nameMap.get(c.user_id) || "—" }));
+      setComps(compsList);
+
+      // Fetch reflection state (submitted + requested) for these athletes
+      const compIds = compsList.map((c: any) => c.id);
+      if (compIds.length) {
+        const [{ data: refls }, { data: reqs }] = await Promise.all([
+          supabase.from("competition_reflections")
+            .select("user_id, competition_name, competition_date")
+            .in("user_id", athleteIds),
+          supabase.from("competition_reflection_requests")
+            .select("athlete_id, competition_id")
+            .in("competition_id", compIds),
+        ]);
+        const status: Record<string, "submitted" | "requested"> = {};
+        const compById = new Map(compsList.map((c: any) => [c.id, c]));
+        for (const r of (reqs ?? []) as any[]) {
+          const c = compById.get(r.competition_id);
+          if (!c) continue;
+          status[`${r.athlete_id}|${c.name.trim().toLowerCase()}|${c.event_date}`] = "requested";
+        }
+        for (const r of (refls ?? []) as any[]) {
+          const key = `${r.user_id}|${(r.competition_name || "").trim().toLowerCase()}|${r.competition_date}`;
+          status[key] = "submitted";
+        }
+        setReflectionStatus(status);
+      }
       setLoading(false);
     })();
   }, []);
