@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import {
-  Trophy, Loader2, ChevronDown, ChevronRight, Target, Sparkles, MessageSquare, Save,
+  Trophy, Loader2, ChevronDown, ChevronRight, Target, Sparkles, MessageSquare, Save, Send, Check,
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,7 @@ type SupportedLocale = "en" | "da" | "sv" | "de" | "ar" | "no";
 
 interface Reflection {
   id: string;
+  competition_id: string | null;
   competition_name: string | null;
   competition_date: string | null;
   result: string | null;
@@ -29,6 +30,12 @@ interface Reflection {
   reflections: Record<string, string>;
   ai_plan: any;
   created_at: string;
+}
+
+interface PastComp {
+  id: string;
+  name: string;
+  event_date: string;
 }
 
 interface CommentRecord {
