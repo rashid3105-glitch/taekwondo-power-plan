@@ -14,6 +14,7 @@ interface PendingComp {
   name: string;
   event_date: string;
   result: string | null;
+  requested_by_coach: boolean;
 }
 
 const DISMISS_PREFIX = "reflectionPromptDismissed:";
