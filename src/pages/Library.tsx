@@ -22,6 +22,7 @@ const TITLE_KEYS: Record<string, TranslationKey> = {
   nutrition: "hubNutritionTitle",
   testing: "libTestingLabel",
   hiit: "libHiitLabel",
+  supplement: "libSupplementLabel",
 };
 
 const ICONS: Record<string, typeof Dumbbell> = {
@@ -30,6 +31,7 @@ const ICONS: Record<string, typeof Dumbbell> = {
   nutrition: UtensilsCrossed,
   testing: ClipboardList,
   hiit: Zap,
+  supplement: ShieldCheck,
 };
 
 const COLORS: Record<string, string> = {
@@ -38,6 +40,7 @@ const COLORS: Record<string, string> = {
   nutrition: "text-tab-nutrition",
   testing: "text-primary",
   hiit: "text-destructive",
+  supplement: "text-emerald-500",
 };
 
 type NutritionView = "home" | "planner" | "logger" | "recipes";
