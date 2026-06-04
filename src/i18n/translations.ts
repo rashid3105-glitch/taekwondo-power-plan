@@ -2698,6 +2698,12 @@ const translations = {
     changelogEntry136: "Multi-club support: members of more than one club now see a club switcher in the header to toggle between clubs; users in a single club see no change.",
     changelog_2026_06_04: "June 4, 2026",
     changelogEntry137: "Athletes can now open the Injury Rehab plan again from the side menu.",
+    changelogEntry138: "Coaches can now request a post-competition evaluation directly from the athlete view.",
+    requestEvaluationCTA: "Request evaluation",
+    evaluationRequested: "Requested",
+    evaluationRequestSent: "Evaluation requested — the athlete will be notified",
+    evaluationAlreadyRequested: "Already requested",
+    awaitingEvaluation: "Awaiting evaluation",
   },
   da: {
     defaultLanguage: "Standardsprog",
