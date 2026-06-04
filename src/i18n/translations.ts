@@ -16996,5 +16996,11 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   changelogEntry136: "Soporte multi-club: los miembros de más de un club ahora ven un selector de club en la cabecera; los usuarios con un solo club no notan ningún cambio.",
   changelog_2026_06_04: "4 de junio de 2026",
   changelogEntry137: "Los atletas ahora pueden volver a abrir el plan de rehabilitación de lesiones desde el menú lateral.",
+  changelogEntry138: "Los entrenadores ahora pueden solicitar una evaluación de competición directamente desde la vista del atleta.",
+  requestEvaluationCTA: "Solicitar evaluación",
+  evaluationRequested: "Solicitada",
+  evaluationRequestSent: "Evaluación solicitada — se notificará al atleta",
+  evaluationAlreadyRequested: "Ya solicitada",
+  awaitingEvaluation: "Pendiente de evaluación",
 };
 export default translations;
