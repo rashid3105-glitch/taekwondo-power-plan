@@ -292,7 +292,7 @@ export function SupplementChecker() {
             {t("supplementDisclaimerTitle") || "Vigtigt — vejledende screening"}
           </p>
         </div>
-        <p className="text-xs text-muted-foreground leading-relaxed">
+        <p className="text-xs text-foreground/90 leading-relaxed">
           {t("supplementDisclaimerBody") || "Dette er en vejledende screening, ikke en garanti. WADA's liste er ikke udtømmende, og du er selv ansvarlig (strict liability) for hvad du indtager. Kosttilskud dækkes IKKE af Global DRO og kan være forurenede eller fejlmærkede. Verificér altid officielt og tal med din træner, læge eller en voksen."}
         </p>
         <div className="flex flex-col gap-1.5 pt-1">
