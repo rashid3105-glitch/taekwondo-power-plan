@@ -2696,6 +2696,8 @@ const translations = {
     activeClub: "Active club",
     switchClub: "Switch club",
     changelogEntry136: "Multi-club support: members of more than one club now see a club switcher in the header to toggle between clubs; users in a single club see no change.",
+    changelog_2026_06_04: "June 4, 2026",
+    changelogEntry137: "Athletes can now open the Injury Rehab plan again from the side menu.",
   },
   da: {
     defaultLanguage: "Standardsprog",
