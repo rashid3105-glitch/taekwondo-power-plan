@@ -13360,6 +13360,12 @@ const translations = {
     changelogEntry136: "دعم متعدد الأندية: يمكن للأعضاء في أكثر من نادٍ التبديل بينها عبر محدد في الرأس؛ المستخدمون في نادٍ واحد لا يلاحظون أي تغيير.",
     changelog_2026_06_04: "4 يونيو 2026",
     changelogEntry137: "يمكن للرياضيين الآن فتح خطة إعادة تأهيل الإصابة مرة أخرى من القائمة الجانبية.",
+    changelogEntry138: "يمكن للمدربين الآن طلب تقييم ما بعد المنافسة مباشرة من عرض الرياضي.",
+    requestEvaluationCTA: "طلب تقييم",
+    evaluationRequested: "تم الطلب",
+    evaluationRequestSent: "تم طلب التقييم — سيتم إشعار الرياضي",
+    evaluationAlreadyRequested: "تم الطلب بالفعل",
+    awaitingEvaluation: "في انتظار التقييم",
   },
   no: {
     onbWelcomeTitle: "Velkommen til Sportstalent",
