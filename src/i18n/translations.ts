@@ -5381,6 +5381,8 @@ const translations = {
     activeClub: "Aktiv klub",
     switchClub: "Skift klub",
     changelogEntry136: "Multi-klub-understøttelse: brugere med flere klubmedlemskaber kan nu skifte klub via en vælger i headeren; enkelt-klub-brugere oplever ingen ændring.",
+    changelog_2026_06_04: "4. juni 2026",
+    changelogEntry137: "Atleter kan nu åbne Skade-genoptræning fra sidemenuen igen.",
   },
   sv: {
     defaultLanguage: "Standardspråk",
