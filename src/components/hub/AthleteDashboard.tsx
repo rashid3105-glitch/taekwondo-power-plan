@@ -65,8 +65,8 @@ export function AthleteDashboard() {
   }, [nextCompetition]);
 
   useEffect(() => {
-    if (activeRole !== "athlete") return;
     let mounted = true;
+
 
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -159,7 +159,8 @@ export function AthleteDashboard() {
     })();
 
     return () => { mounted = false; };
-  }, [activeRole]);
+  }, []);
+
 
   const countdown = useMemo(() => {
     if (!nextCompetition) return null;
@@ -171,7 +172,7 @@ export function AthleteDashboard() {
     return { days, hours, minutes };
   }, [nextCompetition, now]);
 
-  if (activeRole !== "athlete") return null;
+  
 
   const accentStyle = { color: "var(--accent-hex)" } as const;
   const accentLeftBorder = { borderLeft: "3px solid var(--accent-hex)" } as const;

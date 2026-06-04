@@ -1,63 +1,32 @@
-## Fix plan for the stuck coach dashboard
+## Problem
 
-I found the main loop causing this:
+When a coach user opens `/dashboard` (the "I dag" tab), the page only shows the readiness banner, greeting, and footer. All module cards (Today's session, Next event, Diary, Messages, Quick access) are gone.
 
-- The **Home button on `/coach` does fire**, but it sends the user to `/`.
-- `/` immediately redirects signed-in users to `/dashboard`.
-- `Dashboard.tsx` then **forces coaches straight back to `/coach`**, even after coach mode was turned off.
+## Root cause
 
-So the problem is not the button icon itself — it is the **redirect chain overriding the user’s choice**.
+`src/components/hub/AthleteDashboard.tsx` line 174:
 
-### What I will change
-
-1. **Stop the forced redirect from `/dashboard` unless coach mode is actually on**
-   - Update `src/pages/Dashboard.tsx`
-   - The current effect redirects based only on coach role / active club role.
-   - I will make it respect the stored/current **coach mode state**, so a coach can return to the normal dashboard/front flow.
-
-2. **Make all coach-exit actions use one consistent escape path**
-   - Update `src/pages/CoachDashboard.tsx`
-   - The Home/exit controls should:
-     - turn coach mode off
-     - navigate to the intended non-coach destination
-     - not be immediately overridden by dashboard logic
-   - I will also check the left-arrow button, since it currently goes to `/` without clearing coach mode.
-
-3. **Harden role handling for club switching**
-   - Update `src/contexts/RoleContext.tsx` if needed
-   - Right now single-club users can still fall back to `profiles.role`, which can keep someone behaving like a coach even when the active membership logic should decide otherwise.
-   - I will make the active club membership the source of truth where appropriate, so switching club or leaving coach mode does not bounce back incorrectly.
-
-4. **Validate the full stuck flow in preview before stopping**
-   - I will verify these exact cases:
-     - click Home from `/coach` and confirm the URL stays off `/coach`
-     - switch club after leaving coach mode and confirm it still stays out of coach dashboard
-     - enter coach dashboard again intentionally and confirm that still works
-
-## Files likely involved
-
-- `src/pages/Dashboard.tsx`
-- `src/pages/CoachDashboard.tsx`
-- `src/contexts/RoleContext.tsx`
-
-## Technical details
-
-Current problematic chain:
-
-```text
-/coach
-  -> Home click
-  -> setCoachMode(false) + navigate('/')
-  -> / redirects signed-in user to /dashboard
-  -> Dashboard effect sees coach role in active club
-  -> forced navigate('/coach')
+```ts
+if (activeRole !== "athlete") return null;
 ```
 
-The fix is to make the redirect logic depend on both:
+The component renders the entire athlete hub content, but bails out when `activeRole === "coach"`. Coaches still need to use the athlete dashboard as their own personal home (Dashboard.tsx already gates rendering — it only mounts `<AthleteDashboard />` inside the hub tab, never on `/coach`).
 
-- **user can act as coach**
-- **user has actually chosen coach mode**
+The data-loading `useEffect` is also gated by the same `activeRole !== "athlete"` check, so even if we removed the render guard, the data wouldn't load.
 
-not just coach role alone.
+## Fix
 
-Once you approve, I’ll implement this surgically and verify it in the preview.
+In `src/components/hub/AthleteDashboard.tsx`:
+
+1. Remove the `if (activeRole !== "athlete") return null;` early-return (line 174).
+2. Remove the `if (activeRole !== "athlete") return;` guard inside the data-loading `useEffect` (line 68), and drop `activeRole` from that effect's dependency array.
+
+This makes `AthleteDashboard` render and load data for every signed-in user that mounts it. Dashboard.tsx already decides when it should mount (only on the hub tab of `/dashboard`), so removing the internal role check is safe and does not affect `/coach`.
+
+## Files to edit
+
+- `src/components/hub/AthleteDashboard.tsx`
+
+## Out of scope
+
+No changes to `CoachDashboard`, role context, routing, RLS, or data fetching logic.
