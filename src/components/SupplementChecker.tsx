@@ -300,7 +300,7 @@ export function SupplementChecker() {
       )}
 
       {/* Always-visible disclaimer */}
-      <Card className="p-4 border-amber-500/40 bg-amber-500/5 space-y-2">
+      <Card className="p-4 border-l-4 border-l-amber-500 border border-border bg-card space-y-2">
         <div className="flex items-center gap-2">
           <ShieldAlert className="h-4 w-4 text-amber-600 dark:text-amber-400" />
           <p className="font-bold text-sm text-foreground">
