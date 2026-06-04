@@ -93,14 +93,14 @@ Return JSON in exactly this shape:
 }`;
 
     const ratingsText = Object.entries(ratings)
-      .map(([k, v]) => `- ${k}: ${v}/10`)
+      .map(([k, v]) => `- ${sanitizePromptText(k, 60)}: ${Number(v) || 0}/10`)
       .join("\n");
     const reflectionsText = Object.entries(reflections || {})
       .filter(([, v]) => typeof v === "string" && v.trim().length > 0)
       .map(([k, v]) => `- ${sanitizePromptText(k, 60)}: ${sanitizePromptText(v, 600)}`)
       .join("\n");
-    const baselineText = recentBaselineScores
-      ? `Recent baseline mental scores (1-5):\n${Object.entries(recentBaselineScores).map(([k, v]) => `- ${k}: ${v}`).join("\n")}`
+    const baselineText = recentBaselineScores && typeof recentBaselineScores === "object"
+      ? `Recent baseline mental scores (1-5):\n${Object.entries(recentBaselineScores).map(([k, v]) => `- ${sanitizePromptText(k, 60)}: ${Number(v) || 0}`).join("\n")}`
       : "No recent baseline mental assessment available.";
 
     const userPrompt = `Competition: ${sanitizePromptText(competition?.name, 120) || "Unnamed"}
