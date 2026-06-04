@@ -141,6 +141,11 @@ export default function CoachDashboard() {
   const isMobile = useIsMobile();
   const { activeClubId, activeMembership, memberships } = useActiveClub();
 
+  const exitCoachDashboard = () => {
+    setCoachMode(false);
+    navigate("/dashboard", { replace: true });
+  };
+
   useEffect(() => {
     if (!activeMembership) return;
     if (activeMembership.role_in_club !== "coach" && activeMembership.role_in_club !== "admin") {
@@ -343,7 +348,7 @@ export default function CoachDashboard() {
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10 pt-safe">
         <div className="container max-w-4xl mx-auto px-3 sm:px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2 min-w-0">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
+            <Button variant="ghost" size="icon" onClick={exitCoachDashboard}>
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div className="h-8 w-8 rounded-lg bg-gradient-energy flex items-center justify-center shrink-0">
@@ -361,7 +366,7 @@ export default function CoachDashboard() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => { setCoachMode(false); navigate("/", { replace: true }); }}
+              onClick={exitCoachDashboard}
               aria-label="Home"
               title="Home"
             >
