@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import {
-  Trophy, Loader2, ChevronDown, ChevronRight, Target, Sparkles, MessageSquare, Save,
+  Trophy, Loader2, ChevronDown, ChevronRight, Target, Sparkles, MessageSquare, Save, Send, Check,
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,7 @@ type SupportedLocale = "en" | "da" | "sv" | "de" | "ar" | "no";
 
 interface Reflection {
   id: string;
+  competition_id: string | null;
   competition_name: string | null;
   competition_date: string | null;
   result: string | null;
@@ -29,6 +30,12 @@ interface Reflection {
   reflections: Record<string, string>;
   ai_plan: any;
   created_at: string;
+}
+
+interface PastComp {
+  id: string;
+  name: string;
+  event_date: string;
 }
 
 interface CommentRecord {
@@ -75,6 +82,9 @@ export function CoachAthleteReflections({ athleteId, athleteName }: Props) {
   const [savingId, setSavingId] = useState<string | null>(null);
   const [coachId, setCoachId] = useState<string | null>(null);
   const [reloadTick, setReloadTick] = useState(0);
+  const [pastComps, setPastComps] = useState<PastComp[]>([]);
+  const [requestedIds, setRequestedIds] = useState<Set<string>>(new Set());
+  const [requestingId, setRequestingId] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -86,13 +96,14 @@ export function CoachAthleteReflections({ athleteId, athleteName }: Props) {
 
       const { data } = await supabase
         .from("competition_reflections")
-        .select("id, competition_name, competition_date, result, ratings, reflections, ai_plan, created_at")
+        .select("id, competition_id, competition_name, competition_date, result, ratings, reflections, ai_plan, created_at")
         .eq("user_id", athleteId)
         .order("competition_date", { ascending: false, nullsFirst: false })
         .order("created_at", { ascending: false });
       if (cancelled) return;
       const rows: Reflection[] = (data || []).map((r: any) => ({
         id: r.id,
+        competition_id: r.competition_id ?? null,
         competition_name: r.competition_name,
         competition_date: r.competition_date,
         result: r.result,
@@ -103,6 +114,27 @@ export function CoachAthleteReflections({ athleteId, athleteName }: Props) {
       }));
       setItems(rows);
       if (rows[0]) setOpenId(rows[0].id);
+
+      // Load past competitions for this athlete + existing requests by this coach
+      const todayIso = new Date().toISOString().slice(0, 10);
+      const [pastCompsRes, requestsRes] = await Promise.all([
+        supabase
+          .from("competitions")
+          .select("id, name, event_date")
+          .eq("user_id", athleteId)
+          .lt("event_date", todayIso)
+          .order("event_date", { ascending: false })
+          .limit(20),
+        supabase
+          .from("competition_reflection_requests")
+          .select("competition_id")
+          .eq("athlete_id", athleteId),
+      ]);
+      if (cancelled) return;
+      const reflectedSet = new Set(rows.map((r) => r.competition_id).filter(Boolean) as string[]);
+      const pendingComps = ((pastCompsRes.data as PastComp[]) || []).filter((c) => !reflectedSet.has(c.id));
+      setPastComps(pendingComps);
+      setRequestedIds(new Set(((requestsRes.data as any[]) || []).map((r) => r.competition_id)));
 
       // Load coach's existing private comments for these reflections
       if (user && rows.length > 0) {
@@ -159,6 +191,43 @@ export function CoachAthleteReflections({ athleteId, athleteName }: Props) {
     }
   }
 
+  async function requestEvaluation(competitionId: string) {
+    if (!coachId) return;
+    if (requestedIds.has(competitionId)) {
+      toast({ title: t("evaluationAlreadyRequested") });
+      return;
+    }
+    setRequestingId(competitionId);
+    try {
+      // Re-check for an existing request (no unique constraint in DB)
+      const { data: existing } = await supabase
+        .from("competition_reflection_requests")
+        .select("id")
+        .eq("competition_id", competitionId)
+        .eq("athlete_id", athleteId)
+        .limit(1);
+      if (existing && existing.length > 0) {
+        setRequestedIds((prev) => new Set(prev).add(competitionId));
+        toast({ title: t("evaluationAlreadyRequested") });
+        return;
+      }
+      const row: any = {
+        competition_id: competitionId,
+        athlete_id: athleteId,
+        coach_id: coachId,
+      };
+      if (activeClubId) row.club_id = activeClubId;
+      const { error } = await supabase.from("competition_reflection_requests").insert(row);
+      if (error) throw error;
+      setRequestedIds((prev) => new Set(prev).add(competitionId));
+      toast({ title: t("evaluationRequestSent") });
+    } catch (e: any) {
+      toast({ title: t("error"), description: e.message, variant: "destructive" });
+    } finally {
+      setRequestingId(null);
+    }
+  }
+
   if (loading) {
     return (
       <div className="rounded-xl border border-border bg-card p-4 shadow-card flex items-center gap-2 text-xs text-muted-foreground">
@@ -169,6 +238,48 @@ export function CoachAthleteReflections({ athleteId, athleteName }: Props) {
 
   return (
     <div className="space-y-3">
+      {pastComps.length > 0 && (
+        <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
+          <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+            <Send className="h-4 w-4 text-primary" /> {t("awaitingEvaluation")}
+          </h4>
+          <div className="space-y-2">
+            {pastComps.map((c) => {
+              const requested = requestedIds.has(c.id);
+              const busy = requestingId === c.id;
+              return (
+                <div
+                  key={c.id}
+                  className="flex items-center justify-between gap-2 rounded-lg border border-border bg-background/50 px-3 py-2"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="text-xs font-medium text-foreground truncate">{c.name}</div>
+                    <div className="text-[10px] text-muted-foreground">
+                      {formatDate(c.event_date, l)}
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant={requested ? "secondary" : "outline"}
+                    disabled={requested || busy}
+                    onClick={() => requestEvaluation(c.id)}
+                    className="h-8 px-2 text-[11px] shrink-0"
+                  >
+                    {busy ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : requested ? (
+                      <><Check className="h-3 w-3 mr-1" /> {t("evaluationRequested")}</>
+                    ) : (
+                      <><Send className="h-3 w-3 mr-1" /> {t("requestEvaluationCTA")}</>
+                    )}
+                  </Button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
