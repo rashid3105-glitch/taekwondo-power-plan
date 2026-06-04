@@ -329,22 +329,65 @@ export default function CoachCompetitions() {
                 <div className="space-y-1.5">
                   {[...openGroup.participants]
                     .sort((a, b) => a.athlete_name.localeCompare(b.athlete_name))
-                    .map((p) => (
-                      <div key={p.user_id} className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-muted/50">
-                        <span className="text-sm font-medium truncate">{p.athlete_name}</span>
-                        <div className="flex items-center gap-2 shrink-0">
-                          {p.result && <Badge variant="outline" className="text-[10px]">{p.result}</Badge>}
-                          <button
-                            onClick={() => removeAthleteFromComp(openGroup, p.user_id)}
-                            disabled={removingId === p.user_id}
-                            className="text-xs text-destructive hover:text-destructive/80 px-2 py-0.5 rounded border border-destructive/30 hover:bg-destructive/10 transition-colors disabled:opacity-50"
-                          >
-                            {removingId === p.user_id ? "…" : labelRemove}
-                          </button>
+                    .map((p) => {
+                      const isPastEvent = openGroup.event_date <= today;
+                      const rStatus = reflectionStatus[reflectionKey(p.user_id, openGroup)];
+                      return (
+                        <div key={p.user_id} className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-muted/50">
+                          <div className="min-w-0 flex-1 flex items-center gap-2">
+                            <span className="text-sm font-medium truncate">{p.athlete_name}</span>
+                            {isPastEvent && rStatus === "submitted" && (
+                              <Badge variant="outline" className="text-[10px] gap-1 border-emerald-500/40 text-emerald-600 dark:text-emerald-400">
+                                <CheckCircle2 className="h-3 w-3" />{labelStatusSubmitted}
+                              </Badge>
+                            )}
+                            {isPastEvent && rStatus === "requested" && (
+                              <Badge variant="outline" className="text-[10px] gap-1">
+                                <Clock className="h-3 w-3" />{labelStatusRequested}
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            {p.result && <Badge variant="outline" className="text-[10px]">{p.result}</Badge>}
+                            {isPastEvent && rStatus !== "submitted" && (
+                              <button
+                                onClick={() => requestReflection(openGroup, [p.user_id])}
+                                disabled={requestingOne === p.user_id || requestingAll}
+                                className="text-xs text-primary hover:text-primary/80 px-2 py-0.5 rounded border border-primary/30 hover:bg-primary/10 transition-colors disabled:opacity-50 inline-flex items-center gap-1"
+                              >
+                                <Sparkles className="h-3 w-3" />
+                                {requestingOne === p.user_id ? "…" : labelRequestOne}
+                              </button>
+                            )}
+                            <button
+                              onClick={() => removeAthleteFromComp(openGroup, p.user_id)}
+                              disabled={removingId === p.user_id}
+                              className="text-xs text-destructive hover:text-destructive/80 px-2 py-0.5 rounded border border-destructive/30 hover:bg-destructive/10 transition-colors disabled:opacity-50"
+                            >
+                              {removingId === p.user_id ? "…" : labelRemove}
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                 </div>
+
+                {openGroup.event_date <= today && openGroup.participants.length > 0 && (
+                  <div className="mt-4 p-3 rounded-lg border border-primary/30 bg-primary/5">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                      {labelReflectionSection}
+                    </p>
+                    <Button
+                      size="sm"
+                      onClick={() => requestReflection(openGroup)}
+                      disabled={requestingAll}
+                      className="gap-1.5"
+                    >
+                      <Sparkles className="h-3.5 w-3.5" />
+                      {requestingAll ? "…" : labelRequestAll}
+                    </Button>
+                  </div>
+                )}
 
                 {notYetIn.length > 0 && (
                   <div className="mt-4">
