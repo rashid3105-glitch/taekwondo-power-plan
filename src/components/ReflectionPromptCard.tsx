@@ -99,6 +99,11 @@ export function ReflectionPromptCard() {
           <div>
             <h3 className="text-sm font-bold text-foreground">{t("dashboardReflectPromptTitle")}</h3>
             <p className="text-xs text-muted-foreground mt-0.5">{t("dashboardReflectPromptDesc")}</p>
+            {comp.requested_by_coach && (
+              <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 rounded-full bg-primary/15 text-primary text-[10px] font-semibold uppercase tracking-wide">
+                {t("reflectionRequestedByCoachBadge")}
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-2 text-xs text-foreground bg-background/60 border border-border rounded-lg px-3 py-2">
