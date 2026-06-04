@@ -188,16 +188,16 @@ export default function Dashboard() {
   const { role } = useRole();
   const { memberships, activeMembership, loading: activeClubLoading } = useActiveClub();
 
-  // Coaches go straight to their own dashboard — no role toggle.
+  // Only stay in the coach dashboard when coach mode is explicitly active.
   useEffect(() => {
-    if (activeClubLoading) return;
+    if (activeClubLoading || !isCoachMode) return;
     const isActiveCoachClub = activeMembership
       ? activeMembership.role_in_club === "coach" || activeMembership.role_in_club === "admin"
       : memberships.length <= 1 && role === "coach";
     if (isActiveCoachClub) {
       navigate("/coach", { replace: true });
     }
-  }, [role, memberships.length, activeMembership, activeClubLoading, navigate]);
+  }, [role, memberships.length, activeMembership, activeClubLoading, isCoachMode, navigate]);
 
   // Sync activeTab → URL ?tab= so browser back/refresh works.
   useEffect(() => {
