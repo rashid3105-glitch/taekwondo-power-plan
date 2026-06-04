@@ -93,13 +93,14 @@ export function CoachAthleteReflections({ athleteId, athleteName }: Props) {
 
       const { data } = await supabase
         .from("competition_reflections")
-        .select("id, competition_name, competition_date, result, ratings, reflections, ai_plan, created_at")
+        .select("id, competition_id, competition_name, competition_date, result, ratings, reflections, ai_plan, created_at")
         .eq("user_id", athleteId)
         .order("competition_date", { ascending: false, nullsFirst: false })
         .order("created_at", { ascending: false });
       if (cancelled) return;
       const rows: Reflection[] = (data || []).map((r: any) => ({
         id: r.id,
+        competition_id: r.competition_id ?? null,
         competition_name: r.competition_name,
         competition_date: r.competition_date,
         result: r.result,
@@ -110,6 +111,27 @@ export function CoachAthleteReflections({ athleteId, athleteName }: Props) {
       }));
       setItems(rows);
       if (rows[0]) setOpenId(rows[0].id);
+
+      // Load past competitions for this athlete + existing requests by this coach
+      const todayIso = new Date().toISOString().slice(0, 10);
+      const [pastCompsRes, requestsRes] = await Promise.all([
+        supabase
+          .from("competitions")
+          .select("id, name, event_date")
+          .eq("user_id", athleteId)
+          .lt("event_date", todayIso)
+          .order("event_date", { ascending: false })
+          .limit(20),
+        supabase
+          .from("competition_reflection_requests")
+          .select("competition_id")
+          .eq("athlete_id", athleteId),
+      ]);
+      if (cancelled) return;
+      const reflectedSet = new Set(rows.map((r) => r.competition_id).filter(Boolean) as string[]);
+      const pendingComps = ((pastCompsRes.data as PastComp[]) || []).filter((c) => !reflectedSet.has(c.id));
+      setPastComps(pendingComps);
+      setRequestedIds(new Set(((requestsRes.data as any[]) || []).map((r) => r.competition_id)));
 
       // Load coach's existing private comments for these reflections
       if (user && rows.length > 0) {
