@@ -2728,6 +2728,8 @@ const translations = {
     supplementRateLimited: "Too many requests — try again shortly",
     supplementPaymentRequired: "Credits exhausted — please contact support",
     supplementCheckError: "Could not complete the check",
+    parentSupplementTitle: "Check supplements & medicine",
+    parentSupplementNote: "Advisory screening for your child. The language is adapted to the child's age. Always verify officially.",
   },
   da: {
     defaultLanguage: "Standardsprog",
@@ -5443,6 +5445,8 @@ const translations = {
     supplementRateLimited: "For mange forespørgsler — prøv igen om lidt",
     supplementPaymentRequired: "Kreditter opbrugt — kontakt support",
     supplementCheckError: "Kunne ikke gennemføre tjekket",
+    parentSupplementTitle: "Tjek kosttilskud & medicin",
+    parentSupplementNote: "Vejledende screening for dit barn. Sproget er tilpasset barnets alder. Verificér altid officielt.",
   },
   sv: {
     defaultLanguage: "Standardspråk",
@@ -8157,6 +8161,8 @@ const translations = {
     supplementRateLimited: "För många förfrågningar — försök igen snart",
     supplementPaymentRequired: "Krediter slut — kontakta support",
     supplementCheckError: "Kunde inte slutföra kontrollen",
+    parentSupplementTitle: "Kontrollera kosttillskott & medicin",
+    parentSupplementNote: "Vägledande screening för ditt barn. Språket är anpassat till barnets ålder. Verifiera alltid officiellt.",
   },
   de: {
     defaultLanguage: "Standardsprache",
@@ -10821,6 +10827,8 @@ const translations = {
     supplementRateLimited: "Zu viele Anfragen — versuche es gleich erneut",
     supplementPaymentRequired: "Guthaben aufgebraucht — kontaktiere den Support",
     supplementCheckError: "Prüfung konnte nicht abgeschlossen werden",
+    parentSupplementTitle: "Nahrungsergänzung & Medikamente prüfen",
+    parentSupplementNote: "Orientierendes Screening für Ihr Kind. Die Sprache ist an das Alter des Kindes angepasst. Immer offiziell verifizieren.",
   },
 
   ar: {
@@ -13486,6 +13494,8 @@ const translations = {
     supplementRateLimited: "طلبات كثيرة جداً — حاول مرة أخرى بعد قليل",
     supplementPaymentRequired: "نفدت الأرصدة — تواصل مع الدعم",
     supplementCheckError: "تعذّر إكمال الفحص",
+    parentSupplementTitle: "فحص المكملات والأدوية",
+    parentSupplementNote: "فحص استرشادي لطفلك. اللغة مُكيَّفة مع عمر الطفل. تحقّق دائمًا من المصادر الرسمية.",
   },
   no: {
     onbWelcomeTitle: "Velkommen til Sportstalent",
@@ -16201,6 +16211,8 @@ const translations = {
     supplementRateLimited: "For mange forespørsler — prøv igjen snart",
     supplementPaymentRequired: "Krediter brukt opp — kontakt support",
     supplementCheckError: "Kunne ikke fullføre sjekken",
+    parentSupplementTitle: "Sjekk kosttilskudd og medisin",
+    parentSupplementNote: "Veiledende screening for barnet ditt. Språket er tilpasset barnets alder. Verifiser alltid offisielt.",
   },
 } as const;
 
