@@ -54,6 +54,14 @@ const libraries: {
     color: "text-destructive",
     bgClass: "bg-destructive/10 border-destructive/20 hover:border-destructive/40",
   },
+  {
+    id: "supplement",
+    labelKey: "libSupplementLabel",
+    descKey: "libSupplementDesc",
+    icon: ShieldCheck,
+    color: "text-emerald-500",
+    bgClass: "bg-emerald-500/10 border-emerald-500/20 hover:border-emerald-500/40",
+  },
 ];
 
 export default function LibraryChooser() {
