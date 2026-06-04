@@ -7,13 +7,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { Loader2, LogOut, Trophy, Calendar, ClipboardList, Check, X, Settings, ChevronDown } from "lucide-react";
+import { Loader2, LogOut, Trophy, Calendar, ClipboardList, Check, X, Settings, ChevronDown, Pill } from "lucide-react";
 import { AvatarImg } from "@/components/AvatarImg";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import { SeasonCalendarMini } from "@/components/hub/SeasonCalendarMini";
 import { PHONE_CODES } from "@/data/phoneCodes";
 import { PlanViewDialog } from "@/components/PlanViewDialog";
+import { SupplementChecker } from "@/components/SupplementChecker";
 
 interface AthleteProfile {
   user_id: string;
@@ -66,6 +67,7 @@ export default function ParentDashboard() {
   const [phoneCountryCode, setPhoneCountryCode] = useState("+45");
   const [saving, setSaving] = useState(false);
   const [openPlanAthleteId, setOpenPlanAthleteId] = useState<string | null>(null);
+  const [openSupplementAthleteId, setOpenSupplementAthleteId] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -359,6 +361,28 @@ export default function ParentDashboard() {
                     </li>
                   ))}
                 </ul>
+              )}
+            </Card>
+
+            {/* Supplement check */}
+            <Card className="p-4 space-y-3">
+              <button
+                onClick={() => setOpenSupplementAthleteId((cur) => (cur === a.profile.user_id ? null : a.profile.user_id))}
+                className="w-full flex items-center justify-between text-sm font-semibold text-foreground"
+              >
+                <span className="flex items-center gap-2">
+                  <Pill className="h-4 w-4 text-primary" />
+                  {t("parentSupplementTitle") || "Tjek kosttilskud & medicin"}
+                </span>
+                <ChevronDown className={cn("h-4 w-4 transition-transform", openSupplementAthleteId === a.profile.user_id && "rotate-180")} />
+              </button>
+              {openSupplementAthleteId === a.profile.user_id && (
+                <div className="space-y-3 pt-1">
+                  <p className="text-xs text-muted-foreground">
+                    {t("parentSupplementNote") || "Vejledende screening for dit barn. Sproget er tilpasset barnets alder. Verificér altid officielt."}
+                  </p>
+                  <SupplementChecker athleteId={a.profile.user_id} />
+                </div>
               )}
             </Card>
 
