@@ -1,87 +1,53 @@
-# Coach-anmodning om evaluering efter stævne
+## Bug 1 — Android viser dashboardet i halv bredde
 
-I dag bliver atleten selv promptet i op til 14 dage efter et stævne (`ReflectionPromptCard` + Competitions-side). Coachen har ingen måde at bede om en evaluering på. Vi tilføjer en eksplicit "Bed om evaluering"-handling pr. deltager (og hele holdet) i stævnebottom-sheet'en på coach-siden.
+**Diagnose:** `index.html` har korrekt `viewport` meta. `index.css` mangler dog en global `overflow-x` / `max-width` lås på `html`/`body`/`#root`. Det betyder at hvis ét element på siden er bredere end viewport (fx en chart, en lang ord-streng, et billede uden `max-width`, eller en grid der ikke wrapper), så bliver hele dokumentet bredere end skærmen og Samsung Internet zoomer ud — præcis det Kaihan ser (indhold klemt sammen til venstre, sort til højre, watermark følger kun den smalle kolonne).
 
-## Brugerflow (coach)
+**Fix:**
+1. I `src/index.css` tilføj i `@layer base`:
+   ```css
+   html, body, #root {
+     max-width: 100vw;
+     overflow-x: hidden;
+   }
+   ```
+   Defensiv, påvirker ikke nuværende layout, men forhindrer at ét uvelkomment element trækker hele siden bred.
 
-1. Coach åbner `Stævner` → vælger et stævne (drawer åbner med deltagerliste).
-2. Hvis stævnet er **i dag eller tidligere**, vises en ny sektion **"Evaluering"** i drawer:
-   - Knap: **"Bed alle om evaluering"** (sender til alle deltagere uden eksisterende reflection).
-   - Pr. deltager vises status-badge:
-     - `Indsendt` (grøn) – hvis der findes en `competition_reflections`-række for atlet + comp.
-     - `Anmodet` (muted) – hvis vi tidligere har sendt en anmodning.
-     - `—` (intet) – default, med lille "Bed om evaluering"-knap.
-3. Hvis stævnet er **fremtidigt**, skjules sektionen (giver ingen mening endnu).
+2. Find den faktiske synder ved at scanne `src/pages/Dashboard.tsx` og dets hub-komponenter for elementer med:
+   - explicit `width:` / `min-width:` i px > 320
+   - `<img>` uden `max-width:100%` (vi har en global regel for `img`, men inline-bg kan slippe igennem)
+   - lange ord/URLs uden `break-words` / `truncate`
+   - horisontalt scrollable wrappers uden `min-w-0` på flex-children
+   Ret den/de fundne synder (typisk: tilføj `min-w-0`, `truncate`, eller `max-w-full`).
 
-## Brugerflow (atlet)
+3. Verificér ved at åbne `/dashboard` i preview ved 360×800 (Android-ækvivalent) og bekræfte at indholdet fylder hele bredden uden vandret scroll. Brug devtools "elements bredere end viewport" tjek.
 
-- Atleten får i forvejen automatisk prompt i 14 dage. Coach-anmodningen tilføjer:
-  - En **event_reminder**-række (vises i atletens påmindelsesliste, "Coach beder dig evaluere {Stævne}").
-  - Push-notifikation via `send-push` med deeplink `/competitions/:id/reflect`.
-  - `ReflectionPromptCard` på dashboardet får et lille "Anmodet af coach"-mærke når en åben anmodning findes.
+Ingen ændringer til viewport meta, capacitor config eller PWA-laget.
 
-## Datamodel
+## Bug 2 — Coach-managed atlet kan ikke selv lave rehab-plan
 
-Ny tabel `competition_reflection_requests` (minimal, audit + status):
+**Diagnose:** I `src/pages/Dashboard.tsx` linje 1141/1195 er rehab-generator og aktiver/slet-knapper gated bag `(!hasCoach || isPaid)`. Kaihan er coach-managed og ikke selvbetalende → han ser kun MedicalDocumentTranslator + en tom side.
 
-```
-id uuid pk
-competition_id uuid -> competitions(id) on delete cascade
-athlete_id uuid -> auth.users
-coach_id uuid -> auth.users
-club_id uuid null
-requested_at timestamptz default now()
-unique (competition_id, athlete_id)
-```
+Modul-adgang i sig selv er fin: `club_module_defaults.rehab = true` for Copenhagen City. Eneste blokering er det ovenstående UI-gate.
 
-RLS:
-- `INSERT`: coach kan oprette hvis (`coach_athletes` link) ELLER (`users_share_club(auth.uid(), athlete_id)` og `has_role(auth.uid(),'coach')`).
-- `SELECT`: atleten selv + samme coach-regler som ovenfor.
-- `DELETE`: kun coach der ejer rækken.
-- GRANT SELECT/INSERT/DELETE til `authenticated`; ALL til `service_role`.
+**Fix:** Du har valgt at generatoren altid skal vises når modulet er enabled. Konkret:
 
-(Vi genbruger ikke `event_reminders` som primær kilde, fordi vi har brug for unik nøgle på (competition, athlete) for at vise status korrekt. Men vi opretter ÆOgså en `event_reminders`-række så atleten ser den i den eksisterende påmindelsesliste — samme mønster som andre coach-nudges.)
+1. **Linje 1141:** Fjern `{(!hasCoach || isPaid) && (...)}`-gating omkring rehab-generator-blokken. Den skal altid renderes når vi er forbi `isTabModuleDisabled`/`isDemo`/`isModuleLocked` checks (som allerede er på plads).
 
-## Ny edge function
+2. **Linje 1171:** Fjern `hasCoach && !isPaid ? undefined :` fra `onDelete` på `RehabPlanCard`. Atleten skal kunne slette sin EGEN selvgenererede plan.
 
-`request-competition-reflection`:
+3. **Linje 1195:** Fjern `{(!hasCoach || isPaid) && (...)}` omkring aktiver/slet-knapperne i previous-rehab-plans listen, så atleten kan skifte mellem og slette sine egne historiske planer.
 
-- Input: `{ competition_id: uuid, athlete_ids?: uuid[] }` (hvis ikke angivet → alle deltagere uden eksisterende reflection).
-- Auth: validér `getUser(token)`, bekræft coach-role + relation til hver atlet (coach_athletes ELLER samme klub).
-- For hver atlet:
-  - Spring over hvis der allerede findes en `competition_reflections`-row for (athlete, competition).
-  - Upsert i `competition_reflection_requests` (idempotent på unique nøglen).
-  - Insert i `event_reminders` (title = stævnets navn, message = "Coachen beder dig evaluere stævnet").
-  - Invoke `send-push` med titel "Evaluering ønskes", body "{Stævne} — del din evaluering", url `/competitions/:id/reflect`.
-- Output: `{ requested: n, skipped_already_submitted: m }`.
+**Vigtig afgrænsning:** Disse handlinger rammer kun atletens EGNE rehab_plans-rækker (RLS sikrer at `user_id = auth.uid()`). Coach-tildelte planer (hvis sådanne findes via en anden user_id eller en assigner-kolonne) skal ikke kunne slettes af atleten. Hvis `rehab_plans` har en `assigned_by_coach`/`source` kolonne, brug den til at vise slet-knap kun for atlet-genererede rækker. Hvis ikke (mest sandsynligt — alle rækker er `user_id = atleten`), så er den fulde fjernelse safe.
 
-## Frontend-ændringer
+**Bevar:** "Your programs are managed by your coach"-banneret øverst på hub forbliver — det er informativt og separat fra rehab-fanen.
 
-- `src/pages/CoachCompetitions.tsx`
-  - Hent `competition_reflections` og `competition_reflection_requests` for de viste stævner.
-  - I drawer: ny "Evaluering"-sektion (kun ved past/today). Status-badge pr. deltager. To handlinger: bed alle / bed enkelt atlet. Kald edge function, refresh state, toast.
-- `src/components/ReflectionPromptCard.tsx`
-  - Hvis der findes en `competition_reflection_requests`-række for atletens kommende prompt → vis lille "Anmodet af coach"-badge øverst og evt. lidt stærkere CTA-styling. Ingen ny route, ingen ændret logik for når kortet vises.
-- `src/components/coach/CoachAthleteReflections.tsx`
-  - I listen over forventede reflections: når der er en anmodning men ingen reflection → vis "Anmodet {dato}". (Lille nice-to-have, samme query.)
+## Teknisk afgrænsning
 
-## Oversættelser
+- Rør IKKE: RLS, edge functions, database, ActiveClubContext, NAV_ITEMS, bottom nav, entitlements.
+- Filer der ændres: `src/index.css` (global overflow-x), `src/pages/Dashboard.tsx` (3 gating-fjernelser i rehab-blokken) og evt. 1–2 hub-komponenter hvis kilde til overflow findes.
+- Ingen changelog (begge er bugfixes).
 
-Tilføj keys for alle 7 sprog (en, da, sv, de, ar, no, es):
-`reflectionRequestSection`, `requestReflectionAll`, `requestReflectionOne`, `reflectionStatusSubmitted`, `reflectionStatusRequested`, `reflectionRequestedByCoachBadge`, `reflectionRequestSent`, `reflectionPushTitle`, `reflectionPushBody`.
+## Verifikation
 
-## Acceptkriterier
-
-1. Coach ser ny "Evaluering"-sektion kun for stævner ≤ i dag.
-2. "Bed alle" springer atleter med eksisterende reflection over og viser hvor mange der blev kontaktet.
-3. Atleten får både en in-app påmindelse og en push (hvis push aktiveret), der deeplinker direkte til `/competitions/:id/reflect`.
-4. Status-badge opdateres korrekt når atleten indsender (kræver bare refetch ved åbning af drawer — ingen realtime nødvendigt).
-5. Idempotent: at trykke "Bed om evaluering" igen sender ikke duplikerede rækker (men sender godt nok en frisk push hvis coach trykker manuelt på enkelt-atlet igen — vi vurderer det rimeligt).
-6. RLS forhindrer en coach i at sende anmodninger til atleter udenfor egen klub eller managed-liste.
-
-## Ikke i scope
-
-- Ingen email — kun in-app + push (samme mønster som event reminders i dag).
-- Ingen redigering/sletning af afsendte anmodninger fra UI (kun via DB hvis nødvendigt).
-- Ingen ændring af 14-dages auto-prompt-vinduet.
-- Ingen changelog (mindre tilføjelse — kan tilføjes hvis ønsket).
+- **Bug 1:** Åbn `/dashboard` i preview på 360×800, ingen vandret scroll, content fylder bredden. Bed Kaihan reloade på Android.
+- **Bug 2:** Som Kaihan: åbn hamburger → "Skade-genoptræning" → skriv en skade → "Generér plan" virker → planen vises → "Slet" virker.
