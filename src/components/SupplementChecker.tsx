@@ -50,7 +50,8 @@ export function SupplementChecker() {
   const [savedNote, setSavedNote] = useState(false);
   const [history, setHistory] = useState<HistoryRow[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
 
   const loadHistory = async () => {
     setHistoryLoading(true);
