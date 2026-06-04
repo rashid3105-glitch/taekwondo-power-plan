@@ -129,7 +129,8 @@ Always respond by calling the explain_medical_document tool.`;
       if (mimeType === "text/plain") {
         try {
           const decoded = atob(fileBase64);
-          userParts.push({ type: "text", text: `Document text:\n\n${decoded.slice(0, 15000)}` });
+          const safeDecoded = sanitizePromptText(decoded, 15000);
+          userParts.push({ type: "text", text: asUserDataBlock("MEDICAL DOCUMENT", safeDecoded, 15000) });
         } catch {
           // ignore
         }
