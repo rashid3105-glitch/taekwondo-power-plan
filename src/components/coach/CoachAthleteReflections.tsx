@@ -238,6 +238,48 @@ export function CoachAthleteReflections({ athleteId, athleteName }: Props) {
 
   return (
     <div className="space-y-3">
+      {pastComps.length > 0 && (
+        <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
+          <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+            <Send className="h-4 w-4 text-primary" /> {t("awaitingEvaluation")}
+          </h4>
+          <div className="space-y-2">
+            {pastComps.map((c) => {
+              const requested = requestedIds.has(c.id);
+              const busy = requestingId === c.id;
+              return (
+                <div
+                  key={c.id}
+                  className="flex items-center justify-between gap-2 rounded-lg border border-border bg-background/50 px-3 py-2"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="text-xs font-medium text-foreground truncate">{c.name}</div>
+                    <div className="text-[10px] text-muted-foreground">
+                      {formatDate(c.event_date, l)}
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant={requested ? "secondary" : "outline"}
+                    disabled={requested || busy}
+                    onClick={() => requestEvaluation(c.id)}
+                    className="h-8 px-2 text-[11px] shrink-0"
+                  >
+                    {busy ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : requested ? (
+                      <><Check className="h-3 w-3 mr-1" /> {t("evaluationRequested")}</>
+                    ) : (
+                      <><Send className="h-3 w-3 mr-1" /> {t("requestEvaluationCTA")}</>
+                    )}
+                  </Button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
