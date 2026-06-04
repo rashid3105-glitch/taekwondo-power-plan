@@ -16019,6 +16019,8 @@ const translations = {
     activeClub: "Aktiv klubb",
     switchClub: "Bytt klubb",
     changelogEntry136: "Støtte for flere klubber: medlemmer i flere klubber ser nå en klubbvelger i toppen; brukere med kun én klubb merker ingen forskjell.",
+    changelog_2026_06_04: "4. juni 2026",
+    changelogEntry137: "Utøvere kan nå åpne Skade-rehabilitering fra sidemenyen igjen.",
   },
 } as const;
 
