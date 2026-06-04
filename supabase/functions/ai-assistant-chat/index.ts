@@ -1,6 +1,7 @@
 // AI Assistant chat — proxies user messages to Lovable AI Gateway.
 // Uses LOVABLE_API_KEY server-side so no client secret is exposed.
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { sanitizePromptText } from "../_shared/sanitizePrompt.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -69,7 +70,7 @@ Deno.serve(async (req) => {
     // Truncate per message + total history to keep prompts small
     const safe = messages.slice(-20).map((m) => ({
       role: m.role === "assistant" ? "assistant" : "user",
-      content: String(m.content ?? "").slice(0, 2000),
+      content: sanitizePromptText(m.content, 2000),
     }));
 
     const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {

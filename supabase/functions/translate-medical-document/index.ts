@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { checkAIEntitlement } from "../_shared/checkEntitlement.ts";
+import { sanitizePromptText, asUserDataBlock } from "../_shared/sanitizePrompt.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -121,13 +122,15 @@ Always respond by calling the explain_medical_document tool.`;
 
     const userParts: any[] = [];
     if (text && text.trim()) {
-      userParts.push({ type: "text", text: `Document text:\n\n${text.trim()}` });
+      const safeText = sanitizePromptText(text, 15000);
+      userParts.push({ type: "text", text: asUserDataBlock("MEDICAL DOCUMENT", safeText, 15000) });
     }
     if (fileBase64 && mimeType) {
       if (mimeType === "text/plain") {
         try {
           const decoded = atob(fileBase64);
-          userParts.push({ type: "text", text: `Document text:\n\n${decoded.slice(0, 15000)}` });
+          const safeDecoded = sanitizePromptText(decoded, 15000);
+          userParts.push({ type: "text", text: asUserDataBlock("MEDICAL DOCUMENT", safeDecoded, 15000) });
         } catch {
           // ignore
         }
