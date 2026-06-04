@@ -137,7 +137,14 @@ export default function CoachDashboard() {
   const { toast } = useToast();
   const { t, locale } = useLanguage();
   const isMobile = useIsMobile();
-  const { activeClubId, memberships } = useActiveClub();
+  const { activeClubId, activeMembership, memberships } = useActiveClub();
+
+  useEffect(() => {
+    if (!activeMembership) return;
+    if (activeMembership.role_in_club !== "coach" && activeMembership.role_in_club !== "admin") {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [activeMembership, navigate]);
 
   useEffect(() => {
     checkRoleAndLoad();
