@@ -72,6 +72,10 @@ export default function CoachCompetitions() {
   const [openGroup, setOpenGroup] = useState<CompGroup | null>(null);
   const [addingId, setAddingId] = useState<string | null>(null);
   const [removingId, setRemovingId] = useState<string | null>(null);
+  // Per-athlete reflection status keyed by `${userId}|${compName}|${eventDate}`
+  const [reflectionStatus, setReflectionStatus] = useState<Record<string, "submitted" | "requested">>({});
+  const [requestingAll, setRequestingAll] = useState(false);
+  const [requestingOne, setRequestingOne] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
