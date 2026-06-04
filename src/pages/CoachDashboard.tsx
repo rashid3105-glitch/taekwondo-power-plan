@@ -358,6 +358,15 @@ export default function CoachDashboard() {
             </Button>
             <MessagesIcon isCoach />
             <LanguageSwitcher />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => { setCoachMode(false); navigate("/", { replace: true }); }}
+              aria-label="Home"
+              title="Home"
+            >
+              <Home className="h-4 w-4" />
+            </Button>
           </div>
         </div>
         <div className="container max-w-4xl mx-auto px-3 sm:px-4 pb-2 flex justify-end">
