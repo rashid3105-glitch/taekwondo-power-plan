@@ -305,11 +305,13 @@ export default function CoachDashboard() {
     setDiaryAthleteName(athleteName);
     setDiaryLoading(true);
     setDiaryEntries([]);
-    const { data } = await supabase
+    let q: any = supabase
       .from("diary_entries")
       .select("id, entry_date, content, mood, energy, tags, entry_type")
       .eq("user_id", athleteId)
       .order("entry_date", { ascending: false });
+    if (activeClubId) q = q.eq("club_id", activeClubId);
+    const { data } = await q;
     setDiaryEntries((data as DiaryEntry[]) || []);
     setDiaryLoading(false);
   };
