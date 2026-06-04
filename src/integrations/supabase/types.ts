@@ -927,6 +927,41 @@ export type Database = {
           },
         ]
       }
+      competition_reflection_requests: {
+        Row: {
+          athlete_id: string
+          club_id: string | null
+          coach_id: string
+          competition_id: string
+          id: string
+          requested_at: string
+        }
+        Insert: {
+          athlete_id: string
+          club_id?: string | null
+          coach_id: string
+          competition_id: string
+          id?: string
+          requested_at?: string
+        }
+        Update: {
+          athlete_id?: string
+          club_id?: string | null
+          coach_id?: string
+          competition_id?: string
+          id?: string
+          requested_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "competition_reflection_requests_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       competition_reflections: {
         Row: {
           ai_plan: Json | null
