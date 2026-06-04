@@ -249,6 +249,7 @@ Deno.serve(async (req) => {
           .map((s: any) => ({
             navn: String(s.navn).slice(0, 200),
             flag: (["green", "yellow", "red"].includes(s.flag) ? s.flag : "yellow") as Flag,
+            kategori: typeof s.kategori === "string" ? s.kategori.slice(0, 16) : null,
             note: typeof s.note === "string" ? s.note.slice(0, 500) : "",
           }))
       : [];
