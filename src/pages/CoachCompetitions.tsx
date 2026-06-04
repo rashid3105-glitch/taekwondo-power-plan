@@ -136,6 +136,52 @@ export default function CoachCompetitions() {
   const labelParticipants = tx(t("participants") as string, "Deltagere");
   const labelRemove = tx(t("removeParticipant") as string, "Fjern");
   const labelAddSection = tx(t("addParticipant") as string, "Tilføj atlet");
+  const labelReflectionSection = t("reflectionRequestSection") as string;
+  const labelRequestAll = t("requestReflectionAll") as string;
+  const labelRequestOne = t("requestReflectionOne") as string;
+  const labelStatusSubmitted = t("reflectionStatusSubmitted") as string;
+  const labelStatusRequested = t("reflectionStatusRequested") as string;
+  const labelRequestSent = t("reflectionRequestSent") as string;
+  const labelRequestNone = t("reflectionRequestNone") as string;
+
+  const reflectionKey = (userId: string, group: CompGroup) =>
+    `${userId}|${group.name.trim().toLowerCase()}|${group.event_date}`;
+
+  const requestReflection = async (group: CompGroup, athleteIds?: string[]) => {
+    if (athleteIds && athleteIds.length === 1) setRequestingOne(athleteIds[0]);
+    else setRequestingAll(true);
+    try {
+      // Use any participant's competition row id (server resolves all participants by name+date)
+      const refCompId = getCompId(group, group.participants[0]?.user_id ?? "");
+      if (!refCompId) throw new Error("No competition id");
+      const { data, error } = await supabase.functions.invoke("request-competition-reflection", {
+        body: { competition_id: refCompId, athlete_ids: athleteIds },
+      });
+      if (error) throw error;
+      const requested = (data as any)?.requested ?? 0;
+      if (requested === 0) {
+        toast({ title: labelRequestNone });
+      } else {
+        toast({ title: labelRequestSent, description: `${requested} / ${(athleteIds ?? group.participants.map(p => p.user_id)).length}` });
+        // Optimistically mark as requested
+        const targetIds = athleteIds ?? group.participants.map(p => p.user_id);
+        setReflectionStatus(prev => {
+          const next = { ...prev };
+          for (const id of targetIds) {
+            const key = reflectionKey(id, group);
+            if (next[key] !== "submitted") next[key] = "requested";
+          }
+          return next;
+        });
+      }
+    } catch (e: any) {
+      toast({ title: "Fejl", description: e.message, variant: "destructive" });
+    } finally {
+      setRequestingOne(null);
+      setRequestingAll(false);
+    }
+  };
+
 
   const getCompId = (group: CompGroup, userId: string): string | null => {
     const match = comps.find(c =>
