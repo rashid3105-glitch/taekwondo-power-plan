@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ClubSwitcher } from "@/components/ClubSwitcher";
+import { useCoachMode } from "@/contexts/CoachModeContext";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { CoachAthleteDetail } from "@/components/CoachAthleteDetail";
 import { AvatarImg } from "@/components/AvatarImg";
@@ -134,6 +135,7 @@ export default function CoachDashboard() {
     });
   };
   const navigate = useNavigate();
+  const { setCoachMode } = useCoachMode();
   const { toast } = useToast();
   const { t, locale } = useLanguage();
   const isMobile = useIsMobile();
@@ -142,9 +144,10 @@ export default function CoachDashboard() {
   useEffect(() => {
     if (!activeMembership) return;
     if (activeMembership.role_in_club !== "coach" && activeMembership.role_in_club !== "admin") {
+      setCoachMode(false);
       navigate("/dashboard", { replace: true });
     }
-  }, [activeMembership, navigate]);
+  }, [activeMembership, navigate, setCoachMode]);
 
   useEffect(() => {
     checkRoleAndLoad();
