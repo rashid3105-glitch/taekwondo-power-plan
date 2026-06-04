@@ -612,13 +612,15 @@ export default function Dashboard() {
       {/* Header */}
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10 pt-safe">
         <div className="container max-w-4xl mx-auto px-3 sm:px-4 py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-3 min-w-0">
               <img src={logo} alt="Sportstalent" className="h-12 w-12 sm:h-14 sm:w-14 rounded-lg object-contain" />
-              <span className="text-sm sm:text-base font-extrabold text-foreground">SPORTSTALENT</span>
+              <span className="text-sm sm:text-base font-extrabold text-foreground truncate">SPORTSTALENT</span>
             </div>
-            <div className="flex items-center gap-2">
-              <ClubSwitcher />
+            <div className="flex items-center gap-2 shrink-0">
+              <div className="hidden sm:block">
+                <ClubSwitcher />
+              </div>
               <LanguageSwitcher />
               {isCoach && activeTab === "calendar" && (
                 <Button
@@ -658,6 +660,11 @@ export default function Dashboard() {
               </Button>
             </div>
           </div>
+          {/* Mobile-only second row: full-width club switcher */}
+          <div className="sm:hidden mt-2">
+            <ClubSwitcher />
+          </div>
+
         </div>
       </header>
 
