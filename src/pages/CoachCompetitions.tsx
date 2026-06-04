@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { ArrowLeft, Trophy, MapPin, Calendar, Users } from "lucide-react";
+import { ArrowLeft, Trophy, MapPin, Calendar, Users, Sparkles, CheckCircle2, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Comp {
@@ -72,6 +72,10 @@ export default function CoachCompetitions() {
   const [openGroup, setOpenGroup] = useState<CompGroup | null>(null);
   const [addingId, setAddingId] = useState<string | null>(null);
   const [removingId, setRemovingId] = useState<string | null>(null);
+  // Per-athlete reflection status keyed by `${userId}|${compName}|${eventDate}`
+  const [reflectionStatus, setReflectionStatus] = useState<Record<string, "submitted" | "requested">>({});
+  const [requestingAll, setRequestingAll] = useState(false);
+  const [requestingOne, setRequestingOne] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -84,7 +88,33 @@ export default function CoachCompetitions() {
       const nameMap = new Map((profiles ?? []).map((p: any) => [p.user_id, p.display_name]));
       setMyAthletes((profiles ?? []).map((p: any) => ({ user_id: p.user_id, display_name: p.display_name || "—" })));
       const { data: competitions } = await supabase.from("competitions").select("id, name, event_date, location, user_id, priority, result").in("user_id", athleteIds).order("event_date", { ascending: true });
-      setComps(((competitions ?? []) as any[]).map((c: any) => ({ ...c, athlete_name: nameMap.get(c.user_id) || "—" })));
+      const compsList = ((competitions ?? []) as any[]).map((c: any) => ({ ...c, athlete_name: nameMap.get(c.user_id) || "—" }));
+      setComps(compsList);
+
+      // Fetch reflection state (submitted + requested) for these athletes
+      const compIds = compsList.map((c: any) => c.id);
+      if (compIds.length) {
+        const [{ data: refls }, { data: reqs }] = await Promise.all([
+          supabase.from("competition_reflections")
+            .select("user_id, competition_name, competition_date")
+            .in("user_id", athleteIds),
+          supabase.from("competition_reflection_requests")
+            .select("athlete_id, competition_id")
+            .in("competition_id", compIds),
+        ]);
+        const status: Record<string, "submitted" | "requested"> = {};
+        const compById = new Map(compsList.map((c: any) => [c.id, c]));
+        for (const r of (reqs ?? []) as any[]) {
+          const c = compById.get(r.competition_id);
+          if (!c) continue;
+          status[`${r.athlete_id}|${c.name.trim().toLowerCase()}|${c.event_date}`] = "requested";
+        }
+        for (const r of (refls ?? []) as any[]) {
+          const key = `${r.user_id}|${(r.competition_name || "").trim().toLowerCase()}|${r.competition_date}`;
+          status[key] = "submitted";
+        }
+        setReflectionStatus(status);
+      }
       setLoading(false);
     })();
   }, []);
@@ -106,6 +136,52 @@ export default function CoachCompetitions() {
   const labelParticipants = tx(t("participants") as string, "Deltagere");
   const labelRemove = tx(t("removeParticipant") as string, "Fjern");
   const labelAddSection = tx(t("addParticipant") as string, "Tilføj atlet");
+  const labelReflectionSection = t("reflectionRequestSection") as string;
+  const labelRequestAll = t("requestReflectionAll") as string;
+  const labelRequestOne = t("requestReflectionOne") as string;
+  const labelStatusSubmitted = t("reflectionStatusSubmitted") as string;
+  const labelStatusRequested = t("reflectionStatusRequested") as string;
+  const labelRequestSent = t("reflectionRequestSent") as string;
+  const labelRequestNone = t("reflectionRequestNone") as string;
+
+  const reflectionKey = (userId: string, group: CompGroup) =>
+    `${userId}|${group.name.trim().toLowerCase()}|${group.event_date}`;
+
+  const requestReflection = async (group: CompGroup, athleteIds?: string[]) => {
+    if (athleteIds && athleteIds.length === 1) setRequestingOne(athleteIds[0]);
+    else setRequestingAll(true);
+    try {
+      // Use any participant's competition row id (server resolves all participants by name+date)
+      const refCompId = getCompId(group, group.participants[0]?.user_id ?? "");
+      if (!refCompId) throw new Error("No competition id");
+      const { data, error } = await supabase.functions.invoke("request-competition-reflection", {
+        body: { competition_id: refCompId, athlete_ids: athleteIds },
+      });
+      if (error) throw error;
+      const requested = (data as any)?.requested ?? 0;
+      if (requested === 0) {
+        toast({ title: labelRequestNone });
+      } else {
+        toast({ title: labelRequestSent, description: `${requested} / ${(athleteIds ?? group.participants.map(p => p.user_id)).length}` });
+        // Optimistically mark as requested
+        const targetIds = athleteIds ?? group.participants.map(p => p.user_id);
+        setReflectionStatus(prev => {
+          const next = { ...prev };
+          for (const id of targetIds) {
+            const key = reflectionKey(id, group);
+            if (next[key] !== "submitted") next[key] = "requested";
+          }
+          return next;
+        });
+      }
+    } catch (e: any) {
+      toast({ title: "Fejl", description: e.message, variant: "destructive" });
+    } finally {
+      setRequestingOne(null);
+      setRequestingAll(false);
+    }
+  };
+
 
   const getCompId = (group: CompGroup, userId: string): string | null => {
     const match = comps.find(c =>
@@ -253,22 +329,65 @@ export default function CoachCompetitions() {
                 <div className="space-y-1.5">
                   {[...openGroup.participants]
                     .sort((a, b) => a.athlete_name.localeCompare(b.athlete_name))
-                    .map((p) => (
-                      <div key={p.user_id} className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-muted/50">
-                        <span className="text-sm font-medium truncate">{p.athlete_name}</span>
-                        <div className="flex items-center gap-2 shrink-0">
-                          {p.result && <Badge variant="outline" className="text-[10px]">{p.result}</Badge>}
-                          <button
-                            onClick={() => removeAthleteFromComp(openGroup, p.user_id)}
-                            disabled={removingId === p.user_id}
-                            className="text-xs text-destructive hover:text-destructive/80 px-2 py-0.5 rounded border border-destructive/30 hover:bg-destructive/10 transition-colors disabled:opacity-50"
-                          >
-                            {removingId === p.user_id ? "…" : labelRemove}
-                          </button>
+                    .map((p) => {
+                      const isPastEvent = openGroup.event_date <= today;
+                      const rStatus = reflectionStatus[reflectionKey(p.user_id, openGroup)];
+                      return (
+                        <div key={p.user_id} className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-muted/50">
+                          <div className="min-w-0 flex-1 flex items-center gap-2">
+                            <span className="text-sm font-medium truncate">{p.athlete_name}</span>
+                            {isPastEvent && rStatus === "submitted" && (
+                              <Badge variant="outline" className="text-[10px] gap-1 border-emerald-500/40 text-emerald-600 dark:text-emerald-400">
+                                <CheckCircle2 className="h-3 w-3" />{labelStatusSubmitted}
+                              </Badge>
+                            )}
+                            {isPastEvent && rStatus === "requested" && (
+                              <Badge variant="outline" className="text-[10px] gap-1">
+                                <Clock className="h-3 w-3" />{labelStatusRequested}
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            {p.result && <Badge variant="outline" className="text-[10px]">{p.result}</Badge>}
+                            {isPastEvent && rStatus !== "submitted" && (
+                              <button
+                                onClick={() => requestReflection(openGroup, [p.user_id])}
+                                disabled={requestingOne === p.user_id || requestingAll}
+                                className="text-xs text-primary hover:text-primary/80 px-2 py-0.5 rounded border border-primary/30 hover:bg-primary/10 transition-colors disabled:opacity-50 inline-flex items-center gap-1"
+                              >
+                                <Sparkles className="h-3 w-3" />
+                                {requestingOne === p.user_id ? "…" : labelRequestOne}
+                              </button>
+                            )}
+                            <button
+                              onClick={() => removeAthleteFromComp(openGroup, p.user_id)}
+                              disabled={removingId === p.user_id}
+                              className="text-xs text-destructive hover:text-destructive/80 px-2 py-0.5 rounded border border-destructive/30 hover:bg-destructive/10 transition-colors disabled:opacity-50"
+                            >
+                              {removingId === p.user_id ? "…" : labelRemove}
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                 </div>
+
+                {openGroup.event_date <= today && openGroup.participants.length > 0 && (
+                  <div className="mt-4 p-3 rounded-lg border border-primary/30 bg-primary/5">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                      {labelReflectionSection}
+                    </p>
+                    <Button
+                      size="sm"
+                      onClick={() => requestReflection(openGroup)}
+                      disabled={requestingAll}
+                      className="gap-1.5"
+                    >
+                      <Sparkles className="h-3.5 w-3.5" />
+                      {requestingAll ? "…" : labelRequestAll}
+                    </Button>
+                  </div>
+                )}
 
                 {notYetIn.length > 0 && (
                   <div className="mt-4">

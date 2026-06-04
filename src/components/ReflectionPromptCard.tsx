@@ -14,6 +14,7 @@ interface PendingComp {
   name: string;
   event_date: string;
   result: string | null;
+  requested_by_coach: boolean;
 }
 
 const DISMISS_PREFIX = "reflectionPromptDismissed:";
@@ -32,7 +33,7 @@ export function ReflectionPromptCard() {
       const today = new Date().toISOString().slice(0, 10);
       const cutoff = new Date(Date.now() - 14 * 86400000).toISOString().slice(0, 10);
 
-      const [{ data: past }, { data: refls }] = await Promise.all([
+      const [{ data: past }, { data: refls }, { data: requests }] = await Promise.all([
         supabase
           .from("competitions")
           .select("id, name, event_date, result")
@@ -46,16 +47,23 @@ export function ReflectionPromptCard() {
           .select("competition_id")
           .eq("user_id", user.id)
           .not("competition_id", "is", null),
+        supabase
+          .from("competition_reflection_requests")
+          .select("competition_id")
+          .eq("athlete_id", user.id),
       ]);
 
       if (cancelled) return;
       const reflectedIds = new Set((refls || []).map((r: any) => r.competition_id));
-      const pending = (past || []).find((c: any) => {
+      const requestedIds = new Set((requests || []).map((r: any) => r.competition_id));
+      const pendingList = (past || []).filter((c: any) => {
         if (reflectedIds.has(c.id)) return false;
         if (sessionStorage.getItem(`${DISMISS_PREFIX}${c.id}`) === "1") return false;
         return true;
-      }) as PendingComp | undefined;
-      setComp(pending ?? null);
+      });
+      // Prioritize coach-requested
+      const pending = (pendingList.find((c: any) => requestedIds.has(c.id)) ?? pendingList[0]) as any;
+      setComp(pending ? { ...pending, requested_by_coach: requestedIds.has(pending.id) } : null);
     })();
     return () => { cancelled = true; };
   }, []);
@@ -91,6 +99,11 @@ export function ReflectionPromptCard() {
           <div>
             <h3 className="text-sm font-bold text-foreground">{t("dashboardReflectPromptTitle")}</h3>
             <p className="text-xs text-muted-foreground mt-0.5">{t("dashboardReflectPromptDesc")}</p>
+            {comp.requested_by_coach && (
+              <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 rounded-full bg-primary/15 text-primary text-[10px] font-semibold uppercase tracking-wide">
+                {t("reflectionRequestedByCoachBadge")}
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-2 text-xs text-foreground bg-background/60 border border-border rounded-lg px-3 py-2">
