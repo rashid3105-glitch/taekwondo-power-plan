@@ -10,7 +10,7 @@ import { FoodScanner } from "@/components/FoodScanner";
 import { DailyNutritionDashboard } from "@/components/DailyNutritionDashboard";
 import { TestLibrary } from "@/components/TestLibrary";
 import { HiitLibrary } from "@/components/HiitLibrary";
-import { Dumbbell, Brain, UtensilsCrossed, ClipboardList, ArrowLeft, BookOpen, Zap, ChefHat, Camera } from "lucide-react";
+import { Dumbbell, Brain, UtensilsCrossed, ClipboardList, ArrowLeft, BookOpen, Zap, ChefHat, Camera, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
