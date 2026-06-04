@@ -1,32 +1,36 @@
 ## Problem
 
-When a coach user opens `/dashboard` (the "I dag" tab), the page only shows the readiness banner, greeting, and footer. All module cards (Today's session, Next event, Diary, Messages, Quick access) are gone.
+On mobile, the dashboard header is a single row:
 
-## Root cause
+`[logo + SPORTSTALENT] ... [ClubSwitcher] [LanguageSwitcher] [EventReminders] [avatar] [hamburger]`
 
-`src/components/hub/AthleteDashboard.tsx` line 174:
+When the active club has a long name ("Copenhagen City..."), the `ClubSwitcher` expands and pushes the avatar + hamburger off-screen. Result:
+- Club selector overlaps the "SPORTSTALENT" wordmark.
+- The right-side menu (avatar + burger) is invisible.
 
-```ts
-if (activeRole !== "athlete") return null;
-```
-
-The component renders the entire athlete hub content, but bails out when `activeRole === "coach"`. Coaches still need to use the athlete dashboard as their own personal home (Dashboard.tsx already gates rendering — it only mounts `<AthleteDashboard />` inside the hub tab, never on `/coach`).
-
-The data-loading `useEffect` is also gated by the same `activeRole !== "athlete"` check, so even if we removed the render guard, the data wouldn't load.
+We previously agreed to move the club selector down to its own row.
 
 ## Fix
 
-In `src/components/hub/AthleteDashboard.tsx`:
+In `src/pages/Dashboard.tsx` header (around lines 613–662), restructure into two rows on mobile:
 
-1. Remove the `if (activeRole !== "athlete") return null;` early-return (line 174).
-2. Remove the `if (activeRole !== "athlete") return;` guard inside the data-loading `useEffect` (line 68), and drop `activeRole` from that effect's dependency array.
+**Row 1 (always visible):**
+- Left: logo + `SPORTSTALENT` wordmark.
+- Right: `LanguageSwitcher`, optional coach season-calendar button, `EventRemindersDropdown`, avatar button, hamburger menu button. (Same components as today — just without the `ClubSwitcher`.)
 
-This makes `AthleteDashboard` render and load data for every signed-in user that mounts it. Dashboard.tsx already decides when it should mount (only on the hub tab of `/dashboard`), so removing the internal role check is safe and does not affect `/coach`.
+**Row 2 (mobile only):**
+- Full-width `ClubSwitcher` below row 1, only rendered on `sm:hidden`.
+
+**Desktop (`sm:` and up):**
+- Keep the existing single-row layout: include `ClubSwitcher` inline in row 1 right side (where there is room). Hide the mobile second row via `sm:hidden`.
+
+This guarantees the avatar and hamburger always stay on screen on mobile regardless of club name length, while the club selector gets its own full-width row below.
 
 ## Files to edit
 
-- `src/components/hub/AthleteDashboard.tsx`
+- `src/pages/Dashboard.tsx` (header block only, ~lines 613–662)
+- `src/pages/CoachDashboard.tsx` (apply the same two-row pattern if it shares the same overflow issue — verify first; only edit if confirmed)
 
 ## Out of scope
 
-No changes to `CoachDashboard`, role context, routing, RLS, or data fetching logic.
+No changes to `ClubSwitcher` internals, role logic, routing, RLS, or other tabs.
