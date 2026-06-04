@@ -16051,6 +16051,12 @@ const translations = {
     changelogEntry136: "Støtte for flere klubber: medlemmer i flere klubber ser nå en klubbvelger i toppen; brukere med kun én klubb merker ingen forskjell.",
     changelog_2026_06_04: "4. juni 2026",
     changelogEntry137: "Utøvere kan nå åpne Skade-rehabilitering fra sidemenyen igjen.",
+    changelogEntry138: "Trenere kan nå be en utøver evaluere et stevne direkte fra utøvervisningen.",
+    requestEvaluationCTA: "Be om evaluering",
+    evaluationRequested: "Forespurt",
+    evaluationRequestSent: "Evaluering forespurt — utøveren får beskjed",
+    evaluationAlreadyRequested: "Allerede forespurt",
+    awaitingEvaluation: "Venter på evaluering",
   },
 } as const;
 
