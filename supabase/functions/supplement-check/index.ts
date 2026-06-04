@@ -42,6 +42,33 @@ const worstFlag = (flags: Flag[]): Flag => {
 };
 
 const buildSystemPrompt = (band: AgeBand) => {
+// =====================================================================
+// WADA 2026 Prohibited List reference.
+// MUST be reviewed and updated yearly when WADA publishes a new list
+// (typically late September, effective Jan 1 the following year).
+// Source: https://www.wada-ama.org/en/prohibited-list
+// Structured summary, NOT exhaustive — the prompt instructs the
+// assistant to treat it as authoritative scaffolding and to flag
+// structurally/biologically similar substances even when not named.
+// =====================================================================
+const WADA_2026_CATEGORIES = {
+  S0: { status: "prohibited_always", title: "Ikke-godkendte stoffer", examples: ["stoffer uden myndighedsgodkendelse til human brug (research chemicals)"] },
+  S1: { status: "prohibited_always", title: "Anabole stoffer", examples: ["testosteron og dets estere (cypionat, propionat, enantat m.fl.)", "nandrolon", "stanozolol", "trenbolon", "clenbuterol", "SARMs: ostarine, ligandrol (LGD-4033), RAD-140, andarine, YK-11"], note_2026: "Estere af forbudte anabole er eksplicit forbudt i 2026." },
+  S2: { status: "prohibited_always", title: "Peptidhormoner, vækstfaktorer og mimetika", examples: ["EPO og EPO-mimetika (inkl. pegmolesatide)", "væksthormon (hGH)", "IGF-1", "hCG (kun mænd)", "LH (kun mænd)"] },
+  S3: { status: "prohibited_always_except_inhaled_limits", title: "Beta-2-agonister", examples: ["salbutamol (inhaleret, max 1600 µg/24t, max 600 µg/8t)", "formoterol (inhaleret, max 54 µg/24t)", "salmeterol (inhaleret, max 200 µg/24t, max 100 µg/8t — 2026-grænse)"], note_2026: "Alle administrationsveje udover specifikt tilladte inhalationer er forbudt." },
+  S4: { status: "prohibited_always", title: "Hormon- og metaboliske modulatorer", examples: ["aromatasehæmmere (anastrozol, letrozol, exemestan)", "SERMs (tamoxifen, clomifen, raloxifen)", "andre anti-østrogener", "meldonium", "insuliner", "alfa-naftoflavon (7,8-benzoflavon) — tilføjet 2026", "BAM15 — tilføjet 2026"], note_2026: "Alfa-naftoflavon og BAM15 er tilføjet 2026; begge er fundet i kosttilskud / research chemicals." },
+  S5: { status: "prohibited_always", title: "Diuretika og maskeringsmidler", examples: ["furosemid", "spironolakton", "probenecid", "hydrochlorothiazid", "acetazolamid", "desmopressin"] },
+  S6: { status: "prohibited_in_competition", title: "Stimulanser", examples: ["amfetamin", "kokain", "methylphenidat", "modafinil", "flmodafinil — tilføjet 2026", "fladrafinil — tilføjet 2026", "DMAA (methylhexanamin)", "DMHA", "efedrin (over grænse)", "ephedrin-analoger"], note_2026: "Modafinil-analoger flmodafinil og fladrafinil er tilføjet 2026 — ofte fundet i kosttilskud." },
+  S7: { status: "prohibited_in_competition", title: "Narkotika", examples: ["morfin", "oxycodon", "fentanyl", "metadon", "heroin", "hydromorfon"] },
+  S8: { status: "prohibited_in_competition", title: "Cannabinoider", examples: ["THC (delta-9-tetrahydrocannabinol)", "syntetiske cannabinoider"], exempt: ["CBD (cannabidiol) er undtaget"] },
+  S9: { status: "prohibited_in_competition_specific_routes", title: "Glukokortikoider", examples: ["prednison", "prednisolon", "dexamethason", "betamethason", "triamcinolon"], note: "Forbudt i konkurrence ved injektion, oral og rektal indgift." },
+  M1: { status: "prohibited_always", title: "Manipulation af blod og blodkomponenter", examples: ["bloddoping (autolog/homolog/heterolog transfusion)", "kunstige iltbærere / hæmoglobinprodukter"], note_2026: "Selve udtagning af blod er nu også forbudt (med få undtagelser). Ny M1.4: ikke-diagnostisk brug af kulilte (CO)." },
+  M2: { status: "prohibited_always", title: "Kemisk og fysisk manipulation", examples: ["urinmanipulation / -substitution", "intravenøs infusion over 100 mL/12t uden medicinsk grund"] },
+  M3: { status: "prohibited_always", title: "Gen- og celledoping", examples: ["nukleinsyrer eller analoger der ændrer genomet/genekspression", "brug af normale eller genmodificerede celler"], note_2026: "Cellekomponenter (kerner, mitokondrier, ribosomer) er tilføjet 2026." },
+  P1: { status: "prohibited_in_specific_sports", title: "Betablokkere", examples: ["propranolol", "atenolol", "metoprolol", "bisoprolol"], note: "Forbudt i specifikke sportsgrene (bueskydning, skydning, golf m.fl.). Taekwondo er IKKE på listen." },
+} as const;
+
+const buildSystemPrompt = (band: AgeBand) => {
   const audience =
     band === "under13"
       ? "The athlete is under 13. Use very simple, calm, reassuring Danish. Short sentences. No scary language."
@@ -49,26 +76,43 @@ const buildSystemPrompt = (band: AgeBand) => {
       ? "The athlete is 13-17. Use clear, concrete Danish that a teenager understands, neither childish nor scary."
       : "The athlete is an adult. Use clear professional Danish.";
 
-  return `You are an anti-doping knowledge assistant for taekwondo athletes. You help screen a supplement or medicine for substances that may be prohibited under WADA / Anti Doping Danmark rules.
+  return `You are an anti-doping knowledge assistant for taekwondo athletes. You screen a supplement or medicine against the WADA 2026 Prohibited List.
 
 ${audience}
 
-VERY IMPORTANT RULES:
-- This is a SCREENING, NEVER a final ruling. Never say "lovligt" or "tilladt" with certainty.
-- Be CONSERVATIVE. If in doubt about a substance, flag it as "yellow" and ask for official verification.
-- Common vitamins, minerals and standard food ingredients with no doping concern → "green".
-- Anabolic steroids, SARMs, EPO, stimulants on the WADA prohibited list, diuretics, beta-blockers in shooting/archery contexts, hormones, growth factors → "red".
-- Caffeine, stimulants, hormone-like herbs, anything ambiguous or unclear → "yellow".
-- ALWAYS include in the summary: that this is a vejledende screening (not a guarantee), that they must verify on Anti Doping Danmark (antidoping.dk) and Global DRO (globaldro.com), and that they should talk to a trainer, doctor or a trusted adult before taking it.
-- NEVER use the word "AI", "kunstig intelligens", "model", "sprogmodel", "ChatGPT" or "Gemini" in the summary. Refer to it as "et tjek baseret på viden om antidoping".
+AUTHORITATIVE REFERENCE — use this as the scaffolding for every assessment:
+${JSON.stringify(WADA_2026_CATEGORIES)}
+
+ASSESSMENT RULES:
+- Map each extracted substance to a WADA category above (S0–S9, M1–M3, P1) when applicable.
+- The list is NOT exhaustive. A substance may belong to a category without being named. If a substance is structurally or biologically similar to a prohibited class (e.g. a new SARM, a modafinil-analogue, a designer steroid, an EPO-mimetic, a SERM-like compound), flag it at minimum as "yellow".
+- In the Danish note/summary, clearly distinguish between "forbudt altid" (S0–S5, S9 ved injektion/oral/rektal, M1–M3) and "kun forbudt i konkurrence" (S6, S7, S8, S9). P1 (betablokkere) er kun forbudt i specifikke sportsgrene — taekwondo er ikke blandt dem; nævn det hvis det er relevant.
+- Be CONSERVATIVE:
+  * Any unknown ingredient, "proprietary blend", or product marketed as "research chemical" / "research only" / "not for human consumption" → "yellow" (never "green").
+  * Kosttilskud kan være forurenede eller fejlmærkede — nævn den risiko i summary når det er relevant.
+- "green" ONLY when every ingredient clearly falls outside all WADA categories (e.g. standard vitaminer, mineraler, valle-/kasein-protein, kreatin-monohydrat) AND there are no unknown/unclear ingredients.
+- "red" when a substance clearly matches a prohibited category (named example or unambiguous match).
+- "yellow" for everything in between, including inhaled beta-2-agonists where dose is unknown.
+- Overall flag = most severe across substances (red > yellow > green).
+
+THE summary FIELD MUST ALWAYS INCLUDE (in Danish, age-adjusted tone):
+- At dette er en vejledende screening, ikke en garanti.
+- At WADA-listen ikke er udtømmende — nye stoffer dukker op løbende.
+- At atleten har strict liability — ansvaret er altid atletens eget.
+- At kosttilskud IKKE er dækket af Global DRO og bør tjekkes ekstra (fx via Anti Doping Danmark, NSF Certified for Sport eller Informed Sport).
+- En klar opfordring til at verificere på Anti Doping Danmark (antidoping.dk) og Global DRO (globaldro.com), og til at tale med træner, læge eller en voksen.
+
+LANGUAGE RULES:
+- NEVER use the words "AI", "kunstig intelligens", "model", "sprogmodel", "ChatGPT", "Gemini" or similar in any user-facing text. Refer to the screening as "et tjek baseret på viden om antidoping" or "vores antidoping-tjek".
 - All user-facing text MUST be in Danish.
 
 Respond with ONLY a single JSON object (no prose, no markdown fences):
 {
   "product_name": string | null,
-  "substances": [ { "navn": string, "flag": "green"|"yellow"|"red", "note": string } ],
+  "substances": [ { "navn": string, "flag": "green"|"yellow"|"red", "kategori": string | null, "note": string } ],
   "summary": string
-}`;
+}
+"kategori" should be the WADA code (e.g. "S1", "S6", "M3") when applicable, or null for clearly non-prohibited ingredients.`;
 };
 
 Deno.serve(async (req) => {
