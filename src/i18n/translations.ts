@@ -10719,6 +10719,12 @@ const translations = {
     changelogEntry136: "Multi-Vereins-Unterstützung: Mitglieder mehrerer Vereine sehen jetzt eine Vereinsauswahl im Header; Nutzer in nur einem Verein bemerken keine Änderung.",
     changelog_2026_06_04: "4. Juni 2026",
     changelogEntry137: "Athleten können den Verletzungs-Reha-Plan jetzt wieder über das Seitenmenü öffnen.",
+    changelogEntry138: "Trainer können einen Athleten jetzt direkt aus der Athletenansicht zur Wettkampfauswertung auffordern.",
+    requestEvaluationCTA: "Auswertung anfordern",
+    evaluationRequested: "Angefordert",
+    evaluationRequestSent: "Auswertung angefordert — der Athlet wird benachrichtigt",
+    evaluationAlreadyRequested: "Bereits angefordert",
+    awaitingEvaluation: "Auswertung ausstehend",
   },
 
   ar: {
