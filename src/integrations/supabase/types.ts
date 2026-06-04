@@ -2283,6 +2283,56 @@ export type Database = {
           },
         ]
       }
+      supplement_checks: {
+        Row: {
+          age_band: string | null
+          club_id: string | null
+          created_at: string
+          extracted_substances: Json | null
+          flag_status: string
+          id: string
+          input_type: string
+          performed_by: string
+          product_name: string | null
+          result_summary: string | null
+          user_id: string
+        }
+        Insert: {
+          age_band?: string | null
+          club_id?: string | null
+          created_at?: string
+          extracted_substances?: Json | null
+          flag_status: string
+          id?: string
+          input_type: string
+          performed_by: string
+          product_name?: string | null
+          result_summary?: string | null
+          user_id: string
+        }
+        Update: {
+          age_band?: string | null
+          club_id?: string | null
+          created_at?: string
+          extracted_substances?: Json | null
+          flag_status?: string
+          id?: string
+          input_type?: string
+          performed_by?: string
+          product_name?: string | null
+          result_summary?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supplement_checks_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       suppressed_emails: {
         Row: {
           created_at: string
