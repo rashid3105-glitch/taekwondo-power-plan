@@ -136,6 +136,7 @@ export default function Library() {
         {section === "mental" && <MentalLibrary />}
         {section === "testing" && <TestLibrary />}
         {section === "hiit" && <HiitLibrary />}
+        {section === "supplement" && <SupplementChecker />}
 
         {section === "nutrition" && nutritionView === "home" && (
           <div className="grid gap-4">
