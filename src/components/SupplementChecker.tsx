@@ -40,7 +40,11 @@ const flagStyles: Record<Flag, { bg: string; border: string; text: string; icon:
   red: { bg: "bg-red-500/10", border: "border-red-500/40", text: "text-red-600 dark:text-red-400", icon: ShieldAlert },
 };
 
-export function SupplementChecker() {
+interface SupplementCheckerProps {
+  athleteId?: string;
+}
+
+export function SupplementChecker({ athleteId }: SupplementCheckerProps = {}) {
   const { t } = useLanguage();
   const [mode, setMode] = useState<"text" | "image">("text");
   const [productName, setProductName] = useState("");
@@ -56,11 +60,13 @@ export function SupplementChecker() {
   const loadHistory = async () => {
     setHistoryLoading(true);
     try {
-      const { data, error } = await supabase
+      let q = supabase
         .from("supplement_checks")
         .select("id, created_at, product_name, flag_status, result_summary, extracted_substances")
         .order("created_at", { ascending: false })
         .limit(20);
+      if (athleteId) q = q.eq("user_id", athleteId);
+      const { data, error } = await q;
       if (error) throw error;
       setHistory((data ?? []) as any);
     } catch (e) {
@@ -70,7 +76,7 @@ export function SupplementChecker() {
     }
   };
 
-  useEffect(() => { loadHistory(); }, []);
+  useEffect(() => { loadHistory(); }, [athleteId]);
 
   const handleImage = (file: File) => {
     if (!file.type.startsWith("image/")) return;
@@ -90,7 +96,8 @@ export function SupplementChecker() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("not_authenticated");
 
-      const body: any = { input_type: mode, athlete_id: user.id };
+      const targetAthleteId = athleteId ?? user.id;
+      const body: any = { input_type: mode, athlete_id: targetAthleteId };
       if (mode === "text") body.product_name = productName.trim();
       else body.image_base64 = image;
 
