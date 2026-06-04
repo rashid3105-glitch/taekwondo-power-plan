@@ -1,53 +1,63 @@
-## Bug 1 — Android viser dashboardet i halv bredde
+## Fix plan for the stuck coach dashboard
 
-**Diagnose:** `index.html` har korrekt `viewport` meta. `index.css` mangler dog en global `overflow-x` / `max-width` lås på `html`/`body`/`#root`. Det betyder at hvis ét element på siden er bredere end viewport (fx en chart, en lang ord-streng, et billede uden `max-width`, eller en grid der ikke wrapper), så bliver hele dokumentet bredere end skærmen og Samsung Internet zoomer ud — præcis det Kaihan ser (indhold klemt sammen til venstre, sort til højre, watermark følger kun den smalle kolonne).
+I found the main loop causing this:
 
-**Fix:**
-1. I `src/index.css` tilføj i `@layer base`:
-   ```css
-   html, body, #root {
-     max-width: 100vw;
-     overflow-x: hidden;
-   }
-   ```
-   Defensiv, påvirker ikke nuværende layout, men forhindrer at ét uvelkomment element trækker hele siden bred.
+- The **Home button on `/coach` does fire**, but it sends the user to `/`.
+- `/` immediately redirects signed-in users to `/dashboard`.
+- `Dashboard.tsx` then **forces coaches straight back to `/coach`**, even after coach mode was turned off.
 
-2. Find den faktiske synder ved at scanne `src/pages/Dashboard.tsx` og dets hub-komponenter for elementer med:
-   - explicit `width:` / `min-width:` i px > 320
-   - `<img>` uden `max-width:100%` (vi har en global regel for `img`, men inline-bg kan slippe igennem)
-   - lange ord/URLs uden `break-words` / `truncate`
-   - horisontalt scrollable wrappers uden `min-w-0` på flex-children
-   Ret den/de fundne synder (typisk: tilføj `min-w-0`, `truncate`, eller `max-w-full`).
+So the problem is not the button icon itself — it is the **redirect chain overriding the user’s choice**.
 
-3. Verificér ved at åbne `/dashboard` i preview ved 360×800 (Android-ækvivalent) og bekræfte at indholdet fylder hele bredden uden vandret scroll. Brug devtools "elements bredere end viewport" tjek.
+### What I will change
 
-Ingen ændringer til viewport meta, capacitor config eller PWA-laget.
+1. **Stop the forced redirect from `/dashboard` unless coach mode is actually on**
+   - Update `src/pages/Dashboard.tsx`
+   - The current effect redirects based only on coach role / active club role.
+   - I will make it respect the stored/current **coach mode state**, so a coach can return to the normal dashboard/front flow.
 
-## Bug 2 — Coach-managed atlet kan ikke selv lave rehab-plan
+2. **Make all coach-exit actions use one consistent escape path**
+   - Update `src/pages/CoachDashboard.tsx`
+   - The Home/exit controls should:
+     - turn coach mode off
+     - navigate to the intended non-coach destination
+     - not be immediately overridden by dashboard logic
+   - I will also check the left-arrow button, since it currently goes to `/` without clearing coach mode.
 
-**Diagnose:** I `src/pages/Dashboard.tsx` linje 1141/1195 er rehab-generator og aktiver/slet-knapper gated bag `(!hasCoach || isPaid)`. Kaihan er coach-managed og ikke selvbetalende → han ser kun MedicalDocumentTranslator + en tom side.
+3. **Harden role handling for club switching**
+   - Update `src/contexts/RoleContext.tsx` if needed
+   - Right now single-club users can still fall back to `profiles.role`, which can keep someone behaving like a coach even when the active membership logic should decide otherwise.
+   - I will make the active club membership the source of truth where appropriate, so switching club or leaving coach mode does not bounce back incorrectly.
 
-Modul-adgang i sig selv er fin: `club_module_defaults.rehab = true` for Copenhagen City. Eneste blokering er det ovenstående UI-gate.
+4. **Validate the full stuck flow in preview before stopping**
+   - I will verify these exact cases:
+     - click Home from `/coach` and confirm the URL stays off `/coach`
+     - switch club after leaving coach mode and confirm it still stays out of coach dashboard
+     - enter coach dashboard again intentionally and confirm that still works
 
-**Fix:** Du har valgt at generatoren altid skal vises når modulet er enabled. Konkret:
+## Files likely involved
 
-1. **Linje 1141:** Fjern `{(!hasCoach || isPaid) && (...)}`-gating omkring rehab-generator-blokken. Den skal altid renderes når vi er forbi `isTabModuleDisabled`/`isDemo`/`isModuleLocked` checks (som allerede er på plads).
+- `src/pages/Dashboard.tsx`
+- `src/pages/CoachDashboard.tsx`
+- `src/contexts/RoleContext.tsx`
 
-2. **Linje 1171:** Fjern `hasCoach && !isPaid ? undefined :` fra `onDelete` på `RehabPlanCard`. Atleten skal kunne slette sin EGEN selvgenererede plan.
+## Technical details
 
-3. **Linje 1195:** Fjern `{(!hasCoach || isPaid) && (...)}` omkring aktiver/slet-knapperne i previous-rehab-plans listen, så atleten kan skifte mellem og slette sine egne historiske planer.
+Current problematic chain:
 
-**Vigtig afgrænsning:** Disse handlinger rammer kun atletens EGNE rehab_plans-rækker (RLS sikrer at `user_id = auth.uid()`). Coach-tildelte planer (hvis sådanne findes via en anden user_id eller en assigner-kolonne) skal ikke kunne slettes af atleten. Hvis `rehab_plans` har en `assigned_by_coach`/`source` kolonne, brug den til at vise slet-knap kun for atlet-genererede rækker. Hvis ikke (mest sandsynligt — alle rækker er `user_id = atleten`), så er den fulde fjernelse safe.
+```text
+/coach
+  -> Home click
+  -> setCoachMode(false) + navigate('/')
+  -> / redirects signed-in user to /dashboard
+  -> Dashboard effect sees coach role in active club
+  -> forced navigate('/coach')
+```
 
-**Bevar:** "Your programs are managed by your coach"-banneret øverst på hub forbliver — det er informativt og separat fra rehab-fanen.
+The fix is to make the redirect logic depend on both:
 
-## Teknisk afgrænsning
+- **user can act as coach**
+- **user has actually chosen coach mode**
 
-- Rør IKKE: RLS, edge functions, database, ActiveClubContext, NAV_ITEMS, bottom nav, entitlements.
-- Filer der ændres: `src/index.css` (global overflow-x), `src/pages/Dashboard.tsx` (3 gating-fjernelser i rehab-blokken) og evt. 1–2 hub-komponenter hvis kilde til overflow findes.
-- Ingen changelog (begge er bugfixes).
+not just coach role alone.
 
-## Verifikation
-
-- **Bug 1:** Åbn `/dashboard` i preview på 360×800, ingen vandret scroll, content fylder bredden. Bed Kaihan reloade på Android.
-- **Bug 2:** Som Kaihan: åbn hamburger → "Skade-genoptræning" → skriv en skade → "Generér plan" virker → planen vises → "Slet" virker.
+Once you approve, I’ll implement this surgically and verify it in the preview.
