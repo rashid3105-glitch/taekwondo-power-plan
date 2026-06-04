@@ -5389,6 +5389,12 @@ const translations = {
     changelogEntry136: "Multi-klub-understøttelse: brugere med flere klubmedlemskaber kan nu skifte klub via en vælger i headeren; enkelt-klub-brugere oplever ingen ændring.",
     changelog_2026_06_04: "4. juni 2026",
     changelogEntry137: "Atleter kan nu åbne Skade-genoptræning fra sidemenuen igen.",
+    changelogEntry138: "Trænere kan nu bede en atlet om at evaluere et stævne direkte fra atletvisningen.",
+    requestEvaluationCTA: "Bed om evaluering",
+    evaluationRequested: "Anmodet",
+    evaluationRequestSent: "Evaluering anmodet — atleten får besked",
+    evaluationAlreadyRequested: "Allerede anmodet",
+    awaitingEvaluation: "Afventer evaluering",
   },
   sv: {
     defaultLanguage: "Standardspråk",
