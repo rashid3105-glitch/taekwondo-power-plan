@@ -64,6 +64,7 @@ export async function syncCompetitionReflections(): Promise<ReflectionSyncResult
             reflections: intent.reflections,
             ai_plan: plan,
             next_competition_id: intent.next_competition_id,
+            ...(intent.club_id ? { club_id: intent.club_id } : {}),
           } as any)
           .select("id, created_at")
           .single();

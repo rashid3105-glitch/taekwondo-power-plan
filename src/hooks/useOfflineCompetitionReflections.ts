@@ -16,6 +16,7 @@ import {
   syncCompetitionReflections,
   type ReflectionSyncResult,
 } from "@/lib/competitionReflectionSyncEngine";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 
 interface SubmitInput {
   competition_id: string | null;
@@ -52,6 +53,7 @@ export function useOfflineCompetitionReflections() {
   const [userId, setUserId] = useState<string | null>(null);
   const [pendingCount, setPendingCount] = useState(0);
   const [syncing, setSyncing] = useState(false);
+  const { activeClubId } = useActiveClub();
 
   const recountPending = useCallback(async () => {
     try {
@@ -162,6 +164,7 @@ export function useOfflineCompetitionReflections() {
         ratings: input.ratings,
         reflections: input.reflections,
         next_competition_id: input.next_competition_id,
+        ...(activeClubId ? { club_id: activeClubId } : {}),
         profile: input.profile,
         language: input.language,
         recentBaselineScores: input.recentBaselineScores,
@@ -195,7 +198,7 @@ export function useOfflineCompetitionReflections() {
       }
       return rec;
     },
-    [userId, recountPending],
+    [userId, recountPending, activeClubId],
   );
 
   const removeReflection = useCallback(
