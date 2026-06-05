@@ -5430,6 +5430,7 @@ const translations = {
     changelogEntry139: "Nyt værktøj i Biblioteket: tjek kosttilskud og medicin baseret på viden om antidoping og WADA-listen.",
     changelog_2026_06_05: "5. juni 2026",
     changelogEntry140: "Forbedret læsbarhed: tekstfarver følger nu baggrunden automatisk, så hvid tekst på lyse kort ikke længere er usynlig.",
+    changelogEntry141: "Coach-navigation omstruktureret: I dag og Beskeder er nu egne sider, og coach-dashboardet fokuserer på Hold.",
     requestEvaluationCTA: "Bed om evaluering",
     evaluationRequested: "Anmodet",
     evaluationRequestSent: "Evaluering anmodet — atleten får besked",
