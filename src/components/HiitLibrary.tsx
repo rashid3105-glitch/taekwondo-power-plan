@@ -28,6 +28,8 @@ const LEVEL_STYLES: Record<HiitWorkout["level"], string> = {
   beginner: "bg-accent/15 text-accent-foreground border-accent/30",
   intermediate: "bg-primary/15 text-primary border-primary/30",
   advanced: "bg-destructive/15 text-destructive border-destructive/30",
+};
+
 const CATEGORY_ICONS: Record<HiitWorkout["category"], typeof Zap> = {
   kicks: Zap,
   conditioning: Flame,
