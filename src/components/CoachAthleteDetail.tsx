@@ -572,6 +572,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
                 className="flex-1"
               />
               <Button
+                variant="default"
                 onClick={generateRehabPlan}
                 disabled={!editing || generatingRehab || !rehabDescription.trim()}
                 size="sm"
