@@ -252,7 +252,7 @@ export function MedicalDocumentTranslator() {
               <ul className="space-y-2">
                 {result.keyFindings.map((f, i) => (
                   <li key={i} className="rounded-md border border-border bg-muted/30 p-2.5">
-                    <p className="text-sm font-semibold text-foreground">{f.term}</p>
+                    <p className="text-sm font-semibold text-card-foreground">{f.term}</p>
                     <p className="text-sm text-muted-foreground mt-0.5">{f.explanation}</p>
                   </li>
                 ))}
