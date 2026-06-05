@@ -361,15 +361,27 @@ export function AthleteDashboard() {
 
       {/* 5. Quick access */}
       <section className="grid grid-cols-2 gap-3">
-        <button
-          type="button"
-          onClick={() => navigate("/dashboard?tab=progress")}
-          className="rounded-xl p-4 flex items-center gap-2 font-semibold text-sm"
-          style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
-        >
-          <BarChart3 className="h-4 w-4" />
-          Fremgang
-        </button>
+        {activeRole === "coach" ? (
+          <button
+            type="button"
+            onClick={() => navigate("/coach/today")}
+            className="rounded-xl p-4 flex items-center gap-2 font-semibold text-sm"
+            style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
+          >
+            <CalendarCheck className="h-4 w-4" />
+            I dag
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => navigate("/dashboard?tab=progress")}
+            className="rounded-xl p-4 flex items-center gap-2 font-semibold text-sm"
+            style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
+          >
+            <BarChart3 className="h-4 w-4" />
+            Fremgang
+          </button>
+        )}
         <button
           type="button"
           onClick={() => navigate("/match-analysis/me")}
