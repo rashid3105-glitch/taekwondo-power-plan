@@ -3,7 +3,8 @@ import { HIIT_WORKOUTS, HIIT_CATEGORY_LABELS, type HiitWorkout } from "@/data/hi
 import { HiitRunner } from "./HiitRunner";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Zap, Play, Clock, Flame, Target } from "lucide-react";
+import { Zap, Play, Clock, Flame, Target, Footprints, Swords } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { cn } from "@/lib/utils";
 import type { TranslationKey } from "@/i18n/translations";
