@@ -313,23 +313,44 @@ export function ExerciseLibrary() {
 
       {/* Exercise list */}
       <div className="space-y-2">
-        {filtered.map((exercise, i) => (
-          <div key={exercise.id} className="relative">
-            <ExerciseCard exercise={exercise} index={i + 1} />
-            {"isCustom" in exercise && exercise.isCustom && (
-              <div className="absolute top-2 right-2 flex items-center gap-1.5 z-10">
-                <span className="text-[9px] bg-primary/15 text-primary px-1.5 py-0.5 rounded-full font-bold uppercase">{t("customLabel")}</span>
-                <button
-                  onClick={() => deleteCustomExercise(exercise.dbId)}
-                  className="h-6 w-6 rounded-full bg-destructive/15 text-destructive flex items-center justify-center hover:bg-destructive/25 transition-colors"
-                  title={t("deleteExercise")}
-                >
-                  <Trash2 className="h-3 w-3" />
-                </button>
+      {/* Exercise list — grouped by category sections */}
+      <div className="space-y-6">
+        {(filter === "custom" ? ["custom" as const] : CATEGORIES).map((cat) => {
+          const catItems = filter === "custom"
+            ? filtered
+            : filtered.filter((e) => e.category === cat);
+          if (catItems.length === 0) return null;
+          const Icon = cat === "custom" ? Plus : CATEGORY_ICONS[cat as ExerciseCategory];
+          const label = cat === "custom" ? t("myExercises") : CATEGORY_LABELS[cat as ExerciseCategory];
+          return (
+            <div key={cat}>
+              <div className="flex items-center gap-2 mb-3">
+                <Icon className="h-5 w-5 text-primary" />
+                <h2 className="text-base font-bold text-foreground">{label}</h2>
+                <Badge variant="secondary" className="text-[10px]">{catItems.length}</Badge>
               </div>
-            )}
-          </div>
-        ))}
+              <div className="space-y-2">
+                {catItems.map((exercise, i) => (
+                  <div key={exercise.id} className="relative">
+                    <ExerciseCard exercise={exercise} index={i + 1} />
+                    {"isCustom" in exercise && exercise.isCustom && (
+                      <div className="absolute top-2 right-2 flex items-center gap-1.5 z-10">
+                        <span className="text-[9px] bg-primary/15 text-primary px-1.5 py-0.5 rounded-full font-bold uppercase">{t("customLabel")}</span>
+                        <button
+                          onClick={() => deleteCustomExercise(exercise.dbId)}
+                          className="h-6 w-6 rounded-full bg-destructive/15 text-destructive flex items-center justify-center hover:bg-destructive/25 transition-colors"
+                          title={t("deleteExercise")}
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
