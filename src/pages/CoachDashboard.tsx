@@ -18,7 +18,6 @@ import { AvatarImg } from "@/components/AvatarImg";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Badge } from "@/components/ui/badge";
-import { Badge } from "@/components/ui/badge";
 import { PlanViewDialog } from "@/components/PlanViewDialog";
 import { DiaryComments } from "@/components/DiaryComments";
 import { CoachDiaryView } from "@/components/coach/CoachDiaryView";
