@@ -282,9 +282,9 @@ export function MedicalDocumentTranslator() {
             </div>
           )}
 
-          <div className="rounded-md border border-amber-500/30 bg-amber-500/10 p-2.5 flex gap-2">
-            <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
-            <p className="text-xs text-foreground/90">{t("medDocDisclaimer")}</p>
+          <div className="rounded-md border border-amber-500/40 bg-amber-500/15 p-2.5 flex gap-2">
+            <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+            <p className="text-xs text-amber-900 dark:text-amber-100">{t("medDocDisclaimer")}</p>
           </div>
 
           <div className="flex gap-2">
