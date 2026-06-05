@@ -274,7 +274,7 @@ export function MedicalDocumentTranslator() {
               <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {t("medDocQuestionsForDoctor")}
               </h4>
-              <ul className="space-y-1.5 text-sm text-foreground list-disc pl-5">
+              <ul className="space-y-1.5 text-sm text-card-foreground list-disc pl-5">
                 {result.questionsForDoctor.map((q, i) => (
                   <li key={i}>{q}</li>
                 ))}
