@@ -17192,6 +17192,8 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   changelogEntry137: "Los atletas ahora pueden volver a abrir el plan de rehabilitación de lesiones desde el menú lateral.",
   changelogEntry138: "Los entrenadores ahora pueden solicitar una evaluación de competición directamente desde la vista del atleta.",
   changelogEntry139: "Nueva herramienta en la Biblioteca: comprueba suplementos y medicación con conocimiento antidopaje basado en la lista WADA.",
+  changelog_2026_06_05: "5 de junio de 2026",
+  changelogEntry140: "Mejor legibilidad: los colores del texto siguen ahora la superficie automáticamente; el texto blanco sobre tarjetas claras vuelve a verse.",
   requestEvaluationCTA: "Solicitar evaluación",
   evaluationRequested: "Solicitada",
   evaluationRequestSent: "Evaluación solicitada — se notificará al atleta",
