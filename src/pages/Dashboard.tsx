@@ -236,7 +236,7 @@ export default function Dashboard() {
 
   const BackToHub = ({ onBack, label }: { onBack: () => void; label: string }) => (
     <div className="mb-3">
-      <Button variant="ghost" size="sm" onClick={onBack} className="-ml-2 h-11 sm:h-9">
+      <Button variant="ghost" size="sm" onClick={onBack} className="-ml-2 h-11 sm:h-9 text-white hover:text-white">
         <ArrowLeft className="h-4 w-4 mr-1" /> {label}
       </Button>
     </div>
@@ -1162,10 +1162,10 @@ export default function Dashboard() {
           <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isTabModuleDisabled("rehab") ? renderModuleDisabledState() : isDemo ? renderDemoLockedState("injuryRehabPlan") : isModuleLocked("rehab") ? renderTierLockedState("injuryRehabPlan") : (
           <>
             {/* Rehab Plan Generator — always available when module is enabled */}
-            <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
+            <div className="rounded-xl border border-border bg-card text-card-foreground p-4 sm:p-5 shadow-card space-y-3">
               <div className="flex items-center gap-2">
                 <Heart className="h-5 w-5 text-destructive" />
-                <h3 className="font-bold text-foreground">{t("injuryRehabPlan")}</h3>
+                <h3 className="font-bold text-card-foreground">{t("injuryRehabPlan")}</h3>
               </div>
               <p className="text-xs text-muted-foreground">
                 {t("rehabDescription")}
@@ -1178,7 +1178,7 @@ export default function Dashboard() {
                   maxLength={200}
                   className="flex-1"
                 />
-                <Button onClick={generateRehabPlan} disabled={generatingRehab || !rehabInjury.trim()} size="sm" className="w-full sm:w-auto">
+                <Button variant="default" onClick={generateRehabPlan} disabled={generatingRehab || !rehabInjury.trim()} size="sm" className="w-full sm:w-auto">
                   {generatingRehab ? (
                     <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
                   ) : (
@@ -1209,9 +1209,9 @@ export default function Dashboard() {
                 <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">{t("previousRehabPlans")}</h3>
                 <div className="space-y-3">
                   {rehabPlans.filter(p => !p.is_active).map((rp) => (
-                    <div key={rp.id} className="rounded-lg border border-border bg-card/50 p-4 flex items-center justify-between">
+                    <div key={rp.id} className="rounded-lg border border-border bg-card/50 text-card-foreground p-4 flex items-center justify-between">
                       <div>
-                        <p className="font-medium text-sm text-foreground">{rp.name}</p>
+                        <p className="font-medium text-sm text-card-foreground">{rp.name}</p>
                         <p className="text-xs text-muted-foreground">{rp.injury_description} · {new Date(rp.created_at).toLocaleDateString()}</p>
                       </div>
                       <div className="flex gap-2">

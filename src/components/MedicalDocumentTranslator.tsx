@@ -146,16 +146,16 @@ export function MedicalDocumentTranslator() {
   };
 
   return (
-    <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
+    <div className="rounded-xl border border-border bg-card text-card-foreground p-4 sm:p-5 shadow-card space-y-3">
       <div className="flex items-center gap-2">
         <Stethoscope className="h-5 w-5 text-tab-rehab" />
-        <h3 className="font-bold text-foreground">{t("medDocTitle")}</h3>
+        <h3 className="font-bold text-card-foreground">{t("medDocTitle")}</h3>
       </div>
       <p className="text-xs text-muted-foreground">{t("medDocDescription")}</p>
 
-      <div className="rounded-md border border-amber-500/30 bg-amber-500/10 p-2.5 flex gap-2">
-        <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
-        <p className="text-xs text-foreground/90">{t("medDocDisclaimer")}</p>
+      <div className="rounded-md border border-amber-500/40 bg-amber-500/15 p-2.5 flex gap-2">
+        <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+        <p className="text-xs text-amber-900 dark:text-amber-100">{t("medDocDisclaimer")}</p>
       </div>
 
       {!result && (
@@ -191,7 +191,7 @@ export function MedicalDocumentTranslator() {
               className="flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border bg-muted/30 px-4 py-6 cursor-pointer hover:bg-muted/50 transition-colors"
             >
               <Upload className="h-6 w-6 text-muted-foreground" />
-              <span className="text-sm font-medium text-foreground">
+              <span className="text-sm font-medium text-card-foreground">
                 {file ? file.name : t("medDocFilePrompt")}
               </span>
               <span className="text-[11px] text-muted-foreground">{t("medDocFileHint")}</span>
@@ -241,7 +241,7 @@ export function MedicalDocumentTranslator() {
             <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               {t("medDocSummary")}
             </h4>
-            <p className="text-sm text-foreground leading-relaxed">{result.summary}</p>
+            <p className="text-sm text-card-foreground leading-relaxed">{result.summary}</p>
           </div>
 
           {result.keyFindings.length > 0 && (
@@ -252,7 +252,7 @@ export function MedicalDocumentTranslator() {
               <ul className="space-y-2">
                 {result.keyFindings.map((f, i) => (
                   <li key={i} className="rounded-md border border-border bg-muted/30 p-2.5">
-                    <p className="text-sm font-semibold text-foreground">{f.term}</p>
+                    <p className="text-sm font-semibold text-card-foreground">{f.term}</p>
                     <p className="text-sm text-muted-foreground mt-0.5">{f.explanation}</p>
                   </li>
                 ))}
@@ -265,7 +265,7 @@ export function MedicalDocumentTranslator() {
               <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {t("medDocTrainingImplications")}
               </h4>
-              <p className="text-sm text-foreground leading-relaxed">{result.trainingImplications}</p>
+              <p className="text-sm text-card-foreground leading-relaxed">{result.trainingImplications}</p>
             </div>
           )}
 
@@ -274,7 +274,7 @@ export function MedicalDocumentTranslator() {
               <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {t("medDocQuestionsForDoctor")}
               </h4>
-              <ul className="space-y-1.5 text-sm text-foreground list-disc pl-5">
+              <ul className="space-y-1.5 text-sm text-card-foreground list-disc pl-5">
                 {result.questionsForDoctor.map((q, i) => (
                   <li key={i}>{q}</li>
                 ))}
@@ -282,9 +282,9 @@ export function MedicalDocumentTranslator() {
             </div>
           )}
 
-          <div className="rounded-md border border-amber-500/30 bg-amber-500/10 p-2.5 flex gap-2">
-            <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
-            <p className="text-xs text-foreground/90">{t("medDocDisclaimer")}</p>
+          <div className="rounded-md border border-amber-500/40 bg-amber-500/15 p-2.5 flex gap-2">
+            <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+            <p className="text-xs text-amber-900 dark:text-amber-100">{t("medDocDisclaimer")}</p>
           </div>
 
           <div className="flex gap-2">

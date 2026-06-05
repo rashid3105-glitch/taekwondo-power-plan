@@ -209,7 +209,7 @@ export function RehabPlanCard({ plan, onDelete }: RehabPlanCardProps) {
   return (
     <Collapsible open={!collapsed} onOpenChange={(open) => setCollapsed(!open)}>
       {/* Header */}
-      <div className="rounded-xl border border-border bg-card p-4 shadow-card">
+      <div className="rounded-xl border border-border bg-card text-card-foreground p-4 shadow-card">
         <div className="flex items-start gap-3">
           <CollapsibleTrigger asChild>
             <button className="h-10 w-10 rounded-lg bg-destructive/10 flex items-center justify-center flex-shrink-0 cursor-pointer hover:bg-destructive/20 transition-colors">
@@ -219,7 +219,7 @@ export function RehabPlanCard({ plan, onDelete }: RehabPlanCardProps) {
           <div className="min-w-0 flex-1">
             <CollapsibleTrigger asChild>
               <button className="text-left cursor-pointer">
-                <h2 className="text-base font-bold text-foreground">{plan.rehabPlanName}</h2>
+                <h2 className="text-base font-bold text-card-foreground">{plan.rehabPlanName}</h2>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   {t("rehabEstimatedRecovery")}: ~{plan.estimatedWeeks} {t("rehabWeeks")}
                 </p>
@@ -264,14 +264,14 @@ export function RehabPlanCard({ plan, onDelete }: RehabPlanCardProps) {
 
       {/* Important notes */}
       {plan.importantNotes?.length > 0 && (
-        <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
+        <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-card-foreground">
           <div className="flex items-center gap-2 mb-2">
             <AlertTriangle className="h-4 w-4 text-destructive" />
             <span className="text-xs font-bold uppercase tracking-wider text-destructive">{t("rehabSafetyNotes")}</span>
           </div>
           <ul className="space-y-1">
             {plan.importantNotes.map((note: string, i: number) => (
-              <li key={i} className="text-xs text-foreground flex items-start gap-2">
+              <li key={i} className="text-xs text-card-foreground flex items-start gap-2">
                 <span className="text-destructive mt-0.5">•</span>
                 {note}
               </li>
@@ -283,14 +283,14 @@ export function RehabPlanCard({ plan, onDelete }: RehabPlanCardProps) {
       {/* Phases */}
       <div className="space-y-2">
         {plan.phases?.map((phase: any, i: number) => (
-          <div key={i} className={cn("rounded-xl border overflow-hidden transition-all", PHASE_COLORS[i] || "border-border bg-card")}>
+          <div key={i} className={cn("rounded-xl border overflow-hidden transition-all text-card-foreground", PHASE_COLORS[i] || "border-border bg-card")}>
             <button
               onClick={() => setOpenPhase(openPhase === i ? null : i)}
               className="w-full flex items-center gap-3 p-4 cursor-pointer hover:bg-secondary/30 transition-colors"
             >
               <span className={cn("h-3 w-3 rounded-full flex-shrink-0", PHASE_DOT[i] || "bg-muted")} />
               <div className="flex-1 text-left">
-                <p className="text-sm font-bold text-foreground">{phase.phase}</p>
+                <p className="text-sm font-bold text-card-foreground">{phase.phase}</p>
                 <p className="text-xs text-muted-foreground">Weeks {phase.weeks} · {phase.goal}</p>
               </div>
               {openPhase === i ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
@@ -304,7 +304,7 @@ export function RehabPlanCard({ plan, onDelete }: RehabPlanCardProps) {
                     <ArrowRight className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
                     <div>
                       <p className="text-[10px] uppercase tracking-wider text-primary font-bold mb-0.5">{t("rehabProgressWhen")}:</p>
-                      <p className="text-xs text-foreground">{phase.criteria}</p>
+                      <p className="text-xs text-card-foreground">{phase.criteria}</p>
                     </div>
                   </div>
                 )}
@@ -328,13 +328,13 @@ function RehabExerciseRow({ exercise, index }: { exercise: any; index: number })
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="rounded-lg border border-border bg-card overflow-hidden">
+    <div className="rounded-lg border border-border bg-card text-card-foreground overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
         className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-secondary/40 transition-colors cursor-pointer"
       >
         <span className="mono text-xs text-muted-foreground w-5">{String(index).padStart(2, "0")}</span>
-        <span className="font-semibold text-sm flex-1 text-left text-foreground">{exercise.name}</span>
+        <span className="font-semibold text-sm flex-1 text-left text-card-foreground">{exercise.name}</span>
         <span className="text-xs text-muted-foreground">{exercise.sets}×{exercise.reps}</span>
         {open ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
       </button>
@@ -344,21 +344,21 @@ function RehabExerciseRow({ exercise, index }: { exercise: any; index: number })
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             <div className="rounded-md bg-muted p-2">
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("rehabSetsReps")}</p>
-              <p className="text-sm font-bold text-foreground">{exercise.sets} × {exercise.reps}</p>
+              <p className="text-sm font-bold text-card-foreground">{exercise.sets} × {exercise.reps}</p>
             </div>
             <div className="rounded-md bg-muted p-2">
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("rehabRest")}</p>
-              <p className="text-sm font-bold text-foreground">{exercise.rest}</p>
+              <p className="text-sm font-bold text-card-foreground">{exercise.rest}</p>
             </div>
             {exercise.tempo && (
               <div className="rounded-md bg-muted p-2">
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("rehabTempo")}</p>
-                <p className="text-sm font-bold text-foreground">{exercise.tempo}</p>
+                <p className="text-sm font-bold text-card-foreground">{exercise.tempo}</p>
               </div>
             )}
           </div>
           <p className="text-xs text-muted-foreground">
-            <span className="font-semibold text-foreground">{t("rehabCoaching")}: </span>{exercise.coachingCue}
+            <span className="font-semibold text-card-foreground">{t("rehabCoaching")}: </span>{exercise.coachingCue}
           </p>
           <p className="text-xs text-primary/80">
             <span className="font-semibold text-primary">{t("rehabWhy")}: </span>{exercise.whyItMatters}
