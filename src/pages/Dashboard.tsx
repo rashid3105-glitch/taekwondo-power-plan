@@ -1209,9 +1209,9 @@ export default function Dashboard() {
                 <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">{t("previousRehabPlans")}</h3>
                 <div className="space-y-3">
                   {rehabPlans.filter(p => !p.is_active).map((rp) => (
-                    <div key={rp.id} className="rounded-lg border border-border bg-card/50 p-4 flex items-center justify-between">
+                    <div key={rp.id} className="rounded-lg border border-border bg-card/50 text-card-foreground p-4 flex items-center justify-between">
                       <div>
-                        <p className="font-medium text-sm text-foreground">{rp.name}</p>
+                        <p className="font-medium text-sm text-card-foreground">{rp.name}</p>
                         <p className="text-xs text-muted-foreground">{rp.injury_description} · {new Date(rp.created_at).toLocaleDateString()}</p>
                       </div>
                       <div className="flex gap-2">
