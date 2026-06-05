@@ -2708,6 +2708,7 @@ const translations = {
     changelog_2026_06_05: "June 5, 2026",
     changelogEntry140: "Improved readability: text colors now follow the surface automatically, fixing white-on-light text on several screens.",
     changelogEntry141: "Coach navigation restructured: Today and Messages are now their own pages, and the coach dashboard focuses on the squad.",
+    changelogEntry142: "Library reorganized: Exercises, Mental, Recipes, and HIIT now use the same category sections with icons and item counts as Physical Tests.",
     requestEvaluationCTA: "Request evaluation",
     evaluationRequested: "Requested",
     evaluationRequestSent: "Evaluation requested — the athlete will be notified",
