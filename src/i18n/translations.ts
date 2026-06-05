@@ -16213,6 +16213,8 @@ const translations = {
     changelogEntry137: "Utøvere kan nå åpne Skade-rehabilitering fra sidemenyen igjen.",
     changelogEntry138: "Trenere kan nå be en utøver evaluere et stevne direkte fra utøvervisningen.",
     changelogEntry139: "Nytt verktøy i Biblioteket: sjekk kosttilskudd og medisin basert på antidoping-kunnskap og WADA-listen.",
+    changelog_2026_06_05: "5. juni 2026",
+    changelogEntry140: "Bedre lesbarhet: tekstfarger følger nå bakgrunnen automatisk, hvit tekst på lyse kort er ikke lenger usynlig.",
     requestEvaluationCTA: "Be om evaluering",
     evaluationRequested: "Forespurt",
     evaluationRequestSent: "Evaluering forespurt — utøveren får beskjed",
