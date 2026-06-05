@@ -8155,6 +8155,7 @@ const translations = {
     changelog_2026_06_05: "5 juni 2026",
     changelogEntry140: "Förbättrad läsbarhet: textfärger följer nu ytan automatiskt, vit text på ljusa kort syns igen.",
     changelogEntry141: "Coach-navigering omstrukturerad: Idag och Meddelanden är nu egna sidor, och coach-dashboarden fokuserar på Laget.",
+    changelogEntry142: "Biblioteket omorganiserat: Övningar, Mentalt, Recept och HIIT använder nu samma kategorisektioner med ikoner och antal som Fysiska tester.",
     requestEvaluationCTA: "Be om utvärdering",
     evaluationRequested: "Begärd",
     evaluationRequestSent: "Utvärdering begärd — idrottaren får ett meddelande",
