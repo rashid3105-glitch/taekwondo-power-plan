@@ -264,14 +264,14 @@ export function RehabPlanCard({ plan, onDelete }: RehabPlanCardProps) {
 
       {/* Important notes */}
       {plan.importantNotes?.length > 0 && (
-        <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
+        <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-card-foreground">
           <div className="flex items-center gap-2 mb-2">
             <AlertTriangle className="h-4 w-4 text-destructive" />
             <span className="text-xs font-bold uppercase tracking-wider text-destructive">{t("rehabSafetyNotes")}</span>
           </div>
           <ul className="space-y-1">
             {plan.importantNotes.map((note: string, i: number) => (
-              <li key={i} className="text-xs text-foreground flex items-start gap-2">
+              <li key={i} className="text-xs text-card-foreground flex items-start gap-2">
                 <span className="text-destructive mt-0.5">•</span>
                 {note}
               </li>
