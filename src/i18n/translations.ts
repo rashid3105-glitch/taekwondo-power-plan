@@ -2705,6 +2705,8 @@ const translations = {
     changelogEntry137: "Athletes can now open the Injury Rehab plan again from the side menu.",
     changelogEntry138: "Coaches can now request a post-competition evaluation directly from the athlete view.",
     changelogEntry139: "New tool in the Library: check supplements and medicine against anti-doping knowledge based on WADA's list.",
+    changelog_2026_06_05: "June 5, 2026",
+    changelogEntry140: "Improved readability: text colors now follow the surface automatically, fixing white-on-light text on several screens.",
     requestEvaluationCTA: "Request evaluation",
     evaluationRequested: "Requested",
     evaluationRequestSent: "Evaluation requested — the athlete will be notified",
