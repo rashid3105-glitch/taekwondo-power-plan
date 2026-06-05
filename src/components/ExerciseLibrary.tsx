@@ -40,6 +40,14 @@ const FILTER_STYLES: Record<ExerciseCategory, string> = {
   mobility: "data-[active=true]:bg-accent data-[active=true]:text-accent-foreground",
 };
 
+const CATEGORY_ICONS: Record<ExerciseCategory, typeof Dumbbell> = {
+  power: Activity,
+  plyometric: Flame,
+  speed: Zap,
+  strength: Dumbbell,
+  mobility: Move,
+};
+
 function extractYouTubeId(url: string): string {
   const match = url.match(/(?:v=|\/embed\/|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
   return match?.[1] || "";
