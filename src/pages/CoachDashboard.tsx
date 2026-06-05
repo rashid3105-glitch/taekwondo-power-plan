@@ -18,25 +18,21 @@ import { AvatarImg } from "@/components/AvatarImg";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import { PlanViewDialog } from "@/components/PlanViewDialog";
 import { DiaryComments } from "@/components/DiaryComments";
 import { CoachDiaryView } from "@/components/coach/CoachDiaryView";
 import { SquadOverview } from "@/components/coach/SquadOverview";
 import { SquadPulse, type PulseFilter } from "@/components/coach/SquadPulse";
-import { SessionAttendance } from "@/components/coach/SessionAttendance";
 import { WeeklySquadExport } from "@/components/coach/WeeklySquadExport";
-import { CoachSentHistory } from "@/components/coach/CoachSentHistory";
 import { CreateAthleteDialog } from "@/components/coach/CreateAthleteDialog";
 import { InviteDialog } from "@/components/coach/InviteDialog";
 import { PendingAthletesSection } from "@/components/coach/PendingAthletesSection";
 import { CoachBulkCreateCompetitionDialog } from "@/components/coach/CoachBulkCreateCompetitionDialog";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
-  ArrowLeft, Loader2, Zap, User, Users, NotebookPen, UserCog,
-  Frown, Meh, Smile, Laugh, BatteryLow, BatteryMedium, BatteryFull, MessageSquare, Bell, Search, Send, Building, CalendarRange, Home,
+  ArrowLeft, Loader2, Zap, User, Users, NotebookPen,
+  MessageSquare, Building, CalendarRange, Home,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MessagesIcon } from "@/components/chat/MessagesIcon";
