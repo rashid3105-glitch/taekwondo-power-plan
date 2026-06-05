@@ -1,51 +1,52 @@
-# Læsbarheds-fix for rehab-tabben
+# Plan: Ensartet bibliotekslayout med kategori-sektioner
 
-## Hvad er problemet
-På skærmen "Skade-genoptræningsplan / Forstå et lægedokument" (Dashboard → Rehab) er:
-- kort-titlerne næsten usynlige (hvid tekst på lyst kort)
-- disclaimer-teksten i amber-boksen næsten usynlig (lys tekst på lys gul)
-- placeholder/input-teksten dårligt læsbar
-- "Generer genoptræningsplan"-knappen har hvid tekst på en lys amber-baggrund
+## Mål
+Bring `ExerciseLibrary`, `MentalLibrary`, `NutritionLibrary` og `HiitLibrary` på samme visuelle og strukturelle form som `TestLibrary`:
 
-Årsag: Dashboard-roden tvinger sidebaggrunden til sort via inline `style={{ backgroundColor: "#0a0a0a" }}`, men temaets tokens (lyst athlete-tema vs. mørkt coach-tema) styrer korten uafhængigt. Inde i kortene bruges `text-foreground` — den værdi følger body-temaet og ender ikke nødvendigvis i kontrast med det aktuelle `bg-card`. Det skal være `text-card-foreground`, som er garanteret modparten til `bg-card` i begge temaer. Amber-disclaimeren bruger `text-foreground/90` som også fejler i lyst tema.
+- **Sektionsoverskrift pr. kategori**: ikon + lokaliseret titel + `Badge` med antal.
+- **Foldbart kort** med stilen `rounded-xl border border-border bg-card shadow-card overflow-hidden`, klikbar header (ikon-firkant + titel + kort beskrivelse, chevron til højre), foldet detalje-sektion adskilt med top-border.
+- Eksisterende filter-pills bevares **øverst** (uændret funktion), men resultatet rendres herunder grupperet i kategori-sektioner i stedet for én flad liste. Tomme kategorier skjules (`if (catItems.length === 0) return null`).
 
-Tidligere kerne-fix (`.text-heading`/`.text-subheading` → `hsl(var(--foreground))`) slår ikke igennem her, fordi disse skærme bruger `text-foreground` direkte og en disclaimer-boks med egen baggrund.
+## Filer der ændres
 
-## Hvad ændres (kun frontend/styling, ingen logik)
+1. **`src/components/ExerciseLibrary.tsx`**
+   - Behold disclaimer, kategori-/goal-/risk-filter-pills, add-knap og add-form uændret.
+   - Erstat den flade `filtered.map(...)`-liste med en `CATEGORIES.map(cat => ...)`-loop, der filtrerer på `cat` og render sektioner. Sektionsikon: brug eksisterende kategori-dot-paletten i ny `CATEGORY_ICONS` map (Dumbbell/Zap/Activity/Move/Flame fra lucide).
+   - Når brugeren har valgt en enkelt kategori eller "custom", vis kun den ene sektion. "All" viser alle ikke-tomme sektioner.
+   - `ExerciseCard` selv ændres ikke (er allerede foldbart kort) — det er kun container-layoutet, der bliver grupperet.
 
-### 1) `src/pages/Dashboard.tsx` — rehab-tabben
-- Erstat `text-foreground` med `text-card-foreground` på alle tekst-elementer inde i de to rehab-kort (titel, "Tidligere planer"-liste).
-- Tilføj `text-card-foreground` på selve kort-wrapperne (`rounded-xl … bg-card …`) så al arvet tekst får korrekt farve.
+2. **`src/components/MentalLibrary.tsx`**
+   - Behold filter-pills.
+   - Grupper `filtered`-listen pr. `MentalCategory` med sektionsoverskrift (ikon fra `MENTAL_CATEGORY_ICONS` + label fra `MENTAL_CATEGORY_LABELS[locale][cat]` + `Badge` med antal).
+   - `MentalExerciseCard` ændres ikke.
 
-### 2) `src/components/MedicalDocumentTranslator.tsx`
-- Kort-wrapper: tilføj `text-card-foreground`.
-- H3-titlen: skift `text-foreground` → `text-card-foreground`.
-- Disclaimer-boksen (amber): skift `text-foreground/90` → `text-amber-900 dark:text-amber-100` så den er læsbar på den lyse amber-baggrund i begge temaer. Samme for den anden forekomst i resultat-sektionen.
-- Result-blokken: titel-h4'er beholder `text-muted-foreground`; brødtekst/listeitems skiftes til `text-card-foreground`.
-- Filupload-label, valgt filnavn og keyFinding-term: skift `text-foreground` → `text-card-foreground`.
+3. **`src/components/NutritionLibrary.tsx`**
+   - Behold filter-pills, add-knap, add-form og custom-overlay-logik.
+   - Grupper `filtered` pr. `RecipeCategory` med sektionsoverskrift (emoji fra `RECIPE_CATEGORY_ICONS` + `t(CATEGORY_KEYS[cat])` + antals-`Badge`).
+   - `RecipeCard` ændres ikke.
 
-### 3) `src/components/RehabPlanCard.tsx`
-- Kort-wrappere (header-kort, faser, øvelsesrækker, "important notes"-boks): tilføj `text-card-foreground` så arvet farve er korrekt.
-- Hvor `text-foreground` bruges direkte (titel, fase-navn, øvelses-navn, sets/reps/rest-tal, "Coaching"-label, important-note-items): skift til `text-card-foreground`.
-- Den røde `text-destructive`-tekst og blå/grønne accent-tekster bevares som de er.
+4. **`src/components/HiitLibrary.tsx`**
+   - Behold disclaimer + kategori-filter-pills.
+   - Grupper workout-kortene pr. `HiitWorkout["category"]` med sektionsoverskrift (Zap/Flame/Footprints/Swords ikon + `t(hiitCat_*)` + antal).
+   - Workout-kortet ændres ikke i denne omgang (det er ikke foldbart — start-knappen åbner runneren). Kun grupperingen tilføjes.
 
-### 4) Generate-knappen
-- I Dashboard.tsx tilføj eksplicit `variant="default"` på "Generer genoptræningsplan"-knappen (samme i `CoachAthleteDetail.tsx` for konsistens) så den altid får `bg-primary text-primary-foreground` og ikke kan blive en lys amber-tone via arvede stilarter. Ingen logikændring.
+## Tekniske detaljer
 
-### 5) BackToHub-knappen
-- Tilføj `text-foreground` eksplicit på "Tilbage"-knappens label, så den forbliver læsbar på den sort-tvungne side-baggrund uanset om body er athlete- eller coach-mode.
+- Sektions-header-mønster (kopieret 1:1 fra `TestLibrary` linje 121–125):
+  ```tsx
+  <div className="flex items-center gap-2 mb-3">
+    <Icon className="h-5 w-5 text-primary" />
+    <h2 className="text-base font-bold text-foreground">{label}</h2>
+    <Badge variant="secondary" className="text-[10px]">{count}</Badge>
+  </div>
+  ```
+  Ikon-farve følger bibliotekets tab-farve: `text-primary` (Øvelser), `text-tab-mental` (Mental), `text-tab-nutrition` (Opskrifter), `text-destructive` (HIIT).
+- Hver sektion wrappes i `<div key={cat}>` med `space-y-2` for kortlisten; sektioner adskilles via `space-y-6` på ydre container (matcher TestLibrary).
+- Ingen nye translation-nøgler nødvendige — alle kategorinavne findes allerede.
+- Ingen ændringer i edge functions, RLS, database, eller delte UI-komponenter.
 
-## Hvad røres IKKE
-- Edge functions, database, RLS.
-- Logik i rehab-/medical-translator-flow.
-- Globale design-tokens i `index.css` (de seneste ændringer beholdes).
-- Oversættelser (alle nøgler er allerede til stede fra tidligere PR).
-
-## Verifikation
-- Åbn /dashboard → Rehab i både athlete (lyst tema) og coach-mode (mørkt tema).
-- Tjek at "Skade-genoptræningsplan" og "Forstå et lægedokument" titler er tydeligt læsbare.
-- Tjek disclaimer-boksen er læsbar i begge temaer.
-- Tjek "Generer"-knappen viser primary-blå med hvid tekst (ikke amber).
-- Tjek tidligere rehab-planer-liste samt resultat-visning fra RehabPlanCard.
-
-## Ingen changelog-bump (rent bugfix).
+## Out of scope
+- LibraryChooser-siden (`/library`) ændres ikke.
+- Filter-UI'et ændres ikke.
+- Selve kort-komponenterne (`ExerciseCard`, `MentalExerciseCard`, `RecipeCard`) ændres ikke.
+- Changelog opdateres ikke (rent layout-finpus).

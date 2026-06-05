@@ -3,7 +3,8 @@ import { HIIT_WORKOUTS, HIIT_CATEGORY_LABELS, type HiitWorkout } from "@/data/hi
 import { HiitRunner } from "./HiitRunner";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Zap, Play, Clock, Flame, Target } from "lucide-react";
+import { Zap, Play, Clock, Flame, Target, Footprints, Swords } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { cn } from "@/lib/utils";
 import type { TranslationKey } from "@/i18n/translations";
@@ -28,6 +29,14 @@ const LEVEL_STYLES: Record<HiitWorkout["level"], string> = {
   intermediate: "bg-primary/15 text-primary border-primary/30",
   advanced: "bg-destructive/15 text-destructive border-destructive/30",
 };
+
+const CATEGORY_ICONS: Record<HiitWorkout["category"], typeof Zap> = {
+  kicks: Zap,
+  conditioning: Flame,
+  footwork: Footprints,
+  sparring: Swords,
+};
+
 
 function totalSeconds(w: HiitWorkout): number {
   return w.intervals.reduce((sum, i) => sum + i.duration, 0);
@@ -87,55 +96,71 @@ export function HiitLibrary() {
         })}
       </div>
 
-      {/* Workout cards */}
-      <div className="grid gap-3">
-        {filtered.map((w) => {
-          const work = w.intervals.filter((i) => i.type === "WORK").length;
-          const total = totalSeconds(w);
+      {/* Workout cards — grouped by category */}
+      <div className="space-y-6">
+        {CATEGORIES.map((cat) => {
+          const catItems = filtered.filter((w) => w.category === cat);
+          if (catItems.length === 0) return null;
+          const Icon = CATEGORY_ICONS[cat];
           return (
-            <div
-              key={w.id}
-              className="rounded-xl border border-border bg-card p-4 hover:border-destructive/40 transition-colors"
-            >
-              <div className="flex items-start justify-between gap-3 mb-2">
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="text-base font-extrabold text-foreground leading-tight">{wName(w)}</h3>
-                    <span
-                      className={cn(
-                        "text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-full font-bold border",
-                        LEVEL_STYLES[w.level]
-                      )}
+            <div key={cat}>
+              <div className="flex items-center gap-2 mb-3">
+                <Icon className="h-5 w-5 text-destructive" />
+                <h2 className="text-base font-bold text-foreground">{t(`hiitCat_${cat}` as any)}</h2>
+                <Badge variant="secondary" className="text-[10px]">{catItems.length}</Badge>
+              </div>
+              <div className="grid gap-3">
+                {catItems.map((w) => {
+                  const work = w.intervals.filter((i) => i.type === "WORK").length;
+                  const total = totalSeconds(w);
+                  return (
+                    <div
+                      key={w.id}
+                      className="rounded-xl border border-border bg-card p-4 hover:border-destructive/40 transition-colors"
                     >
-                      {t(`hiitLevel_${w.level}` as any)}
-                    </span>
-                  </div>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{wDesc(w)}</p>
-                </div>
-                <div className="h-10 w-10 rounded-lg bg-destructive/15 text-destructive flex items-center justify-center shrink-0">
-                  <Zap className="h-5 w-5" fill="currentColor" />
-                </div>
-              </div>
+                      <div className="flex items-start justify-between gap-3 mb-2">
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="text-base font-extrabold text-foreground leading-tight">{wName(w)}</h3>
+                            <span
+                              className={cn(
+                                "text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-full font-bold border",
+                                LEVEL_STYLES[w.level]
+                              )}
+                            >
+                              {t(`hiitLevel_${w.level}` as any)}
+                            </span>
+                          </div>
+                          <p className="text-xs text-muted-foreground leading-relaxed">{wDesc(w)}</p>
+                        </div>
+                        <div className="h-10 w-10 rounded-lg bg-destructive/15 text-destructive flex items-center justify-center shrink-0">
+                          <Zap className="h-5 w-5" fill="currentColor" />
+                        </div>
+                      </div>
 
-              <div className="flex items-center gap-3 text-[11px] text-muted-foreground mb-3 mt-2">
-                <span className="flex items-center gap-1">
-                  <Flame className="h-3 w-3" /> {work} {t("hiitRoundsLabel")}
-                </span>
-                <span className="flex items-center gap-1">
-                  <Clock className="h-3 w-3" /> {formatDuration(total)}
-                </span>
-                <span className="flex items-center gap-1">
-                  <Target className="h-3 w-3" /> {t(`hiitCat_${w.category}` as any)}
-                </span>
-              </div>
+                      <div className="flex items-center gap-3 text-[11px] text-muted-foreground mb-3 mt-2">
+                        <span className="flex items-center gap-1">
+                          <Flame className="h-3 w-3" /> {work} {t("hiitRoundsLabel")}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" /> {formatDuration(total)}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Target className="h-3 w-3" /> {t(`hiitCat_${w.category}` as any)}
+                        </span>
+                      </div>
 
-              <Button
-                onClick={() => setActive(w)}
-                className="w-full bg-destructive text-destructive-foreground hover:bg-destructive/90 font-bold uppercase tracking-wider text-xs h-10"
-              >
-                <Play className="h-4 w-4 mr-2" fill="currentColor" />
-                {t("hiitStartSession")}
-              </Button>
+                      <Button
+                        onClick={() => setActive(w)}
+                        className="w-full bg-destructive text-destructive-foreground hover:bg-destructive/90 font-bold uppercase tracking-wider text-xs h-10"
+                      >
+                        <Play className="h-4 w-4 mr-2" fill="currentColor" />
+                        {t("hiitStartSession")}
+                      </Button>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           );
         })}
