@@ -16675,6 +16675,12 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   recoveryLoadVsRecovery: "Carga de entrenamiento vs recuperación (HRV)",
   recoveryTrainingMinutes: "Minutos de entrenamiento",
   recoveryAvgHrv: "HRV media",
+  healthOpenDetails: "Ver detalles",
+  healthWoCount: "Sesiones",
+  healthWoAvgHr: "FC media",
+  healthStepsTitle: "Pasos",
+  healthStepsToday: "Hoy",
+  healthStepsAvg7: "Media 7 días",
 
   // ===== Plan / Program =====
   programLength: "Duración del programa",
