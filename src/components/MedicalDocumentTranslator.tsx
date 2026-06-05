@@ -241,7 +241,7 @@ export function MedicalDocumentTranslator() {
             <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               {t("medDocSummary")}
             </h4>
-            <p className="text-sm text-foreground leading-relaxed">{result.summary}</p>
+            <p className="text-sm text-card-foreground leading-relaxed">{result.summary}</p>
           </div>
 
           {result.keyFindings.length > 0 && (
