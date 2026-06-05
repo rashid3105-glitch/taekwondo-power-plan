@@ -30,6 +30,7 @@ export interface ReflectionOutboxIntent {
   ratings: Record<string, number>;
   reflections: Record<string, string>;
   next_competition_id: string | null;
+  club_id?: string | null;
   // Snapshot for advice generation
   profile: any;
   language: string;
