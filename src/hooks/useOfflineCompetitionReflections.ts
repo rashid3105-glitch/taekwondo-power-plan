@@ -164,6 +164,7 @@ export function useOfflineCompetitionReflections() {
         ratings: input.ratings,
         reflections: input.reflections,
         next_competition_id: input.next_competition_id,
+        ...(activeClubId ? { club_id: activeClubId } : {}),
         profile: input.profile,
         language: input.language,
         recentBaselineScores: input.recentBaselineScores,
