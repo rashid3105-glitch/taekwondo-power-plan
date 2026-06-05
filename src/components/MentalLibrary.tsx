@@ -2,6 +2,7 @@ import { useState } from "react";
 import { getMentalExercises, MENTAL_CATEGORY_LABELS, MENTAL_CATEGORY_ICONS, type MentalCategory } from "@/data/mentalExercises";
 import { MentalExerciseCard } from "./MentalExerciseCard";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { Badge } from "@/components/ui/badge";
 
 const CATEGORIES: MentalCategory[] = ["focus", "visualization", "breathing", "confidence", "recovery", "toughness"];
 
@@ -39,10 +40,25 @@ export function MentalLibrary() {
         ))}
       </div>
 
-      <div className="space-y-2">
-        {filtered.map((exercise, i) => (
-          <MentalExerciseCard key={exercise.id} exercise={exercise} index={i + 1} />
-        ))}
+      <div className="space-y-6">
+        {CATEGORIES.map((cat) => {
+          const catItems = filtered.filter((e) => e.category === cat);
+          if (catItems.length === 0) return null;
+          return (
+            <div key={cat}>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-xl leading-none">{MENTAL_CATEGORY_ICONS[cat]}</span>
+                <h2 className="text-base font-bold text-foreground">{catLabels[cat]}</h2>
+                <Badge variant="secondary" className="text-[10px]">{catItems.length}</Badge>
+              </div>
+              <div className="space-y-2">
+                {catItems.map((exercise, i) => (
+                  <MentalExerciseCard key={exercise.id} exercise={exercise} index={i + 1} />
+                ))}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
