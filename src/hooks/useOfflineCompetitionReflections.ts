@@ -53,6 +53,7 @@ export function useOfflineCompetitionReflections() {
   const [userId, setUserId] = useState<string | null>(null);
   const [pendingCount, setPendingCount] = useState(0);
   const [syncing, setSyncing] = useState(false);
+  const { activeClubId } = useActiveClub();
 
   const recountPending = useCallback(async () => {
     try {
