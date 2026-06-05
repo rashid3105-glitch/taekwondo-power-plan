@@ -192,7 +192,6 @@ export function NutritionLibrary() {
         <AddRecipeForm onClose={() => setShowForm(false)} onAdded={loadUserRecipes} />
       )}
 
-      <div className="space-y-2">
       <div className="space-y-6">
         {(filter === "custom" ? (["custom"] as const) : CATEGORIES).map((cat) => {
           const catItems = cat === "custom"
