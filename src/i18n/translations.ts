@@ -10828,6 +10828,7 @@ const translations = {
     changelog_2026_06_05: "5. Juni 2026",
     changelogEntry140: "Bessere Lesbarkeit: Textfarben folgen jetzt automatisch der Oberfläche, weiße Texte auf hellen Karten sind wieder sichtbar.",
     changelogEntry141: "Coach-Navigation umstrukturiert: Heute und Nachrichten sind jetzt eigene Seiten, und das Coach-Dashboard konzentriert sich auf das Team.",
+    changelogEntry142: "Bibliothek neu organisiert: Übungen, Mental, Rezepte und HIIT verwenden jetzt dieselben Kategorie-Sektionen mit Icons und Anzahl wie Physische Tests.",
     requestEvaluationCTA: "Auswertung anfordern",
     evaluationRequested: "Angefordert",
     evaluationRequestSent: "Auswertung angefordert — der Athlet wird benachrichtigt",
