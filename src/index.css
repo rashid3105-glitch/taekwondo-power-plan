@@ -234,12 +234,12 @@
   .text-heading {
     font-size: 22px;
     font-weight: 800;
-    color: white;
+    color: hsl(var(--foreground));
   }
   .text-subheading {
     font-size: 16px;
     font-weight: 700;
-    color: white;
+    color: hsl(var(--foreground));
   }
   .text-label {
     font-size: 11px;
@@ -250,11 +250,11 @@
   .text-body {
     font-size: 14px;
     font-weight: 400;
-    color: rgba(255, 255, 255, 0.85);
+    color: hsl(var(--foreground) / 0.85);
   }
   .text-caption {
     font-size: 11px;
-    color: rgba(255, 255, 255, 0.5);
+    color: hsl(var(--muted-foreground));
   }
 
 
