@@ -10819,6 +10819,8 @@ const translations = {
     changelogEntry137: "Athleten können den Verletzungs-Reha-Plan jetzt wieder über das Seitenmenü öffnen.",
     changelogEntry138: "Trainer können einen Athleten jetzt direkt aus der Athletenansicht zur Wettkampfauswertung auffordern.",
     changelogEntry139: "Neues Werkzeug in der Bibliothek: Supplemente und Medikamente gegen Anti-Doping-Wissen auf Basis der WADA-Liste prüfen.",
+    changelog_2026_06_05: "5. Juni 2026",
+    changelogEntry140: "Bessere Lesbarkeit: Textfarben folgen jetzt automatisch der Oberfläche, weiße Texte auf hellen Karten sind wieder sichtbar.",
     requestEvaluationCTA: "Auswertung anfordern",
     evaluationRequested: "Angefordert",
     evaluationRequestSent: "Auswertung angefordert — der Athlet wird benachrichtigt",
