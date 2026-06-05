@@ -75,11 +75,6 @@ interface RehabPlan {
   injury_description: string;
 }
 
-const MOOD_ICONS = [Frown, Frown, Meh, Smile, Laugh];
-const MOOD_LABELS = ["Very low", "Low", "Okay", "Good", "Great"];
-const MOOD_COLORS = ["text-destructive", "text-orange-400", "text-yellow-400", "text-emerald-400", "text-emerald-500"];
-const ENERGY_ICONS = [BatteryLow, BatteryLow, BatteryMedium, BatteryFull, BatteryFull];
-const ENERGY_LABELS = ["Drained", "Low", "Moderate", "High", "Peak"];
 
 interface DiaryEntry {
   id: string;
