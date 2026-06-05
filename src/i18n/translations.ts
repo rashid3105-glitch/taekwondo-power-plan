@@ -5427,6 +5427,8 @@ const translations = {
     changelogEntry137: "Atleter kan nu åbne Skade-genoptræning fra sidemenuen igen.",
     changelogEntry138: "Trænere kan nu bede en atlet om at evaluere et stævne direkte fra atletvisningen.",
     changelogEntry139: "Nyt værktøj i Biblioteket: tjek kosttilskud og medicin baseret på viden om antidoping og WADA-listen.",
+    changelog_2026_06_05: "5. juni 2026",
+    changelogEntry140: "Forbedret læsbarhed: tekstfarver følger nu baggrunden automatisk, så hvid tekst på lyse kort ikke længere er usynlig.",
     requestEvaluationCTA: "Bed om evaluering",
     evaluationRequested: "Anmodet",
     evaluationRequestSent: "Evaluering anmodet — atleten får besked",
