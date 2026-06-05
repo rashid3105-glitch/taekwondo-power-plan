@@ -2707,6 +2707,7 @@ const translations = {
     changelogEntry139: "New tool in the Library: check supplements and medicine against anti-doping knowledge based on WADA's list.",
     changelog_2026_06_05: "June 5, 2026",
     changelogEntry140: "Improved readability: text colors now follow the surface automatically, fixing white-on-light text on several screens.",
+    changelogEntry141: "Coach navigation restructured: Today and Messages are now their own pages, and the coach dashboard focuses on the squad.",
     requestEvaluationCTA: "Request evaluation",
     evaluationRequested: "Requested",
     evaluationRequestSent: "Evaluation requested — the athlete will be notified",
