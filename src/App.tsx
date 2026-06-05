@@ -36,6 +36,8 @@ import PendingApproval from "./pages/PendingApproval";
 import AdminApproval from "./pages/AdminApproval";
 import AdminModuleAccess from "./pages/AdminModuleAccess";
 import CoachDashboard from "./pages/CoachDashboard";
+import CoachToday from "./pages/CoachToday";
+import CoachMessages from "./pages/CoachMessages";
 import CoachAthleteOverview from "./pages/CoachAthleteOverview";
 import CoachCompetitions from "./pages/CoachCompetitions";
 import SeasonCalendar from "./pages/SeasonCalendar";
