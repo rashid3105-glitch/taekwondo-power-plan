@@ -16,6 +16,7 @@ import {
   syncCompetitionReflections,
   type ReflectionSyncResult,
 } from "@/lib/competitionReflectionSyncEngine";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 
 interface SubmitInput {
   competition_id: string | null;
