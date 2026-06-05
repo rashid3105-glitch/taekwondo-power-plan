@@ -1,36 +1,51 @@
-## Problem
+# Læsbarheds-fix for rehab-tabben
 
-On mobile, the dashboard header is a single row:
+## Hvad er problemet
+På skærmen "Skade-genoptræningsplan / Forstå et lægedokument" (Dashboard → Rehab) er:
+- kort-titlerne næsten usynlige (hvid tekst på lyst kort)
+- disclaimer-teksten i amber-boksen næsten usynlig (lys tekst på lys gul)
+- placeholder/input-teksten dårligt læsbar
+- "Generer genoptræningsplan"-knappen har hvid tekst på en lys amber-baggrund
 
-`[logo + SPORTSTALENT] ... [ClubSwitcher] [LanguageSwitcher] [EventReminders] [avatar] [hamburger]`
+Årsag: Dashboard-roden tvinger sidebaggrunden til sort via inline `style={{ backgroundColor: "#0a0a0a" }}`, men temaets tokens (lyst athlete-tema vs. mørkt coach-tema) styrer korten uafhængigt. Inde i kortene bruges `text-foreground` — den værdi følger body-temaet og ender ikke nødvendigvis i kontrast med det aktuelle `bg-card`. Det skal være `text-card-foreground`, som er garanteret modparten til `bg-card` i begge temaer. Amber-disclaimeren bruger `text-foreground/90` som også fejler i lyst tema.
 
-When the active club has a long name ("Copenhagen City..."), the `ClubSwitcher` expands and pushes the avatar + hamburger off-screen. Result:
-- Club selector overlaps the "SPORTSTALENT" wordmark.
-- The right-side menu (avatar + burger) is invisible.
+Tidligere kerne-fix (`.text-heading`/`.text-subheading` → `hsl(var(--foreground))`) slår ikke igennem her, fordi disse skærme bruger `text-foreground` direkte og en disclaimer-boks med egen baggrund.
 
-We previously agreed to move the club selector down to its own row.
+## Hvad ændres (kun frontend/styling, ingen logik)
 
-## Fix
+### 1) `src/pages/Dashboard.tsx` — rehab-tabben
+- Erstat `text-foreground` med `text-card-foreground` på alle tekst-elementer inde i de to rehab-kort (titel, "Tidligere planer"-liste).
+- Tilføj `text-card-foreground` på selve kort-wrapperne (`rounded-xl … bg-card …`) så al arvet tekst får korrekt farve.
 
-In `src/pages/Dashboard.tsx` header (around lines 613–662), restructure into two rows on mobile:
+### 2) `src/components/MedicalDocumentTranslator.tsx`
+- Kort-wrapper: tilføj `text-card-foreground`.
+- H3-titlen: skift `text-foreground` → `text-card-foreground`.
+- Disclaimer-boksen (amber): skift `text-foreground/90` → `text-amber-900 dark:text-amber-100` så den er læsbar på den lyse amber-baggrund i begge temaer. Samme for den anden forekomst i resultat-sektionen.
+- Result-blokken: titel-h4'er beholder `text-muted-foreground`; brødtekst/listeitems skiftes til `text-card-foreground`.
+- Filupload-label, valgt filnavn og keyFinding-term: skift `text-foreground` → `text-card-foreground`.
 
-**Row 1 (always visible):**
-- Left: logo + `SPORTSTALENT` wordmark.
-- Right: `LanguageSwitcher`, optional coach season-calendar button, `EventRemindersDropdown`, avatar button, hamburger menu button. (Same components as today — just without the `ClubSwitcher`.)
+### 3) `src/components/RehabPlanCard.tsx`
+- Kort-wrappere (header-kort, faser, øvelsesrækker, "important notes"-boks): tilføj `text-card-foreground` så arvet farve er korrekt.
+- Hvor `text-foreground` bruges direkte (titel, fase-navn, øvelses-navn, sets/reps/rest-tal, "Coaching"-label, important-note-items): skift til `text-card-foreground`.
+- Den røde `text-destructive`-tekst og blå/grønne accent-tekster bevares som de er.
 
-**Row 2 (mobile only):**
-- Full-width `ClubSwitcher` below row 1, only rendered on `sm:hidden`.
+### 4) Generate-knappen
+- I Dashboard.tsx tilføj eksplicit `variant="default"` på "Generer genoptræningsplan"-knappen (samme i `CoachAthleteDetail.tsx` for konsistens) så den altid får `bg-primary text-primary-foreground` og ikke kan blive en lys amber-tone via arvede stilarter. Ingen logikændring.
 
-**Desktop (`sm:` and up):**
-- Keep the existing single-row layout: include `ClubSwitcher` inline in row 1 right side (where there is room). Hide the mobile second row via `sm:hidden`.
+### 5) BackToHub-knappen
+- Tilføj `text-foreground` eksplicit på "Tilbage"-knappens label, så den forbliver læsbar på den sort-tvungne side-baggrund uanset om body er athlete- eller coach-mode.
 
-This guarantees the avatar and hamburger always stay on screen on mobile regardless of club name length, while the club selector gets its own full-width row below.
+## Hvad røres IKKE
+- Edge functions, database, RLS.
+- Logik i rehab-/medical-translator-flow.
+- Globale design-tokens i `index.css` (de seneste ændringer beholdes).
+- Oversættelser (alle nøgler er allerede til stede fra tidligere PR).
 
-## Files to edit
+## Verifikation
+- Åbn /dashboard → Rehab i både athlete (lyst tema) og coach-mode (mørkt tema).
+- Tjek at "Skade-genoptræningsplan" og "Forstå et lægedokument" titler er tydeligt læsbare.
+- Tjek disclaimer-boksen er læsbar i begge temaer.
+- Tjek "Generer"-knappen viser primary-blå med hvid tekst (ikke amber).
+- Tjek tidligere rehab-planer-liste samt resultat-visning fra RehabPlanCard.
 
-- `src/pages/Dashboard.tsx` (header block only, ~lines 613–662)
-- `src/pages/CoachDashboard.tsx` (apply the same two-row pattern if it shares the same overflow issue — verify first; only edit if confirmed)
-
-## Out of scope
-
-No changes to `ClubSwitcher` internals, role logic, routing, RLS, or other tabs.
+## Ingen changelog-bump (rent bugfix).

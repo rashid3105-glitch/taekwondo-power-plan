@@ -236,7 +236,7 @@ export default function Dashboard() {
 
   const BackToHub = ({ onBack, label }: { onBack: () => void; label: string }) => (
     <div className="mb-3">
-      <Button variant="ghost" size="sm" onClick={onBack} className="-ml-2 h-11 sm:h-9">
+      <Button variant="ghost" size="sm" onClick={onBack} className="-ml-2 h-11 sm:h-9 text-white hover:text-white">
         <ArrowLeft className="h-4 w-4 mr-1" /> {label}
       </Button>
     </div>
