@@ -17200,6 +17200,7 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   changelogEntry139: "Nueva herramienta en la Biblioteca: comprueba suplementos y medicación con conocimiento antidopaje basado en la lista WADA.",
   changelog_2026_06_05: "5 de junio de 2026",
   changelogEntry140: "Mejor legibilidad: los colores del texto siguen ahora la superficie automáticamente; el texto blanco sobre tarjetas claras vuelve a verse.",
+  changelogEntry141: "Navegación del entrenador reestructurada: Hoy y Mensajes ahora son páginas propias, y el panel del entrenador se centra en el equipo.",
   requestEvaluationCTA: "Solicitar evaluación",
   evaluationRequested: "Solicitada",
   evaluationRequestSent: "Evaluación solicitada — se notificará al atleta",
