@@ -146,16 +146,16 @@ export function MedicalDocumentTranslator() {
   };
 
   return (
-    <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
+    <div className="rounded-xl border border-border bg-card text-card-foreground p-4 sm:p-5 shadow-card space-y-3">
       <div className="flex items-center gap-2">
         <Stethoscope className="h-5 w-5 text-tab-rehab" />
-        <h3 className="font-bold text-foreground">{t("medDocTitle")}</h3>
+        <h3 className="font-bold text-card-foreground">{t("medDocTitle")}</h3>
       </div>
       <p className="text-xs text-muted-foreground">{t("medDocDescription")}</p>
 
-      <div className="rounded-md border border-amber-500/30 bg-amber-500/10 p-2.5 flex gap-2">
-        <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
-        <p className="text-xs text-foreground/90">{t("medDocDisclaimer")}</p>
+      <div className="rounded-md border border-amber-500/40 bg-amber-500/15 p-2.5 flex gap-2">
+        <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+        <p className="text-xs text-amber-900 dark:text-amber-100">{t("medDocDisclaimer")}</p>
       </div>
 
       {!result && (
