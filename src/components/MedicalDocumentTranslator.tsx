@@ -191,7 +191,7 @@ export function MedicalDocumentTranslator() {
               className="flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border bg-muted/30 px-4 py-6 cursor-pointer hover:bg-muted/50 transition-colors"
             >
               <Upload className="h-6 w-6 text-muted-foreground" />
-              <span className="text-sm font-medium text-foreground">
+              <span className="text-sm font-medium text-card-foreground">
                 {file ? file.name : t("medDocFilePrompt")}
               </span>
               <span className="text-[11px] text-muted-foreground">{t("medDocFileHint")}</span>
