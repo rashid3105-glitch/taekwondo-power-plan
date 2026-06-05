@@ -28,28 +28,33 @@ export async function syncCompetitionReflections(): Promise<ReflectionSyncResult
     );
     for (const intent of intents) {
       try {
-        // 1) Generate AI plan.
-        const { data: planData, error: planErr } = await supabase.functions.invoke(
-          "generate-competition-reflection",
-          {
-            body: {
-              ratings: intent.ratings,
-              reflections: intent.reflections,
-              competition: {
-                name: intent.competition_name,
-                date: intent.competition_date,
-                result: intent.result,
+        // 1) Attempt AI plan (isolated — AI failure must not block INSERT).
+        let plan: any = null;
+        try {
+          const { data: planData, error: planErr } = await supabase.functions.invoke(
+            "generate-competition-reflection",
+            {
+              body: {
+                ratings: intent.ratings,
+                reflections: intent.reflections,
+                competition: {
+                  name: intent.competition_name,
+                  date: intent.competition_date,
+                  result: intent.result,
+                },
+                recentBaselineScores: intent.recentBaselineScores,
+                profile: intent.profile,
+                language: intent.language,
               },
-              recentBaselineScores: intent.recentBaselineScores,
-              profile: intent.profile,
-              language: intent.language,
             },
-          },
-        );
-        if (planErr || (planData as any)?.error) {
-          throw new Error((planData as any)?.error || planErr?.message);
+          );
+          if (!planErr && !(planData as any)?.error) {
+            plan = (planData as any)?.plan ?? null;
+          }
+        } catch (_) {
+          // AI plan failed — proceed with plan=null; user will see "plan coming soon".
         }
-        const plan = (planData as any)?.plan ?? null;
+
 
         // 2) Insert row.
         const { data: inserted, error: insertErr } = await supabase
