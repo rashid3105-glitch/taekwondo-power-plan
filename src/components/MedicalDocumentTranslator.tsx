@@ -265,7 +265,7 @@ export function MedicalDocumentTranslator() {
               <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 {t("medDocTrainingImplications")}
               </h4>
-              <p className="text-sm text-foreground leading-relaxed">{result.trainingImplications}</p>
+              <p className="text-sm text-card-foreground leading-relaxed">{result.trainingImplications}</p>
             </div>
           )}
 
