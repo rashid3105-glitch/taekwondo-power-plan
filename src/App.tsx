@@ -139,6 +139,8 @@ const AnimatedRoutes = () => {
         <Route path="/admin/payments" element={<Page><AdminPayments /></Page>} />
         <Route path="/admin/clubs" element={<Page><AdminClubs /></Page>} />
         <Route path="/coach" element={<Page><CoachDashboard /></Page>} />
+        <Route path="/coach/today" element={<Page><CoachToday /></Page>} />
+        <Route path="/coach/messages" element={<Page><CoachMessages /></Page>} />
         <Route path="/coach/athlete/:athleteId" element={<Page><CoachAthleteOverview /></Page>} />
         <Route path="/coach/competitions" element={<Page><CoachCompetitions /></Page>} />
         <Route path="/coach/season-calendar" element={<Page><SeasonCalendar /></Page>} />
