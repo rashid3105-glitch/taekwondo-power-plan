@@ -198,7 +198,7 @@ export function useOfflineCompetitionReflections() {
       }
       return rec;
     },
-    [userId, recountPending],
+    [userId, recountPending, activeClubId],
   );
 
   const removeReflection = useCallback(
