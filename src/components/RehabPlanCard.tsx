@@ -209,7 +209,7 @@ export function RehabPlanCard({ plan, onDelete }: RehabPlanCardProps) {
   return (
     <Collapsible open={!collapsed} onOpenChange={(open) => setCollapsed(!open)}>
       {/* Header */}
-      <div className="rounded-xl border border-border bg-card p-4 shadow-card">
+      <div className="rounded-xl border border-border bg-card text-card-foreground p-4 shadow-card">
         <div className="flex items-start gap-3">
           <CollapsibleTrigger asChild>
             <button className="h-10 w-10 rounded-lg bg-destructive/10 flex items-center justify-center flex-shrink-0 cursor-pointer hover:bg-destructive/20 transition-colors">
@@ -219,7 +219,7 @@ export function RehabPlanCard({ plan, onDelete }: RehabPlanCardProps) {
           <div className="min-w-0 flex-1">
             <CollapsibleTrigger asChild>
               <button className="text-left cursor-pointer">
-                <h2 className="text-base font-bold text-foreground">{plan.rehabPlanName}</h2>
+                <h2 className="text-base font-bold text-card-foreground">{plan.rehabPlanName}</h2>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   {t("rehabEstimatedRecovery")}: ~{plan.estimatedWeeks} {t("rehabWeeks")}
                 </p>
