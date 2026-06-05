@@ -16220,6 +16220,7 @@ const translations = {
     changelogEntry139: "Nytt verktøy i Biblioteket: sjekk kosttilskudd og medisin basert på antidoping-kunnskap og WADA-listen.",
     changelog_2026_06_05: "5. juni 2026",
     changelogEntry140: "Bedre lesbarhet: tekstfarger følger nå bakgrunnen automatisk, hvit tekst på lyse kort er ikke lenger usynlig.",
+    changelogEntry141: "Coach-navigasjon omstrukturert: I dag og Meldinger er nå egne sider, og coach-dashbordet fokuserer på laget.",
     requestEvaluationCTA: "Be om evaluering",
     evaluationRequested: "Forespurt",
     evaluationRequestSent: "Evaluering forespurt — utøveren får beskjed",
