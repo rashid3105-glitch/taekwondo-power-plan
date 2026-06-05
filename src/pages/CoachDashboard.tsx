@@ -381,43 +381,49 @@ export default function CoachDashboard() {
 
       <main className="container max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {coachUserId && (
-          <Tabs defaultValue="today" className="space-y-4">
-            <div className="flex items-center justify-between gap-2 flex-wrap">
-              <div className="-mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto scrollbar-none w-full sm:w-auto">
-                <TabsList className="w-max">
-                  <TabsTrigger value="today">{t("todayTab")}</TabsTrigger>
-                  <TabsTrigger value="squad">{t("squadTab")}</TabsTrigger>
-                  <TabsTrigger value="messages">{t("messagesTab")}</TabsTrigger>
-                </TabsList>
-              </div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <WeeklySquadExport athletes={athletes as any} />
-                <CoachBulkCreateCompetitionDialog
-                  athletes={athletes.map((a) => ({
-                    user_id: a.user_id,
-                    display_name: a.display_name,
-                    weight_kg: a.weight_kg,
-                    avatar_url: a.avatar_url,
-                  }))}
-                  onCreated={async () => { await loadAthletes(); }}
+          <div className="space-y-4">
+            {/* Beskeder pill */}
+            <button
+              type="button"
+              onClick={() => navigate("/coach/messages")}
+              className="w-full flex items-center justify-between gap-3 rounded-xl border border-primary/40 bg-primary/10 hover:bg-primary/15 transition-colors p-3 sm:p-4"
+            >
+              <span className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                <MessageSquare className="h-4 w-4 text-primary" />
+                {t("messagesTab")}
+              </span>
+              <span className="text-xs text-muted-foreground">{t("messagesTabDescription")}</span>
+            </button>
+
+            {/* Action buttons (previously in tab header) */}
+            <div className="flex items-center gap-2 flex-wrap justify-end">
+              <WeeklySquadExport athletes={athletes as any} />
+              <CoachBulkCreateCompetitionDialog
+                athletes={athletes.map((a) => ({
+                  user_id: a.user_id,
+                  display_name: a.display_name,
+                  weight_kg: a.weight_kg,
+                  avatar_url: a.avatar_url,
+                }))}
+                onCreated={async () => { await loadAthletes(); }}
+              />
+              <CreateAthleteDialog
+                disabled={!isAdmin && athletes.length >= MAX_ATHLETES}
+                onCreated={async () => { await loadAthletes(); }}
+                countLabel={!isAdmin ? `${athletes.length}/${MAX_ATHLETES}` : undefined}
+              />
+              {coachUserId && (
+                <InviteDialog
+                  coachId={coachUserId}
+                  clubId={coachClubId}
+                  pendingCount={0}
+                  approvedCount={athletes.length}
                 />
-                <CreateAthleteDialog
-                  disabled={!isAdmin && athletes.length >= MAX_ATHLETES}
-                  onCreated={async () => { await loadAthletes(); }}
-                  countLabel={!isAdmin ? `${athletes.length}/${MAX_ATHLETES}` : undefined}
-                />
-                {coachUserId && (
-                  <InviteDialog
-                    coachId={coachUserId}
-                    clubId={coachClubId}
-                    pendingCount={0}
-                    approvedCount={athletes.length}
-                  />
-                )}
-              </div>
+              )}
             </div>
 
-            <TabsContent value="squad" className="space-y-4">
+            {/* Squad content (formerly the "squad" tab) */}
+            <div className="space-y-4">
               {coachUserId && <PendingAthletesSection coachId={coachUserId} />}
               {!isAdmin && athletes.length >= MAX_ATHLETES && (
                 <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 flex flex-col sm:flex-row sm:items-center gap-2">
@@ -510,197 +516,8 @@ export default function CoachDashboard() {
                   </div>
                 </div>
               )}
-            </TabsContent>
-
-            <TabsContent value="today" className="space-y-4">
-              <SessionAttendance coachId={coachUserId} athletes={athletes.map((a) => ({ user_id: a.user_id, display_name: a.display_name, avatar_url: a.avatar_url }))} />
-            </TabsContent>
-
-            <TabsContent value="messages" className="space-y-4">
-              {athletes.length === 0 ? (
-                <div className="rounded-xl border border-border bg-card p-12 text-center shadow-card">
-                  <MessageSquare className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
-                  <h3 className="font-bold text-foreground mb-1">{t("messagesTab")}</h3>
-                  <p className="text-sm text-muted-foreground">{t("messagesNoAthletes")}</p>
-                </div>
-              ) : (
-                <>
-                  {/* Header card */}
-                  <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-1">
-                    <h3 className="font-bold text-foreground flex items-center gap-2">
-                      <MessageSquare className="h-5 w-5 text-primary" /> {t("messagesTab")}
-                    </h3>
-                    <p className="text-xs text-muted-foreground">{t("messagesTabDescription")}</p>
-                  </div>
-
-                  {/* Recipient picker */}
-                  <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
-                    <div className="flex items-center justify-between gap-2 flex-wrap">
-                      <h4 className="text-sm font-semibold text-foreground">{t("recipientsLabel")}</h4>
-                      <span className="text-xs text-muted-foreground">
-                        {t("selectedCount")
-                          .replace("{n}", String(messageRecipientIds.size))
-                          .replace("{total}", String(athletes.length))}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="relative flex-1">
-                        <Search className="h-3.5 w-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                        <Input
-                          value={messageSearch}
-                          onChange={(e) => setMessageSearch(e.target.value)}
-                          placeholder={t("searchAthletes")}
-                          className="pl-8 h-9"
-                        />
-                      </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-9 text-xs whitespace-nowrap"
-                        onClick={() => {
-                          if (messageRecipientIds.size === athletes.length) {
-                            setMessageRecipientIds(new Set());
-                          } else {
-                            setMessageRecipientIds(new Set(athletes.map((a) => a.user_id)));
-                          }
-                        }}
-                      >
-                        {messageRecipientIds.size === athletes.length ? t("clearSelection") : t("selectAll")}
-                      </Button>
-                    </div>
-                    <div className="max-h-72 overflow-y-auto rounded-md border border-border divide-y divide-border">
-                      {athletes
-                        .filter((a) =>
-                          !messageSearch.trim()
-                            ? true
-                            : (a.display_name || "").toLowerCase().includes(messageSearch.toLowerCase())
-                        )
-                        .map((a) => {
-                          const checked = messageRecipientIds.has(a.user_id);
-                          return (
-                            <label
-                              key={a.user_id}
-                              className="flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-muted/40 transition-colors"
-                            >
-                              <Checkbox
-                                checked={checked}
-                                onCheckedChange={() => toggleRecipient(a.user_id)}
-                              />
-                              <AvatarImg avatarUrl={a.avatar_url} />
-                              <div className="min-w-0 flex-1">
-                                <p className="text-sm font-medium text-foreground truncate">
-                                  {a.display_name || t("noName")}
-                                </p>
-                                <div className="flex items-center gap-1.5 flex-wrap">
-                                  {a.club_name && (
-                                    <span className="inline-flex items-center gap-0.5 text-[10px] text-muted-foreground">
-                                      <Building className="h-2.5 w-2.5" />
-                                      {a.club_name}
-                                    </span>
-                                  )}
-                                  <p className="text-[10px] text-muted-foreground truncate">{a.athlete_code}</p>
-                                </div>
-                              </div>
-                            </label>
-                          );
-                        })}
-                    </div>
-                  </div>
-
-                  {/* Composer card */}
-                  {messageRecipientIds.size > 0 && (
-                    <div className="rounded-xl border-2 border-primary/40 bg-card p-4 sm:p-5 shadow-card space-y-3 animate-fade-in">
-                      <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                        <Send className="h-4 w-4 text-primary" /> {t("composerTitle")}
-                      </h4>
-                      <div className="space-y-1">
-                        <Label className="text-xs">{t("messageSubjectLabel")}</Label>
-                        <Input
-                          value={messageSubject}
-                          onChange={(e) => setMessageSubject(e.target.value)}
-                          maxLength={200}
-                          placeholder={t("messageSubjectPlaceholder")}
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <Label className="text-xs">{t("messageBodyLabel")}</Label>
-                        <Textarea
-                          value={messageBody}
-                          onChange={(e) => setMessageBody(e.target.value)}
-                          rows={5}
-                          maxLength={5000}
-                          placeholder={t("messageBodyPlaceholder")}
-                        />
-                      </div>
-                      <div className="flex flex-col sm:flex-row gap-2">
-                        <Button
-                          onClick={async () => {
-                            if (!messageSubject.trim()) {
-                              toast({ title: t("error"), description: t("messageSubjectRequired"), variant: "destructive" });
-                              return;
-                            }
-                            const recipients = athletes.filter((a) => messageRecipientIds.has(a.user_id));
-                            if (recipients.length === 0) return;
-                            setSendingMessage(true);
-                            try {
-                              const { data, error } = await supabase.functions.invoke("send-coach-message", {
-                                body: {
-                                  athleteIds: recipients.map((a) => a.user_id),
-                                  subject: messageSubject.trim(),
-                                  body: messageBody.trim(),
-                                },
-                              });
-                              if (error || (data as any)?.error) {
-                                throw new Error(error?.message || (data as any)?.error);
-                              }
-                              toast({
-                                title: t("messageSent"),
-                                description: `${(data as any)?.inserted || 0} ${t("delivered")} · ${(data as any)?.emailed || 0} ${t("emailed")}`,
-                              });
-                              setMessageSubject("");
-                              setMessageBody("");
-                              setMessageRecipientIds(new Set());
-                            } catch (err: any) {
-                              toast({ title: t("error"), description: err.message, variant: "destructive" });
-                            } finally {
-                              setSendingMessage(false);
-                            }
-                          }}
-                          disabled={sendingMessage}
-                          className="flex-1"
-                        >
-                          {sendingMessage ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <>
-                              <Send className="h-4 w-4 mr-1" /> {t("bulkSendMessage")}
-                            </>
-                          )}
-                        </Button>
-                        <Button
-                          variant="outline"
-                          onClick={() => setReminderOpen(true)}
-                          disabled={sendingMessage}
-                          className="flex-1"
-                        >
-                          <Bell className="h-4 w-4 mr-1" /> {t("sendReminderInstead")}
-                        </Button>
-                      </div>
-                      <p className="text-[10px] text-muted-foreground">{t("messageDeliveryNote")}</p>
-                    </div>
-                  )}
-
-                  {/* Sent history (messages + reminders) */}
-                  <CoachSentHistory
-                    coachId={coachUserId}
-                    athleteNames={Object.fromEntries(
-                      [...athletes, ...clubAthletes].map((a) => [a.user_id, a.display_name])
-                    )}
-                  />
-                </>
-              )}
-            </TabsContent>
-          </Tabs>
+            </div>
+          </div>
         )}
 
         {/* Reminder dialog (used from Messages tab) */}
