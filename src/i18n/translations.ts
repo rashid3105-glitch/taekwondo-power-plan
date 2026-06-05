@@ -16226,6 +16226,7 @@ const translations = {
     changelog_2026_06_05: "5. juni 2026",
     changelogEntry140: "Bedre lesbarhet: tekstfarger følger nå bakgrunnen automatisk, hvit tekst på lyse kort er ikke lenger usynlig.",
     changelogEntry141: "Coach-navigasjon omstrukturert: I dag og Meldinger er nå egne sider, og coach-dashbordet fokuserer på laget.",
+    changelogEntry142: "Bibliotek omorganisert: Øvelser, Mental, Oppskrifter og HIIT bruker nå samme kategoriseksjoner med ikoner og antall som Fysiske tester.",
     requestEvaluationCTA: "Be om evaluering",
     evaluationRequested: "Forespurt",
     evaluationRequestSent: "Evaluering forespurt — utøveren får beskjed",
