@@ -328,13 +328,13 @@ function RehabExerciseRow({ exercise, index }: { exercise: any; index: number })
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="rounded-lg border border-border bg-card overflow-hidden">
+    <div className="rounded-lg border border-border bg-card text-card-foreground overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
         className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-secondary/40 transition-colors cursor-pointer"
       >
         <span className="mono text-xs text-muted-foreground w-5">{String(index).padStart(2, "0")}</span>
-        <span className="font-semibold text-sm flex-1 text-left text-foreground">{exercise.name}</span>
+        <span className="font-semibold text-sm flex-1 text-left text-card-foreground">{exercise.name}</span>
         <span className="text-xs text-muted-foreground">{exercise.sets}×{exercise.reps}</span>
         {open ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
       </button>
@@ -344,21 +344,21 @@ function RehabExerciseRow({ exercise, index }: { exercise: any; index: number })
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             <div className="rounded-md bg-muted p-2">
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("rehabSetsReps")}</p>
-              <p className="text-sm font-bold text-foreground">{exercise.sets} × {exercise.reps}</p>
+              <p className="text-sm font-bold text-card-foreground">{exercise.sets} × {exercise.reps}</p>
             </div>
             <div className="rounded-md bg-muted p-2">
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("rehabRest")}</p>
-              <p className="text-sm font-bold text-foreground">{exercise.rest}</p>
+              <p className="text-sm font-bold text-card-foreground">{exercise.rest}</p>
             </div>
             {exercise.tempo && (
               <div className="rounded-md bg-muted p-2">
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("rehabTempo")}</p>
-                <p className="text-sm font-bold text-foreground">{exercise.tempo}</p>
+                <p className="text-sm font-bold text-card-foreground">{exercise.tempo}</p>
               </div>
             )}
           </div>
           <p className="text-xs text-muted-foreground">
-            <span className="font-semibold text-foreground">{t("rehabCoaching")}: </span>{exercise.coachingCue}
+            <span className="font-semibold text-card-foreground">{t("rehabCoaching")}: </span>{exercise.coachingCue}
           </p>
           <p className="text-xs text-primary/80">
             <span className="font-semibold text-primary">{t("rehabWhy")}: </span>{exercise.whyItMatters}
