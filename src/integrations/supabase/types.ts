@@ -965,6 +965,7 @@ export type Database = {
       competition_reflections: {
         Row: {
           ai_plan: Json | null
+          club_id: string | null
           competition_date: string | null
           competition_id: string | null
           competition_name: string | null
@@ -979,6 +980,7 @@ export type Database = {
         }
         Insert: {
           ai_plan?: Json | null
+          club_id?: string | null
           competition_date?: string | null
           competition_id?: string | null
           competition_name?: string | null
@@ -993,6 +995,7 @@ export type Database = {
         }
         Update: {
           ai_plan?: Json | null
+          club_id?: string | null
           competition_date?: string | null
           competition_id?: string | null
           competition_name?: string | null
@@ -1006,6 +1009,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "competition_reflections_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "competition_reflections_competition_id_fkey"
             columns: ["competition_id"]
