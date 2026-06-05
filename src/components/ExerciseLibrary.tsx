@@ -311,8 +311,6 @@ export function ExerciseLibrary() {
         <AddExerciseForm onClose={() => setShowForm(false)} onAdded={loadUserExercises} />
       )}
 
-      {/* Exercise list */}
-      <div className="space-y-2">
       {/* Exercise list — grouped by category sections */}
       <div className="space-y-6">
         {(filter === "custom" ? ["custom" as const] : CATEGORIES).map((cat) => {
