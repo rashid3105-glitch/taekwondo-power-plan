@@ -283,14 +283,14 @@ export function RehabPlanCard({ plan, onDelete }: RehabPlanCardProps) {
       {/* Phases */}
       <div className="space-y-2">
         {plan.phases?.map((phase: any, i: number) => (
-          <div key={i} className={cn("rounded-xl border overflow-hidden transition-all", PHASE_COLORS[i] || "border-border bg-card")}>
+          <div key={i} className={cn("rounded-xl border overflow-hidden transition-all text-card-foreground", PHASE_COLORS[i] || "border-border bg-card")}>
             <button
               onClick={() => setOpenPhase(openPhase === i ? null : i)}
               className="w-full flex items-center gap-3 p-4 cursor-pointer hover:bg-secondary/30 transition-colors"
             >
               <span className={cn("h-3 w-3 rounded-full flex-shrink-0", PHASE_DOT[i] || "bg-muted")} />
               <div className="flex-1 text-left">
-                <p className="text-sm font-bold text-foreground">{phase.phase}</p>
+                <p className="text-sm font-bold text-card-foreground">{phase.phase}</p>
                 <p className="text-xs text-muted-foreground">Weeks {phase.weeks} · {phase.goal}</p>
               </div>
               {openPhase === i ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
@@ -304,7 +304,7 @@ export function RehabPlanCard({ plan, onDelete }: RehabPlanCardProps) {
                     <ArrowRight className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
                     <div>
                       <p className="text-[10px] uppercase tracking-wider text-primary font-bold mb-0.5">{t("rehabProgressWhen")}:</p>
-                      <p className="text-xs text-foreground">{phase.criteria}</p>
+                      <p className="text-xs text-card-foreground">{phase.criteria}</p>
                     </div>
                   </div>
                 )}
