@@ -17207,6 +17207,7 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   changelog_2026_06_05: "5 de junio de 2026",
   changelogEntry140: "Mejor legibilidad: los colores del texto siguen ahora la superficie automáticamente; el texto blanco sobre tarjetas claras vuelve a verse.",
   changelogEntry141: "Navegación del entrenador reestructurada: Hoy y Mensajes ahora son páginas propias, y el panel del entrenador se centra en el equipo.",
+  changelogEntry142: "Biblioteca reorganizada: Ejercicios, Mental, Recetas y HIIT usan ahora las mismas secciones por categoría con iconos y contadores que las Pruebas físicas.",
   requestEvaluationCTA: "Solicitar evaluación",
   evaluationRequested: "Solicitada",
   evaluationRequestSent: "Evaluación solicitada — se notificará al atleta",
