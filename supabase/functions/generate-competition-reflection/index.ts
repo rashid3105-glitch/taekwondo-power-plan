@@ -4,7 +4,7 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { checkAIEntitlement } from "../_shared/checkEntitlement.ts";
+
 import { sanitizePromptText } from "../_shared/sanitizePrompt.ts";
 
 const corsHeaders = {
@@ -31,8 +31,7 @@ serve(async (req) => {
     if (claimsError || !claimsData?.claims) return json({ error: "Unauthorized" }, 401);
 
     const userId = (claimsData.claims as any).sub as string;
-    const notEntitled = await checkAIEntitlement(userId, corsHeaders);
-    if (notEntitled) return notEntitled;
+    void userId;
 
     const raw = await req.text();
     if (raw.length > 10000) return json({ error: "Request too large" }, 400);
