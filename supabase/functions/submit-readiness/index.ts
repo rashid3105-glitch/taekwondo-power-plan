@@ -40,8 +40,13 @@ Deno.serve(async (req) => {
     const { score, recommendation } = computeScore(parsed.data);
     const today = new Date().toISOString().slice(0, 10);
 
+    // Look up the athlete's club_id so the row is stamped for multi-club isolation.
+    const { data: prof } = await supa.from("profiles").select("club_id").eq("user_id", user.id).maybeSingle();
+    const clubId = (prof as any)?.club_id ?? null;
+
     const { data, error } = await supa.from("readiness_checkins").upsert({
       user_id: user.id, checkin_date: today, ...parsed.data, score, recommendation,
+      ...(clubId ? { club_id: clubId } : {}),
     }, { onConflict: "user_id,checkin_date" }).select().single();
 
     if (error) return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });

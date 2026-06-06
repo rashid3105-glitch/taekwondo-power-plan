@@ -53,6 +53,12 @@ serve(async (req) => {
     const isAdmin = (roles || []).some((r: any) => r.role === "admin");
     if (!isAdmin && !link) return j({ error: "Forbidden — not this athlete's coach" }, 403);
 
+    // Stamp club_id from the TARGET athlete's profile so the row is correctly
+    // isolated to the athlete's club.
+    const { data: targetProf } = await admin
+      .from("profiles").select("club_id").eq("user_id", athlete_id).maybeSingle();
+    const targetClubId = (targetProf as any)?.club_id ?? null;
+
     const { data: inserted, error } = await admin
       .from("competitions")
       .insert({
@@ -62,6 +68,7 @@ serve(async (req) => {
         weight_class_kg: wc,
         priority: priority || "A",
         location: location?.slice(0, 200) || null,
+        ...(targetClubId ? { club_id: targetClubId } : {}),
       })
       .select()
       .single();
