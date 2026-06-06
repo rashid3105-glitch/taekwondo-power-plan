@@ -53,8 +53,21 @@ function openDB(): Promise<IDBDatabase> {
         db.createObjectStore("outbox", { keyPath: "key" });
       }
     };
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
+    req.onsuccess = () => {
+      const db = req.result;
+      db.onversionchange = () => {
+        db.close();
+        dbPromise = null;
+      };
+      (db as any).onclose = () => {
+        dbPromise = null;
+      };
+      resolve(db);
+    };
+    req.onerror = () => {
+      dbPromise = null;
+      reject(req.error);
+    };
   });
   return dbPromise;
 }
@@ -64,16 +77,32 @@ function tx<T>(
   mode: IDBTransactionMode,
   fn: (s: IDBObjectStore) => IDBRequest<T>,
 ): Promise<T> {
-  return openDB().then(
-    (db) =>
-      new Promise<T>((resolve, reject) => {
-        const transaction = db.transaction(storeName, mode);
-        const store = transaction.objectStore(storeName);
-        const req = fn(store);
-        req.onsuccess = () => resolve(req.result);
-        req.onerror = () => reject(req.error);
-      }),
-  );
+  const run = (db: IDBDatabase) =>
+    new Promise<T>((resolve, reject) => {
+      let transaction: IDBTransaction;
+      try {
+        transaction = db.transaction(storeName, mode);
+      } catch (e) {
+        dbPromise = null;
+        reject(e);
+        return;
+      }
+      const store = transaction.objectStore(storeName);
+      const req = fn(store);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  return openDB()
+    .then(run)
+    .catch((e: any) => {
+      const closing =
+        e && (e.name === "InvalidStateError" || String(e?.message || "").includes("closing"));
+      if (closing) {
+        dbPromise = null;
+        return openDB().then(run);
+      }
+      throw e;
+    });
 }
 
 export async function putCachedReflection(rec: CachedReflection): Promise<void> {
