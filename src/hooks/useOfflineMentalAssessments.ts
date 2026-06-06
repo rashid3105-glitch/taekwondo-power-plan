@@ -159,7 +159,7 @@ export function useOfflineMentalAssessments() {
       }
       return rec;
     },
-    [userId],
+    [userId, activeClubId],
   );
 
   const removeAssessment = useCallback(
