@@ -12,6 +12,7 @@ import {
   type CachedAssessment,
 } from "@/lib/mentalAssessmentOfflineDB";
 import { syncMentalAssessments } from "@/lib/mentalAssessmentSyncEngine";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 
 interface SubmitInput {
   total_score: number;
@@ -50,6 +51,7 @@ export function useOfflineMentalAssessments() {
   const [assessments, setAssessments] = useState<CachedAssessment[]>([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
+  const { activeClubId } = useActiveClub();
 
   const refresh = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -137,6 +139,7 @@ export function useOfflineMentalAssessments() {
         answers: input.answers,
         profile: input.profile,
         language: input.language,
+        club_id: activeClubId ?? null,
         queued_at: Date.now(),
       });
       setAssessments(await listCachedAssessments(uid));
