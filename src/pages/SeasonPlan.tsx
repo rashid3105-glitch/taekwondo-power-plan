@@ -15,6 +15,7 @@ import { Watermark } from "@/components/Watermark";
 import { AppFooter } from "@/components/AppFooter";
 import { SeasonTimeline } from "@/components/season/SeasonTimeline";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 import {
   PHASE_META, PHASE_TYPES, generateDefaultPhases, currentPhase, uid, todayISO, addDays,
   type SeasonPhase, type SeasonMilestone, type PhaseType,
@@ -35,6 +36,7 @@ export default function SeasonPlan() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
+  const { activeClubId } = useActiveClub();
   const [params] = useSearchParams();
   const athleteIdParam = params.get("athlete"); // coach-mode override
 
@@ -96,6 +98,7 @@ export default function SeasonPlan() {
     const { data, error } = await supabase.from("season_plans").insert({
       user_id: ownerId, name, season_start: seasonStart, season_end: seasonEnd,
       phases: phases as any, milestones: milestones as any,
+      ...(activeClubId ? { club_id: activeClubId } : {}),
     }).select().single();
     if (error) { toast({ title: t("seasonCouldNotCreate"), description: error.message, variant: "destructive" }); return; }
     setPlan({ ...(data as any), phases, milestones } as SeasonPlanRow);

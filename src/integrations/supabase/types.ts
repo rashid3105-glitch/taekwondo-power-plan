@@ -1034,6 +1034,7 @@ export type Database = {
       }
       competitions: {
         Row: {
+          club_id: string | null
           created_at: string
           event_date: string
           id: string
@@ -1049,6 +1050,7 @@ export type Database = {
           weight_class_kg: number | null
         }
         Insert: {
+          club_id?: string | null
           created_at?: string
           event_date: string
           id?: string
@@ -1064,6 +1066,7 @@ export type Database = {
           weight_class_kg?: number | null
         }
         Update: {
+          club_id?: string | null
           created_at?: string
           event_date?: string
           id?: string
@@ -1078,7 +1081,15 @@ export type Database = {
           user_id?: string
           weight_class_kg?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "competitions_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       contact_submissions: {
         Row: {
@@ -1343,6 +1354,7 @@ export type Database = {
       }
       form_curve_weekly: {
         Row: {
+          club_id: string | null
           composite_score: number
           computed_at: string
           load: number
@@ -1353,6 +1365,7 @@ export type Database = {
           week_start: string
         }
         Insert: {
+          club_id?: string | null
           composite_score?: number
           computed_at?: string
           load?: number
@@ -1363,6 +1376,7 @@ export type Database = {
           week_start: string
         }
         Update: {
+          club_id?: string | null
           composite_score?: number
           computed_at?: string
           load?: number
@@ -1372,7 +1386,15 @@ export type Database = {
           user_id?: string
           week_start?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "form_curve_weekly_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       health_data: {
         Row: {
@@ -1571,6 +1593,7 @@ export type Database = {
         Row: {
           ai_advice: string | null
           answers: Json
+          club_id: string | null
           created_at: string
           id: string
           scores: Json
@@ -1580,6 +1603,7 @@ export type Database = {
         Insert: {
           ai_advice?: string | null
           answers?: Json
+          club_id?: string | null
           created_at?: string
           id?: string
           scores?: Json
@@ -1589,13 +1613,22 @@ export type Database = {
         Update: {
           ai_advice?: string | null
           answers?: Json
+          club_id?: string | null
           created_at?: string
           id?: string
           scores?: Json
           total_score?: number
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "mental_assessments_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       notification_preferences: {
         Row: {
@@ -1768,6 +1801,7 @@ export type Database = {
       physical_test_results: {
         Row: {
           category: string
+          club_id: string | null
           created_at: string
           id: string
           notes: string | null
@@ -1781,6 +1815,7 @@ export type Database = {
         }
         Insert: {
           category?: string
+          club_id?: string | null
           created_at?: string
           id?: string
           notes?: string | null
@@ -1794,6 +1829,7 @@ export type Database = {
         }
         Update: {
           category?: string
+          club_id?: string | null
           created_at?: string
           id?: string
           notes?: string | null
@@ -1805,7 +1841,15 @@ export type Database = {
           user_id?: string
           value?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "physical_test_results_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -2022,6 +2066,7 @@ export type Database = {
       readiness_checkins: {
         Row: {
           checkin_date: string
+          club_id: string | null
           created_at: string
           id: string
           is_sick: boolean
@@ -2035,6 +2080,7 @@ export type Database = {
         }
         Insert: {
           checkin_date?: string
+          club_id?: string | null
           created_at?: string
           id?: string
           is_sick?: boolean
@@ -2048,6 +2094,7 @@ export type Database = {
         }
         Update: {
           checkin_date?: string
+          club_id?: string | null
           created_at?: string
           id?: string
           is_sick?: boolean
@@ -2059,7 +2106,15 @@ export type Database = {
           soreness?: number
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "readiness_checkins_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       recipe_photo_overrides: {
         Row: {
@@ -2134,6 +2189,7 @@ export type Database = {
       }
       season_plans: {
         Row: {
+          club_id: string | null
           created_at: string
           id: string
           is_active: boolean
@@ -2146,6 +2202,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          club_id?: string | null
           created_at?: string
           id?: string
           is_active?: boolean
@@ -2158,6 +2215,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          club_id?: string | null
           created_at?: string
           id?: string
           is_active?: boolean
@@ -2169,7 +2227,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "season_plans_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       session_attendance: {
         Row: {
@@ -2949,6 +3015,7 @@ export type Database = {
       }
       wearable_connections: {
         Row: {
+          club_id: string | null
           connected_at: string
           device_label: string | null
           granted_scopes: string[]
@@ -2961,6 +3028,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          club_id?: string | null
           connected_at?: string
           device_label?: string | null
           granted_scopes?: string[]
@@ -2973,6 +3041,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          club_id?: string | null
           connected_at?: string
           device_label?: string | null
           granted_scopes?: string[]
@@ -2984,7 +3053,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "wearable_connections_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       wearable_daily_summary: {
         Row: {
@@ -3113,6 +3190,7 @@ export type Database = {
       }
       weight_logs: {
         Row: {
+          club_id: string | null
           created_at: string
           id: string
           log_date: string
@@ -3121,6 +3199,7 @@ export type Database = {
           weight_kg: number
         }
         Insert: {
+          club_id?: string | null
           created_at?: string
           id?: string
           log_date?: string
@@ -3129,6 +3208,7 @@ export type Database = {
           weight_kg: number
         }
         Update: {
+          club_id?: string | null
           created_at?: string
           id?: string
           log_date?: string
@@ -3136,7 +3216,15 @@ export type Database = {
           user_id?: string
           weight_kg?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "weight_logs_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       workout_log_feedback: {
         Row: {

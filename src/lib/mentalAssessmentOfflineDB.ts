@@ -25,6 +25,8 @@ export interface MentalAssessmentOutboxIntent {
   total_score: number;
   scores: Record<string, number>;
   answers: Record<string, number>;
+  // Snapshot of the active club at queue time so the row is stamped on INSERT.
+  club_id?: string | null;
   // Snapshot of the profile/language used to request advice.
   profile: any;
   language: string;

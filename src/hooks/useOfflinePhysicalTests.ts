@@ -12,6 +12,7 @@ import {
   type CachedTestResult,
 } from "@/lib/physicalTestOfflineDB";
 import { syncPhysicalTests } from "@/lib/physicalTestSyncEngine";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 
 export interface NewTestInput {
   user_id: string;
@@ -33,6 +34,7 @@ function uuid() {
 export function useOfflinePhysicalTests(targetUserId: string | null) {
   const [results, setResults] = useState<CachedTestResult[]>([]);
   const [loading, setLoading] = useState(true);
+  const { activeClubId } = useActiveClub();
 
   const refresh = useCallback(async () => {
     if (!targetUserId) {
@@ -105,6 +107,7 @@ export function useOfflinePhysicalTests(targetUserId: string | null) {
       await queueTestIntent({
         key: localId,
         ...input,
+        club_id: activeClubId ?? null,
         queued_at: Date.now(),
       });
       setResults(await listCachedResults(input.user_id));
@@ -113,7 +116,7 @@ export function useOfflinePhysicalTests(targetUserId: string | null) {
         if (r.flushed > 0) setResults(await listCachedResults(input.user_id));
       }
     },
-    [],
+    [activeClubId],
   );
 
   const removeResult = useCallback(

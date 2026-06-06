@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ArrowLeft, Trophy, MapPin, Calendar, Users, Sparkles, CheckCircle2, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 
 interface Comp {
   id: string;
@@ -66,6 +67,7 @@ export default function CoachCompetitions() {
   const { t } = useLanguage();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { activeClubId } = useActiveClub();
   const [comps, setComps] = useState<Comp[]>([]);
   const [myAthletes, setMyAthletes] = useState<{ user_id: string; display_name: string }[]>([]);
   const [loading, setLoading] = useState(true);
@@ -202,6 +204,7 @@ export default function CoachCompetitions() {
         location: group.location,
         priority: group.priority,
         result: null,
+        ...(activeClubId ? { club_id: activeClubId } : {}),
       } as any).select("id").single();
       if (error) throw error;
       const athleteName = myAthletes.find(a => a.user_id === athleteId)?.display_name || "—";

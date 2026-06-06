@@ -58,6 +58,7 @@ export async function syncMentalAssessments(): Promise<MentalAssessmentSyncResul
             total_score: Math.round(intent.total_score),
             // ai_advice column is text — store as JSON string (parseAdvice normalises on read).
             ai_advice: advice ? JSON.stringify(advice) : null,
+            ...(intent.club_id ? { club_id: intent.club_id } : {}),
           } as any)
           .select("id, created_at")
           .single();

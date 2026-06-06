@@ -15,6 +15,7 @@ import { Watermark } from "@/components/Watermark";
 import { AppFooter } from "@/components/AppFooter";
 import { CompetitionPlanDialog } from "@/components/CompetitionPlanDialog";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 
 interface Competition {
   id: string;
@@ -34,6 +35,7 @@ export default function Competitions() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
+  const { activeClubId } = useActiveClub();
   const [comps, setComps] = useState<Competition[]>([]);
   const [pastComps, setPastComps] = useState<Competition[]>([]);
   const [reflectedIds, setReflectedIds] = useState<Set<string>>(new Set());
@@ -84,6 +86,7 @@ export default function Competitions() {
       user_id: user.id, name, event_date: date,
       weight_class_kg: weightClass ? parseFloat(weightClass) : null,
       priority, location: location || null,
+      ...(activeClubId ? { club_id: activeClubId } : {}),
     });
     if (error) { toast({ title: t("error"), description: error.message, variant: "destructive" }); return; }
     setName(""); setDate(""); setWeightClass(""); setLocation(""); setPriority("A"); setCreateOpen(false);
@@ -109,7 +112,7 @@ export default function Competitions() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
     const today = new Date().toISOString().slice(0, 10);
-    const { error } = await supabase.from("weight_logs").upsert({ user_id: user.id, log_date: today, weight_kg: w }, { onConflict: "user_id,log_date" });
+    const { error } = await supabase.from("weight_logs").upsert({ user_id: user.id, log_date: today, weight_kg: w, ...(activeClubId ? { club_id: activeClubId } : {}) }, { onConflict: "user_id,log_date" });
     if (error) { toast({ title: t("error"), description: error.message, variant: "destructive" }); return; }
     setTodayWeight("");
     toast({ title: t("competitionsWeightLogged") });
