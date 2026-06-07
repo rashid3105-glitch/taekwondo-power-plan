@@ -11,8 +11,8 @@ import { useAvatarUrl } from "@/hooks/useAvatarUrl";
 import { toast } from "sonner";
 
 const cardCls = "rounded-xl bg-white/[0.03] border border-white/10 p-5 sm:p-6";
-const sectionTitleCls = "text-xs uppercase tracking-wider text-white/35 mb-4";
-const inputCls = "bg-white/[0.04] border-white/10 text-white placeholder:text-white/30 focus-visible:ring-white/20";
+const sectionTitleCls = "text-xs uppercase tracking-wider text-white mb-4";
+const inputCls = "bg-white/[0.04] border-white/10 text-white placeholder:text-white/70 focus-visible:ring-white/20";
 
 const ALLOWED_EXT = ["jpg", "jpeg", "png", "webp", "gif"];
 
@@ -344,7 +344,7 @@ export default function ProfileEdit() {
             size="sm"
             onClick={handleBack}
             disabled={saving}
-            className="-ml-2 text-white/70 hover:text-white hover:bg-white/5"
+            className="-ml-2 text-white hover:text-white hover:bg-white/5"
           >
             <ChevronLeft className="h-4 w-4 mr-1" />
             {t("profileBack" as any)}
@@ -382,7 +382,7 @@ export default function ProfileEdit() {
                 {displayedAvatar ? (
                   <img src={displayedAvatar} alt="" className="h-full w-full object-cover" />
                 ) : (
-                  <UserIcon className="h-10 w-10 text-white/40" />
+                  <UserIcon className="h-10 w-10 text-white" />
                 )}
               </div>
               <span
@@ -439,7 +439,7 @@ export default function ProfileEdit() {
                       style={
                         active
                           ? { backgroundColor: "var(--accent-hex)", color: "#000" }
-                          : { backgroundColor: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.7)" }
+                          : { backgroundColor: "rgba(255,255,255,0.06)", color: "#ffffff" }
                       }
                     >
                       {d}
@@ -459,7 +459,7 @@ export default function ProfileEdit() {
             </div>
 
             {licenseFields.length === 0 && !isCoach && (
-              <p className="text-sm text-white/50 py-2">
+              <p className="text-sm text-white py-2">
                 {t("profileLicensesNoFields" as any)}
               </p>
             )}
@@ -470,12 +470,12 @@ export default function ProfileEdit() {
                 return (
                   <div key={f.id} className="rounded-lg border border-white/10 bg-white/[0.02] p-3 space-y-3">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="text-xs uppercase tracking-wider text-white/55 truncate">{f.field_name}</p>
+                      <p className="text-xs uppercase tracking-wider text-white truncate">{f.field_name}</p>
                       {isCoach && (
                         <button
                           type="button"
                           onClick={() => removeLicenseField(f.id)}
-                          className="text-xs text-white/40 hover:text-red-400 px-2 py-1"
+                          className="text-xs text-white hover:text-red-400 px-2 py-1"
                           aria-label="Fjern felt"
                         >
                           Fjern
@@ -526,7 +526,7 @@ export default function ProfileEdit() {
               </div>
             )}
 
-            <p className="text-xs text-white/40 pt-3">
+            <p className="text-xs text-white pt-3">
               {isCoach
                 ? "Du definerer selv hvilke licens- og registreringsfelter der vises."
                 : t("profileLicensesFooter" as any)}
@@ -555,7 +555,7 @@ export default function ProfileEdit() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="space-y-2">
-      <Label className="text-xs uppercase tracking-wider text-white/45">{label}</Label>
+      <Label className="text-xs uppercase tracking-wider text-white">{label}</Label>
       {children}
     </div>
   );

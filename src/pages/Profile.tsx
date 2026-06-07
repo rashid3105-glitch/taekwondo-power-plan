@@ -167,7 +167,7 @@ export default function Profile() {
   const goals = data?.goals || [];
 
   const cardCls = "rounded-xl bg-white/[0.03] border border-white/10 p-5 sm:p-6";
-  const sectionTitleCls = "text-xs uppercase tracking-wider text-white/35 mb-3";
+  const sectionTitleCls = "text-xs uppercase tracking-wider text-white mb-3";
 
   return (
     <div className="min-h-screen text-white" style={{ backgroundColor: "#0a0a0a" }}>
@@ -177,7 +177,7 @@ export default function Profile() {
         noindex
       />
       <div className="mx-auto max-w-2xl px-4 py-6 space-y-5">
-        <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="-ml-2 text-white/70 hover:text-white hover:bg-white/5">
+        <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="-ml-2 text-white hover:text-white hover:bg-white/5">
           <ChevronLeft className="h-4 w-4 mr-1" />
           {t("profileBack" as any)}
         </Button>
@@ -189,7 +189,7 @@ export default function Profile() {
             variant="ghost"
             size="icon"
             onClick={() => navigate("/profile-edit")}
-            className="absolute top-3 right-3 h-9 w-9 rounded-full text-white/70 hover:text-white hover:bg-white/5"
+            className="absolute top-3 right-3 h-9 w-9 rounded-full text-white hover:text-white hover:bg-white/5"
             aria-label={t("profileEdit" as any)}
             style={{ color: "var(--accent-hex)" }}
           >
@@ -211,7 +211,7 @@ export default function Profile() {
               <h1 className="text-base font-semibold text-white truncate">
                 {loading ? "—" : (data?.display_name || t("profileNoName" as any))}
               </h1>
-              <p className="text-sm text-white/50 mt-0.5 truncate">
+              <p className="text-sm text-white mt-0.5 truncate">
                 {data?.club_name || t("profileNoClub" as any)}
               </p>
 
@@ -234,7 +234,7 @@ export default function Profile() {
           <Row label={t("profileSport" as any)} value="Taekwondo" />
           <Separator className="bg-white/10" />
           <div className="py-3">
-            <p className="text-xs text-white/50 mb-2">{t("profileDiscipline" as any)}</p>
+            <p className="text-xs text-white mb-2">{t("profileDiscipline" as any)}</p>
             <div className="flex gap-2">
               {["sparring", "poomsae"].map((d) => {
                 const active = discipline === d;
@@ -245,7 +245,7 @@ export default function Profile() {
                     style={
                       active
                         ? { backgroundColor: "var(--accent-hex)", color: "#000" }
-                        : { backgroundColor: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)" }
+                        : { backgroundColor: "rgba(255,255,255,0.06)", color: "#ffffff" }
                     }
                   >
                     {d}
@@ -256,7 +256,7 @@ export default function Profile() {
           </div>
           <Separator className="bg-white/10" />
           <div className="flex items-center justify-between py-3">
-            <p className="text-sm text-white/60">{t("profileRole" as any)}</p>
+            <p className="text-sm text-white">{t("profileRole" as any)}</p>
             <span
               className="px-3 py-1 rounded-md text-xs font-medium"
               style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
@@ -270,7 +270,7 @@ export default function Profile() {
         <div className={cardCls}>
           <h2 className={sectionTitleCls}>{t("profileLicensesTitle" as any)}</h2>
           {!hasCoach || licenseFields.length === 0 ? (
-            <p className="text-sm text-white/50 text-center py-6">
+            <p className="text-sm text-white text-center py-6">
               {hasCoach ? t("profileLicensesNoFields" as any) : t("profileLicensesNoCoach" as any)}
             </p>
           ) : (
@@ -282,7 +282,7 @@ export default function Profile() {
               const soon = dleft !== null && dleft >= 0 && dleft <= 30;
 
               let badgeText = "";
-              let badgeStyle: React.CSSProperties = { backgroundColor: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)" };
+              let badgeStyle: React.CSSProperties = { backgroundColor: "rgba(255,255,255,0.06)", color: "#ffffff" };
               if (defined) {
                 if (expired) { badgeText = t("profileLicenseExpired" as any); badgeStyle = { backgroundColor: "rgba(239,68,68,0.15)", color: "#ef4444" }; }
                 else if (soon) { badgeText = t("profileLicenseExpiringSoon" as any); badgeStyle = { backgroundColor: "rgba(245,158,11,0.15)", color: "#f59e0b" }; }
@@ -294,16 +294,16 @@ export default function Profile() {
                   {idx > 0 && <Separator className="bg-white/10" />}
                   <div className="flex items-start justify-between gap-3 py-3">
                     <div className="min-w-0 flex-1">
-                      <p className="text-xs text-white/50">{f.field_name}</p>
+                      <p className="text-xs text-white">{f.field_name}</p>
                       {defined ? (
                         <>
                           <p className="text-sm text-white mt-1 truncate">{v?.value}</p>
-                          <p className={`text-xs mt-0.5 ${expired ? "text-red-400" : "text-white/50"}`}>
+                          <p className={`text-xs mt-0.5 ${expired ? "text-red-400" : "text-white"}`}>
                             {t("profileLicenseExpires" as any)}: {fmtDate(v?.expires_at, locale)}
                           </p>
                         </>
                       ) : (
-                        <p className="text-sm text-white/40 italic mt-1">
+                        <p className="text-sm text-white italic mt-1">
                           {t("profileLicenseNotDefined" as any)}
                         </p>
                       )}
@@ -319,7 +319,7 @@ export default function Profile() {
             })
           )}
           <Separator className="bg-white/10" />
-          <p className="text-xs text-white/40 pt-3">
+          <p className="text-xs text-white pt-3">
             {t("profileLicensesFooter" as any)}
           </p>
         </div>
@@ -328,14 +328,14 @@ export default function Profile() {
         <div className={cardCls}>
           <h2 className={sectionTitleCls}>{t("profileGoalsTitle" as any)}</h2>
           {goals.length === 0 ? (
-            <p className="text-sm text-white/50">{t("profileGoalsEmpty" as any)}</p>
+            <p className="text-sm text-white">{t("profileGoalsEmpty" as any)}</p>
           ) : (
             <div className="flex flex-wrap gap-2">
               {goals.map((g) => (
                 <span
                   key={g}
                   className="px-3 py-1 rounded-md text-xs font-medium"
-                  style={{ backgroundColor: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.75)" }}
+                  style={{ backgroundColor: "rgba(255,255,255,0.06)", color: "#ffffff" }}
                 >
                   {g}
                 </span>
@@ -390,7 +390,7 @@ export default function Profile() {
 
         <Button
           variant="ghost"
-          className="w-full h-11 border border-white/10 text-white/80 hover:text-white hover:bg-white/5"
+          className="w-full h-11 border border-white/10 text-white hover:text-white hover:bg-white/5"
           onClick={handleLogout}
         >
           <LogOut className="h-4 w-4 mr-2" />
@@ -405,7 +405,7 @@ export default function Profile() {
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between gap-3 py-3">
-      <p className="text-sm text-white/60">{label}</p>
+      <p className="text-sm text-white">{label}</p>
       <p className="text-sm text-white truncate">{value}</p>
     </div>
   );
@@ -432,7 +432,7 @@ function ActionRow({
       </div>
       <div className="flex-1 min-w-0">
         <p className={`text-sm font-medium ${danger ? "text-red-400" : "text-white"}`}>{label}</p>
-        {sub && <p className="text-xs text-white/50 mt-0.5">{sub}</p>}
+        {sub && <p className="text-xs text-white mt-0.5">{sub}</p>}
       </div>
     </button>
   );
@@ -441,7 +441,7 @@ function ActionRow({
 function MetaCell({ label, value }: { label: string; value: string }) {
   return (
     <div className="min-w-0">
-      <p className="text-xs text-white/45">{label}</p>
+      <p className="text-xs text-white">{label}</p>
       <p className="text-sm text-white truncate mt-0.5">{value}</p>
     </div>
   );
