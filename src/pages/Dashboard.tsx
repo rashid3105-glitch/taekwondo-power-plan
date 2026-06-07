@@ -577,12 +577,14 @@ export default function Dashboard() {
 
       await supabase.from("rehab_plans").update({ is_active: false } as any).eq("user_id", user.id);
 
+      const rehabClubId = activeMembership?.club_id || profile?.club_id || null;
       await supabase.from("rehab_plans").insert({
         user_id: user.id,
         name: data.plan.rehabPlanName || "Rehab Plan",
         injury_description: rehabInjury,
         plan_data: data.plan,
         is_active: true,
+        ...(rehabClubId ? { club_id: rehabClubId } : {}),
       } as any);
 
       setRehabPlan(data.plan);

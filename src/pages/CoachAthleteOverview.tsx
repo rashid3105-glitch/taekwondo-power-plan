@@ -116,7 +116,8 @@ export default function CoachAthleteOverview() {
       .select("id, name, plan_data, is_active, created_at, user_id, injury_description")
       .eq("user_id", athleteId)
       .order("created_at", { ascending: false });
-    if (activeClubId) rehabQ = rehabQ.eq("club_id", activeClubId);
+    // Rehab plans: null-tolerant filter (older plans have club_id = NULL).
+    if (activeClubId) rehabQ = rehabQ.or(`club_id.eq.${activeClubId},club_id.is.null`);
 
     const [profileRes, plansRes, rehabRes, clubsRes] = await Promise.all([
       supabase

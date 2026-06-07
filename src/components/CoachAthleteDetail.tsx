@@ -257,13 +257,15 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
         .update({ is_active: false })
         .eq("user_id", athlete.user_id);
 
+      const rehabClubId = (athlete as any)?.club_id || null;
       const { error: insertError } = await supabase.from("rehab_plans").insert({
         user_id: athlete.user_id,
         name: data.plan.rehabPlanName || "Coach Rehab Plan",
         plan_data: data.plan,
         injury_description: rehabDescription,
         is_active: true,
-      });
+        ...(rehabClubId ? { club_id: rehabClubId } : {}),
+      } as any);
       if (insertError) throw insertError;
 
       toast({ title: t("rehabGenerated") });
