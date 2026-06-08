@@ -87,8 +87,8 @@ export default function JoinInvite() {
 
         {info?.valid && sent && (
           <div className="text-center space-y-3">
-            <h1 className="text-xl font-extrabold">{t("joinRequestSent")}</h1>
-            <p className="text-sm text-muted-foreground">{t("pendingApprovalDesc")}</p>
+            <h1 className="text-xl font-extrabold">{t("joinWelcomeIn")}</h1>
+            <p className="text-sm text-muted-foreground">{t("joinWelcomeInDesc")}</p>
           </div>
         )}
 
