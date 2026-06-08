@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Loader2, ArrowLeft, Plus, Video as VideoIcon, Upload, Download, WifiOff, RefreshCw, Trash2, CloudUpload,
@@ -73,6 +73,13 @@ export default function MatchAnalysis() {
   const [athleteAge, setAthleteAge] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+
+  // Replace-old-video flow
+  const [replaceDialogOpen, setReplaceDialogOpen] = useState(false);
+  const [newVideoId, setNewVideoId] = useState<string | null>(null);
+  const [newVideoPath, setNewVideoPath] = useState<string | null>(null);
+  const [oldVideos, setOldVideos] = useState<MatchVideoRow[]>([]);
+  const [replaceBusy, setReplaceBusy] = useState(false);
 
   useEffect(() => { void init(); /* eslint-disable-next-line */ }, [athleteId, offline.online]);
 
