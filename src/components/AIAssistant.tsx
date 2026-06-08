@@ -143,12 +143,12 @@ export function AIAssistant() {
           left: pos.x,
           top: pos.y,
           zIndex: 40,
-          touchAction: "none",
           userSelect: "none",
         }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
+        onPointerCancel={onPointerCancel}
         onClick={handleClick}
       >
         <button
