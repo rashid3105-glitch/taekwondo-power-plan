@@ -108,7 +108,7 @@ const pageTransition = prefersReducedMotion
     };
 
 const Page = ({ children }: { children: React.ReactNode }) => (
-  <motion.div {...pageTransition} style={{ minHeight: "100%" }}>
+  <motion.div {...pageTransition} style={{ minHeight: "100dvh" }}>
     {children}
   </motion.div>
 );
