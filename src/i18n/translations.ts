@@ -13917,6 +13917,8 @@ const translations = {
     noThanks: "Nei takk",
     backToHome: "Tilbake til forsiden",
     joinRequestSent: "Forespørselen din er sendt",
+    joinWelcomeIn: "Du er med!",
+    joinWelcomeInDesc: "Tar deg til dashbordet…",
     joinInvalid: "Denne invitasjonslenken er ikke lenger gyldig. Be treneren din om en ny lenke.",
     requestRejected: "Forespørsel ikke godkjent",
     requestRejectedDesc: "Forespørselen din ble ikke godkjent. Kontakt treneren din for mer informasjon.",
