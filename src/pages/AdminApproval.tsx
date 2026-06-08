@@ -890,18 +890,18 @@ export default function AdminApproval() {
         {/* Stats overview */}
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
           {[
-            { label: "Total", value: totalUsers, icon: Users, color: "text-foreground" },
-            { label: "Pending", value: pendingCount, icon: UserX, color: "text-yellow-400" },
-            { label: "Paid", value: paidCount, icon: CreditCard, color: "text-green-400" },
-            { label: "Demo", value: demoCount, icon: FlaskConical, color: "text-blue-400" },
-            { label: "Coaches", value: coachCount, icon: Crown, color: "text-purple-400" },
+            { label: "Total", value: totalUsers, icon: Users, color: "text-[#F5C84B]" },
+            { label: "Pending", value: pendingCount, icon: UserX, color: "text-[#F5C84B]" },
+            { label: "Paid", value: paidCount, icon: CreditCard, color: "text-[#F5C84B]" },
+            { label: "Demo", value: demoCount, icon: FlaskConical, color: "text-[#F5C84B]" },
+            { label: "Coaches", value: coachCount, icon: Crown, color: "text-[#F5C84B]" },
           ].map(stat => {
             const Icon = stat.icon;
             return (
-              <div key={stat.label} className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-center space-y-1">
+              <div key={stat.label} className="rounded-xl border border-[#F5C84B]/30 bg-[#0a0a0a] p-3 text-center space-y-1 shadow-md">
                 <Icon className={`h-4 w-4 mx-auto ${stat.color}`} />
-                <p className="text-2xl font-bold text-white">{stat.value}</p>
-                <p className="text-[10px] text-white/60 uppercase tracking-wider">{stat.label}</p>
+                <p className="text-2xl font-bold text-[#F5C84B]">{stat.value}</p>
+                <p className="text-[10px] text-[#F5C84B]/70 uppercase tracking-wider font-semibold">{stat.label}</p>
               </div>
             );
           })}
