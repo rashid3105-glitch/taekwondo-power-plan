@@ -3051,6 +3051,8 @@ const translations = {
     noThanks: "Nej tak",
     backToHome: "Tilbage til forsiden",
     joinRequestSent: "Din anmodning er sendt",
+    joinWelcomeIn: "Du er på holdet!",
+    joinWelcomeInDesc: "Henter dit dashboard…",
     joinInvalid: "Dette invitationslink er ikke længere gyldigt. Bed din træner om et nyt link.",
     requestRejected: "Anmodning ikke godkendt",
     requestRejectedDesc: "Din anmodning er ikke godkendt. Kontakt din træner for mere information.",
