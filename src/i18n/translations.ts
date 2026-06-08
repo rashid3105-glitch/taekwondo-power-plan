@@ -5774,6 +5774,8 @@ const translations = {
     noThanks: "Nej tack",
     backToHome: "Till startsidan",
     joinRequestSent: "Din begäran har skickats",
+    joinWelcomeIn: "Du är med!",
+    joinWelcomeInDesc: "Tar dig till din dashboard…",
     joinInvalid: "Den här inbjudningslänken är inte längre giltig. Be din tränare om en ny länk.",
     requestRejected: "Begäran ej godkänd",
     requestRejectedDesc: "Din begäran godkändes inte. Kontakta din tränare för mer information.",
