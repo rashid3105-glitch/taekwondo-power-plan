@@ -169,6 +169,8 @@ const AnimatedRoutes = () => {
         <Route path="/wearables/sync" element={<Navigate to="/health" replace />} />
         <Route path="/dashboard" element={<Page><Dashboard /></Page>} />
         <Route path="/library" element={<Page><UpgradeGate module="library"><LibraryChooser /></UpgradeGate></Page>} />
+        {/* Antidoping/supplement check is free for all tiers — defined BEFORE the gated :section route so it wins */}
+        <Route path="/library/supplement" element={<Page><Library /></Page>} />
         <Route path="/library/:section" element={<Page><UpgradeGate module="library"><Library /></UpgradeGate></Page>} />
         <Route path="/diary" element={<Page><Diary /></Page>} />
         <Route path="/messages" element={<Page><Messages /></Page>} />
