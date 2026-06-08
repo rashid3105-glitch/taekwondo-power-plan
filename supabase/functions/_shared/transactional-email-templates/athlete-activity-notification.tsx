@@ -5,7 +5,7 @@ import {
 import type { TemplateEntry } from './registry.ts'
 
 const SITE_NAME = "SPORTSTALENT"
-const APP_URL = "https://app.sportstalent.dk"
+const APP_URL = "https://sportstalent.dk/coach"
 
 interface AthleteActivityNotificationProps {
   athleteName?: string
