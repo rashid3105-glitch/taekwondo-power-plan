@@ -8169,6 +8169,7 @@ const translations = {
     changelogEntry140: "Förbättrad läsbarhet: textfärger följer nu ytan automatiskt, vit text på ljusa kort syns igen.",
     changelogEntry141: "Coach-navigering omstrukturerad: Idag och Meddelanden är nu egna sidor, och coach-dashboarden fokuserar på Laget.",
     changelogEntry142: "Biblioteket omorganiserat: Övningar, Mentalt, Recept och HIIT använder nu samma kategorisektioner med ikoner och antal som Fysiska tester.",
+    changelogEntry144: "Tränarinbjudningar godkänns automatiskt: atleter som går med via en tränarinbjudan får direkt åtkomst — ingen admingodkännande.",
     changelogEntry143: "Multi-klubb-isolering förstärkt: nya tävlingar, viktloggar, beredskapscheckar, säsongsplaner, fysiska tester, mentala bedömningar och veckans formkurva stämplas nu med aktiv klubb.",
     requestEvaluationCTA: "Be om utvärdering",
     evaluationRequested: "Begärd",
