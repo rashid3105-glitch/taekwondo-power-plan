@@ -8481,6 +8481,8 @@ const translations = {
     noThanks: "Nein danke",
     backToHome: "Zur Startseite",
     joinRequestSent: "Deine Anfrage wurde gesendet",
+    joinWelcomeIn: "Du bist dabei!",
+    joinWelcomeInDesc: "Du wirst zum Dashboard weitergeleitet…",
     joinInvalid: "Dieser Einladungslink ist nicht mehr gültig. Bitte deinen Trainer um einen neuen Link.",
     requestRejected: "Anfrage nicht genehmigt",
     requestRejectedDesc: "Deine Anfrage wurde nicht genehmigt. Wende dich an deinen Trainer für weitere Informationen.",
