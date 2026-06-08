@@ -25,7 +25,7 @@ export type PlanType = "training" | "mental" | "nutrition";
 // "*" = everything locked (free / unpaid).
 export const LOCKED_MODULES_BY_TIER: Record<Tier, LockedModule[] | ["*"]> = {
   free: ["*"],
-  athlete: ["testing", "match_analysis", "competitions", "season_plan", "library"],
+  athlete: ["testing", "match_analysis", "season_plan", "library"],
   coach_solo: [],
   team_small: [],
   team_medium: [],
