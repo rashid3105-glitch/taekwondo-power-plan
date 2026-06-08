@@ -1,57 +1,54 @@
 ## Goal
-When an athlete accepts a coach's invite link, they should be granted access immediately — no admin approval step. Today the invite flow sets `is_approved = false` and parks the athlete in the admin approval queue.
+Restore vertical scrolling on every page in Chrome (desktop + iPhone). The symptom is global ("all pages won't scroll at all"), so the cause must be in a globally-mounted element or in the global CSS — not in any single page component.
 
-## Root cause
-The `public.apply_invite_to_my_profile(_code)` SQL function (called from `JoinInvite.tsx` and `InviteSignup.tsx`) sets:
-```
-is_approved = false
-pending_invite_code = <code>
-pending_coach_id = <coach>
-```
-The athlete then has to wait for `admin_approve_with_invite` to be run from `AdminApproval.tsx`.
+## Suspects (in priority order)
 
-## Changes
+1. **AIAssistant floating draggable button** (`src/components/AIAssistant.tsx`)
+   - The fixed wrapper sets `touchAction: "none"` and calls `setPointerCapture(e.pointerId)` on every `pointerdown`.
+   - Although the wrapper is only ~56×56 px, `touch-action: none` + pointer capture inside a `position: fixed` near the bottom-right is a known cause of "page won't scroll" on iOS Safari and Chrome, especially when the user's first touch lands on or near the FAB.
+   - The drag handler captures the pointer regardless of whether the user intends to drag or scroll — there is no scroll-vs-drag threshold *before* capture.
 
-### 1. Database migration — rewrite `apply_invite_to_my_profile`
-Make it do, in one shot, what `admin_approve_with_invite` does today when a pending invite is present:
+2. **`AnimatePresence` wrapping `AIAssistant`** (`src/App.tsx` line 194)
+   - `AIAssistant` is rendered **inside** `<AnimatePresence mode="wait">` next to `<Routes>`. On every navigation, AnimatePresence treats it as part of the keyed transition, which can leave a stale wrapper in the tree and interfere with scroll on the new page.
+   - It should live **outside** AnimatePresence (as a sibling of `AnimatedRoutes`).
 
-- Validate invite (active, not expired) — unchanged.
-- Update `profiles` for the calling user:
-  - `is_approved = true`
-  - `club_id = COALESCE(invite.club_id, club_id)`
-  - `pending_invite_code = NULL`
-  - `pending_coach_id = NULL`
-  - `rejection_reason = NULL`
-- `INSERT INTO coach_athletes (coach_id, athlete_id) VALUES (invite.coach_id, auth.uid()) ON CONFLICT DO NOTHING`.
-- `UPDATE coach_invites SET uses_count = uses_count + 1 WHERE id = invite.id`.
-- Return `{ ok: true, club_id, coach_id, auto_approved: true }`.
+3. **`<Page>` wrapper `minHeight: "100%"`** (`src/App.tsx` lines 110–114)
+   - `motion.div` with `style={{ minHeight: "100%" }}` has no effect because its parent has no defined height. Harmless on its own, but combined with framer's exit animations it can briefly produce a 0-height layer. Not the main cause but worth correcting to `minHeight: "100dvh"` for consistency.
 
-Security: keep `SECURITY DEFINER`, `search_path = public`. The function only operates on `auth.uid()`'s own profile, so no privilege escalation. Admin manual approval (`admin_approve_with_invite`) stays in place for the legacy flow / coach-request flow.
+4. **`html, body { overscroll-behavior-y: contain }`** (`src/index.css` line 154)
+   - Correct usage, not a blocker. Mentioned only so it isn't blamed.
 
-### 2. `src/pages/JoinInvite.tsx` — drop pending-approval UX
-Current behavior on success: shows `joinRequestSent` + `pendingApprovalDesc`, signs the user out, redirects to `/`.
+## Investigation step (do first)
+Open the running app in the browser tool, run a DevTools snippet that reports:
+- `getComputedStyle(document.documentElement)` and `body` overflow/height/touch-action
+- Any element with `position:fixed` covering `>50%` of the viewport, plus its `pointer-events` and `touch-action`
+- `document.scrollingElement.scrollHeight` vs `clientHeight`
 
-New behavior on success:
-- Show a brief "Welcome — you're in" confirmation (reuse an existing translation like `joinClubConfirm` or add a new key set across all 7 locales — `da/en/sv/de/ar/no/es`).
-- Navigate straight to `/dashboard` (or `/onboarding` if the profile hasn't been set up — match `InviteSignup.tsx`'s post-signup route).
-- Do NOT sign the user out.
+This confirms whether the blocker is CSS (overflow lock) or pointer/touch (event interception). The fix branches accordingly.
 
-### 3. `src/pages/InviteSignup.tsx` — no functional change needed
-It already routes to `/onboarding` after `apply_invite_to_my_profile`. The new function auto-approves, so the dashboard will load normally instead of bouncing to `PendingApproval`.
+## Fix plan (after confirming)
 
-### 4. Translations
-Add 1 new key (e.g. `joinWelcomeIn`) across all 7 locales in `src/i18n/translations.ts` if a suitable existing key isn't reusable.
+### A. AIAssistant FAB hardening (`src/components/AIAssistant.tsx`)
+- Remove `touchAction: "none"` from the outer wrapper; move `touch-action: none` to the inner `<button>` only.
+- Defer `setPointerCapture` until the pointer has moved > 6 px (introduce a small drag threshold). Until then, allow the browser to handle the gesture as a scroll.
+- On `pointercancel`, reset `dragging.current = false` so an aborted gesture doesn't keep capture.
 
-### 5. Help.tsx + changelog
-Short changelog entry: "Atleter der tilmelder sig via en trænerinvitation får adgang med det samme — ingen admin-godkendelse." (translated for all locales).
+### B. Move AIAssistant out of AnimatePresence (`src/App.tsx`)
+- Render `{shouldShowAIAssistant(location.pathname) && <AIAssistant />}` as a sibling of `<AnimatedRoutes />` (in the `App` tree, after `<AnimatedRoutes />`), not inside the `AnimatePresence` block.
+
+### C. `<Page>` height correction (`src/App.tsx`)
+- Change `style={{ minHeight: "100%" }}` to `style={{ minHeight: "100dvh" }}`.
+
+### D. Verify
+- Use browser tool at 390×844 (iPhone) and 1280×800 (desktop), navigate to `/coach/season-calendar`, `/dashboard`, `/help`, `/coach`, and confirm the page scrolls via wheel and via touch drag (including a touch that starts on top of the FAB).
+- Confirm the FAB still drags after the threshold and still opens the chat on tap.
 
 ## Out of scope
-- Coach role requests (`wants_coach`) — these still require admin approval.
-- Athletes who sign up without an invite — still require admin approval (unchanged).
-- RLS, schema columns, `admin_approve_with_invite` — untouched.
+- No backend, RLS, edge function, translation, or page-content changes.
+- No new dependencies.
 
-## Verification
-1. Coach generates invite, athlete (new account) opens `/invite/<code>` → signs up → lands on `/onboarding` then `/dashboard` (not `/pending-approval`).
-2. Already-signed-in athlete on `/join/<code>` → "Send request" → lands on dashboard, linked to coach + club.
-3. `coach_athletes` row exists; `profiles.is_approved = true`; `coach_invites.uses_count` incremented.
-4. Admin queue no longer contains invite-joined athletes.
+## Files expected to change
+- `src/components/AIAssistant.tsx`
+- `src/App.tsx`
+
+If the DevTools investigation reveals a different global blocker (e.g. a leftover modal overlay or a `body { overflow:hidden }` toggled by some component), I will report the actual culprit and adjust the fix to target it instead of blindly applying A–C.

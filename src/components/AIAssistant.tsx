@@ -33,26 +33,50 @@ export function AIAssistant() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const DRAG_THRESHOLD = 6;
+  const pointerStart = useRef<{ x: number; y: number; id: number } | null>(null);
+
   const onPointerDown = (e: React.PointerEvent) => {
     if (open) return;
     didDrag.current = false;
-    dragging.current = true;
+    dragging.current = false;
+    pointerStart.current = { x: e.clientX, y: e.clientY, id: e.pointerId };
     dragOffset.current = { x: e.clientX - pos.x, y: e.clientY - pos.y };
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    // Do NOT capture yet — let the browser handle scroll until we know it's a drag
   };
 
   const onPointerMove = (e: React.PointerEvent) => {
-    if (!dragging.current) return;
-    const dx = e.clientX - dragOffset.current.x - pos.x;
-    const dy = e.clientY - dragOffset.current.y - pos.y;
-    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) didDrag.current = true;
+    const start = pointerStart.current;
+    if (!start) return;
+    const totalDx = e.clientX - start.x;
+    const totalDy = e.clientY - start.y;
+
+    if (!dragging.current) {
+      if (Math.abs(totalDx) < DRAG_THRESHOLD && Math.abs(totalDy) < DRAG_THRESHOLD) return;
+      // Threshold exceeded — commit to drag and capture
+      dragging.current = true;
+      didDrag.current = true;
+      try {
+        (e.target as HTMLElement).setPointerCapture(start.id);
+      } catch {
+        /* element may have been removed */
+      }
+    }
+
     setPos({
       x: Math.max(0, Math.min(window.innerWidth - 56, e.clientX - dragOffset.current.x)),
       y: Math.max(0, Math.min(window.innerHeight - 56, e.clientY - dragOffset.current.y)),
     });
   };
 
-  const onPointerUp = () => { dragging.current = false; };
+  const onPointerUp = () => {
+    dragging.current = false;
+    pointerStart.current = null;
+  };
+  const onPointerCancel = () => {
+    dragging.current = false;
+    pointerStart.current = null;
+  };
 
   const handleClick = () => {
     if (didDrag.current) return;
