@@ -274,14 +274,28 @@ export default function MatchAnalysis() {
           cacheControl: "3600", upsert: false,
         });
         if (upErr) throw upErr;
-        const { error: insErr } = await supabase.from("match_videos").insert({
+        const { data: inserted, error: insErr } = await supabase.from("match_videos").insert({
           athlete_id: resolvedAthleteId, coach_id: me, club_id: clubId,
           title, storage_path: path, duration_seconds: duration, discipline,
           opponent_name: opponent || null, event_name: eventName || null, match_date: matchDate || null,
           poomsae_type: discipline === "poomsae" ? poomsaeType : null,
           athlete_age: athleteAge.trim() || null,
-        });
+        }).select("id").single();
         if (insErr) throw insErr;
+
+        // Find existing videos (1-per-athlete rule). If any exist, open replace dialog.
+        const existing = (serverVideos || []).filter((v) => v.id !== (inserted as any)?.id);
+        if (existing.length > 0) {
+          setNewVideoId((inserted as any)?.id || null);
+          setNewVideoPath(path);
+          setOldVideos(existing);
+          setReplaceDialogOpen(true);
+          // Reset form but keep dialog logic running
+          setTitle(""); setOpponent(""); setEventName(""); setMatchDate(""); setFile(null); setAthleteAge(""); setPoomsaeType("individual");
+          setUploadOpen(false);
+          await init();
+          return;
+        }
         toast({ title: t("matchUploadSuccess") });
       } else {
         // Queue in outbox
@@ -305,6 +319,167 @@ export default function MatchAnalysis() {
       toast({ title: t("error"), description: e.message, variant: "destructive" });
     } finally {
       setUploading(false);
+    }
+  }
+
+  // ---------- Replace-old-video helpers ----------
+
+  async function downloadOldNotesPdf() {
+    setReplaceBusy(true);
+    try {
+      const { default: jsPDF } = await import("jspdf");
+      const doc = new jsPDF({ unit: "mm", format: "a4" });
+      const pageW = doc.internal.pageSize.getWidth();
+      const pageH = doc.internal.pageSize.getHeight();
+      const margin = 15;
+      const contentW = pageW - margin * 2;
+      let y = margin;
+      const ensure = (n: number) => { if (y + n > pageH - 15) { doc.addPage(); y = margin; } };
+      const para = (txt: string, size = 10, bold = false) => {
+        doc.setFont("helvetica", bold ? "bold" : "normal");
+        doc.setFontSize(size);
+        const lines = doc.splitTextToSize(txt || "—", contentW);
+        for (const ln of lines) { ensure(size * 0.5); doc.text(ln, margin, y); y += size * 0.5; }
+        y += 1;
+      };
+
+      // Header
+      doc.setFillColor(14, 165, 233);
+      doc.rect(0, 0, pageW, 18, "F");
+      doc.setTextColor(255, 255, 255);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+      doc.text("SPORTSTALENT.DK", margin, 8);
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      doc.text("Match video archive — notes & tags", margin, 14);
+      y = 26;
+      doc.setTextColor(30, 41, 59);
+      para(`Athlete: ${athleteName}`, 11, true);
+      para(`Generated: ${new Date().toLocaleString()}`, 9);
+      y += 2;
+
+      for (const v of oldVideos) {
+        ensure(20);
+        doc.setFillColor(241, 245, 249);
+        doc.rect(margin, y - 4, contentW, 8, "F");
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(11);
+        doc.setTextColor(14, 165, 233);
+        doc.text(v.title || "—", margin + 2, y + 1);
+        y += 8;
+        doc.setTextColor(100, 116, 139);
+        para(
+          [
+            v.discipline,
+            v.match_date ? `Date: ${v.match_date}` : null,
+            v.opponent_name ? `Opponent: ${v.opponent_name}` : null,
+            v.event_name ? `Event: ${v.event_name}` : null,
+          ].filter(Boolean).join(" · "),
+          9,
+        );
+        doc.setTextColor(30, 41, 59);
+
+        if (v.notes) { para("Notes", 10, true); para(v.notes, 9); }
+
+        // Tags
+        const { data: tagsRaw } = await (supabase.from as any)("match_tags")
+          .select("*").eq("video_id", v.id).order("timestamp_seconds");
+        const tags = (tagsRaw || []) as any[];
+        if (tags.length > 0) {
+          para(`Tags (${tags.length})`, 10, true);
+          for (const tg of tags) {
+            const ts = Math.round(tg.timestamp_seconds || 0);
+            const mm = Math.floor(ts / 60).toString().padStart(2, "0");
+            const ss = (ts % 60).toString().padStart(2, "0");
+            para(`• ${mm}:${ss} — ${tg.technique || "—"} (${tg.side || "—"}, ${tg.outcome || "—"})${tg.notes ? " — " + tg.notes : ""}`, 9);
+          }
+        }
+
+        // Video notes (timestamped)
+        const { data: vnRaw } = await (supabase.from as any)("video_notes")
+          .select("*").eq("video_id", v.id).order("timestamp_seconds");
+        const vns = (vnRaw || []) as any[];
+        if (vns.length > 0) {
+          para(`Video notes (${vns.length})`, 10, true);
+          for (const n of vns) {
+            const ts = Math.round(n.timestamp_seconds || 0);
+            const mm = Math.floor(ts / 60).toString().padStart(2, "0");
+            const ss = (ts % 60).toString().padStart(2, "0");
+            para(`• ${mm}:${ss} — ${n.note || n.text || "—"}`, 9);
+          }
+        }
+
+        // Annotations
+        const { data: anRaw } = await (supabase.from as any)("video_annotations")
+          .select("*").eq("video_id", v.id).order("timestamp_seconds");
+        const ans = (anRaw || []) as any[];
+        if (ans.length > 0) {
+          para(`Annotations (${ans.length})`, 10, true);
+          for (const a of ans) {
+            const ts = Math.round(a.timestamp_seconds || 0);
+            const mm = Math.floor(ts / 60).toString().padStart(2, "0");
+            const ss = (ts % 60).toString().padStart(2, "0");
+            para(`• ${mm}:${ss} — ${a.label || a.note || a.type || "—"}`, 9);
+          }
+        }
+        y += 4;
+      }
+
+      const safe = (athleteName || "athlete").replace(/[^a-zA-Z0-9._-]/g, "_");
+      doc.save(`match-archive-${safe}.pdf`);
+      toast({ title: t("matchReplacePdfSaved") });
+    } catch (e: any) {
+      toast({ title: t("error"), description: e.message, variant: "destructive" });
+    } finally {
+      setReplaceBusy(false);
+    }
+  }
+
+  async function confirmReplaceDeleteOld() {
+    setReplaceBusy(true);
+    try {
+      for (const v of oldVideos) {
+        // Delete dependent rows first (in case FK cascade isn't set)
+        await (supabase.from as any)("match_tags").delete().eq("video_id", v.id);
+        await (supabase.from as any)("video_notes").delete().eq("video_id", v.id);
+        await (supabase.from as any)("video_annotations").delete().eq("video_id", v.id);
+        if (v.storage_path) {
+          await supabase.storage.from("match_videos").remove([v.storage_path]);
+        }
+        await supabase.from("match_videos").delete().eq("id", v.id);
+      }
+      toast({ title: t("matchReplaceDoneToast") });
+      setReplaceDialogOpen(false);
+      setNewVideoId(null); setNewVideoPath(null); setOldVideos([]);
+      await Promise.all([init(), offline.refresh()]);
+    } catch (e: any) {
+      toast({ title: t("error"), description: e.message, variant: "destructive" });
+    } finally {
+      setReplaceBusy(false);
+    }
+  }
+
+  async function cancelReplaceDiscardNew() {
+    setReplaceBusy(true);
+    try {
+      if (newVideoPath) {
+        await supabase.storage.from("match_videos").remove([newVideoPath]);
+      }
+      if (newVideoId) {
+        await (supabase.from as any)("match_tags").delete().eq("video_id", newVideoId);
+        await (supabase.from as any)("video_notes").delete().eq("video_id", newVideoId);
+        await (supabase.from as any)("video_annotations").delete().eq("video_id", newVideoId);
+        await supabase.from("match_videos").delete().eq("id", newVideoId);
+      }
+      toast({ title: t("matchReplaceCancelledToast") });
+      setReplaceDialogOpen(false);
+      setNewVideoId(null); setNewVideoPath(null); setOldVideos([]);
+      await Promise.all([init(), offline.refresh()]);
+    } catch (e: any) {
+      toast({ title: t("error"), description: e.message, variant: "destructive" });
+    } finally {
+      setReplaceBusy(false);
     }
   }
 
