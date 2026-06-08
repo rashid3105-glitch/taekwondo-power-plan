@@ -47,11 +47,10 @@ export default function JoinInvite() {
       const res = data as any;
       if (!res?.ok) throw new Error(res?.error || "Failed");
       setSent(true);
-      // sign out and redirect
-      setTimeout(async () => {
-        await supabase.auth.signOut();
-        navigate("/");
-      }, 3000);
+      // Auto-approved: go straight to the dashboard
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1200);
     } catch (e: any) {
       toast({ title: e.message || "Error", variant: "destructive" });
     } finally {
