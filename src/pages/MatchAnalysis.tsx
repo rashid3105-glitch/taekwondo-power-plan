@@ -727,6 +727,31 @@ export default function MatchAnalysis() {
         )}
       </div>
       <AppFooter />
+
+      {/* Replace-old-video confirmation dialog */}
+      <Dialog open={replaceDialogOpen} onOpenChange={(open) => { if (!replaceBusy) setReplaceDialogOpen(open); }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t("matchReplaceTitle")}</DialogTitle>
+            <DialogDescription>
+              {t("matchReplaceDesc").replace("{title}", oldVideos.map((v) => `"${v.title}"`).join(", "))}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-2">
+            <Button variant="outline" onClick={downloadOldNotesPdf} disabled={replaceBusy}>
+              {replaceBusy ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : <Download className="h-4 w-4 mr-1" />}
+              {t("matchReplaceDownloadPdf")}
+            </Button>
+            <Button variant="destructive" onClick={confirmReplaceDeleteOld} disabled={replaceBusy}>
+              <Trash2 className="h-4 w-4 mr-1" />
+              {t("matchReplaceConfirm")}
+            </Button>
+            <Button variant="ghost" onClick={cancelReplaceDiscardNew} disabled={replaceBusy}>
+              {t("matchReplaceCancelKeepOld")}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
