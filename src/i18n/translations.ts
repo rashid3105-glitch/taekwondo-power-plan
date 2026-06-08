@@ -11221,6 +11221,8 @@ const translations = {
     noThanks: "لا، شكرا",
     backToHome: "العودة للرئيسية",
     joinRequestSent: "تم إرسال طلبك",
+    joinWelcomeIn: "أنت الآن عضو!",
+    joinWelcomeInDesc: "جارٍ نقلك إلى لوحة التحكم…",
     joinInvalid: "رابط الدعوة لم يعد صالحًا. اطلب من مدربك رابطًا جديدًا.",
     requestRejected: "لم تتم الموافقة على الطلب",
     requestRejectedDesc: "لم تتم الموافقة على طلبك. تواصل مع مدربك لمزيد من المعلومات.",
