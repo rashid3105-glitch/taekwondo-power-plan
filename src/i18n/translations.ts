@@ -5441,6 +5441,7 @@ const translations = {
     changelogEntry140: "Forbedret læsbarhed: tekstfarver følger nu baggrunden automatisk, så hvid tekst på lyse kort ikke længere er usynlig.",
     changelogEntry141: "Coach-navigation omstruktureret: I dag og Beskeder er nu egne sider, og coach-dashboardet fokuserer på Hold.",
     changelogEntry142: "Bibliotek omorganiseret: Øvelser, Mental, Opskrifter og HIIT bruger nu samme kategori-sektioner med ikoner og antals-tællere som Fysiske tests.",
+    changelogEntry144: "Trænerinvitationer godkendes automatisk: atleter der tilmelder sig via en trænerinvitation får adgang med det samme — ingen admin-godkendelse.",
     changelogEntry143: "Multi-klub-isolation styrket: nye stævner, vægtlog, parathedstjek, sæsonplaner, fysiske tests, mentale vurderinger og ugentlig form-kurve bliver nu klub-mærket ved oprettelse.",
     requestEvaluationCTA: "Bed om evaluering",
     evaluationRequested: "Anmodet",
