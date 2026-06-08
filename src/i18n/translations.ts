@@ -2712,6 +2712,7 @@ const translations = {
     changelogEntry140: "Improved readability: text colors now follow the surface automatically, fixing white-on-light text on several screens.",
     changelogEntry141: "Coach navigation restructured: Today and Messages are now their own pages, and the coach dashboard focuses on the squad.",
     changelogEntry142: "Library reorganized: Exercises, Mental, Recipes, and HIIT now use the same category sections with icons and item counts as Physical Tests.",
+    changelogEntry144: "Coach invite links now auto-approve: athletes who join via a coach's invite link get instant access — no admin approval required.",
     changelogEntry143: "Multi-club isolation hardened: new competitions, weight logs, readiness check-ins, season plans, physical tests, mental assessments and weekly form curve rows are now stamped with the active club.",
     requestEvaluationCTA: "Request evaluation",
     evaluationRequested: "Requested",
