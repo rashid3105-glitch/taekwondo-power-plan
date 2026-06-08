@@ -108,7 +108,7 @@ const pageTransition = prefersReducedMotion
     };
 
 const Page = ({ children }: { children: React.ReactNode }) => (
-  <motion.div {...pageTransition} style={{ minHeight: "100%" }}>
+  <motion.div {...pageTransition} style={{ minHeight: "100dvh" }}>
     {children}
   </motion.div>
 );
@@ -116,6 +116,7 @@ const Page = ({ children }: { children: React.ReactNode }) => (
 const AnimatedRoutes = () => {
   const location = useLocation();
   return (
+    <>
     <AnimatePresence mode="wait" initial={false}>
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Page><CoachLanding /></Page>} />
@@ -191,8 +192,9 @@ const AnimatedRoutes = () => {
         <Route path="/progress" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<Page><NotFound /></Page>} />
       </Routes>
+      </AnimatePresence>
       {shouldShowAIAssistant(location.pathname) && <AIAssistant />}
-    </AnimatePresence>
+    </>
   );
 };
 
