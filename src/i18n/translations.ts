@@ -16255,6 +16255,7 @@ const translations = {
     changelogEntry140: "Bedre lesbarhet: tekstfarger følger nå bakgrunnen automatisk, hvit tekst på lyse kort er ikke lenger usynlig.",
     changelogEntry141: "Coach-navigasjon omstrukturert: I dag og Meldinger er nå egne sider, og coach-dashbordet fokuserer på laget.",
     changelogEntry142: "Bibliotek omorganisert: Øvelser, Mental, Oppskrifter og HIIT bruker nå samme kategoriseksjoner med ikoner og antall som Fysiske tester.",
+    changelogEntry144: "Trenerinvitasjoner godkjennes automatisk: utøvere som blir med via en trenerinvitasjon får tilgang med en gang — ingen admin-godkjenning nødvendig.",
     changelogEntry143: "Multi-klubb-isolasjon styrket: nye stevner, vektlogger, parathetssjekk, sesongplaner, fysiske tester, mentale vurderinger og ukentlig formkurve stemples nå med aktiv klubb.",
     requestEvaluationCTA: "Be om evaluering",
     evaluationRequested: "Forespurt",
