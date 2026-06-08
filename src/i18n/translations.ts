@@ -10847,6 +10847,7 @@ const translations = {
     changelogEntry140: "Bessere Lesbarkeit: Textfarben folgen jetzt automatisch der Oberfläche, weiße Texte auf hellen Karten sind wieder sichtbar.",
     changelogEntry141: "Coach-Navigation umstrukturiert: Heute und Nachrichten sind jetzt eigene Seiten, und das Coach-Dashboard konzentriert sich auf das Team.",
     changelogEntry142: "Bibliothek neu organisiert: Übungen, Mental, Rezepte und HIIT verwenden jetzt dieselben Kategorie-Sektionen mit Icons und Anzahl wie Physische Tests.",
+    changelogEntry144: "Trainer-Einladungen werden automatisch genehmigt: Athleten, die über einen Trainer-Einladungslink beitreten, erhalten sofort Zugriff — keine Admin-Genehmigung nötig.",
     changelogEntry143: "Multi-Club-Isolation gestärkt: neue Wettkämpfe, Gewichtslogs, Bereitschafts-Check-ins, Saisonpläne, physische Tests, mentale Bewertungen und wöchentliche Formkurve werden jetzt mit dem aktiven Club gestempelt.",
     requestEvaluationCTA: "Auswertung anfordern",
     evaluationRequested: "Angefordert",
