@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, Users, Brain, Clock, Apple, Home, Lock, NotebookPen, AlertTriangle, ClipboardList, HelpCircle, Trash2, Menu, Video as VideoIcon, CalendarRange, Watch, Swords, Trophy, MessageCircle, Pencil, X, LayoutGrid, Settings, Camera } from "lucide-react";
+import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, ShieldCheck, Users, Brain, Clock, Apple, Home, Lock, NotebookPen, AlertTriangle, ClipboardList, HelpCircle, Trash2, Menu, Video as VideoIcon, CalendarRange, Watch, Swords, Trophy, MessageCircle, Pencil, X, LayoutGrid, Settings, Camera } from "lucide-react";
 import { ChatDrawer } from "@/components/chat/ChatDrawer";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -732,6 +732,15 @@ export default function Dashboard() {
               </span>
               <span className="truncate">{t("library")}</span>
               {isDemo && <Lock className="h-3 w-3 ms-auto shrink-0" />}
+            </button>
+
+            {/* Antidoping & supplement check — free for all tiers, bypasses library gate */}
+            <button
+              onClick={() => { setMenuOpen(false); navigate("/library/supplement"); }}
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
+            >
+              <ShieldCheck className="h-4 w-4 shrink-0" />
+              <span className="truncate">{t("libSupplementLabel")}</span>
             </button>
 
             <Separator className="my-2" />
