@@ -310,6 +310,8 @@ const translations = {
     noThanks: "No thanks",
     backToHome: "Back to home",
     joinRequestSent: "Your request has been sent",
+    joinWelcomeIn: "You're in!",
+    joinWelcomeInDesc: "Taking you to your dashboard…",
     joinInvalid: "This invitation link is no longer valid. Ask your coach for a new link.",
     requestRejected: "Request not approved",
     requestRejectedDesc: "Your request was not approved. Contact your coach for more information.",
