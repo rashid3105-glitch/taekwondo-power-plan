@@ -154,12 +154,14 @@
     overscroll-behavior-y: contain;
   }
 
-  html, body, #root {
-    /* Defensive: prevent any oversized child from making the page wider
-       than the device viewport (causes Android browsers to zoom out
-       and render the app in a narrow column with empty space). */
+  /* Defensive: prevent any oversized child from making the page wider
+     than the device viewport. Applied to body ONLY — applying `overflow-x`
+     to `html` and `#root` as well turns them into separate scroll
+     containers in Chrome, which can lock vertical scrolling across the
+     whole app on both desktop and Android/Chrome on iOS. */
+  body {
     max-width: 100vw;
-    overflow-x: hidden;
+    overflow-x: clip;
   }
 
   html {
