@@ -12,8 +12,11 @@ export function ThemeSync() {
 
     root.style.transition = "color 0.3s ease";
 
-    root.style.setProperty("--background", "0 0% 4%");
-    root.style.setProperty("--foreground", "0 0% 100%");
+    // Do NOT override --background or --foreground here — the app uses the
+    // light palette from index.css. Forcing dark bg + white fg made text
+    // unreadable on light cards (bg-card stayed light, text went white).
+    root.style.removeProperty("--background");
+    root.style.removeProperty("--foreground");
 
     if (shouldUseCoachTheme) {
       root.style.setProperty("--primary", "38 92% 55%");
