@@ -17239,6 +17239,7 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   changelogEntry140: "Mejor legibilidad: los colores del texto siguen ahora la superficie automáticamente; el texto blanco sobre tarjetas claras vuelve a verse.",
   changelogEntry141: "Navegación del entrenador reestructurada: Hoy y Mensajes ahora son páginas propias, y el panel del entrenador se centra en el equipo.",
   changelogEntry142: "Biblioteca reorganizada: Ejercicios, Mental, Recetas y HIIT usan ahora las mismas secciones por categoría con iconos y contadores que las Pruebas físicas.",
+  changelogEntry144: "Invitaciones de entrenador con aprobación automática: los atletas que se unen mediante un enlace de invitación obtienen acceso inmediato — sin aprobación del administrador.",
   changelogEntry143: "Aislamiento multiclub reforzado: nuevas competiciones, registros de peso, check-ins de readiness, planes de temporada, tests físicos, evaluaciones mentales y curva de forma semanal ahora se sellan con el club activo.",
   requestEvaluationCTA: "Solicitar evaluación",
   evaluationRequested: "Solicitada",
