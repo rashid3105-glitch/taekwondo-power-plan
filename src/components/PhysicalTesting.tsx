@@ -319,7 +319,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
       {/* Coach athlete selector */}
       {mode === "coach" && !athleteId && (
         <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
-          <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+          <h3 className="text-sm font-bold text-card-foreground flex items-center gap-2">
             <Users className="h-4 w-4 text-primary" /> {t("ptSelectAthlete")}
           </h3>
           {athletes.length === 0 ? (
@@ -362,7 +362,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
             {/* Add test form */}
             <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
               <div className="flex items-center justify-between gap-2 flex-wrap">
-                <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+                <h3 className="text-sm font-bold text-card-foreground flex items-center gap-2">
                   <Plus className="h-4 w-4" /> {t("ptAddResult")}
                 </h3>
                 {cat === "endurance" && (
@@ -443,7 +443,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
             {Object.keys(groupedByTest).length > 0 ? (
               Object.entries(groupedByTest).map(([testName, testResults]) => (
                 <div key={testName} className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
-                  <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
+                  <h3 className="text-sm font-bold text-card-foreground mb-3 flex items-center gap-2">
                     <CategoryIcon className="h-4 w-4 text-primary" />
                     {getLocalizedTestName(testName, t)}
                   </h3>
@@ -477,7 +477,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
                           return (
                             <Fragment key={r.local_id}>
                             <tr className="border-b border-border/50 last:border-0">
-                              <td className="py-2 text-foreground">
+                              <td className="py-2 text-card-foreground">
                                 <span className="inline-flex items-center gap-1.5">
                                   {new Date(r.test_date).toLocaleDateString()}
                                   {r.pending && (
@@ -485,7 +485,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
                                   )}
                                 </span>
                               </td>
-                              <td className="py-2 text-right font-mono font-bold text-foreground">{r.value}</td>
+                              <td className="py-2 text-right font-mono font-bold text-card-foreground">{r.value}</td>
                               <td className="py-2 text-left text-muted-foreground">{r.unit}</td>
                               <td className="py-2 text-right">{changeEl || "—"}</td>
                               <td className="py-2">

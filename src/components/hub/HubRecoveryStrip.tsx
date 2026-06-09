@@ -44,7 +44,7 @@ export function HubRecoveryStrip() {
   const cells = [
     { value: fmt(summary?.resting_hr ?? null), label: t("recoveryRhr"), color: "text-tab-progress" },
     { value: fmt(summary?.hrv_rmssd ?? null), label: "HRV", color: "text-tab-mental" },
-    { value: sleep, label: t("recoverySleep"), color: "text-foreground" },
+    { value: sleep, label: t("recoverySleep"), color: "text-card-foreground" },
   ];
 
   return (

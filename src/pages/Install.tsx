@@ -169,7 +169,7 @@ export default function Install() {
         )}
 
         <div className="rounded-xl border border-border bg-muted/30 p-4 text-sm text-muted-foreground">
-          <strong className="text-foreground">{t("installBenefitsTitle")}</strong>
+          <strong className="text-card-foreground">{t("installBenefitsTitle")}</strong>
           <ul className="mt-2 space-y-1 list-disc pl-5">
             <li>{t("installBenefit1")}</li>
             <li>{t("installBenefit2")}</li>

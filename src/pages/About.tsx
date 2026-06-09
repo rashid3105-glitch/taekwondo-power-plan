@@ -69,7 +69,7 @@ export default function About() {
                   <div className="mb-3 h-10 w-10 rounded-lg bg-energy/10 border border-energy/20 flex items-center justify-center">
                     <item.icon className="h-5 w-5 text-energy" />
                   </div>
-                  <h2 className="text-base font-bold text-foreground mb-2">{t(item.titleKey)}</h2>
+                  <h2 className="text-base font-bold text-card-foreground mb-2">{t(item.titleKey)}</h2>
                   <p className="text-sm text-muted-foreground leading-relaxed">{t(item.descKey)}</p>
                 </motion.div>
               ))}
@@ -88,7 +88,7 @@ export default function About() {
               <div className="mb-3 h-10 w-10 rounded-lg bg-energy/10 border border-energy/20 flex items-center justify-center">
                 <Users className="h-5 w-5 text-energy" />
               </div>
-              <h2 className="text-base font-bold text-foreground mb-2">{t("aboutTeamTitle")}</h2>
+              <h2 className="text-base font-bold text-card-foreground mb-2">{t("aboutTeamTitle")}</h2>
               <p className="text-sm text-muted-foreground leading-relaxed">{t("aboutTeamDesc")}</p>
             </motion.div>
           </section>

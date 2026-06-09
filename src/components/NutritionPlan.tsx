@@ -379,7 +379,7 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
         <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
           <div className="flex items-center gap-2">
             <Apple className="h-5 w-5 text-tab-nutrition" />
-            <h3 className="font-bold text-foreground">{t("nutritionGoals")}</h3>
+            <h3 className="font-bold text-card-foreground">{t("nutritionGoals")}</h3>
           </div>
           <p className="text-xs text-muted-foreground">{t("selectNutritionGoals")}</p>
           <div className="flex flex-wrap gap-2">
@@ -426,14 +426,14 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
           {plan.healthWarning && (
             <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4 flex gap-3">
               <AlertTriangle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
-              <p className="text-sm text-foreground">{plan.healthWarning}</p>
+              <p className="text-sm text-card-foreground">{plan.healthWarning}</p>
             </div>
           )}
 
           {/* Overview */}
           <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
             <div className="flex items-center justify-between gap-2">
-              <h3 className="font-bold text-foreground truncate">{plan.planName}</h3>
+              <h3 className="font-bold text-card-foreground truncate">{plan.planName}</h3>
               <div className="flex items-center gap-2 shrink-0">
                 <Button variant="outline" size="sm" onClick={downloadPDF}>
                   <Download className="h-4 w-4 mr-1" /> PDF
@@ -449,21 +449,21 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
               <div className="rounded-lg bg-muted/50 p-3 text-center">
                 <Flame className="h-4 w-4 mx-auto text-primary mb-1" />
                 <p className="text-xs text-muted-foreground">{t("calories")}</p>
-                <p className="text-sm font-bold text-foreground">{plan.dailyCalorieEstimate}</p>
+                <p className="text-sm font-bold text-card-foreground">{plan.dailyCalorieEstimate}</p>
               </div>
               {plan.macroSplit && (
                 <>
                   <div className="rounded-lg bg-muted/50 p-3 text-center">
                     <p className="text-xs text-muted-foreground">{t("protein")}</p>
-                    <p className="text-sm font-bold text-foreground">{plan.macroSplit.protein}</p>
+                    <p className="text-sm font-bold text-card-foreground">{plan.macroSplit.protein}</p>
                   </div>
                   <div className="rounded-lg bg-muted/50 p-3 text-center">
                     <p className="text-xs text-muted-foreground">{t("carbs")}</p>
-                    <p className="text-sm font-bold text-foreground">{plan.macroSplit.carbs}</p>
+                    <p className="text-sm font-bold text-card-foreground">{plan.macroSplit.carbs}</p>
                   </div>
                   <div className="rounded-lg bg-muted/50 p-3 text-center">
                     <p className="text-xs text-muted-foreground">{t("fats")}</p>
-                    <p className="text-sm font-bold text-foreground">{plan.macroSplit.fats}</p>
+                    <p className="text-sm font-bold text-card-foreground">{plan.macroSplit.fats}</p>
                   </div>
                 </>
               )}
@@ -473,14 +473,14 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
             {profile?.custom_calories && (
               <div className="rounded-lg border border-border bg-muted/30 p-3">
                 <p className="text-xs text-muted-foreground">{t("dailyCalorieTarget")}</p>
-                <p className="text-sm font-bold text-foreground">{profile.custom_calories} {t("kcalPerDay")}</p>
+                <p className="text-sm font-bold text-card-foreground">{profile.custom_calories} {t("kcalPerDay")}</p>
               </div>
             )}
             {/* Backward compat: show saved custom_calories from plan if no profile value */}
             {!profile?.custom_calories && customCalories && (
               <div className="rounded-lg border border-border bg-muted/30 p-3">
                 <p className="text-xs text-muted-foreground">{t("customCalories")}</p>
-                <p className="text-sm font-bold text-foreground">{customCalories} {t("kcalPerDay")}</p>
+                <p className="text-sm font-bold text-card-foreground">{customCalories} {t("kcalPerDay")}</p>
               </div>
             )}
           </div>
@@ -488,7 +488,7 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
           {/* Key Principles */}
           {plan.keyPrinciples?.length > 0 && (
             <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-2">
-              <h4 className="font-semibold text-sm text-foreground">{t("keyPrinciples")}</h4>
+              <h4 className="font-semibold text-sm text-card-foreground">{t("keyPrinciples")}</h4>
               <ul className="space-y-1.5">
                 {plan.keyPrinciples.map((p: string, i: number) => (
                   <li key={i} className="text-xs text-muted-foreground flex gap-2">
@@ -502,7 +502,7 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
           {/* Meals */}
           {plan.meals?.length > 0 && (
             <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
-              <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+              <h4 className="font-semibold text-sm text-card-foreground flex items-center gap-2">
                 <Utensils className="h-4 w-4 text-tab-nutrition" /> {t("dailyMeals")}
               </h4>
               <div className="space-y-2">
@@ -513,7 +513,7 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
                       className="w-full flex items-center justify-between p-3 text-left"
                     >
                       <div>
-                        <p className="text-sm font-medium text-foreground">{meal.name}</p>
+                        <p className="text-sm font-medium text-card-foreground">{meal.name}</p>
                         <p className="text-xs text-muted-foreground">{meal.timing}</p>
                       </div>
                       {expandedMeal === i ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
@@ -527,7 +527,7 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
                           className="w-full h-36 sm:h-44 object-cover rounded-md border border-border"
                         />
                         <div>
-                          <p className="text-xs font-medium text-foreground mb-1">{t("foods")}:</p>
+                          <p className="text-xs font-medium text-card-foreground mb-1">{t("foods")}:</p>
                           <ul className="space-y-0.5">
                             {meal.foods?.map((food: string, j: number) => (
                               <li key={j} className="text-xs text-muted-foreground">• {food}</li>
@@ -547,25 +547,25 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
           {/* Hydration */}
           {plan.hydration && (
             <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-2">
-              <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+              <h4 className="font-semibold text-sm text-card-foreground flex items-center gap-2">
                 <Droplets className="h-4 w-4" /> {t("hydration")}
               </h4>
               <div className="grid grid-cols-2 gap-2">
                 <div className="rounded-lg bg-muted/50 p-2">
                   <p className="text-[10px] text-muted-foreground">{t("daily")}</p>
-                  <p className="text-xs font-medium text-foreground">{plan.hydration.daily}</p>
+                  <p className="text-xs font-medium text-card-foreground">{plan.hydration.daily}</p>
                 </div>
                 <div className="rounded-lg bg-muted/50 p-2">
                   <p className="text-[10px] text-muted-foreground">{t("preTraining")}</p>
-                  <p className="text-xs font-medium text-foreground">{plan.hydration.preTrain}</p>
+                  <p className="text-xs font-medium text-card-foreground">{plan.hydration.preTrain}</p>
                 </div>
                 <div className="rounded-lg bg-muted/50 p-2">
                   <p className="text-[10px] text-muted-foreground">{t("duringTraining")}</p>
-                  <p className="text-xs font-medium text-foreground">{plan.hydration.duringTrain}</p>
+                  <p className="text-xs font-medium text-card-foreground">{plan.hydration.duringTrain}</p>
                 </div>
                 <div className="rounded-lg bg-muted/50 p-2">
                   <p className="text-[10px] text-muted-foreground">{t("postTraining")}</p>
-                  <p className="text-xs font-medium text-foreground">{plan.hydration.postTrain}</p>
+                  <p className="text-xs font-medium text-card-foreground">{plan.hydration.postTrain}</p>
                 </div>
               </div>
             </div>
@@ -574,13 +574,13 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
           {/* Supplements */}
           {plan.supplements?.length > 0 && (
             <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-2">
-              <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+              <h4 className="font-semibold text-sm text-card-foreground flex items-center gap-2">
                 <Pill className="h-4 w-4" /> {t("supplements")}
               </h4>
               <div className="space-y-2">
                 {plan.supplements.map((s: any, i: number) => (
                   <div key={i} className="rounded-lg bg-muted/30 p-3 space-y-1">
-                    <p className="text-sm font-medium text-foreground">{s.name}</p>
+                    <p className="text-sm font-medium text-card-foreground">{s.name}</p>
                     <p className="text-xs text-muted-foreground">{s.dosage} · {s.timing}</p>
                     <p className="text-xs text-muted-foreground">{s.reason}</p>
                     {s.warning && (
@@ -597,7 +597,7 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
           {/* Weekly Variation */}
           {plan.weeklyVariation && (
             <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
-              <h4 className="font-semibold text-sm text-foreground mb-2">{t("weeklyVariation")}</h4>
+              <h4 className="font-semibold text-sm text-card-foreground mb-2">{t("weeklyVariation")}</h4>
               <p className="text-xs text-muted-foreground">{plan.weeklyVariation}</p>
             </div>
           )}

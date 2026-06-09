@@ -329,7 +329,7 @@ export default function Diary() {
             <div className="h-8 w-8 rounded-lg bg-gradient-energy flex items-center justify-center shrink-0">
               <Zap className="h-4 w-4 text-primary-foreground" />
             </div>
-            <h1 className="text-sm font-extrabold text-foreground truncate">{t("diary")}</h1>
+            <h1 className="text-sm font-extrabold text-card-foreground truncate">{t("diary")}</h1>
           </div>
           <div className="ml-auto flex items-center gap-1">
             <Button
@@ -355,7 +355,7 @@ export default function Diary() {
         {showForm && (
           <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="font-bold text-foreground text-sm">
+              <h2 className="font-bold text-card-foreground text-sm">
                 {editingId ? t("diaryEditEntry") : t("diaryNewEntry")}
               </h2>
               <Button variant="ghost" size="icon" onClick={resetForm}>
@@ -444,11 +444,11 @@ export default function Diary() {
                 {runPace > 0 && (
                   <div className="grid grid-cols-3 gap-2 pt-1">
                     <div className="rounded-lg bg-card border border-border p-2.5 text-center">
-                      <div className="text-lg font-bold text-foreground">{formatPace(runPace)}</div>
+                      <div className="text-lg font-bold text-card-foreground">{formatPace(runPace)}</div>
                       <div className="text-[10px] text-muted-foreground uppercase tracking-wide">{t("runPace")}</div>
                     </div>
                     <div className="rounded-lg bg-card border border-border p-2.5 text-center">
-                      <div className="text-lg font-bold text-foreground">{runDistNum.toFixed(1)}</div>
+                      <div className="text-lg font-bold text-card-foreground">{runDistNum.toFixed(1)}</div>
                       <div className="text-[10px] text-muted-foreground uppercase tracking-wide">{t("runDistanceKm")}</div>
                     </div>
                     <div className="rounded-lg bg-card border border-border p-2.5 text-center">

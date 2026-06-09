@@ -182,7 +182,7 @@ export default function Methodology() {
                 <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${s.bgColor} border border-border/40`}>
                   <s.icon className={`h-[18px] w-[18px] ${s.color}`} />
                 </div>
-                <h2 className="text-base sm:text-lg font-bold text-foreground tracking-tight pt-1.5">
+                <h2 className="text-base sm:text-lg font-bold text-card-foreground tracking-tight pt-1.5">
                   {tt(s.titleKey)}
                 </h2>
               </div>
@@ -194,7 +194,7 @@ export default function Methodology() {
               {s.listKeys && (
                 <ul className="mt-4 space-y-2">
                   {s.listKeys.map((k) => (
-                    <li key={k} className="flex items-start gap-2 text-[13px] sm:text-sm text-foreground/90">
+                    <li key={k} className="flex items-start gap-2 text-[13px] sm:text-sm text-card-foreground/90">
                       <span className={`mt-1.5 h-1.5 w-1.5 rounded-full shrink-0 ${s.bgColor} ring-1 ring-border/40`} />
                       {tt(k)}
                     </li>
@@ -206,7 +206,7 @@ export default function Methodology() {
                 <div className="mt-5 space-y-4">
                   {s.subsections.map((sub) => (
                     <div key={sub.label}>
-                      <h3 className="text-[13px] sm:text-sm font-semibold text-foreground mb-1">
+                      <h3 className="text-[13px] sm:text-sm font-semibold text-card-foreground mb-1">
                         {tt(sub.label)}
                       </h3>
                       <p className="text-[12px] sm:text-[13px] text-muted-foreground leading-relaxed">

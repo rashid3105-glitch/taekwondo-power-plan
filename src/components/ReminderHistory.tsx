@@ -53,7 +53,7 @@ export function ReminderHistory({ athleteId }: ReminderHistoryProps) {
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center justify-between cursor-pointer"
       >
-        <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+        <h4 className="font-semibold text-sm text-card-foreground flex items-center gap-2">
           <Bell className="h-4 w-4" /> {t("reminderHistory")} ({reminders.length})
         </h4>
         {expanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
@@ -67,7 +67,7 @@ export function ReminderHistory({ athleteId }: ReminderHistoryProps) {
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground">{r.title}</p>
+                  <p className="text-sm font-medium text-card-foreground">{r.title}</p>
                   <p className="text-xs text-muted-foreground">📅 {r.event_date}</p>
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">

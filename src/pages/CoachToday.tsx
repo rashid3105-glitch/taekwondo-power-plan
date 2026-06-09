@@ -92,7 +92,7 @@ export default function CoachToday() {
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <CalendarCheck className="h-5 w-5 text-primary" />
-          <span className="text-base font-extrabold text-foreground">{t("todayTab")}</span>
+          <span className="text-base font-extrabold text-card-foreground">{t("todayTab")}</span>
         </div>
       </header>
 

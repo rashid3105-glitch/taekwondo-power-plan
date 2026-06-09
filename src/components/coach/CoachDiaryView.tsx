@@ -269,7 +269,7 @@ export function CoachDiaryView({ entries }: Props) {
                               <span className={MOOD_COLORS[(entry.mood || 3) - 1]}><EntryMood className="h-3 w-3 inline" /></span>
                               <span className="text-primary"><EntryEnergy className="h-3 w-3 inline" /></span>
                             </div>
-                            <p className="text-sm text-foreground line-clamp-2 mt-0.5 break-words min-w-0">{entry.content}</p>
+                            <p className="text-sm text-card-foreground line-clamp-2 mt-0.5 break-words min-w-0">{entry.content}</p>
                           </div>
                           <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
                         </div>
@@ -297,7 +297,7 @@ export function CoachDiaryView({ entries }: Props) {
                           </Button>
                         )}
                       </div>
-                      <p className="text-sm text-foreground leading-relaxed break-all min-w-0 overflow-hidden" style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere", wordBreak: "break-word" }}>{entry.content}</p>
+                      <p className="text-sm text-card-foreground leading-relaxed break-all min-w-0 overflow-hidden" style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere", wordBreak: "break-word" }}>{entry.content}</p>
                       {entry.entry_type === "running" && entry.run_distance_km && (
                         <div className="grid grid-cols-3 gap-2">
                           <div className="rounded-lg bg-muted/50 p-2.5 text-center">

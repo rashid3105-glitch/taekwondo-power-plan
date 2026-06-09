@@ -76,7 +76,7 @@ export default function Programs() {
                   <div className={`mb-3 h-10 w-10 rounded-lg bg-gradient-to-br ${card.gradient} flex items-center justify-center`}>
                     <card.icon className="h-5 w-5 text-white" />
                   </div>
-                  <h3 className="text-sm font-bold text-foreground mb-2">{t(card.titleKey)}</h3>
+                  <h3 className="text-sm font-bold text-card-foreground mb-2">{t(card.titleKey)}</h3>
                   <p className="text-xs text-muted-foreground leading-relaxed flex-1">{t(card.descKey)}</p>
                 </motion.div>
               ))}

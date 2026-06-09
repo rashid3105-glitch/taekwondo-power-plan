@@ -257,20 +257,20 @@ export function SamplePlanPreview() {
                           {String(j + 1).padStart(2, "0")}
                         </span>
                         <span className={`h-2 w-2 rounded-full flex-shrink-0 ${CATEGORY_DOT[ex.category] || "bg-muted"}`} />
-                        <span className="text-sm font-semibold text-foreground flex-1 truncate">
+                        <span className="text-sm font-semibold text-card-foreground flex-1 truncate">
                           {ex.name}
                         </span>
                       </div>
                       <div className="flex flex-wrap gap-2 sm:gap-3 text-xs text-muted-foreground">
                         <span>
-                          <strong className="text-foreground">{ex.sets}×{ex.reps}</strong>
+                          <strong className="text-card-foreground">{ex.sets}×{ex.reps}</strong>
                         </span>
                         <span>Rest: {ex.rest}</span>
                         {ex.tempo && <span>Tempo: {ex.tempo}</span>}
                       </div>
                       {ex.cue && (
                         <p className="text-xs text-muted-foreground">
-                          <span className="font-semibold text-foreground">Coaching:</span> {ex.cue}
+                          <span className="font-semibold text-card-foreground">Coaching:</span> {ex.cue}
                         </p>
                       )}
                       {ex.why && (

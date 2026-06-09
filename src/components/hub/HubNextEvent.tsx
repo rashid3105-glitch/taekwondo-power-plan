@@ -64,7 +64,7 @@ export function HubNextEvent({ event }: Props) {
           <p className="text-[11px] font-bold uppercase tracking-wider text-primary">
             {t("nextEventTitle")}
           </p>
-          <p className="text-base font-bold text-foreground truncate mt-0.5">{event.name}</p>
+          <p className="text-base font-bold text-card-foreground truncate mt-0.5">{event.name}</p>
           {sub && <p className="text-xs text-muted-foreground truncate">{sub}</p>}
         </div>
         <div className="flex gap-1.5 shrink-0">

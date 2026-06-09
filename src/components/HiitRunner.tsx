@@ -218,7 +218,7 @@ export function HiitRunner({ open, onClose, intervals, workoutName }: HiitRunner
                 <span className="text-muted-foreground uppercase tracking-wider font-bold">
                   {t("hiitNext")}
                 </span>
-                <span className="font-bold text-foreground truncate ml-2">
+                <span className="font-bold text-card-foreground truncate ml-2">
                   {getName(intervals[idx + 1])}
                 </span>
                 <span className="text-muted-foreground ml-2 tabular-nums">

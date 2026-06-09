@@ -78,7 +78,7 @@ export default function LibraryChooser() {
           </Button>
           <div className="flex items-center gap-2">
             <BookOpen className="h-5 w-5 text-primary" />
-            <span className="text-base font-extrabold text-foreground">{t("library")}</span>
+            <span className="text-base font-extrabold text-card-foreground">{t("library")}</span>
           </div>
         </div>
       </header>
@@ -100,7 +100,7 @@ export default function LibraryChooser() {
                 <lib.icon className={`h-6 w-6 ${lib.color}`} />
               </div>
               <div>
-                <div className="font-bold text-foreground text-base">{t(lib.labelKey)}</div>
+                <div className="font-bold text-card-foreground text-base">{t(lib.labelKey)}</div>
                 <div className="text-sm text-muted-foreground">{t(lib.descKey)}</div>
               </div>
             </button>

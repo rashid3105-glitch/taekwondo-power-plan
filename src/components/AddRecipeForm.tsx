@@ -170,7 +170,7 @@ export function AddRecipeForm({ onClose, onAdded }: AddRecipeFormProps) {
   return (
     <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-bold text-foreground">{t("recipeFormTitle")}</h3>
+        <h3 className="text-sm font-bold text-card-foreground">{t("recipeFormTitle")}</h3>
         <Button variant="ghost" size="icon" onClick={onClose} className="h-7 w-7">
           <X className="h-4 w-4" />
         </Button>

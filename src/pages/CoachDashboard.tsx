@@ -327,7 +327,7 @@ export default function CoachDashboard() {
             <div className="h-8 w-8 rounded-lg bg-gradient-energy flex items-center justify-center shrink-0">
               <Zap className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="text-sm sm:text-base font-extrabold text-foreground truncate">{t("coachDashboard")}</span>
+            <span className="text-sm sm:text-base font-extrabold text-card-foreground truncate">{t("coachDashboard")}</span>
           </div>
           <div className="flex items-center gap-1 shrink-0">
             <Button variant="ghost" size="sm" onClick={() => navigate("/coach/season-calendar")} className="gap-1">
@@ -361,7 +361,7 @@ export default function CoachDashboard() {
               onClick={() => navigate("/coach/messages")}
               className="w-full flex items-center justify-between gap-3 rounded-xl border border-primary/40 bg-primary/10 hover:bg-primary/15 transition-colors p-3 sm:p-4"
             >
-              <span className="flex items-center gap-2 text-sm font-semibold text-foreground">
+              <span className="flex items-center gap-2 text-sm font-semibold text-card-foreground">
                 <MessageSquare className="h-4 w-4 text-primary" />
                 {t("messagesTab")}
               </span>
@@ -410,7 +410,7 @@ export default function CoachDashboard() {
               {athletes.length === 0 ? (
                 <div className="rounded-xl border border-border bg-card p-12 text-center shadow-card">
                   <User className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
-                  <h3 className="font-bold text-foreground mb-1">{t("noAthletes")}</h3>
+                  <h3 className="font-bold text-card-foreground mb-1">{t("noAthletes")}</h3>
                   <p className="text-sm text-muted-foreground">{t("noAthletesDesc")}</p>
                 </div>
               ) : (
@@ -456,7 +456,7 @@ export default function CoachDashboard() {
                           <div className="flex items-center gap-3 min-w-0 flex-1">
                             <AvatarImg avatarUrl={a.avatar_url} />
                             <div className="min-w-0 flex-1">
-                              <p className="font-medium text-sm text-foreground truncate">{a.display_name || t("noName")}</p>
+                              <p className="font-medium text-sm text-card-foreground truncate">{a.display_name || t("noName")}</p>
                               <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
                                 {a.club_name && (
                                   <span className="inline-flex items-center gap-0.5 text-[10px] text-muted-foreground">

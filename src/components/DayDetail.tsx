@@ -19,7 +19,7 @@ export function DayDetail({ day }: { day: TrainingDay }) {
           <Icon className="h-3 w-3" />
           {badge.label}
         </span>
-        <h3 className="text-lg font-bold text-foreground">{day.dayOfWeek}</h3>
+        <h3 className="text-lg font-bold text-card-foreground">{day.dayOfWeek}</h3>
       </div>
       {day.focus && (
         <p className="text-sm text-muted-foreground mb-6">{day.focus}</p>

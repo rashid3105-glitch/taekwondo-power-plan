@@ -33,7 +33,7 @@ export function FeatureEmptyState({
       >
         <Icon className={cn("h-8 w-8", accentClass)} strokeWidth={1.5} />
       </div>
-      <h3 className="text-base sm:text-lg font-bold text-foreground mb-2">
+      <h3 className="text-base sm:text-lg font-bold text-card-foreground mb-2">
         {t(titleKey) || titleKey}
       </h3>
       <p className="text-sm text-muted-foreground max-w-sm mx-auto leading-relaxed mb-5">

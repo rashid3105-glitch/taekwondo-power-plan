@@ -24,7 +24,7 @@ export default function PrivacyPolicy() {
         <div className="container max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img src={logo} alt="Sportstalent" className="h-9 w-9 rounded-lg object-contain cursor-pointer" onClick={() => navigate("/")} />
-            <span className="text-sm font-extrabold text-foreground">SPORTSTALENT</span>
+            <span className="text-sm font-extrabold text-card-foreground">SPORTSTALENT</span>
           </div>
           <LanguageSwitcher />
         </div>

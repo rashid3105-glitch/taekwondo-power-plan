@@ -97,7 +97,7 @@ export function HubTodayHero({ activePlan, onGoToPlan }: Props) {
             <span className="inline-flex items-center rounded-full border border-tab-plan/40 bg-tab-plan/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-tab-plan">
               {t("todayCardTitle")} · {weekday}
             </span>
-            <h2 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-extrabold text-card-foreground tracking-tight">
               {t("hubTrainingTitle")}
             </h2>
             <p className="text-sm text-muted-foreground">{t("hubTrainingDesc")}</p>
@@ -125,7 +125,7 @@ export function HubTodayHero({ activePlan, onGoToPlan }: Props) {
           </span>
           {isRest ? (
             <>
-              <h2 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight flex items-center gap-2">
+              <h2 className="text-xl sm:text-2xl font-extrabold text-card-foreground tracking-tight flex items-center gap-2">
                 <Battery className="h-5 w-5 text-speed" />
                 {t("todayRestTitle")}
               </h2>
@@ -133,7 +133,7 @@ export function HubTodayHero({ activePlan, onGoToPlan }: Props) {
             </>
           ) : (
             <>
-              <h2 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight truncate">
+              <h2 className="text-xl sm:text-2xl font-extrabold text-card-foreground tracking-tight truncate">
                 {title || t("todaySessionTkd")}
               </h2>
               {subParts.length > 0 && (

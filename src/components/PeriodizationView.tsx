@@ -76,7 +76,7 @@ export function PeriodizationView({ periodization, programWeeks }: Periodization
   return (
     <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-5">
       <div>
-        <h3 className="text-sm font-bold text-foreground">{t("periodizationTitle")}</h3>
+        <h3 className="text-sm font-bold text-card-foreground">{t("periodizationTitle")}</h3>
         <p className="text-xs text-muted-foreground">
           {(t("periodizationSubtitle") || "{{n}}-week overview").replace("{{n}}", String(totalWeeks))}
         </p>

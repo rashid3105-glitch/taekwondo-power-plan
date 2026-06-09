@@ -142,7 +142,7 @@ export default function PlatformPage() {
                   className="h-4 w-4 shrink-0 mt-0.5"
                   style={{ color: audienceColor }}
                 />
-                <span className="text-sm text-foreground">{b}</span>
+                <span className="text-sm text-card-foreground">{b}</span>
               </motion.li>
             ))}
           </ul>
