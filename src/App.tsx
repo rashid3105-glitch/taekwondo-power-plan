@@ -191,6 +191,7 @@ const AnimatedRoutes = () => {
         <Route path="/privacy" element={<Page><PrivacyPolicy /></Page>} />
         <Route path="/taekwondo-training-program" element={<Page><SeoLanding /></Page>} />
         <Route path="/progress" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/mockup/season-onboarding" element={<Page><MockupSeasonOnboarding /></Page>} />
         <Route path="*" element={<Page><NotFound /></Page>} />
       </Routes>
       </AnimatePresence>
