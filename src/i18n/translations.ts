@@ -1495,6 +1495,8 @@ const translations = {
     seasonAiHintPreComp: "Pre-competition — taper volume, raise intensity",
     seasonNoCalendarYet: "No season plan has been shared with you yet. Ask your coach.",
     helpSeasonCalendar: "Season Calendar (Coach)",
+    helpSeasonCalendarTitle: "Season Calendar",
+    helpSeasonCalendarSteps: "1. Open Coach → Season Calendar\n2. Create a season plan with a start and end date\n3. Add phases (e.g. GPP, SPP, Competition, Peak, Deload) with colors and training focus tags\n4. Set the weekly day template — which weekdays are TKD, gym/strength, rest or competition\n5. Per-athlete overrides let you change a single day for one athlete\n6. Competitions automatically appear as red 'stævne' days\n7. Athletes see the same calendar in their hub with the current week highlighted",
     changelog_2026_05_17: "May 17, 2026",
     changelogEntry117: "Season Calendar: coaches can now create a periodized season plan with phases, a weekly session template, and per-athlete overrides — athletes and parents see the team schedule as a read-only calendar, and AI training plans now adapt to the current season phase",
     changelogEntry118: "Season Calendar: phase week input now uses ISO week numbers that match the calendar display, and each phase can be tagged with training focus areas (technique, conditioning, sparring, strength, competition prep, recovery, mental)",
