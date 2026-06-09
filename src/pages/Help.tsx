@@ -131,6 +131,7 @@ export default function Help() {
   const [query, setQuery] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
   const [showAllChangelog, setShowAllChangelog] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -140,12 +141,14 @@ export default function Help() {
       const { data: { user } } = await supabase.auth.getUser();
       if (cancelled) return;
       setIsLoggedIn(!!user);
+      setAuthChecked(true);
       if (!user) return;
       const { data } = await supabase.rpc("is_admin", { _user_id: user.id });
       if (!cancelled && data === true) setIsAdmin(true);
     })();
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
       setIsLoggedIn(!!session?.user);
+      setAuthChecked(true);
     });
     return () => { cancelled = true; sub.subscription.unsubscribe(); };
   }, []);
@@ -280,7 +283,7 @@ export default function Help() {
     <div className="min-h-screen bg-background relative">
       <PageMeta title="Help Center" description="Get help with Sportstalent features and training tools." canonical="https://sportstalent.dk/help" />
       <Watermark />
-      <PublicNav />
+      {authChecked && !isLoggedIn && <PublicNav />}
 
       {/* Hero */}
       <div className="px-4 py-8">
