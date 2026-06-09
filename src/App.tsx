@@ -193,6 +193,7 @@ const AnimatedRoutes = () => {
         <Route path="/taekwondo-training-program" element={<Page><SeoLanding /></Page>} />
         <Route path="/progress" element={<Navigate to="/dashboard" replace />} />
         <Route path="/mockup/season-onboarding" element={<Page><MockupSeasonOnboarding /></Page>} />
+        <Route path="/mockup/athlete-goals" element={<Page><MockupAthleteGoals /></Page>} />
         <Route path="*" element={<Page><NotFound /></Page>} />
       </Routes>
       </AnimatePresence>
