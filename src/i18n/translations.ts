@@ -9667,6 +9667,8 @@ const translations = {
     seasonAiHintPreComp: "Vor dem Wettkampf — Volumen senken, Intensität erhöhen",
     seasonNoCalendarYet: "Es wurde noch kein Saisonplan mit dir geteilt. Frage deinen Trainer.",
     helpSeasonCalendar: "Saisonkalender (Trainer)",
+    helpSeasonCalendarTitle: "Saisonkalender",
+    helpSeasonCalendarSteps: "1. Öffnen Sie Trainer → Saisonkalender\n2. Erstellen Sie einen Saisonplan mit Start- und Enddatum\n3. Fügen Sie Phasen hinzu (z. B. GPP, SPP, Wettkampf, Peak, Deload) mit Farben und Trainingsfokus-Tags\n4. Legen Sie die Wochentag-Vorlage fest — welche Wochentage sind TKD, Kraft, Ruhe oder Wettkampf\n5. Athleten-Overrides erlauben, einen einzelnen Tag für einen Athleten zu ändern\n6. Wettkämpfe erscheinen automatisch als rote 'Wettkampf'-Tage\n7. Athleten sehen denselben Kalender in ihrem Hub mit hervorgehobener aktueller Woche",
     changelog_2026_05_17: "17. Mai 2026",
     changelogEntry117: "Saisonkalender: Trainer können jetzt einen periodisierten Saisonplan mit Phasen, einer wöchentlichen Sitzungsvorlage und individuellen Athleten-Abweichungen erstellen — Athleten und Eltern sehen den Teamplan als schreibgeschützten Kalender, und KI-Trainingspläne passen sich jetzt der aktuellen Saisonphase an",
     changelogEntry118: "Saisonkalender: Wocheneingabe der Phase nutzt jetzt ISO-Wochennummern, die mit der Anzeige übereinstimmen, und jede Phase kann mit Trainingsfokus-Tags (Technik, Kondition, Sparring, Kraft, Wettkampfvorbereitung, Erholung, Mental) versehen werden",
