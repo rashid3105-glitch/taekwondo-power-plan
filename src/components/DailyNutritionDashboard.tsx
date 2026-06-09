@@ -45,7 +45,7 @@ function Ring({ value, max, label }: { value: number; max: number; label: string
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-lg font-extrabold text-foreground leading-none">{Math.round(value)}</span>
+        <span className="text-lg font-extrabold text-card-foreground leading-none">{Math.round(value)}</span>
         <span className="text-[10px] text-muted-foreground mt-0.5">{label}</span>
       </div>
     </div>
@@ -58,7 +58,7 @@ function Bar({ label, value, max, color }: { label: string; value: number; max: 
     <div className="space-y-1">
       <div className="flex items-center justify-between text-xs">
         <span className="text-muted-foreground">{label}</span>
-        <span className="font-medium text-foreground tabular-nums">
+        <span className="font-medium text-card-foreground tabular-nums">
           {Math.round(value)}{max > 0 ? `/${Math.round(max)}` : ""}g
         </span>
       </div>
@@ -133,15 +133,15 @@ export function DailyNutritionDashboard({
 
       {calTarget > 0 && (
         <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span>{t("dailyTarget") || "Dagligt mål"}: <span className="font-semibold text-foreground">{calTarget} kcal</span></span>
-          <span>{t("remaining") || "Tilbage"}: <span className="font-semibold text-foreground">{Math.max(0, calTarget - totals.cal)} kcal</span></span>
+          <span>{t("dailyTarget") || "Dagligt mål"}: <span className="font-semibold text-card-foreground">{calTarget} kcal</span></span>
+          <span>{t("remaining") || "Tilbage"}: <span className="font-semibold text-card-foreground">{Math.max(0, calTarget - totals.cal)} kcal</span></span>
         </div>
       )}
 
       <div className="space-y-2">
         <div className="flex items-center gap-2">
           <Utensils className="h-4 w-4 text-tab-nutrition" />
-          <h4 className="text-sm font-semibold text-foreground">{t("todayMeals") || "Dagens måltider"}</h4>
+          <h4 className="text-sm font-semibold text-card-foreground">{t("todayMeals") || "Dagens måltider"}</h4>
         </div>
         {loading ? (
           <p className="text-xs text-muted-foreground">…</p>
@@ -152,7 +152,7 @@ export function DailyNutritionDashboard({
             {logs.map((l) => (
               <li key={l.id} className="flex items-center justify-between gap-2 rounded-lg bg-muted/40 px-3 py-2">
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-foreground truncate">{l.meal_name || "—"}</p>
+                  <p className="text-sm font-medium text-card-foreground truncate">{l.meal_name || "—"}</p>
                   <p className="text-[11px] text-muted-foreground">
                     {Math.round(Number(l.calories) || 0)} kcal · {Math.round(Number(l.protein_g) || 0)}g protein
                   </p>

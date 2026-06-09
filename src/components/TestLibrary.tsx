@@ -141,7 +141,7 @@ export function TestLibrary() {
                           <Icon className="h-4 w-4 text-primary" />
                         </div>
                         <div>
-                          <div className="font-semibold text-foreground text-sm">{getLocalizedTestName(test.name, t)}</div>
+                          <div className="font-semibold text-card-foreground text-sm">{getLocalizedTestName(test.name, t)}</div>
                           <div className="text-xs text-muted-foreground mt-0.5">{test.description[locale] || test.description.en}</div>
                         </div>
                       </div>
@@ -167,11 +167,11 @@ export function TestLibrary() {
                       <div className="border-t border-border px-4 pb-4 pt-3 space-y-2">
                         <div>
                           <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{t("ptUnit")}</span>
-                          <p className="text-sm text-foreground font-mono">{test.unit}</p>
+                          <p className="text-sm text-card-foreground font-mono">{test.unit}</p>
                         </div>
                         <div>
                           <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{t("ptProtocol")}</span>
-                          <p className="text-sm text-foreground leading-relaxed">{test.protocol[locale] || test.protocol.en}</p>
+                          <p className="text-sm text-card-foreground leading-relaxed">{test.protocol[locale] || test.protocol.en}</p>
                         </div>
                       </div>
                     )}
