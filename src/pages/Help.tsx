@@ -141,6 +141,7 @@ export default function Help() {
       const { data: { user } } = await supabase.auth.getUser();
       if (cancelled) return;
       setIsLoggedIn(!!user);
+      setAuthChecked(true);
       if (!user) return;
       const { data } = await supabase.rpc("is_admin", { _user_id: user.id });
       if (!cancelled && data === true) setIsAdmin(true);
