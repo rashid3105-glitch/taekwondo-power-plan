@@ -1,7 +1,61 @@
 import { useMemo, useState } from "react";
 import { X, Check, Calendar as CalendarIcon, Sparkles, Layers, Trophy, Target, FilePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+
+const WEEKDAY_LABELS = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag"];
+const TYPE_LABEL: Record<string, string> = { sky: "TKD", emerald: "Styrke", rose: "Stævne", muted: "Hvile" };
+// Per-weekday focus tags (Mon..Sun)
+const DAY_FOCUS: Record<string, string[][]> = {
+  sky: [
+    ["Teknik", "Sparring"],
+    ["Teknik", "Kondition"],
+    ["Sparring", "Mental"],
+    ["Teknik", "Sparring"],
+    ["Sparring", "Konkurrenceforberedelse"],
+    ["Teknik"],
+    ["Teknik", "Mental"],
+  ],
+  emerald: [
+    ["Styrke", "Kondition"],
+    ["Styrke", "Eksplosivitet"],
+    ["Styrke", "Core"],
+    ["Styrke", "Kondition"],
+    ["Styrke", "Mobilitet"],
+    ["Styrke"],
+    ["Styrke", "Kondition"],
+  ],
+  rose: Array(7).fill(["Konkurrenceforberedelse", "Mental"]),
+  muted: Array(7).fill(["Restitution"]),
+};
+
+function DayFocusContent({ week, dow, type }: { week: number; dow: number; type: string }) {
+  const tags = DAY_FOCUS[type]?.[dow] ?? [];
+  return (
+    <div className="space-y-2">
+      <div className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground">
+        Uge {week} · {WEEKDAY_LABELS[dow]}
+      </div>
+      <div className="flex items-center gap-2">
+        <span className={cn("h-2.5 w-2.5 rounded-full", dotClass(type))} />
+        <span className="text-sm font-bold text-popover-foreground">{TYPE_LABEL[type]}</span>
+      </div>
+      {type === "muted" ? (
+        <p className="text-xs text-muted-foreground">Hviledag — fokus på restitution.</p>
+      ) : (
+        <div className="flex flex-wrap gap-1.5">
+          {tags.map((f) => (
+            <span key={f} className="inline-flex items-center rounded-full bg-secondary px-2 py-0.5 text-[10px] font-semibold text-popover-foreground">
+              {f}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 // =============================================================
 // MOCKUP — Season Onboarding (sandbox, not linked in navigation)
