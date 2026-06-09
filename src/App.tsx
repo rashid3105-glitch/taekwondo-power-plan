@@ -49,6 +49,7 @@ import AdminPayments from "./pages/AdminPayments";
 import AdminClubs from "./pages/AdminClubs";
 import NotFound from "./pages/NotFound";
 import MockupSeasonOnboarding from "./pages/MockupSeasonOnboarding";
+import MockupAthleteGoals from "./pages/MockupAthleteGoals";
 import Methodology from "./pages/Methodology";
 import Unsubscribe from "./pages/Unsubscribe";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
