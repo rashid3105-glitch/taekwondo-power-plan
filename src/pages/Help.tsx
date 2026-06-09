@@ -148,6 +148,7 @@ export default function Help() {
     })();
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
       setIsLoggedIn(!!session?.user);
+      setAuthChecked(true);
     });
     return () => { cancelled = true; sub.subscription.unsubscribe(); };
   }, []);
