@@ -162,7 +162,7 @@ export default function AdminPayments() {
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <CreditCard className="h-5 w-5 text-primary" />
-            <span className="text-sm sm:text-base font-extrabold text-foreground">
+            <span className="text-sm sm:text-base font-extrabold text-card-foreground">
               {t("adminPayments") || "Payment Management"}
             </span>
           </div>
@@ -173,7 +173,7 @@ export default function AdminPayments() {
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { label: t("total") || "Total", value: stats.total, color: "text-foreground" },
+            { label: t("total") || "Total", value: stats.total, color: "text-card-foreground" },
             { label: t("paid"), value: stats.paid, color: "text-emerald-500" },
             { label: t("unpaid"), value: stats.unpaid, color: "text-destructive" },
             { label: t("demo"), value: stats.demo, color: "text-primary" },
@@ -235,7 +235,7 @@ export default function AdminPayments() {
                 <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <p className="font-medium text-sm text-foreground truncate">{u.display_name || "—"}</p>
+                      <p className="font-medium text-sm text-card-foreground truncate">{u.display_name || "—"}</p>
                       {u.club_name && (
                         <span className="inline-flex items-center gap-0.5 text-[10px] text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded-full">
                           <Building className="h-2.5 w-2.5" />

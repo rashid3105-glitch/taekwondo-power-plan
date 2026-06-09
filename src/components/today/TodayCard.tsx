@@ -98,7 +98,7 @@ export function TodayCard({ activePlan, onGoToProgress, onGoToPlan }: Props) {
             <Battery className="h-5 w-5 text-speed" />
           </div>
           <div className="min-w-0">
-            <p className="text-base font-bold text-foreground">{t("todayRestTitle")}</p>
+            <p className="text-base font-bold text-card-foreground">{t("todayRestTitle")}</p>
             <p className="text-sm text-muted-foreground mt-0.5">{t("todayRestBody")}</p>
           </div>
         </div>
@@ -160,7 +160,7 @@ function SessionRow({
               <span className="text-xs text-muted-foreground">{exercises.length} {t("todayExercisesCount")}</span>
             )}
           </div>
-          {session.focus && <p className="text-sm font-semibold text-foreground mt-1 truncate">{session.focus}</p>}
+          {session.focus && <p className="text-sm font-semibold text-card-foreground mt-1 truncate">{session.focus}</p>}
         </div>
       </div>
       {allDone ? (
@@ -256,7 +256,7 @@ function TkdRunner({ focus, completed, onMark }: { focus?: string; completed: bo
   const { t } = useLanguage();
   return (
     <div className="rounded-xl border border-border bg-card p-5 text-center space-y-4">
-      {focus && <p className="text-base text-foreground">{focus}</p>}
+      {focus && <p className="text-base text-card-foreground">{focus}</p>}
       {completed ? (
         <div className="inline-flex items-center gap-2 rounded-full bg-speed/15 text-speed border border-speed/30 px-3 py-1.5 text-sm font-bold">
           <Check className="h-4 w-4" /> {t("todayCompleted")}
@@ -290,7 +290,7 @@ function GymExerciseCard({ exercise, completed, onComplete }: { exercise: any; c
         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-speed/20">
           <Check className="h-4 w-4 text-speed" />
         </div>
-        <p className="font-semibold text-foreground flex-1 truncate">{exercise.name}</p>
+        <p className="font-semibold text-card-foreground flex-1 truncate">{exercise.name}</p>
         <span className="text-xs text-speed font-bold uppercase">{t("todayCompleted")}</span>
       </div>
     );
@@ -299,7 +299,7 @@ function GymExerciseCard({ exercise, completed, onComplete }: { exercise: any; c
   return (
     <div className="rounded-xl border border-border bg-card p-4 space-y-3">
       <div>
-        <p className="font-bold text-foreground">{exercise.name}</p>
+        <p className="font-bold text-card-foreground">{exercise.name}</p>
         <p className="text-xs text-muted-foreground mt-0.5">
           {setsTotal} × {exercise.reps}
           {exercise.tempo ? ` @ ${exercise.tempo}` : ""}
@@ -368,7 +368,7 @@ function CompletionMoment({ onProgress, onHome }: { onProgress: () => void; onHo
         @keyframes today-check { to { stroke-dashoffset: 0; } }
       `}</style>
       <div>
-        <h2 className="text-2xl font-extrabold text-foreground">{t("todayDoneTitle")}</h2>
+        <h2 className="text-2xl font-extrabold text-card-foreground">{t("todayDoneTitle")}</h2>
         <p className="text-sm text-muted-foreground mt-1">{t("todayDoneBody")}</p>
       </div>
       <div className="flex flex-col gap-2 w-full max-w-xs">

@@ -101,7 +101,7 @@ export function AddExerciseForm({ onClose, onAdded }: AddExerciseFormProps) {
   return (
     <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-bold text-foreground">Add Custom Exercise</h3>
+        <h3 className="text-sm font-bold text-card-foreground">Add Custom Exercise</h3>
         <Button variant="ghost" size="icon" onClick={onClose} className="h-7 w-7">
           <X className="h-4 w-4" />
         </Button>
@@ -146,7 +146,7 @@ export function AddExerciseForm({ onClose, onAdded }: AddExerciseFormProps) {
                   checked={muscles.includes(m)}
                   onCheckedChange={() => toggleMuscle(m)}
                 />
-                <span className="text-xs text-foreground capitalize">{m.replace("-", " ")}</span>
+                <span className="text-xs text-card-foreground capitalize">{m.replace("-", " ")}</span>
               </label>
             ))}
           </div>

@@ -135,7 +135,7 @@ export default function CoachMessages() {
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <MessageSquare className="h-5 w-5 text-primary" />
-          <span className="text-base font-extrabold text-foreground">{t("messagesTab")}</span>
+          <span className="text-base font-extrabold text-card-foreground">{t("messagesTab")}</span>
         </div>
       </header>
 
@@ -143,13 +143,13 @@ export default function CoachMessages() {
         {athletes.length === 0 ? (
           <div className="rounded-xl border border-border bg-card p-12 text-center shadow-card">
             <MessageSquare className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
-            <h3 className="font-bold text-foreground mb-1">{t("messagesTab")}</h3>
+            <h3 className="font-bold text-card-foreground mb-1">{t("messagesTab")}</h3>
             <p className="text-sm text-muted-foreground">{t("messagesNoAthletes")}</p>
           </div>
         ) : (
           <>
             <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-1">
-              <h3 className="font-bold text-foreground flex items-center gap-2">
+              <h3 className="font-bold text-card-foreground flex items-center gap-2">
                 <MessageSquare className="h-5 w-5 text-primary" /> {t("messagesTab")}
               </h3>
               <p className="text-xs text-muted-foreground">{t("messagesTabDescription")}</p>
@@ -157,7 +157,7 @@ export default function CoachMessages() {
 
             <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
               <div className="flex items-center justify-between gap-2 flex-wrap">
-                <h4 className="text-sm font-semibold text-foreground">{t("recipientsLabel")}</h4>
+                <h4 className="text-sm font-semibold text-card-foreground">{t("recipientsLabel")}</h4>
                 <span className="text-xs text-muted-foreground">
                   {t("selectedCount")
                     .replace("{n}", String(messageRecipientIds.size))
@@ -206,7 +206,7 @@ export default function CoachMessages() {
                         <Checkbox checked={checked} onCheckedChange={() => toggleRecipient(a.user_id)} />
                         <AvatarImg avatarUrl={a.avatar_url} />
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium text-foreground truncate">
+                          <p className="text-sm font-medium text-card-foreground truncate">
                             {a.display_name || t("noName")}
                           </p>
                           <div className="flex items-center gap-1.5 flex-wrap">
@@ -227,7 +227,7 @@ export default function CoachMessages() {
 
             {messageRecipientIds.size > 0 && (
               <div className="rounded-xl border-2 border-primary/40 bg-card p-4 sm:p-5 shadow-card space-y-3 animate-fade-in">
-                <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <h4 className="text-sm font-semibold text-card-foreground flex items-center gap-2">
                   <Send className="h-4 w-4 text-primary" /> {t("composerTitle")}
                 </h4>
                 <div className="space-y-1">

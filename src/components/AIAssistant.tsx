@@ -180,7 +180,7 @@ export function AIAssistant() {
             <div className="flex items-center gap-3 px-4 py-3 border-b border-border bg-primary/5 shrink-0">
               <Sparkles className="h-5 w-5 text-primary shrink-0" />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-foreground">{t("aiAssistantTitle") as string}</p>
+                <p className="text-sm font-bold text-card-foreground">{t("aiAssistantTitle") as string}</p>
                 <p className="text-[10px] text-muted-foreground truncate">{t("aiAssistantSubtitle") as string}</p>
               </div>
               <button
@@ -217,7 +217,7 @@ export function AIAssistant() {
                       "max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed",
                       m.role === "user"
                         ? "bg-primary text-primary-foreground rounded-br-sm"
-                        : "bg-muted text-foreground rounded-bl-sm"
+                        : "bg-muted text-card-foreground rounded-bl-sm"
                     )}
                   >
                     {m.role === "assistant" && (

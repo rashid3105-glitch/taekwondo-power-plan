@@ -101,7 +101,7 @@ export function PlanProgramGrid({
                     style={{ minWidth: 160 }}
                   >
                     <div className="flex items-center justify-between gap-1">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-foreground">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-card-foreground">
                         {(t("weekN") || "Week {{n}}").replace("{{n}}", String(wi + 1))}
                       </span>
                       {isCurrent && (
@@ -138,7 +138,7 @@ export function PlanProgramGrid({
                   >
                     <div className="flex items-center gap-1.5">
                       <Icon className="h-3.5 w-3.5 text-primary flex-shrink-0" />
-                      <span className="text-[11px] font-bold text-foreground truncate">
+                      <span className="text-[11px] font-bold text-card-foreground truncate">
                         {localizeDayOfWeek(day.dayOfWeek, locale)}
                       </span>
                     </div>
@@ -217,7 +217,7 @@ function SessionCellContent({
         const v = computeWeekVariant(ex, weekIndex, periodization);
         return (
           <div key={j} className="flex items-center justify-between gap-1">
-            <span className="text-[10px] text-foreground truncate">
+            <span className="text-[10px] text-card-foreground truncate">
               <span className="text-muted-foreground mr-1">{v.sets}×{v.repsLabel}</span>
               {localizeExerciseName(ex.name, locale)}
             </span>

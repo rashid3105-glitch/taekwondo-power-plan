@@ -89,7 +89,7 @@ export default function Contact() {
                 className="rounded-xl border border-border bg-card p-8 text-center shadow-sm"
               >
                 <CheckCircle className="h-12 w-12 text-speed mx-auto mb-4" />
-                <h2 className="text-lg font-bold text-foreground mb-2">{t("contactSuccessTitle")}</h2>
+                <h2 className="text-lg font-bold text-card-foreground mb-2">{t("contactSuccessTitle")}</h2>
                 <p className="text-sm text-muted-foreground">{t("contactSuccessDesc")}</p>
               </motion.div>
             ) : (

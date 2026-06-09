@@ -124,7 +124,7 @@ export default function Library() {
           </Button>
           <div className="flex items-center gap-2">
             <Icon className={`h-5 w-5 ${COLORS[section || ""] || "text-primary"}`} />
-            <span className="text-base font-extrabold text-foreground">
+            <span className="text-base font-extrabold text-card-foreground">
               {titleKey ? t(titleKey) : t("library")}
             </span>
           </div>
@@ -150,7 +150,7 @@ export default function Library() {
                   <c.icon className={`h-6 w-6 ${c.color}`} />
                 </div>
                 <div>
-                  <div className="font-bold text-foreground text-base">{c.label}</div>
+                  <div className="font-bold text-card-foreground text-base">{c.label}</div>
                   <div className="text-sm text-muted-foreground">{c.desc}</div>
                 </div>
               </button>

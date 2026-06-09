@@ -219,7 +219,7 @@ export default function CoachAthleteOverview() {
               <AvatarImg avatarUrl={athlete.avatar_url} className="h-14 w-14 rounded-full object-cover border-2 border-border" />
             </div>
             <div className="min-w-0 flex-1">
-              <h1 className="text-lg sm:text-xl font-extrabold text-foreground truncate">{athlete.display_name}</h1>
+              <h1 className="text-lg sm:text-xl font-extrabold text-card-foreground truncate">{athlete.display_name}</h1>
               <div className="flex items-center gap-1.5 flex-wrap mt-1">
                 {athlete.club_name && (
                   <Badge variant="secondary" className="text-[10px] gap-1">

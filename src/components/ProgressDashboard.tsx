@@ -38,7 +38,7 @@ function StatCard({ icon: Icon, label, value, sublabel }: { icon: typeof Target;
         <Icon className="h-4 w-4 text-primary" />
         <span className="text-[10px] sm:text-xs uppercase tracking-wider text-muted-foreground font-semibold">{label}</span>
       </div>
-      <p className="text-xl sm:text-2xl font-extrabold text-foreground">{value}</p>
+      <p className="text-xl sm:text-2xl font-extrabold text-card-foreground">{value}</p>
       {sublabel && <p className="text-[10px] text-muted-foreground mt-0.5">{sublabel}</p>}
     </div>
   );
@@ -58,12 +58,12 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
   return (
     <div className="rounded-lg border border-border bg-card/95 backdrop-blur-sm px-3 py-2 shadow-lg text-xs">
-      <p className="font-bold text-foreground mb-1">{label}</p>
+      <p className="font-bold text-card-foreground mb-1">{label}</p>
       {payload.map((entry: any, i: number) => (
         <div key={i} className="flex items-center gap-2">
           <div className="h-2 w-2 rounded-full" style={{ backgroundColor: entry.color }} />
           <span className="text-muted-foreground">{entry.name}:</span>
-          <span className="font-bold text-foreground">{entry.value}{entry.unit || ""}</span>
+          <span className="font-bold text-card-foreground">{entry.value}{entry.unit || ""}</span>
         </div>
       ))}
     </div>
@@ -316,7 +316,7 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
 
           {/* Weekly volume chart */}
           <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
-            <h3 className="text-sm font-bold text-foreground mb-4">{t("weeklyTrainingVolume")}</h3>
+            <h3 className="text-sm font-bold text-card-foreground mb-4">{t("weeklyTrainingVolume")}</h3>
             <div className="h-52 sm:h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={stats.weeklyData} barGap={2}>
@@ -347,7 +347,7 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
 
           {/* Completion rate over time */}
           <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
-            <h3 className="text-sm font-bold text-foreground mb-4">{t("weeklyCompletionRate")}</h3>
+            <h3 className="text-sm font-bold text-card-foreground mb-4">{t("weeklyCompletionRate")}</h3>
             <div className="h-52 sm:h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={stats.weeklyData}>
@@ -379,7 +379,7 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
 
           {/* 28-day consistency heatmap */}
           <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
-            <h3 className="text-sm font-bold text-foreground mb-4">{t("last28DaysConsistency")}</h3>
+            <h3 className="text-sm font-bold text-card-foreground mb-4">{t("last28DaysConsistency")}</h3>
             <div className="grid grid-cols-7 gap-1.5">
               {stats.consistencyData.map((d, i) => (
                 <div key={i} className="flex flex-col items-center gap-1 group/cell" title={`${d.date}: ${d.logged} exercises`}>
@@ -413,7 +413,7 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
           {/* Completion by day of week */}
           {stats.dayCompletionData.length > 0 && (
             <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
-              <h3 className="text-sm font-bold text-foreground mb-4">{t("completionByDay")}</h3>
+              <h3 className="text-sm font-bold text-card-foreground mb-4">{t("completionByDay")}</h3>
               <div className="h-52 sm:h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={stats.dayCompletionData} layout="vertical">
@@ -438,7 +438,7 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
       <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
         <div className="flex items-center gap-2 mb-4">
           <Brain className="h-5 w-5 text-tab-mental" />
-          <h3 className="text-sm font-bold text-foreground">{t("mentalPerformance")}</h3>
+          <h3 className="text-sm font-bold text-card-foreground">{t("mentalPerformance")}</h3>
         </div>
         {mentalStats ? (
           <div className="space-y-3">
@@ -477,7 +477,7 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
                         }}
                       />
                     </div>
-                    <span className="text-xs font-semibold text-foreground w-8 text-right">{score}/5</span>
+                    <span className="text-xs font-semibold text-card-foreground w-8 text-right">{score}/5</span>
                     {diff !== null && diff !== 0 && (
                       <span className={`text-[10px] font-bold w-6 ${diff > 0 ? "text-green-500" : "text-red-500"}`}>
                         {diff > 0 ? "+" : ""}{diff}
@@ -497,7 +497,7 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
       <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
         <div className="flex items-center gap-2 mb-4">
           <ClipboardList className="h-5 w-5 text-primary" />
-          <h3 className="text-sm font-bold text-foreground">{t("trainingPlanProgress")}</h3>
+          <h3 className="text-sm font-bold text-card-foreground">{t("trainingPlanProgress")}</h3>
         </div>
         {planProgress ? (
           <div className="space-y-3">
@@ -509,9 +509,9 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
             </div>
             <div className="flex items-center gap-2 mt-2">
               <span className="text-xs text-muted-foreground">{t("totalLogged")}:</span>
-              <span className="text-xs font-bold text-foreground">{planProgress.totalCompleted} {t("exercises")}</span>
+              <span className="text-xs font-bold text-card-foreground">{planProgress.totalCompleted} {t("exercises")}</span>
               <span className="text-xs text-muted-foreground ml-2">{t("across")}</span>
-              <span className="text-xs font-bold text-foreground">{planProgress.daysLogged} {t("daysTrained").toLowerCase()}</span>
+              <span className="text-xs font-bold text-card-foreground">{planProgress.daysLogged} {t("daysTrained").toLowerCase()}</span>
             </div>
           </div>
         ) : (

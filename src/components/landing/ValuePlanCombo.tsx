@@ -36,7 +36,7 @@ export const ValuePlanCombo = () => {
                 {t("landingValueComboTitle").split(".")[0]}
               </span>
             </span>
-            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground leading-tight mb-2">
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-card-foreground leading-tight mb-2">
               {t("landingValueComboTitle")}
             </h2>
             <p className="text-xs text-muted-foreground mb-5 leading-relaxed">
@@ -49,7 +49,7 @@ export const ValuePlanCombo = () => {
                     <b.icon className="h-4 w-4 text-energy" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-bold text-foreground leading-tight">{t(b.titleKey)}</p>
+                    <p className="text-sm font-bold text-card-foreground leading-tight">{t(b.titleKey)}</p>
                     <p className="text-[11px] text-muted-foreground leading-relaxed mt-0.5">{t(b.descKey)}</p>
                   </div>
                 </li>
@@ -83,7 +83,7 @@ export const ValuePlanCombo = () => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2 mb-1.5">
                       <div className="flex items-center gap-2 min-w-0">
-                        <span className="text-xs font-bold text-foreground">{t(day.dayKey)}</span>
+                        <span className="text-xs font-bold text-card-foreground">{t(day.dayKey)}</span>
                         <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider truncate">
                           {t(day.typeKey)}
                         </span>

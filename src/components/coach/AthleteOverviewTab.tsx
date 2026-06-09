@@ -192,7 +192,7 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
         )} />
         <span className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</span>
       </div>
-      <div className="text-xl font-bold tabular-nums text-foreground">{value}</div>
+      <div className="text-xl font-bold tabular-nums text-card-foreground">{value}</div>
       {hint && <div className="text-[11px] text-muted-foreground mt-0.5">{hint}</div>}
     </div>
   );
@@ -281,7 +281,7 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
             <ul className="space-y-1.5">
               {upcoming.map((c) => (
                 <li key={c.id} className="text-xs flex items-center justify-between gap-2 border-b border-border/50 last:border-0 pb-1.5 last:pb-0">
-                  <span className="font-medium text-foreground truncate">{c.name}</span>
+                  <span className="font-medium text-card-foreground truncate">{c.name}</span>
                   <span className="text-muted-foreground whitespace-nowrap">
                     {new Date(c.event_date).toLocaleDateString(locale, { month: "short", day: "numeric" })}
                   </span>
@@ -293,7 +293,7 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
             <div className="mt-2 pt-2 border-t border-border/50 flex items-center gap-2 text-xs">
               <Flame className="h-3.5 w-3.5 text-orange-500" />
               <span className="text-muted-foreground">{t("latestPR")}:</span>
-              <span className="font-semibold text-foreground">{activePR.test_name} — {activePR.value} {activePR.unit}</span>
+              <span className="font-semibold text-card-foreground">{activePR.test_name} — {activePR.value} {activePR.unit}</span>
             </div>
           )}
         </div>

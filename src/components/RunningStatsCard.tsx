@@ -54,20 +54,20 @@ export function RunningStatsCard() {
     <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4 sm:p-5 shadow-card space-y-3">
       <div className="flex items-center gap-2">
         <Footprints className="h-5 w-5 text-emerald-500" />
-        <h3 className="font-bold text-foreground">{t("diaryTypeRunning")}</h3>
+        <h3 className="font-bold text-card-foreground">{t("diaryTypeRunning")}</h3>
         <span className="ml-auto text-[10px] font-bold text-muted-foreground uppercase tracking-wide">30d</span>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         <div className="rounded-lg bg-card border border-border p-3 text-center">
-          <div className="text-lg font-bold text-foreground">{totalKm.toFixed(1)} km</div>
+          <div className="text-lg font-bold text-card-foreground">{totalKm.toFixed(1)} km</div>
           <div className="text-[10px] text-muted-foreground uppercase tracking-wide">{t("runTotalDistance")}</div>
         </div>
         <div className="rounded-lg bg-card border border-border p-3 text-center">
-          <div className="text-lg font-bold text-foreground">{totalRuns}</div>
+          <div className="text-lg font-bold text-card-foreground">{totalRuns}</div>
           <div className="text-[10px] text-muted-foreground uppercase tracking-wide">{t("runTotalRuns")}</div>
         </div>
         <div className="rounded-lg bg-card border border-border p-3 text-center">
-          <div className="text-lg font-bold text-foreground">{bestPace ? `${formatPace(bestPace)}/km` : "—"}</div>
+          <div className="text-lg font-bold text-card-foreground">{bestPace ? `${formatPace(bestPace)}/km` : "—"}</div>
           <div className="text-[10px] text-muted-foreground uppercase tracking-wide">{t("runBestPace")}</div>
         </div>
         <div className="rounded-lg bg-emerald-500/10 p-3 text-center">

@@ -297,7 +297,7 @@ export function SquadOverview({
                     <AvatarImg avatarUrl={r.avatar_url} />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <p className="font-medium text-sm text-foreground truncate">{r.display_name}</p>
+                        <p className="font-medium text-sm text-card-foreground truncate">{r.display_name}</p>
                         {r.has_active_injury && (
                           <Heart className="h-3 w-3 text-destructive flex-shrink-0" />
                         )}

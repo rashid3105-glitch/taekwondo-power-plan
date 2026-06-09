@@ -258,13 +258,13 @@ export function SupplementChecker({ athleteId }: SupplementCheckerProps = {}) {
           <div className="flex items-start gap-3">
             {(() => { const Icon = flagStyles[result.flag_status].icon; return <Icon className={cn("h-8 w-8 shrink-0", flagStyles[result.flag_status].text)} />; })()}
             <div className="flex-1 min-w-0">
-              <p className="font-extrabold text-base text-foreground">{flagLabel(result.flag_status)}</p>
+              <p className="font-extrabold text-base text-card-foreground">{flagLabel(result.flag_status)}</p>
               <div className="flex items-center gap-2 mt-0.5">
                 <span className={cn("inline-block h-2 w-2 rounded-full", result.flag_status === "green" ? "bg-emerald-500" : result.flag_status === "yellow" ? "bg-amber-500" : "bg-red-500")} />
                 <span className={cn("text-xs font-bold uppercase", flagStyles[result.flag_status].text)}>{result.flag_status}</span>
               </div>
               {result.product_name && (
-                <p className="text-sm font-semibold text-foreground truncate mt-1">{result.product_name}</p>
+                <p className="text-sm font-semibold text-card-foreground truncate mt-1">{result.product_name}</p>
               )}
             </div>
           </div>
@@ -277,7 +277,7 @@ export function SupplementChecker({ athleteId }: SupplementCheckerProps = {}) {
               {result.substances.map((s, i) => (
                 <div key={i} className={cn("rounded-lg border p-2 bg-background", flagStyles[s.flag].border)}>
                   <div className="flex items-center justify-between gap-2">
-                    <span className="font-semibold text-sm text-foreground">{s.navn}</span>
+                    <span className="font-semibold text-sm text-card-foreground">{s.navn}</span>
                     <span className={cn("text-xs font-bold uppercase shrink-0", flagStyles[s.flag].text)}>
                       {s.kategori ? `${s.kategori} · ` : ""}{s.flag}
                     </span>
@@ -310,11 +310,11 @@ export function SupplementChecker({ athleteId }: SupplementCheckerProps = {}) {
       <Card className="p-4 border-l-4 border-l-amber-500 border border-border bg-card space-y-2">
         <div className="flex items-center gap-2">
           <ShieldAlert className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-          <p className="font-bold text-sm text-foreground">
+          <p className="font-bold text-sm text-card-foreground">
             {t("supplementDisclaimerTitle") || "Vigtigt — vejledende screening"}
           </p>
         </div>
-        <p className="text-xs text-foreground/90 leading-relaxed">
+        <p className="text-xs text-card-foreground/90 leading-relaxed">
           {t("supplementDisclaimerBody") || "Dette er en vejledende screening, ikke en garanti. WADA's liste er ikke udtømmende, og du er selv ansvarlig (strict liability) for hvad du indtager. Kosttilskud dækkes IKKE af Global DRO og kan være forurenede eller fejlmærkede. Verificér altid officielt og tal med din træner, læge eller en voksen."}
         </p>
         <div className="flex flex-col gap-1.5 pt-1">
@@ -333,7 +333,7 @@ export function SupplementChecker({ athleteId }: SupplementCheckerProps = {}) {
       <Card className="p-4 space-y-3">
         <div className="flex items-center gap-2">
           <History className="h-4 w-4 text-muted-foreground" />
-          <h3 className="font-bold text-foreground text-sm">{t("supplementHistoryTitle") || "Din historik"}</h3>
+          <h3 className="font-bold text-card-foreground text-sm">{t("supplementHistoryTitle") || "Din historik"}</h3>
         </div>
         {historyLoading ? (
           <div className="flex items-center justify-center py-4"><Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /></div>
@@ -352,7 +352,7 @@ export function SupplementChecker({ athleteId }: SupplementCheckerProps = {}) {
                   >
                     <Icon className={cn("h-4 w-4 shrink-0", style.text)} />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-foreground truncate">{h.product_name || "—"}</p>
+                      <p className="text-sm font-semibold text-card-foreground truncate">{h.product_name || "—"}</p>
                       <p className="text-[11px] text-muted-foreground">{new Date(h.created_at).toLocaleString()}</p>
                     </div>
                     <span className={cn("text-[10px] font-bold uppercase", style.text)}>{h.flag_status}</span>

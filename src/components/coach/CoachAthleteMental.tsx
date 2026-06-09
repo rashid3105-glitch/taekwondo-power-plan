@@ -175,7 +175,7 @@ export function CoachAthleteMental({ athleteId }: Props) {
 
   return (
     <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
-      <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+      <h4 className="font-semibold text-sm text-card-foreground flex items-center gap-2">
         <Brain className="h-4 w-4 text-primary" /> {tr.title}
       </h4>
 
@@ -195,7 +195,7 @@ export function CoachAthleteMental({ athleteId }: Props) {
                   <div className="text-xs text-muted-foreground">
                     {formatDate(selected.created_at, l)}
                   </div>
-                  <div className="text-2xl font-bold text-foreground">
+                  <div className="text-2xl font-bold text-card-foreground">
                     {selected.total_score}
                     <span className="text-xs text-muted-foreground font-normal"> / 30</span>
                   </div>
@@ -226,7 +226,7 @@ export function CoachAthleteMental({ athleteId }: Props) {
                     <span className="text-[11px] text-muted-foreground truncate">
                       {categoryLabels[cat]?.[l] || cat}
                     </span>
-                    <span className="text-sm font-semibold text-foreground tabular-nums">
+                    <span className="text-sm font-semibold text-card-foreground tabular-nums">
                       {score}/5
                     </span>
                   </div>
@@ -238,7 +238,7 @@ export function CoachAthleteMental({ athleteId }: Props) {
                 <div className="space-y-3 pt-2">
                   {selected.ai_advice.summary && (
                     <div>
-                      <div className="text-xs font-semibold text-foreground mb-1">{tr.summary}</div>
+                      <div className="text-xs font-semibold text-card-foreground mb-1">{tr.summary}</div>
                       <p className="text-xs text-muted-foreground leading-relaxed">
                         {selected.ai_advice.summary}
                       </p>
@@ -246,7 +246,7 @@ export function CoachAthleteMental({ athleteId }: Props) {
                   )}
                   {Array.isArray(selected.ai_advice.strengths) && selected.ai_advice.strengths.length > 0 && (
                     <div>
-                      <div className="text-xs font-semibold text-foreground mb-1">{tr.strengths}</div>
+                      <div className="text-xs font-semibold text-card-foreground mb-1">{tr.strengths}</div>
                       <ul className="text-xs text-muted-foreground space-y-0.5 list-disc list-inside">
                         {selected.ai_advice.strengths.map((s: string, i: number) => <li key={i}>{s}</li>)}
                       </ul>
@@ -254,12 +254,12 @@ export function CoachAthleteMental({ athleteId }: Props) {
                   )}
                   {Array.isArray(selected.ai_advice.improvementAreas) && selected.ai_advice.improvementAreas.length > 0 && (
                     <div>
-                      <div className="text-xs font-semibold text-foreground mb-1">{tr.areasToImprove}</div>
+                      <div className="text-xs font-semibold text-card-foreground mb-1">{tr.areasToImprove}</div>
                       <div className="space-y-2">
                         {selected.ai_advice.improvementAreas.map((a: any, i: number) => (
                           <div key={i} className="rounded-lg border border-border bg-background/50 px-3 py-2 space-y-1">
                             <div className="flex items-center justify-between">
-                              <span className="text-xs font-medium text-foreground">{a.area}</span>
+                              <span className="text-xs font-medium text-card-foreground">{a.area}</span>
                               {typeof a.score === "number" && (
                                 <span className="text-[10px] text-muted-foreground tabular-nums">{a.score}/5</span>
                               )}
@@ -279,7 +279,7 @@ export function CoachAthleteMental({ athleteId }: Props) {
                   )}
                   {selected.ai_advice.preCompetitionRoutine && (
                     <div>
-                      <div className="text-xs font-semibold text-foreground mb-1">{tr.preCompRoutine}</div>
+                      <div className="text-xs font-semibold text-card-foreground mb-1">{tr.preCompRoutine}</div>
                       <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-line">
                         {selected.ai_advice.preCompetitionRoutine}
                       </p>
@@ -287,7 +287,7 @@ export function CoachAthleteMental({ athleteId }: Props) {
                   )}
                   {Array.isArray(selected.ai_advice.affirmations) && selected.ai_advice.affirmations.length > 0 && (
                     <div>
-                      <div className="text-xs font-semibold text-foreground mb-1">{tr.affirmations}</div>
+                      <div className="text-xs font-semibold text-card-foreground mb-1">{tr.affirmations}</div>
                       <ul className="text-xs text-muted-foreground space-y-0.5 list-disc list-inside">
                         {selected.ai_advice.affirmations.map((s: string, i: number) => <li key={i}>{s}</li>)}
                       </ul>
@@ -303,7 +303,7 @@ export function CoachAthleteMental({ athleteId }: Props) {
           {/* History list (only if more than one) */}
           {assessments.length > 1 && (
             <div className="pt-2 border-t border-border space-y-1">
-              <div className="text-xs font-semibold text-foreground">{tr.history}</div>
+              <div className="text-xs font-semibold text-card-foreground">{tr.history}</div>
               {assessments.map((a) => (
                 <button
                   key={a.id}
@@ -315,7 +315,7 @@ export function CoachAthleteMental({ athleteId }: Props) {
                   }`}
                 >
                   <div className="text-left">
-                    <div className="text-xs font-medium text-foreground">
+                    <div className="text-xs font-medium text-card-foreground">
                       {formatDate(a.created_at, l)}
                     </div>
                     <div className="text-[10px] text-muted-foreground">

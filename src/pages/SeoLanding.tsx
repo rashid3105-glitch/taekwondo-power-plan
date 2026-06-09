@@ -349,7 +349,7 @@ const SeoLanding = () => {
                   <d.icon className="h-4 w-4" />
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-foreground w-24">{d.day}</span>
+                  <span className="text-xs font-bold text-card-foreground w-24">{d.day}</span>
                   <span className="text-xs text-muted-foreground">{d.label}</span>
                 </div>
               </motion.div>

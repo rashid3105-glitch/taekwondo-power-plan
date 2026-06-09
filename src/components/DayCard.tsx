@@ -33,7 +33,7 @@ export function DayCard({ day, isSelected, onClick }: DayCardProps) {
         {day.dayOfWeek.slice(0, 3)}
       </span>
       <Icon className={cn("h-5 w-5", isSelected ? "text-primary" : "text-muted-foreground")} />
-      <span className="text-[10px] font-medium text-foreground text-center leading-tight">
+      <span className="text-[10px] font-medium text-card-foreground text-center leading-tight">
         {day.label}
       </span>
     </button>

@@ -112,7 +112,7 @@ export function CoachNotes({ athleteId }: Props) {
   return (
     <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
       <div className="flex items-center justify-between gap-2 flex-wrap">
-        <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+        <h4 className="font-semibold text-sm text-card-foreground flex items-center gap-2">
           <NotebookPen className="h-4 w-4" /> {t("privateCoachNotes")}
         </h4>
         <div className="flex items-center gap-2">
@@ -143,7 +143,7 @@ export function CoachNotes({ athleteId }: Props) {
 
       {sharingEnabled && !loading && (
         <div className="pt-3 border-t border-border space-y-2">
-          <div className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+          <div className="text-xs font-semibold text-card-foreground flex items-center gap-1.5">
             <Users className="h-3.5 w-3.5" /> {t("notesByOtherCoaches")}
           </div>
           {sharedNotes.length === 0 ? (
@@ -153,12 +153,12 @@ export function CoachNotes({ athleteId }: Props) {
               {sharedNotes.map(n => (
                 <div key={n.id} className="rounded-lg border border-border bg-background/50 p-3">
                   <div className="flex items-center justify-between gap-2 mb-1">
-                    <span className="text-xs font-semibold text-foreground">{n.coach_name}</span>
+                    <span className="text-xs font-semibold text-card-foreground">{n.coach_name}</span>
                     <span className="text-[10px] text-muted-foreground">
                       {new Date(n.updated_at).toLocaleDateString()}
                     </span>
                   </div>
-                  <p className="text-xs text-foreground whitespace-pre-wrap">{n.content}</p>
+                  <p className="text-xs text-card-foreground whitespace-pre-wrap">{n.content}</p>
                 </div>
               ))}
             </div>

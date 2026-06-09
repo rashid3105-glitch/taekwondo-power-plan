@@ -258,19 +258,19 @@ function TrainingPlanContent({ plan }: { plan: NonNullable<PlanViewDialogProps["
                               <div className="flex items-center gap-2">
                                 <span className="text-[10px] text-muted-foreground font-mono w-5">{String(j + 1).padStart(2, "0")}</span>
                                 <span className={`h-2 w-2 rounded-full flex-shrink-0 ${CATEGORY_DOT[ex.category] || "bg-muted"}`} />
-                                <span className="text-sm font-semibold text-foreground flex-1 truncate">{localizeExerciseName(ex.name, locale)}</span>
+                                <span className="text-sm font-semibold text-card-foreground flex-1 truncate">{localizeExerciseName(ex.name, locale)}</span>
                                 {ex.muscleGroups?.length > 0 && (
                                   <MuscleGroupBadges muscles={ex.muscleGroups} size={18} />
                                 )}
                               </div>
                               <div className="flex flex-wrap gap-2 sm:gap-3 text-xs text-muted-foreground">
-                                <span><strong className="text-foreground">{ex.sets}×{ex.reps}</strong></span>
+                                <span><strong className="text-card-foreground">{ex.sets}×{ex.reps}</strong></span>
                                 <span>Rest: {ex.rest}</span>
                                 {ex.tempo && <span>Tempo: {ex.tempo}</span>}
                               </div>
                               {ex.coachingCue && (
                                 <p className="text-xs text-muted-foreground">
-                                  <span className="font-semibold text-foreground">Coaching:</span> {ex.coachingCue}
+                                  <span className="font-semibold text-card-foreground">Coaching:</span> {ex.coachingCue}
                                 </p>
                               )}
                               {ex.whyItMatters && (
@@ -320,7 +320,7 @@ function RehabPlanContent({ rehabPlan }: { rehabPlan: NonNullable<PlanViewDialog
   return (
     <div className="space-y-3">
       <div>
-        <h3 className="text-base font-bold text-foreground">{planData.rehabPlanName || rehabPlan.name}</h3>
+        <h3 className="text-base font-bold text-card-foreground">{planData.rehabPlanName || rehabPlan.name}</h3>
         <p className="text-xs text-muted-foreground mt-0.5">
           Estimated recovery: ~{planData.estimatedWeeks} weeks
         </p>
@@ -338,7 +338,7 @@ function RehabPlanContent({ rehabPlan }: { rehabPlan: NonNullable<PlanViewDialog
           </div>
           <ul className="space-y-1">
             {planData.importantNotes.map((note: string, i: number) => (
-              <li key={i} className="text-xs text-foreground flex items-start gap-2">
+              <li key={i} className="text-xs text-card-foreground flex items-start gap-2">
                 <span className="text-destructive mt-0.5">•</span>
                 {note}
               </li>
@@ -356,7 +356,7 @@ function RehabPlanContent({ rehabPlan }: { rehabPlan: NonNullable<PlanViewDialog
           >
             <span className={cn("h-3 w-3 rounded-full flex-shrink-0", PHASE_DOT[i] || "bg-muted")} />
             <div className="flex-1 text-left min-w-0">
-              <p className="text-sm font-bold text-foreground truncate">{phase.phase}</p>
+              <p className="text-sm font-bold text-card-foreground truncate">{phase.phase}</p>
               <p className="text-xs text-muted-foreground">Weeks {phase.weeks} · {phase.goal}</p>
             </div>
             {openPhase === i ? <ChevronUp className="h-4 w-4 text-muted-foreground flex-shrink-0" /> : <ChevronDown className="h-4 w-4 text-muted-foreground flex-shrink-0" />}
@@ -369,7 +369,7 @@ function RehabPlanContent({ rehabPlan }: { rehabPlan: NonNullable<PlanViewDialog
                   <ArrowRight className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
                   <div>
                     <p className="text-[10px] uppercase tracking-wider text-primary font-bold mb-0.5">Progress when:</p>
-                    <p className="text-xs text-foreground">{phase.criteria}</p>
+                    <p className="text-xs text-card-foreground">{phase.criteria}</p>
                   </div>
                 </div>
               )}
@@ -397,7 +397,7 @@ function RehabExerciseInline({ exercise, index }: { exercise: any; index: number
         className="w-full flex items-center gap-2 sm:gap-3 px-3 py-2.5 hover:bg-secondary/40 transition-colors cursor-pointer"
       >
         <span className="mono text-xs text-muted-foreground w-5">{String(index).padStart(2, "0")}</span>
-        <span className="font-semibold text-sm flex-1 text-left text-foreground truncate">{displayName}</span>
+        <span className="font-semibold text-sm flex-1 text-left text-card-foreground truncate">{displayName}</span>
         <span className="text-xs text-muted-foreground flex-shrink-0">{exercise.sets}×{exercise.reps}</span>
         {open ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
       </button>
@@ -407,22 +407,22 @@ function RehabExerciseInline({ exercise, index }: { exercise: any; index: number
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             <div className="rounded-md bg-muted p-2">
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Sets × Reps</p>
-              <p className="text-sm font-bold text-foreground">{exercise.sets} × {exercise.reps}</p>
+              <p className="text-sm font-bold text-card-foreground">{exercise.sets} × {exercise.reps}</p>
             </div>
             <div className="rounded-md bg-muted p-2">
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Rest</p>
-              <p className="text-sm font-bold text-foreground">{exercise.rest}</p>
+              <p className="text-sm font-bold text-card-foreground">{exercise.rest}</p>
             </div>
             {exercise.tempo && (
               <div className="rounded-md bg-muted p-2">
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Tempo</p>
-                <p className="text-sm font-bold text-foreground">{exercise.tempo}</p>
+                <p className="text-sm font-bold text-card-foreground">{exercise.tempo}</p>
               </div>
             )}
           </div>
           {exercise.coachingCue && (
             <p className="text-xs text-muted-foreground">
-              <span className="font-semibold text-foreground">Coaching: </span>{exercise.coachingCue}
+              <span className="font-semibold text-card-foreground">Coaching: </span>{exercise.coachingCue}
             </p>
           )}
           {exercise.painGuideline && (

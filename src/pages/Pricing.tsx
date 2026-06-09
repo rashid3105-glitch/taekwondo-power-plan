@@ -264,7 +264,7 @@ export default function Pricing() {
         </CardHeader>
         <CardContent className="flex-1 space-y-4">
           <div className="text-center">
-            <span className="text-3xl font-extrabold text-foreground">{priceDisplay}</span>
+            <span className="text-3xl font-extrabold text-card-foreground">{priceDisplay}</span>
           </div>
           <ul className="space-y-2">
             {tier.features.map((featureKey) => (
@@ -396,7 +396,7 @@ export default function Pricing() {
                 <Trophy className="h-6 w-6 text-primary" />
               </div>
               <div className="flex-1">
-                <h3 className="font-bold text-foreground">{t("pricingTierFederation")}</h3>
+                <h3 className="font-bold text-card-foreground">{t("pricingTierFederation")}</h3>
                 <p className="text-sm text-muted-foreground">{t("pricingTierFederationDesc")}</p>
               </div>
               <Button variant="outline" asChild>
@@ -414,7 +414,7 @@ export default function Pricing() {
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary">
                 <FlaskConical className="h-5 w-5 text-primary" />
               </div>
-              <h3 className="font-bold text-foreground">{t("requestDemo")}</h3>
+              <h3 className="font-bold text-card-foreground">{t("requestDemo")}</h3>
               <p className="text-sm text-muted-foreground max-w-md">{t("requestDemoDesc")}</p>
               <Button variant="outline" onClick={() => navigate("/auth?mode=signup&demo=true")}>
                 {t("requestDemo")}

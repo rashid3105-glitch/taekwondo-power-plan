@@ -225,7 +225,7 @@ export default function Kostplan() {
                   className="flex items-start gap-2.5 rounded-xl border border-border bg-card p-4"
                 >
                   <Icon className="h-4 w-4 shrink-0 mt-0.5" style={{ color: accent }} />
-                  <span className="text-sm text-foreground">{b}</span>
+                  <span className="text-sm text-card-foreground">{b}</span>
                 </motion.li>
               );
             })}
@@ -235,7 +235,7 @@ export default function Kostplan() {
         {/* Safety */}
         <section className="mx-auto max-w-3xl px-5 pb-16">
           <div className="rounded-xl border-l-4 p-5 bg-card border border-border" style={{ borderLeftColor: accent }}>
-            <h3 className="font-bold text-foreground">{t.safety}</h3>
+            <h3 className="font-bold text-card-foreground">{t.safety}</h3>
             <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{t.safetyText}</p>
           </div>
         </section>

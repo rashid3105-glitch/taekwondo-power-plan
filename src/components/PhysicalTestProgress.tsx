@@ -160,7 +160,7 @@ export function PhysicalTestProgress({ userId }: { userId?: string }) {
       <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
         <div className="flex items-center gap-2 mb-4">
           <ClipboardList className="h-5 w-5 text-primary" />
-          <h3 className="text-sm font-bold text-foreground">{t("ptProgressTitle")}</h3>
+          <h3 className="text-sm font-bold text-card-foreground">{t("ptProgressTitle")}</h3>
         </div>
 
         <div className="space-y-4">
@@ -190,11 +190,11 @@ export function PhysicalTestProgress({ userId }: { userId?: string }) {
                     <tbody>
                       {tests.map(test => (
                         <tr key={test.name} className="border-b border-border/50 last:border-0">
-                          <td className="py-2 text-foreground font-medium">
+                          <td className="py-2 text-card-foreground font-medium">
                             {getLocalizedTestName(test.name, t)}
                             <span className="text-[10px] text-muted-foreground ml-1">({test.count}×)</span>
                           </td>
-                          <td className="py-2 text-right font-mono font-bold text-foreground">
+                          <td className="py-2 text-right font-mono font-bold text-card-foreground">
                             {test.latest.value} {test.latest.unit}
                           </td>
                           <td className="py-2 text-right font-mono text-muted-foreground">
@@ -203,7 +203,7 @@ export function PhysicalTestProgress({ userId }: { userId?: string }) {
                           <td className="py-2 text-right font-mono text-muted-foreground hidden sm:table-cell">
                             {test.avg} {test.latest.unit}
                           </td>
-                          <td className="py-2 text-right font-mono text-foreground hidden sm:table-cell">
+                          <td className="py-2 text-right font-mono text-card-foreground hidden sm:table-cell">
                             {test.best} {test.latest.unit}
                           </td>
                           <td className="py-2 text-center">
@@ -245,7 +245,7 @@ export function PhysicalTestProgress({ userId }: { userId?: string }) {
           <div key={`chart-${category}`} className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
             <div className="flex items-center gap-2 mb-3">
               <Icon className="h-4 w-4" style={{ color: catColor }} />
-              <h3 className="text-sm font-bold text-foreground">
+              <h3 className="text-sm font-bold text-card-foreground">
                 {t(`ptCat_${category}`)} — {t("ptTrend")}
               </h3>
             </div>

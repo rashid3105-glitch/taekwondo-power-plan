@@ -114,7 +114,7 @@ export function CoachSentHistory({ coachId, athleteNames }: Props) {
   return (
     <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
       <div className="flex items-center justify-between gap-2">
-        <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+        <h4 className="text-sm font-semibold text-card-foreground flex items-center gap-2">
           <Inbox className="h-4 w-4 text-primary" /> {t("sentHistoryTitle")}
         </h4>
         <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={load} disabled={loading}>
@@ -148,7 +148,7 @@ export function CoachSentHistory({ coachId, athleteNames }: Props) {
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">{m.subject}</p>
+                      <p className="text-sm font-medium text-card-foreground truncate">{m.subject}</p>
                       <p className="text-[11px] text-muted-foreground">
                         {t("toLabel")} {athleteNames[m.athlete_id] || t("noName")} · {fmtDate(m.created_at)}
                       </p>
@@ -197,7 +197,7 @@ export function CoachSentHistory({ coachId, athleteNames }: Props) {
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">{r.title}</p>
+                      <p className="text-sm font-medium text-card-foreground truncate">{r.title}</p>
                       <p className="text-[11px] text-muted-foreground">
                         {t("toLabel")} {athleteNames[r.athlete_id] || t("noName")} · 📅 {r.event_date} · {fmtDate(r.created_at)}
                       </p>

@@ -646,7 +646,7 @@ export function SampleProgramDialog() {
                 <div key={day.name} className="rounded-xl border border-border bg-card overflow-hidden">
                   <div className="flex items-center gap-2.5 px-4 py-3 bg-secondary/20 border-b border-border">
                     <DayIcon className={cn("h-4 w-4", TYPE_COLORS[day.type])} />
-                    <span className="text-sm font-bold text-foreground">{day.name}</span>
+                    <span className="text-sm font-bold text-card-foreground">{day.name}</span>
                     <Badge variant="outline" className="ml-auto text-[9px] uppercase tracking-wider">
                       {day.type}
                     </Badge>
@@ -664,7 +664,7 @@ export function SampleProgramDialog() {
                         >
                           <div className="flex items-center gap-3">
                             <span className="text-[10px] font-mono text-muted-foreground w-5">{String(ei + 1).padStart(2, "0")}</span>
-                            <span className="text-xs font-semibold text-foreground flex-1">{ex.name}</span>
+                            <span className="text-xs font-semibold text-card-foreground flex-1">{ex.name}</span>
                             <span className="text-[10px] text-muted-foreground font-mono whitespace-nowrap">
                               {ex.sets}×{ex.reps}
                             </span>
@@ -682,13 +682,13 @@ export function SampleProgramDialog() {
                                 <p className="text-[10px] font-bold uppercase tracking-wider text-primary mb-1 flex items-center gap-1">
                                   <Info className="h-3 w-3" /> {labels.coachingCue}
                                 </p>
-                                <p className="text-xs text-foreground/80 leading-relaxed">{ex.cue}</p>
+                                <p className="text-xs text-card-foreground/80 leading-relaxed">{ex.cue}</p>
                               </div>
                               <div className="rounded-lg bg-accent/5 border border-accent/10 p-2.5">
                                 <p className="text-[10px] font-bold uppercase tracking-wider text-accent-foreground mb-1">
                                   🥋 {labels.tkdRelevance}
                                 </p>
-                                <p className="text-xs text-foreground/80 leading-relaxed">{ex.why}</p>
+                                <p className="text-xs text-card-foreground/80 leading-relaxed">{ex.why}</p>
                               </div>
                             </div>
                           )}

@@ -390,7 +390,7 @@ export function BeepTestTimer({
                 >
                   <div className="min-w-0">
                     {mode === "coach" && (
-                      <p className="text-sm font-semibold text-foreground truncate">{a.display_name}</p>
+                      <p className="text-sm font-semibold text-card-foreground truncate">{a.display_name}</p>
                     )}
                     {!isActive && stoppedData && (
                       <p className="text-xs text-muted-foreground">
@@ -430,7 +430,7 @@ export function BeepTestTimer({
       {phase === "finished" && (
         <div className="space-y-4">
           <div className="rounded-xl border border-border bg-card p-4 space-y-3">
-            <p className="text-sm font-bold text-foreground">{t("beepTestFinished")}</p>
+            <p className="text-sm font-bold text-card-foreground">{t("beepTestFinished")}</p>
             <div className="space-y-2">
               {activeParticipants.map(a => {
                 const res = stopped.get(a.athlete_id);
@@ -441,7 +441,7 @@ export function BeepTestTimer({
                 return (
                   <div key={a.athlete_id} className="flex items-center justify-between gap-2 py-1.5 border-b border-border/50 last:border-0">
                     {mode === "coach" && (
-                      <span className="text-sm font-semibold text-foreground truncate flex-1">{a.display_name}</span>
+                      <span className="text-sm font-semibold text-card-foreground truncate flex-1">{a.display_name}</span>
                     )}
                     <div className="text-right shrink-0">
                       <div className="text-sm font-bold text-primary">

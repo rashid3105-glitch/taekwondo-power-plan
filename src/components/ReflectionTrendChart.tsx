@@ -77,7 +77,7 @@ export function ReflectionTrendChart({ reflections, keys = DEFAULT_KEYS, classNa
   if (data.length < 2) {
     return (
       <div className={`rounded-xl border border-border bg-card p-4 shadow-card ${className ?? ""}`}>
-        <h4 className="font-semibold text-sm text-foreground flex items-center gap-2 mb-2">
+        <h4 className="font-semibold text-sm text-card-foreground flex items-center gap-2 mb-2">
           <TrendingUp className="h-4 w-4 text-primary" /> {t("reflectionTrendTitle")}
         </h4>
         <p className="text-xs text-muted-foreground">{t("reflectionTrendNeedMore")}</p>
@@ -88,7 +88,7 @@ export function ReflectionTrendChart({ reflections, keys = DEFAULT_KEYS, classNa
   return (
     <div className={`rounded-xl border border-border bg-card p-4 shadow-card space-y-3 ${className ?? ""}`}>
       <div>
-        <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+        <h4 className="font-semibold text-sm text-card-foreground flex items-center gap-2">
           <TrendingUp className="h-4 w-4 text-primary" /> {t("reflectionTrendTitle")}
         </h4>
         <p className="text-[11px] text-muted-foreground mt-0.5">{t("reflectionTrendDesc")}</p>

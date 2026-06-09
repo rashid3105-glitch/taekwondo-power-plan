@@ -71,7 +71,7 @@ export const WeekPlanPreview = () => {
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-2 mb-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-foreground">{t(dayKeys[day.dayKey])}</span>
+                  <span className="text-xs font-bold text-card-foreground">{t(dayKeys[day.dayKey])}</span>
                   <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{t(typeKeys[day.typeKey])}</span>
                 </div>
                 {day.intensity > 20 && (

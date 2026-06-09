@@ -71,7 +71,7 @@ export function UpgradeGate({ module, children }: Props) {
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
             <Lock className="h-8 w-8 text-primary" />
           </div>
-          <h2 className="text-2xl font-bold text-foreground">{t("moduleLockedTitle")}</h2>
+          <h2 className="text-2xl font-bold text-card-foreground">{t("moduleLockedTitle")}</h2>
           <p className="text-muted-foreground text-sm">{t("moduleLockedDesc")}</p>
           <div className="flex flex-col gap-2 pt-2">
             <Button onClick={() => navigate("/pricing")} className="w-full">

@@ -780,7 +780,7 @@ function SurveyResultsDialog({ surveyId, onClose }: { surveyId: string; onClose:
                   <p className="font-semibold text-sm mb-2">{q.question_text}</p>
                   {q.type === "scale" && s && s.numbers.length > 0 && (
                     <div>
-                      <p className="text-xs text-muted-foreground">{t("surveyAverage")}: <span className="font-bold text-foreground">{(s.numbers.reduce((a, b) => a + b, 0) / s.numbers.length).toFixed(1)}</span> / {q.scale_max}</p>
+                      <p className="text-xs text-muted-foreground">{t("surveyAverage")}: <span className="font-bold text-card-foreground">{(s.numbers.reduce((a, b) => a + b, 0) / s.numbers.length).toFixed(1)}</span> / {q.scale_max}</p>
                       <p className="text-xs text-muted-foreground mt-1">n = {s.numbers.length}</p>
                     </div>
                   )}

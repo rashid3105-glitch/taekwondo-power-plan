@@ -515,7 +515,7 @@ export default function AdminApproval() {
                     <span className={`inline-block h-2 w-2 rounded-full shrink-0 ${isOnline ? 'bg-green-500 shadow-[0_0_4px_rgba(34,197,94,0.6)]' : 'bg-muted-foreground/30'}`} title={isOnline ? 'Online' : u.last_seen_at ? `Last seen ${new Date(u.last_seen_at).toLocaleString()}` : 'Never'} />
                   );
                 })()}
-                <p className={`font-medium text-sm ${u.is_approved ? 'text-foreground' : 'text-yellow-400'}`}>{u.display_name || t("noName")}</p>
+                <p className={`font-medium text-sm ${u.is_approved ? 'text-card-foreground' : 'text-yellow-400'}`}>{u.display_name || t("noName")}</p>
                 {u.payment_status === "paid" && (
                   <Badge variant="default" className="text-[10px] h-5">
                     <CreditCard className="h-2.5 w-2.5 mr-0.5" /> {t("paid")}

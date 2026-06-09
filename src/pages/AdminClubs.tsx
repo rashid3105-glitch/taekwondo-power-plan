@@ -152,7 +152,7 @@ export default function AdminClubs() {
           {clubs.map(club => (
             <div key={club.id} className="rounded-lg border border-border bg-card p-4 space-y-3">
               <div className="flex items-center justify-between gap-3">
-                <span className="text-sm font-medium text-foreground truncate">{club.name}</span>
+                <span className="text-sm font-medium text-card-foreground truncate">{club.name}</span>
                 <div className="flex items-center gap-2 shrink-0">
                   <span className="text-[10px] text-muted-foreground whitespace-nowrap">{t("maxAthletes")}:</span>
                   <Input
@@ -173,7 +173,7 @@ export default function AdminClubs() {
               </div>
               <div className="flex items-start justify-between gap-3 border-t border-border pt-3">
                 <div className="min-w-0">
-                  <div className="text-xs font-medium text-foreground">{t("shareCoachNotes")}</div>
+                  <div className="text-xs font-medium text-card-foreground">{t("shareCoachNotes")}</div>
                   <div className="text-[10px] text-muted-foreground mt-0.5">{t("shareCoachNotesHint")}</div>
                 </div>
                 <Switch

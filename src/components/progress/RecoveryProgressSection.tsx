@@ -100,7 +100,7 @@ export function RecoveryProgressSection() {
       <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
         <div className="flex items-center gap-2 mb-2">
           <Activity className="h-5 w-5 text-primary" />
-          <h3 className="text-sm font-bold text-foreground">{t("recoveryProgressTitle")}</h3>
+          <h3 className="text-sm font-bold text-card-foreground">{t("recoveryProgressTitle")}</h3>
           <Watch className="h-4 w-4 text-muted-foreground ml-auto" />
         </div>
         <p className="text-sm text-muted-foreground">
@@ -115,7 +115,7 @@ export function RecoveryProgressSection() {
     <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-4">
       <div className="flex items-center gap-2">
         <Activity className="h-5 w-5 text-primary" />
-        <h3 className="text-sm font-bold text-foreground">{t("recoveryProgressTitle")}</h3>
+        <h3 className="text-sm font-bold text-card-foreground">{t("recoveryProgressTitle")}</h3>
         <Link to="/health" className="ml-auto inline-flex items-center gap-1 text-xs text-primary hover:underline">
           {t("healthOpenDetails" as any) || "Open Health"} <ArrowRight className="h-3 w-3" />
         </Link>
@@ -132,7 +132,7 @@ export function RecoveryProgressSection() {
       {/* Steps chart */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <h4 className="text-xs font-semibold text-foreground">{t("healthStepsTitle" as any) || "Steps"} · 30d</h4>
+          <h4 className="text-xs font-semibold text-card-foreground">{t("healthStepsTitle" as any) || "Steps"} · 30d</h4>
           <span className="text-[10px] text-muted-foreground">{t("recoveryLast30d")}</span>
         </div>
         <div className="h-40">
@@ -157,7 +157,7 @@ function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; va
       <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-muted-foreground mb-1">
         {icon}{label}
       </div>
-      <div className="text-base font-bold text-foreground">{value}</div>
+      <div className="text-base font-bold text-card-foreground">{value}</div>
     </div>
   );
 }

@@ -50,7 +50,7 @@ export const FAQSection = () => {
               value={key}
               className="rounded-xl border border-border bg-card px-4 shadow-sm data-[state=open]:border-energy/30"
             >
-              <AccordionTrigger className="text-sm font-semibold text-foreground hover:no-underline py-4">
+              <AccordionTrigger className="text-sm font-semibold text-card-foreground hover:no-underline py-4">
                 {t(`${key}Q`)}
               </AccordionTrigger>
               <AccordionContent className="text-sm text-muted-foreground leading-relaxed pb-4">
@@ -64,7 +64,7 @@ export const FAQSection = () => {
           <div className="flex justify-center mt-5">
             <button
               onClick={() => setShowAll(true)}
-              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-4 py-2 text-xs font-semibold text-foreground hover:bg-secondary transition-colors shadow-sm"
+              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-4 py-2 text-xs font-semibold text-card-foreground hover:bg-secondary transition-colors shadow-sm"
             >
               {t("landingShowAllFAQ")}
               <ChevronDown className="h-3.5 w-3.5" />

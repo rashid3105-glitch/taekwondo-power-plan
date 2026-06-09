@@ -240,7 +240,7 @@ export function CoachAthleteReflections({ athleteId, athleteName }: Props) {
     <div className="space-y-3">
       {pastComps.length > 0 && (
         <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
-          <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+          <h4 className="font-semibold text-sm text-card-foreground flex items-center gap-2">
             <Send className="h-4 w-4 text-primary" /> {t("awaitingEvaluation")}
           </h4>
           <div className="space-y-2">
@@ -253,7 +253,7 @@ export function CoachAthleteReflections({ athleteId, athleteName }: Props) {
                   className="flex items-center justify-between gap-2 rounded-lg border border-border bg-background/50 px-3 py-2"
                 >
                   <div className="min-w-0 flex-1">
-                    <div className="text-xs font-medium text-foreground truncate">{c.name}</div>
+                    <div className="text-xs font-medium text-card-foreground truncate">{c.name}</div>
                     <div className="text-[10px] text-muted-foreground">
                       {formatDate(c.event_date, l)}
                     </div>
@@ -282,7 +282,7 @@ export function CoachAthleteReflections({ athleteId, athleteName }: Props) {
 
       <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
         <div className="flex items-center justify-between gap-2 flex-wrap">
-          <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+          <h4 className="font-semibold text-sm text-card-foreground flex items-center gap-2">
             <Trophy className="h-4 w-4 text-primary" /> {t("coachReflectionsTitle")}
           </h4>
           <div className="flex items-center gap-2 flex-wrap">
@@ -317,7 +317,7 @@ export function CoachAthleteReflections({ athleteId, athleteName }: Props) {
                     className="w-full flex items-center justify-between gap-2 px-3 py-2.5 text-left hover:bg-accent/30 transition-colors rounded-lg"
                   >
                     <div className="min-w-0 flex-1">
-                      <div className="text-xs font-medium text-foreground truncate">
+                      <div className="text-xs font-medium text-card-foreground truncate">
                         {r.competition_name || t("competitionsResult")}
                       </div>
                       <div className="text-[10px] text-muted-foreground truncate">
@@ -349,7 +349,7 @@ export function CoachAthleteReflections({ athleteId, athleteName }: Props) {
                         <div className="space-y-2">
                           {Object.entries(r.reflections).filter(([, v]) => v && v.trim()).map(([k, v]) => (
                             <div key={k}>
-                              <div className="text-[10px] font-semibold text-foreground uppercase tracking-wide">
+                              <div className="text-[10px] font-semibold text-card-foreground uppercase tracking-wide">
                                 {t(`reflectionPrompt_${k}` as any)}
                               </div>
                               <p className="text-xs text-muted-foreground leading-relaxed mt-0.5">{v}</p>
@@ -361,7 +361,7 @@ export function CoachAthleteReflections({ athleteId, athleteName }: Props) {
                       {/* AI plan */}
                       {r.ai_plan && (
                         <div className="space-y-2 border-t border-border pt-2">
-                          <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
+                          <div className="flex items-center gap-1.5 text-xs font-semibold text-card-foreground">
                             <Sparkles className="h-3.5 w-3.5 text-primary" /> {t("reflectionPlanTitle")}
                           </div>
                           {r.ai_plan.summary && (
@@ -374,7 +374,7 @@ export function CoachAthleteReflections({ athleteId, athleteName }: Props) {
                               </div>
                               {r.ai_plan.nextCompetitionGoals.map((g: any, i: number) => (
                                 <div key={i} className="rounded border border-primary/20 bg-primary/5 p-2">
-                                  <div className="text-[11px] font-medium text-foreground">{g.goal}</div>
+                                  <div className="text-[11px] font-medium text-card-foreground">{g.goal}</div>
                                   {g.metric && <div className="text-[10px] text-muted-foreground mt-0.5">{t("reflectionGoalMetric")}: {g.metric}</div>}
                                 </div>
                               ))}
@@ -386,7 +386,7 @@ export function CoachAthleteReflections({ athleteId, athleteName }: Props) {
                       {/* Coach private comment */}
                       <div className="space-y-2 border-t border-border pt-2">
                         <div className="flex items-center justify-between gap-2">
-                          <div className="text-[11px] font-semibold text-foreground flex items-center gap-1">
+                          <div className="text-[11px] font-semibold text-card-foreground flex items-center gap-1">
                             <MessageSquare className="h-3 w-3 text-primary" /> {t("coachReflectionCommentTitle")}
                           </div>
                           <Button
