@@ -1,7 +1,60 @@
 import { useMemo, useState } from "react";
 import { X, Check, Calendar as CalendarIcon, Sparkles, Layers, Trophy, Target, FilePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+
+const WEEKDAY_LABELS = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag"];
+const TYPE_LABEL: Record<string, string> = { sky: "TKD", emerald: "Styrke", rose: "Stævne", muted: "Hvile" };
+// Per-weekday focus tags (Mon..Sun)
+const DAY_FOCUS: Record<string, string[][]> = {
+  sky: [
+    ["Teknik", "Sparring"],
+    ["Teknik", "Kondition"],
+    ["Sparring", "Mental"],
+    ["Teknik", "Sparring"],
+    ["Sparring", "Konkurrenceforberedelse"],
+    ["Teknik"],
+    ["Teknik", "Mental"],
+  ],
+  emerald: [
+    ["Styrke", "Kondition"],
+    ["Styrke", "Eksplosivitet"],
+    ["Styrke", "Core"],
+    ["Styrke", "Kondition"],
+    ["Styrke", "Mobilitet"],
+    ["Styrke"],
+    ["Styrke", "Kondition"],
+  ],
+  rose: Array(7).fill(["Konkurrenceforberedelse", "Mental"]),
+  muted: Array(7).fill(["Restitution"]),
+};
+
+function DayFocusContent({ week, dow, type }: { week: number; dow: number; type: string }) {
+  const tags = DAY_FOCUS[type]?.[dow] ?? [];
+  return (
+    <div className="space-y-2">
+      <div className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground">
+        Uge {week} · {WEEKDAY_LABELS[dow]}
+      </div>
+      <div className="flex items-center gap-2">
+        <span className={cn("h-2.5 w-2.5 rounded-full", dotClass(type))} />
+        <span className="text-sm font-bold text-popover-foreground">{TYPE_LABEL[type]}</span>
+      </div>
+      {type === "muted" ? (
+        <p className="text-xs text-muted-foreground">Hviledag — fokus på restitution.</p>
+      ) : (
+        <div className="flex flex-wrap gap-1.5">
+          {tags.map((f) => (
+            <span key={f} className="inline-flex items-center rounded-full bg-secondary px-2 py-0.5 text-[10px] font-semibold text-popover-foreground">
+              {f}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 // =============================================================
 // MOCKUP — Season Onboarding (sandbox, not linked in navigation)
@@ -104,8 +157,8 @@ const dotClass = (k: string) =>
   k === "sky" ? "bg-sky-500" : k === "emerald" ? "bg-emerald-500" : k === "rose" ? "bg-rose-500" : "bg-muted-foreground/30";
 
 function MiniMonthCalendar({ highlightWeek = 2, compFinalWeek }: { highlightWeek?: number; compFinalWeek?: number }) {
-  // 5 weeks x 7 days grid
   const weeks = [1, 2, 3, 4, 5];
+  const [openKey, setOpenKey] = useState<string | null>(null);
   return (
     <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
       <div className="flex items-center justify-between mb-3">
@@ -129,18 +182,33 @@ function MiniMonthCalendar({ highlightWeek = 2, compFinalWeek }: { highlightWeek
               )}
             >
               {weekPattern.map((p, i) => {
-                const isComp = compFinalWeek === w && i >= 5; // weekend stævne
+                const isComp = compFinalWeek === w && i >= 5;
+                const type = isComp ? "rose" : p;
+                const key = `${w}-${i}`;
                 return (
-                  <div key={i} className="flex flex-col items-center gap-1">
-                    <div className="text-[10px] text-muted-foreground">{w * 7 - 6 + i}</div>
-                    <span className={cn("h-2 w-2 rounded-full", isComp ? "bg-rose-500" : dotClass(p))} />
-                  </div>
+                  <Popover key={i} open={openKey === key} onOpenChange={(o) => setOpenKey(o ? key : null)}>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        onMouseEnter={() => setOpenKey(key)}
+                        onMouseLeave={() => setOpenKey((k) => (k === key ? null : k))}
+                        className="flex flex-col items-center gap-1 cursor-help focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
+                      >
+                        <div className="text-[10px] text-muted-foreground">{w * 7 - 6 + i}</div>
+                        <span className={cn("h-2 w-2 rounded-full", dotClass(type))} />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent side="top" className="w-56 p-3" onMouseEnter={() => setOpenKey(key)} onMouseLeave={() => setOpenKey(null)}>
+                      <DayFocusContent week={w} dow={i} type={type} />
+                    </PopoverContent>
+                  </Popover>
                 );
               })}
             </div>
           );
         })}
       </div>
+      <p className="mt-3 text-[10px] text-muted-foreground">Hold musen over (eller tap) en dag for at se fokus.</p>
     </div>
   );
 }
