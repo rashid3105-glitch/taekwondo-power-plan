@@ -49,6 +49,7 @@ import AdminPayments from "./pages/AdminPayments";
 import AdminClubs from "./pages/AdminClubs";
 import NotFound from "./pages/NotFound";
 import MockupSeasonOnboarding from "./pages/MockupSeasonOnboarding";
+import MockupAthleteGoals from "./pages/MockupAthleteGoals";
 import Methodology from "./pages/Methodology";
 import Unsubscribe from "./pages/Unsubscribe";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -192,6 +193,7 @@ const AnimatedRoutes = () => {
         <Route path="/taekwondo-training-program" element={<Page><SeoLanding /></Page>} />
         <Route path="/progress" element={<Navigate to="/dashboard" replace />} />
         <Route path="/mockup/season-onboarding" element={<Page><MockupSeasonOnboarding /></Page>} />
+        <Route path="/mockup/athlete-goals" element={<Page><MockupAthleteGoals /></Page>} />
         <Route path="*" element={<Page><NotFound /></Page>} />
       </Routes>
       </AnimatePresence>
