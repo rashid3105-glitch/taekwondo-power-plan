@@ -4239,6 +4239,8 @@ const translations = {
     seasonAiHintPreComp: "Før stævne — sænk volumen, øg intensiteten",
     seasonNoCalendarYet: "Der er endnu ikke delt en sæsonplan med dig. Spørg din træner.",
     helpSeasonCalendar: "Sæsonkalender (Træner)",
+    helpSeasonCalendarTitle: "Sæsonkalender",
+    helpSeasonCalendarSteps: "1. Åbn Træner → Sæsonkalender\n2. Opret en sæsonplan med start- og slutdato\n3. Tilføj faser (fx GPP, SPP, Konkurrence, Peak, Deload) med farver og træningsfokus-tags\n4. Indstil ugens dagsskabelon — hvilke ugedage er TKD, styrke, hvile eller stævne\n5. Atlet-overrides lader dig ændre en enkelt dag for én atlet\n6. Stævner vises automatisk som røde 'stævne'-dage\n7. Atleter ser samme kalender i deres hub med den aktuelle uge fremhævet",
     changelog_2026_05_17: "17. maj 2026",
     changelogEntry117: "Sæsonkalender: trænere kan nu oprette en periodiseret sæsonplan med faser, en ugentlig skabelon og individuelle atlet-afvigelser — atleter og forældre ser holdkalenderen som en læse-visning, og AI-træningsplaner tilpasser sig nu den aktuelle sæsonfase",
     changelogEntry118: "Sæsonkalender: fasens uge-input bruger nu ISO-ugenumre der stemmer med visningen, og hver fase kan markeres med træningsfokus-tags (teknik, kondition, sparring, styrke, konkurrenceforberedelse, restitution, mental)",
