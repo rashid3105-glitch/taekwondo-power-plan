@@ -16707,6 +16707,8 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   seasonAiHintPreComp: "Pre-competición — reduce volumen, sube intensidad",
   seasonNoCalendarYet: "Todavía no se ha compartido ningún plan de temporada contigo. Pregunta a tu entrenador.",
   helpSeasonCalendar: "Calendario de temporada (Entrenador)",
+  helpSeasonCalendarTitle: "Calendario de temporada",
+  helpSeasonCalendarSteps: "1. Abre Entrenador → Calendario de temporada\n2. Crea un plan de temporada con fecha de inicio y fin\n3. Añade fases (p. ej. GPP, SPP, Competición, Pico, Descarga) con colores y etiquetas de enfoque de entrenamiento\n4. Configura la plantilla semanal — qué días son TKD, fuerza, descanso o competición\n5. Las excepciones por atleta permiten cambiar un solo día para un atleta concreto\n6. Las competiciones aparecen automáticamente como días rojos de 'competición'\n7. Los atletas ven el mismo calendario en su hub con la semana actual destacada",
   changelog_2026_05_17: "17 de mayo de 2026",
   changelogEntry117: "Calendario de temporada: los entrenadores ahora pueden crear un plan de temporada periodizado con fases, una plantilla de sesión semanal y desviaciones individuales por atleta — los atletas y padres ven el horario del equipo como un calendario de solo lectura, y los planes de entrenamiento de IA ahora se adaptan a la fase de temporada actual",
   changelogEntry118: "Calendario de temporada: la entrada de semana de fase ahora usa números de semana ISO que coinciden con la visualización, y cada fase puede etiquetarse con áreas de enfoque de entrenamiento (técnica, condición, sparring, fuerza, preparación de competición, recuperación, mental)",
