@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { X, Check, Calendar as CalendarIcon, Sparkles, Layers, Trophy, Target, FilePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
