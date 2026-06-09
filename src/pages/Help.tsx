@@ -131,6 +131,7 @@ export default function Help() {
   const [query, setQuery] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
   const [showAllChangelog, setShowAllChangelog] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
