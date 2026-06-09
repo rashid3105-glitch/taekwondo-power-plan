@@ -6976,6 +6976,8 @@ const translations = {
     seasonAiHintPreComp: "Inför tävling — sänk volymen, höj intensiteten",
     seasonNoCalendarYet: "Ingen säsongsplan har delats med dig ännu. Fråga din tränare.",
     helpSeasonCalendar: "Säsongskalender (Tränare)",
+    helpSeasonCalendarTitle: "Säsongskalender",
+    helpSeasonCalendarSteps: "1. Öppna Tränare → Säsongskalender\n2. Skapa en säsongsplan med start- och slutdatum\n3. Lägg till faser (t.ex. GPP, SPP, Tävling, Topp, Avlastning) med färger och träningsfokus-taggar\n4. Ställ in veckans dagmall — vilka veckodagar är TKD, styrka, vila eller tävling\n5. Atletspecifika undantag låter dig ändra en enskild dag för en atlet\n6. Tävlingar visas automatiskt som röda 'tävlings'-dagar\n7. Atleter ser samma kalender i sin hub med aktuell vecka markerad",
     changelog_2026_05_17: "17 maj 2026",
     changelogEntry117: "Säsongskalender: tränare kan nu skapa en periodiserad säsongsplan med faser, en veckovis sessionsmall och individuella avvikelser per atlet — atleter och föräldrar ser lagets schema som en skrivskyddad kalender, och AI-träningsplaner anpassas nu till den aktuella säsongsfasen",
     changelogEntry118: "Säsongskalender: fasens veckoinmatning använder nu ISO-veckonummer som matchar visningen, och varje fas kan märkas med träningsfokus (teknik, kondition, sparring, styrka, tävlingsförberedelse, återhämtning, mentalt)",
