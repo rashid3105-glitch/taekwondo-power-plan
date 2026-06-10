@@ -423,11 +423,88 @@ function CoachView() {
             </p>
           </div>
 
+          {/* Athlete picker */}
+          <div className="rounded-xl border border-border bg-card p-3 shadow-sm">
+            <div className="text-[11px] uppercase tracking-wider font-bold text-muted-foreground mb-2 px-1">
+              Vis kalender for
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              <button
+                onClick={() => setSelectedAthlete("team")}
+                className={cn(
+                  "px-3 py-1.5 rounded-md text-xs font-bold transition-colors",
+                  selectedAthlete === "team"
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "bg-secondary text-card-foreground hover:bg-secondary/70"
+                )}
+              >
+                Hele holdet
+              </button>
+              {ATHLETES.map((a) => (
+                <button
+                  key={a.id}
+                  onClick={() => setSelectedAthlete(a.id)}
+                  className={cn(
+                    "px-3 py-1.5 rounded-md text-xs font-bold transition-colors inline-flex items-center gap-1.5",
+                    selectedAthlete === a.id
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "bg-secondary text-card-foreground hover:bg-secondary/70"
+                  )}
+                >
+                  <User className="h-3 w-3" />
+                  {a.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Calendar + legend */}
           <div className="grid gap-4 sm:grid-cols-[1fr_180px]">
-            <MiniMonthCalendar highlightWeek={2} compFinalWeek={tpl.id === "comp" ? 5 : undefined} />
+            <MiniMonthCalendar
+              highlightWeek={2}
+              compFinalWeek={tpl.id === "comp" ? 5 : undefined}
+              overlays={overlays}
+              athleteName={activeAthlete?.name}
+            />
             <Legend />
           </div>
+
+          {/* CTA → individual goals mockup */}
+          {activeAthlete ? (
+            <Link
+              to="/mockup/athlete-goals"
+              className="block rounded-xl border border-amber-500/40 bg-amber-500/5 p-4 hover:bg-amber-500/10 transition-colors"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <div className="text-sm font-bold text-card-foreground">
+                    Vil du sætte langsigtede mål for {activeAthlete.name}?
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Åbn individuelle mål (sport / træning / teknik).
+                  </p>
+                </div>
+                <ArrowRight className="h-4 w-4 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+              </div>
+            </Link>
+          ) : (
+            <Link
+              to="/mockup/athlete-goals"
+              className="block rounded-xl border border-border bg-card p-4 hover:border-primary/50 transition-colors"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <div className="text-sm font-bold text-card-foreground">
+                    Sæt individuelle mål pr. atlet
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Åbn mockup for individuelle mål — sport, træning, teknik.
+                  </p>
+                </div>
+                <ArrowRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+              </div>
+            </Link>
+          )}
         </div>
       ) : tpl ? (
         <div className="rounded-xl border border-dashed border-border bg-card p-8 text-center">
