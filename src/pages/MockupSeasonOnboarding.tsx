@@ -206,9 +206,21 @@ const weekPattern = ["sky", "emerald", "sky", "muted", "sky", "emerald", "muted"
 const dotClass = (k: string) =>
   k === "sky" ? "bg-sky-500" : k === "emerald" ? "bg-emerald-500" : k === "rose" ? "bg-rose-500" : "bg-muted-foreground/30";
 
-function MiniMonthCalendar({ highlightWeek = 2, compFinalWeek }: { highlightWeek?: number; compFinalWeek?: number }) {
+function MiniMonthCalendar({
+  highlightWeek = 2,
+  compFinalWeek,
+  overlays = [],
+  athleteName,
+}: {
+  highlightWeek?: number;
+  compFinalWeek?: number;
+  overlays?: Overlay[];
+  athleteName?: string;
+}) {
   const weeks = [1, 2, 3, 4, 5];
   const [openKey, setOpenKey] = useState<string | null>(null);
+  const overlayFor = (w: number, i: number) =>
+    overlays.find((o) => o.week === w && o.dow === i)?.tag;
   return (
     <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
       <div className="flex items-center justify-between mb-3">
@@ -235,6 +247,7 @@ function MiniMonthCalendar({ highlightWeek = 2, compFinalWeek }: { highlightWeek
                 const isComp = compFinalWeek === w && i >= 5;
                 const type = isComp ? "rose" : p;
                 const key = `${w}-${i}`;
+                const overlayTag = overlayFor(w, i);
                 return (
                   <Popover key={i} open={openKey === key} onOpenChange={(o) => setOpenKey(o ? key : null)}>
                     <PopoverTrigger asChild>
@@ -242,14 +255,29 @@ function MiniMonthCalendar({ highlightWeek = 2, compFinalWeek }: { highlightWeek
                         type="button"
                         onMouseEnter={() => setOpenKey(key)}
                         onMouseLeave={() => setOpenKey((k) => (k === key ? null : k))}
-                        className="flex flex-col items-center gap-1 cursor-help focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
+                        className="flex flex-col items-center gap-1 cursor-help focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded relative"
                       >
                         <div className="text-[10px] text-muted-foreground">{w * 7 - 6 + i}</div>
-                        <span className={cn("h-2 w-2 rounded-full", dotClass(type))} />
+                        <span
+                          className={cn(
+                            "h-2 w-2 rounded-full",
+                            dotClass(type),
+                            overlayTag && "ring-2 ring-amber-500 ring-offset-1 ring-offset-card"
+                          )}
+                        />
+                        {overlayTag && (
+                          <span className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-amber-500" />
+                        )}
                       </button>
                     </PopoverTrigger>
                     <PopoverContent side="top" className="w-56 p-3" onMouseEnter={() => setOpenKey(key)} onMouseLeave={() => setOpenKey(null)}>
-                      <DayFocusContent week={w} dow={i} type={type} />
+                      <DayFocusContent
+                        week={w}
+                        dow={i}
+                        type={type}
+                        overlayTag={overlayTag}
+                        athleteName={athleteName}
+                      />
                     </PopoverContent>
                   </Popover>
                 );
@@ -258,7 +286,10 @@ function MiniMonthCalendar({ highlightWeek = 2, compFinalWeek }: { highlightWeek
           );
         })}
       </div>
-      <p className="mt-3 text-[10px] text-muted-foreground">Hold musen over (eller tap) en dag for at se fokus.</p>
+      <p className="mt-3 text-[10px] text-muted-foreground">
+        Hold musen over (eller tap) en dag for at se fokus.
+        {athleteName && <span className="text-amber-600 dark:text-amber-400"> Gul ring = individuelt fokus.</span>}
+      </p>
     </div>
   );
 }
