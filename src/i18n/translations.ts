@@ -5325,7 +5325,7 @@ const translations = {
     aiSuggest2: "Hvordan genererer jeg en træningsplan?",
     aiSuggest3: "Hvad spiser jeg dagen før stævne?",
     // Evaluering
-    surveysTitle: "Evalueringer",
+    surveysTitle: "Spørgeskemaer",
     surveysSubtitle: "Skemaer fra din træner",
     newSurvey: "Nyt skema",
     surveyFormTitle: "Titel",
