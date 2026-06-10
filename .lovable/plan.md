@@ -1,83 +1,80 @@
 
-# Individuelle atlet-mål — guide + klikbar mockup
+# Mockup-udvidelse: individuelle atleter i season-onboarding
 
-## Hvorfor
+Begge mockups forbliver isolerede sandboxes uden DB. Kun `src/pages/MockupSeasonOnboarding.tsx` ændres.
 
-Coachen vil i næste uge bruge appen til **feedback og kommunikation pr. atlet**, og hun spørger specifikt efter *"hvordan sætter jeg individuelle mål"*. Kortlægningen viser at appen i dag **ikke har ét sted** hvor coachen kan skrive 1–3 navngivne mål for én atlet, sætte en deadline, og få atleten til at se det dagligt. Bidder findes spredt — men ingen samlet "mål"-flade.
+## 1. Atlet-vælger i Coach-view
 
-## Del 1 — Kort guide: hvad coachen KAN gøre i appen i dag
+Tilføj en lille toolbar over månedskalenderen (vises kun når en skabelon er valgt):
 
-Skrives som en kort sektion (mockup-siden viser den øverst, så coachen kan reagere på den næste uge):
+```text
+[ Hele holdet ▾ ]   [ Sara K. ]  [ Jonas M. ]  [ Mikkel A. ]  [ Layla H. ]
+```
 
-- **Private coach-noter** (`/coach/athlete/:id` → Manage → Activity → "Private Coach Notes")
-  Frit tekstfelt pr. atlet. *Synlig kun for coachen (og evt. andre coaches i klubben). Atleten ser den IKKE.*
-- **Direkte besked til atleten** (samme side → "Send påmindelse"-knap i headeren)
-  Emne + tekst → atleten ser den i sin notifikations-klokke. *Forsvinder når den læses, ingen deadline, ingen struktur.*
-- **Ugefokus i teknik** (Sæsonkalender → klik på en uge → vælg teknikker for én atlet)
-  Eneste strukturerede coach→atlet kanal i dag. *Kun teknik-tags, ingen fri tekst, ingen mål-framing.*
-- **Kommentar på post-stævne-refleksion** (`/coach/athlete/:id` → Manage → Mental → Refleksioner)
-  *Kun synlig for coaches.*
-- **Dagbogs-kommentar** (åbn atletens dagbog → kommentar pr. opslag)
-  Eneste kanal hvor atleten ser coachens tekst i kontekst. *Reaktivt, ikke proaktivt målsætning.*
+- Lokal state `selectedAthlete: "team" | athleteId`.
+- "Hele holdet" = nuværende visning (uændret).
+- Når en atlet vælges: kalenderen viser ekstra individuelle tags/badges oven på holdets dage.
 
-**Bundlinje for coachen i denne uge:** Brug **dagbogs-kommentarer + ugefokus i sæsonkalenderen + en direkte besked** som midlertidig erstatning for individuelle mål. Det er det bedste appen kan i dag.
+## 2. Individuelle overlays på dagene
 
-## Del 2 — Mockup: `/mockup/athlete-goals`
+Hver mock-atlet får 2–3 hårdkodede "individuelle fokus" knyttet til specifikke (uge, ugedag):
 
-Ny selvstændig side, ikke linket fra navigation. Lokal state, ingen DB. Følger samme mønster som `/mockup/season-onboarding`.
+```ts
+const ATHLETE_OVERLAYS = {
+  sara:   [{week:2, dow:1, tag:"Ekstra bandal chagi"}, {week:3, dow:4, tag:"Sparring vs. højre"}],
+  jonas:  [{week:1, dow:2, tag:"Knæ-rehab let"},      {week:4, dow:0, tag:"Eksplosivitet"}],
+  mikkel: [{week:2, dow:5, tag:"Poomsae detail"}],
+  layla:  [{week:3, dow:2, tag:"Mental: pres-scenarie"}],
+};
+```
 
-### Sider/visninger
+I `MiniMonthCalendar`:
+- Tag en `overlays` prop.
+- Hvis en dag har et overlay: vis en lille farvet prik/ring (fx amber) ved dot'en + tilføj overlay-tag'en i popoveren under "Individuelt fokus".
 
-**Role-toggle øverst: Coach / Atlet** (samme mønster som eksisterende mockup).
+Popover-indhold bliver:
+```text
+Uge 3 · Torsdag
+● TKD
+Hold: Sparring, Mental
+─────────────
+👤 Sara: Sparring vs. højre
+```
 
-### Coach-visning
+## 3. Link til athlete-goals mockup
 
-1. **Atlet-vælger** (chips/avatarer) — 4 mock-atleter (Sara, Liam, Mia, Noah). Klik én → resten af siden viser hendes mål.
-2. **"Sådan i dag"-banner** (kan lukkes) — kort version af guiden ovenfor med link til de relevante steder.
-3. **Mål-kort for valgt atlet** — 3 strukturerede mål-typer i hver sin farve:
-   - **Sportsligt mål** (trofæ-ikon, rosa) — fx "Top 3 ved DM marts"
-   - **Trænings-mål** (kalender-ikon, grøn) — fx "4 træninger/uge i 6 uger"
-   - **Teknik-fokus** (target-ikon, blå) — fx "Forbedre bandal chagi-timing"
-   Hvert mål-kort har: titel · kort beskrivelse · deadline (date picker, mock) · status (ikke startet / i gang / opnået) · "Rediger"-knap.
-4. **Tilføj/rediger-dialog** (Sheet) — felter: type, titel, beskrivelse, målbar indikator (valgfri tekst), deadline. Gem opdaterer kun lokal state.
-5. **Ugentlig coach-kommentar** — felt under målene: "Sara, godt arbejde i tirsdags — fokuser på fodarbejdet næste uge." Vises også i atlet-preview.
-6. **Preview-knap: "Se hvad Sara ser"** — toggler hurtigt til atlet-visning for samme atlet.
+Når en specifik atlet er valgt, vises under kalenderen et lille kort:
 
-### Atlet-visning
+```text
+Vil du sætte langsigtede mål for Sara?
+→ Åbn individuelle mål (sport / træning / teknik)   [knap]
+```
 
-1. **Topkort:** "Dine mål fra din coach" — 3 mål-kort i samme farvekodning, status-badge, dage til deadline.
-2. **Ugens kommentar fra coachen** — citat-blok med dato.
-3. **Lille progress-strip** — fx "2/3 mål i gang · 1 opnået i sidste måned".
-4. **Note:** "Dette er en mockup — målene er eksempler."
+Knappen linker til `/mockup/athlete-goals` (åbnes i samme tab via `<Link>`).
 
-### Designkrav
+Når "Hele holdet" er valgt vises i stedet en mere generel CTA:
+```text
+Sæt individuelle mål pr. atlet → /mockup/athlete-goals
+```
 
-- Genbruger `Card`, `Button`, `Sheet`, `Popover`, badges fra appen.
-- Tre faste mål-typer med distinkte tokens (rosa/grøn/blå) konsistent med eksisterende tab-farvekodning.
-- Mobile-first (atleten ser det på telefon). Touch targets ≥44px.
-- Al data er hardcoded mock i komponenten. Ingen Supabase-kald.
-- Banneret med "sådan i dag" bruger samme `Sparkles` + `bg-primary/5` mønster som season-onboarding-mockup'en.
+## 4. Lille forklarende banner-update
 
-### Tekniske detaljer
+Coach-banneret tilføjes én linje:
+> Vælg en atlet for at se hvor holdets plan suppleres med individuelt fokus.
 
-- Ny fil: `src/pages/MockupAthleteGoals.tsx`
-- Tilføj route i `src/App.tsx`: `<Route path="/mockup/athlete-goals" element={<MockupAthleteGoals />} />` (lazy import)
-- Lokal state typer:
-  ```ts
-  type GoalType = "sport" | "training" | "technique";
-  type GoalStatus = "not_started" | "in_progress" | "achieved";
-  type Goal = { id: string; type: GoalType; title: string; desc: string; metric?: string; deadline: string; status: GoalStatus; };
-  type Athlete = { id: string; name: string; avatar?: string; goals: Goal[]; coachComment: string; };
-  ```
-- 4 mock-atleter, hver med 2–3 prefyldte mål så coachen ser et realistisk billede.
+## Tekniske detaljer
 
-## Hvad jeg IKKE rører
+- Kun ét filændring: `src/pages/MockupSeasonOnboarding.tsx`.
+- Ny `Athlete`-type + `ATHLETES` array + `ATHLETE_OVERLAYS` map.
+- `MiniMonthCalendar` får ny prop `overlays?: {week:number; dow:number; tag:string}[]` og en `athleteName?: string`.
+- `DayFocusContent` får ny prop `overlayTag?: string` + `athleteName?: string` til at vise den ekstra sektion.
+- Atlet-vælger styles som de eksisterende role-toggle pills (genbruger samme look).
+- Ingen ændringer i: App.tsx, routes, DB, RLS, edge functions, translations (mockup forbliver dansk-only som i dag), changelog, eller `/mockup/athlete-goals`.
 
-- Den rigtige `/coach/athlete/:id`, `coach_athlete_notes`, `athlete_week_technique_focus`, RLS, database, edge functions, changelog.
-- Ingen nye tabeller. Mockup'en eksisterer kun for at evaluere konceptet før vi beslutter om det skal bygges rigtigt.
+## Hvad det IKKE er
 
-## Leverancer
+- Ingen rigtig data — alt hårdkodet.
+- Ingen edit-funktion (man kan ikke tilføje overlays i UI'et — kun se dem).
+- Ingen påvirkning af den rigtige `/coach/season-calendar`.
 
-- `src/pages/MockupAthleteGoals.tsx` (ny)
-- `src/App.tsx` (én route tilføjet)
-- Rapport tilbage med ruten og hvad der blev bygget.
+Formålet er kun at vise konceptet "holdets plan + individuelle lag + langsigtede mål" i ét samlet flow, så coachen kan vurdere idéen.

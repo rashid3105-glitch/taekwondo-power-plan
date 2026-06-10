@@ -1,8 +1,33 @@
 import { useMemo, useState } from "react";
-import { X, Check, Calendar as CalendarIcon, Sparkles, Layers, Trophy, Target, FilePlus } from "lucide-react";
+import { Link } from "react-router-dom";
+import { X, Check, Calendar as CalendarIcon, Sparkles, Layers, Trophy, Target, FilePlus, User, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+
+// --- Mock athletes + individual overlays ----------------------
+type AthleteId = "sara" | "jonas" | "mikkel" | "layla";
+type Overlay = { week: number; dow: number; tag: string };
+
+const ATHLETES: { id: AthleteId; name: string }[] = [
+  { id: "sara", name: "Sara K." },
+  { id: "jonas", name: "Jonas M." },
+  { id: "mikkel", name: "Mikkel A." },
+  { id: "layla", name: "Layla H." },
+];
+
+const ATHLETE_OVERLAYS: Record<AthleteId, Overlay[]> = {
+  sara: [
+    { week: 2, dow: 1, tag: "Ekstra bandal chagi" },
+    { week: 3, dow: 4, tag: "Sparring vs. højre" },
+  ],
+  jonas: [
+    { week: 1, dow: 2, tag: "Knæ-rehab let" },
+    { week: 4, dow: 0, tag: "Eksplosivitet" },
+  ],
+  mikkel: [{ week: 2, dow: 5, tag: "Poomsae detail" }],
+  layla: [{ week: 3, dow: 2, tag: "Mental: pres-scenarie" }],
+};
 
 const WEEKDAY_LABELS = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag"];
 const TYPE_LABEL: Record<string, string> = { sky: "TKD", emerald: "Styrke", rose: "Stævne", muted: "Hvile" };
@@ -30,7 +55,19 @@ const DAY_FOCUS: Record<string, string[][]> = {
   muted: Array(7).fill(["Restitution"]),
 };
 
-function DayFocusContent({ week, dow, type }: { week: number; dow: number; type: string }) {
+function DayFocusContent({
+  week,
+  dow,
+  type,
+  overlayTag,
+  athleteName,
+}: {
+  week: number;
+  dow: number;
+  type: string;
+  overlayTag?: string;
+  athleteName?: string;
+}) {
   const tags = DAY_FOCUS[type]?.[dow] ?? [];
   return (
     <div className="space-y-2">
@@ -50,6 +87,19 @@ function DayFocusContent({ week, dow, type }: { week: number; dow: number; type:
               {f}
             </span>
           ))}
+        </div>
+      )}
+      {overlayTag && athleteName && (
+        <div className="mt-2 pt-2 border-t border-border">
+          <div className="text-[10px] uppercase tracking-wider font-bold text-amber-600 dark:text-amber-400 mb-1">
+            Individuelt fokus
+          </div>
+          <div className="flex items-center gap-1.5">
+            <User className="h-3 w-3 text-amber-600 dark:text-amber-400" />
+            <span className="text-xs text-popover-foreground">
+              <span className="font-semibold">{athleteName}:</span> {overlayTag}
+            </span>
+          </div>
         </div>
       )}
     </div>
@@ -156,9 +206,21 @@ const weekPattern = ["sky", "emerald", "sky", "muted", "sky", "emerald", "muted"
 const dotClass = (k: string) =>
   k === "sky" ? "bg-sky-500" : k === "emerald" ? "bg-emerald-500" : k === "rose" ? "bg-rose-500" : "bg-muted-foreground/30";
 
-function MiniMonthCalendar({ highlightWeek = 2, compFinalWeek }: { highlightWeek?: number; compFinalWeek?: number }) {
+function MiniMonthCalendar({
+  highlightWeek = 2,
+  compFinalWeek,
+  overlays = [],
+  athleteName,
+}: {
+  highlightWeek?: number;
+  compFinalWeek?: number;
+  overlays?: Overlay[];
+  athleteName?: string;
+}) {
   const weeks = [1, 2, 3, 4, 5];
   const [openKey, setOpenKey] = useState<string | null>(null);
+  const overlayFor = (w: number, i: number) =>
+    overlays.find((o) => o.week === w && o.dow === i)?.tag;
   return (
     <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
       <div className="flex items-center justify-between mb-3">
@@ -185,6 +247,7 @@ function MiniMonthCalendar({ highlightWeek = 2, compFinalWeek }: { highlightWeek
                 const isComp = compFinalWeek === w && i >= 5;
                 const type = isComp ? "rose" : p;
                 const key = `${w}-${i}`;
+                const overlayTag = overlayFor(w, i);
                 return (
                   <Popover key={i} open={openKey === key} onOpenChange={(o) => setOpenKey(o ? key : null)}>
                     <PopoverTrigger asChild>
@@ -192,14 +255,29 @@ function MiniMonthCalendar({ highlightWeek = 2, compFinalWeek }: { highlightWeek
                         type="button"
                         onMouseEnter={() => setOpenKey(key)}
                         onMouseLeave={() => setOpenKey((k) => (k === key ? null : k))}
-                        className="flex flex-col items-center gap-1 cursor-help focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
+                        className="flex flex-col items-center gap-1 cursor-help focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded relative"
                       >
                         <div className="text-[10px] text-muted-foreground">{w * 7 - 6 + i}</div>
-                        <span className={cn("h-2 w-2 rounded-full", dotClass(type))} />
+                        <span
+                          className={cn(
+                            "h-2 w-2 rounded-full",
+                            dotClass(type),
+                            overlayTag && "ring-2 ring-amber-500 ring-offset-1 ring-offset-card"
+                          )}
+                        />
+                        {overlayTag && (
+                          <span className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-amber-500" />
+                        )}
                       </button>
                     </PopoverTrigger>
                     <PopoverContent side="top" className="w-56 p-3" onMouseEnter={() => setOpenKey(key)} onMouseLeave={() => setOpenKey(null)}>
-                      <DayFocusContent week={w} dow={i} type={type} />
+                      <DayFocusContent
+                        week={w}
+                        dow={i}
+                        type={type}
+                        overlayTag={overlayTag}
+                        athleteName={athleteName}
+                      />
                     </PopoverContent>
                   </Popover>
                 );
@@ -208,7 +286,10 @@ function MiniMonthCalendar({ highlightWeek = 2, compFinalWeek }: { highlightWeek
           );
         })}
       </div>
-      <p className="mt-3 text-[10px] text-muted-foreground">Hold musen over (eller tap) en dag for at se fokus.</p>
+      <p className="mt-3 text-[10px] text-muted-foreground">
+        Hold musen over (eller tap) en dag for at se fokus.
+        {athleteName && <span className="text-amber-600 dark:text-amber-400"> Gul ring = individuelt fokus.</span>}
+      </p>
     </div>
   );
 }
@@ -236,8 +317,11 @@ function Legend() {
 function CoachView() {
   const [bannerOpen, setBannerOpen] = useState(true);
   const [selected, setSelected] = useState<Template["id"] | null>(null);
+  const [selectedAthlete, setSelectedAthlete] = useState<AthleteId | "team">("team");
 
   const tpl = useMemo(() => TEMPLATES.find((t) => t.id === selected) ?? null, [selected]);
+  const activeAthlete = selectedAthlete === "team" ? null : ATHLETES.find((a) => a.id === selectedAthlete) ?? null;
+  const overlays = activeAthlete ? ATHLETE_OVERLAYS[activeAthlete.id] : [];
 
   return (
     <div className="space-y-6">
@@ -246,7 +330,7 @@ function CoachView() {
           <div className="flex items-start gap-3">
             <Sparkles className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
             <p className="text-sm text-card-foreground leading-relaxed">
-              <span className="font-semibold">Byg din sæson:</span> vælg en skabelon eller start fra bunden. Atleterne ser planen automatisk.
+              <span className="font-semibold">Byg din sæson:</span> vælg en skabelon eller start fra bunden. Atleterne ser planen automatisk. Vælg en atlet nedenfor for at se hvor holdets plan suppleres med individuelt fokus.
             </p>
           </div>
           <button
@@ -339,11 +423,88 @@ function CoachView() {
             </p>
           </div>
 
+          {/* Athlete picker */}
+          <div className="rounded-xl border border-border bg-card p-3 shadow-sm">
+            <div className="text-[11px] uppercase tracking-wider font-bold text-muted-foreground mb-2 px-1">
+              Vis kalender for
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              <button
+                onClick={() => setSelectedAthlete("team")}
+                className={cn(
+                  "px-3 py-1.5 rounded-md text-xs font-bold transition-colors",
+                  selectedAthlete === "team"
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "bg-secondary text-card-foreground hover:bg-secondary/70"
+                )}
+              >
+                Hele holdet
+              </button>
+              {ATHLETES.map((a) => (
+                <button
+                  key={a.id}
+                  onClick={() => setSelectedAthlete(a.id)}
+                  className={cn(
+                    "px-3 py-1.5 rounded-md text-xs font-bold transition-colors inline-flex items-center gap-1.5",
+                    selectedAthlete === a.id
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "bg-secondary text-card-foreground hover:bg-secondary/70"
+                  )}
+                >
+                  <User className="h-3 w-3" />
+                  {a.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Calendar + legend */}
           <div className="grid gap-4 sm:grid-cols-[1fr_180px]">
-            <MiniMonthCalendar highlightWeek={2} compFinalWeek={tpl.id === "comp" ? 5 : undefined} />
+            <MiniMonthCalendar
+              highlightWeek={2}
+              compFinalWeek={tpl.id === "comp" ? 5 : undefined}
+              overlays={overlays}
+              athleteName={activeAthlete?.name}
+            />
             <Legend />
           </div>
+
+          {/* CTA → individual goals mockup */}
+          {activeAthlete ? (
+            <Link
+              to="/mockup/athlete-goals"
+              className="block rounded-xl border border-amber-500/40 bg-amber-500/5 p-4 hover:bg-amber-500/10 transition-colors"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <div className="text-sm font-bold text-card-foreground">
+                    Vil du sætte langsigtede mål for {activeAthlete.name}?
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Åbn individuelle mål (sport / træning / teknik).
+                  </p>
+                </div>
+                <ArrowRight className="h-4 w-4 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+              </div>
+            </Link>
+          ) : (
+            <Link
+              to="/mockup/athlete-goals"
+              className="block rounded-xl border border-border bg-card p-4 hover:border-primary/50 transition-colors"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <div className="text-sm font-bold text-card-foreground">
+                    Sæt individuelle mål pr. atlet
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Åbn mockup for individuelle mål — sport, træning, teknik.
+                  </p>
+                </div>
+                <ArrowRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+              </div>
+            </Link>
+          )}
         </div>
       ) : tpl ? (
         <div className="rounded-xl border border-dashed border-border bg-card p-8 text-center">
