@@ -317,8 +317,11 @@ function Legend() {
 function CoachView() {
   const [bannerOpen, setBannerOpen] = useState(true);
   const [selected, setSelected] = useState<Template["id"] | null>(null);
+  const [selectedAthlete, setSelectedAthlete] = useState<AthleteId | "team">("team");
 
   const tpl = useMemo(() => TEMPLATES.find((t) => t.id === selected) ?? null, [selected]);
+  const activeAthlete = selectedAthlete === "team" ? null : ATHLETES.find((a) => a.id === selectedAthlete) ?? null;
+  const overlays = activeAthlete ? ATHLETE_OVERLAYS[activeAthlete.id] : [];
 
   return (
     <div className="space-y-6">
