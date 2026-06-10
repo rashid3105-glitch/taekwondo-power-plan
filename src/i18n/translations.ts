@@ -16378,7 +16378,7 @@ export type TranslationKey = keyof typeof translations.en;
 // AI-generated plans (training, nutrition, mental, rehab) are produced in
 // Spanish server-side regardless of UI string coverage.
 const esOverrides: Partial<Record<TranslationKey, string>> = {
-  surveysTitle: "Evaluaciones",
+  surveysTitle: "Encuestas",
   surveysSubtitle: "Formularios de tu entrenador",
   newSurvey: "Nueva evaluación",
   surveyFormTitle: "Título",
