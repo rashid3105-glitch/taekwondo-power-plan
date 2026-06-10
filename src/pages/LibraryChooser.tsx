@@ -1,9 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { AppFooter } from "@/components/AppFooter";
 import { Watermark } from "@/components/Watermark";
-import { Dumbbell, Brain, UtensilsCrossed, ClipboardList, ArrowLeft, BookOpen, Zap, ShieldCheck } from "lucide-react";
+import { Dumbbell, Brain, UtensilsCrossed, ClipboardList, ArrowLeft, BookOpen, Zap, ShieldCheck, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useRole } from "@/contexts/RoleContext";
 import type { TranslationKey } from "@/i18n/translations";
 
 const libraries: {
@@ -67,6 +68,21 @@ const libraries: {
 export default function LibraryChooser() {
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { hasCoachRole } = useRole();
+
+  const visibleLibraries = hasCoachRole
+    ? [
+        ...libraries,
+        {
+          id: "surveys",
+          labelKey: "libSurveysLabel" as TranslationKey,
+          descKey: "libSurveysDesc" as TranslationKey,
+          icon: FileText,
+          color: "text-primary",
+          bgClass: "bg-primary/10 border-primary/20 hover:border-primary/40",
+        },
+      ]
+    : libraries;
 
   return (
     <div className="min-h-screen bg-background relative">
@@ -90,7 +106,7 @@ export default function LibraryChooser() {
         </p>
 
         <div className="grid gap-4">
-          {libraries.map((lib) => (
+          {visibleLibraries.map((lib) => (
             <button
               key={lib.id}
               onClick={() => navigate(`/library/${lib.id}`)}
