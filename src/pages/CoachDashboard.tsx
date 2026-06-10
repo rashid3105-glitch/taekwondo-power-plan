@@ -31,7 +31,7 @@ import { CoachBulkCreateCompetitionDialog } from "@/components/coach/CoachBulkCr
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   ArrowLeft, Loader2, Zap, User, Users, NotebookPen,
-  MessageSquare, Building, CalendarRange, Home,
+  MessageSquare, Building, CalendarRange, CalendarCheck, Home,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MessagesIcon } from "@/components/chat/MessagesIcon";
