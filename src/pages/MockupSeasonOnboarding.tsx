@@ -55,7 +55,19 @@ const DAY_FOCUS: Record<string, string[][]> = {
   muted: Array(7).fill(["Restitution"]),
 };
 
-function DayFocusContent({ week, dow, type }: { week: number; dow: number; type: string }) {
+function DayFocusContent({
+  week,
+  dow,
+  type,
+  overlayTag,
+  athleteName,
+}: {
+  week: number;
+  dow: number;
+  type: string;
+  overlayTag?: string;
+  athleteName?: string;
+}) {
   const tags = DAY_FOCUS[type]?.[dow] ?? [];
   return (
     <div className="space-y-2">
@@ -75,6 +87,19 @@ function DayFocusContent({ week, dow, type }: { week: number; dow: number; type:
               {f}
             </span>
           ))}
+        </div>
+      )}
+      {overlayTag && athleteName && (
+        <div className="mt-2 pt-2 border-t border-border">
+          <div className="text-[10px] uppercase tracking-wider font-bold text-amber-600 dark:text-amber-400 mb-1">
+            Individuelt fokus
+          </div>
+          <div className="flex items-center gap-1.5">
+            <User className="h-3 w-3 text-amber-600 dark:text-amber-400" />
+            <span className="text-xs text-popover-foreground">
+              <span className="font-semibold">{athleteName}:</span> {overlayTag}
+            </span>
+          </div>
         </div>
       )}
     </div>
