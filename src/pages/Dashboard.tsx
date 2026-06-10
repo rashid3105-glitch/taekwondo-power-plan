@@ -832,7 +832,7 @@ export default function Dashboard() {
             { key: "coach-hold", label: t("coachNav") || "Hold", icon: Users, active: false, onClick: () => navigate("/coach") },
             { key: "coach-traening", label: t("train") || "Træning", icon: CalendarRange, active: false, onClick: () => navigate("/coach/season-calendar") },
             { key: "coach-staevner", label: t("competitions") || "Stævner", icon: Trophy, active: false, onClick: () => navigate("/coach/competitions") },
-            { key: "coach-surveys", label: t("surveysTitle") || "Evalueringer", icon: ClipboardList, active: false, onClick: () => navigate("/coach/surveys") },
+            { key: "coach-surveys", label: t("surveysTitle") || "Spørgeskemaer", icon: ClipboardList, active: false, onClick: () => navigate("/coach/surveys") },
 
           ] : [
             { key: "idag", label: t("today") || "I dag", icon: Home, active: activeTab === "hub", onClick: () => handleTabChange("hub") },
