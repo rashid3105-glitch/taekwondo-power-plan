@@ -1,80 +1,53 @@
+## Mål
 
-# Mockup-udvidelse: individuelle atleter i season-onboarding
+Give coach-spørgeskema-værktøjet en synlig hjemmebase i Biblioteket, så det er nemt at finde — uden at flytte selve værktøjet væk fra `/coach/surveys`. Atletens indbakke (`/surveys`) og Hub-chippen med rød "nyt"-prik forbliver præcis som i dag.
 
-Begge mockups forbliver isolerede sandboxes uden DB. Kun `src/pages/MockupSeasonOnboarding.tsx` ændres.
+## Ændringer
 
-## 1. Atlet-vælger i Coach-view
+### 1) Coach-only kort i Biblioteket
+`src/pages/LibraryChooser.tsx`: tilføj et 7. kort **"Spørgeskemaer"** (ikon `FileText`, t-nøgle `surveysTitle` + ny `libSurveysDesc`).
+- Vises kun hvis brugeren er coach (tjek via `useRole()` eller `isCoach` ligesom Dashboard gør).
+- Klik → `/library/surveys` (ny hub-side, se punkt 2).
+- Ingen andre kort eller routes ændres.
 
-Tilføj en lille toolbar over månedskalenderen (vises kun når en skabelon er valgt):
+### 2) Ny mellem-side `/library/surveys` (coach only)
+Ny fil `src/pages/CoachSurveysHub.tsx` — samme layout/skelet som `LibraryChooser` (Watermark, header med ArrowLeft tilbage til `/library`, kort i grid). To kort:
 
-```text
-[ Hele holdet ▾ ]   [ Sara K. ]  [ Jonas M. ]  [ Mikkel A. ]  [ Layla H. ]
+- **"Opret & administrer"** (ikon `ClipboardList`, beskrivelse: byg spørgeskemaer, skabeloner, arkiv) → `/coach/surveys?view=manage`
+- **"Resultater & svar"** (ikon `BarChart3`, beskrivelse: se besvarelser pr. spørgeskema) → `/coach/surveys?view=results`
+
+Begge dybde-links lander på den eksisterende `CoachSurveys`-side. Hvis `?view=results` ikke matcher en eksisterende tab, åbnes default-listen — det er en blød hint, ikke et nyt tab-system. Hvis `CoachSurveys` allerede har Tabs (det gør den, ifølge filens imports), wires `view`-query'en til at sætte default-tabben; ellers ignoreres den uden fejl.
+
+Tilføjes som ny rute i `src/App.tsx` lige ved siden af `/library/:section`:
 ```
-
-- Lokal state `selectedAthlete: "team" | athleteId`.
-- "Hele holdet" = nuværende visning (uændret).
-- Når en atlet vælges: kalenderen viser ekstra individuelle tags/badges oven på holdets dage.
-
-## 2. Individuelle overlays på dagene
-
-Hver mock-atlet får 2–3 hårdkodede "individuelle fokus" knyttet til specifikke (uge, ugedag):
-
-```ts
-const ATHLETE_OVERLAYS = {
-  sara:   [{week:2, dow:1, tag:"Ekstra bandal chagi"}, {week:3, dow:4, tag:"Sparring vs. højre"}],
-  jonas:  [{week:1, dow:2, tag:"Knæ-rehab let"},      {week:4, dow:0, tag:"Eksplosivitet"}],
-  mikkel: [{week:2, dow:5, tag:"Poomsae detail"}],
-  layla:  [{week:3, dow:2, tag:"Mental: pres-scenarie"}],
-};
+<Route path="/library/surveys" element={<CoachSurveysHub />} />
 ```
+(Skal stå **før** den dynamiske `/library/:section` for at undgå at "surveys" tolkes som section.)
 
-I `MiniMonthCalendar`:
-- Tag en `overlays` prop.
-- Hvis en dag har et overlay: vis en lille farvet prik/ring (fx amber) ved dot'en + tilføj overlay-tag'en i popoveren under "Individuelt fokus".
+### 3) Oversættelser
+Tilføj følgende nye nøgler på alle 7 sprog (DA, EN, SV, DE, AR, NO, ES) i `src/i18n/translations.ts`:
+- `libSurveysLabel` — kort-label i Biblioteket (DA: "Spørgeskemaer", EN: "Surveys", …)
+- `libSurveysDesc` — kort-beskrivelse (DA: "Opret spørgeskemaer og se atleters svar")
+- `surveysHubCreateTitle` / `surveysHubCreateDesc` — underkort 1
+- `surveysHubResultsTitle` / `surveysHubResultsDesc` — underkort 2
 
-Popover-indhold bliver:
-```text
-Uge 3 · Torsdag
-● TKD
-Hold: Sparring, Mental
-─────────────
-👤 Sara: Sparring vs. højre
-```
+Eksisterende `surveysTitle` genbruges som sidetitel i hub'en.
 
-## 3. Link til athlete-goals mockup
+### 4) Hvad der **IKKE** røres
+- `AthleteSurveys.tsx`, `/surveys`-routen — uændret.
+- Hub-chippen "Spørgeskemaer" i `HubOtherModules.tsx` med rød notifikations-prik — bevares for atleter.
+- `CoachSurveys.tsx` kerne-logik, builder, results-dialog, skabeloner — uændret (kun evt. en lille `useSearchParams` til at læse `?view=` og sætte default-tab).
+- Ingen ændringer i RLS, DB, edge functions, navigation/bottom-nav, eller changelog.
+- Den eksisterende coach-hjemmeside-genvej til `/coach/surveys` (hvis nogen) forbliver — det nye er en *ekstra* indgang.
 
-Når en specifik atlet er valgt, vises under kalenderen et lille kort:
+### 5) Test
+- Som atlet: Biblioteket viser stadig 6 kort, ingen "Spørgeskemaer" der. Hub-chip med prik virker som før.
+- Som coach: Biblioteket viser 7 kort, sidste er "Spørgeskemaer". Klik → hub med 2 underkort → hver underkort lander korrekt på `/coach/surveys` med relevant tab forvalgt.
+- RTL (Arabic): hub-layout spejlvendes korrekt (genbrug samme klasser som LibraryChooser, så det følger automatisk).
 
-```text
-Vil du sætte langsigtede mål for Sara?
-→ Åbn individuelle mål (sport / træning / teknik)   [knap]
-```
-
-Knappen linker til `/mockup/athlete-goals` (åbnes i samme tab via `<Link>`).
-
-Når "Hele holdet" er valgt vises i stedet en mere generel CTA:
-```text
-Sæt individuelle mål pr. atlet → /mockup/athlete-goals
-```
-
-## 4. Lille forklarende banner-update
-
-Coach-banneret tilføjes én linje:
-> Vælg en atlet for at se hvor holdets plan suppleres med individuelt fokus.
-
-## Tekniske detaljer
-
-- Kun ét filændring: `src/pages/MockupSeasonOnboarding.tsx`.
-- Ny `Athlete`-type + `ATHLETES` array + `ATHLETE_OVERLAYS` map.
-- `MiniMonthCalendar` får ny prop `overlays?: {week:number; dow:number; tag:string}[]` og en `athleteName?: string`.
-- `DayFocusContent` får ny prop `overlayTag?: string` + `athleteName?: string` til at vise den ekstra sektion.
-- Atlet-vælger styles som de eksisterende role-toggle pills (genbruger samme look).
-- Ingen ændringer i: App.tsx, routes, DB, RLS, edge functions, translations (mockup forbliver dansk-only som i dag), changelog, eller `/mockup/athlete-goals`.
-
-## Hvad det IKKE er
-
-- Ingen rigtig data — alt hårdkodet.
-- Ingen edit-funktion (man kan ikke tilføje overlays i UI'et — kun se dem).
-- Ingen påvirkning af den rigtige `/coach/season-calendar`.
-
-Formålet er kun at vise konceptet "holdets plan + individuelle lag + langsigtede mål" i ét samlet flow, så coachen kan vurdere idéen.
+## Filer der røres
+- `src/pages/LibraryChooser.tsx` (tilføj coach-kort)
+- `src/pages/CoachSurveysHub.tsx` (NY)
+- `src/pages/CoachSurveys.tsx` (lille `?view=` → default tab tilføjelse, ingen anden ændring)
+- `src/App.tsx` (ny route)
+- `src/i18n/translations.ts` (6 nye nøgler × 7 sprog)
