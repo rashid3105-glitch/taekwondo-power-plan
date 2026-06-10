@@ -1,8 +1,33 @@
 import { useMemo, useState } from "react";
-import { X, Check, Calendar as CalendarIcon, Sparkles, Layers, Trophy, Target, FilePlus } from "lucide-react";
+import { Link } from "react-router-dom";
+import { X, Check, Calendar as CalendarIcon, Sparkles, Layers, Trophy, Target, FilePlus, User, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+
+// --- Mock athletes + individual overlays ----------------------
+type AthleteId = "sara" | "jonas" | "mikkel" | "layla";
+type Overlay = { week: number; dow: number; tag: string };
+
+const ATHLETES: { id: AthleteId; name: string }[] = [
+  { id: "sara", name: "Sara K." },
+  { id: "jonas", name: "Jonas M." },
+  { id: "mikkel", name: "Mikkel A." },
+  { id: "layla", name: "Layla H." },
+];
+
+const ATHLETE_OVERLAYS: Record<AthleteId, Overlay[]> = {
+  sara: [
+    { week: 2, dow: 1, tag: "Ekstra bandal chagi" },
+    { week: 3, dow: 4, tag: "Sparring vs. højre" },
+  ],
+  jonas: [
+    { week: 1, dow: 2, tag: "Knæ-rehab let" },
+    { week: 4, dow: 0, tag: "Eksplosivitet" },
+  ],
+  mikkel: [{ week: 2, dow: 5, tag: "Poomsae detail" }],
+  layla: [{ week: 3, dow: 2, tag: "Mental: pres-scenarie" }],
+};
 
 const WEEKDAY_LABELS = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag", "Søndag"];
 const TYPE_LABEL: Record<string, string> = { sky: "TKD", emerald: "Styrke", rose: "Stævne", muted: "Hvile" };
