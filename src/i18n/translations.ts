@@ -2582,7 +2582,7 @@ const translations = {
     aiSuggest2: "How do I generate a training plan?",
     aiSuggest3: "What should I eat the day before a competition?",
     // Surveys (evaluation forms)
-    surveysTitle: "Evaluations",
+    surveysTitle: "Surveys",
     surveysSubtitle: "Forms from your coach",
     newSurvey: "New evaluation",
     surveyFormTitle: "Title",
@@ -5325,7 +5325,7 @@ const translations = {
     aiSuggest2: "Hvordan genererer jeg en træningsplan?",
     aiSuggest3: "Hvad spiser jeg dagen før stævne?",
     // Evaluering
-    surveysTitle: "Evalueringer",
+    surveysTitle: "Spørgeskemaer",
     surveysSubtitle: "Skemaer fra din træner",
     newSurvey: "Nyt skema",
     surveyFormTitle: "Titel",
@@ -8067,7 +8067,7 @@ const translations = {
     aiSuggest2: "Hur genererar jag en träningsplan?",
     aiSuggest3: "Vad äter jag dagen innan tävling?",
     // Utvärderingar
-    surveysTitle: "Utvärderingar",
+    surveysTitle: "Enkäter",
     surveysSubtitle: "Formulär från din tränare",
     newSurvey: "Nytt formulär",
     surveyFormTitle: "Titel",
@@ -10759,7 +10759,7 @@ const translations = {
     aiSuggest2: "Wie erstelle ich einen Trainingsplan?",
     aiSuggest3: "Was esse ich am Tag vor dem Wettkampf?",
     // Evaluierungen
-    surveysTitle: "Evaluierungen",
+    surveysTitle: "Umfragen",
     surveysSubtitle: "Formulare von deinem Trainer",
     newSurvey: "Neue Evaluierung",
     surveyFormTitle: "Titel",
@@ -13452,7 +13452,7 @@ const translations = {
     aiSuggest2: "كيف أولّد خطة تدريب؟",
     aiSuggest3: "ماذا آكل يوم المنافسة؟",
     // تقييمات
-    surveysTitle: "التقييمات",
+    surveysTitle: "الاستبيانات",
     surveysSubtitle: "نماذج من مدربك",
     newSurvey: "تقييم جديد",
     surveyFormTitle: "العنوان",
@@ -16195,7 +16195,7 @@ const translations = {
     aiSuggest2: "Hvordan genererer jeg en treningsplan?",
     aiSuggest3: "Hva spiser jeg dagen før stevne?",
     // Evalueringer
-    surveysTitle: "Evalueringer",
+    surveysTitle: "Spørreskjemaer",
     surveysSubtitle: "Skjemaer fra treneren din",
     newSurvey: "Ny evaluering",
     surveyFormTitle: "Tittel",
@@ -16378,7 +16378,7 @@ export type TranslationKey = keyof typeof translations.en;
 // AI-generated plans (training, nutrition, mental, rehab) are produced in
 // Spanish server-side regardless of UI string coverage.
 const esOverrides: Partial<Record<TranslationKey, string>> = {
-  surveysTitle: "Evaluaciones",
+  surveysTitle: "Encuestas",
   surveysSubtitle: "Formularios de tu entrenador",
   newSurvey: "Nueva evaluación",
   surveyFormTitle: "Título",
