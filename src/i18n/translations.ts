@@ -13452,7 +13452,7 @@ const translations = {
     aiSuggest2: "كيف أولّد خطة تدريب؟",
     aiSuggest3: "ماذا آكل يوم المنافسة؟",
     // تقييمات
-    surveysTitle: "التقييمات",
+    surveysTitle: "الاستبيانات",
     surveysSubtitle: "نماذج من مدربك",
     newSurvey: "تقييم جديد",
     surveyFormTitle: "العنوان",
