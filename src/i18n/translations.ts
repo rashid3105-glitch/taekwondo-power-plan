@@ -8067,7 +8067,7 @@ const translations = {
     aiSuggest2: "Hur genererar jag en träningsplan?",
     aiSuggest3: "Vad äter jag dagen innan tävling?",
     // Utvärderingar
-    surveysTitle: "Utvärderingar",
+    surveysTitle: "Enkäter",
     surveysSubtitle: "Formulär från din tränare",
     newSurvey: "Nytt formulär",
     surveyFormTitle: "Titel",
