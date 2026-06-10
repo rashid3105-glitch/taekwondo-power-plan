@@ -10759,7 +10759,7 @@ const translations = {
     aiSuggest2: "Wie erstelle ich einen Trainingsplan?",
     aiSuggest3: "Was esse ich am Tag vor dem Wettkampf?",
     // Evaluierungen
-    surveysTitle: "Evaluierungen",
+    surveysTitle: "Umfragen",
     surveysSubtitle: "Formulare von deinem Trainer",
     newSurvey: "Neue Evaluierung",
     surveyFormTitle: "Titel",
