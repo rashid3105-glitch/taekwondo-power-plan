@@ -16195,7 +16195,7 @@ const translations = {
     aiSuggest2: "Hvordan genererer jeg en treningsplan?",
     aiSuggest3: "Hva spiser jeg dagen før stevne?",
     // Evalueringer
-    surveysTitle: "Evalueringer",
+    surveysTitle: "Spørreskjemaer",
     surveysSubtitle: "Skjemaer fra treneren din",
     newSurvey: "Ny evaluering",
     surveyFormTitle: "Tittel",
