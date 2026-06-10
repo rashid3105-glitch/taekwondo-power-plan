@@ -330,7 +330,7 @@ function CoachView() {
           <div className="flex items-start gap-3">
             <Sparkles className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
             <p className="text-sm text-card-foreground leading-relaxed">
-              <span className="font-semibold">Byg din sæson:</span> vælg en skabelon eller start fra bunden. Atleterne ser planen automatisk.
+              <span className="font-semibold">Byg din sæson:</span> vælg en skabelon eller start fra bunden. Atleterne ser planen automatisk. Vælg en atlet nedenfor for at se hvor holdets plan suppleres med individuelt fokus.
             </p>
           </div>
           <button
