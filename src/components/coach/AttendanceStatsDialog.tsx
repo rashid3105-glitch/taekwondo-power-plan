@@ -197,6 +197,28 @@ export function AttendanceStatsDialog({ open, onOpenChange, coachId, athletes }:
           </Button>
         </div>
 
+        {/* Athlete selector + PDF export */}
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Select value={selectedAthleteId} onValueChange={setSelectedAthleteId}>
+            <SelectTrigger className="flex-1">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t("wholeTeam")}</SelectItem>
+              {athletes
+                .slice()
+                .sort((a, b) => (a.display_name || "").localeCompare(b.display_name || ""))
+                .map((a) => (
+                  <SelectItem key={a.user_id} value={a.user_id}>{a.display_name}</SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+          <Button variant="outline" onClick={exportPdf} disabled={sessionsHeld === 0} className="gap-2">
+            <FileDown className="h-4 w-4" />
+            {t("exportPdf")}
+          </Button>
+        </div>
+
         {/* Legend */}
         <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground border-y border-border py-2">
           <span className="font-semibold uppercase tracking-wider">{t("legend")}:</span>
