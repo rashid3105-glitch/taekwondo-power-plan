@@ -13,56 +13,13 @@ const libraries: {
   descKey: TranslationKey;
   icon: typeof Dumbbell;
   color: string;
-  bgClass: string;
 }[] = [
-  {
-    id: "exercise",
-    labelKey: "libExerciseLabel",
-    descKey: "libExerciseDesc",
-    icon: Dumbbell,
-    color: "text-primary",
-    bgClass: "bg-primary/10 border-primary/20 hover:border-primary/40",
-  },
-  {
-    id: "mental",
-    labelKey: "libMentalLabel",
-    descKey: "libMentalDesc",
-    icon: Brain,
-    color: "text-tab-mental",
-    bgClass: "bg-tab-mental/10 border-tab-mental/20 hover:border-tab-mental/40",
-  },
-  {
-    id: "nutrition",
-    labelKey: "libNutritionLabel",
-    descKey: "libNutritionDesc",
-    icon: UtensilsCrossed,
-    color: "text-tab-nutrition",
-    bgClass: "bg-tab-nutrition/10 border-tab-nutrition/20 hover:border-tab-nutrition/40",
-  },
-  {
-    id: "testing",
-    labelKey: "libTestingLabel",
-    descKey: "libTestingDesc",
-    icon: ClipboardList,
-    color: "text-primary",
-    bgClass: "bg-primary/10 border-primary/20 hover:border-primary/40",
-  },
-  {
-    id: "hiit",
-    labelKey: "libHiitLabel",
-    descKey: "libHiitDesc",
-    icon: Zap,
-    color: "text-destructive",
-    bgClass: "bg-destructive/10 border-destructive/20 hover:border-destructive/40",
-  },
-  {
-    id: "supplement",
-    labelKey: "libSupplementLabel",
-    descKey: "libSupplementDesc",
-    icon: ShieldCheck,
-    color: "text-emerald-500",
-    bgClass: "bg-emerald-500/10 border-emerald-500/20 hover:border-emerald-500/40",
-  },
+  { id: "exercise", labelKey: "libExerciseLabel", descKey: "libExerciseDesc", icon: Dumbbell, color: "text-primary" },
+  { id: "mental", labelKey: "libMentalLabel", descKey: "libMentalDesc", icon: Brain, color: "text-tab-mental" },
+  { id: "nutrition", labelKey: "libNutritionLabel", descKey: "libNutritionDesc", icon: UtensilsCrossed, color: "text-tab-nutrition" },
+  { id: "testing", labelKey: "libTestingLabel", descKey: "libTestingDesc", icon: ClipboardList, color: "text-primary" },
+  { id: "hiit", labelKey: "libHiitLabel", descKey: "libHiitDesc", icon: Zap, color: "text-destructive" },
+  { id: "supplement", labelKey: "libSupplementLabel", descKey: "libSupplementDesc", icon: ShieldCheck, color: "text-emerald-500" },
 ];
 
 export default function LibraryChooser() {
