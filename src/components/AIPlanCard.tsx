@@ -696,8 +696,9 @@ function AIExerciseRow({ exercise, index, log, pending, onToggleComplete, onUpda
         >
           <span className={cn(
             "font-semibold text-sm block truncate",
-            completed ? "text-muted-foreground line-through" : "text-foreground"
+            completed ? "text-muted-foreground line-through" : "text-card-foreground"
           )}>
+
             {displayName}
           </span>
         </button>
