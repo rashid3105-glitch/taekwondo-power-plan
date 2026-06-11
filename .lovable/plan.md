@@ -1,35 +1,66 @@
-## Mål
-Fjern "📅 Ugentlig skabelon"-editoren i `/coach/season-calendar`. Lad i stedet sæsonkalenderen bygge på "Holdets standard-ugeplan" (`clubs.default_weekly_schedule`), som allerede vedligeholdes via `TeamWeeklyScheduleCard` på `/coach`.
+## Goal
+Let coaches copy the current week's "Holdets fokus" (techniques + trænernote) to up to 4 other weeks in the same season plan.
 
-## Hvad ændres
+## UI
+In `src/pages/SeasonCalendar.tsx`, in the week focus editor (around line 1024, right next to the `Gem` button):
 
-### `src/pages/SeasonCalendar.tsx`
-1. Fjern hele det collapsible `<details>`-blok "Weekly template editor" (linje ~841-874) i sidebaren.
-2. Fjern `updateTemplate()`-funktionen (linje ~439-447) — bruges ikke længere.
-3. Behold `template` state, men hold den i hukommelsen kun (skriv ikke længere til `club_season_day_templates`). Den udledes nu af klubbens `default_weekly_schedule`:
-   - Tilføj load af `clubs.default_weekly_schedule` når `clubId` ændres.
-   - Map `DaySchedule[]` → `ClubSeasonDayTemplate[]` (én row pr. day_of_week 0..6). Mapping: dag-navn → index (Mon=0…Sun=6), `type` ("tkd" | "gym" | "rest") → `session_type` (samme værdier; `gym` forbliver `gym`). Hvis dagen har flere sessions, lav én template-row pr. session (multi-session understøttes allerede af `resolveSessionsForDate`). Hvis klubben ikke har en standard-ugeplan, fald tilbage til `GENERIC_DEFAULT_SCHEDULE` fra `TeamWeeklyScheduleCard`.
-   - `id` og `season_plan_id` på de mappede rows er kosmetiske (kun brugt af `updateTemplate`, som nu fjernes) — sæt fx `id: ${dow}-${i}`, `season_plan_id: selectedPlanId ?? ""`.
-4. Stop med at læse fra og skrive til `club_season_day_templates`:
-   - Fjern read i `loadPlanData` (parallel select på linje ~201 og `setTemplate` på linje ~207).
-   - Fjern seed-insert i `createPlan` (linje ~352-356).
-   - Fjern delete i `deletePlan` (linje ~370).
-5. `resolveSessionForDate` / `resolveSessionsForDate` får nu det klub-afledte template — ingen ændringer i `seasonCalendar.ts`.
+- Add a secondary button `Kopiér fokus til andre uger` (outline variant) beside `Gem`.
+- Clicking it opens a Popover with:
+  - A short helper line: "Vælg op til 4 uger" (max 4).
+  - A scrollable list of checkboxes for every other week in the plan (`1..totalWeeks` minus the current `sw`), labeled `Uge N · yyyy-mm-dd – yyyy-mm-dd` (reuse the same date math used elsewhere in this file).
+  - Disable unchecked checkboxes once 4 are selected.
+  - Footer with "Annullér" and a primary "Kopiér til X uge(r)" button (disabled when 0 selected).
+- On confirm: call a new `copyWeekFocusTo(sourceWeek, targetWeeks[])` helper, close the popover, clear selection, toast `t("seasonTechFocusCopied") || "Fokus kopieret til X uge(r)"`.
 
-### Hjælpetekst
-- Tilføj en lille info-linje øverst i sidebaren (eller ved siden af fasen-card), fx "Ugeplan styres på holdsiden" med link til `/coach`. Brug eksisterende `t()`-nøgle hvis muligt, ellers tilføj ny key `seasonWeeklyFromTeam` på alle 7 sprog.
+## Logic
+New helper in the same file:
 
-### i18n
-- Ny nøgle `seasonWeeklyFromTeam` ("Ugeplan styres på holdsiden") tilføjes på da/en/sv/de/ar/no/es.
-- Lad eksisterende `seasonWeeklyTemplate`-nøgle stå (kan stadig bruges andetsteds), men fjern dens UI-brug her.
+```
+async function copyWeekFocusTo(sourceWeek: number, targetWeeks: number[]) {
+  if (!selectedPlanId || !userId || targetWeeks.length === 0) return;
+  const src = weekFocusMap.get(sourceWeek);
+  if (!src) return;
+  const rows = targetWeeks.map((w) => ({
+    season_plan_id: selectedPlanId,
+    season_week: w,
+    technique_ids: src.technique_ids,
+    coach_note: src.coach_note,
+    created_by: userId,
+    updated_at: new Date().toISOString(),
+  }));
+  const { data } = await (supabase.from as any)("club_week_technique_focus")
+    .upsert(rows, { onConflict: "season_plan_id,season_week" })
+    .select();
+  // Merge results back into weekFocusMap so UI reflects copies immediately
+  setWeekFocusMap((prev) => {
+    const next = new Map(prev);
+    for (const row of (data ?? []) as any[]) {
+      next.set(row.season_week, {
+        id: row.id,
+        technique_ids: row.technique_ids ?? [],
+        coach_note: row.coach_note ?? "",
+      });
+    }
+    return next;
+  });
+  toast({ title: (t("seasonTechFocusCopied") || "Fokus kopieret") + ` (${targetWeeks.length})` });
+}
+```
 
-## Hvad røres ikke
-- DB-skemaet (`club_season_day_templates` beholdes for bagudkompatibilitet — nye planer skriver bare ikke til den).
-- `clubs.default_weekly_schedule` og `TeamWeeklyScheduleCard` ændres ikke.
-- Athlete-overrides, faser, teknikker, kompetencer, kompetitions-pinde rører vi ikke.
-- `SeasonCalendarView.tsx` (athlete-siden) bruger samme data og fungerer videre.
+Guardrails:
+- Hard-cap selection at 4 in the UI (no server-side change needed).
+- If current week has empty `technique_ids` and empty `coach_note`, disable the copy button with tooltip "Ingen fokus at kopiere".
 
-## Effekt for brugeren
-- Sidebaren bliver renere: ingen duplikeret ugentlig editor.
-- Når træneren ændrer holdets standard-ugeplan på `/coach`, opdateres sæsonkalenderen automatisk.
-- Eksisterende planer der har skrevet `rest` til alle dage (som på skærmbillede 1) viser nu klubbens rigtige ugeplan i kalendergittet.
+## i18n
+Add to `src/i18n/translations.ts` in all 7 locales (en, da, sv, de, ar, no, es):
+- `seasonCopyFocus` — DA: "Kopiér fokus til andre uger", EN: "Copy focus to other weeks", etc.
+- `seasonCopyFocusHelp` — DA: "Vælg op til 4 uger", EN: "Pick up to 4 weeks".
+- `seasonCopyFocusConfirm` — DA: "Kopiér til {n} uger", EN: "Copy to {n} weeks" (use simple string replace on `{n}`).
+- `seasonTechFocusCopied` — DA: "Fokus kopieret", EN: "Focus copied".
+- `cancel` if not already present (reuse if it is).
+
+## Files changed
+- `src/pages/SeasonCalendar.tsx`
+- `src/i18n/translations.ts`
+
+No DB changes, no edits to athlete view.
