@@ -15214,6 +15214,7 @@ const translations = {
     seasonDisciplinePoomsae: "Poomsae",
     seasonNoTechniques: "Ingen teknikker ennå. Legg til din første teknikk ovenfor.",
     seasonWeeklyTemplate: "Ukemal",
+    seasonWeeklyFromTeam: "Ukeplanen styres i lagets standarduke.",
     seasonAiSuggestion: "Forslag",
     seasonTeamFocus: "Lagets fokus (opptil 3)",
     seasonAddTechnique: "Legg til teknikk",
