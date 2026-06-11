@@ -1489,6 +1489,7 @@ const translations = {
     seasonDisciplinePoomsae: "Poomsae",
     seasonNoTechniques: "No techniques yet. Add your first technique above.",
     seasonWeeklyTemplate: "Weekly template",
+    seasonWeeklyFromTeam: "The weekly schedule is managed in the team's standard week.",
     seasonAiSuggestion: "Suggestion",
     seasonTeamFocus: "Team focus (up to 3)",
     seasonAddTechnique: "Add technique",
