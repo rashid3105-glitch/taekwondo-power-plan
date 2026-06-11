@@ -111,7 +111,7 @@ export function AddExerciseForm({ onClose, onAdded }: AddExerciseFormProps) {
         {/* Name & Category */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <Label className="text-xs">Exercise Name *</Label>
+            <Label className="text-xs text-card-foreground">Exercise Name *</Label>
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -122,7 +122,7 @@ export function AddExerciseForm({ onClose, onAdded }: AddExerciseFormProps) {
             />
           </div>
           <div>
-            <Label className="text-xs">Category *</Label>
+            <Label className="text-xs text-card-foreground">Category *</Label>
             <Select value={category} onValueChange={(v) => setCategory(v as ExerciseCategory)}>
               <SelectTrigger className="mt-1">
                 <SelectValue />
@@ -138,7 +138,7 @@ export function AddExerciseForm({ onClose, onAdded }: AddExerciseFormProps) {
 
         {/* Muscle groups */}
         <div>
-          <Label className="text-xs">Muscle Groups *</Label>
+          <Label className="text-xs text-card-foreground">Muscle Groups *</Label>
           <div className="flex flex-wrap gap-2 mt-1.5">
             {MUSCLE_GROUPS.map((m) => (
               <label key={m} className="flex items-center gap-1.5 cursor-pointer">
@@ -155,19 +155,19 @@ export function AddExerciseForm({ onClose, onAdded }: AddExerciseFormProps) {
         {/* Sets, Reps, Rest, Tempo */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div>
-            <Label className="text-xs">Sets</Label>
+            <Label className="text-xs text-card-foreground">Sets</Label>
             <Input type="number" inputMode="numeric" min={1} max={20} value={sets} onChange={(e) => setSets(e.target.value)} className="mt-1" />
           </div>
           <div>
-            <Label className="text-xs">Reps</Label>
+            <Label className="text-xs text-card-foreground">Reps</Label>
             <Input value={reps} onChange={(e) => setReps(e.target.value)} placeholder="8-10" maxLength={30} className="mt-1" />
           </div>
           <div>
-            <Label className="text-xs">Rest</Label>
+            <Label className="text-xs text-card-foreground">Rest</Label>
             <Input value={rest} onChange={(e) => setRest(e.target.value)} placeholder="90 sec" maxLength={30} className="mt-1" />
           </div>
           <div>
-            <Label className="text-xs">Tempo</Label>
+            <Label className="text-xs text-card-foreground">Tempo</Label>
             <Input value={tempo} onChange={(e) => setTempo(e.target.value)} placeholder="3-0-1-0" maxLength={50} className="mt-1" />
           </div>
         </div>
@@ -175,24 +175,24 @@ export function AddExerciseForm({ onClose, onAdded }: AddExerciseFormProps) {
         {/* Notes & Why it matters */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <Label className="text-xs">Coaching Notes</Label>
+            <Label className="text-xs text-card-foreground">Coaching Notes</Label>
             <Input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Key form cues..." maxLength={500} className="mt-1" />
           </div>
           <div>
-            <Label className="text-xs">Why It Matters for TKD</Label>
+            <Label className="text-xs text-card-foreground">Why It Matters for TKD</Label>
             <Input value={whyItMatters} onChange={(e) => setWhyItMatters(e.target.value)} placeholder="Builds explosive..." maxLength={500} className="mt-1" />
           </div>
         </div>
 
         {/* Video URL */}
         <div>
-          <Label className="text-xs">YouTube Video URL (optional)</Label>
+          <Label className="text-xs text-card-foreground">YouTube Video URL (optional)</Label>
           <Input value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder="https://www.youtube.com/watch?v=..." maxLength={500} className="mt-1" />
         </div>
 
         {/* Alternatives */}
         <div className="space-y-2">
-          <Label className="text-xs">Alternatives (optional)</Label>
+          <Label className="text-xs text-card-foreground">Alternatives (optional)</Label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <Input value={alt1Name} onChange={(e) => setAlt1Name(e.target.value)} placeholder="Alternative 1 name" maxLength={100} />
             <Input value={alt1Reason} onChange={(e) => setAlt1Reason(e.target.value)} placeholder="Reason for substitution" maxLength={200} />
