@@ -101,6 +101,51 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) 
           throw error;
         }
       } else {
+        // If the coach's club has a team default schedule AND the athlete still
+        // uses the generic global default, copy the team default to the athlete.
+        try {
+          const { data: coachProfile } = await supabase
+            .from("profiles")
+            .select("club_id")
+            .eq("user_id", user.id)
+            .maybeSingle();
+          const clubId = (coachProfile as any)?.club_id;
+          if (clubId) {
+            const [{ data: clubRow }, { data: athleteRow }] = await Promise.all([
+              supabase.from("clubs" as any).select("default_weekly_schedule").eq("id", clubId).maybeSingle(),
+              supabase.from("profiles").select("weekly_schedule").eq("user_id", userId as string).maybeSingle(),
+            ]);
+            const clubDefault = (clubRow as any)?.default_weekly_schedule;
+            const athleteSchedule = (athleteRow as any)?.weekly_schedule;
+            const GENERIC = [
+              { day: "Monday", type: "tkd" },
+              { day: "Tuesday", type: "gym" },
+              { day: "Wednesday", type: "tkd" },
+              { day: "Thursday", type: "gym" },
+              { day: "Friday", type: "tkd" },
+              { day: "Saturday", type: "gym" },
+              { day: "Sunday", type: "rest" },
+            ];
+            const isGeneric =
+              Array.isArray(athleteSchedule) &&
+              athleteSchedule.length === GENERIC.length &&
+              GENERIC.every((g, i) => {
+                const a = athleteSchedule[i];
+                return a && a.day === g.day && a.type === g.type &&
+                  (!a.sessions || a.sessions.length === 0);
+              });
+            if (clubDefault && isGeneric) {
+              await supabase
+                .from("profiles")
+                .update({ weekly_schedule: clubDefault as any })
+                .eq("user_id", userId as string);
+            }
+          }
+        } catch (e) {
+          // Non-fatal: athlete is added even if schedule copy fails.
+          console.warn("Team schedule copy skipped:", e);
+        }
+
         toast({ title: t("athleteAdded") });
         reset();
         setOpen(false);
