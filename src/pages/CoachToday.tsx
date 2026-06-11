@@ -95,14 +95,39 @@ export default function CoachToday() {
           </Button>
           <CalendarCheck className="h-5 w-5 text-primary" />
           <span className="text-base font-extrabold text-card-foreground">{t("todayTab")}</span>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="ml-auto"
+            onClick={() => setStatsOpen(true)}
+            aria-label={t("attendanceStats")}
+            title={t("attendanceStats")}
+          >
+            <BarChart3 className="h-5 w-5" />
+          </Button>
         </div>
       </header>
 
       <main className="container max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4">
+        {/* Icon legend */}
+        <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground rounded-lg border border-border bg-card/60 px-3 py-2">
+          <span className="font-semibold uppercase tracking-wider">{t("legend")}:</span>
+          <span className="inline-flex items-center gap-1"><Check className="h-3.5 w-3.5 text-emerald-500" />{t("present")}</span>
+          <span className="inline-flex items-center gap-1"><Clock className="h-3.5 w-3.5 text-orange-500" />{t("late")}</span>
+          <span className="inline-flex items-center gap-1"><X className="h-3.5 w-3.5 text-destructive" />{t("absent")}</span>
+        </div>
         {coachUserId && (
           <SessionAttendance coachId={coachUserId} athletes={athletes} />
         )}
       </main>
+      {coachUserId && (
+        <AttendanceStatsDialog
+          open={statsOpen}
+          onOpenChange={setStatsOpen}
+          coachId={coachUserId}
+          athletes={athletes}
+        />
+      )}
       <AppFooter />
     </div>
   );
