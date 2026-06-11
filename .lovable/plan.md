@@ -1,33 +1,35 @@
-## Problem
-I `/coach/season-calendar` vises 31.05.2026 i mandagskolonnen for juni. Det er forkert (31.05.2026 er en søndag). Den rigtige dato i den celle er 01.06.2026.
+## Mål
+Fjern "📅 Ugentlig skabelon"-editoren i `/coach/season-calendar`. Lad i stedet sæsonkalenderen bygge på "Holdets standard-ugeplan" (`clubs.default_weekly_schedule`), som allerede vedligeholdes via `TeamWeeklyScheduleCard` på `/coach`.
 
-## Årsag
-I `src/pages/SeasonCalendar.tsx` (linje 132-143) bygges månedens datoer sådan:
+## Hvad ændres
 
-```ts
-const d = new Date(viewYear, viewMonth, 1);          // lokal midnat
-...
-days.push(d.toISOString().slice(0, 10));             // ← bug
-d.setDate(d.getDate() + 1);
-```
+### `src/pages/SeasonCalendar.tsx`
+1. Fjern hele det collapsible `<details>`-blok "Weekly template editor" (linje ~841-874) i sidebaren.
+2. Fjern `updateTemplate()`-funktionen (linje ~439-447) — bruges ikke længere.
+3. Behold `template` state, men hold den i hukommelsen kun (skriv ikke længere til `club_season_day_templates`). Den udledes nu af klubbens `default_weekly_schedule`:
+   - Tilføj load af `clubs.default_weekly_schedule` når `clubId` ændres.
+   - Map `DaySchedule[]` → `ClubSeasonDayTemplate[]` (én row pr. day_of_week 0..6). Mapping: dag-navn → index (Mon=0…Sun=6), `type` ("tkd" | "gym" | "rest") → `session_type` (samme værdier; `gym` forbliver `gym`). Hvis dagen har flere sessions, lav én template-row pr. session (multi-session understøttes allerede af `resolveSessionsForDate`). Hvis klubben ikke har en standard-ugeplan, fald tilbage til `GENERIC_DEFAULT_SCHEDULE` fra `TeamWeeklyScheduleCard`.
+   - `id` og `season_plan_id` på de mappede rows er kosmetiske (kun brugt af `updateTemplate`, som nu fjernes) — sæt fx `id: ${dow}-${i}`, `season_plan_id: selectedPlanId ?? ""`.
+4. Stop med at læse fra og skrive til `club_season_day_templates`:
+   - Fjern read i `loadPlanData` (parallel select på linje ~201 og `setTemplate` på linje ~207).
+   - Fjern seed-insert i `createPlan` (linje ~352-356).
+   - Fjern delete i `deletePlan` (linje ~370).
+5. `resolveSessionForDate` / `resolveSessionsForDate` får nu det klub-afledte template — ingen ændringer i `seasonCalendar.ts`.
 
-`new Date(2026, 5, 1)` er lokal midnat 1. juni. I dansk sommertid (UTC+2) konverterer `toISOString()` det til `2026-05-31T22:00:00Z`, så `.slice(0,10)` giver **"2026-05-31"**. Resultatet: hver celle viser dagen før (i UTC), mens dagens nummer renders via `new Date(iso+"T00:00:00").getDate()` — så cellen lander i mandags-slottet (fordi 1. juni er en mandag) men viser "31".
+### Hjælpetekst
+- Tilføj en lille info-linje øverst i sidebaren (eller ved siden af fasen-card), fx "Ugeplan styres på holdsiden" med link til `/coach`. Brug eksisterende `t()`-nøgle hvis muligt, ellers tilføj ny key `seasonWeeklyFromTeam` på alle 7 sprog.
 
-Samme fejl findes ikke i `src/components/hub/SeasonCalendarView.tsx` rent visuelt (den bruger samme mønster — bør tjekkes/fixes samme sted), men brugerens skærmbillede er coach-siden.
+### i18n
+- Ny nøgle `seasonWeeklyFromTeam` ("Ugeplan styres på holdsiden") tilføjes på da/en/sv/de/ar/no/es.
+- Lad eksisterende `seasonWeeklyTemplate`-nøgle stå (kan stadig bruges andetsteds), men fjern dens UI-brug her.
 
-## Fix
-Erstat `d.toISOString().slice(0,10)` med en lokal YYYY-MM-DD formatter, så ISO-strengen matcher den lokale dato:
+## Hvad røres ikke
+- DB-skemaet (`club_season_day_templates` beholdes for bagudkompatibilitet — nye planer skriver bare ikke til den).
+- `clubs.default_weekly_schedule` og `TeamWeeklyScheduleCard` ændres ikke.
+- Athlete-overrides, faser, teknikker, kompetencer, kompetitions-pinde rører vi ikke.
+- `SeasonCalendarView.tsx` (athlete-siden) bruger samme data og fungerer videre.
 
-```ts
-const toLocalIso = (dt: Date) =>
-  `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,"0")}-${String(dt.getDate()).padStart(2,"0")}`;
-```
-
-og brug `toLocalIso(d)` i stedet.
-
-## Ændringer
-1. **`src/pages/SeasonCalendar.tsx`** — fix `calendarDays` memo (linje 132-143) til at bruge lokal ISO-formattering.
-2. **`src/components/hub/SeasonCalendarView.tsx`** — samme fix i `daysInMonth` memo (samme mønster med `new Date(viewYear, viewMonth, 1)` + `toISOString().slice(0,10)`), så atletvisningen ikke får samme bug.
-3. Hurtigt grep efter andre `toISOString().slice(0, 10)`-brug kombineret med lokal `new Date(y,m,d)` for at fange evt. yderligere forekomster — kun de der opfylder begge dele rettes.
-
-Ingen DB/translation ændringer. Ingen anden adfærd røres.
+## Effekt for brugeren
+- Sidebaren bliver renere: ingen duplikeret ugentlig editor.
+- Når træneren ændrer holdets standard-ugeplan på `/coach`, opdateres sæsonkalenderen automatisk.
+- Eksisterende planer der har skrevet `rest` til alle dage (som på skærmbillede 1) viser nu klubbens rigtige ugeplan i kalendergittet.

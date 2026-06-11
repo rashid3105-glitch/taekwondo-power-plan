@@ -12,7 +12,9 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { toast } from "@/hooks/use-toast";
-import { ArrowLeft, Loader2, Plus, Printer, Trash2, CalendarRange, Eye, ChevronLeft, ChevronRight, ChevronDown, Target, Sparkles } from "lucide-react";
+import { ArrowLeft, Loader2, Plus, Printer, Trash2, CalendarRange, Eye, ChevronLeft, ChevronRight, ChevronDown, Target, Sparkles, Info } from "lucide-react";
+import { GENERIC_DEFAULT_SCHEDULE } from "@/components/coach/TeamWeeklyScheduleCard";
+import type { DaySchedule } from "@/components/WeekSchedulePicker";
 import { cn } from "@/lib/utils";
 import {
   type ClubSeasonPlan,
@@ -188,23 +190,54 @@ export default function SeasonCalendar() {
     })();
   }, [navigate, activeClubId]);
 
+  // Build the per-day session template from the club's standard weekly schedule
+  // (managed on /coach via TeamWeeklyScheduleCard). One row per session per day_of_week.
+  useEffect(() => {
+    if (!clubId) { setTemplate([]); return; }
+    (async () => {
+      const { data } = await (supabase.from as any)("clubs")
+        .select("default_weekly_schedule").eq("id", clubId).maybeSingle();
+      const schedule: DaySchedule[] =
+        ((data as any)?.default_weekly_schedule as DaySchedule[] | null) ?? GENERIC_DEFAULT_SCHEDULE;
+      const DOW: Record<string, number> = {
+        Monday: 0, Tuesday: 1, Wednesday: 2, Thursday: 3, Friday: 4, Saturday: 5, Sunday: 6,
+      };
+      const rows: ClubSeasonDayTemplate[] = [];
+      for (let dow = 0; dow < 7; dow++) {
+        const entry = schedule.find((s) => DOW[s.day] === dow);
+        const sessions = entry?.sessions && entry.sessions.length > 0
+          ? entry.sessions
+          : [{ type: (entry?.type ?? "rest") as SessionType }];
+        sessions.forEach((sess, i) => {
+          rows.push({
+            id: `club-${dow}-${i}`,
+            season_plan_id: "",
+            day_of_week: dow,
+            session_type: sess.type as SessionType,
+            location: null,
+            notes: null,
+          });
+        });
+      }
+      setTemplate(rows);
+    })();
+  }, [clubId]);
+
   // Load phases / template / overrides / competitions whenever plan changes
   useEffect(() => {
     if (!selectedPlanId) {
-      setPhases([]); setTemplate([]); setOverrides([]); setCompetitions([]); setVisibleAthleteIds(new Set());
+      setPhases([]); setOverrides([]); setCompetitions([]); setVisibleAthleteIds(new Set());
       setWeekFocusMap(new Map()); setAthleteFocusMap(new Map());
       return;
     }
     (async () => {
-      const [phRes, tplRes, visRes, focusRes, athFocusRes] = await Promise.all([
+      const [phRes, visRes, focusRes, athFocusRes] = await Promise.all([
         (supabase.from as any)("club_season_phases").select("*").eq("season_plan_id", selectedPlanId).order("start_week"),
-        (supabase.from as any)("club_season_day_templates").select("*").eq("season_plan_id", selectedPlanId).order("day_of_week"),
         (supabase.from as any)("club_season_plan_visibility").select("athlete_id").eq("season_plan_id", selectedPlanId),
         (supabase.from as any)("club_week_technique_focus").select("id, season_week, technique_ids, coach_note").eq("season_plan_id", selectedPlanId),
         (supabase.from as any)("athlete_week_technique_focus").select("athlete_id, season_week, technique_ids").eq("season_plan_id", selectedPlanId),
       ]);
       setPhases((phRes.data ?? []) as ClubSeasonPhase[]);
-      setTemplate((tplRes.data ?? []) as ClubSeasonDayTemplate[]);
       setVisibleAthleteIds(new Set(((visRes.data ?? []) as any[]).map((r) => r.athlete_id)));
 
       const fm = new Map<number, { id?: string; technique_ids: string[]; coach_note: string }>();
@@ -349,11 +382,8 @@ export default function SeasonCalendar() {
       .insert({ ...newPlan, club_id: clubId, created_by: userId, is_active: true })
       .select().single();
     if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
-    // Seed empty 7-day template
-    const tplRows = Array.from({ length: 7 }, (_, i) => ({
-      season_plan_id: data.id, day_of_week: i, session_type: "rest" as SessionType,
-    }));
-    await (supabase.from as any)("club_season_day_templates").insert(tplRows);
+
+
 
     setPlans((prev) => [data as ClubSeasonPlan, ...prev]);
     setSelectedPlanId(data.id);
@@ -367,7 +397,6 @@ export default function SeasonCalendar() {
     if (!window.confirm(`${t("seasonDeletePlanConfirm") || "Delete this season plan? This cannot be undone."}\n\n${selectedPlan.name}`)) return;
     const id = selectedPlan.id;
     await (supabase.from as any)("club_athlete_season_overrides").delete().eq("season_plan_id", id);
-    await (supabase.from as any)("club_season_day_templates").delete().eq("season_plan_id", id);
     await (supabase.from as any)("club_season_phases").delete().eq("season_plan_id", id);
     const { error } = await (supabase.from as any)("club_season_plans").delete().eq("id", id);
     if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
@@ -436,15 +465,8 @@ export default function SeasonCalendar() {
     await (supabase.from as any)("club_season_phases").update({ focus_tags: next }).eq("id", phaseId);
   }
 
-  async function updateTemplate(day: number, patch: Partial<ClubSeasonDayTemplate>) {
-    const row = template.find((t) => t.day_of_week === day);
-    if (!row) return;
-    const updated = { ...row, ...patch };
-    setTemplate((prev) => prev.map((t) => (t.day_of_week === day ? updated : t)));
-    await (supabase.from as any)("club_season_day_templates")
-      .update({ session_type: updated.session_type, location: updated.location ?? null })
-      .eq("id", row.id);
-  }
+
+
 
   async function addOverride() {
     if (!selectedPlanId || !selectedAthleteId || !overrideForm.date) return;
@@ -838,40 +860,22 @@ export default function SeasonCalendar() {
                 </div>
               </Card>
 
-              {/* Weekly template editor (collapsible) */}
-              <details className="group">
-                <summary className="cursor-pointer list-none">
-                  <Card className="p-4">
-                    <div className="flex items-center justify-between">
-                      <h2 className="font-semibold text-sm">📅 {t("seasonWeeklyTemplate") || "Ugentlig skabelon"}</h2>
-                      <ChevronDown className="h-4 w-4 text-muted-foreground group-open:rotate-180 transition-transform" />
-                    </div>
-                  </Card>
-                </summary>
-                <Card className="p-4 space-y-2 -mt-1 rounded-t-none border-t-0">
-                  <div className="grid grid-cols-1 gap-2">
-                    {Array.from({ length: 7 }, (_, d) => {
-                      const row = template.find((tt) => tt.day_of_week === d);
-                      return (
-                        <div key={d} className="border border-border rounded p-2 space-y-2">
-                          <div className="text-xs font-bold uppercase">{DAY_KEYS[d]}</div>
-                          <Select value={row?.session_type ?? "rest"} onValueChange={(v) => updateTemplate(d, { session_type: v as SessionType })}>
-                            <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                              {SESSION_TYPES.map((s) => <SelectItem key={s} value={s}>{t(sessionLabelKey(s) as any)}</SelectItem>)}
-                            </SelectContent>
-                          </Select>
-                          <Input
-                            className="h-8 text-xs" placeholder="Location"
-                            defaultValue={row?.location ?? ""}
-                            onBlur={(e) => updateTemplate(d, { location: e.target.value })}
-                          />
-                        </div>
-                      );
-                    })}
+              {/* Info: weekly schedule comes from team standard week */}
+              <Card className="p-3 bg-muted/30 border-dashed">
+                <div className="flex items-start gap-2 text-xs text-muted-foreground">
+                  <Info className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+                  <div className="space-y-1">
+                    <p>{t("seasonWeeklyFromTeam")}</p>
+                    <button
+                      type="button"
+                      onClick={() => navigate("/coach")}
+                      className="text-primary hover:underline font-medium"
+                    >
+                      {t("editTeamWeeklySchedule")} →
+                    </button>
                   </div>
-                </Card>
-              </details>
+                </div>
+              </Card>
             </>
           )}
         </aside>
