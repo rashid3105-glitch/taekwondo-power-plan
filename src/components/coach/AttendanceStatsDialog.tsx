@@ -248,7 +248,7 @@ export function AttendanceStatsDialog({ open, onOpenChange, coachId, athletes }:
           </div>
         ) : (
           <div className="space-y-2">
-            {perAthlete.map((row) => (
+            {filteredPerAthlete.map((row) => (
               <div key={row.athlete.user_id} className="rounded-lg border border-border bg-card p-3 space-y-2">
                 <div className="flex items-center gap-3">
                   <AvatarImg avatarUrl={row.athlete.avatar_url} />
