@@ -16529,6 +16529,8 @@ const translations = {
     avgRpe: "Gj.snitt RPE",
     noSessionsThisMonth: "Ingen økter registrert denne måneden",
     legend: "Forklaring",
+    wholeTeam: "Hele laget",
+    exportPdf: "Eksporter PDF",
   },
 } as const;
 
