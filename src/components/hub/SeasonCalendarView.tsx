@@ -200,6 +200,12 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
             const hasFocus = wkNum !== null && hasTkd && (weekFocusMap.get(wkNum)?.teamTechIds?.length ?? 0) > 0;
             const isSelected = wkNum !== null && wkNum === selectedWeek;
 
+            const focusTechs = hasFocus
+              ? (weekFocusMap.get(wkNum!)?.teamTechIds ?? [])
+                  .map(id => techMap.get(id))
+                  .filter(Boolean) as { name: string; category: string }[]
+              : [];
+
             return (
               <div
                 key={iso}
@@ -208,7 +214,7 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
                   setSelectedWeek(prev => prev === wkNum ? null : wkNum);
                 }}
                 className={cn(
-                  "min-h-14 border-b border-r border-border/30 p-1.5 flex flex-col cursor-pointer transition-colors hover:bg-muted/30",
+                  "min-h-[58px] border-b border-r border-border/30 p-1.5 flex flex-col cursor-pointer transition-colors hover:bg-muted/30",
                   !inSeason && "opacity-30 cursor-default pointer-events-none",
                   isSelected && "ring-2 ring-inset ring-primary",
                   isCompetition ? "bg-destructive/15" : "",
@@ -227,6 +233,23 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
                 >
                   {new Date(iso + "T00:00:00").getDate()}
                 </span>
+                {focusTechs.length > 0 && (
+                  <div className="flex flex-wrap gap-0.5 mt-1">
+                    {focusTechs.slice(0, 2).map((tech, i) => (
+                      <span
+                        key={i}
+                        className="text-[8px] leading-tight px-1 py-0.5 rounded bg-primary/15 text-primary font-medium truncate max-w-full"
+                      >
+                        {tech.name}
+                      </span>
+                    ))}
+                    {focusTechs.length > 2 && (
+                      <span className="text-[8px] leading-tight px-1 py-0.5 rounded bg-primary/15 text-primary font-medium">
+                        +{focusTechs.length - 2}
+                      </span>
+                    )}
+                  </div>
+                )}
                 {dotTypes.length > 0 && (
                   <div className="flex gap-0.5 mt-auto pt-0.5 justify-center">
                     {dotTypes.map((type) => (
@@ -241,9 +264,6 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
                       />
                     ))}
                   </div>
-                )}
-                {hasFocus && inSeason && (
-                  <span className="text-[8px] text-primary font-bold leading-tight">🎯</span>
                 )}
               </div>
             );
