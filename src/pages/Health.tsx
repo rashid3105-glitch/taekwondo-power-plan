@@ -760,7 +760,7 @@ function Stat({ label, value, tone }: { label: string; value: React.ReactNode; t
   const color = tone === "good" ? "text-emerald-500" : tone === "bad" ? "text-rose-500" : "text-foreground";
   return (
     <div className="rounded-lg border border-border bg-background/50 p-3">
-      <div className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">{label}</div>
+      <div className="text-[10px] uppercase tracking-wide text-zinc-700 font-semibold mb-1">{label}</div>
       <div className={`text-lg font-bold ${color}`}>{value}</div>
     </div>
   );

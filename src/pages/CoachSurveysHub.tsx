@@ -23,7 +23,6 @@ export default function CoachSurveysHub() {
       desc: t("surveysHubCreateDesc"),
       icon: ClipboardList,
       color: "text-primary",
-      bgClass: "bg-primary/10 border-primary/20 hover:border-primary/40",
       to: "/coach/surveys?view=manage",
     },
     {
@@ -32,7 +31,6 @@ export default function CoachSurveysHub() {
       desc: t("surveysHubResultsDesc"),
       icon: BarChart3,
       color: "text-tab-progress",
-      bgClass: "bg-tab-progress/10 border-tab-progress/20 hover:border-tab-progress/40",
       to: "/coach/surveys?view=results",
     },
   ];
@@ -61,14 +59,14 @@ export default function CoachSurveysHub() {
             <button
               key={c.key}
               onClick={() => navigate(c.to)}
-              className={`flex items-center gap-4 p-5 rounded-xl border transition-all cursor-pointer text-left ${c.bgClass}`}
+              className="flex items-center gap-4 p-5 rounded-xl border border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800/80 hover:border-zinc-700 transition-all cursor-pointer text-left"
             >
-              <div className="h-12 w-12 rounded-lg bg-card flex items-center justify-center shrink-0">
+              <div className="h-12 w-12 rounded-lg bg-zinc-950/60 border border-zinc-800 flex items-center justify-center shrink-0">
                 <c.icon className={`h-6 w-6 ${c.color}`} />
               </div>
               <div>
-                <div className="font-bold text-card-foreground text-base">{c.label}</div>
-                <div className="text-sm text-muted-foreground">{c.desc}</div>
+                <div className="font-bold text-zinc-100 text-base">{c.label}</div>
+                <div className="text-sm text-zinc-400">{c.desc}</div>
               </div>
             </button>
           ))}
