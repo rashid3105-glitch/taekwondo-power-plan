@@ -46,8 +46,9 @@ const COLORS: Record<string, string> = {
 
 type NutritionView = "home" | "planner" | "logger" | "recipes";
 
-export default function Library() {
-  const { section } = useParams<{ section: string }>();
+export default function Library({ forcedSection }: { forcedSection?: string } = {}) {
+  const { section: paramSection } = useParams<{ section: string }>();
+  const section = forcedSection ?? paramSection;
   const navigate = useNavigate();
   const { t } = useLanguage();
   const Icon = ICONS[section || ""] || BookOpen;
@@ -106,6 +107,8 @@ export default function Library() {
   const onHeaderBack = () => {
     if (section === "nutrition" && nutritionView !== "home") {
       setNutritionView("home");
+    } else if (forcedSection === "supplement") {
+      navigate("/dashboard");
     } else {
       navigate("/library");
     }
