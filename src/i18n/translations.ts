@@ -12478,6 +12478,7 @@ const translations = {
     seasonVisibilitySave: "حفظ الظهور",
     seasonVisibilitySaved: "تم حفظ الظهور",
     seasonNoTechniquesFocus: "لم يتم تعيين تركيز تقني لهذا الأسبوع.",
+    seasonTeamFocusNotSet: "لم يتم تحديد تركيز الفريق الأسبوعي بعد.",
     seasonTechniqueLibrary: "مكتبة التقنيات",
     seasonTechniqueName: "اسم التقنية",
     seasonCatAttack: "هجوم",
