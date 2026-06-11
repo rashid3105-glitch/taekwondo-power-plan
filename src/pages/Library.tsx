@@ -85,7 +85,6 @@ export default function Library() {
       label: t("libNutritionPlannerLabel") || "Kostplanlægger",
       desc: t("libNutritionPlannerDesc") || "Din personlige kostplan",
       icon: ChefHat,
-      bg: "bg-emerald-500/10 border-emerald-500/20 hover:border-emerald-500/40",
       color: "text-emerald-500",
     },
     {
@@ -93,7 +92,6 @@ export default function Library() {
       label: t("libNutritionLoggerLabel") || "Madregistrering",
       desc: t("libNutritionLoggerDesc") || "Scan og log dine måltider",
       icon: Camera,
-      bg: "bg-tab-nutrition/10 border-tab-nutrition/20 hover:border-tab-nutrition/40",
       color: "text-tab-nutrition",
     },
     {
@@ -101,7 +99,6 @@ export default function Library() {
       label: t("libNutritionRecipesLabel") || "Opskrifter",
       desc: t("libNutritionRecipesDesc") || "Sund mad tilpasset taekwondo-atleter",
       icon: BookOpen,
-      bg: "bg-amber-500/10 border-amber-500/20 hover:border-amber-500/40",
       color: "text-amber-500",
     },
   ];
@@ -144,14 +141,14 @@ export default function Library() {
               <button
                 key={c.key}
                 onClick={() => setNutritionView(c.key)}
-                className={`flex items-center gap-4 p-5 rounded-xl border transition-all cursor-pointer text-left ${c.bg}`}
+                className="flex items-center gap-4 p-5 rounded-xl border border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800/80 hover:border-zinc-700 transition-all cursor-pointer text-left"
               >
-                <div className="h-12 w-12 rounded-lg bg-card flex items-center justify-center shrink-0">
+                <div className="h-12 w-12 rounded-lg bg-zinc-950/60 border border-zinc-800 flex items-center justify-center shrink-0">
                   <c.icon className={`h-6 w-6 ${c.color}`} />
                 </div>
                 <div>
-                  <div className="font-bold text-card-foreground text-base">{c.label}</div>
-                  <div className="text-sm text-muted-foreground">{c.desc}</div>
+                  <div className="font-bold text-zinc-100 text-base">{c.label}</div>
+                  <div className="text-sm text-zinc-400">{c.desc}</div>
                 </div>
               </button>
             ))}
