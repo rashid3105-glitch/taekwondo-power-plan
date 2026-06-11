@@ -1476,6 +1476,7 @@ const translations = {
     seasonVisibilitySave: "Save visibility",
     seasonVisibilitySaved: "Visibility saved",
     seasonNoTechniquesFocus: "No technique focus set for this week.",
+    seasonTeamFocusNotSet: "Team weekly focus is not set yet.",
     seasonTechniqueLibrary: "Technique library",
     seasonTechniqueName: "Technique name",
     seasonCatAttack: "Attack",
