@@ -326,7 +326,41 @@ export default function SeasonCalendar() {
     }, { onConflict: "season_plan_id,season_week" }).select().single();
     if (data) {
       setWeekFocusMap((prev) => new Map(prev).set(seasonWeek, { id: data.id, technique_ids: data.technique_ids ?? [], coach_note: data.coach_note ?? "" }));
+  }
+
+  async function copyWeekFocusTo(sourceWeek: number, targetWeeks: number[]) {
+    if (!selectedPlanId || !userId || targetWeeks.length === 0) return;
+    const src = weekFocusMap.get(sourceWeek);
+    if (!src) return;
+    const rows = targetWeeks.map((w) => ({
+      season_plan_id: selectedPlanId,
+      season_week: w,
+      technique_ids: src.technique_ids,
+      coach_note: src.coach_note,
+      created_by: userId,
+      updated_at: new Date().toISOString(),
+    }));
+    const { data, error } = await (supabase.from as any)("club_week_technique_focus")
+      .upsert(rows, { onConflict: "season_plan_id,season_week" })
+      .select();
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+      return;
     }
+    setWeekFocusMap((prev) => {
+      const next = new Map(prev);
+      for (const row of (data ?? []) as any[]) {
+        next.set(row.season_week, {
+          id: row.id,
+          technique_ids: row.technique_ids ?? [],
+          coach_note: row.coach_note ?? "",
+        });
+      }
+      return next;
+    });
+    setCopyOpen(false);
+    setCopyTargets([]);
+    toast({ title: (t("seasonTechFocusCopied") || "Fokus kopieret") + ` (${targetWeeks.length})` });
     toast({ title: t("seasonTechFocusSaved") || "Teknikfokus gemt" });
   }
 
