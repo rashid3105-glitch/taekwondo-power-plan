@@ -2781,6 +2781,8 @@ const translations = {
     avgRpe: "Avg RPE",
     noSessionsThisMonth: "No sessions recorded this month",
     legend: "Legend",
+    wholeTeam: "Whole team",
+    exportPdf: "Export PDF",
   },
   da: {
     defaultLanguage: "Standardsprog",
@@ -5549,6 +5551,8 @@ const translations = {
     avgRpe: "Gns. RPE",
     noSessionsThisMonth: "Ingen træninger registreret denne måned",
     legend: "Forklaring",
+    wholeTeam: "Hele holdet",
+    exportPdf: "Eksportér PDF",
   },
   sv: {
     defaultLanguage: "Standardspråk",
@@ -8316,6 +8320,8 @@ const translations = {
     avgRpe: "Genom. RPE",
     noSessionsThisMonth: "Inga pass registrerade denna månad",
     legend: "Förklaring",
+    wholeTeam: "Hela laget",
+    exportPdf: "Exportera PDF",
   },
   de: {
     defaultLanguage: "Standardsprache",
@@ -11033,6 +11039,8 @@ const translations = {
     avgRpe: "Ø RPE",
     noSessionsThisMonth: "Keine Einheiten in diesem Monat erfasst",
     legend: "Legende",
+    wholeTeam: "Ganzes Team",
+    exportPdf: "PDF exportieren",
   },
 
   ar: {
@@ -13751,6 +13759,8 @@ const translations = {
     avgRpe: "متوسط RPE",
     noSessionsThisMonth: "لا توجد جلسات مسجلة هذا الشهر",
     legend: "المفتاح",
+    wholeTeam: "الفريق بأكمله",
+    exportPdf: "تصدير PDF",
   },
   no: {
     onbWelcomeTitle: "Velkommen til Sportstalent",
@@ -16519,6 +16529,8 @@ const translations = {
     avgRpe: "Gj.snitt RPE",
     noSessionsThisMonth: "Ingen økter registrert denne måneden",
     legend: "Forklaring",
+    wholeTeam: "Hele laget",
+    exportPdf: "Eksporter PDF",
   },
 } as const;
 
@@ -17519,5 +17531,7 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   avgRpe: "RPE medio",
   noSessionsThisMonth: "No hay sesiones registradas este mes",
   legend: "Leyenda",
+  wholeTeam: "Equipo completo",
+  exportPdf: "Exportar PDF",
 };
 export default translations;
