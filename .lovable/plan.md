@@ -1,53 +1,40 @@
-## Mål
+## Hvad bygges
 
-Give coach-spørgeskema-værktøjet en synlig hjemmebase i Biblioteket, så det er nemt at finde — uden at flytte selve værktøjet væk fra `/coach/surveys`. Atletens indbakke (`/surveys`) og Hub-chippen med rød "nyt"-prik forbliver præcis som i dag.
+Du valgte **"Flat mørk elevated"** retningen. To sammenhængende rettelser, kun frontend.
 
-## Ændringer
+### 1. Library-kort: ét unified mørkt look
 
-### 1) Coach-only kort i Biblioteket
-`src/pages/LibraryChooser.tsx`: tilføj et 7. kort **"Spørgeskemaer"** (ikon `FileText`, t-nøgle `surveysTitle` + ny `libSurveysDesc`).
-- Vises kun hvis brugeren er coach (tjek via `useRole()` eller `isCoach` ligesom Dashboard gør).
-- Klik → `/library/surveys` (ny hub-side, se punkt 2).
-- Ingen andre kort eller routes ændres.
+Fil: `src/pages/LibraryChooser.tsx`
 
-### 2) Ny mellem-side `/library/surveys` (coach only)
-Ny fil `src/pages/CoachSurveysHub.tsx` — samme layout/skelet som `LibraryChooser` (Watermark, header med ArrowLeft tilbage til `/library`, kort i grid). To kort:
+- Erstat regnbue-`bgClass` (orange/lilla/grøn/gul/rød/emerald) med ét unified mørkt look på ALLE 7 kort:
+  - Kort: `bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800/80`
+  - Ikon-tile: `bg-primary/10` med ikon i kortets egen farve (beholder den lille farvekode via `lib.color` → ikonet, IKKE kortet)
+  - Titel: `text-zinc-100 font-bold` (ikke `text-card-foreground` som blender ud)
+  - Beskrivelse: `text-zinc-400`
+- Fjerner pr.-kort `bgClass` feltet helt fra `libraries` listen (forenkler datastrukturen). Ikon-farver (`color`) bevares så hvert modul stadig har et lille visuelt anker på ikonet.
+- Samme behandling i `Library.tsx` for nutrition-undersiden (samme 3 kort har lige nu emerald/nutrition/amber bg — gøres unified).
 
-- **"Opret & administrer"** (ikon `ClipboardList`, beskrivelse: byg spørgeskemaer, skabeloner, arkiv) → `/coach/surveys?view=manage`
-- **"Resultater & svar"** (ikon `BarChart3`, beskrivelse: se besvarelser pr. spørgeskema) → `/coach/surveys?view=results`
+### 2. Grå-på-mørk tekst (læsbarhedsbug)
 
-Begge dybde-links lander på den eksisterende `CoachSurveys`-side. Hvis `?view=results` ikke matcher en eksisterende tab, åbnes default-listen — det er en blød hint, ikke et nyt tab-system. Hvis `CoachSurveys` allerede har Tabs (det gør den, ifølge filens imports), wires `view`-query'en til at sætte default-tabben; ellers ignoreres den uden fejl.
+Problemet: i den autentificerede cockpit (mørk baggrund) bruges hvide `bg-card` kort med `text-card-foreground` mange steder, men når kortet ligger direkte på mørk baggrund og selv bliver mørk/transparent, forsvinder `muted-foreground` tekst i grå tone.
 
-Tilføjes som ny rute i `src/App.tsx` lige ved siden af `/library/:section`:
-```
-<Route path="/library/surveys" element={<CoachSurveysHub />} />
-```
-(Skal stå **før** den dynamiske `/library/:section` for at undgå at "surveys" tolkes som section.)
+Scope holdt **minimal og målrettet** — kun de skærme du viste:
+- **LibraryChooser** (skærmbillede 4): løses i punkt 1.
+- **Plan-siden ugeoversigt** (skærmbillede 1 — dagskort MAN/TIR/ONS med utydelige sessions-navne): gør tekst på inaktive dagskort til `text-foreground` i stedet for `text-muted-foreground` så "Eksplosiv Underkrop & RFD" osv. er læsbart. Lokaliseres i `src/components/PlanWeekView.tsx` eller den komponent der renderer dagspillerne (jeg finder den præcise fil i build).
+- **Custom Exercise dialog** (skærmbillede 2 — "Add Custom Exercise", labels usynlige): dialogen har hvid baggrund men labels står i lys grå. Fix: tving labels til `text-foreground` i `AddCustomExerciseDialog` (eller den filnavn der bruges).
+- **Tuesday-kort på Plan** (skærmbillede 3 — "Strength & Speed Session A" overskrift forsvinder): session-titlen sættes til `text-foreground` på det aktive dagskort i stedet for muted.
 
-### 3) Oversættelser
-Tilføj følgende nye nøgler på alle 7 sprog (DA, EN, SV, DE, AR, NO, ES) i `src/i18n/translations.ts`:
-- `libSurveysLabel` — kort-label i Biblioteket (DA: "Spørgeskemaer", EN: "Surveys", …)
-- `libSurveysDesc` — kort-beskrivelse (DA: "Opret spørgeskemaer og se atleters svar")
-- `surveysHubCreateTitle` / `surveysHubCreateDesc` — underkort 1
-- `surveysHubResultsTitle` / `surveysHubResultsDesc` — underkort 2
+### Hvad ikke ændres
 
-Eksisterende `surveysTitle` genbruges som sidetitel i hub'en.
+- Ingen ændringer i andre sider, tokens i `index.css`/`tailwind.config.ts`, RLS, database, edge functions, oversættelser, eller changelog.
+- Hub-chips, bottom nav, header, andre tab-farvekoder bevares uændret.
+- Ingen "global søg/erstat" af `muted-foreground` — kun de 4 konkrete steder ovenfor.
 
-### 4) Hvad der **IKKE** røres
-- `AthleteSurveys.tsx`, `/surveys`-routen — uændret.
-- Hub-chippen "Spørgeskemaer" i `HubOtherModules.tsx` med rød notifikations-prik — bevares for atleter.
-- `CoachSurveys.tsx` kerne-logik, builder, results-dialog, skabeloner — uændret (kun evt. en lille `useSearchParams` til at læse `?view=` og sætte default-tab).
-- Ingen ændringer i RLS, DB, edge functions, navigation/bottom-nav, eller changelog.
-- Den eksisterende coach-hjemmeside-genvej til `/coach/surveys` (hvis nogen) forbliver — det nye er en *ekstra* indgang.
+### Filer der røres
 
-### 5) Test
-- Som atlet: Biblioteket viser stadig 6 kort, ingen "Spørgeskemaer" der. Hub-chip med prik virker som før.
-- Som coach: Biblioteket viser 7 kort, sidste er "Spørgeskemaer". Klik → hub med 2 underkort → hver underkort lander korrekt på `/coach/surveys` med relevant tab forvalgt.
-- RTL (Arabic): hub-layout spejlvendes korrekt (genbrug samme klasser som LibraryChooser, så det følger automatisk).
+- `src/pages/LibraryChooser.tsx`
+- `src/pages/Library.tsx` (nutrition-undersidens 3 kort)
+- Plan ugeoversigt-komponent (find præcis i build — `PlanWeekView` / `WeekDayCard`)
+- Custom exercise dialog-komponent (find præcis i build)
 
-## Filer der røres
-- `src/pages/LibraryChooser.tsx` (tilføj coach-kort)
-- `src/pages/CoachSurveysHub.tsx` (NY)
-- `src/pages/CoachSurveys.tsx` (lille `?view=` → default tab tilføjelse, ingen anden ændring)
-- `src/App.tsx` (ny route)
-- `src/i18n/translations.ts` (6 nye nøgler × 7 sprog)
+Rapport efter build: præcis hvilke filer + hvilke linjer.
