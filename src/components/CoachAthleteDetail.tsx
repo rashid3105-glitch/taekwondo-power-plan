@@ -551,7 +551,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
                 <span className="text-xs text-muted-foreground">
                   {t("generatingFor")} <span className="font-semibold text-foreground">{athlete.display_name}</span>
                 </span>
-                <Button onClick={generatePlan} disabled={!editing || generatingPlan} size="sm">
+                <Button onClick={generatePlan} disabled={generatingPlan} size="sm">
                   {generatingPlan ? (
                     <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
                   ) : (
