@@ -860,40 +860,22 @@ export default function SeasonCalendar() {
                 </div>
               </Card>
 
-              {/* Weekly template editor (collapsible) */}
-              <details className="group">
-                <summary className="cursor-pointer list-none">
-                  <Card className="p-4">
-                    <div className="flex items-center justify-between">
-                      <h2 className="font-semibold text-sm">📅 {t("seasonWeeklyTemplate") || "Ugentlig skabelon"}</h2>
-                      <ChevronDown className="h-4 w-4 text-muted-foreground group-open:rotate-180 transition-transform" />
-                    </div>
-                  </Card>
-                </summary>
-                <Card className="p-4 space-y-2 -mt-1 rounded-t-none border-t-0">
-                  <div className="grid grid-cols-1 gap-2">
-                    {Array.from({ length: 7 }, (_, d) => {
-                      const row = template.find((tt) => tt.day_of_week === d);
-                      return (
-                        <div key={d} className="border border-border rounded p-2 space-y-2">
-                          <div className="text-xs font-bold uppercase">{DAY_KEYS[d]}</div>
-                          <Select value={row?.session_type ?? "rest"} onValueChange={(v) => updateTemplate(d, { session_type: v as SessionType })}>
-                            <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                              {SESSION_TYPES.map((s) => <SelectItem key={s} value={s}>{t(sessionLabelKey(s) as any)}</SelectItem>)}
-                            </SelectContent>
-                          </Select>
-                          <Input
-                            className="h-8 text-xs" placeholder="Location"
-                            defaultValue={row?.location ?? ""}
-                            onBlur={(e) => updateTemplate(d, { location: e.target.value })}
-                          />
-                        </div>
-                      );
-                    })}
+              {/* Info: weekly schedule comes from team standard week */}
+              <Card className="p-3 bg-muted/30 border-dashed">
+                <div className="flex items-start gap-2 text-xs text-muted-foreground">
+                  <Info className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+                  <div className="space-y-1">
+                    <p>{t("seasonWeeklyFromTeam")}</p>
+                    <button
+                      type="button"
+                      onClick={() => navigate("/coach")}
+                      className="text-primary hover:underline font-medium"
+                    >
+                      {t("editTeamWeeklySchedule")} →
+                    </button>
                   </div>
-                </Card>
-              </details>
+                </div>
+              </Card>
             </>
           )}
         </aside>
