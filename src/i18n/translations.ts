@@ -5513,6 +5513,8 @@ const translations = {
     supplementCheckError: "Kunne ikke gennemføre tjekket",
     parentSupplementTitle: "Tjek kosttilskud & medicin",
     parentSupplementNote: "Vejledende screening for dit barn. Sproget er tilpasset barnets alder. Verificér altid officielt.",
+    generatingFor: "Genererer for",
+    coachSelfPlanNote: "Denne plan gemmes på din egen konto. For at lave en plan til en atlet: Hold → vælg atlet → Administrer.",
   },
   sv: {
     defaultLanguage: "Standardspråk",
