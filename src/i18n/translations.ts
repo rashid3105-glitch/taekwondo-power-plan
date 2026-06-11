@@ -4254,6 +4254,7 @@ const translations = {
     seasonVisibilitySave: "Gem synlighed",
     seasonVisibilitySaved: "Synlighed gemt",
     seasonNoTechniquesFocus: "Ingen teknikfokus sat for denne uge.",
+    seasonTeamFocusNotSet: "Holdets ugefokus er endnu ikke sat.",
     seasonTechniqueLibrary: "Teknikbibliotek",
     seasonTechniqueName: "Teknikkens navn",
     seasonCatAttack: "Angreb",
