@@ -955,20 +955,21 @@ export default function SeasonCalendar() {
 
                 <div className="grid grid-cols-7">
                   {calendarDays.map((iso, i) => {
-                    if (!iso) return <div key={`e${i}`} className="min-h-[46px] border-b border-r border-border/30 bg-muted/20" />;
+                    if (!iso) return <div key={`e${i}`} className="min-h-[58px] border-b border-r border-border/30 bg-muted/20" />;
                     const inSeason = iso >= selectedPlan.start_date && iso <= selectedPlan.end_date;
                     const isToday = iso === todayIso;
                     const wk = inSeason ? seasonWeekNumber(selectedPlan.start_date, iso) : null;
                     const phase = wk ? phaseForWeek(phases, wk) : null;
                     const s = inSeason ? resolveSessionForDate(iso, template, overrides, compDateSet) : null;
                     const isSelected = wk !== null && wk === selectedWeek;
-                    const hasFocus = wk !== null && s?.type === "tkd" && (weekFocusMap.get(wk)?.technique_ids?.length ?? 0) > 0;
+                    const focusIds = wk !== null && s?.type === "tkd" ? (weekFocusMap.get(wk)?.technique_ids ?? []) : [];
+                    const focusTechs = focusIds.length > 0 ? techniques.filter((tt) => focusIds.includes(tt.id)) : [];
                     return (
                       <div
                         key={iso}
                         onClick={() => inSeason && wk && setSelectedWeek(wk === selectedWeek ? null : wk)}
                         className={cn(
-                          "min-h-[46px] border-b border-r border-border/30 p-1 flex flex-col cursor-pointer transition-colors",
+                          "min-h-[58px] border-b border-r border-border/30 p-1 flex flex-col cursor-pointer transition-colors",
                           !inSeason && "opacity-25 cursor-default",
                           isSelected && "ring-2 ring-inset ring-primary",
                           s && inSeason ? sessionRowClass(s.type) : "",
@@ -982,10 +983,25 @@ export default function SeasonCalendar() {
                           {new Date(iso + "T00:00:00").getDate()}
                         </span>
                         {s && s.type !== "rest" && inSeason && (
-                          <span className="text-[9px] font-bold mt-auto leading-tight">{t(sessionLabelKey(s.type) as any)}</span>
+                          <span className="text-[9px] font-bold leading-tight mt-0.5">{t(sessionLabelKey(s.type) as any)}</span>
                         )}
-                        {hasFocus && inSeason && (
-                          <span className="text-[8px] text-primary font-bold leading-tight">🎯</span>
+                        {focusTechs.length > 0 && inSeason && (
+                          <div className="flex flex-wrap gap-0.5 mt-auto pt-0.5">
+                            {focusTechs.slice(0, 2).map((tech) => (
+                              <span
+                                key={tech.id}
+                                title={tech.name}
+                                className="text-[8px] leading-none px-1 py-0.5 rounded bg-primary/15 text-primary font-semibold max-w-full truncate"
+                              >
+                                {tech.name}
+                              </span>
+                            ))}
+                            {focusTechs.length > 2 && (
+                              <span className="text-[8px] leading-none px-1 py-0.5 rounded bg-primary/15 text-primary font-semibold">
+                                +{focusTechs.length - 2}
+                              </span>
+                            )}
+                          </div>
                         )}
                       </div>
                     );
