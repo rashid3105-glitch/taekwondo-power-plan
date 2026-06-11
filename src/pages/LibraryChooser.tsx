@@ -36,7 +36,6 @@ export default function LibraryChooser() {
           descKey: "libSurveysDesc" as TranslationKey,
           icon: FileText,
           color: "text-primary",
-          bgClass: "bg-primary/10 border-primary/20 hover:border-primary/40",
         },
       ]
     : libraries;
@@ -67,14 +66,14 @@ export default function LibraryChooser() {
             <button
               key={lib.id}
               onClick={() => navigate(`/library/${lib.id}`)}
-              className={`flex items-center gap-4 p-5 rounded-xl border transition-all cursor-pointer text-left ${lib.bgClass}`}
+              className="flex items-center gap-4 p-5 rounded-xl border border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800/80 hover:border-zinc-700 transition-all cursor-pointer text-left"
             >
-              <div className="h-12 w-12 rounded-lg bg-card flex items-center justify-center shrink-0">
+              <div className="h-12 w-12 rounded-lg bg-zinc-950/60 border border-zinc-800 flex items-center justify-center shrink-0">
                 <lib.icon className={`h-6 w-6 ${lib.color}`} />
               </div>
               <div>
-                <div className="font-bold text-card-foreground text-base">{t(lib.labelKey)}</div>
-                <div className="text-sm text-muted-foreground">{t(lib.descKey)}</div>
+                <div className="font-bold text-zinc-100 text-base">{t(lib.labelKey)}</div>
+                <div className="text-sm text-zinc-400">{t(lib.descKey)}</div>
               </div>
             </button>
           ))}
