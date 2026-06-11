@@ -1333,15 +1333,22 @@ export default function Dashboard() {
                 <AIPlanCard plan={activePlan} />
               </div>
             ) : (!hasCoach || isPaid) ? (
-              <FeatureEmptyState
-                icon={Zap}
-                titleKey="emptyPlanTitle"
-                descKey="emptyPlanDesc"
-                ctaKey={generating ? "generating" : "emptyPlanCta"}
-                onCta={generating ? undefined : generatePlan}
-                accentClass="text-tab-plan"
-                iconBgClass="bg-tab-plan/15"
-              />
+              <>
+                <FeatureEmptyState
+                  icon={Zap}
+                  titleKey="emptyPlanTitle"
+                  descKey="emptyPlanDesc"
+                  ctaKey={generating ? "generating" : "emptyPlanCta"}
+                  onCta={generating ? undefined : generatePlan}
+                  accentClass="text-tab-plan"
+                  iconBgClass="bg-tab-plan/15"
+                />
+                {isCoach && (
+                  <p className="text-[11px] text-muted-foreground text-center mt-2 max-w-md mx-auto">
+                    {t("coachSelfPlanNote")}
+                  </p>
+                )}
+              </>
             ) : (
               <div className="rounded-xl border border-accent/30 bg-accent/5 p-6 space-y-3 text-center">
                 <div className="mx-auto h-12 w-12 rounded-full bg-accent/10 flex items-center justify-center">
