@@ -11039,6 +11039,8 @@ const translations = {
     avgRpe: "Ø RPE",
     noSessionsThisMonth: "Keine Einheiten in diesem Monat erfasst",
     legend: "Legende",
+    wholeTeam: "Ganzes Team",
+    exportPdf: "PDF exportieren",
   },
 
   ar: {
