@@ -10963,6 +10963,8 @@ const translations = {
     supplementCheckError: "Prüfung konnte nicht abgeschlossen werden",
     parentSupplementTitle: "Nahrungsergänzung & Medikamente prüfen",
     parentSupplementNote: "Orientierendes Screening für Ihr Kind. Die Sprache ist an das Alter des Kindes angepasst. Immer offiziell verifizieren.",
+    generatingFor: "Wird generiert für",
+    coachSelfPlanNote: "Dieser Plan wird auf deinem eigenen Konto gespeichert. Um einen Plan für einen Athleten zu erstellen: Team → Athlet wählen → Verwalten.",
   },
 
   ar: {
