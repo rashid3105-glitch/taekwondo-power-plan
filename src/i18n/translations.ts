@@ -7026,6 +7026,7 @@ const translations = {
     seasonDisciplinePoomsae: "Poomsae",
     seasonNoTechniques: "Inga tekniker ännu. Lägg till din första teknik ovan.",
     seasonWeeklyTemplate: "Veckomall",
+    seasonWeeklyFromTeam: "Veckoschemat hanteras i lagets standardvecka.",
     seasonAiSuggestion: "Förslag",
     seasonTeamFocus: "Lagets fokus (upp till 3)",
     seasonAddTechnique: "Lägg till teknik",
