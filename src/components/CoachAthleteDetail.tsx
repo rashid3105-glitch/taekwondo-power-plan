@@ -537,6 +537,9 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
               <span className="text-sm font-bold text-foreground min-w-[60px] text-right">{programWeeks} {t("weeks")}</span>
             </div>
           </div>
+          </fieldset>
+
+
 
           {/* Training Plan */}
           <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3 group-disabled:opacity-70">
@@ -548,7 +551,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
                 <span className="text-xs text-muted-foreground">
                   {t("generatingFor")} <span className="font-semibold text-foreground">{athlete.display_name}</span>
                 </span>
-                <Button onClick={generatePlan} disabled={!editing || generatingPlan} size="sm">
+                <Button onClick={generatePlan} disabled={generatingPlan} size="sm">
                   {generatingPlan ? (
                     <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
                   ) : (
@@ -583,7 +586,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
               <Button
                 variant="default"
                 onClick={generateRehabPlan}
-                disabled={!editing || generatingRehab || !rehabDescription.trim()}
+                disabled={generatingRehab || !rehabDescription.trim()}
                 size="sm"
                 className="w-full sm:w-auto"
               >
@@ -601,7 +604,6 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
               }} />
             )}
           </div>
-          </fieldset>
         </TabsContent>
 
         <TabsContent value="mental" className="space-y-4 mt-3">
