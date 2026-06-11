@@ -397,7 +397,6 @@ export default function SeasonCalendar() {
     if (!window.confirm(`${t("seasonDeletePlanConfirm") || "Delete this season plan? This cannot be undone."}\n\n${selectedPlan.name}`)) return;
     const id = selectedPlan.id;
     await (supabase.from as any)("club_athlete_season_overrides").delete().eq("season_plan_id", id);
-    await (supabase.from as any)("club_season_day_templates").delete().eq("season_plan_id", id);
     await (supabase.from as any)("club_season_phases").delete().eq("season_plan_id", id);
     const { error } = await (supabase.from as any)("club_season_plans").delete().eq("id", id);
     if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
