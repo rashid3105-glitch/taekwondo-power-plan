@@ -122,6 +122,8 @@ export default function SeasonCalendar() {
   const [viewYear, setViewYear] = useState(() => new Date().getFullYear());
   const [viewMonth, setViewMonth] = useState(() => new Date().getMonth());
   const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
+  const [copyOpen, setCopyOpen] = useState(false);
+  const [copyTargets, setCopyTargets] = useState<number[]>([]);
 
   const todayIso = new Date().toISOString().slice(0, 10);
 
