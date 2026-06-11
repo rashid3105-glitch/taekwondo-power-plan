@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -120,6 +122,8 @@ export default function SeasonCalendar() {
   const [viewYear, setViewYear] = useState(() => new Date().getFullYear());
   const [viewMonth, setViewMonth] = useState(() => new Date().getMonth());
   const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
+  const [copyOpen, setCopyOpen] = useState(false);
+  const [copyTargets, setCopyTargets] = useState<number[]>([]);
 
   const todayIso = new Date().toISOString().slice(0, 10);
 
@@ -324,6 +328,41 @@ export default function SeasonCalendar() {
       setWeekFocusMap((prev) => new Map(prev).set(seasonWeek, { id: data.id, technique_ids: data.technique_ids ?? [], coach_note: data.coach_note ?? "" }));
     }
     toast({ title: t("seasonTechFocusSaved") || "Teknikfokus gemt" });
+  }
+
+  async function copyWeekFocusTo(sourceWeek: number, targetWeeks: number[]) {
+    if (!selectedPlanId || !userId || targetWeeks.length === 0) return;
+    const src = weekFocusMap.get(sourceWeek);
+    if (!src) return;
+    const rows = targetWeeks.map((w) => ({
+      season_plan_id: selectedPlanId,
+      season_week: w,
+      technique_ids: src.technique_ids,
+      coach_note: src.coach_note,
+      created_by: userId,
+      updated_at: new Date().toISOString(),
+    }));
+    const { data, error } = await (supabase.from as any)("club_week_technique_focus")
+      .upsert(rows, { onConflict: "season_plan_id,season_week" })
+      .select();
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+      return;
+    }
+    setWeekFocusMap((prev) => {
+      const next = new Map(prev);
+      for (const row of (data ?? []) as any[]) {
+        next.set(row.season_week, {
+          id: row.id,
+          technique_ids: row.technique_ids ?? [],
+          coach_note: row.coach_note ?? "",
+        });
+      }
+      return next;
+    });
+    setCopyOpen(false);
+    setCopyTargets([]);
+    toast({ title: (t("seasonTechFocusCopied") || "Fokus kopieret") + ` (${targetWeeks.length})` });
   }
 
   async function saveAthleteFocus(seasonWeek: number, athleteId: string, techIds: string[]) {
@@ -1021,9 +1060,76 @@ export default function SeasonCalendar() {
                           value={focus.coach_note}
                           onChange={(e) => setWeekFocusMap((prev) => new Map(prev).set(sw, { ...focus, coach_note: e.target.value }))}
                         />
-                        <Button size="sm" className="mt-2" onClick={() => saveWeekFocus(sw)}>
-                          {t("save") || "Gem"}
-                        </Button>
+                        <div className="flex flex-wrap items-center gap-2 mt-2">
+                          <Button size="sm" onClick={() => saveWeekFocus(sw)}>
+                            {t("save") || "Gem"}
+                          </Button>
+                          {(() => {
+                            const hasFocusToCopy = focus.technique_ids.length > 0 || (focus.coach_note ?? "").trim().length > 0;
+                            const totalWeeks = Math.max(1, Math.floor(daysBetween(selectedPlan.start_date, selectedPlan.end_date) / 7) + 1);
+                            const otherWeeks = Array.from({ length: totalWeeks }, (_, i) => i + 1).filter((w) => w !== sw);
+                            return (
+                              <Popover open={copyOpen} onOpenChange={(o) => { setCopyOpen(o); if (!o) setCopyTargets([]); }}>
+                                <PopoverTrigger asChild>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    disabled={!hasFocusToCopy}
+                                    title={!hasFocusToCopy ? (t("seasonNoFocusToCopy") || "Ingen fokus at kopiere") : undefined}
+                                  >
+                                    {t("seasonCopyFocus") || "Kopiér fokus til andre uger"}
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent align="start" className="w-72 p-3 space-y-2">
+                                  <p className="text-xs text-muted-foreground">
+                                    {t("seasonCopyFocusHelp") || "Vælg op til 4 uger"}
+                                  </p>
+                                  <div className="max-h-60 overflow-y-auto space-y-1 pr-1">
+                                    {otherWeeks.map((w) => {
+                                      const ws = addDays(selectedPlan.start_date, (w - 1) * 7);
+                                      const we = addDays(ws, 6);
+                                      const checked = copyTargets.includes(w);
+                                      const disabled = !checked && copyTargets.length >= 4;
+                                      return (
+                                        <label
+                                          key={w}
+                                          className={cn(
+                                            "flex items-center gap-2 text-xs px-2 py-1.5 rounded-md cursor-pointer hover:bg-muted/50",
+                                            disabled && "opacity-50 cursor-not-allowed"
+                                          )}
+                                        >
+                                          <Checkbox
+                                            checked={checked}
+                                            disabled={disabled}
+                                            onCheckedChange={(v) => {
+                                              setCopyTargets((prev) =>
+                                                v ? [...prev, w].slice(0, 4) : prev.filter((x) => x !== w)
+                                              );
+                                            }}
+                                          />
+                                          <span className="font-medium">{t("seasonWeek") || "Uge"} {w}</span>
+                                          <span className="text-muted-foreground">· {ws} – {we}</span>
+                                        </label>
+                                      );
+                                    })}
+                                  </div>
+                                  <div className="flex justify-end gap-2 pt-1">
+                                    <Button size="sm" variant="ghost" onClick={() => { setCopyOpen(false); setCopyTargets([]); }}>
+                                      {t("cancel") || "Annullér"}
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      disabled={copyTargets.length === 0}
+                                      onClick={() => copyWeekFocusTo(sw, copyTargets)}
+                                    >
+                                      {(t("seasonCopyFocusConfirm") || "Kopiér til {n} uger").replace("{n}", String(copyTargets.length))}
+                                    </Button>
+                                  </div>
+                                </PopoverContent>
+                              </Popover>
+                            );
+                          })()}
+                        </div>
                       </div>
 
                       <div className="h-px bg-border" />
