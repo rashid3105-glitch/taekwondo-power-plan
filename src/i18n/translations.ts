@@ -12467,6 +12467,7 @@ const translations = {
     seasonDisciplinePoomsae: "بومسي",
     seasonNoTechniques: "لا توجد تقنيات بعد. أضف تقنيتك الأولى أعلاه.",
     seasonWeeklyTemplate: "قالب أسبوعي",
+    seasonWeeklyFromTeam: "تتم إدارة الجدول الأسبوعي في الأسبوع القياسي للفريق.",
     seasonAiSuggestion: "اقتراح",
     seasonTeamFocus: "تركيز الفريق (حتى 3)",
     seasonAddTechnique: "إضافة تقنية",
