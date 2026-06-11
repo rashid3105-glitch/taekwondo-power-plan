@@ -321,7 +321,7 @@ export default function AdminModuleAccess() {
           </aside>
 
           {/* Right panel */}
-          <main className="rounded-xl border border-border bg-card p-4 sm:p-6">
+          <main className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4 sm:p-6 text-zinc-100">
             {mode === "defaults" ? (
               <div className="space-y-4">
                 <div className="flex items-center justify-between gap-2 flex-wrap">
