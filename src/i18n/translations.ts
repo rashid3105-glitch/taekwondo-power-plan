@@ -8263,6 +8263,8 @@ const translations = {
     supplementCheckError: "Kunde inte slutföra kontrollen",
     parentSupplementTitle: "Kontrollera kosttillskott & medicin",
     parentSupplementNote: "Vägledande screening för ditt barn. Språket är anpassat till barnets ålder. Verifiera alltid officiellt.",
+    generatingFor: "Genererar för",
+    coachSelfPlanNote: "Den här planen sparas på ditt eget konto. För att skapa en plan till en atlet: Lag → välj atlet → Hantera.",
   },
   de: {
     defaultLanguage: "Standardsprache",
