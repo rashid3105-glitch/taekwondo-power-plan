@@ -134,8 +134,10 @@ export default function SeasonCalendar() {
     const d = new Date(viewYear, viewMonth, 1);
     const firstDow = ((d.getDay() + 6) % 7);
     for (let i = 0; i < firstDow; i++) days.push(null);
+    const toLocalIso = (dt: Date) =>
+      `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
     while (d.getMonth() === viewMonth) {
-      days.push(d.toISOString().slice(0, 10));
+      days.push(toLocalIso(d));
       d.setDate(d.getDate() + 1);
     }
     while (days.length % 7 !== 0) days.push(null);
