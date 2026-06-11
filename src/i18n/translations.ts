@@ -11022,6 +11022,17 @@ const translations = {
     parentSupplementNote: "Orientierendes Screening für Ihr Kind. Die Sprache ist an das Alter des Kindes angepasst. Immer offiziell verifizieren.",
     generatingFor: "Wird generiert für",
     coachSelfPlanNote: "Dieser Plan wird auf deinem eigenen Konto gespeichert. Um einen Plan für einen Athleten zu erstellen: Team → Athlet wählen → Verwalten.",
+    attendanceStats: "Anwesenheitsstatistik",
+    monthlyAttendance: "Monatliche Anwesenheit",
+    sessionsHeld: "Einheiten durchgeführt",
+    teamAttendanceRate: "Team-Anwesenheit",
+    present: "Anwesend",
+    late: "Verspätet",
+    absent: "Abwesend",
+    attendanceRate: "Anwesenheit",
+    avgRpe: "Ø RPE",
+    noSessionsThisMonth: "Keine Einheiten in diesem Monat erfasst",
+    legend: "Legende",
   },
 
   ar: {
