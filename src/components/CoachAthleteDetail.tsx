@@ -537,6 +537,9 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
               <span className="text-sm font-bold text-foreground min-w-[60px] text-right">{programWeeks} {t("weeks")}</span>
             </div>
           </div>
+          </fieldset>
+
+
 
           {/* Training Plan */}
           <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3 group-disabled:opacity-70">
