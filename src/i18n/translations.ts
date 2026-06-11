@@ -9745,6 +9745,7 @@ const translations = {
     seasonDisciplinePoomsae: "Poomsae",
     seasonNoTechniques: "Noch keine Techniken. Füge deine erste Technik oben hinzu.",
     seasonWeeklyTemplate: "Wöchentliche Vorlage",
+    seasonWeeklyFromTeam: "Der Wochenplan wird im Team-Standardwochenplan verwaltet.",
     seasonAiSuggestion: "Vorschlag",
     seasonTeamFocus: "Teamfokus (bis zu 3)",
     seasonAddTechnique: "Technik hinzufügen",
