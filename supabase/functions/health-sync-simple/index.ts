@@ -65,18 +65,33 @@ Deno.serve(async (req) => {
 
     let upserted = 0;
     for (const [date, b] of Object.entries(byDate)) {
-      const row = {
-        user_id: userId,
-        date,
-        steps: b.steps > 0 ? Math.round(b.steps) : null,
-        sleep_hours: b.sleep_seconds > 0 ? Math.round((b.sleep_seconds / 3600) * 100) / 100 : null,
-        heart_rate_avg: b.hr.length ? Math.round(avg(b.hr)! * 10) / 10 : null,
-        hrv: b.hrv_vals.length ? Math.round(avg(b.hrv_vals)! * 10) / 10 : null,
-      };
+      const patch: Record<string, number> = {};
+      if (b.steps > 0) patch.steps = Math.round(b.steps);
+      if (b.sleep_seconds > 0) patch.sleep_hours = Math.round((b.sleep_seconds / 3600) * 100) / 100;
+      if (b.hr.length) patch.heart_rate_avg = Math.round(avg(b.hr)! * 10) / 10;
+      if (b.hrv_vals.length) patch.hrv = Math.round(avg(b.hrv_vals)! * 10) / 10;
 
-      if (!row.steps && !row.sleep_hours && !row.heart_rate_avg && !row.hrv) continue;
+      if (Object.keys(patch).length === 0) continue;
 
-      const { error } = await admin.from("health_data").upsert(row, { onConflict: "user_id,date" });
+      const { data: existing } = await admin
+        .from("health_data")
+        .select("id")
+        .eq("user_id", userId)
+        .eq("date", date)
+        .maybeSingle();
+
+      let error;
+      if (existing) {
+        ({ error } = await admin
+          .from("health_data")
+          .update(patch)
+          .eq("user_id", userId)
+          .eq("date", date));
+      } else {
+        ({ error } = await admin
+          .from("health_data")
+          .insert({ user_id: userId, date, ...patch }));
+      }
       if (!error) upserted++;
     }
 
