@@ -326,6 +326,8 @@ export default function SeasonCalendar() {
     }, { onConflict: "season_plan_id,season_week" }).select().single();
     if (data) {
       setWeekFocusMap((prev) => new Map(prev).set(seasonWeek, { id: data.id, technique_ids: data.technique_ids ?? [], coach_note: data.coach_note ?? "" }));
+    }
+    toast({ title: t("seasonTechFocusSaved") || "Teknikfokus gemt" });
   }
 
   async function copyWeekFocusTo(sourceWeek: number, targetWeeks: number[]) {
@@ -361,7 +363,6 @@ export default function SeasonCalendar() {
     setCopyOpen(false);
     setCopyTargets([]);
     toast({ title: (t("seasonTechFocusCopied") || "Fokus kopieret") + ` (${targetWeeks.length})` });
-    toast({ title: t("seasonTechFocusSaved") || "Teknikfokus gemt" });
   }
 
   async function saveAthleteFocus(seasonWeek: number, athleteId: string, techIds: string[]) {
