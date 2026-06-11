@@ -351,8 +351,8 @@ export default function AdminModuleAccess() {
                       >
                         <Lock className="h-4 w-4 text-muted-foreground" />
                         <div>
-                          <div className="text-sm font-semibold">{m.label}</div>
-                          <div className="text-xs text-muted-foreground">{m.desc}</div>
+                          <div className="text-sm font-semibold text-zinc-100">{m.label}</div>
+                          <div className="text-xs text-zinc-100">{m.desc}</div>
                         </div>
                       </div>
                     ))}
