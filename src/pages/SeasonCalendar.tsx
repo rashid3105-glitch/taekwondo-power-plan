@@ -193,7 +193,7 @@ export default function SeasonCalendar() {
   // Load phases / template / overrides / competitions whenever plan changes
   useEffect(() => {
     if (!selectedPlanId) {
-      setPhases([]); setTemplate([]); setOverrides([]); setCompetitions([]); setVisibleAthleteIds(new Set());
+      setPhases([]); setOverrides([]); setCompetitions([]); setVisibleAthleteIds(new Set());
       setWeekFocusMap(new Map()); setAthleteFocusMap(new Map());
       return;
     }
