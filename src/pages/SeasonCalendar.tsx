@@ -962,7 +962,7 @@ export default function SeasonCalendar() {
                     const phase = wk ? phaseForWeek(phases, wk) : null;
                     const s = inSeason ? resolveSessionForDate(iso, template, overrides, compDateSet) : null;
                     const isSelected = wk !== null && wk === selectedWeek;
-                    const hasFocus = wk !== null && (weekFocusMap.get(wk)?.technique_ids?.length ?? 0) > 0;
+                    const hasFocus = wk !== null && s?.type === "tkd" && (weekFocusMap.get(wk)?.technique_ids?.length ?? 0) > 0;
                     return (
                       <div
                         key={iso}
