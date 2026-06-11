@@ -16415,6 +16415,8 @@ const translations = {
     supplementCheckError: "Kunne ikke fullføre sjekken",
     parentSupplementTitle: "Sjekk kosttilskudd og medisin",
     parentSupplementNote: "Veiledende screening for barnet ditt. Språket er tilpasset barnets alder. Verifiser alltid offisielt.",
+    generatingFor: "Genererer for",
+    coachSelfPlanNote: "Denne planen lagres på din egen konto. For å lage en plan til en utøver: Lag → velg utøver → Administrer.",
   },
 } as const;
 
