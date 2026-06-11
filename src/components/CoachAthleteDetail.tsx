@@ -604,7 +604,6 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
               }} />
             )}
           </div>
-          </fieldset>
         </TabsContent>
 
         <TabsContent value="mental" className="space-y-4 mt-3">
