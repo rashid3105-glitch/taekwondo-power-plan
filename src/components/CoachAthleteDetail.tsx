@@ -586,7 +586,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
               <Button
                 variant="default"
                 onClick={generateRehabPlan}
-                disabled={!editing || generatingRehab || !rehabDescription.trim()}
+                disabled={generatingRehab || !rehabDescription.trim()}
                 size="sm"
                 className="w-full sm:w-auto"
               >
