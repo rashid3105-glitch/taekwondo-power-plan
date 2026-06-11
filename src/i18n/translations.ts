@@ -7025,6 +7025,7 @@ const translations = {
     seasonVisibilitySave: "Spara synlighet",
     seasonVisibilitySaved: "Synlighet sparad",
     seasonNoTechniquesFocus: "Inget teknikfokus angivet för denna vecka.",
+    seasonTeamFocusNotSet: "Lagets veckofokus är inte angivet ännu.",
     seasonTechniqueLibrary: "Teknikbibliotek",
     seasonTechniqueName: "Teknikens namn",
     seasonCatAttack: "Attack",
