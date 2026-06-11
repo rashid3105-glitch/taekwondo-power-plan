@@ -97,12 +97,12 @@ export default function CoachToday() {
           <span className="text-base font-extrabold text-card-foreground">{t("todayTab")}</span>
           <Button
             variant="ghost"
-            size="icon"
-            className="ml-auto"
+            className="ml-auto gap-2 px-2"
             onClick={() => setStatsOpen(true)}
             aria-label={t("attendanceStats")}
             title={t("attendanceStats")}
           >
+            <span className="text-base font-extrabold text-card-foreground">{t("attendanceStats")}</span>
             <BarChart3 className="h-5 w-5" />
           </Button>
         </div>
