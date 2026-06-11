@@ -468,10 +468,10 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
                       }`} />;
                     })}
                   </div>
-                  <span className={`text-[8px] sm:text-[9px] font-medium text-center leading-tight transition-all ${
+                  <span className={`text-[8px] sm:text-[9px] font-semibold text-center leading-tight transition-all ${
                     isSelected 
                       ? "text-primary drop-shadow-[0_0_8px_hsl(190_95%_50%/0.8)]" 
-                      : "text-foreground group-hover:text-primary group-hover:drop-shadow-[0_0_6px_hsl(190_95%_50%/0.5)]"
+                      : "text-card-foreground group-hover:text-primary group-hover:drop-shadow-[0_0_6px_hsl(190_95%_50%/0.5)]"
                   }`}>
                     {sessions.length > 1 ? `${sessions.length} ${t("nSessions")}` : (day.label || sessions[0]?.label)}
                   </span>
