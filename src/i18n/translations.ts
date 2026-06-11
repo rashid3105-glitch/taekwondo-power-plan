@@ -13664,6 +13664,8 @@ const translations = {
     supplementCheckError: "تعذّر إكمال الفحص",
     parentSupplementTitle: "فحص المكملات والأدوية",
     parentSupplementNote: "فحص استرشادي لطفلك. اللغة مُكيَّفة مع عمر الطفل. تحقّق دائمًا من المصادر الرسمية.",
+    generatingFor: "يتم الإنشاء لـ",
+    coachSelfPlanNote: "ستُحفظ هذه الخطة على حسابك الخاص. لإنشاء خطة لرياضي: الفريق ← اختر رياضيًا ← إدارة.",
   },
   no: {
     onbWelcomeTitle: "Velkommen til Sportstalent",
