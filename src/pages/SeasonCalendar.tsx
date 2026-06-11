@@ -382,11 +382,8 @@ export default function SeasonCalendar() {
       .insert({ ...newPlan, club_id: clubId, created_by: userId, is_active: true })
       .select().single();
     if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
-    // Seed empty 7-day template
-    const tplRows = Array.from({ length: 7 }, (_, i) => ({
-      season_plan_id: data.id, day_of_week: i, session_type: "rest" as SessionType,
-    }));
-    await (supabase.from as any)("club_season_day_templates").insert(tplRows);
+
+
 
     setPlans((prev) => [data as ClubSeasonPlan, ...prev]);
     setSelectedPlanId(data.id);
