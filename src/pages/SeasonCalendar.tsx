@@ -465,15 +465,8 @@ export default function SeasonCalendar() {
     await (supabase.from as any)("club_season_phases").update({ focus_tags: next }).eq("id", phaseId);
   }
 
-  async function updateTemplate(day: number, patch: Partial<ClubSeasonDayTemplate>) {
-    const row = template.find((t) => t.day_of_week === day);
-    if (!row) return;
-    const updated = { ...row, ...patch };
-    setTemplate((prev) => prev.map((t) => (t.day_of_week === day ? updated : t)));
-    await (supabase.from as any)("club_season_day_templates")
-      .update({ session_type: updated.session_type, location: updated.location ?? null })
-      .eq("id", row.id);
-  }
+
+
 
   async function addOverride() {
     if (!selectedPlanId || !selectedAthleteId || !overrideForm.date) return;
