@@ -9750,6 +9750,7 @@ const translations = {
     seasonVisibilitySave: "Sichtbarkeit speichern",
     seasonVisibilitySaved: "Sichtbarkeit gespeichert",
     seasonNoTechniquesFocus: "Kein Technikfokus für diese Woche gesetzt.",
+    seasonTeamFocusNotSet: "Wochenfokus des Teams ist noch nicht festgelegt.",
     seasonTechniqueLibrary: "Technikbibliothek",
     seasonTechniqueName: "Name der Technik",
     seasonCatAttack: "Angriff",
