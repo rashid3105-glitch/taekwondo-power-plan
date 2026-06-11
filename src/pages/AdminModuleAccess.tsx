@@ -334,7 +334,7 @@ export default function AdminModuleAccess() {
                   </Button>
                 </div>
 
-                <div className="rounded-md bg-muted/40 border border-border p-3 text-xs text-muted-foreground">
+                <div className="rounded-md bg-zinc-950/40 border border-zinc-800 p-3 text-xs text-zinc-100">
                   These are the default modules for all athletes in this club.
                   Individual athletes can be overridden separately.
                 </div>
