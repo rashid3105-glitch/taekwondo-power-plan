@@ -334,7 +334,7 @@ export default function AdminModuleAccess() {
                   </Button>
                 </div>
 
-                <div className="rounded-md bg-muted/40 border border-border p-3 text-xs text-muted-foreground">
+                <div className="rounded-md bg-zinc-950/40 border border-zinc-800 p-3 text-xs text-zinc-100">
                   These are the default modules for all athletes in this club.
                   Individual athletes can be overridden separately.
                 </div>
@@ -351,8 +351,8 @@ export default function AdminModuleAccess() {
                       >
                         <Lock className="h-4 w-4 text-muted-foreground" />
                         <div>
-                          <div className="text-sm font-semibold">{m.label}</div>
-                          <div className="text-xs text-muted-foreground">{m.desc}</div>
+                          <div className="text-sm font-semibold text-zinc-100">{m.label}</div>
+                          <div className="text-xs text-zinc-100">{m.desc}</div>
                         </div>
                       </div>
                     ))}
