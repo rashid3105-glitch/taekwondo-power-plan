@@ -23,6 +23,7 @@ export default function CoachToday() {
   const [coachUserId, setCoachUserId] = useState<string | null>(null);
   const [athletes, setAthletes] = useState<MiniAthlete[]>([]);
   const [loading, setLoading] = useState(true);
+  const [statsOpen, setStatsOpen] = useState(false);
 
   useEffect(() => {
     (async () => {
