@@ -2762,6 +2762,8 @@ const translations = {
     supplementCheckError: "Could not complete the check",
     parentSupplementTitle: "Check supplements & medicine",
     parentSupplementNote: "Advisory screening for your child. The language is adapted to the child's age. Always verify officially.",
+    generatingFor: "Generating for",
+    coachSelfPlanNote: "This plan will be saved on your own account. To create a plan for an athlete: Team → choose athlete → Manage.",
   },
   da: {
     defaultLanguage: "Standardsprog",
@@ -5511,6 +5513,8 @@ const translations = {
     supplementCheckError: "Kunne ikke gennemføre tjekket",
     parentSupplementTitle: "Tjek kosttilskud & medicin",
     parentSupplementNote: "Vejledende screening for dit barn. Sproget er tilpasset barnets alder. Verificér altid officielt.",
+    generatingFor: "Genererer for",
+    coachSelfPlanNote: "Denne plan gemmes på din egen konto. For at lave en plan til en atlet: Hold → vælg atlet → Administrer.",
   },
   sv: {
     defaultLanguage: "Standardspråk",
@@ -8259,6 +8263,8 @@ const translations = {
     supplementCheckError: "Kunde inte slutföra kontrollen",
     parentSupplementTitle: "Kontrollera kosttillskott & medicin",
     parentSupplementNote: "Vägledande screening för ditt barn. Språket är anpassat till barnets ålder. Verifiera alltid officiellt.",
+    generatingFor: "Genererar för",
+    coachSelfPlanNote: "Den här planen sparas på ditt eget konto. För att skapa en plan till en atlet: Lag → välj atlet → Hantera.",
   },
   de: {
     defaultLanguage: "Standardsprache",
@@ -10957,6 +10963,8 @@ const translations = {
     supplementCheckError: "Prüfung konnte nicht abgeschlossen werden",
     parentSupplementTitle: "Nahrungsergänzung & Medikamente prüfen",
     parentSupplementNote: "Orientierendes Screening für Ihr Kind. Die Sprache ist an das Alter des Kindes angepasst. Immer offiziell verifizieren.",
+    generatingFor: "Wird generiert für",
+    coachSelfPlanNote: "Dieser Plan wird auf deinem eigenen Konto gespeichert. Um einen Plan für einen Athleten zu erstellen: Team → Athlet wählen → Verwalten.",
   },
 
   ar: {
@@ -13656,6 +13664,8 @@ const translations = {
     supplementCheckError: "تعذّر إكمال الفحص",
     parentSupplementTitle: "فحص المكملات والأدوية",
     parentSupplementNote: "فحص استرشادي لطفلك. اللغة مُكيَّفة مع عمر الطفل. تحقّق دائمًا من المصادر الرسمية.",
+    generatingFor: "يتم الإنشاء لـ",
+    coachSelfPlanNote: "ستُحفظ هذه الخطة على حسابك الخاص. لإنشاء خطة لرياضي: الفريق ← اختر رياضيًا ← إدارة.",
   },
   no: {
     onbWelcomeTitle: "Velkommen til Sportstalent",
@@ -16405,6 +16415,8 @@ const translations = {
     supplementCheckError: "Kunne ikke fullføre sjekken",
     parentSupplementTitle: "Sjekk kosttilskudd og medisin",
     parentSupplementNote: "Veiledende screening for barnet ditt. Språket er tilpasset barnets alder. Verifiser alltid offisielt.",
+    generatingFor: "Genererer for",
+    coachSelfPlanNote: "Denne planen lagres på din egen konto. For å lage en plan til en utøver: Lag → velg utøver → Administrer.",
   },
 } as const;
 
@@ -17386,5 +17398,7 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   evaluationRequestSent: "Evaluación solicitada — se notificará al atleta",
   evaluationAlreadyRequested: "Ya solicitada",
   awaitingEvaluation: "Pendiente de evaluación",
+  generatingFor: "Generando para",
+  coachSelfPlanNote: "Este plan se guardará en tu propia cuenta. Para crear un plan para un atleta: Equipo → elige atleta → Gestionar.",
 };
 export default translations;

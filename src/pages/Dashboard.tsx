@@ -1302,13 +1302,20 @@ export default function Dashboard() {
                       )}
                     </div>
                   </div>
-                  <Button onClick={generatePlan} disabled={generating} size="sm" className="w-full sm:w-auto">
-                    {generating ? (
-                      <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
-                    ) : (
-                      <><Plus className="h-4 w-4 mr-1" /> {t("generatePlan")}</>
+                  <div className="flex flex-col items-end gap-1 w-full sm:w-auto">
+                    <Button onClick={generatePlan} disabled={generating} size="sm" className="w-full sm:w-auto">
+                      {generating ? (
+                        <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
+                      ) : (
+                        <><Plus className="h-4 w-4 mr-1" /> {t("generatePlan")}</>
+                      )}
+                    </Button>
+                    {isCoach && (
+                      <p className="text-[11px] text-muted-foreground text-right max-w-xs">
+                        {t("coachSelfPlanNote")}
+                      </p>
                     )}
-                  </Button>
+                  </div>
                 </div>
               </div>
             )}
@@ -1326,15 +1333,22 @@ export default function Dashboard() {
                 <AIPlanCard plan={activePlan} />
               </div>
             ) : (!hasCoach || isPaid) ? (
-              <FeatureEmptyState
-                icon={Zap}
-                titleKey="emptyPlanTitle"
-                descKey="emptyPlanDesc"
-                ctaKey={generating ? "generating" : "emptyPlanCta"}
-                onCta={generating ? undefined : generatePlan}
-                accentClass="text-tab-plan"
-                iconBgClass="bg-tab-plan/15"
-              />
+              <>
+                <FeatureEmptyState
+                  icon={Zap}
+                  titleKey="emptyPlanTitle"
+                  descKey="emptyPlanDesc"
+                  ctaKey={generating ? "generating" : "emptyPlanCta"}
+                  onCta={generating ? undefined : generatePlan}
+                  accentClass="text-tab-plan"
+                  iconBgClass="bg-tab-plan/15"
+                />
+                {isCoach && (
+                  <p className="text-[11px] text-muted-foreground text-center mt-2 max-w-md mx-auto">
+                    {t("coachSelfPlanNote")}
+                  </p>
+                )}
+              </>
             ) : (
               <div className="rounded-xl border border-accent/30 bg-accent/5 p-6 space-y-3 text-center">
                 <div className="mx-auto h-12 w-12 rounded-full bg-accent/10 flex items-center justify-center">

@@ -221,12 +221,14 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
         .update({ is_active: false })
         .eq("user_id", athlete.user_id);
 
+      const athleteClubId = (athlete as any)?.club_id || null;
       const { error: insertError } = await supabase.from("training_plans").insert({
         user_id: athlete.user_id,
         name: data.plan.planName || "Coach Generated Plan",
         plan_data: data.plan,
         is_active: true,
-      });
+        ...(athleteClubId ? { club_id: athleteClubId } : {}),
+      } as any);
       if (insertError) throw insertError;
 
       toast({ title: t("planGenerated"), description: `${t("planGeneratedDesc")} - ${athlete.display_name}` });
@@ -538,17 +540,22 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
 
           {/* Training Plan */}
           <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3 group-disabled:opacity-70">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
               <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
                 <Zap className="h-4 w-4" /> {t("plan")}
               </h4>
-              <Button onClick={generatePlan} disabled={!editing || generatingPlan} size="sm">
-                {generatingPlan ? (
-                  <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
-                ) : (
-                  <><Plus className="h-4 w-4 mr-1" /> {t("generatePlan")}</>
-                )}
-              </Button>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs text-muted-foreground">
+                  {t("generatingFor")} <span className="font-semibold text-foreground">{athlete.display_name}</span>
+                </span>
+                <Button onClick={generatePlan} disabled={!editing || generatingPlan} size="sm">
+                  {generatingPlan ? (
+                    <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
+                  ) : (
+                    <><Plus className="h-4 w-4 mr-1" /> {t("generatePlan")}</>
+                  )}
+                </Button>
+              </div>
             </div>
             {activePlan ? (
               <AIPlanCard plan={activePlan} coachMode athleteUserId={athlete.user_id} />
