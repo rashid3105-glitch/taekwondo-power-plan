@@ -1,31 +1,20 @@
-## Goal
-Make the athlete-side Sæsonkalender (`SeasonCalendarView`) reliably load the right plan and surface a hint when no team techniques are configured yet.
+## Cause
+The "I dag" card in `src/components/hub/AthleteDashboard.tsx` reads `plan_data.days` or `plan_data.week`, but the active plan structure is actually `plan_data.weeklySchedule` (array indexed Mon=0..Sun=6, with `sessions[]` containing `label`, `focus`, `type`, `exercises[]`). The lookup returns nothing, so the card always shows the empty state even when training is scheduled.
 
-## Changes
+## Changes — `src/components/hub/AthleteDashboard.tsx`
 
-### 1. Auto-pick the active plan covering today — `src/pages/Dashboard.tsx`
-Replace the current `.maybeSingle()` query (which arbitrarily returns one of multiple active plans) with a small selection step:
+1. **Extend the data shape and fetch**
+   - Add `label?: string`, `focus?: string`, `exercises: string[]` to `TodaySession`.
+   - When loading the plan, use `plan_data.weeklySchedule ?? plan_data.days ?? plan_data.week` so existing formats still work.
+   - Pick today's day with the existing `(todayDow + 6) % 7` index.
+   - From the first non-empty session, capture: `label` (fallback to `type`/`focus`/"Træning"), `focus`, and the first ~5 exercise names (`exercises.map(e => e.name).filter(Boolean)`).
 
-- Fetch **all** active plans for the club (with nested phases + day templates).
-- Pick the plan whose `start_date ≤ today ≤ end_date`.
-- If multiple match, pick the one with the most recent `start_date`.
-- If none match, fall back to the most recently started active plan.
+2. **Render exercise headlines**
+   - Keep the existing title row (session label) and tags.
+   - Below the tags, render a short bullet list of up to 5 exercise names (`text-xs text-white/80`, leading-tight, truncated). If more than 5 exist, append a muted `+N flere` line.
+   - Keep the card clickable to `/dashboard?tab=plan` and the Start chip.
 
-Only this single block (~lines 442–466) changes; the rest of the loading logic stays the same.
-
-### 2. Empty-state hint — `src/components/hub/SeasonCalendarView.tsx`
-Compute `hasAnyTeamFocus = [...weekFocusMap.values()].some(v => v.teamTechIds.length > 0)`.
-
-When the plan has at least one TKD day in the template **and** `hasAnyTeamFocus` is false, render a muted one-liner just above the calendar `<Card>`:
-
-> "Holdets ugefokus er endnu ikke sat" (DA) / "Team weekly focus is not set yet" etc.
-
-Implementation: a small `<p className="text-xs text-muted-foreground italic px-1">` inside the existing wrapper. No layout shift, no extra cards.
-
-### 3. Translation key
-Add `seasonTeamFocusNotSet` to `src/i18n/translations.ts` for all 7 locales (en, da, sv, de, ar, no, es).
+3. **No empty-state change** when a real session exists; "Ingen træning planlagt i dag" still shows when `weeklySchedule` is missing or the day is a rest day with no exercises.
 
 ## Out of scope
-- Coach-side `SeasonCalendar.tsx` (already shows chips correctly when configured).
-- Deduplicating active plans at the DB level — handled purely in client selection.
-- Changing the chip rendering itself (already in place from previous turns).
+- No DB changes, no edits to the Plan/Uge view, no translation additions (Danish-only hub copy is consistent with the surrounding card).
