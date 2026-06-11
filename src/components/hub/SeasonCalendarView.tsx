@@ -161,6 +161,19 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
         </div>
       )}
 
+      {(() => {
+        const hasTkdInTemplate = template.some((d) => d.session_type === "tkd");
+        const hasAnyTeamFocus = [...weekFocusMap.values()].some((v) => v.teamTechIds.length > 0);
+        if (hasTkdInTemplate && !hasAnyTeamFocus) {
+          return (
+            <p className="text-xs text-muted-foreground italic px-1">
+              {t("seasonTeamFocusNotSet")}
+            </p>
+          );
+        }
+        return null;
+      })()}
+
       <Card className="overflow-hidden">
         <div className="flex items-center justify-between px-4 py-3 border-b border-border">
           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={prevMonth}>
