@@ -15,6 +15,8 @@ interface TodaySession {
   weekdayLabel: string;
   type: string;
   tags: string[];
+  exercises: string[];
+  extraCount: number;
 }
 
 interface NextCompetition {
