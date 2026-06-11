@@ -8320,6 +8320,8 @@ const translations = {
     avgRpe: "Genom. RPE",
     noSessionsThisMonth: "Inga pass registrerade denna månad",
     legend: "Förklaring",
+    wholeTeam: "Hela laget",
+    exportPdf: "Exportera PDF",
   },
   de: {
     defaultLanguage: "Standardsprache",
