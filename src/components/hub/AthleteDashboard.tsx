@@ -243,6 +243,20 @@ export function AthleteDashboard() {
                   ))}
                 </div>
               )}
+              {todaySession.exercises.length > 0 && (
+                <ul className="mt-3 space-y-1">
+                  {todaySession.exercises.map((name, i) => (
+                    <li key={i} className="text-xs text-white/80 leading-tight truncate">
+                      • {name}
+                    </li>
+                  ))}
+                  {todaySession.extraCount > 0 && (
+                    <li className="text-xs text-white/50 leading-tight">
+                      +{todaySession.extraCount} flere
+                    </li>
+                  )}
+                </ul>
+              )}
             </div>
           ) : (
             <EmptyState
