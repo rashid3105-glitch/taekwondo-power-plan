@@ -306,8 +306,8 @@ export default function AdminModuleAccess() {
                       {initials(a.display_name)}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="text-xs font-semibold truncate">{a.display_name || "—"}</div>
-                      <div className="text-[10px] text-muted-foreground">
+                      <div className="text-xs font-semibold truncate text-zinc-900">{a.display_name || "—"}</div>
+                      <div className="text-[10px] text-zinc-700">
                         {enabled} / {total} modules
                       </div>
                     </div>
