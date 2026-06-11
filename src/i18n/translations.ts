@@ -16892,6 +16892,7 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   seasonVisibilitySave: "Guardar visibilidad",
   seasonVisibilitySaved: "Visibilidad guardada",
   seasonNoTechniquesFocus: "No hay foco técnico establecido para esta semana.",
+  seasonTeamFocusNotSet: "El foco semanal del equipo aún no está configurado.",
   seasonTechniqueLibrary: "Biblioteca de técnicas",
   seasonTechniqueName: "Nombre de la técnica",
   seasonCatAttack: "Ataque",
