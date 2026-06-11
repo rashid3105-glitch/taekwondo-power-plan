@@ -2762,6 +2762,8 @@ const translations = {
     supplementCheckError: "Could not complete the check",
     parentSupplementTitle: "Check supplements & medicine",
     parentSupplementNote: "Advisory screening for your child. The language is adapted to the child's age. Always verify officially.",
+    generatingFor: "Generating for",
+    coachSelfPlanNote: "This plan will be saved on your own account. To create a plan for an athlete: Team → choose athlete → Manage.",
   },
   da: {
     defaultLanguage: "Standardsprog",
