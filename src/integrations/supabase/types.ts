@@ -690,6 +690,7 @@ export type Database = {
       clubs: {
         Row: {
           created_at: string
+          default_weekly_schedule: Json | null
           id: string
           max_athletes: number
           name: string
@@ -698,6 +699,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          default_weekly_schedule?: Json | null
           id?: string
           max_athletes?: number
           name: string
@@ -706,6 +708,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          default_weekly_schedule?: Json | null
           id?: string
           max_athletes?: number
           name?: string
@@ -3547,6 +3550,10 @@ export type Database = {
       }
       rename_chat_group: {
         Args: { _thread: string; _title: string }
+        Returns: undefined
+      }
+      set_club_default_weekly_schedule: {
+        Args: { _club_id: string; _schedule: Json }
         Returns: undefined
       }
       start_direct_thread: { Args: { _other_user: string }; Returns: string }
