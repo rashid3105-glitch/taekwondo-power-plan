@@ -1,23 +1,31 @@
 ## Goal
-On the coach Season Calendar, each TKD-day cell should display the team's focus technique names (small chips) instead of the current 🎯 marker. The Uge detail panel below stays as-is.
-
-## Scope
-File: `src/pages/SeasonCalendar.tsx` only.
+Make the athlete-side Sæsonkalender (`SeasonCalendarView`) reliably load the right plan and surface a hint when no team techniques are configured yet.
 
 ## Changes
 
-1. In the month-grid cell renderer (around lines 957–991):
-   - Remove the `🎯` `<span>` (line 987–989).
-   - When `hasFocus` is true and `inSeason`, render the technique names for that week as small chips:
-     - Resolve names via the existing `techniques` array using `weekFocusMap.get(wk)?.technique_ids`.
-     - Render up to 2 chips at `text-[8px]`/`text-[9px]`, `truncate`, primary-tinted background (`bg-primary/15 text-primary`), stacked or wrapped at the bottom of the cell.
-     - If more than 2 techniques exist, show `+N` chip for the remainder.
-   - Keep the existing session-type label (`{t(sessionLabelKey(s.type))}`) — chips go below it.
-   - Slightly raise cell `min-h` (e.g. from `min-h-[46px]` to `min-h-[58px]`) so chips fit without breaking the grid.
+### 1. Auto-pick the active plan covering today — `src/pages/Dashboard.tsx`
+Replace the current `.maybeSingle()` query (which arbitrarily returns one of multiple active plans) with a small selection step:
 
-2. No data-layer changes — `weekFocusMap` and `techniques` are already loaded.
-3. No translations needed (chip text is the technique name).
+- Fetch **all** active plans for the club (with nested phases + day templates).
+- Pick the plan whose `start_date ≤ today ≤ end_date`.
+- If multiple match, pick the one with the most recent `start_date`.
+- If none match, fall back to the most recently started active plan.
+
+Only this single block (~lines 442–466) changes; the rest of the loading logic stays the same.
+
+### 2. Empty-state hint — `src/components/hub/SeasonCalendarView.tsx`
+Compute `hasAnyTeamFocus = [...weekFocusMap.values()].some(v => v.teamTechIds.length > 0)`.
+
+When the plan has at least one TKD day in the template **and** `hasAnyTeamFocus` is false, render a muted one-liner just above the calendar `<Card>`:
+
+> "Holdets ugefokus er endnu ikke sat" (DA) / "Team weekly focus is not set yet" etc.
+
+Implementation: a small `<p className="text-xs text-muted-foreground italic px-1">` inside the existing wrapper. No layout shift, no extra cards.
+
+### 3. Translation key
+Add `seasonTeamFocusNotSet` to `src/i18n/translations.ts` for all 7 locales (en, da, sv, de, ar, no, es).
 
 ## Out of scope
-- Athlete `SeasonCalendarView.tsx` (athlete view) — not touched unless requested.
-- Uge detail panel — no change.
+- Coach-side `SeasonCalendar.tsx` (already shows chips correctly when configured).
+- Deduplicating active plans at the DB level — handled purely in client selection.
+- Changing the chip rendering itself (already in place from previous turns).
