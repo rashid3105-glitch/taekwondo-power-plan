@@ -16508,6 +16508,17 @@ const translations = {
     parentSupplementNote: "Veiledende screening for barnet ditt. Språket er tilpasset barnets alder. Verifiser alltid offisielt.",
     generatingFor: "Genererer for",
     coachSelfPlanNote: "Denne planen lagres på din egen konto. For å lage en plan til en utøver: Lag → velg utøver → Administrer.",
+    attendanceStats: "Oppmøte-statistikk",
+    monthlyAttendance: "Månedlig oppmøte",
+    sessionsHeld: "Økter gjennomført",
+    teamAttendanceRate: "Lagets oppmøte",
+    present: "Til stede",
+    late: "Forsinket",
+    absent: "Fraværende",
+    attendanceRate: "Oppmøte",
+    avgRpe: "Gj.snitt RPE",
+    noSessionsThisMonth: "Ingen økter registrert denne måneden",
+    legend: "Forklaring",
   },
 } as const;
 
