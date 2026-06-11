@@ -440,12 +440,17 @@ export default function Dashboard() {
       setClubName((clubData as { name?: string } | null)?.name || "");
       // Active club season (read-only). Only show if athlete is in visibility list OR is the creator.
       try {
-        const { data: seasonRow } = await (supabase.from as any)("club_season_plans")
+        const { data: seasonRows } = await (supabase.from as any)("club_season_plans")
           .select("*, club_season_phases(*), club_season_day_templates(*)")
-          .eq("club_id", profileData.club_id).eq("is_active", true).maybeSingle();
-        if (seasonRow) {
-          // Show to everyone in the club by default (opt-out model)
-          // Only hide if coach has explicitly set visibility AND the athlete is not included
+          .eq("club_id", profileData.club_id).eq("is_active", true);
+        const rows = (seasonRows ?? []) as any[];
+        if (rows.length > 0) {
+          const todayIso = new Date().toISOString().slice(0, 10);
+          const covering = rows
+            .filter((r) => r.start_date <= todayIso && r.end_date >= todayIso)
+            .sort((a, b) => (a.start_date < b.start_date ? 1 : -1));
+          const fallback = [...rows].sort((a, b) => (a.start_date < b.start_date ? 1 : -1));
+          const seasonRow = covering[0] ?? fallback[0];
           const { data: visRows } = await (supabase.from as any)("club_season_plan_visibility")
             .select("athlete_id")
             .eq("season_plan_id", seasonRow.id);
@@ -453,8 +458,6 @@ export default function Dashboard() {
           const hasAnyVisibilitySet = visRows && visRows.length > 0;
           const athleteIsIncluded = visRows?.some((v: any) => v.athlete_id === user.id) || seasonRow.created_by === user.id;
 
-          // If no visibility rows exist at all, show to everyone
-          // If visibility rows exist, only show to included athletes
           if (!hasAnyVisibilitySet || athleteIsIncluded) {
             setClubSeason({
               plan: seasonRow,
