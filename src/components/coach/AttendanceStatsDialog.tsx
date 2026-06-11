@@ -2,9 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AvatarImg } from "@/components/AvatarImg";
-import { ChevronLeft, ChevronRight, Loader2, Check, Clock, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, Check, Clock, X, FileDown } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import jsPDF from "jspdf";
 
 interface Athlete {
   user_id: string;
