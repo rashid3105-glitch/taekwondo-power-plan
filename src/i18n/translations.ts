@@ -5551,6 +5551,8 @@ const translations = {
     avgRpe: "Gns. RPE",
     noSessionsThisMonth: "Ingen træninger registreret denne måned",
     legend: "Forklaring",
+    wholeTeam: "Hele holdet",
+    exportPdf: "Eksportér PDF",
   },
   sv: {
     defaultLanguage: "Standardspråk",
