@@ -28,6 +28,7 @@ import { CreateAthleteDialog } from "@/components/coach/CreateAthleteDialog";
 import { InviteDialog } from "@/components/coach/InviteDialog";
 import { PendingAthletesSection } from "@/components/coach/PendingAthletesSection";
 import { CoachBulkCreateCompetitionDialog } from "@/components/coach/CoachBulkCreateCompetitionDialog";
+import { TeamWeeklyScheduleCard } from "@/components/coach/TeamWeeklyScheduleCard";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   ArrowLeft, Loader2, Zap, User, Users, NotebookPen,
@@ -398,6 +399,8 @@ export default function CoachDashboard() {
                 />
               )}
             </div>
+
+            {coachClubId && <TeamWeeklyScheduleCard clubId={coachClubId} />}
 
             {/* Squad content (formerly the "squad" tab) */}
             <div className="space-y-4">

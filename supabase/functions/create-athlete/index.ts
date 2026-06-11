@@ -106,6 +106,17 @@ Deno.serve(async (req) => {
       club_id: coachProfile.club_id,
       is_approved: true,
     };
+
+    // Apply club's team-default weekly schedule if set.
+    const { data: clubDefault } = await adminClient
+      .from("clubs")
+      .select("default_weekly_schedule")
+      .eq("id", coachProfile.club_id)
+      .maybeSingle();
+    if (clubDefault?.default_weekly_schedule) {
+      profileUpdates.weekly_schedule = clubDefault.default_weekly_schedule;
+    }
+
     if (age != null && typeof age === "number" && age >= 5 && age <= 99) profileUpdates.age = age;
     if (belt_level && typeof belt_level === "string") profileUpdates.belt_level = belt_level;
     if (experience_years != null && typeof experience_years === "number" && experience_years >= 0 && experience_years <= 50) profileUpdates.experience_years = experience_years;
