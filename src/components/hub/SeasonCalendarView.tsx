@@ -102,8 +102,10 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
   const daysInMonth = useMemo(() => {
     const days: string[] = [];
     const d = new Date(viewYear, viewMonth, 1);
+    const toLocalIso = (dt: Date) =>
+      `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
     while (d.getMonth() === viewMonth) {
-      days.push(d.toISOString().slice(0, 10));
+      days.push(toLocalIso(d));
       d.setDate(d.getDate() + 1);
     }
     return days;
