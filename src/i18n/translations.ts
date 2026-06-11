@@ -17531,5 +17531,7 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   avgRpe: "RPE medio",
   noSessionsThisMonth: "No hay sesiones registradas este mes",
   legend: "Leyenda",
+  wholeTeam: "Equipo completo",
+  exportPdf: "Exportar PDF",
 };
 export default translations;
