@@ -13759,6 +13759,8 @@ const translations = {
     avgRpe: "متوسط RPE",
     noSessionsThisMonth: "لا توجد جلسات مسجلة هذا الشهر",
     legend: "المفتاح",
+    wholeTeam: "الفريق بأكمله",
+    exportPdf: "تصدير PDF",
   },
   no: {
     onbWelcomeTitle: "Velkommen til Sportstalent",
