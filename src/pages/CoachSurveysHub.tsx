@@ -23,7 +23,6 @@ export default function CoachSurveysHub() {
       desc: t("surveysHubCreateDesc"),
       icon: ClipboardList,
       color: "text-primary",
-      bgClass: "bg-primary/10 border-primary/20 hover:border-primary/40",
       to: "/coach/surveys?view=manage",
     },
     {
@@ -32,7 +31,6 @@ export default function CoachSurveysHub() {
       desc: t("surveysHubResultsDesc"),
       icon: BarChart3,
       color: "text-tab-progress",
-      bgClass: "bg-tab-progress/10 border-tab-progress/20 hover:border-tab-progress/40",
       to: "/coach/surveys?view=results",
     },
   ];
