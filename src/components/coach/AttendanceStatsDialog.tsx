@@ -40,6 +40,7 @@ export function AttendanceStatsDialog({ open, onOpenChange, coachId, athletes }:
   const [cursor, setCursor] = useState(() => new Date());
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(false);
+  const [selectedAthleteId, setSelectedAthleteId] = useState<string>("all");
 
   useEffect(() => {
     if (!open) return;
