@@ -485,7 +485,7 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
             <div className="animate-slide-up rounded-xl border border-border bg-card p-3 sm:p-5 shadow-card">
               <div className="mb-4 flex items-center justify-between">
                 <div>
-                  <h3 className="font-bold text-foreground">
+                  <h3 className="font-bold text-card-foreground">
                     {viewMode === "program" && programWeeks > 1 && (
                       <span className="text-xs font-semibold text-primary uppercase tracking-wider mr-2">
                         {(t("weekN") || "Week {{n}}").replace("{{n}}", String(selectedWeek + 1))} ·
@@ -526,7 +526,7 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
               {currentSession && (
                 <>
                   {currentDaySessions.length === 1 && (
-                    <p className="text-sm font-semibold text-foreground mb-1">{currentSession.label}</p>
+                    <p className="text-sm font-semibold text-card-foreground mb-1">{currentSession.label}</p>
                   )}
                   {currentSession.focus && (
                     <p className="text-sm text-muted-foreground mb-3">{currentSession.focus}</p>
@@ -696,8 +696,9 @@ function AIExerciseRow({ exercise, index, log, pending, onToggleComplete, onUpda
         >
           <span className={cn(
             "font-semibold text-sm block truncate",
-            completed ? "text-muted-foreground line-through" : "text-foreground"
+            completed ? "text-muted-foreground line-through" : "text-card-foreground"
           )}>
+
             {displayName}
           </span>
         </button>
