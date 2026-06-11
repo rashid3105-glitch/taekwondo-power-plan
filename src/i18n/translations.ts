@@ -2783,7 +2783,6 @@ const translations = {
     legend: "Legend",
     wholeTeam: "Whole team",
     exportPdf: "Export PDF",
-    date: "Date",
   },
   da: {
     defaultLanguage: "Standardsprog",
