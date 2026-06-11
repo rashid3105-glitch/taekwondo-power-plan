@@ -526,7 +526,7 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
               {currentSession && (
                 <>
                   {currentDaySessions.length === 1 && (
-                    <p className="text-sm font-semibold text-foreground mb-1">{currentSession.label}</p>
+                    <p className="text-sm font-semibold text-card-foreground mb-1">{currentSession.label}</p>
                   )}
                   {currentSession.focus && (
                     <p className="text-sm text-muted-foreground mb-3">{currentSession.focus}</p>
