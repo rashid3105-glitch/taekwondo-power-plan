@@ -17398,5 +17398,7 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   evaluationRequestSent: "Evaluación solicitada — se notificará al atleta",
   evaluationAlreadyRequested: "Ya solicitada",
   awaitingEvaluation: "Pendiente de evaluación",
+  generatingFor: "Generando para",
+  coachSelfPlanNote: "Este plan se guardará en tu propia cuenta. Para crear un plan para un atleta: Equipo → elige atleta → Gestionar.",
 };
 export default translations;
