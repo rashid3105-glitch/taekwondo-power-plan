@@ -16869,6 +16869,7 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   seasonDisciplinePoomsae: "Poomsae",
   seasonNoTechniques: "Aún no hay técnicas. Añade tu primera técnica arriba.",
   seasonWeeklyTemplate: "Plantilla semanal",
+  seasonWeeklyFromTeam: "El horario semanal se gestiona en la semana estándar del equipo.",
   seasonAiSuggestion: "Sugerencia",
   seasonTeamFocus: "Foco del equipo (hasta 3)",
   seasonAddTechnique: "Añadir técnica",
