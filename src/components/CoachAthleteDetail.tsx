@@ -540,17 +540,22 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
 
           {/* Training Plan */}
           <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3 group-disabled:opacity-70">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
               <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
                 <Zap className="h-4 w-4" /> {t("plan")}
               </h4>
-              <Button onClick={generatePlan} disabled={!editing || generatingPlan} size="sm">
-                {generatingPlan ? (
-                  <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
-                ) : (
-                  <><Plus className="h-4 w-4 mr-1" /> {t("generatePlan")}</>
-                )}
-              </Button>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs text-muted-foreground">
+                  {t("generatingFor")} <span className="font-semibold text-foreground">{athlete.display_name}</span>
+                </span>
+                <Button onClick={generatePlan} disabled={!editing || generatingPlan} size="sm">
+                  {generatingPlan ? (
+                    <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
+                  ) : (
+                    <><Plus className="h-4 w-4 mr-1" /> {t("generatePlan")}</>
+                  )}
+                </Button>
+              </div>
             </div>
             {activePlan ? (
               <AIPlanCard plan={activePlan} coachMode athleteUserId={athlete.user_id} />
