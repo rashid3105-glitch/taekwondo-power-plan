@@ -200,7 +200,7 @@ function Hero() {
           </div>
           {cl.heroLeadMagnet && (
             <a
-              href="https://sportstalent.dk/praestationens-fundament.pdf"
+              href="https://www.dropbox.com/scl/fi/5csdmz9hzbseo5gg6hetn/Praestationens_Fundament.pdf?rlkey=dakju2vh7b7a5n3neeeczd905&dl=1"
               target="_blank"
               rel="noopener noreferrer"
               className="mt-3 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground underline underline-offset-4 transition-colors"
