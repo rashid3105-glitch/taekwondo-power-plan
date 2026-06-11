@@ -190,6 +190,39 @@ export default function SeasonCalendar() {
     })();
   }, [navigate, activeClubId]);
 
+  // Build the per-day session template from the club's standard weekly schedule
+  // (managed on /coach via TeamWeeklyScheduleCard). One row per session per day_of_week.
+  useEffect(() => {
+    if (!clubId) { setTemplate([]); return; }
+    (async () => {
+      const { data } = await (supabase.from as any)("clubs")
+        .select("default_weekly_schedule").eq("id", clubId).maybeSingle();
+      const schedule: DaySchedule[] =
+        ((data as any)?.default_weekly_schedule as DaySchedule[] | null) ?? GENERIC_DEFAULT_SCHEDULE;
+      const DOW: Record<string, number> = {
+        Monday: 0, Tuesday: 1, Wednesday: 2, Thursday: 3, Friday: 4, Saturday: 5, Sunday: 6,
+      };
+      const rows: ClubSeasonDayTemplate[] = [];
+      for (let dow = 0; dow < 7; dow++) {
+        const entry = schedule.find((s) => DOW[s.day] === dow);
+        const sessions = entry?.sessions && entry.sessions.length > 0
+          ? entry.sessions
+          : [{ type: (entry?.type ?? "rest") as SessionType }];
+        sessions.forEach((sess, i) => {
+          rows.push({
+            id: `club-${dow}-${i}`,
+            season_plan_id: "",
+            day_of_week: dow,
+            session_type: sess.type as SessionType,
+            location: null,
+            notes: null,
+          });
+        });
+      }
+      setTemplate(rows);
+    })();
+  }, [clubId]);
+
   // Load phases / template / overrides / competitions whenever plan changes
   useEffect(() => {
     if (!selectedPlanId) {
