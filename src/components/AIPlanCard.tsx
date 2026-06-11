@@ -452,10 +452,10 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
                     isSelected ? "border-primary bg-secondary shadow-glow" : "border-border bg-card hover:border-primary/50"
                   }`}
                 >
-                  <span className={`text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider transition-all ${
+                  <span className={`text-[9px] sm:text-[10px] font-bold uppercase tracking-wider transition-all ${
                     isSelected 
                       ? "text-primary drop-shadow-[0_0_8px_hsl(190_95%_50%)]" 
-                      : "text-muted-foreground group-hover:text-primary group-hover:drop-shadow-[0_0_6px_hsl(190_95%_50%/0.5)]"
+                      : "text-card-foreground/70 group-hover:text-primary group-hover:drop-shadow-[0_0_6px_hsl(190_95%_50%/0.5)]"
                   }`}>
                     {translateDayShort(day.dayOfWeek, t)}
                   </span>
