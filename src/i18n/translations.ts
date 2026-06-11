@@ -17508,5 +17508,16 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   awaitingEvaluation: "Pendiente de evaluación",
   generatingFor: "Generando para",
   coachSelfPlanNote: "Este plan se guardará en tu propia cuenta. Para crear un plan para un atleta: Equipo → elige atleta → Gestionar.",
+  attendanceStats: "Estadísticas de asistencia",
+  monthlyAttendance: "Asistencia mensual",
+  sessionsHeld: "Sesiones realizadas",
+  teamAttendanceRate: "Asistencia del equipo",
+  present: "Presente",
+  late: "Tarde",
+  absent: "Ausente",
+  attendanceRate: "Asistencia",
+  avgRpe: "RPE medio",
+  noSessionsThisMonth: "No hay sesiones registradas este mes",
+  legend: "Leyenda",
 };
 export default translations;
