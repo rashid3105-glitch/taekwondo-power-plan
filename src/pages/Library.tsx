@@ -85,7 +85,6 @@ export default function Library() {
       label: t("libNutritionPlannerLabel") || "Kostplanlægger",
       desc: t("libNutritionPlannerDesc") || "Din personlige kostplan",
       icon: ChefHat,
-      bg: "bg-emerald-500/10 border-emerald-500/20 hover:border-emerald-500/40",
       color: "text-emerald-500",
     },
     {
@@ -93,7 +92,6 @@ export default function Library() {
       label: t("libNutritionLoggerLabel") || "Madregistrering",
       desc: t("libNutritionLoggerDesc") || "Scan og log dine måltider",
       icon: Camera,
-      bg: "bg-tab-nutrition/10 border-tab-nutrition/20 hover:border-tab-nutrition/40",
       color: "text-tab-nutrition",
     },
     {
@@ -101,7 +99,6 @@ export default function Library() {
       label: t("libNutritionRecipesLabel") || "Opskrifter",
       desc: t("libNutritionRecipesDesc") || "Sund mad tilpasset taekwondo-atleter",
       icon: BookOpen,
-      bg: "bg-amber-500/10 border-amber-500/20 hover:border-amber-500/40",
       color: "text-amber-500",
     },
   ];
