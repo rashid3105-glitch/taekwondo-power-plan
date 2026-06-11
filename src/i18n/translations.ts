@@ -2781,6 +2781,9 @@ const translations = {
     avgRpe: "Avg RPE",
     noSessionsThisMonth: "No sessions recorded this month",
     legend: "Legend",
+    wholeTeam: "Whole team",
+    exportPdf: "Export PDF",
+    date: "Date",
   },
   da: {
     defaultLanguage: "Standardsprog",
