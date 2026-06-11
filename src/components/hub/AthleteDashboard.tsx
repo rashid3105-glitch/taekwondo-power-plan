@@ -103,7 +103,8 @@ export function AthleteDashboard() {
         .eq("is_active", true)
         .maybeSingle();
 
-      const days: any[] = (plan?.plan_data as any)?.days || (plan?.plan_data as any)?.week || [];
+      const pd: any = plan?.plan_data || {};
+      const days: any[] = pd.weeklySchedule || pd.days || pd.week || [];
       const todayDow = new Date().getDay();
       const todayIdx = (todayDow + 6) % 7;
       let today: TodaySession | null = null;
@@ -111,7 +112,7 @@ export function AthleteDashboard() {
         const d: any = days[todayIdx];
         if (d) {
           const sessions = Array.isArray(d.sessions) ? d.sessions : (d.session ? [d.session] : []);
-          const first = sessions.find((s: any) => s && (s.type || s.exercises?.length));
+          const first = sessions.find((s: any) => s && (s.label || s.type || s.focus || s.exercises?.length));
           if (first) {
             const tags: string[] = [];
             if (first.focus) tags.push(String(first.focus));
@@ -119,10 +120,15 @@ export function AthleteDashboard() {
             if (first.duration || first.duration_minutes) {
               tags.push(`${first.duration || first.duration_minutes} min`);
             }
+            const allExercises: string[] = Array.isArray(first.exercises)
+              ? first.exercises.map((e: any) => e?.name).filter((n: any) => typeof n === "string" && n.trim())
+              : [];
             today = {
               weekdayLabel: WEEKDAYS_DA[todayDow],
-              type: first.type || d.focus || "Træning",
+              type: first.label || first.type || d.focus || first.focus || "Træning",
               tags: tags.slice(0, 3),
+              exercises: allExercises.slice(0, 5),
+              extraCount: Math.max(0, allExercises.length - 5),
             };
           }
         }
