@@ -282,7 +282,7 @@ export default function Help() {
   return (
     <div className="min-h-screen bg-background relative">
       <PageMeta title="Help Center" description="Get help with Sportstalent features and training tools." canonical="https://sportstalent.dk/help" />
-      <Watermark />
+      {!isLoggedIn && <Watermark />}
       {authChecked && !isLoggedIn && <PublicNav />}
 
       {/* Hero */}
@@ -486,6 +486,7 @@ export default function Help() {
 // Build numbers start at v1.0.0 on 2026-05-29 (first build with semantic versioning).
 // MINOR bumps for new features, PATCH bumps for small tweaks/fixes. Older releases left unversioned.
 const CHANGELOG: { dateKey: string; entries: string[]; build?: string }[] = [
+  { dateKey: "changelog_2026_06_12", entries: ["changelogEntry146"], build: "v1.1.5" },
   { dateKey: "changelog_2026_06_08", entries: ["changelogEntry145", "changelogEntry144"], build: "v1.1.4" },
   { dateKey: "changelog_2026_06_06", entries: ["changelogEntry143"], build: "v1.1.2" },
   { dateKey: "changelog_2026_06_05", entries: ["changelogEntry142", "changelogEntry141", "changelogEntry140"], build: "v1.1.1" },
