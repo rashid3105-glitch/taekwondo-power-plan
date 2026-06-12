@@ -18,6 +18,13 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: "email and password required" }), { status: 400, headers: cors });
     }
 
+    // Comma-tolerant numeric parser (iOS Shortcuts may send "33,63" in da-DK locale)
+    const num = (v: unknown): number | null => {
+      if (v == null) return null;
+      const n = Number(String(v).trim().replace(",", "."));
+      return Number.isFinite(n) ? n : null;
+    };
+
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
     const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -39,25 +46,29 @@ Deno.serve(async (req) => {
       if (!byDate[d]) byDate[d] = { steps: 0, sleep_seconds: 0, hr: [], hrv_vals: [] };
     };
 
-    if (steps != null) {
+    const s = num(steps);
+    if (s != null) {
       const d = steps_date ?? today;
       ensure(d);
-      byDate[d].steps += Number(steps);
+      byDate[d].steps += s;
     }
-    if (resting_hr != null) {
+    const rh = num(resting_hr);
+    if (rh != null) {
       const d = resting_hr_date ?? today;
       ensure(d);
-      byDate[d].hr.push(Number(resting_hr));
+      byDate[d].hr.push(rh);
     }
-    if (hrv != null) {
+    const hv = num(hrv);
+    if (hv != null) {
       const d = hrv_date ?? today;
       ensure(d);
-      byDate[d].hrv_vals.push(Number(hrv));
+      byDate[d].hrv_vals.push(hv);
     }
-    if (sleep_hours != null) {
+    const sl = num(sleep_hours);
+    if (sl != null) {
       const d = sleep_date ?? today;
       ensure(d);
-      byDate[d].sleep_seconds += Number(sleep_hours) * 3600;
+      byDate[d].sleep_seconds += sl * 3600;
     }
 
     const admin = createClient(SUPABASE_URL, SERVICE_KEY);
