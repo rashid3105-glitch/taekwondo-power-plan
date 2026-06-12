@@ -8,7 +8,7 @@ import { PageMeta } from "@/components/PageMeta";
 import { toast } from "sonner";
 import { haptics } from "@/lib/haptics";
 
-const ICLOUD_SHORTCUT_URL = "https://www.icloud.com/shortcuts/d32370f5169d42c2b898ae118e3bc39a";
+const ICLOUD_SHORTCUT_URL = "https://www.icloud.com/shortcuts/df745b596cd54e968913d6b403339fd6";
 const TOTAL_STEPS = 5;
 
 export default function HealthSyncSetup() {
