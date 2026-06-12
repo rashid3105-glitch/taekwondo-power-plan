@@ -3,8 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
-  CheckCircle2,
-  Loader2,
   Check,
   User,
   Users,
@@ -12,8 +10,6 @@ import {
   Heart,
   ClipboardX,
   Activity,
-  FileDown,
-  CalendarPlus,
   Dumbbell,
   TrendingUp,
   Apple,
@@ -21,23 +17,14 @@ import {
   Brain,
   Trophy,
   Tag,
+  Quote,
+  X,
 } from "lucide-react";
-import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { PageMeta } from "@/components/PageMeta";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { toast } from "sonner";
 import { haptics } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 import { detectCurrency, formatPrice, getTierPrice } from "@/lib/currency";
@@ -119,9 +106,6 @@ const Hero = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
 
-  const scrollToWaitlist = () => {
-    document.getElementById("waitlist")?.scrollIntoView({ behavior: "smooth" });
-  };
 
   return (
     <section className="relative pt-28 pb-16 sm:pt-36 sm:pb-24 px-4 sm:px-6 overflow-hidden">
@@ -161,19 +145,19 @@ const Hero = () => {
         >
           <Button
             size="lg"
-            onClick={() => navigate("/signup")}
+            onClick={() => navigate("/signup?role=coach")}
             className="bg-landing-red hover:bg-landing-red-hover text-white font-bold px-7"
           >
-            {t("landingV2HeroCtaPrimary")}
+            {t("landingHeroCtaCoach")}
             <ArrowRight className="h-4 w-4" />
           </Button>
           <Button
             size="lg"
             variant="outline"
-            onClick={scrollToWaitlist}
+            onClick={() => navigate("/signup?role=athlete")}
             className="bg-transparent border-white/40 text-white hover:bg-white/10 hover:text-white font-semibold px-7"
           >
-            {t("landingV2HeroCtaSecondary")}
+            {t("landingHeroCtaAthlete")}
           </Button>
         </motion.div>
 
@@ -387,26 +371,6 @@ const CoachHighlight = () => {
           ))}
         </div>
 
-        <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-slate-200 hover:text-white hover:bg-white/10 border border-white/15"
-            disabled
-          >
-            <FileDown className="h-4 w-4" />
-            {t("landingV2CoachActionExport")}
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-slate-200 hover:text-white hover:bg-white/10 border border-white/15"
-            disabled
-          >
-            <CalendarPlus className="h-4 w-4" />
-            {t("landingV2CoachActionBulkComp")}
-          </Button>
-        </div>
       </motion.div>
     </section>
   );
@@ -487,14 +451,48 @@ const Credibility = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
-        className="max-w-3xl mx-auto rounded-2xl bg-landing-elevated border border-white/10 p-7 sm:p-10 text-center"
+        className="max-w-4xl mx-auto rounded-2xl bg-landing-elevated border border-white/10 p-7 sm:p-12"
       >
-        <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white mb-4">
-          {t("landingV2CredibilityTitle")}
-        </h2>
-        <p className="text-sm sm:text-base text-slate-200/90 leading-relaxed">
-          {t("landingV2CredibilityBody")}
-        </p>
+        <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-8 md:gap-10 items-start">
+          {/* Photo column */}
+          <div className="flex flex-col gap-4 items-center md:items-start text-center md:text-left">
+            <div className="aspect-square w-full max-w-[240px] md:max-w-none rounded-xl bg-gradient-to-br from-landing-red/20 to-landing-red/5 border border-landing-red/30 flex items-center justify-center overflow-hidden">
+              {/* TODO: replace with <img src="/founder.jpg" ... /> once founder photo is uploaded */}
+              <span className="text-7xl font-black text-landing-red/70 tracking-tight">FR</span>
+            </div>
+            <div>
+              <div className="text-lg font-black text-white tracking-tight">
+                {t("landingCredName")}
+              </div>
+              <div className="text-sm text-slate-300/70 mt-0.5">
+                {t("landingCredRole")}
+              </div>
+            </div>
+          </div>
+
+          {/* Content column */}
+          <div>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-landing-red/15 border border-landing-red/30 text-landing-red text-[11px] font-bold uppercase tracking-wider mb-5">
+              <span className="w-1.5 h-1.5 rounded-full bg-landing-red" />
+              {t("landingCredEyebrow")}
+            </div>
+            <p className="text-xl sm:text-2xl font-bold text-white leading-snug tracking-tight mb-6">
+              <Quote className="inline-block w-5 h-5 text-landing-red mr-1 -mt-2" />
+              {t("landingCredQuote")}
+            </p>
+            <div className="h-px bg-white/10 my-6" />
+            <ul className="flex flex-col gap-2.5">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <li key={i} className="flex items-start gap-2.5 text-sm text-slate-300/90 leading-relaxed">
+                  <span className="flex-shrink-0 w-[18px] h-[18px] rounded-full bg-landing-red/15 border border-landing-red/30 flex items-center justify-center mt-0.5">
+                    <Check className="w-2.5 h-2.5 text-landing-red" strokeWidth={3} />
+                  </span>
+                  <span dangerouslySetInnerHTML={{ __html: t(`landingCredItem${i}` as any) }} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </motion.div>
     </section>
   );
@@ -606,149 +604,88 @@ const Pricing = () => {
 };
 
 /* ────────────────────────────────────────────────────────── */
-/*                          WAITLIST                           */
+/*                         COMPARISON                          */
 /* ────────────────────────────────────────────────────────── */
 
-const waitlistSchema = z.object({
-  name: z.string().trim().min(1).max(120),
-  email: z.string().trim().email().max(254),
-  role: z.enum(["athlete", "coach", "club"]),
-});
-
-const Waitlist = () => {
-  const { t, locale } = useLanguage();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [role, setRole] = useState<"athlete" | "coach" | "club" | "">("");
-  const [loading, setLoading] = useState(false);
-  const [done, setDone] = useState(false);
-
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    haptics.tap();
-
-    const parsed = waitlistSchema.safeParse({ name, email, role });
-    if (!parsed.success) {
-      toast.error(t("landingV2WaitlistInvalid"));
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const { name: n, email: e2, role: r } = parsed.data;
-      const { error } = await supabase
-        .from("waitlist")
-        .insert([{ name: n, email: e2, role: r, locale } as any]);
-      if (error) throw error;
-      setDone(true);
-      toast.success(t("landingV2WaitlistSuccess"));
-    } catch (err: any) {
-      toast.error(err?.message || t("error"));
-    } finally {
-      setLoading(false);
-    }
-  };
-
+const Comparison = () => {
+  const { t } = useLanguage();
+  const rows = [1, 2, 3, 4, 5, 6];
   return (
-    <section id="waitlist" className="py-16 sm:py-20 px-4 sm:px-6 scroll-mt-20 bg-landing-navy">
-      <div className="max-w-xl mx-auto">
+    <section className="py-16 sm:py-20 px-4 sm:px-6 bg-landing-navy">
+      <div className="max-w-4xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.4 }}
-          className="text-center mb-7"
+          className="text-center mb-10"
         >
           <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white mb-3">
-            {t("landingV2WaitlistTitle")}
+            {t("landingCompareTitle")}
           </h2>
-          <p className="text-sm sm:text-base text-slate-300/85 leading-relaxed">
-            {t("landingV2WaitlistSubtitle")}
+          <p className="text-sm sm:text-base text-slate-300/85 leading-relaxed max-w-2xl mx-auto">
+            {t("landingCompareSubtitle")}
           </p>
         </motion.div>
 
-        <div className="rounded-2xl bg-landing-elevated border border-white/10 p-5 sm:p-6">
-          {done ? (
-            <div className="flex flex-col items-center text-center py-6">
-              <CheckCircle2 className="h-10 w-10 text-landing-red mb-3" />
-              <p className="text-base font-semibold text-white">
-                {t("landingV2WaitlistSuccess")}
-              </p>
+        <div className="rounded-2xl border border-white/10 bg-landing-elevated overflow-hidden">
+          {/* Column headers — visible on md+ */}
+          <div className="hidden md:grid grid-cols-2 border-b border-white/10">
+            <div className="px-5 py-4 border-r border-white/10 flex items-center gap-2">
+              <span className="inline-flex w-5 h-5 rounded-full bg-slate-600/40 border border-slate-500/40 items-center justify-center">
+                <X className="w-3 h-3 text-slate-300" />
+              </span>
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-300/70">
+                {t("landingCompareColBefore")}
+              </span>
             </div>
-          ) : (
-            <form onSubmit={submit} className="space-y-4">
-              <div>
-                <Label htmlFor="wl-name" className="text-slate-200 text-sm">
-                  {t("landingV2WaitlistName")}
-                </Label>
-                <Input
-                  id="wl-name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  maxLength={120}
-                  required
-                  className="mt-1 bg-landing-navy border-white/15 text-white placeholder:text-slate-400"
-                  autoComplete="name"
-                />
-              </div>
+            <div className="px-5 py-4 flex items-center gap-2">
+              <span className="inline-flex w-5 h-5 rounded-full bg-landing-red/20 border border-landing-red/40 items-center justify-center">
+                <Check className="w-3 h-3 text-landing-red" strokeWidth={3} />
+              </span>
+              <span className="text-xs font-bold uppercase tracking-wider text-landing-red">
+                {t("landingCompareColAfter")}
+              </span>
+            </div>
+          </div>
 
-              <div>
-                <Label htmlFor="wl-email" className="text-slate-200 text-sm">
-                  {t("landingV2WaitlistEmail")}
-                </Label>
-                <Input
-                  id="wl-email"
-                  type="email"
-                  inputMode="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  maxLength={254}
-                  required
-                  className="mt-1 bg-landing-navy border-white/15 text-white placeholder:text-slate-400"
-                  autoComplete="email"
-                />
+          {/* Rows */}
+          {rows.map((i, idx) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-30px" }}
+              transition={{ duration: 0.35, delay: idx * 0.04 }}
+              className={cn(
+                "grid grid-cols-1 md:grid-cols-2",
+                idx < rows.length - 1 && "border-b border-white/10",
+              )}
+            >
+              {/* Before */}
+              <div className="px-5 py-4 md:border-r border-white/10 flex items-start gap-2.5 md:bg-transparent bg-slate-900/40">
+                <span className="md:hidden inline-flex w-5 h-5 rounded-full bg-slate-600/40 border border-slate-500/40 items-center justify-center flex-shrink-0 mt-0.5">
+                  <X className="w-3 h-3 text-slate-300" />
+                </span>
+                <span className="hidden md:inline-flex w-5 h-5 rounded-full bg-slate-600/40 border border-slate-500/40 items-center justify-center flex-shrink-0 mt-0.5">
+                  <X className="w-3 h-3 text-slate-300" />
+                </span>
+                <span className="text-sm text-slate-300/85 leading-snug">
+                  {t(`landingCompareRow${i}Before` as any)}
+                </span>
               </div>
-
-              <div>
-                <Label htmlFor="wl-role" className="text-slate-200 text-sm">
-                  {t("landingV2WaitlistRole")}
-                </Label>
-                <Select value={role} onValueChange={(v) => setRole(v as any)}>
-                  <SelectTrigger
-                    id="wl-role"
-                    className="mt-1 bg-landing-navy border-white/15 text-white"
-                  >
-                    <SelectValue placeholder={t("landingV2WaitlistRolePlaceholder")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="athlete">{t("landingV2WaitlistRoleAthlete")}</SelectItem>
-                    <SelectItem value="coach">{t("landingV2WaitlistRoleCoach")}</SelectItem>
-                    <SelectItem value="club">{t("landingV2WaitlistRoleClub")}</SelectItem>
-                  </SelectContent>
-                </Select>
+              {/* After */}
+              <div className="px-5 py-4 flex items-start gap-2.5 border-t md:border-t-0 border-white/10 md:border-0">
+                <span className="inline-flex w-5 h-5 rounded-full bg-landing-red/20 border border-landing-red/40 items-center justify-center flex-shrink-0 mt-0.5">
+                  <Check className="w-3 h-3 text-landing-red" strokeWidth={3} />
+                </span>
+                <span className="text-sm text-white font-medium leading-snug">
+                  {t(`landingCompareRow${i}After` as any)}
+                </span>
               </div>
-
-              <Button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-landing-red hover:bg-landing-red-hover text-white font-bold"
-              >
-                {loading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  t("landingV2WaitlistSubmit")
-                )}
-              </Button>
-            </form>
-          )}
+            </motion.div>
+          ))}
         </div>
-
-        <p className="mt-5 text-center text-xs text-slate-300/70">
-          {t("landingV2WaitlistReadyNow")}{" "}
-          <Link to="/signup" className="text-landing-red hover:underline font-medium">
-            {t("landingV2WaitlistReadyNowLink")}
-          </Link>
-        </p>
       </div>
     </section>
   );
@@ -815,8 +752,8 @@ const Landing = () => {
         <CoachHighlight />
         <FeaturesGrid />
         <Credibility />
+        <Comparison />
         <Pricing />
-        <Waitlist />
       </main>
       <Footer />
     </div>
