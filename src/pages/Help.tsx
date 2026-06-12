@@ -285,25 +285,30 @@ export default function Help() {
       {!isLoggedIn && <Watermark />}
       {authChecked && !isLoggedIn && <PublicNav />}
 
+      {isLoggedIn && (
+        <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-md border-b border-border">
+          <div className="mx-auto max-w-3xl px-4 py-3 flex items-center">
+            <button
+              type="button"
+              onClick={() => navigate("/dashboard")}
+              className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-foreground hover:bg-muted transition-colors -ml-2"
+              aria-label={t("backToDashboard")}
+            >
+              <ArrowLeft className="h-5 w-5" />
+              <span>{t("backToDashboard")}</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Hero */}
       <div className="px-4 py-8">
         <div className="mx-auto max-w-3xl space-y-3 text-center">
-          {isLoggedIn && (
-            <div className="flex justify-center">
-              <button
-                type="button"
-                onClick={() => navigate("/dashboard")}
-                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-muted transition-colors shadow-sm"
-              >
-                <ArrowLeft className="h-3.5 w-3.5" />
-                {t("backToDashboard")}
-              </button>
-            </div>
-          )}
           <h1 className="text-3xl sm:text-4xl font-extrabold text-foreground">{t("helpTitle")}</h1>
           <p className="text-muted-foreground">{t("helpSubtitle")}</p>
         </div>
       </div>
+
 
       {/* Gradient transition */}
       <div className="h-12 bg-gradient-to-b from-background to-[hsl(210,20%,97%)]" aria-hidden="true" />
