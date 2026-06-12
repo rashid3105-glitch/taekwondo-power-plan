@@ -196,6 +196,7 @@ export default function Onboarding() {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
       if (error) throw error;
+      clearDraft();
 
       // Apply pending invite (athlete signed up via /join/CODE)
       const pendingInvite = sessionStorage.getItem("pending_invite_code");
