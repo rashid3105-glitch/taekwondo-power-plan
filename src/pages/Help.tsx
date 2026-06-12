@@ -282,7 +282,7 @@ export default function Help() {
   return (
     <div className="min-h-screen bg-background relative">
       <PageMeta title="Help Center" description="Get help with Sportstalent features and training tools." canonical="https://sportstalent.dk/help" />
-      <Watermark />
+      {!isLoggedIn && <Watermark />}
       {authChecked && !isLoggedIn && <PublicNav />}
 
       {/* Hero */}

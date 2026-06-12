@@ -25,7 +25,7 @@ import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { useRole } from "@/contexts/RoleContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ClubSwitcher } from "@/components/ClubSwitcher";
-import Help from "@/pages/Help";
+
 import { MentalAssessment } from "@/components/MentalAssessment";
 import { ProgressDashboard } from "@/components/ProgressDashboard";
 import { NutritionPlan } from "@/components/NutritionPlan";
@@ -146,7 +146,7 @@ export default function Dashboard() {
     });
   }
   const [menuOpen, setMenuOpen] = useState(false);
-  const [helpOpen, setHelpOpen] = useState(false);
+  
   const [isOnline, setIsOnline] = useState(typeof navigator !== "undefined" ? navigator.onLine : true);
   const { isCoachMode, setCoachMode } = useCoachMode();
   const coachAthleteMode = isCoachMode ? "coach" : "athlete";
@@ -801,7 +801,7 @@ export default function Dashboard() {
                 <span>{t("admin")}</span>
               </button>
             )}
-            <button onClick={() => { setMenuOpen(false); setHelpOpen(true); }} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer">
+            <button onClick={() => { setMenuOpen(false); navigate("/help"); }} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer">
               <HelpCircle className="h-4 w-4 shrink-0" />
               <span>{t("helpTitle")}</span>
             </button>
@@ -818,15 +818,6 @@ export default function Dashboard() {
         </SheetContent>
       </Sheet>
 
-      {/* Help Sheet */}
-      <Sheet open={helpOpen} onOpenChange={setHelpOpen}>
-        <SheetContent side="bottom" className="h-[90vh] overflow-y-auto p-0">
-          <SheetHeader className="sr-only">
-            <SheetTitle>{t("helpTitle")}</SheetTitle>
-          </SheetHeader>
-          <Help />
-        </SheetContent>
-      </Sheet>
 
       {/* Mobile bottom nav — 5 tabs */}
       <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-card/95 backdrop-blur-sm sm:hidden pb-safe">
