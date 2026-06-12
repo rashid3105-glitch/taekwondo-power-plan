@@ -289,6 +289,27 @@ export default function Onboarding() {
 
   return (
     <div className="min-h-screen bg-background">
+      {userId && (
+        <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-md border-b border-border">
+          <div className="mx-auto max-w-2xl px-4 py-3 flex items-center justify-end">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={async () => {
+                saveDraft();
+                toast.success(t("onboardingDraftSavedToast"));
+                await supabase.auth.signOut();
+                navigate("/");
+              }}
+              className="gap-2 text-muted-foreground hover:text-foreground"
+              aria-label={t("onboardingExitForNow")}
+            >
+              <LogOut className="h-4 w-4" />
+              <span>{t("onboardingExitForNow")}</span>
+            </Button>
+          </div>
+        </div>
+      )}
       <div className="mx-auto max-w-2xl px-4 py-6 sm:py-12">
         {step > 0 && (
           <div className="mb-6 flex items-center gap-3">
