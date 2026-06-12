@@ -80,6 +80,61 @@ export default function Onboarding() {
     })();
   }, [navigate]);
 
+  const draftKey = userId ? `onboarding_draft_${userId}` : null;
+
+  const saveDraft = () => {
+    if (!draftKey) return;
+    try {
+      localStorage.setItem(draftKey, JSON.stringify({
+        step, role, discipline, belt, experience, age, weight,
+        schedule, goals, otherGoal,
+        clubName, athleteCount, focus,
+      }));
+    } catch { /* localStorage full or disabled — silent fail */ }
+  };
+
+  const loadDraft = () => {
+    if (!draftKey) return null;
+    try {
+      const raw = localStorage.getItem(draftKey);
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  };
+
+  const clearDraft = () => {
+    if (!draftKey) return;
+    try { localStorage.removeItem(draftKey); } catch { /* ignore */ }
+  };
+
+  // Restore draft when user id becomes known
+  useEffect(() => {
+    if (!userId) return;
+    const draft = loadDraft();
+    if (!draft) return;
+    if (typeof draft.step === "number") setStep(draft.step);
+    if (draft.role) setRole(draft.role);
+    if (draft.discipline) setDiscipline(draft.discipline);
+    if (draft.belt) setBelt(draft.belt);
+    if (draft.experience !== undefined) setExperience(draft.experience);
+    if (draft.age !== undefined) setAge(draft.age);
+    if (draft.weight !== undefined) setWeight(draft.weight);
+    if (draft.schedule) setSchedule(draft.schedule);
+    if (Array.isArray(draft.goals)) setGoals(draft.goals);
+    if (draft.otherGoal) setOtherGoal(draft.otherGoal);
+    if (draft.clubName) setClubName(draft.clubName);
+    if (draft.athleteCount) setAthleteCount(draft.athleteCount);
+    if (Array.isArray(draft.focus)) setFocus(draft.focus);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
+
+  // Auto-save draft on any tracked field change
+  useEffect(() => {
+    if (!userId) return;
+    saveDraft();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, step, role, discipline, belt, experience, age, weight,
+      schedule, goals, otherGoal, clubName, athleteCount, focus]);
+
   const totalSteps = role === "athlete" ? 4 : 3; // welcome + steps
   const stepLabel = useMemo(
     () => t("onbStepLabel").replace("{{current}}", String(step)).replace("{{total}}", String(totalSteps - 1)),
