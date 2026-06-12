@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, ArrowLeft, ArrowRight, Sparkles, Users, FileText, Trophy, Zap } from "lucide-react";
+import { Loader2, ArrowLeft, ArrowRight, Sparkles, Users, FileText, Trophy, Zap, LogOut } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekSchedulePicker";
