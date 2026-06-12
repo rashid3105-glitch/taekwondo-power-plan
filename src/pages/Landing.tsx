@@ -3,8 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
-  CheckCircle2,
-  Loader2,
   Check,
   User,
   Users,
@@ -12,8 +10,6 @@ import {
   Heart,
   ClipboardX,
   Activity,
-  FileDown,
-  CalendarPlus,
   Dumbbell,
   TrendingUp,
   Apple,
@@ -21,23 +17,14 @@ import {
   Brain,
   Trophy,
   Tag,
+  Quote,
+  X,
 } from "lucide-react";
-import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { PageMeta } from "@/components/PageMeta";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { toast } from "sonner";
 import { haptics } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 import { detectCurrency, formatPrice, getTierPrice } from "@/lib/currency";
