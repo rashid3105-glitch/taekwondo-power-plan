@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, ArrowLeft, ArrowRight, Sparkles, Users, FileText, Trophy, Zap } from "lucide-react";
+import { Loader2, ArrowLeft, ArrowRight, Sparkles, Users, FileText, Trophy, Zap, LogOut } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekSchedulePicker";
@@ -80,6 +80,61 @@ export default function Onboarding() {
     })();
   }, [navigate]);
 
+  const draftKey = userId ? `onboarding_draft_${userId}` : null;
+
+  const saveDraft = () => {
+    if (!draftKey) return;
+    try {
+      localStorage.setItem(draftKey, JSON.stringify({
+        step, role, discipline, belt, experience, age, weight,
+        schedule, goals, otherGoal,
+        clubName, athleteCount, focus,
+      }));
+    } catch { /* localStorage full or disabled — silent fail */ }
+  };
+
+  const loadDraft = () => {
+    if (!draftKey) return null;
+    try {
+      const raw = localStorage.getItem(draftKey);
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  };
+
+  const clearDraft = () => {
+    if (!draftKey) return;
+    try { localStorage.removeItem(draftKey); } catch { /* ignore */ }
+  };
+
+  // Restore draft when user id becomes known
+  useEffect(() => {
+    if (!userId) return;
+    const draft = loadDraft();
+    if (!draft) return;
+    if (typeof draft.step === "number") setStep(draft.step);
+    if (draft.role) setRole(draft.role);
+    if (draft.discipline) setDiscipline(draft.discipline);
+    if (draft.belt) setBelt(draft.belt);
+    if (draft.experience !== undefined) setExperience(draft.experience);
+    if (draft.age !== undefined) setAge(draft.age);
+    if (draft.weight !== undefined) setWeight(draft.weight);
+    if (draft.schedule) setSchedule(draft.schedule);
+    if (Array.isArray(draft.goals)) setGoals(draft.goals);
+    if (draft.otherGoal) setOtherGoal(draft.otherGoal);
+    if (draft.clubName) setClubName(draft.clubName);
+    if (draft.athleteCount) setAthleteCount(draft.athleteCount);
+    if (Array.isArray(draft.focus)) setFocus(draft.focus);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
+
+  // Auto-save draft on any tracked field change
+  useEffect(() => {
+    if (!userId) return;
+    saveDraft();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, step, role, discipline, belt, experience, age, weight,
+      schedule, goals, otherGoal, clubName, athleteCount, focus]);
+
   const totalSteps = role === "athlete" ? 4 : 3; // welcome + steps
   const stepLabel = useMemo(
     () => t("onbStepLabel").replace("{{current}}", String(step)).replace("{{total}}", String(totalSteps - 1)),
@@ -141,6 +196,7 @@ export default function Onboarding() {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
       if (error) throw error;
+      clearDraft();
 
       // Apply pending invite (athlete signed up via /join/CODE)
       const pendingInvite = sessionStorage.getItem("pending_invite_code");
@@ -233,6 +289,27 @@ export default function Onboarding() {
 
   return (
     <div className="min-h-screen bg-background">
+      {userId && (
+        <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-md border-b border-border">
+          <div className="mx-auto max-w-2xl px-4 py-3 flex items-center justify-end">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={async () => {
+                saveDraft();
+                toast.success(t("onboardingDraftSavedToast"));
+                await supabase.auth.signOut();
+                navigate("/");
+              }}
+              className="gap-2 text-muted-foreground hover:text-foreground"
+              aria-label={t("onboardingExitForNow")}
+            >
+              <LogOut className="h-4 w-4" />
+              <span>{t("onboardingExitForNow")}</span>
+            </Button>
+          </div>
+        </div>
+      )}
       <div className="mx-auto max-w-2xl px-4 py-6 sm:py-12">
         {step > 0 && (
           <div className="mb-6 flex items-center gap-3">
