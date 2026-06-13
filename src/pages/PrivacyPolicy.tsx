@@ -79,6 +79,11 @@ export default function PrivacyPolicy() {
         </section>
 
         <section className="space-y-3">
+          <h2 className="text-lg font-bold text-foreground">{t("privacyMinorConsent")}</h2>
+          <p className="text-sm text-muted-foreground leading-relaxed">{t("privacyMinorConsentDesc")}</p>
+        </section>
+
+        <section className="space-y-3">
           <h2 className="text-lg font-bold text-foreground">{t("privacyRetention")}</h2>
           <p className="text-sm text-muted-foreground leading-relaxed">{t("privacyRetentionDesc")}</p>
         </section>
