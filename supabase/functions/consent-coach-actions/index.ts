@@ -261,21 +261,18 @@ Deno.serve(async (req) => {
 
       const athleteNames = missing.map((m) => m.display_name).filter(Boolean);
 
-      const { error: emailErr } = await admin.functions.invoke("send-transactional-email", {
-        body: {
-          templateName: "coach-consent-reminder",
-          recipientEmail: coachEmail,
-          idempotencyKey: `coach-consent-reminder-${coachId}-${new Date().toISOString().slice(0, 10)}`,
-          templateData: {
-            coachName: coachProfile?.display_name || "coach",
-            athleteNames,
-            total: missing.length,
-          },
+      const sendRes = await invokeSendEmail(supabaseUrl, anonKey, authHeader, {
+        templateName: "coach-consent-reminder",
+        recipientEmail: coachEmail,
+        idempotencyKey: `coach-consent-reminder-${coachId}-${new Date().toISOString().slice(0, 10)}`,
+        templateData: {
+          coachName: coachProfile?.display_name || "coach",
+          athleteNames,
+          total: missing.length,
         },
       });
-      if (emailErr) {
-        console.warn("coach reminder email error:", emailErr);
-        return jsonResponse({ ok: true, queued: false, count: missing.length });
+      if (!sendRes.ok) {
+        return jsonResponse({ ok: false, queued: false, count: missing.length, error: sendRes.error || `status_${sendRes.status}` }, 502);
       }
       return jsonResponse({ ok: true, queued: true, count: missing.length });
     }
