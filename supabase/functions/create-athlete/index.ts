@@ -143,25 +143,33 @@ Deno.serve(async (req) => {
         expires_at: expiresAt,
       });
 
-      // Email parent via existing transactional pipeline
+      // Email parent via existing transactional pipeline (forward user's JWT — service-role is rejected by send-transactional-email)
       try {
         const consentUrl = `${APP_URL}/consent/${token}`;
-        const { error: emailErr } = await adminClient.functions.invoke(
-          "send-transactional-email",
-          {
-            body: {
-              templateName: "parental-consent-request",
-              recipientEmail: parent_email.trim(),
-              idempotencyKey: `parental-consent-${newUser.user!.id}-${token.slice(0, 8)}`,
-              templateData: {
-                athleteName: name,
-                consentUrl,
-                expiresInDays: 14,
-              },
-            },
+        const emailRes = await fetch(`${supabaseUrl}/functions/v1/send-transactional-email`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: authHeader,
+            apikey: anonKey,
           },
-        );
-        if (!emailErr) consentSent = true;
+          body: JSON.stringify({
+            templateName: "parental-consent-request",
+            recipientEmail: parent_email.trim(),
+            idempotencyKey: `parental-consent-${newUser.user!.id}-${token.slice(0, 8)}`,
+            templateData: {
+              athleteName: name,
+              consentUrl,
+              expiresInDays: 14,
+            },
+          }),
+        });
+        const emailBody = await emailRes.text();
+        if (emailRes.ok) {
+          consentSent = true;
+        } else {
+          console.warn("consent email send failed:", emailRes.status, emailBody);
+        }
       } catch (e) {
         console.warn("consent email send failed:", e);
       }

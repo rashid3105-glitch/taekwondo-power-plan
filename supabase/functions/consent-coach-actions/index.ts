@@ -25,6 +25,34 @@ function randomToken(bytes = 32) {
   return Array.from(arr).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+async function invokeSendEmail(
+  supabaseUrl: string,
+  anonKey: string,
+  authHeader: string,
+  payload: Record<string, unknown>,
+): Promise<{ ok: boolean; status: number; error?: string }> {
+  try {
+    const res = await fetch(`${supabaseUrl}/functions/v1/send-transactional-email`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: authHeader,
+        apikey: anonKey,
+      },
+      body: JSON.stringify(payload),
+    });
+    const text = await res.text();
+    if (!res.ok) {
+      console.warn("send-transactional-email failed", res.status, text);
+      return { ok: false, status: res.status, error: text };
+    }
+    return { ok: true, status: res.status };
+  } catch (e) {
+    console.warn("send-transactional-email fetch threw", e);
+    return { ok: false, status: 0, error: String((e as Error)?.message || e) };
+  }
+}
+
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -196,21 +224,18 @@ Deno.serve(async (req) => {
       });
 
       const consentUrl = `${APP_URL}/consent/${tokenValue}`;
-      const { error: emailErr } = await admin.functions.invoke("send-transactional-email", {
-        body: {
-          templateName: "parental-consent-request",
-          recipientEmail: parentEmail,
-          idempotencyKey: `parental-consent-${athleteId}-${tokenValue.slice(0, 8)}`,
-          templateData: {
-            athleteName: athleteRow.display_name || "your child",
-            consentUrl,
-            expiresInDays: 14,
-          },
+      const sendRes = await invokeSendEmail(supabaseUrl, anonKey, authHeader, {
+        templateName: "parental-consent-request",
+        recipientEmail: parentEmail,
+        idempotencyKey: `parental-consent-${athleteId}-${tokenValue.slice(0, 8)}`,
+        templateData: {
+          athleteName: athleteRow.display_name || "your child",
+          consentUrl,
+          expiresInDays: 14,
         },
       });
-      if (emailErr) {
-        console.warn("consent email send error:", emailErr);
-        return jsonResponse({ ok: true, queued: false });
+      if (!sendRes.ok) {
+        return jsonResponse({ ok: false, queued: false, error: sendRes.error || `status_${sendRes.status}` }, 502);
       }
       return jsonResponse({ ok: true, queued: true });
     }
@@ -236,21 +261,18 @@ Deno.serve(async (req) => {
 
       const athleteNames = missing.map((m) => m.display_name).filter(Boolean);
 
-      const { error: emailErr } = await admin.functions.invoke("send-transactional-email", {
-        body: {
-          templateName: "coach-consent-reminder",
-          recipientEmail: coachEmail,
-          idempotencyKey: `coach-consent-reminder-${coachId}-${new Date().toISOString().slice(0, 10)}`,
-          templateData: {
-            coachName: coachProfile?.display_name || "coach",
-            athleteNames,
-            total: missing.length,
-          },
+      const sendRes = await invokeSendEmail(supabaseUrl, anonKey, authHeader, {
+        templateName: "coach-consent-reminder",
+        recipientEmail: coachEmail,
+        idempotencyKey: `coach-consent-reminder-${coachId}-${new Date().toISOString().slice(0, 10)}`,
+        templateData: {
+          coachName: coachProfile?.display_name || "coach",
+          athleteNames,
+          total: missing.length,
         },
       });
-      if (emailErr) {
-        console.warn("coach reminder email error:", emailErr);
-        return jsonResponse({ ok: true, queued: false, count: missing.length });
+      if (!sendRes.ok) {
+        return jsonResponse({ ok: false, queued: false, count: missing.length, error: sendRes.error || `status_${sendRes.status}` }, 502);
       }
       return jsonResponse({ ok: true, queued: true, count: missing.length });
     }

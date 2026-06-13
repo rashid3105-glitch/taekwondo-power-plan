@@ -1,33 +1,47 @@
-## Goal
+## Problem
 
-Add a new "Data Hosting & Residency" section to the Privacy Policy page so users (and clubs evaluating GDPR compliance) can see where their data lives and what safeguards are in place — while we wait for Lovable Support's reply on the exact region.
+When you typed Kian's parent email and hit "Send", the request reached the server but the email never went out. Edge logs show:
 
-## Changes
+```
+consent email send error: ... status: 401, statusText: "Unauthorized"
+url: ".../send-transactional-email"
+```
 
-### 1. `src/pages/PrivacyPolicy.tsx`
-Insert a new `<section>` between **Data Sharing** and **Retention** using two new translation keys:
-- `privacyHosting` (heading)
-- `privacyHostingDesc` (body)
+`send-transactional-email` is hardened to only accept a real logged-in user's token. The consent code was calling it with the service-role token (admin client), which it rejects. The function then swallowed the error and returned `ok: true, queued: false`, so the UI showed a success toast even though nothing was sent.
 
-### 2. `src/i18n/translations.ts`
-Add the two keys for all 7 locales (da, en, sv, de, ar, no, fa).
+This affects three call sites:
+1. `consent-coach-actions` → `send_parent_request` (the one you just hit)
+2. `consent-coach-actions` → `remind_me` (coach reminder email)
+3. `create-athlete` → auto parental-consent email when a coach creates a minor
 
-Proposed copy (EN, others translated equivalently):
+## Fix
 
-> **Data Hosting & Residency**
-> Sportstalent runs on Lovable Cloud, which is built on Supabase (PostgreSQL, Auth, Storage) and managed by Lovable AB (Sweden). All personal data is processed within the EU/EEA where possible. Some sub-processors (e.g. Lovable AI Gateway via Google Gemini, Stripe for payments, transactional email) may process limited data outside the EU under EU Standard Contractual Clauses (SCCs). Contact us at rashid3105@gmail.com to request our current list of sub-processors or a Data Processing Agreement (DPA).
+Forward the caller's existing `Authorization` header when invoking `send-transactional-email`, instead of the service-role admin client. The caller is always a logged-in coach/admin, so the downstream function's auth check passes.
 
-Danish (primary) copy:
+### Files to change
 
-> **Dataplacering og hosting**
-> Sportstalent kører på Lovable Cloud, som er bygget på Supabase (PostgreSQL, Auth, Storage) og drives af Lovable AB (Sverige). Personoplysninger behandles så vidt muligt inden for EU/EØS. Enkelte underdatabehandlere (fx Lovable AI Gateway via Google Gemini, Stripe til betalinger, transaktionelle e-mails) kan behandle begrænsede data uden for EU under EU-standardkontraktbestemmelser (SCC'er). Kontakt os på rashid3105@gmail.com for at få vores aktuelle liste over underdatabehandlere eller en databehandleraftale (DPA).
+**`supabase/functions/consent-coach-actions/index.ts`**
+- Build a small helper that POSTs to `${SUPABASE_URL}/functions/v1/send-transactional-email` with:
+  - `Authorization: <incoming authHeader>` (the coach's user JWT)
+  - `apikey: SUPABASE_ANON_KEY`
+  - JSON body identical to today's payload
+- Replace both `admin.functions.invoke("send-transactional-email", ...)` calls (parent request + remind_me) with the helper.
+- Treat non-2xx as a real failure and return `{ ok: false, queued: false, error }` so the UI can show a proper error toast instead of a false success.
 
-### 3. Bump the `privacyLastUpdated` date to today (2026-06-13).
+**`supabase/functions/create-athlete/index.ts`**
+- Same swap: invoke `send-transactional-email` using the original `authHeader` (already available in the function) instead of the `adminClient`.
+- Keep the existing best-effort behaviour (don't fail athlete creation if the email fails), but log the actual status code so we can see it in logs.
 
-## Out of scope
+**`src/components/coach/ConsentMissingPanel.tsx`** (small UX safety net)
+- Currently treats `{ ok: true, queued: false }` as success. Change the success toast to require `queued === true`; otherwise show `consentParentRequestFailed`. No new translation keys needed.
 
-- No backend, RLS, or schema changes.
-- No actual region migration — that requires Lovable Support's response first.
-- No changes to Help.tsx changelog (minor copy change).
+### Out of scope
+- No schema changes, no RLS changes, no new tables.
+- No change to `send-transactional-email` itself — keeping its strict auth is correct.
+- No change to translations or Help/changelog (purely a backend bug fix).
 
-Approve to implement.
+### Verification
+1. Re-deploy `consent-coach-actions` and `create-athlete`.
+2. From the coach UI, enter the parent's email for Kian and click Send.
+3. Confirm in `email_send_log` that a `parental-consent-request` row is created with `status='sent'` and `recipient_email` = the parent's address.
+4. Check the parent's inbox.
