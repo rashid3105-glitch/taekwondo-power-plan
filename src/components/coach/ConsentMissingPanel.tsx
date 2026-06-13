@@ -80,7 +80,7 @@ export function ConsentMissingPanel() {
       body: { action: "send_parent_request", athlete_id: row.athlete_id, parent_email: email },
     });
     setSendingId(null);
-    if (error || !(data as any)?.ok) {
+    if (error || !(data as any)?.ok || !(data as any)?.queued) {
       toast.error(t("consentParentRequestFailed"));
       return;
     }
