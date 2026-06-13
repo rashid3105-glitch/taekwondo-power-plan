@@ -18,6 +18,7 @@ interface MissingRow {
 export function ConsentMissingPanel() {
   const { t } = useLanguage();
   const [rows, setRows] = useState<MissingRow[] | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [sendingId, setSendingId] = useState<string | null>(null);
   const [reminding, setReminding] = useState(false);
@@ -27,13 +28,37 @@ export function ConsentMissingPanel() {
       body: { action: "list_missing" },
     });
     if (error) {
+      console.error("[ConsentMissingPanel] list_missing failed:", error);
+      const msg = (error as any)?.message || (error as any)?.error || String(error);
+      setLoadError(msg);
       setRows([]);
       return;
     }
+    if ((data as any)?.error) {
+      console.error("[ConsentMissingPanel] list_missing returned error:", (data as any).error);
+      setLoadError(String((data as any).error));
+      setRows([]);
+      return;
+    }
+    setLoadError(null);
     setRows((data?.missing as MissingRow[]) || []);
   }
 
   useEffect(() => { load(); }, []);
+
+  if (loadError) {
+    return (
+      <div className="rounded-xl border border-destructive/40 bg-destructive/10 p-4">
+        <div className="flex items-start gap-3">
+          <ShieldAlert className="h-5 w-5 text-destructive mt-0.5 shrink-0" />
+          <div className="flex-1 min-w-0">
+            <h3 className="text-sm font-semibold text-destructive">{t("consentLoadFailed")}</h3>
+            <p className="text-xs text-destructive/80 mt-1 break-words">{loadError}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!rows || rows.length === 0) return null;
 
