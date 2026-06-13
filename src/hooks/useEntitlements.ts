@@ -39,7 +39,8 @@ export function useEntitlements(): EntitlementState {
         return;
       }
 
-      // Check admin role first
+      // Check admin / coach role first — coaches in a club always have full
+      // module access (subject to per-club / per-athlete override toggles).
       const { data: roles } = await supabase
         .from("user_roles")
         .select("role")
@@ -48,6 +49,12 @@ export function useEntitlements(): EntitlementState {
         cachedTier = "admin";
         cachedAt = Date.now();
         setTier("admin");
+        return;
+      }
+      if (roles?.some((r) => r.role === "coach")) {
+        cachedTier = "team_small";
+        cachedAt = Date.now();
+        setTier("team_small");
         return;
       }
 
