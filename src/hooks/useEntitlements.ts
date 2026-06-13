@@ -106,9 +106,16 @@ export function useEntitlements(): EntitlementState {
     if (cachedTier && Date.now() - cachedAt < CACHE_TTL_MS) {
       setTier(cachedTier);
       setLoading(false);
-      return;
+    } else {
+      fetchTier();
     }
-    fetchTier();
+    // Bust cache + refetch when auth user changes (sign-in/out, role change).
+    const { data: sub } = supabase.auth.onAuthStateChange(() => {
+      cachedTier = null;
+      cachedAt = 0;
+      fetchTier();
+    });
+    return () => sub.subscription.unsubscribe();
   }, []);
 
   return {
