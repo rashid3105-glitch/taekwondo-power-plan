@@ -56,7 +56,7 @@ export const template = {
   displayName: 'Parental consent request',
   previewData: {
     athleteName: 'Sara',
-    consentUrl: 'https://taekwondo-power-plan.lovable.app/consent/example-token',
+    consentUrl: 'https://sportstalent.dk/consent/example-token',
     expiresInDays: 14,
   },
 } satisfies TemplateEntry
