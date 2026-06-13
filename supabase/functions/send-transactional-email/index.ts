@@ -134,9 +134,22 @@ Deno.serve(async (req) => {
     )
   }
 
+  // Templates that are authorized server-side by the calling Edge Function
+  // (which has already verified the coach/athlete/parent relationship) and
+  // therefore by design send to a third-party recipient.
+  const SELF_OR_ADMIN_EXEMPT_TEMPLATES = new Set([
+    'parental-consent-request',
+    'coach-consent-reminder',
+  ])
+
   // Security: if template has no fixed `to`, restrict non-admin callers
-  // to only send emails to their own address.
-  if (!template.to && recipientEmail) {
+  // to only send emails to their own address — unless the template is in
+  // the server-authorized allowlist above.
+  if (
+    !template.to &&
+    recipientEmail &&
+    !SELF_OR_ADMIN_EXEMPT_TEMPLATES.has(templateName)
+  ) {
     if (callerEmail?.toLowerCase() !== recipientEmail.toLowerCase()) {
       // Check if caller is admin
       const { data: isAdmin } = await userClient.rpc('is_admin', { _user_id: callerUserId })
