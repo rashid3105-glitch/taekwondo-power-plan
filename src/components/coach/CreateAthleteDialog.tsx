@@ -85,6 +85,8 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) 
       let description = err.message;
       if (err.message === "COACH_CLUB_REQUIRED") description = t("completeClubBeforeCoach");
       else if (err.message === "WEAK_PASSWORD") description = t("passwordTooWeak");
+      else if (err.message === "PARENT_EMAIL_REQUIRED") description = t("parentEmailRequiredDesc");
+
       toast({ title: t("error"), description, variant: "destructive" });
     } finally {
       setCreating(false);
