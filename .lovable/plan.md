@@ -1,20 +1,77 @@
-## Cause
-The "I dag" card in `src/components/hub/AthleteDashboard.tsx` reads `plan_data.days` or `plan_data.week`, but the active plan structure is actually `plan_data.weeklySchedule` (array indexed Mon=0..Sun=6, with `sessions[]` containing `label`, `focus`, `type`, `exercises[]`). The lookup returns nothing, so the card always shows the empty state even when training is scheduled.
+## Problem
 
-## Changes — `src/components/hub/AthleteDashboard.tsx`
+Laila and Sami are coach-only users. Clicking **Testing** or **Rehab** in the side menu briefly flashes the tab content, then bounces back to `/coach`. Same for any other athlete-only tab the side menu surfaces.
 
-1. **Extend the data shape and fetch**
-   - Add `label?: string`, `focus?: string`, `exercises: string[]` to `TodaySession`.
-   - When loading the plan, use `plan_data.weeklySchedule ?? plan_data.days ?? plan_data.week` so existing formats still work.
-   - Pick today's day with the existing `(todayDow + 6) % 7` index.
-   - From the first non-empty session, capture: `label` (fallback to `type`/`focus`/"Træning"), `focus`, and the first ~5 exercise names (`exercises.map(e => e.name).filter(Boolean)`).
+## Root cause
 
-2. **Render exercise headlines**
-   - Keep the existing title row (session label) and tags.
-   - Below the tags, render a short bullet list of up to 5 exercise names (`text-xs text-white/80`, leading-tight, truncated). If more than 5 exist, append a muted `+N flere` line.
-   - Keep the card clickable to `/dashboard?tab=plan` and the Start chip.
+`src/pages/Dashboard.tsx` lines 192–200:
 
-3. **No empty-state change** when a real session exists; "Ingen træning planlagt i dag" still shows when `weeklySchedule` is missing or the day is a rest day with no exercises.
+```ts
+useEffect(() => {
+  if (activeClubLoading || !isCoachMode) return;
+  const isActiveCoachClub = activeMembership
+    ? activeMembership.role_in_club === "coach" || activeMembership.role_in_club === "admin"
+    : memberships.length <= 1 && role === "coach";
+  if (isActiveCoachClub) {
+    navigate("/coach", { replace: true });
+  }
+}, [role, memberships.length, activeMembership, activeClubLoading, isCoachMode, navigate]);
+```
 
-## Out of scope
-- No DB changes, no edits to the Plan/Uge view, no translation additions (Danish-only hub copy is consistent with the surrounding card).
+This effect unconditionally hard-redirects any coach in coach-mode away from `/dashboard` — including when the user explicitly opened `/dashboard?tab=testing`. Since Testing and Rehab views only render inside Dashboard, coaches can never reach them while in coach mode.
+
+The entitlements fix from the last turn (`coach` role → `team_small`) is correctly applied; the tier check itself already passes. The only thing blocking access is this route guard.
+
+## Fix
+
+### 1) Let coaches deep-link into athlete-tabs (Dashboard.tsx)
+
+Skip the auto-redirect when the URL already specifies a non-hub tab. Only bounce coaches to `/coach` when they land on the bare Dashboard hub.
+
+```ts
+useEffect(() => {
+  if (activeClubLoading || !isCoachMode) return;
+  // Allow coaches to deep-link to athlete-only tabs (testing, rehab, etc.).
+  // Only auto-bounce when they land on the bare hub.
+  const requestedTab = searchParams.get("tab");
+  if (requestedTab && requestedTab !== "hub") return;
+
+  const isActiveCoachClub = activeMembership
+    ? activeMembership.role_in_club === "coach" || activeMembership.role_in_club === "admin"
+    : memberships.length <= 1 && role === "coach";
+  if (isActiveCoachClub) {
+    navigate("/coach", { replace: true });
+  }
+}, [role, memberships.length, activeMembership, activeClubLoading, isCoachMode, navigate, searchParams]);
+```
+
+### 2) Bust entitlements cache on auth/user change (useEntitlements.ts)
+
+`cachedTier` is module-scoped, so a stale value can survive a sign-in/-out or role change until a hard reload. Add an `onAuthStateChange` listener that clears the cache + refetches when the user id changes.
+
+```ts
+useEffect(() => {
+  // initial fetch (existing code)
+  ...
+  const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+    cachedTier = null;
+    cachedAt = 0;
+    fetchTier();
+  });
+  return () => sub.subscription.unsubscribe();
+}, []);
+```
+
+## Verification
+
+1. As Laila (coach-only, in coach mode), open `/dashboard?tab=testing` directly — should render `PhysicalTesting` (coach mode), not bounce.
+2. Click Testing and Rehab from the Dashboard side menu — should land on the respective tabs.
+3. Going to bare `/dashboard` should still bounce to `/coach` (preserves existing UX).
+4. Sign out and sign in as a different user → tier should refetch immediately (no stale `cachedTier`).
+
+## Files touched
+
+- `src/pages/Dashboard.tsx` — guard the redirect effect with `searchParams.get("tab")`.
+- `src/hooks/useEntitlements.ts` — clear cache + refetch on `onAuthStateChange`.
+
+No DB, RLS, or edge-function changes needed.
