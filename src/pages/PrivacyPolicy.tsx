@@ -36,7 +36,7 @@ export default function PrivacyPolicy() {
         </Button>
 
         <h1 className="text-2xl font-extrabold text-foreground">{t("privacyPolicyTitle")}</h1>
-        <p className="text-xs text-muted-foreground">{t("privacyLastUpdated")}: 2026-03-25</p>
+        <p className="text-xs text-muted-foreground">{t("privacyLastUpdated")}: 2026-06-13</p>
 
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-foreground">{t("privacyWhoWeAre")}</h2>
@@ -71,6 +71,11 @@ export default function PrivacyPolicy() {
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-foreground">{t("privacyDataSharing")}</h2>
           <p className="text-sm text-muted-foreground leading-relaxed">{t("privacyDataSharingDesc")}</p>
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="text-lg font-bold text-foreground">{t("privacyHosting")}</h2>
+          <p className="text-sm text-muted-foreground leading-relaxed">{t("privacyHostingDesc")}</p>
         </section>
 
         <section className="space-y-3">
