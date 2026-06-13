@@ -2,3 +2,7 @@ project_id = "zklwergsziidgyxewbkw"
 
 [functions.parent-signup]
 verify_jwt = false
+
+[functions.consent-confirm]
+verify_jwt = false
+

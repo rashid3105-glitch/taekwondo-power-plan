@@ -4,7 +4,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2'
 import { TEMPLATES } from '../_shared/transactional-email-templates/registry.ts'
 
 // Configuration baked in at scaffold time
-const SITE_NAME = "taekwondo-power-plan"
+const SITE_NAME = "Sportstalent"
 const SENDER_DOMAIN = "notify.sportstalent.dk"
 const FROM_DOMAIN = "sportstalent.dk"
 

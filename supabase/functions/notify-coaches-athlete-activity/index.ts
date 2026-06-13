@@ -11,7 +11,7 @@ const cors = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-const SITE_NAME = "taekwondo-power-plan";
+const SITE_NAME = "Sportstalent";
 const SENDER_DOMAIN = "notify.sportstalent.dk";
 const FROM_DOMAIN = "sportstalent.dk";
 
