@@ -224,21 +224,18 @@ Deno.serve(async (req) => {
       });
 
       const consentUrl = `${APP_URL}/consent/${tokenValue}`;
-      const { error: emailErr } = await admin.functions.invoke("send-transactional-email", {
-        body: {
-          templateName: "parental-consent-request",
-          recipientEmail: parentEmail,
-          idempotencyKey: `parental-consent-${athleteId}-${tokenValue.slice(0, 8)}`,
-          templateData: {
-            athleteName: athleteRow.display_name || "your child",
-            consentUrl,
-            expiresInDays: 14,
-          },
+      const sendRes = await invokeSendEmail(supabaseUrl, anonKey, authHeader, {
+        templateName: "parental-consent-request",
+        recipientEmail: parentEmail,
+        idempotencyKey: `parental-consent-${athleteId}-${tokenValue.slice(0, 8)}`,
+        templateData: {
+          athleteName: athleteRow.display_name || "your child",
+          consentUrl,
+          expiresInDays: 14,
         },
       });
-      if (emailErr) {
-        console.warn("consent email send error:", emailErr);
-        return jsonResponse({ ok: true, queued: false });
+      if (!sendRes.ok) {
+        return jsonResponse({ ok: false, queued: false, error: sendRes.error || `status_${sendRes.status}` }, 502);
       }
       return jsonResponse({ ok: true, queued: true });
     }
