@@ -27,6 +27,7 @@ import { WeeklySquadExport } from "@/components/coach/WeeklySquadExport";
 import { CreateAthleteDialog } from "@/components/coach/CreateAthleteDialog";
 import { InviteDialog } from "@/components/coach/InviteDialog";
 import { PendingAthletesSection } from "@/components/coach/PendingAthletesSection";
+import { ConsentMissingPanel } from "@/components/coach/ConsentMissingPanel";
 import { CoachBulkCreateCompetitionDialog } from "@/components/coach/CoachBulkCreateCompetitionDialog";
 import { TeamWeeklyScheduleCard } from "@/components/coach/TeamWeeklyScheduleCard";
 import { useIsMobile } from "@/hooks/use-mobile";
