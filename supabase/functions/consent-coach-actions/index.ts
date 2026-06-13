@@ -25,6 +25,34 @@ function randomToken(bytes = 32) {
   return Array.from(arr).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+async function invokeSendEmail(
+  supabaseUrl: string,
+  anonKey: string,
+  authHeader: string,
+  payload: Record<string, unknown>,
+): Promise<{ ok: boolean; status: number; error?: string }> {
+  try {
+    const res = await fetch(`${supabaseUrl}/functions/v1/send-transactional-email`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: authHeader,
+        apikey: anonKey,
+      },
+      body: JSON.stringify(payload),
+    });
+    const text = await res.text();
+    if (!res.ok) {
+      console.warn("send-transactional-email failed", res.status, text);
+      return { ok: false, status: res.status, error: text };
+    }
+    return { ok: true, status: res.status };
+  } catch (e) {
+    console.warn("send-transactional-email fetch threw", e);
+    return { ok: false, status: 0, error: String((e as Error)?.message || e) };
+  }
+}
+
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
