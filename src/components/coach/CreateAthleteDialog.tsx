@@ -286,7 +286,7 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) 
               </div>
             </div>
 
-            <Button onClick={createAthlete} disabled={creating || disabled || !name.trim() || !email.trim() || !password.trim()} className="w-full">
+            <Button onClick={createAthlete} disabled={creating || disabled || !name.trim() || !email.trim() || !password.trim() || (isMinor && !parentEmailValid)} className="w-full">
               {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <><UserPlus className="h-4 w-4 mr-1" /> {t("createAccount")}</>}
             </Button>
           </div>
