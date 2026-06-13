@@ -247,6 +247,21 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) 
               </div>
             </div>
 
+            {isMinor && (
+              <div className="space-y-1 rounded-md border border-border bg-muted/30 p-2">
+                <Label className="text-xs">{t("parentEmailLabel")} *</Label>
+                <Input
+                  type="email"
+                  value={parentEmail}
+                  onChange={(e) => setParentEmail(e.target.value)}
+                  placeholder={t("parentEmailPlaceholder")}
+                  className="h-9"
+                />
+                <p className="text-[11px] text-muted-foreground">{t("parentEmailHint")}</p>
+              </div>
+            )}
+
+
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1">
                 <Label className="text-xs">{t("beltLevel")}</Label>
