@@ -22,6 +22,7 @@ export function ConsentMissingPanel() {
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [sendingId, setSendingId] = useState<string | null>(null);
   const [reminding, setReminding] = useState(false);
+  const [expanded, setExpanded] = useState<boolean | null>(null);
 
   async function load() {
     const { data, error } = await supabase.functions.invoke("consent-coach-actions", {
@@ -41,7 +42,9 @@ export function ConsentMissingPanel() {
       return;
     }
     setLoadError(null);
-    setRows((data?.missing as MissingRow[]) || []);
+    const list = (data?.missing as MissingRow[]) || [];
+    setRows(list);
+    setExpanded((prev) => (prev === null ? list.length <= 3 : prev));
   }
 
   useEffect(() => { load(); }, []);
@@ -99,20 +102,38 @@ export function ConsentMissingPanel() {
     toast.success(t("consentReminderSent"));
   }
 
+  const isOpen = expanded ?? false;
+
   return (
     <div className="rounded-xl border border-amber-300/40 bg-amber-50/60 dark:bg-amber-950/20 p-4">
-      <div className="flex items-start gap-3 mb-3">
-        <ShieldAlert className="h-5 w-5 text-amber-600 mt-0.5 shrink-0" />
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-3 flex-wrap">
-            <h3 className="text-sm font-semibold text-amber-900 dark:text-amber-200">
-              {t("consentMissingPanelTitle")}{" "}
-              <Badge variant="secondary" className="ml-1 align-middle">{rows.length}</Badge>
-            </h3>
+      <button
+        type="button"
+        onClick={() => setExpanded(!isOpen)}
+        aria-expanded={isOpen}
+        className="w-full flex items-center gap-3 text-left"
+      >
+        <ShieldAlert className="h-5 w-5 text-amber-600 shrink-0" />
+        <h3 className="text-sm font-semibold text-amber-900 dark:text-amber-200 flex-1 min-w-0">
+          {t("consentMissingPanelTitle")}{" "}
+          <Badge variant="secondary" className="ml-1 align-middle">{rows.length}</Badge>
+        </h3>
+        {isOpen ? (
+          <ChevronUp className="h-4 w-4 text-amber-700 dark:text-amber-300 shrink-0" />
+        ) : (
+          <ChevronDown className="h-4 w-4 text-amber-700 dark:text-amber-300 shrink-0" />
+        )}
+      </button>
+
+      {isOpen && (
+        <>
+          <div className="flex items-start justify-between gap-3 flex-wrap mt-3 mb-3 pl-8">
+            <p className="text-xs text-amber-800/80 dark:text-amber-300/80 flex-1 min-w-0">
+              {t("consentMissingPanelDesc")}
+            </p>
             <Button
               size="sm"
               variant="outline"
-              onClick={remindMe}
+              onClick={(e) => { e.stopPropagation(); remindMe(); }}
               disabled={reminding}
               className="h-8"
             >
@@ -120,55 +141,52 @@ export function ConsentMissingPanel() {
               {t("consentRemindMeBtn")}
             </Button>
           </div>
-          <p className="text-xs text-amber-800/80 dark:text-amber-300/80 mt-1">
-            {t("consentMissingPanelDesc")}
-          </p>
-        </div>
-      </div>
 
-      <div className="space-y-2">
-        {rows.map((row) => (
-          <div
-            key={row.athlete_id}
-            className="rounded-lg border border-border bg-card p-3 flex flex-col sm:flex-row sm:items-center gap-2"
-          >
-            <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium truncate">{row.display_name}</div>
-              <div className="text-[11px] text-muted-foreground flex flex-wrap gap-x-2">
-                <span>{statusLabel(row.status)}</span>
-                {row.parent_email_on_token && (
-                  <span className="truncate">
-                    {t("consentLastSentTo")} {row.parent_email_on_token}
-                  </span>
-                )}
-              </div>
-            </div>
-            <div className="flex gap-2 w-full sm:w-auto">
-              <Input
-                type="email"
-                inputMode="email"
-                placeholder={t("parentEmailPlaceholder")}
-                value={drafts[row.athlete_id] ?? row.parent_email_on_token ?? ""}
-                onChange={(e) =>
-                  setDrafts((d) => ({ ...d, [row.athlete_id]: e.target.value }))
-                }
-                className="h-9 text-sm sm:w-64"
-              />
-              <Button
-                size="sm"
-                onClick={() => sendForAthlete(row)}
-                disabled={sendingId === row.athlete_id}
-                className="h-9 whitespace-nowrap"
+          <div className="space-y-2">
+            {rows.map((row) => (
+              <div
+                key={row.athlete_id}
+                className="rounded-lg border border-border bg-card p-3 flex flex-col sm:flex-row sm:items-center gap-2"
               >
-                <Mail className="h-3.5 w-3.5 mr-1" />
-                {sendingId === row.athlete_id
-                  ? t("consentSendingParent")
-                  : t("consentSendParentBtn")}
-              </Button>
-            </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium truncate">{row.display_name}</div>
+                  <div className="text-[11px] text-muted-foreground flex flex-wrap gap-x-2">
+                    <span>{statusLabel(row.status)}</span>
+                    {row.parent_email_on_token && (
+                      <span className="truncate">
+                        {t("consentLastSentTo")} {row.parent_email_on_token}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div className="flex gap-2 w-full sm:w-auto">
+                  <Input
+                    type="email"
+                    inputMode="email"
+                    placeholder={t("parentEmailPlaceholder")}
+                    value={drafts[row.athlete_id] ?? row.parent_email_on_token ?? ""}
+                    onChange={(e) =>
+                      setDrafts((d) => ({ ...d, [row.athlete_id]: e.target.value }))
+                    }
+                    className="h-9 text-sm sm:w-64"
+                  />
+                  <Button
+                    size="sm"
+                    onClick={() => sendForAthlete(row)}
+                    disabled={sendingId === row.athlete_id}
+                    className="h-9 whitespace-nowrap"
+                  >
+                    <Mail className="h-3.5 w-3.5 mr-1" />
+                    {sendingId === row.athlete_id
+                      ? t("consentSendingParent")
+                      : t("consentSendParentBtn")}
+                  </Button>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </>
+      )}
     </div>
   );
 }
