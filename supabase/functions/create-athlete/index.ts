@@ -6,7 +6,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const APP_URL = "https://taekwondo-power-plan.lovable.app";
+const APP_URL = "https://sportstalent.dk";
 
 function randomToken(bytes = 32) {
   const arr = new Uint8Array(bytes);
