@@ -15,6 +15,7 @@ import { template as coachProfileReady } from './coach-profile-ready.tsx'
 import { template as coachWeeklyDigest } from './coach-weekly-digest.tsx'
 import { template as coachMessage } from './coach-message.tsx'
 import { template as athleteActivityNotification } from './athlete-activity-notification.tsx'
+import { template as parentalConsentRequest } from './parental-consent-request.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'new-user-notification': newUserNotification,
@@ -23,4 +24,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'coach-weekly-digest': coachWeeklyDigest,
   'coach-message': coachMessage,
   'athlete-activity-notification': athleteActivityNotification,
+  'parental-consent-request': parentalConsentRequest,
 }

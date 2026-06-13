@@ -29,23 +29,35 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) 
   const [belt, setBelt] = useState("white");
   const [expYears, setExpYears] = useState("");
   const [discipline, setDiscipline] = useState("sparring");
+  const [parentEmail, setParentEmail] = useState("");
   const [creating, setCreating] = useState(false);
 
   // Add by code
   const [code, setCode] = useState("");
   const [adding, setAdding] = useState(false);
 
+  const ageNum = age ? parseInt(age) : NaN;
+  const isMinor = Number.isFinite(ageNum) && ageNum < 18;
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const parentEmailValid = !isMinor || EMAIL_RE.test(parentEmail.trim());
+
   const reset = () => {
     setName(""); setEmail(""); setPassword(""); setAge("");
     setBelt("white"); setExpYears(""); setDiscipline("sparring");
+    setParentEmail("");
     setCode("");
   };
+
 
   const createAthlete = async () => {
     if (!name.trim() || !email.trim() || !password.trim()) return;
     const pw = validatePassword(password);
     if (!pw.ok) {
       toast({ title: t("error"), description: t("passwordTooWeak"), variant: "destructive" });
+      return;
+    }
+    if (isMinor && !parentEmailValid) {
+      toast({ title: t("error"), description: t("parentEmailRequiredDesc"), variant: "destructive" });
       return;
     }
     setCreating(true);
@@ -59,8 +71,10 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) 
           belt_level: belt,
           experience_years: expYears ? parseInt(expYears) : null,
           discipline,
+          parent_email: isMinor ? parentEmail.trim() : null,
         },
       });
+
       if (error) throw error;
       if ((data as any)?.error) throw new Error((data as any).error);
       toast({ title: t("athleteCreated"), description: t("athleteCreatedDesc") });
@@ -71,6 +85,8 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) 
       let description = err.message;
       if (err.message === "COACH_CLUB_REQUIRED") description = t("completeClubBeforeCoach");
       else if (err.message === "WEAK_PASSWORD") description = t("passwordTooWeak");
+      else if (err.message === "PARENT_EMAIL_REQUIRED") description = t("parentEmailRequiredDesc");
+
       toast({ title: t("error"), description, variant: "destructive" });
     } finally {
       setCreating(false);
@@ -231,6 +247,21 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) 
               </div>
             </div>
 
+            {isMinor && (
+              <div className="space-y-1 rounded-md border border-border bg-muted/30 p-2">
+                <Label className="text-xs">{t("parentEmailLabel")} *</Label>
+                <Input
+                  type="email"
+                  value={parentEmail}
+                  onChange={(e) => setParentEmail(e.target.value)}
+                  placeholder={t("parentEmailPlaceholder")}
+                  className="h-9"
+                />
+                <p className="text-[11px] text-muted-foreground">{t("parentEmailHint")}</p>
+              </div>
+            )}
+
+
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1">
                 <Label className="text-xs">{t("beltLevel")}</Label>
@@ -255,7 +286,7 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) 
               </div>
             </div>
 
-            <Button onClick={createAthlete} disabled={creating || disabled || !name.trim() || !email.trim() || !password.trim()} className="w-full">
+            <Button onClick={createAthlete} disabled={creating || disabled || !name.trim() || !email.trim() || !password.trim() || (isMinor && !parentEmailValid)} className="w-full">
               {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <><UserPlus className="h-4 w-4 mr-1" /> {t("createAccount")}</>}
             </Button>
           </div>

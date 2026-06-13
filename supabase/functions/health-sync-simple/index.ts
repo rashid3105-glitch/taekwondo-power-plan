@@ -1,4 +1,6 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { isMinor } from "../_shared/age.ts";
+
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -38,6 +40,36 @@ Deno.serve(async (req) => {
 
     const userId = authData.user.id;
     const today = new Date().toISOString().slice(0, 10);
+
+    // ─── Parental consent gate (minors only) ───
+    const admin0 = createClient(SUPABASE_URL, SERVICE_KEY);
+    const { data: prof } = await admin0
+      .from("profiles")
+      .select("birth_date, age")
+      .eq("user_id", userId)
+      .maybeSingle();
+    if (isMinor(prof?.birth_date as any, (prof?.age as any) ?? null)) {
+      const { data: consent } = await admin0
+        .from("consent_records")
+        .select("status, grace_until")
+        .eq("athlete_id", userId)
+        .eq("consent_type", "health_data_processing")
+        .maybeSingle();
+      const granted = consent?.status === "granted";
+      const inGrace =
+        consent?.grace_until && new Date(consent.grace_until).getTime() > Date.now();
+      if (!granted && !inGrace) {
+        return new Response(
+          JSON.stringify({
+            error: "parental_consent_required",
+            message:
+              "This athlete is under 18 and parental consent for health data processing has not been granted yet.",
+          }),
+          { status: 403, headers: { ...cors, "Content-Type": "application/json" } },
+        );
+      }
+    }
+
 
     // Step 2 — aggregate into daily buckets
     const byDate: Record<string, { steps: number; sleep_seconds: number; hr: number[]; hrv_vals: number[] }> = {};

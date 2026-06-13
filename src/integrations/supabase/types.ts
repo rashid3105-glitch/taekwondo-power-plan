@@ -1094,6 +1094,87 @@ export type Database = {
           },
         ]
       }
+      consent_records: {
+        Row: {
+          athlete_id: string
+          club_id: string | null
+          consent_type: string
+          created_at: string
+          grace_until: string | null
+          granted_at: string | null
+          granted_by_email: string | null
+          granted_by_relation: string | null
+          id: string
+          policy_version: string | null
+          status: string
+          updated_at: string
+          withdrawn_at: string | null
+        }
+        Insert: {
+          athlete_id: string
+          club_id?: string | null
+          consent_type?: string
+          created_at?: string
+          grace_until?: string | null
+          granted_at?: string | null
+          granted_by_email?: string | null
+          granted_by_relation?: string | null
+          id?: string
+          policy_version?: string | null
+          status?: string
+          updated_at?: string
+          withdrawn_at?: string | null
+        }
+        Update: {
+          athlete_id?: string
+          club_id?: string | null
+          consent_type?: string
+          created_at?: string
+          grace_until?: string | null
+          granted_at?: string | null
+          granted_by_email?: string | null
+          granted_by_relation?: string | null
+          id?: string
+          policy_version?: string | null
+          status?: string
+          updated_at?: string
+          withdrawn_at?: string | null
+        }
+        Relationships: []
+      }
+      consent_tokens: {
+        Row: {
+          athlete_id: string
+          confirmed_at: string | null
+          consent_type: string
+          created_at: string
+          expires_at: string
+          id: string
+          parent_email: string
+          token: string
+        }
+        Insert: {
+          athlete_id: string
+          confirmed_at?: string | null
+          consent_type?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          parent_email: string
+          token: string
+        }
+        Update: {
+          athlete_id?: string
+          confirmed_at?: string | null
+          consent_type?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          parent_email?: string
+          token?: string
+        }
+        Relationships: []
+      }
       contact_submissions: {
         Row: {
           created_at: string

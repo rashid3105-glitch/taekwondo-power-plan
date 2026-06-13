@@ -76,6 +76,8 @@ import InviteSignup from "./pages/InviteSignup";
 import Messages from "./pages/Messages";
 import ParentJoin from "./pages/ParentJoin";
 import ParentDashboard from "./pages/ParentDashboard";
+import Consent from "./pages/Consent";
+
 import { UpgradeGate } from "@/components/UpgradeGate";
 import { AIAssistant } from "@/components/AIAssistant";
 import CoachSurveys from "./pages/CoachSurveys";
@@ -88,8 +90,9 @@ const AI_ASSISTANT_HIDDEN_PATHS = new Set([
 ]);
 const AI_ASSISTANT_HIDDEN_PREFIXES = [
   "/platform/", "/features/", "/match/share/", "/athlete/",
-  "/join/", "/parent-join/", "/invite/",
+  "/join/", "/parent-join/", "/invite/", "/consent/",
 ];
+
 const shouldShowAIAssistant = (pathname: string) => {
   if (AI_ASSISTANT_HIDDEN_PATHS.has(pathname)) return false;
   return !AI_ASSISTANT_HIDDEN_PREFIXES.some((p) => pathname.startsWith(p));
@@ -190,7 +193,9 @@ const AnimatedRoutes = () => {
         <Route path="/join/:code" element={<Page><JoinInvite /></Page>} />
         <Route path="/parent-join/:code" element={<Page><ParentJoin /></Page>} />
         <Route path="/parent-dashboard" element={<Page><ParentDashboard /></Page>} />
+        <Route path="/consent/:token" element={<Page><Consent /></Page>} />
         <Route path="/payment-success" element={<Page><PaymentSuccess /></Page>} />
+
         <Route path="/unsubscribe" element={<Page><Unsubscribe /></Page>} />
         <Route path="/privacy" element={<Page><PrivacyPolicy /></Page>} />
         <Route path="/taekwondo-training-program" element={<Page><SeoLanding /></Page>} />
