@@ -1,4 +1,6 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { isMinor } from "../_shared/age.ts";
+
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
