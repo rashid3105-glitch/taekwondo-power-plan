@@ -191,13 +191,17 @@ export default function Dashboard() {
   // Only stay in the coach dashboard when coach mode is explicitly active.
   useEffect(() => {
     if (activeClubLoading || !isCoachMode) return;
+    // Allow coaches to deep-link to athlete-only tabs (testing, rehab, etc.).
+    // Only auto-bounce when they land on the bare hub.
+    const requestedTab = searchParams.get("tab");
+    if (requestedTab && requestedTab !== "hub") return;
     const isActiveCoachClub = activeMembership
       ? activeMembership.role_in_club === "coach" || activeMembership.role_in_club === "admin"
       : memberships.length <= 1 && role === "coach";
     if (isActiveCoachClub) {
       navigate("/coach", { replace: true });
     }
-  }, [role, memberships.length, activeMembership, activeClubLoading, isCoachMode, navigate]);
+  }, [role, memberships.length, activeMembership, activeClubLoading, isCoachMode, navigate, searchParams]);
 
   // Sync activeTab → URL ?tab= so browser back/refresh works.
   useEffect(() => {
