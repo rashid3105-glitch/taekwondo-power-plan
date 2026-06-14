@@ -703,7 +703,7 @@ export default function Diary() {
                                 </Badge>
                               )}
                             </div>
-                            <p className="text-sm text-foreground line-clamp-1 mt-0.5">{entry.content}</p>
+                            <p className="text-sm text-card-foreground line-clamp-1 mt-0.5">{entry.content}</p>
                           </div>
                           <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
                         </div>
@@ -756,16 +756,16 @@ export default function Diary() {
                           </Button>
                         </div>
                       </div>
-                      <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">{entry.content}</p>
+                      <p className="text-sm text-card-foreground whitespace-pre-wrap leading-relaxed">{entry.content}</p>
                       {((entry.entry_types?.includes("running")) || entry.entry_type === "running") && entry.run_distance_km && (
                         <div className="grid grid-cols-3 gap-2">
                           <div className="rounded-lg bg-muted/50 p-2.5 text-center">
-                            <div className="text-sm font-bold">{entry.run_distance_km} km</div>
+                            <div className="text-sm font-bold text-card-foreground">{entry.run_distance_km} km</div>
                             <div className="text-[10px] text-muted-foreground">{t("runDistanceKm")}</div>
                           </div>
                           {entry.run_pace_seconds_per_km && (
                             <div className="rounded-lg bg-muted/50 p-2.5 text-center">
-                              <div className="text-sm font-bold">{formatPace(entry.run_pace_seconds_per_km)}/km</div>
+                              <div className="text-sm font-bold text-card-foreground">{formatPace(entry.run_pace_seconds_per_km)}/km</div>
                               <div className="text-[10px] text-muted-foreground">{t("runPace")}</div>
                             </div>
                           )}

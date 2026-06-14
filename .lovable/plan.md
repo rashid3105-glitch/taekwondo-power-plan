@@ -1,47 +1,37 @@
 ## Problem
+På `/diary` (Dagbog) er brødtekst og løbe-metrics næsten usynlige (hvid tekst på lys grå-hvid kortbaggrund). Det rammer både atlet og coach (coachen ser samme side når han åbner en atlets dagbog).
 
-When you typed Kian's parent email and hit "Send", the request reached the server but the email never went out. Edge logs show:
+## Årsag
+`ThemeSync` (src/contexts/ThemeSync.tsx) overskriver globalt:
+- `--background: 0 0% 4%` (sort)
+- `--foreground: 0 0% 100%` (hvid)
 
-```
-consent email send error: ... status: 401, statusText: "Unauthorized"
-url: ".../send-transactional-email"
-```
+…men rører IKKE `--card` / `--card-foreground`. Så kortene beholder lys-tema-værdierne (`--card: 220 13% 95%` lys, `--card-foreground: 222 35% 12%` mørk).
 
-`send-transactional-email` is hardened to only accept a real logged-in user's token. The consent code was calling it with the service-role token (admin client), which it rejects. The function then swallowed the error and returned `ok: true, queued: false`, so the UI showed a success toast even though nothing was sent.
+I `src/pages/Diary.tsx` bruges `text-foreground` (= hvid) til indholdsteksten inde i `bg-card` (= lys). Resultat: hvid på næsten-hvid → usynlig. Det samme gælder umarkerede `<div>`'er (fx "5 km", "5:00/km") som arver body-color = hvid.
 
-This affects three call sites:
-1. `consent-coach-actions` → `send_parent_request` (the one you just hit)
-2. `consent-coach-actions` → `remind_me` (coach reminder email)
-3. `create-athlete` → auto parental-consent email when a coach creates a minor
+Bemærk: `CoachDiaryView` bruger allerede `text-card-foreground` korrekt og er ikke berørt.
 
-## Fix
+## Fix (kun src/pages/Diary.tsx — frontend-only, kun farveklasser)
 
-Forward the caller's existing `Authorization` header when invoking `send-transactional-email`, instead of the service-role admin client. The caller is always a logged-in coach/admin, so the downstream function's auth check passes.
+1. Linje 706 (compact-række — entry.content):
+   `text-sm text-foreground` → `text-sm text-card-foreground`
 
-### Files to change
+2. Linje 759 (expanded entry.content):
+   `text-sm text-foreground whitespace-pre-wrap leading-relaxed` → `text-sm text-card-foreground whitespace-pre-wrap leading-relaxed`
 
-**`supabase/functions/consent-coach-actions/index.ts`**
-- Build a small helper that POSTs to `${SUPABASE_URL}/functions/v1/send-transactional-email` with:
-  - `Authorization: <incoming authHeader>` (the coach's user JWT)
-  - `apikey: SUPABASE_ANON_KEY`
-  - JSON body identical to today's payload
-- Replace both `admin.functions.invoke("send-transactional-email", ...)` calls (parent request + remind_me) with the helper.
-- Treat non-2xx as a real failure and return `{ ok: false, queued: false, error }` so the UI can show a proper error toast instead of a false success.
+3. Linje 763 (løbe-distance tal):
+   `text-sm font-bold` → `text-sm font-bold text-card-foreground`
 
-**`supabase/functions/create-athlete/index.ts`**
-- Same swap: invoke `send-transactional-email` using the original `authHeader` (already available in the function) instead of the `adminClient`.
-- Keep the existing best-effort behaviour (don't fail athlete creation if the email fails), but log the actual status code so we can see it in logs.
+4. Linje 768 (løbe-pace tal):
+   `text-sm font-bold` → `text-sm font-bold text-card-foreground`
 
-**`src/components/coach/ConsentMissingPanel.tsx`** (small UX safety net)
-- Currently treats `{ ok: true, queued: false }` as success. Change the success toast to require `queued === true`; otherwise show `consentParentRequestFailed`. No new translation keys needed.
+(Kcal-tallet på linje 774 har allerede `text-emerald-600` og er synligt.)
 
-### Out of scope
-- No schema changes, no RLS changes, no new tables.
-- No change to `send-transactional-email` itself — keeping its strict auth is correct.
-- No change to translations or Help/changelog (purely a backend bug fix).
+## Ikke berørt
+- Ingen ændring i ThemeSync, index.css eller andre temaer.
+- Ingen ændring i CoachDiaryView (allerede korrekt).
+- Ingen logik/data/RLS/edge functions.
 
-### Verification
-1. Re-deploy `consent-coach-actions` and `create-athlete`.
-2. From the coach UI, enter the parent's email for Kian and click Send.
-3. Confirm in `email_send_log` that a `parental-consent-request` row is created with `status='sent'` and `recipient_email` = the parent's address.
-4. Check the parent's inbox.
+## Verifikation
+Efter ændringen skal teksten i hver dagbogspost ("Det var en rigtig god træning i dag", "great", "good") og metrics ("5 km", "5:00/km") være tydeligt mørke på den lyse korthandflade — både når man er logget ind som atlet og når en coach åbner samme side.
