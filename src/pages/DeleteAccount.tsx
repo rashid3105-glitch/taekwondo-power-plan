@@ -9,6 +9,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { PageMeta } from "@/components/PageMeta";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { toast } from "sonner";
+import { DELETE_ACCOUNT_API_CONFIRMATION } from "@/lib/accountDeletion";
 
 const cardCls = "rounded-xl bg-white/[0.03] border border-white/10 p-5 sm:p-6";
 const sectionTitleCls = "text-xs uppercase tracking-wider text-white/35 mb-4";
@@ -85,7 +86,7 @@ export default function DeleteAccount() {
     setDeleting(true);
     try {
       const { data, error } = await supabase.functions.invoke("delete-my-account", {
-        body: { confirmation: "DELETE MY ACCOUNT" },
+        body: { confirmation: DELETE_ACCOUNT_API_CONFIRMATION },
       });
       if (error) throw error;
       const errs = (data as any)?.errors ?? [];

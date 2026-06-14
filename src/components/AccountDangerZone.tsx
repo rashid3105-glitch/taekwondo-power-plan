@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { AlertTriangle, Download, Trash2, Loader2, ChevronDown } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { DELETE_ACCOUNT_API_CONFIRMATION } from "@/lib/accountDeletion";
 
 import {
   AlertDialog,
@@ -55,7 +56,7 @@ export function AccountDangerZone() {
     setDeleting(true);
     try {
       const { data, error } = await supabase.functions.invoke("delete-my-account", {
-        body: { confirmation: "DELETE MY ACCOUNT" },
+        body: { confirmation: DELETE_ACCOUNT_API_CONFIRMATION },
       });
       if (error) throw error;
       if (data?.success) {
