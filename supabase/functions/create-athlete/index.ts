@@ -174,14 +174,13 @@ Deno.serve(async (req) => {
         console.warn("consent email send failed:", e);
       }
     } else {
-      // Adult — record self-consent so health-sync passes uniformly.
+      // Adult — record PENDING self-consent. The athlete must actively confirm
+      // via the in-app login gate before health-data processing is enabled.
       await adminClient.from("consent_records").upsert({
         athlete_id: newUser.user!.id,
         consent_type: "health_data_processing",
-        status: "granted",
-        granted_at: new Date().toISOString(),
+        status: "pending",
         granted_by_relation: "self",
-        policy_version: POLICY_VERSION,
         club_id: coachProfile.club_id,
       }, { onConflict: "athlete_id,consent_type" });
     }

@@ -10,6 +10,7 @@ import { CoachModeProvider } from "@/contexts/CoachModeContext";
 import { ActiveClubProvider } from "@/contexts/ActiveClubContext";
 import { RoleProvider } from "@/contexts/RoleContext";
 import { ThemeSync } from "@/contexts/ThemeSync";
+import { ConsentGate } from "@/components/ConsentGate";
 
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { SplashScreen } from "@/components/SplashScreen";
@@ -226,7 +227,9 @@ const App = () => {
                 <CoachModeProvider>
                   <ThemeSync />
                   <OfflineBanner />
-                  <AnimatedRoutes />
+                  <ConsentGate>
+                    <AnimatedRoutes />
+                  </ConsentGate>
                 </CoachModeProvider>
               </RoleProvider>
             </ActiveClubProvider>
