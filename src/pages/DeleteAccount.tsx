@@ -86,7 +86,7 @@ export default function DeleteAccount() {
     setDeleting(true);
     try {
       const { data, error } = await supabase.functions.invoke("delete-my-account", {
-        body: { confirmation: "DELETE MY ACCOUNT" },
+        body: { confirmation: DELETE_ACCOUNT_API_CONFIRMATION },
       });
       if (error) throw error;
       const errs = (data as any)?.errors ?? [];
