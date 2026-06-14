@@ -84,11 +84,21 @@ export default function DeleteAccount() {
     if (!canDelete) return;
     setDeleting(true);
     try {
-      const { error } = await supabase.functions.invoke("delete-my-account", {
+      const { data, error } = await supabase.functions.invoke("delete-my-account", {
         body: { confirmation: "DELETE MY ACCOUNT" },
       });
       if (error) throw error;
-      toast.success(t("accountDeleted" as any) || "Konto slettet");
+      const errs = (data as any)?.errors ?? [];
+      if (errs.length > 0) {
+        toast.warning(
+          (t("deletionPartialErrors" as any) || "Konto slettet, men {n} trin fejlede").replace(
+            "{n}",
+            String(errs.length),
+          ),
+        );
+      } else {
+        toast.success(t("accountDeleted" as any) || "Konto slettet");
+      }
       await supabase.auth.signOut();
       navigate("/");
     } catch (e: any) {
