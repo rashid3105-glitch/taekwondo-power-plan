@@ -9,4 +9,10 @@ verify_jwt = false
 [functions.consent-self]
 verify_jwt = true
 
+[functions.account-deletion-dry-run]
+verify_jwt = true
+
+[functions.export-my-data]
+verify_jwt = true
+
 

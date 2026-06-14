@@ -4,7 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ChevronLeft, Loader2, Download, Trash2, AlertTriangle } from "lucide-react";
+import { ChevronLeft, Loader2, Download, Trash2, AlertTriangle, ChevronDown } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { PageMeta } from "@/components/PageMeta";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { toast } from "sonner";
@@ -15,12 +16,27 @@ const inputCls = "bg-white/[0.04] border-white/10 text-white placeholder:text-wh
 
 const CONFIRM_PHRASE = "SLET";
 
+type CountRow = { table: string; column: string; count: number; error?: string };
+type StorageRow = { bucket: string; estimated_objects: number; error?: string };
+type DryRun = {
+  hard_delete: CountRow[];
+  anonymize: CountRow[];
+  storage: StorageRow[];
+  total_hard: number;
+  total_anonymize: number;
+  total_storage: number;
+  total_hard_tables: number;
+};
+
 export default function DeleteAccount() {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const [confirmInput, setConfirmInput] = useState("");
   const [deleting, setDeleting] = useState(false);
-  const [profile, setProfile] = useState<any>(null);
+  const [exporting, setExporting] = useState(false);
+  const [dryRun, setDryRun] = useState<DryRun | null>(null);
+  const [dryRunLoading, setDryRunLoading] = useState(true);
+  const [dryRunError, setDryRunError] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -29,26 +45,37 @@ export default function DeleteAccount() {
         navigate("/auth");
         return;
       }
-      const { data } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("user_id", user.id)
-        .maybeSingle();
-      setProfile({ ...data, email: user.email });
+      try {
+        const { data, error } = await supabase.functions.invoke("account-deletion-dry-run");
+        if (error) throw error;
+        setDryRun(data as DryRun);
+      } catch (e: any) {
+        setDryRunError(e?.message || "Error");
+      } finally {
+        setDryRunLoading(false);
+      }
     })();
   }, [navigate]);
 
-  const handleExport = () => {
-    if (!profile) return;
-    const blob = new Blob([JSON.stringify(profile, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `profile-${new Date().toISOString().slice(0, 10)}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("export-my-data");
+      if (error) throw error;
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `my-data-export-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success(t("dataExported" as any) || "Eksport hentet");
+    } catch (e: any) {
+      toast.error(e?.message || "Fejl");
+    }
+    setExporting(false);
   };
 
   const canDelete = confirmInput.trim().toUpperCase() === CONFIRM_PHRASE;
@@ -69,6 +96,13 @@ export default function DeleteAccount() {
       setDeleting(false);
     }
   };
+
+  const summary = dryRun
+    ? (t("deleteDryRunSummary" as any) || "Når du sletter din konto, fjernes {hard} rækker permanent på tværs af {tables} tabeller, og {anon} rækker anonymiseres.")
+        .replace("{hard}", String(dryRun.total_hard))
+        .replace("{tables}", String(dryRun.total_hard_tables))
+        .replace("{anon}", String(dryRun.total_anonymize))
+    : "";
 
   return (
     <div className="min-h-screen text-white" style={{ backgroundColor: "#0a0a0a" }}>
@@ -93,12 +127,73 @@ export default function DeleteAccount() {
           <Button
             type="button"
             onClick={handleExport}
+            disabled={exporting}
             variant="ghost"
             className="w-full h-11 border border-white/10 text-white hover:bg-white/5"
           >
-            <Download className="h-4 w-4 mr-2" />
+            {exporting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
             {t("profileExportData" as any) || "Download mine data"}
           </Button>
+        </div>
+
+        {/* Dry-run transparency */}
+        <div className={cardCls}>
+          <h2 className={sectionTitleCls}>{t("deleteDryRunTitle" as any) || "Hvad sker der når du sletter?"}</h2>
+          {dryRunLoading && (
+            <div className="flex items-center gap-2 text-sm text-white/60">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              {t("deleteDryRunLoading" as any) || "Beregner..."}
+            </div>
+          )}
+          {dryRunError && (
+            <p className="text-sm text-red-400">{t("deleteDryRunError" as any) || "Kunne ikke beregne"}: {dryRunError}</p>
+          )}
+          {dryRun && (
+            <>
+              <p className="text-sm text-white/75">{summary}</p>
+              {dryRun.total_storage > 0 && (
+                <p className="text-sm text-white/60 mt-2">
+                  {(t("deleteDryRunStorageSummary" as any) || "{files} filer i lagring slettes også.").replace(
+                    "{files}",
+                    String(dryRun.total_storage),
+                  )}
+                </p>
+              )}
+              <Collapsible className="mt-4">
+                <CollapsibleTrigger className="flex w-full items-center justify-between text-xs uppercase tracking-wider text-white/45 group">
+                  <span>{t("deleteDryRunShowDetails" as any) || "Vis detaljer"}</span>
+                  <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="mt-3 space-y-4">
+                  <Section
+                    title={t("deleteDryRunHardSection" as any) || "Slettes permanent"}
+                    rows={dryRun.hard_delete}
+                    unit={t("deleteDryRunRowsLabel" as any) || "rækker"}
+                  />
+                  <Section
+                    title={t("deleteDryRunAnonSection" as any) || "Anonymiseres"}
+                    rows={dryRun.anonymize}
+                    unit={t("deleteDryRunRowsLabel" as any) || "rækker"}
+                  />
+                  {dryRun.storage.length > 0 && (
+                    <div>
+                      <h3 className="text-xs uppercase tracking-wider text-white/45 mb-2">
+                        {t("deleteDryRunStorageSection" as any) || "Filer i lagring"}
+                      </h3>
+                      <ul className="text-xs text-white/70 space-y-1">
+                        {dryRun.storage.map((s) => (
+                          <li key={s.bucket} className="flex justify-between">
+                            <span>{s.bucket}</span>
+                            <span>{s.estimated_objects} {t("deleteDryRunFilesLabel" as any) || "filer"}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </CollapsibleContent>
+              </Collapsible>
+            </>
+          )}
         </div>
 
         <div
@@ -147,6 +242,33 @@ export default function DeleteAccount() {
           </Button>
         </div>
       </div>
+    </div>
+  );
+}
+
+function Section({ title, rows, unit }: { title: string; rows: CountRow[]; unit: string }) {
+  const visible = rows.filter((r) => r.count > 0 || r.error);
+  if (visible.length === 0) {
+    return (
+      <div>
+        <h3 className="text-xs uppercase tracking-wider text-white/45 mb-2">{title}</h3>
+        <p className="text-xs text-white/40">—</p>
+      </div>
+    );
+  }
+  return (
+    <div>
+      <h3 className="text-xs uppercase tracking-wider text-white/45 mb-2">{title}</h3>
+      <ul className="text-xs text-white/70 space-y-1">
+        {visible.map((r) => (
+          <li key={`${r.table}.${r.column}`} className="flex justify-between gap-2">
+            <span className="truncate">{r.table} <span className="text-white/30">({r.column})</span></span>
+            <span className={r.error ? "text-red-400" : ""}>
+              {r.error ? r.error : `${r.count} ${unit}`}
+            </span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
