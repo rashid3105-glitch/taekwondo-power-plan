@@ -18232,5 +18232,16 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   selfConsentBannerCta: "Dar consentimiento",
   selfConsentGrantBtn: "Doy mi consentimiento",
   selfConsentLogout: "Cerrar sesión",
+  deleteDryRunTitle: "¿Qué pasa al eliminar?",
+  deleteDryRunLoading: "Calculando...",
+  deleteDryRunError: "No se pudo calcular",
+  deleteDryRunSummary: "Al eliminar tu cuenta, se eliminarán {hard} filas permanentemente en {tables} tablas y se anonimizarán {anon} filas.",
+  deleteDryRunStorageSummary: "También se eliminarán {files} archivos del almacenamiento.",
+  deleteDryRunShowDetails: "Ver detalles",
+  deleteDryRunHardSection: "Se eliminan permanentemente",
+  deleteDryRunAnonSection: "Se anonimizan",
+  deleteDryRunStorageSection: "Archivos en almacenamiento",
+  deleteDryRunRowsLabel: "filas",
+  deleteDryRunFilesLabel: "archivos",
 };
 export default translations;
