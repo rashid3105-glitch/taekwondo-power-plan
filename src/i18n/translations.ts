@@ -2885,7 +2885,6 @@ const translations = {
     deleteDryRunStorageSection: "Files in storage",
     deleteDryRunRowsLabel: "rows",
     deleteDryRunFilesLabel: "files",
-    dataExported: "Export downloaded",
   },
   da: {
     defaultLanguage: "Standardsprog",
@@ -5758,7 +5757,6 @@ const translations = {
     deleteDryRunStorageSection: "Filer i lagring",
     deleteDryRunRowsLabel: "rækker",
     deleteDryRunFilesLabel: "filer",
-    dataExported: "Eksport hentet",
   },
   sv: {
     defaultLanguage: "Standardspråk",
@@ -8630,7 +8628,6 @@ const translations = {
     deleteDryRunStorageSection: "Filer i lagring",
     deleteDryRunRowsLabel: "rader",
     deleteDryRunFilesLabel: "filer",
-    dataExported: "Export hämtad",
   },
   de: {
     defaultLanguage: "Standardsprache",
@@ -11452,7 +11449,6 @@ const translations = {
     deleteDryRunStorageSection: "Dateien im Speicher",
     deleteDryRunRowsLabel: "Zeilen",
     deleteDryRunFilesLabel: "Dateien",
-    dataExported: "Export heruntergeladen",
   },
 
   ar: {
@@ -14275,7 +14271,6 @@ const translations = {
     deleteDryRunStorageSection: "الملفات في التخزين",
     deleteDryRunRowsLabel: "صفوف",
     deleteDryRunFilesLabel: "ملفات",
-    dataExported: "تم تنزيل التصدير",
   },
   no: {
     onbWelcomeTitle: "Velkommen til Sportstalent",
@@ -17148,7 +17143,6 @@ const translations = {
     deleteDryRunStorageSection: "Filer i lagring",
     deleteDryRunRowsLabel: "rader",
     deleteDryRunFilesLabel: "filer",
-    dataExported: "Eksport lastet ned",
   },
 } as const;
 
