@@ -6,3 +6,7 @@ verify_jwt = false
 [functions.consent-confirm]
 verify_jwt = false
 
+[functions.consent-self]
+verify_jwt = true
+
+
