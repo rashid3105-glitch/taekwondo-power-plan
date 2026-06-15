@@ -292,7 +292,7 @@ const Index = () => {
       <div style={{ borderTop: "0.5px solid rgba(255,255,255,0.07)" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto", padding: `28px ${pad}px`, display: "flex", justifyContent: "space-between", alignItems: isMobile ? "flex-start" : "center", flexDirection: isMobile ? "column" : "row", flexWrap: "wrap", gap: 16 }}>
           <div>
-            <div onClick={() => navigate("/")} style={{ fontSize: 18, fontWeight: 900, letterSpacing: "-0.03em", cursor: "pointer" }}>Sports<span style={{ color: "#F5C842" }}>talent</span></div>
+            <BrandLogo height={36} onClick={() => navigate("/")} />
             <div style={{ fontSize: 11, color: "rgba(255,255,255,0.55)", marginTop: 4 }}>CVR 33685815 · København, Danmark</div>
           </div>
           <div style={{ display: "flex", gap: isMobile ? 16 : 24, fontSize: 12, color: "rgba(255,255,255,0.75)", flexWrap: "wrap" }}>
