@@ -7,11 +7,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { ArrowLeft, Save, Upload, X } from "lucide-react";
+import { ArrowLeft, Save, Upload, X, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { RichTextEditor } from "@/components/blog/RichTextEditor";
 import {
-  createPost, updatePost, getPostById, uploadBlogImage, slugify,
+  createPost, updatePost, getPostById, uploadBlogImage, slugify, sanitizeHtml,
   type BlogLocale, type BlogPost,
 } from "@/lib/blogApi";
 
@@ -24,6 +24,7 @@ export default function AdminBlogEditor() {
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   const [locale, setLocale] = useState<BlogLocale>("da");
   const [title, setTitle] = useState("");
@@ -151,10 +152,36 @@ export default function AdminBlogEditor() {
           <Button variant="ghost" size="sm" onClick={() => navigate("/admin/blog")} className="text-white hover:bg-white/10 hover:text-amber-400">
             <ArrowLeft className="h-4 w-4 mr-1" /> All posts
           </Button>
-          <Button onClick={onSave} disabled={saving} className={goldBtn}>
-            <Save className="h-4 w-4 mr-1" /> {saving ? "Saving…" : "Save"}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setShowPreview((v) => !v)}
+              className={goldOutline}
+            >
+              {showPreview ? <><EyeOff className="h-4 w-4 mr-1" /> Hide preview</> : <><Eye className="h-4 w-4 mr-1" /> Preview</>}
+            </Button>
+            <Button onClick={onSave} disabled={saving} className={goldBtn}>
+              <Save className="h-4 w-4 mr-1" /> {saving ? "Saving…" : "Save"}
+            </Button>
+          </div>
         </div>
+
+        {showPreview && (
+          <Card className="p-6 bg-zinc-900 border-amber-400/40 text-white">
+            <div className="text-xs uppercase tracking-wider text-amber-400 mb-4">Preview</div>
+            {coverUrl && (
+              <img src={coverUrl} alt="" className="w-full max-h-80 object-cover rounded-lg mb-6" />
+            )}
+            <h1 className="text-3xl font-extrabold mb-3">{title || (locale === "da" ? "Uden titel" : "Untitled")}</h1>
+            {excerpt && <p className="text-lg text-zinc-300 mb-6">{excerpt}</p>}
+            <div
+              className="prose prose-invert max-w-none"
+              dir="ltr"
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(content || "") }}
+            />
+          </Card>
+        )}
 
         <h1 className="text-2xl font-extrabold text-white">{isNew ? "New blog post" : "Edit post"}</h1>
 
