@@ -80,6 +80,29 @@ export function DailyNutritionDashboard({
   const [logs, setLogs] = useState<MealLog[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [calcOpen, setCalcOpen] = useState(false);
+  const [calcWeight, setCalcWeight] = useState("");
+  const [calcAge, setCalcAge] = useState("");
+  const [calcGender, setCalcGender] = useState<"m" | "f">("m");
+  const [calcActivity, setCalcActivity] = useState("moderate");
+  const [calcGoal, setCalcGoal] = useState("maintain");
+  const [calcResult, setCalcResult] = useState<number | null>(null);
+
+  const calculateTDEE = () => {
+    const w = parseFloat(calcWeight);
+    const a = parseFloat(calcAge);
+    if (!w || !a) return;
+    const bmr = calcGender === "m"
+      ? 10 * w + 6.25 * 175 - 5 * a + 5
+      : 10 * w + 6.25 * 165 - 5 * a - 161;
+    const mult: Record<string, number> = {
+      sedentary: 1.2, light: 1.375, moderate: 1.55, active: 1.725, very_active: 1.9,
+    };
+    const tdee = bmr * (mult[calcActivity] ?? 1.55);
+    const adj: Record<string, number> = { cut: -300, maintain: 0, bulk: 300 };
+    setCalcResult(Math.round(tdee + (adj[calcGoal] ?? 0)));
+  };
+
   const load = useCallback(async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
