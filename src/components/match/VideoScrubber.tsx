@@ -165,7 +165,7 @@ export function VideoScrubber({
       {/* Tick scrubber */}
       <div
         ref={containerRef}
-        className="relative w-full rounded-md overflow-hidden border border-white/10 bg-white/[0.02]"
+        className="relative w-full rounded-md overflow-hidden border border-border bg-muted/30"
         style={{ touchAction: "none", cursor: "ew-resize" }}
       >
         <canvas ref={canvasRef} className="block w-full" style={{ height: 60 }} />
@@ -182,7 +182,7 @@ function ScrubBtn({ label, onClick }: { label: string; onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="h-8 px-2.5 rounded-md text-[11px] font-mono border border-white/10 bg-white/[0.03] text-white/80 hover:bg-white/[0.08] transition-colors"
+      className="h-8 px-2.5 rounded-md text-[11px] font-mono border border-border bg-card text-foreground hover:bg-muted transition-colors"
     >
       {label}
     </button>
