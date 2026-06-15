@@ -78,6 +78,17 @@
     --light-border: 220 15% 88%;
     --light-muted: 215 25% 95%;
     --light-muted-foreground: 220 12% 42%;
+
+    /* Video analysis controls — fixed light surface for contrast in coach mode */
+    --video-analysis-surface: 210 30% 98%;
+    --video-analysis-card: 220 18% 95%;
+    --video-analysis-foreground: 222 35% 12%;
+    --video-analysis-muted: 220 12% 42%;
+    --video-analysis-border: 220 15% 82%;
+    --video-analysis-accent: 38 92% 55%;
+    --video-analysis-accent-foreground: 222 35% 10%;
+    --video-analysis-input: 222 35% 5%;
+    --video-analysis-input-foreground: 210 30% 95%;
   }
 
   body.coach-mode {

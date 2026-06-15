@@ -88,12 +88,12 @@ export function NoteEditor({
   };
 
   return (
-    <div className="rounded-lg border border-border bg-card p-4 space-y-3">
+    <div className="rounded-lg border border-video-border bg-video-card p-4 space-y-3">
       <div className="flex items-center justify-between">
-        <div className="text-sm font-semibold text-foreground">
+        <div className="text-sm font-semibold text-video-foreground">
           {t("videoNoteAtFrame").replace("{frame}", String(frameNumber))}
         </div>
-        <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
+        <button onClick={onClose} className="text-video-muted hover:text-video-foreground">
           <X className="h-4 w-4" />
         </button>
       </div>
@@ -106,12 +106,11 @@ export function NoteEditor({
               key={key}
               type="button"
               onClick={() => toggleTag(key)}
-              className="px-2.5 h-7 rounded-full text-[11px] font-medium border transition-colors"
-              style={{
-                background: active ? ACCENT : "transparent",
-                color: active ? "#000" : "hsl(var(--foreground))",
-                borderColor: active ? ACCENT : "hsl(var(--border))",
-              }}
+              className={`px-2.5 h-7 rounded-full text-[11px] font-semibold border transition-colors ${
+                active
+                  ? "bg-video-accent text-video-accent-foreground border-video-accent"
+                  : "bg-video-surface text-video-foreground border-video-border hover:bg-video-card"
+              }`}
             >
               {t(labelKey as any)}
             </button>
@@ -123,15 +122,14 @@ export function NoteEditor({
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder={t("videoNotePlaceholder")}
-        className="bg-background border-border text-foreground placeholder:text-muted-foreground min-h-[80px]"
+        className="bg-video-input border-video-border text-video-input-foreground placeholder:text-video-muted min-h-[80px]"
       />
 
       <Button
         type="button"
         onClick={save}
         disabled={saving}
-        className="w-full text-black"
-        style={{ background: ACCENT }}
+        className="w-full bg-video-accent text-video-accent-foreground hover:brightness-95"
       >
         {t("videoNoteSave")}
       </Button>
@@ -219,8 +217,7 @@ export function NotesList({
                     return (
                       <span
                         key={tg}
-                        className="px-2 h-5 rounded-full text-[10px] inline-flex items-center"
-                        style={{ background: `${ACCENT}22`, color: "#8a5a00" }}
+                        className="px-2 h-5 rounded-full text-[10px] font-medium inline-flex items-center bg-video-accent/20 text-video-foreground border border-video-accent/30"
                       >
                         {def ? t(def.labelKey as any) : tg}
                       </span>
@@ -244,12 +241,11 @@ function FilterPill({ active, onClick, label }: { active: boolean; onClick: () =
     <button
       type="button"
       onClick={onClick}
-      className="px-2.5 h-7 rounded-full text-[11px] font-medium border transition-colors"
-      style={{
-        background: active ? ACCENT : "transparent",
-        color: active ? "#000" : "hsl(var(--foreground))",
-        borderColor: active ? ACCENT : "hsl(var(--border))",
-      }}
+      className={`px-2.5 h-7 rounded-full text-[11px] font-semibold border transition-colors ${
+        active
+          ? "bg-video-accent text-video-accent-foreground border-video-accent"
+          : "bg-video-surface text-video-foreground border-video-border hover:bg-video-card"
+      }`}
     >
       {label}
     </button>
