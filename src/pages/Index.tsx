@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { PageMeta } from "@/components/PageMeta";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { BrandLogo } from "@/components/BrandLogo";
 import coachSittingAsset from "@/assets/coach-sitting.png.asset.json";
 import coachStandingAsset from "@/assets/coach-standing.jpg.asset.json";
 
@@ -41,13 +42,14 @@ const Index = () => {
       {/* NAV */}
       <header style={{ position: "sticky", top: 0, zIndex: 100, background: "rgba(11,12,20,0.95)", borderBottom: "0.5px solid rgba(255,255,255,0.08)" }}>
         <nav style={{ padding: `0 ${pad}px`, height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-          <div onClick={() => navigate("/")} style={{ fontSize: isMobile ? 18 : 20, fontWeight: 900, letterSpacing: "-0.03em", cursor: "pointer", flexShrink: 0 }}>Sports<span style={{ color: "#F5C842" }}>talent</span></div>
+          <BrandLogo height={isMobile ? 36 : 44} onClick={() => navigate("/")} />
           {!isMobile && (
-            <div style={{ display: "flex", gap: isTablet ? 16 : 28, fontSize: 14, color: "rgba(255,255,255,0.8)" }}>
+            <div style={{ display: "flex", gap: isTablet ? 14 : 24, fontSize: 14, color: "rgba(255,255,255,0.8)" }}>
               {[
                 { l: "Platform", to: "/platform" },
                 { l: "Funktioner", to: "/funktioner" },
                 { l: "Priser", to: "/priser" },
+                { l: "Blog", to: "/blog" },
                 { l: "Om os", to: "/about" },
               ].map(({ l, to }) => (
                 <span key={l} onClick={() => navigate(to)} style={{ cursor: "pointer" }}>{l}</span>
@@ -68,6 +70,7 @@ const Index = () => {
               { l: "Platform", to: "/platform" },
               { l: "Funktioner", to: "/funktioner" },
               { l: "Priser", to: "/priser" },
+              { l: "Blog", to: "/blog" },
               { l: "Om os", to: "/about" },
             ].map(({ l, to }) => (
               <span key={l} onClick={() => navigate(to)} style={{ cursor: "pointer" }}>{l}</span>
@@ -289,7 +292,7 @@ const Index = () => {
       <div style={{ borderTop: "0.5px solid rgba(255,255,255,0.07)" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto", padding: `28px ${pad}px`, display: "flex", justifyContent: "space-between", alignItems: isMobile ? "flex-start" : "center", flexDirection: isMobile ? "column" : "row", flexWrap: "wrap", gap: 16 }}>
           <div>
-            <div onClick={() => navigate("/")} style={{ fontSize: 18, fontWeight: 900, letterSpacing: "-0.03em", cursor: "pointer" }}>Sports<span style={{ color: "#F5C842" }}>talent</span></div>
+            <BrandLogo height={36} onClick={() => navigate("/")} />
             <div style={{ fontSize: 11, color: "rgba(255,255,255,0.55)", marginTop: 4 }}>CVR 33685815 · København, Danmark</div>
           </div>
           <div style={{ display: "flex", gap: isMobile ? 16 : 24, fontSize: 12, color: "rgba(255,255,255,0.75)", flexWrap: "wrap" }}>

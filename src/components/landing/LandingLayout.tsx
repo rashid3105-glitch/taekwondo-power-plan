@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { BrandLogo } from "@/components/BrandLogo";
 
 const GOLD = "#F5C842";
 const NAV_LINKS = [
@@ -18,9 +19,7 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
       <nav style={{ background: "rgba(11,12,20,0.97)", borderBottom: "0.5px solid rgba(255,255,255,0.08)", position: "sticky", top: 0, zIndex: 100 }}>
         {/* Row 1: logo + utility */}
         <div style={{ padding: "0 20px", height: 56, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div onClick={() => navigate("/")} style={{ fontSize: 20, fontWeight: 900, letterSpacing: "-0.03em", cursor: "pointer" }}>
-            Sports<span style={{ color: GOLD }}>talent</span>
-          </div>
+          <BrandLogo height={40} onClick={() => navigate("/")} />
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
             <LanguageSwitcher />
             <button
@@ -76,7 +75,7 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
       <footer style={{ borderTop: "0.5px solid rgba(255,255,255,0.07)" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto", padding: "28px 32px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
           <div>
-            <div style={{ fontSize: 18, fontWeight: 900, letterSpacing: "-0.03em" }}>Sports<span style={{ color: GOLD }}>talent</span></div>
+            <BrandLogo height={36} onClick={() => navigate("/")} />
             <div style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", marginTop: 4 }}>CVR 33685815 · København, Danmark</div>
           </div>
           <div style={{ display: "flex", gap: 24, fontSize: 12, color: "rgba(255,255,255,0.7)" }}>

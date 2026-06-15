@@ -4,7 +4,7 @@ import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useLanguage } from "@/i18n/LanguageContext";
-import logo from "@/assets/logo.png";
+import { BrandLogo } from "@/components/BrandLogo";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
@@ -26,14 +26,8 @@ export function PublicNav() {
     <header className="sticky top-0 z-40 border-b border-border/40 bg-background/80 backdrop-blur-xl pt-safe">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
         {/* Logo */}
-        <button
-          onClick={() => navigate("/")}
-          className="flex items-center gap-2 cursor-pointer"
-        >
-          <img src={logo} alt="Sportstalent" className="h-10 w-10 rounded-lg object-contain flex-shrink-0" />
-          <span className="text-sm font-extrabold tracking-tight text-foreground whitespace-nowrap hidden sm:inline">
-            SPORTSTALENT
-          </span>
+        <button onClick={() => navigate("/")} className="cursor-pointer">
+          <BrandLogo height={40} textColor="hsl(var(--foreground))" />
         </button>
 
         {/* Desktop nav */}
