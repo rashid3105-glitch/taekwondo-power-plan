@@ -88,15 +88,12 @@ export function NoteEditor({
   };
 
   return (
-    <div
-      className="rounded-lg border p-4 space-y-3"
-      style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.1)" }}
-    >
+    <div className="rounded-lg border border-border bg-card p-4 space-y-3">
       <div className="flex items-center justify-between">
-        <div className="text-sm font-semibold text-white">
+        <div className="text-sm font-semibold text-foreground">
           {t("videoNoteAtFrame").replace("{frame}", String(frameNumber))}
         </div>
-        <button onClick={onClose} className="text-white/60 hover:text-white">
+        <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
           <X className="h-4 w-4" />
         </button>
       </div>
@@ -111,9 +108,9 @@ export function NoteEditor({
               onClick={() => toggleTag(key)}
               className="px-2.5 h-7 rounded-full text-[11px] font-medium border transition-colors"
               style={{
-                background: active ? ACCENT : "rgba(255,255,255,0.04)",
-                color: active ? "#000" : "rgba(255,255,255,0.7)",
-                borderColor: active ? ACCENT : "rgba(255,255,255,0.1)",
+                background: active ? ACCENT : "transparent",
+                color: active ? "#000" : "hsl(var(--foreground))",
+                borderColor: active ? ACCENT : "hsl(var(--border))",
               }}
             >
               {t(labelKey as any)}
@@ -126,7 +123,7 @@ export function NoteEditor({
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder={t("videoNotePlaceholder")}
-        className="bg-white/[0.02] border-white/10 text-white placeholder:text-white/40 min-h-[80px]"
+        className="bg-background border-border text-foreground placeholder:text-muted-foreground min-h-[80px]"
       />
 
       <Button
