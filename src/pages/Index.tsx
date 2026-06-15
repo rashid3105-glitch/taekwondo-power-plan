@@ -254,13 +254,16 @@ const Index = () => {
       <div style={{ borderTop: "0.5px solid rgba(255,255,255,0.07)" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto", padding: "28px 32px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
           <div>
-            <div style={{ fontSize: 18, fontWeight: 900, letterSpacing: "-0.03em" }}>Sports<span style={{ color: "#F5C842" }}>talent</span></div>
-            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", marginTop: 4 }}>CVR 33685815 · København, Danmark</div>
+            <div onClick={() => navigate("/")} style={{ fontSize: 18, fontWeight: 900, letterSpacing: "-0.03em", cursor: "pointer" }}>Sports<span style={{ color: "#F5C842" }}>talent</span></div>
+            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.55)", marginTop: 4 }}>CVR 33685815 · København, Danmark</div>
           </div>
-          <div style={{ display: "flex", gap: 24, fontSize: 12, color: "rgba(255,255,255,0.35)" }}>
-            {["Privatlivspolitik", "Vilkår", "Kontakt", "Blog"].map(l => <span key={l} style={{ cursor: "pointer" }}>{l}</span>)}
+          <div style={{ display: "flex", gap: 24, fontSize: 12, color: "rgba(255,255,255,0.75)" }}>
+            {[
+              { label: "Privatlivspolitik", href: "/privacy" },
+              { label: "Kontakt", href: "/contact" },
+            ].map(l => <span key={l.href} onClick={() => navigate(l.href)} style={{ cursor: "pointer" }}>{l.label}</span>)}
           </div>
-          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.2)" }}>© 2026 Sportstalent.dk</div>
+          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)" }}>© 2026 Sportstalent.dk</div>
         </div>
       </div>
     </div>
