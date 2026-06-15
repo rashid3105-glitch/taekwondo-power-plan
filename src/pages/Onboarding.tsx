@@ -52,6 +52,36 @@ export default function Onboarding() {
   const [athleteCount, setAthleteCount] = useState("1to5");
   const [focus, setFocus] = useState<string[]>([]);
   const [coachSlide, setCoachSlide] = useState(0);
+  const [clubSearchResults, setClubSearchResults] = useState<{id: string; name: string}[]>([]);
+  const [clubSearching, setClubSearching] = useState(false);
+  const [selectedExistingClub, setSelectedExistingClub] = useState<{id: string; name: string} | null>(null);
+  const [clubAction, setClubAction] = useState<'create' | 'join' | null>(null);
+
+  useEffect(() => {
+    if (!clubName.trim() || clubName.trim().length < 2) {
+      setClubSearchResults([]);
+      setClubAction(null);
+      return;
+    }
+    if (selectedExistingClub && clubName !== selectedExistingClub.name) {
+      setSelectedExistingClub(null);
+      setClubAction(null);
+    }
+    const timer = setTimeout(async () => {
+      setClubSearching(true);
+      const { data } = await supabase
+        .from("clubs" as any)
+        .select("id, name")
+        .ilike("name", `%${clubName.trim()}%`)
+        .limit(5);
+      const results = (data as any[] ?? []) as {id: string; name: string}[];
+      setClubSearchResults(results);
+      if (results.length === 0) setClubAction('create');
+      setClubSearching(false);
+    }, 400);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clubName]);
 
   useEffect(() => {
     (async () => {
