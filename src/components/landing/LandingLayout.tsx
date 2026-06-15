@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { BrandLogo } from "@/components/BrandLogo";
 
 const GOLD = "#F5C842";
 const NAV_LINKS = [
