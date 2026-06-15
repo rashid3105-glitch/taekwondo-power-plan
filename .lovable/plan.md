@@ -1,35 +1,42 @@
-## Hvorfor du ikke kan se Annamarias dagbog
+## Hvad skete der?
+Anna-Marias 15. juni-indslag (og 2 andre) blev gemt med `club_id = NULL`. Coach-views filtrerede dem væk. Backfill + null-tolerant query er allerede kørt — de 3 gamle rækker er nu synlige.
 
-Annamarias seneste dagbogsindslag (15. juni 2026) er gemt med `club_id = NULL` i databasen. Coach-visningerne filtrerer dagbogsindslag på den aktive klub med `eq("club_id", activeClubId)`, så rækker uden klub-stempel bliver filtreret væk — selvom RLS faktisk tillader dig at se dem.
+## Hvorfor kan det ske igen?
+`Diary.tsx` linje 220 stamper med `activeClubId ?? null`. Hvis `ActiveClubContext` endnu ikke har loadet (race), eller hvis indslaget oprettes offline før konteksten er klar, ryger der `null` ind. Sync-engine respekterer det — den tilføjer kun `club_id` hvis det allerede står på intent'en. Så fejlen kan gentage sig på enhver klient.
 
-Det rammer i alt 3 dagbogsindslag på tværs af alle atleter (resten af de 101 er stemplet korrekt). Nye indslag oprettet via `Diary.tsx` bliver allerede stemplet med `activeClubId`, så problemet er begrænset til ældre/offline-skrevne indslag.
+Samme mønster findes potentielt på andre offline-tabeller (readiness, workout_logs, mental_assessments, physical_tests), men dagbog er den eneste der pt. har null-rækker — så vi løser kilden ét sted.
 
-## Plan (2 trin, samme commit)
+## Plan (1 trin, database-trigger)
 
-### 1. Backfill manglende `club_id` i databasen
-Migration der sætter `diary_entries.club_id` ud fra `profiles.club_id`, hvor det er NULL:
+Tilføj `BEFORE INSERT` trigger på `public.diary_entries` der auto-stamper `club_id` fra `profiles.club_id`, hvis NEW.club_id er NULL:
 
 ```sql
-UPDATE public.diary_entries d
-SET club_id = p.club_id
-FROM public.profiles p
-WHERE d.user_id = p.user_id
-  AND d.club_id IS NULL
-  AND p.club_id IS NOT NULL;
+CREATE OR REPLACE FUNCTION public.stamp_diary_club_id()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  IF NEW.club_id IS NULL THEN
+    SELECT club_id INTO NEW.club_id
+    FROM public.profiles
+    WHERE user_id = NEW.user_id;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER diary_entries_stamp_club_id
+BEFORE INSERT ON public.diary_entries
+FOR EACH ROW EXECUTE FUNCTION public.stamp_diary_club_id();
 ```
 
-Rammer netop de 3 forældreløse rækker (inkl. Annamarias).
-
-### 2. Gør coach-læsninger null-tolerante (forsikring mod fremtidige offline-indslag)
-Samme mønster som rehab_plans bruger i forvejen. To steder:
-
-- `src/pages/CoachAthleteOverview.tsx` linje ~180:
-  - Skift `q = q.eq("club_id", activeClubId)` → `q = q.or(\`club_id.eq.${activeClubId},club_id.is.null\`)`
-- `src/components/coach/AthleteOverviewTab.tsx` (samme `eq("club_id", activeClubId)` på diary_entries)
-
-Ingen ændringer i `useOfflineDiary` / sync-engine — de stempler allerede `club_id` korrekt fra `Diary.tsx`. Ingen Help.tsx eller changelog.
+Robust uanset om indslaget kommer fra web, offline-sync, edge function eller fremtidig RN-klient. Klientens `activeClubId ?? null` bliver irrelevant — serveren retter det.
 
 ## Hvad ændres ikke
-- RLS-policies (de er allerede korrekte)
-- Create-stien (allerede stempler `club_id`)
-- Andre coach-faner end dagbog
+- Klient-koden i `Diary.tsx` (uændret — fungerer stadig som hurtig hint når kontext er klar)
+- Coach-queries (null-tolerant or-filter beholdes som ekstra sikkerhed)
+- Andre tabeller (kan overvejes senere hvis samme symptom dukker op)
+
+Ingen Help.tsx, ingen changelog.
