@@ -26,8 +26,9 @@ const COPY = {
 
 const Blog = () => {
   const navigate = useNavigate();
-  const { language } = useLanguage() as { language: string };
-  const locale: BlogLocale = language === "en" ? "en" : "da";
+  const { locale: appLocale } = useLanguage();
+  const locale: BlogLocale = appLocale === "en" ? "en" : "da";
+
   const t = COPY[locale];
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
