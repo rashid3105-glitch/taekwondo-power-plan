@@ -42,20 +42,26 @@ Deno.serve(async (req) => {
 
     if (action === "get") {
       // Minimal, non-sensitive info to render the page.
+      // We expose the athlete's display name AND the club name (the
+      // data controller) so the parent can verify *who* is asking for
+      // consent. No health-data values are returned — only metadata.
       let athleteName: string | null = null;
+      let clubName: string | null = null;
       if (tk.athlete_id) {
         const { data: p } = await admin
           .from("profiles")
-          .select("display_name")
+          .select("display_name, club_id, clubs:club_id(name)")
           .eq("user_id", tk.athlete_id)
           .maybeSingle();
-        athleteName = p?.display_name || null;
+        athleteName = (p as any)?.display_name || null;
+        clubName = (p as any)?.clubs?.name || null;
       }
       return json({
         valid: !expired && !used,
         expired,
         used,
         athlete_name: athleteName,
+        club_name: clubName,
         consent_type: tk.consent_type,
         data_items: HEALTH_DATA_ITEMS,
         policy_version: POLICY_VERSION,
