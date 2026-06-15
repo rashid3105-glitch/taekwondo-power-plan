@@ -10,8 +10,9 @@ const GOLD = "#F5C842";
 const BlogPostPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { language } = useLanguage() as { language: string };
-  const locale: BlogLocale = language === "en" ? "en" : "da";
+  const { locale: appLocale } = useLanguage();
+  const locale: BlogLocale = appLocale === "en" ? "en" : "da";
+
 
   const [post, setPost] = useState<BlogPost | null>(null);
   const [translations, setTranslations] = useState<BlogPost[]>([]);
