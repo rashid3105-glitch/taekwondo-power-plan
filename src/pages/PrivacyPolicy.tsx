@@ -36,7 +36,17 @@ export default function PrivacyPolicy() {
         </Button>
 
         <h1 className="text-2xl font-extrabold text-foreground">{t("privacyPolicyTitle")}</h1>
-        <p className="text-xs text-muted-foreground">{t("privacyLastUpdated")}: 2026-06-13</p>
+
+        <div
+          role="alert"
+          className="rounded-md border-2 border-amber-500 bg-amber-100 dark:bg-amber-950/40 text-amber-900 dark:text-amber-100 px-4 py-3 text-sm font-medium"
+        >
+          {t("privacyDraftBanner")}
+        </div>
+
+        <p className="text-xs text-muted-foreground">
+          {t("privacyLastUpdated")}: 2026-06-15 · {t("privacyVersion")}
+        </p>
 
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-foreground">{t("privacyWhoWeAre")}</h2>
