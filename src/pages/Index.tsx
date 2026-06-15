@@ -55,10 +55,10 @@ const Index = () => {
         )}
         <div style={{ display: "flex", gap: isMobile ? 6 : 10, alignItems: "center" }}>
           <LanguageSwitcher />
+          <button onClick={() => navigate("/auth")} style={{ padding: isMobile ? "7px 14px" : "8px 18px", borderRadius: 8, border: "none", background: "#F5C842", color: "#0B0C14", fontSize: isMobile ? 13 : 14, fontWeight: 800, cursor: "pointer", whiteSpace: "nowrap" }}>Log ind</button>
           {!isMobile && (
-            <button onClick={() => navigate("/auth")} style={{ padding: "8px 18px", borderRadius: 8, border: "0.5px solid rgba(255,255,255,0.12)", background: "transparent", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>Log ind</button>
+            <button onClick={() => navigate("/auth?tab=signup")} style={{ padding: "8px 18px", borderRadius: 8, border: "0.5px solid rgba(255,255,255,0.12)", background: "transparent", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>Prøv gratis</button>
           )}
-          <button onClick={() => navigate("/auth")} style={{ padding: isMobile ? "7px 12px" : "8px 18px", borderRadius: 8, border: "none", background: "#F5C842", color: "#0B0C14", fontSize: isMobile ? 13 : 14, fontWeight: 800, cursor: "pointer", whiteSpace: "nowrap" }}>{isMobile ? "Prøv" : "Prøv gratis"}</button>
         </div>
       </nav>
 
