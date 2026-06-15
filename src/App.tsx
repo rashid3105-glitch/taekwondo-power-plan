@@ -85,24 +85,9 @@ import ParentDashboard from "./pages/ParentDashboard";
 import Consent from "./pages/Consent";
 
 import { UpgradeGate } from "@/components/UpgradeGate";
-import { AIAssistant } from "@/components/AIAssistant";
 import CoachSurveys from "./pages/CoachSurveys";
 import AthleteSurveys from "./pages/AthleteSurveys";
 
-const AI_ASSISTANT_HIDDEN_PATHS = new Set([
-  "/", "/v2", "/v1", "/auth", "/reset-password", "/pricing",
-  "/help", "/about", "/contact", "/privacy", "/unsubscribe",
-  "/signup/coach", "/methodology", "/programs", "/taekwondo-training-program",
-]);
-const AI_ASSISTANT_HIDDEN_PREFIXES = [
-  "/platform/", "/features/", "/match/share/", "/athlete/",
-  "/join/", "/parent-join/", "/invite/", "/consent/",
-];
-
-const shouldShowAIAssistant = (pathname: string) => {
-  if (AI_ASSISTANT_HIDDEN_PATHS.has(pathname)) return false;
-  return !AI_ASSISTANT_HIDDEN_PREFIXES.some((p) => pathname.startsWith(p));
-};
 
 const queryClient = new QueryClient();
 
