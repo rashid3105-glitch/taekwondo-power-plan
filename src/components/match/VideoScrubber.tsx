@@ -42,7 +42,7 @@ export function VideoScrubber({
 
     const centerX = cssWidth / 2;
     // Background
-    ctx.fillStyle = "rgba(255,255,255,0.03)";
+    ctx.fillStyle = "rgba(0,0,0,0.04)";
     ctx.fillRect(0, 0, cssWidth, cssHeight);
 
     // Compute visible frame range
@@ -54,14 +54,14 @@ export function VideoScrubber({
       const x = centerX + (f - currentFrame) * TICK_SPACING;
       const isMajor = f % 10 === 0;
       const h = isMajor ? cssHeight * 0.55 : cssHeight * 0.25;
-      ctx.strokeStyle = isMajor ? "rgba(255,255,255,0.55)" : "rgba(255,255,255,0.18)";
+      ctx.strokeStyle = isMajor ? "rgba(0,0,0,0.5)" : "rgba(0,0,0,0.18)";
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(x, (cssHeight - h) / 2);
       ctx.lineTo(x, (cssHeight + h) / 2);
       ctx.stroke();
       if (isMajor) {
-        ctx.fillStyle = "rgba(255,255,255,0.6)";
+        ctx.fillStyle = "rgba(0,0,0,0.6)";
         ctx.font = "10px ui-monospace, monospace";
         ctx.textAlign = "center";
         ctx.fillText(String(f), x, cssHeight - 2);
@@ -135,9 +135,9 @@ export function VideoScrubber({
             onClick={() => onSpeed(s)}
             className="px-2.5 h-7 rounded-full text-[11px] font-medium border transition-colors"
             style={{
-              background: speed === s ? ACCENT : "rgba(255,255,255,0.04)",
-              color: speed === s ? "#000" : "rgba(255,255,255,0.7)",
-              borderColor: speed === s ? ACCENT : "rgba(255,255,255,0.1)",
+              background: speed === s ? ACCENT : "transparent",
+              color: speed === s ? "#000" : "hsl(var(--foreground))",
+              borderColor: speed === s ? ACCENT : "hsl(var(--border))",
             }}
           >
             {s}×
@@ -165,7 +165,7 @@ export function VideoScrubber({
       {/* Tick scrubber */}
       <div
         ref={containerRef}
-        className="relative w-full rounded-md overflow-hidden border border-white/10 bg-white/[0.02]"
+        className="relative w-full rounded-md overflow-hidden border border-border bg-muted/30"
         style={{ touchAction: "none", cursor: "ew-resize" }}
       >
         <canvas ref={canvasRef} className="block w-full" style={{ height: 60 }} />
@@ -182,7 +182,7 @@ function ScrubBtn({ label, onClick }: { label: string; onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="h-8 px-2.5 rounded-md text-[11px] font-mono border border-white/10 bg-white/[0.03] text-white/80 hover:bg-white/[0.08] transition-colors"
+      className="h-8 px-2.5 rounded-md text-[11px] font-mono border border-border bg-card text-foreground hover:bg-muted transition-colors"
     >
       {label}
     </button>
