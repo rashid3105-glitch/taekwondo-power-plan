@@ -361,6 +361,43 @@ export default function CoachDashboard() {
       </header>
 
       <main className="container max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
+        {/* Trial banner */}
+        {isInTrial && trialDaysLeft <= 7 && (
+          <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 px-4 py-3 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 text-sm">
+              <span>⏰</span>
+              <span className="text-amber-600 dark:text-amber-400 font-medium">
+                {trialDaysLeft === 1
+                  ? "1 dag tilbage af din gratis prøveperiode"
+                  : `${trialDaysLeft} dage tilbage af din gratis prøveperiode`}
+              </span>
+            </div>
+            <button
+              onClick={() => window.location.href = "/priser"}
+              className="shrink-0 text-xs font-semibold text-amber-600 dark:text-amber-400 hover:underline"
+            >
+              Opgrader →
+            </button>
+          </div>
+        )}
+
+        {trialExpired && (
+          <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 text-sm">
+              <span>🔒</span>
+              <span className="text-destructive font-medium">
+                Prøveperioden er udløbet — visse funktioner er låst
+              </span>
+            </div>
+            <button
+              onClick={() => window.location.href = "/priser"}
+              className="shrink-0 text-xs font-semibold text-destructive hover:underline"
+            >
+              Se prisplaner →
+            </button>
+          </div>
+        )}
+
         {coachUserId && (
           <div className="space-y-4">
             {/* Beskeder pill */}
