@@ -24,8 +24,8 @@ const Index = () => {
 
       {/* NAV */}
       <nav style={{ background: "rgba(11,12,20,0.95)", borderBottom: "0.5px solid rgba(255,255,255,0.08)", padding: "0 32px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100 }}>
-        <div style={{ fontSize: 20, fontWeight: 900, letterSpacing: "-0.03em" }}>Sports<span style={{ color: "#F5C842" }}>talent</span></div>
-        <div style={{ display: "flex", gap: 28, fontSize: 14, color: "rgba(255,255,255,0.5)" }}>
+        <div onClick={() => navigate("/")} style={{ fontSize: 20, fontWeight: 900, letterSpacing: "-0.03em", cursor: "pointer" }}>Sports<span style={{ color: "#F5C842" }}>talent</span></div>
+        <div style={{ display: "flex", gap: 28, fontSize: 14, color: "rgba(255,255,255,0.8)" }}>
           {[
             { l: "Platform", to: "/platform" },
             { l: "Funktioner", to: "/funktioner" },
