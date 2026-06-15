@@ -246,9 +246,9 @@ function FilterPill({ active, onClick, label }: { active: boolean; onClick: () =
       onClick={onClick}
       className="px-2.5 h-7 rounded-full text-[11px] font-medium border transition-colors"
       style={{
-        background: active ? ACCENT : "rgba(255,255,255,0.04)",
-        color: active ? "#000" : "rgba(255,255,255,0.7)",
-        borderColor: active ? ACCENT : "rgba(255,255,255,0.1)",
+        background: active ? ACCENT : "transparent",
+        color: active ? "#000" : "hsl(var(--foreground))",
+        borderColor: active ? ACCENT : "hsl(var(--border))",
       }}
     >
       {label}
