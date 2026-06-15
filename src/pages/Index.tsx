@@ -70,6 +70,7 @@ const Index = () => {
               { l: "Platform", to: "/platform" },
               { l: "Funktioner", to: "/funktioner" },
               { l: "Priser", to: "/priser" },
+              { l: "Blog", to: "/blog" },
               { l: "Om os", to: "/about" },
             ].map(({ l, to }) => (
               <span key={l} onClick={() => navigate(to)} style={{ cursor: "pointer" }}>{l}</span>
