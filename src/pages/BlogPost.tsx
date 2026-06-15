@@ -85,9 +85,9 @@ const BlogPostPage = () => {
         title={`${post.title} · Sportstalent`}
         description={post.excerpt || post.title}
         canonical={`https://sportstalent.dk/blog/${post.slug}`}
-        ogImage={post.cover_image_url || undefined}
-        jsonLd={articleLd}
       />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleLd) }} />
+
 
       <article style={{ maxWidth: 720, margin: "0 auto", padding: "48px 20px 80px" }}>
         <button
