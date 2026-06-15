@@ -436,6 +436,29 @@ export default function Profile() {
         </Button>
       </div>
       <AppFooter />
+
+      <AlertDialog open={withdrawOpen} onOpenChange={(o) => !withdrawing && setWithdrawOpen(o)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("privacyConsentWithdrawConfirmTitle" as any)}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("privacyConsentWithdrawConfirmBody" as any)}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={withdrawing}>
+              {t("privacyConsentWithdrawCancel" as any)}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => { e.preventDefault(); handleWithdrawConsent(); }}
+              disabled={withdrawing}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {withdrawing ? "…" : t("privacyConsentWithdrawConfirmBtn" as any)}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
