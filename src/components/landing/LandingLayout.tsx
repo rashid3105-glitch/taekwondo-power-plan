@@ -75,7 +75,7 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
       <footer style={{ borderTop: "0.5px solid rgba(255,255,255,0.07)" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto", padding: "28px 32px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
           <div>
-            <div style={{ fontSize: 18, fontWeight: 900, letterSpacing: "-0.03em" }}>Sports<span style={{ color: GOLD }}>talent</span></div>
+            <BrandLogo height={36} onClick={() => navigate("/")} />
             <div style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", marginTop: 4 }}>CVR 33685815 · København, Danmark</div>
           </div>
           <div style={{ display: "flex", gap: 24, fontSize: 12, color: "rgba(255,255,255,0.7)" }}>
