@@ -187,6 +187,7 @@ export default function Onboarding() {
   };
   const validateCoachStep1 = () => {
     if (!clubName.trim()) { toast.error(t("onbValidationMissing")); return false; }
+    if (!clubAction) { toast.error("Vælg en eksisterende klub eller bekræft oprettelse af ny"); return false; }
     return true;
   };
 
