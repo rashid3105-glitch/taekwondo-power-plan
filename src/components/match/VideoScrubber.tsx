@@ -135,9 +135,9 @@ export function VideoScrubber({
             onClick={() => onSpeed(s)}
             className="px-2.5 h-7 rounded-full text-[11px] font-medium border transition-colors"
             style={{
-              background: speed === s ? ACCENT : "rgba(255,255,255,0.04)",
-              color: speed === s ? "#000" : "rgba(255,255,255,0.7)",
-              borderColor: speed === s ? ACCENT : "rgba(255,255,255,0.1)",
+              background: speed === s ? ACCENT : "transparent",
+              color: speed === s ? "#000" : "hsl(var(--foreground))",
+              borderColor: speed === s ? ACCENT : "hsl(var(--border))",
             }}
           >
             {s}×
