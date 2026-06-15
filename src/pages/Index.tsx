@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { PageMeta } from "@/components/PageMeta";
-import heroImage from "@/assets/hero-taekwondo-coach.jpg";
+import coachSittingAsset from "@/assets/coach-sitting.png.asset.json";
+import coachStandingAsset from "@/assets/coach-standing.jpg.asset.json";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -25,7 +26,14 @@ const Index = () => {
       <nav style={{ background: "rgba(11,12,20,0.95)", borderBottom: "0.5px solid rgba(255,255,255,0.08)", padding: "0 32px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100 }}>
         <div style={{ fontSize: 20, fontWeight: 900, letterSpacing: "-0.03em" }}>Sports<span style={{ color: "#F5C842" }}>talent</span></div>
         <div style={{ display: "flex", gap: 28, fontSize: 14, color: "rgba(255,255,255,0.5)" }}>
-          {["Platform", "Funktioner", "Priser", "Om os"].map(l => <span key={l} style={{ cursor: "pointer" }}>{l}</span>)}
+          {[
+            { l: "Platform", to: "/programs" },
+            { l: "Funktioner", to: "/methodology" },
+            { l: "Priser", to: "/pricing" },
+            { l: "Om os", to: "/about" },
+          ].map(({ l, to }) => (
+            <span key={l} onClick={() => navigate(to)} style={{ cursor: "pointer" }}>{l}</span>
+          ))}
         </div>
         <div style={{ display: "flex", gap: 10 }}>
           <button onClick={() => navigate("/auth")} style={{ padding: "8px 18px", borderRadius: 8, border: "0.5px solid rgba(255,255,255,0.12)", background: "transparent", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>Log ind</button>
@@ -55,7 +63,7 @@ const Index = () => {
         </div>
         {/* Hero image */}
         <div style={{ maxWidth: 920, margin: "44px auto 0", borderRadius: "14px 14px 0 0", overflow: "hidden", border: "0.5px solid rgba(255,255,255,0.08)", borderBottom: "none" }}>
-          <img src={heroImage} alt="Sportstalent platform" style={{ width: "100%", height: 380, objectFit: "cover", display: "block" }} />
+          <img src={coachSittingAsset.url} alt="Coach guider atlet" style={{ width: "100%", height: 380, objectFit: "cover", display: "block" }} />
           <div style={{ background: "#13141F", padding: "16px 24px", display: "flex", gap: 12, borderTop: "0.5px solid rgba(255,255,255,0.07)" }}>
             {[{ val: "24", up: "+3", label: "Aktive atleter" }, { val: "8", up: "", label: "Sessioner i dag" }, { val: "7 dage", up: "", label: "Næste stævne", gold: true }, { val: "91%", up: "", label: "Holdets aktivitet" }].map((s, i) => (
               <div key={i} style={{ flex: 1, background: "#1A1B2E", borderRadius: 8, padding: "12px 14px", border: "0.5px solid rgba(255,255,255,0.06)" }}>
@@ -67,15 +75,14 @@ const Index = () => {
         </div>
       </section>
 
-      {/* STATS */}
+      {/* MANIFESTO */}
       <div style={{ background: "#13141F", borderTop: "0.5px solid rgba(255,255,255,0.07)", borderBottom: "0.5px solid rgba(255,255,255,0.07)", marginTop: 0 }}>
-        <div style={{ maxWidth: 1000, margin: "0 auto", padding: "44px 32px", display: "grid", gridTemplateColumns: "repeat(4,1fr)" }}>
-          {[{ num: "150+", label: "Aktive coaches" }, { num: "2.400+", label: "Registrerede atleter" }, { num: "38", label: "Klubber på platformen" }, { num: "8 timer", label: "Sparet pr. uge på admin" }].map((s, i) => (
-            <div key={i} style={{ textAlign: "center", padding: "8px 16px", borderRight: i < 3 ? "0.5px solid rgba(255,255,255,0.07)" : "none" }}>
-              <div style={{ fontSize: 42, fontWeight: 900, color: "#F5C842", letterSpacing: "-0.04em", lineHeight: 1 }}>{s.num}</div>
-              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 6 }}>{s.label}</div>
-            </div>
-          ))}
+        <div style={{ maxWidth: 760, margin: "0 auto", padding: "64px 32px", textAlign: "center" }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#F5C842", marginBottom: 14 }}>Bygget på årtiers erfaring</div>
+          <h2 style={{ fontSize: "clamp(22px,3.5vw,32px)", fontWeight: 900, letterSpacing: "-0.03em", marginBottom: 16, lineHeight: 1.2 }}>En platform skabt af coaches — til coaches</h2>
+          <p style={{ fontSize: 15, color: "rgba(255,255,255,0.55)", lineHeight: 1.75, margin: 0 }}>
+            Sportstalent er bygget af aktive trænere med årtiers erfaring fra sportshallen. Hver eneste funktion løser et reelt problem fra hverdagen — ikke et tænkt scenarie fra et kontor. Vi deler ikke brugertal endnu; vi fokuserer på at bygge det bedste værktøj til dig og dine atleter.
+          </p>
         </div>
       </div>
 
@@ -129,7 +136,7 @@ const Index = () => {
             </div>
           </div>
           <div style={{ position: "relative" }}>
-            <img src={heroImage} alt="Coach med hold" style={{ width: "100%", borderRadius: 14, border: "0.5px solid rgba(255,255,255,0.08)", display: "block" }} />
+            <img src={coachStandingAsset.url} alt="Coach i sportshallen" style={{ width: "100%", borderRadius: 14, border: "0.5px solid rgba(255,255,255,0.08)", display: "block" }} />
             <div style={{ position: "absolute", bottom: -14, left: -14, background: "#0B0C14", borderRadius: 10, padding: "12px 16px", border: "0.5px solid rgba(255,255,255,0.08)" }}>
               <div style={{ fontSize: 22, fontWeight: 900, color: "#F5C842" }}>67%</div>
               <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 1 }}>Mere tid til coaching</div>
@@ -146,20 +153,14 @@ const Index = () => {
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
           {[
-            { name: "Rasmus Møller", role: "Cheftræner, Odense TKD", text: "Sportstalent har halveret min tid på administration. Den tid bruger jeg på atleter i stedet.", av: "RM", feat: false },
-            { name: "Sara Lindqvist", role: "Landsholdstræner, Sverige TKD", text: "Endelig et redskab bygget til sportens krav. Videoanalysen alene er pengene værd.", av: "SL", feat: true },
-            { name: "Ahmed Hassan", role: "Coach, Aarhus Martial Arts", text: "Mine atleter elsker app'en. Fremgangsvisningen motiverer dem til at træne konsistent.", av: "AH", feat: false },
+            { text: "Sportstalent har halveret min tid på administration. Den tid bruger jeg på atleter i stedet.", feat: false },
+            { text: "Endelig et redskab bygget til sportens krav. Videoanalysen alene er pengene værd.", feat: true },
+            { text: "Mine atleter elsker app'en. Fremgangsvisningen motiverer dem til at træne konsistent.", feat: false },
           ].map((t, i) => (
             <div key={i} style={{ background: t.feat ? "rgba(245,200,66,0.07)" : "rgba(255,255,255,0.03)", border: `0.5px solid ${t.feat ? "rgba(245,200,66,0.22)" : "rgba(255,255,255,0.07)"}`, borderRadius: 14, padding: "24px" }}>
               <div style={{ fontSize: 26, color: t.feat ? "rgba(245,200,66,0.35)" : "rgba(255,255,255,0.1)", marginBottom: 10 }}>"</div>
               <p style={{ fontSize: 14, color: "rgba(255,255,255,0.65)", lineHeight: 1.65, fontStyle: "italic", marginBottom: 18 }}>{t.text}</p>
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <div style={{ width: 34, height: 34, borderRadius: "50%", background: t.feat ? "rgba(245,200,66,0.12)" : "#1A1B2E", border: "0.5px solid rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: t.feat ? "#F5C842" : "#fff" }}>{t.av}</div>
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 700 }}>{t.name}</div>
-                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>{t.role}</div>
-                </div>
-              </div>
+              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", fontWeight: 600 }}>— Coach på platformen</div>
             </div>
           ))}
         </div>
@@ -244,7 +245,7 @@ const Index = () => {
       {/* CTA */}
       <div style={{ background: "#13141F", borderTop: "0.5px solid rgba(255,255,255,0.07)", padding: "72px 32px", textAlign: "center" }}>
         <h2 style={{ fontSize: "clamp(26px,4vw,44px)", fontWeight: 900, letterSpacing: "-0.03em", marginBottom: 14, lineHeight: 1.1 }}>Giv dine atleter den<br />platform de fortjener</h2>
-        <p style={{ fontSize: 16, color: "rgba(255,255,255,0.45)", maxWidth: 400, margin: "0 auto 32px", lineHeight: 1.65 }}>Slut dig til 150+ coaches der allerede bruger Sportstalent til at udvikle talenter smartere.</p>
+        <p style={{ fontSize: 16, color: "rgba(255,255,255,0.45)", maxWidth: 440, margin: "0 auto 32px", lineHeight: 1.65 }}>Kom i gang i dag og giv dine atleter et samlet sted at træne, følge fremgang og forberede sig til stævner.</p>
         <button onClick={() => navigate("/auth")} style={{ padding: "14px 36px", borderRadius: 10, border: "none", background: "#F5C842", color: "#0B0C14", fontSize: 15, fontWeight: 800, cursor: "pointer" }}>Opret gratis konto →</button>
         <div style={{ marginTop: 14, fontSize: 12, color: "rgba(255,255,255,0.25)" }}>30 dage gratis · Intet kreditkort · Opsig når som helst</div>
       </div>
