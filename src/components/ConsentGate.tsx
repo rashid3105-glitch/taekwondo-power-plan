@@ -1,10 +1,11 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { effectiveAge } from "@/lib/age";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ShieldCheck, Loader2, AlertTriangle, X } from "lucide-react";
 
 // Routes where the gate must never appear (public / pre-login / consent flows).
@@ -27,8 +28,12 @@ const isPublicRoute = (pathname: string) => {
 type State =
   | { kind: "loading" }
   | { kind: "ok" }
-  | { kind: "banner"; graceUntil: string }
-  | { kind: "blocking" };
+  | { kind: "banner"; graceUntil: string; clubName: string | null }
+  | { kind: "blocking"; clubName: string | null };
+
+function fillPlaceholders(template: string, vars: Record<string, string>) {
+  return template.replace(/\{(\w+)\}/g, (_m, key) => vars[key] ?? `{${key}}`);
+}
 
 export function ConsentGate({ children }: { children: React.ReactNode }) {
   const location = useLocation();
@@ -38,6 +43,9 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [bannerDismissed, setBannerDismissed] = useState(false);
+  // GDPR requires unambiguous, active consent — checkbox starts UNCHECKED
+  // and the submit button stays disabled until the user ticks it.
+  const [checked, setChecked] = useState(false);
 
   const evaluate = useCallback(async () => {
     try {
@@ -51,7 +59,7 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
       const [{ data: profile }, { data: consent }] = await Promise.all([
         supabase
           .from("profiles")
-          .select("role, active_role, birth_date, age")
+          .select("role, active_role, birth_date, age, club_id, clubs:club_id(name)")
           .eq("user_id", uid)
           .maybeSingle(),
         supabase
@@ -80,6 +88,8 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
         return;
       }
 
+      const clubName: string | null = (profile as any)?.clubs?.name ?? null;
+
       const status = (consent as any)?.status;
       if (status === "granted") {
         setState({ kind: "ok" });
@@ -88,10 +98,10 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
 
       const grace = (consent as any)?.grace_until as string | null | undefined;
       if (grace && new Date(grace).getTime() > Date.now()) {
-        setState({ kind: "banner", graceUntil: grace });
+        setState({ kind: "banner", graceUntil: grace, clubName });
         return;
       }
-      setState({ kind: "blocking" });
+      setState({ kind: "blocking", clubName });
     } catch (e) {
       // Fail open — never lock users out on a network/RLS error.
       console.warn("ConsentGate evaluation failed; failing open:", e);
@@ -103,16 +113,18 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
     evaluate();
     const { data: sub } = supabase.auth.onAuthStateChange(() => {
       setState({ kind: "loading" });
+      setChecked(false);
       evaluate();
     });
     return () => sub.subscription.unsubscribe();
   }, [evaluate]);
 
   const grant = async () => {
+    if (!checked && state.kind === "blocking") return; // safety net
     setSubmitting(true);
     setError(null);
     try {
-      const { data, error } = await supabase.functions.invoke("consent-self", { body: {} });
+      const { data, error } = await supabase.functions.invoke("consent-self", { body: { action: "grant" } });
       if (error) throw error;
       if (!(data as any)?.ok) throw new Error((data as any)?.error || "error");
       setState({ kind: "ok" });
@@ -129,6 +141,13 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
   };
 
   const onPublic = isPublicRoute(location.pathname);
+
+  // Compute placeholder vars — only meaningful inside banner/blocking states.
+  const clubName =
+    (state.kind === "blocking" || state.kind === "banner")
+      ? (state.clubName?.trim() || t("privacyConsentYourClub"))
+      : t("privacyConsentYourClub");
+  const vars = useMemo(() => ({ clubName }), [clubName]);
 
   // Always render children on public routes; never block sign-in flow.
   if (onPublic) return <>{children}</>;
@@ -169,29 +188,38 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
       <Card className="w-full max-w-lg p-6 space-y-5">
         <div className="flex items-center gap-3">
           <ShieldCheck className="h-6 w-6 text-primary" />
-          <h1 className="text-xl font-semibold">{t("selfConsentTitle")}</h1>
+          <h1 className="text-xl font-semibold">{t("privacyConsentAdultTitle")}</h1>
         </div>
-        <p className="text-sm">{t("selfConsentIntro")}</p>
-        <div className="rounded-md border border-border p-3 space-y-2">
-          <div className="text-xs font-semibold text-muted-foreground uppercase">
-            {t("consentDataItemsTitle")}
-          </div>
-          <ul className="text-sm list-disc list-inside space-y-1">
-            <li>{t("consentItemHeartRate")}</li>
-            <li>{t("consentItemHrv")}</li>
-            <li>{t("consentItemSleep")}</li>
-            <li>{t("consentItemSteps")}</li>
-            <li>{t("consentItemWeight")}</li>
-            <li>{t("consentItemMental")}</li>
-          </ul>
+        <p className="text-sm leading-relaxed">{t("privacyConsentAdultBody")}</p>
+
+        <div className="rounded-md border border-border p-3 text-sm leading-relaxed bg-muted/30">
+          {fillPlaceholders(t("privacyConsentAdultDeclaration"), vars)}
         </div>
-        <p className="text-xs text-muted-foreground">
-          <Link to="/privacy" className="underline">{t("readPrivacyPolicy")}</Link>
+
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          {t("privacyConsentVoluntary")}
         </p>
+
+        <p className="text-xs text-muted-foreground">
+          <Link to="/privacy" className="underline">{t("privacyConsentPolicyLink")}</Link>
+        </p>
+
+        <label className="flex items-start gap-3 rounded-md border border-border p-3 cursor-pointer">
+          <Checkbox
+            checked={checked}
+            onCheckedChange={(v) => setChecked(v === true)}
+            className="mt-0.5"
+            aria-describedby="adult-consent-checkbox-label"
+          />
+          <span id="adult-consent-checkbox-label" className="text-sm leading-relaxed">
+            {t("privacyConsentAdultCheckbox")}
+          </span>
+        </label>
+
         {error && <p className="text-sm text-destructive">{error}</p>}
         <div className="flex flex-col gap-2">
-          <Button onClick={grant} disabled={submitting} className="w-full">
-            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t("selfConsentGrantBtn")}
+          <Button onClick={grant} disabled={submitting || !checked} className="w-full">
+            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t("privacyConsentGrantBtn")}
           </Button>
           <Button onClick={logout} variant="ghost" className="w-full">
             {t("selfConsentLogout")}

@@ -4,7 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { LogOut, Pencil, Download, KeyRound, Trash2, ChevronLeft, Apple, Smartphone } from "lucide-react";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
+import { LogOut, Pencil, Download, KeyRound, Trash2, ChevronLeft, Apple, Smartphone, ShieldOff } from "lucide-react";
 import { PageMeta } from "@/components/PageMeta";
 import { AppFooter } from "@/components/AppFooter";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -152,6 +157,31 @@ export default function Profile() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
+
+  const [withdrawOpen, setWithdrawOpen] = useState(false);
+  const [withdrawing, setWithdrawing] = useState(false);
+  const handleWithdrawConsent = async () => {
+    setWithdrawing(true);
+    try {
+      const { data: res, error } = await supabase.functions.invoke("consent-self", {
+        body: { action: "withdraw" },
+      });
+      if (error) throw error;
+      if (!(res as any)?.ok) throw new Error((res as any)?.error || "error");
+      toast.success(t("privacyConsentWithdrawDone" as any));
+      setWithdrawOpen(false);
+      // Re-evaluating ConsentGate happens on next auth event / route change;
+      // a soft reload guarantees the gate immediately shows the consent screen
+      // again so health-sync stays blocked until consent is given anew.
+      setTimeout(() => window.location.reload(), 400);
+    } catch (e: any) {
+      console.error("withdraw consent failed", e);
+      toast.error(e?.message || t("privacyConsentWithdrawFailed" as any));
+    } finally {
+      setWithdrawing(false);
+    }
+  };
+
 
   const roleLabel = (() => {
     const r = data?.roles || [];
@@ -380,6 +410,13 @@ export default function Profile() {
           />
           <Separator className="bg-white/10" />
           <ActionRow
+            icon={<ShieldOff className="h-4 w-4" />}
+            label={t("privacyConsentWithdrawTitle" as any)}
+            sub={t("privacyConsentWithdrawSub" as any)}
+            onClick={() => setWithdrawOpen(true)}
+          />
+          <Separator className="bg-white/10" />
+          <ActionRow
             icon={<Trash2 className="h-4 w-4" />}
             label={t("profileDeleteAccount" as any)}
             sub={t("profileDeleteAccountSub" as any)}
@@ -387,6 +424,7 @@ export default function Profile() {
             danger
           />
         </div>
+
 
         <Button
           variant="ghost"
@@ -398,6 +436,29 @@ export default function Profile() {
         </Button>
       </div>
       <AppFooter />
+
+      <AlertDialog open={withdrawOpen} onOpenChange={(o) => !withdrawing && setWithdrawOpen(o)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("privacyConsentWithdrawConfirmTitle" as any)}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("privacyConsentWithdrawConfirmBody" as any)}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={withdrawing}>
+              {t("privacyConsentWithdrawCancel" as any)}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => { e.preventDefault(); handleWithdrawConsent(); }}
+              disabled={withdrawing}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {withdrawing ? "…" : t("privacyConsentWithdrawConfirmBtn" as any)}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
