@@ -1,4 +1,4 @@
-import runnerAsset from "@/assets/runner-icon.png.asset.json";
+import runnerIcon from "@/assets/runner-icon.png";
 
 /**
  * Sportstalent brand lockup: runner icon + wordmark.
