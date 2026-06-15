@@ -44,7 +44,7 @@ export default function Priser() {
       </section>
 
       <div style={sec}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16, alignItems: "start" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16, alignItems: "start" }}>
           <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: "28px 24px" }}>
             <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 8 }}>Atlet</div>
             <div style={{ fontSize: 44, fontWeight: 900, letterSpacing: "-0.04em" }}>49</div>
@@ -53,6 +53,22 @@ export default function Priser() {
             <hr style={{ border: "none", borderTop: "0.5px solid rgba(255,255,255,0.07)", margin: "12px 0" }} />
             {["Personlig træningsplan", "Stævneoversigt", "Beskeder fra coach", "Fremgangsstatistik"].map((f, i) => (
               <div key={i} style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", display: "flex", gap: 7, marginBottom: 8 }}><span style={{ color: GOLD }}>✓</span>{f}</div>
+            ))}
+            <button onClick={() => navigate("/auth")} style={{ width: "100%", marginTop: 20, padding: "11px", borderRadius: 8, border: "0.5px solid rgba(255,255,255,0.12)", background: "transparent", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>Kom i gang</button>
+          </div>
+
+          {/* Starter */}
+          <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: "28px 24px" }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 8 }}>Starter</div>
+            <div style={{ fontSize: 44, fontWeight: 900, letterSpacing: "-0.04em" }}>249</div>
+            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.35)", marginBottom: 8 }}>DKK/md</div>
+            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", marginBottom: 16, lineHeight: 1.5 }}>Til den lille klub med op til 5 atleter.</div>
+            <hr style={{ border: "none", borderTop: "0.5px solid rgba(255,255,255,0.07)", margin: "12px 0" }} />
+            {["Op til 5 atleter", "Træningsplaner", "Stævner", "Mental coaching", "Beskeder", "Skadeopfølgning", "Dagbog"].map((f, i) => (
+              <div key={i} style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", display: "flex", gap: 7, marginBottom: 8 }}><span style={{ color: GOLD }}>✓</span>{f}</div>
+            ))}
+            {["Videoanalyse", "PDF-rapporter", "Sæsonkalender"].map((f, i) => (
+              <div key={`x-${i}`} style={{ fontSize: 13, color: "rgba(255,255,255,0.25)", display: "flex", gap: 7, marginBottom: 8 }}><span>✕</span>{f}</div>
             ))}
             <button onClick={() => navigate("/auth")} style={{ width: "100%", marginTop: 20, padding: "11px", borderRadius: 8, border: "0.5px solid rgba(255,255,255,0.12)", background: "transparent", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>Kom i gang</button>
           </div>
