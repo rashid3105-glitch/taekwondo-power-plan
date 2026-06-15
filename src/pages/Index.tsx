@@ -27,9 +27,9 @@ const Index = () => {
         <div style={{ fontSize: 20, fontWeight: 900, letterSpacing: "-0.03em" }}>Sports<span style={{ color: "#F5C842" }}>talent</span></div>
         <div style={{ display: "flex", gap: 28, fontSize: 14, color: "rgba(255,255,255,0.5)" }}>
           {[
-            { l: "Platform", to: "/programs" },
-            { l: "Funktioner", to: "/methodology" },
-            { l: "Priser", to: "/pricing" },
+            { l: "Platform", to: "/platform" },
+            { l: "Funktioner", to: "/funktioner" },
+            { l: "Priser", to: "/priser" },
             { l: "Om os", to: "/about" },
           ].map(({ l, to }) => (
             <span key={l} onClick={() => navigate(to)} style={{ cursor: "pointer" }}>{l}</span>
