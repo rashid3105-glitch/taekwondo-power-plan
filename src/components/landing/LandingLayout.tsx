@@ -1,4 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 const GOLD = "#F5C842";
 const NAV_LINKS = [
@@ -22,7 +23,8 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
             <span key={l.href} onClick={() => navigate(l.href)} style={{ color: location.pathname === l.href ? GOLD : "rgba(255,255,255,0.5)", cursor: "pointer", fontWeight: location.pathname === l.href ? 600 : 400 }}>{l.label}</span>
           ))}
         </div>
-        <div style={{ display: "flex", gap: 10 }}>
+        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+          <LanguageSwitcher />
           <button onClick={() => navigate("/auth")} style={{ padding: "8px 18px", borderRadius: 8, border: "0.5px solid rgba(255,255,255,0.12)", background: "transparent", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>Log ind</button>
           <button onClick={() => navigate("/auth")} style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: GOLD, color: "#0B0C14", fontSize: 14, fontWeight: 800, cursor: "pointer" }}>Prøv gratis</button>
         </div>
