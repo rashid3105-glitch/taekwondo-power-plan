@@ -42,7 +42,7 @@ export function VideoScrubber({
 
     const centerX = cssWidth / 2;
     // Background
-    ctx.fillStyle = "rgba(255,255,255,0.03)";
+    ctx.fillStyle = "rgba(0,0,0,0.04)";
     ctx.fillRect(0, 0, cssWidth, cssHeight);
 
     // Compute visible frame range
@@ -54,14 +54,14 @@ export function VideoScrubber({
       const x = centerX + (f - currentFrame) * TICK_SPACING;
       const isMajor = f % 10 === 0;
       const h = isMajor ? cssHeight * 0.55 : cssHeight * 0.25;
-      ctx.strokeStyle = isMajor ? "rgba(255,255,255,0.55)" : "rgba(255,255,255,0.18)";
+      ctx.strokeStyle = isMajor ? "rgba(0,0,0,0.5)" : "rgba(0,0,0,0.18)";
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(x, (cssHeight - h) / 2);
       ctx.lineTo(x, (cssHeight + h) / 2);
       ctx.stroke();
       if (isMajor) {
-        ctx.fillStyle = "rgba(255,255,255,0.6)";
+        ctx.fillStyle = "rgba(0,0,0,0.6)";
         ctx.font = "10px ui-monospace, monospace";
         ctx.textAlign = "center";
         ctx.fillText(String(f), x, cssHeight - 2);
