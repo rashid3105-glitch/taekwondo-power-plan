@@ -182,7 +182,7 @@ export function NotesList({
       </div>
 
       {filtered.length === 0 ? (
-        <div className="text-xs text-white/40 italic py-4 text-center">
+        <div className="text-xs text-muted-foreground italic py-4 text-center">
           {t("videoNoteEmpty")}
         </div>
       ) : (
@@ -190,8 +190,7 @@ export function NotesList({
           {filtered.map((n) => (
             <div
               key={n.id}
-              className="rounded-lg border p-3 cursor-pointer transition-colors hover:bg-white/[0.05]"
-              style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.1)" }}
+              className="rounded-lg border border-border bg-card p-3 cursor-pointer transition-colors hover:bg-muted/50"
               onClick={() => onJump(n.frame_number)}
             >
               <div className="flex items-center justify-between gap-2 mb-1.5">
@@ -202,12 +201,12 @@ export function NotesList({
                   >
                     F{n.frame_number}
                   </span>
-                  <span className="text-[11px] font-mono text-white/50">{fmtTime(n.frame_number)}</span>
+                  <span className="text-[11px] font-mono text-muted-foreground">{fmtTime(n.frame_number)}</span>
                 </div>
                 <button
                   type="button"
                   onClick={(e) => { e.stopPropagation(); void del(n.id); }}
-                  className="text-white/40 hover:text-rose-400"
+                  className="text-muted-foreground hover:text-destructive"
                   aria-label="Delete"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
@@ -221,7 +220,7 @@ export function NotesList({
                       <span
                         key={tg}
                         className="px-2 h-5 rounded-full text-[10px] inline-flex items-center"
-                        style={{ background: `${ACCENT}22`, color: ACCENT }}
+                        style={{ background: `${ACCENT}22`, color: "#8a5a00" }}
                       >
                         {def ? t(def.labelKey as any) : tg}
                       </span>
@@ -230,7 +229,7 @@ export function NotesList({
                 </div>
               )}
               {n.note_text && (
-                <div className="text-xs text-white/80 whitespace-pre-wrap break-words">{n.note_text}</div>
+                <div className="text-xs text-foreground whitespace-pre-wrap break-words">{n.note_text}</div>
               )}
             </div>
           ))}
