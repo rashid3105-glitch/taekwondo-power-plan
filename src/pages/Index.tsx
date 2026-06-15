@@ -39,10 +39,31 @@ const Index = () => {
       <PageMeta title="Sportstalent — Platformen til sportscoaches" description="Træningsplaner, videoanalyse og atletdata samlet ét sted." canonical="https://sportstalent.dk/" />
 
       {/* NAV */}
-      <nav style={{ background: "rgba(11,12,20,0.95)", borderBottom: "0.5px solid rgba(255,255,255,0.08)", padding: `0 ${pad}px`, height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100, gap: 12 }}>
-        <div onClick={() => navigate("/")} style={{ fontSize: isMobile ? 18 : 20, fontWeight: 900, letterSpacing: "-0.03em", cursor: "pointer", flexShrink: 0 }}>Sports<span style={{ color: "#F5C842" }}>talent</span></div>
-        {!isMobile && (
-          <div style={{ display: "flex", gap: isTablet ? 16 : 28, fontSize: 14, color: "rgba(255,255,255,0.8)" }}>
+      <header style={{ position: "sticky", top: 0, zIndex: 100, background: "rgba(11,12,20,0.95)", borderBottom: "0.5px solid rgba(255,255,255,0.08)" }}>
+        <nav style={{ padding: `0 ${pad}px`, height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+          <div onClick={() => navigate("/")} style={{ fontSize: isMobile ? 18 : 20, fontWeight: 900, letterSpacing: "-0.03em", cursor: "pointer", flexShrink: 0 }}>Sports<span style={{ color: "#F5C842" }}>talent</span></div>
+          {!isMobile && (
+            <div style={{ display: "flex", gap: isTablet ? 16 : 28, fontSize: 14, color: "rgba(255,255,255,0.8)" }}>
+              {[
+                { l: "Platform", to: "/platform" },
+                { l: "Funktioner", to: "/funktioner" },
+                { l: "Priser", to: "/priser" },
+                { l: "Om os", to: "/about" },
+              ].map(({ l, to }) => (
+                <span key={l} onClick={() => navigate(to)} style={{ cursor: "pointer" }}>{l}</span>
+              ))}
+            </div>
+          )}
+          <div style={{ display: "flex", gap: isMobile ? 6 : 10, alignItems: "center" }}>
+            <LanguageSwitcher />
+            <button onClick={() => navigate("/auth")} style={{ padding: isMobile ? "7px 14px" : "8px 18px", borderRadius: 8, border: "none", background: "#F5C842", color: "#0B0C14", fontSize: isMobile ? 13 : 14, fontWeight: 800, cursor: "pointer", whiteSpace: "nowrap" }}>Log ind</button>
+            {!isMobile && (
+              <button onClick={() => navigate("/auth?tab=signup")} style={{ padding: "8px 18px", borderRadius: 8, border: "0.5px solid rgba(255,255,255,0.12)", background: "transparent", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>Prøv gratis</button>
+            )}
+          </div>
+        </nav>
+        {isMobile && (
+          <div style={{ display: "flex", justifyContent: "center", gap: 18, padding: "8px 12px 10px", fontSize: 12, color: "rgba(255,255,255,0.7)", borderTop: "0.5px solid rgba(255,255,255,0.05)" }}>
             {[
               { l: "Platform", to: "/platform" },
               { l: "Funktioner", to: "/funktioner" },
@@ -53,14 +74,7 @@ const Index = () => {
             ))}
           </div>
         )}
-        <div style={{ display: "flex", gap: isMobile ? 6 : 10, alignItems: "center" }}>
-          <LanguageSwitcher />
-          <button onClick={() => navigate("/auth")} style={{ padding: isMobile ? "7px 14px" : "8px 18px", borderRadius: 8, border: "none", background: "#F5C842", color: "#0B0C14", fontSize: isMobile ? 13 : 14, fontWeight: 800, cursor: "pointer", whiteSpace: "nowrap" }}>Log ind</button>
-          {!isMobile && (
-            <button onClick={() => navigate("/auth?tab=signup")} style={{ padding: "8px 18px", borderRadius: 8, border: "0.5px solid rgba(255,255,255,0.12)", background: "transparent", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>Prøv gratis</button>
-          )}
-        </div>
-      </nav>
+      </header>
 
       {/* HERO */}
       <section style={{ padding: `${isMobile ? 48 : 72}px ${pad}px 0`, textAlign: "center" }}>
