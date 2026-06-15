@@ -1,61 +1,69 @@
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { AppFooter } from "@/components/AppFooter";
-import { Watermark } from "@/components/Watermark";
+import { LandingLayout } from "@/components/landing/LandingLayout";
 import { PageMeta } from "@/components/PageMeta";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import logo from "@/assets/logo.png";
+
+const GOLD = "#F5C842";
 
 export default function PrivacyPolicy() {
   const { t } = useLanguage();
   const navigate = useNavigate();
 
+  const h2: React.CSSProperties = { fontSize: 20, fontWeight: 800, marginBottom: 10, letterSpacing: "-0.01em", color: "#fff" };
+  const p: React.CSSProperties = { fontSize: 15, lineHeight: 1.7, color: "rgba(255,255,255,0.78)" };
+  const ul: React.CSSProperties = { fontSize: 15, lineHeight: 1.7, color: "rgba(255,255,255,0.78)", paddingLeft: 20, margin: 0 };
+  const section: React.CSSProperties = { marginBottom: 32 };
+
   return (
-    <div className="min-h-screen bg-background">
+    <LandingLayout>
       <PageMeta
         title="Privacy Policy – Sportstalent"
         description="How Sportstalent processes and protects your personal data under GDPR."
       />
-      <Watermark />
-
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10 pt-safe">
-        <div className="container max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src={logo} alt="Sportstalent" className="h-9 w-9 rounded-lg object-contain cursor-pointer" onClick={() => navigate("/")} />
-            <span className="text-sm font-extrabold text-card-foreground">SPORTSTALENT</span>
-          </div>
+      <div style={{ maxWidth: 800, margin: "0 auto", padding: "48px 32px 80px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+          <button
+            onClick={() => navigate(-1)}
+            style={{ background: "transparent", border: "0.5px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 14px", borderRadius: 8, fontSize: 13, cursor: "pointer" }}
+          >
+            ← {t("back")}
+          </button>
           <LanguageSwitcher />
         </div>
-      </header>
 
-      <main className="container max-w-3xl mx-auto px-4 py-8 space-y-8">
-        <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="mb-2">
-          <ArrowLeft className="h-4 w-4 mr-1" /> {t("back")}
-        </Button>
-
-        <h1 className="text-2xl font-extrabold text-foreground">{t("privacyPolicyTitle")}</h1>
+        <h1 style={{ fontSize: 44, fontWeight: 900, letterSpacing: "-0.03em", marginBottom: 24, color: "#fff" }}>
+          {t("privacyPolicyTitle")}
+        </h1>
 
         <div
           role="alert"
-          className="rounded-md border-2 border-amber-500 bg-amber-100 dark:bg-amber-950/40 text-amber-900 dark:text-amber-100 px-4 py-3 text-sm font-medium"
+          style={{
+            background: "rgba(245,200,66,0.1)",
+            border: "1px solid rgba(245,200,66,0.4)",
+            color: GOLD,
+            padding: "14px 18px",
+            borderRadius: 10,
+            fontSize: 14,
+            fontWeight: 600,
+            marginBottom: 24,
+          }}
         >
           {t("privacyDraftBanner")}
         </div>
 
-        <p className="text-xs text-muted-foreground">
+        <p style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", marginBottom: 40 }}>
           {t("privacyLastUpdated")}: 2026-06-15 · {t("privacyVersion")}
         </p>
 
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-foreground">{t("privacyWhoWeAre")}</h2>
-          <p className="text-sm text-muted-foreground leading-relaxed">{t("privacyWhoWeAreDesc")}</p>
+        <section style={section}>
+          <h2 style={h2}>{t("privacyWhoWeAre")}</h2>
+          <p style={p}>{t("privacyWhoWeAreDesc")}</p>
         </section>
 
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-foreground">{t("privacyWhatWeCollect")}</h2>
-          <ul className="text-sm text-muted-foreground leading-relaxed list-disc pl-5 space-y-1">
+        <section style={section}>
+          <h2 style={h2}>{t("privacyWhatWeCollect")}</h2>
+          <ul style={ul}>
             <li>{t("privacyCollect1")}</li>
             <li>{t("privacyCollect2")}</li>
             <li>{t("privacyCollect3")}</li>
@@ -64,70 +72,68 @@ export default function PrivacyPolicy() {
           </ul>
         </section>
 
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-foreground">{t("privacyWhyWeCollect")}</h2>
-          <ul className="text-sm text-muted-foreground leading-relaxed list-disc pl-5 space-y-1">
+        <section style={section}>
+          <h2 style={h2}>{t("privacyWhyWeCollect")}</h2>
+          <ul style={ul}>
             <li>{t("privacyPurpose1")}</li>
             <li>{t("privacyPurpose2")}</li>
             <li>{t("privacyPurpose3")}</li>
           </ul>
         </section>
 
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-foreground">{t("privacyLegalBasis")}</h2>
-          <p className="text-sm text-muted-foreground leading-relaxed">{t("privacyLegalBasisDesc")}</p>
+        <section style={section}>
+          <h2 style={h2}>{t("privacyLegalBasis")}</h2>
+          <p style={p}>{t("privacyLegalBasisDesc")}</p>
         </section>
 
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-foreground">{t("privacyDataSharing")}</h2>
-          <p className="text-sm text-muted-foreground leading-relaxed">{t("privacyDataSharingDesc")}</p>
+        <section style={section}>
+          <h2 style={h2}>{t("privacyDataSharing")}</h2>
+          <p style={p}>{t("privacyDataSharingDesc")}</p>
         </section>
 
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-foreground">{t("privacyAiTitle")}</h2>
-          <p className="text-sm text-muted-foreground leading-relaxed">{t("privacyAiDesc")}</p>
+        <section style={section}>
+          <h2 style={h2}>{t("privacyAiTitle")}</h2>
+          <p style={p}>{t("privacyAiDesc")}</p>
         </section>
 
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-foreground">{t("privacyHosting")}</h2>
-          <p className="text-sm text-muted-foreground leading-relaxed">{t("privacyHostingDesc")}</p>
+        <section style={section}>
+          <h2 style={h2}>{t("privacyHosting")}</h2>
+          <p style={p}>{t("privacyHostingDesc")}</p>
         </section>
 
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-foreground">{t("privacyMinorConsent")}</h2>
-          <p className="text-sm text-muted-foreground leading-relaxed">{t("privacyMinorConsentDesc")}</p>
+        <section style={section}>
+          <h2 style={h2}>{t("privacyMinorConsent")}</h2>
+          <p style={p}>{t("privacyMinorConsentDesc")}</p>
         </section>
 
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-foreground">{t("privacyRetention")}</h2>
-          <p className="text-sm text-muted-foreground leading-relaxed">{t("privacyRetentionDesc")}</p>
+        <section style={section}>
+          <h2 style={h2}>{t("privacyRetention")}</h2>
+          <p style={p}>{t("privacyRetentionDesc")}</p>
         </section>
 
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-foreground">{t("privacyYourRights")}</h2>
-          <ul className="text-sm text-muted-foreground leading-relaxed list-disc pl-5 space-y-1">
+        <section style={section}>
+          <h2 style={h2}>{t("privacyYourRights")}</h2>
+          <ul style={ul}>
             <li>{t("privacyRight1")}</li>
             <li>{t("privacyRight2")}</li>
             <li>{t("privacyRight3")}</li>
             <li>{t("privacyRight4")}</li>
             <li>{t("privacyRight5")}</li>
           </ul>
-          <p className="text-sm text-muted-foreground leading-relaxed">{t("privacyRightsHow")}</p>
+          <p style={{ ...p, marginTop: 12 }}>{t("privacyRightsHow")}</p>
         </section>
 
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-foreground">{t("privacyCookies")}</h2>
-          <p className="text-sm text-muted-foreground leading-relaxed">{t("privacyCookiesDesc")}</p>
+        <section style={section}>
+          <h2 style={h2}>{t("privacyCookies")}</h2>
+          <p style={p}>{t("privacyCookiesDesc")}</p>
         </section>
 
-        <section className="space-y-3">
-          <h2 className="text-lg font-bold text-foreground">{t("privacyContact")}</h2>
-          <p className="text-sm text-muted-foreground leading-relaxed">{t("privacyContactDesc")}</p>
-          <p className="text-sm text-foreground font-medium">rashid3105@gmail.com</p>
+        <section style={section}>
+          <h2 style={h2}>{t("privacyContact")}</h2>
+          <p style={p}>{t("privacyContactDesc")}</p>
+          <p style={{ fontSize: 15, color: "#fff", fontWeight: 600, marginTop: 8 }}>rashid3105@gmail.com</p>
         </section>
-      </main>
-
-      <AppFooter />
-    </div>
+      </div>
+    </LandingLayout>
   );
 }
