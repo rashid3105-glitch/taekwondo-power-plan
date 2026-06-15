@@ -62,6 +62,8 @@ import Programs from "./pages/Programs";
 import PlatformMarketing from "./pages/PlatformMarketing";
 import Funktioner from "./pages/Funktioner";
 import Priser from "./pages/Priser";
+import Terms from "./pages/Terms";
+import Blog from "./pages/Blog";
 import Contact from "./pages/Contact";
 import Kostplan from "./pages/Kostplan";
 import Health from "./pages/Health";
@@ -142,6 +144,8 @@ const AnimatedRoutes = () => {
         <Route path="/platform" element={<Page><PlatformMarketing /></Page>} />
         <Route path="/funktioner" element={<Page><Funktioner /></Page>} />
         <Route path="/priser" element={<Page><Priser /></Page>} />
+        <Route path="/terms" element={<Page><Terms /></Page>} />
+        <Route path="/blog" element={<Page><Blog /></Page>} />
         <Route path="/contact" element={<Page><Contact /></Page>} />
         <Route path="/features/:section" element={<Page><FeatureDetail /></Page>} />
         <Route path="/platform/:slug" element={<Page><PlatformPage /></Page>} />

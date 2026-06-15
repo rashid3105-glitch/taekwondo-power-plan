@@ -34,10 +34,12 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
             <div style={{ fontSize: 18, fontWeight: 900, letterSpacing: "-0.03em" }}>Sports<span style={{ color: GOLD }}>talent</span></div>
             <div style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", marginTop: 4 }}>CVR 33685815 · København, Danmark</div>
           </div>
-          <div style={{ display: "flex", gap: 24, fontSize: 12, color: "rgba(255,255,255,0.35)" }}>
+          <div style={{ display: "flex", gap: 24, fontSize: 12, color: "rgba(255,255,255,0.7)" }}>
             {[
               { label: "Privatlivspolitik", href: "/privacy" },
-              { label: "Kontakt", href: "/contact" },
+              { label: "Vilkår", href: "/terms" },
+              { label: "Kontakt", href: "/priser" },
+              { label: "Blog", href: "/blog" },
             ].map(l => <span key={l.href} onClick={() => navigate(l.href)} style={{ cursor: "pointer" }}>{l.label}</span>)}
           </div>
           <div style={{ fontSize: 11, color: "rgba(255,255,255,0.2)" }}>© 2026 Sportstalent.dk</div>
