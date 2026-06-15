@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { PageMeta } from "@/components/PageMeta";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import coachSittingAsset from "@/assets/coach-sitting.png.asset.json";
 import coachStandingAsset from "@/assets/coach-standing.jpg.asset.json";
 
@@ -35,7 +36,8 @@ const Index = () => {
             <span key={l} onClick={() => navigate(to)} style={{ cursor: "pointer" }}>{l}</span>
           ))}
         </div>
-        <div style={{ display: "flex", gap: 10 }}>
+        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+          <LanguageSwitcher />
           <button onClick={() => navigate("/auth")} style={{ padding: "8px 18px", borderRadius: 8, border: "0.5px solid rgba(255,255,255,0.12)", background: "transparent", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>Log ind</button>
           <button onClick={() => navigate("/auth")} style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: "#F5C842", color: "#0B0C14", fontSize: 14, fontWeight: 800, cursor: "pointer" }}>Prøv gratis</button>
         </div>
