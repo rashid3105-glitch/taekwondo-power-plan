@@ -84,6 +84,11 @@ export default function PrivacyPolicy() {
         </section>
 
         <section className="space-y-3">
+          <h2 className="text-lg font-bold text-foreground">{t("privacyAiTitle")}</h2>
+          <p className="text-sm text-muted-foreground leading-relaxed">{t("privacyAiDesc")}</p>
+        </section>
+
+        <section className="space-y-3">
           <h2 className="text-lg font-bold text-foreground">{t("privacyHosting")}</h2>
           <p className="text-sm text-muted-foreground leading-relaxed">{t("privacyHostingDesc")}</p>
         </section>
