@@ -40,14 +40,14 @@ export function LanguageSwitcher({ className }: { className?: string }) {
       </button>
 
       {open && (
-        <div className="absolute end-0 top-full mt-1 z-50 min-w-[140px] rounded-md border border-border bg-popover shadow-md py-1">
+        <div className="absolute end-0 top-full mt-1 z-50 min-w-[140px] rounded-md border border-border bg-popover text-popover-foreground shadow-md py-1">
           {(Object.keys(FLAGS) as Locale[]).map((l) => (
             <button
               key={l}
               onClick={() => { setLocale(l); setOpen(false); }}
               className={cn(
-                "flex w-full items-center gap-2 px-3 py-2 text-sm transition-colors cursor-pointer hover:bg-accent",
-                l === locale && "bg-accent font-semibold"
+                "flex w-full items-center gap-2 px-3 py-2 text-sm text-popover-foreground transition-colors cursor-pointer hover:bg-accent hover:text-accent-foreground",
+                l === locale && "bg-accent text-accent-foreground font-semibold"
               )}
             >
               <span className="text-base leading-none">{FLAGS[l].emoji}</span>
