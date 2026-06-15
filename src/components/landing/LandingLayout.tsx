@@ -7,6 +7,7 @@ const NAV_LINKS = [
   { label: "Funktioner", href: "/funktioner" },
   { label: "Priser", href: "/priser" },
   { label: "Om os", href: "/about" },
+  { label: "Blog", href: "/blog" },
 ];
 
 export function LandingLayout({ children }: { children: React.ReactNode }) {
@@ -14,19 +15,61 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   return (
     <div style={{ background: "#0B0C14", color: "#fff", fontFamily: "Inter, sans-serif", minHeight: "100vh" }}>
-      <nav style={{ background: "rgba(11,12,20,0.97)", borderBottom: "0.5px solid rgba(255,255,255,0.08)", padding: "0 32px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100 }}>
-        <div onClick={() => navigate("/")} style={{ fontSize: 20, fontWeight: 900, letterSpacing: "-0.03em", cursor: "pointer" }}>
-          Sports<span style={{ color: GOLD }}>talent</span>
+      <nav style={{ background: "rgba(11,12,20,0.97)", borderBottom: "0.5px solid rgba(255,255,255,0.08)", position: "sticky", top: 0, zIndex: 100 }}>
+        {/* Row 1: logo + utility */}
+        <div style={{ padding: "0 20px", height: 56, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div onClick={() => navigate("/")} style={{ fontSize: 20, fontWeight: 900, letterSpacing: "-0.03em", cursor: "pointer" }}>
+            Sports<span style={{ color: GOLD }}>talent</span>
+          </div>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <LanguageSwitcher />
+            <button
+              onClick={() => navigate("/auth")}
+              style={{
+                padding: "8px 16px",
+                borderRadius: 8,
+                border: `0.5px solid ${GOLD}`,
+                background: GOLD,
+                color: "#0B0C14",
+                fontSize: 13,
+                fontWeight: 800,
+                cursor: "pointer",
+              }}
+            >
+              Log ind
+            </button>
+          </div>
         </div>
-        <div style={{ display: "flex", gap: 28, fontSize: 14 }}>
-          {NAV_LINKS.map(l => (
-            <span key={l.href} onClick={() => navigate(l.href)} style={{ color: location.pathname === l.href ? GOLD : "rgba(255,255,255,0.5)", cursor: "pointer", fontWeight: location.pathname === l.href ? 600 : 400 }}>{l.label}</span>
-          ))}
-        </div>
-        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-          <LanguageSwitcher />
-          <button onClick={() => navigate("/auth")} style={{ padding: "8px 18px", borderRadius: 8, border: "0.5px solid rgba(255,255,255,0.12)", background: "transparent", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>Log ind</button>
-          <button onClick={() => navigate("/auth")} style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: GOLD, color: "#0B0C14", fontSize: 14, fontWeight: 800, cursor: "pointer" }}>Prøv gratis</button>
+        {/* Row 2: nav links */}
+        <div
+          style={{
+            display: "flex",
+            gap: 20,
+            justifyContent: "center",
+            padding: "8px 16px",
+            borderTop: "0.5px solid rgba(255,255,255,0.05)",
+            overflowX: "auto",
+          }}
+        >
+          {NAV_LINKS.map((l) => {
+            const active = location.pathname === l.href;
+            return (
+              <span
+                key={l.href}
+                onClick={() => navigate(l.href)}
+                style={{
+                  color: active ? GOLD : "rgba(255,255,255,0.7)",
+                  cursor: "pointer",
+                  fontWeight: active ? 700 : 500,
+                  fontSize: 12,
+                  letterSpacing: "0.02em",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {l.label}
+              </span>
+            );
+          })}
         </div>
       </nav>
       <main>{children}</main>
