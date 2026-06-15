@@ -140,31 +140,35 @@ export default function AdminBlogEditor() {
     return <div className="container py-12 text-center text-muted-foreground">Loading…</div>;
   }
 
+  const goldBtn = "bg-amber-400 text-black hover:bg-amber-300 border-amber-400";
+  const goldOutline = "bg-transparent text-amber-400 border border-amber-400 hover:bg-amber-400 hover:text-black";
+  const inputDark = "mt-1 bg-black border-zinc-700 text-white placeholder:text-zinc-500";
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="dark min-h-screen bg-black text-white">
       <div className="container max-w-4xl mx-auto px-4 py-6 space-y-6">
         <div className="flex items-center justify-between gap-3 flex-wrap">
-          <Button variant="ghost" size="sm" onClick={() => navigate("/admin/blog")}>
+          <Button variant="ghost" size="sm" onClick={() => navigate("/admin/blog")} className="text-white hover:bg-white/10 hover:text-amber-400">
             <ArrowLeft className="h-4 w-4 mr-1" /> All posts
           </Button>
-          <Button onClick={onSave} disabled={saving}>
+          <Button onClick={onSave} disabled={saving} className={goldBtn}>
             <Save className="h-4 w-4 mr-1" /> {saving ? "Saving…" : "Save"}
           </Button>
         </div>
 
-        <h1 className="text-2xl font-extrabold">{isNew ? "New blog post" : "Edit post"}</h1>
+        <h1 className="text-2xl font-extrabold text-white">{isNew ? "New blog post" : "Edit post"}</h1>
 
-        <Card className="p-5 space-y-5">
+        <Card className="p-5 space-y-5 bg-zinc-900 border-zinc-800 text-white">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label>Language</Label>
+              <Label className="text-white">Language</Label>
               <div className="flex gap-2 mt-2">
                 {(["da", "en"] as const).map((l) => (
                   <Button
                     key={l}
                     type="button"
                     size="sm"
-                    variant={locale === l ? "default" : "outline"}
+                    className={locale === l ? goldBtn : goldOutline}
                     onClick={() => setLocale(l)}
                   >
                     {l.toUpperCase()}
@@ -173,7 +177,7 @@ export default function AdminBlogEditor() {
               </div>
             </div>
             <div className="flex items-center justify-end gap-3 pt-7">
-              <Label htmlFor="status-switch" className="text-sm">
+              <Label htmlFor="status-switch" className="text-sm text-white">
                 {status === "published" ? "Published" : "Draft"}
               </Label>
               <Switch
@@ -185,42 +189,43 @@ export default function AdminBlogEditor() {
           </div>
 
           <div>
-            <Label htmlFor="title">Title</Label>
+            <Label htmlFor="title" className="text-white">Title</Label>
             <Input
               id="title"
               value={title}
               onChange={(e) => handleTitleChange(e.target.value)}
               placeholder={locale === "da" ? "Min blog titel" : "My blog title"}
-              className="mt-1"
+              className={inputDark}
             />
           </div>
 
           <div>
-            <Label htmlFor="slug">Slug</Label>
+            <Label htmlFor="slug" className="text-white">Slug</Label>
             <Input
               id="slug"
               value={slug}
               onChange={(e) => { setSlug(slugify(e.target.value)); setSlugTouched(true); }}
               placeholder="my-blog-post"
-              className="mt-1 font-mono text-sm"
+              className={`${inputDark} font-mono text-sm`}
             />
-            <p className="text-xs text-muted-foreground mt-1">URL: /blog/{slug || "your-slug"}</p>
+            <p className="text-xs text-zinc-400 mt-1">URL: /blog/{slug || "your-slug"}</p>
           </div>
 
           <div>
-            <Label htmlFor="excerpt">Excerpt</Label>
+            <Label htmlFor="excerpt" className="text-white">Excerpt</Label>
             <Textarea
               id="excerpt"
               value={excerpt}
               onChange={(e) => setExcerpt(e.target.value)}
               placeholder={locale === "da" ? "Kort beskrivelse (1-2 sætninger)" : "Short summary (1-2 sentences)"}
               rows={2}
-              className="mt-1"
+              className={inputDark}
             />
           </div>
 
           <div>
-            <Label>Cover image</Label>
+            <Label className="text-white">Cover image</Label>
+
             {coverUrl ? (
               <div className="mt-2 relative inline-block">
                 <img src={coverUrl} alt="" className="rounded-lg max-h-48 object-cover" />
@@ -252,7 +257,7 @@ export default function AdminBlogEditor() {
           </div>
 
           <div>
-            <Label>Content</Label>
+            <Label className="text-white">Content</Label>
             <div className="mt-2">
               <RichTextEditor value={content} onChange={setContent} onImageUpload={uploadBlogImage} />
             </div>
@@ -260,32 +265,32 @@ export default function AdminBlogEditor() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <Label htmlFor="published-at">Publish date (optional)</Label>
+              <Label htmlFor="published-at" className="text-white">Publish date (optional)</Label>
               <Input
                 id="published-at"
                 type="datetime-local"
                 value={publishedAt}
                 onChange={(e) => setPublishedAt(e.target.value)}
-                className="mt-1"
+                className={inputDark}
               />
-              <p className="text-xs text-muted-foreground mt-1">Leave empty to publish immediately when status is set to Published.</p>
+              <p className="text-xs text-zinc-400 mt-1">Leave empty to publish immediately when status is set to Published.</p>
             </div>
             <div>
-              <Label htmlFor="expires-at">Expires (optional)</Label>
+              <Label htmlFor="expires-at" className="text-white">Expires (optional)</Label>
               <Input
                 id="expires-at"
                 type="datetime-local"
                 value={expiresAt}
                 onChange={(e) => setExpiresAt(e.target.value)}
-                className="mt-1"
+                className={inputDark}
               />
-              <p className="text-xs text-muted-foreground mt-1">Post will be hidden after this date.</p>
+              <p className="text-xs text-zinc-400 mt-1">Post will be hidden after this date.</p>
             </div>
           </div>
         </Card>
 
         <div className="flex justify-end">
-          <Button onClick={onSave} disabled={saving} size="lg">
+          <Button onClick={onSave} disabled={saving} size="lg" className={goldBtn}>
             <Save className="h-4 w-4 mr-1" /> {saving ? "Saving…" : "Save"}
           </Button>
         </div>
