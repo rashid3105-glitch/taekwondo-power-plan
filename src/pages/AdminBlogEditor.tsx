@@ -7,11 +7,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { ArrowLeft, Save, Upload, X } from "lucide-react";
+import { ArrowLeft, Save, Upload, X, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { RichTextEditor } from "@/components/blog/RichTextEditor";
 import {
-  createPost, updatePost, getPostById, uploadBlogImage, slugify,
+  createPost, updatePost, getPostById, uploadBlogImage, slugify, sanitizeHtml,
   type BlogLocale, type BlogPost,
 } from "@/lib/blogApi";
 
