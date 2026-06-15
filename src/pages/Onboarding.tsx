@@ -227,6 +227,36 @@ export default function Onboarding() {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
       if (error) throw error;
+
+      // Coach: opret eller tilknyt klub
+      if (role === "coach") {
+        let clubId: string | null = null;
+        if (selectedExistingClub && clubAction === 'join') {
+          clubId = selectedExistingClub.id;
+        } else {
+          const slug = clubName.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+          const { data: newClub, error: clubError } = await supabase
+            .from("clubs" as any)
+            .insert({ name: clubName.trim(), slug, max_athletes: 5 } as any)
+            .select("id")
+            .single();
+          if (clubError) throw clubError;
+          clubId = (newClub as any).id;
+        }
+        await supabase
+          .from("profiles")
+          .update({ club_id: clubId } as any)
+          .eq("user_id", userId);
+        await supabase
+          .from("club_memberships" as any)
+          .upsert({
+            user_id: userId,
+            club_id: clubId,
+            role_in_club: 'coach',
+            status: 'active',
+          } as any, { onConflict: 'user_id,club_id' });
+      }
+
       clearDraft();
 
       // Apply pending invite (athlete signed up via /join/CODE)
