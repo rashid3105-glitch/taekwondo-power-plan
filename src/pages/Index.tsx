@@ -260,7 +260,9 @@ const Index = () => {
           <div style={{ display: "flex", gap: 24, fontSize: 12, color: "rgba(255,255,255,0.75)" }}>
             {[
               { label: "Privatlivspolitik", href: "/privacy" },
-              { label: "Kontakt", href: "/contact" },
+              { label: "Vilkår", href: "/terms" },
+              { label: "Kontakt", href: "/priser" },
+              { label: "Blog", href: "/blog" },
             ].map(l => <span key={l.href} onClick={() => navigate(l.href)} style={{ cursor: "pointer" }}>{l.label}</span>)}
           </div>
           <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)" }}>© 2026 Sportstalent.dk</div>
