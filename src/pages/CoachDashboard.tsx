@@ -408,10 +408,16 @@ export default function CoachDashboard() {
               {coachUserId && <PendingAthletesSection coachId={coachUserId} />}
               <ConsentMissingPanel />
               {!isAdmin && athletes.length >= MAX_ATHLETES && (
-                <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 flex flex-col sm:flex-row sm:items-center gap-2">
-                  <span className="text-sm text-destructive flex-1">{t("maxAthletesReached")}</span>
-                  <a href="mailto:info@sportstalent.dk?subject=Upgrade%20to%20Enterprise" className="inline-flex items-center justify-center gap-1 rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap">
-                    {t("upgradeEnterprise")}
+                <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 flex flex-col sm:flex-row sm:items-center gap-2">
+                  <span className="text-sm text-amber-600 dark:text-amber-400 flex-1">
+                    Du har nået grænsen på {MAX_ATHLETES} atleter for din klub.
+                    Kontakt admin for at udvide din klubkvote.
+                  </span>
+                  <a
+                    href={`mailto:info@sportstalent.dk?subject=${encodeURIComponent(`Udvid klubkvote for ${athletes[0]?.club_name ?? ""}`)}`}
+                    className="inline-flex items-center justify-center gap-1 rounded-md bg-amber-500 text-white px-4 py-2 text-sm font-medium hover:bg-amber-600 transition-colors whitespace-nowrap"
+                  >
+                    Kontakt admin
                   </a>
                 </div>
               )}

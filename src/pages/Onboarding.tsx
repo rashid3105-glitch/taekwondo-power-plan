@@ -52,6 +52,36 @@ export default function Onboarding() {
   const [athleteCount, setAthleteCount] = useState("1to5");
   const [focus, setFocus] = useState<string[]>([]);
   const [coachSlide, setCoachSlide] = useState(0);
+  const [clubSearchResults, setClubSearchResults] = useState<{id: string; name: string}[]>([]);
+  const [clubSearching, setClubSearching] = useState(false);
+  const [selectedExistingClub, setSelectedExistingClub] = useState<{id: string; name: string} | null>(null);
+  const [clubAction, setClubAction] = useState<'create' | 'join' | null>(null);
+
+  useEffect(() => {
+    if (!clubName.trim() || clubName.trim().length < 2) {
+      setClubSearchResults([]);
+      setClubAction(null);
+      return;
+    }
+    if (selectedExistingClub && clubName !== selectedExistingClub.name) {
+      setSelectedExistingClub(null);
+      setClubAction(null);
+    }
+    const timer = setTimeout(async () => {
+      setClubSearching(true);
+      const { data } = await supabase
+        .from("clubs" as any)
+        .select("id, name")
+        .ilike("name", `%${clubName.trim()}%`)
+        .limit(5);
+      const results = (data as any[] ?? []) as {id: string; name: string}[];
+      setClubSearchResults(results);
+      if (results.length === 0) setClubAction('create');
+      setClubSearching(false);
+    }, 400);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clubName]);
 
   useEffect(() => {
     (async () => {
@@ -157,6 +187,7 @@ export default function Onboarding() {
   };
   const validateCoachStep1 = () => {
     if (!clubName.trim()) { toast.error(t("onbValidationMissing")); return false; }
+    if (!clubAction) { toast.error("Vælg en eksisterende klub eller bekræft oprettelse af ny"); return false; }
     return true;
   };
 
@@ -196,6 +227,36 @@ export default function Onboarding() {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
       if (error) throw error;
+
+      // Coach: opret eller tilknyt klub
+      if (role === "coach") {
+        let clubId: string | null = null;
+        if (selectedExistingClub && clubAction === 'join') {
+          clubId = selectedExistingClub.id;
+        } else {
+          const slug = clubName.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+          const { data: newClub, error: clubError } = await supabase
+            .from("clubs" as any)
+            .insert({ name: clubName.trim(), slug, max_athletes: 5 } as any)
+            .select("id")
+            .single();
+          if (clubError) throw clubError;
+          clubId = (newClub as any).id;
+        }
+        await supabase
+          .from("profiles")
+          .update({ club_id: clubId } as any)
+          .eq("user_id", userId);
+        await supabase
+          .from("club_memberships" as any)
+          .upsert({
+            user_id: userId,
+            club_id: clubId,
+            role_in_club: 'coach',
+            status: 'active',
+          } as any, { onConflict: 'user_id,club_id' });
+      }
+
       clearDraft();
 
       // Apply pending invite (athlete signed up via /join/CODE)
@@ -484,6 +545,71 @@ export default function Onboarding() {
                   <div className="space-y-2">
                     <Label htmlFor="clubName">{t("onbClubName")}</Label>
                     <Input id="clubName" value={clubName} onChange={(e) => setClubName(e.target.value)} className="h-11" />
+
+                    {clubSearching && (
+                      <div className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Loader2 className="h-3 w-3 animate-spin" /> Søger efter eksisterende klubber...
+                      </div>
+                    )}
+
+                    {!clubSearching && clubSearchResults.length > 0 && !selectedExistingClub && (
+                      <div className="rounded-md border border-border bg-card divide-y divide-border">
+                        <div className="px-3 py-2 text-xs text-muted-foreground font-medium">
+                          Disse klubber eksisterer allerede — vil du tilknytte dig en af dem?
+                        </div>
+                        {clubSearchResults.map(club => (
+                          <button
+                            key={club.id}
+                            type="button"
+                            onClick={() => {
+                              setSelectedExistingClub(club);
+                              setClubName(club.name);
+                              setClubAction('join');
+                              setClubSearchResults([]);
+                            }}
+                            className="w-full px-3 py-2.5 text-left text-sm hover:bg-muted/50 transition-colors flex items-center justify-between gap-2"
+                          >
+                            <span>{club.name}</span>
+                            <span className="text-xs text-primary font-medium">Tilknyt mig →</span>
+                          </button>
+                        ))}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setClubAction('create');
+                            setClubSearchResults([]);
+                          }}
+                          className="w-full px-3 py-2.5 text-left text-xs text-muted-foreground hover:bg-muted/50 transition-colors"
+                        >
+                          Nej, opret ny klub med dette navn
+                        </button>
+                      </div>
+                    )}
+
+                    {clubAction === 'join' && selectedExistingClub && (
+                      <div className="flex items-center gap-2 rounded-md bg-primary/10 border border-primary/20 px-3 py-2 text-sm text-primary">
+                        <span>✓</span>
+                        <span>Du tilknyttes <strong>{selectedExistingClub.name}</strong></span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedExistingClub(null);
+                            setClubAction(null);
+                            setClubName("");
+                          }}
+                          className="ml-auto text-xs text-muted-foreground hover:text-foreground"
+                        >
+                          Fortryd
+                        </button>
+                      </div>
+                    )}
+
+                    {clubAction === 'create' && clubName.trim() && (
+                      <div className="flex items-center gap-2 rounded-md bg-muted/50 border border-border px-3 py-2 text-sm text-muted-foreground">
+                        <span>＋</span>
+                        <span>Ny klub oprettes: <strong className="text-foreground">{clubName.trim()}</strong> — maks 5 atleter</span>
+                      </div>
+                    )}
                   </div>
 
                   <div className="space-y-2">
