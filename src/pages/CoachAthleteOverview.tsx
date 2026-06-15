@@ -177,7 +177,7 @@ export default function CoachAthleteOverview() {
       .select("id, entry_date, content, mood, energy, tags, entry_type, club_id")
       .eq("user_id", athleteId)
       .order("entry_date", { ascending: false });
-    if (activeClubId) q = q.eq("club_id", activeClubId);
+    if (activeClubId) q = q.or(`club_id.eq.${activeClubId},club_id.is.null`);
     const { data } = await q;
     setDiaryEntries(data || []);
     setDiaryLoading(false);

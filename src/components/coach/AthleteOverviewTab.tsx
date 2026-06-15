@@ -97,7 +97,7 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
           .eq("user_id", athleteId)
           .gte("entry_date", isoStart)
           .order("entry_date", { ascending: false });
-        if (activeClubId) q = q.eq("club_id", activeClubId);
+        if (activeClubId) q = q.or(`club_id.eq.${activeClubId},club_id.is.null`);
         return q;
       })(),
 
