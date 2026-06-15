@@ -24,6 +24,7 @@ export default function AdminBlogEditor() {
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   const [locale, setLocale] = useState<BlogLocale>("da");
   const [title, setTitle] = useState("");
