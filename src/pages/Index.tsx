@@ -1,26 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { ArrowRight, Users, TrendingUp, Award } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
 import { PageMeta } from "@/components/PageMeta";
-import { AppFooter } from "@/components/AppFooter";
-import { Watermark } from "@/components/Watermark";
-import { useLanguage } from "@/i18n/LanguageContext";
-import { CaseStudy } from "@/components/landing/CaseStudy";
-import { FeatureGrid } from "@/components/landing/FeatureGrid";
-import { FAQSection } from "@/components/landing/FAQSection";
-import { ValuePlanCombo } from "@/components/landing/ValuePlanCombo";
-import { ProblemSolution } from "@/components/landing/ProblemSolution";
-import { PublicNav } from "@/components/PublicNav";
-import { WhatsNewInline } from "@/components/landing/WhatsNewInline";
 import heroImage from "@/assets/hero-taekwondo-coach.jpg";
 
 const Index = () => {
   const navigate = useNavigate();
   const [checking, setChecking] = useState(true);
-  const { t } = useLanguage();
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -32,180 +18,250 @@ const Index = () => {
   if (checking) return null;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col relative">
-      <PageMeta
-        title="S&C Training for Taekwondo Athletes | Sportstalent"
-        description="Sport science S&C for taekwondo athletes. Periodized weekly plans with TKD-specific exercises for explosive power, speed, and kick performance."
-        canonical="https://sportstalent.dk/"
-      />
-      <Watermark />
+    <div style={{ background: "#0B0C14", color: "#fff", fontFamily: "Inter, sans-serif", overflowX: "hidden" }}>
+      <PageMeta title="Sportstalent — Platformen til sportscoaches" description="Træningsplaner, videoanalyse og atletdata samlet ét sted." canonical="https://sportstalent.dk/" />
 
-      <PublicNav />
+      {/* NAV */}
+      <nav style={{ background: "rgba(11,12,20,0.95)", borderBottom: "0.5px solid rgba(255,255,255,0.08)", padding: "0 32px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100 }}>
+        <div style={{ fontSize: 20, fontWeight: 900, letterSpacing: "-0.03em" }}>Sports<span style={{ color: "#F5C842" }}>talent</span></div>
+        <div style={{ display: "flex", gap: 28, fontSize: 14, color: "rgba(255,255,255,0.5)" }}>
+          {["Platform", "Funktioner", "Priser", "Om os"].map(l => <span key={l} style={{ cursor: "pointer" }}>{l}</span>)}
+        </div>
+        <div style={{ display: "flex", gap: 10 }}>
+          <button onClick={() => navigate("/auth")} style={{ padding: "8px 18px", borderRadius: 8, border: "0.5px solid rgba(255,255,255,0.12)", background: "transparent", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>Log ind</button>
+          <button onClick={() => navigate("/auth")} style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: "#F5C842", color: "#0B0C14", fontSize: 14, fontWeight: 800, cursor: "pointer" }}>Prøv gratis</button>
+        </div>
+      </nav>
 
-      <main className="flex-1">
-        {/* Hero */}
-        <section className="relative overflow-hidden" aria-labelledby="hero-heading">
-          {/* Hero background image — bumped opacity for stronger presence */}
-          <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-            <img
-              src={heroImage}
-              alt=""
-              width={1920}
-              height={1080}
-              className="w-full h-full object-cover object-center opacity-65"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-background/55 via-background/75 to-background" />
-            <div className="absolute inset-0 bg-gradient-to-r from-background/85 via-background/30 to-background/60" />
+      {/* HERO */}
+      <section style={{ padding: "72px 32px 0", textAlign: "center" }}>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(245,200,66,0.1)", border: "0.5px solid rgba(245,200,66,0.28)", borderRadius: 20, padding: "4px 14px", fontSize: 11, color: "#F5C842", fontWeight: 700, letterSpacing: "0.08em", marginBottom: 24 }}>
+          🥋 BYGGET TIL SPORTSCOACHES
+        </div>
+        <h1 style={{ fontSize: "clamp(36px,6vw,62px)", fontWeight: 900, lineHeight: 1.07, letterSpacing: "-0.04em", margin: "0 0 20px" }}>
+          Platformen der løfter<br /><span style={{ color: "#F5C842" }}>talenter</span> til champions
+        </h1>
+        <p style={{ fontSize: 17, color: "rgba(255,255,255,0.5)", lineHeight: 1.65, maxWidth: 500, margin: "0 auto 36px" }}>
+          Stop med at jonglere regneark og spredte noter. Sportstalent samler træningsplaner, videoanalyse, stævner og atletdata — ét sted.
+        </p>
+        <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap", marginBottom: 16 }}>
+          <button onClick={() => navigate("/auth")} style={{ padding: "13px 28px", borderRadius: 10, border: "none", background: "#F5C842", color: "#0B0C14", fontSize: 15, fontWeight: 800, cursor: "pointer" }}>Start gratis i 30 dage →</button>
+          <button style={{ padding: "13px 28px", borderRadius: 10, border: "0.5px solid rgba(255,255,255,0.12)", background: "transparent", color: "#fff", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>Se platformen</button>
+        </div>
+        <div style={{ display: "flex", gap: 20, justifyContent: "center", fontSize: 13, color: "rgba(255,255,255,0.35)", flexWrap: "wrap" }}>
+          {["30 dage gratis", "Intet kreditkort", "Opsig når som helst"].map((t, i) => (
+            <span key={i}>✓ {t}</span>
+          ))}
+        </div>
+        {/* Hero image */}
+        <div style={{ maxWidth: 920, margin: "44px auto 0", borderRadius: "14px 14px 0 0", overflow: "hidden", border: "0.5px solid rgba(255,255,255,0.08)", borderBottom: "none" }}>
+          <img src={heroImage} alt="Sportstalent platform" style={{ width: "100%", height: 380, objectFit: "cover", display: "block" }} />
+          <div style={{ background: "#13141F", padding: "16px 24px", display: "flex", gap: 12, borderTop: "0.5px solid rgba(255,255,255,0.07)" }}>
+            {[{ val: "24", up: "+3", label: "Aktive atleter" }, { val: "8", up: "", label: "Sessioner i dag" }, { val: "7 dage", up: "", label: "Næste stævne", gold: true }, { val: "91%", up: "", label: "Holdets aktivitet" }].map((s, i) => (
+              <div key={i} style={{ flex: 1, background: "#1A1B2E", borderRadius: 8, padding: "12px 14px", border: "0.5px solid rgba(255,255,255,0.06)" }}>
+                <div style={{ fontSize: 20, fontWeight: 900, color: s.gold ? "#F5C842" : "#fff" }}>{s.val} <span style={{ fontSize: 12, color: "#F5C842" }}>{s.up}</span></div>
+                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginTop: 2 }}>{s.label}</div>
+              </div>
+            ))}
           </div>
-          <div
-            className="absolute top-0 inset-x-0 mx-auto w-[700px] h-[450px] opacity-15 pointer-events-none"
-            style={{ background: "radial-gradient(ellipse, hsl(190 95% 50% / 0.35), transparent 70%)" }}
-            aria-hidden="true"
-          />
-          <div className="relative max-w-3xl mx-auto px-5 pt-14 pb-8 sm:pt-20 sm:pb-10">
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-secondary/40 backdrop-blur-sm px-3 py-1 mb-5"
-            >
-              <span className="h-1.5 w-1.5 rounded-full bg-speed animate-pulse" />
-              <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
-                {t("landingBadge")}
-              </span>
-            </motion.div>
+        </div>
+      </section>
 
-            <motion.h1
-              id="hero-heading"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter text-foreground leading-[1.05]"
-            >
-              {t("landingHeroTitle")}{" "}
-              <span className="text-gradient-energy">{t("landingHeroHighlight")}</span>
-            </motion.h1>
+      {/* STATS */}
+      <div style={{ background: "#13141F", borderTop: "0.5px solid rgba(255,255,255,0.07)", borderBottom: "0.5px solid rgba(255,255,255,0.07)", marginTop: 0 }}>
+        <div style={{ maxWidth: 1000, margin: "0 auto", padding: "44px 32px", display: "grid", gridTemplateColumns: "repeat(4,1fr)" }}>
+          {[{ num: "150+", label: "Aktive coaches" }, { num: "2.400+", label: "Registrerede atleter" }, { num: "38", label: "Klubber på platformen" }, { num: "8 timer", label: "Sparet pr. uge på admin" }].map((s, i) => (
+            <div key={i} style={{ textAlign: "center", padding: "8px 16px", borderRight: i < 3 ? "0.5px solid rgba(255,255,255,0.07)" : "none" }}>
+              <div style={{ fontSize: 42, fontWeight: 900, color: "#F5C842", letterSpacing: "-0.04em", lineHeight: 1 }}>{s.num}</div>
+              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 6 }}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
 
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.25 }}
-              className="mt-4 text-base sm:text-lg text-muted-foreground leading-relaxed max-w-xl"
-            >
-              {t("landingHeroDesc")}
-            </motion.p>
+      {/* FEATURES */}
+      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "72px 32px" }}>
+        <div style={{ textAlign: "center", marginBottom: 44 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#F5C842", marginBottom: 10 }}>Platformen</div>
+          <h2 style={{ fontSize: "clamp(24px,4vw,38px)", fontWeight: 900, letterSpacing: "-0.03em", marginBottom: 12 }}>Alt hvad du behøver som sportscoach</h2>
+          <p style={{ fontSize: 15, color: "rgba(255,255,255,0.45)", maxWidth: 440, margin: "0 auto" }}>Én platform erstatter regneark, beskedapps og spredte noter.</p>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 12 }}>
+          {[
+            { icon: "📋", title: "Træningsplaner", desc: "12-ugers programmer med periodisering og progressive overload" },
+            { icon: "🎥", title: "Videoanalyse", desc: "Frame-by-frame scrubber med noter og tags på klippet" },
+            { icon: "📊", title: "Fremgangsdata", desc: "Belastningsstyring og restitutionsanalyse i ét dashboard" },
+            { icon: "🏆", title: "Stævner", desc: "Live nedtælling og resultatregistrering" },
+            { icon: "🧠", title: "Mental coaching", desc: "Check-ins, humørregistrering og velvære for holdet" },
+            { icon: "🩹", title: "Skadeopfølgning", desc: "Fra skadesdag til tilbagevenden — komplet tidslinje" },
+            { icon: "💬", title: "Beskeder", desc: "Direkte kommunikation med atleter samlet ét sted" },
+            { icon: "📄", title: "PDF-rapporter", desc: "Eksportér holdpræstationer med ét tryk" },
+          ].map((f, i) => (
+            <div key={i} style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: "20px 18px" }}>
+              <div style={{ fontSize: 26, marginBottom: 10 }}>{f.icon}</div>
+              <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 6 }}>{f.title}</div>
+              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", lineHeight: 1.55 }}>{f.desc}</div>
+            </div>
+          ))}
+        </div>
+      </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="mt-6 flex flex-col sm:flex-row gap-3"
-            >
-              <Button
-                onClick={() => navigate("/auth")}
-                size="lg"
-                className="px-7 font-bold text-sm shadow-glow relative overflow-hidden group"
-              >
-                <span className="absolute inset-0 bg-gradient-to-r from-energy/20 to-speed/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <span className="relative flex items-center gap-1.5">
-                  {t("getStarted")} <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
-                </span>
-              </Button>
-              <Button onClick={() => navigate("/methodology")} size="lg" variant="outline" className="px-7 font-semibold text-sm border-border/60">
-                {t("methCta")}
-              </Button>
-            </motion.div>
-
-            {/* Inline social proof chips */}
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.55 }}
-              className="mt-5 flex flex-wrap items-center gap-2"
-            >
+      {/* WHY */}
+      <div style={{ background: "#13141F", borderTop: "0.5px solid rgba(255,255,255,0.07)", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
+        <div style={{ maxWidth: 1000, margin: "0 auto", padding: "72px 32px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 56, alignItems: "center" }}>
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#F5C842", marginBottom: 10 }}>Hvorfor Sportstalent</div>
+            <h2 style={{ fontSize: "clamp(24px,4vw,36px)", fontWeight: 900, letterSpacing: "-0.03em", marginBottom: 14, lineHeight: 1.1 }}>Bygget af coaches.<br />For coaches.</h2>
+            <p style={{ fontSize: 15, color: "rgba(255,255,255,0.45)", lineHeight: 1.7, marginBottom: 32 }}>Træt af at jonglere regneark, WhatsApp-beskeder og tre forskellige apps? Sportstalent samler alt i én platform.</p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
               {[
-                { icon: Users, text: "landingProofAthletes" as const },
-                { icon: TrendingUp, text: "landingProofJump" as const },
-                { icon: Award, text: "landingProofLevel" as const },
-              ].map((item, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-1.5 rounded-full border border-border/60 bg-secondary/40 backdrop-blur-sm px-2.5 py-1"
-                >
-                  <item.icon className="h-3 w-3 text-energy" />
-                  <span className="text-[11px] font-semibold text-foreground/90">{t(item.text)}</span>
+                { icon: "🥋", t: "Bygget til sport", d: "Designet til konkurrencesport med kamplens og stævner." },
+                { icon: "📱", t: "App til atleter", d: "Dashboard med plan, stævner og coach-kontakt." },
+                { icon: "⚡", t: "Spar 8+ timer/uge", d: "Automatisér opfølgning og rapportering." },
+                { icon: "🤝", t: "Coach-samarbejde", d: "Del planer og sæsonkalender på tværs af hold." },
+              ].map((w, i) => (
+                <div key={i}>
+                  <div style={{ fontSize: 20, marginBottom: 6 }}>{w.icon}</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>{w.t}</div>
+                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", lineHeight: 1.5 }}>{w.d}</div>
                 </div>
               ))}
-            </motion.div>
-
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.7 }}
-              className="mt-3 text-[11px] text-muted-foreground"
-            >
-              {t("ctaSubtext")}
-            </motion.p>
-
-            <WhatsNewInline />
+            </div>
           </div>
-        </section>
-
-        {/* Gradient transition: dark → light */}
-        <div className="h-24 bg-gradient-to-b from-background to-[hsl(210,20%,97%)]" aria-hidden="true" />
-
-        {/* ── Light content sections ── */}
-        <div className="theme-light-section pt-4">
-          {/* Who it's for / Problem / Solution */}
-          <ProblemSolution />
-
-          {/* Combined value props + 3-day plan teaser */}
-          <ValuePlanCombo />
-
-          {/* Case Study (compact) */}
-          <CaseStudy />
-
-          {/* Features (dense grid) */}
-          <FeatureGrid />
-
-          {/* FAQ (top 3) */}
-          <FAQSection />
+          <div style={{ position: "relative" }}>
+            <img src={heroImage} alt="Coach med hold" style={{ width: "100%", borderRadius: 14, border: "0.5px solid rgba(255,255,255,0.08)", display: "block" }} />
+            <div style={{ position: "absolute", bottom: -14, left: -14, background: "#0B0C14", borderRadius: 10, padding: "12px 16px", border: "0.5px solid rgba(255,255,255,0.08)" }}>
+              <div style={{ fontSize: 22, fontWeight: 900, color: "#F5C842" }}>67%</div>
+              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 1 }}>Mere tid til coaching</div>
+            </div>
+          </div>
         </div>
+      </div>
 
-        {/* CTA — back to dark */}
-        <div className="bg-gradient-to-b from-[hsl(210,20%,97%)] to-background h-16" aria-hidden="true" />
-        <section className="max-w-3xl mx-auto px-5 pb-16 sm:pb-20">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="rounded-2xl border border-energy/20 bg-energy/5 p-6 sm:p-8 text-center"
-          >
-            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground mb-2">
-              {t("landingCtaTitle")}
-            </h2>
-            <p className="text-sm text-muted-foreground mb-5 max-w-md mx-auto">
-              {t("landingCtaDesc")}
-            </p>
-            <Button
-              onClick={() => navigate("/auth")}
-              size="lg"
-              className="px-8 font-bold text-sm shadow-glow relative overflow-hidden group"
-            >
-              <span className="absolute inset-0 bg-gradient-to-r from-energy/20 to-speed/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <span className="relative flex items-center gap-1.5">
-                {t("landingCtaButton")} <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
-              </span>
-            </Button>
-            <p className="mt-3 text-[11px] text-muted-foreground">
-              {t("ctaSubtext")}
-            </p>
-          </motion.div>
-        </section>
-      </main>
+      {/* TESTIMONIALS */}
+      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "72px 32px" }}>
+        <div style={{ textAlign: "center", marginBottom: 40 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#F5C842", marginBottom: 10 }}>Coaches siger</div>
+          <h2 style={{ fontSize: "clamp(24px,4vw,36px)", fontWeight: 900, letterSpacing: "-0.03em" }}>Hvad siger dem der bruger det?</h2>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
+          {[
+            { name: "Rasmus Møller", role: "Cheftræner, Odense TKD", text: "Sportstalent har halveret min tid på administration. Den tid bruger jeg på atleter i stedet.", av: "RM", feat: false },
+            { name: "Sara Lindqvist", role: "Landsholdstræner, Sverige TKD", text: "Endelig et redskab bygget til sportens krav. Videoanalysen alene er pengene værd.", av: "SL", feat: true },
+            { name: "Ahmed Hassan", role: "Coach, Aarhus Martial Arts", text: "Mine atleter elsker app'en. Fremgangsvisningen motiverer dem til at træne konsistent.", av: "AH", feat: false },
+          ].map((t, i) => (
+            <div key={i} style={{ background: t.feat ? "rgba(245,200,66,0.07)" : "rgba(255,255,255,0.03)", border: `0.5px solid ${t.feat ? "rgba(245,200,66,0.22)" : "rgba(255,255,255,0.07)"}`, borderRadius: 14, padding: "24px" }}>
+              <div style={{ fontSize: 26, color: t.feat ? "rgba(245,200,66,0.35)" : "rgba(255,255,255,0.1)", marginBottom: 10 }}>"</div>
+              <p style={{ fontSize: 14, color: "rgba(255,255,255,0.65)", lineHeight: 1.65, fontStyle: "italic", marginBottom: 18 }}>{t.text}</p>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ width: 34, height: 34, borderRadius: "50%", background: t.feat ? "rgba(245,200,66,0.12)" : "#1A1B2E", border: "0.5px solid rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: t.feat ? "#F5C842" : "#fff" }}>{t.av}</div>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 700 }}>{t.name}</div>
+                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>{t.role}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
 
-      <AppFooter />
+      {/* FOUNDER */}
+      <div style={{ background: "#13141F", borderTop: "0.5px solid rgba(255,255,255,0.07)", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
+        <div style={{ maxWidth: 1000, margin: "0 auto", padding: "72px 32px", display: "grid", gridTemplateColumns: "auto 1fr", gap: 48, alignItems: "start" }}>
+          <div style={{ position: "relative", flexShrink: 0 }}>
+            <img src="/founder-farooq.jpg" alt="Farooq Rashid" style={{ width: 200, height: 260, objectFit: "cover", borderRadius: 14, border: "0.5px solid rgba(255,255,255,0.08)", display: "block" }} onError={(e) => { e.currentTarget.style.display = "none"; }} />
+            <div style={{ position: "absolute", bottom: -12, right: -12, background: "#0B0C14", border: "0.5px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "10px 14px" }}>
+              <div style={{ fontSize: 20, fontWeight: 900, color: "#F5C842" }}>30+</div>
+              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", marginTop: 1 }}>år i sporten</div>
+            </div>
+          </div>
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#F5C842", marginBottom: 10 }}>Grundlæggeren</div>
+            <h2 style={{ fontSize: "clamp(22px,3.5vw,34px)", fontWeight: 900, letterSpacing: "-0.02em", marginBottom: 4 }}>Farooq Rashid</h2>
+            <div style={{ fontSize: 14, color: "#F5C842", fontWeight: 600, marginBottom: 20 }}>Grundlægger & Cheftræner, Copenhagen City Taekwondo</div>
+            <div style={{ borderLeft: "3px solid #F5C842", paddingLeft: 18, marginBottom: 16 }}>
+              <p style={{ fontSize: 15, color: "rgba(255,255,255,0.8)", lineHeight: 1.75, fontStyle: "italic", margin: 0 }}>"Jeg har brugt årtier som aktiv taekwondo-coach og oplevet på egen krop, hvad der mangler i moderne talentudvikling — et samlet sted til at følge, guide og løfte atleter fra begynder til verdensklasse."</p>
+            </div>
+            <p style={{ fontSize: 14, color: "rgba(255,255,255,0.45)", lineHeight: 1.7, marginBottom: 22 }}>
+              Sportstalent er ikke skabt på et kontor. Det er skabt i en sportshal, med sved på panden og atleter foran mig. Hvert eneste værktøj på platformen løser et problem jeg selv har stået med.<br /><br />
+              Mit mål er enkelt: give enhver coach de redskaber, der gør dem i stand til at fokusere på det der virkelig betyder noget — at udvikle mennesker.
+            </p>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              {["Sort bælte", "Cheftræner i 20+ år", "Copenhagen City TKD"].map((tag, i) => (
+                <span key={i} style={{ display: "inline-flex", background: "rgba(245,200,66,0.1)", border: "0.5px solid rgba(245,200,66,0.22)", borderRadius: 20, padding: "4px 12px", fontSize: 11, fontWeight: 700, color: "#F5C842" }}>{tag}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* PRICING */}
+      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "72px 32px" }}>
+        <div style={{ textAlign: "center", marginBottom: 48 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#F5C842", marginBottom: 10 }}>Priser</div>
+          <h2 style={{ fontSize: "clamp(24px,4vw,36px)", fontWeight: 900, letterSpacing: "-0.03em", marginBottom: 12 }}>Simpel, transparent prissætning</h2>
+          <p style={{ fontSize: 15, color: "rgba(255,255,255,0.45)", maxWidth: 380, margin: "0 auto" }}>Ingen skjulte gebyrer. Start gratis, opgrader når holdet vokser.</p>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16, alignItems: "start" }}>
+          {/* Atlet */}
+          <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: "24px" }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 8 }}>Atlet</div>
+            <div style={{ fontSize: 40, fontWeight: 900, letterSpacing: "-0.04em" }}>49</div>
+            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.35)", marginBottom: 16 }}>DKK/md</div>
+            <hr style={{ border: "none", borderTop: "0.5px solid rgba(255,255,255,0.07)", margin: "12px 0" }} />
+            {["Personlig træningsplan", "Stævneoversigt", "Beskeder fra coach", "Fremgangsstatistik"].map((f, i) => (
+              <div key={i} style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", display: "flex", gap: 7, marginBottom: 7 }}><span style={{ color: "#F5C842" }}>✓</span>{f}</div>
+            ))}
+            <button onClick={() => navigate("/auth")} style={{ width: "100%", marginTop: 18, padding: "10px", borderRadius: 8, border: "0.5px solid rgba(255,255,255,0.12)", background: "transparent", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>Kom i gang</button>
+          </div>
+          {/* Club */}
+          <div style={{ background: "rgba(245,200,66,0.06)", border: "0.5px solid rgba(245,200,66,0.28)", borderRadius: 14, padding: "24px", position: "relative" }}>
+            <div style={{ position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)", background: "#F5C842", color: "#0B0C14", borderRadius: 20, padding: "3px 14px", fontSize: 10, fontWeight: 800, whiteSpace: "nowrap" }}>Mest populær</div>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#F5C842", marginBottom: 8 }}>Klublicens</div>
+            <div style={{ fontSize: 40, fontWeight: 900, letterSpacing: "-0.04em" }}>999</div>
+            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.35)", marginBottom: 16 }}>DKK/md · op til 25 atleter</div>
+            <hr style={{ border: "none", borderTop: "0.5px solid rgba(245,200,66,0.15)", margin: "12px 0" }} />
+            {["Op til 25 atleter", "Videoanalyse & noter", "Holdstatistik & PDF-rapporter", "Sæsonkalender (kollaborativ)", "Træningsplanbygger", "Mental coaching & check-ins", "Skadeopfølgning", "Prioriteret support"].map((f, i) => (
+              <div key={i} style={{ fontSize: 12, color: "rgba(255,255,255,0.75)", display: "flex", gap: 7, marginBottom: 7 }}><span style={{ color: "#F5C842" }}>✓</span>{f}</div>
+            ))}
+            <button onClick={() => navigate("/auth")} style={{ width: "100%", marginTop: 18, padding: "12px", borderRadius: 8, border: "none", background: "#F5C842", color: "#0B0C14", fontSize: 13, fontWeight: 800, cursor: "pointer" }}>Start gratis i 30 dage</button>
+            <div style={{ textAlign: "center", marginTop: 8, fontSize: 10, color: "rgba(255,255,255,0.3)" }}>9.990 DKK/år — spar 2 måneder</div>
+          </div>
+          {/* Forbund */}
+          <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: "24px" }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 8 }}>Forbund / Skole</div>
+            <div style={{ fontSize: 22, fontWeight: 900, letterSpacing: "-0.02em", marginBottom: 4 }}>Kontakt os</div>
+            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.35)", marginBottom: 16 }}> </div>
+            <hr style={{ border: "none", borderTop: "0.5px solid rgba(255,255,255,0.07)", margin: "12px 0" }} />
+            {["Ubegrænset atleter", "Flerklubs-overblik", "API-adgang", "Dedikeret onboarding", "SLA & prioriteret support"].map((f, i) => (
+              <div key={i} style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", display: "flex", gap: 7, marginBottom: 7 }}><span style={{ color: "#F5C842" }}>✓</span>{f}</div>
+            ))}
+            <button style={{ width: "100%", marginTop: 18, padding: "10px", borderRadius: 8, border: "0.5px solid rgba(255,255,255,0.12)", background: "transparent", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>Skriv til os</button>
+          </div>
+        </div>
+      </div>
+
+      {/* CTA */}
+      <div style={{ background: "#13141F", borderTop: "0.5px solid rgba(255,255,255,0.07)", padding: "72px 32px", textAlign: "center" }}>
+        <h2 style={{ fontSize: "clamp(26px,4vw,44px)", fontWeight: 900, letterSpacing: "-0.03em", marginBottom: 14, lineHeight: 1.1 }}>Giv dine atleter den<br />platform de fortjener</h2>
+        <p style={{ fontSize: 16, color: "rgba(255,255,255,0.45)", maxWidth: 400, margin: "0 auto 32px", lineHeight: 1.65 }}>Slut dig til 150+ coaches der allerede bruger Sportstalent til at udvikle talenter smartere.</p>
+        <button onClick={() => navigate("/auth")} style={{ padding: "14px 36px", borderRadius: 10, border: "none", background: "#F5C842", color: "#0B0C14", fontSize: 15, fontWeight: 800, cursor: "pointer" }}>Opret gratis konto →</button>
+        <div style={{ marginTop: 14, fontSize: 12, color: "rgba(255,255,255,0.25)" }}>30 dage gratis · Intet kreditkort · Opsig når som helst</div>
+      </div>
+
+      {/* FOOTER */}
+      <div style={{ borderTop: "0.5px solid rgba(255,255,255,0.07)" }}>
+        <div style={{ maxWidth: 1000, margin: "0 auto", padding: "28px 32px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
+          <div>
+            <div style={{ fontSize: 18, fontWeight: 900, letterSpacing: "-0.03em" }}>Sports<span style={{ color: "#F5C842" }}>talent</span></div>
+            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", marginTop: 4 }}>CVR 33685815 · København, Danmark</div>
+          </div>
+          <div style={{ display: "flex", gap: 24, fontSize: 12, color: "rgba(255,255,255,0.35)" }}>
+            {["Privatlivspolitik", "Vilkår", "Kontakt", "Blog"].map(l => <span key={l} style={{ cursor: "pointer" }}>{l}</span>)}
+          </div>
+          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.2)" }}>© 2026 Sportstalent.dk</div>
+        </div>
+      </div>
     </div>
   );
 };
