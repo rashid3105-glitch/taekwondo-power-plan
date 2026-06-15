@@ -7,6 +7,7 @@ import { useEntitlements, useAthleteModuleAccess } from "@/hooks/useEntitlements
 import { LockedModule } from "@/lib/entitlements";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
+import { useClubTrial } from "@/hooks/useClubTrial";
 
 interface Props {
   module: LockedModule;
@@ -29,12 +30,20 @@ export function UpgradeGate({ module, children }: Props) {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const [coachGranted, setCoachGranted] = useState<boolean | null>(null);
+  const [clubId, setClubId] = useState<string | null>(null);
+  const { isInTrial, loading: trialLoading } = useClubTrial(clubId);
 
   useEffect(() => {
     (async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) { setCoachGranted(false); return; }
+        const { data: prof } = await supabase
+          .from("profiles")
+          .select("club_id")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        setClubId((prof as any)?.club_id ?? null);
         const keys = COACH_MODULE_KEYS[module] ?? [];
         if (keys.length === 0) { setCoachGranted(false); return; }
         const { data } = await supabase
@@ -50,13 +59,16 @@ export function UpgradeGate({ module, children }: Props) {
     })();
   }, [module]);
 
-  if (loading || moduleAccessLoading || coachGranted === null) {
+  if (loading || moduleAccessLoading || coachGranted === null || trialLoading) {
     return (
       <div className="min-h-[40vh] flex items-center justify-center">
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
       </div>
     );
   }
+
+  // During club trial: unlock everything
+  if (isInTrial) return <>{children}</>;
 
   // Club-level grant: if the module is enabled via club_module_defaults or
   // athlete_module_overrides, the athlete has access regardless of personal tier.
