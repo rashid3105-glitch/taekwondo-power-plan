@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { BrandLogo } from "@/components/BrandLogo";
 import { Button } from "@/components/ui/button";
 import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, ShieldCheck, Users, Brain, Clock, Apple, Home, Lock, NotebookPen, AlertTriangle, ClipboardList, HelpCircle, Trash2, Menu, Video as VideoIcon, CalendarRange, Watch, Swords, Trophy, MessageCircle, Pencil, X, LayoutGrid, Settings, Camera } from "lucide-react";
 import { ChatDrawer } from "@/components/chat/ChatDrawer";
@@ -622,9 +623,8 @@ export default function Dashboard() {
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10 pt-safe">
         <div className="container max-w-4xl mx-auto px-3 sm:px-4 py-3">
           <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-3 min-w-0">
-              <img src={logo} alt="Sportstalent" className="h-12 w-12 sm:h-14 sm:w-14 rounded-lg object-contain" />
-              <span className="text-sm sm:text-base font-extrabold text-foreground truncate">SPORTSTALENT</span>
+            <div className="flex items-center min-w-0">
+              <BrandLogo height={36} textColor="hsl(var(--foreground))" />
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <div className="hidden sm:block">
