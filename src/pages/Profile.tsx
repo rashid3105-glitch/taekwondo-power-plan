@@ -158,6 +158,31 @@ export default function Profile() {
     URL.revokeObjectURL(url);
   };
 
+  const [withdrawOpen, setWithdrawOpen] = useState(false);
+  const [withdrawing, setWithdrawing] = useState(false);
+  const handleWithdrawConsent = async () => {
+    setWithdrawing(true);
+    try {
+      const { data: res, error } = await supabase.functions.invoke("consent-self", {
+        body: { action: "withdraw" },
+      });
+      if (error) throw error;
+      if (!(res as any)?.ok) throw new Error((res as any)?.error || "error");
+      toast.success(t("privacyConsentWithdrawDone" as any));
+      setWithdrawOpen(false);
+      // Re-evaluating ConsentGate happens on next auth event / route change;
+      // a soft reload guarantees the gate immediately shows the consent screen
+      // again so health-sync stays blocked until consent is given anew.
+      setTimeout(() => window.location.reload(), 400);
+    } catch (e: any) {
+      console.error("withdraw consent failed", e);
+      toast.error(e?.message || t("privacyConsentWithdrawFailed" as any));
+    } finally {
+      setWithdrawing(false);
+    }
+  };
+
+
   const roleLabel = (() => {
     const r = data?.roles || [];
     const hasA = r.includes("athlete");
