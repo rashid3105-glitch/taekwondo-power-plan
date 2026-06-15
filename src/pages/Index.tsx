@@ -245,7 +245,7 @@ const Index = () => {
       {/* CTA */}
       <div style={{ background: "#13141F", borderTop: "0.5px solid rgba(255,255,255,0.07)", padding: "72px 32px", textAlign: "center" }}>
         <h2 style={{ fontSize: "clamp(26px,4vw,44px)", fontWeight: 900, letterSpacing: "-0.03em", marginBottom: 14, lineHeight: 1.1 }}>Giv dine atleter den<br />platform de fortjener</h2>
-        <p style={{ fontSize: 16, color: "rgba(255,255,255,0.45)", maxWidth: 400, margin: "0 auto 32px", lineHeight: 1.65 }}>Slut dig til 150+ coaches der allerede bruger Sportstalent til at udvikle talenter smartere.</p>
+        <p style={{ fontSize: 16, color: "rgba(255,255,255,0.45)", maxWidth: 440, margin: "0 auto 32px", lineHeight: 1.65 }}>Kom i gang i dag og giv dine atleter et samlet sted at træne, følge fremgang og forberede sig til stævner.</p>
         <button onClick={() => navigate("/auth")} style={{ padding: "14px 36px", borderRadius: 10, border: "none", background: "#F5C842", color: "#0B0C14", fontSize: 15, fontWeight: 800, cursor: "pointer" }}>Opret gratis konto →</button>
         <div style={{ marginTop: 14, fontSize: 12, color: "rgba(255,255,255,0.25)" }}>30 dage gratis · Intet kreditkort · Opsig når som helst</div>
       </div>
