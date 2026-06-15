@@ -4,7 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { LogOut, Pencil, Download, KeyRound, Trash2, ChevronLeft, Apple, Smartphone } from "lucide-react";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
+import { LogOut, Pencil, Download, KeyRound, Trash2, ChevronLeft, Apple, Smartphone, ShieldOff } from "lucide-react";
 import { PageMeta } from "@/components/PageMeta";
 import { AppFooter } from "@/components/AppFooter";
 import { useLanguage } from "@/i18n/LanguageContext";
