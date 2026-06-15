@@ -35,7 +35,7 @@ export function BrandLogo({
       }}
     >
       <img
-        src={runnerAsset.url}
+        src={runnerIcon}
         alt=""
         aria-hidden
         style={{
