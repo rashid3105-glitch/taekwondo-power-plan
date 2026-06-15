@@ -79,8 +79,8 @@ export default function PlatformMarketing() {
           {[
             { num: "8+", label: "Timer sparet om ugen" },
             { num: "67%", label: "Mere tid til coaching" },
-            { num: "150+", label: "Aktive coaches" },
-            { num: "2.400+", label: "Atleter på platformen" },
+            { num: "30+", label: "Aktive coaches" },
+            { num: "100+", label: "Atleter på platformen" },
           ].map((s, i, arr) => (
             <div key={i} style={{ textAlign: "center", padding: "16px", borderRight: i < arr.length - 1 ? "0.5px solid rgba(255,255,255,0.07)" : "none" }}>
               <div style={{ fontSize: 40, fontWeight: 900, color: GOLD, letterSpacing: "-0.04em", lineHeight: 1 }}>{s.num}</div>
