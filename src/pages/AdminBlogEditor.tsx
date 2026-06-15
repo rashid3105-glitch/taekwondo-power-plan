@@ -257,7 +257,7 @@ export default function AdminBlogEditor() {
           </div>
 
           <div>
-            <Label>Content</Label>
+            <Label className="text-white">Content</Label>
             <div className="mt-2">
               <RichTextEditor value={content} onChange={setContent} onImageUpload={uploadBlogImage} />
             </div>
@@ -265,32 +265,32 @@ export default function AdminBlogEditor() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <Label htmlFor="published-at">Publish date (optional)</Label>
+              <Label htmlFor="published-at" className="text-white">Publish date (optional)</Label>
               <Input
                 id="published-at"
                 type="datetime-local"
                 value={publishedAt}
                 onChange={(e) => setPublishedAt(e.target.value)}
-                className="mt-1"
+                className={inputDark}
               />
-              <p className="text-xs text-muted-foreground mt-1">Leave empty to publish immediately when status is set to Published.</p>
+              <p className="text-xs text-zinc-400 mt-1">Leave empty to publish immediately when status is set to Published.</p>
             </div>
             <div>
-              <Label htmlFor="expires-at">Expires (optional)</Label>
+              <Label htmlFor="expires-at" className="text-white">Expires (optional)</Label>
               <Input
                 id="expires-at"
                 type="datetime-local"
                 value={expiresAt}
                 onChange={(e) => setExpiresAt(e.target.value)}
-                className="mt-1"
+                className={inputDark}
               />
-              <p className="text-xs text-muted-foreground mt-1">Post will be hidden after this date.</p>
+              <p className="text-xs text-zinc-400 mt-1">Post will be hidden after this date.</p>
             </div>
           </div>
         </Card>
 
         <div className="flex justify-end">
-          <Button onClick={onSave} disabled={saving} size="lg">
+          <Button onClick={onSave} disabled={saving} size="lg" className={goldBtn}>
             <Save className="h-4 w-4 mr-1" /> {saving ? "Saving…" : "Save"}
           </Button>
         </div>
