@@ -410,6 +410,13 @@ export default function Profile() {
           />
           <Separator className="bg-white/10" />
           <ActionRow
+            icon={<ShieldOff className="h-4 w-4" />}
+            label={t("privacyConsentWithdrawTitle" as any)}
+            sub={t("privacyConsentWithdrawSub" as any)}
+            onClick={() => setWithdrawOpen(true)}
+          />
+          <Separator className="bg-white/10" />
+          <ActionRow
             icon={<Trash2 className="h-4 w-4" />}
             label={t("profileDeleteAccount" as any)}
             sub={t("profileDeleteAccountSub" as any)}
@@ -417,6 +424,7 @@ export default function Profile() {
             danger
           />
         </div>
+
 
         <Button
           variant="ghost"
