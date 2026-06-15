@@ -64,6 +64,9 @@ import Funktioner from "./pages/Funktioner";
 import Priser from "./pages/Priser";
 import Terms from "./pages/Terms";
 import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
+import AdminBlog from "./pages/AdminBlog";
+import AdminBlogEditor from "./pages/AdminBlogEditor";
 import Contact from "./pages/Contact";
 import Kostplan from "./pages/Kostplan";
 import Health from "./pages/Health";
@@ -85,24 +88,9 @@ import ParentDashboard from "./pages/ParentDashboard";
 import Consent from "./pages/Consent";
 
 import { UpgradeGate } from "@/components/UpgradeGate";
-import { AIAssistant } from "@/components/AIAssistant";
 import CoachSurveys from "./pages/CoachSurveys";
 import AthleteSurveys from "./pages/AthleteSurveys";
 
-const AI_ASSISTANT_HIDDEN_PATHS = new Set([
-  "/", "/v2", "/v1", "/auth", "/reset-password", "/pricing",
-  "/help", "/about", "/contact", "/privacy", "/unsubscribe",
-  "/signup/coach", "/methodology", "/programs", "/taekwondo-training-program",
-]);
-const AI_ASSISTANT_HIDDEN_PREFIXES = [
-  "/platform/", "/features/", "/match/share/", "/athlete/",
-  "/join/", "/parent-join/", "/invite/", "/consent/",
-];
-
-const shouldShowAIAssistant = (pathname: string) => {
-  if (AI_ASSISTANT_HIDDEN_PATHS.has(pathname)) return false;
-  return !AI_ASSISTANT_HIDDEN_PREFIXES.some((p) => pathname.startsWith(p));
-};
 
 const queryClient = new QueryClient();
 
@@ -146,6 +134,10 @@ const AnimatedRoutes = () => {
         <Route path="/priser" element={<Page><Priser /></Page>} />
         <Route path="/terms" element={<Page><Terms /></Page>} />
         <Route path="/blog" element={<Page><Blog /></Page>} />
+        <Route path="/blog/:slug" element={<Page><BlogPost /></Page>} />
+        <Route path="/admin/blog" element={<Page><AdminBlog /></Page>} />
+        <Route path="/admin/blog/new" element={<Page><AdminBlogEditor /></Page>} />
+        <Route path="/admin/blog/:id/edit" element={<Page><AdminBlogEditor /></Page>} />
         <Route path="/contact" element={<Page><Contact /></Page>} />
         <Route path="/features/:section" element={<Page><FeatureDetail /></Page>} />
         <Route path="/platform/:slug" element={<Page><PlatformPage /></Page>} />
@@ -216,7 +208,6 @@ const AnimatedRoutes = () => {
         <Route path="*" element={<Page><NotFound /></Page>} />
       </Routes>
       </AnimatePresence>
-      {shouldShowAIAssistant(location.pathname) && <AIAssistant />}
     </>
   );
 };
