@@ -41,13 +41,14 @@ const Index = () => {
       {/* NAV */}
       <header style={{ position: "sticky", top: 0, zIndex: 100, background: "rgba(11,12,20,0.95)", borderBottom: "0.5px solid rgba(255,255,255,0.08)" }}>
         <nav style={{ padding: `0 ${pad}px`, height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-          <div onClick={() => navigate("/")} style={{ fontSize: isMobile ? 18 : 20, fontWeight: 900, letterSpacing: "-0.03em", cursor: "pointer", flexShrink: 0 }}>Sports<span style={{ color: "#F5C842" }}>talent</span></div>
+          <BrandLogo height={isMobile ? 36 : 44} onClick={() => navigate("/")} />
           {!isMobile && (
-            <div style={{ display: "flex", gap: isTablet ? 16 : 28, fontSize: 14, color: "rgba(255,255,255,0.8)" }}>
+            <div style={{ display: "flex", gap: isTablet ? 14 : 24, fontSize: 14, color: "rgba(255,255,255,0.8)" }}>
               {[
                 { l: "Platform", to: "/platform" },
                 { l: "Funktioner", to: "/funktioner" },
                 { l: "Priser", to: "/priser" },
+                { l: "Blog", to: "/blog" },
                 { l: "Om os", to: "/about" },
               ].map(({ l, to }) => (
                 <span key={l} onClick={() => navigate(to)} style={{ cursor: "pointer" }}>{l}</span>
