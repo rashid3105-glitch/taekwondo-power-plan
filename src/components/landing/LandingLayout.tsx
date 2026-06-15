@@ -19,9 +19,7 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
       <nav style={{ background: "rgba(11,12,20,0.97)", borderBottom: "0.5px solid rgba(255,255,255,0.08)", position: "sticky", top: 0, zIndex: 100 }}>
         {/* Row 1: logo + utility */}
         <div style={{ padding: "0 20px", height: 56, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div onClick={() => navigate("/")} style={{ fontSize: 20, fontWeight: 900, letterSpacing: "-0.03em", cursor: "pointer" }}>
-            Sports<span style={{ color: GOLD }}>talent</span>
-          </div>
+          <BrandLogo height={40} onClick={() => navigate("/")} />
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
             <LanguageSwitcher />
             <button
