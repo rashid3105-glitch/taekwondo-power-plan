@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { PageMeta } from "@/components/PageMeta";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { BrandLogo } from "@/components/BrandLogo";
 import coachSittingAsset from "@/assets/coach-sitting.png.asset.json";
 import coachStandingAsset from "@/assets/coach-standing.jpg.asset.json";
 
