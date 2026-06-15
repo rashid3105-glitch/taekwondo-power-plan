@@ -140,31 +140,35 @@ export default function AdminBlogEditor() {
     return <div className="container py-12 text-center text-muted-foreground">Loading…</div>;
   }
 
+  const goldBtn = "bg-amber-400 text-black hover:bg-amber-300 border-amber-400";
+  const goldOutline = "bg-transparent text-amber-400 border border-amber-400 hover:bg-amber-400 hover:text-black";
+  const inputDark = "mt-1 bg-black border-zinc-700 text-white placeholder:text-zinc-500";
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="dark min-h-screen bg-black text-white">
       <div className="container max-w-4xl mx-auto px-4 py-6 space-y-6">
         <div className="flex items-center justify-between gap-3 flex-wrap">
-          <Button variant="ghost" size="sm" onClick={() => navigate("/admin/blog")}>
+          <Button variant="ghost" size="sm" onClick={() => navigate("/admin/blog")} className="text-white hover:bg-white/10 hover:text-amber-400">
             <ArrowLeft className="h-4 w-4 mr-1" /> All posts
           </Button>
-          <Button onClick={onSave} disabled={saving}>
+          <Button onClick={onSave} disabled={saving} className={goldBtn}>
             <Save className="h-4 w-4 mr-1" /> {saving ? "Saving…" : "Save"}
           </Button>
         </div>
 
-        <h1 className="text-2xl font-extrabold">{isNew ? "New blog post" : "Edit post"}</h1>
+        <h1 className="text-2xl font-extrabold text-white">{isNew ? "New blog post" : "Edit post"}</h1>
 
-        <Card className="p-5 space-y-5">
+        <Card className="p-5 space-y-5 bg-zinc-900 border-zinc-800 text-white">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label>Language</Label>
+              <Label className="text-white">Language</Label>
               <div className="flex gap-2 mt-2">
                 {(["da", "en"] as const).map((l) => (
                   <Button
                     key={l}
                     type="button"
                     size="sm"
-                    variant={locale === l ? "default" : "outline"}
+                    className={locale === l ? goldBtn : goldOutline}
                     onClick={() => setLocale(l)}
                   >
                     {l.toUpperCase()}
