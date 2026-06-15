@@ -177,7 +177,7 @@ export default function AdminBlogEditor() {
             {excerpt && <p className="text-lg text-zinc-300 mb-6">{excerpt}</p>}
             <div
               className="prose prose-invert max-w-none"
-              dir={locale === "ar" ? "rtl" : "ltr"}
+              dir="ltr"
               dangerouslySetInnerHTML={{ __html: sanitizeHtml(content || "") }}
             />
           </Card>
