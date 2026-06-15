@@ -1,10 +1,8 @@
-import logo from "@/assets/logo.png";
+import runnerAsset from "@/assets/runner-icon.png.asset.json";
 
 /**
  * Sportstalent brand lockup: runner icon + wordmark.
  * The icon is rendered slightly taller than the text for a stronger mark.
- * The baked-in "SPORTSTALENT.DK" caption on the source artwork is cropped
- * away with backgroundSize/Position so only the runner shows.
  */
 export function BrandLogo({
   height = 44,
@@ -22,7 +20,8 @@ export function BrandLogo({
   className?: string;
 }) {
   const iconH = height;
-  const textSize = Math.round(iconH * 0.42);
+  // Text ~70% of icon height → icon visibly taller than the wordmark.
+  const textSize = Math.round(iconH * 0.55);
   return (
     <span
       onClick={onClick}
@@ -30,24 +29,19 @@ export function BrandLogo({
       style={{
         display: "inline-flex",
         alignItems: "center",
-        gap: Math.round(iconH * 0.2),
+        gap: Math.round(iconH * 0.22),
         cursor: onClick ? "pointer" : undefined,
         userSelect: "none",
       }}
     >
-      <span
+      <img
+        src={runnerAsset.url}
+        alt=""
         aria-hidden
         style={{
-          display: "inline-block",
-          width: iconH,
           height: iconH,
-          backgroundImage: `url(${logo})`,
-          // Zoom into the runner: the source artwork has the runner in the
-          // upper ~55% of a square canvas with the SPORTSTALENT.DK caption
-          // baked in below — we scale up and shift to crop that caption out.
-          backgroundSize: `${iconH * 1.7}px ${iconH * 1.7}px`,
-          backgroundPosition: `center -${Math.round(iconH * 0.12)}px`,
-          backgroundRepeat: "no-repeat",
+          width: "auto",
+          display: "block",
           flexShrink: 0,
         }}
       />
