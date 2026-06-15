@@ -177,7 +177,7 @@ export default function AdminBlogEditor() {
               </div>
             </div>
             <div className="flex items-center justify-end gap-3 pt-7">
-              <Label htmlFor="status-switch" className="text-sm">
+              <Label htmlFor="status-switch" className="text-sm text-white">
                 {status === "published" ? "Published" : "Draft"}
               </Label>
               <Switch
@@ -189,42 +189,43 @@ export default function AdminBlogEditor() {
           </div>
 
           <div>
-            <Label htmlFor="title">Title</Label>
+            <Label htmlFor="title" className="text-white">Title</Label>
             <Input
               id="title"
               value={title}
               onChange={(e) => handleTitleChange(e.target.value)}
               placeholder={locale === "da" ? "Min blog titel" : "My blog title"}
-              className="mt-1"
+              className={inputDark}
             />
           </div>
 
           <div>
-            <Label htmlFor="slug">Slug</Label>
+            <Label htmlFor="slug" className="text-white">Slug</Label>
             <Input
               id="slug"
               value={slug}
               onChange={(e) => { setSlug(slugify(e.target.value)); setSlugTouched(true); }}
               placeholder="my-blog-post"
-              className="mt-1 font-mono text-sm"
+              className={`${inputDark} font-mono text-sm`}
             />
-            <p className="text-xs text-muted-foreground mt-1">URL: /blog/{slug || "your-slug"}</p>
+            <p className="text-xs text-zinc-400 mt-1">URL: /blog/{slug || "your-slug"}</p>
           </div>
 
           <div>
-            <Label htmlFor="excerpt">Excerpt</Label>
+            <Label htmlFor="excerpt" className="text-white">Excerpt</Label>
             <Textarea
               id="excerpt"
               value={excerpt}
               onChange={(e) => setExcerpt(e.target.value)}
               placeholder={locale === "da" ? "Kort beskrivelse (1-2 sætninger)" : "Short summary (1-2 sentences)"}
               rows={2}
-              className="mt-1"
+              className={inputDark}
             />
           </div>
 
           <div>
-            <Label>Cover image</Label>
+            <Label className="text-white">Cover image</Label>
+
             {coverUrl ? (
               <div className="mt-2 relative inline-block">
                 <img src={coverUrl} alt="" className="rounded-lg max-h-48 object-cover" />
