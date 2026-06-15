@@ -21,6 +21,8 @@ import {
   Pencil,
   Save,
   Users,
+  FileText,
+  CalendarRange,
 } from "lucide-react";
 
 const REQUIRED_MODULES = [
@@ -34,6 +36,8 @@ const OPTIONAL_MODULES = [
   { key: "nutrition", icon: Apple, label: "Nutrition", desc: "Meal plans" },
   { key: "testing", icon: ClipboardList, label: "Testing", desc: "Physical tests" },
   { key: "video", icon: Video, label: "Video analysis", desc: "Match tagging" },
+  { key: "pdf_reports", icon: FileText, label: "PDF Reports", desc: "Export team reports" },
+  { key: "season_calendar", icon: CalendarRange, label: "Season Calendar", desc: "Collaborative planning" },
   { key: "rehab", icon: Heart, label: "Rehab", desc: "Injury plans" },
   { key: "diary", icon: NotebookPen, label: "Diary", desc: "Notes & mood" },
 ] as const;
