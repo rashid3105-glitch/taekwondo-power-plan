@@ -688,7 +688,7 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
                       type="button"
                       size="sm"
                       variant={drawMode ? "default" : "outline"}
-                      className={`h-7 px-3 text-xs gap-1.5 ${drawMode ? "bg-red-500 hover:bg-red-600 border-red-500 text-white" : ""}`}
+                      className={`h-7 px-3 text-xs gap-1.5 font-semibold ${drawMode ? "bg-red-500 hover:bg-red-600 border-red-500 text-white" : "bg-video-input text-video-input-foreground border-video-border hover:bg-video-input/90"}`}
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={() => {
                         setDrawMode((d) => !d);

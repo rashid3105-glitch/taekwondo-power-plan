@@ -241,12 +241,11 @@ function FilterPill({ active, onClick, label }: { active: boolean; onClick: () =
     <button
       type="button"
       onClick={onClick}
-      className="px-2.5 h-7 rounded-full text-[11px] font-medium border transition-colors"
-      style={{
-        background: active ? ACCENT : "transparent",
-        color: active ? "#000" : "hsl(var(--foreground))",
-        borderColor: active ? ACCENT : "hsl(var(--border))",
-      }}
+      className={`px-2.5 h-7 rounded-full text-[11px] font-semibold border transition-colors ${
+        active
+          ? "bg-video-accent text-video-accent-foreground border-video-accent"
+          : "bg-video-surface text-video-foreground border-video-border hover:bg-video-card"
+      }`}
     >
       {label}
     </button>

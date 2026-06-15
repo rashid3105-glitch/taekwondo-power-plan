@@ -133,12 +133,11 @@ export function VideoScrubber({
             key={s}
             type="button"
             onClick={() => onSpeed(s)}
-            className="px-2.5 h-7 rounded-full text-[11px] font-medium border transition-colors"
-            style={{
-              background: speed === s ? ACCENT : "transparent",
-              color: speed === s ? "#000" : "hsl(var(--foreground))",
-              borderColor: speed === s ? ACCENT : "hsl(var(--border))",
-            }}
+            className={`px-2.5 h-7 rounded-full text-[11px] font-semibold border transition-colors ${
+              speed === s
+                ? "bg-video-accent text-video-accent-foreground border-video-accent"
+                : "bg-video-surface text-video-foreground border-video-border hover:bg-video-card"
+            }`}
           >
             {s}×
           </button>
@@ -182,7 +181,7 @@ function ScrubBtn({ label, onClick }: { label: string; onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="h-8 px-2.5 rounded-md text-[11px] font-mono border border-border bg-card text-foreground hover:bg-muted transition-colors"
+      className="h-8 px-2.5 rounded-md text-[11px] font-mono font-semibold border border-video-border bg-video-surface text-video-foreground hover:bg-video-card transition-colors"
     >
       {label}
     </button>
