@@ -557,7 +557,15 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
           </div>
           {shareUrl && (
             <div className="flex items-center gap-2 mt-2 p-2 bg-muted rounded text-xs">
-              <span className="truncate flex-1 font-mono">{shareUrl}</span>
+              <a
+                href={shareUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-primary hover:underline tracking-wide"
+              >
+                LINK
+              </a>
+              <span className="flex-1" />
               <Button size="sm" variant="ghost" onClick={copyShareLink}>
                 {copied ? <Check className="h-3.5 w-3.5 text-primary" /> : <Copy className="h-3.5 w-3.5" />}
               </Button>
