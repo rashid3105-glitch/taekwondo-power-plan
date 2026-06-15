@@ -12,6 +12,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ClubSwitcher } from "@/components/ClubSwitcher";
 import { useCoachMode } from "@/contexts/CoachModeContext";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
+import { useClubTrial } from "@/hooks/useClubTrial";
 import { CoachAthleteDetail } from "@/components/CoachAthleteDetail";
 import { AvatarImg } from "@/components/AvatarImg";
 
