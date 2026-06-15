@@ -201,7 +201,6 @@ const AnimatedRoutes = () => {
         <Route path="*" element={<Page><NotFound /></Page>} />
       </Routes>
       </AnimatePresence>
-      {shouldShowAIAssistant(location.pathname) && <AIAssistant />}
     </>
   );
 };
