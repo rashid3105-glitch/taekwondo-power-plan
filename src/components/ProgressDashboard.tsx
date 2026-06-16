@@ -301,8 +301,8 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
         </div>
       </div>
 
-      {/* Recovery & wearables (hidden if no watch) */}
-      <RecoveryProgressSection />
+      {/* Recovery & wearables (hidden if no watch) — TODO: health-sync skjult indtil native HealthKit (RN) er klar — vis for admin indtil da. */}
+      {canSeeHealthSync && <RecoveryProgressSection />}
 
       {/* Form curve — combined load/strain/output composite */}
       <FormCurveChart />
