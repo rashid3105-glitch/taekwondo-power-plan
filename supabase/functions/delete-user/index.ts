@@ -19,11 +19,10 @@ Deno.serve(async (req) => {
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
 
     // Verify calling user is admin
-    const userClient = createClient(supabaseUrl, anonKey, {
-      global: { headers: { Authorization: authHeader } },
-    });
-    const { data: { user } } = await userClient.auth.getUser();
-    if (!user) throw new Error("Not authenticated");
+    const token = authHeader.replace("Bearer ", "");
+    const userClient = createClient(supabaseUrl, anonKey);
+    const { data: { user }, error: userErr } = await userClient.auth.getUser(token);
+    if (userErr || !user) throw new Error("Not authenticated");
 
     const adminClient = createClient(supabaseUrl, serviceRoleKey);
 
