@@ -8,6 +8,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { CoachModeProvider } from "@/contexts/CoachModeContext";
 import { ActiveClubProvider } from "@/contexts/ActiveClubContext";
+import { ClubSwitchOverlay } from "@/components/ClubSwitchOverlay";
 import { RoleProvider } from "@/contexts/RoleContext";
 import { ThemeSync } from "@/contexts/ThemeSync";
 import { ConsentGate } from "@/components/ConsentGate";
