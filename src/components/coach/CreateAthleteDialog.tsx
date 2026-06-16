@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, UserPlus } from "lucide-react";
+import { Loader2, UserPlus, Building } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -107,16 +107,28 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) 
       const { data, error } = await supabase.functions.invoke("add-athlete-by-code", {
         body: { code: code.trim(), club_id: activeClubId },
       });
-      if (error || (data as any)?.error) {
-        const errMsg = (data as any)?.error || error?.message || "error";
-        let description: string = errMsg;
+      const payload = (data as any) ?? {};
+      const errMsg: string | undefined = payload?.error || error?.message;
+      const clubName: string = payload?.club_name || activeMembership?.club_name || "";
+
+      // Idempotent same-club re-add: backend returns ok:true + already:true
+      if (payload?.ok && payload?.already) {
+        toast({
+          title: t("athleteAlreadyAdded"),
+          description: t("athleteAlreadyAddedInClub").replace("{club}", clubName),
+        });
+        reset();
+        setOpen(false);
+        await onCreated();
+      } else if (error || errMsg) {
+        let description: string = errMsg ?? "error";
         if (errMsg === "ATHLETE_NOT_FOUND") description = t("athleteNotFound");
-        else if (errMsg === "ALREADY_IN_CLUB") description = t("athleteAlreadyAdded");
+        else if (errMsg === "ALREADY_IN_CLUB") description = t("athleteAlreadyAddedInClub").replace("{club}", clubName);
         else if (errMsg === "MAX_ATHLETES_REACHED") description = t("maxAthletesReached") ?? errMsg;
         else if (errMsg === "forbidden") description = t("sameClubRequired");
         toast({ title: t("error"), description, variant: "destructive" });
       } else {
-        toast({ title: t("athleteAdded") });
+        toast({ title: t("athleteAdded"), description: clubName ? `→ ${clubName}` : undefined });
         reset();
         setOpen(false);
         await onCreated();
@@ -152,14 +164,20 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) 
               <span className="ml-auto text-xs font-normal text-muted-foreground">{countLabel}</span>
             )}
           </DialogTitle>
-          <DialogDescription>
-            {t("createAthleteDesc")}
-            {activeMembership?.club_name && (
-              <span className="mt-1 block text-xs font-medium text-primary">
-                → {activeMembership.club_name}
-              </span>
-            )}
-          </DialogDescription>
+          <DialogDescription>{t("createAthleteDesc")}</DialogDescription>
+          {activeMembership?.club_name && (
+            <div className="mt-2 flex items-center gap-2 rounded-md border border-primary/40 bg-primary/10 px-3 py-2">
+              <Building className="h-4 w-4 text-primary shrink-0" />
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                  {t("addingToClub")}
+                </p>
+                <p className="truncate text-sm font-semibold text-primary">
+                  {activeMembership.club_name}
+                </p>
+              </div>
+            </div>
+          )}
         </DialogHeader>
 
         <div className="mt-2 space-y-5">

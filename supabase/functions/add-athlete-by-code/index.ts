@@ -55,13 +55,15 @@ Deno.serve(async (req) => {
     if (lookupErr) return json({ error: lookupErr.message }, 400);
     if (!athleteId) return json({ error: "ATHLETE_NOT_FOUND" }, 404);
 
+    // Resolve club name once for nicer error messages
+    const { data: clubRow } = await admin
+      .from("clubs").select("name, max_athletes").eq("id", clubId).maybeSingle();
+    const clubName = (clubRow as any)?.name ?? null;
+
     // License limit (per club)
     if (!isAdmin) {
-      const [{ data: club }, { data: count }] = await Promise.all([
-        admin.from("clubs").select("max_athletes").eq("id", clubId).maybeSingle(),
-        admin.rpc("club_athlete_count", { _club_id: clubId }),
-      ]);
-      const limit = (club as any)?.max_athletes ?? 5;
+      const { data: count } = await admin.rpc("club_athlete_count", { _club_id: clubId });
+      const limit = (clubRow as any)?.max_athletes ?? 5;
       const currentCount = typeof count === "number" ? count : 0;
 
       // Check whether athlete is already counted in this club
@@ -75,7 +77,7 @@ Deno.serve(async (req) => {
       const alreadyCounted = (existingMembership as any)?.status === "active";
 
       if (!alreadyCounted && currentCount >= limit) {
-        return json({ error: "MAX_ATHLETES_REACHED" }, 400);
+        return json({ error: "MAX_ATHLETES_REACHED", club_name: clubName }, 400);
       }
     }
 
@@ -96,12 +98,13 @@ Deno.serve(async (req) => {
       .insert({ coach_id: user.id, athlete_id: athleteId, club_id: clubId });
     if (linkErr) {
       if (linkErr.code === "23505") {
-        return json({ error: "ALREADY_IN_CLUB" }, 409);
+        // Same (coach, athlete, club) already exists — treat as success (idempotent)
+        return json({ ok: true, already: true, athlete_id: athleteId, club_name: clubName, error: "ALREADY_IN_CLUB" }, 200);
       }
-      return json({ error: linkErr.message }, 400);
+      return json({ error: linkErr.message, club_name: clubName }, 400);
     }
 
-    return json({ ok: true, athlete_id: athleteId });
+    return json({ ok: true, athlete_id: athleteId, club_name: clubName });
   } catch (err: any) {
     return new Response(JSON.stringify({ error: err?.message ?? "error" }), {
       status: 500,
