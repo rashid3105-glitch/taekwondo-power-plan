@@ -19,6 +19,8 @@ import { COUNTRIES } from "@/data/countries";
 import { PHONE_CODES } from "@/data/phoneCodes";
 import { AnnouncementEditor } from "@/components/admin/AnnouncementEditor";
 
+const DELETED_USER_ID = "00000000-0000-0000-0000-0000deadbeef";
+
 interface UserPlan {
   id: string;
   name: string;
@@ -138,7 +140,7 @@ export default function AdminApproval() {
       supabase.from("clubs" as any).select("id, name, max_athletes").order("name"),
     ]);
 
-    const profiles = (profilesRes.data || []) as PendingUser[];
+    const profiles = ((profilesRes.data || []) as PendingUser[]).filter((p) => p.user_id !== DELETED_USER_ID);
     const emailMap: Record<string, string> = emailsRes.data?.emailMap || {};
     const plans = (plansRes.data || []) as (UserPlan & { user_id: string })[];
     const roles = (rolesRes.data || []) as { user_id: string; role: string }[];
@@ -280,6 +282,7 @@ export default function AdminApproval() {
   };
 
   const deleteUser = async (userId: string, displayName: string) => {
+    if (userId === DELETED_USER_ID) return;
     if (!confirm(`Are you sure you want to permanently delete "${displayName || "this user"}"? This cannot be undone.`)) return;
     setDeletingUser(userId);
     try {

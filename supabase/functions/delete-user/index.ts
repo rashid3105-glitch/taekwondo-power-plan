@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { DELETED_USER_ID } from "../_shared/deletion-lists.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -56,6 +57,7 @@ Deno.serve(async (req) => {
 
     const { user_id } = await req.json();
     if (!user_id) throw new Error("Missing user_id");
+    if (user_id === DELETED_USER_ID) throw new Error("cannot_delete_system_user");
     if (user_id === user.id) throw new Error("Cannot delete yourself");
 
     // Direct call to GoTrue admin API so we get the real status/body if it fails
