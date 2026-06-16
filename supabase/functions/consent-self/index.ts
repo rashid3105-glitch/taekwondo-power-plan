@@ -73,6 +73,7 @@ Deno.serve(async (req) => {
           status: "withdrawn",
           withdrawn_at: now,
           granted_at: null,
+          grace_until: null,
         })
         .eq("id", existing.id)
         .eq("athlete_id", user.id);
