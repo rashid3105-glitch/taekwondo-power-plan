@@ -74,6 +74,7 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) 
           experience_years: expYears ? parseInt(expYears) : null,
           discipline,
           parent_email: isMinor ? parentEmail.trim() : null,
+          club_id: activeClubId,
         },
       });
 
