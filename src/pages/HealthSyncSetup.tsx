@@ -11,11 +11,7 @@ import { haptics } from "@/lib/haptics";
 const ICLOUD_SHORTCUT_URL = "https://www.icloud.com/shortcuts/df745b596cd54e968913d6b403339fd6";
 const TOTAL_STEPS = 5;
 
-import { haptics } from "@/lib/haptics";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
-
-const ICLOUD_SHORTCUT_URL = "https://www.icloud.com/shortcuts/df745b596cd54e968913d6b403339fd6";
-const TOTAL_STEPS = 5;
 
 export default function HealthSyncSetup() {
   const navigate = useNavigate();
