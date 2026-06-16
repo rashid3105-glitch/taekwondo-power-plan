@@ -7831,6 +7831,8 @@ const translations = {
     privateCoachNotesPlaceholder: "Anteckningar om denna atlet — styrkor, fokus, skador att övervaka...",
     shareCoachNotes: "Dela tränaranteckningar",
     shareCoachNotesHint: "När påslaget kan alla tränare i klubben läsa varandras anteckningar om klubbens atleter.",
+    clubLicenseActive: "Klubblicens aktiv",
+    clubLicenseActiveHint: "När påslaget får alla atleter i klubben tillgång till personliga funktioner (kostplan, träningsplan m.m.) utan eget abonnemang.",
     sharedInClub: "Delas i klubben",
     notesByOtherCoaches: "Anteckningar från andra tränare",
     noOtherCoachNotes: "Inga andra tränare har skrivit anteckningar ännu.",
