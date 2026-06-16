@@ -1862,6 +1862,7 @@ export type Database = {
       }
       nutrition_plans: {
         Row: {
+          club_id: string | null
           created_at: string
           custom_calories: number | null
           goals: string[]
@@ -1873,6 +1874,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          club_id?: string | null
           created_at?: string
           custom_calories?: number | null
           goals?: string[]
@@ -1884,6 +1886,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          club_id?: string | null
           created_at?: string
           custom_calories?: number | null
           goals?: string[]
@@ -1894,7 +1897,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "nutrition_plans_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       parent_athletes: {
         Row: {
@@ -2389,6 +2400,7 @@ export type Database = {
       session_attendance: {
         Row: {
           athlete_id: string
+          club_id: string | null
           coach_id: string
           created_at: string
           id: string
@@ -2400,6 +2412,7 @@ export type Database = {
         }
         Insert: {
           athlete_id: string
+          club_id?: string | null
           coach_id: string
           created_at?: string
           id?: string
@@ -2411,6 +2424,7 @@ export type Database = {
         }
         Update: {
           athlete_id?: string
+          club_id?: string | null
           coach_id?: string
           created_at?: string
           id?: string
@@ -2420,7 +2434,15 @@ export type Database = {
           status?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "session_attendance_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       subscription_tiers: {
         Row: {
@@ -3378,6 +3400,7 @@ export type Database = {
       workout_log_feedback: {
         Row: {
           athlete_id: string
+          club_id: string | null
           coach_id: string
           comment: string
           created_at: string
@@ -3389,6 +3412,7 @@ export type Database = {
         }
         Insert: {
           athlete_id: string
+          club_id?: string | null
           coach_id: string
           comment?: string
           created_at?: string
@@ -3400,6 +3424,7 @@ export type Database = {
         }
         Update: {
           athlete_id?: string
+          club_id?: string | null
           coach_id?: string
           comment?: string
           created_at?: string
@@ -3410,6 +3435,13 @@ export type Database = {
           workout_log_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "workout_log_feedback_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "workout_log_feedback_workout_log_id_fkey"
             columns: ["workout_log_id"]
@@ -3425,6 +3457,7 @@ export type Database = {
           actual_sets: number | null
           avg_hr: number | null
           calories: number | null
+          club_id: string | null
           completed: boolean
           created_at: string
           day_index: number
@@ -3445,6 +3478,7 @@ export type Database = {
           actual_sets?: number | null
           avg_hr?: number | null
           calories?: number | null
+          club_id?: string | null
           completed?: boolean
           created_at?: string
           day_index: number
@@ -3465,6 +3499,7 @@ export type Database = {
           actual_sets?: number | null
           avg_hr?: number | null
           calories?: number | null
+          club_id?: string | null
           completed?: boolean
           created_at?: string
           day_index?: number
@@ -3481,6 +3516,13 @@ export type Database = {
           wearable_source?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "workout_logs_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "workout_logs_plan_id_fkey"
             columns: ["plan_id"]
