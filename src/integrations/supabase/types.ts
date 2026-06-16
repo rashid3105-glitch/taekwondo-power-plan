@@ -812,21 +812,21 @@ export type Database = {
       coach_athletes: {
         Row: {
           athlete_id: string
-          club_id: string | null
+          club_id: string
           coach_id: string
           created_at: string
           id: string
         }
         Insert: {
           athlete_id: string
-          club_id?: string | null
+          club_id: string
           coach_id: string
           created_at?: string
           id?: string
         }
         Update: {
           athlete_id?: string
-          club_id?: string | null
+          club_id?: string
           coach_id?: string
           created_at?: string
           id?: string

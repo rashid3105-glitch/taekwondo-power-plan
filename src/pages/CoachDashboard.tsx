@@ -200,9 +200,12 @@ export default function CoachDashboard() {
   const loadAthletes = async (currentUserId?: string, currentClubId?: string) => {
     const userId = currentUserId || coachUserId;
     const clubId = currentClubId || coachClubId;
-    const { data: links } = await supabase
-      .from("coach_athletes")
-      .select("athlete_id");
+    // Restrict the coach<->athlete links to the active club only.
+    // Combined with the NOT NULL constraint on coach_athletes.club_id, this
+    // guarantees we never pick up a link belonging to another club.
+    let linksQuery = supabase.from("coach_athletes").select("athlete_id, club_id");
+    if (clubId) linksQuery = linksQuery.eq("club_id", clubId);
+    const { data: links } = await linksQuery;
 
     const athleteIds = (links || []).map((l: any) => l.athlete_id);
 

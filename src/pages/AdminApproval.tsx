@@ -305,9 +305,20 @@ export default function AdminApproval() {
     try {
       await supabase.from("coach_athletes").delete().eq("athlete_id", athleteId);
       if (newCoachId) {
+        // club_id is required (NOT NULL). Use the athlete's primary club.
+        const { data: athleteProfile } = await supabase
+          .from("profiles")
+          .select("club_id")
+          .eq("user_id", athleteId)
+          .maybeSingle();
+        const clubId = (athleteProfile as any)?.club_id as string | null;
+        if (!clubId) {
+          throw new Error("Athlete has no club — set a primary club first.");
+        }
         const { error } = await supabase.from("coach_athletes").insert({
           coach_id: newCoachId,
           athlete_id: athleteId,
+          club_id: clubId,
         });
         if (error) throw error;
       }

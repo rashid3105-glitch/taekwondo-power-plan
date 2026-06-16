@@ -36,6 +36,8 @@ Deno.serve(async (req) => {
     if (!code) return json({ error: "code required" }, 400);
     if (!clubId) return json({ error: "club_id required" }, 400);
 
+    console.log("add-athlete-by-code start", { code, clubId, callerId: user.id });
+
     const admin = createClient(supabaseUrl, serviceRoleKey);
 
     // Caller must be admin OR active coach/admin in the target club
@@ -49,20 +51,27 @@ Deno.serve(async (req) => {
     ]);
     const m = membership as any;
     const isClubCoach = m?.status === "active" && (m?.role_in_club === "coach" || m?.role_in_club === "admin");
-    if (!isAdmin && !isClubCoach) return json({ error: "forbidden" }, 403);
+    if (!isAdmin && !isClubCoach) {
+      console.log("forbidden", { isAdmin, membership });
+      return json({ error: "forbidden" }, 403);
+    }
 
     // Look up athlete by code
     const { data: athleteId, error: lookupErr } = await admin.rpc("lookup_athlete_by_code", { _code: code });
-    if (lookupErr) return json({ error: lookupErr.message }, 400);
+    if (lookupErr) {
+      console.log("lookup error", lookupErr);
+      return json({ error: lookupErr.message }, 400);
+    }
     if (!athleteId) return json({ error: "ATHLETE_NOT_FOUND" }, 404);
+    console.log("athlete resolved", { athleteId });
 
-    // Resolve club name once for nicer error messages
+    // Resolve club name + capacity
     const { data: clubRow } = await admin
       .from("clubs").select("name, max_athletes").eq("id", clubId).maybeSingle();
     const clubName = (clubRow as any)?.name ?? null;
 
     // Cross-club guard: if coach already has this athlete linked in OTHER clubs,
-    // require an explicit confirm before creating a second link.
+    // require an explicit confirm.
     if (!confirmCrossClub) {
       const { data: otherLinks } = await admin
         .from("coach_athletes")
@@ -75,6 +84,7 @@ Deno.serve(async (req) => {
         const otherClubNames = others
           .map((r) => r.clubs?.name)
           .filter((n) => typeof n === "string" && n.length > 0);
+        console.log("cross-club confirm required", { otherClubNames });
         return json({
           error: "CROSS_CLUB_CONFIRM",
           target_club_name: clubName,
@@ -89,7 +99,6 @@ Deno.serve(async (req) => {
       const limit = (clubRow as any)?.max_athletes ?? 5;
       const currentCount = typeof count === "number" ? count : 0;
 
-      // Check whether athlete is already counted in this club
       const { data: existingMembership } = await admin
         .from("club_memberships" as any)
         .select("id, status, role_in_club")
@@ -100,35 +109,97 @@ Deno.serve(async (req) => {
       const alreadyCounted = (existingMembership as any)?.status === "active";
 
       if (!alreadyCounted && currentCount >= limit) {
+        console.log("max athletes reached", { currentCount, limit });
         return json({ error: "MAX_ATHLETES_REACHED", club_name: clubName }, 400);
       }
     }
 
     // Ensure athlete membership exists & is active in this club
-    await admin.from("club_memberships" as any).upsert(
-      {
-        user_id: athleteId,
-        club_id: clubId,
-        role_in_club: "athlete",
-        status: "active",
-      },
-      { onConflict: "user_id,club_id,role_in_club" },
-    );
+    const { error: membershipErr } = await admin
+      .from("club_memberships" as any)
+      .upsert(
+        {
+          user_id: athleteId,
+          club_id: clubId,
+          role_in_club: "athlete",
+          status: "active",
+        },
+        { onConflict: "user_id,club_id,role_in_club" },
+      );
+    if (membershipErr) {
+      console.log("membership upsert failed", membershipErr);
+      return json({
+        error: "MEMBERSHIP_UPSERT_FAILED",
+        detail: membershipErr.message,
+        club_name: clubName,
+      }, 500);
+    }
 
-    // Insert coach<->athlete link for this club (idempotent)
+    // Insert coach<->athlete link for this club (idempotent on unique constraint)
     const { error: linkErr } = await admin
       .from("coach_athletes")
       .insert({ coach_id: user.id, athlete_id: athleteId, club_id: clubId });
-    if (linkErr) {
-      if (linkErr.code === "23505") {
-        // Same (coach, athlete, club) already exists — treat as success (idempotent)
-        return json({ ok: true, already: true, athlete_id: athleteId, club_name: clubName }, 200);
-      }
-      return json({ error: linkErr.message, club_name: clubName }, 400);
+    if (linkErr && linkErr.code !== "23505") {
+      console.log("coach_athletes insert failed", linkErr);
+      return json({
+        error: "COACH_LINK_FAILED",
+        detail: linkErr.message,
+        club_name: clubName,
+      }, 500);
     }
 
-    return json({ ok: true, athlete_id: athleteId, club_name: clubName });
+    // Cleanup legacy NULL-club row for this (coach, athlete), if any survived
+    await admin
+      .from("coach_athletes")
+      .delete()
+      .eq("coach_id", user.id)
+      .eq("athlete_id", athleteId)
+      .is("club_id", null);
+
+    // Verify both rows now exist
+    const [verifyMembership, verifyLink] = await Promise.all([
+      admin.from("club_memberships" as any)
+        .select("id")
+        .eq("user_id", athleteId)
+        .eq("club_id", clubId)
+        .eq("role_in_club", "athlete")
+        .eq("status", "active")
+        .maybeSingle(),
+      admin.from("coach_athletes")
+        .select("id")
+        .eq("coach_id", user.id)
+        .eq("athlete_id", athleteId)
+        .eq("club_id", clubId)
+        .maybeSingle(),
+    ]);
+
+    if (!verifyMembership.data || !verifyLink.data) {
+      console.log("verify failed", {
+        membership: verifyMembership,
+        link: verifyLink,
+      });
+      return json({
+        error: "VERIFY_FAILED",
+        detail: "Could not confirm athlete was added — please try again.",
+        club_name: clubName,
+      }, 500);
+    }
+
+    console.log("add-athlete-by-code success", {
+      athleteId,
+      clubId,
+      already: linkErr?.code === "23505",
+    });
+
+    return json({
+      ok: true,
+      already: linkErr?.code === "23505",
+      athlete_id: athleteId,
+      club_id: clubId,
+      club_name: clubName,
+    });
   } catch (err: any) {
+    console.error("add-athlete-by-code unexpected", err);
     return new Response(JSON.stringify({ error: err?.message ?? "error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
