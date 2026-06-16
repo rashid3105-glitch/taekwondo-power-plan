@@ -43,7 +43,7 @@ export default function AdminClubs() {
   const loadClubs = async () => {
     const { data, error } = await supabase
       .from("clubs" as any)
-      .select("id, name, max_athletes, share_coach_notes")
+      .select("id, name, max_athletes, share_coach_notes, license_active")
       .order("name");
 
     if (error) {
