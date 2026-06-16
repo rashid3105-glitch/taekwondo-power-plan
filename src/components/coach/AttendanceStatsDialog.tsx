@@ -19,6 +19,7 @@ interface Props {
   onOpenChange: (open: boolean) => void;
   coachId: string;
   athletes: Athlete[];
+  activeClubId?: string | null;
 }
 
 interface Row {
