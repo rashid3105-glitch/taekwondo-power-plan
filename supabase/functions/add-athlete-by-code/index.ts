@@ -156,6 +156,44 @@ Deno.serve(async (req) => {
       .eq("athlete_id", athleteId)
       .is("club_id", null);
 
+    // Auto-backfill: create coach_athletes rows for every OTHER club where both
+    // the coach and the athlete are already active members. Prevents the
+    // "skrivebeskyttet" read-only fallback in any shared club.
+    try {
+      const { data: coachClubs } = await admin
+        .from("club_memberships" as any)
+        .select("club_id")
+        .eq("user_id", user.id)
+        .eq("status", "active")
+        .in("role_in_club", ["coach", "admin"]);
+      const { data: athleteClubs } = await admin
+        .from("club_memberships" as any)
+        .select("club_id")
+        .eq("user_id", athleteId)
+        .eq("status", "active")
+        .eq("role_in_club", "athlete");
+
+      const coachClubIds = new Set(((coachClubs as any[]) ?? []).map((r) => r.club_id));
+      const sharedClubs = ((athleteClubs as any[]) ?? [])
+        .map((r) => r.club_id)
+        .filter((id: string) => coachClubIds.has(id) && id !== clubId);
+
+      if (sharedClubs.length > 0) {
+        const rows = sharedClubs.map((cid: string) => ({
+          coach_id: user.id,
+          athlete_id: athleteId,
+          club_id: cid,
+        }));
+        await admin.from("coach_athletes").upsert(rows, {
+          onConflict: "coach_id,athlete_id,club_id",
+          ignoreDuplicates: true,
+        });
+        console.log("auto-backfilled coach_athletes for shared clubs", { sharedClubs });
+      }
+    } catch (e) {
+      console.log("auto-backfill skipped (non-fatal)", e);
+    }
+
     // Verify both rows now exist
     const [verifyMembership, verifyLink] = await Promise.all([
       admin.from("club_memberships" as any)
