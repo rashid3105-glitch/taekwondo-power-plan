@@ -194,6 +194,16 @@ export default function AdminClubs() {
                   onCheckedChange={(v) => updateShareCoachNotes(club.id, v)}
                 />
               </div>
+              <div className="flex items-start justify-between gap-3 border-t border-border pt-3">
+                <div className="min-w-0">
+                  <div className="text-xs font-medium text-card-foreground">{t("clubLicenseActive")}</div>
+                  <div className="text-[10px] text-muted-foreground mt-0.5">{t("clubLicenseActiveHint")}</div>
+                </div>
+                <Switch
+                  checked={!!club.license_active}
+                  onCheckedChange={(v) => updateLicenseActive(club.id, v)}
+                />
+              </div>
             </div>
           ))}
         </div>
