@@ -31,6 +31,10 @@ export default function HealthSyncSetup() {
     })();
   }, [navigate]);
 
+  useEffect(() => {
+    if (!adminLoading && !canSeeHealthSync) navigate("/dashboard", { replace: true });
+  }, [adminLoading, canSeeHealthSync, navigate]);
+
   function goNext() {
     haptics.tap();
     setStep((s) => Math.min(s + 1, TOTAL_STEPS - 1));
