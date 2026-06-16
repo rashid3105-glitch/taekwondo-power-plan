@@ -1,43 +1,37 @@
-## Diagnose
+## Plan
 
-Annamaria (TKD‑203205) er allerede tilknyttet dig som coach i **Copenhagen City** (rækken fra 14. juni), og det er DEN klub `add-athlete-by-code` blev kaldt med — ikke UC Copenhagen.
+### 1. Engangs-oprydning i databasen (migration)
 
-Bevis fra databasen:
-- `coach_athletes` har to rækker for (dig → Annamaria):
-  1. `club_id = 4b827e40` (Copenhagen City) — 14. juni
-  2. `club_id = NULL` (legacy admin‑approve række) — 16. juni 20:37
-- Ingen række for `club_id = 440ea492` (UC Copenhagen).
-- Den unique index `(coach_id, athlete_id, COALESCE(club_id, sentinel))` ville tillade UC‑rækken. Den blev altså aldrig forsøgt.
+- **Slet** legacy `coach_athletes`-række hvor `coach_id = <din userId>`, `athlete_id = <Annamarias userId>`, `club_id IS NULL` (rækken fra 16. juni).
+- **Tilføj** `club_memberships`-række: Annamaria som `role_in_club='athlete'`, `status='active'` i UC Copenhagen (`440ea492…`). Brug upsert på `(user_id, club_id, role_in_club)` så den er idempotent.
+- **Tilføj** `coach_athletes`-række: (din coach_id → Annamaria, club_id = UC Copenhagen).
 
-Konklusion: edge‑funktionen modtog `club_id = Copenhagen City` (ikke UC). `activeClubId` i `ActiveClubContext` var stadig Copenhagen City da du trykkede "Add" — sandsynligvis fra localStorage `activeClubId:<din-userId>` der huskede sidste valg fra tidligere session. Funktionen gjorde det rigtige (afslog dublet) — fejlmeddelelsen var bare ikke informativ nok til at afsløre at den arbejdede på den forkerte klub.
+Resultat: Annamaria er korrekt tilknyttet dig i begge klubber (Copenhagen City + UC Copenhagen), og den forvirrende NULL-række er væk.
 
-## Hvad der ændres
+### 2. Cross-club bekræftelsesdialog (frontend + edge function)
 
-### 1. `supabase/functions/add-athlete-by-code/index.ts`
-- Returnér `ALREADY_IN_CLUB` med klubnavn i payload: `{ error: "ALREADY_IN_CLUB", club_name }` så frontend kan vise hvilken klub.
-- Slå klubnavn op (én ekstra `clubs.name` query) inden insert‑forsøget for at have navnet ved hånden.
-- Returnér også 200 succes hvis Annamaria allerede er en active athlete‑membership i den valgte klub OG `coach_athletes`‑rækken eksisterer for samme `(coach, athlete, club_id)` — dvs. behandl re‑add som idempotent for samme klub (men stadig informativ via `{ already: true, club_name }`).
+**`supabase/functions/add-athlete-by-code/index.ts`**
+- Tilføj `confirm_cross_club: boolean` flag i request body (default `false`).
+- Inden insert: tjek om atleten allerede har en `coach_athletes`-række med samme `coach_id` men *anden* `club_id`. Hvis ja og `confirm_cross_club !== true`:
+  - Returnér `409` med `{ error: "CROSS_CLUB_CONFIRM", other_club_names: [...], target_club_name }`.
+- Hvis `confirm_cross_club === true`: kør insert som normalt (idempotent på samme klub bevares).
 
-### 2. `src/components/coach/CreateAthleteDialog.tsx`
-- I `addByCode` `catch ALREADY_IN_CLUB`: vis toast med klubnavnet, f.eks. `Annamaria er allerede tilknyttet dig i "Copenhagen City Taekwondo klub". Skift aktiv klub øverst for at tilføje hende til en anden klub.`
-- Gør den eksisterende `→ {activeMembership.club_name}` mere prominent: flyt op i `DialogHeader` som badge med en kontrastfarve, så det er umuligt at overse hvilken klub atleten lander i.
+**`src/components/coach/CreateAthleteDialog.tsx`**
+- I `addByCode` `catch CROSS_CLUB_CONFIRM`: åbn en `AlertDialog`:
+  - Titel: *"Tilføj også til {target_club_name}?"*
+  - Tekst: *"{athleteName} er allerede tilknyttet dig i {other_club_names}. Vil du også tilføje hende til {target_club_name}?"*
+  - Knapper: **Annullér** / **Tilføj også her**.
+- Ved bekræft: kald edge-funktionen igen med samme `code` + `club_id` + `confirm_cross_club: true`.
 
 ### 3. Translations (`src/i18n/translations.ts`)
-- Tilføj nye nøgler i alle 7 sprog (da/en/sv/de/ar/no/es):
-  - `athleteAlreadyAddedInClub` ("{name} er allerede i {club}. Skift aktiv klub for at tilføje til en anden.")
-  - `addingToClub` ("Tilføjes til")
 
-### 4. Engangs‑oprydning (valgfrit, kun hvis du bekræfter)
-- Slet den legacy NULL‑club_id række i `coach_athletes` for (dig → Annamaria), så datamodellen er rent klub‑skaleret.
-- Hvis du faktisk ønsker Annamaria tilknyttet både Copenhagen City og UC Copenhagen, så indsætter jeg manuelt en `coach_athletes`‑række + `club_memberships`‑række for UC Copenhagen som engangs‑fix.
+Tilføj nøgler på alle 7 sprog (da/en/sv/de/ar/no/es):
+- `addAthleteCrossClubTitle` — "Tilføj også til {club}?"
+- `addAthleteCrossClubBody` — "{name} er allerede tilknyttet dig i {otherClubs}. Vil du også tilføje til {targetClub}?"
+- `addAthleteCrossClubConfirm` — "Tilføj også her"
 
-## Tekniske detaljer
+### 4. Tekniske detaljer
 
-- Edge function endrer kun fejl‑payload + tilføjer "already linked to this club" idempotency‑gren — ingen breaking changes.
-- Dialog ændringer er rene UI/i18n.
-- Ingen migration nødvendig.
-
-## Spørgsmål før jeg implementerer
-
-1. Skal jeg også gennemføre engangs‑oprydningen i punkt 4 (NULL‑række + tilføj Annamaria til UC Copenhagen)?
-2. Vil du have en hård guard, der nægter add‑by‑code hvis atleten allerede er tilknyttet dig i en *anden* klub (med en "Bekræft for at også tilføje til {ny klub}"‑dialog), eller skal vi bare lade den gå igennem stille?
+- Migrationen rammer kun tre rækker — ingen schema-ændring.
+- `confirm_cross_club` er bagudkompatibel: gamle klienter får bare 409'eren og kan vise rå fejlmeddelelsen via eksisterende fallback.
+- Ingen ændringer i `ActiveClubContext` — den prominente badge fra forrige runde gør allerede klart hvilken klub der er aktiv.
