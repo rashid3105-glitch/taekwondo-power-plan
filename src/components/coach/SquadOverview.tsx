@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { AvatarImg } from "@/components/AvatarImg";
 import {
   Loader2, AlertTriangle, Heart, Activity, Frown, Meh, Smile, Calendar,
@@ -91,6 +92,7 @@ export function SquadOverview({
   onStatsChange,
 }: Props) {
   const { t } = useLanguage();
+  const { activeClubId } = useActiveClub();
   const [rows, setRows] = useState<SquadRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState<SortKey>("name");
@@ -102,7 +104,10 @@ export function SquadOverview({
   const metaKey = (athleteMeta || []).map((m) => `${m.user_id}:${m.club_name || ""}`).join("|");
 
   const load = async () => {
-    const { data, error } = await supabase.rpc("get_squad_overview" as any, { _coach_id: coachId });
+    const { data, error } = await supabase.rpc("get_squad_overview" as any, {
+      _coach_id: coachId,
+      _club_id: activeClubId ?? null,
+    });
     if (!error && data) {
       const all = data as unknown as SquadRow[];
       const metaMap = new Map((athleteMeta || []).map((m) => [m.user_id, m.club_name || null]));
@@ -120,7 +125,7 @@ export function SquadOverview({
     const id = setInterval(load, 60_000);
     return () => clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [coachId, allowedKey, metaKey]);
+  }, [coachId, allowedKey, metaKey, activeClubId]);
 
   // Stats for parent
   useEffect(() => {
