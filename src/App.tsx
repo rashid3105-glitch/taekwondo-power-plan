@@ -13,6 +13,7 @@ import { ThemeSync } from "@/contexts/ThemeSync";
 import { ConsentGate } from "@/components/ConsentGate";
 
 import { OfflineBanner } from "@/components/OfflineBanner";
+import { AppUpdateBanner } from "@/components/AppUpdateBanner";
 import { SplashScreen } from "@/components/SplashScreen";
 import Index from "./pages/Index";
 import Landing from "./pages/Landing";
@@ -217,6 +218,7 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <AppUpdateBanner />
       <LanguageProvider>
         <TooltipProvider>
           {showSplash && <SplashScreen onFinish={() => setShowSplash(false)} />}

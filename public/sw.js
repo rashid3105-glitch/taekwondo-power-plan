@@ -1,6 +1,23 @@
 // Sportstalent Service Worker — push notifications only
-self.addEventListener("install", (e) => self.skipWaiting());
-self.addEventListener("activate", (e) => e.waitUntil(self.clients.claim()));
+self.addEventListener("install", (e) => {
+  self.skipWaiting();
+});
+
+self.addEventListener("activate", (e) => {
+  e.waitUntil(
+    self.clients.claim().then(() => {
+      return self.clients.matchAll({ type: "window" }).then((clients) => {
+        clients.forEach((client) => client.postMessage({ type: "SW_UPDATED" }));
+      });
+    })
+  );
+});
+
+self.addEventListener("message", (event) => {
+  if (event.data?.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
+});
 
 self.addEventListener("push", (event) => {
   let data = {};
