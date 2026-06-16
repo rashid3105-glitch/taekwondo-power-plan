@@ -16403,6 +16403,8 @@ const translations = {
     privateCoachNotesPlaceholder: "Notater om denne utøveren — styrker, fokus, skader å følge med på...",
     shareCoachNotes: "Del trenernotater",
     shareCoachNotesHint: "Når på, kan alle trenere i klubben lese hverandres notater om klubbens utøvere.",
+    clubLicenseActive: "Klubblisens aktiv",
+    clubLicenseActiveHint: "Når på, får alle utøvere i klubben tilgang til personlige funksjoner (ernæringsplan, treningsplan m.m.) uten eget abonnement.",
     sharedInClub: "Delt i klubben",
     notesByOtherCoaches: "Notater fra andre trenere",
     noOtherCoachNotes: "Ingen andre trenere har skrevet notater ennå.",
