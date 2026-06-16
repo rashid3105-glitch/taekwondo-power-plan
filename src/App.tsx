@@ -233,6 +233,7 @@ const App = () => {
                   <ConsentGate>
                     <AnimatedRoutes />
                   </ConsentGate>
+                  <ClubSwitchOverlay />
                 </CoachModeProvider>
               </RoleProvider>
             </ActiveClubProvider>
