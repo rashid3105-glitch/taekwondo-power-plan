@@ -1,8 +1,19 @@
-I found the failing call: `add-athlete-by-code` returns HTTP 409 for `TKD-173424` because the athlete is already linked to you in another club, so the backend asks for cross-club confirmation. The UI currently treats that non-2xx function response as a generic “Edge Function returned a non-2xx status code”, so the confirm dialog never appears.
+## Problem
+The "Månedligt fremmøde" dialog (`AttendanceStatsDialog`) and `CoachToday` query `session_attendance` rows by `coach_id` only. When a coach belongs to multiple clubs, rows from all clubs are mixed together, so the team rate and per-athlete counts don't reflect the currently active club.
 
-Plan:
-1. Update the add-by-code frontend flow so it can read the Edge Function response body even when the status is 409.
-2. Show the existing cross-club confirmation dialog for `CROSS_CLUB_CONFIRM` instead of the red generic error toast.
-3. Keep the second confirmed request unchanged, so the athlete is then added to the active club and the dashboard refreshes.
-4. Improve error handling so future backend errors show the specific Danish message instead of “Edge Function returned a non-2xx status code”.
-5. Validate with the actual `TKD-173424` flow against the deployed function after the code change.
+## Fix
+Filter `session_attendance` reads by the active club so each club has its own attendance stats.
+
+### Changes
+1. **`src/components/coach/AttendanceStatsDialog.tsx`**
+   - Accept `activeClubId: string | null` prop.
+   - In the month-load query, add `.eq("club_id", activeClubId)` when `activeClubId` is set.
+   - Re-run on `activeClubId` change.
+
+2. **`src/pages/CoachToday.tsx`**
+   - Pass `activeClubId` (already read from `useActiveClub()`) into `<AttendanceStatsDialog />`.
+   - The athletes list is already filtered by active club here, so per-athlete grouping stays correct.
+
+3. **Any other call site of `AttendanceStatsDialog`** — search and pass the same prop (likely only `CoachDashboard`/`CoachToday`).
+
+No DB/migration changes needed — `session_attendance.club_id` already exists and is populated by the `stamp_club_id_from_athlete` trigger. Historical rows where `club_id` is NULL will be excluded from a club-scoped view; if that matters we can backfill in a follow-up, but the user's ask is about correctness going forward.

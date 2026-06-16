@@ -19,6 +19,7 @@ interface Props {
   onOpenChange: (open: boolean) => void;
   coachId: string;
   athletes: Athlete[];
+  activeClubId?: string | null;
 }
 
 interface Row {
@@ -35,7 +36,7 @@ function monthBounds(d: Date) {
   return { start: fmt(start), end: fmt(end) };
 }
 
-export function AttendanceStatsDialog({ open, onOpenChange, coachId, athletes }: Props) {
+export function AttendanceStatsDialog({ open, onOpenChange, coachId, athletes, activeClubId }: Props) {
   const { t, locale } = useLanguage();
   const [cursor, setCursor] = useState(() => new Date());
   const [rows, setRows] = useState<Row[]>([]);
@@ -47,16 +48,18 @@ export function AttendanceStatsDialog({ open, onOpenChange, coachId, athletes }:
     (async () => {
       setLoading(true);
       const { start, end } = monthBounds(cursor);
-      const { data } = await supabase
+      let query = supabase
         .from("session_attendance" as any)
         .select("athlete_id, session_date, status, rpe")
         .eq("coach_id", coachId)
         .gte("session_date", start)
         .lte("session_date", end);
+      if (activeClubId) query = query.eq("club_id", activeClubId);
+      const { data } = await query;
       setRows(((data as any[]) || []) as Row[]);
       setLoading(false);
     })();
-  }, [open, coachId, cursor]);
+  }, [open, coachId, cursor, activeClubId]);
 
   const monthLabel = useMemo(
     () => cursor.toLocaleDateString(locale, { month: "long", year: "numeric" }),

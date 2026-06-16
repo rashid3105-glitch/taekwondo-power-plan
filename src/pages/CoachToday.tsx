@@ -126,6 +126,7 @@ export default function CoachToday() {
           onOpenChange={setStatsOpen}
           coachId={coachUserId}
           athletes={athletes}
+          activeClubId={activeClubId}
         />
       )}
       <AppFooter />
