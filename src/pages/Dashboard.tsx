@@ -781,13 +781,16 @@ export default function Dashboard() {
               <User className="h-4 w-4 shrink-0" />
               <span>{t("profile")}</span>
             </button>
-            <button onClick={() => { setMenuOpen(false); navigate("/health"); }} className="relative flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer">
-              <span className="relative inline-flex">
-                <Watch className="h-4 w-4 shrink-0" />
-                <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-background" aria-hidden="true" />
-              </span>
-              <span>{t("healthPageTitle" as any) || "Health"}</span>
-            </button>
+            {/* TODO: health-sync skjult indtil native HealthKit (RN) er klar — vis for admin indtil da. */}
+            {isAdmin && (
+              <button onClick={() => { setMenuOpen(false); navigate("/health"); }} className="relative flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer">
+                <span className="relative inline-flex">
+                  <Watch className="h-4 w-4 shrink-0" />
+                  <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-background" aria-hidden="true" />
+                </span>
+                <span>{t("healthPageTitle" as any) || "Health"}</span>
+              </button>
+            )}
             {coachAthleteMode === "coach" && isCoach ? (
               <button onClick={() => { setMenuOpen(false); navigate("/hold/moduler"); }} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer">
                 <Settings className="h-4 w-4 shrink-0" />
