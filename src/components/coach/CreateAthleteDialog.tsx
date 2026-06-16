@@ -126,6 +126,7 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) 
       const payload = (data as any) ?? {};
       const errMsg: string | undefined = payload?.error || error?.message;
       const clubName: string = payload?.club_name || activeMembership?.club_name || "";
+      const returnedClubId: string | undefined = payload?.club_id;
 
       // Idempotent same-club re-add: backend returns ok:true + already:true
       if (payload?.ok && payload?.already) {
@@ -133,6 +134,7 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) 
           title: t("athleteAlreadyAdded"),
           description: t("athleteAlreadyAddedInClub").replace("{club}", clubName),
         });
+        if (returnedClubId && returnedClubId !== activeClubId) setActiveClubId(returnedClubId);
         reset();
         setOpen(false);
         await onCreated();
@@ -148,9 +150,16 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) 
         else if (errMsg === "ALREADY_IN_CLUB") description = t("athleteAlreadyAddedInClub").replace("{club}", clubName);
         else if (errMsg === "MAX_ATHLETES_REACHED") description = t("maxAthletesReached") ?? errMsg;
         else if (errMsg === "forbidden") description = t("sameClubRequired");
+        else if (errMsg === "MEMBERSHIP_UPSERT_FAILED" || errMsg === "COACH_LINK_FAILED" || errMsg === "VERIFY_FAILED") {
+          description = payload?.detail || errMsg;
+        }
         toast({ title: t("error"), description, variant: "destructive" });
       } else {
-        toast({ title: t("athleteAdded"), description: clubName ? `→ ${clubName}` : undefined });
+        toast({
+          title: t("athleteAdded"),
+          description: clubName ? `→ ${clubName}` : undefined,
+        });
+        if (returnedClubId && returnedClubId !== activeClubId) setActiveClubId(returnedClubId);
         reset();
         setOpen(false);
         await onCreated();
