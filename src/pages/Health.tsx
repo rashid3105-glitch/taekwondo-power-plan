@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Activity, Footprints, Info, FileDown, ChevronDown } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PageMeta } from "@/components/PageMeta";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 import {
   Bar, LineChart, Line, ComposedChart,
   ReferenceArea, ReferenceLine,
