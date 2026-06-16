@@ -13528,6 +13528,8 @@ const translations = {
     privateCoachNotesPlaceholder: "ملاحظات حول هذا الرياضي — نقاط القوة، التركيز، الإصابات...",
     shareCoachNotes: "مشاركة ملاحظات المدربين",
     shareCoachNotesHint: "عند التفعيل، يمكن لجميع المدربين في النادي قراءة ملاحظات بعضهم عن رياضيي النادي.",
+    clubLicenseActive: "ترخيص النادي مفعّل",
+    clubLicenseActiveHint: "عند التفعيل، يحصل جميع رياضيي النادي على الوصول إلى الميزات المخصصة (خطة التغذية، خطة التدريب، إلخ) دون اشتراك خاص بهم.",
     sharedInClub: "مشترك في النادي",
     notesByOtherCoaches: "ملاحظات من مدربين آخرين",
     noOtherCoachNotes: "لم يكتب مدربون آخرون أي ملاحظات بعد.",
