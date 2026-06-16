@@ -32,6 +32,7 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const code = typeof body.code === "string" ? body.code.trim() : "";
     const clubId = typeof body.club_id === "string" ? body.club_id : "";
+    const confirmCrossClub = body.confirm_cross_club === true;
     if (!code) return json({ error: "code required" }, 400);
     if (!clubId) return json({ error: "club_id required" }, 400);
 
@@ -59,6 +60,28 @@ Deno.serve(async (req) => {
     const { data: clubRow } = await admin
       .from("clubs").select("name, max_athletes").eq("id", clubId).maybeSingle();
     const clubName = (clubRow as any)?.name ?? null;
+
+    // Cross-club guard: if coach already has this athlete linked in OTHER clubs,
+    // require an explicit confirm before creating a second link.
+    if (!confirmCrossClub) {
+      const { data: otherLinks } = await admin
+        .from("coach_athletes")
+        .select("club_id, clubs:club_id ( name )")
+        .eq("coach_id", user.id)
+        .eq("athlete_id", athleteId);
+      const others = ((otherLinks as any[]) ?? [])
+        .filter((r) => r.club_id && r.club_id !== clubId);
+      if (others.length > 0) {
+        const otherClubNames = others
+          .map((r) => r.clubs?.name)
+          .filter((n) => typeof n === "string" && n.length > 0);
+        return json({
+          error: "CROSS_CLUB_CONFIRM",
+          target_club_name: clubName,
+          other_club_names: otherClubNames,
+        }, 409);
+      }
+    }
 
     // License limit (per club)
     if (!isAdmin) {
@@ -99,7 +122,7 @@ Deno.serve(async (req) => {
     if (linkErr) {
       if (linkErr.code === "23505") {
         // Same (coach, athlete, club) already exists — treat as success (idempotent)
-        return json({ ok: true, already: true, athlete_id: athleteId, club_name: clubName, error: "ALREADY_IN_CLUB" }, 200);
+        return json({ ok: true, already: true, athlete_id: athleteId, club_name: clubName }, 200);
       }
       return json({ error: linkErr.message, club_name: clubName }, 400);
     }
