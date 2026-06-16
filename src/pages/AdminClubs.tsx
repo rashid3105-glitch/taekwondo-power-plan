@@ -14,6 +14,7 @@ interface Club {
   name: string;
   max_athletes: number;
   share_coach_notes: boolean;
+  license_active: boolean;
 }
 
 export default function AdminClubs() {
@@ -42,7 +43,7 @@ export default function AdminClubs() {
   const loadClubs = async () => {
     const { data, error } = await supabase
       .from("clubs" as any)
-      .select("id, name, max_athletes, share_coach_notes")
+      .select("id, name, max_athletes, share_coach_notes, license_active")
       .order("name");
 
     if (error) {
@@ -73,6 +74,18 @@ export default function AdminClubs() {
       toast({ title: t("error"), description: err.message, variant: "destructive" });
       // revert
       setClubs(prev => prev.map(c => c.id === clubId ? { ...c, share_coach_notes: !value } : c));
+    }
+  };
+
+  const updateLicenseActive = async (clubId: string, value: boolean) => {
+    setClubs(prev => prev.map(c => c.id === clubId ? { ...c, license_active: value } : c));
+    try {
+      const { error } = await supabase.from("clubs" as any).update({ license_active: value } as any).eq("id", clubId);
+      if (error) throw error;
+      toast({ title: t("clubUpdated") });
+    } catch (err: any) {
+      toast({ title: t("error"), description: err.message, variant: "destructive" });
+      setClubs(prev => prev.map(c => c.id === clubId ? { ...c, license_active: !value } : c));
     }
   };
 
@@ -179,6 +192,16 @@ export default function AdminClubs() {
                 <Switch
                   checked={!!club.share_coach_notes}
                   onCheckedChange={(v) => updateShareCoachNotes(club.id, v)}
+                />
+              </div>
+              <div className="flex items-start justify-between gap-3 border-t border-border pt-3">
+                <div className="min-w-0">
+                  <div className="text-xs font-medium text-card-foreground">{t("clubLicenseActive")}</div>
+                  <div className="text-[10px] text-muted-foreground mt-0.5">{t("clubLicenseActiveHint")}</div>
+                </div>
+                <Switch
+                  checked={!!club.license_active}
+                  onCheckedChange={(v) => updateLicenseActive(club.id, v)}
                 />
               </div>
             </div>
