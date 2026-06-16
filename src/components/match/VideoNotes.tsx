@@ -225,7 +225,7 @@ export function NotesList({
                 </div>
               )}
               {n.note_text && (
-                <div className="text-xs text-foreground whitespace-pre-wrap break-words">{n.note_text}</div>
+                <div className="text-xs text-card-foreground whitespace-pre-wrap break-words">{n.note_text}</div>
               )}
             </div>
           ))}
