@@ -44,15 +44,26 @@ export function ActiveClubProvider({ children }: { children: ReactNode }) {
       ]);
 
       const rawRows = ((membershipsRes.data as any[]) ?? []);
-      const list: ClubMembership[] = rawRows
-        .map((r) => ({
+      const rolePriority: Record<ClubRole, number> = { admin: 3, coach: 2, athlete: 1 };
+      // Dedupe by club_id — same user may have multiple membership rows in one
+      // club (e.g. both 'athlete' and 'coach'); keep highest-privilege role.
+      const byClub = new Map<string, ClubMembership>();
+      for (const r of rawRows) {
+        const role: ClubRole = ((r.role_in_club as string) === "coach" || (r.role_in_club as string) === "admin")
+          ? (r.role_in_club as ClubRole)
+          : "athlete";
+        const entry: ClubMembership = {
           club_id: r.club_id as string,
           club_name: (r.clubs?.name as string) ?? "",
-          role_in_club: ((r.role_in_club as string) === "coach" || (r.role_in_club as string) === "admin")
-            ? (r.role_in_club as ClubRole)
-            : "athlete",
+          role_in_club: role,
           status: r.status as string,
-        }))
+        };
+        const existing = byClub.get(entry.club_id);
+        if (!existing || rolePriority[entry.role_in_club] > rolePriority[existing.role_in_club]) {
+          byClub.set(entry.club_id, entry);
+        }
+      }
+      const list: ClubMembership[] = Array.from(byClub.values())
         .sort((a, b) => a.club_name.localeCompare(b.club_name));
 
       const profile = (profileRes.data as any) ?? null;
