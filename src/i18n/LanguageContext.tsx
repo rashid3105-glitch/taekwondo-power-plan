@@ -15,10 +15,67 @@ const RTL_LOCALES: Locale[] = ["ar"];
 const isLocale = (v: unknown): v is Locale =>
   typeof v === "string" && (SUPPORTED as string[]).includes(v);
 
+// Map common IANA timezones to their country's locale.
+// Strongest signal of physical location (works even with English browsers/VPN-off).
+const TZ_TO_LOCALE: Record<string, Locale> = {
+  "Europe/Copenhagen": "da",
+  "Europe/Stockholm": "sv",
+  "Europe/Oslo": "no",
+  "Europe/Berlin": "de",
+  "Europe/Vienna": "de",
+  "Europe/Zurich": "de",
+  "Europe/Madrid": "es",
+  "Atlantic/Canary": "es",
+  "Asia/Riyadh": "ar",
+  "Asia/Dubai": "ar",
+  "Asia/Qatar": "ar",
+  "Asia/Kuwait": "ar",
+  "Asia/Bahrain": "ar",
+  "Asia/Muscat": "ar",
+  "Asia/Baghdad": "ar",
+  "Asia/Amman": "ar",
+  "Asia/Beirut": "ar",
+  "Asia/Damascus": "ar",
+  "Africa/Cairo": "ar",
+  "Africa/Tunis": "ar",
+  "Africa/Algiers": "ar",
+  "Africa/Casablanca": "ar",
+  "America/Mexico_City": "es",
+  "America/Argentina/Buenos_Aires": "es",
+  "America/Santiago": "es",
+  "America/Bogota": "es",
+  "America/Lima": "es",
+};
+
+function detectLocaleFromCountry(): Locale {
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (tz && TZ_TO_LOCALE[tz]) return TZ_TO_LOCALE[tz];
+  } catch {
+    // ignore
+  }
+  if (typeof navigator !== "undefined") {
+    const langs = [navigator.language, ...(navigator.languages || [])]
+      .filter(Boolean)
+      .map((l) => l.toLowerCase());
+    for (const l of langs) {
+      if (l === "da" || l.startsWith("da-") || l.endsWith("-dk")) return "da";
+      if (l === "sv" || l.startsWith("sv-") || l.endsWith("-se")) return "sv";
+      if (l === "nb" || l === "nn" || l === "no" || l.startsWith("nb-") || l.startsWith("nn-") || l.startsWith("no-") || l.endsWith("-no")) return "no";
+      if (l.startsWith("de") || l.endsWith("-de") || l.endsWith("-at") || l.endsWith("-ch")) return "de";
+      if (l.startsWith("es") || l.endsWith("-es") || l.endsWith("-mx") || l.endsWith("-ar")) return "es";
+      if (l.startsWith("ar")) return "ar";
+      if (l.startsWith("en")) return "en";
+    }
+  }
+  return "en";
+}
+
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(() => {
     const saved = localStorage.getItem("tkd-lang");
-    return isLocale(saved) ? saved : "en";
+    if (isLocale(saved)) return saved;
+    return detectLocaleFromCountry();
   });
 
   // Track which user IDs we've already seeded so a different account signing
