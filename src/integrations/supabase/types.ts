@@ -743,6 +743,7 @@ export type Database = {
           created_at: string
           default_weekly_schedule: Json | null
           id: string
+          license_active: boolean
           max_athletes: number
           name: string
           share_coach_notes: boolean
@@ -752,6 +753,7 @@ export type Database = {
           created_at?: string
           default_weekly_schedule?: Json | null
           id?: string
+          license_active?: boolean
           max_athletes?: number
           name: string
           share_coach_notes?: boolean
@@ -761,6 +763,7 @@ export type Database = {
           created_at?: string
           default_weekly_schedule?: Json | null
           id?: string
+          license_active?: boolean
           max_athletes?: number
           name?: string
           share_coach_notes?: boolean

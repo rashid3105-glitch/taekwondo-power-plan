@@ -24,6 +24,21 @@ export async function checkAIEntitlement(
       .eq("user_id", userId);
     if (roles?.some((r: any) => r.role === "admin")) return null;
 
+    // Club license override — manually toggled per club
+    const { data: prof } = await supa
+      .from("profiles")
+      .select("club_id")
+      .eq("user_id", userId)
+      .maybeSingle();
+    if (prof?.club_id) {
+      const { data: club } = await supa
+        .from("clubs")
+        .select("license_active")
+        .eq("id", prof.club_id)
+        .maybeSingle();
+      if (club?.license_active === true) return null;
+    }
+
     // Active subscription (local mirror)
     const { data: sub } = await supa
       .from("subscriptions")
