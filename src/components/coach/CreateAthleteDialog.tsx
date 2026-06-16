@@ -152,7 +152,14 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) 
               <span className="ml-auto text-xs font-normal text-muted-foreground">{countLabel}</span>
             )}
           </DialogTitle>
-          <DialogDescription>{t("createAthleteDesc")}</DialogDescription>
+          <DialogDescription>
+            {t("createAthleteDesc")}
+            {activeMembership?.club_name && (
+              <span className="mt-1 block text-xs font-medium text-primary">
+                → {activeMembership.club_name}
+              </span>
+            )}
+          </DialogDescription>
         </DialogHeader>
 
         <div className="mt-2 space-y-5">
