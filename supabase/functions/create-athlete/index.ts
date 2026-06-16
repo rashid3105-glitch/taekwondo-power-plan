@@ -164,7 +164,7 @@ Deno.serve(async (req) => {
         athlete_id: newUser.user!.id,
         consent_type: "health_data_processing",
         status: "pending",
-        club_id: coachProfile.club_id,
+        club_id: targetClubId,
       }, { onConflict: "athlete_id,consent_type" });
 
       // consent token
@@ -214,7 +214,7 @@ Deno.serve(async (req) => {
         consent_type: "health_data_processing",
         status: "pending",
         granted_by_relation: "self",
-        club_id: coachProfile.club_id,
+        club_id: targetClubId,
       }, { onConflict: "athlete_id,consent_type" });
     }
 
