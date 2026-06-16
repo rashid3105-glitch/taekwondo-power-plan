@@ -3621,7 +3621,10 @@ export type Database = {
       }
       get_public_athlete_bundle: { Args: { _code: string }; Returns: Json }
       get_shared_match_video: { Args: { _token: string }; Returns: Json }
-      get_squad_overview: { Args: { _coach_id: string }; Returns: Json }
+      get_squad_overview: {
+        Args: { _club_id?: string; _coach_id: string }
+        Returns: Json
+      }
       get_unread_chat_counts: {
         Args: never
         Returns: {
