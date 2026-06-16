@@ -35,6 +35,11 @@ interface DailyRow {
 export default function Health() {
   const navigate = useNavigate();
   const { t, locale } = useLanguage();
+  // TODO: health-sync skjult indtil native HealthKit (RN) er klar — vis for admin indtil da.
+  const { isAdmin: canSeeHealthSync, loading: adminLoading } = useIsAdmin();
+  useEffect(() => {
+    if (!adminLoading && !canSeeHealthSync) navigate("/dashboard", { replace: true });
+  }, [adminLoading, canSeeHealthSync, navigate]);
   const [loaded, setLoaded] = useState(false);
   const [steps, setSteps] = useState<DailyRow[]>([]);
   const [reporting, setReporting] = useState(false);
