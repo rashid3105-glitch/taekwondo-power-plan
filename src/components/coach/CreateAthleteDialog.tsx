@@ -164,14 +164,20 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) 
               <span className="ml-auto text-xs font-normal text-muted-foreground">{countLabel}</span>
             )}
           </DialogTitle>
-          <DialogDescription>
-            {t("createAthleteDesc")}
-            {activeMembership?.club_name && (
-              <span className="mt-1 block text-xs font-medium text-primary">
-                → {activeMembership.club_name}
-              </span>
-            )}
-          </DialogDescription>
+          <DialogDescription>{t("createAthleteDesc")}</DialogDescription>
+          {activeMembership?.club_name && (
+            <div className="mt-2 flex items-center gap-2 rounded-md border border-primary/40 bg-primary/10 px-3 py-2">
+              <Building className="h-4 w-4 text-primary shrink-0" />
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                  {t("addingToClub")}
+                </p>
+                <p className="truncate text-sm font-semibold text-primary">
+                  {activeMembership.club_name}
+                </p>
+              </div>
+            </div>
+          )}
         </DialogHeader>
 
         <div className="mt-2 space-y-5">
