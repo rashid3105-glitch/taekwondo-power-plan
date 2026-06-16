@@ -58,8 +58,15 @@ Deno.serve(async (req) => {
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (err: any) {
+    console.error("delete-user error:", err);
+    const message =
+      err?.message ||
+      err?.error_description ||
+      err?.msg ||
+      (typeof err === "string" ? err : JSON.stringify(err)) ||
+      "Unknown error";
     return new Response(
-      JSON.stringify({ error: err.message }),
+      JSON.stringify({ error: message, details: err?.code || err?.status || null }),
       { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
