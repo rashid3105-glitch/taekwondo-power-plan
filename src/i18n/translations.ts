@@ -2038,6 +2038,8 @@ const translations = {
     privateCoachNotesPlaceholder: "Notes about this athlete — strengths, focus areas, injuries to watch...",
     shareCoachNotes: "Share coach notes",
     shareCoachNotesHint: "When on, all coaches in this club can read each other's notes about athletes in the club.",
+    clubLicenseActive: "Club license active",
+    clubLicenseActiveHint: "When on, all athletes in the club get access to personalized features (nutrition plan, training plan, etc.) without their own subscription.",
     sharedInClub: "Shared in club",
     notesByOtherCoaches: "Notes by other coaches",
     noOtherCoachNotes: "No other coaches have written notes yet.",
