@@ -294,6 +294,37 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) 
           </div>
         </div>
       </DialogContent>
+
+      <AlertDialog
+        open={crossClubInfo !== null}
+        onOpenChange={(o) => { if (!o) setCrossClubInfo(null); }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {t("addAthleteCrossClubTitle").replace("{club}", crossClubInfo?.targetClubName ?? "")}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("addAthleteCrossClubBody")
+                .replace("{otherClubs}", (crossClubInfo?.otherClubNames ?? []).join(", "))
+                .replace("{targetClub}", crossClubInfo?.targetClubName ?? "")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={adding}>{t("cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={adding}
+              onClick={async (e) => {
+                e.preventDefault();
+                setCrossClubInfo(null);
+                await addByCode(true);
+              }}
+            >
+              {adding ? <Loader2 className="h-4 w-4 animate-spin" /> : t("addAthleteCrossClubConfirm")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 }
