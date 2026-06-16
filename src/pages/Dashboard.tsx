@@ -741,14 +741,6 @@ export default function Dashboard() {
               {isDemo && <Lock className="h-3 w-3 ms-auto shrink-0" />}
             </button>
 
-            {/* Antidoping & supplement check — free for all tiers, bypasses library gate */}
-            <button
-              onClick={() => { setMenuOpen(false); navigate("/library/supplement"); }}
-              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
-            >
-              <ShieldCheck className="h-4 w-4 shrink-0" />
-              <span className="truncate">{t("libSupplementLabel")}</span>
-            </button>
 
             <Separator className="my-2" />
 
