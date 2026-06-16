@@ -18,7 +18,14 @@ export function RichTextEditor({ value, onChange, onImageUpload }: Props) {
 
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        bulletList: { HTMLAttributes: { class: "list-disc pl-6 my-3 space-y-1" } },
+        orderedList: { HTMLAttributes: { class: "list-decimal pl-6 my-3 space-y-1" } },
+        listItem: { HTMLAttributes: { class: "leading-relaxed" } },
+        heading: { levels: [1, 2, 3, 4] },
+        blockquote: { HTMLAttributes: { class: "border-l-4 border-border pl-4 italic my-3 text-muted-foreground" } },
+        codeBlock: { HTMLAttributes: { class: "bg-muted rounded p-3 font-mono text-sm my-3 overflow-x-auto" } },
+      }),
       Link.configure({ openOnClick: false, HTMLAttributes: { class: "text-primary underline" } }),
       Image.configure({ HTMLAttributes: { class: "rounded-lg my-4 max-w-full h-auto" } }),
     ],
@@ -26,7 +33,19 @@ export function RichTextEditor({ value, onChange, onImageUpload }: Props) {
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
     editorProps: {
       attributes: {
-        class: "prose prose-invert max-w-none min-h-[300px] focus:outline-none px-4 py-3",
+        class:
+          "tiptap-editor max-w-none min-h-[300px] focus:outline-none px-4 py-3 text-foreground " +
+          "[&_h1]:text-3xl [&_h1]:font-bold [&_h1]:mt-4 [&_h1]:mb-2 " +
+          "[&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mt-4 [&_h2]:mb-2 " +
+          "[&_h3]:text-xl [&_h3]:font-semibold [&_h3]:mt-3 [&_h3]:mb-2 " +
+          "[&_h4]:text-lg [&_h4]:font-semibold [&_h4]:mt-3 [&_h4]:mb-1 " +
+          "[&_p]:my-2 [&_p]:leading-relaxed " +
+          "[&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-3 " +
+          "[&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:my-3 " +
+          "[&_li]:my-1 [&_li>p]:my-0 " +
+          "[&_a]:text-primary [&_a]:underline " +
+          "[&_strong]:font-bold [&_em]:italic " +
+          "[&_hr]:my-4 [&_hr]:border-border",
       },
     },
   });
