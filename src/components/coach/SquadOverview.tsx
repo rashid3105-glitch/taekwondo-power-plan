@@ -92,6 +92,7 @@ export function SquadOverview({
   onStatsChange,
 }: Props) {
   const { t } = useLanguage();
+  const { activeClubId } = useActiveClub();
   const [rows, setRows] = useState<SquadRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState<SortKey>("name");
@@ -103,7 +104,10 @@ export function SquadOverview({
   const metaKey = (athleteMeta || []).map((m) => `${m.user_id}:${m.club_name || ""}`).join("|");
 
   const load = async () => {
-    const { data, error } = await supabase.rpc("get_squad_overview" as any, { _coach_id: coachId });
+    const { data, error } = await supabase.rpc("get_squad_overview" as any, {
+      _coach_id: coachId,
+      _club_id: activeClubId ?? null,
+    });
     if (!error && data) {
       const all = data as unknown as SquadRow[];
       const metaMap = new Map((athleteMeta || []).map((m) => [m.user_id, m.club_name || null]));
