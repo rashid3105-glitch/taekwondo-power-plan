@@ -30,7 +30,7 @@ interface Props {
 export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) {
   const { t } = useLanguage();
   const { toast } = useToast();
-  const { activeClubId, activeMembership } = useActiveClub();
+  const { activeClubId, activeMembership, setActiveClubId } = useActiveClub();
   const [open, setOpen] = useState(false);
 
   // Create form
