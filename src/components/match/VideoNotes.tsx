@@ -32,12 +32,11 @@ export function useVideoNotes(videoId: string) {
   const [notes, setNotes] = useState<VideoNote[]>([]);
 
   const reload = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    // Load all notes for this video (RLS controls visibility — athlete sees own,
+    // coach sees notes on videos belonging to athletes in their club).
     const { data } = await (supabase.from as any)("video_notes")
       .select("*")
       .eq("video_id", videoId)
-      .eq("user_id", user.id)
       .order("frame_number", { ascending: true });
     setNotes((data ?? []) as VideoNote[]);
   };
@@ -226,7 +225,7 @@ export function NotesList({
                 </div>
               )}
               {n.note_text && (
-                <div className="text-xs text-foreground whitespace-pre-wrap break-words">{n.note_text}</div>
+                <div className="text-xs text-card-foreground whitespace-pre-wrap break-words">{n.note_text}</div>
               )}
             </div>
           ))}
