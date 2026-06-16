@@ -77,6 +77,18 @@ export default function AdminClubs() {
     }
   };
 
+  const updateLicenseActive = async (clubId: string, value: boolean) => {
+    setClubs(prev => prev.map(c => c.id === clubId ? { ...c, license_active: value } : c));
+    try {
+      const { error } = await supabase.from("clubs" as any).update({ license_active: value } as any).eq("id", clubId);
+      if (error) throw error;
+      toast({ title: t("clubUpdated") });
+    } catch (err: any) {
+      toast({ title: t("error"), description: err.message, variant: "destructive" });
+      setClubs(prev => prev.map(c => c.id === clubId ? { ...c, license_active: !value } : c));
+    }
+  };
+
   const createClub = async () => {
     const name = newClubName.trim();
     if (!name) return;
