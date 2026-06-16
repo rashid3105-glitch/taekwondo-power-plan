@@ -166,7 +166,10 @@ export default function AdminClubs() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {clubs.map(club => (
+          {clubs.map(club => {
+            const dirty = isDirty(club);
+            const saving = savingId === club.id;
+            return (
             <div key={club.id} className="rounded-lg border border-border bg-card p-4 space-y-3">
               <div className="flex items-center justify-between gap-3">
                 <span className="text-sm font-medium text-card-foreground truncate">{club.name}</span>
@@ -180,10 +183,9 @@ export default function AdminClubs() {
                     onChange={(e) => {
                       const val = parseInt(e.target.value);
                       if (!isNaN(val) && val >= 1) {
-                        setClubs(prev => prev.map(c => c.id === club.id ? { ...c, max_athletes: val } : c));
+                        updateLocal(club.id, { max_athletes: val });
                       }
                     }}
-                    onBlur={() => updateClubMaxAthletes(club.id, club.max_athletes)}
                     className="w-16 h-8 text-xs text-center"
                   />
                 </div>
@@ -195,7 +197,7 @@ export default function AdminClubs() {
                 </div>
                 <Switch
                   checked={!!club.share_coach_notes}
-                  onCheckedChange={(v) => updateShareCoachNotes(club.id, v)}
+                  onCheckedChange={(v) => updateLocal(club.id, { share_coach_notes: v })}
                 />
               </div>
               <div className="flex items-start justify-between gap-3 border-t border-border pt-3">
@@ -205,11 +207,22 @@ export default function AdminClubs() {
                 </div>
                 <Switch
                   checked={!!club.license_active}
-                  onCheckedChange={(v) => updateLicenseActive(club.id, v)}
+                  onCheckedChange={(v) => updateLocal(club.id, { license_active: v })}
                 />
               </div>
+              <div className="flex justify-end border-t border-border pt-3">
+                <Button
+                  size="sm"
+                  onClick={() => saveClub(club)}
+                  disabled={!dirty || saving}
+                >
+                  {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4 mr-1" />}
+                  {t("save") || "Save"}
+                </Button>
+              </div>
             </div>
-          ))}
+            );
+          })}
         </div>
 
         {clubs.length === 0 && (
