@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Activity, Footprints, Info, FileDown, ChevronDown } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PageMeta } from "@/components/PageMeta";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 import {
   Bar, LineChart, Line, ComposedChart,
   ReferenceArea, ReferenceLine,
@@ -34,6 +35,11 @@ interface DailyRow {
 export default function Health() {
   const navigate = useNavigate();
   const { t, locale } = useLanguage();
+  // TODO: health-sync skjult indtil native HealthKit (RN) er klar — vis for admin indtil da.
+  const { isAdmin: canSeeHealthSync, loading: adminLoading } = useIsAdmin();
+  useEffect(() => {
+    if (!adminLoading && !canSeeHealthSync) navigate("/dashboard", { replace: true });
+  }, [adminLoading, canSeeHealthSync, navigate]);
   const [loaded, setLoaded] = useState(false);
   const [steps, setSteps] = useState<DailyRow[]>([]);
   const [reporting, setReporting] = useState(false);

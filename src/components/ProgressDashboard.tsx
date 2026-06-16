@@ -6,6 +6,7 @@ import { PhysicalTestProgress } from "@/components/PhysicalTestProgress";
 import { RunningStatsCard } from "@/components/RunningStatsCard";
 import { FormCurveChart } from "@/components/FormCurveChart";
 import { RecoveryProgressSection } from "@/components/progress/RecoveryProgressSection";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   AreaChart, Area, Legend, Cell,
@@ -77,6 +78,8 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<TimeRange>("all");
   const { t } = useLanguage();
+  // TODO: health-sync skjult indtil native HealthKit (RN) er klar — vis for admin indtil da.
+  const { isAdmin: canSeeHealthSync } = useIsAdmin();
 
   useEffect(() => {
     loadData();
@@ -298,8 +301,8 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
         </div>
       </div>
 
-      {/* Recovery & wearables (hidden if no watch) */}
-      <RecoveryProgressSection />
+      {/* Recovery & wearables (hidden if no watch) — TODO: health-sync skjult indtil native HealthKit (RN) er klar — vis for admin indtil da. */}
+      {canSeeHealthSync && <RecoveryProgressSection />}
 
       {/* Form curve — combined load/strain/output composite */}
       <FormCurveChart />

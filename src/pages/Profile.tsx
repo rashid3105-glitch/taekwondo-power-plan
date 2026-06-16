@@ -14,6 +14,7 @@ import { PageMeta } from "@/components/PageMeta";
 import { AppFooter } from "@/components/AppFooter";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAvatarUrl } from "@/hooks/useAvatarUrl";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 
 interface LicenseField {
   id: string;
@@ -75,6 +76,8 @@ function fmtDate(dateStr: string | undefined, locale: string): string {
 export default function Profile() {
   const navigate = useNavigate();
   const { t, locale } = useLanguage();
+  // TODO: health-sync skjult indtil native HealthKit (RN) er klar — vis for admin indtil da.
+  const { isAdmin: canSeeHealthSync } = useIsAdmin();
   const [data, setData] = useState<ProfileData | null>(null);
   const [licenseFields, setLicenseFields] = useState<LicenseField[]>([]);
   const [hasCoach, setHasCoach] = useState(false);
@@ -374,23 +377,25 @@ export default function Profile() {
           )}
         </div>
 
-        {/* Health & devices */}
-        <div className={cardCls}>
-          <h2 className={sectionTitleCls}>{t("profileHealthSectionTitle" as any)}</h2>
-          <ActionRow
-            icon={<Apple className="h-4 w-4" />}
-            label={t("profileHealthAppleTitle" as any)}
-            sub={t("profileHealthAppleDesc" as any)}
-            onClick={() => navigate("/health/sync-setup")}
-          />
-          <Separator className="bg-white/10" />
-          <ActionRow
-            icon={<Smartphone className="h-4 w-4" />}
-            label={t("profileHealthAndroidTitle" as any)}
-            sub={t("profileHealthAndroidDesc" as any)}
-            onClick={() => navigate("/health/sync-setup-android")}
-          />
-        </div>
+        {/* Health & devices — TODO: health-sync skjult indtil native HealthKit (RN) er klar — vis for admin indtil da. */}
+        {canSeeHealthSync && (
+          <div className={cardCls}>
+            <h2 className={sectionTitleCls}>{t("profileHealthSectionTitle" as any)}</h2>
+            <ActionRow
+              icon={<Apple className="h-4 w-4" />}
+              label={t("profileHealthAppleTitle" as any)}
+              sub={t("profileHealthAppleDesc" as any)}
+              onClick={() => navigate("/health/sync-setup")}
+            />
+            <Separator className="bg-white/10" />
+            <ActionRow
+              icon={<Smartphone className="h-4 w-4" />}
+              label={t("profileHealthAndroidTitle" as any)}
+              sub={t("profileHealthAndroidDesc" as any)}
+              onClick={() => navigate("/health/sync-setup-android")}
+            />
+          </div>
+        )}
 
         {/* Account */}
         <div className={cardCls}>

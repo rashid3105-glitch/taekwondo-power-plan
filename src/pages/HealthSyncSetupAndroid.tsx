@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Smartphone, Bell, Apple } from "lucide-react";
@@ -5,10 +6,16 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { PageMeta } from "@/components/PageMeta";
 import { toast } from "sonner";
 import { haptics } from "@/lib/haptics";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 
 export default function HealthSyncSetupAndroid() {
   const navigate = useNavigate();
   const { t } = useLanguage();
+  // TODO: health-sync skjult indtil native HealthKit (RN) er klar — vis for admin indtil da.
+  const { isAdmin: canSeeHealthSync, loading: adminLoading } = useIsAdmin();
+  useEffect(() => {
+    if (!adminLoading && !canSeeHealthSync) navigate("/dashboard", { replace: true });
+  }, [adminLoading, canSeeHealthSync, navigate]);
 
   function notifyMe() {
     haptics.tap();
