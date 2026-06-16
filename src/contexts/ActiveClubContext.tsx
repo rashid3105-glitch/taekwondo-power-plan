@@ -169,19 +169,28 @@ export function ActiveClubProvider({ children }: { children: ReactNode }) {
   }, [loadFor]);
 
   const setActiveClubId = useCallback((id: string) => {
-    setActiveClubIdState(id);
+    setActiveClubIdState((prev) => {
+      if (prev && prev !== id) {
+        const next = memberships.find((m) => m.club_id === id);
+        if (next) {
+          setSwitchingTo({ id: next.club_id, name: next.club_name });
+          window.setTimeout(() => setSwitchingTo(null), 850);
+        }
+      }
+      return id;
+    });
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user && typeof window !== "undefined") {
         window.localStorage.setItem(STORAGE_PREFIX + user.id, id);
       }
     });
-  }, []);
+  }, [memberships]);
 
   const activeMembership = memberships.find((m) => m.club_id === activeClubId) ?? null;
 
   return (
     <ActiveClubContext.Provider
-      value={{ memberships, activeClubId, activeMembership, setActiveClubId, loading }}
+      value={{ memberships, activeClubId, activeMembership, setActiveClubId, switchingTo, loading }}
     >
       {children}
     </ActiveClubContext.Provider>
@@ -196,6 +205,7 @@ export function useActiveClub() {
       activeClubId: null,
       activeMembership: null,
       setActiveClubId: () => {},
+      switchingTo: null,
       loading: false,
     };
   }
