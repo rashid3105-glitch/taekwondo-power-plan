@@ -1,0 +1,1 @@
+UPDATE public.match_videos SET athlete_id = '920974d3-4ba1-4039-9122-3ded9b25ff68' WHERE id = '1f68b614-48d3-4e7b-9e84-c1560c3972f8';
