@@ -45,25 +45,47 @@ Deno.serve(async (req) => {
     });
     if (!hasCoachRole && !isAdmin) throw new Error("Not a coach");
 
-    const { data: coachProfile, error: coachProfileError } = await adminClient
-      .from("profiles").select("club_id").eq("user_id", user.id).maybeSingle();
-    if (coachProfileError) throw coachProfileError;
-    if (!coachProfile?.club_id) throw new Error("COACH_CLUB_REQUIRED");
-
-    if (!isAdmin) {
-      const { data: club } = await adminClient
-        .from("clubs").select("max_athletes").eq("id", coachProfile.club_id).single();
-      const limit = club?.max_athletes ?? 5;
-      const { count } = await adminClient
-        .from("coach_athletes").select("id", { count: "exact", head: true })
-        .eq("coach_id", user.id);
-      if ((count ?? 0) >= limit) throw new Error("MAX_ATHLETES_REACHED");
-    }
-
     const {
       name, email, password, age, belt_level, experience_years, discipline,
-      birth_date, parent_email,
+      birth_date, parent_email, club_id: requestedClubId,
     } = await req.json();
+
+    // Resolve target club: prefer client-supplied (active club from ClubSwitcher),
+    // fall back to coach's primary profile.club_id for backwards compatibility.
+    let targetClubId: string | null = typeof requestedClubId === "string" && requestedClubId
+      ? requestedClubId
+      : null;
+
+    if (!targetClubId) {
+      const { data: coachProfile, error: coachProfileError } = await adminClient
+        .from("profiles").select("club_id").eq("user_id", user.id).maybeSingle();
+      if (coachProfileError) throw coachProfileError;
+      if (!coachProfile?.club_id) throw new Error("COACH_CLUB_REQUIRED");
+      targetClubId = coachProfile.club_id as string;
+    }
+
+    // Caller must be admin or active coach/admin in the target club
+    if (!isAdmin) {
+      const { data: m } = await adminClient
+        .from("club_memberships")
+        .select("role_in_club, status")
+        .eq("user_id", user.id)
+        .eq("club_id", targetClubId)
+        .maybeSingle();
+      const ok = (m as any)?.status === "active" &&
+        ((m as any)?.role_in_club === "coach" || (m as any)?.role_in_club === "admin");
+      if (!ok) throw new Error("NOT_COACH_OF_CLUB");
+    }
+
+    // License check — per-club athlete count
+    if (!isAdmin) {
+      const { data: club } = await adminClient
+        .from("clubs").select("max_athletes").eq("id", targetClubId).single();
+      const limit = (club as any)?.max_athletes ?? 5;
+      const { data: countRes } = await adminClient.rpc("club_athlete_count", { _club_id: targetClubId });
+      const current = typeof countRes === "number" ? countRes : 0;
+      if (current >= limit) throw new Error("MAX_ATHLETES_REACHED");
+    }
 
     if (!name || !email || !password) throw new Error("Missing required fields");
     const hasLetter = /\p{L}/u.test(password);
@@ -96,12 +118,12 @@ Deno.serve(async (req) => {
     if (!profileExists) console.error("Profile not created by trigger after retries");
 
     const profileUpdates: Record<string, any> = {
-      club_id: coachProfile.club_id,
+      club_id: targetClubId,
       is_approved: true,
     };
 
     const { data: clubDefault } = await adminClient
-      .from("clubs").select("default_weekly_schedule").eq("id", coachProfile.club_id).maybeSingle();
+      .from("clubs").select("default_weekly_schedule").eq("id", targetClubId).maybeSingle();
     if (clubDefault?.default_weekly_schedule) {
       profileUpdates.weekly_schedule = clubDefault.default_weekly_schedule;
     }
@@ -116,8 +138,19 @@ Deno.serve(async (req) => {
       .update(profileUpdates).eq("user_id", newUser.user!.id);
     if (updateError) console.error("Profile update error:", updateError);
 
+    // Active athlete membership in the target club
+    await adminClient.from("club_memberships").upsert(
+      {
+        user_id: newUser.user!.id,
+        club_id: targetClubId,
+        role_in_club: "athlete",
+        status: "active",
+      },
+      { onConflict: "user_id,club_id,role_in_club" },
+    );
+
     await adminClient.from("coach_athletes").insert({
-      coach_id: user.id, athlete_id: newUser.user!.id,
+      coach_id: user.id, athlete_id: newUser.user!.id, club_id: targetClubId,
     });
 
     // ─── Consent handling ───
@@ -131,7 +164,7 @@ Deno.serve(async (req) => {
         athlete_id: newUser.user!.id,
         consent_type: "health_data_processing",
         status: "pending",
-        club_id: coachProfile.club_id,
+        club_id: targetClubId,
       }, { onConflict: "athlete_id,consent_type" });
 
       // consent token
@@ -181,7 +214,7 @@ Deno.serve(async (req) => {
         consent_type: "health_data_processing",
         status: "pending",
         granted_by_relation: "self",
-        club_id: coachProfile.club_id,
+        club_id: targetClubId,
       }, { onConflict: "athlete_id,consent_type" });
     }
 

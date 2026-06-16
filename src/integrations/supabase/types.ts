@@ -812,23 +812,34 @@ export type Database = {
       coach_athletes: {
         Row: {
           athlete_id: string
+          club_id: string | null
           coach_id: string
           created_at: string
           id: string
         }
         Insert: {
           athlete_id: string
+          club_id?: string | null
           coach_id: string
           created_at?: string
           id?: string
         }
         Update: {
           athlete_id?: string
+          club_id?: string | null
           coach_id?: string
           created_at?: string
           id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "coach_athletes_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       coach_invites: {
         Row: {
@@ -3537,6 +3548,7 @@ export type Database = {
       apply_invite_to_my_profile: { Args: { _code: string }; Returns: Json }
       can_chat_with: { Args: { _a: string; _b: string }; Returns: boolean }
       cleanup_archived_survey_templates: { Args: never; Returns: undefined }
+      club_athlete_count: { Args: { _club_id: string }; Returns: number }
       club_shares_coach_notes: { Args: { _club_id: string }; Returns: boolean }
       compute_form_curve: {
         Args: { _user_id: string; _weeks?: number }
