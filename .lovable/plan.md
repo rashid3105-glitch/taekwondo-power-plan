@@ -1,42 +1,23 @@
-## Hvad skete der?
-Anna-Marias 15. juni-indslag (og 2 andre) blev gemt med `club_id = NULL`. Coach-views filtrerede dem væk. Backfill + null-tolerant query er allerede kørt — de 3 gamle rækker er nu synlige.
+## Problem
+`adminClient.auth.admin.deleteUser(user_id)` i `supabase/functions/delete-user/index.ts` kaster `AuthRetryableFetchError` med tom body og status 500. Det betyder at selve HTTP-kaldet til GoTrue's admin-endpoint fejler — ikke en valideringsfejl. Sandsynlig årsag: efter Supabases overgang til signing-keys accepterer admin-API'et ikke længere den gamle `SUPABASE_SERVICE_ROLE_KEY` for dette projekt, mens den nye secret key (eksponeret som `SUPABASE_SECRET_KEYS`) gør.
 
-## Hvorfor kan det ske igen?
-`Diary.tsx` linje 220 stamper med `activeClubId ?? null`. Hvis `ActiveClubContext` endnu ikke har loadet (race), eller hvis indslaget oprettes offline før konteksten er klar, ryger der `null` ind. Sync-engine respekterer det — den tilføjer kun `club_id` hvis det allerede står på intent'en. Så fejlen kan gentage sig på enhver klient.
+## Fix (kun `supabase/functions/delete-user/index.ts`)
 
-Samme mønster findes potentielt på andre offline-tabeller (readiness, workout_logs, mental_assessments, physical_tests), men dagbog er den eneste der pt. har null-rækker — så vi løser kilden ét sted.
+1. Vælg admin-nøgle med fallback:
+   - Prøv `SUPABASE_SECRET_KEYS` først (kan være ren nøgle eller JSON — håndter begge: hvis den starter med `{` eller `[`, parse og tag første værdi/`secret` felt; ellers brug råstrengen).
+   - Fald tilbage til `SUPABASE_SERVICE_ROLE_KEY`.
+   - Hvis ingen findes → 500 med klar besked.
 
-## Plan (1 trin, database-trigger)
+2. Erstat `auth.admin.deleteUser`-kaldet med et direkte `fetch` til `${SUPABASE_URL}/auth/v1/admin/users/${user_id}` (DELETE) med headers `apikey` + `Authorization: Bearer <adminKey>`. Det giver os rå HTTP-status + body i fejltilfælde i stedet for auth-js' tomme `AuthRetryableFetchError`.
+   - Hvis `!res.ok`: læs `await res.text()`, log det, returnér 400 med `{ error: "auth admin deleteUser failed", status: res.status, body: text }` så vi ser den faktiske årsag i UI'et næste gang.
 
-Tilføj `BEFORE INSERT` trigger på `public.diary_entries` der auto-stamper `club_id` fra `profiles.club_id`, hvis NEW.club_id er NULL:
+3. Resten af filen (admin-tjek via RPC, cleanup-deletes, CORS) er uændret.
 
-```sql
-CREATE OR REPLACE FUNCTION public.stamp_diary_club_id()
-RETURNS trigger
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public
-AS $$
-BEGIN
-  IF NEW.club_id IS NULL THEN
-    SELECT club_id INTO NEW.club_id
-    FROM public.profiles
-    WHERE user_id = NEW.user_id;
-  END IF;
-  RETURN NEW;
-END;
-$$;
+## Verifikation
+- Deploy `delete-user`.
+- Bed bruger prøve sletning igen fra `/admin/approval`.
+- Hvis det stadig fejler vil svaret nu indeholde præcis GoTrue-status og -body (fx 401/403 + besked) i stedet for `{}`, og vi kan ramme rodårsagen direkte.
 
-CREATE TRIGGER diary_entries_stamp_club_id
-BEFORE INSERT ON public.diary_entries
-FOR EACH ROW EXECUTE FUNCTION public.stamp_diary_club_id();
-```
-
-Robust uanset om indslaget kommer fra web, offline-sync, edge function eller fremtidig RN-klient. Klientens `activeClubId ?? null` bliver irrelevant — serveren retter det.
-
-## Hvad ændres ikke
-- Klient-koden i `Diary.tsx` (uændret — fungerer stadig som hurtig hint når kontext er klar)
-- Coach-queries (null-tolerant or-filter beholdes som ekstra sikkerhed)
-- Andre tabeller (kan overvejes senere hvis samme symptom dukker op)
-
-Ingen Help.tsx, ingen changelog.
+## Rør ikke
+- Ingen ændringer i config, RLS, andre edge functions eller frontend.
+- `SUPABASE_SECRET_KEYS`/`SUPABASE_SERVICE_ROLE_KEY` secrets ændres ikke.
