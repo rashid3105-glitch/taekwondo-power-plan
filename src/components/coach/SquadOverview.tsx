@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { AvatarImg } from "@/components/AvatarImg";
 import {
   Loader2, AlertTriangle, Heart, Activity, Frown, Meh, Smile, Calendar,
