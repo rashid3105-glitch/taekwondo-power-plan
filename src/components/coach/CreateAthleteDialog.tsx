@@ -9,6 +9,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { validatePassword } from "@/lib/passwordValidation";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 
 interface Props {
   disabled?: boolean;
@@ -19,6 +20,7 @@ interface Props {
 export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) {
   const { t } = useLanguage();
   const { toast } = useToast();
+  const { activeClubId, activeMembership } = useActiveClub();
   const [open, setOpen] = useState(false);
 
   // Create form
