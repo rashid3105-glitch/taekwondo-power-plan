@@ -123,12 +123,24 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) 
       const { data, error } = await supabase.functions.invoke("add-athlete-by-code", {
         body: { code: code.trim(), club_id: activeClubId, confirm_cross_club: confirmCrossClub },
       });
-      const payload = (data as any) ?? {};
+
+      // supabase-js sets `error` on any non-2xx and leaves `data` null. The real
+      // JSON body lives on error.context (a Response) — parse it so we can react
+      // to CROSS_CLUB_CONFIRM (409) and show specific backend messages instead
+      // of a generic "Edge Function returned a non-2xx status code".
+      let payload: any = (data as any) ?? {};
+      if (error && (error as any).context && typeof (error as any).context.clone === "function") {
+        try {
+          payload = await (error as any).context.clone().json();
+        } catch {
+          // keep payload empty; fall back to generic error message below
+        }
+      }
+
       const errMsg: string | undefined = payload?.error || error?.message;
       const clubName: string = payload?.club_name || activeMembership?.club_name || "";
       const returnedClubId: string | undefined = payload?.club_id;
 
-      // Idempotent same-club re-add: backend returns ok:true + already:true
       if (payload?.ok && payload?.already) {
         toast({
           title: t("athleteAlreadyAdded"),
@@ -138,20 +150,23 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) 
         reset();
         setOpen(false);
         await onCreated();
-      } else if (errMsg === "CROSS_CLUB_CONFIRM") {
-        // Open confirm dialog; do not toast.
+      } else if (payload?.error === "CROSS_CLUB_CONFIRM") {
         setCrossClubInfo({
           targetClubName: payload?.target_club_name || activeMembership?.club_name || "",
           otherClubNames: Array.isArray(payload?.other_club_names) ? payload.other_club_names : [],
         });
-      } else if (error || errMsg) {
-        let description: string = errMsg ?? "error";
-        if (errMsg === "ATHLETE_NOT_FOUND") description = t("athleteNotFound");
-        else if (errMsg === "ALREADY_IN_CLUB") description = t("athleteAlreadyAddedInClub").replace("{club}", clubName);
-        else if (errMsg === "MAX_ATHLETES_REACHED") description = t("maxAthletesReached") ?? errMsg;
-        else if (errMsg === "forbidden") description = t("sameClubRequired");
-        else if (errMsg === "MEMBERSHIP_UPSERT_FAILED" || errMsg === "COACH_LINK_FAILED" || errMsg === "VERIFY_FAILED") {
-          description = payload?.detail || errMsg;
+      } else if (errMsg) {
+        let description: string = errMsg;
+        if (payload?.error === "ATHLETE_NOT_FOUND") description = t("athleteNotFound");
+        else if (payload?.error === "ALREADY_IN_CLUB") description = t("athleteAlreadyAddedInClub").replace("{club}", clubName);
+        else if (payload?.error === "MAX_ATHLETES_REACHED") description = t("maxAthletesReached") ?? errMsg;
+        else if (payload?.error === "forbidden") description = t("sameClubRequired");
+        else if (
+          payload?.error === "MEMBERSHIP_UPSERT_FAILED" ||
+          payload?.error === "COACH_LINK_FAILED" ||
+          payload?.error === "VERIFY_FAILED"
+        ) {
+          description = payload?.detail || payload.error;
         }
         toast({ title: t("error"), description, variant: "destructive" });
       } else {
