@@ -98,73 +98,24 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) 
 
   const addByCode = async () => {
     if (!code.trim()) return;
+    if (!activeClubId) {
+      toast({ title: t("error"), description: t("noClubSelected") ?? "Vælg en aktiv klub først", variant: "destructive" });
+      return;
+    }
     setAdding(true);
     try {
-      const { data: userId, error: lookupError } = await supabase
-        .rpc("lookup_athlete_by_code", { _code: code.trim() });
-      if (lookupError || !userId) {
-        toast({ title: t("error"), description: t("athleteNotFound"), variant: "destructive" });
-        return;
-      }
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { error } = await supabase
-        .from("coach_athletes")
-        .insert({ coach_id: user.id, athlete_id: userId as string });
-      if (error) {
-        if (error.code === "23505") {
-          toast({ title: t("error"), description: t("athleteAlreadyAdded"), variant: "destructive" });
-        } else if (error.message?.toLowerCase().includes("row-level security")) {
-          toast({ title: t("error"), description: t("sameClubRequired"), variant: "destructive" });
-        } else {
-          throw error;
-        }
+      const { data, error } = await supabase.functions.invoke("add-athlete-by-code", {
+        body: { code: code.trim(), club_id: activeClubId },
+      });
+      if (error || (data as any)?.error) {
+        const errMsg = (data as any)?.error || error?.message || "error";
+        let description: string = errMsg;
+        if (errMsg === "ATHLETE_NOT_FOUND") description = t("athleteNotFound");
+        else if (errMsg === "ALREADY_IN_CLUB") description = t("athleteAlreadyAdded");
+        else if (errMsg === "MAX_ATHLETES_REACHED") description = t("maxAthletesReached") ?? errMsg;
+        else if (errMsg === "forbidden") description = t("sameClubRequired");
+        toast({ title: t("error"), description, variant: "destructive" });
       } else {
-        // If the coach's club has a team default schedule AND the athlete still
-        // uses the generic global default, copy the team default to the athlete.
-        try {
-          const { data: coachProfile } = await supabase
-            .from("profiles")
-            .select("club_id")
-            .eq("user_id", user.id)
-            .maybeSingle();
-          const clubId = (coachProfile as any)?.club_id;
-          if (clubId) {
-            const [{ data: clubRow }, { data: athleteRow }] = await Promise.all([
-              supabase.from("clubs" as any).select("default_weekly_schedule").eq("id", clubId).maybeSingle(),
-              supabase.from("profiles").select("weekly_schedule").eq("user_id", userId as string).maybeSingle(),
-            ]);
-            const clubDefault = (clubRow as any)?.default_weekly_schedule;
-            const athleteSchedule = (athleteRow as any)?.weekly_schedule;
-            const GENERIC = [
-              { day: "Monday", type: "tkd" },
-              { day: "Tuesday", type: "gym" },
-              { day: "Wednesday", type: "tkd" },
-              { day: "Thursday", type: "gym" },
-              { day: "Friday", type: "tkd" },
-              { day: "Saturday", type: "gym" },
-              { day: "Sunday", type: "rest" },
-            ];
-            const isGeneric =
-              Array.isArray(athleteSchedule) &&
-              athleteSchedule.length === GENERIC.length &&
-              GENERIC.every((g, i) => {
-                const a = athleteSchedule[i];
-                return a && a.day === g.day && a.type === g.type &&
-                  (!a.sessions || a.sessions.length === 0);
-              });
-            if (clubDefault && isGeneric) {
-              await supabase
-                .from("profiles")
-                .update({ weekly_schedule: clubDefault as any })
-                .eq("user_id", userId as string);
-            }
-          }
-        } catch (e) {
-          // Non-fatal: athlete is added even if schedule copy fails.
-          console.warn("Team schedule copy skipped:", e);
-        }
-
         toast({ title: t("athleteAdded") });
         reset();
         setOpen(false);
@@ -176,6 +127,7 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) 
       setAdding(false);
     }
   };
+
 
   const triggerTitle = `${t("addAthleteAction")}${countLabel ? " · " + countLabel : ""}`;
 
