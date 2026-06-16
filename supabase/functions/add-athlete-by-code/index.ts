@@ -1,0 +1,111 @@
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
+function json(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  try {
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) return json({ error: "unauthorized" }, 401);
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+
+    const userClient = createClient(supabaseUrl, anonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: { user } } = await userClient.auth.getUser();
+    if (!user) return json({ error: "unauthorized" }, 401);
+
+    const body = await req.json().catch(() => ({}));
+    const code = typeof body.code === "string" ? body.code.trim() : "";
+    const clubId = typeof body.club_id === "string" ? body.club_id : "";
+    if (!code) return json({ error: "code required" }, 400);
+    if (!clubId) return json({ error: "club_id required" }, 400);
+
+    const admin = createClient(supabaseUrl, serviceRoleKey);
+
+    // Caller must be admin OR active coach/admin in the target club
+    const [{ data: isAdmin }, { data: membership }] = await Promise.all([
+      admin.rpc("is_admin", { _user_id: user.id }),
+      admin.from("club_memberships" as any)
+        .select("role_in_club, status")
+        .eq("user_id", user.id)
+        .eq("club_id", clubId)
+        .maybeSingle(),
+    ]);
+    const m = membership as any;
+    const isClubCoach = m?.status === "active" && (m?.role_in_club === "coach" || m?.role_in_club === "admin");
+    if (!isAdmin && !isClubCoach) return json({ error: "forbidden" }, 403);
+
+    // Look up athlete by code
+    const { data: athleteId, error: lookupErr } = await admin.rpc("lookup_athlete_by_code", { _code: code });
+    if (lookupErr) return json({ error: lookupErr.message }, 400);
+    if (!athleteId) return json({ error: "ATHLETE_NOT_FOUND" }, 404);
+
+    // License limit (per club)
+    if (!isAdmin) {
+      const [{ data: club }, { data: count }] = await Promise.all([
+        admin.from("clubs").select("max_athletes").eq("id", clubId).maybeSingle(),
+        admin.rpc("club_athlete_count", { _club_id: clubId }),
+      ]);
+      const limit = (club as any)?.max_athletes ?? 5;
+      const currentCount = typeof count === "number" ? count : 0;
+
+      // Check whether athlete is already counted in this club
+      const { data: existingMembership } = await admin
+        .from("club_memberships" as any)
+        .select("id, status, role_in_club")
+        .eq("user_id", athleteId)
+        .eq("club_id", clubId)
+        .eq("role_in_club", "athlete")
+        .maybeSingle();
+      const alreadyCounted = (existingMembership as any)?.status === "active";
+
+      if (!alreadyCounted && currentCount >= limit) {
+        return json({ error: "MAX_ATHLETES_REACHED" }, 400);
+      }
+    }
+
+    // Ensure athlete membership exists & is active in this club
+    await admin.from("club_memberships" as any).upsert(
+      {
+        user_id: athleteId,
+        club_id: clubId,
+        role_in_club: "athlete",
+        status: "active",
+      },
+      { onConflict: "user_id,club_id,role_in_club" },
+    );
+
+    // Insert coach<->athlete link for this club (idempotent)
+    const { error: linkErr } = await admin
+      .from("coach_athletes")
+      .insert({ coach_id: user.id, athlete_id: athleteId, club_id: clubId });
+    if (linkErr) {
+      if (linkErr.code === "23505") {
+        return json({ error: "ALREADY_IN_CLUB" }, 409);
+      }
+      return json({ error: linkErr.message }, 400);
+    }
+
+    return json({ ok: true, athlete_id: athleteId });
+  } catch (err: any) {
+    return new Response(JSON.stringify({ error: err?.message ?? "error" }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+});
