@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, ArrowLeft, Building, Plus } from "lucide-react";
+import { Loader2, ArrowLeft, Building, Plus, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 
@@ -19,6 +19,8 @@ interface Club {
 
 export default function AdminClubs() {
   const [clubs, setClubs] = useState<Club[]>([]);
+  const [originalClubs, setOriginalClubs] = useState<Record<string, Club>>({});
+  const [savingId, setSavingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [newClubName, setNewClubName] = useState("");
@@ -49,43 +51,45 @@ export default function AdminClubs() {
     if (error) {
       toast({ title: t("error"), description: error.message, variant: "destructive" });
     } else {
-      setClubs((data as unknown as Club[]) ?? []);
+      const list = (data as unknown as Club[]) ?? [];
+      setClubs(list);
+      const map: Record<string, Club> = {};
+      list.forEach(c => { map[c.id] = { ...c }; });
+      setOriginalClubs(map);
     }
     setLoading(false);
   };
 
-  const updateClubMaxAthletes = async (clubId: string, newMax: number) => {
-    try {
-      const { error } = await supabase.from("clubs" as any).update({ max_athletes: newMax } as any).eq("id", clubId);
-      if (error) throw error;
-      toast({ title: t("clubUpdated") });
-    } catch (err: any) {
-      toast({ title: t("error"), description: err.message, variant: "destructive" });
-    }
+  const updateLocal = (clubId: string, patch: Partial<Club>) => {
+    setClubs(prev => prev.map(c => c.id === clubId ? { ...c, ...patch } : c));
   };
 
-  const updateShareCoachNotes = async (clubId: string, value: boolean) => {
-    setClubs(prev => prev.map(c => c.id === clubId ? { ...c, share_coach_notes: value } : c));
-    try {
-      const { error } = await supabase.from("clubs" as any).update({ share_coach_notes: value } as any).eq("id", clubId);
-      if (error) throw error;
-      toast({ title: t("clubUpdated") });
-    } catch (err: any) {
-      toast({ title: t("error"), description: err.message, variant: "destructive" });
-      // revert
-      setClubs(prev => prev.map(c => c.id === clubId ? { ...c, share_coach_notes: !value } : c));
-    }
+  const isDirty = (club: Club) => {
+    const orig = originalClubs[club.id];
+    if (!orig) return false;
+    return orig.max_athletes !== club.max_athletes
+      || orig.share_coach_notes !== club.share_coach_notes
+      || orig.license_active !== club.license_active;
   };
 
-  const updateLicenseActive = async (clubId: string, value: boolean) => {
-    setClubs(prev => prev.map(c => c.id === clubId ? { ...c, license_active: value } : c));
+  const saveClub = async (club: Club) => {
+    setSavingId(club.id);
     try {
-      const { error } = await supabase.from("clubs" as any).update({ license_active: value } as any).eq("id", clubId);
+      const { error } = await supabase
+        .from("clubs" as any)
+        .update({
+          max_athletes: club.max_athletes,
+          share_coach_notes: club.share_coach_notes,
+          license_active: club.license_active,
+        } as any)
+        .eq("id", club.id);
       if (error) throw error;
+      setOriginalClubs(prev => ({ ...prev, [club.id]: { ...club } }));
       toast({ title: t("clubUpdated") });
     } catch (err: any) {
       toast({ title: t("error"), description: err.message, variant: "destructive" });
-      setClubs(prev => prev.map(c => c.id === clubId ? { ...c, license_active: !value } : c));
+    } finally {
+      setSavingId(null);
     }
   };
 
@@ -162,7 +166,10 @@ export default function AdminClubs() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {clubs.map(club => (
+          {clubs.map(club => {
+            const dirty = isDirty(club);
+            const saving = savingId === club.id;
+            return (
             <div key={club.id} className="rounded-lg border border-border bg-card p-4 space-y-3">
               <div className="flex items-center justify-between gap-3">
                 <span className="text-sm font-medium text-card-foreground truncate">{club.name}</span>
@@ -176,10 +183,9 @@ export default function AdminClubs() {
                     onChange={(e) => {
                       const val = parseInt(e.target.value);
                       if (!isNaN(val) && val >= 1) {
-                        setClubs(prev => prev.map(c => c.id === club.id ? { ...c, max_athletes: val } : c));
+                        updateLocal(club.id, { max_athletes: val });
                       }
                     }}
-                    onBlur={() => updateClubMaxAthletes(club.id, club.max_athletes)}
                     className="w-16 h-8 text-xs text-center"
                   />
                 </div>
@@ -191,7 +197,7 @@ export default function AdminClubs() {
                 </div>
                 <Switch
                   checked={!!club.share_coach_notes}
-                  onCheckedChange={(v) => updateShareCoachNotes(club.id, v)}
+                  onCheckedChange={(v) => updateLocal(club.id, { share_coach_notes: v })}
                 />
               </div>
               <div className="flex items-start justify-between gap-3 border-t border-border pt-3">
@@ -201,11 +207,22 @@ export default function AdminClubs() {
                 </div>
                 <Switch
                   checked={!!club.license_active}
-                  onCheckedChange={(v) => updateLicenseActive(club.id, v)}
+                  onCheckedChange={(v) => updateLocal(club.id, { license_active: v })}
                 />
               </div>
+              <div className="flex justify-end border-t border-border pt-3">
+                <Button
+                  size="sm"
+                  onClick={() => saveClub(club)}
+                  disabled={!dirty || saving}
+                >
+                  {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4 mr-1" />}
+                  {t("save") || "Save"}
+                </Button>
+              </div>
             </div>
-          ))}
+            );
+          })}
         </div>
 
         {clubs.length === 0 && (
