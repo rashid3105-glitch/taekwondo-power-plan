@@ -6,6 +6,7 @@ import { PhysicalTestProgress } from "@/components/PhysicalTestProgress";
 import { RunningStatsCard } from "@/components/RunningStatsCard";
 import { FormCurveChart } from "@/components/FormCurveChart";
 import { RecoveryProgressSection } from "@/components/progress/RecoveryProgressSection";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   AreaChart, Area, Legend, Cell,
