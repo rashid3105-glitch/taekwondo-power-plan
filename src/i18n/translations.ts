@@ -10678,6 +10678,8 @@ const translations = {
     privateCoachNotesPlaceholder: "Notizen zu diesem Athleten — Stärken, Fokus, zu beobachtende Verletzungen...",
     shareCoachNotes: "Trainernotizen teilen",
     shareCoachNotesHint: "Wenn aktiviert, können alle Trainer im Verein die Notizen der anderen über Vereinsathleten lesen.",
+    clubLicenseActive: "Vereinslizenz aktiv",
+    clubLicenseActiveHint: "Wenn aktiviert, erhalten alle Athleten des Vereins Zugriff auf personalisierte Funktionen (Ernährungsplan, Trainingsplan usw.) ohne eigenes Abonnement.",
     sharedInClub: "Im Verein geteilt",
     notesByOtherCoaches: "Notizen anderer Trainer",
     noOtherCoachNotes: "Noch keine Notizen anderer Trainer.",
