@@ -213,7 +213,7 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) 
                 placeholder={t("athleteCodePlaceholder")}
                 className="flex-1 uppercase"
               />
-              <Button onClick={addByCode} disabled={adding || !code.trim()} size="sm" variant="outline">
+              <Button onClick={() => addByCode(false)} disabled={adding || !code.trim()} size="sm" variant="outline">
                 {adding ? <Loader2 className="h-4 w-4 animate-spin" /> : t("add")}
               </Button>
             </div>
