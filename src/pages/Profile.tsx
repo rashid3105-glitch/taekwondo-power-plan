@@ -76,6 +76,8 @@ function fmtDate(dateStr: string | undefined, locale: string): string {
 export default function Profile() {
   const navigate = useNavigate();
   const { t, locale } = useLanguage();
+  // TODO: health-sync skjult indtil native HealthKit (RN) er klar — vis for admin indtil da.
+  const { isAdmin: canSeeHealthSync } = useIsAdmin();
   const [data, setData] = useState<ProfileData | null>(null);
   const [licenseFields, setLicenseFields] = useState<LicenseField[]>([]);
   const [hasCoach, setHasCoach] = useState(false);
