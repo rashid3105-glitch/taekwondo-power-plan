@@ -10,11 +10,14 @@ export type ClubMembership = {
   status: string;
 };
 
+type SwitchingTo = { id: string; name: string } | null;
+
 type ActiveClubContextValue = {
   memberships: ClubMembership[];
   activeClubId: string | null;
   activeMembership: ClubMembership | null;
   setActiveClubId: (id: string) => void;
+  switchingTo: SwitchingTo;
   loading: boolean;
 };
 
