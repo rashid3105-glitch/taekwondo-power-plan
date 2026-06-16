@@ -78,6 +78,8 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<TimeRange>("all");
   const { t } = useLanguage();
+  // TODO: health-sync skjult indtil native HealthKit (RN) er klar — vis for admin indtil da.
+  const { isAdmin: canSeeHealthSync } = useIsAdmin();
 
   useEffect(() => {
     loadData();
