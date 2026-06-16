@@ -14,6 +14,7 @@ import { PageMeta } from "@/components/PageMeta";
 import { AppFooter } from "@/components/AppFooter";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAvatarUrl } from "@/hooks/useAvatarUrl";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 
 interface LicenseField {
   id: string;
