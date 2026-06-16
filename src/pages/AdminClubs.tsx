@@ -14,6 +14,7 @@ interface Club {
   name: string;
   max_athletes: number;
   share_coach_notes: boolean;
+  license_active: boolean;
 }
 
 export default function AdminClubs() {
