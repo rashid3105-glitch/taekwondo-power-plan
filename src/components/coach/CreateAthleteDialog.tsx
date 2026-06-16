@@ -107,16 +107,28 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) 
       const { data, error } = await supabase.functions.invoke("add-athlete-by-code", {
         body: { code: code.trim(), club_id: activeClubId },
       });
-      if (error || (data as any)?.error) {
-        const errMsg = (data as any)?.error || error?.message || "error";
-        let description: string = errMsg;
+      const payload = (data as any) ?? {};
+      const errMsg: string | undefined = payload?.error || error?.message;
+      const clubName: string = payload?.club_name || activeMembership?.club_name || "";
+
+      // Idempotent same-club re-add: backend returns ok:true + already:true
+      if (payload?.ok && payload?.already) {
+        toast({
+          title: t("athleteAlreadyAdded"),
+          description: t("athleteAlreadyAddedInClub").replace("{club}", clubName),
+        });
+        reset();
+        setOpen(false);
+        await onCreated();
+      } else if (error || errMsg) {
+        let description: string = errMsg ?? "error";
         if (errMsg === "ATHLETE_NOT_FOUND") description = t("athleteNotFound");
-        else if (errMsg === "ALREADY_IN_CLUB") description = t("athleteAlreadyAdded");
+        else if (errMsg === "ALREADY_IN_CLUB") description = t("athleteAlreadyAddedInClub").replace("{club}", clubName);
         else if (errMsg === "MAX_ATHLETES_REACHED") description = t("maxAthletesReached") ?? errMsg;
         else if (errMsg === "forbidden") description = t("sameClubRequired");
         toast({ title: t("error"), description, variant: "destructive" });
       } else {
-        toast({ title: t("athleteAdded") });
+        toast({ title: t("athleteAdded"), description: clubName ? `→ ${clubName}` : undefined });
         reset();
         setOpen(false);
         await onCreated();
