@@ -1,5 +1,15 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,6 +47,12 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) 
   // Add by code
   const [code, setCode] = useState("");
   const [adding, setAdding] = useState(false);
+
+  // Cross-club confirm dialog state
+  const [crossClubInfo, setCrossClubInfo] = useState<
+    | { targetClubName: string; otherClubNames: string[] }
+    | null
+  >(null);
 
   const ageNum = age ? parseInt(age) : NaN;
   const isMinor = Number.isFinite(ageNum) && ageNum < 18;
@@ -96,7 +112,7 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) 
     }
   };
 
-  const addByCode = async () => {
+  const addByCode = async (confirmCrossClub = false) => {
     if (!code.trim()) return;
     if (!activeClubId) {
       toast({ title: t("error"), description: t("noClubSelected") ?? "Vælg en aktiv klub først", variant: "destructive" });
@@ -105,7 +121,7 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) 
     setAdding(true);
     try {
       const { data, error } = await supabase.functions.invoke("add-athlete-by-code", {
-        body: { code: code.trim(), club_id: activeClubId },
+        body: { code: code.trim(), club_id: activeClubId, confirm_cross_club: confirmCrossClub },
       });
       const payload = (data as any) ?? {};
       const errMsg: string | undefined = payload?.error || error?.message;
@@ -120,6 +136,12 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) 
         reset();
         setOpen(false);
         await onCreated();
+      } else if (errMsg === "CROSS_CLUB_CONFIRM") {
+        // Open confirm dialog; do not toast.
+        setCrossClubInfo({
+          targetClubName: payload?.target_club_name || activeMembership?.club_name || "",
+          otherClubNames: Array.isArray(payload?.other_club_names) ? payload.other_club_names : [],
+        });
       } else if (error || errMsg) {
         let description: string = errMsg ?? "error";
         if (errMsg === "ATHLETE_NOT_FOUND") description = t("athleteNotFound");
