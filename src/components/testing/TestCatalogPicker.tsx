@@ -78,7 +78,7 @@ export function TestCatalogPicker({ onPick }: Props) {
                     {t(`ptCat_${cat}`)}
                   </span>
                   <span className="block text-[11px] text-muted-foreground">
-                    {tests.length} {tests.length === 1 ? t("ptTestSingular") : t("ptTestPlural")}
+                    {t("ptTestsAvailable").replace("{n}", String(tests.length))}
                   </span>
                 </span>
                 <ChevronRight
