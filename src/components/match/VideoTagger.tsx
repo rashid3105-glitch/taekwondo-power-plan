@@ -243,18 +243,29 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
     const { data: { user } } = await supabase.auth.getUser();
     if (!user || !videoRef.current) return;
     const ts = Math.round(videoRef.current.currentTime * 10) / 10;
-    await (supabase.from as any)("video_annotations").insert({
+    const { data: inserted } = await (supabase.from as any)("video_annotations").insert({
       video_id: video.id,
       created_by: user.id,
       timestamp_seconds: ts,
-      paths: allPaths,
+      paths: [newPath],
       color: DRAW_COLOR,
       expires_at: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString(),
-    });
+    }).select("id, timestamp_seconds, paths, color").maybeSingle();
+    if (inserted) {
+      setAllAnnotations((prev) => [
+        ...prev,
+        {
+          id: (inserted as any).id,
+          timestamp_seconds: (inserted as any).timestamp_seconds,
+          paths: ((inserted as any).paths as any[]).map((p: any) => ({ points: p.points, color: p.color ?? DRAW_COLOR })),
+        },
+      ]);
+    }
   };
 
   const clearAnnotations = async () => {
     setSavedPaths([]);
+    setAllAnnotations([]);
     clearCanvas();
     await (supabase.from as any)("video_annotations")
       .delete()
