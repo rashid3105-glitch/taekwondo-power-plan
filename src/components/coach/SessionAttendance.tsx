@@ -58,7 +58,7 @@ export function SessionAttendance({ coachId, athletes, activeClubId }: Props) {
     if (activeClubId) payload.club_id = activeClubId;
     const { error } = await supabase
       .from("session_attendance" as any)
-      .upsert(payload, { onConflict: "coach_id,athlete_id,session_date" });
+      .upsert(payload, { onConflict: "athlete_id,session_date" });
     if (error) toast({ title: t("error"), description: error.message, variant: "destructive" });
   };
 
@@ -71,7 +71,7 @@ export function SessionAttendance({ coachId, athletes, activeClubId }: Props) {
     if (activeClubId) payload.club_id = activeClubId;
     await supabase
       .from("session_attendance" as any)
-      .upsert(payload, { onConflict: "coach_id,athlete_id,session_date" });
+      .upsert(payload, { onConflict: "athlete_id,session_date" });
   };
 
   return (
