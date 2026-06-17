@@ -261,7 +261,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
 
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="grid w-full" style={{ gridTemplateColumns: mode === "coach" ? "1fr 1fr 1fr" : "1fr 1fr" }}>
-          <TabsTrigger value="results">{t("ptResult")}</TabsTrigger>
+          <TabsTrigger value="results">{t("ptStartOrResults")}</TabsTrigger>
           <TabsTrigger value="progression">{t("ptProgressionTitle")}</TabsTrigger>
           {mode === "coach" && <TabsTrigger value="compare">{t("ptComparisonTitle")}</TabsTrigger>}
         </TabsList>
