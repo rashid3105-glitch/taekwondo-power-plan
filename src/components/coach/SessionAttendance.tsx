@@ -116,7 +116,7 @@ export function SessionAttendance({ coachId, athletes, activeClubId }: Props) {
                 </div>
                 {rec && rec.status !== "absent" && (
                   <div className="flex items-center gap-3 pl-12">
-                    <span className="text-[11px] text-muted-foreground w-12">RPE</span>
+                    <span className="text-[11px] text-muted-foreground w-20">{t("trainingIntensity")}</span>
                     <Slider
                       value={[rec.rpe ?? 5]}
                       onValueChange={([v]) => setRpe(a.user_id, v)}
