@@ -34,8 +34,10 @@ import { TeamWeeklyScheduleCard } from "@/components/coach/TeamWeeklyScheduleCar
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   ArrowLeft, Loader2, Zap, User, Users, NotebookPen,
-  MessageSquare, Building, CalendarRange, CalendarCheck, Home,
+  MessageSquare, Building, CalendarRange, CalendarCheck, Home, ChevronDown,
 } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+
 import { cn } from "@/lib/utils";
 import { MessagesIcon } from "@/components/chat/MessagesIcon";
 
