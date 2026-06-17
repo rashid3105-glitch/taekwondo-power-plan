@@ -551,7 +551,7 @@ export default function MatchAnalysis() {
                 {t("matchOfflineUploading")}
               </Button>
             )}
-            {isCoach && coachAthletes.length > 0 && (
+            {coachAthletes.length > 0 && (
               <Select
                 value={resolvedAthleteId === me ? "me" : (resolvedAthleteId || "me")}
                 onValueChange={(v) => navigate(v === "me" ? "/match-analysis/me" : `/match-analysis/${v}`)}
