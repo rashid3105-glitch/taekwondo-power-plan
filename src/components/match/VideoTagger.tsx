@@ -724,8 +724,8 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={() => {
                         setDrawMode((d) => !d);
-                        if (!drawMode) void loadAnnotations();
                       }}
+
                     >
                       ✏️ {drawMode ? t("annotationModeOn") : t("annotationMode")}
                     </Button>
