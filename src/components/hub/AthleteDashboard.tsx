@@ -400,10 +400,9 @@ export function AthleteDashboard() {
             <button
               type="button"
               onClick={() => navigate("/library/testing")}
-              className="rounded-xl p-4 flex items-center gap-2 font-semibold text-sm"
-              style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
+              className="rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white"
             >
-              <ClipboardList className="h-4 w-4" />
+              <ClipboardList className="h-4 w-4" style={accentStyle} />
               Testning
             </button>
             <button
@@ -417,9 +416,10 @@ export function AthleteDashboard() {
             <button
               type="button"
               onClick={() => navigate("/coach/today")}
-              className="col-span-2 rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white"
+              className="col-span-2 rounded-xl p-4 flex items-center gap-2 font-semibold text-sm"
+              style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
             >
-              <CalendarCheck className="h-4 w-4" style={accentStyle} />
+              <CalendarCheck className="h-4 w-4" />
               I dag
             </button>
           </>
