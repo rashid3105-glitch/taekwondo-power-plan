@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useRole } from "@/contexts/RoleContext";
 import { useThreads } from "@/hooks/useThreads";
-import { Calendar, MessageCircle, Play, BookOpen, Trophy, NotebookPen, CalendarX, Book, Video, BarChart3, CalendarCheck } from "lucide-react";
+import { Calendar, MessageCircle, Play, BookOpen, Trophy, NotebookPen, CalendarX, Book, Video, BarChart3, CalendarCheck, ClipboardList } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -308,7 +308,7 @@ export function AthleteDashboard() {
         </section>
       )}
 
-      {/* 3. Latest diary entry */}
+      {/* 3. Diary — write new / view latest */}
       {diaryLoading ? (
         <SkeletonBlock className="h-[96px]" />
       ) : latestDiary ? (
@@ -322,7 +322,7 @@ export function AthleteDashboard() {
           <div className="flex items-center gap-2 mb-2">
             <NotebookPen className="h-4 w-4" style={accentStyle} />
             <h3 className="text-[11px] font-bold uppercase tracking-wider" style={accentStyle}>
-              Seneste dagbogsopslag
+              Skriv nyt / se seneste opslag
             </h3>
             {hasCoachComments && (
               <span
@@ -337,7 +337,19 @@ export function AthleteDashboard() {
           </p>
         </section>
       ) : (
-        <section className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+        <section
+          role="button"
+          tabIndex={0}
+          onClick={() => navigate("/diary")}
+          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate("/diary"); } }}
+          className="rounded-xl border border-white/10 bg-white/[0.03] p-4 cursor-pointer hover:bg-white/[0.05] transition-colors"
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <NotebookPen className="h-4 w-4" style={accentStyle} />
+            <h3 className="text-[11px] font-bold uppercase tracking-wider" style={accentStyle}>
+              Skriv nyt / se seneste opslag
+            </h3>
+          </div>
           <EmptyState
             icon={<Book size={24} style={accentStyle} />}
             text="Ingen dagbogsopslag endnu"
@@ -384,42 +396,54 @@ export function AthleteDashboard() {
       {/* 5. Quick access */}
       <section className="grid grid-cols-2 gap-3">
         {activeRole === "coach" ? (
-          <button
-            type="button"
-            onClick={() => navigate("/coach/today")}
-            className="rounded-xl p-4 flex items-center gap-2 font-semibold text-sm"
-            style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
-          >
-            <CalendarCheck className="h-4 w-4" />
-            I dag
-          </button>
+          <>
+            <button
+              type="button"
+              onClick={() => navigate("/library/testing")}
+              className="rounded-xl p-4 flex items-center gap-2 font-semibold text-sm"
+              style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
+            >
+              <ClipboardList className="h-4 w-4" />
+              Testning
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate("/match-analysis/me")}
+              className="rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white"
+            >
+              <Video className="h-4 w-4" style={accentStyle} />
+              Video-analyse
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate("/coach/today")}
+              className="col-span-2 rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white"
+            >
+              <CalendarCheck className="h-4 w-4" style={accentStyle} />
+              I dag
+            </button>
+          </>
         ) : (
-          <button
-            type="button"
-            onClick={() => navigate("/dashboard?tab=progress")}
-            className="rounded-xl p-4 flex items-center gap-2 font-semibold text-sm"
-            style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
-          >
-            <BarChart3 className="h-4 w-4" />
-            Fremgang
-          </button>
+          <>
+            <button
+              type="button"
+              onClick={() => navigate("/dashboard?tab=progress")}
+              className="rounded-xl p-4 flex items-center gap-2 font-semibold text-sm"
+              style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
+            >
+              <BarChart3 className="h-4 w-4" />
+              Fremgang
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate("/match-analysis/me")}
+              className="rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white"
+            >
+              <Video className="h-4 w-4" style={accentStyle} />
+              Video-analyse
+            </button>
+          </>
         )}
-        <button
-          type="button"
-          onClick={() => navigate("/match-analysis/me")}
-          className="rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white"
-        >
-          <Video className="h-4 w-4" style={accentStyle} />
-          Video-analyse
-        </button>
-        <button
-          type="button"
-          onClick={() => navigate("/diary")}
-          className="col-span-2 rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white"
-        >
-          <NotebookPen className="h-4 w-4" style={accentStyle} />
-          Skriv i dagbogen
-        </button>
       </section>
 
       {/* Diary read-only modal */}
