@@ -111,8 +111,8 @@ export default function MatchAnalysis() {
     }
     setIsCoach(coach);
 
-    // Load coach's athletes for the athlete picker
-    if (coach && offline.online) {
+    // Load athlete picker options for anyone with coach_athletes links (coach or admin)
+    if (offline.online) {
       const { data: links } = await supabase
         .from("coach_athletes")
         .select("athlete_id, profiles:athlete_id(display_name)")
@@ -551,7 +551,7 @@ export default function MatchAnalysis() {
                 {t("matchOfflineUploading")}
               </Button>
             )}
-            {isCoach && coachAthletes.length > 0 && (
+            {coachAthletes.length > 0 && (
               <Select
                 value={resolvedAthleteId === me ? "me" : (resolvedAthleteId || "me")}
                 onValueChange={(v) => navigate(v === "me" ? "/match-analysis/me" : `/match-analysis/${v}`)}
@@ -654,7 +654,7 @@ export default function MatchAnalysis() {
                         <WifiOff className="h-3 w-3" /> {t("matchOfflineQueueUpload")}
                       </div>
                     )}
-                    <Button onClick={handleUpload} disabled={uploading || !file || !title} className="w-full">
+                    <Button onClick={handleUpload} disabled={uploading || !file || !title} className="w-full bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-100 disabled:bg-primary/60">
                       {uploading ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : <Upload className="h-4 w-4 mr-1" />}
                       {t("matchUpload")}
                     </Button>
