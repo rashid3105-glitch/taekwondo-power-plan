@@ -159,7 +159,7 @@ export function AttendanceStatsDialog({ open, onOpenChange, coachId, athletes, a
         doc.setFontSize(10);
         doc.text("Date", margin, y);
         doc.text("Status", margin + 60, y);
-        doc.text("RPE", margin + 110, y);
+        doc.text(t("trainingIntensity"), margin + 110, y);
         y += 5;
         doc.line(margin, y, 200, y);
         y += 4;
