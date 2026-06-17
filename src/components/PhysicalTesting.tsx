@@ -236,7 +236,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
     );
   }
 
-  if (loading && (mode !== "coach" || selectedAthleteId || athleteId)) {
+  if (loading && (mode !== "coach" || targetUserId)) {
     return (
       <div className="flex items-center justify-center py-12">
         <Loader2 className="h-6 w-6 animate-spin text-primary" />
@@ -244,7 +244,8 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
     );
   }
 
-  const currentAthleteName = athleteName || selectedAthleteName;
+  const focusedAthlete = athletes.find((a) => a.athlete_id === (focusedAthleteId || targetUserId || ""));
+  const currentAthleteName = athleteName || focusedAthlete?.display_name || "";
   const categoryResults = results.filter((r) => r.category === activeCategory);
   const groupedByTest = categoryResults.reduce((acc, r) => {
     if (!acc[r.test_name]) acc[r.test_name] = [];
@@ -252,7 +253,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
     return acc;
   }, {} as Record<string, TestResult[]>);
 
-  const showAthletePickedUI = mode !== "coach" || athleteId || selectedAthleteId;
+  const showAthletePickedUI = mode !== "coach" || athleteId || targetUserId;
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -266,32 +267,72 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
         </h2>
       </div>
 
-      {/* Coach athlete selector */}
+      {/* Coach athlete selector (multi) */}
       {mode === "coach" && !athleteId && (
         <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
-          <h3 className="text-sm font-bold text-card-foreground flex items-center gap-2">
-            <Users className="h-4 w-4 text-primary" /> {t("ptSelectAthlete")}
-          </h3>
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <h3 className="text-sm font-bold text-card-foreground flex items-center gap-2">
+              <Users className="h-4 w-4 text-primary" /> {t("ptSelectAthletes")}
+              {selectedIds.size > 0 && (
+                <span className="text-xs font-normal text-muted-foreground">({selectedIds.size})</span>
+              )}
+            </h3>
+            {athletes.length > 0 && (
+              <div className="flex gap-1.5">
+                <Button size="sm" variant="outline" className="h-7 text-xs" onClick={selectAllAthletes}>
+                  {t("ptSelectAll")}
+                </Button>
+                <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={clearAthletes} disabled={selectedIds.size === 0}>
+                  {t("ptClearSelection")}
+                </Button>
+              </div>
+            )}
+          </div>
           {athletes.length === 0 ? (
             <p className="text-sm text-muted-foreground">{t("ptNoAthletes")}</p>
           ) : (
-            <Select value={selectedAthleteId} onValueChange={(v) => {
-              setSelectedAthleteId(v);
-              const ath = athletes.find(a => a.athlete_id === v);
-              setSelectedAthleteName(ath?.display_name || "");
-            }}>
-              <SelectTrigger>
-                <SelectValue placeholder={t("ptSelectAthlete")} />
-              </SelectTrigger>
-              <SelectContent>
-                {athletes.map(a => (
-                  <SelectItem key={a.athlete_id} value={a.athlete_id}>{a.display_name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-60 overflow-y-auto">
+                {athletes.map((a) => {
+                  const checked = selectedIds.has(a.athlete_id);
+                  return (
+                    <label
+                      key={a.athlete_id}
+                      className={`flex items-center gap-2 px-2 py-1.5 rounded-md border cursor-pointer transition-colors ${
+                        checked ? "border-primary/40 bg-primary/5" : "border-border bg-background hover:bg-muted/30"
+                      }`}
+                    >
+                      <Checkbox
+                        checked={checked}
+                        onCheckedChange={() => toggleAthlete(a.athlete_id)}
+                      />
+                      <span className="text-sm truncate flex-1">{a.display_name}</span>
+                    </label>
+                  );
+                })}
+              </div>
+              {selectedIds.size > 1 && (
+                <div className="pt-1">
+                  <label className="block text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+                    {t("ptFocusAthlete")}
+                  </label>
+                  <Select value={focusedAthleteId} onValueChange={setFocusedAthleteId}>
+                    <SelectTrigger className="h-9">
+                      <SelectValue placeholder={t("ptFocusAthlete")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {selectedAthletes.map((a) => (
+                        <SelectItem key={a.athlete_id} value={a.athlete_id}>{a.display_name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}
+
 
       {/* Tabs: Results | Progression | Compare (coach) */}
       <Tabs value={tab} onValueChange={setTab}>
