@@ -62,10 +62,12 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
   const { toast } = useToast();
   const { t, locale } = useLanguage();
 
-  // Coach athlete selection
+  // Coach athlete selection (multi)
   const [athletes, setAthletes] = useState<CoachAthlete[]>([]);
-  const [selectedAthleteId, setSelectedAthleteId] = useState<string>(athleteId || "");
-  const [selectedAthleteName, setSelectedAthleteName] = useState<string>(athleteName || "");
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(
+    () => new Set(athleteId ? [athleteId] : []),
+  );
+  const [focusedAthleteId, setFocusedAthleteId] = useState<string>(athleteId || "");
   const [loadingAthletes, setLoadingAthletes] = useState(mode === "coach" && !athleteId);
 
   // Run-flow state
@@ -85,11 +87,17 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
     if (mode === "coach" && !athleteId) void loadAthletes();
   }, [mode, athleteId]);
 
+  // Single user the results table / progression is keyed to
   const targetUserId =
-    mode === "coach" ? (athleteId || selectedAthleteId || null) : currentUserId;
+    mode === "coach"
+      ? (athleteId || focusedAthleteId || (selectedIds.size > 0 ? Array.from(selectedIds)[0] : null))
+      : currentUserId;
 
-  const { results: cachedResults, loading, addResult, removeResult, updateResult } =
-    useOfflinePhysicalTests(targetUserId);
+  const selectedAthletes = useMemo(
+    () => athletes.filter((a) => selectedIds.has(a.athlete_id)),
+    [athletes, selectedIds],
+  );
+
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
