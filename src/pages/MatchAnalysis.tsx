@@ -654,7 +654,7 @@ export default function MatchAnalysis() {
                         <WifiOff className="h-3 w-3" /> {t("matchOfflineQueueUpload")}
                       </div>
                     )}
-                    <Button onClick={handleUpload} disabled={uploading || !file || !title} className="w-full">
+                    <Button onClick={handleUpload} disabled={uploading || !file || !title} className="w-full bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-100 disabled:bg-primary/60">
                       {uploading ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : <Upload className="h-4 w-4 mr-1" />}
                       {t("matchUpload")}
                     </Button>
