@@ -550,18 +550,18 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
                 <Video className="h-4 w-4 text-primary" />
                 {video.title}
                 {isCached && (
-                  <Badge variant="outline" className="text-[9px] h-4">
+                  <Badge variant="outline" className="text-[9px] h-4 text-card-foreground border-border">
                     {t("matchOfflineCached")}
                   </Badge>
                 )}
               </CardTitle>
               <div className="flex flex-wrap gap-2 mt-1">
-                <Badge variant="outline" className="text-[10px]">
+                <Badge variant="outline" className="text-[10px] text-card-foreground border-border">
                   {video.discipline === "poomsae" ? t("matchDisciplinePoomsae") : t("matchDisciplineSparring")}
                 </Badge>
-                {video.opponent_name && <Badge variant="outline" className="text-[10px]">vs {video.opponent_name}</Badge>}
-                {video.event_name && <Badge variant="outline" className="text-[10px]">{video.event_name}</Badge>}
-                {video.match_date && <Badge variant="outline" className="text-[10px]">{video.match_date}</Badge>}
+                {video.opponent_name && <Badge variant="outline" className="text-[10px] text-card-foreground border-border">vs {video.opponent_name}</Badge>}
+                {video.event_name && <Badge variant="outline" className="text-[10px] text-card-foreground border-border">{video.event_name}</Badge>}
+                {video.match_date && <Badge variant="outline" className="text-[10px] text-card-foreground border-border">{video.match_date}</Badge>}
               </div>
             </div>
             {isOwner && !onlineActionsDisabled && (
