@@ -57,7 +57,9 @@ interface AthleteProfile {
   country: string | null;
   club_id?: string | null;
   club_name?: string | null;
+  is_coach?: boolean;
 }
+
 
 interface AthletePlan {
   id: string;
