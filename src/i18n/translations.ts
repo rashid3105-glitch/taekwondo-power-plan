@@ -14867,6 +14867,10 @@ const translations = {
     clubAthletes: "Klub-atleter",
     clubAthletesDesc: "Alle atleter i din klub (skrivebeskyttet)",
     readOnly: "Skrivebeskyttet",
+    clubMembers: "Klubbmedlemmer",
+    clubMembersDesc: "Alle medlemmer i klubben din (skrivebeskyttet)",
+    coaches: "Trenere",
+
     editAction: "Rediger",
     lockAction: "Lås",
     hasPlan: "Har plan",
