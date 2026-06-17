@@ -308,7 +308,7 @@ export function AthleteDashboard() {
         </section>
       )}
 
-      {/* 3. Latest diary entry */}
+      {/* 3. Diary — write new / view latest */}
       {diaryLoading ? (
         <SkeletonBlock className="h-[96px]" />
       ) : latestDiary ? (
@@ -322,7 +322,7 @@ export function AthleteDashboard() {
           <div className="flex items-center gap-2 mb-2">
             <NotebookPen className="h-4 w-4" style={accentStyle} />
             <h3 className="text-[11px] font-bold uppercase tracking-wider" style={accentStyle}>
-              Seneste dagbogsopslag
+              Skriv nyt / se seneste opslag
             </h3>
             {hasCoachComments && (
               <span
@@ -337,7 +337,19 @@ export function AthleteDashboard() {
           </p>
         </section>
       ) : (
-        <section className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+        <section
+          role="button"
+          tabIndex={0}
+          onClick={() => navigate("/diary")}
+          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate("/diary"); } }}
+          className="rounded-xl border border-white/10 bg-white/[0.03] p-4 cursor-pointer hover:bg-white/[0.05] transition-colors"
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <NotebookPen className="h-4 w-4" style={accentStyle} />
+            <h3 className="text-[11px] font-bold uppercase tracking-wider" style={accentStyle}>
+              Skriv nyt / se seneste opslag
+            </h3>
+          </div>
           <EmptyState
             icon={<Book size={24} style={accentStyle} />}
             text="Ingen dagbogsopslag endnu"
