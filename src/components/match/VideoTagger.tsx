@@ -191,6 +191,26 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
     setAllAnnotations(list);
   };
 
+  // Show only annotations recorded near the current playback moment.
+  useEffect(() => {
+    if (isDrawing) return;
+    const ts = currentFrame / FPS;
+    const active = allAnnotations
+      .filter((a) => Math.abs(a.timestamp_seconds - ts) <= ANNOTATION_WINDOW_S)
+      .flatMap((a) => a.paths);
+    setSavedPaths(active);
+    redrawCanvas(active);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentFrame, allAnnotations, isDrawing]);
+
+  // Initial load of all annotations for this video.
+  useEffect(() => {
+    void loadAnnotations();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [video.id]);
+
+
+
   const getCanvasPos = (e: React.MouseEvent | React.TouchEvent, canvas: HTMLCanvasElement): [number, number] => {
     const rect = canvas.getBoundingClientRect();
     const clientX = "touches" in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
