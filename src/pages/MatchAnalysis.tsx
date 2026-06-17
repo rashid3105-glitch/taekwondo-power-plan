@@ -575,14 +575,31 @@ export default function MatchAnalysis() {
                 <DialogContent className="max-w-md">
                   <DialogHeader><DialogTitle>{t("matchUploadClip")}</DialogTitle></DialogHeader>
                   <div className="space-y-3">
+                    {coachAthletes.length > 0 && (
+                      <div>
+                        <Label className="text-foreground">{t("matchAthlete")} *</Label>
+                        <Select
+                          value={resolvedAthleteId === me ? "me" : (resolvedAthleteId || "me")}
+                          onValueChange={(v) => navigate(v === "me" ? "/match-analysis/me" : `/match-analysis/${v}`)}
+                        >
+                          <SelectTrigger className="bg-background text-foreground border-input"><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="me">{t("matchYou")}</SelectItem>
+                            {coachAthletes.map((a) => (
+                              <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
                     <div>
-                      <Label>{t("matchClipTitle")} *</Label>
-                      <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Round 1 vs Park" />
+                      <Label className="text-foreground">{t("matchClipTitle")} *</Label>
+                      <Input className="bg-background text-foreground border-input placeholder:text-muted-foreground" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Round 1 vs Park" />
                     </div>
                     <div>
-                      <Label>{t("matchDiscipline")}</Label>
+                      <Label className="text-foreground">{t("matchDiscipline")}</Label>
                       <Select value={discipline} onValueChange={(v) => setDiscipline(v as Discipline)}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectTrigger className="bg-background text-foreground border-input"><SelectValue /></SelectTrigger>
                         <SelectContent>
                           <SelectItem value="sparring">{t("matchDisciplineSparring")}</SelectItem>
                           <SelectItem value="poomsae">{t("matchDisciplinePoomsae")}</SelectItem>
@@ -591,9 +608,9 @@ export default function MatchAnalysis() {
                     </div>
                     {discipline === "poomsae" && (
                       <div>
-                        <Label>{t("matchPoomsaeType")}</Label>
+                        <Label className="text-foreground">{t("matchPoomsaeType")}</Label>
                         <Select value={poomsaeType} onValueChange={(v) => setPoomsaeType(v as any)}>
-                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectTrigger className="bg-background text-foreground border-input"><SelectValue /></SelectTrigger>
                           <SelectContent>
                             <SelectItem value="individual">{t("matchPoomsaeIndividual")}</SelectItem>
                             <SelectItem value="pair">{t("matchPoomsaePair")}</SelectItem>
@@ -603,8 +620,9 @@ export default function MatchAnalysis() {
                       </div>
                     )}
                     <div>
-                      <Label>{t("matchAthleteAge")}</Label>
+                      <Label className="text-foreground">{t("matchAthleteAge")}</Label>
                       <Input
+                        className="bg-background text-foreground border-input placeholder:text-muted-foreground"
                         value={athleteAge}
                         onChange={(e) => setAthleteAge(e.target.value.replace(/[^0-9]/g, "").slice(0, 3))}
                         inputMode="numeric"
@@ -615,21 +633,21 @@ export default function MatchAnalysis() {
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <Label>{t("matchOpponent")}</Label>
-                        <Input value={opponent} onChange={(e) => setOpponent(e.target.value)} />
+                        <Label className="text-foreground">{t("matchOpponent")}</Label>
+                        <Input className="bg-background text-foreground border-input placeholder:text-muted-foreground" value={opponent} onChange={(e) => setOpponent(e.target.value)} />
                       </div>
                       <div>
-                        <Label>{t("matchEvent")}</Label>
-                        <Input value={eventName} onChange={(e) => setEventName(e.target.value)} />
+                        <Label className="text-foreground">{t("matchEvent")}</Label>
+                        <Input className="bg-background text-foreground border-input placeholder:text-muted-foreground" value={eventName} onChange={(e) => setEventName(e.target.value)} />
                       </div>
                     </div>
                     <div>
-                      <Label>{t("matchDate")}</Label>
-                      <Input type="date" value={matchDate} onChange={(e) => setMatchDate(e.target.value)} />
+                      <Label className="text-foreground">{t("matchDate")}</Label>
+                      <Input className="bg-background text-foreground border-input placeholder:text-muted-foreground" type="date" value={matchDate} onChange={(e) => setMatchDate(e.target.value)} />
                     </div>
                     <div>
-                      <Label>{t("matchVideoFile")} (mp4/mov, max 200MB)</Label>
-                      <Input type="file" accept="video/mp4,video/quicktime,video/webm" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+                      <Label className="text-foreground">{t("matchVideoFile")} (mp4/mov, max 200MB)</Label>
+                      <Input className="bg-background text-foreground border-input" type="file" accept="video/mp4,video/quicktime,video/webm" onChange={(e) => setFile(e.target.files?.[0] || null)} />
                     </div>
                     {!offline.online && (
                       <div className="text-xs text-muted-foreground flex items-center gap-1">
