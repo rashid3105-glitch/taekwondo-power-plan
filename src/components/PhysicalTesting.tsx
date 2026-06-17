@@ -97,7 +97,8 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
     () => athletes.filter((a) => selectedIds.has(a.athlete_id)),
     [athletes, selectedIds],
   );
-
+  const { results: cachedResults, loading, addResult, removeResult, updateResult, refresh } =
+    useOfflinePhysicalTests(targetUserId);
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
@@ -141,6 +142,23 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
     setLoadingAthletes(false);
   }
 
+  function toggleAthlete(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+    setFocusedAthleteId((cur) => cur || id);
+  }
+  function selectAllAthletes() {
+    setSelectedIds(new Set(athletes.map((a) => a.athlete_id)));
+    if (!focusedAthleteId && athletes[0]) setFocusedAthleteId(athletes[0].athlete_id);
+  }
+  function clearAthletes() {
+    setSelectedIds(new Set());
+    setFocusedAthleteId("");
+  }
+
   function handleCatalogPick(def: TestDefinition) {
     setPickerOpen(false);
     // The existing dedicated Beep Test flow is preserved.
@@ -151,31 +169,64 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
     setRunnerDef(def);
   }
 
-  async function handleRunnerSave({ value, unit }: { value: number; unit: string }) {
+  async function handleRunnerSave(
+    payload:
+      | { value: number; unit: string }
+      | { entries: Array<{ athleteId: string; value: number }>; unit: string },
+  ) {
     if (!runnerDef) return;
+    const { data: { user } } = await supabase.auth.getUser();
+    const today = new Date().toISOString().split("T")[0];
+
+    // Group mode
+    if ("entries" in payload) {
+      if (payload.entries.length === 0) return;
+      for (const e of payload.entries) {
+        await addResult({
+          user_id: e.athleteId,
+          test_name: runnerDef.dbTestName,
+          category: runnerDef.category,
+          value: e.value,
+          unit: payload.unit,
+          test_type: "coach",
+          tested_by: user?.id ?? null,
+          notes: "",
+          test_date: today,
+        });
+      }
+      toast({
+        title: t("ptResultSaved"),
+        description: t("ptSavedForN").replace("{n}", String(payload.entries.length)),
+      });
+      setRunnerDef(null);
+      void refresh();
+      return;
+    }
+
+    // Single-athlete mode
     if (mode === "coach" && !targetUserId) {
       toast({ title: t("error"), description: t("ptSelectAthlete"), variant: "destructive" });
       return;
     }
     const targetId = targetUserId;
     if (!targetId) return;
-    const { data: { user } } = await supabase.auth.getUser();
     await addResult({
       user_id: targetId,
       test_name: runnerDef.dbTestName,
       category: runnerDef.category,
-      value,
-      unit,
+      value: payload.value,
+      unit: payload.unit,
       test_type: mode === "coach" ? "coach" : "individual",
       tested_by: mode === "coach" ? (user?.id ?? null) : null,
       notes: "",
-      test_date: new Date().toISOString().split("T")[0],
+      test_date: today,
     });
     toast({ title: t("ptResultSaved") });
     setRunnerDef(null);
   }
 
   const handleDelete = async (localId: string) => { await removeResult(localId); };
+
 
   if (loadingAthletes) {
     return (
