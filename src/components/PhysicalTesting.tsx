@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import {
-  Loader2, Trash2, ClipboardList, Users, WifiOff, Pencil, Plus, TrendingUp,
+  Loader2, Trash2, ClipboardList, Users, WifiOff, Pencil, Plus,
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useOfflinePhysicalTests } from "@/hooks/useOfflinePhysicalTests";
