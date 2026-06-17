@@ -39,9 +39,9 @@ export function SessionAttendance({ coachId, athletes, activeClubId }: Props) {
       let q = supabase
         .from("session_attendance" as any)
         .select("athlete_id, status, rpe")
-        .eq("coach_id", coachId)
         .eq("session_date", date);
       if (activeClubId) q = q.eq("club_id", activeClubId);
+      else q = q.eq("coach_id", coachId);
       const { data } = await q;
       const map = new Map<string, Record>();
       ((data as any[]) || []).forEach((r) => map.set(r.athlete_id, r as Record));
