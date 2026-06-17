@@ -502,56 +502,88 @@ export default function CoachDashboard() {
                 </>
               )}
 
-              {/* Club Athletes (read-only) */}
-              {clubAthletes.length > 0 && (
-                <div className="space-y-3 pt-4 border-t border-border">
-                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                    <Users className="h-4 w-4" /> {t("clubAthletes")} ({clubAthletes.length})
-                  </h3>
-                  <p className="text-xs text-muted-foreground">{t("clubAthletesDesc")}</p>
-                  <div className="grid gap-2 sm:grid-cols-2">
-                    {clubAthletes.map((a) => (
-                      <div
-                        key={a.user_id}
-                        className="rounded-lg border bg-card p-3 border-border/50 overflow-hidden opacity-90"
-                      >
-                        <div className="flex items-center justify-between gap-2 min-w-0">
-                          <div className="flex items-center gap-3 min-w-0 flex-1">
-                            <AvatarImg avatarUrl={a.avatar_url} />
-                            <div className="min-w-0 flex-1">
-                              <p className="font-medium text-sm text-card-foreground truncate">{a.display_name || t("noName")}</p>
-                              <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
-                                {a.club_name && (
-                                  <span className="inline-flex items-center gap-0.5 text-[10px] text-muted-foreground">
-                                    <Building className="h-2.5 w-2.5" />
-                                    {a.club_name}
-                                  </span>
-                                )}
-                                <p className="text-[10px] text-muted-foreground">{a.athlete_code}</p>
-                                {a.belt_level && (
-                                  <span className="text-[10px] text-muted-foreground capitalize">· {a.belt_level}</span>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-1 flex-shrink-0">
-                            <Badge variant="secondary" className="text-[10px]">{t("readOnly")}</Badge>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8"
-                              title={t("diary")}
-                              onClick={() => openDiary(a.user_id, a.display_name)}
-                            >
-                              <NotebookPen className="h-4 w-4" />
-                            </Button>
+              {/* Club Members (read-only) — split into athletes and coaches, foldable */}
+              {clubAthletes.length > 0 && (() => {
+                const memberAthletes = clubAthletes.filter((m) => !m.is_coach);
+                const memberCoaches = clubAthletes.filter((m) => m.is_coach);
+                const renderCard = (a: AthleteProfile, showDiary: boolean) => (
+                  <div
+                    key={a.user_id}
+                    className="rounded-lg border bg-card p-3 border-border/50 overflow-hidden opacity-90"
+                  >
+                    <div className="flex items-center justify-between gap-2 min-w-0">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <AvatarImg avatarUrl={a.avatar_url} />
+                        <div className="min-w-0 flex-1">
+                          <p className="font-medium text-sm text-card-foreground truncate">{a.display_name || t("noName")}</p>
+                          <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
+                            {a.club_name && (
+                              <span className="inline-flex items-center gap-0.5 text-[10px] text-muted-foreground">
+                                <Building className="h-2.5 w-2.5" />
+                                {a.club_name}
+                              </span>
+                            )}
+                            <p className="text-[10px] text-muted-foreground">{a.athlete_code}</p>
+                            {a.belt_level && (
+                              <span className="text-[10px] text-muted-foreground capitalize">· {a.belt_level}</span>
+                            )}
                           </div>
                         </div>
                       </div>
-                    ))}
+                      <div className="flex items-center gap-1 flex-shrink-0">
+                        <Badge variant="secondary" className="text-[10px]">{t("readOnly")}</Badge>
+                        {showDiary && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            title={t("diary")}
+                            onClick={() => openDiary(a.user_id, a.display_name)}
+                          >
+                            <NotebookPen className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+                return (
+                  <Collapsible defaultOpen className="pt-4 border-t border-border group/clubmembers">
+                    <CollapsibleTrigger className="w-full flex items-center justify-between gap-2 text-left">
+                      <div>
+                        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                          <Users className="h-4 w-4" /> {t("clubMembers")} ({clubAthletes.length})
+                        </h3>
+                        <p className="text-xs text-muted-foreground mt-1">{t("clubMembersDesc")}</p>
+                      </div>
+                      <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-data-[state=closed]/clubmembers:-rotate-90" />
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="space-y-4 pt-3">
+                      {memberAthletes.length > 0 && (
+                        <div className="space-y-2">
+                          <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                            {t("athletes")} ({memberAthletes.length})
+                          </h4>
+                          <div className="grid gap-2 sm:grid-cols-2">
+                            {memberAthletes.map((a) => renderCard(a, true))}
+                          </div>
+                        </div>
+                      )}
+                      {memberCoaches.length > 0 && (
+                        <div className="space-y-2">
+                          <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                            {t("coaches")} ({memberCoaches.length})
+                          </h4>
+                          <div className="grid gap-2 sm:grid-cols-2">
+                            {memberCoaches.map((a) => renderCard(a, false))}
+                          </div>
+                        </div>
+                      )}
+                    </CollapsibleContent>
+                  </Collapsible>
+                );
+              })()}
+
             </div>
           </div>
         )}
