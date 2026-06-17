@@ -255,16 +255,22 @@ function FilterPill({ active, onClick, label }: { active: boolean; onClick: () =
 // Overlay markers on the video element (numbered circles)
 // =====================================================
 export function NoteOverlayMarkers({
-  notes, totalFrames, onJump,
+  notes, totalFrames, currentFrame, onJump, windowFrames = 10,
 }: {
   notes: VideoNote[];
   totalFrames: number;
+  currentFrame?: number;
   onJump: (frame: number) => void;
+  windowFrames?: number;
 }) {
   if (!totalFrames || totalFrames <= 0) return null;
+  // Only show markers near the current frame — each note belongs to its own moment.
+  const visible = typeof currentFrame === "number"
+    ? notes.filter((n) => Math.abs(n.frame_number - currentFrame) <= windowFrames)
+    : notes;
   return (
     <>
-      {notes.map((n, idx) => {
+      {visible.map((n, idx) => {
         const left = Math.min(100, Math.max(0, (n.frame_number / totalFrames) * 100));
         return (
           <button
@@ -282,3 +288,4 @@ export function NoteOverlayMarkers({
     </>
   );
 }
+

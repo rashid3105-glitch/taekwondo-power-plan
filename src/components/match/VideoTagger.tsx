@@ -140,7 +140,13 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
   const [isDrawing, setIsDrawing] = useState(false);
   const [currentPath, setCurrentPath] = useState<[number, number][]>([]);
   const [savedPaths, setSavedPaths] = useState<{ points: [number, number][]; color: string }[]>([]);
+  // All persisted annotations across the whole video, each pinned to its timestamp.
+  // Drawings only render when playback is within ANNOTATION_WINDOW_S of their timestamp.
+  const [allAnnotations, setAllAnnotations] = useState<
+    { id: string; timestamp_seconds: number; paths: { points: [number, number][]; color: string }[] }[]
+  >([]);
   const DRAW_COLOR = "#ef4444";
+  const ANNOTATION_WINDOW_S = 0.3;
 
   const clearCanvas = () => {
     const canvas = canvasRef.current;
@@ -170,25 +176,40 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
     }
   };
 
+  // Load every annotation for this video so we can show each drawing only at
+  // its own moment in the video.
   const loadAnnotations = async () => {
-    if (!videoRef.current) return;
-    const ts = Math.round(videoRef.current.currentTime * 10) / 10;
     const { data } = await (supabase.from as any)("video_annotations")
-      .select("paths, color")
+      .select("id, timestamp_seconds, paths, color")
       .eq("video_id", video.id)
-      .gte("timestamp_seconds", ts - 2)
-      .lte("timestamp_seconds", ts + 2)
-      .order("created_at", { ascending: false })
-      .limit(1);
-    if (data?.[0]) {
-      const paths = (data[0].paths as any[]).map((p: any) => ({ points: p.points, color: p.color ?? DRAW_COLOR }));
-      setSavedPaths(paths);
-      redrawCanvas(paths);
-    } else {
-      setSavedPaths([]);
-      clearCanvas();
-    }
+      .order("timestamp_seconds", { ascending: true });
+    const list = (data ?? []).map((row: any) => ({
+      id: row.id,
+      timestamp_seconds: row.timestamp_seconds,
+      paths: (row.paths as any[]).map((p: any) => ({ points: p.points, color: p.color ?? DRAW_COLOR })),
+    }));
+    setAllAnnotations(list);
   };
+
+  // Show only annotations recorded near the current playback moment.
+  useEffect(() => {
+    if (isDrawing) return;
+    const ts = currentFrame / FPS;
+    const active = allAnnotations
+      .filter((a) => Math.abs(a.timestamp_seconds - ts) <= ANNOTATION_WINDOW_S)
+      .flatMap((a) => a.paths);
+    setSavedPaths(active);
+    redrawCanvas(active);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentFrame, allAnnotations, isDrawing]);
+
+  // Initial load of all annotations for this video.
+  useEffect(() => {
+    void loadAnnotations();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [video.id]);
+
+
 
   const getCanvasPos = (e: React.MouseEvent | React.TouchEvent, canvas: HTMLCanvasElement): [number, number] => {
     const rect = canvas.getBoundingClientRect();
@@ -242,18 +263,29 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
     const { data: { user } } = await supabase.auth.getUser();
     if (!user || !videoRef.current) return;
     const ts = Math.round(videoRef.current.currentTime * 10) / 10;
-    await (supabase.from as any)("video_annotations").insert({
+    const { data: inserted } = await (supabase.from as any)("video_annotations").insert({
       video_id: video.id,
       created_by: user.id,
       timestamp_seconds: ts,
-      paths: allPaths,
+      paths: [newPath],
       color: DRAW_COLOR,
       expires_at: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString(),
-    });
+    }).select("id, timestamp_seconds, paths, color").maybeSingle();
+    if (inserted) {
+      setAllAnnotations((prev) => [
+        ...prev,
+        {
+          id: (inserted as any).id,
+          timestamp_seconds: (inserted as any).timestamp_seconds,
+          paths: ((inserted as any).paths as any[]).map((p: any) => ({ points: p.points, color: p.color ?? DRAW_COLOR })),
+        },
+      ]);
+    }
   };
 
   const clearAnnotations = async () => {
     setSavedPaths([]);
+    setAllAnnotations([]);
     clearCanvas();
     await (supabase.from as any)("video_annotations")
       .delete()
@@ -642,7 +674,7 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
                     />
                     {/* Note markers overlay */}
                     <div className="absolute inset-0 pointer-events-none">
-                      <NoteOverlayMarkers notes={notes} totalFrames={totalFrames} onJump={seekToFrame} />
+                      <NoteOverlayMarkers notes={notes} totalFrames={totalFrames} currentFrame={currentFrame} onJump={seekToFrame} />
                     </div>
                     {/* + Add note button */}
                     <button
@@ -692,8 +724,8 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={() => {
                         setDrawMode((d) => !d);
-                        if (!drawMode) void loadAnnotations();
                       }}
+
                     >
                       ✏️ {drawMode ? t("annotationModeOn") : t("annotationMode")}
                     </Button>
@@ -780,7 +812,7 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
                       )}
                     </div>
                     <Select value={technique} onValueChange={setTechnique}>
-                      <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                      <SelectTrigger className="h-9 bg-background text-foreground border-input"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         {techList.map((tech) => (
                           <SelectItem key={tech.key} value={tech.key}>{t(tech.labelKey as any)}</SelectItem>
@@ -799,7 +831,7 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
                   <div>
                     <Label className="text-xs">{t("matchSide")}</Label>
                     <Select value={side} onValueChange={(v) => setSide(v as any)}>
-                      <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                      <SelectTrigger className="h-9 bg-background text-foreground border-input"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         {SIDES.map((s) => (
                           <SelectItem key={s.key} value={s.key}>{t(s.labelKey as any)}</SelectItem>
@@ -810,7 +842,7 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
                   <div>
                     <Label className="text-xs">{t("matchOutcome")}</Label>
                     <Select value={outcome} onValueChange={(v) => setOutcome(v as any)}>
-                      <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                      <SelectTrigger className="h-9 bg-background text-foreground border-input"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         {OUTCOMES.map((o) => (
                           <SelectItem key={o.key} value={o.key}>{t(o.labelKey as any)}</SelectItem>
@@ -820,7 +852,8 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
                   </div>
                   <div>
                     <Label className="text-xs">{t("matchNoteOptional")}</Label>
-                    <Input value={tagNote} onChange={(e) => setTagNote(e.target.value)} className="h-9" placeholder="…" />
+                    <Input value={tagNote} onChange={(e) => setTagNote(e.target.value)} className="h-9 bg-background text-foreground border-input" placeholder="…" />
+
                   </div>
                 </div>
                 <Button
