@@ -140,7 +140,13 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
   const [isDrawing, setIsDrawing] = useState(false);
   const [currentPath, setCurrentPath] = useState<[number, number][]>([]);
   const [savedPaths, setSavedPaths] = useState<{ points: [number, number][]; color: string }[]>([]);
+  // All persisted annotations across the whole video, each pinned to its timestamp.
+  // Drawings only render when playback is within ANNOTATION_WINDOW_S of their timestamp.
+  const [allAnnotations, setAllAnnotations] = useState<
+    { id: string; timestamp_seconds: number; paths: { points: [number, number][]; color: string }[] }[]
+  >([]);
   const DRAW_COLOR = "#ef4444";
+  const ANNOTATION_WINDOW_S = 0.3;
 
   const clearCanvas = () => {
     const canvas = canvasRef.current;
@@ -170,24 +176,19 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
     }
   };
 
+  // Load every annotation for this video so we can show each drawing only at
+  // its own moment in the video.
   const loadAnnotations = async () => {
-    if (!videoRef.current) return;
-    const ts = Math.round(videoRef.current.currentTime * 10) / 10;
     const { data } = await (supabase.from as any)("video_annotations")
-      .select("paths, color")
+      .select("id, timestamp_seconds, paths, color")
       .eq("video_id", video.id)
-      .gte("timestamp_seconds", ts - 2)
-      .lte("timestamp_seconds", ts + 2)
-      .order("created_at", { ascending: false })
-      .limit(1);
-    if (data?.[0]) {
-      const paths = (data[0].paths as any[]).map((p: any) => ({ points: p.points, color: p.color ?? DRAW_COLOR }));
-      setSavedPaths(paths);
-      redrawCanvas(paths);
-    } else {
-      setSavedPaths([]);
-      clearCanvas();
-    }
+      .order("timestamp_seconds", { ascending: true });
+    const list = (data ?? []).map((row: any) => ({
+      id: row.id,
+      timestamp_seconds: row.timestamp_seconds,
+      paths: (row.paths as any[]).map((p: any) => ({ points: p.points, color: p.color ?? DRAW_COLOR })),
+    }));
+    setAllAnnotations(list);
   };
 
   const getCanvasPos = (e: React.MouseEvent | React.TouchEvent, canvas: HTMLCanvasElement): [number, number] => {
