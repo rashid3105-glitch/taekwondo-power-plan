@@ -396,42 +396,54 @@ export function AthleteDashboard() {
       {/* 5. Quick access */}
       <section className="grid grid-cols-2 gap-3">
         {activeRole === "coach" ? (
-          <button
-            type="button"
-            onClick={() => navigate("/coach/today")}
-            className="rounded-xl p-4 flex items-center gap-2 font-semibold text-sm"
-            style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
-          >
-            <CalendarCheck className="h-4 w-4" />
-            I dag
-          </button>
+          <>
+            <button
+              type="button"
+              onClick={() => navigate("/library/testing")}
+              className="rounded-xl p-4 flex items-center gap-2 font-semibold text-sm"
+              style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
+            >
+              <ClipboardList className="h-4 w-4" />
+              Testning
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate("/match-analysis/me")}
+              className="rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white"
+            >
+              <Video className="h-4 w-4" style={accentStyle} />
+              Video-analyse
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate("/coach/today")}
+              className="col-span-2 rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white"
+            >
+              <CalendarCheck className="h-4 w-4" style={accentStyle} />
+              I dag
+            </button>
+          </>
         ) : (
-          <button
-            type="button"
-            onClick={() => navigate("/dashboard?tab=progress")}
-            className="rounded-xl p-4 flex items-center gap-2 font-semibold text-sm"
-            style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
-          >
-            <BarChart3 className="h-4 w-4" />
-            Fremgang
-          </button>
+          <>
+            <button
+              type="button"
+              onClick={() => navigate("/dashboard?tab=progress")}
+              className="rounded-xl p-4 flex items-center gap-2 font-semibold text-sm"
+              style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
+            >
+              <BarChart3 className="h-4 w-4" />
+              Fremgang
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate("/match-analysis/me")}
+              className="rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white"
+            >
+              <Video className="h-4 w-4" style={accentStyle} />
+              Video-analyse
+            </button>
+          </>
         )}
-        <button
-          type="button"
-          onClick={() => navigate("/match-analysis/me")}
-          className="rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white"
-        >
-          <Video className="h-4 w-4" style={accentStyle} />
-          Video-analyse
-        </button>
-        <button
-          type="button"
-          onClick={() => navigate("/diary")}
-          className="col-span-2 rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white"
-        >
-          <NotebookPen className="h-4 w-4" style={accentStyle} />
-          Skriv i dagbogen
-        </button>
       </section>
 
       {/* Diary read-only modal */}
