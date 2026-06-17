@@ -742,6 +742,7 @@ export type Database = {
         Row: {
           created_at: string
           default_weekly_schedule: Json | null
+          deleted_at: string | null
           id: string
           license_active: boolean
           max_athletes: number
@@ -752,6 +753,7 @@ export type Database = {
         Insert: {
           created_at?: string
           default_weekly_schedule?: Json | null
+          deleted_at?: string | null
           id?: string
           license_active?: boolean
           max_athletes?: number
@@ -762,6 +764,7 @@ export type Database = {
         Update: {
           created_at?: string
           default_weekly_schedule?: Json | null
+          deleted_at?: string | null
           id?: string
           license_active?: boolean
           max_athletes?: number
@@ -2047,6 +2050,7 @@ export type Database = {
           myfightbook_expires_at: string | null
           onboarding_completed: boolean
           owns_wearable: boolean
+          parent_email: string | null
           passkey_prompt_dismissed_at: string | null
           payment_date: string | null
           payment_status: string
@@ -2104,6 +2108,7 @@ export type Database = {
           myfightbook_expires_at?: string | null
           onboarding_completed?: boolean
           owns_wearable?: boolean
+          parent_email?: string | null
           passkey_prompt_dismissed_at?: string | null
           payment_date?: string | null
           payment_status?: string
@@ -2161,6 +2166,7 @@ export type Database = {
           myfightbook_expires_at?: string | null
           onboarding_completed?: boolean
           owns_wearable?: boolean
+          parent_email?: string | null
           passkey_prompt_dismissed_at?: string | null
           payment_date?: string | null
           payment_status?: string
