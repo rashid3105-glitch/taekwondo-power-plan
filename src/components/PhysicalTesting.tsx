@@ -1,7 +1,8 @@
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -9,6 +10,7 @@ import {
   Loader2, Trash2, ClipboardList, Users, WifiOff, Pencil, Plus,
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+
 import { useOfflinePhysicalTests } from "@/hooks/useOfflinePhysicalTests";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { BeepTestTimer } from "@/components/BeepTestTimer";
@@ -60,10 +62,12 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
   const { toast } = useToast();
   const { t, locale } = useLanguage();
 
-  // Coach athlete selection
+  // Coach athlete selection (multi)
   const [athletes, setAthletes] = useState<CoachAthlete[]>([]);
-  const [selectedAthleteId, setSelectedAthleteId] = useState<string>(athleteId || "");
-  const [selectedAthleteName, setSelectedAthleteName] = useState<string>(athleteName || "");
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(
+    () => new Set(athleteId ? [athleteId] : []),
+  );
+  const [focusedAthleteId, setFocusedAthleteId] = useState<string>(athleteId || "");
   const [loadingAthletes, setLoadingAthletes] = useState(mode === "coach" && !athleteId);
 
   // Run-flow state
@@ -83,10 +87,17 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
     if (mode === "coach" && !athleteId) void loadAthletes();
   }, [mode, athleteId]);
 
+  // Single user the results table / progression is keyed to
   const targetUserId =
-    mode === "coach" ? (athleteId || selectedAthleteId || null) : currentUserId;
+    mode === "coach"
+      ? (athleteId || focusedAthleteId || (selectedIds.size > 0 ? Array.from(selectedIds)[0] : null))
+      : currentUserId;
 
-  const { results: cachedResults, loading, addResult, removeResult, updateResult } =
+  const selectedAthletes = useMemo(
+    () => athletes.filter((a) => selectedIds.has(a.athlete_id)),
+    [athletes, selectedIds],
+  );
+  const { results: cachedResults, loading, addResult, removeResult, updateResult, refresh } =
     useOfflinePhysicalTests(targetUserId);
 
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -131,6 +142,23 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
     setLoadingAthletes(false);
   }
 
+  function toggleAthlete(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+    setFocusedAthleteId((cur) => cur || id);
+  }
+  function selectAllAthletes() {
+    setSelectedIds(new Set(athletes.map((a) => a.athlete_id)));
+    if (!focusedAthleteId && athletes[0]) setFocusedAthleteId(athletes[0].athlete_id);
+  }
+  function clearAthletes() {
+    setSelectedIds(new Set());
+    setFocusedAthleteId("");
+  }
+
   function handleCatalogPick(def: TestDefinition) {
     setPickerOpen(false);
     // The existing dedicated Beep Test flow is preserved.
@@ -141,31 +169,64 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
     setRunnerDef(def);
   }
 
-  async function handleRunnerSave({ value, unit }: { value: number; unit: string }) {
+  async function handleRunnerSave(
+    payload:
+      | { value: number; unit: string }
+      | { entries: Array<{ athleteId: string; value: number }>; unit: string },
+  ) {
     if (!runnerDef) return;
+    const { data: { user } } = await supabase.auth.getUser();
+    const today = new Date().toISOString().split("T")[0];
+
+    // Group mode
+    if ("entries" in payload) {
+      if (payload.entries.length === 0) return;
+      for (const e of payload.entries) {
+        await addResult({
+          user_id: e.athleteId,
+          test_name: runnerDef.dbTestName,
+          category: runnerDef.category,
+          value: e.value,
+          unit: payload.unit,
+          test_type: "coach",
+          tested_by: user?.id ?? null,
+          notes: "",
+          test_date: today,
+        });
+      }
+      toast({
+        title: t("ptResultSaved"),
+        description: t("ptSavedForN").replace("{n}", String(payload.entries.length)),
+      });
+      setRunnerDef(null);
+      void refresh();
+      return;
+    }
+
+    // Single-athlete mode
     if (mode === "coach" && !targetUserId) {
       toast({ title: t("error"), description: t("ptSelectAthlete"), variant: "destructive" });
       return;
     }
     const targetId = targetUserId;
     if (!targetId) return;
-    const { data: { user } } = await supabase.auth.getUser();
     await addResult({
       user_id: targetId,
       test_name: runnerDef.dbTestName,
       category: runnerDef.category,
-      value,
-      unit,
+      value: payload.value,
+      unit: payload.unit,
       test_type: mode === "coach" ? "coach" : "individual",
       tested_by: mode === "coach" ? (user?.id ?? null) : null,
       notes: "",
-      test_date: new Date().toISOString().split("T")[0],
+      test_date: today,
     });
     toast({ title: t("ptResultSaved") });
     setRunnerDef(null);
   }
 
   const handleDelete = async (localId: string) => { await removeResult(localId); };
+
 
   if (loadingAthletes) {
     return (
@@ -175,7 +236,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
     );
   }
 
-  if (loading && (mode !== "coach" || selectedAthleteId || athleteId)) {
+  if (loading && (mode !== "coach" || targetUserId)) {
     return (
       <div className="flex items-center justify-center py-12">
         <Loader2 className="h-6 w-6 animate-spin text-primary" />
@@ -183,7 +244,8 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
     );
   }
 
-  const currentAthleteName = athleteName || selectedAthleteName;
+  const focusedAthlete = athletes.find((a) => a.athlete_id === (focusedAthleteId || targetUserId || ""));
+  const currentAthleteName = athleteName || focusedAthlete?.display_name || "";
   const categoryResults = results.filter((r) => r.category === activeCategory);
   const groupedByTest = categoryResults.reduce((acc, r) => {
     if (!acc[r.test_name]) acc[r.test_name] = [];
@@ -191,7 +253,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
     return acc;
   }, {} as Record<string, TestResult[]>);
 
-  const showAthletePickedUI = mode !== "coach" || athleteId || selectedAthleteId;
+  const showAthletePickedUI = mode !== "coach" || athleteId || targetUserId;
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -205,32 +267,72 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
         </h2>
       </div>
 
-      {/* Coach athlete selector */}
+      {/* Coach athlete selector (multi) */}
       {mode === "coach" && !athleteId && (
         <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
-          <h3 className="text-sm font-bold text-card-foreground flex items-center gap-2">
-            <Users className="h-4 w-4 text-primary" /> {t("ptSelectAthlete")}
-          </h3>
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <h3 className="text-sm font-bold text-card-foreground flex items-center gap-2">
+              <Users className="h-4 w-4 text-primary" /> {t("ptSelectAthletes")}
+              {selectedIds.size > 0 && (
+                <span className="text-xs font-normal text-muted-foreground">({selectedIds.size})</span>
+              )}
+            </h3>
+            {athletes.length > 0 && (
+              <div className="flex gap-1.5">
+                <Button size="sm" variant="outline" className="h-7 text-xs" onClick={selectAllAthletes}>
+                  {t("ptSelectAll")}
+                </Button>
+                <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={clearAthletes} disabled={selectedIds.size === 0}>
+                  {t("ptClearSelection")}
+                </Button>
+              </div>
+            )}
+          </div>
           {athletes.length === 0 ? (
             <p className="text-sm text-muted-foreground">{t("ptNoAthletes")}</p>
           ) : (
-            <Select value={selectedAthleteId} onValueChange={(v) => {
-              setSelectedAthleteId(v);
-              const ath = athletes.find(a => a.athlete_id === v);
-              setSelectedAthleteName(ath?.display_name || "");
-            }}>
-              <SelectTrigger>
-                <SelectValue placeholder={t("ptSelectAthlete")} />
-              </SelectTrigger>
-              <SelectContent>
-                {athletes.map(a => (
-                  <SelectItem key={a.athlete_id} value={a.athlete_id}>{a.display_name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-60 overflow-y-auto">
+                {athletes.map((a) => {
+                  const checked = selectedIds.has(a.athlete_id);
+                  return (
+                    <label
+                      key={a.athlete_id}
+                      className={`flex items-center gap-2 px-2 py-1.5 rounded-md border cursor-pointer transition-colors ${
+                        checked ? "border-primary/40 bg-primary/5" : "border-border bg-background hover:bg-muted/30"
+                      }`}
+                    >
+                      <Checkbox
+                        checked={checked}
+                        onCheckedChange={() => toggleAthlete(a.athlete_id)}
+                      />
+                      <span className="text-sm truncate flex-1">{a.display_name}</span>
+                    </label>
+                  );
+                })}
+              </div>
+              {selectedIds.size > 1 && (
+                <div className="pt-1">
+                  <label className="block text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+                    {t("ptFocusAthlete")}
+                  </label>
+                  <Select value={focusedAthleteId} onValueChange={setFocusedAthleteId}>
+                    <SelectTrigger className="h-9">
+                      <SelectValue placeholder={t("ptFocusAthlete")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {selectedAthletes.map((a) => (
+                        <SelectItem key={a.athlete_id} value={a.athlete_id}>{a.display_name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}
+
 
       {/* Tabs: Results | Progression | Compare (coach) */}
       <Tabs value={tab} onValueChange={setTab}>
@@ -408,7 +510,13 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
               def={runnerDef}
               onCancel={() => setRunnerDef(null)}
               onSave={handleRunnerSave}
+              athletes={
+                mode === "coach" && !athleteId && selectedAthletes.length > 1
+                  ? selectedAthletes.map((a) => ({ id: a.athlete_id, name: a.display_name }))
+                  : undefined
+              }
             />
+
           )}
         </DialogContent>
       </Dialog>
