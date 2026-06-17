@@ -5,11 +5,24 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { Loader2, Plus, Trash2, Timer, Dumbbell, Wind, Zap, ClipboardList, Users, WifiOff, Pencil } from "lucide-react";
+import {
+  Loader2, Trash2, ClipboardList, Users, WifiOff, Pencil, Plus,
+} from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useOfflinePhysicalTests } from "@/hooks/useOfflinePhysicalTests";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { BeepTestTimer } from "@/components/BeepTestTimer";
+import { TestCatalogPicker } from "@/components/testing/TestCatalogPicker";
+import { TestRunner } from "@/components/testing/TestRunner";
+import { AthleteProgressionView } from "@/components/testing/AthleteProgressionView";
+import { AthletesComparisonView } from "@/components/testing/AthletesComparisonView";
+import {
+  TEST_CATEGORIES,
+  type TestCategory,
+  type TestDefinition,
+  findTestByDbName,
+  localizedTestName,
+} from "@/lib/testCatalog";
 
 interface TestResult {
   id: string;
@@ -29,127 +42,45 @@ interface CoachAthlete {
   display_name: string;
 }
 
-const STANDARD_TESTS: Record<string, { name: string; unit: string; category: string }[]> = {
-  speed: [
-    { name: "30m Sprint", unit: "sec", category: "speed" },
-    { name: "10m Sprint", unit: "sec", category: "speed" },
-    { name: "5-10-5 Shuttle", unit: "sec", category: "speed" },
-  ],
-  endurance: [
-    { name: "Beep Test", unit: "level", category: "endurance" },
-    { name: "Cooper Test", unit: "m", category: "endurance" },
-    { name: "3 min Step Test", unit: "bpm", category: "endurance" },
-  ],
-  strength: [
-    { name: "1RM Back Squat", unit: "kg", category: "strength" },
-    { name: "1RM Deadlift", unit: "kg", category: "strength" },
-    { name: "Max Push-ups (1 min)", unit: "reps", category: "strength" },
-    { name: "Grip Strength", unit: "kg", category: "strength" },
-  ],
-  agility: [
-    { name: "T-Test", unit: "sec", category: "agility" },
-    { name: "Illinois Agility", unit: "sec", category: "agility" },
-    { name: "Hexagonal Agility", unit: "sec", category: "agility" },
-  ],
-};
-
-// Maps canonical EN test name (stored in DB) to translation key for display.
-const TEST_NAME_KEYS: Record<string, string> = {
-  "30m Sprint": "ptTest_30mSprint",
-  "10m Sprint": "ptTest_10mSprint",
-  "5-10-5 Shuttle": "ptTest_5_10_5Shuttle",
-  "Beep Test": "ptTest_BeepTest",
-  "Cooper Test": "ptTest_CooperTest",
-  "3 min Step Test": "ptTest_3MinStepTest",
-  "1RM Back Squat": "ptTest_1RMBackSquat",
-  "1RM Deadlift": "ptTest_1RMDeadlift",
-  "Max Push-ups (1 min)": "ptTest_MaxPushups1Min",
-  "Grip Strength": "ptTest_GripStrength",
-  "T-Test": "ptTest_TTest",
-  "Illinois Agility": "ptTest_IllinoisAgility",
-  "Hexagonal Agility": "ptTest_HexagonalAgility",
-};
-
-export const getLocalizedTestName = (
-  englishName: string,
-  t: (key: string) => string
-): string => {
-  const key = TEST_NAME_KEYS[englishName];
-  return key ? t(key) : englishName;
-};
-
-const CATEGORY_ICONS: Record<string, typeof Timer> = {
-  speed: Zap,
-  endurance: Wind,
-  strength: Dumbbell,
-  agility: Timer,
-};
-
 interface PhysicalTestingProps {
   mode: "individual" | "coach";
   athleteId?: string;
   athleteName?: string;
 }
 
+// Re-export for callers that previously imported this helper.
+export const getLocalizedTestName = (englishName: string, t: (key: string) => string, locale?: any): string => {
+  const def = findTestByDbName(englishName);
+  if (def && locale) return localizedTestName(def, locale);
+  return englishName;
+};
+
 export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestingProps) {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [activeCategory, setActiveCategory] = useState("speed");
   const { toast } = useToast();
   const { t, locale } = useLanguage();
 
-  const validationMessage = (type: "selectTest" | "enterValue" | "invalidValue" | "selectAthlete") => {
-    const messages = {
-      da: {
-        selectTest: "Vælg venligst en test",
-        enterValue: "Indtast venligst en værdi",
-        invalidValue: "Indtast et gyldigt tal (fx 10,5)",
-        selectAthlete: "Vælg venligst en atlet",
-      },
-      sv: {
-        selectTest: "Välj ett test",
-        enterValue: "Ange ett värde",
-        invalidValue: "Ange ett giltigt tal (t.ex. 10,5)",
-        selectAthlete: "Välj en atlet",
-      },
-      en: {
-        selectTest: "Please select a test",
-        enterValue: "Please enter a value",
-        invalidValue: "Please enter a valid number (e.g. 10.5)",
-        selectAthlete: "Please select an athlete",
-      },
-    } as const;
-
-    return messages[locale]?.[type] ?? messages.en[type];
-  };
-
-  // Coach athlete selection (when no athleteId is provided but mode is coach)
+  // Coach athlete selection
   const [athletes, setAthletes] = useState<CoachAthlete[]>([]);
   const [selectedAthleteId, setSelectedAthleteId] = useState<string>(athleteId || "");
   const [selectedAthleteName, setSelectedAthleteName] = useState<string>(athleteName || "");
   const [loadingAthletes, setLoadingAthletes] = useState(mode === "coach" && !athleteId);
 
-  // Form state
-  const [selectedTest, setSelectedTest] = useState("");
-  const [customTestName, setCustomTestName] = useState("");
-  const [testValue, setTestValue] = useState("");
-  const [testUnit, setTestUnit] = useState("");
-  const [testDate, setTestDate] = useState(new Date().toISOString().split("T")[0]);
-  const [testNotes, setTestNotes] = useState("");
+  // Run-flow state
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [runnerDef, setRunnerDef] = useState<TestDefinition | null>(null);
   const [beepOpen, setBeepOpen] = useState(false);
 
-  // Resolve current user id once for individual mode + tested_by metadata.
+  // View state
+  const [tab, setTab] = useState<string>("results");
+  const [activeCategory, setActiveCategory] = useState<TestCategory>("endurance");
+
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setCurrentUserId(user?.id ?? null);
-    });
+    supabase.auth.getUser().then(({ data: { user } }) => setCurrentUserId(user?.id ?? null));
   }, []);
 
-  // Load coach's athletes if in coach mode without a pre-selected athlete
   useEffect(() => {
-    if (mode === "coach" && !athleteId) {
-      loadAthletes();
-    }
+    if (mode === "coach" && !athleteId) void loadAthletes();
   }, [mode, athleteId]);
 
   const targetUserId =
@@ -175,115 +106,66 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
     pending: r.pending,
   }));
 
-  const loadAthletes = async () => {
+  async function loadAthletes() {
     setLoadingAthletes(true);
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
+    if (!user) { setLoadingAthletes(false); return; }
     const { data: links } = await supabase
       .from("coach_athletes")
       .select("athlete_id")
       .eq("coach_id", user.id);
-
     if (links && links.length > 0) {
       const athleteIds = links.map(l => l.athlete_id);
       const { data: profiles } = await supabase
         .from("profiles")
         .select("user_id, display_name")
         .in("user_id", athleteIds);
-
       if (profiles) {
         setAthletes(
           profiles
             .map(p => ({ athlete_id: p.user_id, display_name: p.display_name }))
-            .sort((a, b) => a.display_name.localeCompare(b.display_name))
+            .sort((a, b) => a.display_name.localeCompare(b.display_name)),
         );
       }
     }
     setLoadingAthletes(false);
-  };
+  }
 
-  const handleSubmit = async () => {
-    const finalName = selectedTest === "__custom" ? customTestName.trim() : selectedTest;
-    if (!finalName) {
-      toast({ title: t("error"), description: validationMessage("selectTest"), variant: "destructive" });
+  function handleCatalogPick(def: TestDefinition) {
+    setPickerOpen(false);
+    // The existing dedicated Beep Test flow is preserved.
+    if (def.id === "shuttle_beep_20m") {
+      setBeepOpen(true);
       return;
     }
+    setRunnerDef(def);
+  }
 
-    const rawValue = testValue.trim();
-    if (!rawValue) {
-      toast({ title: t("error"), description: validationMessage("enterValue"), variant: "destructive" });
+  async function handleRunnerSave({ value, unit }: { value: number; unit: string }) {
+    if (!runnerDef) return;
+    if (mode === "coach" && !targetUserId) {
+      toast({ title: t("error"), description: t("ptSelectAthlete"), variant: "destructive" });
       return;
     }
-
-    if (mode === "coach" && !(athleteId || selectedAthleteId)) {
-      toast({ title: t("error"), description: validationMessage("selectAthlete"), variant: "destructive" });
-      return;
-    }
-
-    const normalizedValue = rawValue
-      .replace(/\s+/g, "")
-      .replace(/,/g, ".")
-      .replace(/^(\d+)-(\d+)$/, "$1.$2");
-    const parsedValue = Number(normalizedValue);
-
-    if (!Number.isFinite(parsedValue)) {
-      toast({ title: t("error"), description: validationMessage("invalidValue"), variant: "destructive" });
-      return;
-    }
-
-    setSaving(true);
+    const targetId = targetUserId;
+    if (!targetId) return;
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      setSaving(false);
-      return;
-    }
+    await addResult({
+      user_id: targetId,
+      test_name: runnerDef.dbTestName,
+      category: runnerDef.category,
+      value,
+      unit,
+      test_type: mode === "coach" ? "coach" : "individual",
+      tested_by: mode === "coach" ? (user?.id ?? null) : null,
+      notes: "",
+      test_date: new Date().toISOString().split("T")[0],
+    });
+    toast({ title: t("ptResultSaved") });
+    setRunnerDef(null);
+  }
 
-    const targetId = mode === "coach" ? (athleteId || selectedAthleteId) : user.id;
-    if (!targetId) {
-      setSaving(false);
-      return;
-    }
-
-    const standardTest = Object.values(STANDARD_TESTS).flat().find(t => t.name === finalName);
-    const unit = testUnit || standardTest?.unit || "";
-
-    try {
-      await addResult({
-        user_id: targetId,
-        test_name: finalName,
-        category: activeCategory,
-        value: parsedValue,
-        unit,
-        test_type: mode === "coach" ? "coach" : "individual",
-        tested_by: mode === "coach" ? user.id : null,
-        notes: testNotes,
-        test_date: testDate,
-      });
-      toast({ title: t("ptResultSaved") });
-      setSelectedTest("");
-      setCustomTestName("");
-      setTestValue("");
-      setTestUnit("");
-      setTestNotes("");
-    } catch (e: any) {
-      toast({ title: t("error"), description: e?.message || "Save failed", variant: "destructive" });
-    }
-    setSaving(false);
-  };
-
-  const handleDelete = async (localId: string) => {
-    await removeResult(localId);
-  };
-
-  const categoryResults = results.filter(r => r.category === activeCategory);
-
-  // Group by test name for comparison table
-  const groupedByTest = categoryResults.reduce((acc, r) => {
-    if (!acc[r.test_name]) acc[r.test_name] = [];
-    acc[r.test_name].push(r);
-    return acc;
-  }, {} as Record<string, TestResult[]>);
+  const handleDelete = async (localId: string) => { await removeResult(localId); };
 
   if (loadingAthletes) {
     return (
@@ -301,8 +183,15 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
     );
   }
 
-  const CategoryIcon = CATEGORY_ICONS[activeCategory] || ClipboardList;
   const currentAthleteName = athleteName || selectedAthleteName;
+  const categoryResults = results.filter((r) => r.category === activeCategory);
+  const groupedByTest = categoryResults.reduce((acc, r) => {
+    if (!acc[r.test_name]) acc[r.test_name] = [];
+    acc[r.test_name].push(r);
+    return acc;
+  }, {} as Record<string, TestResult[]>);
+
+  const showAthletePickedUI = mode !== "coach" || athleteId || selectedAthleteId;
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -343,109 +232,52 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
         </div>
       )}
 
-      {/* Category tabs */}
-      <Tabs value={activeCategory} onValueChange={setActiveCategory}>
-        <TabsList className="grid grid-cols-4 w-full">
-          {(["speed", "endurance", "strength", "agility"] as const).map(cat => {
-            const Icon = CATEGORY_ICONS[cat];
-            return (
-              <TabsTrigger key={cat} value={cat} className="flex items-center gap-1 text-xs sm:text-sm">
-                <Icon className="h-3.5 w-3.5" />
-                {t(`ptCat_${cat}`)}
-              </TabsTrigger>
-            );
-          })}
+      {/* Tabs: Results | Progression | Compare (coach) */}
+      <Tabs value={tab} onValueChange={setTab}>
+        <TabsList className="grid w-full" style={{ gridTemplateColumns: mode === "coach" ? "1fr 1fr 1fr" : "1fr 1fr" }}>
+          <TabsTrigger value="results">{t("ptResult")}</TabsTrigger>
+          <TabsTrigger value="progression">{t("ptProgressionTitle")}</TabsTrigger>
+          {mode === "coach" && <TabsTrigger value="compare">{t("ptComparisonTitle")}</TabsTrigger>}
         </TabsList>
 
-        {(["speed", "endurance", "strength", "agility"] as const).map(cat => (
-          <TabsContent key={cat} value={cat} className="space-y-4">
-            {/* Add test form */}
-            <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
-              <div className="flex items-center justify-between gap-2 flex-wrap">
-                <h3 className="text-sm font-bold text-card-foreground flex items-center gap-2">
-                  <Plus className="h-4 w-4" /> {t("ptAddResult")}
-                </h3>
-                {cat === "endurance" && (
+        <TabsContent value="results" className="space-y-4 mt-3">
+          {showAthletePickedUI && (
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex flex-wrap gap-1.5">
+                {TEST_CATEGORIES.map((cat) => (
                   <Button
-                    type="button"
+                    key={cat}
                     size="sm"
-                    variant="secondary"
-                    onClick={() => setBeepOpen(true)}
-                    className="gap-1.5"
+                    variant={activeCategory === cat ? "default" : "outline"}
+                    onClick={() => setActiveCategory(cat)}
+                    className="h-8 text-xs"
                   >
-                    <Wind className="h-4 w-4" />
-                    {t("beepTestRunBeepTest")}
+                    {t(`ptCat_${cat}`)}
                   </Button>
-                )}
+                ))}
               </div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div>
-                  <Select value={selectedTest} onValueChange={(v) => {
-                    setSelectedTest(v);
-                    if (v !== "__custom") {
-                      const st = STANDARD_TESTS[cat].find(t => t.name === v);
-                      if (st) setTestUnit(st.unit);
-                    }
-                  }}>
-                    <SelectTrigger>
-                      <SelectValue placeholder={t("ptSelectTest")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {STANDARD_TESTS[cat].map(test => (
-                        <SelectItem key={test.name} value={test.name}>{getLocalizedTestName(test.name, t)}</SelectItem>
-                      ))}
-                      <SelectItem value="__custom">{t("ptCustomTest")}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {selectedTest === "__custom" && (
-                    <Input
-                      className="mt-2"
-                      placeholder={t("ptCustomTestName")}
-                      value={customTestName}
-                      onChange={(e) => setCustomTestName(e.target.value)}
-                    />
-                  )}
-                </div>
-                <div className="flex gap-2">
-                  <Input
-                    type="text"
-                    inputMode="decimal"
-                    placeholder={t("ptValue")}
-                    value={testValue}
-                    onChange={(e) => setTestValue(e.target.value)}
-                    className="flex-1"
-                  />
-                  <Input
-                    placeholder={t("ptUnit")}
-                    value={testUnit}
-                    onChange={(e) => setTestUnit(e.target.value)}
-                    className="w-20"
-                  />
-                </div>
-                <Input
-                  type="date"
-                  value={testDate}
-                  onChange={(e) => setTestDate(e.target.value)}
-                />
-                <Input
-                  placeholder={t("ptNotes")}
-                  value={testNotes}
-                  onChange={(e) => setTestNotes(e.target.value)}
-                />
-              </div>
-              <Button onClick={handleSubmit} disabled={saving} size="sm">
-                {saving ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : <Plus className="h-4 w-4 mr-1" />}
-                {t("ptSaveResult")}
+              <Button onClick={() => setPickerOpen(true)} size="sm" className="gap-1.5">
+                <Plus className="h-4 w-4" /> {t("ptRunTest")}
               </Button>
             </div>
+          )}
 
-            {/* Results comparison table */}
-            {Object.keys(groupedByTest).length > 0 ? (
-              Object.entries(groupedByTest).map(([testName, testResults]) => (
+          {!showAthletePickedUI ? (
+            <div className="rounded-xl border border-border bg-card p-8 text-center text-sm text-muted-foreground">
+              {t("ptSelectAthlete")}
+            </div>
+          ) : Object.keys(groupedByTest).length === 0 ? (
+            <div className="rounded-xl border border-border bg-card p-8 text-center text-sm text-muted-foreground">
+              {t("ptNoResults")}
+            </div>
+          ) : (
+            Object.entries(groupedByTest).map(([testName, testResults]) => {
+              const def = findTestByDbName(testName);
+              const label = def ? localizedTestName(def, locale) : testName;
+              return (
                 <div key={testName} className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
                   <h3 className="text-sm font-bold text-card-foreground mb-3 flex items-center gap-2">
-                    <CategoryIcon className="h-4 w-4 text-primary" />
-                    {getLocalizedTestName(testName, t)}
+                    <ClipboardList className="h-4 w-4 text-primary" /> {label}
                   </h3>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
@@ -456,111 +288,80 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
                           <th className="text-left py-2 text-xs text-muted-foreground font-semibold">{t("ptUnit")}</th>
                           <th className="text-right py-2 text-xs text-muted-foreground font-semibold">{t("ptChange")}</th>
                           <th className="text-left py-2 text-xs text-muted-foreground font-semibold">{t("ptType")}</th>
-                          <th className="text-left py-2 text-xs text-muted-foreground font-semibold">{t("ptNotes")}</th>
                           <th className="py-2"></th>
                         </tr>
                       </thead>
                       <tbody>
                         {testResults.map((r, i) => {
                           const prev = testResults[i + 1];
-                          const isLowerBetter = ["sec", "bpm"].includes(r.unit);
-                          let changeEl = null;
-                          if (prev) {
+                          let changeEl: React.ReactNode = null;
+                          if (prev && def) {
                             const diff = r.value - prev.value;
-                            const improved = isLowerBetter ? diff < 0 : diff > 0;
+                            const improved = def.direction === "lower_is_better" ? diff < 0 : diff > 0;
+                            const same = diff === 0;
                             changeEl = (
-                              <span className={improved ? "text-green-500 font-semibold" : diff === 0 ? "text-muted-foreground" : "text-red-500 font-semibold"}>
-                                {diff > 0 ? "+" : ""}{diff.toFixed(1)} {r.unit}
+                              <span className={same ? "text-muted-foreground" : improved ? "text-green-500 font-semibold" : "text-red-500 font-semibold"}>
+                                {diff > 0 ? "+" : ""}{(Math.round(diff * 100) / 100)} {r.unit}
                               </span>
                             );
                           }
                           return (
                             <Fragment key={r.local_id}>
-                            <tr className="border-b border-border/50 last:border-0">
-                              <td className="py-2 text-card-foreground">
-                                <span className="inline-flex items-center gap-1.5">
-                                  {new Date(r.test_date).toLocaleDateString()}
-                                  {r.pending && (
-                                    <WifiOff className="h-3 w-3 text-amber-500" aria-label="Pending sync" />
-                                  )}
-                                </span>
-                              </td>
-                              <td className="py-2 text-right font-mono font-bold text-card-foreground">{r.value}</td>
-                              <td className="py-2 text-left text-muted-foreground">{r.unit}</td>
-                              <td className="py-2 text-right">{changeEl || "—"}</td>
-                              <td className="py-2">
-                                <span className={`text-xs px-2 py-0.5 rounded-full ${r.test_type === "coach" ? "bg-accent/20 text-accent" : "bg-primary/10 text-primary"}`}>
-                                  {r.test_type === "coach" ? t("ptCoachTest") : t("ptIndividualTest")}
-                                </span>
-                              </td>
-                              <td className="py-2 text-xs text-muted-foreground max-w-[120px] truncate" title={r.notes || ""}>
-                                {r.notes || "—"}
-                              </td>
-                              <td className="py-2 text-right">
-                                <div className="flex items-center justify-end gap-1">
-                                  {mode === "coach" && editingId !== r.local_id && (
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      className="h-7 w-7"
-                                      onClick={() => {
-                                        setEditingId(r.local_id);
-                                        setEditValue(String(r.value));
-                                        setEditNotes(r.notes || "");
-                                      }}
-                                    >
-                                      <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
-                                    </Button>
-                                  )}
-                                  {mode === "coach" && (
-                                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDelete(r.local_id)}>
-                                      <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                                    </Button>
-                                  )}
-                                </div>
-                              </td>
-                            </tr>
-                            {mode === "coach" && editingId === r.local_id && (
-                              <tr key={`${r.local_id}-edit`}>
-                                <td colSpan={7} className="pb-3 pt-1 px-1">
-                                  <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 space-y-2">
-                                    <p className="text-xs font-bold text-primary uppercase tracking-wider">{t("ptEditResult")}</p>
-                                    <div className="flex gap-2 flex-wrap">
-                                      <Input
-                                        type="text"
-                                        inputMode="decimal"
-                                        value={editValue}
-                                        onChange={e => setEditValue(e.target.value)}
-                                        className="h-8 w-24 text-sm"
-                                        placeholder={t("ptValue")}
-                                      />
-                                      <Input
-                                        value={editNotes}
-                                        onChange={e => setEditNotes(e.target.value)}
-                                        className="h-8 flex-1 text-sm"
-                                        placeholder={t("ptNotes")}
-                                      />
-                                      <Button
-                                        size="sm"
-                                        className="h-8"
-                                        onClick={async () => {
-                                          const parsed = Number(editValue.replace(",", "."));
-                                          if (!Number.isFinite(parsed)) return;
-                                          await updateResult(r.local_id, { value: parsed, notes: editNotes });
-                                            setEditingId(null);
-                                            toast({ title: t("ptResultSaved") });
-                                        }}
-                                      >
-                                        {t("save")}
+                              <tr className="border-b border-border/50 last:border-0">
+                                <td className="py-2 text-card-foreground">
+                                  <span className="inline-flex items-center gap-1.5">
+                                    {new Date(r.test_date).toLocaleDateString(locale)}
+                                    {r.pending && <WifiOff className="h-3 w-3 text-amber-500" aria-label="Pending sync" />}
+                                  </span>
+                                </td>
+                                <td className="py-2 text-right font-mono font-bold text-card-foreground">{r.value}</td>
+                                <td className="py-2 text-left text-muted-foreground">{r.unit}</td>
+                                <td className="py-2 text-right">{changeEl || "—"}</td>
+                                <td className="py-2">
+                                  <span className={`text-xs px-2 py-0.5 rounded-full ${r.test_type === "coach" ? "bg-accent/20 text-accent" : "bg-primary/10 text-primary"}`}>
+                                    {r.test_type === "coach" ? t("ptCoachTest") : t("ptIndividualTest")}
+                                  </span>
+                                </td>
+                                <td className="py-2 text-right">
+                                  <div className="flex items-center justify-end gap-1">
+                                    {mode === "coach" && editingId !== r.local_id && (
+                                      <Button variant="ghost" size="icon" className="h-7 w-7"
+                                        onClick={() => { setEditingId(r.local_id); setEditValue(String(r.value)); setEditNotes(r.notes || ""); }}>
+                                        <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
                                       </Button>
-                                      <Button size="sm" variant="ghost" className="h-8" onClick={() => setEditingId(null)}>
-                                        {t("cancel")}
+                                    )}
+                                    {mode === "coach" && (
+                                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDelete(r.local_id)}>
+                                        <Trash2 className="h-3.5 w-3.5 text-destructive" />
                                       </Button>
-                                    </div>
+                                    )}
                                   </div>
                                 </td>
                               </tr>
-                            )}
+                              {mode === "coach" && editingId === r.local_id && (
+                                <tr key={`${r.local_id}-edit`}>
+                                  <td colSpan={6} className="pb-3 pt-1 px-1">
+                                    <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 space-y-2">
+                                      <p className="text-xs font-bold text-primary uppercase tracking-wider">{t("ptEditResult")}</p>
+                                      <div className="flex gap-2 flex-wrap">
+                                        <Input type="text" inputMode="decimal" value={editValue}
+                                          onChange={e => setEditValue(e.target.value)}
+                                          className="h-8 w-24 text-sm" placeholder={t("ptValue")} />
+                                        <Input value={editNotes} onChange={e => setEditNotes(e.target.value)}
+                                          className="h-8 flex-1 text-sm" placeholder={t("ptNotes")} />
+                                        <Button size="sm" className="h-8" onClick={async () => {
+                                          const parsed = Number(editValue.replace(",", "."));
+                                          if (!Number.isFinite(parsed)) return;
+                                          await updateResult(r.local_id, { value: parsed, notes: editNotes });
+                                          setEditingId(null);
+                                          toast({ title: t("ptResultSaved") });
+                                        }}>{t("save")}</Button>
+                                        <Button size="sm" variant="ghost" className="h-8" onClick={() => setEditingId(null)}>{t("cancel")}</Button>
+                                      </div>
+                                    </div>
+                                  </td>
+                                </tr>
+                              )}
                             </Fragment>
                           );
                         })}
@@ -568,17 +369,51 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
                     </table>
                   </div>
                 </div>
-              ))
-            ) : (
-              <div className="rounded-xl border border-border bg-card p-8 text-center shadow-card">
-                <CategoryIcon className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
-                <p className="text-sm text-muted-foreground">{t("ptNoResults")}</p>
-              </div>
-            )}
+              );
+            })
+          )}
+        </TabsContent>
+
+        <TabsContent value="progression" className="space-y-3 mt-3">
+          {targetUserId ? (
+            <AthleteProgressionView athleteId={targetUserId} />
+          ) : (
+            <div className="rounded-xl border border-border bg-card p-8 text-center text-sm text-muted-foreground">
+              {t("ptSelectAthlete")}
+            </div>
+          )}
+        </TabsContent>
+
+        {mode === "coach" && (
+          <TabsContent value="compare" className="space-y-3 mt-3">
+            <AthletesComparisonView />
           </TabsContent>
-        ))}
+        )}
       </Tabs>
 
+      {/* Catalog picker dialog */}
+      <Dialog open={pickerOpen} onOpenChange={setPickerOpen}>
+        <DialogContent className="max-w-md p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
+          <DialogTitle>{t("ptOpenCatalog")}</DialogTitle>
+          <TestCatalogPicker onPick={handleCatalogPick} />
+        </DialogContent>
+      </Dialog>
+
+      {/* Runner dialog */}
+      <Dialog open={!!runnerDef} onOpenChange={(o) => !o && setRunnerDef(null)}>
+        <DialogContent className="max-w-md p-4 sm:p-6 max-h-[95vh] overflow-y-auto">
+          <DialogTitle className="sr-only">{runnerDef ? localizedTestName(runnerDef, locale) : ""}</DialogTitle>
+          {runnerDef && (
+            <TestRunner
+              def={runnerDef}
+              onCancel={() => setRunnerDef(null)}
+              onSave={handleRunnerSave}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Existing Beep Test (kept) */}
       <Dialog open={beepOpen} onOpenChange={setBeepOpen}>
         <DialogContent className="max-w-md p-4 sm:p-6 max-h-[95vh] overflow-y-auto">
           <DialogTitle className="sr-only">{t("beepTestTitle")}</DialogTitle>
