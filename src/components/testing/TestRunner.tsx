@@ -1,5 +1,5 @@
 // Universal test runner. Renders the right widget based on TestDefinition.inputType.
-// Saves to physical_test_results via the supplied onSave callback.
+// Supports single-athlete (legacy) and multi-athlete group testing.
 
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -12,15 +12,21 @@ import {
   localizedProtocol,
 } from "@/lib/testCatalog";
 
-export interface TestRunResult {
+export interface TestRunResultSingle {
   value: number;
   unit: string;
 }
+export interface TestRunResultGroup {
+  entries: Array<{ athleteId: string; value: number }>;
+  unit: string;
+}
+export type TestRunResult = TestRunResultSingle | TestRunResultGroup;
 
 interface Props {
   def: TestDefinition;
   onSave: (r: TestRunResult) => Promise<void>;
   onCancel: () => void;
+  athletes?: Array<{ id: string; name: string }>;
 }
 
 function formatSec(ms: number): string {
@@ -31,8 +37,9 @@ function formatSec(ms: number): string {
   return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}.${cs.toString().padStart(2, "0")}`;
 }
 
-export function TestRunner({ def, onSave, onCancel }: Props) {
+export function TestRunner({ def, onSave, onCancel, athletes }: Props) {
   const { t, locale } = useLanguage();
+  const isGroup = (athletes?.length ?? 0) > 1;
   const [showProtocol, setShowProtocol] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -47,8 +54,10 @@ export function TestRunner({ def, onSave, onCancel }: Props) {
   const [countdownLeft, setCountdownLeft] = useState<number>(def.countdownSeconds || 0);
   const [countdownPhase, setCountdownPhase] = useState<"ready" | "running" | "done">("ready");
 
-  // Number input (level, distance, weight, count, and post-countdown)
+  // Single-athlete input
   const [inputValue, setInputValue] = useState("");
+  // Per-athlete values (group mode)
+  const [perValues, setPerValues] = useState<Record<string, string>>({});
 
   useEffect(() => {
     return () => {
@@ -60,6 +69,9 @@ export function TestRunner({ def, onSave, onCancel }: Props) {
   const isStopwatch = inputType === "stopwatch" || inputType === "time_hold";
   const isCountdown = inputType === "countdown";
   const isPureInput = !isStopwatch && !isCountdown;
+
+  const setPerValue = (id: string, v: string) =>
+    setPerValues((prev) => ({ ...prev, [id]: v }));
 
   // ---- Stopwatch handlers ----
   const swStart = () => {
@@ -75,6 +87,15 @@ export function TestRunner({ def, onSave, onCancel }: Props) {
     if (intervalRef.current) clearInterval(intervalRef.current);
     intervalRef.current = null;
     setRunning(false);
+    if (isGroup && athletes) {
+      // Prefill group inputs that are empty with shared elapsed time (seconds)
+      const sec = String(Math.round((elapsedMs / 1000) * 100) / 100);
+      setPerValues((prev) => {
+        const next = { ...prev };
+        athletes.forEach((a) => { if (!next[a.id]) next[a.id] = sec; });
+        return next;
+      });
+    }
   };
   const swReset = () => {
     if (intervalRef.current) clearInterval(intervalRef.current);
@@ -106,10 +127,36 @@ export function TestRunner({ def, onSave, onCancel }: Props) {
     setCountdownLeft(def.countdownSeconds || 0);
     setCountdownPhase("ready");
     setInputValue("");
+    setPerValues({});
   };
 
   // ---- Submit ----
   const handleSubmit = async () => {
+    setError(null);
+    if (isGroup && athletes) {
+      const entries = athletes
+        .map((a) => {
+          const raw = (perValues[a.id] ?? "").replace(/\s+/g, "").replace(/,/g, ".");
+          const parsed = Number(raw);
+          return { athleteId: a.id, value: parsed };
+        })
+        .filter((e) => Number.isFinite(e.value) && e.value > 0);
+      if (entries.length === 0) {
+        setError(t("ptEnterFinalResult"));
+        return;
+      }
+      setSaving(true);
+      try {
+        await onSave({ entries, unit: def.unit });
+      } catch (e: any) {
+        setError(e?.message || "Save failed");
+      } finally {
+        setSaving(false);
+      }
+      return;
+    }
+
+    // Single-athlete path (unchanged)
     let value: number | null = null;
     if (isStopwatch) {
       value = Math.round((elapsedMs / 1000) * 100) / 100;
@@ -124,7 +171,6 @@ export function TestRunner({ def, onSave, onCancel }: Props) {
       value = parsed;
     }
     setSaving(true);
-    setError(null);
     try {
       await onSave({ value, unit: def.unit });
     } catch (e: any) {
@@ -134,10 +180,42 @@ export function TestRunner({ def, onSave, onCancel }: Props) {
     }
   };
 
-  const canSubmit =
-    isStopwatch ? !running && elapsedMs > 0
+  const groupHasAny = isGroup
+    ? (athletes ?? []).some((a) => {
+        const raw = (perValues[a.id] ?? "").replace(/,/g, ".").trim();
+        const n = Number(raw);
+        return Number.isFinite(n) && n > 0;
+      })
+    : false;
+
+  const canSubmit = isGroup
+    ? groupHasAny && (isStopwatch ? !running : isCountdown ? countdownPhase === "done" : true)
+    : isStopwatch ? !running && elapsedMs > 0
       : isCountdown ? countdownPhase === "done" && inputValue.trim().length > 0
       : inputValue.trim().length > 0;
+
+  const renderPerAthleteInputs = () => (
+    <div className="rounded-xl border border-border bg-card p-4 space-y-2">
+      <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+        {t("ptPerAthleteResult")} ({def.unit})
+      </div>
+      <div className="space-y-1.5 max-h-72 overflow-y-auto">
+        {(athletes ?? []).map((a) => (
+          <div key={a.id} className="flex items-center gap-2">
+            <span className="text-sm text-foreground flex-1 truncate">{a.name}</span>
+            <Input
+              type="text"
+              inputMode="decimal"
+              placeholder={def.unit}
+              value={perValues[a.id] ?? ""}
+              onChange={(e) => setPerValue(a.id, e.target.value)}
+              className="h-10 w-24 text-sm text-right font-mono"
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 
   return (
     <div className="space-y-4">
@@ -145,6 +223,7 @@ export function TestRunner({ def, onSave, onCancel }: Props) {
         <h3 className="text-lg font-bold text-foreground">{localizedTestName(def, locale)}</h3>
         <p className="text-xs text-muted-foreground mt-0.5">
           {t(`ptCat_${def.category}`)} · {def.direction === "lower_is_better" ? t("ptDirection_lower") : t("ptDirection_higher")}
+          {isGroup && ` · ${(athletes ?? []).length} ${t("ptResultsForGroup")}`}
         </p>
       </div>
 
@@ -210,25 +289,32 @@ export function TestRunner({ def, onSave, onCancel }: Props) {
               </Button>
             )}
           </div>
-          {countdownPhase === "done" && (
-            <div className="pt-2">
-              <label className="block text-xs text-muted-foreground mb-1 text-left">
-                {t("ptEnterFinalResult")} ({def.unit})
-              </label>
-              <Input
-                type="text"
-                inputMode="decimal"
-                placeholder={t("ptInputPlaceholder")}
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                autoFocus
-              />
-            </div>
-          )}
         </div>
       )}
 
-      {isPureInput && (
+      {/* Per-athlete inputs (group mode) */}
+      {isGroup && (isPureInput || (isCountdown && countdownPhase === "done") || (isStopwatch && !running && elapsedMs > 0)) && (
+        renderPerAthleteInputs()
+      )}
+
+      {/* Single-athlete inputs */}
+      {!isGroup && isCountdown && countdownPhase === "done" && (
+        <div className="rounded-xl border border-border bg-card p-4">
+          <label className="block text-xs text-muted-foreground mb-1">
+            {t("ptEnterFinalResult")} ({def.unit})
+          </label>
+          <Input
+            type="text"
+            inputMode="decimal"
+            placeholder={t("ptInputPlaceholder")}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            autoFocus
+          />
+        </div>
+      )}
+
+      {!isGroup && isPureInput && (
         <div className="rounded-xl border border-border bg-card p-5 space-y-3">
           <label className="block text-xs text-muted-foreground">
             {t("ptEnterFinalResult")} ({def.unit})
