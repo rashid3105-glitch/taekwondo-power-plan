@@ -111,8 +111,8 @@ export default function MatchAnalysis() {
     }
     setIsCoach(coach);
 
-    // Load coach's athletes for the athlete picker
-    if (coach && offline.online) {
+    // Load athlete picker options for anyone with coach_athletes links (coach or admin)
+    if (offline.online) {
       const { data: links } = await supabase
         .from("coach_athletes")
         .select("athlete_id, profiles:athlete_id(display_name)")
