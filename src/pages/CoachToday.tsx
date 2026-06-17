@@ -117,7 +117,7 @@ export default function CoachToday() {
           <span className="inline-flex items-center gap-1"><X className="h-3.5 w-3.5 text-destructive" />{t("absent")}</span>
         </div>
         {coachUserId && (
-          <SessionAttendance coachId={coachUserId} athletes={athletes} />
+          <SessionAttendance coachId={coachUserId} athletes={athletes} activeClubId={activeClubId} />
         )}
       </main>
       {coachUserId && (
