@@ -812,7 +812,7 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
                       )}
                     </div>
                     <Select value={technique} onValueChange={setTechnique}>
-                      <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                      <SelectTrigger className="h-9 bg-background text-foreground border-input"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         {techList.map((tech) => (
                           <SelectItem key={tech.key} value={tech.key}>{t(tech.labelKey as any)}</SelectItem>
@@ -831,7 +831,7 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
                   <div>
                     <Label className="text-xs">{t("matchSide")}</Label>
                     <Select value={side} onValueChange={(v) => setSide(v as any)}>
-                      <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                      <SelectTrigger className="h-9 bg-background text-foreground border-input"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         {SIDES.map((s) => (
                           <SelectItem key={s.key} value={s.key}>{t(s.labelKey as any)}</SelectItem>
@@ -842,7 +842,7 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
                   <div>
                     <Label className="text-xs">{t("matchOutcome")}</Label>
                     <Select value={outcome} onValueChange={(v) => setOutcome(v as any)}>
-                      <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                      <SelectTrigger className="h-9 bg-background text-foreground border-input"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         {OUTCOMES.map((o) => (
                           <SelectItem key={o.key} value={o.key}>{t(o.labelKey as any)}</SelectItem>
@@ -852,7 +852,8 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
                   </div>
                   <div>
                     <Label className="text-xs">{t("matchNoteOptional")}</Label>
-                    <Input value={tagNote} onChange={(e) => setTagNote(e.target.value)} className="h-9" placeholder="…" />
+                    <Input value={tagNote} onChange={(e) => setTagNote(e.target.value)} className="h-9 bg-background text-foreground border-input" placeholder="…" />
+
                   </div>
                 </div>
                 <Button
