@@ -23,9 +23,10 @@ interface Record {
 interface Props {
   coachId: string;
   athletes: Athlete[];
+  activeClubId?: string | null;
 }
 
-export function SessionAttendance({ coachId, athletes }: Props) {
+export function SessionAttendance({ coachId, athletes, activeClubId }: Props) {
   const { t } = useLanguage();
   const { toast } = useToast();
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
@@ -35,28 +36,29 @@ export function SessionAttendance({ coachId, athletes }: Props) {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      const { data } = await supabase
+      let q = supabase
         .from("session_attendance" as any)
         .select("athlete_id, status, rpe")
         .eq("coach_id", coachId)
         .eq("session_date", date);
+      if (activeClubId) q = q.eq("club_id", activeClubId);
+      const { data } = await q;
       const map = new Map<string, Record>();
       ((data as any[]) || []).forEach((r) => map.set(r.athlete_id, r as Record));
       setRecords(map);
       setLoading(false);
     })();
-  }, [coachId, date]);
+  }, [coachId, date, activeClubId]);
 
   const setStatus = async (athleteId: string, status: "present" | "absent" | "late") => {
     const existing = records.get(athleteId);
     const next: Record = { athlete_id: athleteId, status, rpe: existing?.rpe ?? null };
     setRecords(new Map(records).set(athleteId, next));
+    const payload: any = { coach_id: coachId, athlete_id: athleteId, session_date: date, status, rpe: next.rpe };
+    if (activeClubId) payload.club_id = activeClubId;
     const { error } = await supabase
       .from("session_attendance" as any)
-      .upsert(
-        { coach_id: coachId, athlete_id: athleteId, session_date: date, status, rpe: next.rpe },
-        { onConflict: "coach_id,athlete_id,session_date" },
-      );
+      .upsert(payload, { onConflict: "coach_id,athlete_id,session_date" });
     if (error) toast({ title: t("error"), description: error.message, variant: "destructive" });
   };
 
@@ -65,12 +67,11 @@ export function SessionAttendance({ coachId, athletes }: Props) {
     if (!existing) return;
     const next = { ...existing, rpe };
     setRecords(new Map(records).set(athleteId, next));
+    const payload: any = { coach_id: coachId, athlete_id: athleteId, session_date: date, status: existing.status, rpe };
+    if (activeClubId) payload.club_id = activeClubId;
     await supabase
       .from("session_attendance" as any)
-      .upsert(
-        { coach_id: coachId, athlete_id: athleteId, session_date: date, status: existing.status, rpe },
-        { onConflict: "coach_id,athlete_id,session_date" },
-      );
+      .upsert(payload, { onConflict: "coach_id,athlete_id,session_date" });
   };
 
   return (
