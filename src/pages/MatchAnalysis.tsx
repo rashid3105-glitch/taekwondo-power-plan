@@ -111,6 +111,21 @@ export default function MatchAnalysis() {
     }
     setIsCoach(coach);
 
+    // Load coach's athletes for the athlete picker
+    if (coach && offline.online) {
+      const { data: links } = await supabase
+        .from("coach_athletes")
+        .select("athlete_id, profiles:athlete_id(display_name)")
+        .eq("coach_id", user.id);
+      const list = (links || [])
+        .map((l: any) => ({
+          id: l.athlete_id as string,
+          name: (l.profiles?.display_name as string) || t("matchAthlete"),
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name));
+      setCoachAthletes(list);
+    }
+
     const targetAthlete = athleteId === "me" || !athleteId ? user.id : athleteId;
     setResolvedAthleteId(targetAthlete);
 
