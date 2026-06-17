@@ -4,7 +4,7 @@ import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
-import { Wind, Loader2, X, CheckCircle2, Users } from "lucide-react";
+import { Wind, Loader2, CheckCircle2, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface BeepLevel {
@@ -295,12 +295,9 @@ export function BeepTestTimer({
 
   return (
     <div className="space-y-5 py-2">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Wind className="h-5 w-5 text-primary" />
-          <h2 className="text-lg font-extrabold text-foreground">{t("beepTestTitle")}</h2>
-        </div>
-        <Button variant="ghost" size="icon" onClick={onClose}><X className="h-5 w-5" /></Button>
+      <div className="flex items-center gap-2">
+        <Wind className="h-5 w-5 text-primary" />
+        <h2 className="text-lg font-extrabold text-foreground">{t("beepTestTitle")}</h2>
       </div>
 
       {phase === "idle" && (
