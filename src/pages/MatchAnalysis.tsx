@@ -61,6 +61,7 @@ export default function MatchAnalysis() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [coachAthletes, setCoachAthletes] = useState<{ id: string; name: string }[]>([]);
 
   // Upload form
   const [uploadOpen, setUploadOpen] = useState(false);
