@@ -9,7 +9,7 @@ import {
   localizedTestName,
 } from "@/lib/testCatalog";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { ChevronRight, Search } from "lucide-react";
+import { Play, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
@@ -70,7 +70,7 @@ export function TestCatalogPicker({ onPick }: Props) {
                           "w-full flex items-center justify-between gap-3 px-3 py-2.5 text-left hover:bg-primary/5 active:bg-primary/10",
                         )}
                       >
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                           <div className="text-sm font-medium text-card-foreground truncate">
                             {localizedTestName(d, locale)}
                           </div>
@@ -81,7 +81,12 @@ export function TestCatalogPicker({ onPick }: Props) {
                               : t("ptDirection_higher")}
                           </div>
                         </div>
-                        <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                        <span
+                          aria-label={t("ptStartTest")}
+                          className="shrink-0 inline-flex items-center justify-center h-9 w-9 rounded-full bg-primary text-primary-foreground shadow-sm group-hover:scale-105 transition-transform"
+                        >
+                          <Play className="h-4 w-4 fill-current" />
+                        </span>
                       </button>
                     </li>
                   ))}
