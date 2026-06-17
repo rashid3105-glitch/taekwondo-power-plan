@@ -276,9 +276,11 @@ export default function CoachDashboard() {
         .map((athlete) => ({
           ...athlete,
           club_name: athlete.club_id ? clubMap.get(athlete.club_id) || null : null,
+          is_coach: !!athlete.is_coach,
         })) as AthleteProfile[];
 
       setClubAthletes(clubOnly.sort((a, b) => a.display_name.localeCompare(b.display_name)));
+
     }
 
     setLoading(false);
