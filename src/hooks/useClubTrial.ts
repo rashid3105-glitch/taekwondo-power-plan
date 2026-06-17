@@ -23,11 +23,16 @@ export function useClubTrial(clubId: string | null | undefined): ClubTrial {
     }
     supabase
       .from("clubs" as any)
-      .select("created_at")
+      .select("created_at, license_active")
       .eq("id", clubId)
       .single()
       .then(({ data }) => {
         if (!data) {
+          setState({ isInTrial: false, trialDaysLeft: 0, trialExpired: false, loading: false });
+          return;
+        }
+        // Paying clubs (license_active) are never in trial and never expired.
+        if ((data as any).license_active) {
           setState({ isInTrial: false, trialDaysLeft: 0, trialExpired: false, loading: false });
           return;
         }
