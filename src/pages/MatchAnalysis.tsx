@@ -111,18 +111,46 @@ export default function MatchAnalysis() {
     }
     setIsCoach(coach);
 
-    // Load athlete picker options for anyone with coach_athletes links (coach or admin)
+    // Load athlete picker options. Coaches in this app manage athletes via club
+    // membership (not coach_athletes), so we combine both sources.
     if (offline.online) {
+      const list: { id: string; name: string }[] = [];
+      const seen = new Set<string>();
+
+      // 1) Direct coach_athletes links
       const { data: links } = await supabase
         .from("coach_athletes")
         .select("athlete_id, profiles:athlete_id(display_name)")
         .eq("coach_id", user.id);
-      const list = (links || [])
-        .map((l: any) => ({
-          id: l.athlete_id as string,
-          name: (l.profiles?.display_name as string) || t("matchAthlete"),
-        }))
-        .sort((a, b) => a.name.localeCompare(b.name));
+      for (const l of (links || []) as any[]) {
+        if (seen.has(l.athlete_id)) continue;
+        seen.add(l.athlete_id);
+        list.push({ id: l.athlete_id, name: l.profiles?.display_name || t("matchAthlete") });
+      }
+
+      // 2) Club-mates: anyone in the same club(s) as this coach
+      const { data: myProf } = await supabase
+        .from("profiles").select("club_id").eq("user_id", user.id).maybeSingle();
+      const myClubs = new Set<string>();
+      if (myProf?.club_id) myClubs.add(myProf.club_id);
+      const { data: myMemberships } = await supabase
+        .from("club_memberships").select("club_id").eq("user_id", user.id);
+      for (const m of (myMemberships || []) as any[]) if (m.club_id) myClubs.add(m.club_id);
+
+      if (myClubs.size > 0) {
+        const clubIds = Array.from(myClubs);
+        const { data: mates } = await supabase
+          .from("profiles")
+          .select("user_id, display_name, club_id")
+          .in("club_id", clubIds);
+        for (const p of (mates || []) as any[]) {
+          if (p.user_id === user.id || seen.has(p.user_id)) continue;
+          seen.add(p.user_id);
+          list.push({ id: p.user_id, name: p.display_name || t("matchAthlete") });
+        }
+      }
+
+      list.sort((a, b) => a.name.localeCompare(b.name));
       setCoachAthletes(list);
     }
 
