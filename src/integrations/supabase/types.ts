@@ -3639,6 +3639,7 @@ export type Database = {
           display_name: string
           experience_years: number
           goals: string[]
+          is_coach: boolean
           program_weeks: number
           tkd_sessions_per_week: number
           user_id: string
