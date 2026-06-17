@@ -510,7 +510,13 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
               def={runnerDef}
               onCancel={() => setRunnerDef(null)}
               onSave={handleRunnerSave}
+              athletes={
+                mode === "coach" && !athleteId && selectedAthletes.length > 1
+                  ? selectedAthletes.map((a) => ({ id: a.athlete_id, name: a.display_name }))
+                  : undefined
+              }
             />
+
           )}
         </DialogContent>
       </Dialog>
