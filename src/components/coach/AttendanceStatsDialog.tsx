@@ -51,10 +51,10 @@ export function AttendanceStatsDialog({ open, onOpenChange, coachId, athletes, a
       let query = supabase
         .from("session_attendance" as any)
         .select("athlete_id, session_date, status, rpe")
-        .eq("coach_id", coachId)
         .gte("session_date", start)
         .lte("session_date", end);
       if (activeClubId) query = query.eq("club_id", activeClubId);
+      else query = query.eq("coach_id", coachId);
       const { data } = await query;
       setRows(((data as any[]) || []) as Row[]);
       setLoading(false);
