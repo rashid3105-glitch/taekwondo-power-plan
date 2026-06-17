@@ -1,7 +1,8 @@
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -9,6 +10,7 @@ import {
   Loader2, Trash2, ClipboardList, Users, WifiOff, Pencil, Plus,
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+
 import { useOfflinePhysicalTests } from "@/hooks/useOfflinePhysicalTests";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { BeepTestTimer } from "@/components/BeepTestTimer";
