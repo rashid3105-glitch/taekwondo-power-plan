@@ -1,13 +1,12 @@
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import {
-  Loader2, Trash2, ClipboardList, Users, WifiOff, Pencil, Plus,
+  Loader2, Trash2, ClipboardList, WifiOff, Pencil,
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
@@ -15,12 +14,11 @@ import { useOfflinePhysicalTests } from "@/hooks/useOfflinePhysicalTests";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { BeepTestTimer } from "@/components/BeepTestTimer";
 import { TestCatalogPicker } from "@/components/testing/TestCatalogPicker";
+import { TestAthletePicker } from "@/components/testing/TestAthletePicker";
 import { TestRunner } from "@/components/testing/TestRunner";
 import { AthleteProgressionView } from "@/components/testing/AthleteProgressionView";
 import { AthletesComparisonView } from "@/components/testing/AthletesComparisonView";
 import {
-  TEST_CATEGORIES,
-  type TestCategory,
   type TestDefinition,
   findTestByDbName,
   localizedTestName,
@@ -62,22 +60,18 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
   const { toast } = useToast();
   const { t, locale } = useLanguage();
 
-  // Coach athlete selection (multi)
+  // Coach: list of all athletes (for picker + focus selector)
   const [athletes, setAthletes] = useState<CoachAthlete[]>([]);
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(
-    () => new Set(athleteId ? [athleteId] : []),
-  );
   const [focusedAthleteId, setFocusedAthleteId] = useState<string>(athleteId || "");
   const [loadingAthletes, setLoadingAthletes] = useState(mode === "coach" && !athleteId);
 
   // Run-flow state
-  const [pickerOpen, setPickerOpen] = useState(false);
+  const [pendingDef, setPendingDef] = useState<TestDefinition | null>(null);
   const [runnerDef, setRunnerDef] = useState<TestDefinition | null>(null);
+  const [runnerAthletes, setRunnerAthletes] = useState<CoachAthlete[]>([]);
   const [beepOpen, setBeepOpen] = useState(false);
 
-  // View state
   const [tab, setTab] = useState<string>("results");
-  const [activeCategory, setActiveCategory] = useState<TestCategory>("endurance");
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => setCurrentUserId(user?.id ?? null));
@@ -87,16 +81,12 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
     if (mode === "coach" && !athleteId) void loadAthletes();
   }, [mode, athleteId]);
 
-  // Single user the results table / progression is keyed to
+  // The user whose historical results / progression we display.
   const targetUserId =
     mode === "coach"
-      ? (athleteId || focusedAthleteId || (selectedIds.size > 0 ? Array.from(selectedIds)[0] : null))
+      ? (athleteId || focusedAthleteId || null)
       : currentUserId;
 
-  const selectedAthletes = useMemo(
-    () => athletes.filter((a) => selectedIds.has(a.athlete_id)),
-    [athletes, selectedIds],
-  );
   const { results: cachedResults, loading, addResult, removeResult, updateResult, refresh } =
     useOfflinePhysicalTests(targetUserId);
 
@@ -132,41 +122,41 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
         .select("user_id, display_name")
         .in("user_id", athleteIds);
       if (profiles) {
-        setAthletes(
-          profiles
-            .map(p => ({ athlete_id: p.user_id, display_name: p.display_name }))
-            .sort((a, b) => a.display_name.localeCompare(b.display_name)),
-        );
+        const list = profiles
+          .map(p => ({ athlete_id: p.user_id, display_name: p.display_name }))
+          .sort((a, b) => a.display_name.localeCompare(b.display_name));
+        setAthletes(list);
+        if (!focusedAthleteId && list[0]) setFocusedAthleteId(list[0].athlete_id);
       }
     }
     setLoadingAthletes(false);
   }
 
-  function toggleAthlete(id: string) {
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
-      return next;
-    });
-    setFocusedAthleteId((cur) => cur || id);
-  }
-  function selectAllAthletes() {
-    setSelectedIds(new Set(athletes.map((a) => a.athlete_id)));
-    if (!focusedAthleteId && athletes[0]) setFocusedAthleteId(athletes[0].athlete_id);
-  }
-  function clearAthletes() {
-    setSelectedIds(new Set());
-    setFocusedAthleteId("");
-  }
-
   function handleCatalogPick(def: TestDefinition) {
-    setPickerOpen(false);
-    // The existing dedicated Beep Test flow is preserved.
+    // Coach in club mode → pick athletes first
+    if (mode === "coach" && !athleteId) {
+      if (def.id === "shuttle_beep_20m") {
+        setBeepOpen(true);
+        return;
+      }
+      setPendingDef(def);
+      return;
+    }
+    // Individual or coach-on-single-athlete page → go straight in
     if (def.id === "shuttle_beep_20m") {
       setBeepOpen(true);
       return;
     }
+    setRunnerAthletes([]);
     setRunnerDef(def);
+  }
+
+  function handleAthletesConfirmed(ids: string[]) {
+    if (!pendingDef || ids.length === 0) return;
+    const chosen = athletes.filter(a => ids.includes(a.athlete_id));
+    setRunnerAthletes(chosen);
+    setRunnerDef(pendingDef);
+    setPendingDef(null);
   }
 
   async function handleRunnerSave(
@@ -199,16 +189,17 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
         description: t("ptSavedForN").replace("{n}", String(payload.entries.length)),
       });
       setRunnerDef(null);
+      setRunnerAthletes([]);
       void refresh();
       return;
     }
 
     // Single-athlete mode
-    if (mode === "coach" && !targetUserId) {
+    if (mode === "coach" && !targetUserId && runnerAthletes.length === 0) {
       toast({ title: t("error"), description: t("ptSelectAthlete"), variant: "destructive" });
       return;
     }
-    const targetId = targetUserId;
+    const targetId = runnerAthletes[0]?.athlete_id || targetUserId;
     if (!targetId) return;
     await addResult({
       user_id: targetId,
@@ -223,10 +214,10 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
     });
     toast({ title: t("ptResultSaved") });
     setRunnerDef(null);
+    setRunnerAthletes([]);
   }
 
   const handleDelete = async (localId: string) => { await removeResult(localId); };
-
 
   if (loadingAthletes) {
     return (
@@ -246,14 +237,15 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
 
   const focusedAthlete = athletes.find((a) => a.athlete_id === (focusedAthleteId || targetUserId || ""));
   const currentAthleteName = athleteName || focusedAthlete?.display_name || "";
-  const categoryResults = results.filter((r) => r.category === activeCategory);
-  const groupedByTest = categoryResults.reduce((acc, r) => {
+
+  const groupedByTest = results.reduce((acc, r) => {
     if (!acc[r.test_name]) acc[r.test_name] = [];
     acc[r.test_name].push(r);
     return acc;
   }, {} as Record<string, TestResult[]>);
 
-  const showAthletePickedUI = mode !== "coach" || athleteId || targetUserId;
+  const showCatalog = mode !== "coach" || !!athleteId || athletes.length > 0;
+  const showResultsHistory = mode !== "coach" || !!athleteId || !!targetUserId;
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -267,74 +259,6 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
         </h2>
       </div>
 
-      {/* Coach athlete selector (multi) */}
-      {mode === "coach" && !athleteId && (
-        <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
-          <div className="flex items-center justify-between gap-2 flex-wrap">
-            <h3 className="text-sm font-bold text-card-foreground flex items-center gap-2">
-              <Users className="h-4 w-4 text-primary" /> {t("ptSelectAthletes")}
-              {selectedIds.size > 0 && (
-                <span className="text-xs font-normal text-muted-foreground">({selectedIds.size})</span>
-              )}
-            </h3>
-            {athletes.length > 0 && (
-              <div className="flex gap-1.5">
-                <Button size="sm" variant="outline" className="h-7 text-xs" onClick={selectAllAthletes}>
-                  {t("ptSelectAll")}
-                </Button>
-                <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={clearAthletes} disabled={selectedIds.size === 0}>
-                  {t("ptClearSelection")}
-                </Button>
-              </div>
-            )}
-          </div>
-          {athletes.length === 0 ? (
-            <p className="text-sm text-muted-foreground">{t("ptNoAthletes")}</p>
-          ) : (
-            <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-60 overflow-y-auto">
-                {athletes.map((a) => {
-                  const checked = selectedIds.has(a.athlete_id);
-                  return (
-                    <label
-                      key={a.athlete_id}
-                      className={`flex items-center gap-2 px-2 py-1.5 rounded-md border cursor-pointer transition-colors ${
-                        checked ? "border-primary/40 bg-primary/5" : "border-border bg-background hover:bg-muted/30"
-                      }`}
-                    >
-                      <Checkbox
-                        checked={checked}
-                        onCheckedChange={() => toggleAthlete(a.athlete_id)}
-                      />
-                      <span className="text-sm truncate flex-1">{a.display_name}</span>
-                    </label>
-                  );
-                })}
-              </div>
-              {selectedIds.size > 1 && (
-                <div className="pt-1">
-                  <label className="block text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
-                    {t("ptFocusAthlete")}
-                  </label>
-                  <Select value={focusedAthleteId} onValueChange={setFocusedAthleteId}>
-                    <SelectTrigger className="h-9">
-                      <SelectValue placeholder={t("ptFocusAthlete")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {selectedAthletes.map((a) => (
-                        <SelectItem key={a.athlete_id} value={a.athlete_id}>{a.display_name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-            </>
-          )}
-        </div>
-      )}
-
-
-      {/* Tabs: Results | Progression | Compare (coach) */}
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="grid w-full" style={{ gridTemplateColumns: mode === "coach" ? "1fr 1fr 1fr" : "1fr 1fr" }}>
           <TabsTrigger value="results">{t("ptResult")}</TabsTrigger>
@@ -343,32 +267,31 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
         </TabsList>
 
         <TabsContent value="results" className="space-y-4 mt-3">
-          {showAthletePickedUI && (
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <div className="flex flex-wrap gap-1.5">
-                {TEST_CATEGORIES.map((cat) => (
-                  <Button
-                    key={cat}
-                    size="sm"
-                    variant={activeCategory === cat ? "default" : "outline"}
-                    onClick={() => setActiveCategory(cat)}
-                    className="h-8 text-xs"
-                  >
-                    {t(`ptCat_${cat}`)}
-                  </Button>
-                ))}
-              </div>
-              <Button onClick={() => setPickerOpen(true)} size="sm" className="gap-1.5">
-                <Plus className="h-4 w-4" /> {t("ptRunTest")}
-              </Button>
+          {/* Inline catalog — each row has a primary Start icon */}
+          {showCatalog && (
+            <TestCatalogPicker onPick={handleCatalogPick} />
+          )}
+
+          {/* Coach focus-athlete selector for the historical results below */}
+          {mode === "coach" && !athleteId && athletes.length > 0 && (
+            <div className="flex items-center gap-2 pt-2">
+              <label className="text-xs uppercase tracking-wider text-muted-foreground shrink-0">
+                {t("ptFocusAthlete")}
+              </label>
+              <Select value={focusedAthleteId} onValueChange={setFocusedAthleteId}>
+                <SelectTrigger className="h-9 flex-1 max-w-xs">
+                  <SelectValue placeholder={t("ptFocusAthlete")} />
+                </SelectTrigger>
+                <SelectContent>
+                  {athletes.map((a) => (
+                    <SelectItem key={a.athlete_id} value={a.athlete_id}>{a.display_name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           )}
 
-          {!showAthletePickedUI ? (
-            <div className="rounded-xl border border-border bg-card p-8 text-center text-sm text-muted-foreground">
-              {t("ptSelectAthlete")}
-            </div>
-          ) : Object.keys(groupedByTest).length === 0 ? (
+          {!showResultsHistory ? null : Object.keys(groupedByTest).length === 0 ? (
             <div className="rounded-xl border border-border bg-card p-8 text-center text-sm text-muted-foreground">
               {t("ptNoResults")}
             </div>
@@ -477,6 +400,23 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
         </TabsContent>
 
         <TabsContent value="progression" className="space-y-3 mt-3">
+          {mode === "coach" && !athleteId && athletes.length > 0 && (
+            <div className="flex items-center gap-2">
+              <label className="text-xs uppercase tracking-wider text-muted-foreground shrink-0">
+                {t("ptFocusAthlete")}
+              </label>
+              <Select value={focusedAthleteId} onValueChange={setFocusedAthleteId}>
+                <SelectTrigger className="h-9 flex-1 max-w-xs">
+                  <SelectValue placeholder={t("ptFocusAthlete")} />
+                </SelectTrigger>
+                <SelectContent>
+                  {athletes.map((a) => (
+                    <SelectItem key={a.athlete_id} value={a.athlete_id}>{a.display_name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
           {targetUserId ? (
             <AthleteProgressionView athleteId={targetUserId} />
           ) : (
@@ -493,35 +433,44 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
         )}
       </Tabs>
 
-      {/* Catalog picker dialog */}
-      <Dialog open={pickerOpen} onOpenChange={setPickerOpen}>
+      {/* Athlete picker dialog (coach picks athletes for the chosen test) */}
+      <Dialog open={!!pendingDef} onOpenChange={(o) => !o && setPendingDef(null)}>
         <DialogContent className="max-w-md p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
-          <DialogTitle>{t("ptOpenCatalog")}</DialogTitle>
-          <TestCatalogPicker onPick={handleCatalogPick} />
+          <DialogTitle className="sr-only">
+            {pendingDef ? localizedTestName(pendingDef, locale) : ""}
+          </DialogTitle>
+          {pendingDef && (
+            <TestAthletePicker
+              title={localizedTestName(pendingDef, locale)}
+              subtitle={`${pendingDef.unit} · ${pendingDef.direction === "lower_is_better" ? t("ptDirection_lower") : t("ptDirection_higher")}`}
+              athletes={athletes}
+              initialSelected={focusedAthleteId ? new Set([focusedAthleteId]) : undefined}
+              onStart={handleAthletesConfirmed}
+            />
+          )}
         </DialogContent>
       </Dialog>
 
       {/* Runner dialog */}
-      <Dialog open={!!runnerDef} onOpenChange={(o) => !o && setRunnerDef(null)}>
+      <Dialog open={!!runnerDef} onOpenChange={(o) => { if (!o) { setRunnerDef(null); setRunnerAthletes([]); } }}>
         <DialogContent className="max-w-md p-4 sm:p-6 max-h-[95vh] overflow-y-auto">
           <DialogTitle className="sr-only">{runnerDef ? localizedTestName(runnerDef, locale) : ""}</DialogTitle>
           {runnerDef && (
             <TestRunner
               def={runnerDef}
-              onCancel={() => setRunnerDef(null)}
+              onCancel={() => { setRunnerDef(null); setRunnerAthletes([]); }}
               onSave={handleRunnerSave}
               athletes={
-                mode === "coach" && !athleteId && selectedAthletes.length > 1
-                  ? selectedAthletes.map((a) => ({ id: a.athlete_id, name: a.display_name }))
+                runnerAthletes.length > 1
+                  ? runnerAthletes.map((a) => ({ id: a.athlete_id, name: a.display_name }))
                   : undefined
               }
             />
-
           )}
         </DialogContent>
       </Dialog>
 
-      {/* Existing Beep Test (kept) */}
+      {/* Beep Test (multi-athlete already built in) */}
       <Dialog open={beepOpen} onOpenChange={setBeepOpen}>
         <DialogContent className="max-w-md p-4 sm:p-6 max-h-[95vh] overflow-y-auto">
           <DialogTitle className="sr-only">{t("beepTestTitle")}</DialogTitle>
