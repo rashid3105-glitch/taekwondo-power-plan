@@ -674,7 +674,7 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
                     />
                     {/* Note markers overlay */}
                     <div className="absolute inset-0 pointer-events-none">
-                      <NoteOverlayMarkers notes={notes} totalFrames={totalFrames} onJump={seekToFrame} />
+                      <NoteOverlayMarkers notes={notes} totalFrames={totalFrames} currentFrame={currentFrame} onJump={seekToFrame} />
                     </div>
                     {/* + Add note button */}
                     <button
