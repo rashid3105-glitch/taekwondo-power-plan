@@ -133,6 +133,10 @@ Deno.serve(async (req) => {
     if (belt_level && typeof belt_level === "string") profileUpdates.belt_level = belt_level;
     if (experience_years != null && typeof experience_years === "number" && experience_years >= 0 && experience_years <= 50) profileUpdates.experience_years = experience_years;
     if (discipline && (discipline === "sparring" || discipline === "poomsae")) profileUpdates.discipline = discipline;
+    if (minor && typeof parent_email === "string" && EMAIL_RE.test(parent_email.trim())) {
+      profileUpdates.parent_email = parent_email.trim();
+    }
+
 
     const { error: updateError } = await adminClient.from("profiles")
       .update(profileUpdates).eq("user_id", newUser.user!.id);
