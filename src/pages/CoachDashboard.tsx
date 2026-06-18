@@ -120,7 +120,8 @@ export default function CoachDashboard() {
   const { t, locale } = useLanguage();
   const isMobile = useIsMobile();
   const { activeClubId, activeMembership, memberships } = useActiveClub();
-  const { isInTrial, trialDaysLeft, trialExpired } = useClubTrial(coachClubId);
+  const effectiveCoachClubId = activeClubId || coachClubId;
+  const { isInTrial, trialDaysLeft, trialExpired } = useClubTrial(effectiveCoachClubId);
 
   const exitCoachDashboard = () => {
     setCoachMode(false);
