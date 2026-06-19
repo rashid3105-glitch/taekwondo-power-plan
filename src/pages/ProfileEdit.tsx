@@ -400,6 +400,12 @@ export default function ProfileEdit() {
             <Field label={t("profileNoName" as any) || "Navn"}>
               <Input className={inputCls} value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
             </Field>
+            <Field label="Email">
+              <Input className={inputCls} value={email} disabled readOnly />
+              <p className="text-xs text-white/50 mt-1">
+                {t("profileEmailReadOnly" as any) || "Kontakt en administrator for at ændre din email."}
+              </p>
+            </Field>
             <div className="grid grid-cols-2 gap-4">
               <Field label={t("profileBirthDate" as any)}>
                 <Input type="date" className={inputCls} value={birthDate} onChange={(e) => setBirthDate(e.target.value)} />
