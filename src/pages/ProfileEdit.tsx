@@ -27,11 +27,12 @@ export default function ProfileEdit() {
 
   const [userId, setUserId] = useState<string>("");
   const [displayName, setDisplayName] = useState("");
-  const [birthDate, setBirthDate] = useState("");
+   const [birthDate, setBirthDate] = useState("");
   const [beltLevel, setBeltLevel] = useState("");
   const [weightKg, setWeightKg] = useState<string>("");
   const [discipline, setDiscipline] = useState("sparring");
   const [goalsText, setGoalsText] = useState("");
+  const [email, setEmail] = useState("");
 
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
