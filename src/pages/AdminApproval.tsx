@@ -845,6 +845,37 @@ export default function AdminApproval() {
                 {t("resetPassword") || "Reset Password"}
               </Button>
             )}
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-7 text-xs"
+              onClick={async () => {
+                const current = u.email || "";
+                const next = window.prompt(
+                  `Change login email for ${u.display_name || "user"}\n\nCurrent: ${current || "(none)"}\n\nEnter new email:`,
+                  current,
+                );
+                if (!next) return;
+                const trimmed = next.trim().toLowerCase();
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+                  toast({ title: t("error"), description: "Invalid email", variant: "destructive" });
+                  return;
+                }
+                if (trimmed === current.toLowerCase()) return;
+                try {
+                  const { data, error } = await supabase.functions.invoke("admin-update-user-email", {
+                    body: { user_id: u.user_id, new_email: trimmed },
+                  });
+                  if (error || (data as any)?.error) throw new Error(error?.message || (data as any)?.error);
+                  toast({ title: "Email updated", description: trimmed });
+                  setUsers((prev) => prev.map((x) => x.user_id === u.user_id ? { ...x, email: trimmed } : x));
+                } catch (err: any) {
+                  toast({ title: t("error"), description: err.message, variant: "destructive" });
+                }
+              }}
+            >
+              <Pencil className="h-3 w-3 mr-1" /> Change email
+            </Button>
             {showRevoke && (
               <Button
                 variant="ghost"
