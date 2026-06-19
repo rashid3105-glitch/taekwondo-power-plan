@@ -56,6 +56,7 @@ export default function ProfileEdit() {
         return;
       }
       setUserId(user.id);
+      setEmail(user.email ?? "");
       const { data: p } = await supabase
         .from("profiles")
         .select("display_name, birth_date, belt_level, weight_kg, discipline, goals, avatar_url, roles, license_values")
