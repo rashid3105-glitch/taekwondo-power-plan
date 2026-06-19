@@ -27,12 +27,11 @@ export default function ProfileEdit() {
 
   const [userId, setUserId] = useState<string>("");
   const [displayName, setDisplayName] = useState("");
-   const [birthDate, setBirthDate] = useState("");
+  const [birthDate, setBirthDate] = useState("");
   const [beltLevel, setBeltLevel] = useState("");
   const [weightKg, setWeightKg] = useState<string>("");
   const [discipline, setDiscipline] = useState("sparring");
   const [goalsText, setGoalsText] = useState("");
-  const [email, setEmail] = useState("");
 
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
@@ -56,7 +55,6 @@ export default function ProfileEdit() {
         return;
       }
       setUserId(user.id);
-      setEmail(user.email ?? "");
       const { data: p } = await supabase
         .from("profiles")
         .select("display_name, birth_date, belt_level, weight_kg, discipline, goals, avatar_url, roles, license_values")
@@ -399,12 +397,6 @@ export default function ProfileEdit() {
           <div className="space-y-4">
             <Field label={t("profileNoName" as any) || "Navn"}>
               <Input className={inputCls} value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
-            </Field>
-            <Field label="Email">
-              <Input className={inputCls} value={email} disabled readOnly />
-              <p className="text-xs text-white/50 mt-1">
-                {t("profileEmailReadOnly" as any) || "Kontakt en administrator for at ændre din email."}
-              </p>
             </Field>
             <div className="grid grid-cols-2 gap-4">
               <Field label={t("profileBirthDate" as any)}>
