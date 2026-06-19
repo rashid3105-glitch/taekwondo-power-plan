@@ -247,6 +247,11 @@ export default function Profile() {
               <p className="text-sm text-white mt-0.5 truncate">
                 {data?.club_name || t("profileNoClub" as any)}
               </p>
+              {data?.email && (
+                <p className="text-xs text-white/70 mt-0.5 truncate" title={data.email}>
+                  {data.email}
+                </p>
+              )}
 
               <div className="grid grid-cols-2 gap-x-4 gap-y-3 mt-4">
                 <MetaCell
