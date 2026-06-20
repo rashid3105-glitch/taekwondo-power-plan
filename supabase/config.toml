@@ -18,5 +18,13 @@ verify_jwt = true
 [functions.delete-my-account]
 verify_jwt = true
 
+[functions.submit-blog-comment]
+verify_jwt = false
+
+[functions.confirm-blog-comment]
+verify_jwt = false
+
+
+
 
 

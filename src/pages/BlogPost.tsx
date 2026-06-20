@@ -4,6 +4,7 @@ import { LandingLayout } from "@/components/landing/LandingLayout";
 import { PageMeta } from "@/components/PageMeta";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { getPostBySlug, getTranslations, sanitizeHtml, type BlogPost, type BlogLocale } from "@/lib/blogApi";
+import BlogComments from "@/components/blog/BlogComments";
 
 const GOLD = "#F5C842";
 
@@ -140,6 +141,8 @@ const BlogPostPage = () => {
           }}
           dangerouslySetInnerHTML={{ __html: safeHtml }}
         />
+
+        <BlogComments postId={post.id} postLocale={post.locale} />
       </article>
     </LandingLayout>
   );

@@ -201,6 +201,56 @@ export type Database = {
           },
         ]
       }
+      blog_comments: {
+        Row: {
+          approved_at: string | null
+          author_email: string
+          author_name: string
+          content: string
+          created_at: string
+          id: string
+          post_id: string
+          status: string
+          token_expires_at: string | null
+          verification_token: string | null
+          verified_at: string | null
+        }
+        Insert: {
+          approved_at?: string | null
+          author_email: string
+          author_name: string
+          content: string
+          created_at?: string
+          id?: string
+          post_id: string
+          status?: string
+          token_expires_at?: string | null
+          verification_token?: string | null
+          verified_at?: string | null
+        }
+        Update: {
+          approved_at?: string | null
+          author_email?: string
+          author_name?: string
+          content?: string
+          created_at?: string
+          id?: string
+          post_id?: string
+          status?: string
+          token_expires_at?: string | null
+          verification_token?: string | null
+          verified_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "blog_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       blog_posts: {
         Row: {
           author_id: string | null
@@ -3629,6 +3679,15 @@ export type Database = {
           sleep_minutes: number
           steps: number
           summary_date: string
+        }[]
+      }
+      get_blog_comments: {
+        Args: { _post_id: string }
+        Returns: {
+          author_name: string
+          content: string
+          created_at: string
+          id: string
         }[]
       }
       get_club_member_profiles: {

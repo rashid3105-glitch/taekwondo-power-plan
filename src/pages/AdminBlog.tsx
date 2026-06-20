@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Plus, Pencil, Trash2, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Plus, Pencil, Trash2, Eye, EyeOff, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { listAllPostsAdmin, deletePost, type BlogPost } from "@/lib/blogApi";
 
@@ -13,6 +13,7 @@ export default function AdminBlog() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [authorized, setAuthorized] = useState<boolean | null>(null);
+  const [pendingComments, setPendingComments] = useState<number>(0);
 
   useEffect(() => {
     (async () => {
@@ -25,6 +26,10 @@ export default function AdminBlog() {
       }
       setAuthorized(true);
       await load();
+      const { count } = await (supabase.from as any)("blog_comments")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "pending_approval");
+      setPendingComments(count || 0);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -72,10 +77,19 @@ export default function AdminBlog() {
             </Button>
             <h1 className="text-2xl font-extrabold">Blog</h1>
           </div>
-          <Button onClick={() => navigate("/admin/blog/new")}>
-            <Plus className="h-4 w-4 mr-1" /> New post
-          </Button>
+          <div className="flex gap-2 flex-wrap">
+            <Button variant="outline" onClick={() => navigate("/admin/blog/comments")}>
+              <MessageSquare className="h-4 w-4 mr-1" /> Comments
+              {pendingComments > 0 && (
+                <Badge className="ml-2 bg-amber-500 hover:bg-amber-500 text-black">{pendingComments}</Badge>
+              )}
+            </Button>
+            <Button onClick={() => navigate("/admin/blog/new")}>
+              <Plus className="h-4 w-4 mr-1" /> New post
+            </Button>
+          </div>
         </div>
+
 
         {loading ? (
           <div className="text-center text-muted-foreground py-12">Loading…</div>

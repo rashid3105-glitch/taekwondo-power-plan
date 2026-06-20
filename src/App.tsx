@@ -67,6 +67,8 @@ import Priser from "./pages/Priser";
 import Terms from "./pages/Terms";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
+import BlogCommentConfirm from "./pages/BlogCommentConfirm";
+import AdminBlogComments from "./pages/AdminBlogComments";
 import AdminBlog from "./pages/AdminBlog";
 import AdminBlogEditor from "./pages/AdminBlogEditor";
 import Contact from "./pages/Contact";
@@ -137,7 +139,9 @@ const AnimatedRoutes = () => {
         <Route path="/terms" element={<Page><Terms /></Page>} />
         <Route path="/blog" element={<Page><Blog /></Page>} />
         <Route path="/blog/:slug" element={<Page><BlogPost /></Page>} />
+        <Route path="/blog-comment/confirm" element={<Page><BlogCommentConfirm /></Page>} />
         <Route path="/admin/blog" element={<Page><AdminBlog /></Page>} />
+        <Route path="/admin/blog/comments" element={<Page><AdminBlogComments /></Page>} />
         <Route path="/admin/blog/new" element={<Page><AdminBlogEditor /></Page>} />
         <Route path="/admin/blog/:id/edit" element={<Page><AdminBlogEditor /></Page>} />
         <Route path="/contact" element={<Page><Contact /></Page>} />
