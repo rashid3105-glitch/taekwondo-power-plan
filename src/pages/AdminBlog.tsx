@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Plus, Pencil, Trash2, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Plus, Pencil, Trash2, Eye, EyeOff, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { listAllPostsAdmin, deletePost, type BlogPost } from "@/lib/blogApi";
 
