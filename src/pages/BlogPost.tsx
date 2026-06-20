@@ -141,6 +141,8 @@ const BlogPostPage = () => {
           }}
           dangerouslySetInnerHTML={{ __html: safeHtml }}
         />
+
+        <BlogComments postId={post.id} postLocale={post.locale} />
       </article>
     </LandingLayout>
   );
