@@ -149,25 +149,21 @@ Deno.serve(async (req) => {
     )
   }
 
-  // Templates that are authorized server-side by the calling Edge Function
-  // (which has already verified the coach/athlete/parent relationship) and
-  // therefore by design send to a third-party recipient.
-  const SELF_OR_ADMIN_EXEMPT_TEMPLATES = new Set([
-    'parental-consent-request',
-    'coach-consent-reminder',
-  ])
+  // Create Supabase client with service role (bypasses RLS) — used below and for admin check.
+  const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
   // Security: if template has no fixed `to`, restrict non-admin callers
   // to only send emails to their own address — unless the template is in
-  // the server-authorized allowlist above.
+  // the server-authorized allowlist defined above. Service-role callers
+  // are inherently trusted (they ARE the server) and skip this check.
   if (
+    !isServiceRoleCall &&
     !template.to &&
     recipientEmail &&
     !SELF_OR_ADMIN_EXEMPT_TEMPLATES.has(templateName)
   ) {
     if (callerEmail?.toLowerCase() !== recipientEmail.toLowerCase()) {
-      // Check if caller is admin
-      const { data: isAdmin } = await userClient.rpc('is_admin', { _user_id: callerUserId })
+      const { data: isAdmin } = await supabase.rpc('is_admin', { _user_id: callerUserId })
       if (!isAdmin) {
         return new Response(
           JSON.stringify({ error: 'You can only send emails to your own address' }),
@@ -180,8 +176,7 @@ Deno.serve(async (req) => {
     }
   }
 
-  // Create Supabase client with service role (bypasses RLS)
-  const supabase = createClient(supabaseUrl, supabaseServiceKey)
+
 
   // 2. Check suppression list (fail-closed: if we can't verify, don't send)
   const { data: suppressed, error: suppressionError } = await supabase
