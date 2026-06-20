@@ -90,6 +90,7 @@ export function SquadOverview({
   onRemove,
   onViewPlan,
   allowedUserIds,
+  removableUserIds,
   athleteMeta,
   pulseFilter = "all",
   onStatsChange,
