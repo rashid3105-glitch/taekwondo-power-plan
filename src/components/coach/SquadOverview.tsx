@@ -50,6 +50,9 @@ interface Props {
   onRemove?: (userId: string) => void;
   onViewPlan?: (userId: string) => void;
   allowedUserIds?: string[];
+  /** Subset of allowedUserIds for which the remove (unlink) action should be shown.
+   *  Coaches viewing club members without a direct coach_athletes link should NOT see it. */
+  removableUserIds?: string[];
   athleteMeta?: AthleteMeta[];
   pulseFilter?: PulseFilter;
   onStatsChange?: (stats: { total: number; attention: number; injured: number; noPlan: number; stale: number }) => void;
