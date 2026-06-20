@@ -129,6 +129,25 @@ export default function PrivacyPolicy() {
         </section>
 
         <section style={section}>
+          <h2 style={h2}>Blogkommentarer / Blog comments</h2>
+          <p style={p}>
+            Når du skriver en kommentar på vores blog, indsamler vi dit navn, din emailadresse og selve kommentaren.
+            Din emailadresse vises <strong>aldrig offentligt</strong> og bruges udelukkende til at sende dig et bekræftelseslink
+            (dobbelt opt-in), så vi kan verificere at du er ejer af adressen. Retsgrundlaget er dit samtykke (GDPR art. 6(1)(a)).
+            Alle kommentarer modereres af en administrator før de offentliggøres. Du kan til enhver tid bede os slette
+            din kommentar ved at kontakte os.
+          </p>
+          <p style={{ ...p, marginTop: 10 }}>
+            When you submit a comment on our blog, we collect your name, email address and the comment itself.
+            Your email address is <strong>never shown publicly</strong> and is used solely to send you a verification link
+            (double opt-in) so we can confirm that you own the address. The legal basis is your consent (GDPR art. 6(1)(a)).
+            All comments are reviewed by an administrator before being published. You can ask us to delete your comment
+            at any time by contacting us.
+          </p>
+        </section>
+
+
+        <section style={section}>
           <h2 style={h2}>{t("privacyContact")}</h2>
           <p style={p}>{t("privacyContactDesc")}</p>
           <p style={{ fontSize: 15, color: "#fff", fontWeight: 600, marginTop: 8 }}>rashid3105@gmail.com</p>
