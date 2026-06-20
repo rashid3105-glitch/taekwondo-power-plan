@@ -13,6 +13,7 @@ export default function AdminBlog() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [authorized, setAuthorized] = useState<boolean | null>(null);
+  const [pendingComments, setPendingComments] = useState<number>(0);
 
   useEffect(() => {
     (async () => {
@@ -25,6 +26,10 @@ export default function AdminBlog() {
       }
       setAuthorized(true);
       await load();
+      const { count } = await (supabase.from as any)("blog_comments")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "pending_approval");
+      setPendingComments(count || 0);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
