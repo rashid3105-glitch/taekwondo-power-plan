@@ -77,7 +77,6 @@ export default function AdminBlog() {
             </Button>
             <h1 className="text-2xl font-extrabold">Blog</h1>
           </div>
-          <Button onClick={() => navigate("/admin/blog/new")}>
           <div className="flex gap-2 flex-wrap">
             <Button variant="outline" onClick={() => navigate("/admin/blog/comments")}>
               <MessageSquare className="h-4 w-4 mr-1" /> Comments
