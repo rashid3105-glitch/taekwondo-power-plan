@@ -392,7 +392,7 @@ export function SquadOverview({
                         <TooltipContent side="left">{t("diary")}</TooltipContent>
                       </Tooltip>
                     )}
-                    {onRemove && (
+                    {onRemove && (!removableUserIds || removableUserIds.includes(r.user_id)) && (
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button
