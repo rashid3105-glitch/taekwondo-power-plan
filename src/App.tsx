@@ -67,6 +67,8 @@ import Priser from "./pages/Priser";
 import Terms from "./pages/Terms";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
+import BlogCommentConfirm from "./pages/BlogCommentConfirm";
+import AdminBlogComments from "./pages/AdminBlogComments";
 import AdminBlog from "./pages/AdminBlog";
 import AdminBlogEditor from "./pages/AdminBlogEditor";
 import Contact from "./pages/Contact";
