@@ -78,9 +78,19 @@ export default function AdminBlog() {
             <h1 className="text-2xl font-extrabold">Blog</h1>
           </div>
           <Button onClick={() => navigate("/admin/blog/new")}>
-            <Plus className="h-4 w-4 mr-1" /> New post
-          </Button>
+          <div className="flex gap-2 flex-wrap">
+            <Button variant="outline" onClick={() => navigate("/admin/blog/comments")}>
+              <MessageSquare className="h-4 w-4 mr-1" /> Comments
+              {pendingComments > 0 && (
+                <Badge className="ml-2 bg-amber-500 hover:bg-amber-500 text-black">{pendingComments}</Badge>
+              )}
+            </Button>
+            <Button onClick={() => navigate("/admin/blog/new")}>
+              <Plus className="h-4 w-4 mr-1" /> New post
+            </Button>
+          </div>
         </div>
+
 
         {loading ? (
           <div className="text-center text-muted-foreground py-12">Loading…</div>
