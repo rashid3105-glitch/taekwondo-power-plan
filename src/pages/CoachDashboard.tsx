@@ -96,6 +96,7 @@ interface DiaryEntry {
 export default function CoachDashboard() {
   const [athletes, setAthletes] = useState<AthleteProfile[]>([]);
   const [clubAthletes, setClubAthletes] = useState<AthleteProfile[]>([]);
+  const [linkedAthleteIds, setLinkedAthleteIds] = useState<string[]>([]);
   const [plans, setPlans] = useState<AthletePlan[]>([]);
   const [rehabPlans, setRehabPlans] = useState<RehabPlan[]>([]);
   const [loading, setLoading] = useState(true);
@@ -205,85 +206,78 @@ export default function CoachDashboard() {
   const loadAthletes = async (currentUserId?: string, currentClubId?: string) => {
     const userId = currentUserId || coachUserId;
     const clubId = currentClubId || coachClubId;
-    // Restrict the coach<->athlete links to the active club only.
-    // Combined with the NOT NULL constraint on coach_athletes.club_id, this
-    // guarantees we never pick up a link belonging to another club.
+
+    // Direct coach<->athlete links in the active club (used to decide whether
+    // the "remove" action is shown — never to gate visibility).
     let linksQuery = supabase.from("coach_athletes").select("athlete_id, club_id");
     if (clubId) linksQuery = linksQuery.eq("club_id", clubId);
     const { data: links } = await linksQuery;
-
-    const athleteIds = (links || []).map((l: any) => l.athlete_id);
+    const linkedIds = Array.from(new Set(((links || []) as any[]).map((l) => l.athlete_id as string)));
+    setLinkedAthleteIds(linkedIds);
 
     const clubsRes = await supabase.from("clubs" as any).select("id, name").order("name");
     const clubMap = new Map<string, string>(
       ((clubsRes.data as unknown as { id: string; name: string }[] | null) ?? []).map((club) => [club.id, club.name])
     );
 
-    // Membership-based filter: athletes whose active membership puts them in this club.
-    // For a coach in only one club this is identical to the old `athlete.club_id === clubId` filter
-    // because club_memberships was backfilled from profiles.club_id.
-    let clubMembershipIds = new Set<string>();
-    if (clubId) {
-      const { data: memberRows } = await supabase
-        .from("club_memberships" as any)
-        .select("user_id")
-        .eq("club_id", clubId)
-        .eq("status", "active");
-      clubMembershipIds = new Set(((memberRows as any[]) ?? []).map((r) => r.user_id as string));
+    if (!clubId || !userId) {
+      setAthletes([]);
+      setClubAthletes([]);
+      setPlans([]);
+      setRehabPlans([]);
+      setLoading(false);
+      return;
     }
 
-    if (athleteIds.length === 0) {
-      setAthletes([]);
+    // Squad = ALL active members of the coach's active club (athletes only),
+    // sourced from the same secure RPC that already powers the read-only
+    // "Club members" section. This makes squad club-membership-driven, not
+    // dependent on direct coach_athletes links.
+    const { data: clubProfiles } = await supabase
+      .rpc("get_club_member_profiles", { _club_id: clubId });
+
+    const allMembers = ((clubProfiles || []) as any[])
+      .filter((p) => p.user_id !== userId)
+      .map((m) => ({
+        ...m,
+        club_name: m.club_id ? clubMap.get(m.club_id) || null : null,
+        is_coach: !!m.is_coach,
+      })) as AthleteProfile[];
+
+    const squad = allMembers
+      .filter((m) => !m.is_coach)
+      .sort((a, b) => a.display_name.localeCompare(b.display_name));
+
+    // Avoid duplicates in the read-only "Club members" section:
+    // anyone now in the squad is removed from clubAthletes. In practice this
+    // means only other coaches remain in that section.
+    const squadIdSet = new Set(squad.map((a) => a.user_id));
+    const otherMembers = allMembers
+      .filter((m) => !squadIdSet.has(m.user_id))
+      .sort((a, b) => a.display_name.localeCompare(b.display_name));
+
+    setAthletes(squad);
+    setClubAthletes(otherMembers);
+
+    const squadIds = squad.map((a) => a.user_id);
+    if (squadIds.length === 0) {
       setPlans([]);
       setRehabPlans([]);
     } else {
-      const [profilesRes, plansRes, rehabRes] = await Promise.all([
-        supabase
-          .from("profiles")
-          .select("user_id, display_name, athlete_code, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, current_injury, program_weeks, weekly_schedule, avatar_url, discipline, club_id, country")
-          .in("user_id", athleteIds),
+      const [plansRes, rehabRes] = await Promise.all([
         supabase
           .from("training_plans")
           .select("id, name, plan_data, is_active, created_at, user_id")
-          .in("user_id", athleteIds)
+          .in("user_id", squadIds)
           .order("created_at", { ascending: false }),
         supabase
           .from("rehab_plans")
           .select("id, name, plan_data, is_active, created_at, user_id, injury_description")
-          .in("user_id", athleteIds)
+          .in("user_id", squadIds)
           .order("created_at", { ascending: false }),
       ]);
-
-      // Restrict managed athletes to those who hold an active membership in this club.
-      const sameClubProfiles = (((profilesRes.data || []) as any[])
-        .filter((athlete) => clubId && (clubMembershipIds.has(athlete.user_id) || athlete.club_id === clubId))
-        .map((athlete) => ({
-          ...athlete,
-          club_name: athlete.club_id ? clubMap.get(athlete.club_id) || null : null,
-        })) as AthleteProfile[]).sort((a, b) => a.display_name.localeCompare(b.display_name));
-
-      const sameClubIds = new Set(sameClubProfiles.map((a) => a.user_id));
-
-      setAthletes(sameClubProfiles);
-      setPlans(((plansRes.data || []) as unknown as AthletePlan[]).filter((p) => sameClubIds.has(p.user_id)));
-      setRehabPlans(((rehabRes.data || []) as unknown as RehabPlan[]).filter((r) => sameClubIds.has(r.user_id)));
-    }
-
-    // Load club athletes via secure RPC (excludes sensitive financial fields)
-    if (clubId && userId) {
-      const { data: clubProfiles } = await supabase
-        .rpc("get_club_member_profiles", { _club_id: clubId });
-
-      const clubOnly = ((clubProfiles || []) as any[])
-        .filter((p) => p.user_id !== userId && !athleteIds.includes(p.user_id))
-        .map((athlete) => ({
-          ...athlete,
-          club_name: athlete.club_id ? clubMap.get(athlete.club_id) || null : null,
-          is_coach: !!athlete.is_coach,
-        })) as AthleteProfile[];
-
-      setClubAthletes(clubOnly.sort((a, b) => a.display_name.localeCompare(b.display_name)));
-
+      setPlans((plansRes.data || []) as unknown as AthletePlan[]);
+      setRehabPlans((rehabRes.data || []) as unknown as RehabPlan[]);
     }
 
     setLoading(false);
@@ -496,6 +490,7 @@ export default function CoachDashboard() {
                       else if (r) { setViewRehabPlan(r); }
                     }}
                     allowedUserIds={athletes.map((a) => a.user_id)}
+                    removableUserIds={linkedAthleteIds}
                     athleteMeta={athletes.map((a) => ({ user_id: a.user_id, club_name: a.club_name }))}
                     pulseFilter={pulseFilter}
                     onStatsChange={setPulseStats}
