@@ -17,13 +17,17 @@ import { FeatureEmptyState } from "@/components/FeatureEmptyState";
 
 interface WorkoutLog {
   id: string;
-  plan_id: string;
-  day_index: number;
-  exercise_index: number;
+  plan_id: string | null;
+  day_index: number | null;
+  exercise_index: number | null;
   completed: boolean;
   actual_sets: number | null;
   actual_reps: string | null;
   logged_date: string;
+  entry_type?: "plan" | "self" | null;
+  activity_label?: string | null;
+  duration_minutes?: number | null;
+  rpe?: number | null;
 }
 
 interface PlanData {
