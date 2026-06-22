@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/i18n/LanguageContext";
 import { useRole } from "@/contexts/RoleContext";
 import { useThreads } from "@/hooks/useThreads";
 import { Calendar, MessageCircle, Play, BookOpen, Trophy, NotebookPen, CalendarX, Book, Video, BarChart3, CalendarCheck, ClipboardList, User as UserIcon } from "lucide-react";
