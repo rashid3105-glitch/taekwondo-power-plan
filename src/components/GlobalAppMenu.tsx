@@ -21,6 +21,7 @@ import {
   Brain,
   BookOpen,
   MessageCircle,
+  MessageSquare,
   LayoutGrid,
   User,
   Settings,
