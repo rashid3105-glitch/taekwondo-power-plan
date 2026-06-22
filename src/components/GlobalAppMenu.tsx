@@ -275,7 +275,7 @@ export function GlobalAppMenu() {
               className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
             >
               <MessageCircle className="h-4 w-4 shrink-0" />
-              <span>{t("chat") || "Beskeder"}</span>
+              <span>{t("messagesEmail") || "Beskeder / Email"}</span>
             </button>
 
             {isCoach && (
