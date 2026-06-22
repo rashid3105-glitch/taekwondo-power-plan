@@ -33,7 +33,10 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
   const [overrides, setOverrides] = useState<AthleteSeasonOverride[]>([]);
   const [weekFocusMap, setWeekFocusMap] = useState<Map<number, WeekFocus>>(new Map());
   const [techMap, setTechMap] = useState<Map<string, { name: string; category: string }>>(new Map());
-  const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
+  const todayWeekNumInit = seasonWeekNumber(seasonPlan.start_date, today);
+  const initialWeek =
+    today >= seasonPlan.start_date && today <= seasonPlan.end_date ? todayWeekNumInit : null;
+  const [selectedWeek, setSelectedWeek] = useState<number | null>(initialWeek);
 
   useEffect(() => {
     let cancelled = false;
