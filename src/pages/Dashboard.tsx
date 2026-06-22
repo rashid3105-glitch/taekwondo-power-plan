@@ -146,7 +146,7 @@ export default function Dashboard() {
       return next;
     });
   }
-  const [menuOpen, setMenuOpen] = useState(false);
+  
   
   const [isOnline, setIsOnline] = useState(typeof navigator !== "undefined" ? navigator.onLine : true);
   const { isCoachMode, setCoachMode } = useCoachMode();
