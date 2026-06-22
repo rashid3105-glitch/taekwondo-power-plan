@@ -29,6 +29,7 @@ interface WorkoutLog {
   activity_label?: string | null;
   duration_minutes?: number | null;
   rpe?: number | null;
+  notes?: string | null;
 }
 
 interface PlanData {
