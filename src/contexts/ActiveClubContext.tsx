@@ -34,7 +34,7 @@ export function ActiveClubProvider({ children }: { children: ReactNode }) {
   const loadFor = useCallback(async (userId: string) => {
     try {
       // Pull active memberships + club names + the user's primary club for fallback ordering.
-      const [membershipsRes, profileRes] = await Promise.all([
+      const [membershipsRes, profileRes, superRes] = await Promise.all([
         supabase
           .from("club_memberships" as any)
           .select("club_id, role_in_club, status, clubs:club_id ( name )")
@@ -45,6 +45,7 @@ export function ActiveClubProvider({ children }: { children: ReactNode }) {
           .select("club_id, role")
           .eq("user_id", userId)
           .maybeSingle(),
+        supabase.rpc("is_superadmin", { _user_id: userId } as any),
       ]);
 
       const rawRows = ((membershipsRes.data as any[]) ?? []);
@@ -67,6 +68,26 @@ export function ActiveClubProvider({ children }: { children: ReactNode }) {
           byClub.set(entry.club_id, entry);
         }
       }
+
+      // Superadmin: append all other clubs as virtual "admin" memberships so the
+      // club switcher exposes every club without requiring real membership rows.
+      const isSuper = (superRes as any)?.data === true;
+      if (isSuper) {
+        const { data: allClubs } = await supabase
+          .from("clubs" as any)
+          .select("id, name");
+        for (const c of ((allClubs as any[] | null) ?? [])) {
+          if (!byClub.has(c.id as string)) {
+            byClub.set(c.id as string, {
+              club_id: c.id as string,
+              club_name: (c.name as string) ?? "",
+              role_in_club: "admin",
+              status: "active",
+            });
+          }
+        }
+      }
+
       const list: ClubMembership[] = Array.from(byClub.values())
         .sort((a, b) => a.club_name.localeCompare(b.club_name));
 

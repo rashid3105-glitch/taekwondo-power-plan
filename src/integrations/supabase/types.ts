@@ -2116,6 +2116,7 @@ export type Database = {
           rejection_reason: string | null
           role: string
           roles: string[] | null
+          superadmin_active: boolean
           tkd_sessions_per_week: number
           tkd_start_date: string | null
           updated_at: string
@@ -2174,6 +2175,7 @@ export type Database = {
           rejection_reason?: string | null
           role?: string
           roles?: string[] | null
+          superadmin_active?: boolean
           tkd_sessions_per_week?: number
           tkd_start_date?: string | null
           updated_at?: string
@@ -2232,6 +2234,7 @@ export type Database = {
           rejection_reason?: string | null
           role?: string
           roles?: string[] | null
+          superadmin_active?: boolean
           tkd_sessions_per_week?: number
           tkd_start_date?: string | null
           updated_at?: string
@@ -3762,6 +3765,7 @@ export type Database = {
         Args: { _athlete: string; _parent: string }
         Returns: boolean
       }
+      is_superadmin: { Args: { _user_id: string }; Returns: boolean }
       is_survey_target: {
         Args: { _survey_id: string; _user_id: string }
         Returns: boolean
@@ -3814,6 +3818,7 @@ export type Database = {
         Args: { _club_id: string; _schedule: Json }
         Returns: undefined
       }
+      set_superadmin_active: { Args: { _active: boolean }; Returns: boolean }
       start_direct_thread: { Args: { _other_user: string }; Returns: string }
       submit_survey: {
         Args: { _answers: Json; _is_anonymous: boolean; _survey_id: string }
