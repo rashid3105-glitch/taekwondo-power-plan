@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, User as UserIcon } from "lucide-react";
+import { Loader2, User as UserIcon, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { haptics } from "@/lib/haptics";
@@ -32,16 +32,28 @@ interface ClubActivityType {
 
 const FALLBACK_TYPES = ["Taekwondo", "Styrke", "Kondisjon", "Andet"];
 
+export interface SelfLogEditTarget {
+  id: string;
+  logged_date: string;
+  activity_label: string | null;
+  duration_minutes: number | null;
+  rpe: number | null;
+  notes: string | null;
+}
+
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onLogged?: () => void;
+  /** When provided, the dialog opens in edit mode for that workout_logs row. */
+  existingLog?: SelfLogEditTarget | null;
 }
 
-export function SelfTrainingLogDialog({ open, onOpenChange, onLogged }: Props) {
+export function SelfTrainingLogDialog({ open, onOpenChange, onLogged, existingLog }: Props) {
   const { t } = useLanguage();
   const { toast } = useToast();
   const today = new Date().toISOString().slice(0, 10);
+  const isEdit = !!existingLog;
 
   const [loadingTypes, setLoadingTypes] = useState(false);
   const [types, setTypes] = useState<string[]>(FALLBACK_TYPES);
@@ -53,13 +65,24 @@ export function SelfTrainingLogDialog({ open, onOpenChange, onLogged }: Props) {
   const [rpe, setRpe] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (!open) return;
-    setDate(today);
-    setDuration("");
-    setRpe("");
-    setNotes("");
+    // Preload either existing values (edit) or defaults (create).
+    if (existingLog) {
+      setDate(existingLog.logged_date);
+      setActivity(existingLog.activity_label || "");
+      setDuration(existingLog.duration_minutes != null ? String(existingLog.duration_minutes) : "");
+      setRpe(existingLog.rpe != null ? String(existingLog.rpe) : "");
+      setNotes(existingLog.notes || "");
+    } else {
+      setDate(today);
+      setActivity("");
+      setDuration("");
+      setRpe("");
+      setNotes("");
+    }
 
     (async () => {
       setLoadingTypes(true);
@@ -95,10 +118,16 @@ export function SelfTrainingLogDialog({ open, onOpenChange, onLogged }: Props) {
       setLoadingTypes(false);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
+  }, [open, existingLog?.id]);
 
   useEffect(() => {
-    if (types.length > 0 && !types.includes(activity)) {
+    if (types.length === 0) return;
+    // If the existing log's activity is no longer in the active list, keep it visible.
+    if (activity && !types.includes(activity)) {
+      setTypes((prev) => (prev.includes(activity) ? prev : [activity, ...prev]));
+      return;
+    }
+    if (!activity) {
       setActivity(types[0]);
     }
   }, [types, activity]);
@@ -128,26 +157,80 @@ export function SelfTrainingLogDialog({ open, onOpenChange, onLogged }: Props) {
       return;
     }
 
-    const { error } = await supabase.from("workout_logs").insert({
-      user_id: user.id,
-      entry_type: "self",
-      activity_label: activity,
-      completed: true,
-      logged_date: date,
-      duration_minutes: dur,
-      rpe: rpeNum,
-      notes: notes.trim() || null,
-      club_id: clubId,
-    } as any);
+    if (isEdit && existingLog) {
+      // Update — RLS scopes to owner and we additionally guard entry_type='self'.
+      const { error } = await supabase
+        .from("workout_logs")
+        .update({
+          activity_label: activity,
+          logged_date: date,
+          duration_minutes: dur,
+          rpe: rpeNum,
+          notes: notes.trim() || null,
+        } as any)
+        .eq("id", existingLog.id)
+        .eq("user_id", user.id)
+        .eq("entry_type", "self");
 
-    setSaving(false);
+      setSaving(false);
+      if (error) {
+        toast({ title: t("error"), description: error.message, variant: "destructive" });
+        return;
+      }
+      toast({ title: t("selfLogUpdated") || "Egen træning opdateret" });
+    } else {
+      const { error } = await supabase.from("workout_logs").insert({
+        user_id: user.id,
+        entry_type: "self",
+        activity_label: activity,
+        completed: true,
+        logged_date: date,
+        duration_minutes: dur,
+        rpe: rpeNum,
+        notes: notes.trim() || null,
+        club_id: clubId,
+      } as any);
 
+      setSaving(false);
+      if (error) {
+        toast({ title: t("error"), description: error.message, variant: "destructive" });
+        return;
+      }
+      toast({ title: t("selfLogSaved") || "Egen træning logget" });
+    }
+
+    onOpenChange(false);
+    onLogged?.();
+  };
+
+  const remove = async () => {
+    if (!existingLog) return;
+    const confirmMsg = t("selfLogDeleteConfirm") || "Slet denne egen-træning?";
+    if (!window.confirm(confirmMsg)) return;
+
+    setDeleting(true);
+    haptics.tap();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setDeleting(false);
+      toast({ title: t("error"), variant: "destructive" });
+      return;
+    }
+
+    // Owner + self-type guard (RLS already enforces owner).
+    const { error } = await supabase
+      .from("workout_logs")
+      .delete()
+      .eq("id", existingLog.id)
+      .eq("user_id", user.id)
+      .eq("entry_type", "self");
+
+    setDeleting(false);
     if (error) {
       toast({ title: t("error"), description: error.message, variant: "destructive" });
       return;
     }
-
-    toast({ title: t("selfLogSaved") || "Egen træning logget" });
+    toast({ title: t("selfLogDeleted") || "Egen træning slettet" });
     onOpenChange(false);
     onLogged?.();
   };
@@ -158,7 +241,9 @@ export function SelfTrainingLogDialog({ open, onOpenChange, onLogged }: Props) {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <UserIcon className="h-5 w-5 text-self" />
-            {t("selfLogTitle") || "Log egen træning"}
+            {isEdit
+              ? t("selfLogEditTitle") || "Rediger egen træning"
+              : t("selfLogTitle") || "Log egen træning"}
           </DialogTitle>
           <DialogDescription>
             {t("selfLogDesc") || "Logger en session der ikke kommer fra din plan."}
@@ -241,13 +326,39 @@ export function SelfTrainingLogDialog({ open, onOpenChange, onLogged }: Props) {
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-2">
-            <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={saving}>
-              {t("cancel")}
-            </Button>
-            <Button onClick={save} disabled={saving} className="bg-self text-self-foreground hover:bg-self/90">
-              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : t("save")}
-            </Button>
+          <div className="flex justify-between gap-2 pt-2">
+            <div>
+              {isEdit && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={remove}
+                  disabled={saving || deleting}
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                >
+                  {deleting ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <>
+                      <Trash2 className="h-4 w-4 mr-1.5" />
+                      {t("selfLogDelete") || "Slet"}
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={saving || deleting}>
+                {t("cancel")}
+              </Button>
+              <Button
+                onClick={save}
+                disabled={saving || deleting}
+                className="bg-self text-self-foreground hover:bg-self/90"
+              >
+                {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : t("save")}
+              </Button>
+            </div>
           </div>
         </div>
       </DialogContent>
