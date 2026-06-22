@@ -661,12 +661,6 @@ export default function Dashboard() {
                   isOnline ? "bg-green-500" : "bg-destructive"
                 )} />
               </button>
-              <Button variant="ghost" size="icon" onClick={() => { setMenuOpen(true); markDotSeen("role_update"); }} className="relative">
-                <Menu className="h-5 w-5" />
-                {!seenDots.has("role_update") && (
-                  <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-destructive animate-pulse" />
-                )}
-              </Button>
             </div>
           </div>
           {/* Mobile-only second row: full-width club switcher */}
