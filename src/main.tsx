@@ -2,6 +2,10 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 import { initNative, isNative } from "./lib/nativeInit";
+import {
+  hydrateAuthFromPreferences,
+  bindAuthPersistence,
+} from "./lib/nativeAuthStorage";
 
 // PWA service worker: ONLY register on the published *web* site.
 // Skip in editor preview iframe AND in any Capacitor native runtime
@@ -41,4 +45,11 @@ if (isPreviewHost || isInIframe || isNative()) {
 // Native bootstrap (StatusBar, SplashScreen, Android back button). No-op on web.
 initNative();
 
-createRoot(document.getElementById("root")!).render(<App />);
+// Native auth persistence: hydrate token from Capacitor Preferences BEFORE
+// React mounts, then keep Preferences in sync on every auth change. No-op on web.
+(async () => {
+  await hydrateAuthFromPreferences();
+  createRoot(document.getElementById("root")!).render(<App />);
+  // Bind listener after mount; supabase client is imported lazily inside.
+  bindAuthPersistence();
+})();
