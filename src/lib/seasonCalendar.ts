@@ -120,9 +120,14 @@ export function isoWeekNumber(iso: string): number {
   return 1 + Math.round(((d.getTime() - firstThursday.getTime()) / 86400000 - 3 + ((firstThursday.getDay() + 6) % 7)) / 7);
 }
 
-/** Returns season week number (1-based) for any ISO date inside the plan. */
+/** Returns season week number (1-based) for any ISO date inside the plan.
+ *  Weeks are always anchored to Monday so the calendar grid (Mon-Sun) maps
+ *  cleanly to one season week, regardless of which weekday the plan starts on.
+ */
 export function seasonWeekNumber(seasonStart: string, iso: string): number {
-  return Math.floor(daysBetween(seasonStart, iso) / 7) + 1;
+  const startMonday = addDays(seasonStart, -dayOfWeekMon0(seasonStart));
+  const isoMonday = addDays(iso, -dayOfWeekMon0(iso));
+  return Math.floor(daysBetween(startMonday, isoMonday) / 7) + 1;
 }
 
 /** ISO year for a given date (Monday-of-week's Thursday rule). */
