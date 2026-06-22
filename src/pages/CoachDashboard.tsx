@@ -438,6 +438,24 @@ export default function CoachDashboard() {
             {coachClubId && <TeamWeeklyScheduleCard clubId={coachClubId} />}
             {coachClubId && <ClubActivityTypesCard clubId={coachClubId} />}
 
+            {/* Coach mental review entry — coach-specific, not the athlete monthly assessment */}
+            <button
+              type="button"
+              onClick={() => navigate("/coach/mental")}
+              className="w-full text-left rounded-lg border border-primary/30 bg-primary/5 hover:bg-primary/10 transition-colors p-4 flex items-center gap-3"
+            >
+              <div className="h-10 w-10 rounded-full bg-primary/15 text-primary flex items-center justify-center shrink-0">
+                <Users className="h-5 w-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-foreground">Mental gennemgang for trænere</p>
+                <p className="text-xs text-muted-foreground">
+                  Månedlig check-in på dit indre coachingspil — ikke for atleter, for dig.
+                </p>
+              </div>
+              <span className="text-xs font-semibold text-primary shrink-0">Start →</span>
+            </button>
+
             {/* Squad content (formerly the "squad" tab) */}
             <div className="space-y-4">
               {coachUserId && <PendingAthletesSection coachId={coachUserId} />}
