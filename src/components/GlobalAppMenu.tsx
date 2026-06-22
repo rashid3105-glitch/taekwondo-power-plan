@@ -315,7 +315,7 @@ export function GlobalAppMenu() {
               <span>{t("profile")}</span>
             </button>
 
-            {coachAthleteMode === "coach" && isCoach ? (
+            {(coachAthleteMode === "coach" || coachOnly) && isCoach ? (
               <button
                 onClick={() => goAndClose("/hold/moduler")}
                 className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
