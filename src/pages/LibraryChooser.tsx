@@ -66,7 +66,7 @@ export default function LibraryChooser() {
           {visibleLibraries.map((lib) => (
             <button
               key={lib.id}
-              onClick={() => navigate(`/library/${lib.id}`)}
+              onClick={() => navigate(lib.id === "rehab" ? "/dashboard?tab=rehab" : `/library/${lib.id}`)}
               className="flex items-center gap-4 p-5 rounded-xl border border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800/80 hover:border-zinc-700 transition-all cursor-pointer text-left"
             >
               <div className="h-12 w-12 rounded-lg bg-zinc-950/60 border border-zinc-800 flex items-center justify-center shrink-0">
