@@ -271,6 +271,7 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
                   if (!inSeason || !wkNum) return;
                   setSelectedWeek(prev => prev === wkNum ? null : wkNum);
                 }}
+                title={wkNum !== null ? (weekFocusMap.get(wkNum)?.teamNote || undefined) : undefined}
                 className={cn(
                   "min-h-[58px] border-b border-r border-border/30 p-1.5 flex flex-col cursor-pointer transition-colors hover:bg-muted/30",
                   !inSeason && "opacity-30 cursor-default pointer-events-none",
