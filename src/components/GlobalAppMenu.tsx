@@ -49,7 +49,6 @@ const NAV_ITEMS: { tab: TabKey; icon: typeof Home; labelKey: string; color: stri
   { tab: "plan", icon: Zap, labelKey: "plan", color: "text-tab-plan" },
   { tab: "calendar", icon: CalendarRange, labelKey: "seasonCalendar", color: "text-primary" },
   { tab: "progress", icon: BarChart3, labelKey: "progress", color: "text-tab-progress" },
-  { tab: "rehab", icon: Heart, labelKey: "injuryRehabPlan", color: "text-tab-rehab" },
   { tab: "mental", icon: Brain, labelKey: "mental", color: "text-tab-mental" },
 ];
 
@@ -276,7 +275,7 @@ export function GlobalAppMenu() {
               className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
             >
               <MessageCircle className="h-4 w-4 shrink-0" />
-              <span>{t("chat") || "Beskeder"}</span>
+              <span>{t("messagesEmail") || "Beskeder / Email"}</span>
             </button>
 
             {isCoach && (

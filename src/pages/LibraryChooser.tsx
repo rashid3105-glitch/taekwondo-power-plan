@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { AppFooter } from "@/components/AppFooter";
 import { Watermark } from "@/components/Watermark";
-import { Dumbbell, Brain, UtensilsCrossed, ClipboardList, ArrowLeft, BookOpen, Zap, ShieldCheck, FileText } from "lucide-react";
+import { Dumbbell, Brain, UtensilsCrossed, ClipboardList, ArrowLeft, BookOpen, Zap, ShieldCheck, FileText, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useRole } from "@/contexts/RoleContext";
@@ -20,6 +20,7 @@ const libraries: {
   { id: "testing", labelKey: "libTestingLabel", descKey: "libTestingDesc", icon: ClipboardList, color: "text-primary" },
   { id: "hiit", labelKey: "libHiitLabel", descKey: "libHiitDesc", icon: Zap, color: "text-destructive" },
   { id: "supplement", labelKey: "libSupplementLabel", descKey: "libSupplementDesc", icon: ShieldCheck, color: "text-emerald-500" },
+  { id: "rehab", labelKey: "libRehabLabel", descKey: "libRehabDesc", icon: Heart, color: "text-tab-rehab" },
 ];
 
 export default function LibraryChooser() {
@@ -65,7 +66,7 @@ export default function LibraryChooser() {
           {visibleLibraries.map((lib) => (
             <button
               key={lib.id}
-              onClick={() => navigate(`/library/${lib.id}`)}
+              onClick={() => navigate(lib.id === "rehab" ? "/dashboard?tab=rehab" : `/library/${lib.id}`)}
               className="flex items-center gap-4 p-5 rounded-xl border border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800/80 hover:border-zinc-700 transition-all cursor-pointer text-left"
             >
               <div className="h-12 w-12 rounded-lg bg-zinc-950/60 border border-zinc-800 flex items-center justify-center shrink-0">
