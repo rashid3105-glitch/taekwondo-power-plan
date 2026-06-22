@@ -89,7 +89,7 @@ export function ThreadList({ threads, selectedId, onSelect, loading, onRefresh }
           )}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <span className={cn("text-sm truncate flex-1 text-foreground", unread > 0 && !archived && "font-semibold")}>
+              <span className={cn("text-sm truncate flex-1 text-card-foreground", unread > 0 && !archived && "font-semibold")}>
                 {title}
               </span>
               {unread > 0 && !archived && (
