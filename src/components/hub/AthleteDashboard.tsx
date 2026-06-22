@@ -432,7 +432,7 @@ export function AthleteDashboard() {
               style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
             >
               <CalendarCheck className="h-4 w-4" />
-              I dag
+              {t("todayTab")}
             </button>
           </>
         ) : (
