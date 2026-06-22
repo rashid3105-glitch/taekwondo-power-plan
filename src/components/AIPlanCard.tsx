@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from "react";
-import { ChevronDown, ChevronUp, Shield, Dumbbell, Battery, Download, Loader2, Check, Layers, Youtube, CalendarPlus, Bell, BellOff, ArrowLeftRight, Trash2, Plus, GripVertical } from "lucide-react";
+import { ChevronDown, ChevronUp, Shield, Dumbbell, Battery, Download, Loader2, Check, Layers, Youtube, CalendarPlus, Bell, BellOff, ArrowLeftRight, Trash2, Plus, GripVertical, User as UserIcon } from "lucide-react";
+import { SelfTrainingLogDialog } from "@/components/SelfTrainingLogDialog";
 import { DndContext, closestCenter, PointerSensor, TouchSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -230,6 +231,7 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [activeSessionIndex, setActiveSessionIndex] = useState(0);
   const [exporting, setExporting] = useState(false);
+  const [selfLogOpen, setSelfLogOpen] = useState(false);
   const [pickerMode, setPickerMode] = useState<{ dayIndex: number; sessionIndex: number; exerciseIndex?: number } | null>(null);
   const [localPlanData, setLocalPlanData] = useState(plan.plan_data);
   const programWeeks = (() => {
@@ -390,6 +392,16 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
         <div className="flex items-center gap-1.5 flex-shrink-0 flex-wrap justify-end">
           <TrainingReminder planId={plan.id} schedule={schedule} />
           <CalendarDropdown plan={plan} />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setSelfLogOpen(true)}
+            className="border-self/40 text-self hover:bg-self/10 hover:text-self"
+            title={t("selfLogTitle") || "Log egen træning"}
+          >
+            <UserIcon className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline ml-1">{t("selfLogShort") || "Egen"}</span>
+          </Button>
           <Button variant="outline" size="sm" onClick={handleDownload} disabled={exporting}>
             {exporting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
             <span className="hidden sm:inline ml-1">PDF</span>
@@ -397,6 +409,7 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
           <span className="text-xs bg-speed/20 text-speed px-2 py-1 rounded-full font-semibold">Active</span>
         </div>
       </div>
+      <SelfTrainingLogDialog open={selfLogOpen} onOpenChange={setSelfLogOpen} />
 
       {/* View toggle */}
       {programWeeks > 1 && (

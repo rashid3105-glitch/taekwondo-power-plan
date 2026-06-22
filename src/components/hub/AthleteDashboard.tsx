@@ -3,13 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useRole } from "@/contexts/RoleContext";
 import { useThreads } from "@/hooks/useThreads";
-import { Calendar, MessageCircle, Play, BookOpen, Trophy, NotebookPen, CalendarX, Book, Video, BarChart3, CalendarCheck, ClipboardList } from "lucide-react";
+import { Calendar, MessageCircle, Play, BookOpen, Trophy, NotebookPen, CalendarX, Book, Video, BarChart3, CalendarCheck, ClipboardList, User as UserIcon } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { SelfTrainingLogDialog } from "@/components/SelfTrainingLogDialog";
 
 interface TodaySession {
   weekdayLabel: string;
@@ -56,6 +57,7 @@ export function AthleteDashboard() {
   const [latestDiary, setLatestDiary] = useState<LatestDiary | null>(null);
   const [diaryLoading, setDiaryLoading] = useState(true);
   const [diaryOpen, setDiaryOpen] = useState(false);
+  const [selfLogOpen, setSelfLogOpen] = useState(false);
   const [now, setNow] = useState(() => new Date());
   const [isLoading, setIsLoading] = useState(true);
 
@@ -219,14 +221,24 @@ export function AthleteDashboard() {
                 I DAG · {WEEKDAYS_DA[new Date().getDay()]}
               </h3>
             </div>
-            {todaySession && (
-              <span
-                className="shrink-0 inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-lg"
-                style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
+            <div className="shrink-0 flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); setSelfLogOpen(true); }}
+                className="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1.5 rounded-lg border border-white/15 bg-white/[0.04] text-white hover:bg-white/[0.08] transition-colors"
+                aria-label="Log egen træning"
               >
-                <Play className="h-3 w-3" fill="currentColor" /> Start
-              </span>
-            )}
+                <UserIcon className="h-3 w-3" /> Egen
+              </button>
+              {todaySession && (
+                <span
+                  className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-lg"
+                  style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
+                >
+                  <Play className="h-3 w-3" fill="currentColor" /> Start
+                </span>
+              )}
+            </div>
           </div>
           {todaySession ? (
             <div>
@@ -491,6 +503,8 @@ export function AthleteDashboard() {
           )}
         </DialogContent>
       </Dialog>
+
+      <SelfTrainingLogDialog open={selfLogOpen} onOpenChange={setSelfLogOpen} />
     </div>
   );
 }

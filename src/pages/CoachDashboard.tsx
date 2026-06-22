@@ -31,6 +31,7 @@ import { PendingAthletesSection } from "@/components/coach/PendingAthletesSectio
 import { ConsentMissingPanel } from "@/components/coach/ConsentMissingPanel";
 import { CoachBulkCreateCompetitionDialog } from "@/components/coach/CoachBulkCreateCompetitionDialog";
 import { TeamWeeklyScheduleCard } from "@/components/coach/TeamWeeklyScheduleCard";
+import { ClubActivityTypesCard } from "@/components/coach/ClubActivityTypesCard";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   ArrowLeft, Loader2, Zap, User, Users, NotebookPen,
@@ -445,6 +446,7 @@ export default function CoachDashboard() {
             </div>
 
             {coachClubId && <TeamWeeklyScheduleCard clubId={coachClubId} />}
+            {coachClubId && <ClubActivityTypesCard clubId={coachClubId} />}
 
             {/* Squad content (formerly the "squad" tab) */}
             <div className="space-y-4">
