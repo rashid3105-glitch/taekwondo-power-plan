@@ -405,18 +405,8 @@ export default function CoachDashboard() {
 
         {coachUserId && (
           <div className="space-y-4">
-            {/* Beskeder pill */}
-            <button
-              type="button"
-              onClick={() => navigate("/coach/messages")}
-              className="w-full flex items-center justify-between gap-3 rounded-xl border border-primary/40 bg-primary/10 hover:bg-primary/15 transition-colors p-3 sm:p-4"
-            >
-              <span className="flex items-center gap-2 text-sm font-semibold text-card-foreground">
-                <MessageSquare className="h-4 w-4 text-primary" />
-                {t("messagesTab")}
-              </span>
-              <span className="text-xs text-muted-foreground">{t("messagesTabDescription")}</span>
-            </button>
+
+
 
             {/* Action buttons (previously in tab header) */}
             <div className="flex items-center gap-2 flex-wrap justify-end">
