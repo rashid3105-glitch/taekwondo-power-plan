@@ -153,7 +153,7 @@ export function MessageBubble({
               "relative rounded-2xl px-3 py-2 text-sm break-words",
               isOwn
                 ? "bg-primary text-primary-foreground rounded-br-sm"
-                : "bg-muted text-foreground rounded-bl-sm",
+                : "bg-muted text-card-foreground rounded-bl-sm",
             )}
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
