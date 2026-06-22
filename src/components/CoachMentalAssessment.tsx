@@ -326,7 +326,7 @@ export function CoachMentalAssessment({ profile }: { profile: Profile | null }) 
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <Users className="h-5 w-5 text-primary" />
-              <h3 className="font-bold text-foreground">{txt.title}</h3>
+              <h3 className="font-bold text-card-foreground">{txt.title}</h3>
             </div>
             <Badge variant="outline" className="text-[10px]">{txt.coachOnly}</Badge>
           </div>
@@ -373,7 +373,7 @@ export function CoachMentalAssessment({ profile }: { profile: Profile | null }) 
                 onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); viewPastResult(h); } }}>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <p className="text-sm font-medium text-foreground">{txt.score}: {h.total_score}/30</p>
+                    <p className="text-sm font-medium text-card-foreground">{txt.score}: {h.total_score}/30</p>
                     {h.pending && (
                       <Badge variant="outline" className="gap-1 text-[10px] py-0 h-5">
                         <CloudOff className="h-3 w-3" /> {txt.pending}
@@ -442,15 +442,15 @@ export function CoachMentalAssessment({ profile }: { profile: Profile | null }) 
               {categoryLabels[q.category][l]}
             </span>
           </div>
-          <h3 className="font-bold text-foreground text-base sm:text-lg">{q.text[l]}</h3>
+          <h3 className="font-bold text-card-foreground text-base sm:text-lg">{q.text[l]}</h3>
           <div className="space-y-2">
             {q.options.map((opt) => (
               <button key={opt.value}
                 onClick={() => handleAnswer(opt.value)}
                 className={`w-full text-left p-3 rounded-lg border transition-all text-sm ${
                   answers[q.id] === opt.value
-                    ? "border-primary bg-primary/10 text-foreground"
-                    : "border-border bg-card hover:border-primary/50 text-foreground"
+                    ? "border-primary bg-primary/10 text-card-foreground"
+                    : "border-border bg-card hover:border-primary/50 text-card-foreground"
                 }`}>
                 {opt.label[l]}
               </button>
@@ -477,7 +477,7 @@ export function CoachMentalAssessment({ profile }: { profile: Profile | null }) 
 
       <Card className="p-4 sm:p-6 text-center space-y-3">
         <Users className="h-8 w-8 mx-auto text-primary" />
-        <h2 className="text-2xl font-extrabold text-foreground">{totalScore}/30</h2>
+        <h2 className="text-2xl font-extrabold text-card-foreground">{totalScore}/30</h2>
         <p className="text-sm text-muted-foreground">{getOverallLabel(totalScore)}</p>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-3">
@@ -508,12 +508,12 @@ export function CoachMentalAssessment({ profile }: { profile: Profile | null }) 
       ) : advice ? (
         <>
           {advice.summary && (
-            <Card className="p-4"><p className="text-sm text-foreground">{advice.summary}</p></Card>
+            <Card className="p-4"><p className="text-sm text-card-foreground">{advice.summary}</p></Card>
           )}
 
           {advice.strengths?.length > 0 && (
             <Card className="p-4 space-y-2">
-              <h3 className="font-bold text-foreground text-sm flex items-center gap-2">
+              <h3 className="font-bold text-card-foreground text-sm flex items-center gap-2">
                 <Trophy className="h-4 w-4 text-green-500" /> {txt.strengths}
               </h3>
               <ul className="space-y-1">
@@ -528,7 +528,7 @@ export function CoachMentalAssessment({ profile }: { profile: Profile | null }) 
 
           {advice.improvementAreas?.map((area: any, i: number) => (
             <Card key={i} className="p-4 space-y-2">
-              <h3 className="font-bold text-foreground text-sm flex items-center gap-2">
+              <h3 className="font-bold text-card-foreground text-sm flex items-center gap-2">
                 <TrendingUp className="h-4 w-4 text-primary" /> {area.area}
                 {typeof area.score === "number" && (
                   <span className={`ml-auto text-sm font-bold ${getScoreColor(area.score)}`}>{area.score}/5</span>
@@ -556,14 +556,14 @@ export function CoachMentalAssessment({ profile }: { profile: Profile | null }) 
 
           {advice.preCompetitionRoutine && (
             <Card className="p-4 space-y-2">
-              <h3 className="font-bold text-foreground text-sm">{txt.preCompRoutine}</h3>
+              <h3 className="font-bold text-card-foreground text-sm">{txt.preCompRoutine}</h3>
               <p className="text-sm text-muted-foreground whitespace-pre-wrap">{advice.preCompetitionRoutine}</p>
             </Card>
           )}
 
           {advice.affirmations?.length > 0 && (
             <Card className="p-4 space-y-2">
-              <h3 className="font-bold text-foreground text-sm">{txt.affirmations}</h3>
+              <h3 className="font-bold text-card-foreground text-sm">{txt.affirmations}</h3>
               <ul className="space-y-1">
                 {advice.affirmations.map((a: string, i: number) => (
                   <li key={i} className="text-sm text-muted-foreground italic">"{a}"</li>
