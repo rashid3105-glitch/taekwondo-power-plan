@@ -38,6 +38,16 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
     today >= seasonPlan.start_date && today <= seasonPlan.end_date ? todayWeekNumInit : null;
   const [selectedWeek, setSelectedWeek] = useState<number | null>(initialWeek);
 
+  // Re-sync the selected week when the plan changes (e.g. club switch) or the day rolls over,
+  // so the highlighted week in the grid matches the "today" banner above.
+  useEffect(() => {
+    if (today >= seasonPlan.start_date && today <= seasonPlan.end_date) {
+      setSelectedWeek(seasonWeekNumber(seasonPlan.start_date, today));
+    } else {
+      setSelectedWeek(null);
+    }
+  }, [seasonPlan.start_date, seasonPlan.end_date, today]);
+
   useEffect(() => {
     let cancelled = false;
     (async () => {

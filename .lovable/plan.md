@@ -1,24 +1,24 @@
-## Goal
-In the athlete Calendar tab, the coach's team focus note (`club_week_technique_focus.coach_note`) is currently only visible after tapping a date to expand a week. Make the team focus + note visible directly in the overview so athletes don't have to click around.
+## Problem
 
-## Changes (frontend only)
+In the athlete Calendar tab, the top banner correctly shows the current week (e.g. "Uge 3 · 2026-06-22 – 2026-06-28"), but the highlighted week in the grid and the detail card below show the previous week ("Uge 2 · 2026-06-15 – 2026-06-21").
 
-File: `src/components/hub/SeasonCalendarView.tsx`
+## Root cause
 
-1. **Auto-select the current season week on load** so the existing week-details card (which already renders team techniques + note) is open by default. Falls back to first week with focus data if today is outside the season.
+`src/components/hub/SeasonCalendarView.tsx` initializes `selectedWeek` with `useState(initialWeek)` based on `seasonPlan.start_date` at first render. `useState`'s initializer only runs once — when `seasonPlan` later changes (e.g. superadmin switches club, or the plan loads asynchronously after the component mounts with a stale plan), `selectedWeek` stays stuck on the week number computed against the old start date. That's why "today's week" in the banner (recomputed every render) and "selected week" diverge by one.
 
-2. **Add a compact "Team focus this week" banner** between the current-phase banner and the month grid. It shows, for the current season week:
-   - Week number + date range
-   - Team technique chips (already-loaded `teamTechIds` → names)
-   - The coach's note (`teamNote`) in quotes
-   - "Ingen teknikfokus sat" empty state when the coach hasn't filled it in yet (uses existing `seasonTeamFocusNotSet` translation key)
-   
-   The banner is always visible (no click needed) and is the primary fix for "right now it does not show anything".
+## Fix (frontend only, single file)
 
-3. **Tooltip on day cells**: add `title={teamNote}` on cells where the week has a coach note, so hovering/long-pressing a day surfaces it too.
+In `src/components/hub/SeasonCalendarView.tsx`:
 
-No backend, schema, or business-logic changes. Data is already fetched by the existing effect — only presentation changes.
+- Add a `useEffect` that re-syncs `selectedWeek` to the current week whenever `seasonPlan.start_date`, `seasonPlan.end_date`, or `today` changes:
+  - If today falls inside the new plan → `setSelectedWeek(seasonWeekNumber(start, today))`
+  - Otherwise → `setSelectedWeek(null)`
+- Keep the existing manual click behavior (toggle on/off) untouched — the effect only fires on plan/date changes, not on user clicks.
+
+No backend, no schema, no business-logic changes. Pure presentation sync.
 
 ## Out of scope
-- Coach-side `SeasonCalendar.tsx` editor (already shows the note inline in the edit panel).
-- Hub mini calendar (`SeasonCalendarMini.tsx`) — different surface, can be a follow-up if you want the note there too.
+
+- Coach-side `SeasonCalendar.tsx`
+- Hub mini calendar
+- Any week-number / Monday-anchor math in `seasonCalendar.ts` (already correct, banner proves it)
