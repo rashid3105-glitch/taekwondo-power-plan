@@ -49,7 +49,6 @@ const NAV_ITEMS: { tab: TabKey; icon: typeof Home; labelKey: string; color: stri
   { tab: "plan", icon: Zap, labelKey: "plan", color: "text-tab-plan" },
   { tab: "calendar", icon: CalendarRange, labelKey: "seasonCalendar", color: "text-primary" },
   { tab: "progress", icon: BarChart3, labelKey: "progress", color: "text-tab-progress" },
-  { tab: "rehab", icon: Heart, labelKey: "injuryRehabPlan", color: "text-tab-rehab" },
   { tab: "mental", icon: Brain, labelKey: "mental", color: "text-tab-mental" },
 ];
 
