@@ -109,7 +109,7 @@ export function GlobalAppMenu() {
   const { pathname } = useLocation();
   const { t } = useLanguage();
   const { hasCoachRole } = useRole();
-  const { isCoachMode } = useCoachMode();
+  const { isCoachMode, setCoachMode } = useCoachMode();
   const { activeMembership } = useActiveClub();
 
   const [open, setOpen] = useState(false);
