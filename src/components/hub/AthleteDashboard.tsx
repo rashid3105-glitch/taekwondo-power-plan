@@ -503,6 +503,8 @@ export function AthleteDashboard() {
           )}
         </DialogContent>
       </Dialog>
+
+      <SelfTrainingLogDialog open={selfLogOpen} onOpenChange={setSelfLogOpen} />
     </div>
   );
 }
