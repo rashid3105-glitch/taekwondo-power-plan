@@ -930,6 +930,8 @@ export default function AdminApproval() {
           </Button>
         </div>
 
+        <SuperadminToggle />
+
         <h1 className="text-xl font-extrabold text-foreground">{t("userApproval")}</h1>
 
         {/* Landing announcement editor */}
