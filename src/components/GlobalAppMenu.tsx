@@ -174,6 +174,11 @@ export function GlobalAppMenu() {
   const goTab = (tab: TabKey) => {
     if (isDemoLockedTab(tab)) return;
     setOpen(false);
+    // Home should always take the user to the athlete hub, even if they're
+    // currently in coach mode (otherwise Dashboard auto-bounces back to /coach).
+    if (tab === "hub" && isCoachMode) {
+      setCoachMode(false);
+    }
     navigate(tab === "hub" ? "/dashboard" : `/dashboard?tab=${tab}`);
   };
 
