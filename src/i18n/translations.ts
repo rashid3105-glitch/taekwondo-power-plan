@@ -2991,8 +2991,6 @@ const translations = {
     activityTypesEmpty: "No types yet — add your first one below.",
     activityTypeNewPlaceholder: "New type (e.g. Running)",
     activityTypeDeleteConfirm: "Delete activity type? Existing logs keep the name.",
-    add: "Add",
-    active: "Active",
   },
   da: {
     defaultLanguage: "Standardsprog",
