@@ -40,7 +40,7 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 import { cn } from "@/lib/utils";
-import { MessagesIcon } from "@/components/chat/MessagesIcon";
+
 
 interface AthleteProfile {
   user_id: string;
