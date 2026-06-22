@@ -1,10 +1,11 @@
 import { type TrainingDay } from "@/data/exercises";
 import { ExerciseCard } from "./ExerciseCard";
-import { Shield, Dumbbell, Battery } from "lucide-react";
+import { Shield, Dumbbell, Battery, User } from "lucide-react";
 
 const TYPE_BADGES: Record<string, { label: string; className: string; icon: typeof Shield }> = {
   tkd: { label: "Taekwondo", className: "bg-gradient-energy", icon: Shield },
   gym: { label: "Gym Session", className: "bg-gradient-power", icon: Dumbbell },
+  selftraining: { label: "Self-training", className: "bg-self/20 text-self", icon: User },
   recovery: { label: "Recovery", className: "bg-speed/20 text-speed", icon: Battery },
 };
 

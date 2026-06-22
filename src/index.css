@@ -52,6 +52,8 @@
     --power: 80 90% 50%;
     --speed: 190 95% 48%;
     --explosive: 350 90% 56%;
+    --self: 32 95% 55%;
+    --self-foreground: 222 35% 12%;
     --gradient-energy: linear-gradient(135deg, hsl(222 95% 56%), hsl(190 95% 48%));
     --gradient-power: linear-gradient(135deg, hsl(80 90% 50%), hsl(150 80% 45%));
     --gradient-explosive: linear-gradient(135deg, hsl(350 90% 56%), hsl(15 95% 55%));
@@ -128,6 +130,9 @@
     --sidebar-accent-foreground: 210 30% 95%;
     --sidebar-border: 222 20% 22%;
     --sidebar-ring: 222 95% 56%;
+
+    --self: 32 95% 58%;
+    --self-foreground: 222 35% 12%;
   }
 }
 

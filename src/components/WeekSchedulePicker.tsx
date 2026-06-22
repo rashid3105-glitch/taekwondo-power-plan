@@ -1,4 +1,4 @@
-import { Shield, Dumbbell, Battery, Plus, X } from "lucide-react";
+import { Shield, Dumbbell, Battery, Plus, X, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
@@ -6,10 +6,11 @@ const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
 const TYPES = [
   { value: "tkd" as const, label: "TKD", icon: Shield, color: "text-primary", border: "border-primary/50", bg: "bg-primary/10" },
   { value: "gym" as const, label: "Gym", icon: Dumbbell, color: "text-accent", border: "border-accent/50", bg: "bg-accent/10" },
+  { value: "selftraining" as const, label: "Self", icon: User, color: "text-self", border: "border-self/50", bg: "bg-self/10" },
   { value: "rest" as const, label: "Rest", icon: Battery, color: "text-speed", border: "border-speed/50", bg: "bg-speed/10" },
 ];
 
-export type SessionType = "tkd" | "gym" | "rest";
+export type SessionType = "tkd" | "gym" | "rest" | "selftraining";
 export type DaySession = { type: SessionType };
 export type DaySchedule = { day: string; type: SessionType; sessions?: DaySession[] };
 
@@ -28,7 +29,7 @@ interface WeekSchedulePickerProps {
 export function WeekSchedulePicker({ schedule, onChange }: WeekSchedulePickerProps) {
   const cycleSession = (day: string, sessionIndex: number) => {
     const sessions = [...getDaySessions(schedule, day)];
-    const order: SessionType[] = ["tkd", "gym", "rest"];
+    const order: SessionType[] = ["tkd", "gym", "selftraining", "rest"];
     sessions[sessionIndex] = {
       type: order[(order.indexOf(sessions[sessionIndex].type) + 1) % order.length],
     };
@@ -125,9 +126,10 @@ export function WeekSchedulePicker({ schedule, onChange }: WeekSchedulePickerPro
         <p className="text-[11px] text-destructive font-medium">⚠ Include at least one rest day for recovery</p>
       )}
 
-      <div className="flex items-center gap-4 text-[10px] text-muted-foreground">
+      <div className="flex items-center gap-4 text-[10px] text-muted-foreground flex-wrap">
         <span className="flex items-center gap-1"><Shield className="h-3 w-3 text-primary" /> TKD</span>
         <span className="flex items-center gap-1"><Dumbbell className="h-3 w-3 text-accent" /> Gym</span>
+        <span className="flex items-center gap-1"><User className="h-3 w-3 text-self" /> Self</span>
         <span className="flex items-center gap-1"><Battery className="h-3 w-3 text-speed" /> Rest</span>
         <span className="ml-auto italic">Tap to cycle · + to add session</span>
       </div>

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Battery, Shield, Dumbbell, Check, ChevronDown, Loader2, Play } from "lucide-react";
+import { Battery, Shield, Dumbbell, Check, ChevronDown, Loader2, Play, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -139,22 +139,27 @@ function SessionRow({
 }) {
   const { t } = useLanguage();
   const isTkd = session.type === "tkd";
+  const isSelf = session.type === "selftraining";
   const exercises = session.exercises || [];
   const total = isTkd ? 1 : exercises.length || 1;
   const { logs } = useOfflineWorkoutLogs(planId, dayIndex, sessionIndex);
   const completedCount = logs.filter((l) => l.completed).length;
   const allDone = completedCount >= total;
 
+  const iconBg = isTkd ? "bg-gradient-energy" : isSelf ? "bg-self" : "bg-gradient-power";
+  const IconCmp = isTkd ? Shield : isSelf ? User : Dumbbell;
+  const badgeLabel = isTkd ? t("todaySessionTkd") : isSelf ? t("sessionTypeSelftraining") : t("todaySessionGym");
+
   return (
     <div className="flex items-center justify-between gap-3 rounded-xl border border-border/60 bg-secondary/30 p-3">
       <div className="flex items-start gap-3 min-w-0">
-        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${isTkd ? "bg-gradient-energy" : "bg-gradient-power"}`}>
-          {isTkd ? <Shield className="h-4 w-4 text-white" /> : <Dumbbell className="h-4 w-4 text-white" />}
+        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${iconBg}`}>
+          <IconCmp className="h-4 w-4 text-white" />
         </div>
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="text-[10px] uppercase tracking-wider">
-              {isTkd ? t("todaySessionTkd") : t("todaySessionGym")}
+              {badgeLabel}
             </Badge>
             {!isTkd && exercises.length > 0 && (
               <span className="text-xs text-muted-foreground">{exercises.length} {t("todayExercisesCount")}</span>

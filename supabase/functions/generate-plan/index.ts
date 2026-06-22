@@ -108,7 +108,7 @@ Return a valid JSON object with this exact structure:
       "dayOfWeek": "Monday",
       "sessions": [
         {
-          "type": "tkd" | "gym" | "recovery",
+          "type": "tkd" | "gym" | "selftraining" | "recovery",
           "label": "string (e.g. 'Morning Strength' or 'Evening TKD')",
           "focus": "string",
           "exercises": [
@@ -133,7 +133,7 @@ Return a valid JSON object with this exact structure:
   ]
 }
 
-IMPORTANT: Each day in weeklySchedule MUST use the "sessions" array format. A day can have ONE or MULTIPLE sessions. For example, a day with both morning gym training and evening TKD would have two session objects in the sessions array. Rest days should have a single session with type "recovery" and an empty exercises array.
+IMPORTANT: Each day in weeklySchedule MUST use the "sessions" array format. A day can have ONE or MULTIPLE sessions. For example, a day with both morning gym training and evening TKD would have two session objects in the sessions array. Rest days should have a single session with type "recovery" and an empty exercises array. For "selftraining" days, build a self-guided session the athlete can run alone at home or in the dojang without a coach present — lower volume than gym day, 4-6 movements blending bodyweight strength, mobility, light technical drills, and conditioning, with clear coaching cues so the athlete can self-correct.
 
 The weeklySchedule represents the BASE WEEK template. The periodization array describes how to modify volume/intensity across the entire program duration. Create realistic periodization phases that make sense for the athlete's level and goals.
 

@@ -4,7 +4,7 @@
  * club_athlete_season_overrides.
  */
 
-export type SessionType = "tkd" | "gym" | "rest" | "styrke" | "stævne";
+export type SessionType = "tkd" | "gym" | "rest" | "styrke" | "stævne" | "selftraining";
 
 export interface ClubSeasonPlan {
   id: string;
@@ -68,28 +68,30 @@ export const PHASE_PALETTE = [
   { name: "Gray",   value: "#6b7280" },
 ];
 
-export const SESSION_TYPES: SessionType[] = ["tkd", "gym", "styrke", "stævne", "rest"];
+export const SESSION_TYPES: SessionType[] = ["tkd", "gym", "styrke", "selftraining", "stævne", "rest"];
 
 /** Tailwind tint classes per session type. Keeps the calendar visually distinct. */
 export function sessionRowClass(t: SessionType | null | undefined): string {
   switch (t) {
-    case "tkd":     return "bg-primary/10";
+    case "tkd":          return "bg-primary/10";
     case "gym":
-    case "styrke":  return "bg-emerald-500/10";
-    case "stævne":  return "bg-destructive/15 font-semibold";
+    case "styrke":       return "bg-emerald-500/10";
+    case "selftraining": return "bg-self/10";
+    case "stævne":       return "bg-destructive/15 font-semibold";
     case "rest":
-    default:        return "";
+    default:             return "";
   }
 }
 
 export function sessionLabelKey(t: SessionType | null | undefined): string {
   switch (t) {
-    case "tkd":    return "sessionTypeTkd";
-    case "gym":    return "sessionTypeGym";
-    case "styrke": return "sessionTypeStyrke";
-    case "stævne": return "sessionTypeStaevne";
+    case "tkd":          return "sessionTypeTkd";
+    case "gym":          return "sessionTypeGym";
+    case "styrke":       return "sessionTypeStyrke";
+    case "stævne":       return "sessionTypeStaevne";
+    case "selftraining": return "sessionTypeSelftraining";
     case "rest":
-    default:       return "sessionTypeRest";
+    default:             return "sessionTypeRest";
   }
 }
 
@@ -221,10 +223,11 @@ export function resolveSessionsForDate(
 
 export function sessionDotColor(t: SessionType | null | undefined): string {
   switch (t) {
-    case "tkd":     return "#3b82f6";
+    case "tkd":          return "#3b82f6";
     case "gym":
-    case "styrke":  return "#10b981";
-    case "stævne":  return "#ef4444";
-    default:        return "transparent";
+    case "styrke":       return "#10b981";
+    case "selftraining": return "#f59e0b";
+    case "stævne":       return "#ef4444";
+    default:             return "transparent";
   }
 }
