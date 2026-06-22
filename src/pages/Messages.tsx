@@ -64,7 +64,7 @@ export default function Messages() {
             </Button>
             <span className="text-sm sm:text-base font-extrabold text-card-foreground">Beskeder</span>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 mr-12">
             {isCoach && (
               <Button variant="ghost" size="icon" onClick={() => setGroupOpen(true)} aria-label="Ny gruppe">
                 <Users className="h-4 w-4" />
