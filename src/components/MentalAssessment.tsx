@@ -642,7 +642,7 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
         <Card className="p-4 sm:p-6 space-y-4">
           <div className="flex items-center gap-2">
             <Brain className="h-5 w-5 text-primary" />
-            <h3 className="font-bold text-foreground">{txt.title}</h3>
+            <h3 className="font-bold text-card-foreground">{txt.title}</h3>
           </div>
           <p className="text-sm text-muted-foreground">{txt.subtitle}</p>
           <div className="flex flex-col sm:flex-row gap-2">
@@ -690,7 +690,7 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <p className="text-sm font-medium text-foreground">
+                    <p className="text-sm font-medium text-card-foreground">
                       {txt.score}: {h.total_score}/30
                     </p>
                     {h.pending && (
@@ -782,7 +782,7 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
               {categoryLabels[q.category][l]}
             </span>
           </div>
-          <h3 className="font-bold text-foreground text-base sm:text-lg">{(questionTexts[currentQ] || q.text)[l]}</h3>
+          <h3 className="font-bold text-card-foreground text-base sm:text-lg">{(questionTexts[currentQ] || q.text)[l]}</h3>
           <div className="space-y-2">
             {q.options.map((opt) => (
               <button
@@ -790,8 +790,8 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
                 onClick={() => handleAnswer(opt.value)}
                 className={`w-full text-left p-3 rounded-lg border transition-all text-sm ${
                   answers[q.id] === opt.value
-                    ? "border-primary bg-primary/10 text-foreground"
-                    : "border-border bg-card hover:border-primary/50 text-foreground"
+                    ? "border-primary bg-primary/10 text-card-foreground"
+                    : "border-border bg-card hover:border-primary/50 text-card-foreground"
                 }`}
               >
                 {opt.label[l]}
@@ -820,7 +820,7 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
 
       <Card className="p-4 sm:p-6 text-center space-y-3">
         <Brain className="h-8 w-8 mx-auto text-primary" />
-        <h2 className="text-2xl font-extrabold text-foreground">{totalScore}/30</h2>
+        <h2 className="text-2xl font-extrabold text-card-foreground">{totalScore}/30</h2>
         <p className="text-sm text-muted-foreground">{getOverallLabel(totalScore)}</p>
 
         <div className="py-2">
@@ -862,12 +862,12 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
       ) : advice ? (
         <>
           <Card className="p-4 space-y-2">
-            <p className="text-sm text-foreground">{advice.summary}</p>
+            <p className="text-sm text-card-foreground">{advice.summary}</p>
           </Card>
 
           {advice.strengths?.length > 0 && (
             <Card className="p-4 space-y-2">
-              <h3 className="font-bold text-foreground text-sm flex items-center gap-2">
+              <h3 className="font-bold text-card-foreground text-sm flex items-center gap-2">
                 <Trophy className="h-4 w-4 text-green-500" /> {txt.strengths}
               </h3>
               <ul className="space-y-1">
@@ -882,7 +882,7 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
 
           {advice.improvementAreas?.map((area: any, i: number) => (
             <Card key={i} className="p-4 space-y-2">
-              <h3 className="font-bold text-foreground text-sm flex items-center gap-2">
+              <h3 className="font-bold text-card-foreground text-sm flex items-center gap-2">
                 <TrendingUp className="h-4 w-4 text-primary" /> {area.area}
                 <span className={`text-xs ml-auto ${getScoreColor(area.score)}`}>{area.score}/5</span>
               </h3>
@@ -890,7 +890,7 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
                 <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">{txt.techniques}</p>
                 <ul className="space-y-1">
                   {area.techniques?.map((tech: string, j: number) => (
-                    <li key={j} className="text-sm text-foreground flex items-start gap-2">
+                    <li key={j} className="text-sm text-card-foreground flex items-start gap-2">
                       <span className="text-primary mt-0.5">•</span> {tech}
                     </li>
                   ))}
@@ -898,28 +898,28 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
               </div>
               <div className="bg-muted/50 rounded-lg p-2">
                 <p className="text-xs font-semibold text-muted-foreground">{txt.dailyHabit}</p>
-                <p className="text-sm text-foreground">{area.dailyHabit}</p>
+                <p className="text-sm text-card-foreground">{area.dailyHabit}</p>
               </div>
             </Card>
           ))}
 
           {advice.preCompetitionRoutine && (
             <Card className="p-4 space-y-2">
-              <h3 className="font-bold text-foreground text-sm flex items-center gap-2">
+              <h3 className="font-bold text-card-foreground text-sm flex items-center gap-2">
                 <Target className="h-4 w-4 text-primary" /> {txt.preCompRoutine}
               </h3>
-              <p className="text-sm text-foreground whitespace-pre-line">{advice.preCompetitionRoutine}</p>
+              <p className="text-sm text-card-foreground whitespace-pre-line">{advice.preCompetitionRoutine}</p>
             </Card>
           )}
 
           {advice.affirmations?.length > 0 && (
             <Card className="p-4 space-y-2">
-              <h3 className="font-bold text-foreground text-sm flex items-center gap-2">
+              <h3 className="font-bold text-card-foreground text-sm flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-yellow-500" /> {txt.affirmations}
               </h3>
               <ul className="space-y-2">
                 {advice.affirmations.map((a: string, i: number) => (
-                  <li key={i} className="text-sm text-foreground italic bg-primary/5 p-2 rounded-lg">
+                  <li key={i} className="text-sm text-card-foreground italic bg-primary/5 p-2 rounded-lg">
                     "{a}"
                   </li>
                 ))}
@@ -929,14 +929,14 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
         </>
       ) : pendingAdvice ? (
         <Card className="p-4 space-y-2 border-primary/30 bg-primary/5">
-          <h3 className="font-bold text-foreground text-sm flex items-center gap-2">
+          <h3 className="font-bold text-card-foreground text-sm flex items-center gap-2">
             <CloudOff className="h-4 w-4 text-primary" /> {txt.pending}
           </h3>
           <p className="text-sm text-muted-foreground">{txt.adviceWillSyncOnline}</p>
         </Card>
       ) : viewingId ? (
         <Card className="p-4 space-y-3 border-primary/30 bg-primary/5">
-          <h3 className="font-bold text-foreground text-sm flex items-center gap-2">
+          <h3 className="font-bold text-card-foreground text-sm flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-primary" /> {txt.noAdviceTitle}
           </h3>
           <p className="text-sm text-muted-foreground">{txt.noAdviceDesc}</p>
@@ -953,7 +953,7 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
 
       {advice && !diarySaved && (
         <Card className="p-4 space-y-2 border-primary/30 bg-primary/5">
-          <h3 className="font-bold text-foreground text-sm flex items-center gap-2">
+          <h3 className="font-bold text-card-foreground text-sm flex items-center gap-2">
             <NotebookPen className="h-4 w-4 text-primary" /> {txt.saveToDiary}
           </h3>
           <p className="text-xs text-muted-foreground">{txt.saveToDiaryPrompt}</p>
@@ -966,7 +966,7 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
 
       {diarySaved && (
         <Card className="p-3 border-green-500/30 bg-green-500/10 text-center">
-          <p className="text-sm text-foreground font-medium">✓ {txt.savedToDiary}</p>
+          <p className="text-sm text-card-foreground font-medium">✓ {txt.savedToDiary}</p>
         </Card>
       )}
 
