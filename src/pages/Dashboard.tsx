@@ -131,6 +131,7 @@ export default function Dashboard() {
     return t && VALID_TABS.includes(t) ? t : "hub";
   })();
   const [activeTab, setActiveTab] = useState<TabKey>(initialTab);
+  const [selfLogOpen, setSelfLogOpen] = useState(false);
   const [nutritionView, setNutritionView] = useState<"home" | "planner" | "recipes">("home");
   const [seenDots, setSeenDots] = useState<Set<string>>(() => {
     try {
