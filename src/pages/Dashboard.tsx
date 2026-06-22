@@ -188,8 +188,16 @@ export default function Dashboard() {
   const { isModuleEnabled } = useAthleteModuleAccess();
   const { isFromCache: profileFromCache, cachedAt: profileCachedAt } = useOfflineProfile();
   const { plan: offlinePlan, online: planOnline } = useOfflinePlan();
-  const { role } = useRole();
+  const { role, coachOnly, loading: roleLoading } = useRole();
   const { memberships, activeMembership, loading: activeClubLoading } = useActiveClub();
+
+  // Coach/admin-only accounts (no athlete role) should never see the athlete dashboard.
+  useEffect(() => {
+    if (roleLoading) return;
+    if (coachOnly) {
+      navigate("/coach", { replace: true });
+    }
+  }, [coachOnly, roleLoading, navigate]);
 
   // Only stay in the coach dashboard when coach mode is explicitly active.
   useEffect(() => {
