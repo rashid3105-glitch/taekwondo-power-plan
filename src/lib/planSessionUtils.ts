@@ -6,7 +6,7 @@
  */
 
 export interface PlanSession {
-  type: "tkd" | "gym" | "recovery" | "rest";
+  type: "tkd" | "gym" | "recovery" | "rest" | "selftraining";
   label: string;
   focus?: string;
   exercises?: any[];

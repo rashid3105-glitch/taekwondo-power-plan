@@ -62,6 +62,10 @@ export default {
         power: "hsl(var(--power))",
         speed: "hsl(var(--speed))",
         explosive: "hsl(var(--explosive))",
+        self: {
+          DEFAULT: "hsl(var(--self))",
+          foreground: "hsl(var(--self-foreground))",
+        },
         "tab-plan": "hsl(var(--tab-plan))",
         "tab-progress": "hsl(var(--tab-progress))",
         "tab-rehab": "hsl(var(--tab-rehab))",

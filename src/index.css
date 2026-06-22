@@ -130,6 +130,9 @@
     --sidebar-accent-foreground: 210 30% 95%;
     --sidebar-border: 222 20% 22%;
     --sidebar-ring: 222 95% 56%;
+
+    --self: 32 95% 58%;
+    --self-foreground: 222 35% 12%;
   }
 }
 
