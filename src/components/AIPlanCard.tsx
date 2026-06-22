@@ -231,6 +231,7 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [activeSessionIndex, setActiveSessionIndex] = useState(0);
   const [exporting, setExporting] = useState(false);
+  const [selfLogOpen, setSelfLogOpen] = useState(false);
   const [pickerMode, setPickerMode] = useState<{ dayIndex: number; sessionIndex: number; exerciseIndex?: number } | null>(null);
   const [localPlanData, setLocalPlanData] = useState(plan.plan_data);
   const programWeeks = (() => {
