@@ -33,7 +33,10 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
   const [overrides, setOverrides] = useState<AthleteSeasonOverride[]>([]);
   const [weekFocusMap, setWeekFocusMap] = useState<Map<number, WeekFocus>>(new Map());
   const [techMap, setTechMap] = useState<Map<string, { name: string; category: string }>>(new Map());
-  const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
+  const todayWeekNumInit = seasonWeekNumber(seasonPlan.start_date, today);
+  const initialWeek =
+    today >= seasonPlan.start_date && today <= seasonPlan.end_date ? todayWeekNumInit : null;
+  const [selectedWeek, setSelectedWeek] = useState<number | null>(initialWeek);
 
   useEffect(() => {
     let cancelled = false;
@@ -163,15 +166,57 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
 
       {(() => {
         const hasTkdInTemplate = template.some((d) => d.session_type === "tkd");
-        const hasAnyTeamFocus = [...weekFocusMap.values()].some((v) => v.teamTechIds.length > 0);
-        if (hasTkdInTemplate && !hasAnyTeamFocus) {
-          return (
-            <p className="text-xs text-muted-foreground italic px-1">
-              {t("seasonTeamFocusNotSet")}
-            </p>
-          );
-        }
-        return null;
+        if (!hasTkdInTemplate) return null;
+        const inSeasonNow = today >= seasonPlan.start_date && today <= seasonPlan.end_date;
+        if (!inSeasonNow) return null;
+        const focus = weekFocusMap.get(todayWeekNum);
+        const teamTechs = (focus?.teamTechIds ?? [])
+          .map((id) => techMap.get(id))
+          .filter(Boolean) as { name: string; category: string }[];
+        const teamNote = (focus?.teamNote ?? "").trim();
+        const hasAny = teamTechs.length > 0 || teamNote.length > 0;
+
+        const startMs = new Date(seasonPlan.start_date + "T00:00:00").getTime();
+        const wkStart = new Date(startMs + (todayWeekNum - 1) * 7 * 86400000)
+          .toISOString().slice(0, 10);
+        const wkEnd = new Date(startMs + ((todayWeekNum - 1) * 7 + 6) * 86400000)
+          .toISOString().slice(0, 10);
+
+        return (
+          <Card className="p-3 space-y-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-sm font-semibold">
+                👥 {t("seasonTeamFocus" as any)?.toString().split("(")[0].trim() || "Team focus"} · {t("seasonWeek")} {todayWeekNum}
+              </span>
+              <span className="text-[11px] text-muted-foreground">{wkStart} – {wkEnd}</span>
+            </div>
+            {hasAny ? (
+              <>
+                {teamTechs.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {teamTechs.map((tech, i) => (
+                      <span
+                        key={i}
+                        className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/30 text-primary"
+                      >
+                        {tech.name}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                {teamNote && (
+                  <p className="text-xs text-muted-foreground italic whitespace-pre-wrap">
+                    "{teamNote}"
+                  </p>
+                )}
+              </>
+            ) : (
+              <p className="text-xs text-muted-foreground italic">
+                {t("seasonTeamFocusNotSet")}
+              </p>
+            )}
+          </Card>
+        );
       })()}
 
       <Card className="overflow-hidden">
@@ -226,6 +271,7 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
                   if (!inSeason || !wkNum) return;
                   setSelectedWeek(prev => prev === wkNum ? null : wkNum);
                 }}
+                title={wkNum !== null ? (weekFocusMap.get(wkNum)?.teamNote || undefined) : undefined}
                 className={cn(
                   "min-h-[58px] border-b border-r border-border/30 p-1.5 flex flex-col cursor-pointer transition-colors hover:bg-muted/30",
                   !inSeason && "opacity-30 cursor-default pointer-events-none",
