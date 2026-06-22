@@ -339,28 +339,58 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
                     {t("selfLogShort") || "Egen"}
                   </span>
                 </h3>
+                <p className="text-[11px] text-muted-foreground mb-2">
+                  {t("selfLogEditHint") || "Tryk på en session for at rette eller slette."}
+                </p>
                 <ul className="space-y-1.5">
                   {selfLogs.map((l) => (
-                    <li
-                      key={l.id}
-                      className="flex items-center justify-between gap-2 text-sm py-1.5 border-b border-border/40 last:border-0"
-                    >
-                      <span className="flex items-center gap-2 min-w-0">
-                        <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-self/15 text-self shrink-0">
-                          {t("selfLogShort") || "Egen"}
+                    <li key={l.id} className="border-b border-border/40 last:border-0">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setEditingSelfLog({
+                            id: l.id,
+                            logged_date: l.logged_date,
+                            activity_label: l.activity_label ?? null,
+                            duration_minutes: l.duration_minutes ?? null,
+                            rpe: l.rpe ?? null,
+                            notes: l.notes ?? null,
+                          })
+                        }
+                        className="w-full flex items-center justify-between gap-2 text-sm py-1.5 text-left rounded-md hover:bg-muted/40 active:bg-muted/60 transition-colors px-1 -mx-1 min-h-11"
+                        aria-label={t("selfLogEditTitle") || "Rediger egen træning"}
+                      >
+                        <span className="flex items-center gap-2 min-w-0">
+                          <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-self/15 text-self shrink-0">
+                            {t("selfLogShort") || "Egen"}
+                          </span>
+                          <span className="truncate text-card-foreground">
+                            {l.activity_label || "—"}
+                          </span>
                         </span>
-                        <span className="truncate text-card-foreground">
-                          {l.activity_label || "—"}
+                        <span className="text-xs text-muted-foreground shrink-0 tabular-nums">
+                          {l.duration_minutes ? `${l.duration_minutes} min · ` : ""}
+                          {new Date(l.logged_date).toLocaleDateString()}
                         </span>
-                      </span>
-                      <span className="text-xs text-muted-foreground shrink-0 tabular-nums">
-                        {l.duration_minutes ? `${l.duration_minutes} min · ` : ""}
-                        {new Date(l.logged_date).toLocaleDateString()}
-                      </span>
+                      </button>
                     </li>
                   ))}
                 </ul>
               </div>
+            );
+          })()}
+
+          <SelfTrainingLogDialog
+            open={!!editingSelfLog}
+            onOpenChange={(o) => {
+              if (!o) setEditingSelfLog(null);
+            }}
+            existingLog={editingSelfLog}
+            onLogged={() => {
+              setEditingSelfLog(null);
+              void loadData();
+            }}
+          />
             );
           })()}
 
