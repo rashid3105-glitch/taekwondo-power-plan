@@ -83,7 +83,7 @@ export function SelfTrainingLogDialog({ open, onOpenChange, onLogged }: Props) {
           .eq("club_id", cid)
           .eq("is_active", true)
           .order("sort_order", { ascending: true });
-        const rows = (data as ClubActivityType[] | null) || [];
+        const rows = (data as unknown as ClubActivityType[] | null) || [];
         if (rows.length > 0) {
           setTypes(rows.map((r) => r.label));
         } else {
