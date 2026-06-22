@@ -175,8 +175,6 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
       )}
 
       {(() => {
-        const hasTkdInTemplate = template.some((d) => d.session_type === "tkd");
-        if (!hasTkdInTemplate) return null;
         const inSeasonNow = today >= seasonPlan.start_date && today <= seasonPlan.end_date;
         const displayWeek = selectedWeek ?? (inSeasonNow ? todayWeekNum : null);
         if (displayWeek === null) return null;
