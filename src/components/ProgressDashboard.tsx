@@ -14,6 +14,7 @@ import {
 import { useLanguage } from "@/i18n/LanguageContext";
 import { normalizeDaySessions } from "@/lib/planSessionUtils";
 import { FeatureEmptyState } from "@/components/FeatureEmptyState";
+import { SelfTrainingLogDialog, type SelfLogEditTarget } from "@/components/SelfTrainingLogDialog";
 
 interface WorkoutLog {
   id: string;
