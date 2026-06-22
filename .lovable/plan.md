@@ -1,24 +1,55 @@
-## Problem
+## Add Self-training as a new session type
 
-In the athlete Calendar tab, the top banner correctly shows the current week (e.g. "Uge 3 · 2026-06-22 – 2026-06-28"), but the highlighted week in the grid and the detail card below show the previous week ("Uge 2 · 2026-06-15 – 2026-06-21").
+Introduce `selftraining` (DA: "Selvtræning") alongside `tkd`, `gym`, `rest`, `styrke`, `stævne`. Icon: lucide `User`, color: amber/orange (semantic token).
 
-## Root cause
+### 1. Design token
+- Add `--self` (amber, e.g. `38 92% 50%`) + `--self-foreground` in `src/index.css` (light + dark), wire into `tailwind.config.ts` as `colors.self`.
 
-`src/components/hub/SeasonCalendarView.tsx` initializes `selectedWeek` with `useState(initialWeek)` based on `seasonPlan.start_date` at first render. `useState`'s initializer only runs once — when `seasonPlan` later changes (e.g. superadmin switches club, or the plan loads asynchronously after the component mounts with a stale plan), `selectedWeek` stays stuck on the week number computed against the old start date. That's why "today's week" in the banner (recomputed every render) and "selected week" diverge by one.
+### 2. Type + helpers — `src/lib/seasonCalendar.ts`
+- Extend `SessionType` union with `"selftraining"`.
+- Add to `SESSION_TYPES` array.
+- `sessionRowClass` → `bg-self/10`.
+- `sessionLabelKey` → `"sessionTypeSelftraining"`.
+- `sessionDotColor` → amber hex (`#f59e0b`).
 
-## Fix (frontend only, single file)
+### 3. WeekSchedulePicker — `src/components/WeekSchedulePicker.tsx`
+- Add `selftraining` entry to `TYPES` array with `User` icon, `text-self`, `border-self/50`, `bg-self/10`.
+- Update `SessionType` union and cycle order: `tkd → gym → selftraining → rest`.
+- Add legend chip.
 
-In `src/components/hub/SeasonCalendarView.tsx`:
+### 4. planSessionUtils — `src/lib/planSessionUtils.ts`
+- Extend `type` union with `"selftraining"`.
+- Multi-session fallback icon logic unchanged.
 
-- Add a `useEffect` that re-syncs `selectedWeek` to the current week whenever `seasonPlan.start_date`, `seasonPlan.end_date`, or `today` changes:
-  - If today falls inside the new plan → `setSelectedWeek(seasonWeekNumber(start, today))`
-  - Otherwise → `setSelectedWeek(null)`
-- Keep the existing manual click behavior (toggle on/off) untouched — the effect only fires on plan/date changes, not on user clicks.
+### 5. Translations — `src/i18n/translations.ts`
+- Add `sessionTypeSelftraining` for all 7 locales (en, da, sv, de, ar, no, es):
+  - da: "Selvtræning", en: "Self-training", sv: "Egenträning", de: "Eigentraining", no: "Egentrening", es: "Autoentrenamiento", ar: "تدريب ذاتي".
 
-No backend, no schema, no business-logic changes. Pure presentation sync.
+### 6. Consumer components — render new type with icon/color
+Update render switches/maps in:
+- `src/components/hub/SeasonCalendarView.tsx`
+- `src/pages/SeasonCalendar.tsx`
+- `src/components/coach/TeamWeeklyScheduleCard.tsx` (already uses WeekSchedulePicker — no change needed beyond picker)
+- `src/components/coach/WeeklySquadExport.tsx`
+- `src/components/DayDetail.tsx`
+- `src/components/CoachAthleteDetail.tsx`
+- `src/components/today/TodayCard.tsx`
+- `src/components/SampleProgramDialog.tsx`
+- `src/components/landing/SamplePlanPreview.tsx`
 
-## Out of scope
+For each: where `tkd|gym|rest|styrke|stævne` maps to icon/label/color, add the `selftraining` branch.
 
-- Coach-side `SeasonCalendar.tsx`
-- Hub mini calendar
-- Any week-number / Monday-anchor math in `seasonCalendar.ts` (already correct, banner proves it)
+### 7. Edge functions — `supabase/functions/generate-plan/index.ts` + `generate-weekly-athlete-summary/index.ts` + `update-my-profile/index.ts`
+- Treat `selftraining` as a valid value where session types are validated/used.
+- In `generate-plan`, prompt: instruct AI to produce a lower-volume self-guided session (athlete trains alone, no coach) — same exercise structure as a TKD/gym day but lighter, with cues/notes.
+
+### 8. Database
+No migration needed — `session_type` is a free-text column with no CHECK constraint. Existing rows unaffected.
+
+### Files touched (~14)
+`src/index.css`, `tailwind.config.ts`, `src/lib/seasonCalendar.ts`, `src/lib/planSessionUtils.ts`, `src/components/WeekSchedulePicker.tsx`, `src/i18n/translations.ts`, the 9 consumer components above, and 3 edge functions.
+
+### Out of scope
+- Backfilling existing user schedules.
+- New "self-training" exercise library (reuses existing exercises).
+- Coach analytics breakdown by type (existing groupings will pick it up automatically once rendered).
