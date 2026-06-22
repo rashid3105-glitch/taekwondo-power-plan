@@ -446,6 +446,7 @@ export default function CoachDashboard() {
             </div>
 
             {coachClubId && <TeamWeeklyScheduleCard clubId={coachClubId} />}
+            {coachClubId && <ClubActivityTypesCard clubId={coachClubId} />}
 
             {/* Squad content (formerly the "squad" tab) */}
             <div className="space-y-4">
