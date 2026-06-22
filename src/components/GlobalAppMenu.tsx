@@ -21,6 +21,7 @@ import {
   Brain,
   BookOpen,
   MessageCircle,
+  MessageSquare,
   LayoutGrid,
   User,
   Settings,
@@ -276,8 +277,18 @@ export function GlobalAppMenu() {
               className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
             >
               <MessageCircle className="h-4 w-4 shrink-0" />
-              <span>{t("chat") || "Beskeder"}</span>
+              <span>{t("chat") || "Chat"}</span>
             </button>
+
+            {isCoach && (
+              <button
+                onClick={() => goAndClose("/coach/messages")}
+                className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
+              >
+                <MessageSquare className="h-4 w-4 shrink-0" />
+                <span>{t("messagesTab") || "Beskeder"}</span>
+              </button>
+            )}
 
             {isCoach && (
               <button

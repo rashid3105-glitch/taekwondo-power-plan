@@ -62,7 +62,7 @@ export default function Messages() {
             <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
               <ArrowLeft className="h-4 w-4" />
             </Button>
-            <span className="text-sm sm:text-base font-extrabold">Beskeder</span>
+            <span className="text-sm sm:text-base font-extrabold text-foreground">Beskeder</span>
           </div>
           <div className="flex items-center gap-1">
             {isCoach && (
