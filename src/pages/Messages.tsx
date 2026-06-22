@@ -66,11 +66,11 @@ export default function Messages() {
           </div>
           <div className="flex items-center gap-1 mr-12">
             {isCoach && (
-              <Button variant="ghost" size="icon" onClick={() => setGroupOpen(true)} aria-label="Ny gruppe">
+              <Button variant="ghost" size="icon" onClick={() => setGroupOpen(true)} aria-label="Ny gruppe" className="bg-amber-400 hover:bg-amber-500 text-black">
                 <Users className="h-4 w-4" />
               </Button>
             )}
-            <Button variant="ghost" size="icon" onClick={() => setPickerOpen(true)} aria-label="Ny samtale">
+            <Button variant="ghost" size="icon" onClick={() => setPickerOpen(true)} aria-label="Ny samtale" className="bg-amber-400 hover:bg-amber-500 text-black">
               <UserPlus className="h-4 w-4" />
             </Button>
           </div>
