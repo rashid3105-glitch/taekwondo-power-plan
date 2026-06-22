@@ -1409,6 +1409,7 @@ export default function Dashboard() {
         </div>
       )}
       <ChatDrawer open={chatOpen} onOpenChange={setChatOpen} isCoach={isCoach} />
+      <SelfTrainingLogDialog open={selfLogOpen} onOpenChange={setSelfLogOpen} />
       <AppFooter />
     </div>
   );
