@@ -51,6 +51,7 @@ const WEEKDAYS_DA = ["SØNDAG", "MANDAG", "TIRSDAG", "ONSDAG", "TORSDAG", "FREDA
 export function AthleteDashboard() {
   const { role: activeRole } = useRole();
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const { totalUnread } = useThreads();
 
   const [todaySession, setTodaySession] = useState<TodaySession | null>(null);
