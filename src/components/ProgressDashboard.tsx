@@ -83,6 +83,7 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
   const [mentalAssessments, setMentalAssessments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<TimeRange>("all");
+  const [editingSelfLog, setEditingSelfLog] = useState<SelfLogEditTarget | null>(null);
   const { t } = useLanguage();
   // TODO: health-sync skjult indtil native HealthKit (RN) er klar — vis for admin indtil da.
   const { isAdmin: canSeeHealthSync } = useIsAdmin();
