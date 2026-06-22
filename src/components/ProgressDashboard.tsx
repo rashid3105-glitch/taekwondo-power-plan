@@ -391,8 +391,6 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
               void loadData();
             }}
           />
-            );
-          })()}
 
 
           {/* Weekly volume chart */}
