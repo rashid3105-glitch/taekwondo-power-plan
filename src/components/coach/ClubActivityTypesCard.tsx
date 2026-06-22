@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { Loader2, Plus, Trash2, Tag, GripVertical } from "lucide-react";
+import { Loader2, Plus, Trash2, Tag, GripVertical, ChevronDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 
@@ -26,6 +26,7 @@ export function ClubActivityTypesCard({ clubId }: Props) {
   const [items, setItems] = useState<ClubActivityType[]>([]);
   const [newLabel, setNewLabel] = useState("");
   const [adding, setAdding] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -112,78 +113,94 @@ export function ClubActivityTypesCard({ clubId }: Props) {
     );
   }
 
+  const activeCount = items.filter((i) => i.is_active).length;
+
   return (
-    <div className="rounded-xl border border-border bg-card p-4 space-y-3">
-      <div className="flex items-center gap-2">
-        <Tag className="h-4 w-4 text-self" />
-        <h3 className="text-sm font-bold text-card-foreground">
+    <div className="rounded-xl border border-border bg-card">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center gap-2 p-4 text-left"
+        aria-expanded={open}
+      >
+        <Tag className="h-4 w-4 text-self shrink-0" />
+        <h3 className="text-sm font-bold text-card-foreground flex-1">
           {t("activityTypesTitle") || "Aktivitetstyper (egen træning)"}
         </h3>
-      </div>
-      <p className="text-xs text-muted-foreground">
-        {t("activityTypesDesc") ||
-          "Disse typer kan atleterne vælge når de logger egen træning. Slå fra eller slet for at fjerne dem som fremtidigt valg — eksisterende logs ændres ikke."}
-      </p>
+        <span className="text-xs text-muted-foreground">{activeCount}/{items.length}</span>
+        <ChevronDown
+          className={`h-4 w-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
 
-      <ul className="space-y-1.5">
-        {items.map((it) => (
-          <li
-            key={it.id}
-            className="flex items-center gap-2 rounded-md border border-border bg-muted/20 px-2 py-1.5"
-          >
-            <GripVertical className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+      {open && (
+        <div className="px-4 pb-4 space-y-3">
+          <p className="text-xs text-muted-foreground">
+            {t("activityTypesDesc") ||
+              "Disse typer kan atleterne vælge når de logger egen træning. Slå fra eller slet for at fjerne dem som fremtidigt valg — eksisterende logs ændres ikke."}
+          </p>
+
+          <ul className="space-y-1.5">
+            {items.map((it) => (
+              <li
+                key={it.id}
+                className="flex items-center gap-2 rounded-md border border-border bg-muted/20 px-2 py-1.5"
+              >
+                <GripVertical className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                <Input
+                  defaultValue={it.label}
+                  onBlur={(e) => {
+                    if (e.target.value.trim() !== it.label) {
+                      void rename(it.id, e.target.value);
+                    }
+                  }}
+                  className="h-9 flex-1"
+                />
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <Switch
+                    checked={it.is_active}
+                    onCheckedChange={(v) => void toggle(it.id, v)}
+                    aria-label={t("active") || "Aktiv"}
+                  />
+                </div>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-9 w-9 text-destructive"
+                  onClick={() => void remove(it.id)}
+                  aria-label={t("delete")}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </li>
+            ))}
+            {items.length === 0 && (
+              <li className="text-xs text-muted-foreground py-2">
+                {t("activityTypesEmpty") || "Ingen typer endnu — tilføj din første nedenfor."}
+              </li>
+            )}
+          </ul>
+
+          <div className="flex items-center gap-2 pt-1">
             <Input
-              defaultValue={it.label}
-              onBlur={(e) => {
-                if (e.target.value.trim() !== it.label) {
-                  void rename(it.id, e.target.value);
+              value={newLabel}
+              onChange={(e) => setNewLabel(e.target.value)}
+              placeholder={t("activityTypeNewPlaceholder") || "Ny type (fx Løb)"}
+              className="h-10 flex-1"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  void add();
                 }
               }}
-              className="h-9 flex-1"
             />
-            <div className="flex items-center gap-1.5 shrink-0">
-              <Switch
-                checked={it.is_active}
-                onCheckedChange={(v) => void toggle(it.id, v)}
-                aria-label={t("active") || "Aktiv"}
-              />
-            </div>
-            <Button
-              size="icon"
-              variant="ghost"
-              className="h-9 w-9 text-destructive"
-              onClick={() => void remove(it.id)}
-              aria-label={t("delete")}
-            >
-              <Trash2 className="h-4 w-4" />
+            <Button onClick={add} disabled={adding || !newLabel.trim()} size="sm">
+              {adding ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+              <span className="hidden sm:inline ml-1">{t("add") || "Tilføj"}</span>
             </Button>
-          </li>
-        ))}
-        {items.length === 0 && (
-          <li className="text-xs text-muted-foreground py-2">
-            {t("activityTypesEmpty") || "Ingen typer endnu — tilføj din første nedenfor."}
-          </li>
-        )}
-      </ul>
-
-      <div className="flex items-center gap-2 pt-1">
-        <Input
-          value={newLabel}
-          onChange={(e) => setNewLabel(e.target.value)}
-          placeholder={t("activityTypeNewPlaceholder") || "Ny type (fx Løb)"}
-          className="h-10 flex-1"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              void add();
-            }
-          }}
-        />
-        <Button onClick={add} disabled={adding || !newLabel.trim()} size="sm">
-          {adding ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
-          <span className="hidden sm:inline ml-1">{t("add") || "Tilføj"}</span>
-        </Button>
-      </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
