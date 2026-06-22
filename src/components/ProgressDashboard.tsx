@@ -321,6 +321,47 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
             <StatCard icon={Zap} label={t("streak")} value={`${stats.streak}d`} />
           </div>
 
+          {/* Recent self-training (egen træning) */}
+          {(() => {
+            const selfLogs = filteredLogs
+              .filter((l) => l.entry_type === "self")
+              .sort((a, b) => (a.logged_date < b.logged_date ? 1 : -1))
+              .slice(0, 5);
+            if (selfLogs.length === 0) return null;
+            return (
+              <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
+                <h3 className="text-sm font-bold text-card-foreground mb-3 flex items-center gap-2">
+                  {t("selfLogRecentTitle") || "Seneste egen-træning"}
+                  <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-self/15 text-self">
+                    {t("selfLogShort") || "Egen"}
+                  </span>
+                </h3>
+                <ul className="space-y-1.5">
+                  {selfLogs.map((l) => (
+                    <li
+                      key={l.id}
+                      className="flex items-center justify-between gap-2 text-sm py-1.5 border-b border-border/40 last:border-0"
+                    >
+                      <span className="flex items-center gap-2 min-w-0">
+                        <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-self/15 text-self shrink-0">
+                          {t("selfLogShort") || "Egen"}
+                        </span>
+                        <span className="truncate text-card-foreground">
+                          {l.activity_label || "—"}
+                        </span>
+                      </span>
+                      <span className="text-xs text-muted-foreground shrink-0 tabular-nums">
+                        {l.duration_minutes ? `${l.duration_minutes} min · ` : ""}
+                        {new Date(l.logged_date).toLocaleDateString()}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })()}
+
+
           {/* Weekly volume chart */}
           <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
             <h3 className="text-sm font-bold text-card-foreground mb-4">{t("weeklyTrainingVolume")}</h3>
