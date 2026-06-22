@@ -178,8 +178,9 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
         const hasTkdInTemplate = template.some((d) => d.session_type === "tkd");
         if (!hasTkdInTemplate) return null;
         const inSeasonNow = today >= seasonPlan.start_date && today <= seasonPlan.end_date;
-        if (!inSeasonNow) return null;
-        const focus = weekFocusMap.get(todayWeekNum);
+        const displayWeek = selectedWeek ?? (inSeasonNow ? todayWeekNum : null);
+        if (displayWeek === null) return null;
+        const focus = weekFocusMap.get(displayWeek);
         const teamTechs = (focus?.teamTechIds ?? [])
           .map((id) => techMap.get(id))
           .filter(Boolean) as { name: string; category: string }[];
@@ -187,16 +188,16 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
         const hasAny = teamTechs.length > 0 || teamNote.length > 0;
 
         const startMs = new Date(seasonPlan.start_date + "T00:00:00").getTime();
-        const wkStart = new Date(startMs + (todayWeekNum - 1) * 7 * 86400000)
+        const wkStart = new Date(startMs + (displayWeek - 1) * 7 * 86400000)
           .toISOString().slice(0, 10);
-        const wkEnd = new Date(startMs + ((todayWeekNum - 1) * 7 + 6) * 86400000)
+        const wkEnd = new Date(startMs + ((displayWeek - 1) * 7 + 6) * 86400000)
           .toISOString().slice(0, 10);
 
         return (
           <Card className="p-3 space-y-2">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="text-sm font-semibold">
-                👥 {t("seasonTeamFocus" as any)?.toString().split("(")[0].trim() || "Team focus"} · {t("seasonWeek")} {todayWeekNum}
+                👥 {t("seasonTeamFocus" as any)?.toString().split("(")[0].trim() || "Team focus"} · {t("seasonWeek")} {displayWeek}
               </span>
               <span className="text-[11px] text-muted-foreground">{wkStart} – {wkEnd}</span>
             </div>
