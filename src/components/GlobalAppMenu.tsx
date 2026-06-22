@@ -108,7 +108,7 @@ export function GlobalAppMenu() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { t } = useLanguage();
-  const { hasCoachRole } = useRole();
+  const { hasCoachRole, coachOnly } = useRole();
   const { isCoachMode, setCoachMode } = useCoachMode();
   const { activeMembership } = useActiveClub();
 
