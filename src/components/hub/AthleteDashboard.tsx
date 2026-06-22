@@ -57,6 +57,7 @@ export function AthleteDashboard() {
   const [latestDiary, setLatestDiary] = useState<LatestDiary | null>(null);
   const [diaryLoading, setDiaryLoading] = useState(true);
   const [diaryOpen, setDiaryOpen] = useState(false);
+  const [selfLogOpen, setSelfLogOpen] = useState(false);
   const [now, setNow] = useState(() => new Date());
   const [isLoading, setIsLoading] = useState(true);
 
