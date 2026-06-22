@@ -108,7 +108,7 @@ export function GlobalAppMenu() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { t } = useLanguage();
-  const { hasCoachRole, coachOnly } = useRole();
+  const { hasCoachRole } = useRole();
   const { isCoachMode, setCoachMode } = useCoachMode();
   const { activeMembership } = useActiveClub();
 
@@ -245,7 +245,7 @@ export function GlobalAppMenu() {
           <Separator />
 
           <nav className="flex-1 overflow-y-auto py-2 px-2">
-            {!coachOnly && NAV_ITEMS.map(({ tab, icon: Icon, labelKey, color }) => {
+            {NAV_ITEMS.map(({ tab, icon: Icon, labelKey, color }) => {
               const locked = isDemoLockedTab(tab);
               return (
                 <button
@@ -263,19 +263,17 @@ export function GlobalAppMenu() {
               );
             })}
 
-            {!coachOnly && (
-              <button
-                onClick={() => goAndClose("/library")}
-                disabled={isDemo}
-                className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors text-muted-foreground hover:bg-accent hover:text-foreground ${
-                  isDemo ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
-                }`}
-              >
-                <BookOpen className="h-4 w-4 shrink-0" />
-                <span className="truncate">{t("library")}</span>
-                {isDemo && <Lock className="h-3 w-3 ms-auto shrink-0" />}
-              </button>
-            )}
+            <button
+              onClick={() => goAndClose("/library")}
+              disabled={isDemo}
+              className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors text-muted-foreground hover:bg-accent hover:text-foreground ${
+                isDemo ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+              }`}
+            >
+              <BookOpen className="h-4 w-4 shrink-0" />
+              <span className="truncate">{t("library")}</span>
+              {isDemo && <Lock className="h-3 w-3 ms-auto shrink-0" />}
+            </button>
 
             <Separator className="my-2" />
 
@@ -315,7 +313,7 @@ export function GlobalAppMenu() {
               <span>{t("profile")}</span>
             </button>
 
-            {(coachAthleteMode === "coach" || coachOnly) && isCoach ? (
+            {coachAthleteMode === "coach" && isCoach ? (
               <button
                 onClick={() => goAndClose("/hold/moduler")}
                 className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
