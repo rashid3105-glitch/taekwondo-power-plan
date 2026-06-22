@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/i18n/LanguageContext";
 import { useRole } from "@/contexts/RoleContext";
 import { useThreads } from "@/hooks/useThreads";
 import { Calendar, MessageCircle, Play, BookOpen, Trophy, NotebookPen, CalendarX, Book, Video, BarChart3, CalendarCheck, ClipboardList, User as UserIcon } from "lucide-react";
@@ -50,6 +51,7 @@ const WEEKDAYS_DA = ["SØNDAG", "MANDAG", "TIRSDAG", "ONSDAG", "TORSDAG", "FREDA
 export function AthleteDashboard() {
   const { role: activeRole } = useRole();
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const { totalUnread } = useThreads();
 
   const [todaySession, setTodaySession] = useState<TodaySession | null>(null);
@@ -432,7 +434,7 @@ export function AthleteDashboard() {
               style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
             >
               <CalendarCheck className="h-4 w-4" />
-              I dag
+              {t("todayTab")}
             </button>
           </>
         ) : (

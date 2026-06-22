@@ -2044,7 +2044,7 @@ const translations = {
     // Coach toolkit
     overview: "Overview",
     athletesTab: "Athletes",
-    todayTab: "Today",
+    todayTab: "Attendance",
     squadOverview: "Squad overview",
     squadEmpty: "No athletes in your squad yet.",
     sortNeedsAttention: "Needs attention",
@@ -5024,7 +5024,7 @@ const translations = {
     // Coach toolkit
     overview: "Overblik",
     athletesTab: "Atleter",
-    todayTab: "I dag",
+    todayTab: "Fremmøde",
     squadOverview: "Holdoverblik",
     squadEmpty: "Du har ingen atleter på holdet endnu.",
     sortNeedsAttention: "Kræver opmærksomhed",
@@ -7995,7 +7995,7 @@ const translations = {
     // Coach toolkit
     overview: "Översikt",
     athletesTab: "Atleter",
-    todayTab: "Idag",
+    todayTab: "Närvaro",
     squadOverview: "Lagöversikt",
     squadEmpty: "Inga atleter i ditt lag än.",
     sortNeedsAttention: "Behöver uppmärksamhet",
@@ -10920,7 +10920,7 @@ const translations = {
     // Coach toolkit
     overview: "Überblick",
     athletesTab: "Athleten",
-    todayTab: "Heute",
+    todayTab: "Anwesenheit",
     squadOverview: "Kaderübersicht",
     squadEmpty: "Noch keine Athleten in deinem Kader.",
     sortNeedsAttention: "Benötigt Aufmerksamkeit",
@@ -13848,7 +13848,7 @@ const translations = {
     // Coach toolkit
     overview: "نظرة عامة",
     athletesTab: "الرياضيون",
-    todayTab: "اليوم",
+    todayTab: "الحضور",
     squadOverview: "نظرة عامة على الفريق",
     squadEmpty: "لا يوجد رياضيون في فريقك بعد.",
     sortNeedsAttention: "يحتاج إلى انتباه",
@@ -16802,7 +16802,7 @@ const translations = {
     // Coach toolkit
     overview: "Oversikt",
     athletesTab: "Utøvere",
-    todayTab: "I dag",
+    todayTab: "Fremmøde",
     squadOverview: "Lagoversikt",
     squadEmpty: "Ingen utøvere i laget ditt ennå.",
     sortNeedsAttention: "Trenger oppmerksomhet",
@@ -18226,7 +18226,7 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   addParticipant: "Añadir atleta",
   mentalReminderTitle: "Revisión mental mensual",
   mentalReminderDesc: "Han pasado más de 30 días desde tu última evaluación — menos de 2 min",
-  todayTab: "Hoy",
+  todayTab: "Asistencia",
   todayCardTitle: "Hoy",
   todayRestTitle: "Día de descanso hoy",
   todayRestBody: "Una buena recuperación forma parte del entrenamiento. Descansa y deja que tu cuerpo se recupere.",
