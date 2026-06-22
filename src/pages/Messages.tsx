@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, MessageCircle, Plus, Users, X } from "lucide-react";
+import { ArrowLeft, MessageCircle, UserPlus, Users, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
@@ -71,7 +71,7 @@ export default function Messages() {
               </Button>
             )}
             <Button variant="ghost" size="icon" onClick={() => setPickerOpen(true)} aria-label="Ny samtale">
-              <Plus className="h-4 w-4" />
+              <UserPlus className="h-4 w-4" />
             </Button>
           </div>
         </div>
