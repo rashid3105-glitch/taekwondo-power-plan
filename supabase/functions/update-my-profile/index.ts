@@ -8,12 +8,12 @@ const corsHeaders = {
 };
 
 const DaySessionSchema = z.object({
-  type: z.enum(["tkd", "gym", "rest"]),
+  type: z.enum(["tkd", "gym", "rest", "selftraining"]),
 });
 
 const DayScheduleSchema = z.object({
   day: z.string().min(1).max(20),
-  type: z.enum(["tkd", "gym", "rest"]),
+  type: z.enum(["tkd", "gym", "rest", "selftraining"]),
   sessions: z.array(DaySessionSchema).min(1).max(3).optional(),
 });
 

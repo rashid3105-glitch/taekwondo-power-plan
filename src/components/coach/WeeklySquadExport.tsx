@@ -187,6 +187,7 @@ export function WeeklySquadExport({ athletes }: Props) {
           const label =
             type === "tkd" ? "TKD" :
             type === "gym" ? (t("gym") || "Gym") :
+            type === "selftraining" ? "Self" :
             type === "rest" || type === "recovery" ? (t("rest") || "Rest") : "—";
           return `${d.slice(0, 3)}: ${label}`;
         }).join("  ");

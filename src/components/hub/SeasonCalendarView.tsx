@@ -409,9 +409,10 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
 
       <div className="flex flex-wrap gap-3 px-1">
         {[
-          { type: "tkd" as SessionType,     size: 5 },
-          { type: "gym" as SessionType,     size: 5 },
-          { type: "stævne" as SessionType,  size: 7 },
+          { type: "tkd" as SessionType,          size: 5 },
+          { type: "gym" as SessionType,          size: 5 },
+          { type: "selftraining" as SessionType, size: 5 },
+          { type: "stævne" as SessionType,       size: 7 },
         ].map(item => (
           <div key={item.type} className="flex items-center gap-1.5">
             <span
