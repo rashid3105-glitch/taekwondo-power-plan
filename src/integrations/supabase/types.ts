@@ -455,6 +455,44 @@ export type Database = {
         }
         Relationships: []
       }
+      club_activity_types: {
+        Row: {
+          club_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          label: string
+          sort_order: number
+        }
+        Insert: {
+          club_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          label: string
+          sort_order?: number
+        }
+        Update: {
+          club_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          label?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "club_activity_types_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       club_athlete_season_overrides: {
         Row: {
           athlete_id: string
@@ -3512,6 +3550,7 @@ export type Database = {
       }
       workout_logs: {
         Row: {
+          activity_label: string | null
           actual_reps: string | null
           actual_sets: number | null
           avg_hr: number | null
@@ -3519,20 +3558,23 @@ export type Database = {
           club_id: string | null
           completed: boolean
           created_at: string
-          day_index: number
+          day_index: number | null
           duration_minutes: number | null
-          exercise_index: number
+          entry_type: string
+          exercise_index: number | null
           id: string
           logged_date: string
           max_hr: number | null
           notes: string | null
-          plan_id: string
-          session_index: number
+          plan_id: string | null
+          rpe: number | null
+          session_index: number | null
           updated_at: string
           user_id: string
           wearable_source: string | null
         }
         Insert: {
+          activity_label?: string | null
           actual_reps?: string | null
           actual_sets?: number | null
           avg_hr?: number | null
@@ -3540,20 +3582,23 @@ export type Database = {
           club_id?: string | null
           completed?: boolean
           created_at?: string
-          day_index: number
+          day_index?: number | null
           duration_minutes?: number | null
-          exercise_index: number
+          entry_type?: string
+          exercise_index?: number | null
           id?: string
           logged_date?: string
           max_hr?: number | null
           notes?: string | null
-          plan_id: string
-          session_index?: number
+          plan_id?: string | null
+          rpe?: number | null
+          session_index?: number | null
           updated_at?: string
           user_id: string
           wearable_source?: string | null
         }
         Update: {
+          activity_label?: string | null
           actual_reps?: string | null
           actual_sets?: number | null
           avg_hr?: number | null
@@ -3561,15 +3606,17 @@ export type Database = {
           club_id?: string | null
           completed?: boolean
           created_at?: string
-          day_index?: number
+          day_index?: number | null
           duration_minutes?: number | null
-          exercise_index?: number
+          entry_type?: string
+          exercise_index?: number | null
           id?: string
           logged_date?: string
           max_hr?: number | null
           notes?: string | null
-          plan_id?: string
-          session_index?: number
+          plan_id?: string | null
+          rpe?: number | null
+          session_index?: number | null
           updated_at?: string
           user_id?: string
           wearable_source?: string | null
