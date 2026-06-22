@@ -26,6 +26,7 @@ export function ClubActivityTypesCard({ clubId }: Props) {
   const [items, setItems] = useState<ClubActivityType[]>([]);
   const [newLabel, setNewLabel] = useState("");
   const [adding, setAdding] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const load = async () => {
     setLoading(true);
