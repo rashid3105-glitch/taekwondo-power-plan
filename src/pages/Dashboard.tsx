@@ -1201,13 +1201,23 @@ export default function Dashboard() {
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-1 w-full sm:w-auto">
-                    <Button onClick={generatePlan} disabled={generating} size="sm" className="w-full sm:w-auto">
-                      {generating ? (
-                        <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
-                      ) : (
-                        <><Plus className="h-4 w-4 mr-1" /> {t("generatePlan")}</>
-                      )}
-                    </Button>
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelfLogOpen(true)}
+                        className="flex-1 sm:flex-none border-self/40 text-self hover:bg-self/10 hover:text-self"
+                      >
+                        <UserRoundIcon className="h-4 w-4 mr-1" /> {t("selfLogShort") || "Egen"}
+                      </Button>
+                      <Button onClick={generatePlan} disabled={generating} size="sm" className="flex-1 sm:flex-none">
+                        {generating ? (
+                          <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
+                        ) : (
+                          <><Plus className="h-4 w-4 mr-1" /> {t("generatePlan")}</>
+                        )}
+                      </Button>
+                    </div>
                     {isCoach && (
                       <p className="text-[11px] text-muted-foreground text-right max-w-xs">
                         {t("coachSelfPlanNote")}
