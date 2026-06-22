@@ -20,6 +20,7 @@ const libraries: {
   { id: "testing", labelKey: "libTestingLabel", descKey: "libTestingDesc", icon: ClipboardList, color: "text-primary" },
   { id: "hiit", labelKey: "libHiitLabel", descKey: "libHiitDesc", icon: Zap, color: "text-destructive" },
   { id: "supplement", labelKey: "libSupplementLabel", descKey: "libSupplementDesc", icon: ShieldCheck, color: "text-emerald-500" },
+  { id: "rehab", labelKey: "libRehabLabel", descKey: "libRehabDesc", icon: Heart, color: "text-tab-rehab" },
 ];
 
 export default function LibraryChooser() {
