@@ -12,6 +12,7 @@ import { ClubSwitchOverlay } from "@/components/ClubSwitchOverlay";
 import { RoleProvider } from "@/contexts/RoleContext";
 import { ThemeSync } from "@/contexts/ThemeSync";
 import { ConsentGate } from "@/components/ConsentGate";
+import { GlobalAppMenu } from "@/components/GlobalAppMenu";
 
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { AppUpdateBanner } from "@/components/AppUpdateBanner";
