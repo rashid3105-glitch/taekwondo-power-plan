@@ -997,6 +997,39 @@ export type Database = {
         }
         Relationships: []
       }
+      coach_mental_assessments: {
+        Row: {
+          ai_advice: string | null
+          answers: Json
+          created_at: string
+          id: string
+          language: string | null
+          scores: Json
+          total_score: number
+          user_id: string
+        }
+        Insert: {
+          ai_advice?: string | null
+          answers?: Json
+          created_at?: string
+          id?: string
+          language?: string | null
+          scores?: Json
+          total_score?: number
+          user_id: string
+        }
+        Update: {
+          ai_advice?: string | null
+          answers?: Json
+          created_at?: string
+          id?: string
+          language?: string | null
+          scores?: Json
+          total_score?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       coach_messages: {
         Row: {
           athlete_id: string
