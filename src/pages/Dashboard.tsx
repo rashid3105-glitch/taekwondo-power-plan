@@ -254,7 +254,6 @@ export default function Dashboard() {
       return;
     }
     setActiveTab(tab);
-    setMenuOpen(false);
   };
   const ALL_PINNABLE = [
     { key: "plan",         icon: Zap,           labelKey: "plan",            color: "text-tab-plan",      onClick: () => handleTabChange("plan") },
