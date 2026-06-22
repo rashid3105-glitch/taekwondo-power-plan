@@ -71,7 +71,7 @@ export default function Messages() {
               </Button>
             )}
             <Button variant="ghost" size="icon" onClick={() => setPickerOpen(true)} aria-label="Ny samtale">
-              <Plus className="h-4 w-4" />
+              <UserPlus className="h-4 w-4" />
             </Button>
           </div>
         </div>
