@@ -340,6 +340,56 @@ export default function Dashboard() {
     loadData();
   }, []);
 
+  // Reload the club season + club name whenever the active club changes
+  // (e.g. superadmin switching clubs via the header switcher). Without this
+  // the season calendar would stay anchored to profiles.club_id.
+  useEffect(() => {
+    const clubId = activeMembership?.club_id;
+    if (!clubId) return;
+    let cancelled = false;
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || cancelled) return;
+      const { data: clubData } = await supabase
+        .from("clubs" as any)
+        .select("name")
+        .eq("id", clubId)
+        .maybeSingle();
+      if (cancelled) return;
+      setClubName((clubData as { name?: string } | null)?.name || "");
+      try {
+        const { data: seasonRows } = await (supabase.from as any)("club_season_plans")
+          .select("*, club_season_phases(*), club_season_day_templates(*)")
+          .eq("club_id", clubId).eq("is_active", true);
+        if (cancelled) return;
+        const rows = (seasonRows ?? []) as any[];
+        if (rows.length === 0) { setClubSeason(null); return; }
+        const todayIso = new Date().toISOString().slice(0, 10);
+        const covering = rows
+          .filter((r) => r.start_date <= todayIso && r.end_date >= todayIso)
+          .sort((a, b) => (a.start_date < b.start_date ? 1 : -1));
+        const fallback = [...rows].sort((a, b) => (a.start_date < b.start_date ? 1 : -1));
+        const seasonRow = covering[0] ?? fallback[0];
+        const { data: visRows } = await (supabase.from as any)("club_season_plan_visibility")
+          .select("athlete_id")
+          .eq("season_plan_id", seasonRow.id);
+        if (cancelled) return;
+        const hasAnyVisibilitySet = visRows && visRows.length > 0;
+        const athleteIsIncluded = visRows?.some((v: any) => v.athlete_id === user.id) || seasonRow.created_by === user.id;
+        if (!hasAnyVisibilitySet || athleteIsIncluded) {
+          setClubSeason({
+            plan: seasonRow,
+            phases: seasonRow.club_season_phases || [],
+            template: seasonRow.club_season_day_templates || [],
+          });
+        } else {
+          setClubSeason(null);
+        }
+      } catch { /* ignore */ }
+    })();
+    return () => { cancelled = true; };
+  }, [activeMembership?.club_id]);
+
   // Auto-flush queued offline workout logs when connectivity returns.
   useEffect(() => {
     const onOnline = async () => {
@@ -351,6 +401,7 @@ export default function Dashboard() {
     window.addEventListener("online", onOnline);
     return () => window.removeEventListener("online", onOnline);
   }, []);
+
 
   const loadData = async () => {
     const { data: { user } } = await supabase.auth.getUser();
