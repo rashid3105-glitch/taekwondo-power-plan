@@ -221,14 +221,24 @@ export function AthleteDashboard() {
                 I DAG · {WEEKDAYS_DA[new Date().getDay()]}
               </h3>
             </div>
-            {todaySession && (
-              <span
-                className="shrink-0 inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-lg"
-                style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
+            <div className="shrink-0 flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); setSelfLogOpen(true); }}
+                className="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1.5 rounded-lg border border-white/15 bg-white/[0.04] text-white hover:bg-white/[0.08] transition-colors"
+                aria-label="Log egen træning"
               >
-                <Play className="h-3 w-3" fill="currentColor" /> Start
-              </span>
-            )}
+                <UserIcon className="h-3 w-3" /> Egen
+              </button>
+              {todaySession && (
+                <span
+                  className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-lg"
+                  style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
+                >
+                  <Play className="h-3 w-3" fill="currentColor" /> Start
+                </span>
+              )}
+            </div>
           </div>
           {todaySession ? (
             <div>
