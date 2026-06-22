@@ -3,7 +3,8 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { BrandLogo } from "@/components/BrandLogo";
 import { Button } from "@/components/ui/button";
-import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, ShieldCheck, Users, Brain, Clock, Apple, Home, Lock, NotebookPen, AlertTriangle, ClipboardList, HelpCircle, Trash2, Menu, Video as VideoIcon, CalendarRange, Watch, Swords, Trophy, MessageCircle, Pencil, X, LayoutGrid, Settings, Camera } from "lucide-react";
+import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, ShieldCheck, Users, Brain, Clock, Apple, Home, Lock, NotebookPen, AlertTriangle, ClipboardList, HelpCircle, Trash2, Menu, Video as VideoIcon, CalendarRange, Watch, Swords, Trophy, MessageCircle, Pencil, X, LayoutGrid, Settings, Camera, User as UserRoundIcon } from "lucide-react";
+import { SelfTrainingLogDialog } from "@/components/SelfTrainingLogDialog";
 import { ChatDrawer } from "@/components/chat/ChatDrawer";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
