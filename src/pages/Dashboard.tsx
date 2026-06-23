@@ -192,9 +192,10 @@ export default function Dashboard() {
   const { role, hasCoachRole } = useRole();
   const { memberships, activeMembership, loading: activeClubLoading } = useActiveClub();
 
-  // Only stay in the coach dashboard when coach mode is explicitly active.
+  // Stay in the coach dashboard when coach mode is explicitly active,
+  // OR auto-promote coaches who have never made an explicit choice yet.
   useEffect(() => {
-    if (activeClubLoading || !isCoachMode) return;
+    if (activeClubLoading) return;
     // Allow coaches to deep-link to athlete-only tabs (testing, rehab, etc.).
     // Only auto-bounce when they land on the bare hub.
     const requestedTab = searchParams.get("tab");
@@ -202,10 +203,21 @@ export default function Dashboard() {
     const isActiveCoachClub = activeMembership
       ? activeMembership.role_in_club === "coach" || activeMembership.role_in_club === "admin"
       : memberships.length <= 1 && role === "coach";
-    if (isActiveCoachClub) {
+    if (!isActiveCoachClub) return;
+
+    if (isCoachMode) {
+      navigate("/coach", { replace: true });
+      return;
+    }
+
+    // First-time coaches (no explicit preference stored) default to coach view.
+    let storedMode: string | null = null;
+    try { storedMode = localStorage.getItem("tkd-coach-mode"); } catch { /* ignore */ }
+    if (hasCoachRole && storedMode === null) {
+      setCoachMode(true);
       navigate("/coach", { replace: true });
     }
-  }, [role, memberships.length, activeMembership, activeClubLoading, isCoachMode, navigate, searchParams]);
+  }, [role, hasCoachRole, memberships.length, activeMembership, activeClubLoading, isCoachMode, setCoachMode, navigate, searchParams]);
 
   // Sync activeTab → URL ?tab= so browser back/refresh works.
   useEffect(() => {
