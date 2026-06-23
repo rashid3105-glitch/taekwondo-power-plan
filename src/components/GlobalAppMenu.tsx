@@ -123,6 +123,7 @@ export function GlobalAppMenu() {
   const [userId, setUserId] = useState<string | null>(null);
   const [profile, setProfile] = useState<MiniProfile | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [adminOpen, setAdminOpen] = useState(false);
   const isCoach = hasCoachRole;
   const isDemo = !!(profile?.is_demo && profile?.payment_status !== "paid");
   const coachAthleteMode = isCoachMode ? "coach" : "athlete";
