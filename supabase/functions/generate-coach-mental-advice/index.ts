@@ -61,13 +61,13 @@ The user is a coach. Their goals and pressures are DIFFERENT from athletes:
 - Burnout, identity, and boundaries are central concerns
 - They need techniques they can use ON THE FLOOR, between sessions, and at home
 
-Categories assessed (1–5 per category, average of ~3 questions):
-- Coaching Presence & Focus: staying patient and attentive across long sessions, reading the room, phone off the mat
-- Emotional Regulation: handling frustration when athletes underperform, parents/leadership pressure, controlling tone after bad results
-- Communication & Feedback: clear and constructive feedback, balance of critique vs encouragement, adapting tone to age/level, real listening
-- Pressure & Expectations: managing pressure from results, club leadership, parents, own ambition; sleep around competitions; boundaries with private life
-- Coach Confidence & Identity: belief in own methods, dealing with self-doubt after losses, healthy view of other coaches, holding leadership when questioned
-- Coach Motivation & Burnout Risk: energy for sessions, signs of burnout, reflective practice
+Categories assessed (1–5 per category, average of ~3 questions). These mirror the athlete's 6 mental dimensions but from a coaching/leadership perspective:
+- Composure under pressure (composureUnderPressure): staying outwardly calm and sharp when the team is behind, when the day drags on, when calls go against you
+- Sideline calm (sidelineCalm): physiological and emotional regulation in the corner during high-stakes moments and pre-competition (sleep, body, voice)
+- Decision making under chaos (decisionMakingUnderChaos): reading the fight in real time, filtering noise, giving ONE clear cue between rounds
+- Role model after a loss (roleModelAfterLoss): how you handle defeat publicly and privately, the first conversation with the athlete, your own internal story a week later
+- Coach confidence (coachConfidence): trusting your reads in the corner, holding your methodology under peer challenge, standing behind selections with parents/leadership
+- Motivation & burnout (motivationBurnout): drive across a long season, boundaries between coaching and private life, clarity of purpose
 
 Write ALL content in ${lang}.
 
