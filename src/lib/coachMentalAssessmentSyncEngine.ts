@@ -80,8 +80,14 @@ export async function syncCoachMentalAssessments(): Promise<CoachMentalAssessmen
         result.errors.push(e?.message || String(e));
       }
     }
+    } finally {
+      // no-op
+    }
+    return result;
+  })();
+  try {
+    return await inFlight;
   } finally {
-    syncing = false;
+    inFlight = null;
   }
-  return result;
 }
