@@ -6,12 +6,14 @@ import { AddExerciseForm } from "./AddExerciseForm";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Plus, Trash2, Search, MessageCircle, Target, ShieldAlert, Activity, Zap, Dumbbell, Move, Flame, ChevronDown } from "lucide-react";
+import { Plus, Trash2, Search, MessageCircle, Target, ShieldAlert, ChevronDown } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { getExerciseGoals, getRiskLevel, type ExerciseGoal, type RiskLevel, RISK_STYLES } from "@/lib/exerciseClassification";
+import { EXERCISE_CATEGORY_STYLE } from "@/lib/exerciseCategoryStyle";
+import { cn } from "@/lib/utils";
 import type { TranslationKey } from "@/i18n/translations";
 
 const GOALS: ExerciseGoal[] = ["speed", "power", "rfd", "mobility", "strength"];
@@ -39,14 +41,6 @@ const FILTER_STYLES: Record<ExerciseCategory, string> = {
   speed: "data-[active=true]:bg-speed data-[active=true]:text-primary-foreground",
   strength: "data-[active=true]:bg-primary data-[active=true]:text-primary-foreground",
   mobility: "data-[active=true]:bg-accent data-[active=true]:text-accent-foreground",
-};
-
-const CATEGORY_ICONS: Record<ExerciseCategory, typeof Dumbbell> = {
-  power: Activity,
-  plyometric: Flame,
-  speed: Zap,
-  strength: Dumbbell,
-  mobility: Move,
 };
 
 function extractYouTubeId(url: string): string {
@@ -319,13 +313,16 @@ export function ExerciseLibrary() {
             ? filtered
             : filtered.filter((e) => e.category === cat);
           if (catItems.length === 0) return null;
-          const Icon = cat === "custom" ? Plus : CATEGORY_ICONS[cat as ExerciseCategory];
+          const styleKey: keyof typeof EXERCISE_CATEGORY_STYLE = cat === "custom" ? "custom" : (cat as ExerciseCategory);
+          const { Icon, tile, icon } = EXERCISE_CATEGORY_STYLE[styleKey];
           const label = cat === "custom" ? t("myExercises") : CATEGORY_LABELS[cat as ExerciseCategory];
           return (
             <Collapsible key={cat} defaultOpen={false}>
-              <CollapsibleTrigger className="group w-full flex items-center gap-2 px-3 py-2.5 rounded-lg border border-border bg-secondary/40 hover:bg-secondary/70 transition-colors">
-                <Icon className="h-5 w-5 text-primary" />
-                <h2 className="text-base font-bold text-foreground flex-1 text-left">{label}</h2>
+              <CollapsibleTrigger className="group w-full flex items-center gap-3 px-3 py-3 rounded-xl border border-border bg-card hover:bg-accent/30 transition-colors">
+                <span className={cn("shrink-0 inline-flex items-center justify-center h-10 w-10 rounded-xl", tile)}>
+                  <Icon className={cn("h-5 w-5", icon)} />
+                </span>
+                <h2 className="text-sm font-bold text-card-foreground flex-1 text-left">{label}</h2>
                 <Badge variant="secondary" className="text-[10px]">{catItems.length}</Badge>
                 <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
               </CollapsibleTrigger>

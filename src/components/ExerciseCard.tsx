@@ -5,6 +5,7 @@ import { ChevronDown, ChevronUp, ShieldAlert, Target, CheckCircle2, Youtube } fr
 import { MuscleGroupBadges } from "./MuscleIcon";
 import { ExerciseIllustration } from "./ExerciseIllustration";
 import { getExerciseGoals, getRiskLevel, RISK_STYLES } from "@/lib/exerciseClassification";
+import { EXERCISE_CATEGORY_STYLE } from "@/lib/exerciseCategoryStyle";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { TranslationKey } from "@/i18n/translations";
 
@@ -30,14 +31,6 @@ const CUES_KEY: Record<string, TranslationKey> = {
   plyometric: "cuesPlyometric",
 };
 
-const CATEGORY_DOT: Record<string, string> = {
-  power: "bg-accent",
-  speed: "bg-speed",
-  strength: "bg-primary",
-  mobility: "bg-accent",
-  plyometric: "bg-explosive",
-};
-
 interface ExerciseCardProps {
   exercise: Exercise;
   index: number;
@@ -48,6 +41,8 @@ export function ExerciseCard({ exercise, index }: ExerciseCardProps) {
   const { t } = useLanguage();
   const goals = getExerciseGoals(exercise);
   const risk = getRiskLevel(exercise);
+  const catStyle = EXERCISE_CATEGORY_STYLE[exercise.category];
+  const CatIcon = catStyle.Icon;
 
   const youtubeHref = exercise.videoId
     ? `https://www.youtube.com/watch?v=${exercise.videoId}`
@@ -62,7 +57,9 @@ export function ExerciseCard({ exercise, index }: ExerciseCardProps) {
           className="flex items-center gap-3 flex-1 min-w-0 text-left cursor-pointer"
         >
           <span className="mono text-xs text-muted-foreground w-5">{String(index).padStart(2, "0")}</span>
-          <span className={cn("h-2 w-2 rounded-full flex-shrink-0", CATEGORY_DOT[exercise.category])} />
+          <span className={cn("h-7 w-7 rounded-lg flex items-center justify-center flex-shrink-0", catStyle.tile)}>
+            <CatIcon className={cn("h-4 w-4", catStyle.icon)} />
+          </span>
           <span className="font-semibold text-sm text-foreground flex-1 text-left truncate">{exercise.name}</span>
           <MuscleGroupBadges muscles={exercise.muscleGroups} size={26} />
           <span className="text-xs text-muted-foreground mr-2 whitespace-nowrap">
