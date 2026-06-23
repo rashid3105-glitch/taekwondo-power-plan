@@ -123,14 +123,31 @@ export function useOfflineCoachMentalAssessments() {
       setAssessments(await listCachedCoachAssessments(uid));
 
       if (navigator.onLine) {
-        const r = await syncCoachMentalAssessments();
-        if (r.flushed > 0) {
+        await syncCoachMentalAssessments();
+        // Re-pull from server to get the freshly-inserted row with advice,
+        // regardless of whether *this* sync call did the flushing.
+        const { data } = await supabase
+          .from("coach_mental_assessments" as any)
+          .select("*")
+          .eq("user_id", uid)
+          .order("created_at", { ascending: false });
+        if (data) {
+          const cached: CachedCoachAssessment[] = (data as any[]).map((a: any) => ({
+            id: a.id,
+            user_id: a.user_id,
+            total_score: a.total_score,
+            scores: (a.scores as Record<string, number>) || {},
+            answers: (a.answers as Record<string, number>) || {},
+            ai_advice: parseAdvice(a.ai_advice),
+            created_at: a.created_at,
+            pending: false,
+          }));
+          await replaceCachedCoachAssessments(uid, cached);
           const fresh = await listCachedCoachAssessments(uid);
           setAssessments(fresh);
-          const replaced = fresh.find(
-            (a) => !a.pending && a.total_score === Math.round(input.total_score),
-          );
-          return replaced || null;
+          // Return the newest non-pending entry (most recently inserted).
+          const newest = fresh.find((a) => !a.pending) || null;
+          return newest;
         }
       }
       return rec;

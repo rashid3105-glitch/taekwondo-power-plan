@@ -16,13 +16,14 @@ export interface CoachMentalAssessmentSyncResult {
   errors: string[];
 }
 
-let syncing = false;
+let inFlight: Promise<CoachMentalAssessmentSyncResult> | null = null;
 
 export async function syncCoachMentalAssessments(): Promise<CoachMentalAssessmentSyncResult> {
-  const result: CoachMentalAssessmentSyncResult = { flushed: 0, failed: 0, errors: [] };
-  if (syncing || !navigator.onLine) return result;
-  syncing = true;
-  try {
+  if (inFlight) return inFlight;
+  if (!navigator.onLine) return { flushed: 0, failed: 0, errors: [] };
+  inFlight = (async (): Promise<CoachMentalAssessmentSyncResult> => {
+    const result: CoachMentalAssessmentSyncResult = { flushed: 0, failed: 0, errors: [] };
+    try {
     const intents = (await listCoachMentalAssessmentOutbox()).sort(
       (a, b) => a.queued_at - b.queued_at,
     );
@@ -79,8 +80,14 @@ export async function syncCoachMentalAssessments(): Promise<CoachMentalAssessmen
         result.errors.push(e?.message || String(e));
       }
     }
+    } finally {
+      // no-op
+    }
+    return result;
+  })();
+  try {
+    return await inFlight;
   } finally {
-    syncing = false;
+    inFlight = null;
   }
-  return result;
 }
