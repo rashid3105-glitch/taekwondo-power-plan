@@ -6,14 +6,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import type { TranslationKey } from "@/i18n/translations";
 
-const CATEGORIES = ["kicks", "combinations", "footwork", "poomsae", "sparring", "conditioning"] as const;
+const CATEGORIES = ["kicks", "combinations", "footwork", "taegeuk", "poomse", "sparring", "conditioning"] as const;
 type DrillCategory = (typeof CATEGORIES)[number];
 
 const CATEGORY_LABEL_KEY: Record<DrillCategory, TranslationKey> = {
   kicks: "drillCatKicks",
   combinations: "drillCatCombinations",
   footwork: "drillCatFootwork",
-  poomsae: "drillCatPoomsae",
+  taegeuk: "drillCatTaegeuk",
+  poomse: "drillCatPoomse",
   sparring: "drillCatSparring",
   conditioning: "drillCatConditioning",
 };

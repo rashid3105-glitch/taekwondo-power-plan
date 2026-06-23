@@ -1,0 +1,2 @@
+ALTER TABLE public.taekwondo_drills DROP CONSTRAINT IF EXISTS taekwondo_drills_category_check;
+ALTER TABLE public.taekwondo_drills ADD CONSTRAINT taekwondo_drills_category_check CHECK (category IN ('kicks','combinations','footwork','taegeuk','poomse','sparring','conditioning'));
