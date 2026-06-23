@@ -107,8 +107,6 @@ export default function Library({ forcedSection }: { forcedSection?: string } = 
   const onHeaderBack = () => {
     if (section === "nutrition" && nutritionView !== "home") {
       setNutritionView("home");
-    } else if (forcedSection === "supplement") {
-      navigate("/dashboard");
     } else {
       navigate("/library");
     }
