@@ -1,8 +1,10 @@
 // Coach-specific mental review questions.
-// 6 categories × 3 questions = 18 items. The 6 categories MIRROR the athlete's
+// 6 categories × 5 questions = 30 items. The 6 categories MIRROR the athlete's
 // 6 mental dimensions but are rewritten from a coaching / leadership perspective.
 // Same 1–5 scoring scale (1 = unhealthy response, 5 = strong/healthy response)
 // so the assessment UI can reuse the average-per-category logic.
+// Total score = sum of 6 category averages (max 5 each) → "out of 30".
+
 
 export interface CoachLangText {
   en: string;
