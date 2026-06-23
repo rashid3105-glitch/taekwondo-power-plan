@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import {
   Brain, Loader2, ChevronLeft, ChevronRight, History, Trash2, Sparkles, CloudOff,
-  Trophy, TrendingUp, Heart, Users, MessageCircle, Gauge, ShieldCheck, Flame,
+  Trophy, TrendingUp, Heart, Users, Wind, ShieldCheck, Flame, Anchor,
 } from "lucide-react";
 import {
   coachMentalQuestions,
@@ -21,41 +21,54 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-type SupportedLocale = "en" | "da" | "sv" | "de" | "ar" | "no";
+type SupportedLocale = "en" | "da" | "sv" | "de" | "ar" | "no" | "es";
 
+// New 6 categories mirror athlete dimensions but in coach-perspective:
+//   composureUnderPressure  ↔ athlete mentalToughness
+//   sidelineCalm            ↔ athlete competitionAnxiety
+//   decisionMakingUnderChaos ↔ athlete focusConcentration
+//   roleModelAfterLoss      ↔ athlete recoveryFromLoss
+//   coachConfidence         ↔ athlete confidence
+//   motivationBurnout       ↔ athlete motivation / fatigueMotivation
 const categoryIcons: Record<string, React.ReactNode> = {
-  coachingPresence: <Brain className="h-4 w-4" />,
-  emotionalRegulation: <Heart className="h-4 w-4" />,
-  communicationFeedback: <MessageCircle className="h-4 w-4" />,
-  pressureExpectations: <Gauge className="h-4 w-4" />,
+  composureUnderPressure: <Anchor className="h-4 w-4" />,
+  sidelineCalm: <Wind className="h-4 w-4" />,
+  decisionMakingUnderChaos: <Brain className="h-4 w-4" />,
+  roleModelAfterLoss: <Heart className="h-4 w-4" />,
   coachConfidence: <ShieldCheck className="h-4 w-4" />,
-  coachMotivation: <Flame className="h-4 w-4" />,
+  motivationBurnout: <Flame className="h-4 w-4" />,
 };
 
 const categoryLabels: Record<string, Record<SupportedLocale, string>> = {
-  coachingPresence: {
-    en: "Coaching Presence & Focus", da: "Coaching-nærvær & fokus", sv: "Coachingnärvaro & fokus",
-    de: "Coaching-Präsenz & Fokus", ar: "الحضور والتركيز في التدريب", no: "Coaching-nærvær & fokus",
+  composureUnderPressure: {
+    en: "Composure under pressure", da: "Ro når holdet er presset", sv: "Lugn när laget pressas",
+    de: "Ruhe unter Druck", ar: "الهدوء تحت الضغط", no: "Ro når laget er presset",
+    es: "Calma bajo presión",
   },
-  emotionalRegulation: {
-    en: "Emotional Regulation", da: "Følelsesregulering", sv: "Emotionell reglering",
-    de: "Emotionsregulation", ar: "تنظيم المشاعر", no: "Følelsesregulering",
+  sidelineCalm: {
+    en: "Sideline calm", da: "Sidelinje-ro", sv: "Lugn vid sidan",
+    de: "Ruhe an der Seitenlinie", ar: "هدوء على حافة البساط", no: "Ro på sidelinjen",
+    es: "Calma en la esquina",
   },
-  communicationFeedback: {
-    en: "Communication & Feedback", da: "Kommunikation & feedback", sv: "Kommunikation & feedback",
-    de: "Kommunikation & Feedback", ar: "التواصل والتغذية الراجعة", no: "Kommunikasjon & tilbakemelding",
+  decisionMakingUnderChaos: {
+    en: "Decision making under chaos", da: "Beslutningstagning i kampens kaos", sv: "Beslutsfattande i kampens kaos",
+    de: "Entscheidungen im Kampf-Chaos", ar: "اتخاذ القرار وسط فوضى المباراة", no: "Beslutninger i kampens kaos",
+    es: "Decisiones en el caos del combate",
   },
-  pressureExpectations: {
-    en: "Pressure & Expectations", da: "Pres & forventninger", sv: "Press & förväntningar",
-    de: "Druck & Erwartungen", ar: "الضغط والتوقعات", no: "Press & forventninger",
+  roleModelAfterLoss: {
+    en: "Role model after a loss", da: "At være rollemodel efter tab", sv: "Förebild efter en förlust",
+    de: "Vorbild nach einer Niederlage", ar: "أن تكون قدوة بعد الخسارة", no: "Rollemodell etter tap",
+    es: "Ser modelo después de una derrota",
   },
   coachConfidence: {
-    en: "Coach Confidence & Identity", da: "Trænertillid & identitet", sv: "Tränarsjälvförtroende & identitet",
-    de: "Trainer-Selbstvertrauen & Identität", ar: "ثقة المدرب وهويته", no: "Trenertillit & identitet",
+    en: "Coach confidence", da: "Coach-selvtillid", sv: "Tränarsjälvförtroende",
+    de: "Coach-Selbstvertrauen", ar: "ثقة المدرب بنفسه", no: "Coach-selvtillit",
+    es: "Confianza del entrenador",
   },
-  coachMotivation: {
-    en: "Motivation & Burnout Risk", da: "Motivation & risiko for udbrændthed", sv: "Motivation & risk för utbrändhet",
-    de: "Motivation & Burnout-Risiko", ar: "الحافز وخطر الإنهاك", no: "Motivasjon & risiko for utbrenthet",
+  motivationBurnout: {
+    en: "Motivation & burnout", da: "Motivation & udbrændthed", sv: "Motivation & utbrändhet",
+    de: "Motivation & Burnout", ar: "الحافز والإنهاك", no: "Motivasjon & utbrenthet",
+    es: "Motivación y desgaste",
   },
 };
 
