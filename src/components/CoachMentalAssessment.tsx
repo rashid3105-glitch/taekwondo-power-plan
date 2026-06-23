@@ -92,7 +92,7 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     adviceRegenerated: "Advice regenerated", adviceRegenerateFailed: "Couldn't regenerate. Try again.",
     tapToView: "Tap to view", coachOnly: "Coach only",
     intro1: "Coaches carry pressure athletes don't see: parents, leadership, long sessions, identity tied to results.",
-    intro2: "This 18-question review focuses on YOUR mental game — presence on the floor, emotional regulation, communication, pressure, confidence, and burnout risk.",
+    intro2: "This 30-question review focuses on YOUR mental game — presence on the floor, emotional regulation, communication, pressure, confidence, and burnout risk.",
     intro3: "Takes ~3 minutes. Repeat monthly to see trends.",
   },
   da: {
@@ -114,7 +114,7 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     adviceRegenerated: "Råd genereret igen", adviceRegenerateFailed: "Kunne ikke generere. Prøv igen.",
     tapToView: "Tryk for at se", coachOnly: "Kun for trænere",
     intro1: "Trænere bærer et pres, atleter ikke ser: forældre, klubledelse, lange træninger, identitet bundet til resultater.",
-    intro2: "Denne 18-spørgsmåls gennemgang fokuserer på DIT mentale spil — nærvær på gulvet, følelser, kommunikation, pres, tillid og risiko for udbrændthed.",
+    intro2: "Denne 30-spørgsmåls gennemgang fokuserer på DIT mentale spil — nærvær på gulvet, følelser, kommunikation, pres, tillid og risiko for udbrændthed.",
     intro3: "Tager ca. 3 minutter. Gentag månedligt for at se tendenser.",
   },
   sv: {
@@ -136,7 +136,7 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     adviceRegenerated: "Råden har genererats igen", adviceRegenerateFailed: "Kunde inte generera. Försök igen.",
     tapToView: "Tryck för att visa", coachOnly: "Endast tränare",
     intro1: "Tränare bär press atleter inte ser: föräldrar, klubbledning, långa pass, identitet kopplad till resultat.",
-    intro2: "Denna 18-fråge-genomgång fokuserar på DITT mentala spel — närvaro på golvet, känslor, kommunikation, press, självförtroende och utbrändhetsrisk.",
+    intro2: "Denna 30-fråge-genomgång fokuserar på DITT mentala spel — närvaro på golvet, känslor, kommunikation, press, självförtroende och utbrändhetsrisk.",
     intro3: "Tar ca 3 minuter. Upprepa månadsvis för att se trender.",
   },
   de: {
@@ -158,7 +158,7 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     adviceRegenerated: "Empfehlungen neu generiert", adviceRegenerateFailed: "Konnte nicht generieren. Bitte erneut versuchen.",
     tapToView: "Zum Anzeigen tippen", coachOnly: "Nur Trainer",
     intro1: "Trainer tragen Druck, den Athleten nicht sehen: Eltern, Vereinsführung, lange Einheiten, Identität an Ergebnisse geknüpft.",
-    intro2: "Diese 18-Fragen-Auswertung fokussiert auf DEIN mentales Spiel — Präsenz auf der Matte, Emotionen, Kommunikation, Druck, Selbstvertrauen und Burnout-Risiko.",
+    intro2: "Diese 30-Fragen-Auswertung fokussiert auf DEIN mentales Spiel — Präsenz auf der Matte, Emotionen, Kommunikation, Druck, Selbstvertrauen und Burnout-Risiko.",
     intro3: "Dauert ca. 3 Minuten. Monatlich wiederholen, um Trends zu sehen.",
   },
   ar: {
@@ -180,7 +180,7 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     adviceRegenerated: "تم إعادة إنشاء النصائح", adviceRegenerateFailed: "تعذّر الإنشاء. حاول مجددًا.",
     tapToView: "اضغط للعرض", coachOnly: "للمدربين فقط",
     intro1: "يحمل المدربون ضغطًا لا يراه اللاعبون: الأهل والإدارة وجلسات طويلة وهوية مرتبطة بالنتائج.",
-    intro2: "تركز هذه المراجعة من 18 سؤالًا على لعبتك الذهنية أنت — الحضور، المشاعر، التواصل، الضغط، الثقة، ومخاطر الإنهاك.",
+    intro2: "تركز هذه المراجعة من 30 سؤالًا على لعبتك الذهنية أنت — الحضور، المشاعر، التواصل، الضغط، الثقة، ومخاطر الإنهاك.",
     intro3: "تستغرق نحو 3 دقائق. كرّر شهريًا لرصد الاتجاهات.",
   },
   no: {
@@ -202,7 +202,7 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     adviceRegenerated: "Råd generert på nytt", adviceRegenerateFailed: "Kunne ikke generere. Prøv igjen.",
     tapToView: "Trykk for å se", coachOnly: "Kun trenere",
     intro1: "Trenere bærer press utøvere ikke ser: foreldre, klubbledelse, lange økter, identitet knyttet til resultater.",
-    intro2: "Denne 18-spørsmåls gjennomgangen fokuserer på DITT mentale spill — tilstedeværelse, følelser, kommunikasjon, press, selvtillit og utbrenthetsrisiko.",
+    intro2: "Denne 30-spørsmåls gjennomgangen fokuserer på DITT mentale spill — tilstedeværelse, følelser, kommunikasjon, press, selvtillit og utbrenthetsrisiko.",
     intro3: "Tar ca. 3 minutter. Gjenta månedlig for å se trender.",
   },
   es: {
@@ -224,7 +224,7 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     adviceRegenerated: "Consejos regenerados", adviceRegenerateFailed: "No se pudo generar. Inténtalo de nuevo.",
     tapToView: "Toca para ver", coachOnly: "Solo entrenadores",
     intro1: "Los entrenadores cargan con una presión que los atletas no ven: padres, directiva, sesiones largas, identidad ligada a los resultados.",
-    intro2: "Esta revisión de 18 preguntas refleja las 6 dimensiones mentales del atleta pero desde la perspectiva del entrenador — calma bajo presión, calma en la esquina, decisiones en el caos, ser modelo tras una derrota, confianza como entrenador y desgaste.",
+    intro2: "Esta revisión de 30 preguntas refleja las 6 dimensiones mentales del atleta pero desde la perspectiva del entrenador — calma bajo presión, calma en la esquina, decisiones en el caos, ser modelo tras una derrota, confianza como entrenador y desgaste.",
     intro3: "Dura unos 3 minutos. Repítela mensualmente para ver tendencias.",
   },
 };
