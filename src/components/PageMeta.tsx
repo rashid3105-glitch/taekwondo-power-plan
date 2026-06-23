@@ -44,6 +44,18 @@ export const PageMeta = ({ title, description, canonical, noindex, ogType, ogIma
     const twTitle = document.querySelector('meta[name="twitter:title"]');
     if (twTitle) twTitle.setAttribute("content", document.title);
 
+    // Update og:type
+    const ogTypeEl = document.querySelector('meta[property="og:type"]');
+    if (ogTypeEl) ogTypeEl.setAttribute("content", ogType || "website");
+
+    // Update og:image / twitter:image per-page
+    if (ogImage) {
+      const ogImg = document.querySelector('meta[property="og:image"]');
+      if (ogImg) ogImg.setAttribute("content", ogImage);
+      const twImg = document.querySelector('meta[name="twitter:image"]');
+      if (twImg) twImg.setAttribute("content", ogImage);
+    }
+
     // Update og:description and twitter:description
     if (description) {
       const ogDesc = document.querySelector('meta[property="og:description"]');
