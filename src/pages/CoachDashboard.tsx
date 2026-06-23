@@ -115,6 +115,7 @@ export default function CoachDashboard() {
   const [viewPlan, setViewPlan] = useState<AthletePlan | null>(null);
   const [viewRehabPlan, setViewRehabPlan] = useState<RehabPlan | null>(null);
   const [manageAthleteId, setManageAthleteId] = useState<string | null>(null);
+  const [coachMentalDue, setCoachMentalDue] = useState(false);
   // Messages/reminders moved to /coach/messages page
   const navigate = useNavigate();
   const { setCoachMode } = useCoachMode();
@@ -142,6 +143,21 @@ export default function CoachDashboard() {
     checkRoleAndLoad();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Coach mental review is monthly — hide entry card if last one is within 30 days
+  useEffect(() => {
+    if (!coachUserId) return;
+    (async () => {
+      const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      const { data } = await supabase
+        .from("coach_mental_assessments" as any)
+        .select("id")
+        .eq("user_id", coachUserId)
+        .gte("created_at", since)
+        .limit(1);
+      setCoachMentalDue(!data || data.length === 0);
+    })();
+  }, [coachUserId]);
 
   // Re-run loadAthletes when the active club changes (only matters for multi-club coaches).
   useEffect(() => {
@@ -438,23 +454,25 @@ export default function CoachDashboard() {
             {coachClubId && <TeamWeeklyScheduleCard clubId={coachClubId} />}
             {coachClubId && <ClubActivityTypesCard clubId={coachClubId} />}
 
-            {/* Coach mental review entry — coach-specific, not the athlete monthly assessment */}
-            <button
-              type="button"
-              onClick={() => navigate("/coach/mental")}
-              className="w-full text-left rounded-lg border border-primary/30 bg-primary/5 hover:bg-primary/10 transition-colors p-4 flex items-center gap-3"
-            >
-              <div className="h-10 w-10 rounded-full bg-primary/15 text-primary flex items-center justify-center shrink-0">
-                <Users className="h-5 w-5" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-foreground">Mental gennemgang for trænere</p>
-                <p className="text-xs text-muted-foreground">
-                  Månedlig check-in på dit indre coachingspil — ikke for atleter, for dig.
-                </p>
-              </div>
-              <span className="text-xs font-semibold text-primary shrink-0">Start →</span>
-            </button>
+            {/* Coach mental review entry — only shown when monthly check-in is due */}
+            {coachMentalDue && (
+              <button
+                type="button"
+                onClick={() => navigate("/coach/mental")}
+                className="w-full text-left rounded-lg border border-primary/30 bg-primary/5 hover:bg-primary/10 transition-colors p-4 flex items-center gap-3"
+              >
+                <div className="h-10 w-10 rounded-full bg-primary/15 text-primary flex items-center justify-center shrink-0">
+                  <Users className="h-5 w-5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-foreground">Mental gennemgang for trænere</p>
+                  <p className="text-xs text-muted-foreground">
+                    Månedlig check-in på dit indre coachingspil — ikke for atleter, for dig.
+                  </p>
+                </div>
+                <span className="text-xs font-semibold text-primary shrink-0">Start →</span>
+              </button>
+            )}
 
             {/* Squad content (formerly the "squad" tab) */}
             <div className="space-y-4">
