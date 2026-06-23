@@ -189,7 +189,7 @@ export default function Dashboard() {
   const { isModuleEnabled } = useAthleteModuleAccess();
   const { isFromCache: profileFromCache, cachedAt: profileCachedAt } = useOfflineProfile();
   const { plan: offlinePlan, online: planOnline } = useOfflinePlan();
-  const { role, hasCoachRole } = useRole();
+  const { role, hasCoachRole, loading: roleLoading } = useRole();
   const { memberships, activeMembership, loading: activeClubLoading } = useActiveClub();
 
   // Stay in the coach dashboard when coach mode is explicitly active,
@@ -245,12 +245,16 @@ export default function Dashboard() {
   }, [searchParams]);
 
   // Re-check mental reminder when returning to hub (e.g. after submitting a review).
+  // Wait for role to be loaded so we query the correct table on the first try,
+  // and guard against out-of-order responses overwriting the latest result.
   useEffect(() => {
     if (activeTab !== "hub") return;
+    if (roleLoading) return;
+    let cancelled = false;
     (async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+        if (!user || cancelled) return;
         const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
         const mentalTable = hasCoachRole ? "coach_mental_assessments" : "mental_assessments";
         const { data: lastMental } = await supabase
@@ -260,12 +264,14 @@ export default function Dashboard() {
           .order("created_at", { ascending: false })
           .limit(1)
           .maybeSingle();
+        if (cancelled) return;
         const isDue = !lastMental || (lastMental as any).created_at < thirtyDaysAgo;
         setShowMentalReminder(isDue && isModuleEnabled("mental"));
       } catch { /* ignore */ }
     })();
+    return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab, hasCoachRole]);
+  }, [activeTab, hasCoachRole, roleLoading]);
 
 
   // Map dashboard tabs to entitlement modules. Tabs not in this map are never tier-locked.
