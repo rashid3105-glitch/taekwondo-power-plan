@@ -1,8 +1,10 @@
 // Coach-specific mental review questions.
-// 6 categories × 3 questions = 18 items. The 6 categories MIRROR the athlete's
+// 6 categories × 5 questions = 30 items. The 6 categories MIRROR the athlete's
 // 6 mental dimensions but are rewritten from a coaching / leadership perspective.
 // Same 1–5 scoring scale (1 = unhealthy response, 5 = strong/healthy response)
 // so the assessment UI can reuse the average-per-category logic.
+// Total score = sum of 6 category averages (max 5 each) → "out of 30".
+
 
 export interface CoachLangText {
   en: string;
@@ -407,4 +409,259 @@ export const coachMentalQuestions: CoachMentalQuestion[] = [
       { en: "Crystal clear — this is my craft and I love it", da: "Krystalklart — dette er mit håndværk og jeg elsker det", sv: "Kristallklart — det här är mitt hantverk och jag älskar det", de: "Kristallklar — das ist mein Handwerk und ich liebe es", ar: "واضح كالكريستال — هذه حرفتي وأنا أعشقها", no: "Krystallklart — dette er håndverket mitt og jeg elsker det", es: "Cristalino — este es mi oficio y me apasiona" },
     ),
   },
+
+  // ===== Additional questions (4 & 5 per category) — added in v1.2.3 expansion 18→30 =====
+
+  // composureUnderPressure
+  {
+    id: "cup4",
+    category: "composureUnderPressure",
+    text: {
+      en: "When my best athlete suddenly looks tight in warm-up before a final, I…",
+      da: "Når min bedste atlet pludselig ser anspændt ud i opvarmningen før en finale, så…",
+      sv: "När min bästa atlet plötsligt ser spänd ut i uppvärmningen före en final, så…",
+      de: "Wenn mein bester Athlet im Aufwärmen vor einem Finale plötzlich verkrampft wirkt, dann…",
+      ar: "عندما يبدو لاعبي الأفضل متوترًا فجأة خلال الإحماء قبل النهائي، أنا…",
+      no: "Når min beste utøver plutselig ser anspent ut i oppvarmingen før en finale, så…",
+      es: "Cuando mi mejor atleta de repente se ve tenso en el calentamiento antes de una final, yo…",
+    },
+    options: opts(
+      { en: "Panic internally and project that anxiety onto them", da: "Får panik indvendigt og smitter dem med min angst", sv: "Får panik inombords och smittar dem med min ångest", de: "Gerate innerlich in Panik und übertrage die Angst auf sie", ar: "أصاب بالذعر داخليًا وأنقل قلقي إليه", no: "Får panikk inni meg og smitter dem med angsten min", es: "Entro en pánico por dentro y le contagio mi ansiedad" },
+      { en: "Over-coach — flood them with last-minute corrections", da: "Overcoacher — overøser dem med last-minute rettelser", sv: "Övercoachar — överöser dem med sista-minuten-korrigeringar", de: "Übercoache — überschütte sie mit Korrekturen", ar: "أُغرقه بتعليمات اللحظة الأخيرة", no: "Overcoacher — overøser dem med siste-liten-korreksjoner", es: "Sobreentreno — los inundo de correcciones de último minuto" },
+      { en: "Stand close but say nothing useful", da: "Står tæt på men siger ikke noget nyttigt", sv: "Står nära men säger inget användbart", de: "Stehe nahe, sage aber nichts Hilfreiches", ar: "أقف بقربه دون أن أقول شيئًا مفيدًا", no: "Står nær, men sier ingenting nyttig", es: "Me quedo cerca pero no digo nada útil" },
+      { en: "Lower my voice, slow my breathing, and remind them of one anchor cue", da: "Sænker stemmen, trækker vejret langsommere og minder dem om ét anker-cue", sv: "Sänker rösten, andas långsammare och påminner om ett ankar-cue", de: "Senke die Stimme, atme langsamer und erinnere an einen Anker-Cue", ar: "أخفض صوتي، أتنفس ببطء، وأذكّره بإشارة مرساة واحدة", no: "Senker stemmen, puster saktere og minner dem om én anker-cue", es: "Bajo la voz, respiro más lento y le recuerdo una indicación ancla" },
+      { en: "Become the calmest person in the room — they borrow it from me", da: "Bliver den roligste person i rummet — de låner ro fra mig", sv: "Blir den lugnaste i rummet — de lånar lugnet från mig", de: "Werde der ruhigste Mensch im Raum — sie übernehmen es von mir", ar: "أكون الأهدأ في المكان — يستعيرون مني الهدوء", no: "Blir den roligste i rommet — de låner roen fra meg", es: "Soy la persona más tranquila del lugar — toman mi calma prestada" },
+    ),
+  },
+  {
+    id: "cup5",
+    category: "composureUnderPressure",
+    text: {
+      en: "When several things go wrong at the same competition, I…",
+      da: "Når flere ting går galt ved samme stævne, så…",
+      sv: "När flera saker går fel på samma tävling, så…",
+      de: "Wenn bei einem Wettkampf mehrere Dinge gleichzeitig schiefgehen, dann…",
+      ar: "عندما تسوء عدة أمور في البطولة نفسها، أنا…",
+      no: "Når flere ting går galt på samme stevne, så…",
+      es: "Cuando varias cosas salen mal en la misma competición, yo…",
+    },
+    options: opts(
+      { en: "Spiral — every new problem doubles my stress", da: "Går i spiral — hvert nyt problem fordobler mit stress", sv: "Spiralerar — varje nytt problem dubblar stressen", de: "Drehe ab — jedes neue Problem verdoppelt den Stress", ar: "أدخل في دوامة — كل مشكلة جديدة تضاعف توتري", no: "Spiraler — hvert nye problem dobler stresset", es: "Entro en espiral — cada problema nuevo me duplica el estrés" },
+      { en: "Get sharp with my staff or family members helping", da: "Bliver kort for hovedet over for stab eller familie der hjælper", sv: "Blir kort i tonen mot personal eller familj som hjälper", de: "Werde scharf zu Helfern oder Familie", ar: "أكون حادًا مع طاقمي أو الأهل الذين يساعدون", no: "Blir kort i tonen mot stab eller familie som hjelper", es: "Me pongo cortante con mi staff o con la familia que ayuda" },
+      { en: "Push through but feel wrecked afterwards", da: "Presser igennem men er smadret bagefter", sv: "Kör vidare men är slut efteråt", de: "Ziehe es durch, bin danach aber zerstört", ar: "أتحامل لكنني محطّم بعدها", no: "Presser meg gjennom, men er ødelagt etterpå", es: "Sigo adelante pero quedo destrozado después" },
+      { en: "Triage — pick the next single most important action", da: "Triagerer — vælger den ene vigtigste handling lige nu", sv: "Triagerar — väljer den enda viktigaste åtgärden härnäst", de: "Priorisiere — wähle die nächste wichtigste Handlung", ar: "أرتّب الأولويات — أختار الإجراء الأهم التالي", no: "Triagerer — velger den ene viktigste handlingen nå", es: "Triajeo — elijo la próxima acción más importante" },
+      { en: "Feel calmer the more chaotic it gets — I trust my process", da: "Bliver mere rolig jo mere kaotisk det bliver — jeg stoler på min proces", sv: "Blir lugnare ju mer kaotiskt det blir — jag litar på min process", de: "Werde ruhiger, je chaotischer es wird — ich vertraue dem Prozess", ar: "أصبح أهدأ كلما زادت الفوضى — أثق بمنهجي", no: "Blir roligere jo mer kaotisk det blir — jeg stoler på prosessen", es: "Me calmo más cuanto más caótico se vuelve — confío en mi proceso" },
+    ),
+  },
+
+  // sidelineCalm
+  {
+    id: "sc4",
+    category: "sidelineCalm",
+    text: {
+      en: "Right before the first fight of the day, my breathing is…",
+      da: "Lige før dagens første kamp er min vejrtrækning…",
+      sv: "Precis före dagens första match är min andning…",
+      de: "Direkt vor dem ersten Kampf des Tages ist meine Atmung…",
+      ar: "قبل أول مباراة في اليوم مباشرة، يكون تنفسي…",
+      no: "Rett før dagens første kamp er pusten min…",
+      es: "Justo antes del primer combate del día, mi respiración es…",
+    },
+    options: opts(
+      { en: "Shallow and rapid — chest only", da: "Overfladisk og hurtig — kun bryst", sv: "Ytlig och snabb — bara bröst", de: "Flach und schnell — nur Brust", ar: "سطحي وسريع — في الصدر فقط", no: "Overflatisk og rask — bare bryst", es: "Superficial y rápida — solo pecho" },
+      { en: "Held — I notice I keep forgetting to exhale", da: "Holdt — jeg opdager at jeg glemmer at puste ud", sv: "Hållen — jag märker att jag glömmer andas ut", de: "Angehalten — ich vergesse das Ausatmen", ar: "محبوس — ألاحظ أنني أنسى الزفير", no: "Holdt — jeg merker at jeg glemmer å puste ut", es: "Contenida — noto que olvido exhalar" },
+      { en: "Uneven but I can settle it if I try", da: "Ujævn men jeg kan stabilisere den hvis jeg prøver", sv: "Ojämn men jag kan lugna den om jag försöker", de: "Ungleichmäßig, aber ich kann sie beruhigen", ar: "غير منتظم لكن أستطيع تهدئته إن حاولت", no: "Ujevn, men jeg kan roe den ned om jeg prøver", es: "Irregular pero la calmo si lo intento" },
+      { en: "Slow and into my belly — I run my pre-fight breathing", da: "Langsom og ned i maven — jeg kører min vejrtrækning før kampen", sv: "Långsam och ner i magen — jag kör min andning före match", de: "Langsam in den Bauch — meine Pre-Fight-Atmung läuft", ar: "بطيء وعميق إلى البطن — أنفّذ روتين تنفسي قبل المباراة", no: "Sakte og ned i magen — jeg kjører pusterutinen min", es: "Lenta y al abdomen — ejecuto mi respiración previa al combate" },
+      { en: "Effortlessly calm — my body is in competition mode", da: "Ubesværet rolig — min krop er i konkurrencemodus", sv: "Lugn utan ansträngning — kroppen är i tävlingsläge", de: "Mühelos ruhig — mein Körper ist im Wettkampfmodus", ar: "هادئ بلا جهد — جسدي في وضع المنافسة", no: "Rolig uten anstrengelse — kroppen er i konkurransemodus", es: "Calmada sin esfuerzo — mi cuerpo está en modo competición" },
+    ),
+  },
+  {
+    id: "sc5",
+    category: "sidelineCalm",
+    text: {
+      en: "After the buzzer ends a tight round, in the corner my emotions are…",
+      da: "Når bzzzeren afslutter en tæt runde, er mine følelser i hjørnet…",
+      sv: "När summern avslutar en tät rond är mina känslor i hörnet…",
+      de: "Wenn der Gong eine knappe Runde beendet, sind meine Emotionen in der Ecke…",
+      ar: "عند انتهاء جولة متقاربة، تكون مشاعري في الزاوية…",
+      no: "Når bzzeren avslutter en tett runde, er følelsene mine i hjørnet…",
+      es: "Cuando el zumbador termina un round ajustado, en la esquina mis emociones son…",
+    },
+    options: opts(
+      { en: "Boiling — I can't hide my frustration or excitement", da: "Kogende — jeg kan ikke skjule frustration eller begejstring", sv: "Kokande — jag kan inte dölja min frustration eller upprymdhet", de: "Kochend — ich kann Frust oder Aufregung nicht verbergen", ar: "ملتهبة — لا أستطيع إخفاء إحباطي أو حماستي", no: "Kokende — jeg klarer ikke skjule frustrasjon eller begeistring", es: "En ebullición — no puedo ocultar frustración o euforia" },
+      { en: "Leaking — my face tells the athlete everything", da: "Lækker — mit ansigt fortæller atleten alt", sv: "Läcker — mitt ansikte berättar allt för atleten", de: "Verrate alles — mein Gesicht spricht Bände", ar: "تتسرّب — وجهي يخبر اللاعب بكل شيء", no: "Lekker — ansiktet mitt forteller utøveren alt", es: "Se filtran — mi cara le cuenta todo al atleta" },
+      { en: "Controlled mostly, but voice rises", da: "For det meste kontrolleret, men stemmen stiger", sv: "Mest kontrollerade men rösten höjs", de: "Meist kontrolliert, aber Stimme wird laut", ar: "محكومة في الغالب لكن صوتي يرتفع", no: "For det meste kontrollert, men stemmen stiger", es: "Sobre todo controladas, pero la voz sube" },
+      { en: "Neutral face, steady voice — emotions parked", da: "Neutralt ansigt, rolig stemme — følelser parkeret", sv: "Neutralt ansikte, stadig röst — känslor parkerade", de: "Neutrales Gesicht, ruhige Stimme — Emotionen geparkt", ar: "وجه محايد، صوت ثابت — مشاعر مؤجلة", no: "Nøytralt ansikt, stødig stemme — følelser parkert", es: "Cara neutra, voz firme — emociones aparcadas" },
+      { en: "Calm presence that gives the athlete oxygen to reset", da: "Roligt nærvær der giver atleten ilt til at nulstille", sv: "Lugn närvaro som ger atleten syre att nollställa", de: "Ruhige Präsenz, die dem Athleten Raum zum Resetten gibt", ar: "حضور هادئ يمنح اللاعب متنفسًا لإعادة الضبط", no: "Rolig nærvær som gir utøveren rom til å nullstille", es: "Presencia calmada que le da al atleta aire para resetearse" },
+    ),
+  },
+
+  // decisionMakingUnderChaos
+  {
+    id: "dm4",
+    category: "decisionMakingUnderChaos",
+    text: {
+      en: "When I have to switch tactics mid-fight, my mental clarity is…",
+      da: "Når jeg skal skifte taktik midt i en kamp, er min mentale klarhed…",
+      sv: "När jag måste byta taktik mitt i en match är min mentala klarhet…",
+      de: "Wenn ich mitten im Kampf die Taktik wechseln muss, ist meine Klarheit…",
+      ar: "حين أحتاج لتغيير التكتيك أثناء المباراة، يكون صفائي الذهني…",
+      no: "Når jeg må bytte taktikk midt i en kamp, er den mentale klarheten min…",
+      es: "Cuando tengo que cambiar de táctica a mitad del combate, mi claridad mental es…",
+    },
+    options: opts(
+      { en: "Foggy — I default to the same instructions louder", da: "Tåget — jeg falder tilbage på samme instrukser bare højere", sv: "Dimmig — jag faller tillbaka på samma instruktioner men högre", de: "Vernebelt — ich wiederhole dieselben Anweisungen lauter", ar: "ضبابي — أكرر التعليمات نفسها بصوت أعلى", no: "Tåkete — jeg faller tilbake på samme instruksjoner høyere", es: "Borrosa — repito las mismas instrucciones más alto" },
+      { en: "Reactive — I copy what the opposing coach did", da: "Reaktiv — jeg kopierer hvad modstandercoachen gjorde", sv: "Reaktiv — jag kopierar vad motståndartränaren gjorde", de: "Reaktiv — ich kopiere den gegnerischen Trainer", ar: "ردّ فعل — أقلّد ما فعله مدرب الخصم", no: "Reaktiv — jeg kopierer det motstandertreneren gjorde", es: "Reactiva — copio lo que hizo el entrenador rival" },
+      { en: "I see the change needed but explain it too slowly", da: "Jeg ser ændringen der skal til men forklarer den for langsomt", sv: "Jag ser förändringen som behövs men förklarar för långsamt", de: "Sehe die nötige Änderung, erkläre sie aber zu langsam", ar: "أرى التغيير المطلوب لكني أشرحه ببطء شديد", no: "Ser endringen som trengs, men forklarer for sakte", es: "Veo el cambio necesario pero lo explico demasiado lento" },
+      { en: "Clear — I name the new plan in one sentence", da: "Klar — jeg navngiver den nye plan i én sætning", sv: "Tydlig — jag namnger den nya planen i en mening", de: "Klar — ich benenne den neuen Plan in einem Satz", ar: "صافٍ — أصف الخطة الجديدة في جملة واحدة", no: "Klar — jeg navngir den nye planen i én setning", es: "Clara — nombro el nuevo plan en una frase" },
+      { en: "Surgical — I see the win condition and direct the athlete to it", da: "Kirurgisk — jeg ser sejrsbetingelsen og dirigerer atleten dertil", sv: "Kirurgisk — jag ser vinstvägen och leder atleten dit", de: "Chirurgisch — ich sehe den Sieg-Pfad und leite den Athleten dorthin", ar: "دقيق كالجراح — أرى شرط الفوز وأقود اللاعب إليه", no: "Kirurgisk — jeg ser veien til seier og leder utøveren dit", es: "Quirúrgica — veo la vía de victoria y guío al atleta hacia ella" },
+    ),
+  },
+  {
+    id: "dm5",
+    category: "decisionMakingUnderChaos",
+    text: {
+      en: "When I'm cornering two athletes back-to-back on different mats, I…",
+      da: "Når jeg coacher to atleter i træk på forskellige måtter, så…",
+      sv: "När jag coachar två atleter i följd på olika mattor, så…",
+      de: "Wenn ich zwei Athleten nacheinander auf verschiedenen Matten betreue, dann…",
+      ar: "عندما أدرّب لاعبين متتاليين على بسطين مختلفين، أنا…",
+      no: "Når jeg coacher to utøvere etter hverandre på ulike matter, så…",
+      es: "Cuando hago de coach a dos atletas seguidos en tatamis distintos, yo…",
+    },
+    options: opts(
+      { en: "Mix them up — the second athlete gets the first one's plan", da: "Blander dem — atlet nummer to får atlet ets plan", sv: "Blandar ihop dem — atlet två får atlet etts plan", de: "Verwechsle sie — der zweite Athlet bekommt den Plan des ersten", ar: "أخلط بينهما — اللاعب الثاني يأخذ خطة الأول", no: "Blander dem — utøver to får utøver én sin plan", es: "Los mezclo — el segundo recibe el plan del primero" },
+      { en: "Arrive at mat 2 still thinking about mat 1", da: "Ankommer til mat 2 stadig tænkende på mat 1", sv: "Anländer till matta 2 men tänker fortfarande på matta 1", de: "Komme an Matte 2 an, denke noch an Matte 1", ar: "أصل إلى البساط 2 وأنا ما زلت أفكر بالبساط 1", no: "Kommer til matte 2, men tenker fortsatt på matte 1", es: "Llego al tatami 2 todavía pensando en el 1" },
+      { en: "Manage but feel scattered the whole bracket", da: "Klarer det men føler mig spredt hele puljen igennem", sv: "Klarar det men känner mig splittrad hela poolen", de: "Schaffe es, fühle mich aber den ganzen Pool zerstreut", ar: "أتدبّر الأمر لكنني مشتت طوال المسابقة", no: "Klarer det, men føler meg spredt gjennom hele puljen", es: "Lo gestiono pero me siento disperso todo el cuadro" },
+      { en: "Have a 10-second reset routine between mats", da: "Har en 10-sekunders nulstillings-rutine mellem måtterne", sv: "Har en 10-sekunders-resetrutin mellan mattorna", de: "Habe eine 10-Sekunden-Reset-Routine zwischen den Matten", ar: "لديّ روتين إعادة ضبط مدته 10 ثوانٍ بين البساطين", no: "Har en 10-sekunders nullstillings-rutine mellom mattene", es: "Tengo una rutina de reseteo de 10 segundos entre tatamis" },
+      { en: "Each athlete gets my full presence — they never feel shared", da: "Hver atlet får mit fulde nærvær — de føler sig aldrig delt", sv: "Varje atlet får min fulla närvaro — de känner sig aldrig delade", de: "Jeder Athlet bekommt meine volle Präsenz — sie fühlen sich nie geteilt", ar: "كل لاعب يحصل على حضوري الكامل — لا يشعرون قط أنني موزّع", no: "Hver utøver får full tilstedeværelse — de føler seg aldri delt", es: "Cada atleta recibe mi presencia plena — nunca se sienten compartidos" },
+    ),
+  },
+
+  // roleModelAfterLoss
+  {
+    id: "rm4",
+    category: "roleModelAfterLoss",
+    text: {
+      en: "When my athlete cries after losing, my first instinct is to…",
+      da: "Når min atlet græder efter et nederlag, er min første impuls at…",
+      sv: "När min atlet gråter efter en förlust är min första impuls att…",
+      de: "Wenn mein Athlet nach einer Niederlage weint, ist mein erster Impuls…",
+      ar: "عندما يبكي لاعبي بعد الخسارة، تكون أول ردة فعلي…",
+      no: "Når utøveren min gråter etter et tap, er min første impuls å…",
+      es: "Cuando mi atleta llora tras perder, mi primer impulso es…",
+    },
+    options: opts(
+      { en: "Tell them to toughen up — crying won't change the result", da: "Sige de skal være hårde — gråd ændrer ikke resultatet", sv: "Säga åt dem att skärpa sig — gråt ändrar inget", de: "Sage, sie sollen sich zusammenreißen — Weinen ändert nichts", ar: "أطلب منه أن يكون قويًا — البكاء لن يغيّر شيئًا", no: "Si de må mann seg opp — gråt endrer ikke resultatet", es: "Decirle que se aguante — llorar no cambia el resultado" },
+      { en: "Look away — I don't know what to do with the emotion", da: "Kigge væk — jeg ved ikke hvad jeg skal gøre med følelsen", sv: "Titta bort — jag vet inte vad jag ska göra med känslan", de: "Wegschauen — ich weiß mit der Emotion nichts anzufangen", ar: "أنظر بعيدًا — لا أعرف ماذا أفعل بالمشاعر", no: "Se vekk — jeg vet ikke hva jeg skal gjøre med følelsen", es: "Mirar a otro lado — no sé qué hacer con la emoción" },
+      { en: "Pat them on the shoulder and change the subject", da: "Klappe dem på skulderen og skifte emne", sv: "Klappa dem på axeln och byta ämne", de: "Auf die Schulter klopfen und das Thema wechseln", ar: "أربّت على كتفه وأغيّر الموضوع", no: "Klappe på skulderen og skifte tema", es: "Darle una palmada y cambiar de tema" },
+      { en: "Sit with them quietly until they're ready to talk", da: "Sidde stille med dem indtil de er klar til at tale", sv: "Sitta tyst med dem tills de är redo att prata", de: "Schweigend bei ihnen sitzen, bis sie reden wollen", ar: "أجلس بصمت بجانبه حتى يكون مستعدًا للحديث", no: "Sitte stille hos dem til de er klare for å snakke", es: "Sentarme con ellos en silencio hasta que quieran hablar" },
+      { en: "Name the feeling, honour the effort, and remind them who they are", da: "Sætte ord på følelsen, ære indsatsen og minde dem om hvem de er", sv: "Sätta ord på känslan, hedra insatsen och påminna om vilka de är", de: "Das Gefühl benennen, den Einsatz würdigen, sie an ihr Wesen erinnern", ar: "أسمي الشعور، أكرّم الجهد، وأذكّره بمن هو حقًا", no: "Sette ord på følelsen, hedre innsatsen og minne dem om hvem de er", es: "Nombrar el sentimiento, honrar el esfuerzo y recordarles quiénes son" },
+    ),
+  },
+  {
+    id: "rm5",
+    category: "roleModelAfterLoss",
+    text: {
+      en: "The Monday after a tough weekend tournament, in training I am…",
+      da: "Mandagen efter en hård turneringsweekend er jeg til træning…",
+      sv: "Måndagen efter en tuff tävlingshelg är jag på träning…",
+      de: "Am Montag nach einem harten Turnier-Wochenende bin ich im Training…",
+      ar: "يوم الإثنين بعد بطولة قاسية في عطلة الأسبوع، أكون في التدريب…",
+      no: "Mandagen etter en tøff turneringshelg er jeg på trening…",
+      es: "El lunes después de un fin de semana duro de torneo, en entrenamiento estoy…",
+    },
+    options: opts(
+      { en: "Cold and punishing — I want them to feel the loss", da: "Kold og straffende — jeg vil have de skal mærke nederlaget", sv: "Kall och straffande — jag vill att de ska känna förlusten", de: "Kalt und strafend — sie sollen die Niederlage spüren", ar: "بارد وعقابي — أريدهم أن يشعروا بالخسارة", no: "Kald og straffende — jeg vil de skal kjenne tapet", es: "Frío y castigador — quiero que sientan la derrota" },
+      { en: "Skip the topic entirely — pretend nothing happened", da: "Springer emnet helt over — lader som om intet skete", sv: "Hoppar över ämnet helt — låtsas som inget hänt", de: "Übergehe das Thema komplett — tue, als wäre nichts gewesen", ar: "أتجاهل الموضوع تمامًا — وكأن شيئًا لم يحدث", no: "Hopper over temaet helt — later som ingenting skjedde", es: "Evito el tema por completo — finjo que no pasó nada" },
+      { en: "Talk about it but my body language says I'm still bitter", da: "Taler om det men mit kropssprog siger jeg stadig er bitter", sv: "Pratar om det men kroppsspråket säger att jag fortfarande är bitter", de: "Spreche darüber, aber meine Körpersprache verrät meinen Frust", ar: "أتحدث عنها لكن لغة جسدي تكشف مرارتي", no: "Snakker om det, men kroppsspråket sier at jeg fortsatt er bitter", es: "Hablo de ello pero mi lenguaje corporal sigue mostrando rencor" },
+      { en: "Open the floor — short, honest review, then forward", da: "Åbner gulvet — kort, ærlig gennemgang, så fremad", sv: "Öppnar för samtal — kort, ärlig genomgång, sedan framåt", de: "Mache es zum Thema — kurze ehrliche Auswertung, dann nach vorn", ar: "أفتح المجال — مراجعة قصيرة وصادقة ثم نتقدم", no: "Åpner for samtale — kort, ærlig gjennomgang, så framover", es: "Abro el tema — repaso corto y honesto, después adelante" },
+      { en: "Lead with curiosity — 'what did we learn?' — energy is forward and positive", da: "Leder med nysgerrighed — 'hvad lærte vi?' — energien er fremad og positiv", sv: "Leder med nyfikenhet — 'vad lärde vi oss?' — energin är framåt och positiv", de: "Führe mit Neugier — 'was haben wir gelernt?' — Energie nach vorn", ar: "أقود بفضول — 'ماذا تعلمنا؟' — الطاقة إيجابية وإلى الأمام", no: "Leder med nysgjerrighet — 'hva lærte vi?' — energien er framover og positiv", es: "Lidero con curiosidad — '¿qué aprendimos?' — energía hacia adelante y positiva" },
+    ),
+  },
+
+  // coachConfidence
+  {
+    id: "cc4",
+    category: "coachConfidence",
+    text: {
+      en: "When my methodology is producing slow results, I…",
+      da: "Når min metodik giver langsomme resultater, så…",
+      sv: "När min metodik ger långsamma resultat, så…",
+      de: "Wenn meine Methodik nur langsam Ergebnisse liefert, dann…",
+      ar: "عندما تعطي منهجيتي نتائج بطيئة، أنا…",
+      no: "Når metodikken min gir trege resultater, så…",
+      es: "Cuando mi metodología produce resultados lentos, yo…",
+    },
+    options: opts(
+      { en: "Scrap it after one bad month and chase the latest trend", da: "Skroter den efter én dårlig måned og jagter nyeste trend", sv: "Skrotar den efter en dålig månad och jagar senaste trenden", de: "Verwerfe sie nach einem schlechten Monat und springe auf jeden Trend", ar: "أتركها بعد شهر سيء واحد وأتبع أحدث صيحة", no: "Skroter den etter én dårlig måned og jakter siste trend", es: "La descarto tras un mes malo y persigo la última tendencia" },
+      { en: "Doubt loudly in front of my athletes", da: "Tvivler højlydt foran mine atleter", sv: "Tvivlar högt inför mina atleter", de: "Zweifle laut vor meinen Athleten", ar: "أشكّك بصوت عالٍ أمام لاعبيّ", no: "Tviler høyt foran utøverne mine", es: "Dudo en voz alta delante de mis atletas" },
+      { en: "Stick with it but feel anxious every session", da: "Holder fast men er nervøs hver træning", sv: "Håller fast men är orolig varje pass", de: "Bleibe dabei, bin aber jede Einheit nervös", ar: "أتمسك بها لكنني قلق في كل جلسة", no: "Holder fast, men er nervøs på hver økt", es: "Sigo con ella pero estoy ansioso en cada sesión" },
+      { en: "Trust the process and look for the lead indicators", da: "Stoler på processen og kigger efter de tidlige indikatorer", sv: "Litar på processen och letar efter tidiga indikatorer", de: "Vertraue dem Prozess und schaue auf Frühindikatoren", ar: "أثق بالعملية وأبحث عن المؤشرات المبكرة", no: "Stoler på prosessen og ser etter tidlige indikatorer", es: "Confío en el proceso y busco los indicadores tempranos" },
+      { en: "Stay rock-solid — long-term thinking is my edge", da: "Forbliver klippefast — langsigtet tænkning er min styrke", sv: "Står klippfast — långsiktigt tänkande är min styrka", de: "Bleibe felsenfest — Langfristdenken ist mein Vorteil", ar: "أبقى صلبًا كالصخر — التفكير طويل المدى هو ميزتي", no: "Står som fjell — langsiktig tenkning er styrken min", es: "Me mantengo firme como roca — pensar a largo plazo es mi ventaja" },
+    ),
+  },
+  {
+    id: "cc5",
+    category: "coachConfidence",
+    text: {
+      en: "When I have to deliver hard feedback to a senior athlete, I…",
+      da: "Når jeg skal give hård feedback til en senior-atlet, så…",
+      sv: "När jag måste ge tuff feedback till en senior-atlet, så…",
+      de: "Wenn ich einem erfahrenen Athleten harte Rückmeldung geben muss, dann…",
+      ar: "عندما يجب أن أُعطي ملاحظات صعبة للاعب كبير، أنا…",
+      no: "Når jeg må gi tøff tilbakemelding til en senior-utøver, så…",
+      es: "Cuando tengo que dar feedback duro a un atleta senior, yo…",
+    },
+    options: opts(
+      { en: "Avoid it and hope it resolves itself", da: "Undgår det og håber det løser sig selv", sv: "Undviker det och hoppas det löser sig", de: "Vermeide es und hoffe, es regelt sich", ar: "أتجنّب الأمر وآمل أن يحلّ نفسه", no: "Unngår det og håper det løser seg selv", es: "Lo evito y espero que se resuelva solo" },
+      { en: "Soften it so much the message disappears", da: "Pakker det så meget ind at budskabet forsvinder", sv: "Mjukar upp det så att budskapet försvinner", de: "Verpacke es so weich, dass die Botschaft verschwindet", ar: "أُلطّفها لدرجة تختفي معها الرسالة", no: "Pakker det så mykt inn at budskapet forsvinner", es: "Lo suavizo tanto que el mensaje desaparece" },
+      { en: "Deliver it but rehearse it ten times first", da: "Leverer det men øver det ti gange først", sv: "Levererar det men övar tio gånger först", de: "Sage es, übe es aber zehnmal vorher", ar: "أقولها لكنني أتدرّب عليها عشر مرات أولًا", no: "Sier det, men øver ti ganger først", es: "Lo digo pero lo ensayo diez veces antes" },
+      { en: "Direct, kind, specific — leave the door open", da: "Direkte, venlig, konkret — lader døren stå åben", sv: "Direkt, vänlig, specifik — lämnar dörren öppen", de: "Direkt, freundlich, konkret — Tür offen lassen", ar: "مباشر، لطيف، محدّد — أُبقي الباب مفتوحًا", no: "Direkte, vennlig, spesifikk — lar døra stå åpen", es: "Directo, amable, específico — dejo la puerta abierta" },
+      { en: "They thank me for it later — that's how I know I led well", da: "De takker mig for det senere — sådan ved jeg at jeg ledte godt", sv: "De tackar mig senare — så vet jag att jag ledde rätt", de: "Sie danken mir später — daran erkenne ich gute Führung", ar: "يشكرونني لاحقًا — هكذا أعرف أنني قُدت بشكل صحيح", no: "De takker meg senere — slik vet jeg at jeg ledet riktig", es: "Me lo agradecen después — así sé que lideré bien" },
+    ),
+  },
+
+  // motivationBurnout
+  {
+    id: "mb4",
+    category: "motivationBurnout",
+    text: {
+      en: "When I think about another full season ahead, I feel…",
+      da: "Når jeg tænker på endnu en fuld sæson forude, føler jeg…",
+      sv: "När jag tänker på ytterligare en hel säsong framöver känner jag…",
+      de: "Wenn ich an eine weitere ganze Saison denke, fühle ich…",
+      ar: "حين أفكر بموسم كامل آخر أمامي، أشعر…",
+      no: "Når jeg tenker på enda en full sesong framover, kjenner jeg…",
+      es: "Cuando pienso en otra temporada completa por delante, siento…",
+    },
+    options: opts(
+      { en: "Dread — I don't see how I'll make it through", da: "Frygt — jeg kan ikke se hvordan jeg klarer den", sv: "Ångest — jag vet inte hur jag ska orka", de: "Angst — ich weiß nicht, wie ich es schaffen soll", ar: "خوفًا — لا أرى كيف سأتحمّل", no: "Gru — jeg ser ikke hvordan jeg skal klare det", es: "Pavor — no veo cómo lo voy a sacar" },
+      { en: "Heaviness — it feels like a duty more than a calling", da: "Tunghed — det føles mere som en pligt end et kald", sv: "Tunghet — det känns mer som plikt än kallelse", de: "Schwere — eher Pflicht als Berufung", ar: "ثِقلًا — يبدو واجبًا أكثر من شغف", no: "Tunghet — det føles mer som plikt enn kall", es: "Pesadez — se siente más como obligación que como vocación" },
+      { en: "Mixed — pockets of excitement, pockets of fatigue", da: "Blandet — øer af begejstring, øer af træthed", sv: "Blandat — stunder av glädje, stunder av trötthet", de: "Gemischt — Momente der Freude, Momente der Erschöpfung", ar: "مشاعر مختلطة — لحظات حماس ولحظات إرهاق", no: "Blandet — øyeblikk av glede, øyeblikk av tretthet", es: "Mezclados — momentos de ilusión, momentos de cansancio" },
+      { en: "Quiet readiness — I know the rhythm and how to pace myself", da: "Stille parathed — jeg kender rytmen og hvordan jeg doserer mig selv", sv: "Stilla beredskap — jag kan rytmen och vet hur jag doserar mig", de: "Stille Bereitschaft — ich kenne den Rhythmus", ar: "جاهزية هادئة — أعرف الإيقاع وكيف أوزّع طاقتي", no: "Stille beredskap — jeg kjenner rytmen og hvordan jeg doserer", es: "Disposición tranquila — conozco el ritmo y sé dosificarme" },
+      { en: "Excited — I can already see the athletes I'll get to develop", da: "Begejstret — jeg kan allerede se atleterne jeg får udvikle", sv: "Entusiastisk — jag ser redan atleterna jag får utveckla", de: "Vorfreude — ich sehe schon die Athleten, die ich entwickeln darf", ar: "متحمسًا — أرى مسبقًا اللاعبين الذين سأطوّرهم", no: "Begeistret — jeg ser allerede utøverne jeg får utvikle", es: "Ilusionado — ya veo a los atletas que voy a poder desarrollar" },
+    ),
+  },
+  {
+    id: "mb5",
+    category: "motivationBurnout",
+    text: {
+      en: "How well I take care of my own body and mind during peak season is…",
+      da: "Hvor godt jeg passer på min krop og sind i højsæsonen er…",
+      sv: "Hur väl jag tar hand om min egen kropp och sinne under högsäsong är…",
+      de: "Wie gut ich in der Hochsaison auf Körper und Geist achte, ist…",
+      ar: "مدى اعتنائي بجسدي وعقلي خلال ذروة الموسم هو…",
+      no: "Hvor godt jeg tar vare på egen kropp og sinn i toppsesong er…",
+      es: "Cómo cuido mi propio cuerpo y mente en plena temporada es…",
+    },
+    options: opts(
+      { en: "Terribly — I'm last on my own priority list", da: "Forfærdeligt — jeg er sidst på min egen prioritetsliste", sv: "Uselt — jag är sist på min egen prioriteringslista", de: "Furchtbar — ich stehe auf meiner Prioritätenliste ganz unten", ar: "سيء جدًا — أنا آخر شخص على قائمة أولوياتي", no: "Forferdelig — jeg står sist på min egen prioriteringsliste", es: "Pésimamente — soy el último en mi propia lista de prioridades" },
+      { en: "Poorly — sleep, food, training all slip", da: "Dårligt — søvn, mad og træning glider", sv: "Dåligt — sömn, mat och träning glider", de: "Schlecht — Schlaf, Essen, Sport leiden alle", ar: "ضعيف — النوم والأكل والتمرين كله ينزلق", no: "Dårlig — søvn, mat og trening glipper", es: "Mal — el sueño, la comida y mi entrenamiento se descuidan" },
+      { en: "Patchy — some weeks good, some weeks survival", da: "Pletvist — nogle uger gode, nogle uger overlevelse", sv: "Ojämnt — vissa veckor bra, vissa överlevnad", de: "Lückenhaft — manche Wochen gut, manche nur Überleben", ar: "متفاوت — أسابيع جيدة وأسابيع للنجاة فقط", no: "Flekkvis — noen uker bra, noen uker overlevelse", es: "Irregular — semanas buenas, semanas de supervivencia" },
+      { en: "Mostly good — I protect non-negotiables", da: "For det meste godt — jeg beskytter de ikke-forhandlebare", sv: "Mest bra — jag skyddar mina icke-förhandlingsbara", de: "Meist gut — ich schütze meine Non-Negotiables", ar: "جيد في الغالب — أحمي ما لا يقبل التفاوض", no: "Stort sett bra — jeg verner de ikke-forhandlbare", es: "Bastante bien — protejo lo no negociable" },
+      { en: "Excellent — I model the recovery I preach to my athletes", da: "Fremragende — jeg er rollemodel for den restitution jeg prædiker", sv: "Utmärkt — jag är förebild för återhämtningen jag predikar", de: "Hervorragend — ich lebe die Erholung, die ich predige, vor", ar: "ممتاز — أكون قدوة في التعافي الذي أعلّمه للاعبيّ", no: "Utmerket — jeg er rollemodell for restitusjonen jeg forkynner", es: "Excelente — encarno la recuperación que predico a mis atletas" },
+    ),
+  },
 ];
+
