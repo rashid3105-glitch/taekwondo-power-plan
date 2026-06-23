@@ -304,8 +304,10 @@ const Index = () => {
         <div style={{ marginTop: 14, fontSize: 12, color: "rgba(255,255,255,0.25)" }}>30 dage gratis · Intet kreditkort · Opsig når som helst</div>
       </div>
 
+      </main>
+
       {/* FOOTER */}
-      <div style={{ borderTop: "0.5px solid rgba(255,255,255,0.07)" }}>
+      <footer style={{ borderTop: "0.5px solid rgba(255,255,255,0.07)" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto", padding: `28px ${pad}px`, display: "flex", justifyContent: "space-between", alignItems: isMobile ? "flex-start" : "center", flexDirection: isMobile ? "column" : "row", flexWrap: "wrap", gap: 16 }}>
           <div>
             <BrandLogo height={36} onClick={() => navigate("/")} />
