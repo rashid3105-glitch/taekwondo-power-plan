@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { type Exercise, CATEGORY_LABELS } from "@/data/exercises";
 import { cn } from "@/lib/utils";
-import { ChevronDown, ChevronUp, ShieldAlert, Target, CheckCircle2 } from "lucide-react";
+import { ChevronDown, ChevronUp, ShieldAlert, Target, CheckCircle2, Youtube } from "lucide-react";
 import { MuscleGroupBadges } from "./MuscleIcon";
 import { ExerciseIllustration } from "./ExerciseIllustration";
 import { getExerciseGoals, getRiskLevel, RISK_STYLES } from "@/lib/exerciseClassification";
@@ -49,33 +49,51 @@ export function ExerciseCard({ exercise, index }: ExerciseCardProps) {
   const goals = getExerciseGoals(exercise);
   const risk = getRiskLevel(exercise);
 
+  const youtubeHref = exercise.videoId
+    ? `https://www.youtube.com/watch?v=${exercise.videoId}`
+    : `https://www.youtube.com/results?search_query=${encodeURIComponent(exercise.name + " taekwondo tutorial")}`;
+
   return (
     <div className="rounded-lg border border-border bg-secondary/30 overflow-hidden transition-all">
       {/* Header */}
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary/60 transition-colors cursor-pointer"
-      >
-        <span className="mono text-xs text-muted-foreground w-5">{String(index).padStart(2, "0")}</span>
-        <span className={cn("h-2 w-2 rounded-full flex-shrink-0", CATEGORY_DOT[exercise.category])} />
-        <span className="font-semibold text-sm text-foreground flex-1 text-left">{exercise.name}</span>
-        <MuscleGroupBadges muscles={exercise.muscleGroups} size={26} />
-        <span className="text-xs text-muted-foreground mr-2">
-          {exercise.sets}×{exercise.reps}
-        </span>
-        <span className={cn("hidden sm:inline-flex items-center gap-1 text-[10px] font-bold uppercase px-1.5 py-0.5 rounded border", RISK_STYLES[risk])}>
-          <ShieldAlert className="h-3 w-3" />
-          {t(RISK_LABEL_KEY[risk])}
-        </span>
-        <span className="text-xs text-muted-foreground hidden sm:inline px-2 py-0.5 rounded bg-muted">
-          {CATEGORY_LABELS[exercise.category]}
-        </span>
-        {expanded ? (
-          <ChevronUp className="h-4 w-4 text-muted-foreground" />
-        ) : (
-          <ChevronDown className="h-4 w-4 text-muted-foreground" />
-        )}
-      </button>
+      <div className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary/60 transition-colors">
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="flex items-center gap-3 flex-1 min-w-0 text-left cursor-pointer"
+        >
+          <span className="mono text-xs text-muted-foreground w-5">{String(index).padStart(2, "0")}</span>
+          <span className={cn("h-2 w-2 rounded-full flex-shrink-0", CATEGORY_DOT[exercise.category])} />
+          <span className="font-semibold text-sm text-foreground flex-1 text-left truncate">{exercise.name}</span>
+          <MuscleGroupBadges muscles={exercise.muscleGroups} size={26} />
+          <span className="text-xs text-muted-foreground mr-2 whitespace-nowrap">
+            {exercise.sets}×{exercise.reps}
+          </span>
+          <span className={cn("hidden sm:inline-flex items-center gap-1 text-[10px] font-bold uppercase px-1.5 py-0.5 rounded border", RISK_STYLES[risk])}>
+            <ShieldAlert className="h-3 w-3" />
+            {t(RISK_LABEL_KEY[risk])}
+          </span>
+          <span className="text-xs text-muted-foreground hidden sm:inline px-2 py-0.5 rounded bg-muted">
+            {CATEGORY_LABELS[exercise.category]}
+          </span>
+        </button>
+        <a
+          href={youtubeHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          title="YouTube"
+          className="flex items-center justify-center h-7 w-7 rounded-md bg-red-600/15 text-red-600 hover:bg-red-600/25 transition-colors flex-shrink-0"
+        >
+          <Youtube className="h-4 w-4" />
+        </a>
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="flex items-center justify-center h-7 w-7 text-muted-foreground hover:text-foreground cursor-pointer"
+          aria-label={expanded ? "Collapse" : "Expand"}
+        >
+          {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+        </button>
+      </div>
 
       {/* Expanded content */}
       {expanded && (
