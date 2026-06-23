@@ -57,7 +57,9 @@ export function ExerciseCard({ exercise, index }: ExerciseCardProps) {
           className="flex items-center gap-3 flex-1 min-w-0 text-left cursor-pointer"
         >
           <span className="mono text-xs text-muted-foreground w-5">{String(index).padStart(2, "0")}</span>
-          <span className={cn("h-2 w-2 rounded-full flex-shrink-0", CATEGORY_DOT[exercise.category])} />
+          <span className={cn("h-7 w-7 rounded-lg flex items-center justify-center flex-shrink-0", catStyle.tile)}>
+            <CatIcon className={cn("h-4 w-4", catStyle.icon)} />
+          </span>
           <span className="font-semibold text-sm text-foreground flex-1 text-left truncate">{exercise.name}</span>
           <MuscleGroupBadges muscles={exercise.muscleGroups} size={26} />
           <span className="text-xs text-muted-foreground mr-2 whitespace-nowrap">
