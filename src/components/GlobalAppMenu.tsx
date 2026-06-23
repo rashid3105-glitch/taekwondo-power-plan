@@ -339,13 +339,38 @@ export function GlobalAppMenu() {
             )}
 
             {isAdmin && (
-              <button
-                onClick={() => goAndClose("/admin/approval")}
-                className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
-              >
-                <Shield className="h-4 w-4 shrink-0" />
-                <span>{t("admin")}</span>
-              </button>
+              <>
+                <button
+                  onClick={() => setAdminOpen((v) => !v)}
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
+                  aria-expanded={adminOpen}
+                >
+                  <Shield className="h-4 w-4 shrink-0" />
+                  <span className="flex-1 text-left">{t("admin")}</span>
+                  <ChevronDown className={`h-4 w-4 shrink-0 transition-transform ${adminOpen ? "rotate-180" : ""}`} />
+                </button>
+                {adminOpen && (
+                  <div className="ml-6 mt-1 mb-1 space-y-0.5 border-l border-border pl-2">
+                    {[
+                      { to: "/admin/approval", icon: Users, label: t("adminUsers") || "Users" },
+                      { to: "/admin/drills", icon: Dumbbell, label: t("adminDrills") || "TKD drills" },
+                      { to: "/admin/blog", icon: FileText, label: t("adminBlog") || "Blog" },
+                      { to: "/admin/clubs", icon: Building, label: t("adminClubs") || "Clubs" },
+                      { to: "/admin/payments", icon: CreditCard, label: t("adminPayments") || "Payments" },
+                      { to: "/admin/modules", icon: LayoutGrid, label: t("adminModules") || "Modules" },
+                    ].map((it) => (
+                      <button
+                        key={it.to}
+                        onClick={() => goAndClose(it.to)}
+                        className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
+                      >
+                        <it.icon className="h-4 w-4 shrink-0" />
+                        <span className="truncate">{it.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </>
             )}
 
             <button
