@@ -5,9 +5,11 @@ interface PageMetaProps {
   description?: string;
   canonical?: string;
   noindex?: boolean;
+  ogType?: "website" | "article" | "profile";
+  ogImage?: string;
 }
 
-export const PageMeta = ({ title, description, canonical, noindex }: PageMetaProps) => {
+export const PageMeta = ({ title, description, canonical, noindex, ogType, ogImage }: PageMetaProps) => {
   useEffect(() => {
     const suffix = "Sportstalent";
     // Only append the brand suffix if the title doesn't already contain it
@@ -42,6 +44,18 @@ export const PageMeta = ({ title, description, canonical, noindex }: PageMetaPro
     const twTitle = document.querySelector('meta[name="twitter:title"]');
     if (twTitle) twTitle.setAttribute("content", document.title);
 
+    // Update og:type
+    const ogTypeEl = document.querySelector('meta[property="og:type"]');
+    if (ogTypeEl) ogTypeEl.setAttribute("content", ogType || "website");
+
+    // Update og:image / twitter:image per-page
+    if (ogImage) {
+      const ogImg = document.querySelector('meta[property="og:image"]');
+      if (ogImg) ogImg.setAttribute("content", ogImage);
+      const twImg = document.querySelector('meta[name="twitter:image"]');
+      if (twImg) twImg.setAttribute("content", ogImage);
+    }
+
     // Update og:description and twitter:description
     if (description) {
       const ogDesc = document.querySelector('meta[property="og:description"]');
@@ -62,7 +76,7 @@ export const PageMeta = ({ title, description, canonical, noindex }: PageMetaPro
         robotsMeta.setAttribute("content", "index, follow");
       }
     };
-  }, [title, description, canonical, noindex]);
+  }, [title, description, canonical, noindex, ogType, ogImage]);
 
   return null;
 };

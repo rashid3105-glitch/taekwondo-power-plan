@@ -79,6 +79,7 @@ const Index = () => {
         )}
       </header>
 
+      <main>
       {/* HERO */}
       <section style={{ padding: `${isMobile ? 48 : 72}px ${pad}px 0`, textAlign: "center" }}>
         <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(245,200,66,0.1)", border: "0.5px solid rgba(245,200,66,0.28)", borderRadius: 20, padding: "4px 14px", fontSize: 11, color: "#F5C842", fontWeight: 700, letterSpacing: "0.08em", marginBottom: 24 }}>
@@ -303,8 +304,10 @@ const Index = () => {
         <div style={{ marginTop: 14, fontSize: 12, color: "rgba(255,255,255,0.25)" }}>30 dage gratis · Intet kreditkort · Opsig når som helst</div>
       </div>
 
+      </main>
+
       {/* FOOTER */}
-      <div style={{ borderTop: "0.5px solid rgba(255,255,255,0.07)" }}>
+      <footer style={{ borderTop: "0.5px solid rgba(255,255,255,0.07)" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto", padding: `28px ${pad}px`, display: "flex", justifyContent: "space-between", alignItems: isMobile ? "flex-start" : "center", flexDirection: isMobile ? "column" : "row", flexWrap: "wrap", gap: 16 }}>
           <div>
             <BrandLogo height={36} onClick={() => navigate("/")} />
@@ -320,7 +323,7 @@ const Index = () => {
           </div>
           <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)" }}>© 2026 Sportstalent.dk</div>
         </div>
-      </div>
+      </footer>
     </div>
   );
 };

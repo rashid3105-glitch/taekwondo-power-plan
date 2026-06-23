@@ -78,14 +78,32 @@ const BlogPostPage = () => {
     image: post.cover_image_url || undefined,
     datePublished: post.published_at || undefined,
     inLanguage: post.locale,
+    author: {
+      "@type": "Organization",
+      name: "Sportstalent",
+      url: "https://sportstalent.dk",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Sportstalent",
+      url: "https://sportstalent.dk",
+    },
+    mainEntityOfPage: `https://sportstalent.dk/blog/${post.slug}`,
   };
+
+  // Trim title to keep <title> under ~60 chars after the " · Sportstalent" suffix
+  const SUFFIX = " · Sportstalent";
+  const maxTitle = 60 - SUFFIX.length;
+  const safeTitle = post.title.length > maxTitle ? post.title.slice(0, maxTitle - 1).trimEnd() + "…" : post.title;
 
   return (
     <LandingLayout>
       <PageMeta
-        title={`${post.title} · Sportstalent`}
+        title={`${safeTitle}${SUFFIX}`}
         description={post.excerpt || post.title}
         canonical={`https://sportstalent.dk/blog/${post.slug}`}
+        ogType="article"
+        ogImage={post.cover_image_url || undefined}
       />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleLd) }} />
 

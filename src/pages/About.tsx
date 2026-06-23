@@ -14,9 +14,36 @@ const VALUES = [
 
 export default function About() {
   const navigate = useNavigate();
+  const aboutLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "AboutPage",
+        url: "https://sportstalent.dk/about",
+        name: "Om os — Sportstalent",
+        description: "Historien bag Sportstalent og teamet der har bygget platformen.",
+        inLanguage: "da",
+      },
+      {
+        "@type": "Organization",
+        name: "Sportstalent",
+        url: "https://sportstalent.dk",
+        founder: { "@type": "Person", name: "Farooq Rashid" },
+        sameAs: ["https://sportstalent.dk"],
+      },
+      {
+        "@type": "LocalBusiness",
+        name: "Sportstalent",
+        url: "https://sportstalent.dk",
+        address: { "@type": "PostalAddress", addressLocality: "København", addressCountry: "DK" },
+        identifier: "CVR 33685815",
+      },
+    ],
+  };
   return (
     <LandingLayout>
       <PageMeta title="Om os — Sportstalent" description="Historien bag Sportstalent og teamet der har bygget platformen." canonical="https://sportstalent.dk/about" />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutLd) }} />
 
       <section style={{ padding: "80px 32px", textAlign: "center", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
         <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(245,200,66,0.1)", border: "0.5px solid rgba(245,200,66,0.28)", borderRadius: 20, padding: "4px 14px", fontSize: 11, color: GOLD, fontWeight: 700, letterSpacing: "0.08em", marginBottom: 24 }}>
