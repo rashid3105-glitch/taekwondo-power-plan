@@ -115,6 +115,7 @@ export default function CoachDashboard() {
   const [viewPlan, setViewPlan] = useState<AthletePlan | null>(null);
   const [viewRehabPlan, setViewRehabPlan] = useState<RehabPlan | null>(null);
   const [manageAthleteId, setManageAthleteId] = useState<string | null>(null);
+  const [coachMentalDue, setCoachMentalDue] = useState(false);
   // Messages/reminders moved to /coach/messages page
   const navigate = useNavigate();
   const { setCoachMode } = useCoachMode();
