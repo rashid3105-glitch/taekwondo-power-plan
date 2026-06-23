@@ -79,6 +79,7 @@ const Index = () => {
         )}
       </header>
 
+      <main>
       {/* HERO */}
       <section style={{ padding: `${isMobile ? 48 : 72}px ${pad}px 0`, textAlign: "center" }}>
         <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(245,200,66,0.1)", border: "0.5px solid rgba(245,200,66,0.28)", borderRadius: 20, padding: "4px 14px", fontSize: 11, color: "#F5C842", fontWeight: 700, letterSpacing: "0.08em", marginBottom: 24 }}>
