@@ -258,7 +258,7 @@ export function CoachMentalAssessment({ profile }: { profile: Profile | null }) 
     regenerateAdvice,
   } = useOfflineCoachMentalAssessments();
 
-  const l: SupportedLocale = (["en", "da", "sv", "de", "ar", "no"].includes(locale) ? locale : "en") as SupportedLocale;
+  const l: SupportedLocale = (["en", "da", "sv", "de", "ar", "no", "es"].includes(locale) ? locale : "en") as SupportedLocale;
   const txt = translations[l];
   const questions: CoachMentalQuestion[] = coachMentalQuestions;
 
