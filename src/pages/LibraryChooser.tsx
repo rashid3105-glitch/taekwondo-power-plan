@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { AppFooter } from "@/components/AppFooter";
 import { Watermark } from "@/components/Watermark";
-import { Dumbbell, Brain, UtensilsCrossed, ClipboardList, ArrowLeft, BookOpen, Zap, ShieldCheck, FileText } from "lucide-react";
+import { Dumbbell, Brain, UtensilsCrossed, ClipboardList, ArrowLeft, BookOpen, Zap, ShieldCheck, FileText, Swords } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useRole } from "@/contexts/RoleContext";
@@ -15,6 +15,7 @@ const libraries: {
   color: string;
 }[] = [
   { id: "exercise", labelKey: "libExerciseLabel", descKey: "libExerciseDesc", icon: Dumbbell, color: "text-primary" },
+  { id: "drills", labelKey: "libDrillsLabel", descKey: "libDrillsDesc", icon: Swords, color: "text-amber-500" },
   { id: "mental", labelKey: "libMentalLabel", descKey: "libMentalDesc", icon: Brain, color: "text-tab-mental" },
   { id: "nutrition", labelKey: "libNutritionLabel", descKey: "libNutritionDesc", icon: UtensilsCrossed, color: "text-tab-nutrition" },
   { id: "testing", labelKey: "libTestingLabel", descKey: "libTestingDesc", icon: ClipboardList, color: "text-primary" },
