@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { type Exercise, CATEGORY_LABELS } from "@/data/exercises";
 import { cn } from "@/lib/utils";
-import { ChevronDown, ChevronUp, ShieldAlert, Target, CheckCircle2 } from "lucide-react";
+import { ChevronDown, ChevronUp, ShieldAlert, Target, CheckCircle2, Youtube } from "lucide-react";
 import { MuscleGroupBadges } from "./MuscleIcon";
 import { ExerciseIllustration } from "./ExerciseIllustration";
 import { getExerciseGoals, getRiskLevel, RISK_STYLES } from "@/lib/exerciseClassification";
