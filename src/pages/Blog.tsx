@@ -41,6 +41,22 @@ const Blog = () => {
       .finally(() => setLoading(false));
   }, [locale]);
 
+  const collectionLd = {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    name: t.title,
+    description: t.sub,
+    url: "https://sportstalent.dk/blog",
+    inLanguage: locale,
+    publisher: { "@type": "Organization", name: "Sportstalent", url: "https://sportstalent.dk" },
+    blogPost: posts.slice(0, 20).map((p) => ({
+      "@type": "BlogPosting",
+      headline: p.title,
+      url: `https://sportstalent.dk/blog/${p.slug}`,
+      datePublished: p.published_at || undefined,
+    })),
+  };
+
   return (
     <LandingLayout>
       <PageMeta
@@ -48,6 +64,7 @@ const Blog = () => {
         description={t.sub}
         canonical="https://sportstalent.dk/blog"
       />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionLd) }} />
       <div style={{ maxWidth: 1000, margin: "0 auto", padding: "56px 20px 80px" }}>
         <div style={{ textAlign: "center", marginBottom: 48 }}>
           <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.2em", color: GOLD, marginBottom: 16 }}>
