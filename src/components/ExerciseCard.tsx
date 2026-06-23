@@ -5,6 +5,7 @@ import { ChevronDown, ChevronUp, ShieldAlert, Target, CheckCircle2, Youtube } fr
 import { MuscleGroupBadges } from "./MuscleIcon";
 import { ExerciseIllustration } from "./ExerciseIllustration";
 import { getExerciseGoals, getRiskLevel, RISK_STYLES } from "@/lib/exerciseClassification";
+import { EXERCISE_CATEGORY_STYLE } from "@/lib/exerciseCategoryStyle";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { TranslationKey } from "@/i18n/translations";
 
@@ -30,14 +31,6 @@ const CUES_KEY: Record<string, TranslationKey> = {
   plyometric: "cuesPlyometric",
 };
 
-const CATEGORY_DOT: Record<string, string> = {
-  power: "bg-accent",
-  speed: "bg-speed",
-  strength: "bg-primary",
-  mobility: "bg-accent",
-  plyometric: "bg-explosive",
-};
-
 interface ExerciseCardProps {
   exercise: Exercise;
   index: number;
@@ -48,6 +41,8 @@ export function ExerciseCard({ exercise, index }: ExerciseCardProps) {
   const { t } = useLanguage();
   const goals = getExerciseGoals(exercise);
   const risk = getRiskLevel(exercise);
+  const catStyle = EXERCISE_CATEGORY_STYLE[exercise.category];
+  const CatIcon = catStyle.Icon;
 
   const youtubeHref = exercise.videoId
     ? `https://www.youtube.com/watch?v=${exercise.videoId}`
