@@ -29,6 +29,12 @@ import {
   HelpCircle,
   LogOut,
   Lock,
+  ChevronDown,
+  Users,
+  Building,
+  FileText,
+  CreditCard,
+  Dumbbell,
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useRole } from "@/contexts/RoleContext";
