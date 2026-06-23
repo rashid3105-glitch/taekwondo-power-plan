@@ -76,7 +76,7 @@ export const PageMeta = ({ title, description, canonical, noindex, ogType, ogIma
         robotsMeta.setAttribute("content", "index, follow");
       }
     };
-  }, [title, description, canonical, noindex]);
+  }, [title, description, canonical, noindex, ogType, ogImage]);
 
   return null;
 };
