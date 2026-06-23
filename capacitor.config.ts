@@ -13,7 +13,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 // Only re-add `server.url` temporarily if you need hot-reload for non-native
 // UI work and you don't care about HealthKit during that session.
 const config: CapacitorConfig = {
-  appId: 'app.lovable.a65f5c861a844640b1394767189347ea',
+  appId: 'dk.sportstalent.app',
   appName: 'Sportstalent',
   webDir: 'dist',
   ios: {
