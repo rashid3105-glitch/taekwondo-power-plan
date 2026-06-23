@@ -1,29 +1,43 @@
-# Vis korrekt mental gennemgang ud fra rolle
+## Goal
+Match the icon styling used in **Fysisk tests** (`TestCatalogPicker.tsx`) inside **Øvelser** (`ExerciseLibrary.tsx` + `ExerciseCard.tsx`).
 
-## Problem
-På `/dashboard?tab=mental` renderes altid `<MentalAssessment />` (atlet, 23 spørgsmål). Coaches (som Farooq) ser derfor atletens spørgsmål, selv om de har en dedikeret coach-version på `/coach/mental` med 18 spørgsmål i 6 spejlede kategorier.
+Currently Øvelser uses thin Lucide icons in `text-primary` on category headers and a tiny colored dot on each exercise row. Fysisk tests uses a **colored tile (`bg-{color}-500/15`) with a matching `text-{color}-500` icon** rendered in a 40×40 (header) / smaller (row) rounded square.
 
-## Løsning
-Rolle-styr indholdet af Mental-fanen i `src/pages/Dashboard.tsx`.
+## Color + icon mapping (mirrors Fysisk tests palette)
+| Exercise category | Icon (Lucide)   | Tile bg                | Icon color         |
+|-------------------|-----------------|------------------------|--------------------|
+| power             | `Zap`           | `bg-yellow-500/15`     | `text-yellow-500`  |
+| plyometric        | `Flame`         | `bg-orange-500/15`     | `text-orange-500`  |
+| speed             | `Gauge`         | `bg-amber-500/15`      | `text-amber-500`   |
+| strength          | `Dumbbell`      | `bg-sky-500/15`        | `text-sky-500`     |
+| mobility          | `StretchHorizontal` | `bg-cyan-500/15`   | `text-cyan-500`    |
+| custom            | `Plus`          | `bg-violet-500/15`     | `text-violet-500`  |
 
-### Ændringer i `src/pages/Dashboard.tsx`
-1. Importer `CoachMentalAssessment` og `useRole` (allerede tilgængelig via `RoleContext`).
-2. På linjen der renderer `activeTab === "mental"`:
-   - Hvis `hasCoachRole === true` → render `<CoachMentalAssessment profile={profile} />`.
-   - Ellers → render `<MentalAssessment profile={profile} />` som i dag.
-3. Påmindelseskortet ("Månedlig mental gennemgang", linje 842-849):
-   - Skift query for "sidste vurdering" til `coach_mental_assessments` når brugeren er coach, så coaches får påmindelse baseret på deres egne reviews (ikke en atlet-tabel de aldrig udfylder).
-   - Tekst forbliver via eksisterende translation keys (`mentalReminderTitle` / `mentalReminderDesc`); ingen nye oversættelser nødvendige.
+(Reuses the same color tokens as `CAT_STYLE` in `TestCatalogPicker` so the two libraries look like siblings.)
 
-### Hvorfor `hasCoachRole` (og ikke kun `isCoachMode`)
-Farooq kan skifte til "atlet-visning" via hjem-ikonet, men han har ingen reel atlet-rolle — så mental-fanen skal stadig vise coach-versionen for ham. `hasCoachRole` fra `RoleContext` er præcis dette signal.
+## Changes
 
-### Out of scope
-- Ingen ændringer i `/coach/mental` ruten — den bevares som direkte indgang.
-- Ingen ændringer i `CoachMentalAssessment`-komponenten eller edge function.
-- Ingen nye oversættelser eller changelog-opdatering (ren bugfix).
+### 1. `src/components/ExerciseLibrary.tsx`
+- Replace `CATEGORY_ICONS` with a `CATEGORY_STYLE` map containing `{ Icon, tile, icon }` per category (plus `custom`).
+- Update the `CollapsibleTrigger` row so the icon is rendered inside a `h-10 w-10 rounded-xl` tile with the category background, matching the Fysisk tests header layout (icon + bold label + count badge + chevron). Keep `defaultOpen={false}` behavior.
+- Swap `ChevronDown` rotation for the same `ChevronRight`/rotate pattern used in `TestCatalogPicker` to keep visual parity (optional polish — keep current ChevronDown if simpler).
 
-## Verifikation
-- Som coach (rashid3105@gmail.com): `/dashboard?tab=mental` viser 18 coach-spørgsmål i de 6 spejlede kategorier.
-- Som ren atlet: samme fane viser uændret atlet-flow (23 spørgsmål).
-- Påmindelseskort vises korrekt baseret på den relevante tabel pr. rolle.
+### 2. `src/components/ExerciseCard.tsx`
+- Replace the small `CATEGORY_DOT` span (`h-2 w-2 rounded-full`) with a small colored tile `h-7 w-7 rounded-lg` containing the matching Lucide icon — same color tokens as the header but smaller, so each exercise row carries its category visually.
+- Remove the old `CATEGORY_DOT` constant.
+- Export the shared style map from `ExerciseLibrary.tsx` (or move it to a small new file `src/lib/exerciseCategoryStyle.ts`) so both files share one source of truth. Recommended: new file `src/lib/exerciseCategoryStyle.ts` exporting `EXERCISE_CATEGORY_STYLE`.
+
+### 3. No changes to
+- `src/data/exercises.ts` data
+- `exerciseClassification.ts` risk styles
+- Translation keys
+- YouTube icon button (kept as-is)
+
+## Out of scope
+- No data, filter logic, or translation changes.
+- Risk badge and goal badges stay unchanged.
+
+## Acceptance
+- Category headers in Øvelser show the same colored-tile + icon look as in Fysisk tests.
+- Each exercise row shows a small matching colored-tile icon instead of the dot.
+- Dark/light mode both render correctly (uses Tailwind `/15` opacity tiles, identical to PhysicalTesting which already works in both modes).
