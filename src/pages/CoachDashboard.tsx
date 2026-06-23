@@ -144,6 +144,21 @@ export default function CoachDashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Coach mental review is monthly — hide entry card if last one is within 30 days
+  useEffect(() => {
+    if (!coachUserId) return;
+    (async () => {
+      const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      const { data } = await supabase
+        .from("coach_mental_assessments" as any)
+        .select("id")
+        .eq("user_id", coachUserId)
+        .gte("created_at", since)
+        .limit(1);
+      setCoachMentalDue(!data || data.length === 0);
+    })();
+  }, [coachUserId]);
+
   // Re-run loadAthletes when the active club changes (only matters for multi-club coaches).
   useEffect(() => {
     if (!coachUserId || !activeClubId) return;
