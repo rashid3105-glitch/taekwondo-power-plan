@@ -1,19 +1,34 @@
-Right now `/admin/drills` exists and works, but it is only reachable by typing the URL. The side menu only has one Admin entry pointing to `/admin/approval`, so drill management is hidden.
+## What I found
 
-Plan to make admin pages discoverable:
+Tommy Mortensen (`UC Copenhagen`, user `40edad3a…`) has the `coach` role correctly in the database. The screenshot shows him on `/dashboard` (athlete view), so he gets the **athlete bottom nav**: `I dag · Træn · Sæsonkalender · Dagbog · Match-analyse`.
 
-1. Convert the single "Admin" item in `GlobalAppMenu.tsx` into an expandable admin sub-section showing all admin routes:
-   - Approval / Brugere
-   - Taekwondo Drills / TKD-drills
-   - Blog / Blog
-   - Clubs / Klubber
-   - Payments / Betalinger
-   - Module Access / Moduladgang
+The "Fremmøde" rename only applies to the **coach** bottom nav (`CoachDashboard`/`CoachToday`), reached at `/coach`. So this isn't an old/cached menu — it's the athlete nav, which is what `/dashboard` always renders.
 
-2. Keep the current top-level icon but add a small chevron; when expanded it reveals the sub-items. Clicking an item navigates and closes the menu, matching existing behavior.
+Why he's stuck on the athlete view:
 
-3. Add translation keys for the new menu labels in all 7 languages (en, da, sv, de, ar, no, es).
+- `CoachModeContext` reads `localStorage["tkd-coach-mode"]`. If the key is missing or set to `"athlete"`, `isCoachMode === false`.
+- `Dashboard.tsx` only auto-redirects coaches to `/coach` when `isCoachMode` is already `true` (lines 196–208).
+- Result: a coach whose flag has never been set (new device, cleared storage, or who once clicked "Home" in the side menu — which explicitly calls `setCoachMode(false)`) lands on `/dashboard` with athlete nav and no obvious way back.
 
-4. Verify the existing drill page still authorizes only admins and that routing from the new menu works.
+## Fix
 
-No database or backend changes are required; this is purely navigation/UX.
+Default users with the coach role into coach mode whenever they haven't explicitly chosen athlete mode.
+
+1. **`src/contexts/CoachModeContext.tsx`** — change the stored value from a 2-state string (`"coach"`/`"athlete"`) to a 3-state: `"coach"`, `"athlete"`, or absent (unset). Initial `isCoachMode` stays `false` (we don't know role yet), but expose a setter that's used by a small bootstrapper.
+
+2. **`src/pages/Dashboard.tsx`** — in the existing coach-bounce effect, also trigger when:
+   - `hasCoachRole === true`, AND
+   - `localStorage.getItem("tkd-coach-mode")` is `null` (user never explicitly chose athlete mode), AND
+   - they're on the bare hub tab.
+   In that case call `setCoachMode(true)` and `navigate("/coach", { replace: true })`.
+
+   This means: a coach who has never toggled stays a coach. A coach who deliberately clicked "Hjem" (which sets `"athlete"`) keeps the athlete view — the Home button still works as designed.
+
+3. **No DB changes, no translation changes, no UI rewrites.**
+
+## Verification
+
+- Reload preview as Tommy → expect immediate redirect to `/coach` with the coach bottom nav showing "Fremmøde · Træning · Stævner · Beskeder · Mig".
+- Click "Hjem" in the side menu → still goes to `/dashboard` athlete view (preserves the recent fix).
+- Existing coaches who already have `"coach"` stored → unchanged.
+- Athletes (no coach role) → unchanged.
