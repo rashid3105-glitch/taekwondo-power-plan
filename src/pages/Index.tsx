@@ -323,7 +323,7 @@ const Index = () => {
           </div>
           <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)" }}>© 2026 Sportstalent.dk</div>
         </div>
-      </div>
+      </footer>
     </div>
   );
 };
