@@ -232,6 +232,30 @@ export default function Dashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
+  // Re-check mental reminder when returning to hub (e.g. after submitting a review).
+  useEffect(() => {
+    if (activeTab !== "hub") return;
+    (async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+        const mentalTable = hasCoachRole ? "coach_mental_assessments" : "mental_assessments";
+        const { data: lastMental } = await supabase
+          .from(mentalTable as any)
+          .select("created_at")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        const isDue = !lastMental || (lastMental as any).created_at < thirtyDaysAgo;
+        setShowMentalReminder(isDue && isModuleEnabled("mental"));
+      } catch { /* ignore */ }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, hasCoachRole]);
+
+
   // Map dashboard tabs to entitlement modules. Tabs not in this map are never tier-locked.
   const TAB_TO_MODULE: Partial<Record<TabKey, LockedModule>> = {
     rehab: "rehab",
