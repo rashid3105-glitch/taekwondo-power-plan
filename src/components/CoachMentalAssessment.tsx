@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import {
   Brain, Loader2, ChevronLeft, ChevronRight, History, Trash2, Sparkles, CloudOff,
-  Trophy, TrendingUp, Heart, Users, MessageCircle, Gauge, ShieldCheck, Flame,
+  Trophy, TrendingUp, Heart, Users, Wind, ShieldCheck, Flame, Anchor,
 } from "lucide-react";
 import {
   coachMentalQuestions,
@@ -21,41 +21,54 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-type SupportedLocale = "en" | "da" | "sv" | "de" | "ar" | "no";
+type SupportedLocale = "en" | "da" | "sv" | "de" | "ar" | "no" | "es";
 
+// New 6 categories mirror athlete dimensions but in coach-perspective:
+//   composureUnderPressure  ↔ athlete mentalToughness
+//   sidelineCalm            ↔ athlete competitionAnxiety
+//   decisionMakingUnderChaos ↔ athlete focusConcentration
+//   roleModelAfterLoss      ↔ athlete recoveryFromLoss
+//   coachConfidence         ↔ athlete confidence
+//   motivationBurnout       ↔ athlete motivation / fatigueMotivation
 const categoryIcons: Record<string, React.ReactNode> = {
-  coachingPresence: <Brain className="h-4 w-4" />,
-  emotionalRegulation: <Heart className="h-4 w-4" />,
-  communicationFeedback: <MessageCircle className="h-4 w-4" />,
-  pressureExpectations: <Gauge className="h-4 w-4" />,
+  composureUnderPressure: <Anchor className="h-4 w-4" />,
+  sidelineCalm: <Wind className="h-4 w-4" />,
+  decisionMakingUnderChaos: <Brain className="h-4 w-4" />,
+  roleModelAfterLoss: <Heart className="h-4 w-4" />,
   coachConfidence: <ShieldCheck className="h-4 w-4" />,
-  coachMotivation: <Flame className="h-4 w-4" />,
+  motivationBurnout: <Flame className="h-4 w-4" />,
 };
 
 const categoryLabels: Record<string, Record<SupportedLocale, string>> = {
-  coachingPresence: {
-    en: "Coaching Presence & Focus", da: "Coaching-nærvær & fokus", sv: "Coachingnärvaro & fokus",
-    de: "Coaching-Präsenz & Fokus", ar: "الحضور والتركيز في التدريب", no: "Coaching-nærvær & fokus",
+  composureUnderPressure: {
+    en: "Composure under pressure", da: "Ro når holdet er presset", sv: "Lugn när laget pressas",
+    de: "Ruhe unter Druck", ar: "الهدوء تحت الضغط", no: "Ro når laget er presset",
+    es: "Calma bajo presión",
   },
-  emotionalRegulation: {
-    en: "Emotional Regulation", da: "Følelsesregulering", sv: "Emotionell reglering",
-    de: "Emotionsregulation", ar: "تنظيم المشاعر", no: "Følelsesregulering",
+  sidelineCalm: {
+    en: "Sideline calm", da: "Sidelinje-ro", sv: "Lugn vid sidan",
+    de: "Ruhe an der Seitenlinie", ar: "هدوء على حافة البساط", no: "Ro på sidelinjen",
+    es: "Calma en la esquina",
   },
-  communicationFeedback: {
-    en: "Communication & Feedback", da: "Kommunikation & feedback", sv: "Kommunikation & feedback",
-    de: "Kommunikation & Feedback", ar: "التواصل والتغذية الراجعة", no: "Kommunikasjon & tilbakemelding",
+  decisionMakingUnderChaos: {
+    en: "Decision making under chaos", da: "Beslutningstagning i kampens kaos", sv: "Beslutsfattande i kampens kaos",
+    de: "Entscheidungen im Kampf-Chaos", ar: "اتخاذ القرار وسط فوضى المباراة", no: "Beslutninger i kampens kaos",
+    es: "Decisiones en el caos del combate",
   },
-  pressureExpectations: {
-    en: "Pressure & Expectations", da: "Pres & forventninger", sv: "Press & förväntningar",
-    de: "Druck & Erwartungen", ar: "الضغط والتوقعات", no: "Press & forventninger",
+  roleModelAfterLoss: {
+    en: "Role model after a loss", da: "At være rollemodel efter tab", sv: "Förebild efter en förlust",
+    de: "Vorbild nach einer Niederlage", ar: "أن تكون قدوة بعد الخسارة", no: "Rollemodell etter tap",
+    es: "Ser modelo después de una derrota",
   },
   coachConfidence: {
-    en: "Coach Confidence & Identity", da: "Trænertillid & identitet", sv: "Tränarsjälvförtroende & identitet",
-    de: "Trainer-Selbstvertrauen & Identität", ar: "ثقة المدرب وهويته", no: "Trenertillit & identitet",
+    en: "Coach confidence", da: "Coach-selvtillid", sv: "Tränarsjälvförtroende",
+    de: "Coach-Selbstvertrauen", ar: "ثقة المدرب بنفسه", no: "Coach-selvtillit",
+    es: "Confianza del entrenador",
   },
-  coachMotivation: {
-    en: "Motivation & Burnout Risk", da: "Motivation & risiko for udbrændthed", sv: "Motivation & risk för utbrändhet",
-    de: "Motivation & Burnout-Risiko", ar: "الحافز وخطر الإنهاك", no: "Motivasjon & risiko for utbrenthet",
+  motivationBurnout: {
+    en: "Motivation & burnout", da: "Motivation & udbrændthed", sv: "Motivation & utbrändhet",
+    de: "Motivation & Burnout", ar: "الحافز والإنهاك", no: "Motivasjon & utbrenthet",
+    es: "Motivación y desgaste",
   },
 };
 
@@ -192,6 +205,28 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     intro2: "Denne 18-spørsmåls gjennomgangen fokuserer på DITT mentale spill — tilstedeværelse, følelser, kommunikasjon, press, selvtillit og utbrenthetsrisiko.",
     intro3: "Tar ca. 3 minutter. Gjenta månedlig for å se trender.",
   },
+  es: {
+    title: "Revisión mental para entrenadores", subtitle: "Un check-in mensual honesto sobre tu juego interno como entrenador — no para los atletas, para ti.",
+    startAssessment: "Iniciar revisión", viewHistory: "Ver historial",
+    question: "Pregunta", of: "de", next: "Siguiente", back: "Atrás",
+    getResults: "Obtener mi revisión y consejos", yourScore: "Tu puntuación como entrenador", outOf: "de 30",
+    generating: "Generando consejos personalizados para ti como entrenador…",
+    strengths: "Donde estás fuerte", areasToImprove: "Dónde puedes crecer",
+    techniques: "Técnicas", dailyHabit: "Hábito diario",
+    preCompRoutine: "Rutina de centrado antes de la sesión", affirmations: "Afirmaciones para ti",
+    retake: "Repetir la revisión", backToIntro: "Atrás", history: "Historial de revisiones",
+    noHistory: "Aún no hay revisiones de entrenador anteriores.", score: "Puntuación", delete: "Eliminar",
+    overallExcellent: "Estás agudo y presente.", overallGood: "Juego interno sólido.",
+    overallAverage: "Hay margen para crecer — es normal.", overallNeedsWork: "Hora de recargar — tú también cuentas.",
+    pending: "Pendiente", adviceWillSyncOnline: "Guardado sin conexión. Los consejos aparecerán cuando vuelvas a estar en línea.",
+    confirmDeleteTitle: "¿Eliminar esta revisión?", confirmDeleteDesc: "Esto elimina permanentemente la revisión y sus consejos. No se puede deshacer.",
+    cancel: "Cancelar", noAdviceTitle: "Aún no hay consejos", regenerateAdvice: "Regenerar consejos",
+    adviceRegenerated: "Consejos regenerados", adviceRegenerateFailed: "No se pudo generar. Inténtalo de nuevo.",
+    tapToView: "Toca para ver", coachOnly: "Solo entrenadores",
+    intro1: "Los entrenadores cargan con una presión que los atletas no ven: padres, directiva, sesiones largas, identidad ligada a los resultados.",
+    intro2: "Esta revisión de 18 preguntas refleja las 6 dimensiones mentales del atleta pero desde la perspectiva del entrenador — calma bajo presión, calma en la esquina, decisiones en el caos, ser modelo tras una derrota, confianza como entrenador y desgaste.",
+    intro3: "Dura unos 3 minutos. Repítela mensualmente para ver tendencias.",
+  },
 };
 
 interface Profile {
@@ -223,7 +258,7 @@ export function CoachMentalAssessment({ profile }: { profile: Profile | null }) 
     regenerateAdvice,
   } = useOfflineCoachMentalAssessments();
 
-  const l: SupportedLocale = (["en", "da", "sv", "de", "ar", "no"].includes(locale) ? locale : "en") as SupportedLocale;
+  const l: SupportedLocale = (["en", "da", "sv", "de", "ar", "no", "es"].includes(locale) ? locale : "en") as SupportedLocale;
   const txt = translations[l];
   const questions: CoachMentalQuestion[] = coachMentalQuestions;
 
