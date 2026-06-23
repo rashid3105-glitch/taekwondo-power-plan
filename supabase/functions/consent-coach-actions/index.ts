@@ -27,17 +27,17 @@ function randomToken(bytes = 32) {
 
 async function invokeSendEmail(
   supabaseUrl: string,
-  anonKey: string,
-  authHeader: string,
+  serviceKey: string,
   payload: Record<string, unknown>,
 ): Promise<{ ok: boolean; status: number; error?: string }> {
   try {
+    // Use service-role auth: consent templates are restricted to trusted
+    // server callers (we have already authenticated the coach above).
     const res = await fetch(`${supabaseUrl}/functions/v1/send-transactional-email`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: authHeader,
-        apikey: anonKey,
+        Authorization: `Bearer ${serviceKey}`,
       },
       body: JSON.stringify(payload),
     });
@@ -224,7 +224,7 @@ Deno.serve(async (req) => {
       });
 
       const consentUrl = `${APP_URL}/consent/${tokenValue}`;
-      const sendRes = await invokeSendEmail(supabaseUrl, anonKey, authHeader, {
+      const sendRes = await invokeSendEmail(supabaseUrl, serviceKey, {
         templateName: "parental-consent-request",
         recipientEmail: parentEmail,
         idempotencyKey: `parental-consent-${athleteId}-${tokenValue.slice(0, 8)}`,
@@ -261,7 +261,7 @@ Deno.serve(async (req) => {
 
       const athleteNames = missing.map((m) => m.display_name).filter(Boolean);
 
-      const sendRes = await invokeSendEmail(supabaseUrl, anonKey, authHeader, {
+      const sendRes = await invokeSendEmail(supabaseUrl, serviceKey, {
         templateName: "coach-consent-reminder",
         recipientEmail: coachEmail,
         idempotencyKey: `coach-consent-reminder-${coachId}-${new Date().toISOString().slice(0, 10)}`,

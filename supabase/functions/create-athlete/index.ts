@@ -180,15 +180,16 @@ Deno.serve(async (req) => {
         expires_at: expiresAt,
       });
 
-      // Email parent via existing transactional pipeline (forward user's JWT — service-role is rejected by send-transactional-email)
+      // Email parent via existing transactional pipeline.
+      // Use service-role auth: this template is restricted to trusted server
+      // callers (we have already authenticated and authorized the coach above).
       try {
         const consentUrl = `${APP_URL}/consent/${token}`;
         const emailRes = await fetch(`${supabaseUrl}/functions/v1/send-transactional-email`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: authHeader,
-            apikey: anonKey,
+            Authorization: `Bearer ${serviceRoleKey}`,
           },
           body: JSON.stringify({
             templateName: "parental-consent-request",

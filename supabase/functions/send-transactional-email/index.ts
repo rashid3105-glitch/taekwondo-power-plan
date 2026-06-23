@@ -30,9 +30,11 @@ Deno.serve(async (req) => {
   }
 
   // --- Authorization ---
-  // Allowlist templates that may be sent by server-side callers (no end-user JWT).
-  // These are triggered by trusted Edge Functions (which have already validated the action).
-  const SELF_OR_ADMIN_EXEMPT_TEMPLATES = new Set([
+  // Templates that may ONLY be sent by trusted server-side callers (service-role).
+  // These templates carry attacker-controllable URLs/links and must never be
+  // invocable directly by authenticated end-users, since that would allow
+  // phishing arbitrary recipients with Sportstalent-branded mail.
+  const SERVICE_ROLE_ONLY_TEMPLATES = new Set([
     'parental-consent-request',
     'coach-consent-reminder',
     'blog-comment-verification',
@@ -152,16 +154,22 @@ Deno.serve(async (req) => {
   // Create Supabase client with service role (bypasses RLS) — used below and for admin check.
   const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
+  // Security: templates carrying attacker-controllable links must only be
+  // invocable by service-role (trusted backend) callers.
+  if (!isServiceRoleCall && SERVICE_ROLE_ONLY_TEMPLATES.has(templateName)) {
+    return new Response(
+      JSON.stringify({ error: 'This template can only be sent by trusted server callers' }),
+      {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    )
+  }
+
   // Security: if template has no fixed `to`, restrict non-admin callers
-  // to only send emails to their own address — unless the template is in
-  // the server-authorized allowlist defined above. Service-role callers
-  // are inherently trusted (they ARE the server) and skip this check.
-  if (
-    !isServiceRoleCall &&
-    !template.to &&
-    recipientEmail &&
-    !SELF_OR_ADMIN_EXEMPT_TEMPLATES.has(templateName)
-  ) {
+  // to only send emails to their own address. Service-role callers are
+  // inherently trusted (they ARE the server) and skip this check.
+  if (!isServiceRoleCall && !template.to && recipientEmail) {
     if (callerEmail?.toLowerCase() !== recipientEmail.toLowerCase()) {
       const { data: isAdmin } = await supabase.rpc('is_admin', { _user_id: callerUserId })
       if (!isAdmin) {
