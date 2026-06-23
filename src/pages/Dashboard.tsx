@@ -29,6 +29,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ClubSwitcher } from "@/components/ClubSwitcher";
 
 import { MentalAssessment } from "@/components/MentalAssessment";
+import { CoachMentalAssessment } from "@/components/CoachMentalAssessment";
 import { ProgressDashboard } from "@/components/ProgressDashboard";
 import { NutritionPlan } from "@/components/NutritionPlan";
 import { NutritionLibrary } from "@/components/NutritionLibrary";
@@ -188,7 +189,7 @@ export default function Dashboard() {
   const { isModuleEnabled } = useAthleteModuleAccess();
   const { isFromCache: profileFromCache, cachedAt: profileCachedAt } = useOfflineProfile();
   const { plan: offlinePlan, online: planOnline } = useOfflinePlan();
-  const { role } = useRole();
+  const { role, hasCoachRole } = useRole();
   const { memberships, activeMembership, loading: activeClubLoading } = useActiveClub();
 
   // Only stay in the coach dashboard when coach mode is explicitly active.
@@ -566,8 +567,9 @@ export default function Dashboard() {
     // Monthly mental assessment reminder
     try {
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      const mentalTable = hasCoachRole ? "coach_mental_assessments" : "mental_assessments";
       const { data: lastMental } = await supabase
-        .from("mental_assessments")
+        .from(mentalTable as any)
         .select("created_at")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false })
@@ -1066,7 +1068,7 @@ export default function Dashboard() {
             )}
           </>
         ) : activeTab === "mental" ? (
-          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isTabModuleDisabled("mental") ? renderModuleDisabledState() : isDemo ? renderDemoLockedState("mental") : <MentalAssessment profile={profile} />}</>
+          <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isTabModuleDisabled("mental") ? renderModuleDisabledState() : isDemo ? renderDemoLockedState("mental") : hasCoachRole ? <CoachMentalAssessment profile={profile} /> : <MentalAssessment profile={profile} />}</>
         ) : activeTab === "testing" ? (
           <><BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />{isTabModuleDisabled("testing") ? renderModuleDisabledState() : isDemo ? renderDemoLockedState("testing") : isModuleLocked("testing") ? renderTierLockedState("testing") : <PhysicalTesting mode={isCoach ? "coach" : "individual"} />}</>
         ) : activeTab === "rehab" ? (
