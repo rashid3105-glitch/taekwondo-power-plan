@@ -9,7 +9,7 @@ const Terms = () => {
 
   return (
     <LandingLayout>
-      <PageMeta title="Vilkår og betingelser · Sportstalent" description="Brugsvilkår for Sportstalent-platformen." />
+      <PageMeta title="Vilkår og betingelser · Sportstalent" description="Brugsvilkår for Sportstalent-platformen — rettigheder, ansvar og databehandling for atleter og klubber." canonical="https://sportstalent.dk/terms" />
       <div style={{ maxWidth: 800, margin: "0 auto", padding: "64px 32px" }}>
         <div
           style={{
