@@ -73,6 +73,7 @@ import BlogCommentConfirm from "./pages/BlogCommentConfirm";
 import AdminBlogComments from "./pages/AdminBlogComments";
 import AdminBlog from "./pages/AdminBlog";
 import AdminBlogEditor from "./pages/AdminBlogEditor";
+import AdminDrills from "./pages/AdminDrills";
 import Contact from "./pages/Contact";
 import Kostplan from "./pages/Kostplan";
 import Health from "./pages/Health";
@@ -156,6 +157,7 @@ const AnimatedRoutes = () => {
         <Route path="/admin/modules" element={<Page><AdminModuleAccess /></Page>} />
         <Route path="/admin/payments" element={<Page><AdminPayments /></Page>} />
         <Route path="/admin/clubs" element={<Page><AdminClubs /></Page>} />
+        <Route path="/admin/drills" element={<Page><AdminDrills /></Page>} />
         <Route path="/coach" element={<Page><CoachDashboard /></Page>} />
         <Route path="/coach/today" element={<Page><CoachToday /></Page>} />
         <Route path="/coach/messages" element={<Page><CoachMessages /></Page>} />
