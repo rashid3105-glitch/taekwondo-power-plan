@@ -95,13 +95,9 @@ Deno.serve(async (req) => {
     return json({ error: 'insert_failed' }, 500)
   }
 
-  // Build confirm URL — use referer origin if available, fallback to sportstalent.dk
-  const referer = req.headers.get('referer') || req.headers.get('origin') || ''
-  let origin = 'https://sportstalent.dk'
-  try {
-    if (referer) origin = new URL(referer).origin
-  } catch { /* ignore */ }
-  const confirmUrl = `${origin}/blog-comment/confirm?token=${verification_token}`
+  // Build confirm URL — hardcoded to the canonical site origin to prevent
+  // Referer/Origin header injection that could phish users with attacker URLs.
+  const confirmUrl = `https://sportstalent.dk/blog-comment/confirm?token=${verification_token}`
 
   // Send verification email via send-transactional-email using service-role auth
   try {

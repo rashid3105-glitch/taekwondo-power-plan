@@ -30,9 +30,11 @@ Deno.serve(async (req) => {
   }
 
   // --- Authorization ---
-  // Allowlist templates that may be sent by server-side callers (no end-user JWT).
-  // These are triggered by trusted Edge Functions (which have already validated the action).
-  const SELF_OR_ADMIN_EXEMPT_TEMPLATES = new Set([
+  // Templates that may ONLY be sent by trusted server-side callers (service-role).
+  // These templates carry attacker-controllable URLs/links and must never be
+  // invocable directly by authenticated end-users, since that would allow
+  // phishing arbitrary recipients with Sportstalent-branded mail.
+  const SERVICE_ROLE_ONLY_TEMPLATES = new Set([
     'parental-consent-request',
     'coach-consent-reminder',
     'blog-comment-verification',
