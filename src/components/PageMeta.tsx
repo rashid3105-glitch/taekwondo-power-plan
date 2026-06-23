@@ -5,9 +5,11 @@ interface PageMetaProps {
   description?: string;
   canonical?: string;
   noindex?: boolean;
+  ogType?: "website" | "article" | "profile";
+  ogImage?: string;
 }
 
-export const PageMeta = ({ title, description, canonical, noindex }: PageMetaProps) => {
+export const PageMeta = ({ title, description, canonical, noindex, ogType, ogImage }: PageMetaProps) => {
   useEffect(() => {
     const suffix = "Sportstalent";
     // Only append the brand suffix if the title doesn't already contain it
