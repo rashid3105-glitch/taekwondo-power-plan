@@ -1,4 +1,5 @@
-// scan-food — analyses a food image via Lovable AI Gateway and returns macros.
+// scan-food — per-component food identification via Lovable AI Gateway.
+// Returns { result: { items: [...], total: {...}, name, portion, confidence } }.
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -6,17 +7,40 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const buildSystemPrompt = (age: number, weight: number) => `You are a sports-nutrition vision assistant. The athlete is ${age} years old and weighs ${weight}kg. Use this to estimate appropriate portion sizes and calorie needs. Analyse the food image and return ONLY a single JSON object — no prose, no markdown fences.
-Fields (all required):
+const buildSystemPrompt = (age: number, weight: number) => `You are a sports-nutrition vision assistant. The athlete is ${age} years old and weighs ${weight}kg. Use this to estimate realistic portion sizes.
+
+Identify EACH distinct food component on the plate separately (e.g. chicken, broccoli, rice, sauce). Return ONLY a single JSON object — no prose, no markdown fences.
+
+Schema (all fields required unless noted):
 {
-  "name": string (dish name in Danish),
-  "calories": number (kcal for the portion shown),
-  "protein": number (grams),
-  "carbs": number (grams),
-  "fat": number (grams),
-  "portion": string (Danish portion description, e.g. "1 tallerken (~350g)"),
-  "confidence": "high" | "medium" | "low"
+  "items": [
+    {
+      "name": string,                 // Danish food name, e.g. "Kylling", "Broccoli", "Ris"
+      "portion_g": number,            // estimated grams of this component
+      "calories": number,             // kcal for this component
+      "protein": number,              // grams
+      "carbs": number,                // grams
+      "fat": number,                  // grams
+      "bbox": { "x": number, "y": number, "w": number, "h": number }, // normalised 0..1 from top-left of the image
+      "confidence": "high" | "medium" | "low"
+    }
+  ],
+  "total": {
+    "name": string,                   // short overall dish name in Danish, e.g. "Kylling med ris og broccoli"
+    "portion": string,                // human portion description, e.g. "1 tallerken (~430g)"
+    "calories": number,               // sum of items.calories
+    "protein": number,                // sum
+    "carbs": number,                  // sum
+    "fat": number,                    // sum
+    "confidence": "high" | "medium" | "low"
+  }
 }
+
+Rules:
+- bbox coordinates are normalised (0..1) relative to image width/height. x,y is the top-left corner of the bounding box.
+- Always provide at least 1 item. If only one food is visible, return a single item covering it.
+- total.calories/protein/carbs/fat MUST equal the sum of items.
+- Be conservative with calories — prefer realistic athletic portions.
 If the image does not contain food, return: {"error":"Ingen mad fundet i billedet"}`;
 
 Deno.serve(async (req) => {
@@ -55,7 +79,6 @@ Deno.serve(async (req) => {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    // Size guard: ~6 MB base64 ≈ 4.5 MB raw
     if (image.length > 6 * 1024 * 1024) {
       return new Response(JSON.stringify({ error: "image_too_large" }), {
         status: 413, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -72,7 +95,7 @@ Deno.serve(async (req) => {
           {
             role: "user",
             content: [
-              { type: "text", text: "Analyser dette måltid." },
+              { type: "text", text: "Analysér dette måltid og returnér hver madvare separat med bounding box." },
               { type: "image_url", image_url: { url: image } },
             ],
           },
@@ -101,7 +124,7 @@ Deno.serve(async (req) => {
     const data = await resp.json();
     const raw = String(data?.choices?.[0]?.message?.content ?? "").trim();
     const clean = raw.replace(/```json|```/g, "").trim();
-    let parsed: unknown;
+    let parsed: any;
     try {
       parsed = JSON.parse(clean);
     } catch {
@@ -113,7 +136,81 @@ Deno.serve(async (req) => {
       }
       parsed = JSON.parse(m[0]);
     }
-    return new Response(JSON.stringify({ result: parsed }), {
+
+    if (parsed?.error) {
+      return new Response(JSON.stringify({ result: parsed }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Normalise + backward-compat: if model returned single-item legacy shape, wrap it.
+    if (!Array.isArray(parsed?.items) && parsed?.name && parsed?.calories != null) {
+      parsed = {
+        items: [{
+          name: parsed.name,
+          portion_g: 0,
+          calories: Number(parsed.calories) || 0,
+          protein: Number(parsed.protein) || 0,
+          carbs: Number(parsed.carbs) || 0,
+          fat: Number(parsed.fat) || 0,
+          bbox: { x: 0.05, y: 0.05, w: 0.9, h: 0.9 },
+          confidence: parsed.confidence ?? "medium",
+        }],
+        total: {
+          name: parsed.name,
+          portion: parsed.portion ?? "",
+          calories: Number(parsed.calories) || 0,
+          protein: Number(parsed.protein) || 0,
+          carbs: Number(parsed.carbs) || 0,
+          fat: Number(parsed.fat) || 0,
+          confidence: parsed.confidence ?? "medium",
+        },
+      };
+    }
+
+    // Clamp bbox values and recompute totals as defence-in-depth.
+    const items = Array.isArray(parsed?.items) ? parsed.items.map((it: any) => {
+      const b = it?.bbox ?? {};
+      const clamp = (v: any) => Math.max(0, Math.min(1, Number(v) || 0));
+      return {
+        name: String(it?.name ?? "?"),
+        portion_g: Number(it?.portion_g) || 0,
+        calories: Number(it?.calories) || 0,
+        protein: Number(it?.protein) || 0,
+        carbs: Number(it?.carbs) || 0,
+        fat: Number(it?.fat) || 0,
+        bbox: { x: clamp(b.x), y: clamp(b.y), w: clamp(b.w), h: clamp(b.h) },
+        confidence: (["high","medium","low"].includes(it?.confidence) ? it.confidence : "medium") as "high"|"medium"|"low",
+      };
+    }) : [];
+
+    const sum = (k: "calories"|"protein"|"carbs"|"fat") =>
+      items.reduce((a: number, it: any) => a + (Number(it[k]) || 0), 0);
+    const totalGrams = items.reduce((a: number, it: any) => a + (Number(it.portion_g) || 0), 0);
+    const total = {
+      name: String(parsed?.total?.name ?? items.map((i: any) => i.name).join(", ")),
+      portion: String(parsed?.total?.portion ?? (totalGrams > 0 ? `1 tallerken (~${Math.round(totalGrams)}g)` : "1 tallerken")),
+      calories: Math.round(sum("calories")),
+      protein: Math.round(sum("protein")),
+      carbs: Math.round(sum("carbs")),
+      fat: Math.round(sum("fat")),
+      confidence: parsed?.total?.confidence ?? "medium",
+    };
+
+    // Keep legacy top-level fields for older clients.
+    const result = {
+      items,
+      total,
+      name: total.name,
+      portion: total.portion,
+      calories: total.calories,
+      protein: total.protein,
+      carbs: total.carbs,
+      fat: total.fat,
+      confidence: total.confidence,
+    };
+
+    return new Response(JSON.stringify({ result }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
