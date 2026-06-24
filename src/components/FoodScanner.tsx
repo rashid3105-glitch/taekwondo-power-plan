@@ -35,6 +35,31 @@ interface Props {
   onLogged?: () => void;
 }
 
+async function downscaleImage(file: File, maxDim = 1280, quality = 0.82): Promise<string> {
+  const dataUrl: string = await new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result as string);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+  const img = await new Promise<HTMLImageElement>((res, rej) => {
+    const i = new Image();
+    i.onload = () => res(i);
+    i.onerror = rej;
+    i.src = dataUrl;
+  });
+  const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+  const w = Math.round(img.width * scale);
+  const h = Math.round(img.height * scale);
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return dataUrl;
+  ctx.drawImage(img, 0, 0, w, h);
+  return canvas.toDataURL("image/jpeg", quality);
+}
+
 export function FoodScanner({ onLogged }: Props) {
   const { t } = useLanguage();
   const [image, setImage] = useState<string | null>(null);
@@ -60,13 +85,17 @@ export function FoodScanner({ onLogged }: Props) {
     );
   }, [items]);
 
-  const handleImage = (file: File) => {
+  const handleImage = async (file: File) => {
     if (!file.type.startsWith("image/")) return;
-    const reader = new FileReader();
-    reader.onload = (e) => setImage(e.target?.result as string);
-    reader.readAsDataURL(file);
     setItems(null);
     setSelected(null);
+    try {
+      const dataUrl = await downscaleImage(file, 1280, 0.82);
+      setImage(dataUrl);
+    } catch (e) {
+      console.error("downscale failed", e);
+      toast.error("Kunne ikke læse billedet");
+    }
   };
 
   const analyzeImage = async () => {
