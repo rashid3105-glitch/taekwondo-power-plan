@@ -171,17 +171,22 @@ export function FoodScanner({ onLogged }: Props) {
         return;
       }
       const parsed = data?.result;
+      if (!parsed) {
+        toast.error(t("foodScanError") || "Kunne ikke analysere billedet");
+        return;
+      }
       if (parsed && "error" in parsed) {
         toast.error(parsed.error);
         return;
       }
-      const itemsArr = parsed?.items;
+      const scanResult = parsed as ScanResult;
+      const itemsArr = scanResult.items;
       if (!Array.isArray(itemsArr) || itemsArr.length === 0) {
         toast.error(t("foodScanError") || "Kunne ikke analysere billedet");
         return;
       }
       setItems(itemsArr);
-      setDishName(parsed?.total?.name || itemsArr.map(i => i.name).join(", "));
+      setDishName(scanResult.total?.name || itemsArr.map(i => i.name).join(", "));
     } catch (e) {
       console.error("scan-food error", e);
       toast.error(t("foodScanError") || "Kunne ikke analysere billedet");
