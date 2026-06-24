@@ -140,25 +140,32 @@ export function FoodScanner({ onLogged }: Props) {
     }
     setScanning(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      const session = sessionData?.session;
+      const accessToken = session?.access_token;
+      const user = session?.user;
+      if (sessionError || !accessToken || !user) {
+        toast.error("Log ind igen for at analysere mad");
+        return;
+      }
+
       let weight = 70;
       let age = 25;
-      if (user) {
-        const { data: profileData } = await supabase
-          .from("profiles")
-          .select("weight_kg, birth_date")
-          .eq("user_id", user.id)
-          .maybeSingle();
-        const profile = profileData as { weight_kg?: number | null; birth_date?: string | null } | null;
-        const profileWeight = profile?.weight_kg;
-        const birthDate = profile?.birth_date;
-        if (profileWeight != null) weight = profileWeight;
-        if (birthDate) {
-          age = Math.floor((Date.now() - new Date(birthDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000));
-        }
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("weight_kg, birth_date")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      const profile = profileData as { weight_kg?: number | null; birth_date?: string | null } | null;
+      const profileWeight = profile?.weight_kg;
+      const birthDate = profile?.birth_date;
+      if (profileWeight != null) weight = profileWeight;
+      if (birthDate) {
+        age = Math.floor((Date.now() - new Date(birthDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000));
       }
 
       const { data, error } = await supabase.functions.invoke<ScanFoodResponse>("scan-food", {
+        headers: { Authorization: `Bearer ${accessToken}` },
         body: { image, weight, age },
       });
       if (error) throw error;
