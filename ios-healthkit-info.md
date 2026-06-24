@@ -16,6 +16,7 @@ Open `ios/App/App/Info.plist` and add the following two keys inside the top-leve
 <string>Sportstalent does not write data to Apple Health.</string>
 ```
 
+
 Both keys are required by Apple when the HealthKit entitlement is present, even though we only read.
 
 ## 3. Sync and run
