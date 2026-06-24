@@ -44,6 +44,7 @@ export function FoodScanner({ onLogged }: Props) {
   const [selected, setSelected] = useState<number | null>(null);
   const [logging, setLogging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const uploadRef = useRef<HTMLInputElement>(null);
 
   const totals = useMemo(() => {
     if (!items) return null;
