@@ -35,6 +35,13 @@ interface Props {
   onLogged?: () => void;
 }
 
+const MAX_SCAN_IMAGE_BYTES = 4 * 1024 * 1024;
+
+const dataUrlByteLength = (dataUrl: string) => Math.ceil(dataUrl.length * 0.75);
+
+const canvasToDataUrl = (canvas: HTMLCanvasElement, quality: number) =>
+  canvas.toDataURL("image/jpeg", quality);
+
 async function downscaleImage(file: File, maxDim = 1280, quality = 0.82): Promise<string> {
   const dataUrl: string = await new Promise((res, rej) => {
     const r = new FileReader();
@@ -57,7 +64,25 @@ async function downscaleImage(file: File, maxDim = 1280, quality = 0.82): Promis
   const ctx = canvas.getContext("2d");
   if (!ctx) return dataUrl;
   ctx.drawImage(img, 0, 0, w, h);
-  return canvas.toDataURL("image/jpeg", quality);
+
+  let output = canvasToDataUrl(canvas, quality);
+  let currentMaxDim = maxDim;
+  let currentQuality = quality;
+
+  while (dataUrlByteLength(output) > MAX_SCAN_IMAGE_BYTES && currentMaxDim > 640) {
+    currentMaxDim = Math.round(currentMaxDim * 0.82);
+    currentQuality = Math.max(0.55, currentQuality - 0.08);
+
+    const nextScale = Math.min(1, currentMaxDim / Math.max(img.width, img.height));
+    const nextW = Math.max(1, Math.round(img.width * nextScale));
+    const nextH = Math.max(1, Math.round(img.height * nextScale));
+    canvas.width = nextW;
+    canvas.height = nextH;
+    ctx.drawImage(img, 0, 0, nextW, nextH);
+    output = canvasToDataUrl(canvas, currentQuality);
+  }
+
+  return output;
 }
 
 export function FoodScanner({ onLogged }: Props) {
@@ -90,7 +115,11 @@ export function FoodScanner({ onLogged }: Props) {
     setItems(null);
     setSelected(null);
     try {
-      const dataUrl = await downscaleImage(file, 1280, 0.82);
+      const dataUrl = await downscaleImage(file, 1280, 0.8);
+      if (dataUrlByteLength(dataUrl) > MAX_SCAN_IMAGE_BYTES) {
+        toast.error("Billedet er for stort — prøv et beskåret eller mindre billede");
+        return;
+      }
       setImage(dataUrl);
     } catch (e) {
       console.error("downscale failed", e);
@@ -100,6 +129,10 @@ export function FoodScanner({ onLogged }: Props) {
 
   const analyzeImage = async () => {
     if (!image) return;
+    if (dataUrlByteLength(image) > MAX_SCAN_IMAGE_BYTES) {
+      toast.error("Billedet er for stort — upload billedet igen");
+      return;
+    }
     setScanning(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
