@@ -85,63 +85,83 @@ Deno.serve(async (req) => {
       });
     }
 
-    const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          { role: "system", content: buildSystemPrompt(age ?? 25, weight ?? 70) },
-          {
-            role: "user",
-            content: [
-              { type: "text", text: "Analysér dette måltid og returnér hver madvare separat med bounding box." },
-              { type: "image_url", image_url: { url: image } },
-            ],
-          },
-        ],
-      }),
-    });
+    const callGateway = async (insist: boolean) => {
+      return await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-pro",
+          messages: [
+            { role: "system", content: buildSystemPrompt(age ?? 25, weight ?? 70, insist) },
+            {
+              role: "user",
+              content: [
+                { type: "text", text: insist
+                  ? "Billedet indeholder mad. Identificér ALLE synlige madvarer separat med bounding box — returnér ALDRIG fejl."
+                  : "Analysér dette måltid og returnér hver madvare separat med bounding box." },
+                { type: "image_url", image_url: { url: image } },
+              ],
+            },
+          ],
+        }),
+      });
+    };
 
-    if (resp.status === 429) {
-      return new Response(JSON.stringify({ error: "rate_limited" }), {
-        status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-    if (resp.status === 402) {
-      return new Response(JSON.stringify({ error: "payment_required" }), {
-        status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-    if (!resp.ok) {
-      const txt = await resp.text();
-      console.error("scan-food gateway error", resp.status, txt);
-      return new Response(JSON.stringify({ error: "ai_error" }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    const data = await resp.json();
-    const raw = String(data?.choices?.[0]?.message?.content ?? "").trim();
-    const clean = raw.replace(/```json|```/g, "").trim();
-    let parsed: any;
-    try {
-      parsed = JSON.parse(clean);
-    } catch {
-      const m = clean.match(/\{[\s\S]*\}/);
-      if (!m) {
-        return new Response(JSON.stringify({ error: "parse_error" }), {
-          status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+    const parseResp = async (resp: Response): Promise<{ parsed?: any; errorResponse?: Response }> => {
+      if (resp.status === 429) {
+        return { errorResponse: new Response(JSON.stringify({ error: "rate_limited" }), {
+          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }) };
       }
-      parsed = JSON.parse(m[0]);
+      if (resp.status === 402) {
+        return { errorResponse: new Response(JSON.stringify({ error: "payment_required" }), {
+          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }) };
+      }
+      if (!resp.ok) {
+        const txt = await resp.text();
+        console.error("scan-food gateway error", resp.status, txt);
+        return { errorResponse: new Response(JSON.stringify({ error: "ai_error" }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }) };
+      }
+      const data = await resp.json();
+      const raw = String(data?.choices?.[0]?.message?.content ?? "").trim();
+      const clean = raw.replace(/```json|```/g, "").trim();
+      try {
+        return { parsed: JSON.parse(clean) };
+      } catch {
+        const m = clean.match(/\{[\s\S]*\}/);
+        if (!m) {
+          return { errorResponse: new Response(JSON.stringify({ error: "parse_error" }), {
+            status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          }) };
+        }
+        try { return { parsed: JSON.parse(m[0]) }; } catch {
+          return { errorResponse: new Response(JSON.stringify({ error: "parse_error" }), {
+            status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          }) };
+        }
+      }
+    };
+
+    let { parsed, errorResponse } = await parseResp(await callGateway(false));
+    if (errorResponse) return errorResponse;
+
+    // Retry once with insisting prompt if model wrongly claims no food.
+    if (parsed?.error && (!Array.isArray(parsed?.items) || parsed.items.length === 0)) {
+      console.warn("scan-food: model returned error on first pass, retrying with insist prompt");
+      const retry = await parseResp(await callGateway(true));
+      if (retry.errorResponse) return retry.errorResponse;
+      parsed = retry.parsed;
     }
 
-    if (parsed?.error) {
+    if (parsed?.error && (!Array.isArray(parsed?.items) || parsed.items.length === 0)) {
       return new Response(JSON.stringify({ result: parsed }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
 
     // Normalise + backward-compat: if model returned single-item legacy shape, wrap it.
     if (!Array.isArray(parsed?.items) && parsed?.name && parsed?.calories != null) {
