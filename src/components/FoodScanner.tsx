@@ -168,13 +168,26 @@ export function FoodScanner({ onLogged }: Props) {
         headers: { Authorization: `Bearer ${accessToken}` },
         body: { image, weight, age },
       });
-      if (error) throw error;
+      if (error) {
+        const msg = String((error as { message?: string })?.message ?? "");
+        if (msg.includes("401") || /unauthorized/i.test(msg)) {
+          toast.error("Log ind igen for at analysere mad");
+          return;
+        }
+        if (msg.includes("413")) {
+          toast.error("Billedet er for stort — prøv et mindre billede");
+          return;
+        }
+        throw error;
+      }
       if (data?.error) {
         toast.error(data.error === "rate_limited"
           ? "For mange forespørgsler — prøv igen om lidt"
           : data.error === "payment_required"
             ? "AI-kreditter opbrugt — kontakt support"
-            : t("foodScanError") || "Kunne ikke analysere billedet");
+            : data.error === "unauthorized"
+              ? "Log ind igen for at analysere mad"
+              : t("foodScanError") || "Kunne ikke analysere billedet");
         return;
       }
       const parsed = data?.result;
