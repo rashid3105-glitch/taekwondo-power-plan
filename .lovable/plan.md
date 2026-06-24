@@ -1,19 +1,15 @@
-Plan:
+## Problem
 
-1. Fix the reminder source on `/dashboard`
-   - Change the monthly mental reminder check so it waits for role loading to finish before deciding athlete vs coach table.
-   - For users with coach/admin role, check `coach_mental_assessments` only.
-   - For athlete-only users, check `mental_assessments` only.
-   - Prevent the card from briefly showing while the check is still unresolved.
+Edge-funktionen returnerede `{"error":"Ingen mad fundet i billedet"}` for et billede der tydeligvis viser mad (avocado-toast, æg, blåbær, spinat). Modellen (`google/gemini-2.5-flash`) tog den nemme udvej i prompten.
 
-2. Make the reminder update immediately after completion
-   - When returning to the hub after submitting a coach mental review, force a fresh server check instead of relying on stale role/query state.
-   - Keep the existing 30-day rule: any completed assessment within the last 30 days hides the card.
+## Fix i `supabase/functions/scan-food/index.ts`
 
-3. Keep scope narrow
-   - Do not change the question flow, advice generation, history, or coach/athlete role structure.
-   - Only adjust the dashboard reminder gating and navigation target if needed.
+1. **Stærkere vision-model**: skift default fra `google/gemini-2.5-flash` til `google/gemini-2.5-pro` — bedre billedforståelse, færre falske afvisninger.
+2. **Strammere system-prompt**:
+   - Fjern den "lette udvej" — modellen må KUN returnere `{"error":...}` hvis billedet helt klart ikke indeholder spiselig mad (fx landskab, person, tekst-dokument).
+   - Eksplicit: "Hvis du er i tvivl, identificér så mange komponenter som muligt — returnér ALDRIG fejl for et tallerken-billede."
+3. **Retry-fallback**: hvis første kald returnerer `{error: "Ingen mad fundet..."}`, kald gateway én gang til med endnu mere insisterende prompt ("Billedet indeholder garanteret mad — identificér komponenterne") før vi giver op.
+4. Ingen ændringer i frontend, klient-API eller response-shape.
 
-4. Validate
-   - Confirm the dashboard logic reads the correct table for Farooq's coach/admin role.
-   - Confirm the reminder card is hidden when a recent coach review exists and only returns after 30 days.
+## Verifikation
+Kald `scan-food` med det uploadede billede via `supabase--curl_edge_functions` og bekræft at `result.items` har ≥3 komponenter (toast, æg, blåbær, spinat).
