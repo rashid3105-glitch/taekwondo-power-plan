@@ -1,15 +1,28 @@
-## Problem
+## Plan: Få mad-billedanalyse til at virke igen
 
-Edge-funktionen returnerede `{"error":"Ingen mad fundet i billedet"}` for et billede der tydeligvis viser mad (avocado-toast, æg, blåbær, spinat). Modellen (`google/gemini-2.5-flash`) tog den nemme udvej i prompten.
+### Problemet
+`scan-food` bliver ramt med et anonymt token i stedet for brugerens login-token. Derfor svarer backend med `401 unauthorized`, og appen viser kun den generiske besked “Kunne ikke analysere billedet”.
 
-## Fix i `supabase/functions/scan-food/index.ts`
+### Fix
+1. **Frontend: stop anonymt kald**
+   - I `FoodScanner.tsx` henter vi den aktuelle session før analysen.
+   - Hvis der ikke findes en rigtig bruger-session, stopper vi før backend-kaldet og viser: “Log ind igen for at analysere mad”.
+   - Kaldet til `scan-food` sendes med brugerens access token eksplicit.
 
-1. **Stærkere vision-model**: skift default fra `google/gemini-2.5-flash` til `google/gemini-2.5-pro` — bedre billedforståelse, færre falske afvisninger.
-2. **Strammere system-prompt**:
-   - Fjern den "lette udvej" — modellen må KUN returnere `{"error":...}` hvis billedet helt klart ikke indeholder spiselig mad (fx landskab, person, tekst-dokument).
-   - Eksplicit: "Hvis du er i tvivl, identificér så mange komponenter som muligt — returnér ALDRIG fejl for et tallerken-billede."
-3. **Retry-fallback**: hvis første kald returnerer `{error: "Ingen mad fundet..."}`, kald gateway én gang til med endnu mere insisterende prompt ("Billedet indeholder garanteret mad — identificér komponenterne") før vi giver op.
-4. Ingen ændringer i frontend, klient-API eller response-shape.
+2. **Backend: robust token-validering**
+   - I `supabase/functions/scan-food/index.ts` valideres kun rigtige bruger-JWTs.
+   - Anonyme publishable/anon tokens afvises tydeligt, så fejlen ikke ligner en billedanalyse-fejl.
 
-## Verifikation
-Kald `scan-food` med det uploadede billede via `supabase--curl_edge_functions` og bekræft at `result.items` har ≥3 komponenter (toast, æg, blåbær, spinat).
+3. **Bedre brugerfejl**
+   - `401` oversættes i UI til en login/session-besked.
+   - AI/model-fejl og billed-fejl holdes adskilt, så vi kan se om problemet er auth, billede eller analyse.
+
+4. **Verificering**
+   - Deploy/test `scan-food` direkte med en autentificeret request.
+   - Tjek at den ikke længere sender anonymt token fra preview.
+   - Tjek TypeScript for de ændrede filer.
+
+### Ingen ændringer
+- Ingen UI redesign.
+- Ingen databaseændringer.
+- Ingen ændring af nutrition logging eller eksisterende måltidsdata.
