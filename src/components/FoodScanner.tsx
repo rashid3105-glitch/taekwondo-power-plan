@@ -31,6 +31,11 @@ interface ScanResult {
   };
 }
 
+interface ScanFoodResponse {
+  error?: string;
+  result?: ScanResult | { error: string };
+}
+
 interface Props {
   onLogged?: () => void;
 }
@@ -144,38 +149,39 @@ export function FoodScanner({ onLogged }: Props) {
           .select("weight_kg, birth_date")
           .eq("user_id", user.id)
           .maybeSingle();
-        const profileWeight = (profileData as any)?.weight_kg;
-        const birthDate = (profileData as any)?.birth_date;
+        const profile = profileData as { weight_kg?: number | null; birth_date?: string | null } | null;
+        const profileWeight = profile?.weight_kg;
+        const birthDate = profile?.birth_date;
         if (profileWeight != null) weight = profileWeight;
         if (birthDate) {
           age = Math.floor((Date.now() - new Date(birthDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000));
         }
       }
 
-      const { data, error } = await supabase.functions.invoke("scan-food", {
+      const { data, error } = await supabase.functions.invoke<ScanFoodResponse>("scan-food", {
         body: { image, weight, age },
       });
       if (error) throw error;
-      if ((data as any)?.error) {
-        toast.error((data as any).error === "rate_limited"
+      if (data?.error) {
+        toast.error(data.error === "rate_limited"
           ? "For mange forespørgsler — prøv igen om lidt"
-          : (data as any).error === "payment_required"
+          : data.error === "payment_required"
             ? "AI-kreditter opbrugt — kontakt support"
             : t("foodScanError") || "Kunne ikke analysere billedet");
         return;
       }
-      const parsed = (data as any)?.result as ScanResult | { error?: string } | undefined;
-      if ((parsed as any)?.error) {
-        toast.error((parsed as any).error);
+      const parsed = data?.result;
+      if (parsed && "error" in parsed) {
+        toast.error(parsed.error);
         return;
       }
-      const itemsArr = (parsed as ScanResult)?.items;
+      const itemsArr = parsed?.items;
       if (!Array.isArray(itemsArr) || itemsArr.length === 0) {
         toast.error(t("foodScanError") || "Kunne ikke analysere billedet");
         return;
       }
       setItems(itemsArr);
-      setDishName((parsed as ScanResult).total?.name || itemsArr.map(i => i.name).join(", "));
+      setDishName(parsed?.total?.name || itemsArr.map(i => i.name).join(", "));
     } catch (e) {
       console.error("scan-food error", e);
       toast.error(t("foodScanError") || "Kunne ikke analysere billedet");
@@ -209,7 +215,7 @@ export function FoodScanner({ onLogged }: Props) {
 
       const today = new Date().toISOString().slice(0, 10);
       const portion = totals.grams > 0 ? `1 tallerken (~${Math.round(totals.grams)}g)` : "1 tallerken";
-      const { error } = await (supabase.from as any)("nutrition_logs").insert({
+      const { error } = await supabase.from("nutrition_logs").insert({
         user_id: user.id,
         date: today,
         meal_name: dishName || items.map(i => i.name).join(", "),
@@ -228,8 +234,8 @@ export function FoodScanner({ onLogged }: Props) {
       setItems(null);
       setSelected(null);
       onLogged?.();
-    } catch (e: any) {
-      toast.error(e.message || "Kunne ikke logge måltidet");
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Kunne ikke logge måltidet");
     } finally {
       setLogging(false);
     }
