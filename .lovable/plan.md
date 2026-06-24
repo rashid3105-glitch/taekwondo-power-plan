@@ -1,28 +1,45 @@
-## Plan: Få mad-billedanalyse til at virke igen
+## Hvad undersøgelsen viser
 
-### Problemet
-`scan-food` bliver ramt med et anonymt token i stedet for brugerens login-token. Derfor svarer backend med `401 unauthorized`, og appen viser kun den generiske besked “Kunne ikke analysere billedet”.
+- Kaldet til `scan-food` fejler ikke længere på login: netværksloggen viser `Status: 200` og en gyldig bruger-token.
+- Backend returnerer faktisk en analyse for billedet, men svaret er i gammelt single-resultat format:
+  - `{"result":{"name":"Røræg med laks...","calories":...}}`
+- Frontend forventer nu det nye per-komponent format:
+  - `result.items[]`
+- Derfor viser appen fejlen “Kunne ikke analysere billedet”, selvom analysen lykkes. Problemet er altså primært en format-/deployment-mismatch mellem edge-funktionen og klienten.
 
-### Fix
-1. **Frontend: stop anonymt kald**
-   - I `FoodScanner.tsx` henter vi den aktuelle session før analysen.
-   - Hvis der ikke findes en rigtig bruger-session, stopper vi før backend-kaldet og viser: “Log ind igen for at analysere mad”.
-   - Kaldet til `scan-food` sendes med brugerens access token eksplicit.
+## Plan
 
-2. **Backend: robust token-validering**
-   - I `supabase/functions/scan-food/index.ts` valideres kun rigtige bruger-JWTs.
-   - Anonyme publishable/anon tokens afvises tydeligt, så fejlen ikke ligner en billedanalyse-fejl.
+1. **Stop falske fejlbeskeder i frontend**
+   - Opdater `FoodScanner.tsx`, så den accepterer både:
+     - nyt format: `result.items[] + result.total`
+     - gammelt format: `result.name/calories/protein/carbs/fat/portion/confidence`
+   - Hvis gammelt format modtages, konverteres det lokalt til ét item med en full-image bounding box, så brugeren stadig får et brugbart resultat i stedet for fejl.
 
-3. **Bedre brugerfejl**
-   - `401` oversættes i UI til en login/session-besked.
-   - AI/model-fejl og billed-fejl holdes adskilt, så vi kan se om problemet er auth, billede eller analyse.
+2. **Gør edge-funktionen bagud- og fremadssikker**
+   - Bevar serverens normalisering, men stram valideringen så svaret altid sendes til klienten som:
+     - `result.items`
+     - `result.total`
+     - legacy top-level felter
+   - Tilføj en intern `schema_version`/diagnosemarkør i JSON-svaret, så vi kan se i netværksloggen om den nye funktion faktisk kører.
 
-4. **Verificering**
-   - Deploy/test `scan-food` direkte med en autentificeret request.
-   - Tjek at den ikke længere sender anonymt token fra preview.
-   - Tjek TypeScript for de ændrede filer.
+3. **Reducer spild af credits ved gentagne klik**
+   - Tilføj en klient-side guard, så brugeren ikke kan sende samme billede flere gange parallelt.
+   - Gem seneste succesfulde analyse for det aktuelle billede i komponent-state, så gentagne tryk ikke kalder modellen igen unødigt.
 
-### Ingen ændringer
-- Ingen UI redesign.
-- Ingen databaseændringer.
-- Ingen ændring af nutrition logging eller eksisterende måltidsdata.
+4. **Bedre fejlbeskeder uden at bruge ekstra modelkald**
+   - Skeln tydeligt mellem:
+     - session udløbet
+     - billedet for stort
+     - analyse lykkedes men svaret havde uventet format
+     - model/gateway fejl
+   - Behold brugerens billede på skærmen efter fejl, så man ikke skal uploade igen.
+
+5. **Verificering efter implementering**
+   - Test den konkrete response-form fra netværksloggen mod frontend-parseren.
+   - Kontrollér at et legacy-resultat viser kalorier/makroer i UI i stedet for toast-fejl.
+   - Kontrollér at nyt `items[]` format stadig viser komponenter og bounding boxes.
+
+## Filer der ændres
+
+- `src/components/FoodScanner.tsx`
+- `supabase/functions/scan-food/index.ts`

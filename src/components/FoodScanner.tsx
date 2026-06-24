@@ -190,23 +190,40 @@ export function FoodScanner({ onLogged }: Props) {
               : t("foodScanError") || "Kunne ikke analysere billedet");
         return;
       }
-      const parsed = data?.result;
+      const parsed = data?.result as any;
       if (!parsed) {
         toast.error(t("foodScanError") || "Kunne ikke analysere billedet");
         return;
       }
-      if (parsed && "error" in parsed) {
-        toast.error(parsed.error);
+      if (parsed && typeof parsed === "object" && "error" in parsed && !parsed.items) {
+        toast.error(String(parsed.error));
         return;
       }
-      const scanResult = parsed as ScanResult;
-      const itemsArr = scanResult.items;
-      if (!Array.isArray(itemsArr) || itemsArr.length === 0) {
+
+      // Normalise: accept both new items[] schema and legacy single-item schema.
+      let itemsArr: ScanItem[] = Array.isArray(parsed.items) ? parsed.items : [];
+      let totalName: string | undefined = parsed.total?.name;
+
+      if (itemsArr.length === 0 && parsed.name && parsed.calories != null) {
+        itemsArr = [{
+          name: String(parsed.name),
+          portion_g: Number(parsed.portion_g) || 0,
+          calories: Number(parsed.calories) || 0,
+          protein: Number(parsed.protein) || 0,
+          carbs: Number(parsed.carbs) || 0,
+          fat: Number(parsed.fat) || 0,
+          bbox: { x: 0.05, y: 0.05, w: 0.9, h: 0.9 },
+          confidence: (["high","medium","low"].includes(parsed.confidence) ? parsed.confidence : "medium") as ScanItem["confidence"],
+        }];
+        totalName = totalName || String(parsed.name);
+      }
+
+      if (itemsArr.length === 0) {
         toast.error(t("foodScanError") || "Kunne ikke analysere billedet");
         return;
       }
       setItems(itemsArr);
-      setDishName(scanResult.total?.name || itemsArr.map(i => i.name).join(", "));
+      setDishName(totalName || itemsArr.map(i => i.name).join(", "));
     } catch (e) {
       console.error("scan-food error", e);
       toast.error(t("foodScanError") || "Kunne ikke analysere billedet");
