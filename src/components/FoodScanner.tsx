@@ -183,20 +183,35 @@ export function FoodScanner({ onLogged }: Props) {
         className="hidden"
         onChange={(e) => e.target.files?.[0] && handleImage(e.target.files[0])}
       />
+      <input
+        ref={uploadRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => e.target.files?.[0] && handleImage(e.target.files[0])}
+      />
 
       {!image ? (
-        <button
-          onClick={() => inputRef.current?.click()}
-          className="w-full flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 py-10 hover:bg-primary/10 transition-colors"
-        >
-          <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center">
-            <Camera className="h-7 w-7 text-primary" />
-          </div>
-          <div className="text-center px-4">
-            <p className="text-sm font-semibold text-foreground">{t("foodScanTake") || "Tag et billede af dit måltid"}</p>
-            <p className="text-xs text-muted-foreground mt-1">{t("foodScanDesc") || "AI identificerer hver madvare separat"}</p>
-          </div>
-        </button>
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            onClick={() => inputRef.current?.click()}
+            className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 py-8 hover:bg-primary/10 transition-colors"
+          >
+            <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center">
+              <Camera className="h-6 w-6 text-primary" />
+            </div>
+            <p className="text-xs font-semibold text-foreground text-center px-2">{t("foodScanTake") || "Tag billede"}</p>
+          </button>
+          <button
+            onClick={() => uploadRef.current?.click()}
+            className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 py-8 hover:bg-primary/10 transition-colors"
+          >
+            <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center">
+              <Upload className="h-6 w-6 text-primary" />
+            </div>
+            <p className="text-xs font-semibold text-foreground text-center px-2">{t("foodScanUpload") || "Upload billede"}</p>
+          </button>
+        </div>
       ) : (
         <div className="relative rounded-2xl overflow-hidden bg-black">
           <img src={image} alt="Måltid" className="w-full max-h-80 object-contain" />
