@@ -7,9 +7,9 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const buildSystemPrompt = (age: number, weight: number) => `You are a sports-nutrition vision assistant. The athlete is ${age} years old and weighs ${weight}kg. Use this to estimate realistic portion sizes.
+const buildSystemPrompt = (age: number, weight: number, insist = false) => `You are a sports-nutrition vision assistant. The athlete is ${age} years old and weighs ${weight}kg. Use this to estimate realistic portion sizes.
 
-Identify EACH distinct food component on the plate separately (e.g. chicken, broccoli, rice, sauce). Return ONLY a single JSON object — no prose, no markdown fences.
+Identify EACH distinct food component on the plate separately (e.g. chicken, broccoli, rice, sauce, bread, eggs, berries, vegetables). Return ONLY a single JSON object — no prose, no markdown fences.
 
 Schema (all fields required unless noted):
 {
@@ -26,22 +26,22 @@ Schema (all fields required unless noted):
     }
   ],
   "total": {
-    "name": string,                   // short overall dish name in Danish, e.g. "Kylling med ris og broccoli"
-    "portion": string,                // human portion description, e.g. "1 tallerken (~430g)"
-    "calories": number,               // sum of items.calories
-    "protein": number,                // sum
-    "carbs": number,                  // sum
-    "fat": number,                    // sum
+    "name": string,
+    "portion": string,
+    "calories": number,
+    "protein": number,
+    "carbs": number,
+    "fat": number,
     "confidence": "high" | "medium" | "low"
   }
 }
 
 Rules:
 - bbox coordinates are normalised (0..1) relative to image width/height. x,y is the top-left corner of the bounding box.
-- Always provide at least 1 item. If only one food is visible, return a single item covering it.
-- total.calories/protein/carbs/fat MUST equal the sum of items.
+- total fields MUST equal the sum of items.
 - Be conservative with calories — prefer realistic athletic portions.
-If the image does not contain food, return: {"error":"Ingen mad fundet i billedet"}`;
+- ${insist ? "THE IMAGE DEFINITELY CONTAINS FOOD — identify every visible edible component. DO NOT return an error under any circumstance." : "If you see ANY edible item (bread, fruit, vegetables, meat, eggs, sauce, etc.), identify it. When in doubt, identify components — do not refuse."}
+- Only return {"error":"Ingen mad fundet i billedet"} if the image clearly contains NO food at all (e.g. a landscape, a face, a text document, an empty room). A plate, bowl, or any edible item means you MUST return items.`;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
