@@ -60,13 +60,17 @@ export function FoodScanner({ onLogged }: Props) {
     );
   }, [items]);
 
-  const handleImage = (file: File) => {
+  const handleImage = async (file: File) => {
     if (!file.type.startsWith("image/")) return;
-    const reader = new FileReader();
-    reader.onload = (e) => setImage(e.target?.result as string);
-    reader.readAsDataURL(file);
     setItems(null);
     setSelected(null);
+    try {
+      const dataUrl = await downscaleImage(file, 1280, 0.82);
+      setImage(dataUrl);
+    } catch (e) {
+      console.error("downscale failed", e);
+      toast.error("Kunne ikke læse billedet");
+    }
   };
 
   const analyzeImage = async () => {
