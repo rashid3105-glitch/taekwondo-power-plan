@@ -1,45 +1,37 @@
-## Hvad undersøgelsen viser
+## Mål
+Når en coach er logget ind og har valgt en klub som IKKE er deres primære klub (fx superadmin/coach der har skiftet til en anden klub via klub-switcheren), skal hele app'ens baggrund være en anelse lysere end den normale mørke coach-baggrund. Alle øvrige farver (tekst, primary, accent, kort, border) bevares.
 
-- Kaldet til `scan-food` fejler ikke længere på login: netværksloggen viser `Status: 200` og en gyldig bruger-token.
-- Backend returnerer faktisk en analyse for billedet, men svaret er i gammelt single-resultat format:
-  - `{"result":{"name":"Røræg med laks...","calories":...}}`
-- Frontend forventer nu det nye per-komponent format:
-  - `result.items[]`
-- Derfor viser appen fejlen “Kunne ikke analysere billedet”, selvom analysen lykkes. Problemet er altså primært en format-/deployment-mismatch mellem edge-funktionen og klienten.
+## Sådan opdager vi "anden klub"
+- Bruger er coach (eller admin) — `hasCoachRole` fra `RoleContext` eller `isCoachMode`/`isCoachRoute`.
+- `activeClubId` (fra `ActiveClubContext`) ≠ brugerens `profiles.club_id` (primær klub).
 
-## Plan
+Vi henter den primære klub-id én gang (ved login) og sammenligner i `ThemeSync`.
 
-1. **Stop falske fejlbeskeder i frontend**
-   - Opdater `FoodScanner.tsx`, så den accepterer både:
-     - nyt format: `result.items[] + result.total`
-     - gammelt format: `result.name/calories/protein/carbs/fat/portion/confidence`
-   - Hvis gammelt format modtages, konverteres det lokalt til ét item med en full-image bounding box, så brugeren stadig får et brugbart resultat i stedet for fejl.
+## Implementation
 
-2. **Gør edge-funktionen bagud- og fremadssikker**
-   - Bevar serverens normalisering, men stram valideringen så svaret altid sendes til klienten som:
-     - `result.items`
-     - `result.total`
-     - legacy top-level felter
-   - Tilføj en intern `schema_version`/diagnosemarkør i JSON-svaret, så vi kan se i netværksloggen om den nye funktion faktisk kører.
+### 1. `src/contexts/ActiveClubContext.tsx`
+- Eksponér `primaryClubId` i context-værdien (vi henter den allerede via `profileRes` — bare gem den i state og send med ud).
 
-3. **Reducer spild af credits ved gentagne klik**
-   - Tilføj en klient-side guard, så brugeren ikke kan sende samme billede flere gange parallelt.
-   - Gem seneste succesfulde analyse for det aktuelle billede i komponent-state, så gentagne tryk ikke kalder modellen igen unødigt.
+### 2. `src/contexts/ThemeSync.tsx`
+- Læs `activeClubId` og `primaryClubId` fra `useActiveClub()`.
+- Beregn `isForeignClub = hasCoachRole && primaryClubId && activeClubId && activeClubId !== primaryClubId`.
+- Når coach-tema er aktivt OG `isForeignClub` → toggle en ny body-klasse `coach-foreign-club` (i stedet for at sætte `--background` inline, så vi ikke fighter med eksisterende inline-styles).
 
-4. **Bedre fejlbeskeder uden at bruge ekstra modelkald**
-   - Skeln tydeligt mellem:
-     - session udløbet
-     - billedet for stort
-     - analyse lykkedes men svaret havde uventet format
-     - model/gateway fejl
-   - Behold brugerens billede på skærmen efter fejl, så man ikke skal uploade igen.
+### 3. `src/index.css`
+- Tilføj override under coach-mode:
+```css
+body.coach-mode.coach-foreign-club {
+  --background: 222 26% 16%;   /* vs. 222 30% 10% */
+  --card: 222 26% 20%;          /* vs. 222 30% 14% */
+  --sidebar-background: 222 26% 18%;
+}
+```
+Værdier holdes tæt på eksisterende men ~6% lysere, så kontrast til tekst og primary blå bevares.
 
-5. **Verificering efter implementering**
-   - Test den konkrete response-form fra netværksloggen mod frontend-parseren.
-   - Kontrollér at et legacy-resultat viser kalorier/makroer i UI i stedet for toast-fejl.
-   - Kontrollér at nyt `items[]` format stadig viser komponenter og bounding boxes.
+## Verifikation
+- Log ind som rashid3105 (superadmin), skift mellem Tøyen og Copenhagen City → baggrund bliver lysere i den ikke-primære klub, normal mørk i primær klub.
+- Log ind som ren atlet i én klub → ingen ændring (ikke coach).
+- Log ud + log ind igen → temaet matcher startklubben uden flicker.
 
-## Filer der ændres
-
-- `src/components/FoodScanner.tsx`
-- `supabase/functions/scan-food/index.ts`
+## Ingen ændringer
+- Ingen UI-tekst, ingen layout-skift, ingen DB-migration, ingen nye komponenter.

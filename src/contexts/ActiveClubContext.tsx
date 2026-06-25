@@ -16,6 +16,7 @@ type ActiveClubContextValue = {
   memberships: ClubMembership[];
   activeClubId: string | null;
   activeMembership: ClubMembership | null;
+  primaryClubId: string | null;
   setActiveClubId: (id: string) => void;
   switchingTo: SwitchingTo;
   loading: boolean;
@@ -28,6 +29,7 @@ const STORAGE_PREFIX = "activeClubId:";
 export function ActiveClubProvider({ children }: { children: ReactNode }) {
   const [memberships, setMemberships] = useState<ClubMembership[]>([]);
   const [activeClubId, setActiveClubIdState] = useState<string | null>(null);
+  const [primaryClubId, setPrimaryClubId] = useState<string | null>(null);
   const [switchingTo, setSwitchingTo] = useState<SwitchingTo>(null);
   const [loading, setLoading] = useState(true);
 
@@ -141,6 +143,7 @@ export function ActiveClubProvider({ children }: { children: ReactNode }) {
 
       setMemberships(list);
       setActiveClubIdState(next);
+      setPrimaryClubId(primaryClubId);
     } catch (err) {
       // Defensive: never let a failed membership fetch (e.g. preview proxy
       // dropping the request with "TypeError: Load failed") freeze the app.
@@ -211,7 +214,7 @@ export function ActiveClubProvider({ children }: { children: ReactNode }) {
 
   return (
     <ActiveClubContext.Provider
-      value={{ memberships, activeClubId, activeMembership, setActiveClubId, switchingTo, loading }}
+      value={{ memberships, activeClubId, activeMembership, primaryClubId, setActiveClubId, switchingTo, loading }}
     >
       {children}
     </ActiveClubContext.Provider>
@@ -225,6 +228,7 @@ export function useActiveClub() {
       memberships: [] as ClubMembership[],
       activeClubId: null,
       activeMembership: null,
+      primaryClubId: null,
       setActiveClubId: () => {},
       switchingTo: null,
       loading: false,
