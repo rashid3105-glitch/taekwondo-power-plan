@@ -177,7 +177,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
 
       const { error } = await supabase
         .from("profiles")
-        .update(updates)
+        .update(updates as any)
         .eq("user_id", athlete.user_id);
       if (error) throw error;
       toast({ title: t("profileSaved") });
