@@ -228,6 +228,7 @@ export function useActiveClub() {
       memberships: [] as ClubMembership[],
       activeClubId: null,
       activeMembership: null,
+      primaryClubId: null,
       setActiveClubId: () => {},
       switchingTo: null,
       loading: false,
