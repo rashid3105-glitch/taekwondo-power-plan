@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
       .is("used_at", null)
       .gt("expires_at", new Date().toISOString())
       .maybeSingle();
-    if (invErr) return json({ error: invErr.message }, 500);
+    if (invErr) { console.error("parent-signup invite lookup error", invErr); return json({ error: "server_error" }, 500); }
     if (!invite) return json({ error: "invalid_or_expired" }, 400);
 
     const displayName = `${firstName} ${lastName}`.trim();
