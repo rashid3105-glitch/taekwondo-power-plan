@@ -62,14 +62,15 @@ Deno.serve(async (req) => {
       const msg = (createErr?.message || "").toLowerCase();
       const alreadyExists = msg.includes("already") || msg.includes("registered");
       if (!alreadyExists) {
-        return json({ error: createErr?.message || "signup_failed" }, 400);
+        console.error("parent-signup createUser error", createErr);
+        return json({ error: "signup_failed" }, 400);
       }
       // Recovery: find existing user by email
       const { data: list, error: listErr } = await admin.auth.admin.listUsers({
         page: 1,
         perPage: 200,
       });
-      if (listErr) return json({ error: listErr.message }, 500);
+      if (listErr) { console.error("parent-signup listUsers error", listErr); return json({ error: "server_error" }, 500); }
       const existing = list?.users?.find((u) => (u.email || "").toLowerCase() === email);
       if (!existing) return json({ error: "already_registered" }, 400);
       // Verify the password matches before re-using the account
