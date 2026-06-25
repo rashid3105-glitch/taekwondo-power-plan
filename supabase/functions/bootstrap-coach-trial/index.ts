@@ -128,10 +128,11 @@ Deno.serve(async (req) => {
       JSON.stringify({ ok: true, code, club_id: clubId }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
-  } catch (err: any) {
+  } catch (err) {
+    console.error("bootstrap-coach-trial error", err);
     return new Response(
-      JSON.stringify({ error: err.message }),
-      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      JSON.stringify({ error: "server_error" }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   }
 });
