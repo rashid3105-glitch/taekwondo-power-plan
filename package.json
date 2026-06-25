@@ -119,7 +119,9 @@
     "minimatch": "^10.0.3",
     "picomatch": "^4.0.3",
     "glob": "^11.0.3",
-    "@babel/plugin-transform-modules-systemjs": "^7.28.4"
+    "@babel/plugin-transform-modules-systemjs": "^7.28.4",
+    "ajv": "^8.17.1",
+    "brace-expansion": "^2.0.2"
   },
   "resolutions": {
     "rollup": "^4.52.5",
@@ -127,6 +129,8 @@
     "minimatch": "^10.0.3",
     "picomatch": "^4.0.3",
     "glob": "^11.0.3",
-    "@babel/plugin-transform-modules-systemjs": "^7.28.4"
+    "@babel/plugin-transform-modules-systemjs": "^7.28.4",
+    "ajv": "^8.17.1",
+    "brace-expansion": "^2.0.2"
   }
 }
