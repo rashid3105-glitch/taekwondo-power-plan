@@ -143,6 +143,7 @@ export function ActiveClubProvider({ children }: { children: ReactNode }) {
 
       setMemberships(list);
       setActiveClubIdState(next);
+      setPrimaryClubId(primaryClubId);
     } catch (err) {
       // Defensive: never let a failed membership fetch (e.g. preview proxy
       // dropping the request with "TypeError: Load failed") freeze the app.
