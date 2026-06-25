@@ -53,7 +53,12 @@ Deno.serve(async (req) => {
     if (!allowed) return json({ error: "forbidden" }, 403);
 
     if (action === "list_coaches") {
-      const clubId = athleteProfile?.club_id ?? null;
+      const clubId = athleteProfile?.club_id ?? callerProfile?.club_id ?? null;
+      // Without a club context we cannot safely scope the coach list, so refuse
+      // to enumerate all coaches system-wide.
+      if (!clubId) {
+        return json({ coaches: [], current_coach_id: currentLink?.coach_id ?? null });
+      }
       // Find all coach user_ids
       const { data: coachRoleRows } = await admin
         .from("user_roles")
