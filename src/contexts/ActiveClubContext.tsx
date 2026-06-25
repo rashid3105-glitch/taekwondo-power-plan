@@ -16,6 +16,7 @@ type ActiveClubContextValue = {
   memberships: ClubMembership[];
   activeClubId: string | null;
   activeMembership: ClubMembership | null;
+  primaryClubId: string | null;
   setActiveClubId: (id: string) => void;
   switchingTo: SwitchingTo;
   loading: boolean;
