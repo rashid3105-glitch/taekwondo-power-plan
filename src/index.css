@@ -154,6 +154,23 @@
   background-color: hsl(var(--light-bg));
 }
 
+/* Coach viewing a club that isn't their primary one — slightly lighter dark
+   surface so it's visually obvious you're in a "foreign" club context. */
+body.coach-mode.coach-foreign-club {
+  --background: 222 22% 18%;
+  --card: 222 22% 22%;
+  --popover: 222 22% 22%;
+  --muted: 222 20% 24%;
+  --secondary: 222 22% 26%;
+  --border: 222 18% 30%;
+  --input: 222 18% 30%;
+  --sidebar-background: 222 22% 20%;
+  --sidebar-accent: 222 22% 26%;
+  --sidebar-border: 222 18% 30%;
+}
+
+
+
 @layer base {
   *, *::before, *::after {
     @apply border-border;
