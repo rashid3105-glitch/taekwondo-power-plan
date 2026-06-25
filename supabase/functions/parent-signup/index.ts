@@ -127,11 +127,12 @@ Deno.serve(async (req) => {
         { parent_user_id: userId, athlete_id: invite.athlete_id },
         { onConflict: "parent_user_id,athlete_id", ignoreDuplicates: true },
       );
-    if (linkErr) return json({ error: linkErr.message }, 500);
+    if (linkErr) { console.error("parent-signup link error", linkErr); return json({ error: "server_error" }, 500); }
 
     return json({ ok: true, athlete_id: invite.athlete_id });
   } catch (e) {
-    return json({ error: (e as Error).message || "unexpected_error" }, 500);
+    console.error("parent-signup unexpected error", e);
+    return json({ error: "server_error" }, 500);
   }
 });
 
