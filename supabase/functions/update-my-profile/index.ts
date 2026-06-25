@@ -39,8 +39,8 @@ const UpdateProfileSchema = z.object({
   coach_club_name: z.string().max(120).nullable().optional(),
   coach_athlete_count_band: z.string().max(20).nullable().optional(),
   coach_focus: z.array(z.string().min(1).max(40)).max(10).nullable().optional(),
-  pending_invite_code: z.string().max(20).nullable().optional(),
-  pending_coach_id: z.string().uuid().nullable().optional(),
+  // pending_invite_code and pending_coach_id intentionally removed —
+  // those fields must only be written via apply_invite_to_my_profile RPC.
   gal_license: z.string().max(50).nullable().optional(),
   gal_license_expires_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
   has_myfightbook: z.boolean().optional(),
