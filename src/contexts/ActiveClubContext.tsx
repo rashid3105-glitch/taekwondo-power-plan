@@ -29,6 +29,7 @@ const STORAGE_PREFIX = "activeClubId:";
 export function ActiveClubProvider({ children }: { children: ReactNode }) {
   const [memberships, setMemberships] = useState<ClubMembership[]>([]);
   const [activeClubId, setActiveClubIdState] = useState<string | null>(null);
+  const [primaryClubId, setPrimaryClubId] = useState<string | null>(null);
   const [switchingTo, setSwitchingTo] = useState<SwitchingTo>(null);
   const [loading, setLoading] = useState(true);
 
