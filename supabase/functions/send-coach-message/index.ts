@@ -177,7 +177,7 @@ Deno.serve(async (req) => {
         .select("id, athlete_id, title, message, event_date, coach_id")
         .in("id", payload.reminderIds)
         .eq("coach_id", user.id);
-      if (rErr) return json({ error: rErr.message }, 500);
+      if (rErr) { console.error("send-coach-message reminders error", rErr); return json({ error: "server_error" }, 500); }
       if (!reminders || reminders.length === 0) return json({ inserted: 0, emailed: 0, failed: 0 });
 
       const athleteIds = reminders.map((r) => r.athlete_id);
