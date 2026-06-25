@@ -164,7 +164,7 @@ export function SupplementChecker({ athleteId }: SupplementCheckerProps = {}) {
             onClick={() => { setMode("text"); setResult(null); }}
             className={cn(
               "flex items-center justify-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
-              mode === "text" ? "border-primary bg-primary/10 text-foreground" : "border-border bg-background text-foreground hover:bg-secondary"
+              mode === "text" ? "border-primary bg-primary/10 text-foreground" : "border-border bg-card text-card-foreground hover:bg-secondary"
             )}
           >
             <Type className="h-4 w-4" /> {t("supplementModeText") || "Tekst"}
@@ -174,7 +174,7 @@ export function SupplementChecker({ athleteId }: SupplementCheckerProps = {}) {
             onClick={() => { setMode("image"); setResult(null); }}
             className={cn(
               "flex items-center justify-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
-              mode === "image" ? "border-primary bg-primary/10 text-foreground" : "border-border bg-background text-foreground hover:bg-secondary"
+              mode === "image" ? "border-primary bg-primary/10 text-foreground" : "border-border bg-card text-card-foreground hover:bg-secondary"
             )}
           >
             <Camera className="h-4 w-4" /> {t("supplementModeImage") || "Billede"}

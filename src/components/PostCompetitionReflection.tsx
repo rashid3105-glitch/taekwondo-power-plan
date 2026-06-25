@@ -293,7 +293,7 @@ export function PostCompetitionReflection({ competition, upcomingCompetitions, o
                   className={`flex-1 aspect-square rounded-xl border-2 flex items-center justify-center text-2xl transition-all ${
                     mood === i + 1
                       ? "border-primary bg-primary/10 scale-110"
-                      : "border-border bg-background hover:bg-accent/30"
+                      : "border-border bg-card text-card-foreground hover:bg-accent/30"
                   }`}
                   aria-label={`mood-${i + 1}`}
                 >
@@ -322,7 +322,7 @@ export function PostCompetitionReflection({ competition, upcomingCompetitions, o
                       "h-10 rounded-lg border-2 text-sm font-semibold transition-all",
                       ratings[key] === v
                         ? "border-primary bg-primary/15 text-primary"
-                        : "border-border bg-background text-muted-foreground hover:border-primary/50"
+                        : "border-border bg-card text-card-foreground hover:border-primary/50"
                     )}
                   >
                     {v}
@@ -363,7 +363,7 @@ export function PostCompetitionReflection({ competition, upcomingCompetitions, o
                       "w-full text-left rounded-xl border-2 px-3 py-2.5 text-sm transition-all",
                       checked
                         ? "border-green-500 bg-green-500/10 text-foreground font-medium"
-                        : "border-border bg-background text-muted-foreground hover:border-green-500/50"
+                        : "border-border bg-card text-card-foreground hover:border-green-500/50"
                     )}
                   >
                     {t(key as any)}
@@ -393,7 +393,7 @@ export function PostCompetitionReflection({ competition, upcomingCompetitions, o
                       "w-full text-left rounded-xl border-2 px-3 py-2.5 text-sm transition-all",
                       checked
                         ? "border-primary bg-primary/10 text-foreground font-medium"
-                        : "border-border bg-background text-muted-foreground hover:border-primary/50"
+                        : "border-border bg-card text-card-foreground hover:border-primary/50"
                     )}
                   >
                     {t(key as any)}

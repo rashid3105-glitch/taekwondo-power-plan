@@ -427,7 +427,7 @@ export default function Onboarding() {
                           type="button"
                           onClick={() => setDiscipline(d)}
                           className={`h-11 rounded-md border-2 text-sm font-medium transition ${
-                            discipline === d ? "border-primary bg-primary/10 text-primary" : "border-border bg-background"
+                            discipline === d ? "border-primary bg-primary/10 text-primary" : "border-border bg-card text-card-foreground"
                           }`}
                         >
                           {d === "sparring" ? t("onbDisciplineSparring") : t("onbDisciplinePoomsae")}
@@ -505,7 +505,7 @@ export default function Onboarding() {
                         type="button"
                         onClick={() => toggleGoal(g.label)}
                         className={`flex items-center gap-2 rounded-md border-2 p-3 text-left text-sm transition ${
-                          goals.includes(g.label) ? "border-primary bg-primary/10" : "border-border bg-background"
+                          goals.includes(g.label) ? "border-primary bg-primary/10 text-primary" : "border-border bg-card text-card-foreground"
                         }`}
                       >
                         <Checkbox checked={goals.includes(g.label)} className="pointer-events-none" />
@@ -634,7 +634,7 @@ export default function Onboarding() {
                           type="button"
                           onClick={() => toggleFocus(f.id)}
                           className={`h-11 rounded-md border-2 text-sm transition ${
-                            focus.includes(f.id) ? "border-primary bg-primary/10 text-primary" : "border-border bg-background"
+                            focus.includes(f.id) ? "border-primary bg-primary/10 text-primary" : "border-border bg-card text-card-foreground"
                           }`}
                         >
                           {f.label}
