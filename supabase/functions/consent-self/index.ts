@@ -117,7 +117,8 @@ Deno.serve(async (req) => {
 
     return json({ ok: true });
   } catch (e) {
-    return json({ error: String(e) }, 500);
+    console.error("consent-self error", e);
+    return json({ error: "server_error" }, 500);
   }
 });
 
