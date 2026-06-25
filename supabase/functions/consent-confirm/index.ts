@@ -113,7 +113,8 @@ Deno.serve(async (req) => {
 
     return json({ error: "unknown_action" }, 400);
   } catch (e) {
-    return json({ error: String(e) }, 500);
+    console.error("consent-confirm error", e);
+    return json({ error: "server_error" }, 500);
   }
 });
 
