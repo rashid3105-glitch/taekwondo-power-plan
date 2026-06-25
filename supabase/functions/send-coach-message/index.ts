@@ -229,7 +229,8 @@ Deno.serve(async (req) => {
 
     return json({ error: "No payload action provided" }, 400);
   } catch (err) {
-    return json({ error: (err as Error).message }, 500);
+    console.error("send-coach-message error", err);
+    return json({ error: "server_error" }, 500);
   }
 });
 
