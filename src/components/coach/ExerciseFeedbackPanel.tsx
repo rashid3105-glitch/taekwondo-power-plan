@@ -97,7 +97,7 @@ export function ExerciseFeedbackPanel({ workoutLogId, athleteId, existing, onSav
               onClick={() => { haptics.tap(); setReaction(active ? "none" : r.value); }}
               className={cn(
                 "inline-flex items-center gap-1 rounded-full border px-2 py-1 text-[10px] font-semibold transition",
-                active ? r.className : "border-border bg-background text-muted-foreground hover:bg-secondary/50"
+                active ? r.className : "border-border bg-card text-card-foreground hover:bg-secondary/50"
               )}
             >
               <r.icon className="h-3 w-3" />

@@ -191,6 +191,60 @@ export default function Onboarding() {
     return true;
   };
 
+  // Map server-side validation field paths (from update-my-profile zod schema)
+  // to translated, actionable messages. Keep keys aligned with payload field names.
+  const mapValidationError = (fieldPath: string): string | null => {
+    const root = fieldPath.split(".")[0];
+    switch (root) {
+      case "age": return t("onbSaveErrorAge");
+      case "weight_kg": return t("onbSaveErrorWeight");
+      case "belt_level": return t("onbSaveErrorBelt");
+      case "goals": return t("onbSaveErrorGoals");
+      default: return null;
+    }
+  };
+
+  // Parse a FunctionsHttpError thrown by supabase-js into a useful shape.
+  // The Response object is at error.context in supabase-js v2.
+  const parseEdgeError = async (
+    error: unknown,
+  ): Promise<{ status: number; body: any } | null> => {
+    const ctx = (error as any)?.context;
+    if (!ctx || typeof ctx !== "object") return null;
+    const status: number = typeof ctx.status === "number" ? ctx.status : 0;
+    let body: any = null;
+    try {
+      // clone() so other consumers can still read it
+      body = await (ctx as Response).clone().json();
+    } catch {
+      try { body = await (ctx as Response).clone().text(); } catch { /* ignore */ }
+    }
+    return { status, body };
+  };
+
+  const showValidationToast = (body: any): boolean => {
+    // zod flatten() shape: { fieldErrors: { age: ["..."], weight_kg: ["..."] } }
+    const fieldErrors = body?.details?.fieldErrors as Record<string, string[]> | undefined;
+    if (fieldErrors && typeof fieldErrors === "object") {
+      const firstField = Object.keys(fieldErrors).find((k) => Array.isArray(fieldErrors[k]) && fieldErrors[k].length > 0);
+      if (firstField) {
+        const msg = mapValidationError(firstField) ?? `${firstField}: ${fieldErrors[firstField][0]}`;
+        toast.error(msg);
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const invokeUpdateProfile = async (payload: Record<string, unknown>) => {
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData.session?.access_token;
+    return supabase.functions.invoke("update-my-profile", {
+      body: payload,
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    });
+  };
+
   const finish = async () => {
     if (!userId) return;
     setSaving(true);
@@ -220,13 +274,32 @@ export default function Onboarding() {
         });
       }
 
-      const { data: sessionData } = await supabase.auth.getSession();
-      const token = sessionData.session?.access_token;
-      const { error } = await supabase.functions.invoke("update-my-profile", {
-        body: payload,
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-      });
-      if (error) throw error;
+      let { error } = await invokeUpdateProfile(payload);
+
+      // If auth expired (401), try to refresh the session ONCE then retry.
+      if (error) {
+        const parsed = await parseEdgeError(error);
+        if (parsed?.status === 401) {
+          const { error: refreshErr } = await supabase.auth.refreshSession();
+          if (!refreshErr) {
+            const retry = await invokeUpdateProfile(payload);
+            error = retry.error ?? null;
+          }
+        }
+        if (error) {
+          const parsedAfter = await parseEdgeError(error);
+          if (parsedAfter?.status === 401 || parsedAfter?.status === 403) {
+            toast.error(t("onbSaveErrorAuth"));
+            setSaving(false);
+            return;
+          }
+          if (parsedAfter?.status === 400 && showValidationToast(parsedAfter.body)) {
+            setSaving(false);
+            return;
+          }
+          throw error;
+        }
+      }
 
       // Coach: opret eller tilknyt klub
       if (role === "coach") {
@@ -274,6 +347,8 @@ export default function Onboarding() {
       // Background plan generation for approved athletes
       if (role === "athlete" && isApproved) {
         setGenerating(true);
+        const { data: sessionData } = await supabase.auth.getSession();
+        const token = sessionData.session?.access_token;
         supabase.functions.invoke("generate-plan", {
           body: {},
           headers: token ? { Authorization: `Bearer ${token}` } : undefined,
@@ -427,7 +502,7 @@ export default function Onboarding() {
                           type="button"
                           onClick={() => setDiscipline(d)}
                           className={`h-11 rounded-md border-2 text-sm font-medium transition ${
-                            discipline === d ? "border-primary bg-primary/10 text-primary" : "border-border bg-background"
+                            discipline === d ? "border-primary bg-primary/10 text-primary" : "border-border bg-card text-card-foreground"
                           }`}
                         >
                           {d === "sparring" ? t("onbDisciplineSparring") : t("onbDisciplinePoomsae")}
@@ -505,7 +580,7 @@ export default function Onboarding() {
                         type="button"
                         onClick={() => toggleGoal(g.label)}
                         className={`flex items-center gap-2 rounded-md border-2 p-3 text-left text-sm transition ${
-                          goals.includes(g.label) ? "border-primary bg-primary/10" : "border-border bg-background"
+                          goals.includes(g.label) ? "border-primary bg-primary/10 text-primary" : "border-border bg-card text-card-foreground"
                         }`}
                       >
                         <Checkbox checked={goals.includes(g.label)} className="pointer-events-none" />
@@ -634,7 +709,7 @@ export default function Onboarding() {
                           type="button"
                           onClick={() => toggleFocus(f.id)}
                           className={`h-11 rounded-md border-2 text-sm transition ${
-                            focus.includes(f.id) ? "border-primary bg-primary/10 text-primary" : "border-border bg-background"
+                            focus.includes(f.id) ? "border-primary bg-primary/10 text-primary" : "border-border bg-card text-card-foreground"
                           }`}
                         >
                           {f.label}
