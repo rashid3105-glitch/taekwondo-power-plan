@@ -131,7 +131,7 @@ Deno.serve(async (req) => {
         .from("coach_messages")
         .insert(rows)
         .select("id, athlete_id");
-      if (insErr) return json({ error: insErr.message }, 500);
+      if (insErr) { console.error("send-coach-message insert error", insErr); return json({ error: "server_error" }, 500); }
       inserted = insertedRows?.length || 0;
 
       // Dispatch emails
