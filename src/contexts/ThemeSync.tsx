@@ -22,6 +22,7 @@ export function ThemeSync() {
   }, [shouldUseCoachTheme, isForeignClub]);
 
   useEffect(() => {
+    const root = document.documentElement;
 
     root.style.transition = "color 0.3s ease";
 
