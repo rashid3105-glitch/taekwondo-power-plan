@@ -133,7 +133,8 @@ Deno.serve(async (req) => {
     if (dead.length) await supa.from("push_subscriptions").delete().in("id", dead);
 
     return jsonResponse({ sent, removed: dead.length });
-  } catch (e: any) {
-    return jsonResponse({ error: e.message }, 500);
+  } catch (e) {
+    console.error("send-push error", e);
+    return jsonResponse({ error: "server_error" }, 500);
   }
 });

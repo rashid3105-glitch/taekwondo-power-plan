@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
       .is("used_at", null)
       .gt("expires_at", new Date().toISOString())
       .maybeSingle();
-    if (invErr) return json({ error: invErr.message }, 500);
+    if (invErr) { console.error("parent-signup invite lookup error", invErr); return json({ error: "server_error" }, 500); }
     if (!invite) return json({ error: "invalid_or_expired" }, 400);
 
     const displayName = `${firstName} ${lastName}`.trim();
@@ -62,14 +62,15 @@ Deno.serve(async (req) => {
       const msg = (createErr?.message || "").toLowerCase();
       const alreadyExists = msg.includes("already") || msg.includes("registered");
       if (!alreadyExists) {
-        return json({ error: createErr?.message || "signup_failed" }, 400);
+        console.error("parent-signup createUser error", createErr);
+        return json({ error: "signup_failed" }, 400);
       }
       // Recovery: find existing user by email
       const { data: list, error: listErr } = await admin.auth.admin.listUsers({
         page: 1,
         perPage: 200,
       });
-      if (listErr) return json({ error: listErr.message }, 500);
+      if (listErr) { console.error("parent-signup listUsers error", listErr); return json({ error: "server_error" }, 500); }
       const existing = list?.users?.find((u) => (u.email || "").toLowerCase() === email);
       if (!existing) return json({ error: "already_registered" }, 400);
       // Verify the password matches before re-using the account
@@ -103,7 +104,8 @@ Deno.serve(async (req) => {
       if (createdNow && userId) {
         try { await admin.auth.admin.deleteUser(userId); } catch {}
       }
-      return json({ error: profErr.message }, 500);
+      console.error("parent-signup profile upsert error", profErr);
+      return json({ error: "server_error" }, 500);
     }
 
     // 4. Mark invite used and link parent_athletes
@@ -115,7 +117,8 @@ Deno.serve(async (req) => {
       if (createdNow && userId) {
         try { await admin.auth.admin.deleteUser(userId); } catch {}
       }
-      return json({ error: invUpdErr.message }, 500);
+      console.error("parent-signup invite update error", invUpdErr);
+      return json({ error: "server_error" }, 500);
     }
 
     const { error: linkErr } = await admin
@@ -124,11 +127,12 @@ Deno.serve(async (req) => {
         { parent_user_id: userId, athlete_id: invite.athlete_id },
         { onConflict: "parent_user_id,athlete_id", ignoreDuplicates: true },
       );
-    if (linkErr) return json({ error: linkErr.message }, 500);
+    if (linkErr) { console.error("parent-signup link error", linkErr); return json({ error: "server_error" }, 500); }
 
     return json({ ok: true, athlete_id: invite.athlete_id });
   } catch (e) {
-    return json({ error: (e as Error).message || "unexpected_error" }, 500);
+    console.error("parent-signup unexpected error", e);
+    return json({ error: "server_error" }, 500);
   }
 });
 

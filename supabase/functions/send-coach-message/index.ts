@@ -131,7 +131,7 @@ Deno.serve(async (req) => {
         .from("coach_messages")
         .insert(rows)
         .select("id, athlete_id");
-      if (insErr) return json({ error: insErr.message }, 500);
+      if (insErr) { console.error("send-coach-message insert error", insErr); return json({ error: "server_error" }, 500); }
       inserted = insertedRows?.length || 0;
 
       // Dispatch emails
@@ -177,7 +177,7 @@ Deno.serve(async (req) => {
         .select("id, athlete_id, title, message, event_date, coach_id")
         .in("id", payload.reminderIds)
         .eq("coach_id", user.id);
-      if (rErr) return json({ error: rErr.message }, 500);
+      if (rErr) { console.error("send-coach-message reminders error", rErr); return json({ error: "server_error" }, 500); }
       if (!reminders || reminders.length === 0) return json({ inserted: 0, emailed: 0, failed: 0 });
 
       const athleteIds = reminders.map((r) => r.athlete_id);
@@ -229,7 +229,8 @@ Deno.serve(async (req) => {
 
     return json({ error: "No payload action provided" }, 400);
   } catch (err) {
-    return json({ error: (err as Error).message }, 500);
+    console.error("send-coach-message error", err);
+    return json({ error: "server_error" }, 500);
   }
 });
 

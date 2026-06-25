@@ -72,10 +72,14 @@ Keep it concise. No markdown, only JSON.`;
     plan.meta = { currentKg, targetKg, cutKg, daysToEvent, generatedAt: new Date().toISOString() };
 
     const { error: upErr } = await supa.from("competitions").update({ plan_data: plan }).eq("id", comp.id);
-    if (upErr) return new Response(JSON.stringify({ error: upErr.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    if (upErr) {
+      console.error("generate-competition-plan upsert error", upErr);
+      return new Response(JSON.stringify({ error: "server_error" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
 
     return new Response(JSON.stringify({ plan }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
-  } catch (e: any) {
-    return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+  } catch (e) {
+    console.error("generate-competition-plan error", e);
+    return new Response(JSON.stringify({ error: "server_error" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 });
