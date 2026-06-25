@@ -121,7 +121,8 @@
     "glob": "^11.0.3",
     "@babel/plugin-transform-modules-systemjs": "^7.28.4",
     "ajv": "^8.17.1",
-    "brace-expansion": "^2.0.2"
+    "brace-expansion": "^2.0.2",
+    "dompurify": "^3.4.11"
   },
   "resolutions": {
     "rollup": "^4.52.5",
@@ -131,6 +132,7 @@
     "glob": "^11.0.3",
     "@babel/plugin-transform-modules-systemjs": "^7.28.4",
     "ajv": "^8.17.1",
-    "brace-expansion": "^2.0.2"
+    "brace-expansion": "^2.0.2",
+    "dompurify": "^3.4.11"
   }
 }
