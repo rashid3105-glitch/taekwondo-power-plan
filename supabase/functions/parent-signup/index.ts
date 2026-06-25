@@ -104,7 +104,8 @@ Deno.serve(async (req) => {
       if (createdNow && userId) {
         try { await admin.auth.admin.deleteUser(userId); } catch {}
       }
-      return json({ error: profErr.message }, 500);
+      console.error("parent-signup profile upsert error", profErr);
+      return json({ error: "server_error" }, 500);
     }
 
     // 4. Mark invite used and link parent_athletes
