@@ -151,6 +151,7 @@ Deno.serve(async (req) => {
     );
 
   } catch (e: any) {
-    return new Response(JSON.stringify({ error: String(e) }), { status: 500, headers: cors });
+    console.error("health-sync-simple error", e);
+    return new Response(JSON.stringify({ error: "server_error" }), { status: 500, headers: cors });
   }
 });
