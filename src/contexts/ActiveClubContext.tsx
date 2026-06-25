@@ -214,7 +214,7 @@ export function ActiveClubProvider({ children }: { children: ReactNode }) {
 
   return (
     <ActiveClubContext.Provider
-      value={{ memberships, activeClubId, activeMembership, setActiveClubId, switchingTo, loading }}
+      value={{ memberships, activeClubId, activeMembership, primaryClubId, setActiveClubId, switchingTo, loading }}
     >
       {children}
     </ActiveClubContext.Provider>
