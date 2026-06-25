@@ -38,6 +38,8 @@ Deno.serve(async (req) => {
     'parental-consent-request',
     'coach-consent-reminder',
     'blog-comment-verification',
+    'new-user-notification',
+    'coach-profile-ready',
   ])
 
   const authHeader = req.headers.get('Authorization')
