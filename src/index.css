@@ -169,6 +169,11 @@ body.coach-mode.coach-foreign-club {
   --sidebar-border: 222 18% 30%;
 }
 
+/* Foreign-club signal: gold top border on the app header. */
+body.coach-foreign-club .app-header {
+  border-top: 3px solid hsl(var(--primary));
+}
+
 
 
 @layer base {
