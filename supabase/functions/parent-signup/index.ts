@@ -117,7 +117,8 @@ Deno.serve(async (req) => {
       if (createdNow && userId) {
         try { await admin.auth.admin.deleteUser(userId); } catch {}
       }
-      return json({ error: invUpdErr.message }, 500);
+      console.error("parent-signup invite update error", invUpdErr);
+      return json({ error: "server_error" }, 500);
     }
 
     const { error: linkErr } = await admin
