@@ -35,6 +35,10 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [passkeyAvailable, setPasskeyAvailable] = useState(false);
   const [passkeyLoading, setPasskeyLoading] = useState(false);
+  const [bioAvailable, setBioAvailable] = useState(false);
+  const [bioHasCreds, setBioHasCreds] = useState(false);
+  const [bioLabel, setBioLabel] = useState("Face ID");
+  const [bioLoading, setBioLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
