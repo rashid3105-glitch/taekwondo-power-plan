@@ -85,14 +85,14 @@ export function RecipeCard({ recipe, index, onPhotoChange }: RecipeCardProps) {
   };
 
   return (
-    <div className="rounded-lg border border-border bg-secondary/30 overflow-hidden transition-all">
+    <div className="rounded-lg border border-border bg-card text-card-foreground overflow-hidden transition-all">
       <button
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary/60 transition-colors cursor-pointer"
       >
         <span className="mono text-xs text-muted-foreground w-5">{String(index).padStart(2, "0")}</span>
         <span className="text-base">{RECIPE_CATEGORY_ICONS[recipe.category]}</span>
-        <span className="font-semibold text-sm text-foreground flex-1 text-left">{recipe.name}</span>
+        <span className="font-semibold text-sm text-card-foreground flex-1 text-left">{recipe.name}</span>
         <span className="text-[10px] text-muted-foreground flex items-center gap-1">
           <Flame className="h-3 w-3" /> {recipe.calories} kcal
         </span>
@@ -165,7 +165,7 @@ export function RecipeCard({ recipe, index, onPhotoChange }: RecipeCardProps) {
             ].map((m) => (
               <div key={m.label} className="rounded-md bg-muted p-2 text-center">
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{m.label}</p>
-                <p className="text-sm font-bold text-foreground">{m.value}<span className="text-[10px] font-normal text-muted-foreground ml-0.5">{m.unit}</span></p>
+                <p className="text-sm font-bold text-card-foreground">{m.value}<span className="text-[10px] font-normal text-muted-foreground ml-0.5">{m.unit}</span></p>
               </div>
             ))}
           </div>
@@ -175,7 +175,7 @@ export function RecipeCard({ recipe, index, onPhotoChange }: RecipeCardProps) {
             <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{t("recipeIngredients")}</p>
             <ul className="grid grid-cols-2 gap-1">
               {recipe.ingredients.map((ing, i) => (
-                <li key={i} className="text-xs text-foreground/90 flex items-start gap-1.5">
+                <li key={i} className="text-xs text-card-foreground/90 flex items-start gap-1.5">
                   <span className="text-tab-nutrition mt-0.5">•</span> {ing}
                 </li>
               ))}
@@ -187,7 +187,7 @@ export function RecipeCard({ recipe, index, onPhotoChange }: RecipeCardProps) {
             <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{t("recipeSteps")}</p>
             <ol className="space-y-1">
               {recipe.steps.map((step, i) => (
-                <li key={i} className="flex gap-2 text-xs text-foreground/90">
+                <li key={i} className="flex gap-2 text-xs text-card-foreground/90">
                   <span className="font-bold text-tab-nutrition min-w-[16px]">{i + 1}.</span>
                   {step}
                 </li>

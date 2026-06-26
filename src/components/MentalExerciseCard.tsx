@@ -23,7 +23,7 @@ export function MentalExerciseCard({ exercise, index }: { exercise: MentalExerci
       >
         <span className="mono text-xs text-muted-foreground w-5">{String(index).padStart(2, "0")}</span>
         <span className="text-base">{MENTAL_CATEGORY_ICONS[exercise.category]}</span>
-        <span className="font-semibold text-sm text-foreground flex-1 text-left">{exercise.name}</span>
+        <span className="font-semibold text-sm text-card-foreground flex-1 text-left">{exercise.name}</span>
         <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${DIFFICULTY_STYLES[exercise.difficulty]}`}>
           {diffLabels[exercise.difficulty]}
         </span>
