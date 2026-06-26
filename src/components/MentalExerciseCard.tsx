@@ -37,7 +37,7 @@ export function MentalExerciseCard({ exercise, index }: { exercise: MentalExerci
             <span className="flex items-center gap-1"><BarChart3 className="h-3.5 w-3.5" /> {catLabels[exercise.category]}</span>
           </div>
 
-          <p className="text-sm text-foreground/80 leading-relaxed">{exercise.description}</p>
+          <p className="text-sm text-card-foreground/80 leading-relaxed">{exercise.description}</p>
 
           <div className="space-y-2">
             <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{t("mentalSteps")}</p>
