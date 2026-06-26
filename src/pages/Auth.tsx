@@ -58,6 +58,43 @@ export default function AuthPage() {
     })();
   }, []);
 
+  useEffect(() => {
+    (async () => {
+      if (!isNative()) return;
+      const avail = await isBiometricAvailable();
+      setBioAvailable(avail);
+      if (avail) {
+        setBioLabel(await getBiometryLabel());
+        setBioHasCreds(await hasSavedBiometricCredentials());
+      }
+    })();
+  }, []);
+
+  const handleBiometricLogin = async () => {
+    setBioLoading(true);
+    haptics.tap();
+    try {
+      const creds = await getBiometricCredentialsWithPrompt(
+        bioLabel === "Face ID" ? "Log ind med Face ID" : "Log ind med biometri"
+      );
+      if (!creds) throw new Error("Ingen gemte oplysninger");
+      const { error } = await supabase.auth.signInWithPassword({
+        email: creds.email,
+        password: creds.password,
+      });
+      if (error) throw error;
+      navigate(redirectTo || "/dashboard");
+    } catch (e: any) {
+      toast({
+        title: t("error"),
+        description: e?.message || "Biometrisk login fejlede",
+        variant: "destructive",
+      });
+    } finally {
+      setBioLoading(false);
+    }
+  };
+
   const handlePasskeyLogin = async () => {
     setPasskeyLoading(true);
     haptics.tap();
