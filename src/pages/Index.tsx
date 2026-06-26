@@ -102,7 +102,7 @@ const Index = () => {
         </div>
         {/* Hero image */}
         <div style={{ maxWidth: 920, margin: `${isMobile ? 32 : 44}px auto 0`, borderRadius: "14px 14px 0 0", overflow: "hidden", border: "0.5px solid rgba(255,255,255,0.08)", borderBottom: "none" }}>
-          <img src={coachSittingAsset.url} alt="Coach guider atlet" style={{ width: "100%", height: isMobile ? 220 : 380, objectFit: "cover", display: "block" }} />
+          <img src={coachSittingAsset} alt="Coach guider atlet" style={{ width: "100%", height: isMobile ? 220 : 380, objectFit: "cover", display: "block" }} />
           <div style={{ background: "#13141F", padding: isMobile ? "12px" : "16px 24px", display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4,1fr)", gap: isMobile ? 8 : 12, borderTop: "0.5px solid rgba(255,255,255,0.07)" }}>
             {[{ val: "24", up: "+3", label: "Aktive atleter" }, { val: "8", up: "", label: "Sessioner i dag" }, { val: "7 dage", up: "", label: "Næste stævne", gold: true }, { val: "91%", up: "", label: "Holdets aktivitet" }].map((s, i) => (
               <div key={i} style={{ background: "#1A1B2E", borderRadius: 8, padding: "12px 14px", border: "0.5px solid rgba(255,255,255,0.06)" }}>
@@ -175,7 +175,7 @@ const Index = () => {
             </div>
           </div>
           <div style={{ position: "relative" }}>
-            <img src={coachStandingAsset.url} alt="Coach i sportshallen" style={{ width: "100%", borderRadius: 14, border: "0.5px solid rgba(255,255,255,0.08)", display: "block" }} />
+            <img src={coachStandingAsset} alt="Coach i sportshallen" style={{ width: "100%", borderRadius: 14, border: "0.5px solid rgba(255,255,255,0.08)", display: "block" }} />
             <div style={{ position: "absolute", bottom: -14, left: -14, background: "#0B0C14", borderRadius: 10, padding: "12px 16px", border: "0.5px solid rgba(255,255,255,0.08)" }}>
               <div style={{ fontSize: 22, fontWeight: 900, color: "#F5C842" }}>67%</div>
               <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 1 }}>Mere tid til coaching</div>
