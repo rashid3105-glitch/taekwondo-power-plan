@@ -13,7 +13,7 @@ import {
   signInWithPasskey,
 } from "@/lib/passkeys";
 import { haptics } from "@/lib/haptics";
-import coachAthlete from "@/assets/coach-athlete.jpg.asset.json";
+import coachAthlete from "@/assets/coach-athlete.jpg";
 
 const GOLD = "#F5C842";
 const BG = "#0B0C14";
@@ -351,7 +351,7 @@ export default function AuthPage() {
           }}
         >
           <img
-            src={coachAthlete.url}
+            src={coachAthlete}
             alt="Coach og atlet ved sidelinjen til en taekwondo-kamp"
             style={{ width: "100%", display: "block" }}
           />
