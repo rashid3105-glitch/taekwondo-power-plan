@@ -210,15 +210,7 @@ export default function AdminDrills() {
             return (
               <Card key={d.id} className="p-3 flex items-center gap-3">
                 {ytId ? (
-                  <div className="shrink-0 w-40 aspect-video rounded overflow-hidden bg-black">
-                    <iframe
-                      src={`https://www.youtube.com/embed/${ytId}`}
-                      title={d.title}
-                      className="w-full h-full"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  </div>
+                  <DrillVideoThumb id={ytId} title={d.title} />
                 ) : null}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
