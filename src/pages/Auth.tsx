@@ -140,6 +140,18 @@ export default function AuthPage() {
           navigate("/");
           return;
         }
+        // Offer to save credentials for biometric login on native
+        if (bioAvailable && !bioHasCreds) {
+          try {
+            const ok = window.confirm(`Vil du aktivere ${bioLabel} til hurtigt login næste gang?`);
+            if (ok) {
+              await saveBiometricCredentials(email, password);
+              setBioHasCreds(true);
+            }
+          } catch {
+            /* ignore */
+          }
+        }
         navigate(redirectTo || "/dashboard");
       } else {
         const pwCheck = validatePassword(password);
