@@ -86,6 +86,28 @@ export function useEntitlements(): EntitlementState {
         // ignore — fall through
       }
 
+      // Club license override — active membership in a licensed (paying) club
+      // grants full module access regardless of personal subscription status.
+      try {
+        const { data: memberships } = await supabase
+          .from("club_memberships")
+          .select("club_id, status, clubs:club_id(license_active, deleted_at)")
+          .eq("user_id", session.user.id)
+          .eq("status", "active");
+        const hasLicensedClub = (memberships ?? []).some((m: any) => {
+          const c = m.clubs;
+          return c && c.license_active === true && c.deleted_at == null;
+        });
+        if (hasLicensedClub) {
+          cachedTier = "team_small";
+          cachedAt = Date.now();
+          setTier("team_small");
+          return;
+        }
+      } catch {
+        // ignore — fall through
+      }
+
       // Restricted demo (no full access) or unpaid → free
       if (pf?.is_demo) {
         cachedTier = "athlete"; // restricted demo gets athlete-level access
