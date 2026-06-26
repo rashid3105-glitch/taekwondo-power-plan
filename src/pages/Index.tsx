@@ -4,8 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageMeta } from "@/components/PageMeta";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { BrandLogo } from "@/components/BrandLogo";
-import coachSittingAsset from "@/assets/coach-sitting.png.asset.json";
-import coachStandingAsset from "@/assets/coach-standing.jpg.asset.json";
+import coachSittingAsset from "@/assets/coach-sitting.png";
+import coachStandingAsset from "@/assets/coach-standing.jpg";
 
 const useWidth = () => {
   const [w, setW] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
