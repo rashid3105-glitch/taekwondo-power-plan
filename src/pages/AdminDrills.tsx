@@ -89,7 +89,8 @@ function DrillVideoThumb({ id, title }: { id: string; title: string }) {
       </button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-[90vw] w-auto p-0 border-0 bg-transparent shadow-none">
+        <DialogContent className="max-w-[90vw] w-auto p-0 border-0 bg-transparent shadow-none" aria-describedby={undefined}>
+          <DialogTitle className="sr-only">{title}</DialogTitle>
           <div className="relative w-[min(90vw,1200px)] aspect-video bg-black rounded-lg overflow-hidden shadow-2xl">
             <iframe
               src={`https://www.youtube.com/embed/${id}?autoplay=1&rel=0`}
