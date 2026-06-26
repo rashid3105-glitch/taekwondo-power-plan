@@ -121,7 +121,7 @@ function DrillRow({ drill }: { drill: Drill }) {
     || (ytId ? `https://www.youtube.com/watch?v=${ytId}` : `https://www.youtube.com/results?search_query=${encodeURIComponent(drill.title + " taekwondo")}`);
 
   return (
-    <div className="rounded-lg border border-border bg-secondary/30 overflow-hidden">
+    <div className="rounded-lg border border-border bg-card text-card-foreground overflow-hidden">
       <div className="w-full flex items-center gap-3 px-3 py-2.5">
         <button
           onClick={() => setExpanded((e) => !e)}
@@ -157,7 +157,7 @@ function DrillRow({ drill }: { drill: Drill }) {
       {expanded && (
         <div className="px-3 pb-3 pt-1 space-y-3">
           {drill.description && (
-            <p className="text-xs text-foreground/85 leading-relaxed whitespace-pre-wrap">{drill.description}</p>
+            <p className="text-xs text-card-foreground/85 leading-relaxed whitespace-pre-wrap">{drill.description}</p>
           )}
           {ytId && (
             <div className="rounded-lg overflow-hidden border border-border bg-black aspect-video">
