@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Plus, Pencil, Trash2, Globe2 } from "lucide-react";
+import { ArrowLeft, Plus, Pencil, Trash2, Globe2, Play } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { TranslationKey } from "@/i18n/translations";
@@ -64,6 +64,43 @@ const EMPTY_FORM: FormState = {
   sort_order: 0,
   is_active: true,
 };
+
+function DrillVideoThumb({ id, title }: { id: string; title: string }) {
+  const [playing, setPlaying] = useState(false);
+  if (playing) {
+    return (
+      <div className="shrink-0 w-40 aspect-video rounded overflow-hidden bg-black">
+        <iframe
+          src={`https://www.youtube.com/embed/${id}?autoplay=1&rel=0`}
+          title={title}
+          className="w-full h-full"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      </div>
+    );
+  }
+  return (
+    <button
+      type="button"
+      onClick={() => setPlaying(true)}
+      className="shrink-0 w-40 aspect-video rounded overflow-hidden bg-black relative group"
+      aria-label={`Play ${title}`}
+    >
+      <img
+        src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`}
+        alt=""
+        className="w-full h-full object-cover"
+        loading="lazy"
+      />
+      <span className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
+        <span className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center">
+          <Play className="h-5 w-5 text-black fill-black ml-0.5" />
+        </span>
+      </span>
+    </button>
+  );
+}
 
 export default function AdminDrills() {
   const navigate = useNavigate();
@@ -210,15 +247,7 @@ export default function AdminDrills() {
             return (
               <Card key={d.id} className="p-3 flex items-center gap-3">
                 {ytId ? (
-                  <div className="shrink-0 w-40 aspect-video rounded overflow-hidden bg-black">
-                    <iframe
-                      src={`https://www.youtube.com/embed/${ytId}`}
-                      title={d.title}
-                      className="w-full h-full"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  </div>
+                  <DrillVideoThumb id={ytId} title={d.title} />
                 ) : null}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
