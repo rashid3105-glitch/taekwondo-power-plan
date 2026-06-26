@@ -172,6 +172,19 @@ export default function AdminDrills() {
 
   const clubName = (id: string | null) => id ? (clubs.find((c) => c.id === id)?.name ?? "—") : t("adminDrillScopeGlobal");
 
+  const getYouTubeId = (url: string): string | null => {
+    try {
+      const u = new URL(url);
+      if (u.hostname.includes("youtu.be")) return u.pathname.slice(1) || null;
+      if (u.hostname.includes("youtube.com")) {
+        if (u.pathname === "/watch") return u.searchParams.get("v");
+        const m = u.pathname.match(/^\/(embed|shorts|v)\/([^/?#]+)/);
+        if (m) return m[2];
+      }
+    } catch { /* ignore */ }
+    return null;
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10 pt-safe">
