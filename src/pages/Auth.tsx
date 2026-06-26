@@ -13,6 +13,14 @@ import {
   signInWithPasskey,
 } from "@/lib/passkeys";
 import { haptics } from "@/lib/haptics";
+import {
+  isNative,
+  isBiometricAvailable,
+  hasSavedBiometricCredentials,
+  getBiometricCredentialsWithPrompt,
+  saveBiometricCredentials,
+  getBiometryLabel,
+} from "@/lib/biometricAuth";
 import coachAthlete from "@/assets/coach-athlete.jpg";
 
 const GOLD = "#F5C842";
