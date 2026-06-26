@@ -66,39 +66,43 @@ const EMPTY_FORM: FormState = {
 };
 
 function DrillVideoThumb({ id, title }: { id: string; title: string }) {
-  const [playing, setPlaying] = useState(false);
-  if (playing) {
-    return (
-      <div className="shrink-0 w-40 aspect-video rounded overflow-hidden bg-black">
-        <iframe
-          src={`https://www.youtube.com/embed/${id}?autoplay=1&rel=0`}
-          title={title}
-          className="w-full h-full"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        />
-      </div>
-    );
-  }
+  const [open, setOpen] = useState(false);
   return (
-    <button
-      type="button"
-      onClick={() => setPlaying(true)}
-      className="shrink-0 w-40 aspect-video rounded overflow-hidden bg-black relative group"
-      aria-label={`Play ${title}`}
-    >
-      <img
-        src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`}
-        alt=""
-        className="w-full h-full object-cover"
-        loading="lazy"
-      />
-      <span className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
-        <span className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center">
-          <Play className="h-5 w-5 text-black fill-black ml-0.5" />
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="shrink-0 w-40 aspect-video rounded overflow-hidden bg-black relative group"
+        aria-label={`Play ${title}`}
+      >
+        <img
+          src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`}
+          alt=""
+          className="w-full h-full object-cover"
+          loading="lazy"
+        />
+        <span className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
+          <span className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center">
+            <Play className="h-5 w-5 text-black fill-black ml-0.5" />
+          </span>
         </span>
-      </span>
-    </button>
+      </button>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-[90vw] w-auto p-0 border-0 bg-transparent shadow-none" aria-describedby={undefined}>
+          <DialogTitle className="sr-only">{title}</DialogTitle>
+          <div className="relative w-[min(90vw,1200px)] aspect-video bg-black rounded-lg overflow-hidden shadow-2xl">
+            <iframe
+              src={`https://www.youtube.com/embed/${id}?autoplay=1&rel=0`}
+              title={title}
+              className="absolute inset-0 w-full h-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
