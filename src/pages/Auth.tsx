@@ -311,6 +311,43 @@ export default function AuthPage() {
           </>
         )}
 
+        {isLogin && bioAvailable && bioHasCreds && !passkeyAvailable && (
+          <>
+            <button
+              type="button"
+              onClick={handleBiometricLogin}
+              disabled={bioLoading}
+              style={{
+                width: "100%",
+                height: 46,
+                borderRadius: 10,
+                background: "rgba(245,200,66,0.1)",
+                border: "1px solid rgba(245,200,66,0.35)",
+                color: GOLD,
+                fontWeight: 700,
+                fontSize: 14,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 8,
+                marginBottom: 16,
+              }}
+            >
+              {bioLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <>
+                  <Fingerprint className="h-4 w-4" /> Log ind med {bioLabel}
+                </>
+              )}
+            </button>
+            <div style={{ textAlign: "center", fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 16, letterSpacing: "0.1em" }}>
+              {t("usePasswordInstead")}
+            </div>
+          </>
+        )}
+
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           {!isLogin && (
             <div>
