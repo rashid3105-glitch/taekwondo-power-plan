@@ -43,7 +43,7 @@ export function MentalExerciseCard({ exercise, index }: { exercise: MentalExerci
             <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{t("mentalSteps")}</p>
             <ol className="space-y-1.5">
               {exercise.steps.map((step, i) => (
-                <li key={i} className="flex gap-2 text-xs text-foreground/90">
+                <li key={i} className="flex gap-2 text-xs text-card-foreground/90">
                   <span className="font-bold text-tab-mental min-w-[16px]">{i + 1}.</span>
                   {step}
                 </li>
