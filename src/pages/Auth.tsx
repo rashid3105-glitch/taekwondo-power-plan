@@ -13,6 +13,14 @@ import {
   signInWithPasskey,
 } from "@/lib/passkeys";
 import { haptics } from "@/lib/haptics";
+import {
+  isNative,
+  isBiometricAvailable,
+  hasSavedBiometricCredentials,
+  getBiometricCredentialsWithPrompt,
+  saveBiometricCredentials,
+  getBiometryLabel,
+} from "@/lib/biometricAuth";
 import coachAthlete from "@/assets/coach-athlete.jpg";
 
 const GOLD = "#F5C842";
@@ -27,6 +35,10 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [passkeyAvailable, setPasskeyAvailable] = useState(false);
   const [passkeyLoading, setPasskeyLoading] = useState(false);
+  const [bioAvailable, setBioAvailable] = useState(false);
+  const [bioHasCreds, setBioHasCreds] = useState(false);
+  const [bioLabel, setBioLabel] = useState("Face ID");
+  const [bioLoading, setBioLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
@@ -45,6 +57,43 @@ export default function AuthPage() {
       setPasskeyAvailable(ok);
     })();
   }, []);
+
+  useEffect(() => {
+    (async () => {
+      if (!isNative()) return;
+      const avail = await isBiometricAvailable();
+      setBioAvailable(avail);
+      if (avail) {
+        setBioLabel(await getBiometryLabel());
+        setBioHasCreds(await hasSavedBiometricCredentials());
+      }
+    })();
+  }, []);
+
+  const handleBiometricLogin = async () => {
+    setBioLoading(true);
+    haptics.tap();
+    try {
+      const creds = await getBiometricCredentialsWithPrompt(
+        bioLabel === "Face ID" ? "Log ind med Face ID" : "Log ind med biometri"
+      );
+      if (!creds) throw new Error("Ingen gemte oplysninger");
+      const { error } = await supabase.auth.signInWithPassword({
+        email: creds.email,
+        password: creds.password,
+      });
+      if (error) throw error;
+      navigate(redirectTo || "/dashboard");
+    } catch (e: any) {
+      toast({
+        title: t("error"),
+        description: e?.message || "Biometrisk login fejlede",
+        variant: "destructive",
+      });
+    } finally {
+      setBioLoading(false);
+    }
+  };
 
   const handlePasskeyLogin = async () => {
     setPasskeyLoading(true);
@@ -90,6 +139,18 @@ export default function AuthPage() {
           toast({ title: t("joinRequestSent") });
           navigate("/");
           return;
+        }
+        // Offer to save credentials for biometric login on native
+        if (bioAvailable && !bioHasCreds) {
+          try {
+            const ok = window.confirm(`Vil du aktivere ${bioLabel} til hurtigt login næste gang?`);
+            if (ok) {
+              await saveBiometricCredentials(email, password);
+              setBioHasCreds(true);
+            }
+          } catch {
+            /* ignore */
+          }
         }
         navigate(redirectTo || "/dashboard");
       } else {
@@ -241,6 +302,43 @@ export default function AuthPage() {
               ) : (
                 <>
                   <Fingerprint className="h-4 w-4" /> {t("continueWithFaceId")}
+                </>
+              )}
+            </button>
+            <div style={{ textAlign: "center", fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 16, letterSpacing: "0.1em" }}>
+              {t("usePasswordInstead")}
+            </div>
+          </>
+        )}
+
+        {isLogin && bioAvailable && bioHasCreds && !passkeyAvailable && (
+          <>
+            <button
+              type="button"
+              onClick={handleBiometricLogin}
+              disabled={bioLoading}
+              style={{
+                width: "100%",
+                height: 46,
+                borderRadius: 10,
+                background: "rgba(245,200,66,0.1)",
+                border: "1px solid rgba(245,200,66,0.35)",
+                color: GOLD,
+                fontWeight: 700,
+                fontSize: 14,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 8,
+                marginBottom: 16,
+              }}
+            >
+              {bioLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <>
+                  <Fingerprint className="h-4 w-4" /> Log ind med {bioLabel}
                 </>
               )}
             </button>
