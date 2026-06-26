@@ -16,7 +16,7 @@ export function MentalExerciseCard({ exercise, index }: { exercise: MentalExerci
   const diffLabels = MENTAL_DIFFICULTY_LABELS[locale];
 
   return (
-    <div className="rounded-lg border border-border bg-secondary/30 overflow-hidden transition-all">
+    <div className="rounded-lg border border-border bg-card text-card-foreground overflow-hidden transition-all">
       <button
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary/60 transition-colors cursor-pointer"
