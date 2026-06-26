@@ -514,7 +514,7 @@ export default function Onboarding() {
                   <div className="space-y-2">
                     <Label>{t("onbBeltLevel")}</Label>
                     <Select value={belt} onValueChange={setBelt}>
-                      <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
+                      <SelectTrigger className="h-11 bg-card text-card-foreground"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         {beltOptions.map((b) => (
                           <SelectItem key={b} value={b}>{beltLabel[b]}</SelectItem>
@@ -526,7 +526,7 @@ export default function Onboarding() {
                   <div className="space-y-2">
                     <Label>{t("onbExperience")}</Label>
                     <Select value={experience} onValueChange={setExperience}>
-                      <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
+                      <SelectTrigger className="h-11 bg-card text-card-foreground"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="under1">{t("onbExpUnder1")}</SelectItem>
                         <SelectItem value="1to3">{t("onbExp1to3")}</SelectItem>
@@ -539,11 +539,11 @@ export default function Onboarding() {
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-2">
                       <Label htmlFor="age">{t("onbAge")}</Label>
-                      <Input id="age" type="number" inputMode="numeric" value={age} onChange={(e) => setAge(e.target.value)} className="h-11" />
+                      <Input id="age" type="number" inputMode="numeric" value={age} onChange={(e) => setAge(e.target.value)} className="h-11 bg-card text-card-foreground placeholder:text-muted-foreground" />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="weight">{t("onbWeightKg")}</Label>
-                      <Input id="weight" type="number" inputMode="decimal" value={weight} onChange={(e) => setWeight(e.target.value)} className="h-11" />
+                      <Input id="weight" type="number" inputMode="decimal" value={weight} onChange={(e) => setWeight(e.target.value)} className="h-11 bg-card text-card-foreground placeholder:text-muted-foreground" />
                     </div>
                   </div>
 
@@ -591,7 +591,7 @@ export default function Onboarding() {
 
                   <div className="space-y-2">
                     <Label htmlFor="otherGoal">{t("onbOtherGoal")}</Label>
-                    <Input id="otherGoal" value={otherGoal} onChange={(e) => setOtherGoal(e.target.value)} className="h-11" />
+                    <Input id="otherGoal" value={otherGoal} onChange={(e) => setOtherGoal(e.target.value)} className="h-11 bg-card text-card-foreground placeholder:text-muted-foreground" />
                   </div>
 
                   <Button className="w-full h-12" onClick={finish} disabled={saving}>
@@ -619,7 +619,7 @@ export default function Onboarding() {
 
                   <div className="space-y-2">
                     <Label htmlFor="clubName">{t("onbClubName")}</Label>
-                    <Input id="clubName" value={clubName} onChange={(e) => setClubName(e.target.value)} className="h-11" />
+                    <Input id="clubName" value={clubName} onChange={(e) => setClubName(e.target.value)} className="h-11 bg-card text-card-foreground placeholder:text-muted-foreground" />
 
                     {clubSearching && (
                       <div className="text-xs text-muted-foreground flex items-center gap-1">
@@ -690,7 +690,7 @@ export default function Onboarding() {
                   <div className="space-y-2">
                     <Label>{t("onbAthleteCount")}</Label>
                     <Select value={athleteCount} onValueChange={setAthleteCount}>
-                      <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
+                      <SelectTrigger className="h-11 bg-card text-card-foreground"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="1to5">{t("onbCount1to5")}</SelectItem>
                         <SelectItem value="6to15">{t("onbCount6to15")}</SelectItem>
