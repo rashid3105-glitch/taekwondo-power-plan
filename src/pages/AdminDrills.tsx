@@ -205,31 +205,45 @@ export default function AdminDrills() {
         ) : drills.length === 0 ? (
           <p className="text-muted-foreground text-sm">No drills yet.</p>
         ) : (
-          drills.map((d) => (
-            <Card key={d.id} className="p-3 flex items-center gap-3">
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  {d.club_id === null && (
-                    <Badge variant="secondary" className="gap-1">
-                      <Globe2 className="h-3 w-3" /> {t("adminDrillScopeGlobal")}
-                    </Badge>
-                  )}
-                  <span className="font-semibold text-card-foreground truncate">{d.title}</span>
-                  {!d.is_active && <Badge variant="outline">Inactive</Badge>}
+          drills.map((d) => {
+            const ytId = d.video_url ? getYouTubeId(d.video_url) : null;
+            return (
+              <Card key={d.id} className="p-3 flex items-center gap-3">
+                {ytId ? (
+                  <div className="shrink-0 w-40 aspect-video rounded overflow-hidden bg-black">
+                    <iframe
+                      src={`https://www.youtube.com/embed/${ytId}`}
+                      title={d.title}
+                      className="w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                ) : null}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {d.club_id === null && (
+                      <Badge variant="secondary" className="gap-1">
+                        <Globe2 className="h-3 w-3" /> {t("adminDrillScopeGlobal")}
+                      </Badge>
+                    )}
+                    <span className="font-semibold text-card-foreground truncate">{d.title}</span>
+                    {!d.is_active && <Badge variant="outline">Inactive</Badge>}
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1 flex flex-wrap gap-2">
+                    <span>{t(CATEGORY_LABEL_KEY[d.category])}</span>
+                    <span>·</span>
+                    <span>{clubName(d.club_id)}</span>
+                    <span>·</span>
+                    <span>#{d.sort_order}</span>
+                    {d.video_url && !ytId && (<><span>·</span><a href={d.video_url} target="_blank" rel="noopener noreferrer" className="underline truncate max-w-[200px]">Video</a></>)}
+                  </div>
                 </div>
-                <div className="text-xs text-muted-foreground mt-1 flex flex-wrap gap-2">
-                  <span>{t(CATEGORY_LABEL_KEY[d.category])}</span>
-                  <span>·</span>
-                  <span>{clubName(d.club_id)}</span>
-                  <span>·</span>
-                  <span>#{d.sort_order}</span>
-                  {d.video_url && (<><span>·</span><a href={d.video_url} target="_blank" rel="noopener noreferrer" className="underline truncate max-w-[200px]">Video</a></>)}
-                </div>
-              </div>
-              <Button size="sm" variant="ghost" onClick={() => openEdit(d)}><Pencil className="h-4 w-4" /></Button>
-              <Button size="sm" variant="ghost" onClick={() => onDelete(d)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
-            </Card>
-          ))
+                <Button size="sm" variant="ghost" onClick={() => openEdit(d)}><Pencil className="h-4 w-4" /></Button>
+                <Button size="sm" variant="ghost" onClick={() => onDelete(d)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+              </Card>
+            );
+          })
         )}
       </main>
 
