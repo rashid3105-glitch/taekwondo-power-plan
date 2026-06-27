@@ -321,6 +321,8 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
           </div>
         </div>
       </div>
+
+      <MonthlyDevelopmentReportsCard athleteId={athleteId} athleteName={athleteName} />
     </div>
   );
 }
