@@ -158,6 +158,7 @@ export default function Dashboard() {
   const [chatOpen, setChatOpen] = useState(false);
   const [isBirthday, setIsBirthday] = useState(false);
   const [showMentalReminder, setShowMentalReminder] = useState(false);
+  const [coachReportsUnread, setCoachReportsUnread] = useState(0);
   const [pinsEditorOpen, setPinsEditorOpen] = useState(false);
   const DEFAULT_PINS = ["plan", "progress", "competitions", "match"];
   const [pinnedKeys, setPinnedKeys] = useState<string[]>(() => {
