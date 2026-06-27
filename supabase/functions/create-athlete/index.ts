@@ -106,7 +106,13 @@ Deno.serve(async (req) => {
       email, password, email_confirm: true,
       user_metadata: { display_name: name, wants_demo: true },
     });
-    if (createError) throw createError;
+    if (createError) {
+      const msg = (createError.message || "").toLowerCase();
+      if (msg.includes("already") || msg.includes("registered") || msg.includes("exists")) {
+        throw new Error("EMAIL_ALREADY_EXISTS");
+      }
+      throw createError;
+    }
 
     let profileExists = false;
     for (let i = 0; i < 10; i++) {
