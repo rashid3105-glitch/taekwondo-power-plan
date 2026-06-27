@@ -106,7 +106,13 @@ Deno.serve(async (req) => {
       email, password, email_confirm: true,
       user_metadata: { display_name: name, wants_demo: true },
     });
-    if (createError) throw createError;
+    if (createError) {
+      const msg = (createError.message || "").toLowerCase();
+      if (msg.includes("already") || msg.includes("registered") || msg.includes("exists")) {
+        throw new Error("EMAIL_ALREADY_EXISTS");
+      }
+      throw createError;
+    }
 
     let profileExists = false;
     for (let i = 0; i < 10; i++) {
@@ -234,8 +240,19 @@ Deno.serve(async (req) => {
     );
   } catch (err) {
     console.error("create-athlete error", err);
+    const code = (err as any)?.message || "server_error";
+    // Surface known, non-sensitive error codes so the UI can show a helpful hint.
+    const KNOWN = new Set([
+      "EMAIL_ALREADY_EXISTS",
+      "WEAK_PASSWORD",
+      "PARENT_EMAIL_REQUIRED",
+      "COACH_CLUB_REQUIRED",
+      "NOT_COACH_OF_CLUB",
+      "MAX_ATHLETES_REACHED",
+    ]);
+    const payload = KNOWN.has(code) ? { error: code } : { error: "server_error" };
     return new Response(
-      JSON.stringify({ error: "server_error" }),
+      JSON.stringify(payload),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

@@ -135,6 +135,32 @@ Deno.serve(async (req) => {
       }, 500);
     }
 
+    // Coach-added athletes should never sit in admin-approval limbo.
+    // Auto-approve and stamp the club on the profile if it was previously empty.
+    {
+      const { data: athleteProfile } = await admin
+        .from("profiles")
+        .select("club_id")
+        .eq("user_id", athleteId)
+        .maybeSingle();
+      const profileUpdates: Record<string, unknown> = {
+        is_approved: true,
+        pending_coach_id: null,
+        pending_invite_code: null,
+        rejection_reason: null,
+      };
+      if (!(athleteProfile as any)?.club_id) {
+        profileUpdates.club_id = clubId;
+      }
+      const { error: approveErr } = await admin
+        .from("profiles")
+        .update(profileUpdates)
+        .eq("user_id", athleteId);
+      if (approveErr) {
+        console.log("profile auto-approve failed (non-fatal)", approveErr);
+      }
+    }
+
     // Insert coach<->athlete link for this club (idempotent on unique constraint)
     const { error: linkErr } = await admin
       .from("coach_athletes")
