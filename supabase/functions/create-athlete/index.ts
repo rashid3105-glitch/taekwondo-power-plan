@@ -240,8 +240,19 @@ Deno.serve(async (req) => {
     );
   } catch (err) {
     console.error("create-athlete error", err);
+    const code = (err as any)?.message || "server_error";
+    // Surface known, non-sensitive error codes so the UI can show a helpful hint.
+    const KNOWN = new Set([
+      "EMAIL_ALREADY_EXISTS",
+      "WEAK_PASSWORD",
+      "PARENT_EMAIL_REQUIRED",
+      "COACH_CLUB_REQUIRED",
+      "NOT_COACH_OF_CLUB",
+      "MAX_ATHLETES_REACHED",
+    ]);
+    const payload = KNOWN.has(code) ? { error: code } : { error: "server_error" };
     return new Response(
-      JSON.stringify({ error: "server_error" }),
+      JSON.stringify(payload),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
