@@ -4,8 +4,9 @@ import { RecipeCard } from "./RecipeCard";
 import { AddRecipeForm } from "./AddRecipeForm";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, ChevronDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { TranslationKey } from "@/i18n/translations";
@@ -201,83 +202,86 @@ export function NutritionLibrary() {
           const emoji = cat === "custom" ? "⭐" : RECIPE_CATEGORY_ICONS[cat as RecipeCategory];
           const label = cat === "custom" ? t("recipeMyRecipes") : t(CATEGORY_KEYS[cat as RecipeCategory]);
           return (
-            <div key={cat}>
-              <div className="flex items-center gap-2 mb-3">
+            <Collapsible key={cat} defaultOpen>
+              <CollapsibleTrigger className="group w-full flex items-center gap-2 mb-3 cursor-pointer">
                 <span className="text-xl leading-none">{emoji}</span>
                 <h2 className="text-base font-bold text-foreground">{label}</h2>
                 <Badge variant="secondary" className="text-[10px]">{catItems.length}</Badge>
-              </div>
-              <div className="space-y-2">
-                {catItems.map((recipe, i) => {
-                  const isCustom = "isCustom" in recipe && recipe.isCustom;
-                  const handlePhotoChange = isCustom
-                    ? async (file: File | null) => {
-                        const dbId = (recipe as Recipe & { dbId: string }).dbId;
-                        if (!userId) return;
-                        let newUrl: string | null = null;
-                        try { newUrl = await uploadAndSwap(file, recipe.imageUrl); } catch { return; }
-                        const { error } = await supabase
-                          .from("user_recipes")
-                          .update({ image_url: newUrl })
-                          .eq("id", dbId);
-                        if (error) {
-                          toast({ title: t("recipeSaveFailed"), description: error.message, variant: "destructive" });
-                          return;
-                        }
-                        setUserRecipes((prev) =>
-                          prev.map((r) => (r.dbId === dbId ? { ...r, imageUrl: newUrl || undefined } : r)),
-                        );
-                      }
-                    : isLoggedIn
-                    ? async (file: File | null) => {
-                        if (!userId) return;
-                        const currentOverride = photoOverrides[recipe.id];
-                        let newUrl: string | null = null;
-                        try { newUrl = await uploadAndSwap(file, currentOverride); } catch { return; }
-                        if (newUrl) {
+                <ChevronDown className="h-4 w-4 text-muted-foreground ml-auto transition-transform group-data-[state=closed]:-rotate-90" />
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <div className="space-y-2">
+                  {catItems.map((recipe, i) => {
+                    const isCustom = "isCustom" in recipe && recipe.isCustom;
+                    const handlePhotoChange = isCustom
+                      ? async (file: File | null) => {
+                          const dbId = (recipe as Recipe & { dbId: string }).dbId;
+                          if (!userId) return;
+                          let newUrl: string | null = null;
+                          try { newUrl = await uploadAndSwap(file, recipe.imageUrl); } catch { return; }
                           const { error } = await supabase
-                            .from("recipe_photo_overrides")
-                            .upsert({ user_id: userId, recipe_id: recipe.id, image_url: newUrl }, { onConflict: "user_id,recipe_id" });
+                            .from("user_recipes")
+                            .update({ image_url: newUrl })
+                            .eq("id", dbId);
                           if (error) {
                             toast({ title: t("recipeSaveFailed"), description: error.message, variant: "destructive" });
                             return;
                           }
-                          setPhotoOverrides((prev) => ({ ...prev, [recipe.id]: newUrl! }));
-                        } else {
-                          await supabase
-                            .from("recipe_photo_overrides")
-                            .delete()
-                            .eq("user_id", userId)
-                            .eq("recipe_id", recipe.id);
-                          setPhotoOverrides((prev) => {
-                            const next = { ...prev };
-                            delete next[recipe.id];
-                            return next;
-                          });
+                          setUserRecipes((prev) =>
+                            prev.map((r) => (r.dbId === dbId ? { ...r, imageUrl: newUrl || undefined } : r)),
+                          );
                         }
-                      }
-                    : undefined;
+                      : isLoggedIn
+                      ? async (file: File | null) => {
+                          if (!userId) return;
+                          const currentOverride = photoOverrides[recipe.id];
+                          let newUrl: string | null = null;
+                          try { newUrl = await uploadAndSwap(file, currentOverride); } catch { return; }
+                          if (newUrl) {
+                            const { error } = await supabase
+                              .from("recipe_photo_overrides")
+                              .upsert({ user_id: userId, recipe_id: recipe.id, image_url: newUrl }, { onConflict: "user_id,recipe_id" });
+                            if (error) {
+                              toast({ title: t("recipeSaveFailed"), description: error.message, variant: "destructive" });
+                              return;
+                            }
+                            setPhotoOverrides((prev) => ({ ...prev, [recipe.id]: newUrl! }));
+                          } else {
+                            await supabase
+                              .from("recipe_photo_overrides")
+                              .delete()
+                              .eq("user_id", userId)
+                              .eq("recipe_id", recipe.id);
+                            setPhotoOverrides((prev) => {
+                              const next = { ...prev };
+                              delete next[recipe.id];
+                              return next;
+                            });
+                          }
+                        }
+                      : undefined;
 
-                  return (
-                    <div key={recipe.id} className="relative">
-                      <RecipeCard recipe={recipe} index={i + 1} onPhotoChange={handlePhotoChange} />
-                      {isCustom && (
-                        <div className="absolute top-2 right-2 flex items-center gap-1.5 z-10">
-                          <span className="text-[9px] bg-tab-nutrition/15 text-tab-nutrition px-1.5 py-0.5 rounded-full font-bold uppercase">{t("customLabel")}</span>
-                          <button
-                            onClick={() => deleteCustomRecipe((recipe as Recipe & { dbId: string }).dbId)}
-                            className="h-6 w-6 rounded-full bg-destructive/15 text-destructive flex items-center justify-center hover:bg-destructive/25 transition-colors"
-                            title={t("delete")}
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+                    return (
+                      <div key={recipe.id} className="relative">
+                        <RecipeCard recipe={recipe} index={i + 1} onPhotoChange={handlePhotoChange} />
+                        {isCustom && (
+                          <div className="absolute top-2 right-2 flex items-center gap-1.5 z-10">
+                            <span className="text-[9px] bg-tab-nutrition/15 text-tab-nutrition px-1.5 py-0.5 rounded-full font-bold uppercase">{t("customLabel")}</span>
+                            <button
+                              onClick={() => deleteCustomRecipe((recipe as Recipe & { dbId: string }).dbId)}
+                              className="h-6 w-6 rounded-full bg-destructive/15 text-destructive flex items-center justify-center hover:bg-destructive/25 transition-colors"
+                              title={t("delete")}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
           );
         })}
       </div>
