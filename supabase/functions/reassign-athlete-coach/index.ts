@@ -113,6 +113,7 @@ Deno.serve(async (req) => {
 
     return json({ error: "unknown action" }, 400);
   } catch (e: any) {
-    return json({ error: e?.message || "error" }, 500);
+    console.error("reassign-athlete-coach error:", e);
+    return json({ error: "Internal server error" }, 500);
   }
 });
