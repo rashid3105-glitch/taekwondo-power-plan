@@ -831,7 +831,7 @@ export default function Dashboard() {
             <div className="rounded-lg border border-border bg-card p-4 space-y-2">
               <p className="text-sm font-semibold text-foreground">{t("paypalTitle")}</p>
               <p className="text-sm text-muted-foreground">{t("paypalInstruction")}</p>
-              <p className="text-lg font-bold text-primary font-mono">rashid3105@gmail.com</p>
+              <p className="text-lg font-bold text-primary font-mono">kontakt@sportstalent.dk</p>
               <p className="text-sm text-muted-foreground">{t("paypalReference")}</p>
             </div>
             <Button onClick={() => navigate("/pricing")} className="w-full sm:w-auto">
