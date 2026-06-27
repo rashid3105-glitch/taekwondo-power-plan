@@ -26,8 +26,21 @@ export function ThemeSync() {
 
     root.style.transition = "color 0.3s ease";
 
+    // Core surfaces — keep aligned so light pills (bg-muted/bg-secondary/bg-card)
+    // never end up with white text on a light background. All values mirror
+    // the .dark palette in index.css.
     root.style.setProperty("--background", "0 0% 4%");
     root.style.setProperty("--foreground", "0 0% 100%");
+    root.style.setProperty("--card", "222 30% 14%");
+    root.style.setProperty("--card-foreground", "210 30% 95%");
+    root.style.setProperty("--popover", "222 30% 14%");
+    root.style.setProperty("--popover-foreground", "210 30% 95%");
+    root.style.setProperty("--secondary", "222 25% 18%");
+    root.style.setProperty("--secondary-foreground", "210 30% 90%");
+    root.style.setProperty("--muted", "222 25% 16%");
+    root.style.setProperty("--muted-foreground", "220 12% 70%");
+    root.style.setProperty("--border", "222 25% 22%");
+    root.style.setProperty("--input", "222 25% 22%");
 
     if (shouldUseCoachTheme) {
       root.style.setProperty("--primary", "38 92% 55%");
