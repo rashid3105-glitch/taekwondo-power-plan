@@ -206,7 +206,7 @@ export function ExerciseIllustration({ exercise }: ExerciseIllustrationProps) {
                 )}>
                   {i + 1}
                 </span>
-                <span className="text-sm text-foreground leading-relaxed">{cue}</span>
+                <span className="text-sm text-secondary-foreground leading-relaxed">{cue}</span>
               </motion.div>
             ))}
           </div>
@@ -248,7 +248,7 @@ export function ExerciseIllustration({ exercise }: ExerciseIllustrationProps) {
                     )}>
                       {i + 1}
                     </span>
-                    <span className="text-sm text-foreground leading-relaxed">{cue}</span>
+                    <span className="text-sm text-secondary-foreground leading-relaxed">{cue}</span>
                   </motion.div>
                 ))}
               </div>
