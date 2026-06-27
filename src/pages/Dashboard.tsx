@@ -484,6 +484,16 @@ export default function Dashboard() {
       }
     }
 
+    // Coach: unread monthly development reports badge
+    if (coachOrAdmin) {
+      const { data: badgeRow } = await supabase
+        .from("profiles")
+        .select("coach_unread_reports_count")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      setCoachReportsUnread(Number((badgeRow as any)?.coach_unread_reports_count) || 0);
+    }
+
     // Check if user has a coach assigned
     const { data: coachLink } = await supabase.from("coach_athletes").select("coach_id").eq("athlete_id", user.id).limit(1);
     if (coachLink && coachLink.length > 0) {
