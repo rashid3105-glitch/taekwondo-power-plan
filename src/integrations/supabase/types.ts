@@ -1903,6 +1903,86 @@ export type Database = {
           },
         ]
       }
+      monthly_development_reports: {
+        Row: {
+          athlete_user_id: string
+          club_id: string | null
+          generated_at: string
+          id: string
+          locale: string | null
+          metrics: Json
+          period_month: number
+          period_year: number
+          summary_text: string | null
+        }
+        Insert: {
+          athlete_user_id: string
+          club_id?: string | null
+          generated_at?: string
+          id?: string
+          locale?: string | null
+          metrics?: Json
+          period_month: number
+          period_year: number
+          summary_text?: string | null
+        }
+        Update: {
+          athlete_user_id?: string
+          club_id?: string | null
+          generated_at?: string
+          id?: string
+          locale?: string | null
+          metrics?: Json
+          period_month?: number
+          period_year?: number
+          summary_text?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "monthly_development_reports_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      monthly_report_jobs: {
+        Row: {
+          athlete_user_id: string
+          attempts: number
+          created_at: string
+          id: string
+          last_error: string | null
+          period_month: number
+          period_year: number
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          athlete_user_id: string
+          attempts?: number
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          period_month: number
+          period_year: number
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          athlete_user_id?: string
+          attempts?: number
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          period_month?: number
+          period_year?: number
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       notification_preferences: {
         Row: {
           chat_messages: boolean
@@ -2147,6 +2227,7 @@ export type Database = {
           coach_athlete_count_band: string | null
           coach_club_name: string | null
           coach_focus: string[] | null
+          coach_unread_reports_count: number
           country: string | null
           created_at: string
           current_injury: string | null
@@ -2206,6 +2287,7 @@ export type Database = {
           coach_athlete_count_band?: string | null
           coach_club_name?: string | null
           coach_focus?: string[] | null
+          coach_unread_reports_count?: number
           country?: string | null
           created_at?: string
           current_injury?: string | null
@@ -2265,6 +2347,7 @@ export type Database = {
           coach_athlete_count_band?: string | null
           coach_club_name?: string | null
           coach_focus?: string[] | null
+          coach_unread_reports_count?: number
           country?: string | null
           created_at?: string
           current_injury?: string | null
@@ -3802,6 +3885,7 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
+      enqueue_monthly_reports: { Args: never; Returns: number }
       get_athlete_recovery_trend: {
         Args: { _athlete_id: string; _days?: number }
         Returns: {
@@ -3910,6 +3994,7 @@ export type Database = {
         Returns: undefined
       }
       mark_comment_read: { Args: { _comment_id: string }; Returns: undefined }
+      mark_monthly_reports_seen: { Args: never; Returns: undefined }
       mark_reminder_read: { Args: { _reminder_id: string }; Returns: undefined }
       mark_workout_feedback_read: {
         Args: { _feedback_id: string }

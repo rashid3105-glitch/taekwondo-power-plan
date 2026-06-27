@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { FormCurveChart } from "@/components/FormCurveChart";
 import { AthleteRecoveryTrend } from "@/components/coach/AthleteRecoveryTrend";
 import { PhysicalTestComparison } from "@/components/coach/PhysicalTestComparison";
+import { MonthlyDevelopmentReportsCard } from "@/components/coach/MonthlyDevelopmentReportsCard";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
 
 interface Props {
@@ -320,6 +321,8 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
           </div>
         </div>
       </div>
+
+      <MonthlyDevelopmentReportsCard athleteId={athleteId} athleteName={athleteName} />
     </div>
   );
 }

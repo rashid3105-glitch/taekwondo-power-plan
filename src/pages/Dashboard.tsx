@@ -158,6 +158,7 @@ export default function Dashboard() {
   const [chatOpen, setChatOpen] = useState(false);
   const [isBirthday, setIsBirthday] = useState(false);
   const [showMentalReminder, setShowMentalReminder] = useState(false);
+  const [coachReportsUnread, setCoachReportsUnread] = useState(0);
   const [pinsEditorOpen, setPinsEditorOpen] = useState(false);
   const DEFAULT_PINS = ["plan", "progress", "competitions", "match"];
   const [pinnedKeys, setPinnedKeys] = useState<string[]>(() => {
@@ -483,6 +484,16 @@ export default function Dashboard() {
       }
     }
 
+    // Coach: unread monthly development reports badge
+    if (coachOrAdmin) {
+      const { data: badgeRow } = await supabase
+        .from("profiles")
+        .select("coach_unread_reports_count")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      setCoachReportsUnread(Number((badgeRow as any)?.coach_unread_reports_count) || 0);
+    }
+
     // Check if user has a coach assigned
     const { data: coachLink } = await supabase.from("coach_athletes").select("coach_id").eq("athlete_id", user.id).limit(1);
     if (coachLink && coachLink.length > 0) {
@@ -759,7 +770,7 @@ export default function Dashboard() {
       <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-card/95 backdrop-blur-sm sm:hidden pb-safe">
         <div className="flex items-stretch justify-around px-1 pt-1.5">
           {(coachAthleteMode === "coach" && isCoach ? [
-            { key: "coach-hold", label: t("coachNav") || "Hold", icon: Users, active: false, onClick: () => navigate("/coach") },
+            { key: "coach-hold", label: t("coachNav") || "Hold", icon: Users, active: false, onClick: () => navigate("/coach"), dot: coachReportsUnread > 0 },
             { key: "coach-traening", label: t("train") || "Træning", icon: CalendarRange, active: false, onClick: () => navigate("/coach/season-calendar") },
             { key: "coach-staevner", label: t("competitions") || "Stævner", icon: Trophy, active: false, onClick: () => navigate("/coach/competitions") },
             { key: "coach-surveys", label: t("surveysTitle") || "Spørgeskemaer", icon: ClipboardList, active: false, onClick: () => navigate("/coach/surveys") },
@@ -770,7 +781,7 @@ export default function Dashboard() {
             { key: "kalender", label: t("seasonCalendar") || "Kalender", icon: CalendarRange, active: activeTab === "calendar", onClick: () => handleTabChange("calendar") },
             { key: "dagbog", label: t("diary") || "Dagbog", icon: NotebookPen, active: false, onClick: () => navigate("/diary") },
             { key: "video", label: t("hubMatchTitle") || "Video", icon: VideoIcon, active: false, onClick: () => navigate("/match-analysis/me") },
-          ]).map(({ key, label, icon: Icon, active, onClick }) => (
+          ]).map(({ key, label, icon: Icon, active, onClick, dot }: any) => (
             <button
               key={key}
               onClick={() => {
@@ -785,6 +796,9 @@ export default function Dashboard() {
               style={{ minHeight: 48 }}
             >
               <Icon className="h-5 w-5" />
+              {dot && (
+                <span className="absolute top-1 right-3 h-2 w-2 rounded-full bg-destructive" aria-hidden="true" />
+              )}
               <span className="text-[9px] font-semibold uppercase tracking-wide leading-tight truncate max-w-full">{label}</span>
             </button>
           ))}
