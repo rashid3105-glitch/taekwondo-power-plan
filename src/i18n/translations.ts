@@ -3052,6 +3052,7 @@ const translations = {
     monthApril: "April", monthMay: "May", monthJune: "June",
     monthJuly: "July", monthAugust: "August", monthSeptember: "September",
     monthOctober: "October", monthNovember: "November", monthDecember: "December",
+    changelogEntry160: "Privacy policy finalised and updated.",
     changelogEntry159: "New: Monthly development report per athlete for coaches — auto-generated on the 1st of each month.",
   },
   da: {
@@ -6092,6 +6093,7 @@ const translations = {
     monthApril: "april", monthMay: "maj", monthJune: "juni",
     monthJuly: "juli", monthAugust: "august", monthSeptember: "september",
     monthOctober: "oktober", monthNovember: "november", monthDecember: "december",
+    changelogEntry160: "Privatlivspolitik færdiggjort og opdateret.",
     changelogEntry159: "Ny: Månedlig udviklingsrapport pr. atlet for coaches — genereres automatisk den 1. i måneden.",
   },
   sv: {
@@ -9130,6 +9132,7 @@ const translations = {
     monthApril: "april", monthMay: "maj", monthJune: "juni",
     monthJuly: "juli", monthAugust: "augusti", monthSeptember: "september",
     monthOctober: "oktober", monthNovember: "november", monthDecember: "december",
+    changelogEntry160: "Integritetspolicyn är färdigställd och uppdaterad.",
     changelogEntry159: "Nytt: Månatliga utvecklingsrapporter per atlet för tränare — genereras automatiskt den 1:a varje månad.",
   },
   de: {
@@ -12118,6 +12121,7 @@ const translations = {
     monthApril: "April", monthMay: "Mai", monthJune: "Juni",
     monthJuly: "Juli", monthAugust: "August", monthSeptember: "September",
     monthOctober: "Oktober", monthNovember: "November", monthDecember: "Dezember",
+    changelogEntry160: "Datenschutzerklärung finalisiert und aktualisiert.",
     changelogEntry159: "Neu: Monatliche Entwicklungsberichte pro Athlet für Trainer — werden automatisch am 1. des Monats erstellt.",
   },
 
@@ -15107,6 +15111,7 @@ const translations = {
     monthApril: "أبريل", monthMay: "مايو", monthJune: "يونيو",
     monthJuly: "يوليو", monthAugust: "أغسطس", monthSeptember: "سبتمبر",
     monthOctober: "أكتوبر", monthNovember: "نوفمبر", monthDecember: "ديسمبر",
+    changelogEntry160: "تم الانتهاء من سياسة الخصوصية وتحديثها.",
     changelogEntry159: "جديد: تقارير التطور الشهرية لكل لاعب للمدربين — تُنشأ تلقائيًا في الأول من كل شهر.",
   },
   no: {
@@ -18147,6 +18152,7 @@ const translations = {
     monthApril: "april", monthMay: "mai", monthJune: "juni",
     monthJuly: "juli", monthAugust: "august", monthSeptember: "september",
     monthOctober: "oktober", monthNovember: "november", monthDecember: "desember",
+    changelogEntry160: "Personvernerklæringen er ferdigstilt og oppdatert.",
     changelogEntry159: "Ny: Månedlige utviklingsrapporter per utøver for trenere — genereres automatisk den 1. i måneden.",
   },
 } as const;
@@ -19357,6 +19363,7 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   monthApril: "abril", monthMay: "mayo", monthJune: "junio",
   monthJuly: "julio", monthAugust: "agosto", monthSeptember: "septiembre",
   monthOctober: "octubre", monthNovember: "noviembre", monthDecember: "diciembre",
+  changelogEntry160: "Política de privacidad finalizada y actualizada.",
   changelogEntry159: "Nuevo: informe mensual de desarrollo por atleta para entrenadores — se genera automáticamente el día 1 de cada mes.",
 };
 export default translations;
