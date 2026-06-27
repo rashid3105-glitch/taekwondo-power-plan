@@ -781,7 +781,7 @@ export default function Dashboard() {
             { key: "kalender", label: t("seasonCalendar") || "Kalender", icon: CalendarRange, active: activeTab === "calendar", onClick: () => handleTabChange("calendar") },
             { key: "dagbog", label: t("diary") || "Dagbog", icon: NotebookPen, active: false, onClick: () => navigate("/diary") },
             { key: "video", label: t("hubMatchTitle") || "Video", icon: VideoIcon, active: false, onClick: () => navigate("/match-analysis/me") },
-          ]).map(({ key, label, icon: Icon, active, onClick }) => (
+          ]).map(({ key, label, icon: Icon, active, onClick, dot }: any) => (
             <button
               key={key}
               onClick={() => {
@@ -796,6 +796,9 @@ export default function Dashboard() {
               style={{ minHeight: 48 }}
             >
               <Icon className="h-5 w-5" />
+              {dot && (
+                <span className="absolute top-1 right-3 h-2 w-2 rounded-full bg-destructive" aria-hidden="true" />
+              )}
               <span className="text-[9px] font-semibold uppercase tracking-wide leading-tight truncate max-w-full">{label}</span>
             </button>
           ))}
