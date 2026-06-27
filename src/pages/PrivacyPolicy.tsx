@@ -36,25 +36,10 @@ export default function PrivacyPolicy() {
           {t("privacyPolicyTitle")}
         </h1>
 
-        <div
-          role="alert"
-          style={{
-            background: "rgba(245,200,66,0.1)",
-            border: "1px solid rgba(245,200,66,0.4)",
-            color: GOLD,
-            padding: "14px 18px",
-            borderRadius: 10,
-            fontSize: 14,
-            fontWeight: 600,
-            marginBottom: 24,
-          }}
-        >
-          {t("privacyDraftBanner")}
-        </div>
-
         <p style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", marginBottom: 40 }}>
-          {t("privacyLastUpdated")}: 2026-06-15 · {t("privacyVersion")}
+          {t("privacyLastUpdated")}: 2026-06-27 · {t("privacyVersion")}
         </p>
+
 
         <section style={section}>
           <h2 style={h2}>{t("privacyWhoWeAre")}</h2>
@@ -150,7 +135,7 @@ export default function PrivacyPolicy() {
         <section style={section}>
           <h2 style={h2}>{t("privacyContact")}</h2>
           <p style={p}>{t("privacyContactDesc")}</p>
-          <p style={{ fontSize: 15, color: "#fff", fontWeight: 600, marginTop: 8 }}>rashid3105@gmail.com</p>
+          <p style={{ fontSize: 15, color: "#fff", fontWeight: 600, marginTop: 8 }}>kontakt@sportstalent.dk</p>
         </section>
       </div>
     </LandingLayout>
