@@ -82,16 +82,23 @@ export function MonthlyDevelopmentReportsCard({ athleteId, athleteName }: Props)
   }
 
   async function deleteReport(r: ReportRow) {
-    if (!confirm(t("monthlyDevReportDeleteConfirm"))) return;
-    const { error } = await supabase
+    setDeleting(true);
+    const { error, data } = await supabase
       .from("monthly_development_reports" as any)
       .delete()
-      .eq("id", r.id);
+      .eq("id", r.id)
+      .select("id");
+    setDeleting(false);
     if (error) {
       toast({ title: t("error"), description: error.message, variant: "destructive" });
       return;
     }
+    if (!data || (data as any[]).length === 0) {
+      toast({ title: t("error"), description: "Permission denied", variant: "destructive" });
+      return;
+    }
     toast({ title: t("monthlyDevReportDeleted") });
+    setConfirmDelete(null);
     setOpen(null);
     await load();
   }
