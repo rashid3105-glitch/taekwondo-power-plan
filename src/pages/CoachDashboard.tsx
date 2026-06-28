@@ -108,6 +108,7 @@ export default function CoachDashboard() {
   const [coachUserId, setCoachUserId] = useState<string | null>(null);
   const [coachClubId, setCoachClubId] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [superadminActive, setSuperadminActive] = useState(false);
   const [diaryAthleteId, setDiaryAthleteId] = useState<string | null>(null);
   const [diaryAthleteName, setDiaryAthleteName] = useState("");
   const [diaryEntries, setDiaryEntries] = useState<DiaryEntry[]>([]);
