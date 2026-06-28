@@ -4,7 +4,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { ClipboardList, Download, Loader2, Sparkles } from "lucide-react";
+import { ClipboardList, Download, Loader2, Sparkles, Trash2 } from "lucide-react";
 
 interface Props {
   athleteId: string;
