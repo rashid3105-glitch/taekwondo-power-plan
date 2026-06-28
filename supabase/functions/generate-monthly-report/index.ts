@@ -163,12 +163,21 @@ async function collectMetrics(
     };
   }
 
+  // Diary entry-type breakdown so the LLM knows what was actually logged
+  const diaryByType: Record<string, number> = {};
+  for (const d of diaryRows) {
+    const k = String(d.entry_type || "general");
+    diaryByType[k] = (diaryByType[k] || 0) + 1;
+  }
+
   return {
     period: { year, month, start, end },
     diary: {
       entries: diaryRows.length,
       avg_mood: moodAvg,
       avg_energy: energyAvg,
+      by_type: diaryByType,
+      injury_entries: diaryByType["injury"] || 0,
     },
     training: {
       sessions_completed: workoutRows.length,
