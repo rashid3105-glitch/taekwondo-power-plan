@@ -19419,5 +19419,8 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   monthOctober: "octubre", monthNovember: "noviembre", monthDecember: "diciembre",
   changelogEntry160: "Política de privacidad finalizada y actualizada.",
   changelogEntry159: "Nuevo: informe mensual de desarrollo por atleta para entrenadores — se genera automáticamente el día 1 de cada mes.",
+  coachSuperadminAllClubs: "Superadministrador: mostrando atletas de todos los clubes",
+  coachNoAthletesInClub: "0 atletas en este club",
+  coachSwitchClubHint: "Cambia de club para ver atletas de otros clubes",
 };
 export default translations;
