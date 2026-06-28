@@ -12552,7 +12552,7 @@ const translations = {
     manageAthlete: "إدارة الرياضي",
     noAthletes: "لا يوجد رياضيون بعد",
     noAthletesDesc: "أضف رياضيين باستخدام رمز TKD الفريد الخاص بهم لبدء إنشاء خطط لهم.",
-    coachSuperadminAllClubs: "المسؤول الأعلى: عرض الرياضيين من جميع الأندية",
+    coachSuperadminAllClubs: "المسؤول الأعلى مفعّل — بدّل النادي من القائمة لعرض رياضيي نادٍ آخر",
     coachNoAthletesInClub: "0 رياضيين في هذا النادي",
     coachSwitchClubHint: "بدّل النادي لرؤية رياضيين من أندية أخرى",
     myAthletes: "رياضيوني",
