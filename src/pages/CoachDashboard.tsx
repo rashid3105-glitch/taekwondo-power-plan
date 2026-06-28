@@ -274,40 +274,12 @@ export default function CoachDashboard() {
       .filter((m) => !m.is_coach)
       .sort((a, b) => a.display_name.localeCompare(b.display_name));
 
-    // Superadmin: include athletes from coach_athletes links across ALL clubs
-    // (not just the active club). Direct profile read is allowed by RLS for
-    // superadmins via the is_superadmin() bypass.
-    let extraSquad: AthleteProfile[] = [];
-    if (superadminActive) {
-      const { data: allLinks } = await supabase
-        .from("coach_athletes")
-        .select("athlete_id, club_id")
-        .eq("coach_id", userId);
-      const knownIds = new Set(squadFromClub.map((s) => s.user_id));
-      const extraIds = Array.from(
-        new Set(
-          ((allLinks || []) as any[])
-            .map((l) => l.athlete_id as string)
-            .filter((id) => !knownIds.has(id))
-        )
-      );
-      if (extraIds.length > 0) {
-        const { data: extraProfiles } = await supabase
-          .from("profiles")
-          .select(
-            "user_id, display_name, athlete_code, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, current_injury, program_weeks, weekly_schedule, avatar_url, discipline, country, club_id"
-          )
-          .in("user_id", extraIds);
-        extraSquad = ((extraProfiles || []) as any[]).map((p) => ({
-          ...p,
-          club_name: p.club_id ? clubMap.get(p.club_id) || null : null,
-          is_coach: false,
-        })) as AthleteProfile[];
-      }
-    }
-
-    const squad = [...squadFromClub, ...extraSquad].sort((a, b) =>
+    // Squad list always follows the active club. Superadmin gives RLS read
+    // access to all clubs via the club switcher — switch club to see another
+    // club's athletes; don't merge cross-club links into one list.
+    const squad = squadFromClub.sort((a, b) =>
       a.display_name.localeCompare(b.display_name)
+
     );
 
     // Avoid duplicates in the read-only "Club members" section:
@@ -581,7 +553,7 @@ export default function CoachDashboard() {
                     athleteMeta={athletes.map((a) => ({ user_id: a.user_id, club_name: a.club_name }))}
                     pulseFilter={pulseFilter}
                     onStatsChange={setPulseStats}
-                    allClubs={superadminActive}
+                    allClubs={false}
                   />
                 </>
               )}
