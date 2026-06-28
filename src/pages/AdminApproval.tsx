@@ -11,7 +11,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Loader2, CheckCircle, XCircle, ArrowLeft, Download, Shield, Trash2, Users, CreditCard, CalendarIcon, FlaskConical, ChevronDown, KeyRound, Search, Pencil, UserCheck, UserX, Crown, Building, LayoutGrid, FileText } from "lucide-react";
+import { Loader2, CheckCircle, XCircle, ArrowLeft, Download, Shield, Trash2, Users, CreditCard, CalendarIcon, FlaskConical, ChevronDown, KeyRound, Search, Pencil, UserCheck, UserX, Crown, Building, LayoutGrid, FileText, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { format } from "date-fns";
@@ -625,6 +625,19 @@ export default function AdminApproval() {
             {u.current_injury && (
               <span className="text-[10px] bg-destructive/10 text-destructive px-2 py-0.5 rounded-full">
                 Injury: {u.current_injury}
+              </span>
+            )}
+            {u.user_id && u.user_id !== DELETED_USER_ID && (
+              <span
+                className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full inline-flex items-center gap-1 cursor-pointer hover:bg-muted/80"
+                onClick={() => {
+                  navigator.clipboard.writeText(u.user_id);
+                  toast({ title: t("athleteId") || "Athlete ID", description: "Copied to clipboard" });
+                }}
+                title={u.user_id}
+              >
+                {t("athleteId") || "ID"}: {u.user_id.slice(0, 8)}…
+                <Copy className="h-2.5 w-2.5" />
               </span>
             )}
           </div>
