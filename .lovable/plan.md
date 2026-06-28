@@ -1,40 +1,30 @@
-## Hvad sker der nu
+## Mål
+Når superadmin er aktiv, skal coach-dashboardet vise atleter på tværs af klubber (ikke kun aktiv klub). Når superadmin er FRA, beholdes nuværende klub-filter, men tom liste skal vise en tydelig "0 atleter i denne klub — skift klub"-besked.
 
-Ingunn (coach i Tøyen Taekwondo) oprettede atleten **Axel Dahl-Engh** i dag. I databasen:
-- `profiles.club_id = NULL` (ingen klub)
-- ingen `club_memberships`-række
-- ingen `coach_athletes`-link
+## Ændringer
 
-Det betyder Axel sad i et "tomt" tilstand uden klubtilknytning, og UI'et viste "afventer admin-godkendelse" til Ingunn — selvom hun selv havde oprettet ham som coach i en betalt klub.
+### 1. `src/pages/Coach.tsx` (eller hvor coach-atletlisten hentes)
+- Læs `is_admin()` / superadmin-toggle state (samme kilde som header-toggle bruger).
+- Hvis superadmin aktiv:
+  - Hent atleter via `coach_athletes` joined med `profiles` UDEN `club_id`-filter.
+  - Vis et lille badge på listen: "Superadmin: viser alle klubber" + klubnavn pr. atlet-kort.
+- Hvis superadmin FRA:
+  - Behold nuværende filter på `activeMembership.club_id`.
+  - Hvis listen er tom: vis empty-state med tekst "0 atleter i denne klub" + knap/hint "Skift klub" der åbner klubvælgeren.
 
-Konklusion: Axel blev ikke oprettet via coach-dialogen (`CreateAthleteDialog` → `create-athlete` edge function — den sætter både `club_id`, `is_approved=true`, `club_memberships` og `coach_athletes` korrekt). Han er sandsynligvis oprettet via offentlig signup eller via "tilføj med kode"-flowet, som **ikke** auto-godkender eller tilknytter klub på profilen.
+### 2. Atlet-kort
+- Tilføj lille klub-chip under navnet, men KUN når superadmin viser på tværs af klubber (ellers redundant).
 
-## Fix (minimal, lav credit-omkostning)
+### 3. Oversættelser (`src/i18n/translations.ts`)
+Nye nøgler på alle 7 sprog (en, da, sv, de, ar, no, es):
+- `coachSuperadminAllClubs` — "Superadmin: viser atleter på tværs af alle klubber"
+- `coachNoAthletesInClub` — "0 atleter i denne klub"
+- `coachSwitchClubHint` — "Skift klub for at se andre atleter"
 
-### 1. `supabase/functions/add-athlete-by-code/index.ts`
-Efter `club_memberships`-upsert og `coach_athletes`-insert: tilføj én `UPDATE profiles` der sætter:
-- `is_approved = true`
-- `club_id = clubId` (kun hvis NULL — rør ikke andres primære klub)
-- ryd `pending_coach_id`, `pending_invite_code`, `rejection_reason`
+### 4. Ingen DB-ændringer
+RLS tillader allerede admins at se alle `coach_athletes`-rækker; det er kun klient-filteret der skjuler dem.
 
-Én ekstra query, ingen schema-ændring.
-
-### 2. Backfill Axel manuelt (én migration / insert-script)
-- Indsæt `club_memberships(Axel, Tøyen, athlete, active)`
-- Indsæt `coach_athletes(Ingunn, Axel, Tøyen)`
-- `UPDATE profiles SET club_id = Tøyen WHERE user_id = Axel`
-
-### 3. CreateAthleteDialog — bedre fejlhåndtering (lille UI-tweak)
-Hvis `create-athlete` returnerer fejl pga. e-mail-konflikt (bruger findes allerede), vis tydelig besked: "Atleten findes — brug 'Tilføj med atlet-kode' i stedet" så coachen ikke ender med en orphan profil.
-
-### Verifikation
-- Re-test: Ingunn tilføjer en eksisterende atlet via kode → atleten skal øjeblikkeligt være i hendes klubliste, uden admin-skærm.
-- Tjek at Axel nu vises i Tøyen-rosteren og kan logge ind uden pending-skærm.
-
-### Det vi IKKE rører
-- `create-athlete` (virker allerede korrekt — sætter is_approved, club_id, membership, coach-link).
-- RLS-policies.
-- Onboarding-flowet for atleter der selv har tilmeldt sig via invite (`apply_invite_to_my_profile` auto-godkender allerede).
-
-## Spørgsmål inden jeg går videre
-Vil du have at jeg også tilføjer en defensiv `UPDATE profiles SET is_approved=true` i `apply_invite_to_my_profile` RPC'en? Den auto-godkender allerede, men hvis du vil have ekstra bælte+seler på samme tur, kan jeg gøre det. Ellers holder jeg mig til de tre punkter ovenfor.
+## Acceptkriterier
+- Som superadmin med superadmin-toggle ON: Axel Dahl-Engh vises i listen uanset aktiv klub.
+- Som superadmin med toggle OFF og aktiv klub ≠ Tøyen: Axel skjult, og tom Tøyen-visning viser ny besked.
+- Almindelige coaches mærker ingen forskel.
