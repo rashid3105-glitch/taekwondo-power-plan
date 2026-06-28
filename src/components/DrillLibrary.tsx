@@ -160,16 +160,26 @@ function DrillRow({ drill }: { drill: Drill }) {
             <p className="text-xs text-card-foreground/85 leading-relaxed whitespace-pre-wrap">{drill.description}</p>
           )}
           {ytId && (
-            <div className="rounded-lg overflow-hidden border border-border bg-black aspect-video">
-              <iframe
-                src={`https://www.youtube-nocookie.com/embed/${ytId}?rel=0&modestbranding=1`}
-                title={drill.title}
+            <a
+              href={youtubeHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block rounded-lg overflow-hidden border border-border bg-black aspect-video relative group"
+              aria-label={`Play ${drill.title} on YouTube`}
+            >
+              <img
+                src={`https://i.ytimg.com/vi/${ytId}/hqdefault.jpg`}
+                alt=""
                 loading="lazy"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="w-full h-full"
+                className="w-full h-full object-cover"
+                onError={(e) => { (e.currentTarget as HTMLImageElement).src = `https://i.ytimg.com/vi/${ytId}/mqdefault.jpg`; }}
               />
-            </div>
+              <span className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
+                <span className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
+                  <svg viewBox="0 0 24 24" className="w-6 h-6 ml-0.5 fill-black"><path d="M8 5v14l11-7z"/></svg>
+                </span>
+              </span>
+            </a>
           )}
         </div>
       )}
