@@ -60,6 +60,7 @@ interface PendingUser {
   tkd_start_date?: string | null;
   phone?: string | null;
   phone_country_code?: string | null;
+  athlete_code?: string | null;
 }
 
 export default function AdminApproval() {
@@ -128,7 +129,7 @@ export default function AdminApproval() {
     const [profilesRes, emailsRes, plansRes, rolesRes, coachAthletesRes, clubsRes] = await Promise.all([
       supabase
         .from("profiles")
-        .select("user_id, display_name, created_at, is_approved, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, payment_status, payment_date, is_demo, demo_full_access, demo_expires_at, club_id, discipline, country, current_injury, last_seen_at, birth_date, tkd_start_date, phone, phone_country_code")
+        .select("user_id, display_name, created_at, is_approved, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, payment_status, payment_date, is_demo, demo_full_access, demo_expires_at, club_id, discipline, country, current_injury, last_seen_at, birth_date, tkd_start_date, phone, phone_country_code, athlete_code")
         .or("is_parent.is.null,is_parent.eq.false")
         .order("created_at", { ascending: false }),
       supabase.functions.invoke("get-admin-users"),
@@ -627,16 +628,16 @@ export default function AdminApproval() {
                 Injury: {u.current_injury}
               </span>
             )}
-            {u.user_id && u.user_id !== DELETED_USER_ID && (
+            {u.athlete_code && u.user_id !== DELETED_USER_ID && (
               <span
-                className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full inline-flex items-center gap-1 cursor-pointer hover:bg-muted/80"
+                className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full inline-flex items-center gap-1 cursor-pointer hover:bg-muted/80 font-mono"
                 onClick={() => {
-                  navigator.clipboard.writeText(u.user_id);
-                  toast({ title: t("athleteId") || "Athlete ID" });
+                  navigator.clipboard.writeText(u.athlete_code!);
+                  toast({ title: t("athleteId") || "Athlete ID", description: u.athlete_code! });
                 }}
-                title={u.user_id}
+                title={u.athlete_code}
               >
-                {t("athleteId") || "ID"}: {u.user_id.slice(0, 8)}…
+                {u.athlete_code}
                 <Copy className="h-2.5 w-2.5" />
               </span>
             )}
