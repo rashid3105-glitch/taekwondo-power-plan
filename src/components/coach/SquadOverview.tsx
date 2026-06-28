@@ -56,6 +56,8 @@ interface Props {
   athleteMeta?: AthleteMeta[];
   pulseFilter?: PulseFilter;
   onStatsChange?: (stats: { total: number; attention: number; injured: number; noPlan: number; stale: number }) => void;
+  /** When true, query squad across ALL clubs (superadmin view) regardless of active club. */
+  allClubs?: boolean;
 }
 
 const BELT_ORDER = ["white", "yellow", "green", "blue", "red", "black"];
