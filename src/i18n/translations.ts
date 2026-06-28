@@ -15468,7 +15468,7 @@ const translations = {
     backToSignIn: "Tilbake til login",
     passwordRequirementsHint: "Minst 8 tegn",
     passwordTooWeak: "Passordet er for svakt. Bruk minst 8 tegn med en bokstav og et tall.",
-    athleteEmailExistsUseCode: "Este correo ya está registrado. Usa 'Añadir con código de atleta' para vincular al atleta existente a tu club.",
+    
 
     // Approval
     pendingApproval: "Konto afventer godkjenning",
