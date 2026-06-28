@@ -9486,7 +9486,7 @@ const translations = {
     manageAthlete: "Athlet verwalten",
     noAthletes: "Noch keine Athleten",
     noAthletesDesc: "Fügen Sie Athleten mit ihrem einzigartigen TKD-Code hinzu, um Pläne für sie zu erstellen.",
-    coachSuperadminAllClubs: "Superadmin: zeigt Athleten aus allen Vereinen",
+    coachSuperadminAllClubs: "Superadmin AN — Verein im Wähler wechseln, um Athleten anderer Vereine zu sehen",
     coachNoAthletesInClub: "0 Athleten in diesem Verein",
     coachSwitchClubHint: "Verein wechseln, um Athleten aus anderen Vereinen zu sehen",
     myAthletes: "Meine Athleten",
