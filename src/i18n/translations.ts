@@ -18428,6 +18428,8 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   profile: "Perfil",
   coach: "Entrenador",
   athlete: "Atleta",
+  athletes: "Atletas",
+  athleteId: "ID de atleta",
   belt: "Cinturón",
   nutrition: "Nutrición",
   nutritionPlannerTitle: "Planificador de comidas y registro",
