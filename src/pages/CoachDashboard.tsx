@@ -183,7 +183,7 @@ export default function CoachDashboard() {
         .eq("user_id", user.id),
       supabase
         .from("profiles")
-        .select("club_id, onboarding_completed")
+        .select("club_id, onboarding_completed, superadmin_active" as any)
         .eq("user_id", user.id)
         .maybeSingle(),
     ]);
@@ -192,6 +192,7 @@ export default function CoachDashboard() {
     const isCoach = userRoles.some((r: string) => r === "coach" || r === "admin");
     if (!isCoach) { navigate("/dashboard"); return; }
     setIsAdmin(userRoles.includes("admin"));
+    setSuperadminActive(Boolean((profileRes.data as any)?.superadmin_active));
 
     const coachProfile = profileRes.data as any;
     if (!coachProfile?.onboarding_completed) {
