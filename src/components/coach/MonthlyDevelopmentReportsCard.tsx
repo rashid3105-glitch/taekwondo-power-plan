@@ -225,7 +225,7 @@ export function MonthlyDevelopmentReportsCard({ athleteId, athleteName }: Props)
                   variant="ghost"
                   size="sm"
                   className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                  onClick={() => deleteReport(open)}
+                  onClick={() => setConfirmDelete(open)}
                 >
                   <Trash2 className="h-4 w-4 mr-1" /> {t("monthlyDevReportDelete")}
                 </Button>
@@ -237,6 +237,23 @@ export function MonthlyDevelopmentReportsCard({ athleteId, athleteName }: Props)
           )}
         </DialogContent>
       </Dialog>
+      <AlertDialog open={!!confirmDelete} onOpenChange={(o) => !o && setConfirmDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("monthlyDevReportDelete")}</AlertDialogTitle>
+            <AlertDialogDescription>{t("monthlyDevReportDeleteConfirm")}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>{t("cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={deleting}
+              onClick={(e) => { e.preventDefault(); if (confirmDelete) void deleteReport(confirmDelete); }}
+            >
+              {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : t("monthlyDevReportDelete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
