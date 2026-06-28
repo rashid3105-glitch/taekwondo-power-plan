@@ -56,6 +56,8 @@ interface Props {
   athleteMeta?: AthleteMeta[];
   pulseFilter?: PulseFilter;
   onStatsChange?: (stats: { total: number; attention: number; injured: number; noPlan: number; stale: number }) => void;
+  /** When true, query squad across ALL clubs (superadmin view) regardless of active club. */
+  allClubs?: boolean;
 }
 
 const BELT_ORDER = ["white", "yellow", "green", "blue", "red", "black"];
@@ -94,6 +96,7 @@ export function SquadOverview({
   athleteMeta,
   pulseFilter = "all",
   onStatsChange,
+  allClubs = false,
 }: Props) {
   const { t } = useLanguage();
   const { activeClubId } = useActiveClub();
@@ -106,11 +109,12 @@ export function SquadOverview({
 
   const allowedKey = (allowedUserIds || []).slice().sort().join(",");
   const metaKey = (athleteMeta || []).map((m) => `${m.user_id}:${m.club_name || ""}`).join("|");
+  const effectiveClubId = allClubs ? null : (activeClubId ?? null);
 
   const load = async () => {
     const { data, error } = await supabase.rpc("get_squad_overview" as any, {
       _coach_id: coachId,
-      _club_id: activeClubId ?? null,
+      _club_id: effectiveClubId,
     });
     if (!error && data) {
       const all = data as unknown as SquadRow[];
@@ -129,7 +133,7 @@ export function SquadOverview({
     const id = setInterval(load, 60_000);
     return () => clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [coachId, allowedKey, metaKey, activeClubId]);
+  }, [coachId, allowedKey, metaKey, effectiveClubId]);
 
   // Stats for parent
   useEffect(() => {

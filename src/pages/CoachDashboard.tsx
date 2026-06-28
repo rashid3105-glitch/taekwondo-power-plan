@@ -108,6 +108,7 @@ export default function CoachDashboard() {
   const [coachUserId, setCoachUserId] = useState<string | null>(null);
   const [coachClubId, setCoachClubId] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [superadminActive, setSuperadminActive] = useState(false);
   const [diaryAthleteId, setDiaryAthleteId] = useState<string | null>(null);
   const [diaryAthleteName, setDiaryAthleteName] = useState("");
   const [diaryEntries, setDiaryEntries] = useState<DiaryEntry[]>([]);
@@ -170,6 +171,13 @@ export default function CoachDashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeClubId]);
 
+  // When superadmin toggles after first mount, refresh squad to pick up cross-club athletes.
+  useEffect(() => {
+    if (!coachUserId) return;
+    loadAthletes(coachUserId, coachClubId || undefined);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [superadminActive]);
+
   const checkRoleAndLoad = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { navigate("/auth"); return; }
@@ -182,7 +190,7 @@ export default function CoachDashboard() {
         .eq("user_id", user.id),
       supabase
         .from("profiles")
-        .select("club_id, onboarding_completed")
+        .select("club_id, onboarding_completed, superadmin_active" as any)
         .eq("user_id", user.id)
         .maybeSingle(),
     ]);
@@ -191,6 +199,7 @@ export default function CoachDashboard() {
     const isCoach = userRoles.some((r: string) => r === "coach" || r === "admin");
     if (!isCoach) { navigate("/dashboard"); return; }
     setIsAdmin(userRoles.includes("admin"));
+    setSuperadminActive(Boolean((profileRes.data as any)?.superadmin_active));
 
     const coachProfile = profileRes.data as any;
     if (!coachProfile?.onboarding_completed) {
@@ -261,9 +270,45 @@ export default function CoachDashboard() {
         is_coach: !!m.is_coach,
       })) as AthleteProfile[];
 
-    const squad = allMembers
+    const squadFromClub = allMembers
       .filter((m) => !m.is_coach)
       .sort((a, b) => a.display_name.localeCompare(b.display_name));
+
+    // Superadmin: include athletes from coach_athletes links across ALL clubs
+    // (not just the active club). Direct profile read is allowed by RLS for
+    // superadmins via the is_superadmin() bypass.
+    let extraSquad: AthleteProfile[] = [];
+    if (superadminActive) {
+      const { data: allLinks } = await supabase
+        .from("coach_athletes")
+        .select("athlete_id, club_id")
+        .eq("coach_id", userId);
+      const knownIds = new Set(squadFromClub.map((s) => s.user_id));
+      const extraIds = Array.from(
+        new Set(
+          ((allLinks || []) as any[])
+            .map((l) => l.athlete_id as string)
+            .filter((id) => !knownIds.has(id))
+        )
+      );
+      if (extraIds.length > 0) {
+        const { data: extraProfiles } = await supabase
+          .from("profiles")
+          .select(
+            "user_id, display_name, athlete_code, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, current_injury, program_weeks, weekly_schedule, avatar_url, discipline, country, club_id"
+          )
+          .in("user_id", extraIds);
+        extraSquad = ((extraProfiles || []) as any[]).map((p) => ({
+          ...p,
+          club_name: p.club_id ? clubMap.get(p.club_id) || null : null,
+          is_coach: false,
+        })) as AthleteProfile[];
+      }
+    }
+
+    const squad = [...squadFromClub, ...extraSquad].sort((a, b) =>
+      a.display_name.localeCompare(b.display_name)
+    );
 
     // Avoid duplicates in the read-only "Club members" section:
     // anyone now in the squad is removed from clubAthletes. In practice this
@@ -493,11 +538,25 @@ export default function CoachDashboard() {
                 </div>
               )}
 
+              {superadminActive && (
+                <div className="rounded-lg border border-destructive/40 bg-destructive/5 px-3 py-2 text-xs font-medium text-destructive">
+                  {t("coachSuperadminAllClubs")}
+                </div>
+              )}
+
               {athletes.length === 0 ? (
                 <div className="rounded-xl border border-border bg-card p-12 text-center shadow-card">
                   <User className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
-                  <h3 className="font-bold text-card-foreground mb-1">{t("noAthletes")}</h3>
-                  <p className="text-sm text-muted-foreground">{t("noAthletesDesc")}</p>
+                  <h3 className="font-bold text-card-foreground mb-1">
+                    {memberships && memberships.length > 1
+                      ? t("coachNoAthletesInClub")
+                      : t("noAthletes")}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {memberships && memberships.length > 1
+                      ? t("coachSwitchClubHint")
+                      : t("noAthletesDesc")}
+                  </p>
                 </div>
               ) : (
                 <>
@@ -522,6 +581,7 @@ export default function CoachDashboard() {
                     athleteMeta={athletes.map((a) => ({ user_id: a.user_id, club_name: a.club_name }))}
                     pulseFilter={pulseFilter}
                     onStatsChange={setPulseStats}
+                    allClubs={superadminActive}
                   />
                 </>
               )}
