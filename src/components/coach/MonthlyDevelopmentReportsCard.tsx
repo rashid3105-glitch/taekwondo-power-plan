@@ -35,6 +35,8 @@ export function MonthlyDevelopmentReportsCard({ athleteId, athleteName }: Props)
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [open, setOpen] = useState<ReportRow | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<ReportRow | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     void load();
