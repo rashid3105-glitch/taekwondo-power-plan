@@ -6462,7 +6462,7 @@ const translations = {
     manageAthlete: "Hantera atlet",
     noAthletes: "Inga atleter ännu",
     noAthletesDesc: "Lägg till atleter med deras unika TKD-kod för att börja skapa planer åt dem.",
-    coachSuperadminAllClubs: "Superadmin: visar atleter från alla klubbar",
+    coachSuperadminAllClubs: "Superadmin PÅ — byt klubb i väljaren för att se andra klubbars atleter",
     coachNoAthletesInClub: "0 atleter i denna klubb",
     coachSwitchClubHint: "Byt klubb för att se atleter från andra klubbar",
     myAthletes: "Mina atleter",
