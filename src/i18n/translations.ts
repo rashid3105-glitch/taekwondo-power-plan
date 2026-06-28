@@ -3418,7 +3418,7 @@ const translations = {
     manageAthlete: "Administrer atlet",
     noAthletes: "Ingen atleter endnu",
     noAthletesDesc: "Tilføj atleter ved hjælp af deres unikke TKD-kode for at begynde at oprette planer for dem.",
-    coachSuperadminAllClubs: "Superadmin: viser atleter fra alle klubber",
+    coachSuperadminAllClubs: "Superadmin TIL — skift klub i vælgeren for at se andre klubbers atleter",
     coachNoAthletesInClub: "0 atleter i denne klub",
     coachSwitchClubHint: "Skift klub for at se atleter fra andre klubber",
     myAthletes: "Mine atleter",
