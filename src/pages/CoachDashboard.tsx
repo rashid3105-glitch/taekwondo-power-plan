@@ -531,11 +531,25 @@ export default function CoachDashboard() {
                 </div>
               )}
 
+              {superadminActive && (
+                <div className="rounded-lg border border-destructive/40 bg-destructive/5 px-3 py-2 text-xs font-medium text-destructive">
+                  {t("coachSuperadminAllClubs")}
+                </div>
+              )}
+
               {athletes.length === 0 ? (
                 <div className="rounded-xl border border-border bg-card p-12 text-center shadow-card">
                   <User className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
-                  <h3 className="font-bold text-card-foreground mb-1">{t("noAthletes")}</h3>
-                  <p className="text-sm text-muted-foreground">{t("noAthletesDesc")}</p>
+                  <h3 className="font-bold text-card-foreground mb-1">
+                    {memberships && memberships.length > 1
+                      ? t("coachNoAthletesInClub")
+                      : t("noAthletes")}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {memberships && memberships.length > 1
+                      ? t("coachSwitchClubHint")
+                      : t("noAthletesDesc")}
+                  </p>
                 </div>
               ) : (
                 <>
@@ -560,6 +574,7 @@ export default function CoachDashboard() {
                     athleteMeta={athletes.map((a) => ({ user_id: a.user_id, club_name: a.club_name }))}
                     pulseFilter={pulseFilter}
                     onStatsChange={setPulseStats}
+                    allClubs={superadminActive}
                   />
                 </>
               )}
