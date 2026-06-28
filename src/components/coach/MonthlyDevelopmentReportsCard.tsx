@@ -78,6 +78,21 @@ export function MonthlyDevelopmentReportsCard({ athleteId, athleteName }: Props)
     }
   }
 
+  async function deleteReport(r: ReportRow) {
+    if (!confirm(t("monthlyDevReportDeleteConfirm"))) return;
+    const { error } = await supabase
+      .from("monthly_development_reports" as any)
+      .delete()
+      .eq("id", r.id);
+    if (error) {
+      toast({ title: t("error"), description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: t("monthlyDevReportDeleted") });
+    setOpen(null);
+    await load();
+  }
+
   function monthLabel(m: number) {
     return t(MONTH_LABEL_KEYS[m - 1]);
   }
