@@ -171,6 +171,13 @@ export default function CoachDashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeClubId]);
 
+  // When superadmin toggles after first mount, refresh squad to pick up cross-club athletes.
+  useEffect(() => {
+    if (!coachUserId) return;
+    loadAthletes(coachUserId, coachClubId || undefined);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [superadminActive]);
+
   const checkRoleAndLoad = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { navigate("/auth"); return; }
