@@ -356,7 +356,7 @@ const translations = {
     manageAthlete: "Manage athlete",
     noAthletes: "No Athletes Yet",
     noAthletesDesc: "Add athletes using their unique TKD code to start creating plans for them.",
-    coachSuperadminAllClubs: "Superadmin: showing athletes from all clubs",
+    coachSuperadminAllClubs: "Superadmin ON — switch club in the picker to see other clubs' athletes",
     coachNoAthletesInClub: "0 athletes in this club",
     coachSwitchClubHint: "Switch club to see athletes from other clubs",
     myAthletes: "My Athletes",
