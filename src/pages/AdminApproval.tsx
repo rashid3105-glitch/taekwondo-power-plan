@@ -632,7 +632,7 @@ export default function AdminApproval() {
                 className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full inline-flex items-center gap-1 cursor-pointer hover:bg-muted/80"
                 onClick={() => {
                   navigator.clipboard.writeText(u.user_id);
-                  toast({ title: t("athleteId") || "Athlete ID", description: "Copied to clipboard" });
+                  toast({ title: t("athleteId") || "Athlete ID" });
                 }}
                 title={u.user_id}
               >
