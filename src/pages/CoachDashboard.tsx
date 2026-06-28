@@ -553,7 +553,7 @@ export default function CoachDashboard() {
                     athleteMeta={athletes.map((a) => ({ user_id: a.user_id, club_name: a.club_name }))}
                     pulseFilter={pulseFilter}
                     onStatsChange={setPulseStats}
-                    allClubs={superadminActive}
+                    allClubs={false}
                   />
                 </>
               )}
