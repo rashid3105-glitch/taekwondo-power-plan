@@ -163,12 +163,21 @@ async function collectMetrics(
     };
   }
 
+  // Diary entry-type breakdown so the LLM knows what was actually logged
+  const diaryByType: Record<string, number> = {};
+  for (const d of diaryRows) {
+    const k = String(d.entry_type || "general");
+    diaryByType[k] = (diaryByType[k] || 0) + 1;
+  }
+
   return {
     period: { year, month, start, end },
     diary: {
       entries: diaryRows.length,
       avg_mood: moodAvg,
       avg_energy: energyAvg,
+      by_type: diaryByType,
+      injury_entries: diaryByType["injury"] || 0,
     },
     training: {
       sessions_completed: workoutRows.length,
@@ -200,7 +209,7 @@ Cover, when data is present:
 3) Physical test progression
 4) Daily life signals (diary mood/energy) and recovery indicators (sleep/HRV/resting HR) — only if wearable data exists; otherwise skip this entirely without mentioning the absence.
 
-Do not invent numbers. Refer to the athlete by first name only.`;
+Do not invent numbers. Do NOT invent topics that are not in the data — in particular: never mention injuries, illness, family events, school, weight changes, or competitions unless those topics are explicitly present in the JSON (e.g. diary.injury_entries > 0, or a competition entry is listed). If diary.injury_entries is 0, do not write about injuries at all. Refer to the athlete by first name only.`;
 
   const userPrompt = `Athlete first name: ${athleteName}
 Period: ${metrics.period.year}-${String(metrics.period.month).padStart(2, "0")}

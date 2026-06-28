@@ -4,7 +4,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { ClipboardList, Download, Loader2, Sparkles } from "lucide-react";
+import { ClipboardList, Download, Loader2, Sparkles, Trash2 } from "lucide-react";
 
 interface Props {
   athleteId: string;
@@ -76,6 +76,21 @@ export function MonthlyDevelopmentReportsCard({ athleteId, athleteName }: Props)
     } finally {
       setGenerating(false);
     }
+  }
+
+  async function deleteReport(r: ReportRow) {
+    if (!confirm(t("monthlyDevReportDeleteConfirm"))) return;
+    const { error } = await supabase
+      .from("monthly_development_reports" as any)
+      .delete()
+      .eq("id", r.id);
+    if (error) {
+      toast({ title: t("error"), description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: t("monthlyDevReportDeleted") });
+    setOpen(null);
+    await load();
   }
 
   function monthLabel(m: number) {
@@ -195,7 +210,15 @@ export function MonthlyDevelopmentReportsCard({ athleteId, athleteName }: Props)
                   )}
                 </div>
               )}
-              <div className="flex justify-end">
+              <div className="flex justify-between items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                  onClick={() => deleteReport(open)}
+                >
+                  <Trash2 className="h-4 w-4 mr-1" /> {t("monthlyDevReportDelete")}
+                </Button>
                 <Button variant="outline" size="sm" onClick={() => exportPdf(open)}>
                   <Download className="h-4 w-4 mr-1" /> {t("monthlyDevReportExportPdf")}
                 </Button>
