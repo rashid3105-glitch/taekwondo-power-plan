@@ -210,7 +210,15 @@ export function MonthlyDevelopmentReportsCard({ athleteId, athleteName }: Props)
                   )}
                 </div>
               )}
-              <div className="flex justify-end">
+              <div className="flex justify-between items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                  onClick={() => deleteReport(open)}
+                >
+                  <Trash2 className="h-4 w-4 mr-1" /> {t("monthlyDevReportDelete")}
+                </Button>
                 <Button variant="outline" size="sm" onClick={() => exportPdf(open)}>
                   <Download className="h-4 w-4 mr-1" /> {t("monthlyDevReportExportPdf")}
                 </Button>
