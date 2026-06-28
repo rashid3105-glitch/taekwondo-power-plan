@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { ClipboardList, Download, Loader2, Sparkles, Trash2 } from "lucide-react";
 
@@ -34,6 +35,8 @@ export function MonthlyDevelopmentReportsCard({ athleteId, athleteName }: Props)
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [open, setOpen] = useState<ReportRow | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<ReportRow | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     void load();
@@ -79,16 +82,23 @@ export function MonthlyDevelopmentReportsCard({ athleteId, athleteName }: Props)
   }
 
   async function deleteReport(r: ReportRow) {
-    if (!confirm(t("monthlyDevReportDeleteConfirm"))) return;
-    const { error } = await supabase
+    setDeleting(true);
+    const { error, data } = await supabase
       .from("monthly_development_reports" as any)
       .delete()
-      .eq("id", r.id);
+      .eq("id", r.id)
+      .select("id");
+    setDeleting(false);
     if (error) {
       toast({ title: t("error"), description: error.message, variant: "destructive" });
       return;
     }
+    if (!data || (data as any[]).length === 0) {
+      toast({ title: t("error"), description: "Permission denied", variant: "destructive" });
+      return;
+    }
     toast({ title: t("monthlyDevReportDeleted") });
+    setConfirmDelete(null);
     setOpen(null);
     await load();
   }
@@ -215,7 +225,7 @@ export function MonthlyDevelopmentReportsCard({ athleteId, athleteName }: Props)
                   variant="ghost"
                   size="sm"
                   className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                  onClick={() => deleteReport(open)}
+                  onClick={() => setConfirmDelete(open)}
                 >
                   <Trash2 className="h-4 w-4 mr-1" /> {t("monthlyDevReportDelete")}
                 </Button>
@@ -227,6 +237,23 @@ export function MonthlyDevelopmentReportsCard({ athleteId, athleteName }: Props)
           )}
         </DialogContent>
       </Dialog>
+      <AlertDialog open={!!confirmDelete} onOpenChange={(o) => !o && setConfirmDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("monthlyDevReportDelete")}</AlertDialogTitle>
+            <AlertDialogDescription>{t("monthlyDevReportDeleteConfirm")}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>{t("cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={deleting}
+              onClick={(e) => { e.preventDefault(); if (confirmDelete) void deleteReport(confirmDelete); }}
+            >
+              {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : t("monthlyDevReportDelete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
