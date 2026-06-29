@@ -10,7 +10,7 @@ import { PageMeta } from "@/components/PageMeta";
 import { Eye, EyeOff, Loader2, Copy, Check, MessageCircle, Mail, ArrowRight } from "lucide-react";
 import logo from "@/assets/logo.png";
 
-type Step = "account" | "club" | "invite";
+type Step = "account" | "verify" | "club" | "invite";
 type Band = "1-5" | "6-15" | "16-30" | "30+";
 const BANDS: Band[] = ["1-5", "6-15", "16-30", "30+"];
 
@@ -47,10 +47,13 @@ export default function SignupCoach() {
       const { error } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { display_name: name, wants_coach: true, wants_demo: true } },
+        options: {
+          data: { display_name: name, wants_coach: true, wants_demo: true },
+          emailRedirectTo: `${window.location.origin}/auth?tab=signin`,
+        },
       });
       if (error) throw error;
-      setStep("club");
+      setStep("verify");
     } catch (err: any) {
       toast({ title: "Fejl", description: err.message, variant: "destructive" });
     } finally {
@@ -178,6 +181,37 @@ export default function SignupCoach() {
                 </p>
               </form>
             </>
+          )}
+
+          {step === "verify" && (
+            <div className="text-center space-y-4">
+              <div className="text-5xl">📬</div>
+              <h1 className="text-2xl font-black tracking-tight text-foreground">Bekræft din email</h1>
+              <p className="text-sm text-muted-foreground">
+                Vi har sendt et bekræftelseslink til <span className="font-bold text-foreground">{email}</span>. Klik på linket for at aktivere din konto og fortsætte.
+              </p>
+              <p className="text-xs text-muted-foreground">Tjek også spam-mappen.</p>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full h-11 rounded-xl"
+                onClick={async () => {
+                  try {
+                    const { error } = await supabase.auth.resend({
+                      type: "signup",
+                      email,
+                      options: { emailRedirectTo: `${window.location.origin}/auth?tab=signin` },
+                    });
+                    if (error) throw error;
+                    toast({ title: "Mail sendt igen" });
+                  } catch (e: any) {
+                    toast({ title: "Fejl", description: e.message, variant: "destructive" });
+                  }
+                }}
+              >
+                Send mailen igen
+              </Button>
+            </div>
           )}
 
           {step === "club" && (

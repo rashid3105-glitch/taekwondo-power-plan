@@ -13,7 +13,7 @@ import { detectCurrency, getTierPrice, formatPrice } from "@/lib/currency";
 import { useLanguage } from "@/i18n/LanguageContext";
 import logo from "@/assets/logo.png";
 
-type Step = "welcome" | "account";
+type Step = "welcome" | "account" | "verify";
 
 export default function InviteSignup() {
   const { code } = useParams<{ code: string }>();
@@ -58,16 +58,21 @@ export default function InviteSignup() {
       const { error } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { display_name: name } },
+        options: {
+          data: { display_name: name },
+          emailRedirectTo: `${window.location.origin}/auth?tab=signin`,
+        },
       });
       if (error) throw error;
-      // Apply invite — links to coach + club, marks pending approval
+      // Stash invite code; applied after the user confirms email & logs in
       if (code) {
-        await supabase.rpc("apply_invite_to_my_profile" as any, { _code: code });
+        try {
+          sessionStorage.setItem("pending_invite_code", code);
+          localStorage.setItem("pending_invite_code", code);
+        } catch {}
       }
-      // Flag for dashboard banner
       try { localStorage.setItem("invite_welcome_banner", "1"); } catch {}
-      navigate("/onboarding");
+      setStep("verify");
     } catch (err: any) {
       toast({ title: "Fejl", description: err.message, variant: "destructive" });
     } finally {
@@ -179,6 +184,37 @@ export default function InviteSignup() {
                 </Button>
               </form>
             </>
+          )}
+
+          {step === "verify" && (
+            <div className="text-center space-y-4">
+              <div className="text-5xl">📬</div>
+              <h1 className="text-2xl font-black tracking-tight text-foreground">Bekræft din email</h1>
+              <p className="text-sm text-muted-foreground">
+                Vi har sendt et bekræftelseslink til <span className="font-bold text-foreground">{email}</span>. Klik på linket for at aktivere din konto, log derefter ind og din invitation gennemføres automatisk.
+              </p>
+              <p className="text-xs text-muted-foreground">Tjek også spam-mappen.</p>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full h-11 rounded-xl"
+                onClick={async () => {
+                  try {
+                    const { error } = await supabase.auth.resend({
+                      type: "signup",
+                      email,
+                      options: { emailRedirectTo: `${window.location.origin}/auth?tab=signin` },
+                    });
+                    if (error) throw error;
+                    toast({ title: "Mail sendt igen" });
+                  } catch (e: any) {
+                    toast({ title: "Fejl", description: e.message, variant: "destructive" });
+                  }
+                }}
+              >
+                Send mailen igen
+              </Button>
+            </div>
           )}
         </div>
       </main>

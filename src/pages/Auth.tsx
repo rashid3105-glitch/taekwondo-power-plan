@@ -39,6 +39,8 @@ export default function AuthPage() {
   const [bioHasCreds, setBioHasCreds] = useState(false);
   const [bioLabel, setBioLabel] = useState("Face ID");
   const [bioLoading, setBioLoading] = useState(false);
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
+  const [resendLoading, setResendLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
@@ -131,14 +133,13 @@ export default function AuthPage() {
       if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        const pendingInvite = sessionStorage.getItem("pending_invite_code");
+        const pendingInvite =
+          sessionStorage.getItem("pending_invite_code") ||
+          localStorage.getItem("pending_invite_code");
         if (pendingInvite) {
           sessionStorage.removeItem("pending_invite_code");
+          try { localStorage.removeItem("pending_invite_code"); } catch {}
           await supabase.rpc("apply_invite_to_my_profile" as any, { _code: pendingInvite });
-          await supabase.auth.signOut();
-          toast({ title: t("joinRequestSent") });
-          navigate("/");
-          return;
         }
         // Offer to save credentials for biometric login on native
         if (bioAvailable && !bioHasCreds) {
@@ -163,7 +164,10 @@ export default function AuthPage() {
         const { data: signUpData, error } = await supabase.auth.signUp({
           email,
           password,
-          options: { data: { display_name: displayName } },
+          options: {
+            data: { display_name: displayName },
+            emailRedirectTo: `${window.location.origin}/auth`,
+          },
         });
         if (error) throw error;
         try {
@@ -178,8 +182,7 @@ export default function AuthPage() {
         } catch (emailErr) {
           console.error("Failed to send admin notification email", emailErr);
         }
-        toast({ title: t("accountCreated"), description: t("youreSignedIn") });
-        navigate(redirectTo ? `/onboarding?redirect=${encodeURIComponent(redirectTo)}` : "/onboarding");
+        setPendingEmail(email);
       }
     } catch (err: any) {
       const msg = String(err?.message ?? "");
@@ -244,6 +247,74 @@ export default function AuthPage() {
       </nav>
 
       <div style={{ maxWidth: 440, margin: "0 auto", padding: "48px 24px 80px" }}>
+        {pendingEmail ? (
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>📬</div>
+            <h1 style={{ fontSize: 28, fontWeight: 900, letterSpacing: "-0.02em", marginBottom: 12 }}>
+              Tjek din indbakke
+            </h1>
+            <p style={{ fontSize: 15, color: "rgba(255,255,255,0.75)", lineHeight: 1.5, marginBottom: 8 }}>
+              Vi har sendt et bekræftelseslink til
+            </p>
+            <p style={{ fontSize: 15, fontWeight: 700, color: GOLD, marginBottom: 24, wordBreak: "break-all" }}>
+              {pendingEmail}
+            </p>
+            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", lineHeight: 1.5, marginBottom: 32 }}>
+              Klik på linket i mailen for at aktivere din konto. Tjek også spam-mappen.
+            </p>
+            <button
+              type="button"
+              disabled={resendLoading}
+              onClick={async () => {
+                setResendLoading(true);
+                try {
+                  const { error } = await supabase.auth.resend({
+                    type: "signup",
+                    email: pendingEmail,
+                    options: { emailRedirectTo: `${window.location.origin}/auth` },
+                  });
+                  if (error) throw error;
+                  toast({ title: "Mail sendt igen" });
+                } catch (e: any) {
+                  toast({ title: "Fejl", description: e.message, variant: "destructive" });
+                } finally {
+                  setResendLoading(false);
+                }
+              }}
+              style={{
+                background: "transparent",
+                border: `1px solid ${GOLD}`,
+                color: GOLD,
+                fontWeight: 700,
+                padding: "12px 24px",
+                borderRadius: 10,
+                cursor: "pointer",
+                fontSize: 14,
+                marginRight: 8,
+              }}
+            >
+              {resendLoading ? "Sender…" : "Send mailen igen"}
+            </button>
+            <button
+              type="button"
+              onClick={() => { setPendingEmail(null); setIsLogin(true); }}
+              style={{
+                background: "transparent",
+                border: "1px solid rgba(255,255,255,0.2)",
+                color: "#fff",
+                fontWeight: 700,
+                padding: "12px 24px",
+                borderRadius: 10,
+                cursor: "pointer",
+                fontSize: 14,
+              }}
+            >
+              Tilbage til login
+            </button>
+          </div>
+        ) : (
+        <>
+
         <h1
           style={{
             fontSize: 32,
@@ -454,7 +525,10 @@ export default function AuthPage() {
             style={{ width: "100%", display: "block" }}
           />
         </div>
+        </>
+        )}
       </div>
+
     </div>
   );
 }
