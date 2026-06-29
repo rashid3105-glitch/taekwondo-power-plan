@@ -35,8 +35,6 @@ import {
   FileText,
   CreditCard,
   Dumbbell,
-  ClipboardList,
-  Trophy,
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useRole } from "@/contexts/RoleContext";
@@ -60,14 +58,6 @@ const NAV_ITEMS: { tab: TabKey; icon: typeof Home; labelKey: string; color: stri
   { tab: "progress", icon: BarChart3, labelKey: "progress", color: "text-tab-progress" },
   { tab: "rehab", icon: Heart, labelKey: "injuryRehabPlan", color: "text-tab-rehab" },
   { tab: "mental", icon: Brain, labelKey: "mental", color: "text-tab-mental" },
-];
-
-const COACH_NAV_ITEMS: { to: string; icon: typeof Home; labelKey: string; fallback: string; color: string }[] = [
-  { to: "/coach", icon: Home, labelKey: "coachNav", fallback: "Hold", color: "text-primary" },
-  { to: "/coach/season-calendar", icon: CalendarRange, labelKey: "train", fallback: "Træning", color: "text-primary" },
-  { to: "/coach/competitions", icon: Trophy, labelKey: "competitions", fallback: "Stævner", color: "text-explosive" },
-  { to: "/coach/surveys", icon: ClipboardList, labelKey: "surveysTitle", fallback: "Spørgeskemaer", color: "text-tab-progress" },
-  { to: "/coach/mental", icon: Brain, labelKey: "mental", fallback: "Mental", color: "text-tab-mental" },
 ];
 
 // Routes where we do NOT want the global menu (public/auth/marketing).
@@ -137,7 +127,6 @@ export function GlobalAppMenu() {
   const isCoach = hasCoachRole;
   const isDemo = !!(profile?.is_demo && profile?.payment_status !== "paid");
   const coachAthleteMode = isCoachMode ? "coach" : "athlete";
-  const showCoachNavigation = isCoach && isCoachMode;
 
   useEffect(() => {
     let mounted = true;
@@ -192,6 +181,11 @@ export function GlobalAppMenu() {
   const goTab = (tab: TabKey) => {
     if (isDemoLockedTab(tab)) return;
     setOpen(false);
+    // Home should always take the user to the athlete hub, even if they're
+    // currently in coach mode (otherwise Dashboard auto-bounces back to /coach).
+    if (tab === "hub" && isCoachMode) {
+      setCoachMode(false);
+    }
     navigate(tab === "hub" ? "/dashboard" : `/dashboard?tab=${tab}`);
   };
 
@@ -293,16 +287,7 @@ export function GlobalAppMenu() {
           <Separator />
 
           <nav className="flex-1 overflow-y-auto py-2 px-2">
-            {showCoachNavigation ? COACH_NAV_ITEMS.map(({ to, icon: Icon, labelKey, fallback, color }) => (
-              <button
-                key={to}
-                onClick={() => goAndClose(to)}
-                className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
-              >
-                <Icon className={`h-4 w-4 shrink-0 ${color}`} />
-                <span className="truncate">{t(labelKey) || fallback}</span>
-              </button>
-            )) : NAV_ITEMS.map(({ tab, icon: Icon, labelKey, color }) => {
+            {NAV_ITEMS.map(({ tab, icon: Icon, labelKey, color }) => {
               const locked = isDemoLockedTab(tab);
               return (
                 <button

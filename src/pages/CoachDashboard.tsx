@@ -34,8 +34,8 @@ import { TeamWeeklyScheduleCard } from "@/components/coach/TeamWeeklyScheduleCar
 import { ClubActivityTypesCard } from "@/components/coach/ClubActivityTypesCard";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
-  Loader2, Zap, User, Users, NotebookPen,
-  Building, CalendarRange, CalendarCheck, ChevronDown, Home,
+  ArrowLeft, Loader2, Zap, User, Users, NotebookPen,
+  MessageSquare, Building, CalendarRange, CalendarCheck, Home, ChevronDown,
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
@@ -126,6 +126,11 @@ export default function CoachDashboard() {
   const { activeClubId, activeMembership, memberships } = useActiveClub();
   const effectiveCoachClubId = activeClubId || coachClubId;
   const { isInTrial, trialDaysLeft, trialExpired } = useClubTrial(effectiveCoachClubId);
+
+  const exitCoachDashboard = () => {
+    setCoachMode(false);
+    navigate("/dashboard", { replace: true });
+  };
 
   useEffect(() => {
     if (!activeMembership) return;
@@ -364,9 +369,6 @@ export default function CoachDashboard() {
             <span className="text-sm sm:text-base font-extrabold text-card-foreground truncate">{t("coachDashboard")}</span>
           </div>
           <div className="flex items-center gap-1 shrink-0">
-            <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")} className="gap-1" title={t("hubWelcome")}>
-              <Home className="h-4 w-4" />
-            </Button>
             <Button variant="ghost" size="sm" onClick={() => navigate("/coach/today")} className="gap-1">
               <CalendarCheck className="h-4 w-4" />
               <span className="hidden sm:inline">{t("todayTab")}</span>
