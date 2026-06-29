@@ -363,9 +363,6 @@ export default function CoachDashboard() {
       <header className="app-header border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10 pt-safe">
         <div className="container max-w-4xl mx-auto px-3 sm:px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2 min-w-0">
-            <Button variant="ghost" size="icon" onClick={exitCoachDashboard}>
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
             <div className="h-8 w-8 rounded-lg bg-gradient-energy flex items-center justify-center shrink-0">
               <Zap className="h-4 w-4 text-primary-foreground" />
             </div>
@@ -382,15 +379,6 @@ export default function CoachDashboard() {
             </Button>
             
             <LanguageSwitcher />
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={exitCoachDashboard}
-              aria-label="Home"
-              title="Home"
-            >
-              <Home className="h-4 w-4" />
-            </Button>
           </div>
         </div>
         <div className="container max-w-4xl mx-auto px-3 sm:px-4 pb-2 flex justify-end">
