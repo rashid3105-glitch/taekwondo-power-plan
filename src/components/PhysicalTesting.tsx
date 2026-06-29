@@ -60,6 +60,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const { toast } = useToast();
   const { t, locale } = useLanguage();
+  const { activeClubId } = useActiveClub();
 
   // Coach: list of all athletes (for picker + focus selector)
   const [athletes, setAthletes] = useState<CoachAthlete[]>([]);
@@ -80,7 +81,8 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
 
   useEffect(() => {
     if (mode === "coach" && !athleteId) void loadAthletes();
-  }, [mode, athleteId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, athleteId, activeClubId]);
 
   // The user whose historical results / progression we display.
   const targetUserId =
