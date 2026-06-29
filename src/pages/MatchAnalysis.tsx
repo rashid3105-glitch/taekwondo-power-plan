@@ -19,6 +19,8 @@ import { PageMeta } from "@/components/PageMeta";
 import { VideoTagger } from "@/components/match/VideoTagger";
 import type { Discipline } from "@/lib/tkdTechniques";
 import { useMatchOffline } from "@/hooks/useMatchOffline";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
+
 import {
   cacheVideo, removeCachedVideo, queueOutboxUpload, removeOutboxUpload,
   makeTempId, type CachedVideoMeta,
@@ -53,7 +55,9 @@ export default function MatchAnalysis() {
   const { toast } = useToast();
   const { t } = useLanguage();
   const offline = useMatchOffline();
+  const { activeClubId } = useActiveClub();
   const [me, setMe] = useState<string | null>(null);
+
   const [isCoach, setIsCoach] = useState(false);
   const [athleteName, setAthleteName] = useState<string>("");
   const [resolvedAthleteId, setResolvedAthleteId] = useState<string | null>(null);
@@ -82,7 +86,7 @@ export default function MatchAnalysis() {
   const [oldVideos, setOldVideos] = useState<MatchVideoRow[]>([]);
   const [replaceBusy, setReplaceBusy] = useState(false);
 
-  useEffect(() => { void init(); /* eslint-disable-next-line */ }, [athleteId, offline.online]);
+  useEffect(() => { void init(); /* eslint-disable-next-line */ }, [athleteId, offline.online, activeClubId]);
 
   // Refresh once a queued upload completes (cached count grows or outbox shrinks)
   useEffect(() => {
@@ -111,48 +115,43 @@ export default function MatchAnalysis() {
     }
     setIsCoach(coach);
 
-    // Load athlete picker options. Coaches in this app manage athletes via club
-    // membership (not coach_athletes), so we combine both sources.
+    // Load athlete picker options — scope strictly to the active club.
     if (offline.online) {
       const list: { id: string; name: string }[] = [];
       const seen = new Set<string>();
 
-      // 1) Direct coach_athletes links
-      const { data: links } = await supabase
-        .from("coach_athletes")
-        .select("athlete_id, profiles:athlete_id(display_name)")
-        .eq("coach_id", user.id);
-      for (const l of (links || []) as any[]) {
-        if (seen.has(l.athlete_id)) continue;
-        seen.add(l.athlete_id);
-        list.push({ id: l.athlete_id, name: l.profiles?.display_name || t("matchAthlete") });
-      }
-
-      // 2) Club-mates: anyone in the same club(s) as this coach
-      const { data: myProf } = await supabase
-        .from("profiles").select("club_id").eq("user_id", user.id).maybeSingle();
-      const myClubs = new Set<string>();
-      if (myProf?.club_id) myClubs.add(myProf.club_id);
-      const { data: myMemberships } = await supabase
-        .from("club_memberships").select("club_id").eq("user_id", user.id);
-      for (const m of (myMemberships || []) as any[]) if (m.club_id) myClubs.add(m.club_id);
-
-      if (myClubs.size > 0) {
-        const clubIds = Array.from(myClubs);
-        const { data: mates } = await supabase
-          .from("profiles")
-          .select("user_id, display_name, club_id")
-          .in("club_id", clubIds);
-        for (const p of (mates || []) as any[]) {
-          if (p.user_id === user.id || seen.has(p.user_id)) continue;
-          seen.add(p.user_id);
-          list.push({ id: p.user_id, name: p.display_name || t("matchAthlete") });
+      if (activeClubId) {
+        const { data: members } = await supabase
+          .rpc("get_club_member_profiles" as any, { _club_id: activeClubId });
+        for (const m of ((members ?? []) as any[])) {
+          if (m.is_coach) continue;
+          if (m.user_id === user.id) continue;
+          if (seen.has(m.user_id)) continue;
+          seen.add(m.user_id);
+          list.push({ id: m.user_id, name: m.display_name || t("matchAthlete") });
+        }
+      } else {
+        // Fallback: only direct coach_athletes links scoped to coach's own club_id.
+        const { data: myProf } = await supabase
+          .from("profiles").select("club_id").eq("user_id", user.id).maybeSingle();
+        const myClubId = (myProf as any)?.club_id ?? null;
+        let q = supabase
+          .from("coach_athletes")
+          .select("athlete_id, profiles:athlete_id(display_name)")
+          .eq("coach_id", user.id);
+        if (myClubId) q = q.eq("club_id", myClubId);
+        const { data: links } = await q;
+        for (const l of (links || []) as any[]) {
+          if (seen.has(l.athlete_id)) continue;
+          seen.add(l.athlete_id);
+          list.push({ id: l.athlete_id, name: l.profiles?.display_name || t("matchAthlete") });
         }
       }
 
       list.sort((a, b) => a.name.localeCompare(b.name));
       setCoachAthletes(list);
     }
+
 
     const targetAthlete = athleteId === "me" || !athleteId ? user.id : athleteId;
     setResolvedAthleteId(targetAthlete);
