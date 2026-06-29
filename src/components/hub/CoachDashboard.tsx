@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useRole } from "@/contexts/RoleContext";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { Users, AlertTriangle, Dumbbell, FileText, Send, ChevronRight, CalendarDays, CheckCircle } from "lucide-react";
 import { EmptyState } from "./AthleteDashboard";
+
 
 interface CoachStats {
   totalAthletes: number;
@@ -23,6 +25,7 @@ interface InactiveAthlete {
  */
 export function CoachDashboard() {
   const { role: activeRole } = useRole();
+  const { activeClubId } = useActiveClub();
   const navigate = useNavigate();
 
   const [stats, setStats] = useState<CoachStats>({ totalAthletes: 0, sessionsThisWeek: 0, activePlans: 0 });
@@ -34,31 +37,44 @@ export function CoachDashboard() {
     let mounted = true;
 
     (async () => {
+      setLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
       if (!user || !mounted) return;
 
-      // 1. Get all athletes linked to this coach
-      const { data: links } = await supabase
-        .from("coach_athletes")
-        .select("athlete_id")
-        .eq("coach_id", user.id);
-
-      const athleteIds = (links || []).map((l: any) => l.athlete_id);
-      if (athleteIds.length === 0) {
-        if (mounted) setLoading(false);
+      // Scope strictly to the active club so atleter fra andre klubber aldrig vises.
+      if (!activeClubId) {
+        if (mounted) {
+          setStats({ totalAthletes: 0, sessionsThisWeek: 0, activePlans: 0 });
+          setInactiveAthletes([]);
+          setLoading(false);
+        }
         return;
       }
 
-      // 2. Fetch athlete profiles for names
-      const { data: profiles } = await supabase
-        .from("profiles")
-        .select("user_id, display_name")
-        .in("user_id", athleteIds);
+      const { data: members } = await supabase
+        .rpc("get_club_member_profiles" as any, { _club_id: activeClubId });
 
       const profileMap = new Map<string, string>();
-      (profiles || []).forEach((p: any) => {
-        profileMap.set(p.user_id, p.display_name || "Atlet");
-      });
+      const athleteIds: string[] = [];
+      for (const m of ((members ?? []) as any[])) {
+        if (m.is_coach) continue; // exclude coaches from athlete metrics
+        if (m.user_id === user.id) continue;
+        athleteIds.push(m.user_id);
+        profileMap.set(m.user_id, m.display_name || "Atlet");
+      }
+
+      if (athleteIds.length === 0) {
+        if (mounted) {
+          setStats({ totalAthletes: 0, sessionsThisWeek: 0, activePlans: 0 });
+          setInactiveAthletes([]);
+          setLoading(false);
+        }
+        return;
+      }
+
+
+      // 2. (profiles already loaded via RPC above)
+
 
       // 3. Get latest workout log per athlete (for inactive detection)
       const { data: allLogs } = await supabase
@@ -119,7 +135,8 @@ export function CoachDashboard() {
     })();
 
     return () => { mounted = false; };
-  }, [activeRole]);
+  }, [activeRole, activeClubId]);
+
 
   if (activeRole !== "coach") return null;
 
