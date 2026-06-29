@@ -35,7 +35,7 @@ import { ClubActivityTypesCard } from "@/components/coach/ClubActivityTypesCard"
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   Loader2, Zap, User, Users, NotebookPen,
-  Building, CalendarRange, CalendarCheck, ChevronDown,
+  Building, CalendarRange, CalendarCheck, ChevronDown, Home,
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
@@ -364,6 +364,9 @@ export default function CoachDashboard() {
             <span className="text-sm sm:text-base font-extrabold text-card-foreground truncate">{t("coachDashboard")}</span>
           </div>
           <div className="flex items-center gap-1 shrink-0">
+            <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")} className="gap-1" title={t("hubWelcome")}>
+              <Home className="h-4 w-4" />
+            </Button>
             <Button variant="ghost" size="sm" onClick={() => navigate("/coach/today")} className="gap-1">
               <CalendarCheck className="h-4 w-4" />
               <span className="hidden sm:inline">{t("todayTab")}</span>
