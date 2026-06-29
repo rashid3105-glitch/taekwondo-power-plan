@@ -526,7 +526,10 @@ export default function AuthPage() {
             style={{ width: "100%", display: "block" }}
           />
         </div>
+        </>
+        )}
       </div>
+
     </div>
   );
 }
