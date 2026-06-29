@@ -651,9 +651,29 @@ export default function AdminApproval() {
               ))}
             </div>
           )}
-          <p className="text-[10px] text-muted-foreground">
-            Joined: {new Date(u.created_at).toLocaleDateString()}
-          </p>
+          <div className="flex flex-wrap items-center gap-2">
+            {u.email ? (
+              <span className="text-[11px] inline-flex items-center gap-1 bg-muted/60 text-card-foreground px-2 py-0.5 rounded-full">
+                <a href={`mailto:${u.email}`} className="hover:underline">{u.email}</a>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(u.email!);
+                    toast({ title: "Email", description: u.email });
+                  }}
+                  className="opacity-70 hover:opacity-100"
+                  aria-label="Copy email"
+                >
+                  <Copy className="h-2.5 w-2.5" />
+                </button>
+              </span>
+            ) : (
+              <span className="text-[10px] text-muted-foreground italic">Ingen email registreret</span>
+            )}
+            <p className="text-[10px] text-muted-foreground">
+              Joined: {new Date(u.created_at).toLocaleDateString()}
+            </p>
+          </div>
 
           {/* Payment & Demo controls */}
           <div className="flex flex-wrap items-center gap-3 pt-1 border-t border-border mt-2">
