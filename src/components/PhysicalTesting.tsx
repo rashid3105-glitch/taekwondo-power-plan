@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useState } from "react";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -59,6 +60,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const { toast } = useToast();
   const { t, locale } = useLanguage();
+  const { activeClubId } = useActiveClub();
 
   // Coach: list of all athletes (for picker + focus selector)
   const [athletes, setAthletes] = useState<CoachAthlete[]>([]);
@@ -79,7 +81,8 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
 
   useEffect(() => {
     if (mode === "coach" && !athleteId) void loadAthletes();
-  }, [mode, athleteId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, athleteId, activeClubId]);
 
   // The user whose historical results / progression we display.
   const targetUserId =
@@ -110,25 +113,19 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
   async function loadAthletes() {
     setLoadingAthletes(true);
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setLoadingAthletes(false); return; }
-    const { data: links } = await supabase
-      .from("coach_athletes")
-      .select("athlete_id")
-      .eq("coach_id", user.id);
-    if (links && links.length > 0) {
-      const athleteIds = links.map(l => l.athlete_id);
-      const { data: profiles } = await supabase
-        .from("profiles")
-        .select("user_id, display_name")
-        .in("user_id", athleteIds);
-      if (profiles) {
-        const list = profiles
-          .map(p => ({ athlete_id: p.user_id, display_name: p.display_name }))
-          .sort((a, b) => a.display_name.localeCompare(b.display_name));
-        setAthletes(list);
-        if (!focusedAthleteId && list[0]) setFocusedAthleteId(list[0].athlete_id);
-      }
+    if (!user || !activeClubId) {
+      setAthletes([]);
+      setLoadingAthletes(false);
+      return;
     }
+    // Scope to the active club so coaches in another club don't appear in the picker.
+    const { data: members } = await supabase.rpc("get_club_member_profiles" as any, { _club_id: activeClubId });
+    const list: CoachAthlete[] = (((members as any[]) ?? [])
+      .filter((m) => m.user_id !== user.id && m.is_coach !== true)
+      .map((m) => ({ athlete_id: m.user_id as string, display_name: (m.display_name as string) ?? "" }))
+      .sort((a, b) => a.display_name.localeCompare(b.display_name)));
+    setAthletes(list);
+    if (!focusedAthleteId && list[0]) setFocusedAthleteId(list[0].athlete_id);
     setLoadingAthletes(false);
   }
 
