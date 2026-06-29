@@ -182,10 +182,13 @@ export function GlobalAppMenu() {
     if (isDemoLockedTab(tab)) return;
     setOpen(false);
     // Coach mode persists across navigation — only the Athlete/Coach toggle
-    // in the side menu may flip it. Dashboard will auto-bounce hub → /coach
-    // when coach mode is active.
+    // and explicitly clicking "Hjem" (athlete hub) may flip it back.
+    if (tab === "hub" && isCoachMode) {
+      setCoachMode(false);
+    }
     navigate(tab === "hub" ? "/dashboard" : `/dashboard?tab=${tab}`);
   };
+
 
   const goAndClose = (to: string) => {
     setOpen(false);
