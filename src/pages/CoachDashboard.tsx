@@ -34,8 +34,8 @@ import { TeamWeeklyScheduleCard } from "@/components/coach/TeamWeeklyScheduleCar
 import { ClubActivityTypesCard } from "@/components/coach/ClubActivityTypesCard";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
-  ArrowLeft, Loader2, Zap, User, Users, NotebookPen,
-  MessageSquare, Building, CalendarRange, CalendarCheck, Home, ChevronDown,
+  Loader2, Zap, User, Users, NotebookPen,
+  Building, CalendarRange, CalendarCheck, ChevronDown,
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
@@ -126,11 +126,6 @@ export default function CoachDashboard() {
   const { activeClubId, activeMembership, memberships } = useActiveClub();
   const effectiveCoachClubId = activeClubId || coachClubId;
   const { isInTrial, trialDaysLeft, trialExpired } = useClubTrial(effectiveCoachClubId);
-
-  const exitCoachDashboard = () => {
-    setCoachMode(false);
-    navigate("/dashboard", { replace: true });
-  };
 
   useEffect(() => {
     if (!activeMembership) return;
