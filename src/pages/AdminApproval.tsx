@@ -866,30 +866,35 @@ export default function AdminApproval() {
               className="h-7 text-xs"
               onClick={async () => {
                 const current = u.email || "";
-                const next = window.prompt(
-                  `Change login email for ${u.display_name || "user"}\n\nCurrent: ${current || "(none)"}\n\nEnter new email:`,
-                  current,
-                );
+                const name = u.display_name || "brugeren";
+                const message =
+                  `Skift login-email for ${name}\n\n` +
+                  `Nuværende email: ${current || "(ingen registreret)"}\n\n` +
+                  `Skriv den nye email nedenfor og tryk OK.\n` +
+                  `Brugeren skal herefter logge ind med den nye email.`;
+                const next = window.prompt(message, current);
                 if (!next) return;
                 const trimmed = next.trim().toLowerCase();
                 if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
-                  toast({ title: t("error"), description: "Invalid email", variant: "destructive" });
+                  toast({ title: t("error"), description: "Ugyldig email", variant: "destructive" });
                   return;
                 }
                 if (trimmed === current.toLowerCase()) return;
+                if (!window.confirm(`Bekræft skift af login-email for ${name}:\n\nFra: ${current || "(ingen)"}\nTil: ${trimmed}`)) return;
                 try {
                   const { data, error } = await supabase.functions.invoke("admin-update-user-email", {
                     body: { user_id: u.user_id, new_email: trimmed },
                   });
                   if (error || (data as any)?.error) throw new Error(error?.message || (data as any)?.error);
-                  toast({ title: "Email updated", description: trimmed });
+                  toast({ title: "Email opdateret", description: `${current || "(ingen)"} → ${trimmed}` });
                   setUsers((prev) => prev.map((x) => x.user_id === u.user_id ? { ...x, email: trimmed } : x));
                 } catch (err: any) {
                   toast({ title: t("error"), description: err.message, variant: "destructive" });
                 }
               }}
             >
-              <Pencil className="h-3 w-3 mr-1" /> Change email
+              <Pencil className="h-3 w-3 mr-1" /> Skift email
+
             </Button>
             {showRevoke && (
               <Button
