@@ -1,21 +1,24 @@
-## Goal
-When a user has switched to coach mode, clicking Home (or any nav item) must keep them in coach mode. The only way to drop into athlete mode is the Athlete/Coach toggle in the side menu.
+## Mål
+Kian skal se de 5 demo-atleter (Emma, Leo, Maja, Noah, Sara) i sit coach-dashboard for Sportstalent Demo-klubben.
 
-## Change
-`src/components/GlobalAppMenu.tsx` — `goTab()` currently forces `setCoachMode(false)` when tab === "hub". Remove that block so coach mode is never silently flipped by navigation.
+## Diagnose
+- Kian er coach i klub `dec0dec0-…-0001` (Sportstalent Demo) ✅
+- `coach_athletes` indeholder allerede links fra Kian til alle 5 demo-atleter ✅
+- Demo-atleternes `profiles.club_id` peger på Sportstalent Demo ✅
+- **Mangler:** Demo-atleterne har ingen rækker i `club_memberships`. Dashboardets squad-query (`get_squad_overview`, `CoachToday`, `SquadOverview`) joiner mod `club_memberships` for at filtrere efter aktiv klub → 0 resultater.
 
-```diff
-- if (tab === "hub" && isCoachMode) {
--   setCoachMode(false);
-- }
-  navigate(tab === "hub" ? "/dashboard" : `/dashboard?tab=${tab}`);
-```
+## Ændring (kun data, ingen kode)
+Indsæt 5 nye rækker i `club_memberships`:
 
-## Why this is enough (verified)
-- `src/pages/Dashboard.tsx` (lines 200–221) already redirects to `/coach` when `isCoachMode` is true and the active club role is coach/admin. So navigating to `/dashboard` while in coach mode bounces straight back to the coach dashboard — no athlete UI flashes.
-- For non-hub tabs (`plan`, `calendar`, etc.) the Dashboard intentionally lets coaches deep-link, which is the existing behaviour we keep.
-- The explicit Athlete/Coach segmented control in the side menu (lines 232–280) still calls `setCoachMode(false/true)` directly — that remains the only way to switch.
-- `CoachDashboard.tsx` only calls `setCoachMode(false)` when the user has no coach role / no active coach membership, which is correct and untouched.
+| user_id | club_id | role_in_club | status |
+|---|---|---|---|
+| Emma (b43075…) | dec0dec0-…-0001 | athlete | active |
+| Leo (a8f339…) | dec0dec0-…-0001 | athlete | active |
+| Maja (1c6054…) | dec0dec0-…-0001 | athlete | active |
+| Noah (3cfba5…) | dec0dec0-…-0001 | athlete | active |
+| Sara (15201e…) | dec0dec0-…-0001 | athlete | active |
 
-## Out of scope
-No DB, RLS, translations, or styling changes.
+Med `ON CONFLICT DO NOTHING` så det er sikkert at køre igen.
+
+## Verifikation
+Efter indsætning genindlæser Kian sit dashboard → de 5 demo-atleter vises i squad-listen, attendance og dialoger — som på det vedhæftede screenshot.
