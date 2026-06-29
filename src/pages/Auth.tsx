@@ -39,6 +39,8 @@ export default function AuthPage() {
   const [bioHasCreds, setBioHasCreds] = useState(false);
   const [bioLabel, setBioLabel] = useState("Face ID");
   const [bioLoading, setBioLoading] = useState(false);
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
+  const [resendLoading, setResendLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
