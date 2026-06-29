@@ -52,27 +52,26 @@ export function AthletesComparisonView() {
       ]),
     );
 
-    // Get athletes in the active club (or all coach athletes if no club).
+    // Strictly scoped to the active club — atleter fra andre klubber må aldrig optræde.
     const { data: userRes } = await supabase.auth.getUser();
     const coachId = userRes.user?.id;
     if (!coachId) { setLoading(false); return; }
 
-    let athleteIds: string[] = [];
-    if (activeClubId) {
-      const { data: members } = await supabase
-        .from("club_memberships")
-        .select("user_id")
-        .eq("club_id", activeClubId)
-        .eq("status", "active");
-      athleteIds = (members || []).map((m: any) => m.user_id).filter((id) => id !== coachId);
-    } else {
-      const { data: links } = await supabase
-        .from("coach_athletes")
-        .select("athlete_id")
-        .eq("coach_id", coachId);
-      athleteIds = (links || []).map((l: any) => l.athlete_id);
+    if (!activeClubId) {
+      // No club selected → show empty state instead of leaking cross-club athletes.
+      setRows([]);
+      setLoading(false);
+      return;
     }
+
+    const { data: members } = await supabase
+      .from("club_memberships")
+      .select("user_id")
+      .eq("club_id", activeClubId)
+      .eq("status", "active");
+    const athleteIds = (members || []).map((m: any) => m.user_id).filter((id) => id !== coachId);
     if (athleteIds.length === 0) { setRows([]); setLoading(false); return; }
+
 
     const { data: results } = await supabase
       .from("physical_test_results")

@@ -81,17 +81,37 @@ export default function CoachCompetitions() {
 
   useEffect(() => {
     (async () => {
+      setLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const { data: links } = await supabase.from("coach_athletes").select("athlete_id").eq("coach_id", user.id);
-      const athleteIds = (links ?? []).map((l: any) => l.athlete_id);
-      if (!athleteIds.length) { setLoading(false); return; }
-      const { data: profiles } = await supabase.from("profiles").select("user_id, display_name").in("user_id", athleteIds);
-      const nameMap = new Map((profiles ?? []).map((p: any) => [p.user_id, p.display_name]));
-      setMyAthletes((profiles ?? []).map((p: any) => ({ user_id: p.user_id, display_name: p.display_name || "—" })));
+
+      // Scope to active club so atleter fra andre klubber ikke optræder.
+      let athleteIds: string[] = [];
+      const nameMap = new Map<string, string>();
+      if (activeClubId) {
+        const { data: members } = await supabase
+          .rpc("get_club_member_profiles" as any, { _club_id: activeClubId });
+        for (const m of ((members ?? []) as any[])) {
+          if (m.is_coach) continue;
+          if (m.user_id === user.id) continue;
+          athleteIds.push(m.user_id);
+          nameMap.set(m.user_id, m.display_name || "—");
+        }
+      } else {
+        const { data: links } = await supabase.from("coach_athletes").select("athlete_id").eq("coach_id", user.id);
+        athleteIds = (links ?? []).map((l: any) => l.athlete_id);
+        if (athleteIds.length) {
+          const { data: profiles } = await supabase.from("profiles").select("user_id, display_name").in("user_id", athleteIds);
+          (profiles ?? []).forEach((p: any) => nameMap.set(p.user_id, p.display_name || "—"));
+        }
+      }
+
+      if (!athleteIds.length) { setMyAthletes([]); setComps([]); setLoading(false); return; }
+      setMyAthletes(athleteIds.map((id) => ({ user_id: id, display_name: nameMap.get(id) || "—" })));
       const { data: competitions } = await supabase.from("competitions").select("id, name, event_date, location, user_id, priority, result").in("user_id", athleteIds).order("event_date", { ascending: true });
       const compsList = ((competitions ?? []) as any[]).map((c: any) => ({ ...c, athlete_name: nameMap.get(c.user_id) || "—" }));
       setComps(compsList);
+
 
       // Fetch reflection state (submitted + requested) for these athletes
       const compIds = compsList.map((c: any) => c.id);
@@ -119,7 +139,7 @@ export default function CoachCompetitions() {
       }
       setLoading(false);
     })();
-  }, []);
+  }, [activeClubId]);
 
   const today = new Date().toISOString().slice(0, 10);
 
