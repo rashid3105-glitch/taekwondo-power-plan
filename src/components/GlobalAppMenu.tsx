@@ -249,6 +249,41 @@ export function GlobalAppMenu() {
             </div>
           </SheetHeader>
 
+          {isCoach && (
+            <div className="px-5 pb-3">
+              <div className="grid grid-cols-2 gap-1 rounded-lg border border-border bg-muted/40 p-1">
+                <button
+                  onClick={() => {
+                    setCoachMode(false);
+                    setOpen(false);
+                    navigate("/dashboard");
+                  }}
+                  className={`rounded-md px-2 py-1.5 text-xs font-medium transition-colors ${
+                    !isCoachMode
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {t("athlete") || "Athlete"}
+                </button>
+                <button
+                  onClick={() => {
+                    setCoachMode(true);
+                    setOpen(false);
+                    navigate("/coach");
+                  }}
+                  className={`rounded-md px-2 py-1.5 text-xs font-medium transition-colors ${
+                    isCoachMode
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {t("coach") || "Coach"}
+                </button>
+              </div>
+            </div>
+          )}
+
           <Separator />
 
           <nav className="flex-1 overflow-y-auto py-2 px-2">
