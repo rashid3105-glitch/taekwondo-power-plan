@@ -163,7 +163,10 @@ export default function AuthPage() {
         const { data: signUpData, error } = await supabase.auth.signUp({
           email,
           password,
-          options: { data: { display_name: displayName } },
+          options: {
+            data: { display_name: displayName },
+            emailRedirectTo: `${window.location.origin}/auth`,
+          },
         });
         if (error) throw error;
         try {
@@ -178,8 +181,7 @@ export default function AuthPage() {
         } catch (emailErr) {
           console.error("Failed to send admin notification email", emailErr);
         }
-        toast({ title: t("accountCreated"), description: t("youreSignedIn") });
-        navigate(redirectTo ? `/onboarding?redirect=${encodeURIComponent(redirectTo)}` : "/onboarding");
+        setPendingEmail(email);
       }
     } catch (err: any) {
       const msg = String(err?.message ?? "");
