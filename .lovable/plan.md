@@ -1,25 +1,21 @@
-# Fix: Superadmin viser for mange atleter
+## Goal
+When a user has switched to coach mode, clicking Home (or any nav item) must keep them in coach mode. The only way to drop into athlete mode is the Athlete/Coach toggle in the side menu.
 
-## Problem
-Med superadmin TIL viser coach-overview lige nu atleter fra **alle klubber** på én gang (Copenhagen City + Tøyen + …). Det føles som en fejl — du vil have, at listen følger den klub, du har valgt i klubvælgeren, og at du skifter klub for at se andre.
+## Change
+`src/components/GlobalAppMenu.tsx` — `goTab()` currently forces `setCoachMode(false)` when tab === "hub". Remove that block so coach mode is never silently flipped by navigation.
 
-## Løsning (minimal, kun frontend)
+```diff
+- if (tab === "hub" && isCoachMode) {
+-   setCoachMode(false);
+- }
+  navigate(tab === "hub" ? "/dashboard" : `/dashboard?tab=${tab}`);
+```
 
-**`src/pages/CoachDashboard.tsx`**
-- Fjern den cross-club merge der henter `coach_athletes` på tværs af klubber, når superadmin er TIL.
-- Send **ikke** `allClubs={true}` til `SquadOverview` længere — brug altid den aktive klub.
-- Behold superadmin-badge, men omformulér til: *"Superadmin TIL — skift klub i vælgeren for at se andre klubbers atleter"* (alle 7 sprog).
-- Behold den forbedrede tomme-tilstand ("0 atleter i denne klub — skift klub").
+## Why this is enough (verified)
+- `src/pages/Dashboard.tsx` (lines 200–221) already redirects to `/coach` when `isCoachMode` is true and the active club role is coach/admin. So navigating to `/dashboard` while in coach mode bounces straight back to the coach dashboard — no athlete UI flashes.
+- For non-hub tabs (`plan`, `calendar`, etc.) the Dashboard intentionally lets coaches deep-link, which is the existing behaviour we keep.
+- The explicit Athlete/Coach segmented control in the side menu (lines 232–280) still calls `setCoachMode(false/true)` directly — that remains the only way to switch.
+- `CoachDashboard.tsx` only calls `setCoachMode(false)` when the user has no coach role / no active coach membership, which is correct and untouched.
 
-**`src/components/coach/SquadOverview.tsx`**
-- `allClubs`-prop bliver ubrugt fra dashboardet, men beholdes (ingen breaking change). Default forbliver `false`.
-
-**`src/i18n/translations.ts`**
-- Opdatér `coachSuperadminAllClubs`-teksten på alle 7 sprog til den nye formulering.
-
-## Effekt
-- Superadmin TIL + aktiv klub = Tøyen → du ser kun Tøyen-atleter (inkl. Axel).
-- Skift til Copenhagen City i klubvælgeren → du ser CC-atleterne.
-- Superadmin giver stadig **læseadgang** til alle klubber via klubvælgeren (uændret) og RLS-bypass (uændret) — det er kun listen i overview, der nu filtreres pr. valgt klub.
-
-Ingen DB-ændringer, ingen RLS-ændringer.
+## Out of scope
+No DB, RLS, translations, or styling changes.
