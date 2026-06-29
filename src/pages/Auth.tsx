@@ -248,6 +248,74 @@ export default function AuthPage() {
       </nav>
 
       <div style={{ maxWidth: 440, margin: "0 auto", padding: "48px 24px 80px" }}>
+        {pendingEmail ? (
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>📬</div>
+            <h1 style={{ fontSize: 28, fontWeight: 900, letterSpacing: "-0.02em", marginBottom: 12 }}>
+              Tjek din indbakke
+            </h1>
+            <p style={{ fontSize: 15, color: "rgba(255,255,255,0.75)", lineHeight: 1.5, marginBottom: 8 }}>
+              Vi har sendt et bekræftelseslink til
+            </p>
+            <p style={{ fontSize: 15, fontWeight: 700, color: GOLD, marginBottom: 24, wordBreak: "break-all" }}>
+              {pendingEmail}
+            </p>
+            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", lineHeight: 1.5, marginBottom: 32 }}>
+              Klik på linket i mailen for at aktivere din konto. Tjek også spam-mappen.
+            </p>
+            <button
+              type="button"
+              disabled={resendLoading}
+              onClick={async () => {
+                setResendLoading(true);
+                try {
+                  const { error } = await supabase.auth.resend({
+                    type: "signup",
+                    email: pendingEmail,
+                    options: { emailRedirectTo: `${window.location.origin}/auth` },
+                  });
+                  if (error) throw error;
+                  toast({ title: "Mail sendt igen" });
+                } catch (e: any) {
+                  toast({ title: "Fejl", description: e.message, variant: "destructive" });
+                } finally {
+                  setResendLoading(false);
+                }
+              }}
+              style={{
+                background: "transparent",
+                border: `1px solid ${GOLD}`,
+                color: GOLD,
+                fontWeight: 700,
+                padding: "12px 24px",
+                borderRadius: 10,
+                cursor: "pointer",
+                fontSize: 14,
+                marginRight: 8,
+              }}
+            >
+              {resendLoading ? "Sender…" : "Send mailen igen"}
+            </button>
+            <button
+              type="button"
+              onClick={() => { setPendingEmail(null); setIsLogin(true); }}
+              style={{
+                background: "transparent",
+                border: "1px solid rgba(255,255,255,0.2)",
+                color: "#fff",
+                fontWeight: 700,
+                padding: "12px 24px",
+                borderRadius: 10,
+                cursor: "pointer",
+                fontSize: 14,
+              }}
+            >
+              Tilbage til login
+            </button>
+          </div>
+        ) : (
+        <>
+
         <h1
           style={{
             fontSize: 32,
