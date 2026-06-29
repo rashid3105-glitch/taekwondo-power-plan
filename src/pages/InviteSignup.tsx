@@ -13,7 +13,7 @@ import { detectCurrency, getTierPrice, formatPrice } from "@/lib/currency";
 import { useLanguage } from "@/i18n/LanguageContext";
 import logo from "@/assets/logo.png";
 
-type Step = "welcome" | "account";
+type Step = "welcome" | "account" | "verify";
 
 export default function InviteSignup() {
   const { code } = useParams<{ code: string }>();
