@@ -10,7 +10,7 @@ import { PageMeta } from "@/components/PageMeta";
 import { Eye, EyeOff, Loader2, Copy, Check, MessageCircle, Mail, ArrowRight } from "lucide-react";
 import logo from "@/assets/logo.png";
 
-type Step = "account" | "club" | "invite";
+type Step = "account" | "verify" | "club" | "invite";
 type Band = "1-5" | "6-15" | "16-30" | "30+";
 const BANDS: Band[] = ["1-5", "6-15", "16-30", "30+"];
 
