@@ -58,16 +58,21 @@ export default function InviteSignup() {
       const { error } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { display_name: name } },
+        options: {
+          data: { display_name: name },
+          emailRedirectTo: `${window.location.origin}/auth?tab=signin`,
+        },
       });
       if (error) throw error;
-      // Apply invite — links to coach + club, marks pending approval
+      // Stash invite code; applied after the user confirms email & logs in
       if (code) {
-        await supabase.rpc("apply_invite_to_my_profile" as any, { _code: code });
+        try {
+          sessionStorage.setItem("pending_invite_code", code);
+          localStorage.setItem("pending_invite_code", code);
+        } catch {}
       }
-      // Flag for dashboard banner
       try { localStorage.setItem("invite_welcome_banner", "1"); } catch {}
-      navigate("/onboarding");
+      setStep("verify");
     } catch (err: any) {
       toast({ title: "Fejl", description: err.message, variant: "destructive" });
     } finally {
