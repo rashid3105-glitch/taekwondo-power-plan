@@ -47,10 +47,13 @@ export default function SignupCoach() {
       const { error } = await supabase.auth.signUp({
         email,
         password,
-        options: { data: { display_name: name, wants_coach: true, wants_demo: true } },
+        options: {
+          data: { display_name: name, wants_coach: true, wants_demo: true },
+          emailRedirectTo: `${window.location.origin}/auth?tab=signin`,
+        },
       });
       if (error) throw error;
-      setStep("club");
+      setStep("verify");
     } catch (err: any) {
       toast({ title: "Fejl", description: err.message, variant: "destructive" });
     } finally {
