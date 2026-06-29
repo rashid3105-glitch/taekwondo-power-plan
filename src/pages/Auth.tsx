@@ -133,14 +133,13 @@ export default function AuthPage() {
       if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        const pendingInvite = sessionStorage.getItem("pending_invite_code");
+        const pendingInvite =
+          sessionStorage.getItem("pending_invite_code") ||
+          localStorage.getItem("pending_invite_code");
         if (pendingInvite) {
           sessionStorage.removeItem("pending_invite_code");
+          try { localStorage.removeItem("pending_invite_code"); } catch {}
           await supabase.rpc("apply_invite_to_my_profile" as any, { _code: pendingInvite });
-          await supabase.auth.signOut();
-          toast({ title: t("joinRequestSent") });
-          navigate("/");
-          return;
         }
         // Offer to save credentials for biometric login on native
         if (bioAvailable && !bioHasCreds) {
