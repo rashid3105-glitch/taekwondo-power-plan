@@ -245,49 +245,25 @@ export async function getChattableContacts(): Promise<
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return [];
 
-  // People I coach
-  const { data: athletes } = await supabase
-    .from("coach_athletes")
-    .select("athlete_id")
-    .eq("coach_id", user.id);
-  const athleteIds = (athletes ?? []).map((a) => a.athlete_id);
+  // Resolve the active club from localStorage (set by ActiveClubContext).
+  // Falling back to the user's primary profile.club_id keeps athletes uden klubvælger sigtet.
+  let activeClubId: string | null = null;
+  try {
+    if (typeof window !== "undefined") {
+      activeClubId = window.localStorage.getItem("activeClubId:" + user.id);
+    }
+  } catch { /* ignore */ }
 
-  // People who coach me
-  const { data: coaches } = await supabase
-    .from("coach_athletes")
-    .select("coach_id")
-    .eq("athlete_id", user.id);
-  const coachIds = (coaches ?? []).map((c) => c.coach_id);
-
-  // People in my club
   const { data: me } = await supabase
     .from("profiles")
     .select("club_id")
     .eq("user_id", user.id)
     .maybeSingle();
+
+  const effectiveClubId: string | null = activeClubId || (me?.club_id ?? null);
+
+  // Club-mates strictly from the active club.
   let clubMateIds: string[] = [];
-  if (me?.club_id) {
-    const { data: mates } = await supabase
-      .from("club_directory" as any)
-      .select("user_id")
-      .eq("club_id", me.club_id)
-      .neq("user_id", user.id);
-    clubMateIds = ((mates ?? []) as any[]).map((m: any) => m.user_id);
-  }
-
-  // Determine which club_id to use — own profile first, then fall back to coach's club
-  let effectiveClubId: string | null = me?.club_id ?? null;
-
-  if (!effectiveClubId && coachIds.length > 0) {
-    // Athlete has no club_id — use the first coach's club_id
-    const { data: coachProfile } = await supabase
-      .from("club_directory" as any)
-      .select("club_id")
-      .eq("user_id", coachIds[0])
-      .maybeSingle();
-    effectiveClubId = (coachProfile as any)?.club_id ?? null;
-  }
-
   let clubProfiles: Array<{ user_id: string; display_name: string | null; avatar_url: string | null }> = [];
   if (effectiveClubId) {
     const { data: cp } = await supabase
@@ -296,11 +272,30 @@ export async function getChattableContacts(): Promise<
       .eq("club_id", effectiveClubId)
       .neq("user_id", user.id);
     clubProfiles = ((cp ?? []) as any[]) as typeof clubProfiles;
+    clubMateIds = clubProfiles.map((p) => p.user_id);
+  }
+
+  // Coach links scoped to the active club, so atleter fra andre klubber ikke optræder som kontakter.
+  let athleteIds: string[] = [];
+  let coachIds: string[] = [];
+  if (effectiveClubId) {
+    const { data: athletes } = await supabase
+      .from("coach_athletes")
+      .select("athlete_id")
+      .eq("coach_id", user.id)
+      .eq("club_id", effectiveClubId);
+    athleteIds = (athletes ?? []).map((a: any) => a.athlete_id);
+
+    const { data: coaches } = await supabase
+      .from("coach_athletes")
+      .select("coach_id")
+      .eq("athlete_id", user.id)
+      .eq("club_id", effectiveClubId);
+    coachIds = (coaches ?? []).map((c: any) => c.coach_id);
   }
 
   const ids = Array.from(new Set([...athleteIds, ...coachIds, ...clubMateIds]));
 
-  // Merge: club profiles take priority, supplement with coach/athlete links
   const { data: linkedProfiles } = ids.length === 0
     ? { data: [] as Array<{ user_id: string; display_name: string | null; avatar_url: string | null }> }
     : await supabase
@@ -308,12 +303,12 @@ export async function getChattableContacts(): Promise<
         .select("user_id, display_name, avatar_url")
         .in("user_id", ids);
 
-  // Combine and deduplicate by user_id — club profiles + linked profiles
   const profileMap = new Map<string, { user_id: string; display_name: string | null; avatar_url: string | null }>();
   for (const p of [...((linkedProfiles ?? []) as any[]), ...clubProfiles]) {
     profileMap.set((p as any).user_id, p as any);
   }
   const profiles = Array.from(profileMap.values());
+
 
   // Also include parents linked to athletes I coach
   let parentIds: string[] = [];
