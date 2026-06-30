@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import splashLogo from "@/assets/splash-logo.png";
+import splashLogo from "@/assets/runner-icon.png";
 
 interface SplashScreenProps {
   /** Duration in ms before fade-out begins. Default 2500. */
