@@ -59,6 +59,10 @@ export function InviteDialog({ coachId, clubId, pendingCount, approvedCount }: P
         });
         if (error) throw error;
         setCode(newCode);
+        // Fire-and-forget admin notification (don't block UI on failure)
+        supabase.functions
+          .invoke("notify-admin-coach-invite", { body: { invite_code: newCode } })
+          .catch((err) => console.warn("notify-admin-coach-invite failed", err));
       }
     } catch (e: any) {
       toast({ title: e.message || "Error", variant: "destructive" });
@@ -89,6 +93,9 @@ export function InviteDialog({ coachId, clubId, pendingCount, approvedCount }: P
       });
       if (error) throw error;
       setCode(newCode);
+      supabase.functions
+        .invoke("notify-admin-coach-invite", { body: { invite_code: newCode } })
+        .catch((err) => console.warn("notify-admin-coach-invite failed", err));
       toast({ title: t("inviteRegenerated") });
     } catch (e: any) {
       toast({ title: e.message || "Error", variant: "destructive" });
