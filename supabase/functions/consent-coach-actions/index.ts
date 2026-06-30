@@ -90,6 +90,7 @@ Deno.serve(async (req) => {
       .eq("user_id", coachId);
     const roleList = (roles || []).map((r: any) => r.role);
     const isCoach = roleList.includes("coach") || roleList.includes("admin");
+    const isGlobalAdmin = roleList.includes("admin");
     if (!isCoach) return jsonResponse({ error: "forbidden" }, 403);
 
     // Resolve coach's clubs (where they are coach/admin in club_memberships).
@@ -102,7 +103,33 @@ Deno.serve(async (req) => {
       .filter((m: any) => m.role_in_club === "coach" || m.role_in_club === "admin")
       .map((m: any) => m.club_id)
       .filter(Boolean);
-    if (coachClubIds.length === 0) return jsonResponse({ error: "no_clubs" }, 403);
+    if (!isGlobalAdmin && coachClubIds.length === 0) return jsonResponse({ error: "no_clubs" }, 403);
+
+    const body = await req.json().catch(() => ({}));
+    const action: string = body.action;
+    const requestedClubId: string | undefined =
+      typeof body.club_id === "string" && body.club_id.length > 0 ? body.club_id : undefined;
+
+    // Determine effective club scope. Global admins may target any club via ClubSwitcher;
+    // regular coaches may ONLY target clubs they already coach.
+    let effectiveClubIds: string[];
+    if (requestedClubId) {
+      if (isGlobalAdmin) {
+        const { data: clubRow } = await admin
+          .from("clubs").select("id").eq("id", requestedClubId).maybeSingle();
+        if (!clubRow) return jsonResponse({ error: "club_not_found" }, 404);
+        effectiveClubIds = [requestedClubId];
+      } else {
+        if (!coachClubIds.includes(requestedClubId)) {
+          return jsonResponse({ error: "forbidden" }, 403);
+        }
+        effectiveClubIds = [requestedClubId];
+      }
+    } else {
+      effectiveClubIds = coachClubIds;
+    }
+    if (effectiveClubIds.length === 0) return jsonResponse({ error: "no_clubs" }, 403);
+
 
     const body = await req.json().catch(() => ({}));
     const action: string = body.action;
