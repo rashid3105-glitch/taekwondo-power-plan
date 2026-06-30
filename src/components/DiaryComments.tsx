@@ -204,22 +204,54 @@ export function DiaryComments({ entryId, canComment = false }: DiaryCommentsProp
       )}
 
       {canComment && (
-        <div className="space-y-1.5">
-          <div className="flex gap-2">
-            <Textarea
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              placeholder={t("coachCommentPlaceholder") || "Write a comment..."}
-              rows={1}
-              maxLength={2000}
-              className="resize-none text-xs min-h-[36px] py-2"
-            />
+        <div className="space-y-1.5 relative">
+          <div className="flex gap-2 items-end">
+            <div className="relative flex-1">
+              <Textarea
+                ref={textareaRef}
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                placeholder={t("coachCommentPlaceholder") || "Write a comment..."}
+                rows={1}
+                maxLength={2000}
+                className="resize-none text-xs min-h-[36px] py-2 pr-10"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="absolute right-1 bottom-1 h-7 w-7 text-muted-foreground hover:text-foreground"
+                onClick={() => setShowEmoji((s) => !s)}
+                aria-label="Emoji"
+              >
+                <Smile className="h-4 w-4" />
+              </Button>
+              {showEmoji && (
+                <div className="absolute bottom-full right-0 mb-2 z-20 flex flex-wrap gap-1 p-2 bg-card border border-border rounded-lg shadow-lg max-w-[260px]">
+                  {EMOJIS.map((e) => (
+                    <button
+                      key={e}
+                      type="button"
+                      onClick={() => {
+                        setNewComment((b) => b + e);
+                        setShowEmoji(false);
+                        textareaRef.current?.focus();
+                      }}
+                      className="h-9 w-9 text-lg hover:bg-muted rounded flex items-center justify-center"
+                      aria-label={`Emoji ${e}`}
+                    >
+                      {e}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
             <Button
               size="icon"
               variant="ghost"
               onClick={handleSubmit}
               disabled={submitting || !newComment.trim()}
-              className="shrink-0 h-9 w-9"
+              className={cn("shrink-0 h-9 w-9", newComment.trim() && "text-primary")}
             >
               {submitting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
             </Button>
