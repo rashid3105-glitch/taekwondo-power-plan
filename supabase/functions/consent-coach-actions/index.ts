@@ -217,7 +217,7 @@ Deno.serve(async (req) => {
         .eq("user_id", athleteId)
         .eq("status", "active");
       const athleteClubs = new Set((athleteMemberships || []).map((m: any) => m.club_id));
-      const inCoachClub = coachClubIds.some((cid) => athleteClubs.has(cid));
+      const inCoachClub = effectiveClubIds.some((cid) => athleteClubs.has(cid));
       if (!inCoachClub) return jsonResponse({ error: "forbidden" }, 403);
 
       if (!isMinor(athleteRow.birth_date, athleteRow.age)) {
