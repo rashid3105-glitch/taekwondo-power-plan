@@ -18,6 +18,7 @@ import { template as athleteActivityNotification } from './athlete-activity-noti
 import { template as parentalConsentRequest } from './parental-consent-request.tsx'
 import { template as coachConsentReminder } from './coach-consent-reminder.tsx'
 import { template as blogCommentVerification } from './blog-comment-verification.tsx'
+import { template as coachInviteAdminNotification } from './coach-invite-admin-notification.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'new-user-notification': newUserNotification,
@@ -29,4 +30,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'parental-consent-request': parentalConsentRequest,
   'coach-consent-reminder': coachConsentReminder,
   'blog-comment-verification': blogCommentVerification,
+  'coach-invite-admin-notification': coachInviteAdminNotification,
 }

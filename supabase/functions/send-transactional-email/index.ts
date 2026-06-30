@@ -40,6 +40,7 @@ Deno.serve(async (req) => {
     'blog-comment-verification',
     'new-user-notification',
     'coach-profile-ready',
+    'coach-invite-admin-notification',
   ])
 
   const authHeader = req.headers.get('Authorization')
