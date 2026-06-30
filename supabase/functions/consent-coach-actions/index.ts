@@ -131,16 +131,13 @@ Deno.serve(async (req) => {
     if (effectiveClubIds.length === 0) return jsonResponse({ error: "no_clubs" }, 403);
 
 
-    const body = await req.json().catch(() => ({}));
-    const action: string = body.action;
-
     // ─── Helper: load minor athletes in coach's clubs with consent status ───
     async function loadMinorsWithStatus() {
-      // All active members of coach's clubs (excluding coach themselves).
+      // All active members of the effective club scope (excluding coach themselves).
       const { data: clubMembers } = await admin
         .from("club_memberships")
         .select("user_id, club_id")
-        .in("club_id", coachClubIds)
+        .in("club_id", effectiveClubIds)
         .eq("status", "active");
       const athleteIds = Array.from(
         new Set((clubMembers || []).map((m: any) => m.user_id).filter((id: string) => id !== coachId)),
