@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { toast } from "sonner";
 
 interface MissingRow {
@@ -17,6 +18,7 @@ interface MissingRow {
 
 export function ConsentMissingPanel() {
   const { t } = useLanguage();
+  const { activeClubId } = useActiveClub();
   const [rows, setRows] = useState<MissingRow[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
@@ -26,7 +28,7 @@ export function ConsentMissingPanel() {
 
   async function load() {
     const { data, error } = await supabase.functions.invoke("consent-coach-actions", {
-      body: { action: "list_missing" },
+      body: { action: "list_missing", ...(activeClubId ? { club_id: activeClubId } : {}) },
     });
     if (error) {
       console.error("[ConsentMissingPanel] list_missing failed:", error);
@@ -47,7 +49,7 @@ export function ConsentMissingPanel() {
     setExpanded((prev) => (prev === null ? list.length <= 3 : prev));
   }
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [activeClubId]);
 
   if (loadError) {
     return (
@@ -77,7 +79,7 @@ export function ConsentMissingPanel() {
     if (!email) return;
     setSendingId(row.athlete_id);
     const { data, error } = await supabase.functions.invoke("consent-coach-actions", {
-      body: { action: "send_parent_request", athlete_id: row.athlete_id, parent_email: email },
+      body: { action: "send_parent_request", athlete_id: row.athlete_id, parent_email: email, ...(activeClubId ? { club_id: activeClubId } : {}) },
     });
     setSendingId(null);
     if (error || !(data as any)?.ok || !(data as any)?.queued) {
@@ -92,7 +94,7 @@ export function ConsentMissingPanel() {
   async function remindMe() {
     setReminding(true);
     const { data, error } = await supabase.functions.invoke("consent-coach-actions", {
-      body: { action: "remind_me" },
+      body: { action: "remind_me", ...(activeClubId ? { club_id: activeClubId } : {}) },
     });
     setReminding(false);
     if (error || !(data as any)?.ok) {

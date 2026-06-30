@@ -90,6 +90,7 @@ Deno.serve(async (req) => {
       .eq("user_id", coachId);
     const roleList = (roles || []).map((r: any) => r.role);
     const isCoach = roleList.includes("coach") || roleList.includes("admin");
+    const isGlobalAdmin = roleList.includes("admin");
     if (!isCoach) return jsonResponse({ error: "forbidden" }, 403);
 
     // Resolve coach's clubs (where they are coach/admin in club_memberships).
@@ -102,18 +103,41 @@ Deno.serve(async (req) => {
       .filter((m: any) => m.role_in_club === "coach" || m.role_in_club === "admin")
       .map((m: any) => m.club_id)
       .filter(Boolean);
-    if (coachClubIds.length === 0) return jsonResponse({ error: "no_clubs" }, 403);
+    if (!isGlobalAdmin && coachClubIds.length === 0) return jsonResponse({ error: "no_clubs" }, 403);
 
     const body = await req.json().catch(() => ({}));
     const action: string = body.action;
+    const requestedClubId: string | undefined =
+      typeof body.club_id === "string" && body.club_id.length > 0 ? body.club_id : undefined;
+
+    // Determine effective club scope. Global admins may target any club via ClubSwitcher;
+    // regular coaches may ONLY target clubs they already coach.
+    let effectiveClubIds: string[];
+    if (requestedClubId) {
+      if (isGlobalAdmin) {
+        const { data: clubRow } = await admin
+          .from("clubs").select("id").eq("id", requestedClubId).maybeSingle();
+        if (!clubRow) return jsonResponse({ error: "club_not_found" }, 404);
+        effectiveClubIds = [requestedClubId];
+      } else {
+        if (!coachClubIds.includes(requestedClubId)) {
+          return jsonResponse({ error: "forbidden" }, 403);
+        }
+        effectiveClubIds = [requestedClubId];
+      }
+    } else {
+      effectiveClubIds = coachClubIds;
+    }
+    if (effectiveClubIds.length === 0) return jsonResponse({ error: "no_clubs" }, 403);
+
 
     // ─── Helper: load minor athletes in coach's clubs with consent status ───
     async function loadMinorsWithStatus() {
-      // All active members of coach's clubs (excluding coach themselves).
+      // All active members of the effective club scope (excluding coach themselves).
       const { data: clubMembers } = await admin
         .from("club_memberships")
         .select("user_id, club_id")
-        .in("club_id", coachClubIds)
+        .in("club_id", effectiveClubIds)
         .eq("status", "active");
       const athleteIds = Array.from(
         new Set((clubMembers || []).map((m: any) => m.user_id).filter((id: string) => id !== coachId)),
@@ -193,7 +217,7 @@ Deno.serve(async (req) => {
         .eq("user_id", athleteId)
         .eq("status", "active");
       const athleteClubs = new Set((athleteMemberships || []).map((m: any) => m.club_id));
-      const inCoachClub = coachClubIds.some((cid) => athleteClubs.has(cid));
+      const inCoachClub = effectiveClubIds.some((cid) => athleteClubs.has(cid));
       if (!inCoachClub) return jsonResponse({ error: "forbidden" }, 403);
 
       if (!isMinor(athleteRow.birth_date, athleteRow.age)) {
