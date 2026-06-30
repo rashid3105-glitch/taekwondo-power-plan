@@ -49,7 +49,7 @@ export function ConsentMissingPanel() {
     setExpanded((prev) => (prev === null ? list.length <= 3 : prev));
   }
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [activeClubId]);
 
   if (loadError) {
     return (
