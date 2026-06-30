@@ -42,6 +42,19 @@ export function DiaryComments({ entryId, canComment = false }: DiaryCommentsProp
     loadComments();
   }, [entryId]);
 
+  // Close emoji picker when clicking outside
+  useEffect(() => {
+    if (!showEmoji) return;
+    const onClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest("[data-emoji-picker]")) {
+        setShowEmoji(false);
+      }
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [showEmoji]);
+
   const loadComments = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) setCurrentUserId(user.id);
