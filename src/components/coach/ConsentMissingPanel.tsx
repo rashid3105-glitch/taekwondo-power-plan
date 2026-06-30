@@ -94,7 +94,7 @@ export function ConsentMissingPanel() {
   async function remindMe() {
     setReminding(true);
     const { data, error } = await supabase.functions.invoke("consent-coach-actions", {
-      body: { action: "remind_me" },
+      body: { action: "remind_me", ...(activeClubId ? { club_id: activeClubId } : {}) },
     });
     setReminding(false);
     if (error || !(data as any)?.ok) {
