@@ -28,7 +28,7 @@ export function ConsentMissingPanel() {
 
   async function load() {
     const { data, error } = await supabase.functions.invoke("consent-coach-actions", {
-      body: { action: "list_missing" },
+      body: { action: "list_missing", ...(activeClubId ? { club_id: activeClubId } : {}) },
     });
     if (error) {
       console.error("[ConsentMissingPanel] list_missing failed:", error);
