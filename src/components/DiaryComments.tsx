@@ -240,7 +240,7 @@ export function DiaryComments({ entryId, canComment = false }: DiaryCommentsProp
                 <Smile className="h-4 w-4" />
               </Button>
               {showEmoji && (
-                <div className="absolute bottom-full right-0 mb-2 z-20 flex flex-wrap gap-1 p-2 bg-card border border-border rounded-lg shadow-lg max-w-[260px]">
+                <div data-emoji-picker className="absolute bottom-full right-0 mb-2 z-20 flex flex-wrap gap-1 p-2 bg-card border border-border rounded-lg shadow-lg max-w-[260px]">
                   {EMOJIS.map((e) => (
                     <button
                       key={e}
