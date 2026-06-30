@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import splashLogo from "@/assets/splash-logo.png";
+import splashLogo from "@/assets/runner-icon.png";
 
 interface SplashScreenProps {
   /** Duration in ms before fade-out begins. Default 2500. */
@@ -43,12 +43,12 @@ export const SplashScreen = ({ duration = 2500, onFinish }: SplashScreenProps) =
         fading ? "opacity-0" : "opacity-100"
       }`}
     >
-      {/* Logo badge — cream background preserves original artwork colors */}
-      <div className="rounded-3xl bg-[#f5f1e8] p-5 shadow-2xl shadow-black/60">
+      {/* Runner mark on dark background */}
+      <div className="flex items-center justify-center">
         <img
           src={splashLogo}
           alt=""
-          className="h-32 w-32 object-contain sm:h-40 sm:w-40"
+          className="h-40 w-40 object-contain sm:h-48 sm:w-48"
           draggable={false}
         />
       </div>
