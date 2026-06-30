@@ -18,6 +18,7 @@ interface MissingRow {
 
 export function ConsentMissingPanel() {
   const { t } = useLanguage();
+  const { activeClubId } = useActiveClub();
   const [rows, setRows] = useState<MissingRow[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
