@@ -79,7 +79,7 @@ export function ConsentMissingPanel() {
     if (!email) return;
     setSendingId(row.athlete_id);
     const { data, error } = await supabase.functions.invoke("consent-coach-actions", {
-      body: { action: "send_parent_request", athlete_id: row.athlete_id, parent_email: email },
+      body: { action: "send_parent_request", athlete_id: row.athlete_id, parent_email: email, ...(activeClubId ? { club_id: activeClubId } : {}) },
     });
     setSendingId(null);
     if (error || !(data as any)?.ok || !(data as any)?.queued) {
