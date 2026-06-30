@@ -31,8 +31,12 @@ export function DiaryComments({ entryId, canComment = false }: DiaryCommentsProp
   const [shareNew, setShareNew] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [showEmoji, setShowEmoji] = useState(false);
   const { toast } = useToast();
   const { t } = useLanguage();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const EMOJIS = ["👍", "❤️", "🔥", "💪", "🥋", "🎯", "👏", "😄", "🙏", "✅", "😂", "🤩", "👌", "🚀"];
 
   useEffect(() => {
     loadComments();
