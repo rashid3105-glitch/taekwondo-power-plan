@@ -103,6 +103,18 @@ export function FoodScanner({ onLogged }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const uploadRef = useRef<HTMLInputElement>(null);
 
+  // Manual entry state
+  const [mode, setMode] = useState<"idle" | "manual">("idle");
+  const [manualName, setManualName] = useState("");
+  const [manualDesc, setManualDesc] = useState("");
+  const [manualCal, setManualCal] = useState("");
+  const [manualProt, setManualProt] = useState("");
+  const [manualCarb, setManualCarb] = useState("");
+  const [manualFat, setManualFat] = useState("");
+  const [estimating, setEstimating] = useState(false);
+  const [estimated, setEstimated] = useState(false);
+
+
   const totals = useMemo(() => {
     if (!items) return null;
     return items.reduce(
