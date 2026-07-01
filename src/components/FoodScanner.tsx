@@ -414,28 +414,148 @@ export function FoodScanner({ onLogged }: Props) {
         onChange={(e) => e.target.files?.[0] && handleImage(e.target.files[0])}
       />
 
-      {!image ? (
-        <div className="grid grid-cols-2 gap-3">
+      {!image && mode === "idle" ? (
+        <div className="grid grid-cols-3 gap-2">
           <button
             onClick={() => inputRef.current?.click()}
-            className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 py-8 hover:bg-primary/10 transition-colors"
+            className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 py-6 hover:bg-primary/10 transition-colors"
           >
-            <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center">
-              <Camera className="h-6 w-6 text-primary" />
+            <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center">
+              <Camera className="h-5 w-5 text-primary" />
             </div>
-            <p className="text-xs font-semibold text-foreground text-center px-2">{t("foodScanTake") || "Tag billede"}</p>
+            <p className="text-[11px] font-semibold text-foreground text-center px-1 leading-tight">{t("foodScanTake") || "Tag billede"}</p>
           </button>
           <button
             onClick={() => uploadRef.current?.click()}
-            className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 py-8 hover:bg-primary/10 transition-colors"
+            className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 py-6 hover:bg-primary/10 transition-colors"
           >
-            <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center">
-              <Upload className="h-6 w-6 text-primary" />
+            <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center">
+              <Upload className="h-5 w-5 text-primary" />
             </div>
-            <p className="text-xs font-semibold text-foreground text-center px-2">{t("foodScanUpload") || "Upload billede"}</p>
+            <p className="text-[11px] font-semibold text-foreground text-center px-1 leading-tight">{t("foodScanUpload") || "Upload billede"}</p>
+          </button>
+          <button
+            onClick={() => setMode("manual")}
+            className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 py-6 hover:bg-primary/10 transition-colors"
+          >
+            <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center">
+              <Pencil className="h-5 w-5 text-primary" />
+            </div>
+            <p className="text-[11px] font-semibold text-foreground text-center px-1 leading-tight">{t("manualEntry") || "Skriv manuelt"}</p>
           </button>
         </div>
-      ) : (
+      ) : mode === "manual" ? (
+        <Card className="p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-bold text-foreground">{t("manualEntry") || "Skriv manuelt"}</h3>
+            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={resetManual}>
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-[11px] text-muted-foreground">{t("mealNameLabel") || "Måltidets navn (valgfrit)"}</label>
+            <Input
+              value={manualName}
+              onChange={(e) => setManualName(e.target.value)}
+              placeholder={t("mealNamePlaceholder") || "fx Frokost"}
+              maxLength={100}
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-[11px] text-muted-foreground">{t("describeMeal") || "Beskriv dit måltid"}</label>
+            <Textarea
+              value={manualDesc}
+              onChange={(e) => setManualDesc(e.target.value)}
+              placeholder={t("describeMealPlaceholder") || "fx 150g kylling, 200g kogte ris, olivenolie"}
+              rows={3}
+              maxLength={500}
+              className="text-sm"
+            />
+          </div>
+
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full gap-2"
+            onClick={estimateManual}
+            disabled={estimating || manualDesc.trim().length < 2}
+          >
+            {estimating
+              ? <><Loader2 className="h-4 w-4 animate-spin" /> {t("calculating") || "Beregner…"}</>
+              : <>🔥 {t("calculateCalories") || "Beregn kalorier"}</>}
+          </Button>
+
+          {estimated && (
+            <p className="text-[11px] text-muted-foreground italic">
+              {t("estimatedValues") || "Estimeret — du kan rette før du logger"}
+            </p>
+          )}
+
+          <div className="grid grid-cols-4 gap-2">
+            <div className="space-y-1">
+              <label className="text-[10px] uppercase tracking-wider text-muted-foreground">kcal</label>
+              <Input
+                type="number"
+                inputMode="numeric"
+                min={0}
+                max={5000}
+                value={manualCal}
+                onChange={(e) => setManualCal(e.target.value)}
+                placeholder="0"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] uppercase tracking-wider text-muted-foreground">P (g)</label>
+              <Input
+                type="number"
+                inputMode="numeric"
+                min={0}
+                max={500}
+                value={manualProt}
+                onChange={(e) => setManualProt(e.target.value)}
+                placeholder="0"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] uppercase tracking-wider text-muted-foreground">K (g)</label>
+              <Input
+                type="number"
+                inputMode="numeric"
+                min={0}
+                max={500}
+                value={manualCarb}
+                onChange={(e) => setManualCarb(e.target.value)}
+                placeholder="0"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] uppercase tracking-wider text-muted-foreground">F (g)</label>
+              <Input
+                type="number"
+                inputMode="numeric"
+                min={0}
+                max={500}
+                value={manualFat}
+                onChange={(e) => setManualFat(e.target.value)}
+                placeholder="0"
+              />
+            </div>
+          </div>
+
+          <Button
+            className="w-full gap-2"
+            onClick={logManual}
+            disabled={logging || (parseInt(manualCal) || 0) <= 0}
+          >
+            {logging
+              ? <Loader2 className="h-4 w-4 animate-spin" />
+              : <Plus className="h-4 w-4" />}
+            {t("foodScanLog") || "Log måltid"}
+          </Button>
+        </Card>
+      ) : !image ? null : (
         <div className="relative rounded-2xl overflow-hidden bg-black">
           <img src={image} alt="Måltid" className="w-full max-h-80 object-contain" />
           {items && items.map((it, i) => {
