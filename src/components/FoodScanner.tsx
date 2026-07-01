@@ -1,7 +1,9 @@
 import { useState, useRef, useMemo } from "react";
-import { Camera, Loader2, X, Plus, Trash2, Upload } from "lucide-react";
+import { Camera, Loader2, X, Plus, Trash2, Upload, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
