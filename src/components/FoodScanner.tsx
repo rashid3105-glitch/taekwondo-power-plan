@@ -297,6 +297,105 @@ export function FoodScanner({ onLogged }: Props) {
     }
   };
 
+  const resetManual = () => {
+    setMode("idle");
+    setManualName("");
+    setManualDesc("");
+    setManualCal("");
+    setManualProt("");
+    setManualCarb("");
+    setManualFat("");
+    setEstimated(false);
+  };
+
+  const estimateManual = async () => {
+    const desc = manualDesc.trim();
+    if (desc.length < 2) {
+      toast.error(t("describeMeal") || "Beskriv dit måltid");
+      return;
+    }
+    setEstimating(true);
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData?.session?.access_token;
+      if (!accessToken) {
+        toast.error("Log ind igen");
+        return;
+      }
+      const { data, error } = await supabase.functions.invoke<{ result?: any; error?: string }>(
+        "estimate-food-macros",
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+          body: { description: desc, meal_name: manualName.trim() },
+        },
+      );
+      if (error) throw error;
+      if (data?.error) {
+        toast.error(data.error === "rate_limited"
+          ? "For mange forespørgsler — prøv igen om lidt"
+          : data.error === "payment_required"
+            ? "Kredit opbrugt — kontakt support"
+            : t("manualEntryError") || "Kunne ikke estimere");
+        return;
+      }
+      const total = data?.result?.total;
+      if (!total) {
+        toast.error(t("manualEntryError") || "Kunne ikke estimere");
+        return;
+      }
+      setManualCal(String(Math.round(Number(total.calories) || 0)));
+      setManualProt(String(Math.round(Number(total.protein) || 0)));
+      setManualCarb(String(Math.round(Number(total.carbs) || 0)));
+      setManualFat(String(Math.round(Number(total.fat) || 0)));
+      if (!manualName.trim() && total.name) setManualName(String(total.name).slice(0, 100));
+      setEstimated(true);
+    } catch (e) {
+      console.error("estimate-food-macros error", e);
+      toast.error(t("manualEntryError") || "Kunne ikke estimere");
+    } finally {
+      setEstimating(false);
+    }
+  };
+
+  const logManual = async () => {
+    const cal = parseInt(manualCal) || 0;
+    const prot = parseInt(manualProt) || 0;
+    const carb = parseInt(manualCarb) || 0;
+    const fat = parseInt(manualFat) || 0;
+    if (cal <= 0) {
+      toast.error(t("calculateCalories") || "Beregn kalorier eller indtast kcal");
+      return;
+    }
+    setLogging(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("not_authenticated");
+      const today = new Date().toISOString().slice(0, 10);
+      const name = manualName.trim() || manualDesc.trim().slice(0, 60) || "Måltid";
+      const { error } = await supabase.from("nutrition_logs").insert({
+        user_id: user.id,
+        date: today,
+        meal_name: name,
+        calories: cal,
+        protein_g: prot,
+        carbs_g: carb,
+        fat_g: fat,
+        portion: manualDesc.trim().slice(0, 200),
+        source: "manual",
+        logged_at: new Date().toISOString(),
+      });
+      if (error) throw error;
+      toast.success(`${name} ✓`);
+      resetManual();
+      onLogged?.();
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Kunne ikke logge måltidet");
+    } finally {
+      setLogging(false);
+    }
+  };
+
+
   return (
     <div className="space-y-4">
       <input
