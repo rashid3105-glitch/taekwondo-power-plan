@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Sportstalent</string>
+    <string name="title_activity_main">Sportstalent</string>
+    <string name="package_name">dk.sportstalent.app</string>
+    <string name="custom_url_scheme">dk.sportstalent.app</string>
+</resources>
