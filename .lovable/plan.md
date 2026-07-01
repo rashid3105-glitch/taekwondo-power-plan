@@ -1,53 +1,44 @@
+## Manuel madindtastning i kostplanlægger
 
-# Mål
-En coach må aldrig se atleter fra andre klubber i lister, pickers, statistik eller søgninger. Den aktive klub (klubvælgeren) er den eneste sandhed. Skift klub for at se andre.
+Tilføjer mulighed for at logge måltider ved at skrive teksten (fx "150 g kylling og 200 g ris") i stedet for at tage et billede. Systemet estimerer kcal og makroer automatisk, og brugeren kan rette tallene før logning. 
 
-# Fundne lækager
-Gennemgang af alle steder der henter atleter via `coach_athletes`, `club_memberships`, `profiles` eller `get_club_member_profiles`.
+Al mad skal gemmes så man ved har konsumeret i løbet af dagen
 
-| # | Fil | Problem |
-|---|-----|---------|
-| 1 | `src/components/hub/CoachDashboard.tsx` (Hjem → trænerkort: total, inaktive, ugens sessions, aktive planer) | Henter `coach_athletes` for coach uden klubfilter — viser atleter fra ALLE klubber coachen er i. |
-| 2 | `src/pages/CoachCompetitions.tsx` (Stævner) | `coach_athletes` uden klubfilter → stævner og atlet-picker viser tværklubsatleter. |
-| 3 | `src/pages/MatchAnalysis.tsx` (Kamp-analyse picker) | Slår `coach_athletes` (uden klubfilter) sammen med ALLE profiler i ALLE coachens klubber. Ignorerer aktiv klub. |
-| 4 | `src/components/testing/AthletesComparisonView.tsx` (Tests → Sammenlign) | Fallback når ingen aktiv klub → henter alle `coach_athletes` på tværs af klubber. |
-| 5 | `src/lib/chatApi.ts` `getChattableContacts()` (Chat-kontaktliste) | Slår `coach_athletes` (begge retninger) sammen med klubmedlemmer, uden klubscope → tværklubsatleter dukker op som kontakter. |
+### Brugerflow (i FoodScanner-kortet)
 
-Allerede korrekte (verificeret): `CoachToday`, `CoachMessages` (atletliste), `CoachModules`, `CoachDashboard.tsx` (siden), `SquadOverview`, `PhysicalTesting` (athlete picker), `AdminApproval` (er admin med vilje).
+1. Ny tredje knap "Skriv manuelt" ved siden af "Tag foto" og "Upload billede".
+2. Klik åbner en formular med:
+  - Måltidsnavn (fx "Frokost")
+  - Beskrivelse af mad (fri tekst, flere linjer)
+  - Knap "Beregn kalorier"
+3. Efter beregning vises et redigerbart estimat: kcal, protein, kulhydrat, fedt — plus items[] hvis systemet har opdelt måltidet.
+4. Brugeren kan rette tallene direkte i felterne før "Log måltid".
+5. Ved log gemmes rækken i `nutrition_logs` præcis som scannede måltider (samme skema, samme dashboard-visning), så alt tælles automatisk med i dagens ringe/bars.
 
-# Plan
+### Teknisk
 
-## 1. `hub/CoachDashboard.tsx`
-- Brug `useActiveClub()`.
-- Hent atleter via `supabase.rpc("get_club_member_profiles", { _club_id: activeClubId })` (samme som CoachDashboard-siden) i stedet for `coach_athletes`.
-- Hvis ingen aktiv klub: vis tom tilstand med besked om at vælge klub.
+**Ny edge function** `estimate-food-macros`
 
-## 2. `pages/CoachCompetitions.tsx`
-- Brug `useActiveClub()`.
-- Filtrér `coach_athletes`-query med `.eq("club_id", activeClubId)` når aktiv klub er sat.
-- Supplér med `get_club_member_profiles(activeClubId)` så virtuelle/uden-link atleter også vises (parallelt med `CoachToday`/`CoachMessages`-mønstret).
+- Input: `{ description: string, meal_name?: string }`
+- Kalder Lovable AI Gateway (Gemini) med samme prompt-stil som `scan-food`, men tekst i stedet for billede.
+- Zod-validering (description 1–500 tegn), CORS headers, JWT-check i kode.
+- Output: `{ items: [{name, portion_g, calories, protein, carbs, fat}], total: {calories, protein, carbs, fat} }`.
+- Ingen "AI"-ord i UI (jf. projekt-regel) — knapper og labels bruger "Beregn" / "Estimeret".
 
-## 3. `pages/MatchAnalysis.tsx`
-- Brug `useActiveClub()`.
-- Erstat de to kilder (coach_athletes uden filter + alle klubprofiler) med `get_club_member_profiles(activeClubId)`. Hvis ingen aktiv klub, fald tilbage til kun direkte `coach_athletes` med `.eq("club_id", profile.club_id)`.
+**FoodScanner.tsx**
 
-## 4. `components/testing/AthletesComparisonView.tsx`
-- Fjern fallback-grenen der henter alle `coach_athletes` uden klub. Hvis `activeClubId` mangler, vis tom liste med hint "Vælg klub i toppen".
+- Ny `mode: "scan" | "manual"` state.
+- Ny ManualEntry-sektion med tekstområde, beregn-knap, og redigerbare tal-inputs (kcal / P / C / F med `inputMode="decimal"`).
+- Genbruger eksisterende insert til `nutrition_logs` (samme kolonner: `meal_name, calories, protein_g, carbs_g, fat_g, date, logged_at`) — ingen skema-ændring.
+- `onLogged?.()` kaldes så DailyNutritionDashboard refresher.
 
-## 5. `lib/chatApi.ts` `getChattableContacts()`
-- Skift fra `profiles.club_id` til den aktive klub (læs fra `localStorage` nøglen `activeClubId` som `useActiveClub` allerede skriver — eller eksponér en helper).
-- Klubmedlemmer hentes via `club_directory` for aktiv klub (uændret mønster).
-- Drop coach_athletes-grenen helt for kontakter — kontakter er per klub. Coachens egne managed-atleter i den aktive klub kommer alligevel med via klubmedlemskab.
+**Oversættelser** — nye keys i alle 7 sprog (en, da, sv, de, ar, no, es):
+`manualEntry`, `describeMeal`, `describeMealPlaceholder`, `calculateCalories`, `estimatedValues`, `editBeforeLogging`.
 
-## 6. Database-hygiejne (defense in depth)
-- Verificér at alle eksisterende `coach_athletes`-rækker har `club_id` udfyldt (triggeren `stamp_club_id_from_athlete` stamper kun ved insert). Hvis NULL: backfill fra `profiles.club_id` for athlete_id.
-- Migration: kort UPDATE der sætter `club_id` for `coach_athletes` hvor det er NULL.
+**Ingen ændringer** til: database-skema, RLS, DailyNutritionDashboard, Kostplan.tsx eller andre komponenter.
 
-# Verifikation
-- Log ind som coach i klub A med aktiv klub A → ingen atleter fra klub B må optræde i: Hjem-trænerkort, Stævner, Match-analyse picker, Sammenlign-tests, Chat-kontakter.
-- Skift til klub B → kun klub B's atleter vises.
-- Axel (anden klub) må ikke længere optræde nogen steder for Sami i Copenhagen City.
+### Filer der ændres
 
-# Tekniske noter
-- Hovedhjælperne der bør bruges konsekvent: `useActiveClub()` for client-state + RPC `get_club_member_profiles(_club_id)` for autoritativ klubliste (respekterer både `club_memberships` og legacy `profiles.club_id`).
-- Ingen RLS-ændringer nødvendige; problemet er udelukkende klient-queries der ikke scoper. RLS tillader fortsat at en coach SER tværklubsdata når de er coach i flere klubber — det er korrekt; UI skal bare ikke vise det utilsigtet.
+- `supabase/functions/estimate-food-macros/index.ts` (ny)
+- `src/components/FoodScanner.tsx`
+- `src/i18n/translations.ts`
