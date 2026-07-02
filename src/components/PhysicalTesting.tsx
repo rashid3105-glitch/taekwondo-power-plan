@@ -347,13 +347,13 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
                                 <td className="py-2 text-right">
                                   <div className="flex items-center justify-end gap-1">
                                     {mode === "coach" && editingId !== r.local_id && (
-                                      <Button variant="ghost" size="icon" className="h-7 w-7"
+                                      <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={t("iconHintEdit")} title={t("iconHintEdit")}
                                         onClick={() => { setEditingId(r.local_id); setEditValue(String(r.value)); setEditNotes(r.notes || ""); }}>
                                         <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
                                       </Button>
                                     )}
                                     {mode === "coach" && (
-                                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDelete(r.local_id)}>
+                                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDelete(r.local_id)} aria-label={t("delete")} title={t("delete")}>
                                         <Trash2 className="h-3.5 w-3.5 text-destructive" />
                                       </Button>
                                     )}

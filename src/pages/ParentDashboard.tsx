@@ -217,7 +217,7 @@ export default function ParentDashboard() {
           <h1 className="text-2xl font-extrabold">{t("parentDashboardTitle")}</h1>
           <div className="flex items-center gap-2">
             <LanguageSwitcher />
-            <Button variant="ghost" size="icon" onClick={signOut} title={t("signOut") || "Sign out"}>
+            <Button variant="ghost" size="icon" onClick={signOut} title={t("signOut") || "Sign out"} aria-label={t("signOut")}>
               <LogOut className="h-4 w-4" />
             </Button>
           </div>

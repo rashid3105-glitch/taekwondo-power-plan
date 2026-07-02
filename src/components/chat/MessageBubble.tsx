@@ -94,10 +94,10 @@ export function MessageBubble({
             autoFocus
           />
           <div className="flex gap-1 justify-end">
-            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditing(false)}>
+            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditing(false)} aria-label="Cancel" title="Cancel">
               <X className="h-3.5 w-3.5" />
             </Button>
-            <Button size="icon" className="h-7 w-7" onClick={confirmEdit}>
+            <Button size="icon" className="h-7 w-7" onClick={confirmEdit} aria-label="Save" title="Save">
               <Check className="h-3.5 w-3.5" />
             </Button>
           </div>

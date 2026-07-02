@@ -33,6 +33,8 @@ export default function HealthSyncSetupAndroid() {
             size="icon"
             className="h-10 w-10 text-white/80 hover:text-white"
             onClick={() => navigate("/profile")}
+            aria-label={t("back")}
+            title={t("back")}
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>

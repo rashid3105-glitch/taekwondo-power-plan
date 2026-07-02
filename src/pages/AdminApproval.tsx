@@ -576,7 +576,7 @@ export default function AdminApproval() {
             </div>
           </CollapsibleTrigger>
           <div className="flex items-center gap-1 shrink-0">
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEditDialog(u)}>
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEditDialog(u)} aria-label={t("iconHintEdit")} title={t("iconHintEdit")}>
               <Pencil className="h-3.5 w-3.5" />
             </Button>
             {actions}

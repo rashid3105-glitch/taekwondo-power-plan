@@ -224,6 +224,7 @@ export default function Profile() {
             onClick={() => navigate("/profile-edit")}
             className="absolute top-3 right-3 h-9 w-9 rounded-full text-white hover:text-white hover:bg-white/5"
             aria-label={t("profileEdit" as any)}
+            title={t("profileEdit" as any)}
             style={{ color: "var(--accent-hex)" }}
           >
             <Pencil className="h-4 w-4" />

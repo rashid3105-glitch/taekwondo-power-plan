@@ -161,6 +161,8 @@ export function CoachSentHistory({ coachId, athleteNames }: Props) {
                         className="h-6 w-6"
                         onClick={() => deleteMessage(m.id)}
                         disabled={deletingId === m.id}
+                        aria-label={t("delete")}
+                        title={t("delete")}
                       >
                         {deletingId === m.id ? (
                           <Loader2 className="h-3 w-3 animate-spin" />
@@ -210,6 +212,8 @@ export function CoachSentHistory({ coachId, athleteNames }: Props) {
                         className="h-6 w-6"
                         onClick={() => deleteReminder(r.id)}
                         disabled={deletingId === r.id}
+                        aria-label={t("delete")}
+                        title={t("delete")}
                       >
                         {deletingId === r.id ? (
                           <Loader2 className="h-3 w-3 animate-spin" />

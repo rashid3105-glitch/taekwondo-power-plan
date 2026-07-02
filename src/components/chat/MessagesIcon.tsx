@@ -3,12 +3,14 @@ import { MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useThreads } from "@/hooks/useThreads";
 import { ChatDrawer } from "./ChatDrawer";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface Props {
   isCoach?: boolean;
 }
 
 export function MessagesIcon({ isCoach }: Props) {
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const { totalUnread } = useThreads();
 
@@ -19,7 +21,7 @@ export function MessagesIcon({ isCoach }: Props) {
         size="icon"
         onClick={() => setOpen(true)}
         className="relative"
-        aria-label="Beskeder"
+        aria-label={t("iconHintMessages")} title={t("iconHintMessages")}
       >
         <MessageCircle className="h-5 w-5" />
         {totalUnread > 0 && (

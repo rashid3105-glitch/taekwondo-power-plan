@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { editMessage, softDeleteMessage, markThreadRead, addReaction, removeReaction, removeThreadMember, type ChatThread } from "@/lib/chatApi";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface Props {
   thread: ChatThread;
@@ -21,6 +22,7 @@ interface Props {
 }
 
 export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props) {
+  const { t } = useLanguage();
   const { messages, loading, refresh } = useMessages(thread.id);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [meId, setMeId] = useState<string | null>(null);
@@ -103,7 +105,7 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
         )}
       >
         {onBack && (
-          <Button variant="ghost" size="icon" onClick={onBack} aria-label="Tilbage">
+          <Button variant="ghost" size="icon" onClick={onBack} aria-label={t("back")} title={t("back")}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
         )}
@@ -246,7 +248,7 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
       {thread.kind === "group" && membersOpen && (
         <div className="absolute inset-0 z-20 flex flex-col bg-background">
           <div className="flex items-center gap-2 border-b border-border bg-card px-3 py-2">
-            <Button variant="ghost" size="icon" onClick={() => setMembersOpen(false)} aria-label="Luk">
+            <Button variant="ghost" size="icon" onClick={() => setMembersOpen(false)} aria-label={t("iconHintClose")} title={t("iconHintClose")}>
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div className="flex-1 min-w-0">

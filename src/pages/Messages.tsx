@@ -13,9 +13,11 @@ import { listThreads, type ChatThread } from "@/lib/chatApi";
 import { PageMeta } from "@/components/PageMeta";
 import { useIosKeyboard } from "@/hooks/useIosKeyboard";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function Messages() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const { threads, loading, refresh } = useThreads();
   const [active, setActive] = useState<ChatThread | null>(null);
   const [isCoach, setIsCoach] = useState(false);
@@ -59,7 +61,7 @@ export default function Messages() {
       <header className="border-b border-border bg-card sticky top-0 z-10 pt-safe-min md:pt-safe">
         <div className="container max-w-5xl mx-auto px-3 py-3 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
+            <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")} aria-label={t("back")} title={t("back")}>
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <span className="text-sm sm:text-base font-extrabold text-card-foreground">Beskeder</span>

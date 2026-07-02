@@ -322,7 +322,7 @@ export default function Diary() {
       {/* Header */}
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10 pt-safe">
         <div className="container max-w-3xl mx-auto px-3 sm:px-4 py-3 flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
+          <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")} aria-label={t("back")} title={t("back")}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div className="flex items-center gap-2 min-w-0">
@@ -358,7 +358,7 @@ export default function Diary() {
               <h2 className="font-bold text-card-foreground text-sm">
                 {editingId ? t("diaryEditEntry") : t("diaryNewEntry")}
               </h2>
-              <Button variant="ghost" size="icon" onClick={resetForm}>
+              <Button variant="ghost" size="icon" onClick={resetForm} aria-label={t("iconHintClose")} title={t("iconHintClose")}>
                 <X className="h-4 w-4" />
               </Button>
             </div>
@@ -744,7 +744,7 @@ export default function Diary() {
                         </div>
                         <div className="flex gap-1">
                           {viewMode === "compact" && (
-                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => toggleExpand(entry.id)}>
+                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => toggleExpand(entry.id)} aria-label={t("iconHintExpand")} title={t("iconHintExpand")}>
                               <ChevronDown className="h-3.5 w-3.5 rotate-180" />
                             </Button>
                           )}

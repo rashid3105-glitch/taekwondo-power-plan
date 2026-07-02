@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { PageMeta } from "@/components/PageMeta";
 import { Eye, EyeOff, Loader2, Copy, Check, MessageCircle, Mail, ArrowRight } from "lucide-react";
 import logo from "@/assets/logo.png";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 type Step = "account" | "verify" | "club" | "invite";
 type Band = "1-5" | "6-15" | "16-30" | "30+";
@@ -17,6 +18,7 @@ const BANDS: Band[] = ["1-5", "6-15", "16-30", "30+"];
 export default function SignupCoach() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [step, setStep] = useState<Step>("account");
   const [loading, setLoading] = useState(false);
 
@@ -281,7 +283,8 @@ export default function SignupCoach() {
                   <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Inviter-link</Label>
                   <div className="flex gap-2">
                     <Input readOnly value={inviteUrl} className="font-mono text-xs h-11 rounded-xl" onFocus={(e) => e.target.select()} />
-                    <Button type="button" onClick={copyLink} variant="outline" size="icon" className="h-11 w-11 rounded-xl flex-shrink-0">
+                    <Button type="button" onClick={copyLink} variant="outline" size="icon" className="h-11 w-11 rounded-xl flex-shrink-0" aria-label={t("iconHintCopy")} title={t("iconHintCopy")}>
+
                       {copied ? <Check className="h-4 w-4 text-energy" /> : <Copy className="h-4 w-4" />}
                     </Button>
                   </div>

@@ -215,7 +215,7 @@ export function GlobalAppMenu() {
           variant="ghost"
           size="icon"
           onClick={() => setOpen(true)}
-          aria-label={t("menu") || "Menu"}
+          aria-label={t("menu") || "Menu"} title={t("menu") || "Menu"}
           className="bg-card/70 backdrop-blur-sm border border-border/60 shadow-sm hover:bg-card"
         >
           <Menu className="h-5 w-5" />

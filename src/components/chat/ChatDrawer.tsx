@@ -8,6 +8,7 @@ import { Conversation } from "./Conversation";
 import { StartChatPicker } from "./StartChatPicker";
 import { NewGroupDialog } from "./NewGroupDialog";
 import type { ChatThread } from "@/lib/chatApi";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface Props {
   open: boolean;
@@ -16,6 +17,7 @@ interface Props {
 }
 
 export function ChatDrawer({ open, onOpenChange, isCoach }: Props) {
+  const { t } = useLanguage();
   const { threads, loading, refresh } = useThreads();
   const [active, setActive] = useState<ChatThread | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -43,7 +45,7 @@ export function ChatDrawer({ open, onOpenChange, isCoach }: Props) {
           <div className="flex items-center gap-2 px-3 py-2 border-b border-border bg-card">
             {/* Left: back arrow when in a conversation */}
             {active ? (
-              <Button variant="ghost" size="icon" onClick={() => setActive(null)} aria-label="Tilbage">
+              <Button variant="ghost" size="icon" onClick={() => setActive(null)} aria-label={t("back")} title={t("back")}>
                 <ArrowLeft className="h-5 w-5" />
               </Button>
             ) : (
@@ -56,17 +58,17 @@ export function ChatDrawer({ open, onOpenChange, isCoach }: Props) {
             {/* Right: action buttons */}
             <div className="flex items-center gap-1 ml-auto">
               {!active && isCoach && (
-                <Button variant="ghost" size="icon" onClick={() => setGroupOpen(true)} aria-label="Ny gruppe">
+                <Button variant="ghost" size="icon" onClick={() => setGroupOpen(true)} aria-label={t("iconHintMessages")} title={t("iconHintMessages")}>
                   <Users className="h-4 w-4" />
                 </Button>
               )}
               {!active && (
-                <Button variant="ghost" size="icon" onClick={() => setPickerOpen(true)} aria-label="Ny samtale">
+                <Button variant="ghost" size="icon" onClick={() => setPickerOpen(true)} aria-label={t("iconHintSend")} title={t("iconHintSend")}>
                   <Plus className="h-4 w-4" />
                 </Button>
               )}
               {/* Close — always visible, always in our header, never behind safe area */}
-              <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} aria-label="Luk">
+              <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} aria-label={t("iconHintClose")} title={t("iconHintClose")}>
                 <X className="h-5 w-5" />
               </Button>
             </div>

@@ -168,7 +168,7 @@ export function ClubActivityTypesCard({ clubId }: Props) {
                   variant="ghost"
                   className="h-9 w-9 text-destructive"
                   onClick={() => void remove(it.id)}
-                  aria-label={t("delete")}
+                  aria-label={t("delete")} title={t("delete")}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>

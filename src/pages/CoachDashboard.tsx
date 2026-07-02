@@ -569,6 +569,7 @@ export default function CoachDashboard() {
                             size="icon"
                             className="h-8 w-8"
                             title={t("diary")}
+                            aria-label={t("diary")}
                             onClick={() => openDiary(a.user_id, a.display_name)}
                           >
                             <NotebookPen className="h-4 w-4" />
