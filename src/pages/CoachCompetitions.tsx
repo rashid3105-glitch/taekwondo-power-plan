@@ -320,7 +320,7 @@ export default function CoachCompetitions() {
       if (error) throw error;
       const athleteName = myAthletes.find(a => a.user_id === athleteId)?.display_name || "—";
       const newId = (data as any)?.id || crypto.randomUUID();
-      setComps(prev => [...prev, { id: newId, name: group.name, event_date: group.event_date, location: group.location, user_id: athleteId, athlete_name: athleteName, priority: group.priority, result: null }]);
+      setComps(prev => [...prev, { id: newId, name: group.name, event_date: group.event_date, location: group.location, user_id: athleteId, athlete_name: athleteName, priority: group.priority, result: null, invitation_pdf_url: group.invitation_pdf_url }]);
       setOpenGroup(prev => prev ? { ...prev, participants: [...prev.participants, { user_id: athleteId, athlete_name: athleteName, result: null }] } : prev);
     } catch (e: any) {
       toast({ title: "Fejl", description: e.message, variant: "destructive" });
