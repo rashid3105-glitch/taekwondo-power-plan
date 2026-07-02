@@ -28,9 +28,11 @@ type WeekFocus = { teamTechIds: string[]; teamNote: string; athleteTechIds: stri
 
 export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
   const { t } = useLanguage();
+  const { activeClubId } = useActiveClub();
   const today = new Date().toISOString().slice(0, 10);
 
   const [competitionDates, setCompetitionDates] = useState<Set<string>>(new Set());
+  const [competitionsByDate, setCompetitionsByDate] = useState<Map<string, { name: string; priority: string | null }[]>>(new Map());
   const [overrides, setOverrides] = useState<AthleteSeasonOverride[]>([]);
   const [weekFocusMap, setWeekFocusMap] = useState<Map<number, WeekFocus>>(new Map());
   const [techMap, setTechMap] = useState<Map<string, { name: string; category: string }>>(new Map());
