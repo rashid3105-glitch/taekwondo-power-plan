@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Trophy } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 import {
   type ClubSeasonPlan, type ClubSeasonPhase, type ClubSeasonDayTemplate,
   type AthleteSeasonOverride, type SessionType,
