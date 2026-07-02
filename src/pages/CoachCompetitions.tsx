@@ -196,6 +196,8 @@ export default function CoachCompetitions() {
     setEditName(g.name);
     setEditDate(g.event_date);
     setEditLocation(g.location ?? "");
+    setEditPdfUrl(g.invitation_pdf_url ?? null);
+    setEditPdfFile(null);
     setEditMode(true);
   };
 
@@ -215,13 +217,36 @@ export default function CoachCompetitions() {
         )
         .map(c => c.id);
       if (!ids.length) throw new Error("No rows");
+
+      // Handle PDF upload / removal
+      let nextPdfUrl: string | null = editPdfUrl;
+      if (editPdfFile) {
+        const { data: authData } = await supabase.auth.getUser();
+        const uid = authData.user?.id || "anon";
+        const safeName = editPdfFile.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+        const path = `${uid}/${Date.now()}-${safeName}`;
+        const { error: upErr } = await supabase.storage
+          .from("competition-invitations")
+          .upload(path, editPdfFile, {
+            contentType: editPdfFile.type || "application/pdf",
+            upsert: false,
+          });
+        if (upErr) throw new Error(upErr.message);
+        const { data: pub } = supabase.storage
+          .from("competition-invitations")
+          .getPublicUrl(path);
+        nextPdfUrl = pub.publicUrl;
+      }
+
       const { error } = await supabase
         .from("competitions")
-        .update({ name, event_date: date, location })
+        .update({ name, event_date: date, location, invitation_pdf_url: nextPdfUrl })
         .in("id", ids);
       if (error) throw error;
-      setComps(prev => prev.map(c => ids.includes(c.id) ? { ...c, name, event_date: date, location } : c));
-      setOpenGroup(prev => prev ? { ...prev, name, event_date: date, location } : prev);
+      setComps(prev => prev.map(c => ids.includes(c.id) ? { ...c, name, event_date: date, location, invitation_pdf_url: nextPdfUrl } : c));
+      setOpenGroup(prev => prev ? { ...prev, name, event_date: date, location, invitation_pdf_url: nextPdfUrl } : prev);
+      setEditPdfFile(null);
+      setEditPdfUrl(nextPdfUrl);
       setEditMode(false);
       toast({ title: labelUpdated });
     } catch (e: any) {
