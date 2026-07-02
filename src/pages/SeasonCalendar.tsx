@@ -547,6 +547,7 @@ export default function SeasonCalendar() {
             <span className="font-extrabold truncate">{t("seasonCalendar")}</span>
           </div>
           <div className="flex items-center gap-2 shrink-0 min-w-0">
+            <ClubSwitcher />
             {selectedPlan && (
               <Button variant="outline" size="sm" onClick={() => window.print()}>
                 <Printer className="h-4 w-4" />
