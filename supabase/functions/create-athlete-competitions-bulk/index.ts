@@ -41,6 +41,7 @@ serve(async (req) => {
       location,
       default_weight_class_kg,
       weight_overrides,
+      invitation_pdf_url,
     } = JSON.parse(raw);
 
     // ---- Validate shared fields ----
