@@ -1,48 +1,43 @@
-## 1) Flyt "Ugentlig atletrapport" ind i Holdets puls (grønt ikon)
 
-**Nu:** `WeeklySquadExport` ligger som et rødt PDF-ikon i handling-rækken øverst på `/coach` (ved siden af "Manglende forældresamtykke").
+## Problem
 
-**Ændring:**
-- Fjern `<WeeklySquadExport />` fra action-rækken i `src/pages/CoachDashboard.tsx` (linje ~432).
-- Læg den ind i toppen af `SquadPulse`-kortet (`src/components/coach/SquadPulse.tsx`) som en lille "Ugentlig atletrapport"-knap over pulse-tiles, højrestillet.
-- Ikon farves grønt: `text-emerald-500` (Tailwind), matcher "success" tone i cockpittet. Hover: `hover:text-emerald-400`.
-- Behold `title` + `aria-label` (i18n) så web-hover-hint stadig virker.
-- `WeeklySquadExport` udvides med en valgfri `variant="inline" | "icon"` prop, så knappen både kan vise ikon + kort label ("Ugerapport") inde i SquadPulse-headeren.
+On `/dashboard?tab=calendar` (`SeasonCalendarView`) the competitions list is only used to tint a day red — the tournament **name** never appears, and the query is hard-scoped to `user_id = auth user`. A coach viewing the tab (or an athlete whose competitions live under another club context) sees an empty calendar even though tournaments exist in "Stævneoversigt".
 
-## 2) Konsistent klubvælger på coach-siderne
+## Goal
 
-**Nu:** `ClubSwitcher` vises kun på `/coach` (dashboard) og `/dashboard`. Derfor kan man på f.eks. `/coach/competitions` ikke skifte klub, og siden viser data ud fra den klub der sidst blev valgt på dashboardet — hvilket forvirrer.
+Make tournaments from the competitions list visible in the season calendar:
+1. Show tournament **name** on the correct day cell.
+2. Show tournaments for the **currently active club** (respecting `ClubSwitcher`), not just rows owned by the logged-in user.
+3. Add a small **"Stævner denne uge"** list to the week focus card above the grid.
 
-**Ændring:** Introducér én genbrugelig topbar `CoachPageHeader` (ny fil `src/components/coach/CoachPageHeader.tsx`) med:
-- Titel + evt. tilbage-pil.
-- Fast `ClubSwitcher` i højre side (samme komponent som allerede findes).
-- Bruger `useActiveClub()` — ingen ny state.
+## Scope of changes
 
-Sæt den ind i toppen af de datatunge coach-sider:
-- `src/pages/CoachCompetitions.tsx`
-- `src/pages/SeasonCalendar.tsx` (coach-varianten)
-- `src/pages/CoachToday.tsx` (Fremmøde)
-- `src/pages/CoachMessages.tsx`
-- `src/pages/CoachSurveys.tsx`
-- `src/pages/CoachModules.tsx`
-- `src/pages/CoachAthleteOverview.tsx`
+Only `src/components/hub/SeasonCalendarView.tsx` (frontend/presentation). No DB, no RLS, no edge functions.
 
-Ikke tilføjet på indstillinger/hjælp/profil — kun sider hvor data er klub-scoped.
+### Data loading
 
-## 3) Verificér "true to club selection" på Competitions
+Replace the current `competitions` query with a club-scoped one:
 
-`CoachCompetitions` filtrerer allerede athletes via `get_club_member_profiles(activeClubId)` og henter kun `competitions` for de user_ids (linje 109–129). Så snart klubvælgeren skifter til fx **UC Copenhagen** (uden atleter), bliver `athleteIds = []` → early return sætter `comps = []` → siden viser tom-tilstand. Ingen SQL-ændring nødvendig.
+- Read `activeClubId` from `useActiveClub()`.
+- Fetch `competitions` with `id, name, event_date, user_id, priority` filtered by:
+  - `event_date` between `seasonPlan.start_date` and `seasonPlan.end_date`, AND
+  - `club_id = activeClubId` (falls back to `user_id = auth.user.id` when `activeClubId` is null, preserving current athlete-only behavior).
+- Deduplicate multi-athlete entries by `(event_date, name)` so the same tournament isn't rendered N times.
+- Keep the existing `competitionDates: Set<string>` (used by `resolveSessionsForDate`) and add a new `competitionsByDate: Map<string, {name, priority}[]>`.
 
-Ekstra sikring:
-- Tilføj tom-tilstands-kort med tekst "Ingen atleter i denne klub endnu" (i18n, 7 sprog) på Competitions, når `myAthletes.length === 0`, så det er tydeligt hvorfor listen er tom.
-- Samme mønster tjekkes/tilføjes hurtigt på de andre klub-scopede sider hvis de mangler tom-tilstand.
+### Rendering
 
-## Ikke i scope
-- Ingen ændringer af RLS/backend.
-- Ingen ny farve-token; bruger eksisterende Tailwind `emerald` fordi "success" tone allerede findes visuelt i cockpittet.
-- Ingen ændring til athlete-dashboard.
+- **Day cell**: under the date number, render up to 1 tournament name as a compact `text-[8px]` red pill (`bg-destructive/20 text-destructive`) with a `Trophy` icon; `+N` overflow badge if more. Full names shown via `title` tooltip.
+- **Week focus card** (existing card at top): append a "Stævner denne uge" row listing tournaments whose `event_date` falls in `wkStart`–`wkEnd`, each as a small chip with date + name.
+- No layout/spacing overhaul — reuse existing pill/chip styles from the technique focus rows.
 
-## Tekniske detaljer
-- `WeeklySquadExport` refactor: intern knap-render styres via `variant`-prop; default beholder eksisterende look så andre steder (hvis brugt) ikke brydes.
-- `CoachPageHeader` bruger `sticky top-0 z-30 bg-background/80 backdrop-blur` for at være synlig ved scroll.
-- i18n-nøgler: `weeklyAthleteReport`, `noAthletesInSelectedClub` — tilføjes for da/en/sv/de/ar/no/es i `src/i18n/translations.ts`.
+### Safety
+
+- Coaches now see club-wide tournaments — this is the desired behavior and matches how `SeasonCalendar.tsx` (coach page) already works.
+- No text is hardcoded: new labels ("Stævner denne uge", empty state) go through `t()` in all 7 languages via `src/i18n/translations.ts`.
+
+## Out of scope
+
+- No changes to coach `SeasonCalendar.tsx` (already shows competitions).
+- No new tables, RLS, or edge functions.
+- No changes to how tournaments are created/edited.

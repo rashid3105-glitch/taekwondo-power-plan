@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Trophy } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 import {
   type ClubSeasonPlan, type ClubSeasonPhase, type ClubSeasonDayTemplate,
   type AthleteSeasonOverride, type SessionType,
@@ -27,9 +28,11 @@ type WeekFocus = { teamTechIds: string[]; teamNote: string; athleteTechIds: stri
 
 export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
   const { t } = useLanguage();
+  const { activeClubId } = useActiveClub();
   const today = new Date().toISOString().slice(0, 10);
 
   const [competitionDates, setCompetitionDates] = useState<Set<string>>(new Set());
+  const [competitionsByDate, setCompetitionsByDate] = useState<Map<string, { name: string; priority: string | null }[]>>(new Map());
   const [overrides, setOverrides] = useState<AthleteSeasonOverride[]>([]);
   const [weekFocusMap, setWeekFocusMap] = useState<Map<number, WeekFocus>>(new Map());
   const [techMap, setTechMap] = useState<Map<string, { name: string; category: string }>>(new Map());
@@ -53,13 +56,19 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+      const compsQuery = supabase
+        .from("competitions")
+        .select("event_date, name, priority, user_id, club_id")
+        .gte("event_date", seasonPlan.start_date)
+        .lte("event_date", seasonPlan.end_date);
+      // Prefer club scoping when a club is active (coach & athlete views alike);
+      // fall back to own user rows so the calendar still works without an active club.
+      const scopedCompsQuery = activeClubId
+        ? compsQuery.eq("club_id", activeClubId)
+        : compsQuery.eq("user_id", user.id);
+
       const [compsRes, ovRes, techFocusRes, athTechRes] = await Promise.all([
-        supabase
-          .from("competitions")
-          .select("event_date")
-          .eq("user_id", user.id)
-          .gte("event_date", seasonPlan.start_date)
-          .lte("event_date", seasonPlan.end_date),
+        scopedCompsQuery,
         supabase
           .from("club_athlete_season_overrides")
           .select("*")
@@ -74,7 +83,19 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
           .eq("athlete_id", user.id),
       ]);
       if (cancelled) return;
-      setCompetitionDates(new Set((compsRes.data ?? []).map((c: any) => c.event_date as string)));
+      const compRows = (compsRes.data ?? []) as any[];
+      setCompetitionDates(new Set(compRows.map((c) => c.event_date as string)));
+      // Group by date and dedupe by name so multi-athlete tournaments show once per day.
+      const byDate = new Map<string, { name: string; priority: string | null }[]>();
+      for (const c of compRows) {
+        const iso = c.event_date as string;
+        const list = byDate.get(iso) ?? [];
+        if (!list.some((x) => x.name === c.name)) {
+          list.push({ name: c.name as string, priority: (c.priority as string | null) ?? null });
+        }
+        byDate.set(iso, list);
+      }
+      setCompetitionsByDate(byDate);
       setOverrides(((ovRes.data ?? []) as any[]).map((o) => ({
         ...o,
         session_type: o.session_type as SessionType | null,
@@ -106,7 +127,7 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
       setTechMap(tm);
     })();
     return () => { cancelled = true; };
-  }, [seasonPlan.id, seasonPlan.start_date, seasonPlan.end_date]);
+  }, [seasonPlan.id, seasonPlan.start_date, seasonPlan.end_date, activeClubId]);
 
 
   const [viewYear, setViewYear] = useState(() => new Date().getFullYear());
@@ -224,6 +245,37 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
                 {t("seasonTeamFocusNotSet")}
               </p>
             )}
+            {(() => {
+              const wkComps: { date: string; name: string; priority: string | null }[] = [];
+              for (const [d, list] of competitionsByDate.entries()) {
+                if (d >= wkStart && d <= wkEnd) {
+                  for (const c of list) wkComps.push({ date: d, ...c });
+                }
+              }
+              if (wkComps.length === 0) return null;
+              wkComps.sort((a, b) => a.date.localeCompare(b.date));
+              return (
+                <div className="pt-1 border-t border-border/40">
+                  <div className="flex items-center gap-1.5 mb-1.5">
+                    <Trophy className="h-3.5 w-3.5 text-destructive" />
+                    <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                      {t("seasonCompetitionsThisWeek" as any)}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {wkComps.map((c, i) => (
+                      <span
+                        key={i}
+                        className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-destructive/15 border border-destructive/30 text-destructive"
+                        title={`${c.name} · ${c.date}`}
+                      >
+                        {c.date.slice(5)} · {c.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
           </Card>
         );
       })()}
@@ -301,6 +353,27 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
                 >
                   {new Date(iso + "T00:00:00").getDate()}
                 </span>
+                {(() => {
+                  const dayComps = competitionsByDate.get(iso) ?? [];
+                  if (dayComps.length === 0) return null;
+                  return (
+                    <div className="flex flex-wrap gap-0.5 mt-0.5">
+                      <span
+                        className="text-[8px] leading-tight px-1 py-0.5 rounded bg-destructive/20 text-destructive font-semibold truncate max-w-full inline-flex items-center gap-0.5"
+                        title={dayComps.map((c) => c.name).join(", ")}
+                      >
+                        <Trophy className="h-2 w-2 flex-shrink-0" />
+                        <span className="truncate">{dayComps[0].name}</span>
+                      </span>
+                      {dayComps.length > 1 && (
+                        <span className="text-[8px] leading-tight px-1 py-0.5 rounded bg-destructive/20 text-destructive font-semibold">
+                          +{dayComps.length - 1}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })()}
+                
                 {focusTechs.length > 0 && (
                   <div className="flex flex-wrap gap-0.5 mt-1">
                     {focusTechs.slice(0, 2).map((tech, i) => (
