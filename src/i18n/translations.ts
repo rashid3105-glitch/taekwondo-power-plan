@@ -9189,8 +9189,11 @@ const translations = {
     monthApril: "april", monthMay: "maj", monthJune: "juni",
     monthJuly: "juli", monthAugust: "augusti", monthSeptember: "september",
     monthOctober: "oktober", monthNovember: "november", monthDecember: "december",
+    changelogEntry161: "Prenumerationer hanteras nu via webbplatsen; appversionerna visar ett neutralt meddelande om åtkomst.",
     changelogEntry160: "Integritetspolicyn är färdigställd och uppdaterad.",
     changelogEntry159: "Nytt: Månatliga utvecklingsrapporter per atlet för tränare — genereras automatiskt den 1:a varje månad.",
+    nativePlanManagedTitle: "Din prenumeration hanteras på ditt konto.",
+    nativeFeatureUnavailable: "Den här funktionen är inte tillgänglig med din nuvarande åtkomst. Kontakta din klubb eller administratör.",
   },
   de: {
     defaultLanguage: "Standardsprache",
