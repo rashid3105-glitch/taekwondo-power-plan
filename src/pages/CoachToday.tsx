@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Loader2, CalendarCheck, BarChart3, Check, Clock, X } from "lucide-react";
+import { ArrowLeft, Loader2, CalendarCheck, BarChart3, Check, Clock, X, HeartCrack } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { Watermark } from "@/components/Watermark";
@@ -115,6 +115,7 @@ export default function CoachToday() {
           <span className="inline-flex items-center gap-1"><Check className="h-3.5 w-3.5 text-emerald-500" />{t("present")}</span>
           <span className="inline-flex items-center gap-1"><Clock className="h-3.5 w-3.5 text-orange-500" />{t("late")}</span>
           <span className="inline-flex items-center gap-1"><X className="h-3.5 w-3.5 text-destructive" />{t("absent")}</span>
+          <span className="inline-flex items-center gap-1"><HeartCrack className="h-3.5 w-3.5 text-destructive" />{t("injured")}</span>
         </div>
         {coachUserId && (
           <SessionAttendance coachId={coachUserId} athletes={athletes} activeClubId={activeClubId} />
