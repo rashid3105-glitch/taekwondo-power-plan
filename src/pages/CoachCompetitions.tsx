@@ -422,7 +422,8 @@ export default function CoachCompetitions() {
         <div className="container max-w-4xl mx-auto px-3 py-3 flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={() => navigate("/coach")} aria-label={t("back")} title={t("back")}><ArrowLeft className="h-4 w-4" /></Button>
           <Trophy className="h-5 w-5 text-primary" />
-          <span className="font-bold flex-1">{labelCompetitions}</span>
+          <span className="font-bold flex-1 truncate">{labelCompetitions}</span>
+          <ClubSwitcher />
           <CoachBulkCreateCompetitionDialog
             athletes={myAthletes.map((a) => ({ user_id: a.user_id, display_name: a.display_name }))}
             onCreated={async () => {
