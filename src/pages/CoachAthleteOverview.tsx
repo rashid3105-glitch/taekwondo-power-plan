@@ -10,8 +10,14 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   ArrowLeft, Loader2, Heart, Building, NotebookPen,
-  LayoutDashboard, UserCog, Users,
+  LayoutDashboard, UserCog, Users, Trash2,
 } from "lucide-react";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader,
+  AlertDialogTitle, AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
 
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -271,16 +277,58 @@ export default function CoachAthleteOverview() {
 
       <main className="container max-w-5xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList className="grid grid-cols-2 w-full sm:w-[360px]">
-            <TabsTrigger value="overview" className="gap-1.5">
-              <LayoutDashboard className="h-3.5 w-3.5" />
-              <span>{t("overview")}</span>
-            </TabsTrigger>
-            <TabsTrigger value="manage" className="gap-1.5">
-              <UserCog className="h-3.5 w-3.5" />
-              <span>{t("manage")}</span>
-            </TabsTrigger>
-          </TabsList>
+          <div className="flex items-center justify-between gap-2">
+            <TabsList className="grid grid-cols-2 w-full sm:w-[360px]">
+              <TabsTrigger value="overview" className="gap-1.5">
+                <LayoutDashboard className="h-3.5 w-3.5" />
+                <span>{t("overview")}</span>
+              </TabsTrigger>
+              <TabsTrigger value="manage" className="gap-1.5">
+                <UserCog className="h-3.5 w-3.5" />
+                <span>{t("manage")}</span>
+              </TabsTrigger>
+            </TabsList>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9 text-destructive hover:bg-destructive/10 shrink-0"
+                  title={t("remove")}
+                  aria-label={t("remove")}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{t("remove")}</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {athlete.display_name}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={async () => {
+                      const { data: { user } } = await supabase.auth.getUser();
+                      if (!user) return;
+                      await supabase
+                        .from("coach_athletes")
+                        .delete()
+                        .eq("coach_id", user.id)
+                        .eq("athlete_id", athlete.user_id);
+                      toast({ title: t("athleteRemoved") });
+                      navigate("/coach");
+                    }}
+                  >
+                    {t("remove")}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+
 
           <TabsContent value="overview" className="space-y-4 mt-3">
             <AthleteOverviewTab
