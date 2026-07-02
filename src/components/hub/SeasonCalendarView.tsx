@@ -373,7 +373,7 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
                     </div>
                   );
                 })()}
-                <span className="hidden">{/* keep spans balanced */}</span>
+                
                 {focusTechs.length > 0 && (
                   <div className="flex flex-wrap gap-0.5 mt-1">
                     {focusTechs.slice(0, 2).map((tech, i) => (
