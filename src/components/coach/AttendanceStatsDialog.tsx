@@ -191,11 +191,11 @@ export function AttendanceStatsDialog({ open, onOpenChange, coachId, athletes, a
 
         {/* Month picker */}
         <div className="flex items-center justify-between gap-2">
-          <Button variant="outline" size="icon" onClick={() => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1))}>
+          <Button variant="outline" size="icon" onClick={() => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1))} aria-label={t("iconHintPrevious")} title={t("iconHintPrevious")}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <div className="text-sm font-semibold capitalize">{monthLabel}</div>
-          <Button variant="outline" size="icon" onClick={() => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1))}>
+          <Button variant="outline" size="icon" onClick={() => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1))} aria-label={t("next")} title={t("next")}>
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
