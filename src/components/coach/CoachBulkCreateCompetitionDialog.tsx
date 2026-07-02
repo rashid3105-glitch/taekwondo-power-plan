@@ -156,7 +156,6 @@ export function CoachBulkCreateCompetitionDialog({ athletes, onCreated }: Props)
             event_date: date,
             priority,
             location: location || null,
-            weight_overrides: weightOverrides,
             invitation_pdf_url: invitationUrl,
           },
         },
