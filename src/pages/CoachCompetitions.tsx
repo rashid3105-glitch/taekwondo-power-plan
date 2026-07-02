@@ -124,7 +124,7 @@ export default function CoachCompetitions() {
 
       if (!athleteIds.length) { setMyAthletes([]); setComps([]); setLoading(false); return; }
       setMyAthletes(athleteIds.map((id) => ({ user_id: id, display_name: nameMap.get(id) || "—" })));
-      const { data: competitions } = await supabase.from("competitions").select("id, name, event_date, location, user_id, priority, result").in("user_id", athleteIds).order("event_date", { ascending: true });
+      const { data: competitions } = await supabase.from("competitions").select("id, name, event_date, location, user_id, priority, result, invitation_pdf_url").in("user_id", athleteIds).order("event_date", { ascending: true });
       const compsList = ((competitions ?? []) as any[]).map((c: any) => ({ ...c, athlete_name: nameMap.get(c.user_id) || "—" }));
       setComps(compsList);
 
