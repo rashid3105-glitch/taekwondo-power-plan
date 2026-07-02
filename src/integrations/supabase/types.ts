@@ -1230,6 +1230,7 @@ export type Database = {
           created_at: string
           event_date: string
           id: string
+          invitation_pdf_url: string | null
           is_public: boolean
           location: string | null
           name: string
@@ -1246,6 +1247,7 @@ export type Database = {
           created_at?: string
           event_date: string
           id?: string
+          invitation_pdf_url?: string | null
           is_public?: boolean
           location?: string | null
           name: string
@@ -1262,6 +1264,7 @@ export type Database = {
           created_at?: string
           event_date?: string
           id?: string
+          invitation_pdf_url?: string | null
           is_public?: boolean
           location?: string | null
           name?: string
