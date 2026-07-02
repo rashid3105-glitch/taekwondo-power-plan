@@ -724,7 +724,7 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
                       e.stopPropagation();
                       setConfirmDeleteId(h.id);
                     }}
-                    aria-label={txt.delete}
+                    aria-label={txt.delete} title={txt.delete}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
