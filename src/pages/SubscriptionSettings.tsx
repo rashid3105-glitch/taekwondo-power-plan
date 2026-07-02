@@ -19,11 +19,28 @@ export default function SubscriptionSettings() {
   const [portalLoading, setPortalLoading] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const native = isNativeApp();
 
   useEffect(() => {
+    if (native) return;
     supabase.functions.invoke("check-subscription").then(() => refresh());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [native]);
+
+  // Native (App Store / Google Play): no purchase or portal UI, no external links.
+  if (native) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
+        <PageMeta title="Account" description="Manage your account" />
+        <div className="max-w-md w-full rounded-2xl border border-border bg-card p-6 text-center space-y-4 shadow-sm">
+          <h1 className="text-xl font-bold text-foreground">{t("nativePlanManagedTitle")}</h1>
+          <Button variant="outline" onClick={() => navigate(-1)}>
+            <ChevronLeft className="h-4 w-4 mr-1" /> {t("back" as any)}
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   const handlePortal = async () => {
     setPortalLoading(true);
