@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, Plus, Trophy, Search, Users } from "lucide-react";
+import { Loader2, Plus, Trophy, Search, Users, FileUp, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -49,9 +49,10 @@ export function CoachBulkCreateCompetitionDialog({ athletes, onCreated }: Props)
   // Shared fields
   const [name, setName] = useState("");
   const [date, setDate] = useState("");
-  const [defaultWeight, setDefaultWeight] = useState("");
   const [priority, setPriority] = useState<"A" | "B" | "C">("A");
   const [location, setLocation] = useState("");
+  const [invitationFile, setInvitationFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   // Selection + per-athlete weight overrides
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -95,8 +96,9 @@ export function CoachBulkCreateCompetitionDialog({ athletes, onCreated }: Props)
   }
 
   function reset() {
-    setName(""); setDate(""); setDefaultWeight(""); setLocation(""); setPriority("A");
+    setName(""); setDate(""); setLocation(""); setPriority("A");
     setSelected(new Set()); setOverrides({}); setSearch("");
+    setInvitationFile(null);
   }
 
   async function submit() {
@@ -123,6 +125,28 @@ export function CoachBulkCreateCompetitionDialog({ athletes, onCreated }: Props)
         }
       });
 
+      // Upload invitation PDF (if attached) to shared storage bucket
+      let invitationUrl: string | null = null;
+      if (invitationFile) {
+        setUploading(true);
+        const { data: authData } = await supabase.auth.getUser();
+        const uid = authData.user?.id || "anon";
+        const safeName = invitationFile.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+        const path = `${uid}/${Date.now()}-${safeName}`;
+        const { error: upErr } = await supabase.storage
+          .from("competition-invitations")
+          .upload(path, invitationFile, {
+            contentType: invitationFile.type || "application/pdf",
+            upsert: false,
+          });
+        setUploading(false);
+        if (upErr) throw new Error(upErr.message);
+        const { data: pub } = supabase.storage
+          .from("competition-invitations")
+          .getPublicUrl(path);
+        invitationUrl = pub.publicUrl;
+      }
+
       const { data, error } = await supabase.functions.invoke(
         "create-athlete-competitions-bulk",
         {
@@ -132,8 +156,8 @@ export function CoachBulkCreateCompetitionDialog({ athletes, onCreated }: Props)
             event_date: date,
             priority,
             location: location || null,
-            default_weight_class_kg: defaultWeight ? parseFloat(defaultWeight) : null,
             weight_overrides: weightOverrides,
+            invitation_pdf_url: invitationUrl,
           },
         },
       );
@@ -207,18 +231,47 @@ export function CoachBulkCreateCompetitionDialog({ athletes, onCreated }: Props)
               </Select>
             </div>
             <div>
-              <Label className="text-xs">{t("defaultWeightClass")}</Label>
-              <Input
-                type="number" inputMode="decimal" step="0.1"
-                value={defaultWeight} onChange={(e) => setDefaultWeight(e.target.value)}
-                placeholder="67.5"
-              />
-            </div>
-            <div>
               <Label className="text-xs">{t("competitionsLocation")}</Label>
               <Input value={location} onChange={(e) => setLocation(e.target.value)} maxLength={200} placeholder={t("competitionsLocationPlaceholder")} />
             </div>
+            <div className="sm:col-span-2">
+              <Label className="text-xs">{t("competitionInvitationPdf")}</Label>
+              {invitationFile ? (
+                <div className="flex items-center gap-2 rounded-md border border-border bg-muted/30 px-3 py-2">
+                  <FileUp className="h-4 w-4 text-primary shrink-0" />
+                  <span className="text-sm truncate flex-1">{invitationFile.name}</span>
+                  <Button
+                    type="button" size="icon" variant="ghost" className="h-7 w-7"
+                    onClick={() => setInvitationFile(null)}
+                    aria-label={t("remove")}
+                    title={t("remove")}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : (
+                <label className="flex items-center gap-2 cursor-pointer rounded-md border border-dashed border-border px-3 py-2 hover:bg-muted/30">
+                  <FileUp className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">{t("competitionInvitationPdfHint")}</span>
+                  <input
+                    type="file"
+                    accept="application/pdf"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (!f) return;
+                      if (f.size > 10 * 1024 * 1024) {
+                        toast({ title: t("error"), description: "Max 10 MB", variant: "destructive" });
+                        return;
+                      }
+                      setInvitationFile(f);
+                    }}
+                  />
+                </label>
+              )}
+            </div>
           </div>
+
 
           {/* Athlete selection */}
           <div className="space-y-2">

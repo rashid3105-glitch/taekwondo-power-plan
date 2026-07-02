@@ -41,6 +41,7 @@ serve(async (req) => {
       location,
       default_weight_class_kg,
       weight_overrides,
+      invitation_pdf_url,
     } = JSON.parse(raw);
 
     // ---- Validate shared fields ----
@@ -113,6 +114,10 @@ serve(async (req) => {
     const cleanName = name.slice(0, 120);
     const cleanLocation = location ? location.slice(0, 200) : null;
     const cleanPriority = priority || "A";
+    const cleanInvitationUrl =
+      typeof invitation_pdf_url === "string" && invitation_pdf_url.length <= 1024
+        ? invitation_pdf_url
+        : null;
     const rows = ids.map((athlete_id) => ({
       user_id: athlete_id,
       name: cleanName,
@@ -120,6 +125,7 @@ serve(async (req) => {
       weight_class_kg: athlete_id in overrides ? overrides[athlete_id] : defaultWc,
       priority: cleanPriority,
       location: cleanLocation,
+      invitation_pdf_url: cleanInvitationUrl,
     }));
 
     const { data: inserted, error } = await admin
