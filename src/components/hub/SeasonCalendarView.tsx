@@ -56,13 +56,19 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+      const compsQuery = supabase
+        .from("competitions")
+        .select("event_date, name, priority, user_id, club_id")
+        .gte("event_date", seasonPlan.start_date)
+        .lte("event_date", seasonPlan.end_date);
+      // Prefer club scoping when a club is active (coach & athlete views alike);
+      // fall back to own user rows so the calendar still works without an active club.
+      const scopedCompsQuery = activeClubId
+        ? compsQuery.eq("club_id", activeClubId)
+        : compsQuery.eq("user_id", user.id);
+
       const [compsRes, ovRes, techFocusRes, athTechRes] = await Promise.all([
-        supabase
-          .from("competitions")
-          .select("event_date")
-          .eq("user_id", user.id)
-          .gte("event_date", seasonPlan.start_date)
-          .lte("event_date", seasonPlan.end_date),
+        scopedCompsQuery,
         supabase
           .from("club_athlete_season_overrides")
           .select("*")
@@ -77,8 +83,19 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
           .eq("athlete_id", user.id),
       ]);
       if (cancelled) return;
-      setCompetitionDates(new Set((compsRes.data ?? []).map((c: any) => c.event_date as string)));
-      setOverrides(((ovRes.data ?? []) as any[]).map((o) => ({
+      const compRows = (compsRes.data ?? []) as any[];
+      setCompetitionDates(new Set(compRows.map((c) => c.event_date as string)));
+      // Group by date and dedupe by name so multi-athlete tournaments show once per day.
+      const byDate = new Map<string, { name: string; priority: string | null }[]>();
+      for (const c of compRows) {
+        const iso = c.event_date as string;
+        const list = byDate.get(iso) ?? [];
+        if (!list.some((x) => x.name === c.name)) {
+          list.push({ name: c.name as string, priority: (c.priority as string | null) ?? null });
+        }
+        byDate.set(iso, list);
+      }
+      setCompetitionsByDate(byDate);
         ...o,
         session_type: o.session_type as SessionType | null,
       })) as AthleteSeasonOverride[]);
