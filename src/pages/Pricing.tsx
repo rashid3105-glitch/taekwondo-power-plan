@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import type { TranslationKey } from "@/i18n/translations";
 import { detectCurrency, formatPrice, getTierPrice } from "@/lib/currency";
+import { isNativeApp } from "@/lib/platform";
 
 type Tier = {
   key: "athlete" | "coach_solo" | "team_small" | "team_medium" | "team_large";
