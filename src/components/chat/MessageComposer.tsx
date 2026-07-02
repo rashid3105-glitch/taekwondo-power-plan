@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { sendMessage, MAX_ATTACHMENT_BYTES } from "@/lib/chatApi";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface Props {
   threadId: string;
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export function MessageComposer({ threadId, onSent }: Props) {
+  const { t } = useLanguage();
   const [body, setBody] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [sending, setSending] = useState(false);
