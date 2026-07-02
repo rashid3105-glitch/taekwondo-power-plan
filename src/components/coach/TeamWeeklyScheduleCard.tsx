@@ -76,8 +76,15 @@ export function TeamWeeklyScheduleCard({ clubId }: Props) {
           {t("teamWeeklyScheduleTitle")}
         </h3>
         {!editing && (
-          <Button size="sm" variant={schedule ? "outline" : "default"} onClick={() => setEditing(true)}>
-            {schedule ? t("editTeamWeeklySchedule") : t("setTeamWeeklySchedule")}
+          <Button
+            size="icon"
+            variant={schedule ? "outline" : "default"}
+            onClick={() => setEditing(true)}
+            aria-label={schedule ? t("editTeamWeeklySchedule") : t("setTeamWeeklySchedule")}
+            title={schedule ? t("editTeamWeeklySchedule") : t("setTeamWeeklySchedule")}
+            className="shrink-0"
+          >
+            <Pencil className="h-4 w-4" />
           </Button>
         )}
       </div>
