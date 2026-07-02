@@ -18341,6 +18341,18 @@ const translations = {
     changelogEntry159: "Ny: Månedlige utviklingsrapporter per utøver for trenere — genereres automatisk den 1. i måneden.",
     nativePlanManagedTitle: "Abonnementet ditt administreres på kontoen din.",
     nativeFeatureUnavailable: "Denne funksjonen er ikke tilgjengelig med din nåværende tilgang. Kontakt klubben din eller en administrator.",
+    iconHintClose: "Lukk",
+    iconHintSend: "Send",
+    iconHintEdit: "Rediger",
+    iconHintExpand: "Utvid",
+    iconHintPrevious: "Forrige",
+    iconHintVoiceRecord: "Ta opp lyd",
+    iconHintStopRecording: "Stopp opptak",
+    iconHintAttachImage: "Legg ved bilde",
+    iconHintEmoji: "Emoji",
+    iconHintNotifications: "Varsler",
+    iconHintMessages: "Meldinger",
+    iconHintCopy: "Kopier",
   },
 } as const;
 
