@@ -160,7 +160,8 @@ export default function CoachModules() {
         <button onClick={() => navigate(-1)} aria-label="Tilbage" className="p-1 -ml-1 text-white/70 hover:text-white">
           <ArrowLeft className="h-5 w-5" />
         </button>
-        <h1 className="text-heading">Administrer moduler</h1>
+        <h1 className="text-heading flex-1">Administrer moduler</h1>
+        <ClubSwitcher />
       </header>
 
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-4">
