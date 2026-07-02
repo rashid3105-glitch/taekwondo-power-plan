@@ -91,6 +91,8 @@ export default function CoachCompetitions() {
   const [editName, setEditName] = useState("");
   const [editDate, setEditDate] = useState("");
   const [editLocation, setEditLocation] = useState("");
+  const [editPdfUrl, setEditPdfUrl] = useState<string | null>(null);
+  const [editPdfFile, setEditPdfFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
