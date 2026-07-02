@@ -490,9 +490,22 @@ export default function CoachCompetitions() {
                   )}
                 </div>
                 {!editMode ? (
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{new Date(openGroup.event_date + "T00:00:00").toLocaleDateString()}</span>
-                    {openGroup.location && <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{openGroup.location}</span>}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{new Date(openGroup.event_date + "T00:00:00").toLocaleDateString()}</span>
+                      {openGroup.location && <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{openGroup.location}</span>}
+                    </div>
+                    {openGroup.invitation_pdf_url && (
+                      <a
+                        href={openGroup.invitation_pdf_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 underline"
+                      >
+                        <FileText className="h-3.5 w-3.5" />
+                        Invitation (PDF)
+                      </a>
+                    )}
                   </div>
                 ) : (
                   <div className="mt-2 space-y-2">
@@ -511,6 +524,44 @@ export default function CoachCompetitions() {
                         value={editLocation}
                         onChange={(e) => setEditLocation(e.target.value)}
                         placeholder="Sted"
+                      />
+                    </div>
+                    <div className="rounded-lg border border-dashed border-border p-2 space-y-1.5">
+                      <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1">
+                        <Paperclip className="h-3 w-3" />
+                        Invitation (PDF)
+                      </p>
+                      {editPdfFile ? (
+                        <div className="flex items-center justify-between gap-2 text-xs">
+                          <span className="truncate">{editPdfFile.name}</span>
+                          <button
+                            type="button"
+                            onClick={() => setEditPdfFile(null)}
+                            className="text-destructive hover:text-destructive/80"
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      ) : editPdfUrl ? (
+                        <div className="flex items-center justify-between gap-2 text-xs">
+                          <a href={editPdfUrl} target="_blank" rel="noopener noreferrer" className="text-primary underline truncate flex items-center gap-1">
+                            <FileText className="h-3.5 w-3.5" />
+                            Nuværende PDF
+                          </a>
+                          <button
+                            type="button"
+                            onClick={() => setEditPdfUrl(null)}
+                            className="text-destructive hover:text-destructive/80 text-xs"
+                          >
+                            Fjern
+                          </button>
+                        </div>
+                      ) : null}
+                      <Input
+                        type="file"
+                        accept="application/pdf"
+                        onChange={(e) => setEditPdfFile(e.target.files?.[0] ?? null)}
+                        className="text-xs h-9"
                       />
                     </div>
                     <div className="flex items-center gap-2 justify-end">
