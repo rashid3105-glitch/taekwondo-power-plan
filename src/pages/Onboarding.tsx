@@ -358,8 +358,9 @@ export default function Onboarding() {
 
       haptics.success();
 
-      // After onboarding, send athletes without an active subscription to /pricing
-      if (role !== "coach" && userId) {
+      // After onboarding, send athletes without an active subscription to /pricing.
+      // Skip entirely in native builds (App Store / Google Play): no pricing surface allowed.
+      if (role !== "coach" && userId && !isNativeApp()) {
         try {
           const { data: subRow } = await supabase
             .from("subscriptions")
