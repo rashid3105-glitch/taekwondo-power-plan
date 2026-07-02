@@ -16,6 +16,7 @@ interface Athlete {
 
 interface Props {
   athletes: Athlete[];
+  variant?: "icon" | "inline";
 }
 
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
