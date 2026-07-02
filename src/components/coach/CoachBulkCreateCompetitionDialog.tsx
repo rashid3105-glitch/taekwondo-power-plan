@@ -125,6 +125,28 @@ export function CoachBulkCreateCompetitionDialog({ athletes, onCreated }: Props)
         }
       });
 
+      // Upload invitation PDF (if attached) to shared storage bucket
+      let invitationUrl: string | null = null;
+      if (invitationFile) {
+        setUploading(true);
+        const { data: authData } = await supabase.auth.getUser();
+        const uid = authData.user?.id || "anon";
+        const safeName = invitationFile.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+        const path = `${uid}/${Date.now()}-${safeName}`;
+        const { error: upErr } = await supabase.storage
+          .from("competition-invitations")
+          .upload(path, invitationFile, {
+            contentType: invitationFile.type || "application/pdf",
+            upsert: false,
+          });
+        setUploading(false);
+        if (upErr) throw new Error(upErr.message);
+        const { data: pub } = supabase.storage
+          .from("competition-invitations")
+          .getPublicUrl(path);
+        invitationUrl = pub.publicUrl;
+      }
+
       const { data, error } = await supabase.functions.invoke(
         "create-athlete-competitions-bulk",
         {
@@ -134,8 +156,8 @@ export function CoachBulkCreateCompetitionDialog({ athletes, onCreated }: Props)
             event_date: date,
             priority,
             location: location || null,
-            default_weight_class_kg: defaultWeight ? parseFloat(defaultWeight) : null,
             weight_overrides: weightOverrides,
+            invitation_pdf_url: invitationUrl,
           },
         },
       );
