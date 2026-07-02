@@ -427,19 +427,84 @@ export default function CoachCompetitions() {
         )}
       </main>
 
-      <Sheet open={!!openGroup} onOpenChange={(o) => !o && setOpenGroup(null)}>
-        <SheetContent side="bottom" className="rounded-t-2xl max-h-[80vh] overflow-y-auto">
+      <Sheet
+        open={!!openGroup}
+        onOpenChange={(o) => {
+          if (!o) {
+            setOpenGroup(null);
+            setEditMode(false);
+          }
+        }}
+      >
+        <SheetContent side="bottom" className="rounded-t-2xl max-h-[85vh] overflow-y-auto">
           {openGroup && (
             <>
               <SheetHeader className="text-left">
-                <SheetTitle className="flex items-center gap-2">
-                  <Trophy className="h-4 w-4 text-primary" />
-                  {openGroup.name}
-                </SheetTitle>
-                <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{new Date(openGroup.event_date + "T00:00:00").toLocaleDateString()}</span>
-                  {openGroup.location && <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{openGroup.location}</span>}
+                <div className="flex items-start justify-between gap-2">
+                  <SheetTitle className="flex items-center gap-2 flex-1 min-w-0">
+                    <Trophy className="h-4 w-4 text-primary shrink-0" />
+                    <span className="truncate">{openGroup.name}</span>
+                  </SheetTitle>
+                  {!editMode && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 shrink-0"
+                      onClick={() => startEdit(openGroup)}
+                      aria-label={labelEdit}
+                      title={labelEdit}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
+                {!editMode ? (
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{new Date(openGroup.event_date + "T00:00:00").toLocaleDateString()}</span>
+                    {openGroup.location && <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{openGroup.location}</span>}
+                  </div>
+                ) : (
+                  <div className="mt-2 space-y-2">
+                    <Input
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      placeholder={labelCompetitions}
+                    />
+                    <div className="grid grid-cols-2 gap-2">
+                      <Input
+                        type="date"
+                        value={editDate}
+                        onChange={(e) => setEditDate(e.target.value)}
+                      />
+                      <Input
+                        value={editLocation}
+                        onChange={(e) => setEditLocation(e.target.value)}
+                        placeholder="Sted"
+                      />
+                    </div>
+                    <div className="flex items-center gap-2 justify-end">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setEditMode(false)}
+                        disabled={saving}
+                        className="gap-1"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                        {labelCancel}
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={saveEdit}
+                        disabled={saving || !editName.trim() || !editDate}
+                        className="gap-1"
+                      >
+                        <Check className="h-3.5 w-3.5" />
+                        {saving ? "…" : labelSave}
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </SheetHeader>
               <div className="mt-4">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
