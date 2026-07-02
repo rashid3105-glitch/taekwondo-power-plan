@@ -8,6 +8,7 @@ import { Conversation } from "./Conversation";
 import { StartChatPicker } from "./StartChatPicker";
 import { NewGroupDialog } from "./NewGroupDialog";
 import type { ChatThread } from "@/lib/chatApi";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface Props {
   open: boolean;
@@ -16,6 +17,7 @@ interface Props {
 }
 
 export function ChatDrawer({ open, onOpenChange, isCoach }: Props) {
+  const { t } = useLanguage();
   const { threads, loading, refresh } = useThreads();
   const [active, setActive] = useState<ChatThread | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
