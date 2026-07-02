@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import type { TranslationKey } from "@/i18n/translations";
 import { detectCurrency, formatPrice, getTierPrice } from "@/lib/currency";
+import { isNativeApp } from "@/lib/platform";
 
 type Tier = {
   key: "athlete" | "coach_solo" | "team_small" | "team_medium" | "team_large";
@@ -108,13 +109,20 @@ export default function Pricing() {
   const [managingPortal, setManagingPortal] = useState(false);
   const currency = useMemo(() => detectCurrency(), []);
   const showWelcome = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("welcome") === "1";
+  // Native (iOS/Android via Capacitor) MUST NOT expose any purchase UI,
+  // pricing, external payment links, or upgrade/demo CTAs. The web version
+  // stays 100% unchanged. See src/lib/platform.ts.
+  const native = isNativeApp();
 
   useEffect(() => {
+    if (native) return;
     checkSubscription();
-  }, []);
+  }, [native]);
 
-  // Inject Product JSON-LD for subscription tiers (rich pricing results)
+  // Inject Product JSON-LD for subscription tiers (rich pricing results).
+  // Skipped in native — no pricing surface allowed at all.
   useEffect(() => {
+    if (native) return;
     const currencyCode = currency.toUpperCase();
     const allTiers = [...individualTiers, ...teamTiers];
     const products = allTiers.map((tier) => {
@@ -309,6 +317,22 @@ export default function Pricing() {
       </Card>
     );
   };
+
+  // App Store / Google Play compliance: in native builds we render a neutral
+  // informational screen only — no prices, no CTAs, no external payment links.
+  if (native) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
+        <PageMeta title="Account" description="Manage your account" />
+        <div className="max-w-md w-full rounded-2xl border border-border bg-card p-6 text-center space-y-4 shadow-sm">
+          <h1 className="text-xl font-bold text-foreground">{t("nativePlanManagedTitle")}</h1>
+          <Button variant="outline" onClick={() => navigate("/dashboard")}>
+            {t("backToDashboard")}
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background relative">

@@ -48,6 +48,7 @@ import { Calendar as CalendarIcon, Sparkles, ArrowLeft, ChevronRight } from "luc
 import { cn } from "@/lib/utils";
 import { useEntitlements, useAthleteModuleAccess } from "@/hooks/useEntitlements";
 import type { LockedModule } from "@/lib/entitlements";
+import { isNativeApp } from "@/lib/platform";
 import { FeatureEmptyState } from "@/components/FeatureEmptyState";
 import { TodayCard } from "@/components/today/TodayCard";
 import { HubTodayHero } from "@/components/hub/HubTodayHero";
@@ -296,6 +297,8 @@ export default function Dashboard() {
   const handleTabChange = (tab: TabKey) => {
     if (isDemoLockedTab(tab)) return;
     if (isTierLockedTab(tab)) {
+      // Native: no pricing surface; just refuse the navigation silently.
+      if (isNativeApp()) return;
       navigate("/pricing");
       return;
     }
@@ -321,13 +324,20 @@ export default function Dashboard() {
       <div className="space-y-2">
         <h3 className="font-bold text-foreground">{t(featureKey)}</h3>
         <p className="text-sm text-muted-foreground">{t("demoLockedFeatureDesc")}</p>
-        <p className="text-sm text-foreground">{t("demoUpgradePrompt")}</p>
+        {!isNativeApp() && (
+          <p className="text-sm text-foreground">{t("demoUpgradePrompt")}</p>
+        )}
+        {isNativeApp() && (
+          <p className="text-sm text-foreground">{t("nativeFeatureUnavailable")}</p>
+        )}
       </div>
-      <div className="flex justify-center">
-        <Button variant="outline" size="sm" onClick={() => navigate("/pricing")}>
-          {t("viewPricing")}
-        </Button>
-      </div>
+      {!isNativeApp() && (
+        <div className="flex justify-center">
+          <Button variant="outline" size="sm" onClick={() => navigate("/pricing")}>
+            {t("viewPricing")}
+          </Button>
+        </div>
+      )}
     </div>
   );
 
@@ -338,13 +348,17 @@ export default function Dashboard() {
       </div>
       <div className="space-y-2">
         <h3 className="font-bold text-foreground">{t(featureKey)}</h3>
-        <p className="text-sm text-muted-foreground">{t("moduleLockedDesc")}</p>
+        <p className="text-sm text-muted-foreground">
+          {isNativeApp() ? t("nativeFeatureUnavailable") : t("moduleLockedDesc")}
+        </p>
       </div>
-      <div className="flex justify-center">
-        <Button size="sm" onClick={() => navigate("/pricing")}>
-          <Sparkles className="h-4 w-4 mr-1" /> {t("upgradeToUnlock")}
-        </Button>
-      </div>
+      {!isNativeApp() && (
+        <div className="flex justify-center">
+          <Button size="sm" onClick={() => navigate("/pricing")}>
+            <Sparkles className="h-4 w-4 mr-1" /> {t("upgradeToUnlock")}
+          </Button>
+        </div>
+      )}
     </div>
   );
 
@@ -828,15 +842,21 @@ export default function Dashboard() {
                 <span className="text-sm font-bold text-destructive">{t("demoDeletionImminent")}</span>
               </div>
             )}
-            <div className="rounded-lg border border-border bg-card p-4 space-y-2">
-              <p className="text-sm font-semibold text-foreground">{t("paypalTitle")}</p>
-              <p className="text-sm text-muted-foreground">{t("paypalInstruction")}</p>
-              <p className="text-lg font-bold text-primary font-mono">kontakt@sportstalent.dk</p>
-              <p className="text-sm text-muted-foreground">{t("paypalReference")}</p>
-            </div>
-            <Button onClick={() => navigate("/pricing")} className="w-full sm:w-auto">
-              {t("viewPricing")}
-            </Button>
+            {!isNativeApp() && (
+              <div className="rounded-lg border border-border bg-card p-4 space-y-2">
+                <p className="text-sm font-semibold text-foreground">{t("paypalTitle")}</p>
+                <p className="text-sm text-muted-foreground">{t("paypalInstruction")}</p>
+                <p className="text-lg font-bold text-primary font-mono">kontakt@sportstalent.dk</p>
+                <p className="text-sm text-muted-foreground">{t("paypalReference")}</p>
+              </div>
+            )}
+            {isNativeApp() ? (
+              <p className="text-sm text-foreground">{t("nativeFeatureUnavailable")}</p>
+            ) : (
+              <Button onClick={() => navigate("/pricing")} className="w-full sm:w-auto">
+                {t("viewPricing")}
+              </Button>
+            )}
           </div>
         ) : isDemo && demoDaysLeft !== null && (
           <div className={`flex items-center gap-3 rounded-xl border p-3 sm:p-4 ${
