@@ -6,8 +6,13 @@ import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { ArrowLeft, Trophy, MapPin, Calendar, Users, Sparkles, CheckCircle2, Clock } from "lucide-react";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { ArrowLeft, Trophy, MapPin, Calendar, Users, Sparkles, CheckCircle2, Clock, Pencil, Trash2, X, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { CoachBulkCreateCompetitionDialog } from "@/components/coach/CoachBulkCreateCompetitionDialog";
@@ -79,6 +84,13 @@ export default function CoachCompetitions() {
   const [reflectionStatus, setReflectionStatus] = useState<Record<string, "submitted" | "requested">>({});
   const [requestingAll, setRequestingAll] = useState(false);
   const [requestingOne, setRequestingOne] = useState<string | null>(null);
+  const [editMode, setEditMode] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editDate, setEditDate] = useState("");
+  const [editLocation, setEditLocation] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -166,6 +178,81 @@ export default function CoachCompetitions() {
   const labelStatusRequested = t("reflectionStatusRequested") as string;
   const labelRequestSent = t("reflectionRequestSent") as string;
   const labelRequestNone = t("reflectionRequestNone") as string;
+  const labelEdit = t("editCompetition") as string;
+  const labelSave = t("saveChanges") as string;
+  const labelCancel = t("cancel") as string;
+  const labelDelete = t("deleteCompetition") as string;
+  const labelDeleteHelper = t("deleteCompetitionHelper") as string;
+  const labelDeleteConfirm = t("deleteCompetitionConfirm") as string;
+  const labelUpdated = t("competitionUpdated") as string;
+  const labelDeleted = t("competitionDeleted") as string;
+
+  const startEdit = (g: CompGroup) => {
+    setEditName(g.name);
+    setEditDate(g.event_date);
+    setEditLocation(g.location ?? "");
+    setEditMode(true);
+  };
+
+  const saveEdit = async () => {
+    if (!openGroup) return;
+    const name = editName.trim();
+    const date = editDate;
+    const location = editLocation.trim() || null;
+    if (!name || !date) return;
+    setSaving(true);
+    try {
+      const ids = comps
+        .filter(c =>
+          c.name.trim().toLowerCase() === openGroup.name.trim().toLowerCase() &&
+          c.event_date === openGroup.event_date &&
+          (c.location ?? "").trim().toLowerCase() === (openGroup.location ?? "").trim().toLowerCase()
+        )
+        .map(c => c.id);
+      if (!ids.length) throw new Error("No rows");
+      const { error } = await supabase
+        .from("competitions")
+        .update({ name, event_date: date, location })
+        .in("id", ids);
+      if (error) throw error;
+      setComps(prev => prev.map(c => ids.includes(c.id) ? { ...c, name, event_date: date, location } : c));
+      setOpenGroup(prev => prev ? { ...prev, name, event_date: date, location } : prev);
+      setEditMode(false);
+      toast({ title: labelUpdated });
+    } catch (e: any) {
+      toast({ title: "Fejl", description: e.message, variant: "destructive" });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const deleteWholeCompetition = async () => {
+    if (!openGroup) return;
+    setDeleting(true);
+    try {
+      const ids = comps
+        .filter(c =>
+          c.name.trim().toLowerCase() === openGroup.name.trim().toLowerCase() &&
+          c.event_date === openGroup.event_date &&
+          (c.location ?? "").trim().toLowerCase() === (openGroup.location ?? "").trim().toLowerCase()
+        )
+        .map(c => c.id);
+      if (ids.length) {
+        // Best-effort: remove any reflection requests tied to these comp ids
+        await supabase.from("competition_reflection_requests").delete().in("competition_id", ids);
+        const { error } = await supabase.from("competitions").delete().in("id", ids);
+        if (error) throw error;
+      }
+      setComps(prev => prev.filter(c => !ids.includes(c.id)));
+      setConfirmDelete(false);
+      setOpenGroup(null);
+      toast({ title: labelDeleted });
+    } catch (e: any) {
+      toast({ title: "Fejl", description: e.message, variant: "destructive" });
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const reflectionKey = (userId: string, group: CompGroup) =>
     `${userId}|${group.name.trim().toLowerCase()}|${group.event_date}`;
@@ -340,19 +427,84 @@ export default function CoachCompetitions() {
         )}
       </main>
 
-      <Sheet open={!!openGroup} onOpenChange={(o) => !o && setOpenGroup(null)}>
-        <SheetContent side="bottom" className="rounded-t-2xl max-h-[80vh] overflow-y-auto">
+      <Sheet
+        open={!!openGroup}
+        onOpenChange={(o) => {
+          if (!o) {
+            setOpenGroup(null);
+            setEditMode(false);
+          }
+        }}
+      >
+        <SheetContent side="bottom" className="rounded-t-2xl max-h-[85vh] overflow-y-auto">
           {openGroup && (
             <>
               <SheetHeader className="text-left">
-                <SheetTitle className="flex items-center gap-2">
-                  <Trophy className="h-4 w-4 text-primary" />
-                  {openGroup.name}
-                </SheetTitle>
-                <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{new Date(openGroup.event_date + "T00:00:00").toLocaleDateString()}</span>
-                  {openGroup.location && <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{openGroup.location}</span>}
+                <div className="flex items-start justify-between gap-2">
+                  <SheetTitle className="flex items-center gap-2 flex-1 min-w-0">
+                    <Trophy className="h-4 w-4 text-primary shrink-0" />
+                    <span className="truncate">{openGroup.name}</span>
+                  </SheetTitle>
+                  {!editMode && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 shrink-0"
+                      onClick={() => startEdit(openGroup)}
+                      aria-label={labelEdit}
+                      title={labelEdit}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
+                {!editMode ? (
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{new Date(openGroup.event_date + "T00:00:00").toLocaleDateString()}</span>
+                    {openGroup.location && <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{openGroup.location}</span>}
+                  </div>
+                ) : (
+                  <div className="mt-2 space-y-2">
+                    <Input
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      placeholder={labelCompetitions}
+                    />
+                    <div className="grid grid-cols-2 gap-2">
+                      <Input
+                        type="date"
+                        value={editDate}
+                        onChange={(e) => setEditDate(e.target.value)}
+                      />
+                      <Input
+                        value={editLocation}
+                        onChange={(e) => setEditLocation(e.target.value)}
+                        placeholder="Sted"
+                      />
+                    </div>
+                    <div className="flex items-center gap-2 justify-end">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setEditMode(false)}
+                        disabled={saving}
+                        className="gap-1"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                        {labelCancel}
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={saveEdit}
+                        disabled={saving || !editName.trim() || !editDate}
+                        className="gap-1"
+                      >
+                        <Check className="h-3.5 w-3.5" />
+                        {saving ? "…" : labelSave}
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </SheetHeader>
               <div className="mt-4">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
@@ -442,11 +594,49 @@ export default function CoachCompetitions() {
                     </div>
                   </div>
                 )}
+
+                <div className="mt-6 p-3 rounded-lg border border-destructive/40 bg-destructive/5">
+                  <p className="text-sm font-semibold text-destructive mb-1 flex items-center gap-1.5">
+                    <Trash2 className="h-4 w-4" />
+                    {labelDelete}
+                  </p>
+                  <p className="text-xs text-muted-foreground mb-3">{labelDeleteHelper}</p>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => setConfirmDelete(true)}
+                    className="gap-1.5"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    {labelDelete}
+                  </Button>
+                </div>
               </div>
             </>
           )}
         </SheetContent>
       </Sheet>
+
+      <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{labelDelete}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {labelDeleteConfirm.replace("{count}", String(openGroup?.participants.length ?? 0))}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>{labelCancel}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => { e.preventDefault(); deleteWholeCompetition(); }}
+              disabled={deleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleting ? "…" : labelDelete}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
