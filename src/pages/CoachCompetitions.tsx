@@ -12,7 +12,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { ArrowLeft, Trophy, MapPin, Calendar, Users, Sparkles, CheckCircle2, Clock, Pencil, Trash2, X, Check } from "lucide-react";
+import { ArrowLeft, Trophy, MapPin, Calendar, Users, Sparkles, CheckCircle2, Clock, Pencil, Trash2, X, Check, FileText, Paperclip } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { CoachBulkCreateCompetitionDialog } from "@/components/coach/CoachBulkCreateCompetitionDialog";
@@ -26,6 +26,7 @@ interface Comp {
   athlete_name: string;
   priority: string;
   result: string | null;
+  invitation_pdf_url: string | null;
 }
 
 interface CompGroup {
@@ -34,6 +35,7 @@ interface CompGroup {
   event_date: string;
   location: string | null;
   priority: string;
+  invitation_pdf_url: string | null;
   participants: { user_id: string; athlete_name: string; result: string | null }[];
 }
 
@@ -59,6 +61,7 @@ function groupComps(list: Comp[]): CompGroup[] {
         event_date: c.event_date,
         location: c.location,
         priority: c.priority,
+        invitation_pdf_url: c.invitation_pdf_url,
         participants: [{ user_id: c.user_id, athlete_name: c.athlete_name, result: c.result }],
       });
     } else {
@@ -88,6 +91,8 @@ export default function CoachCompetitions() {
   const [editName, setEditName] = useState("");
   const [editDate, setEditDate] = useState("");
   const [editLocation, setEditLocation] = useState("");
+  const [editPdfUrl, setEditPdfUrl] = useState<string | null>(null);
+  const [editPdfFile, setEditPdfFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -121,7 +126,7 @@ export default function CoachCompetitions() {
 
       if (!athleteIds.length) { setMyAthletes([]); setComps([]); setLoading(false); return; }
       setMyAthletes(athleteIds.map((id) => ({ user_id: id, display_name: nameMap.get(id) || "—" })));
-      const { data: competitions } = await supabase.from("competitions").select("id, name, event_date, location, user_id, priority, result").in("user_id", athleteIds).order("event_date", { ascending: true });
+      const { data: competitions } = await supabase.from("competitions").select("id, name, event_date, location, user_id, priority, result, invitation_pdf_url").in("user_id", athleteIds).order("event_date", { ascending: true });
       const compsList = ((competitions ?? []) as any[]).map((c: any) => ({ ...c, athlete_name: nameMap.get(c.user_id) || "—" }));
       setComps(compsList);
 
@@ -191,6 +196,8 @@ export default function CoachCompetitions() {
     setEditName(g.name);
     setEditDate(g.event_date);
     setEditLocation(g.location ?? "");
+    setEditPdfUrl(g.invitation_pdf_url ?? null);
+    setEditPdfFile(null);
     setEditMode(true);
   };
 
@@ -210,13 +217,36 @@ export default function CoachCompetitions() {
         )
         .map(c => c.id);
       if (!ids.length) throw new Error("No rows");
+
+      // Handle PDF upload / removal
+      let nextPdfUrl: string | null = editPdfUrl;
+      if (editPdfFile) {
+        const { data: authData } = await supabase.auth.getUser();
+        const uid = authData.user?.id || "anon";
+        const safeName = editPdfFile.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+        const path = `${uid}/${Date.now()}-${safeName}`;
+        const { error: upErr } = await supabase.storage
+          .from("competition-invitations")
+          .upload(path, editPdfFile, {
+            contentType: editPdfFile.type || "application/pdf",
+            upsert: false,
+          });
+        if (upErr) throw new Error(upErr.message);
+        const { data: pub } = supabase.storage
+          .from("competition-invitations")
+          .getPublicUrl(path);
+        nextPdfUrl = pub.publicUrl;
+      }
+
       const { error } = await supabase
         .from("competitions")
-        .update({ name, event_date: date, location })
+        .update({ name, event_date: date, location, invitation_pdf_url: nextPdfUrl })
         .in("id", ids);
       if (error) throw error;
-      setComps(prev => prev.map(c => ids.includes(c.id) ? { ...c, name, event_date: date, location } : c));
-      setOpenGroup(prev => prev ? { ...prev, name, event_date: date, location } : prev);
+      setComps(prev => prev.map(c => ids.includes(c.id) ? { ...c, name, event_date: date, location, invitation_pdf_url: nextPdfUrl } : c));
+      setOpenGroup(prev => prev ? { ...prev, name, event_date: date, location, invitation_pdf_url: nextPdfUrl } : prev);
+      setEditPdfFile(null);
+      setEditPdfUrl(nextPdfUrl);
       setEditMode(false);
       toast({ title: labelUpdated });
     } catch (e: any) {
@@ -312,12 +342,13 @@ export default function CoachCompetitions() {
         location: group.location,
         priority: group.priority,
         result: null,
+        invitation_pdf_url: group.invitation_pdf_url,
         ...(activeClubId ? { club_id: activeClubId } : {}),
       } as any).select("id").single();
       if (error) throw error;
       const athleteName = myAthletes.find(a => a.user_id === athleteId)?.display_name || "—";
       const newId = (data as any)?.id || crypto.randomUUID();
-      setComps(prev => [...prev, { id: newId, name: group.name, event_date: group.event_date, location: group.location, user_id: athleteId, athlete_name: athleteName, priority: group.priority, result: null }]);
+      setComps(prev => [...prev, { id: newId, name: group.name, event_date: group.event_date, location: group.location, user_id: athleteId, athlete_name: athleteName, priority: group.priority, result: null, invitation_pdf_url: group.invitation_pdf_url }]);
       setOpenGroup(prev => prev ? { ...prev, participants: [...prev.participants, { user_id: athleteId, athlete_name: athleteName, result: null }] } : prev);
     } catch (e: any) {
       toast({ title: "Fejl", description: e.message, variant: "destructive" });
@@ -459,9 +490,22 @@ export default function CoachCompetitions() {
                   )}
                 </div>
                 {!editMode ? (
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{new Date(openGroup.event_date + "T00:00:00").toLocaleDateString()}</span>
-                    {openGroup.location && <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{openGroup.location}</span>}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{new Date(openGroup.event_date + "T00:00:00").toLocaleDateString()}</span>
+                      {openGroup.location && <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{openGroup.location}</span>}
+                    </div>
+                    {openGroup.invitation_pdf_url && (
+                      <a
+                        href={openGroup.invitation_pdf_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 underline"
+                      >
+                        <FileText className="h-3.5 w-3.5" />
+                        Invitation (PDF)
+                      </a>
+                    )}
                   </div>
                 ) : (
                   <div className="mt-2 space-y-2">
@@ -480,6 +524,44 @@ export default function CoachCompetitions() {
                         value={editLocation}
                         onChange={(e) => setEditLocation(e.target.value)}
                         placeholder="Sted"
+                      />
+                    </div>
+                    <div className="rounded-lg border border-dashed border-border p-2 space-y-1.5">
+                      <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1">
+                        <Paperclip className="h-3 w-3" />
+                        Invitation (PDF)
+                      </p>
+                      {editPdfFile ? (
+                        <div className="flex items-center justify-between gap-2 text-xs">
+                          <span className="truncate">{editPdfFile.name}</span>
+                          <button
+                            type="button"
+                            onClick={() => setEditPdfFile(null)}
+                            className="text-destructive hover:text-destructive/80"
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      ) : editPdfUrl ? (
+                        <div className="flex items-center justify-between gap-2 text-xs">
+                          <a href={editPdfUrl} target="_blank" rel="noopener noreferrer" className="text-primary underline truncate flex items-center gap-1">
+                            <FileText className="h-3.5 w-3.5" />
+                            Nuværende PDF
+                          </a>
+                          <button
+                            type="button"
+                            onClick={() => setEditPdfUrl(null)}
+                            className="text-destructive hover:text-destructive/80 text-xs"
+                          >
+                            Fjern
+                          </button>
+                        </div>
+                      ) : null}
+                      <Input
+                        type="file"
+                        accept="application/pdf"
+                        onChange={(e) => setEditPdfFile(e.target.files?.[0] ?? null)}
+                        className="text-xs h-9"
                       />
                     </div>
                     <div className="flex items-center gap-2 justify-end">
