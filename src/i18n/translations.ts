@@ -12198,8 +12198,11 @@ const translations = {
     monthApril: "April", monthMay: "Mai", monthJune: "Juni",
     monthJuly: "Juli", monthAugust: "August", monthSeptember: "September",
     monthOctober: "Oktober", monthNovember: "November", monthDecember: "Dezember",
+    changelogEntry161: "Abonnements werden jetzt über die Website verwaltet; die App-Versionen zeigen eine neutrale Meldung zu deinem Zugang.",
     changelogEntry160: "Datenschutzerklärung finalisiert und aktualisiert.",
     changelogEntry159: "Neu: Monatliche Entwicklungsberichte pro Athlet für Trainer — werden automatisch am 1. des Monats erstellt.",
+    nativePlanManagedTitle: "Dein Abonnement wird über dein Konto verwaltet.",
+    nativeFeatureUnavailable: "Diese Funktion ist mit deinem aktuellen Zugang nicht verfügbar. Bitte wende dich an deinen Verein oder Administrator.",
   },
 
   ar: {
