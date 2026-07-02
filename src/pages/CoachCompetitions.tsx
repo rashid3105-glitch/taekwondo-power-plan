@@ -315,6 +315,7 @@ export default function CoachCompetitions() {
         location: group.location,
         priority: group.priority,
         result: null,
+        invitation_pdf_url: group.invitation_pdf_url,
         ...(activeClubId ? { club_id: activeClubId } : {}),
       } as any).select("id").single();
       if (error) throw error;
