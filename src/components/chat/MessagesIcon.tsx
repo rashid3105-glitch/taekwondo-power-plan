@@ -3,12 +3,14 @@ import { MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useThreads } from "@/hooks/useThreads";
 import { ChatDrawer } from "./ChatDrawer";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface Props {
   isCoach?: boolean;
 }
 
 export function MessagesIcon({ isCoach }: Props) {
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const { totalUnread } = useThreads();
 
