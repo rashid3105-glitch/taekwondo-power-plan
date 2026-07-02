@@ -1,38 +1,37 @@
 ## Problem
 
-Det nuværende native iOS opstartsbillede (`ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732*.png`) viser en **hvid** løbende figur — ikke en rød. Derudover er figuren placeret **højt til højre for centrum** og er meget lille i forhold til billedet. iOS LaunchScreen bruger `contentMode="scaleAspectFill"`, som beskærer siderne på højformat-telefoner — figuren risikerer at havne uden for skærmen på nogle enheder.
-
-Så på iPhone ser man i praksis en næsten sort skærm ved opstart, ikke en rød løbende figur.
+I sidste ombæring genererede jeg en **generisk rød kvindelig løber-silhuet** til iOS-splash-billedet i stedet for at bruge dit faktiske SPORTSTALENT-brand-logo (den røde løber med graf/søjler + "SPORTSTALENT"-wordmark). Det er forkert — brandet skal bruges, ikke en AI-genereret figur.
 
 ## Løsning
 
-1. **Generér et nyt 2732×2732 splash-billede** med:
-   - Sort baggrund (`#0a0a0a`) matcher React-splashen i `SplashScreen.tsx`, så overgangen er sømløs.
-   - **Rød** løbende figur (`#e63946` — samme røde tone som prikkerne og "TALENT"-wordmark).
-   - Figuren **centreret** i billedet og stor nok (ca. 30–35 % af billedets bredde) til at overleve `scaleAspectFill`-beskæring på alle iPhone-formater (fra SE til Pro Max).
+1. **Brug det uploadede logo** (`user-uploads://Sportstalent_-_Sport_Science_Training_for_Taekwondo_Athletes-2.png`) som kilde i stedet for den genererede silhuet.
 
-2. **Overskriv alle tre filer** i `ios/App/App/Assets.xcassets/Splash.imageset/` med det nye billede (`splash-2732x2732.png`, `splash-2732x2732-1.png`, `splash-2732x2732-2.png`) — de tre er `1x`/`2x`/`3x`-varianter og skal være identiske for at Capacitors splash-plugin viser det samme uanset device-scale.
+2. **Byg et nyt 2732×2732 splash-lærred** med PIL:
+   - Sort baggrund (`#0a0a0a`) — matcher React-splashen.
+   - Logoet (løber + graf + "SPORTSTALENT"-tekst samlet) **centreret** på lærredet.
+   - Skaleret til ca. **40 % af lærredets bredde**, så både løberen og wordmark er tydelige efter iOS's `scaleAspectFill`-beskæring på alle iPhone-formater (SE → Pro Max).
+   - Kanterne på det uploadede PNG er sorte og smelter sømløst sammen med baggrunden.
 
-3. **Opdater `resources/splash.png`** med samme nye billede, så en fremtidig `npx capacitor-assets generate` regenererer korrekt.
+3. **Overskriv de samme fire filer** som sidst:
+   - `ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732.png`
+   - `ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732-1.png`
+   - `ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732-2.png`
+   - `resources/splash.png`
 
-Ingen ændringer i `capacitor.config.ts`, `LaunchScreen.storyboard`, `SplashScreen.tsx` eller `nativeInit.ts` — kun billedaktivet.
+4. **Ingen ændringer** i `capacitor.config.ts`, `LaunchScreen.storyboard`, React `SplashScreen.tsx` eller `nativeInit.ts`.
 
 ## Efter deploy
 
-For at det slår igennem på fysisk iPhone skal brugeren:
+For at det slår igennem på fysisk iPhone:
 ```
 git pull
 npm run build
 npx cap sync ios
 ```
-og bygge appen igen i Xcode (LaunchScreen-billeder cacher aggressivt — slet evt. app fra device først).
+og genbyg i Xcode — slet evt. appen fra enheden først, da iOS cacher launch screens aggressivt.
 
 ## Tekniske detaljer
 
-- **Billedgenerering**: `imagegen--generate_image` med `premium` (skarp silhouet, ingen tekst), `width=1920 height=1920`, uploades derefter og kopieres til de fire målstier. Alternativt en enkel PIL-genereret PNG (garanteret præcis farve/placering, ingen AI-artefakter) — sidstnævnte er mere pålidelig for et rent silhuet-mærke.
-- **Anbefaling**: brug PIL-varianten (deterministisk) med den eksisterende `src/assets/runner-icon.png` som kilde — beskær til silhouetten, farv den rød, placér centreret på sort 2732×2732 lærred.
-- **Filstier der opdateres**:
-  - `ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732.png`
-  - `ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732-1.png`
-  - `ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732-2.png`
-  - `resources/splash.png`
+- Deterministisk PIL-composite (ingen ny AI-generering) — garanterer at det er dit faktiske brand-logo pixel-for-pixel.
+- Bevar aspect ratio på det uploadede logo; padd med sort baggrund til 2732×2732 kvadrat.
+- Central placering — ikke offset — for at overleve aspect-fill-beskæring i portrait på alle enheder.
