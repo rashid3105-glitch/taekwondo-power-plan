@@ -16,9 +16,10 @@ interface Props {
   stats: PulseStats;
   active: PulseFilter;
   onChange: (filter: PulseFilter) => void;
+  headerAction?: React.ReactNode;
 }
 
-export function SquadPulse({ stats, active, onChange }: Props) {
+export function SquadPulse({ stats, active, onChange, headerAction }: Props) {
   const { t } = useLanguage();
 
   const tiles: {
