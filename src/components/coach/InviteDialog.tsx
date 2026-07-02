@@ -18,14 +18,19 @@ interface Props {
   clubId: string | null;
   pendingCount: number;
   approvedCount: number;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  hideTrigger?: boolean;
 }
 
-export function InviteDialog({ coachId, clubId, pendingCount, approvedCount }: Props) {
+export function InviteDialog({ coachId, clubId, pendingCount, approvedCount, open: openProp, onOpenChange, hideTrigger }: Props) {
   const { t } = useLanguage();
   const { activeClubId } = useActiveClub();
   const effectiveClubId = activeClubId ?? clubId;
   const { toast } = useToast();
-  const [open, setOpen] = useState(false);
+  const [openInner, setOpenInner] = useState(false);
+  const open = openProp ?? openInner;
+  const setOpen = (v: boolean) => { onOpenChange ? onOpenChange(v) : setOpenInner(v); };
   const [code, setCode] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
