@@ -469,7 +469,7 @@ export default function CoachDashboard() {
             {/* Squad content (formerly the "squad" tab) */}
             <div className="space-y-4">
               {coachUserId && <PendingAthletesSection coachId={coachUserId} />}
-              <ConsentMissingPanel />
+              
               {!isAdmin && athletes.length >= MAX_ATHLETES && (
                 <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 flex flex-col sm:flex-row sm:items-center gap-2">
                   <span className="text-sm text-amber-600 dark:text-amber-400 flex-1">
