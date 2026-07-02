@@ -108,10 +108,15 @@ export default function Pricing() {
   const [managingPortal, setManagingPortal] = useState(false);
   const currency = useMemo(() => detectCurrency(), []);
   const showWelcome = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("welcome") === "1";
+  // Native (iOS/Android via Capacitor) MUST NOT expose any purchase UI,
+  // pricing, external payment links, or upgrade/demo CTAs. The web version
+  // stays 100% unchanged. See src/lib/platform.ts.
+  const native = isNativeApp();
 
   useEffect(() => {
+    if (native) return;
     checkSubscription();
-  }, []);
+  }, [native]);
 
   // Inject Product JSON-LD for subscription tiers (rich pricing results)
   useEffect(() => {
