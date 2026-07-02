@@ -10,6 +10,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { ArrowLeft, Trophy, MapPin, Calendar, Users, Sparkles, CheckCircle2, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
+import { CoachBulkCreateCompetitionDialog } from "@/components/coach/CoachBulkCreateCompetitionDialog";
 
 interface Comp {
   id: string;
