@@ -36,6 +36,7 @@ import {
   CreditCard,
   Dumbbell,
 } from "lucide-react";
+import { BracketIcon } from "@/components/icons/BracketIcon";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useRole } from "@/contexts/RoleContext";
 import { useCoachMode } from "@/contexts/CoachModeContext";
@@ -345,6 +346,16 @@ export function GlobalAppMenu() {
               >
                 <LayoutGrid className="h-4 w-4 shrink-0" />
                 <span>{t("coachDashboard") || "Coach Dashboard"}</span>
+              </button>
+            )}
+
+            {isCoach && (
+              <button
+                onClick={() => goAndClose("/coach/competitions")}
+                className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
+              >
+                <BracketIcon className="h-4 w-4 shrink-0 text-destructive" />
+                <span>{t("teamCompetitionsMenu") || "Klubbens stævner"}</span>
               </button>
             )}
 

@@ -25,13 +25,18 @@ interface Props {
   disabled?: boolean;
   onCreated: () => Promise<void> | void;
   countLabel?: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  hideTrigger?: boolean;
 }
 
-export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) {
+export function CreateAthleteDialog({ disabled, onCreated, countLabel, open: openProp, onOpenChange, hideTrigger }: Props) {
   const { t } = useLanguage();
   const { toast } = useToast();
   const { activeClubId, activeMembership, setActiveClubId } = useActiveClub();
-  const [open, setOpen] = useState(false);
+  const [openInner, setOpenInner] = useState(false);
+  const open = openProp ?? openInner;
+  const setOpen = (v: boolean) => { onOpenChange ? onOpenChange(v) : setOpenInner(v); };
 
   // Create form
   const [name, setName] = useState("");
@@ -193,17 +198,19 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) 
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button
-          size="icon"
-          disabled={disabled}
-          aria-label={triggerTitle}
-          title={triggerTitle}
-          className="shrink-0"
-        >
-          <UserPlus className="h-4 w-4" />
-        </Button>
-      </DialogTrigger>
+      {!hideTrigger && (
+        <DialogTrigger asChild>
+          <Button
+            size="icon"
+            disabled={disabled}
+            aria-label={triggerTitle}
+            title={triggerTitle}
+            className="shrink-0"
+          >
+            <UserPlus className="h-4 w-4" />
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="max-w-md sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">

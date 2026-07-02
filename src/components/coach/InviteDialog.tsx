@@ -18,14 +18,19 @@ interface Props {
   clubId: string | null;
   pendingCount: number;
   approvedCount: number;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  hideTrigger?: boolean;
 }
 
-export function InviteDialog({ coachId, clubId, pendingCount, approvedCount }: Props) {
+export function InviteDialog({ coachId, clubId, pendingCount, approvedCount, open: openProp, onOpenChange, hideTrigger }: Props) {
   const { t } = useLanguage();
   const { activeClubId } = useActiveClub();
   const effectiveClubId = activeClubId ?? clubId;
   const { toast } = useToast();
-  const [open, setOpen] = useState(false);
+  const [openInner, setOpenInner] = useState(false);
+  const open = openProp ?? openInner;
+  const setOpen = (v: boolean) => { onOpenChange ? onOpenChange(v) : setOpenInner(v); };
   const [code, setCode] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -113,11 +118,13 @@ export function InviteDialog({ coachId, clubId, pendingCount, approvedCount }: P
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button size="sm" className="gap-2">
-          <UserPlus className="h-4 w-4" /> {t("inviteAthletes")}
-        </Button>
-      </DialogTrigger>
+      {!hideTrigger && (
+        <DialogTrigger asChild>
+          <Button size="sm" className="gap-2">
+            <UserPlus className="h-4 w-4" /> {t("inviteAthletes")}
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>{t("inviteHeading")}</DialogTitle>

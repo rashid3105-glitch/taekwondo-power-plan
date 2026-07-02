@@ -25,11 +25,9 @@ import { CoachDiaryView } from "@/components/coach/CoachDiaryView";
 import { SquadOverview } from "@/components/coach/SquadOverview";
 import { SquadPulse, type PulseFilter } from "@/components/coach/SquadPulse";
 import { WeeklySquadExport } from "@/components/coach/WeeklySquadExport";
-import { CreateAthleteDialog } from "@/components/coach/CreateAthleteDialog";
-import { InviteDialog } from "@/components/coach/InviteDialog";
+import { AthleteAddMenu } from "@/components/coach/AthleteAddMenu";
 import { PendingAthletesSection } from "@/components/coach/PendingAthletesSection";
-import { ConsentMissingPanel } from "@/components/coach/ConsentMissingPanel";
-import { CoachBulkCreateCompetitionDialog } from "@/components/coach/CoachBulkCreateCompetitionDialog";
+import { ConsentMissingButton } from "@/components/coach/ConsentMissingButton";
 import { TeamWeeklyScheduleCard } from "@/components/coach/TeamWeeklyScheduleCard";
 import { ClubActivityTypesCard } from "@/components/coach/ClubActivityTypesCard";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -432,26 +430,15 @@ export default function CoachDashboard() {
             {/* Action buttons (previously in tab header) */}
             <div className="flex items-center gap-2 flex-wrap justify-end">
               <WeeklySquadExport athletes={athletes as any} />
-              <CoachBulkCreateCompetitionDialog
-                athletes={athletes.map((a) => ({
-                  user_id: a.user_id,
-                  display_name: a.display_name,
-                  weight_kg: a.weight_kg,
-                  avatar_url: a.avatar_url,
-                }))}
-                onCreated={async () => { await loadAthletes(); }}
-              />
-              <CreateAthleteDialog
-                disabled={!isAdmin && athletes.length >= MAX_ATHLETES}
-                onCreated={async () => { await loadAthletes(); }}
-                countLabel={!isAdmin ? `${athletes.length}/${MAX_ATHLETES}` : undefined}
-              />
+              <ConsentMissingButton />
               {coachUserId && (
-                <InviteDialog
+                <AthleteAddMenu
                   coachId={coachUserId}
                   clubId={coachClubId}
-                  pendingCount={0}
+                  disabled={!isAdmin && athletes.length >= MAX_ATHLETES}
+                  countLabel={!isAdmin ? `${athletes.length}/${MAX_ATHLETES}` : undefined}
                   approvedCount={athletes.length}
+                  onCreated={async () => { await loadAthletes(); }}
                 />
               )}
             </div>
@@ -482,7 +469,7 @@ export default function CoachDashboard() {
             {/* Squad content (formerly the "squad" tab) */}
             <div className="space-y-4">
               {coachUserId && <PendingAthletesSection coachId={coachUserId} />}
-              <ConsentMissingPanel />
+              
               {!isAdmin && athletes.length >= MAX_ATHLETES && (
                 <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 flex flex-col sm:flex-row sm:items-center gap-2">
                   <span className="text-sm text-amber-600 dark:text-amber-400 flex-1">

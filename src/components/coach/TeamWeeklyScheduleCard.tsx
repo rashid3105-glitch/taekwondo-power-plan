@@ -4,7 +4,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekSchedulePicker";
-import { CalendarRange, Loader2 } from "lucide-react";
+import { CalendarRange, Loader2, Pencil } from "lucide-react";
 
 export const GENERIC_DEFAULT_SCHEDULE: DaySchedule[] = [
   { day: "Monday", type: "tkd" },
@@ -76,8 +76,15 @@ export function TeamWeeklyScheduleCard({ clubId }: Props) {
           {t("teamWeeklyScheduleTitle")}
         </h3>
         {!editing && (
-          <Button size="sm" variant={schedule ? "outline" : "default"} onClick={() => setEditing(true)}>
-            {schedule ? t("editTeamWeeklySchedule") : t("setTeamWeeklySchedule")}
+          <Button
+            size="icon"
+            variant={schedule ? "outline" : "default"}
+            onClick={() => setEditing(true)}
+            aria-label={schedule ? t("editTeamWeeklySchedule") : t("setTeamWeeklySchedule")}
+            title={schedule ? t("editTeamWeeklySchedule") : t("setTeamWeeklySchedule")}
+            className="shrink-0"
+          >
+            <Pencil className="h-4 w-4" />
           </Button>
         )}
       </div>

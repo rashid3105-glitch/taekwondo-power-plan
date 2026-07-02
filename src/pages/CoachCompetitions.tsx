@@ -10,6 +10,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { ArrowLeft, Trophy, MapPin, Calendar, Users, Sparkles, CheckCircle2, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
+import { CoachBulkCreateCompetitionDialog } from "@/components/coach/CoachBulkCreateCompetitionDialog";
 
 interface Comp {
   id: string;
@@ -302,7 +303,15 @@ export default function CoachCompetitions() {
         <div className="container max-w-4xl mx-auto px-3 py-3 flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={() => navigate("/coach")}><ArrowLeft className="h-4 w-4" /></Button>
           <Trophy className="h-5 w-5 text-primary" />
-          <span className="font-bold">{labelCompetitions}</span>
+          <span className="font-bold flex-1">{labelCompetitions}</span>
+          <CoachBulkCreateCompetitionDialog
+            athletes={myAthletes.map((a) => ({ user_id: a.user_id, display_name: a.display_name }))}
+            onCreated={async () => {
+              // Re-fetch by re-triggering effect via bumping a state — simplest: call reload
+              const evt = new Event("focus");
+              window.dispatchEvent(evt);
+            }}
+          />
         </div>
       </header>
       <main className="container max-w-4xl mx-auto px-3 py-4 space-y-4">
