@@ -4,6 +4,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, Users } from "lucide-react";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 
 interface Coach {
   user_id: string;
@@ -19,6 +20,7 @@ interface Props {
 export function AssignCoachCard({ athleteId, onChanged }: Props) {
   const { t } = useLanguage();
   const { toast } = useToast();
+  const { activeClubId } = useActiveClub();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [coaches, setCoaches] = useState<Coach[]>([]);
@@ -29,7 +31,7 @@ export function AssignCoachCard({ athleteId, onChanged }: Props) {
     setLoading(true);
     setError(null);
     const { data, error } = await supabase.functions.invoke("reassign-athlete-coach", {
-      body: { action: "list_coaches", athlete_id: athleteId },
+      body: { action: "list_coaches", athlete_id: athleteId, club_id: activeClubId },
     });
     if (error || (data as any)?.error) {
       setError((data as any)?.error || error?.message || "error");
@@ -43,13 +45,13 @@ export function AssignCoachCard({ athleteId, onChanged }: Props) {
   useEffect(() => {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [athleteId]);
+  }, [athleteId, activeClubId]);
 
   const handleChange = async (val: string) => {
     setSaving(true);
     const newCoachId = val === "none" ? null : val;
     const { data, error } = await supabase.functions.invoke("reassign-athlete-coach", {
-      body: { action: "reassign", athlete_id: athleteId, coach_id: newCoachId },
+      body: { action: "reassign", athlete_id: athleteId, coach_id: newCoachId, club_id: activeClubId },
     });
     setSaving(false);
     if (error || (data as any)?.error) {

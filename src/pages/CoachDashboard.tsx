@@ -322,10 +322,20 @@ export default function CoachDashboard() {
   const removeAthlete = async (athleteId: string) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-    await supabase.from("coach_athletes").delete().eq("coach_id", user.id).eq("athlete_id", athleteId);
+    const { data, error } = await supabase.functions.invoke("reassign-athlete-coach", {
+      body: {
+        action: "remove_from_club",
+        athlete_id: athleteId,
+        club_id: effectiveCoachClubId,
+      },
+    });
+    if (error || (data as any)?.error) {
+      toast({ title: t("error"), description: (data as any)?.error || error?.message, variant: "destructive" });
+      return;
+    }
     toast({ title: t("athleteRemoved") });
     
-    await loadAthletes();
+    await loadAthletes(user.id, effectiveCoachClubId || undefined);
   };
 
   const openDiary = async (athleteId: string, athleteName: string) => {

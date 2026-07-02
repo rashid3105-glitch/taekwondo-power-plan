@@ -12,6 +12,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader,
+  AlertDialogTitle, AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import type { PulseFilter } from "./SquadPulse";
 
 interface SquadRow {
@@ -292,6 +297,7 @@ export function SquadOverview({
             const completion = r.planned_sessions_7d > 0 ? r.sessions_logged_7d / r.planned_sessions_7d : 0;
             const borderClass =
               status === "red" ? "border-l-destructive" : status === "amber" ? "border-l-orange-400" : "border-l-emerald-500";
+            const canRemove = !!onRemove && (!removableUserIds || removableUserIds.includes(r.user_id));
 
             return (
               <div
@@ -395,6 +401,38 @@ export function SquadOverview({
                         </TooltipTrigger>
                         <TooltipContent side="left">{t("diary")}</TooltipContent>
                       </Tooltip>
+                    )}
+                    {canRemove && (
+                      <AlertDialog>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                                title={t("remove")}
+                                aria-label={t("remove")}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                          </TooltipTrigger>
+                          <TooltipContent side="left">{t("remove")}</TooltipContent>
+                        </Tooltip>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>{t("remove")}</AlertDialogTitle>
+                            <AlertDialogDescription>{r.display_name}</AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => onRemove?.(r.user_id)}>
+                              {t("remove")}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     )}
 
 

@@ -313,11 +313,17 @@ export default function CoachAthleteOverview() {
                     onClick={async () => {
                       const { data: { user } } = await supabase.auth.getUser();
                       if (!user) return;
-                      await supabase
-                        .from("coach_athletes")
-                        .delete()
-                        .eq("coach_id", user.id)
-                        .eq("athlete_id", athlete.user_id);
+                      const { data, error } = await supabase.functions.invoke("reassign-athlete-coach", {
+                        body: {
+                          action: "remove_from_club",
+                          athlete_id: athlete.user_id,
+                          club_id: activeClubId || athlete.club_id,
+                        },
+                      });
+                      if (error || (data as any)?.error) {
+                        toast({ title: t("error"), description: (data as any)?.error || error?.message, variant: "destructive" });
+                        return;
+                      }
                       toast({ title: t("athleteRemoved") });
                       navigate("/coach");
                     }}
