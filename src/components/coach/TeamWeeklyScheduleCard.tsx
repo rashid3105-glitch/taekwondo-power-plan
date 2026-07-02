@@ -4,7 +4,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekSchedulePicker";
-import { CalendarRange, Loader2 } from "lucide-react";
+import { CalendarRange, Loader2, Pencil } from "lucide-react";
 
 export const GENERIC_DEFAULT_SCHEDULE: DaySchedule[] = [
   { day: "Monday", type: "tkd" },
