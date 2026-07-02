@@ -6,8 +6,13 @@ import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { ArrowLeft, Trophy, MapPin, Calendar, Users, Sparkles, CheckCircle2, Clock } from "lucide-react";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { ArrowLeft, Trophy, MapPin, Calendar, Users, Sparkles, CheckCircle2, Clock, Pencil, Trash2, X, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { CoachBulkCreateCompetitionDialog } from "@/components/coach/CoachBulkCreateCompetitionDialog";
