@@ -26,6 +26,7 @@ interface Comp {
   athlete_name: string;
   priority: string;
   result: string | null;
+  invitation_pdf_url: string | null;
 }
 
 interface CompGroup {
@@ -34,6 +35,7 @@ interface CompGroup {
   event_date: string;
   location: string | null;
   priority: string;
+  invitation_pdf_url: string | null;
   participants: { user_id: string; athlete_name: string; result: string | null }[];
 }
 
