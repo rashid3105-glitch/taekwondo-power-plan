@@ -534,7 +534,7 @@ export default function CoachDashboard() {
                       else if (r) { setViewRehabPlan(r); }
                     }}
                     allowedUserIds={athletes.map((a) => a.user_id)}
-                    removableUserIds={linkedAthleteIds}
+                    removableUserIds={athletes.map((a) => a.user_id)}
                     athleteMeta={athletes.map((a) => ({ user_id: a.user_id, club_name: a.club_name }))}
                     pulseFilter={pulseFilter}
                     onStatsChange={setPulseStats}
