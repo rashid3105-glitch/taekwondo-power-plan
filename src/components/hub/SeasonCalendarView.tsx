@@ -96,6 +96,7 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
         byDate.set(iso, list);
       }
       setCompetitionsByDate(byDate);
+      setOverrides(((ovRes.data ?? []) as any[]).map((o) => ({
         ...o,
         session_type: o.session_type as SessionType | null,
       })) as AthleteSeasonOverride[]);
