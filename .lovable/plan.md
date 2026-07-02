@@ -1,37 +1,47 @@
-## Problem
+# 5 Google Play Feature Graphics (1024×500)
 
-I sidste ombæring genererede jeg en **generisk rød kvindelig løber-silhuet** til iOS-splash-billedet i stedet for at bruge dit faktiske SPORTSTALENT-brand-logo (den røde løber med graf/søjler + "SPORTSTALENT"-wordmark). Det er forkert — brandet skal bruges, ikke en AI-genereret figur.
+Deliver 5 marketing banners to `/mnt/documents/` — dark cockpit theme matching the app, English copy, each with a phone-mockup showing a real screenshot from the corresponding module.
 
-## Løsning
+## The 5 graphics
 
-1. **Brug det uploadede logo** (`user-uploads://Sportstalent_-_Sport_Science_Training_for_Taekwondo_Athletes-2.png`) som kilde i stedet for den genererede silhuet.
+| # | Headline | Sub | App screen captured |
+|---|----------|-----|---------------------|
+| 1 | PERFORM | Sport science built for Taekwondo | `/dashboard` (hub tab) |
+| 2 | RECOVER | Smarter rest. Fewer injuries. | `/dashboard` → rehab tab |
+| 3 | TRACK | Every rep, every match, one place | `/dashboard` → progress tab (FormCurve) |
+| 4 | FOCUS | Mental performance, measured | `/dashboard` → mental tab |
+| 5 | GROW | From talent to podium | `/dashboard` → plan tab |
 
-2. **Byg et nyt 2732×2732 splash-lærred** med PIL:
-   - Sort baggrund (`#0a0a0a`) — matcher React-splashen.
-   - Logoet (løber + graf + "SPORTSTALENT"-tekst samlet) **centreret** på lærredet.
-   - Skaleret til ca. **40 % af lærredets bredde**, så både løberen og wordmark er tydelige efter iOS's `scaleAspectFill`-beskæring på alle iPhone-formater (SE → Pro Max).
-   - Kanterne på det uploadede PNG er sorte og smelter sømløst sammen med baggrunden.
+## Layout (per graphic)
 
-3. **Overskriv de samme fire filer** som sidst:
-   - `ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732.png`
-   - `ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732-1.png`
-   - `ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732-2.png`
-   - `resources/splash.png`
-
-4. **Ingen ændringer** i `capacitor.config.ts`, `LaunchScreen.storyboard`, React `SplashScreen.tsx` eller `nativeInit.ts`.
-
-## Efter deploy
-
-For at det slår igennem på fysisk iPhone:
 ```
-git pull
-npm run build
-npx cap sync ios
+1024 × 500 canvas, background #0a0a0a with subtle red radial glow
+┌────────────────────────────────────────────────────┐
+│  SPORTSTALENT logo (top-left, small)               │
+│                                                    │
+│  BIG HEADLINE (left, ~72px black)      [ phone   ] │
+│  Subhead (left, ~22px muted)           [ mockup  ] │
+│                                        [ w/ real ] │
+│  ▸ tiny red accent bar                 [ screen  ] │
+└────────────────────────────────────────────────────┘
 ```
-og genbyg i Xcode — slet evt. appen fra enheden først, da iOS cacher launch screens aggressivt.
 
-## Tekniske detaljer
+- Phone mockup: rounded-corner dark frame (iPhone-style), the app screenshot fills it, slight tilt + drop shadow.
+- Left column: SPORTSTALENT wordmark, headline in white with red accent letter, one-line subhead in muted gray.
+- Red accent: `hsl(0, 80%, 55%)` — matches app's `--explosive` token.
 
-- Deterministisk PIL-composite (ingen ny AI-generering) — garanterer at det er dit faktiske brand-logo pixel-for-pixel.
-- Bevar aspect ratio på det uploadede logo; padd med sort baggrund til 2732×2732 kvadrat.
-- Central placering — ikke offset — for at overleve aspect-fill-beskæring i portrait på alle enheder.
+## How I'll build it
+
+1. Restore the authenticated Supabase session (`LOVABLE_BROWSER_*`) and use Playwright to open the 5 dashboard tabs at 390×844 viewport, saving PNG screenshots to `/tmp/browser/shots/`.
+2. Python + PIL script (`/tmp/make_feature_graphics.py`):
+   - Load the SPORTSTALENT logo from `user-uploads://` (same source used for the splash).
+   - For each of the 5 entries: compose 1024×500 canvas → paint dark bg + radial red glow → paste rounded phone frame with screenshot on right → draw logo + headline + subhead on left.
+   - Fonts: use a bundled system sans (DejaVu Sans Bold for headlines, regular for subhead) — Google Play accepts any legible type; no need to add project fonts.
+3. Save as `/mnt/documents/feature-graphic-1-perform.png` … `feature-graphic-5-grow.png`.
+4. QA: view each PNG, check dimensions = 1024×500, file size < 15 MB, no clipped text, screenshot legible.
+5. Emit 5 `<presentation-artifact>` tags so you can download them directly.
+
+## Notes
+
+- No project code changes — this is a pure artifact generation task.
+- If a dashboard tab won't render (auth injection failed), I'll fall back to a stylized abstract "screen" mock in the phone frame so all 5 still ship.
