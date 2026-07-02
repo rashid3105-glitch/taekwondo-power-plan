@@ -66,19 +66,22 @@ export function SquadPulse({ stats, active, onChange, headerAction }: Props) {
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2 flex-wrap">
         <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
           {t("squadPulseTitle")}
         </h3>
-        {active !== "all" && (
-          <button
-            type="button"
-            onClick={() => onChange("all")}
-            className="text-xs text-primary hover:underline"
-          >
-            {t("clearFilter")}
-          </button>
-        )}
+        <div className="flex items-center gap-2">
+          {active !== "all" && (
+            <button
+              type="button"
+              onClick={() => onChange("all")}
+              className="text-xs text-primary hover:underline"
+            >
+              {t("clearFilter")}
+            </button>
+          )}
+          {headerAction}
+        </div>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         {tiles.map((tile) => {
