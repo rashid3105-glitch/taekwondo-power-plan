@@ -245,6 +245,37 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
                 {t("seasonTeamFocusNotSet")}
               </p>
             )}
+            {(() => {
+              const wkComps: { date: string; name: string; priority: string | null }[] = [];
+              for (const [d, list] of competitionsByDate.entries()) {
+                if (d >= wkStart && d <= wkEnd) {
+                  for (const c of list) wkComps.push({ date: d, ...c });
+                }
+              }
+              if (wkComps.length === 0) return null;
+              wkComps.sort((a, b) => a.date.localeCompare(b.date));
+              return (
+                <div className="pt-1 border-t border-border/40">
+                  <div className="flex items-center gap-1.5 mb-1.5">
+                    <Trophy className="h-3.5 w-3.5 text-destructive" />
+                    <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                      {t("seasonCompetitionsThisWeek" as any)}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {wkComps.map((c, i) => (
+                      <span
+                        key={i}
+                        className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-destructive/15 border border-destructive/30 text-destructive"
+                        title={`${c.name} · ${c.date}`}
+                      >
+                        {c.date.slice(5)} · {c.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
           </Card>
         );
       })()}
