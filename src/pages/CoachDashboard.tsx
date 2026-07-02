@@ -430,26 +430,15 @@ export default function CoachDashboard() {
             {/* Action buttons (previously in tab header) */}
             <div className="flex items-center gap-2 flex-wrap justify-end">
               <WeeklySquadExport athletes={athletes as any} />
-              <CoachBulkCreateCompetitionDialog
-                athletes={athletes.map((a) => ({
-                  user_id: a.user_id,
-                  display_name: a.display_name,
-                  weight_kg: a.weight_kg,
-                  avatar_url: a.avatar_url,
-                }))}
-                onCreated={async () => { await loadAthletes(); }}
-              />
-              <CreateAthleteDialog
-                disabled={!isAdmin && athletes.length >= MAX_ATHLETES}
-                onCreated={async () => { await loadAthletes(); }}
-                countLabel={!isAdmin ? `${athletes.length}/${MAX_ATHLETES}` : undefined}
-              />
+              <ConsentMissingButton />
               {coachUserId && (
-                <InviteDialog
+                <AthleteAddMenu
                   coachId={coachUserId}
                   clubId={coachClubId}
-                  pendingCount={0}
+                  disabled={!isAdmin && athletes.length >= MAX_ATHLETES}
+                  countLabel={!isAdmin ? `${athletes.length}/${MAX_ATHLETES}` : undefined}
                   approvedCount={athletes.length}
+                  onCreated={async () => { await loadAthletes(); }}
                 />
               )}
             </div>
