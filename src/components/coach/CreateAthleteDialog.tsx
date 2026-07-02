@@ -198,17 +198,19 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel, open: ope
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button
-          size="icon"
-          disabled={disabled}
-          aria-label={triggerTitle}
-          title={triggerTitle}
-          className="shrink-0"
-        >
-          <UserPlus className="h-4 w-4" />
-        </Button>
-      </DialogTrigger>
+      {!hideTrigger && (
+        <DialogTrigger asChild>
+          <Button
+            size="icon"
+            disabled={disabled}
+            aria-label={triggerTitle}
+            title={triggerTitle}
+            className="shrink-0"
+          >
+            <UserPlus className="h-4 w-4" />
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="max-w-md sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
