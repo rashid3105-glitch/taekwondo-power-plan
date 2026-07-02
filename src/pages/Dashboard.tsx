@@ -324,13 +324,20 @@ export default function Dashboard() {
       <div className="space-y-2">
         <h3 className="font-bold text-foreground">{t(featureKey)}</h3>
         <p className="text-sm text-muted-foreground">{t("demoLockedFeatureDesc")}</p>
-        <p className="text-sm text-foreground">{t("demoUpgradePrompt")}</p>
+        {!isNativeApp() && (
+          <p className="text-sm text-foreground">{t("demoUpgradePrompt")}</p>
+        )}
+        {isNativeApp() && (
+          <p className="text-sm text-foreground">{t("nativeFeatureUnavailable")}</p>
+        )}
       </div>
-      <div className="flex justify-center">
-        <Button variant="outline" size="sm" onClick={() => navigate("/pricing")}>
-          {t("viewPricing")}
-        </Button>
-      </div>
+      {!isNativeApp() && (
+        <div className="flex justify-center">
+          <Button variant="outline" size="sm" onClick={() => navigate("/pricing")}>
+            {t("viewPricing")}
+          </Button>
+        </div>
+      )}
     </div>
   );
 
@@ -341,13 +348,17 @@ export default function Dashboard() {
       </div>
       <div className="space-y-2">
         <h3 className="font-bold text-foreground">{t(featureKey)}</h3>
-        <p className="text-sm text-muted-foreground">{t("moduleLockedDesc")}</p>
+        <p className="text-sm text-muted-foreground">
+          {isNativeApp() ? t("nativeFeatureUnavailable") : t("moduleLockedDesc")}
+        </p>
       </div>
-      <div className="flex justify-center">
-        <Button size="sm" onClick={() => navigate("/pricing")}>
-          <Sparkles className="h-4 w-4 mr-1" /> {t("upgradeToUnlock")}
-        </Button>
-      </div>
+      {!isNativeApp() && (
+        <div className="flex justify-center">
+          <Button size="sm" onClick={() => navigate("/pricing")}>
+            <Sparkles className="h-4 w-4 mr-1" /> {t("upgradeToUnlock")}
+          </Button>
+        </div>
+      )}
     </div>
   );
 
