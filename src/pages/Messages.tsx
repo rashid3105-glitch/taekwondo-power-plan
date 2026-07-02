@@ -13,9 +13,11 @@ import { listThreads, type ChatThread } from "@/lib/chatApi";
 import { PageMeta } from "@/components/PageMeta";
 import { useIosKeyboard } from "@/hooks/useIosKeyboard";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function Messages() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const { threads, loading, refresh } = useThreads();
   const [active, setActive] = useState<ChatThread | null>(null);
   const [isCoach, setIsCoach] = useState(false);
