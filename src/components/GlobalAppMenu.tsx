@@ -36,6 +36,7 @@ import {
   CreditCard,
   Dumbbell,
 } from "lucide-react";
+import { BracketIcon } from "@/components/icons/BracketIcon";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useRole } from "@/contexts/RoleContext";
 import { useCoachMode } from "@/contexts/CoachModeContext";
