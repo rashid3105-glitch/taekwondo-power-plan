@@ -96,8 +96,9 @@ export function CoachBulkCreateCompetitionDialog({ athletes, onCreated }: Props)
   }
 
   function reset() {
-    setName(""); setDate(""); setDefaultWeight(""); setLocation(""); setPriority("A");
+    setName(""); setDate(""); setLocation(""); setPriority("A");
     setSelected(new Set()); setOverrides({}); setSearch("");
+    setInvitationFile(null);
   }
 
   async function submit() {
