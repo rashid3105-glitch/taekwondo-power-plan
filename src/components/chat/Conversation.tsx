@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { editMessage, softDeleteMessage, markThreadRead, addReaction, removeReaction, removeThreadMember, type ChatThread } from "@/lib/chatApi";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface Props {
   thread: ChatThread;
@@ -21,6 +22,7 @@ interface Props {
 }
 
 export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props) {
+  const { t } = useLanguage();
   const { messages, loading, refresh } = useMessages(thread.id);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [meId, setMeId] = useState<string | null>(null);
