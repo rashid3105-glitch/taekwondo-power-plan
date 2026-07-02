@@ -314,7 +314,7 @@ export function GlobalAppMenu() {
                 isDemo ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
               }`}
             >
-              <BookOpen className="h-4 w-4 shrink-0" />
+              <BookOpen className="h-4 w-4 shrink-0 text-tab-mental" />
               <span className="truncate">{t("library")}</span>
               {isDemo && <Lock className="h-3 w-3 ms-auto shrink-0" />}
             </button>
@@ -325,7 +325,7 @@ export function GlobalAppMenu() {
               onClick={() => goAndClose("/messages")}
               className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
             >
-              <MessageCircle className="h-4 w-4 shrink-0" />
+              <MessageCircle className="h-4 w-4 shrink-0 text-primary" />
               <span>{t("chat") || "Chat"}</span>
             </button>
 
@@ -334,7 +334,7 @@ export function GlobalAppMenu() {
                 onClick={() => goAndClose("/coach/messages")}
                 className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
               >
-                <MessageSquare className="h-4 w-4 shrink-0" />
+                <MessageSquare className="h-4 w-4 shrink-0 text-primary" />
                 <span>{t("messagesTab") || "Beskeder"}</span>
               </button>
             )}
@@ -344,7 +344,7 @@ export function GlobalAppMenu() {
                 onClick={() => goAndClose("/coach")}
                 className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
               >
-                <LayoutGrid className="h-4 w-4 shrink-0" />
+                <LayoutGrid className="h-4 w-4 shrink-0 text-tab-plan" />
                 <span>{t("coachDashboard") || "Coach Dashboard"}</span>
               </button>
             )}
@@ -363,7 +363,7 @@ export function GlobalAppMenu() {
               onClick={() => goAndClose("/profile-setup")}
               className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
             >
-              <User className="h-4 w-4 shrink-0" />
+              <User className="h-4 w-4 shrink-0 text-primary" />
               <span>{t("profile")}</span>
             </button>
 
@@ -372,7 +372,7 @@ export function GlobalAppMenu() {
                 onClick={() => goAndClose("/hold/moduler")}
                 className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
               >
-                <Settings className="h-4 w-4 shrink-0" />
+                <Settings className="h-4 w-4 shrink-0 text-tab-progress" />
                 <span>Administrer moduler</span>
               </button>
             ) : (
@@ -380,7 +380,7 @@ export function GlobalAppMenu() {
                 onClick={() => goAndClose("/moduler")}
                 className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
               >
-                <LayoutGrid className="h-4 w-4 shrink-0" />
+                <LayoutGrid className="h-4 w-4 shrink-0 text-tab-nutrition" />
                 <span>Moduler</span>
               </button>
             )}
@@ -392,26 +392,26 @@ export function GlobalAppMenu() {
                   className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
                   aria-expanded={adminOpen}
                 >
-                  <Shield className="h-4 w-4 shrink-0" />
+                  <Shield className="h-4 w-4 shrink-0 text-amber-500" />
                   <span className="flex-1 text-left">{t("admin")}</span>
                   <ChevronDown className={`h-4 w-4 shrink-0 transition-transform ${adminOpen ? "rotate-180" : ""}`} />
                 </button>
                 {adminOpen && (
                   <div className="ml-6 mt-1 mb-1 space-y-0.5 border-l border-border pl-2">
                     {[
-                      { to: "/admin/approval", icon: Users, label: t("adminUsers") || "Users" },
-                      { to: "/admin/drills", icon: Dumbbell, label: t("adminDrills") || "TKD drills" },
-                      { to: "/admin/blog", icon: FileText, label: t("adminBlog") || "Blog" },
-                      { to: "/admin/clubs", icon: Building, label: t("adminClubs") || "Clubs" },
-                      { to: "/admin/payments", icon: CreditCard, label: t("adminPayments") || "Payments" },
-                      { to: "/admin/modules", icon: LayoutGrid, label: t("adminModules") || "Modules" },
+                      { to: "/admin/approval", icon: Users, label: t("adminUsers") || "Users", color: "text-primary" },
+                      { to: "/admin/drills", icon: Dumbbell, label: t("adminDrills") || "TKD drills", color: "text-tab-mental" },
+                      { to: "/admin/blog", icon: FileText, label: t("adminBlog") || "Blog", color: "text-primary" },
+                      { to: "/admin/clubs", icon: Building, label: t("adminClubs") || "Clubs", color: "text-primary" },
+                      { to: "/admin/payments", icon: CreditCard, label: t("adminPayments") || "Payments", color: "text-emerald-500" },
+                      { to: "/admin/modules", icon: LayoutGrid, label: t("adminModules") || "Modules", color: "text-tab-nutrition" },
                     ].map((it) => (
                       <button
                         key={it.to}
                         onClick={() => goAndClose(it.to)}
                         className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
                       >
-                        <it.icon className="h-4 w-4 shrink-0" />
+                        <it.icon className={`h-4 w-4 shrink-0 ${it.color}`} />
                         <span className="truncate">{it.label}</span>
                       </button>
                     ))}
@@ -424,7 +424,7 @@ export function GlobalAppMenu() {
               onClick={() => goAndClose("/help")}
               className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
             >
-              <HelpCircle className="h-4 w-4 shrink-0" />
+              <HelpCircle className="h-4 w-4 shrink-0 text-emerald-500" />
               <span>{t("helpTitle")}</span>
             </button>
           </nav>

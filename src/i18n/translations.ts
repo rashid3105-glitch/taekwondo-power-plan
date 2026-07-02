@@ -3428,7 +3428,7 @@ const translations = {
 
     // Coach
     coachDashboard: "Træner Dashboard",
-    teamCompetitionsMenu: "stævneoversigt",
+    teamCompetitionsMenu: "Stævneoversigt",
     addAthlete: "Tilføj atlet",
     addAthleteDesc: "Indtast din atlets unikke kode (vist på deres profil) for at koble dem til din trænerkonto.",
     athleteCodePlaceholder: "f.eks. TKD-123456",
