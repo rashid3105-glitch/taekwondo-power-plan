@@ -510,6 +510,7 @@ export default function CoachDashboard() {
                     stats={pulseStats}
                     active={pulseFilter}
                     onChange={setPulseFilter}
+                    headerAction={<WeeklySquadExport athletes={athletes as any} variant="inline" />}
                   />
                   <SquadOverview
                     coachId={coachUserId}
