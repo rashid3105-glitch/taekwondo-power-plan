@@ -396,21 +396,8 @@ export function SquadOverview({
                         <TooltipContent side="left">{t("diary")}</TooltipContent>
                       </Tooltip>
                     )}
-                    {onRemove && (!removableUserIds || removableUserIds.includes(r.user_id)) && (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-destructive hover:bg-destructive/10"
-                            onClick={() => onRemove(r.user_id)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent side="left">{t("remove")}</TooltipContent>
-                      </Tooltip>
-                    )}
+
+
                   </div>
                 </div>
               </div>
