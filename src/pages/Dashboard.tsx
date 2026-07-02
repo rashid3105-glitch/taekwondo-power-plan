@@ -297,6 +297,8 @@ export default function Dashboard() {
   const handleTabChange = (tab: TabKey) => {
     if (isDemoLockedTab(tab)) return;
     if (isTierLockedTab(tab)) {
+      // Native: no pricing surface; just refuse the navigation silently.
+      if (isNativeApp()) return;
       navigate("/pricing");
       return;
     }
