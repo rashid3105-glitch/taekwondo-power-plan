@@ -15,6 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
+import { ClubSwitcher } from "@/components/ClubSwitcher";
 import { supabase } from "@/integrations/supabase/client";
 import {
   fetchCoachSurveys, createSurvey, deleteSurvey, fetchSurvey, fetchSurveyResults,
