@@ -255,9 +255,18 @@ export function WeeklySquadExport({ athletes }: Props) {
     }
   };
 
+  const label = t("exportSquadPdf");
   return (
-    <Button size="sm" variant="outline" onClick={handleExport} disabled={busy || athletes.length === 0}>
-      {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Download className="h-4 w-4 mr-1" /> {t("exportSquadPdf")}</>}
+    <Button
+      size="icon"
+      variant="outline"
+      onClick={handleExport}
+      disabled={busy || athletes.length === 0}
+      aria-label={label}
+      title={label}
+      className="shrink-0 text-destructive hover:text-destructive"
+    >
+      {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileText className="h-4 w-4" />}
     </Button>
   );
 }
