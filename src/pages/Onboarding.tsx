@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekSchedulePicker";
 import { haptics } from "@/lib/haptics";
+import { isNativeApp } from "@/lib/platform";
 
 const DEFAULT_SCHEDULE: DaySchedule[] = [
   { day: "Monday", type: "tkd" },
