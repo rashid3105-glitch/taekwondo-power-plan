@@ -8,7 +8,7 @@ import { CoachMentalAssessment } from "@/components/CoachMentalAssessment";
 
 export default function CoachMentalReview() {
   const navigate = useNavigate();
-  const { locale } = useLanguage();
+  const { locale, t } = useLanguage();
   const [profile, setProfile] = useState<{
     belt_level?: string | null;
     experience_years?: number | null;
