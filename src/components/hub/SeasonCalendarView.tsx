@@ -353,6 +353,27 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
                 >
                   {new Date(iso + "T00:00:00").getDate()}
                 </span>
+                {(() => {
+                  const dayComps = competitionsByDate.get(iso) ?? [];
+                  if (dayComps.length === 0) return null;
+                  return (
+                    <div className="flex flex-wrap gap-0.5 mt-0.5">
+                      <span
+                        className="text-[8px] leading-tight px-1 py-0.5 rounded bg-destructive/20 text-destructive font-semibold truncate max-w-full inline-flex items-center gap-0.5"
+                        title={dayComps.map((c) => c.name).join(", ")}
+                      >
+                        <Trophy className="h-2 w-2 flex-shrink-0" />
+                        <span className="truncate">{dayComps[0].name}</span>
+                      </span>
+                      {dayComps.length > 1 && (
+                        <span className="text-[8px] leading-tight px-1 py-0.5 rounded bg-destructive/20 text-destructive font-semibold">
+                          +{dayComps.length - 1}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })()}
+                <span className="hidden">{/* keep spans balanced */}</span>
                 {focusTechs.length > 0 && (
                   <div className="flex flex-wrap gap-0.5 mt-1">
                     {focusTechs.slice(0, 2).map((tech, i) => (
