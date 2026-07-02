@@ -25,13 +25,18 @@ interface Props {
   disabled?: boolean;
   onCreated: () => Promise<void> | void;
   countLabel?: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  hideTrigger?: boolean;
 }
 
-export function CreateAthleteDialog({ disabled, onCreated, countLabel }: Props) {
+export function CreateAthleteDialog({ disabled, onCreated, countLabel, open: openProp, onOpenChange, hideTrigger }: Props) {
   const { t } = useLanguage();
   const { toast } = useToast();
   const { activeClubId, activeMembership, setActiveClubId } = useActiveClub();
-  const [open, setOpen] = useState(false);
+  const [openInner, setOpenInner] = useState(false);
+  const open = openProp ?? openInner;
+  const setOpen = (v: boolean) => { onOpenChange ? onOpenChange(v) : setOpenInner(v); };
 
   // Create form
   const [name, setName] = useState("");
