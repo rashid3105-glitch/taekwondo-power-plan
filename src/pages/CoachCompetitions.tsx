@@ -84,6 +84,13 @@ export default function CoachCompetitions() {
   const [reflectionStatus, setReflectionStatus] = useState<Record<string, "submitted" | "requested">>({});
   const [requestingAll, setRequestingAll] = useState(false);
   const [requestingOne, setRequestingOne] = useState<string | null>(null);
+  const [editMode, setEditMode] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editDate, setEditDate] = useState("");
+  const [editLocation, setEditLocation] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     (async () => {
