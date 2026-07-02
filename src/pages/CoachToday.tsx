@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Loader2, CalendarCheck, BarChart3, Check, Clock, X, HeartCrack } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
+import { ClubSwitcher } from "@/components/ClubSwitcher";
 import { Watermark } from "@/components/Watermark";
 import { AppFooter } from "@/components/AppFooter";
 import { SessionAttendance } from "@/components/coach/SessionAttendance";
