@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { PageMeta } from "@/components/PageMeta";
 import { Eye, EyeOff, Loader2, Copy, Check, MessageCircle, Mail, ArrowRight } from "lucide-react";
 import logo from "@/assets/logo.png";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 type Step = "account" | "verify" | "club" | "invite";
 type Band = "1-5" | "6-15" | "16-30" | "30+";
@@ -17,6 +18,7 @@ const BANDS: Band[] = ["1-5", "6-15", "16-30", "30+"];
 export default function SignupCoach() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [step, setStep] = useState<Step>("account");
   const [loading, setLoading] = useState(false);
 
