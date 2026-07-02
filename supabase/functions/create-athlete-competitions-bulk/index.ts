@@ -118,6 +118,19 @@ serve(async (req) => {
       typeof invitation_pdf_url === "string" && invitation_pdf_url.length <= 1024
         ? invitation_pdf_url
         : null;
+    // Look up each athlete's ACTIVE club membership so competitions are stamped
+    // with the correct club_id (prevents cross-club leakage in the Competitions list).
+    const { data: memberships } = await admin
+      .from("club_memberships")
+      .select("user_id, club_id, status, role_in_club")
+      .in("user_id", ids)
+      .eq("status", "active")
+      .eq("role_in_club", "athlete");
+    const clubByAthlete = new Map<string, string>();
+    for (const m of ((memberships ?? []) as any[])) {
+      if (!clubByAthlete.has(m.user_id)) clubByAthlete.set(m.user_id, m.club_id);
+    }
+
     const rows = ids.map((athlete_id) => ({
       user_id: athlete_id,
       name: cleanName,
@@ -126,6 +139,7 @@ serve(async (req) => {
       priority: cleanPriority,
       location: cleanLocation,
       invitation_pdf_url: cleanInvitationUrl,
+      ...(clubByAthlete.get(athlete_id) ? { club_id: clubByAthlete.get(athlete_id) } : {}),
     }));
 
     const { data: inserted, error } = await admin
