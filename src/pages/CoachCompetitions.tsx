@@ -437,6 +437,11 @@ export default function CoachCompetitions() {
       <main className="container max-w-4xl mx-auto px-3 py-4 space-y-4">
         {loading ? (
           <p className="text-center text-muted-foreground py-12 text-sm">{labelLoading}</p>
+        ) : myAthletes.length === 0 ? (
+          <div className="text-center py-12 text-muted-foreground text-sm">
+            <Users className="h-10 w-10 mx-auto mb-3 opacity-30" />
+            <p>{t("coachNoAthletesInClub")}</p>
+          </div>
         ) : comps.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground text-sm">
             <Trophy className="h-10 w-10 mx-auto mb-3 opacity-30" />
