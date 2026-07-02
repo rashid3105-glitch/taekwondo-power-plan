@@ -95,7 +95,6 @@ interface DiaryEntry {
 export default function CoachDashboard() {
   const [athletes, setAthletes] = useState<AthleteProfile[]>([]);
   const [clubAthletes, setClubAthletes] = useState<AthleteProfile[]>([]);
-  const [linkedAthleteIds, setLinkedAthleteIds] = useState<string[]>([]);
   const [plans, setPlans] = useState<AthletePlan[]>([]);
   const [rehabPlans, setRehabPlans] = useState<RehabPlan[]>([]);
   const [loading, setLoading] = useState(true);
@@ -230,14 +229,6 @@ export default function CoachDashboard() {
   const loadAthletes = async (currentUserId?: string, currentClubId?: string) => {
     const userId = currentUserId || coachUserId;
     const clubId = currentClubId || coachClubId;
-
-    // Direct coach<->athlete links in the active club (used to decide whether
-    // the "remove" action is shown — never to gate visibility).
-    let linksQuery = supabase.from("coach_athletes").select("athlete_id, club_id");
-    if (clubId) linksQuery = linksQuery.eq("club_id", clubId);
-    const { data: links } = await linksQuery;
-    const linkedIds = Array.from(new Set(((links || []) as any[]).map((l) => l.athlete_id as string)));
-    setLinkedAthleteIds(linkedIds);
 
     const clubsRes = await supabase.from("clubs" as any).select("id, name").order("name");
     const clubMap = new Map<string, string>(
