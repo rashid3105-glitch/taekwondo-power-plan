@@ -119,8 +119,10 @@ export default function Pricing() {
     checkSubscription();
   }, [native]);
 
-  // Inject Product JSON-LD for subscription tiers (rich pricing results)
+  // Inject Product JSON-LD for subscription tiers (rich pricing results).
+  // Skipped in native — no pricing surface allowed at all.
   useEffect(() => {
+    if (native) return;
     const currencyCode = currency.toUpperCase();
     const allTiers = [...individualTiers, ...teamTiers];
     const products = allTiers.map((tier) => {
