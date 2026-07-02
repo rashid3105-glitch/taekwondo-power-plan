@@ -15,6 +15,11 @@ const BATCH_SIZE = 5;
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  const unauthorized = checkCronAuth(req, corsHeaders);
+  if (unauthorized) return unauthorized;
+
+
+
   try {
     const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
