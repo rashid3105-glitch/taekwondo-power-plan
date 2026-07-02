@@ -127,7 +127,7 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
       setTechMap(tm);
     })();
     return () => { cancelled = true; };
-  }, [seasonPlan.id, seasonPlan.start_date, seasonPlan.end_date]);
+  }, [seasonPlan.id, seasonPlan.start_date, seasonPlan.end_date, activeClubId]);
 
 
   const [viewYear, setViewYear] = useState(() => new Date().getFullYear());
