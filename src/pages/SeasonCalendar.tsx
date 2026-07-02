@@ -539,7 +539,7 @@ export default function SeasonCalendar() {
       <header className="border-b border-border bg-card/50 sticky top-0 z-10 pt-safe print:hidden">
         <div className="container max-w-7xl mx-auto px-3 sm:px-4 py-3 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/")} className="shrink-0">
+            <Button variant="ghost" size="icon" onClick={() => navigate("/")} className="shrink-0" aria-label={t("back")} title={t("back")}>
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <CalendarRange className="h-5 w-5 text-primary shrink-0" />
@@ -589,7 +589,7 @@ export default function SeasonCalendar() {
                   </SelectContent>
                 </Select>
                 {selectedPlan && (
-                  <Button size="icon" variant="ghost" onClick={deletePlan} className="h-9 w-9 text-destructive hover:text-destructive shrink-0" title={t("seasonDeletePlan") || "Delete plan"}>
+                  <Button size="icon" variant="ghost" onClick={deletePlan} className="h-9 w-9 text-destructive hover:text-destructive shrink-0" title={t("seasonDeletePlan") || "Delete plan"} aria-label={t("delete")}>
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 )}
@@ -632,7 +632,7 @@ export default function SeasonCalendar() {
                             )}
                           </div>
                         </div>
-                        <Button size="icon" variant="ghost" onClick={() => deletePhase(p.id)} className="h-7 w-7 shrink-0">
+                        <Button size="icon" variant="ghost" onClick={() => deletePhase(p.id)} className="h-7 w-7 shrink-0" aria-label={t("delete")} title={t("delete")}>
                           <Trash2 className="h-3 w-3" />
                         </Button>
                       </div>
@@ -783,7 +783,7 @@ export default function SeasonCalendar() {
                       {overrides.map((o) => (
                         <div key={o.id} className="flex items-center justify-between gap-2">
                           <span>{o.override_date} · <Badge variant="outline">{t(sessionLabelKey(o.session_type) as any)}</Badge></span>
-                          <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => deleteOverride(o.id)}><Trash2 className="h-3 w-3" /></Button>
+                          <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => deleteOverride(o.id)} aria-label={t("delete")} title={t("delete")}><Trash2 className="h-3 w-3" /></Button>
                         </div>
                       ))}
                     </div>
@@ -885,7 +885,7 @@ export default function SeasonCalendar() {
                         {catTechs.map((tech) => (
                           <div key={tech.id} className="flex items-center justify-between gap-1 text-xs py-0.5">
                             <span className="truncate">{tech.name}</span>
-                            <Button size="icon" variant="ghost" className="h-5 w-5 shrink-0" onClick={() => deleteTechnique(tech.id)}>
+                            <Button size="icon" variant="ghost" className="h-5 w-5 shrink-0" onClick={() => deleteTechnique(tech.id)} aria-label={t("delete")} title={t("delete")}>
                               <Trash2 className="h-3 w-3" />
                             </Button>
                           </div>
@@ -936,12 +936,12 @@ export default function SeasonCalendar() {
               {/* Monthly calendar grid */}
               <Card className="overflow-hidden">
                 <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => {
+                  <Button variant="ghost" size="icon" className="h-8 w-8" aria-label={t("iconHintPrevious")} title={t("iconHintPrevious")} onClick={() => {
                     if (viewMonth === 0) { setViewMonth(11); setViewYear((y) => y - 1); }
                     else setViewMonth((m) => m - 1);
                   }}><ChevronLeft className="h-4 w-4" /></Button>
                   <span className="font-semibold text-sm">{MONTH_NAMES[viewMonth]} {viewYear}</span>
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => {
+                  <Button variant="ghost" size="icon" className="h-8 w-8" aria-label={t("next")} title={t("next")} onClick={() => {
                     if (viewMonth === 11) { setViewMonth(0); setViewYear((y) => y + 1); }
                     else setViewMonth((m) => m + 1);
                   }}><ChevronRight className="h-4 w-4" /></Button>
