@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AvatarImg } from "@/components/AvatarImg";
-import { ChevronLeft, ChevronRight, Loader2, Check, Clock, X, FileDown } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, Check, Clock, X, FileDown, HeartCrack } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import jsPDF from "jspdf";
 
@@ -25,7 +25,7 @@ interface Props {
 interface Row {
   athlete_id: string;
   session_date: string;
-  status: "present" | "absent" | "late";
+  status: "present" | "absent" | "late" | "injured";
   rpe: number | null;
 }
 
@@ -69,11 +69,11 @@ export function AttendanceStatsDialog({ open, onOpenChange, coachId, athletes, a
   const { sessionsHeld, teamRate, perAthlete } = useMemo(() => {
     const dates = new Set(rows.map((r) => r.session_date));
     const sessionsHeld = dates.size;
-    const per = new Map<string, { present: number; late: number; absent: number; rpeSum: number; rpeN: number }>();
+    const per = new Map<string, { present: number; late: number; absent: number; injured: number; rpeSum: number; rpeN: number }>();
     rows.forEach((r) => {
-      const cur = per.get(r.athlete_id) || { present: 0, late: 0, absent: 0, rpeSum: 0, rpeN: 0 };
+      const cur = per.get(r.athlete_id) || { present: 0, late: 0, absent: 0, injured: 0, rpeSum: 0, rpeN: 0 };
       cur[r.status] += 1;
-      if (r.rpe != null && r.status !== "absent") {
+      if (r.rpe != null && r.status !== "absent" && r.status !== "injured") {
         cur.rpeSum += r.rpe;
         cur.rpeN += 1;
       }
@@ -83,7 +83,7 @@ export function AttendanceStatsDialog({ open, onOpenChange, coachId, athletes, a
     let totalSlots = 0;
     const perAthlete = athletes
       .map((a) => {
-        const s = per.get(a.user_id) || { present: 0, late: 0, absent: 0, rpeSum: 0, rpeN: 0 };
+        const s = per.get(a.user_id) || { present: 0, late: 0, absent: 0, injured: 0, rpeSum: 0, rpeN: 0 };
         const attended = s.present + s.late;
         const pct = sessionsHeld > 0 ? Math.round((attended / sessionsHeld) * 100) : 0;
         const avgRpe = s.rpeN > 0 ? Math.round((s.rpeSum / s.rpeN) * 10) / 10 : null;
@@ -168,7 +168,7 @@ export function AttendanceStatsDialog({ open, onOpenChange, coachId, athletes, a
           if (y > 280) { doc.addPage(); y = 20; }
           const r = rows.find((rr) => rr.session_date === d && rr.athlete_id === selectedAthleteId);
           const statusKey = r?.status;
-          const statusLabel = statusKey === "present" ? t("present") : statusKey === "late" ? t("late") : statusKey === "absent" ? t("absent") : "—";
+          const statusLabel = statusKey === "present" ? t("present") : statusKey === "late" ? t("late") : statusKey === "absent" ? t("absent") : statusKey === "injured" ? t("injured") : "—";
           doc.text(d, margin, y);
           doc.text(statusLabel, margin + 60, y);
           doc.text(r?.rpe != null ? String(r.rpe) : "—", margin + 110, y);
@@ -228,6 +228,7 @@ export function AttendanceStatsDialog({ open, onOpenChange, coachId, athletes, a
           <span className="inline-flex items-center gap-1"><Check className="h-3.5 w-3.5 text-emerald-500" />{t("present")}</span>
           <span className="inline-flex items-center gap-1"><Clock className="h-3.5 w-3.5 text-orange-500" />{t("late")}</span>
           <span className="inline-flex items-center gap-1"><X className="h-3.5 w-3.5 text-destructive" />{t("absent")}</span>
+          <span className="inline-flex items-center gap-1"><HeartCrack className="h-3.5 w-3.5 text-destructive" />{t("injured")}</span>
         </div>
 
         {/* Summary */}
@@ -261,6 +262,7 @@ export function AttendanceStatsDialog({ open, onOpenChange, coachId, athletes, a
                       <span className="inline-flex items-center gap-0.5"><Check className="h-3 w-3 text-emerald-500" />{row.present}</span>
                       <span className="inline-flex items-center gap-0.5"><Clock className="h-3 w-3 text-orange-500" />{row.late}</span>
                       <span className="inline-flex items-center gap-0.5"><X className="h-3 w-3 text-destructive" />{row.absent}</span>
+                      <span className="inline-flex items-center gap-0.5"><HeartCrack className="h-3 w-3 text-destructive" />{row.injured}</span>
                       {row.avgRpe != null && <span>· {t("avgRpe")} {row.avgRpe}</span>}
                     </div>
                   </div>

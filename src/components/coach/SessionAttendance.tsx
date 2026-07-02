@@ -4,7 +4,7 @@ import { AvatarImg } from "@/components/AvatarImg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
-import { Loader2, Check, X, Clock } from "lucide-react";
+import { Loader2, Check, X, Clock, HeartCrack } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -16,7 +16,7 @@ interface Athlete {
 }
 interface Record {
   athlete_id: string;
-  status: "present" | "absent" | "late";
+  status: "present" | "absent" | "late" | "injured";
   rpe: number | null;
 }
 
@@ -50,7 +50,7 @@ export function SessionAttendance({ coachId, athletes, activeClubId }: Props) {
     })();
   }, [coachId, date, activeClubId]);
 
-  const setStatus = async (athleteId: string, status: "present" | "absent" | "late") => {
+  const setStatus = async (athleteId: string, status: "present" | "absent" | "late" | "injured") => {
     const existing = records.get(athleteId);
     const next: Record = { athlete_id: athleteId, status, rpe: existing?.rpe ?? null };
     setRecords(new Map(records).set(athleteId, next));
@@ -112,9 +112,16 @@ export function SessionAttendance({ coachId, athletes, activeClubId }: Props) {
                       className={cn("h-7 px-2", rec?.status === "absent" && "bg-destructive/15 border-destructive/40 text-destructive")}
                       onClick={() => setStatus(a.user_id, "absent")}
                     ><X className="h-3 w-3" /></Button>
+                    <Button
+                      size="sm" variant="outline"
+                      aria-label={t("injured")}
+                      title={t("injured")}
+                      className={cn("h-7 px-2", rec?.status === "injured" && "bg-destructive/15 border-destructive/40 text-destructive")}
+                      onClick={() => setStatus(a.user_id, "injured")}
+                    ><HeartCrack className="h-3 w-3 text-destructive" /></Button>
                   </div>
                 </div>
-                {rec && rec.status !== "absent" && (
+                {rec && rec.status !== "absent" && rec.status !== "injured" && (
                   <div className="flex items-center gap-3 pl-12">
                     <span className="text-[11px] text-muted-foreground w-20">{t("trainingIntensity")}</span>
                     <Slider

@@ -19378,6 +19378,7 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   present: "Presente",
   late: "Tarde",
   absent: "Ausente",
+  injured: "Lesionado / Enfermo",
   attendanceRate: "Asistencia",
   avgRpe: "Intensidad media",
   trainingIntensity: "Intensidad de entrenamiento",
