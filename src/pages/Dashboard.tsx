@@ -48,6 +48,7 @@ import { Calendar as CalendarIcon, Sparkles, ArrowLeft, ChevronRight } from "luc
 import { cn } from "@/lib/utils";
 import { useEntitlements, useAthleteModuleAccess } from "@/hooks/useEntitlements";
 import type { LockedModule } from "@/lib/entitlements";
+import { isNativeApp } from "@/lib/platform";
 import { FeatureEmptyState } from "@/components/FeatureEmptyState";
 import { TodayCard } from "@/components/today/TodayCard";
 import { HubTodayHero } from "@/components/hub/HubTodayHero";
