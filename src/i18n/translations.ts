@@ -6130,8 +6130,11 @@ const translations = {
     monthApril: "april", monthMay: "maj", monthJune: "juni",
     monthJuly: "juli", monthAugust: "august", monthSeptember: "september",
     monthOctober: "oktober", monthNovember: "november", monthDecember: "december",
+    changelogEntry161: "Abonnement administreres nu via web; app-versionerne viser en neutral besked om adgang.",
     changelogEntry160: "Privatlivspolitik færdiggjort og opdateret.",
     changelogEntry159: "Ny: Månedlig udviklingsrapport pr. atlet for coaches — genereres automatisk den 1. i måneden.",
+    nativePlanManagedTitle: "Dit abonnement administreres på din konto.",
+    nativeFeatureUnavailable: "Denne funktion er ikke tilgængelig på din nuværende adgang. Kontakt din klub eller administrator.",
   },
   sv: {
     defaultLanguage: "Standardspråk",
