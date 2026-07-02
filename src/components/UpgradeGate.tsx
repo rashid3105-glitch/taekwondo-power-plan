@@ -8,6 +8,7 @@ import { LockedModule } from "@/lib/entitlements";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useClubTrial } from "@/hooks/useClubTrial";
+import { isNativeApp } from "@/lib/platform";
 
 interface Props {
   module: LockedModule;
