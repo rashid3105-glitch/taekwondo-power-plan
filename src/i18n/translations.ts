@@ -18270,8 +18270,11 @@ const translations = {
     monthApril: "april", monthMay: "mai", monthJune: "juni",
     monthJuly: "juli", monthAugust: "august", monthSeptember: "september",
     monthOctober: "oktober", monthNovember: "november", monthDecember: "desember",
+    changelogEntry161: "Abonnementer administreres nå via nettstedet; appversjonene viser en nøytral melding om tilgangen din.",
     changelogEntry160: "Personvernerklæringen er ferdigstilt og oppdatert.",
     changelogEntry159: "Ny: Månedlige utviklingsrapporter per utøver for trenere — genereres automatisk den 1. i måneden.",
+    nativePlanManagedTitle: "Abonnementet ditt administreres på kontoen din.",
+    nativeFeatureUnavailable: "Denne funksjonen er ikke tilgjengelig med din nåværende tilgang. Kontakt klubben din eller en administrator.",
   },
 } as const;
 
