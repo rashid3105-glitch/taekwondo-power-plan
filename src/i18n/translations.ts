@@ -15208,8 +15208,11 @@ const translations = {
     monthApril: "أبريل", monthMay: "مايو", monthJune: "يونيو",
     monthJuly: "يوليو", monthAugust: "أغسطس", monthSeptember: "سبتمبر",
     monthOctober: "أكتوبر", monthNovember: "نوفمبر", monthDecember: "ديسمبر",
+    changelogEntry161: "تُدار الاشتراكات الآن عبر الموقع الإلكتروني؛ يعرض إصدار التطبيق رسالة محايدة حول وصولك.",
     changelogEntry160: "تم الانتهاء من سياسة الخصوصية وتحديثها.",
     changelogEntry159: "جديد: تقارير التطور الشهرية لكل لاعب للمدربين — تُنشأ تلقائيًا في الأول من كل شهر.",
+    nativePlanManagedTitle: "تتم إدارة خطتك من حسابك.",
+    nativeFeatureUnavailable: "هذه الميزة غير متاحة ضمن صلاحيتك الحالية. يرجى التواصل مع ناديك أو المسؤول.",
   },
   no: {
     onbWelcomeTitle: "Velkommen til Sportstalent",
