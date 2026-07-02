@@ -49,9 +49,10 @@ export function CoachBulkCreateCompetitionDialog({ athletes, onCreated }: Props)
   // Shared fields
   const [name, setName] = useState("");
   const [date, setDate] = useState("");
-  const [defaultWeight, setDefaultWeight] = useState("");
   const [priority, setPriority] = useState<"A" | "B" | "C">("A");
   const [location, setLocation] = useState("");
+  const [invitationFile, setInvitationFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   // Selection + per-athlete weight overrides
   const [selected, setSelected] = useState<Set<string>>(new Set());
