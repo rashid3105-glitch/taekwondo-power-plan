@@ -21,7 +21,7 @@ interface Props {
 
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-export function WeeklySquadExport({ athletes }: Props) {
+export function WeeklySquadExport({ athletes, variant = "icon" }: Props) {
   const { t, locale } = useLanguage();
   const [busy, setBusy] = useState(false);
 
