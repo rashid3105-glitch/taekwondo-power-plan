@@ -594,11 +594,49 @@ export default function CoachCompetitions() {
                     </div>
                   </div>
                 )}
+
+                <div className="mt-6 p-3 rounded-lg border border-destructive/40 bg-destructive/5">
+                  <p className="text-sm font-semibold text-destructive mb-1 flex items-center gap-1.5">
+                    <Trash2 className="h-4 w-4" />
+                    {labelDelete}
+                  </p>
+                  <p className="text-xs text-muted-foreground mb-3">{labelDeleteHelper}</p>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => setConfirmDelete(true)}
+                    className="gap-1.5"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    {labelDelete}
+                  </Button>
+                </div>
               </div>
             </>
           )}
         </SheetContent>
       </Sheet>
+
+      <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{labelDelete}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {labelDeleteConfirm.replace("{count}", String(openGroup?.participants.length ?? 0))}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>{labelCancel}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => { e.preventDefault(); deleteWholeCompetition(); }}
+              disabled={deleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleting ? "…" : labelDelete}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
