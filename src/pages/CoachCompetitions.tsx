@@ -12,7 +12,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { ArrowLeft, Trophy, MapPin, Calendar, Users, Sparkles, CheckCircle2, Clock, Pencil, Trash2, X, Check } from "lucide-react";
+import { ArrowLeft, Trophy, MapPin, Calendar, Users, Sparkles, CheckCircle2, Clock, Pencil, Trash2, X, Check, FileText, Paperclip } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { CoachBulkCreateCompetitionDialog } from "@/components/coach/CoachBulkCreateCompetitionDialog";
