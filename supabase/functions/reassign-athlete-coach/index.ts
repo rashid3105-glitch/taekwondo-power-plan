@@ -103,9 +103,13 @@ Deno.serve(async (req) => {
       }
       await admin.from("coach_athletes").delete().eq("athlete_id", athleteId);
       if (newCoachId) {
+        const clubId = athleteProfile?.club_id ?? callerProfile?.club_id ?? null;
+        if (!clubId) {
+          return json({ error: "athlete has no club_id — cannot assign coach" }, 400);
+        }
         const { error } = await admin
           .from("coach_athletes")
-          .insert({ coach_id: newCoachId, athlete_id: athleteId });
+          .insert({ coach_id: newCoachId, athlete_id: athleteId, club_id: clubId });
         if (error) return json({ error: error.message }, 400);
       }
       return json({ ok: true });
