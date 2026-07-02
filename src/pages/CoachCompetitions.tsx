@@ -61,6 +61,7 @@ function groupComps(list: Comp[]): CompGroup[] {
         event_date: c.event_date,
         location: c.location,
         priority: c.priority,
+        invitation_pdf_url: c.invitation_pdf_url,
         participants: [{ user_id: c.user_id, athlete_name: c.athlete_name, result: c.result }],
       });
     } else {
