@@ -138,7 +138,17 @@ export default function CoachCompetitions() {
 
       if (!athleteIds.length) { setMyAthletes([]); setComps([]); setLoading(false); return; }
       setMyAthletes(athleteIds.map((id) => ({ user_id: id, display_name: nameMap.get(id) || "—" })));
-      const { data: competitions } = await supabase.from("competitions").select("id, name, event_date, location, user_id, priority, result, invitation_pdf_url").in("user_id", athleteIds).order("event_date", { ascending: true });
+      let compQuery = supabase
+        .from("competitions")
+        .select("id, name, event_date, location, user_id, priority, result, invitation_pdf_url, club_id")
+        .in("user_id", athleteIds)
+        .order("event_date", { ascending: true });
+      if (activeClubId) {
+        // Only competitions tied to the active club. Include legacy rows with
+        // NULL club_id so pre-scoping data still appears for the athlete's home club.
+        compQuery = compQuery.or(`club_id.eq.${activeClubId},club_id.is.null`);
+      }
+      const { data: competitions } = await compQuery;
       const compsList = ((competitions ?? []) as any[]).map((c: any) => ({ ...c, athlete_name: nameMap.get(c.user_id) || "—" }));
       setComps(compsList);
 
