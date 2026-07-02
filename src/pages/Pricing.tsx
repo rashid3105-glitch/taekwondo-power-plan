@@ -318,6 +318,22 @@ export default function Pricing() {
     );
   };
 
+  // App Store / Google Play compliance: in native builds we render a neutral
+  // informational screen only — no prices, no CTAs, no external payment links.
+  if (native) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
+        <PageMeta title="Account" description="Manage your account" />
+        <div className="max-w-md w-full rounded-2xl border border-border bg-card p-6 text-center space-y-4 shadow-sm">
+          <h1 className="text-xl font-bold text-foreground">{t("nativePlanManagedTitle")}</h1>
+          <Button variant="outline" onClick={() => navigate("/dashboard")}>
+            {t("backToDashboard")}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background relative">
       <PageMeta
