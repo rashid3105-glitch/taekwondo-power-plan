@@ -118,11 +118,13 @@ export function InviteDialog({ coachId, clubId, pendingCount, approvedCount, ope
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button size="sm" className="gap-2">
-          <UserPlus className="h-4 w-4" /> {t("inviteAthletes")}
-        </Button>
-      </DialogTrigger>
+      {!hideTrigger && (
+        <DialogTrigger asChild>
+          <Button size="sm" className="gap-2">
+            <UserPlus className="h-4 w-4" /> {t("inviteAthletes")}
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>{t("inviteHeading")}</DialogTitle>
