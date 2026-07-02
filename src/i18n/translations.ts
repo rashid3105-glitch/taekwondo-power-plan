@@ -340,6 +340,7 @@ const translations = {
 
     // Coach
     coachDashboard: "Coach Dashboard",
+    teamCompetitionsMenu: "Team competitions",
     addAthlete: "Add Athlete",
     addAthleteDesc: "Enter your athlete's unique code (shown on their profile) to link them to your coaching account.",
     athleteCodePlaceholder: "e.g. TKD-123456",
@@ -3427,6 +3428,7 @@ const translations = {
 
     // Coach
     coachDashboard: "Træner Dashboard",
+    teamCompetitionsMenu: "stævneoversigt",
     addAthlete: "Tilføj atlet",
     addAthleteDesc: "Indtast din atlets unikke kode (vist på deres profil) for at koble dem til din trænerkonto.",
     athleteCodePlaceholder: "f.eks. TKD-123456",
@@ -6496,6 +6498,7 @@ const translations = {
 
     // Coach
     coachDashboard: "Tränare Dashboard",
+    teamCompetitionsMenu: "tävlingar",
     addAthlete: "Lägg till atlet",
     addAthleteDesc: "Ange din atlets unika kod (visas på deras profil) för att koppla dem till ditt tränarkonto.",
     athleteCodePlaceholder: "t.ex. TKD-123456",
@@ -9545,6 +9548,7 @@ const translations = {
     allClubs: "Alle Vereine",
     filterByClub: "Nach Verein filtern",
     coachDashboard: "Trainer-Dashboard",
+    teamCompetitionsMenu: "Wettkämpfe",
     addAthlete: "Athlet hinzufügen",
     addAthleteDesc: "Geben Sie den einzigartigen Code Ihres Athleten ein (auf seinem Profil angezeigt), um ihn mit Ihrem Trainerkonto zu verknüpfen.",
     athleteCodePlaceholder: "z.B. TKD-123456",
@@ -12636,6 +12640,7 @@ const translations = {
     allClubs: "جميع الأندية",
     filterByClub: "تصفية حسب النادي",
     coachDashboard: "لوحة تحكم المدرب",
+    teamCompetitionsMenu: "نظرة عامة على المنافسات",
     addAthlete: "إضافة رياضي",
     addAthleteDesc: "أدخل الرمز الفريد للرياضي (الموضح في ملفه الشخصي) لربطه بحساب التدريب الخاص بك.",
     athleteCodePlaceholder: "مثال: TKD-123456",
@@ -15680,6 +15685,7 @@ const translations = {
 
     // Coach
     coachDashboard: "Trener Dashboard",
+    teamCompetitionsMenu: "Stevneoversikt",
     addAthlete: "Legg til atlet",
     addAthleteDesc: "Indtast din atlets unikke kode (vist på deres profil) for å koble dem til din trenerkonto.",
     athleteCodePlaceholder: "f.eks. TKD-123456",
@@ -19072,6 +19078,7 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   completionByDay: "Finalización por día de entrenamiento",
   signOut: "Cerrar sesión",
   coachDashboard: "Panel del entrenador",
+  teamCompetitionsMenu: "Competiciones",
   coachRoleGranted: "¡Rol de entrenador concedido!",
   coachRoleRevoked: "Rol de entrenador revocado.",
   coachSoloNoAthletesTitle: "Gestión de atletas no incluida",
