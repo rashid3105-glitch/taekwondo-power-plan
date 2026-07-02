@@ -178,6 +178,81 @@ export default function CoachCompetitions() {
   const labelStatusRequested = t("reflectionStatusRequested") as string;
   const labelRequestSent = t("reflectionRequestSent") as string;
   const labelRequestNone = t("reflectionRequestNone") as string;
+  const labelEdit = t("editCompetition") as string;
+  const labelSave = t("saveChanges") as string;
+  const labelCancel = t("cancel") as string;
+  const labelDelete = t("deleteCompetition") as string;
+  const labelDeleteHelper = t("deleteCompetitionHelper") as string;
+  const labelDeleteConfirm = t("deleteCompetitionConfirm") as string;
+  const labelUpdated = t("competitionUpdated") as string;
+  const labelDeleted = t("competitionDeleted") as string;
+
+  const startEdit = (g: CompGroup) => {
+    setEditName(g.name);
+    setEditDate(g.event_date);
+    setEditLocation(g.location ?? "");
+    setEditMode(true);
+  };
+
+  const saveEdit = async () => {
+    if (!openGroup) return;
+    const name = editName.trim();
+    const date = editDate;
+    const location = editLocation.trim() || null;
+    if (!name || !date) return;
+    setSaving(true);
+    try {
+      const ids = comps
+        .filter(c =>
+          c.name.trim().toLowerCase() === openGroup.name.trim().toLowerCase() &&
+          c.event_date === openGroup.event_date &&
+          (c.location ?? "").trim().toLowerCase() === (openGroup.location ?? "").trim().toLowerCase()
+        )
+        .map(c => c.id);
+      if (!ids.length) throw new Error("No rows");
+      const { error } = await supabase
+        .from("competitions")
+        .update({ name, event_date: date, location })
+        .in("id", ids);
+      if (error) throw error;
+      setComps(prev => prev.map(c => ids.includes(c.id) ? { ...c, name, event_date: date, location } : c));
+      setOpenGroup(prev => prev ? { ...prev, name, event_date: date, location } : prev);
+      setEditMode(false);
+      toast({ title: labelUpdated });
+    } catch (e: any) {
+      toast({ title: "Fejl", description: e.message, variant: "destructive" });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const deleteWholeCompetition = async () => {
+    if (!openGroup) return;
+    setDeleting(true);
+    try {
+      const ids = comps
+        .filter(c =>
+          c.name.trim().toLowerCase() === openGroup.name.trim().toLowerCase() &&
+          c.event_date === openGroup.event_date &&
+          (c.location ?? "").trim().toLowerCase() === (openGroup.location ?? "").trim().toLowerCase()
+        )
+        .map(c => c.id);
+      if (ids.length) {
+        // Best-effort: remove any reflection requests tied to these comp ids
+        await supabase.from("competition_reflection_requests").delete().in("competition_id", ids);
+        const { error } = await supabase.from("competitions").delete().in("id", ids);
+        if (error) throw error;
+      }
+      setComps(prev => prev.filter(c => !ids.includes(c.id)));
+      setConfirmDelete(false);
+      setOpenGroup(null);
+      toast({ title: labelDeleted });
+    } catch (e: any) {
+      toast({ title: "Fejl", description: e.message, variant: "destructive" });
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const reflectionKey = (userId: string, group: CompGroup) =>
     `${userId}|${group.name.trim().toLowerCase()}|${group.event_date}`;
