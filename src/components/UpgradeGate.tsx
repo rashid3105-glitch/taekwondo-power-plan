@@ -77,6 +77,26 @@ export function UpgradeGate({ module, children }: Props) {
 
   if (coachGranted || clubGranted || !isLocked(module)) return <>{children}</>;
 
+  // Native (App Store / Google Play compliance): show neutral message,
+  // no upgrade CTA, no link to pricing or external payment.
+  if (isNativeApp()) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center p-4">
+        <Card className="max-w-md w-full border-border bg-card shadow-lg">
+          <CardContent className="pt-8 pb-6 text-center space-y-4">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+              <Lock className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <p className="text-sm text-foreground">{t("nativeFeatureUnavailable")}</p>
+            <Button variant="ghost" onClick={() => navigate("/dashboard")} className="w-full">
+              {t("backToDashboard")}
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-[60vh] flex items-center justify-center p-4">
       <Card className="max-w-md w-full border-primary/20 bg-card shadow-lg">
