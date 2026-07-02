@@ -6,10 +6,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Check, ArrowLeft, Rocket } from "lucide-react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { isNativeApp } from "@/lib/platform";
 
 export default function PaymentSuccess() {
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const native = isNativeApp();
 
   return (
     <div className="min-h-screen bg-background px-4 py-8 relative flex flex-col items-center justify-center">
@@ -26,9 +28,11 @@ export default function PaymentSuccess() {
           <h1 className="text-2xl font-bold text-foreground">{t("paymentSuccessTitle")}</h1>
           <p className="text-muted-foreground">{t("paymentSuccessDesc")}</p>
           <div className="flex gap-3 pt-4">
-            <Button variant="outline" onClick={() => navigate("/pricing")}>
-              <ArrowLeft className="h-4 w-4 mr-1" /> {t("pricingTitle")}
-            </Button>
+            {!native && (
+              <Button variant="outline" onClick={() => navigate("/pricing")}>
+                <ArrowLeft className="h-4 w-4 mr-1" /> {t("pricingTitle")}
+              </Button>
+            )}
             <Button onClick={() => navigate("/dashboard")}>
               <Rocket className="h-4 w-4 mr-1" /> {t("goToDashboard")}
             </Button>
