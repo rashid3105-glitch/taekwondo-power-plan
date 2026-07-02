@@ -74,7 +74,7 @@ export function ReminderHistory({ athleteId }: ReminderHistoryProps) {
                   <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${r.is_read ? "bg-secondary text-muted-foreground" : "bg-primary/10 text-primary"}`}>
                     {r.is_read ? t("reminderRead") : t("reminderUnread")}
                   </span>
-                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleDelete(r.id)}>
+                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleDelete(r.id)} aria-label={t("delete")} title={t("delete")}>
                     <Trash2 className="h-3 w-3 text-muted-foreground" />
                   </Button>
                 </div>

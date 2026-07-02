@@ -36,7 +36,7 @@ export default function CoachMentalReview() {
           <Button variant="ghost" size="sm" onClick={() => navigate("/coach")}>
             <ChevronLeft className="h-4 w-4 mr-1" /> Coach
           </Button>
-          <Button variant="ghost" size="icon" onClick={() => navigate("/coach")} aria-label="Home">
+          <Button variant="ghost" size="icon" onClick={() => navigate("/coach")} aria-label={t("home")} title={t("home")}>
             <Home className="h-4 w-4" />
           </Button>
         </div>

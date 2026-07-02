@@ -461,7 +461,7 @@ export default function ProfileSetup() {
       <div className="container max-w-lg mx-auto px-4 py-6 sm:py-8">
         <div className="flex justify-end items-center gap-2 mb-4">
           <LanguageSwitcher />
-          <Button variant="ghost" size="icon" onClick={() => navigate("/")} title={t("home")}>
+          <Button variant="ghost" size="icon" onClick={() => navigate("/")} title={t("home")} aria-label={t("home")}>
             <Home className="h-4 w-4" />
           </Button>
         </div>

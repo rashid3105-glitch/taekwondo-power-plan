@@ -448,7 +448,7 @@ export function FoodScanner({ onLogged }: Props) {
         <Card className="p-4 space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-foreground">{t("manualEntry") || "Skriv manuelt"}</h3>
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={resetManual}>
+            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={resetManual} aria-label={t("iconHintClose")} title={t("iconHintClose")}>
               <X className="h-4 w-4" />
             </Button>
           </div>

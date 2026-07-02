@@ -292,7 +292,7 @@ export function CoachDiaryView({ entries }: Props) {
                           <EntryEnergy className="h-4 w-4" />
                         </span>
                         {viewMode === "compact" && (
-                          <Button variant="ghost" size="icon" className="h-7 w-7 ml-auto" onClick={() => toggleExpand(entry.id)}>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 ml-auto" onClick={() => toggleExpand(entry.id)} aria-label={t("iconHintExpand")} title={t("iconHintExpand")}>
                             <ChevronDown className="h-3.5 w-3.5 rotate-180" />
                           </Button>
                         )}

@@ -230,11 +230,11 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
 
       <Card className="overflow-hidden">
         <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={prevMonth}>
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={prevMonth} aria-label={t("iconHintPrevious")} title={t("iconHintPrevious")}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <span className="font-semibold text-sm">{MONTH_NAMES[viewMonth]} {viewYear}</span>
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={nextMonth}>
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={nextMonth} aria-label={t("next")} title={t("next")}>
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>

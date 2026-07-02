@@ -158,7 +158,7 @@ export default function AdminPayments() {
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10 pt-safe">
         <div className="container max-w-4xl mx-auto px-3 sm:px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/admin/approval")}>
+            <Button variant="ghost" size="icon" onClick={() => navigate("/admin/approval")} aria-label={t("back")} title={t("back")}>
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <CreditCard className="h-5 w-5 text-primary" />

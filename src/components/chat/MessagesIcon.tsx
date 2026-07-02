@@ -19,7 +19,7 @@ export function MessagesIcon({ isCoach }: Props) {
         size="icon"
         onClick={() => setOpen(true)}
         className="relative"
-        aria-label="Beskeder"
+        aria-label={t("iconHintMessages")} title={t("iconHintMessages")}
       >
         <MessageCircle className="h-5 w-5" />
         {totalUnread > 0 && (

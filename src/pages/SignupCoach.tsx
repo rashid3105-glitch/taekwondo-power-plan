@@ -281,7 +281,8 @@ export default function SignupCoach() {
                   <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Inviter-link</Label>
                   <div className="flex gap-2">
                     <Input readOnly value={inviteUrl} className="font-mono text-xs h-11 rounded-xl" onFocus={(e) => e.target.select()} />
-                    <Button type="button" onClick={copyLink} variant="outline" size="icon" className="h-11 w-11 rounded-xl flex-shrink-0">
+                    <Button type="button" onClick={copyLink} variant="outline" size="icon" className="h-11 w-11 rounded-xl flex-shrink-0" aria-label={t("iconHintCopy")} title={t("iconHintCopy")}>
+
                       {copied ? <Check className="h-4 w-4 text-energy" /> : <Copy className="h-4 w-4" />}
                     </Button>
                   </div>

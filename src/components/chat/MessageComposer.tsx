@@ -112,7 +112,7 @@ export function MessageComposer({ threadId, onSent }: Props) {
           size="icon"
           className="h-9 w-9 text-muted-foreground hover:text-foreground flex-shrink-0"
           onClick={() => fileRef.current?.click()}
-          aria-label="Vedhæft billede"
+          aria-label={t("iconHintAttachImage")} title={t("iconHintAttachImage")}
         >
           <Image className="h-5 w-5" />
         </Button>
@@ -128,7 +128,7 @@ export function MessageComposer({ threadId, onSent }: Props) {
               : "text-muted-foreground hover:text-foreground"
           )}
           onClick={toggleRecording}
-          aria-label={recording ? "Stop optagelse" : "Indtal besked"}
+          aria-label={recording ? t("iconHintStopRecording") : t("iconHintVoiceRecord")} title={recording ? t("iconHintStopRecording") : t("iconHintVoiceRecord")}
         >
           {recording ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
         </Button>
@@ -139,7 +139,7 @@ export function MessageComposer({ threadId, onSent }: Props) {
           size="icon"
           className="h-9 w-9 text-muted-foreground hover:text-foreground flex-shrink-0"
           onClick={() => setShowEmoji((s) => !s)}
-          aria-label="Emoji"
+          aria-label={t("iconHintEmoji")} title={t("iconHintEmoji")}
         >
           <Smile className="h-5 w-5" />
         </Button>
@@ -188,7 +188,7 @@ export function MessageComposer({ threadId, onSent }: Props) {
           className="h-9 w-9 flex-shrink-0"
           onClick={send}
           disabled={sending || (!body.trim() && !file)}
-          aria-label="Send"
+          aria-label={t("iconHintSend")} title={t("iconHintSend")}
         >
           <Send className="h-4 w-4" />
         </Button>

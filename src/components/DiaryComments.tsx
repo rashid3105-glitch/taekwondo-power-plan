@@ -235,7 +235,7 @@ export function DiaryComments({ entryId, canComment = false }: DiaryCommentsProp
                 size="icon"
                 className="absolute right-1 bottom-1 h-7 w-7 text-muted-foreground hover:text-foreground"
                 onClick={() => setShowEmoji((s) => !s)}
-                aria-label="Emoji"
+                aria-label={t("iconHintEmoji")} title={t("iconHintEmoji")}
               >
                 <Smile className="h-4 w-4" />
               </Button>
