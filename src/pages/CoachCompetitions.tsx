@@ -108,11 +108,22 @@ export default function CoachCompetitions() {
       let athleteIds: string[] = [];
       const nameMap = new Map<string, string>();
       if (activeClubId) {
+        // Only include athletes with an ACTIVE membership in the selected club.
+        // Guards against legacy profiles.club_id pointing to a different club.
+        const { data: memberships } = await supabase
+          .from("club_memberships")
+          .select("user_id")
+          .eq("club_id", activeClubId)
+          .eq("status", "active")
+          .eq("role_in_club", "athlete");
+        const activeIds = new Set(((memberships ?? []) as any[]).map((m) => m.user_id));
+
         const { data: members } = await supabase
           .rpc("get_club_member_profiles" as any, { _club_id: activeClubId });
         for (const m of ((members ?? []) as any[])) {
           if (m.is_coach) continue;
           if (m.user_id === user.id) continue;
+          if (!activeIds.has(m.user_id)) continue;
           athleteIds.push(m.user_id);
           nameMap.set(m.user_id, m.display_name || "—");
         }
