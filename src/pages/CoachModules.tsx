@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
+import { ClubSwitcher } from "@/components/ClubSwitcher";
 
 interface AthleteOption { id: string; name: string; }
 type Tab = "club" | "athlete";
@@ -159,7 +160,8 @@ export default function CoachModules() {
         <button onClick={() => navigate(-1)} aria-label="Tilbage" className="p-1 -ml-1 text-white/70 hover:text-white">
           <ArrowLeft className="h-5 w-5" />
         </button>
-        <h1 className="text-heading">Administrer moduler</h1>
+        <h1 className="text-heading flex-1">Administrer moduler</h1>
+        <ClubSwitcher />
       </header>
 
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-4">

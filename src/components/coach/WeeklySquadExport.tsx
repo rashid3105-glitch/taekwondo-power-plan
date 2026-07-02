@@ -16,11 +16,12 @@ interface Athlete {
 
 interface Props {
   athletes: Athlete[];
+  variant?: "icon" | "inline";
 }
 
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-export function WeeklySquadExport({ athletes }: Props) {
+export function WeeklySquadExport({ athletes, variant = "icon" }: Props) {
   const { t, locale } = useLanguage();
   const [busy, setBusy] = useState(false);
 
@@ -256,6 +257,25 @@ export function WeeklySquadExport({ athletes }: Props) {
   };
 
   const label = t("exportSquadPdf");
+  const reportLabel = t("weeklyAthleteReport") || "Weekly Athlete Report";
+
+  if (variant === "inline") {
+    return (
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={handleExport}
+        disabled={busy || athletes.length === 0}
+        aria-label={reportLabel}
+        title={reportLabel}
+        className="h-8 gap-1.5 border-emerald-500/40 text-emerald-500 hover:text-emerald-400 hover:bg-emerald-500/10"
+      >
+        {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileText className="h-3.5 w-3.5" />}
+        <span className="text-xs font-semibold">{reportLabel}</span>
+      </Button>
+    );
+  }
+
   return (
     <Button
       size="icon"
@@ -264,7 +284,7 @@ export function WeeklySquadExport({ athletes }: Props) {
       disabled={busy || athletes.length === 0}
       aria-label={label}
       title={label}
-      className="shrink-0 text-destructive hover:text-destructive"
+      className="shrink-0 text-emerald-500 hover:text-emerald-400"
     >
       {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileText className="h-4 w-4" />}
     </Button>

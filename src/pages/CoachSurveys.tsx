@@ -15,6 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
+import { ClubSwitcher } from "@/components/ClubSwitcher";
 import { supabase } from "@/integrations/supabase/client";
 import {
   fetchCoachSurveys, createSurvey, deleteSurvey, fetchSurvey, fetchSurveyResults,
@@ -98,6 +99,7 @@ export default function CoachSurveys() {
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <h1 className="text-lg font-bold flex-1">{t("surveysTitle")}</h1>
+          <ClubSwitcher />
           <Button size="sm" onClick={() => openNewSurvey()}>
             <Plus className="h-4 w-4 mr-1" />{t("newSurvey")}
           </Button>

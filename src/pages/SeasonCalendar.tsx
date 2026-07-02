@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
+import { ClubSwitcher } from "@/components/ClubSwitcher";
 import { toast } from "@/hooks/use-toast";
 import { ArrowLeft, Loader2, Plus, Printer, Trash2, CalendarRange, Eye, ChevronLeft, ChevronRight, ChevronDown, Target, Sparkles, Info } from "lucide-react";
 import { GENERIC_DEFAULT_SCHEDULE } from "@/components/coach/TeamWeeklyScheduleCard";
@@ -546,6 +547,7 @@ export default function SeasonCalendar() {
             <span className="font-extrabold truncate">{t("seasonCalendar")}</span>
           </div>
           <div className="flex items-center gap-2 shrink-0 min-w-0">
+            <ClubSwitcher />
             {selectedPlan && (
               <Button variant="outline" size="sm" onClick={() => window.print()}>
                 <Printer className="h-4 w-4" />

@@ -15,6 +15,7 @@ import {
 import { ArrowLeft, Trophy, MapPin, Calendar, Users, Sparkles, CheckCircle2, Clock, Pencil, Trash2, X, Check, FileText, Paperclip } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
+import { ClubSwitcher } from "@/components/ClubSwitcher";
 import { CoachBulkCreateCompetitionDialog } from "@/components/coach/CoachBulkCreateCompetitionDialog";
 
 interface Comp {
@@ -421,7 +422,8 @@ export default function CoachCompetitions() {
         <div className="container max-w-4xl mx-auto px-3 py-3 flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={() => navigate("/coach")} aria-label={t("back")} title={t("back")}><ArrowLeft className="h-4 w-4" /></Button>
           <Trophy className="h-5 w-5 text-primary" />
-          <span className="font-bold flex-1">{labelCompetitions}</span>
+          <span className="font-bold flex-1 truncate">{labelCompetitions}</span>
+          <ClubSwitcher />
           <CoachBulkCreateCompetitionDialog
             athletes={myAthletes.map((a) => ({ user_id: a.user_id, display_name: a.display_name }))}
             onCreated={async () => {
@@ -435,6 +437,11 @@ export default function CoachCompetitions() {
       <main className="container max-w-4xl mx-auto px-3 py-4 space-y-4">
         {loading ? (
           <p className="text-center text-muted-foreground py-12 text-sm">{labelLoading}</p>
+        ) : myAthletes.length === 0 ? (
+          <div className="text-center py-12 text-muted-foreground text-sm">
+            <Users className="h-10 w-10 mx-auto mb-3 opacity-30" />
+            <p>{t("coachNoAthletesInClub")}</p>
+          </div>
         ) : comps.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground text-sm">
             <Trophy className="h-10 w-10 mx-auto mb-3 opacity-30" />

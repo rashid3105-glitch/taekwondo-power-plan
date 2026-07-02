@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
+import { ClubSwitcher } from "@/components/ClubSwitcher";
 import { useToast } from "@/hooks/use-toast";
 import { Watermark } from "@/components/Watermark";
 import { AppFooter } from "@/components/AppFooter";
@@ -136,6 +137,7 @@ export default function CoachMessages() {
           </Button>
           <MessageSquare className="h-5 w-5 text-primary" />
           <span className="text-base font-extrabold text-card-foreground">{t("messagesTab")}</span>
+          <div className="ml-auto"><ClubSwitcher /></div>
         </div>
       </header>
 
