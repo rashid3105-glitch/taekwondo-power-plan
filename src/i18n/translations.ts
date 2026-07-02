@@ -3069,8 +3069,11 @@ const translations = {
     monthApril: "April", monthMay: "May", monthJune: "June",
     monthJuly: "July", monthAugust: "August", monthSeptember: "September",
     monthOctober: "October", monthNovember: "November", monthDecember: "December",
+    changelogEntry161: "Subscriptions are now managed via the website; the app versions show a neutral message about your access.",
     changelogEntry160: "Privacy policy finalised and updated.",
     changelogEntry159: "New: Monthly development report per athlete for coaches — auto-generated on the 1st of each month.",
+    nativePlanManagedTitle: "Your plan is managed on your account.",
+    nativeFeatureUnavailable: "This feature isn't available on your current access. Please contact your club or administrator.",
   },
   da: {
     defaultLanguage: "Standardsprog",
