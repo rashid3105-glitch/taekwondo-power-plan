@@ -141,7 +141,7 @@ Deno.serve(async (req) => {
       await admin.from("coach_athletes").delete().eq("athlete_id", athleteId).eq("club_id", clubId);
       await admin
         .from("club_memberships" as any)
-        .update({ status: "inactive" })
+        .update({ status: "removed" })
         .eq("user_id", athleteId)
         .eq("club_id", clubId)
         .eq("role_in_club", "athlete");
