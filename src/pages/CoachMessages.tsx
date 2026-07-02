@@ -137,6 +137,7 @@ export default function CoachMessages() {
           </Button>
           <MessageSquare className="h-5 w-5 text-primary" />
           <span className="text-base font-extrabold text-card-foreground">{t("messagesTab")}</span>
+          <div className="ml-auto"><ClubSwitcher /></div>
         </div>
       </header>
 
