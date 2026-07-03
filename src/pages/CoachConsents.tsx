@@ -79,6 +79,24 @@ export default function CoachConsents() {
     setEmailDrafts((d) => ({ ...d, [row.athlete_id]: "" }));
   }
 
+  async function sendAdultRequest(row: Row) {
+    setSendingId(row.athlete_id);
+    const { data, error } = await supabase.functions.invoke("consent-coach-actions", {
+      body: {
+        action: "send_adult_request",
+        athlete_id: row.athlete_id,
+        ...(activeClubId ? { club_id: activeClubId } : {}),
+      },
+    });
+    setSendingId(null);
+    if (error || !(data as any)?.ok || !(data as any)?.queued) {
+      toast.error(t("consentParentRequestFailed"));
+      return;
+    }
+    toast.success(t("consentParentRequestSent"));
+  }
+
+
 
   useEffect(() => {
     let cancelled = false;
@@ -329,7 +347,22 @@ export default function CoachConsents() {
                           </Button>
                         </div>
                       ) : (
-                        <span className="text-muted-foreground">—</span>
+                        <div className="flex items-center gap-2 justify-end">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-8"
+                            onClick={() => sendAdultRequest(r)}
+                            disabled={sendingId === r.athlete_id}
+                          >
+                            <Mail className="h-3.5 w-3.5 mr-1" />
+                            {sendingId === r.athlete_id
+                              ? t("consentSendingParent")
+                              : r.status === "granted"
+                                ? t("consentsResendBtn")
+                                : t("consentsRemindBtn")}
+                          </Button>
+                        </div>
                       )}
                     </TableCell>
                   </TableRow>

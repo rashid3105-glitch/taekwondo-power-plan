@@ -16,6 +16,7 @@ import { template as coachWeeklyDigest } from './coach-weekly-digest.tsx'
 import { template as coachMessage } from './coach-message.tsx'
 import { template as athleteActivityNotification } from './athlete-activity-notification.tsx'
 import { template as parentalConsentRequest } from './parental-consent-request.tsx'
+import { template as adultConsentRequest } from './adult-consent-request.tsx'
 import { template as coachConsentReminder } from './coach-consent-reminder.tsx'
 import { template as blogCommentVerification } from './blog-comment-verification.tsx'
 import { template as coachInviteAdminNotification } from './coach-invite-admin-notification.tsx'
@@ -28,6 +29,7 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'coach-message': coachMessage,
   'athlete-activity-notification': athleteActivityNotification,
   'parental-consent-request': parentalConsentRequest,
+  'adult-consent-request': adultConsentRequest,
   'coach-consent-reminder': coachConsentReminder,
   'blog-comment-verification': blogCommentVerification,
   'coach-invite-admin-notification': coachInviteAdminNotification,
