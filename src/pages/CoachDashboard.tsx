@@ -443,8 +443,6 @@ export default function CoachDashboard() {
               )}
             </div>
 
-            {coachClubId && <TeamWeeklyScheduleCard clubId={coachClubId} />}
-            {coachClubId && <ClubActivityTypesCard clubId={coachClubId} />}
 
             {/* Coach mental review entry — only shown when monthly check-in is due */}
             {coachMentalDue && (
@@ -533,6 +531,9 @@ export default function CoachDashboard() {
                   />
                 </>
               )}
+
+              {coachClubId && <TeamWeeklyScheduleCard clubId={coachClubId} />}
+              {coachClubId && <ClubActivityTypesCard clubId={coachClubId} />}
 
               {/* Club Members (read-only) — split into athletes and coaches, foldable */}
               {clubAthletes.length > 0 && (() => {
