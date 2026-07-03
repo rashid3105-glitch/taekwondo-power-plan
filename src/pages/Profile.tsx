@@ -128,6 +128,7 @@ export default function Profile() {
         display_name: p?.display_name ?? null,
         avatar_url: p?.avatar_url ?? null,
         discipline: p?.discipline ?? null,
+        club_id: p?.club_id ?? null,
         club_name: p?.clubs?.name ?? p?.coach_club_name ?? null,
         roles: p?.roles ?? null,
         birth_date: p?.birth_date ?? null,
