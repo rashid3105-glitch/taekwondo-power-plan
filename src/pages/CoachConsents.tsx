@@ -10,8 +10,10 @@ import { Badge } from "@/components/ui/badge";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { ArrowLeft, Download, Loader2, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Download, Loader2, Mail, ShieldCheck } from "lucide-react";
 import { effectiveAge } from "@/lib/age";
+import { toast } from "sonner";
+
 
 type Filter = "all" | "adult" | "minor" | "missing";
 
