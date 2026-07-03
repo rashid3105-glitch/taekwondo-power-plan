@@ -179,7 +179,7 @@ export default function CoachCompetitions() {
       }
       setLoading(false);
     })();
-  }, [activeClubId]);
+  }, [activeClubId, reloadTick]);
 
   const today = new Date().toISOString().slice(0, 10);
 
