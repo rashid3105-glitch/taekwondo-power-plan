@@ -264,6 +264,76 @@ Deno.serve(async (req) => {
       return jsonResponse({ ok: true, queued: true });
     }
 
+    // ─── Action: send_adult_request ───
+    if (action === "send_adult_request") {
+      const athleteId: string = body.athlete_id;
+      if (!athleteId) return jsonResponse({ error: "invalid_input" }, 400);
+
+      const { data: athleteRow } = await admin
+        .from("profiles")
+        .select("user_id, display_name, birth_date, age, club_id")
+        .eq("user_id", athleteId)
+        .maybeSingle();
+      if (!athleteRow) return jsonResponse({ error: "not_found" }, 404);
+
+      const { data: athleteMemberships } = await admin
+        .from("club_memberships")
+        .select("club_id")
+        .eq("user_id", athleteId)
+        .eq("status", "active");
+      const athleteClubs = new Set((athleteMemberships || []).map((m: any) => m.club_id));
+      const inCoachClub = effectiveClubIds.some((cid) => athleteClubs.has(cid));
+      if (!inCoachClub) return jsonResponse({ error: "forbidden" }, 403);
+
+      if (isMinor(athleteRow.birth_date, athleteRow.age)) {
+        return jsonResponse({ error: "is_a_minor" }, 400);
+      }
+
+      // Get athlete's own email
+      const { data: athleteAuth } = await admin.auth.admin.getUserById(athleteId);
+      const athleteEmail = athleteAuth?.user?.email;
+      if (!athleteEmail || !EMAIL_RE.test(athleteEmail)) {
+        return jsonResponse({ error: "no_athlete_email" }, 400);
+      }
+
+      const tokenValue = randomToken(32);
+      const expiresAt = new Date(Date.now() + 14 * 24 * 3600 * 1000).toISOString();
+
+      await admin.from("consent_records").upsert(
+        {
+          athlete_id: athleteId,
+          consent_type: "health_data_processing",
+          status: "pending",
+          club_id: athleteRow.club_id,
+        },
+        { onConflict: "athlete_id,consent_type", ignoreDuplicates: false },
+      );
+
+      await admin.from("consent_tokens").insert({
+        token: tokenValue,
+        athlete_id: athleteId,
+        parent_email: athleteEmail,
+        consent_type: "health_data_processing",
+        expires_at: expiresAt,
+      });
+
+      const consentUrl = `${APP_URL}/consent/${tokenValue}`;
+      const sendRes = await invokeSendEmail(supabaseUrl, serviceKey, {
+        templateName: "adult-consent-request",
+        recipientEmail: athleteEmail,
+        idempotencyKey: `adult-consent-${athleteId}-${tokenValue.slice(0, 8)}`,
+        templateData: {
+          athleteName: athleteRow.display_name || "",
+          consentUrl,
+          expiresInDays: 14,
+        },
+      });
+      if (!sendRes.ok) {
+        return jsonResponse({ ok: false, queued: false, error: sendRes.error || `status_${sendRes.status}` }, 502);
+      }
+      return jsonResponse({ ok: true, queued: true });
+    }
+
     // ─── Action: remind_me ───
     if (action === "remind_me") {
       const all = await loadMinorsWithStatus();
