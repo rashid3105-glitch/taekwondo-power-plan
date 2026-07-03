@@ -27,7 +27,7 @@ import { SquadPulse, type PulseFilter } from "@/components/coach/SquadPulse";
 import { WeeklySquadExport } from "@/components/coach/WeeklySquadExport";
 import { AthleteAddMenu } from "@/components/coach/AthleteAddMenu";
 import { PendingAthletesSection } from "@/components/coach/PendingAthletesSection";
-import { ConsentMissingButton } from "@/components/coach/ConsentMissingButton";
+
 import { TeamWeeklyScheduleCard } from "@/components/coach/TeamWeeklyScheduleCard";
 import { ClubActivityTypesCard } from "@/components/coach/ClubActivityTypesCard";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -430,7 +430,7 @@ export default function CoachDashboard() {
 
             {/* Action buttons (previously in tab header) */}
             <div className="flex items-center gap-2 flex-wrap justify-end">
-              <ConsentMissingButton />
+              
               <Button variant="outline" size="sm" onClick={() => navigate("/coach/consents")}>
                 {t("consentsPageTitle")}
               </Button>

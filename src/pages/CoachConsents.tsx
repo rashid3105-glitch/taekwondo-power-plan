@@ -10,8 +10,10 @@ import { Badge } from "@/components/ui/badge";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { ArrowLeft, Download, Loader2, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Download, Loader2, Mail, ShieldCheck } from "lucide-react";
 import { effectiveAge } from "@/lib/age";
+import { toast } from "sonner";
+
 
 type Filter = "all" | "adult" | "minor" | "missing";
 
@@ -26,7 +28,9 @@ type Row = {
   granted_by_relation: "self" | "parent" | null;
   policy_version: string | null;
   is_minor: boolean;
+  parent_email_on_token: string | null;
 };
+
 
 function fmtDate(iso: string | null, locale: string) {
   if (!iso) return "—";
@@ -47,7 +51,34 @@ export default function CoachConsents() {
   const [rows, setRows] = useState<Row[]>([]);
   const [filter, setFilter] = useState<Filter>("all");
   const [search, setSearch] = useState("");
+  const [emailDrafts, setEmailDrafts] = useState<Record<string, string>>({});
+  const [sendingId, setSendingId] = useState<string | null>(null);
   const clubName = (activeMembership as any)?.club?.name || (activeMembership as any)?.clubs?.name || "";
+
+  async function sendParentRequest(row: Row) {
+    const email = (emailDrafts[row.athlete_id] ?? row.parent_email_on_token ?? "").trim();
+    if (!email) { toast.error(t("consentParentRequestFailed")); return; }
+    setSendingId(row.athlete_id);
+    const { data, error } = await supabase.functions.invoke("consent-coach-actions", {
+      body: {
+        action: "send_parent_request",
+        athlete_id: row.athlete_id,
+        parent_email: email,
+        ...(activeClubId ? { club_id: activeClubId } : {}),
+      },
+    });
+    setSendingId(null);
+    if (error || !(data as any)?.ok || !(data as any)?.queued) {
+      toast.error(t("consentParentRequestFailed"));
+      return;
+    }
+    toast.success(t("consentParentRequestSent"));
+    setRows((rs) => rs.map((r) =>
+      r.athlete_id === row.athlete_id ? { ...r, parent_email_on_token: email } : r,
+    ));
+    setEmailDrafts((d) => ({ ...d, [row.athlete_id]: "" }));
+  }
+
 
   useEffect(() => {
     let cancelled = false;
@@ -68,6 +99,18 @@ export default function CoachConsents() {
 
       const byId = new Map<string, any>();
       (consents || []).forEach((c: any) => byId.set(c.athlete_id, c));
+
+      // Parent-email hints from previously issued consent tokens (minor athletes)
+      const parentEmailByAthlete = new Map<string, string>();
+      try {
+        const { data: missingData } = await supabase.functions.invoke("consent-coach-actions", {
+          body: { action: "list_missing", club_id: activeClubId },
+        });
+        const missing = (missingData as any)?.missing || [];
+        for (const m of missing) {
+          if (m.parent_email_on_token) parentEmailByAthlete.set(m.athlete_id, m.parent_email_on_token);
+        }
+      } catch { /* non-fatal */ }
 
       const out: Row[] = memberList.map((m: any) => {
         const c = byId.get(m.user_id);
@@ -90,10 +133,12 @@ export default function CoachConsents() {
           granted_by_relation: c?.granted_by_relation ?? null,
           policy_version: c?.policy_version ?? null,
           is_minor: isMinor,
+          parent_email_on_token: parentEmailByAthlete.get(m.user_id) ?? null,
         };
       });
 
       out.sort((a, b) => a.display_name.localeCompare(b.display_name));
+
       if (!cancelled) { setRows(out); setLoading(false); }
     })();
     return () => { cancelled = true; };
@@ -222,6 +267,7 @@ export default function CoachConsents() {
                   <TableHead>{t("consentsColApprover")}</TableHead>
                   <TableHead>{t("consentsColDate")}</TableHead>
                   <TableHead>{t("consentsColStatus")}</TableHead>
+                  <TableHead className="text-right">{t("consentsColAction")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -253,8 +299,38 @@ export default function CoachConsents() {
                       {fmtDate(r.granted_at, locale)}
                     </TableCell>
                     <TableCell><StatusBadge s={r.status} /></TableCell>
+                    <TableCell className="text-right">
+                      {r.status !== "granted" && r.is_minor ? (
+                        <div className="flex items-center gap-2 justify-end">
+                          <Input
+                            type="email"
+                            inputMode="email"
+                            placeholder={t("parentEmailPlaceholder")}
+                            value={emailDrafts[r.athlete_id] ?? r.parent_email_on_token ?? ""}
+                            onChange={(e) =>
+                              setEmailDrafts((d) => ({ ...d, [r.athlete_id]: e.target.value }))
+                            }
+                            className="h-8 text-xs w-48"
+                          />
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-8"
+                            onClick={() => sendParentRequest(r)}
+                            disabled={sendingId === r.athlete_id}
+                            title={t("consentSendParentBtn")}
+                          >
+                            <Mail className="h-3.5 w-3.5 mr-1" />
+                            {sendingId === r.athlete_id ? t("consentSendingParent") : t("consentsRemindBtn")}
+                          </Button>
+                        </div>
+                      ) : (
+                        <span className="text-muted-foreground">—</span>
+                      )}
+                    </TableCell>
                   </TableRow>
                 ))}
+
               </TableBody>
             </Table>
           )}
