@@ -41,7 +41,7 @@ function fmtDate(iso: string | null, locale: string) {
 
 export default function CoachConsents() {
   const navigate = useNavigate();
-  const { t, language } = useLanguage();
+  const { t, locale } = useLanguage();
   const { activeClubId, activeMembership } = useActiveClub();
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState<Row[]>([]);
