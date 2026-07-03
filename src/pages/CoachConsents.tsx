@@ -132,7 +132,7 @@ export default function CoachConsents() {
         esc(r.granted_by_email || ""),
         esc(r.granted_by_relation === "self" ? t("consentsRelationSelf")
               : r.granted_by_relation === "parent" ? t("consentsRelationParent") : ""),
-        esc(fmtDate(r.granted_at, language)),
+        esc(fmtDate(r.granted_at, locale)),
         esc(
           r.status === "granted" ? t("consentsStatusGranted")
           : r.status === "withdrawn" ? t("consentsStatusWithdrawn")
@@ -250,7 +250,7 @@ export default function CoachConsents() {
                       ) : <span className="text-muted-foreground">—</span>}
                     </TableCell>
                     <TableCell title={r.policy_version ? `${t("consentPolicyVersion")}: ${r.policy_version}` : undefined}>
-                      {fmtDate(r.granted_at, language)}
+                      {fmtDate(r.granted_at, locale)}
                     </TableCell>
                     <TableCell><StatusBadge s={r.status} /></TableCell>
                   </TableRow>
