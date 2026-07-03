@@ -160,6 +160,7 @@ const AnimatedRoutes = () => {
         <Route path="/admin/clubs" element={<Page><AdminClubs /></Page>} />
         <Route path="/admin/drills" element={<Page><AdminDrills /></Page>} />
         <Route path="/coach" element={<Page><CoachDashboard /></Page>} />
+        <Route path="/coach/consents" element={<Page><CoachConsents /></Page>} />
         <Route path="/coach/today" element={<Page><CoachToday /></Page>} />
         <Route path="/coach/messages" element={<Page><CoachMessages /></Page>} />
         <Route path="/coach/mental" element={<Page><CoachMentalReview /></Page>} />
