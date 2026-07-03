@@ -546,10 +546,9 @@ export default function Dashboard() {
         navigate("/onboarding");
         return;
       }
-      if (!profileData.club_id) {
-        navigate("/profile-setup");
-        return;
-      }
+      // Solo athletes (no club_id) are allowed on the dashboard. They can join a
+      // club later from /profile via the invite-code card. Previously this
+      // redirected to /profile-setup and looped forever.
       if (profileData && (profileData as any).age == null && profileData?.birth_date) {
         const bd = new Date(profileData.birth_date);
         const today = new Date();

@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -31,6 +32,7 @@ interface ProfileData {
   display_name: string | null;
   avatar_url: string | null;
   discipline: string | null;
+  club_id: string | null;
   club_name: string | null;
   roles: string[] | null;
   birth_date: string | null;
@@ -126,6 +128,7 @@ export default function Profile() {
         display_name: p?.display_name ?? null,
         avatar_url: p?.avatar_url ?? null,
         discipline: p?.discipline ?? null,
+        club_id: p?.club_id ?? null,
         club_name: p?.clubs?.name ?? p?.coach_club_name ?? null,
         roles: p?.roles ?? null,
         birth_date: p?.birth_date ?? null,
@@ -173,15 +176,36 @@ export default function Profile() {
       if (!(res as any)?.ok) throw new Error((res as any)?.error || "error");
       toast.success(t("privacyConsentWithdrawDone" as any));
       setWithdrawOpen(false);
-      // Re-evaluating ConsentGate happens on next auth event / route change;
-      // a soft reload guarantees the gate immediately shows the consent screen
-      // again so health-sync stays blocked until consent is given anew.
       setTimeout(() => window.location.reload(), 400);
     } catch (e: any) {
       console.error("withdraw consent failed", e);
       toast.error(e?.message || t("privacyConsentWithdrawFailed" as any));
     } finally {
       setWithdrawing(false);
+    }
+  };
+
+  // Solo-athlete escape hatch: enter an invite code to join a club later.
+  const [inviteCode, setInviteCode] = useState("");
+  const [joining, setJoining] = useState(false);
+  const handleJoinClub = async () => {
+    const code = inviteCode.trim().toUpperCase();
+    if (!code) return;
+    setJoining(true);
+    try {
+      const { data: res, error } = await supabase.rpc("apply_invite_to_my_profile" as any, { _code: code });
+      if (error) throw error;
+      if (!(res as any)?.ok) {
+        toast.error(t("profileJoinClubInvalid" as any));
+        return;
+      }
+      toast.success(t("profileJoinClubSuccess" as any));
+      setTimeout(() => window.location.reload(), 400);
+    } catch (e: any) {
+      console.error("join club failed", e);
+      toast.error(t("profileJoinClubInvalid" as any));
+    } finally {
+      setJoining(false);
     }
   };
 
@@ -266,6 +290,35 @@ export default function Profile() {
             </div>
           </div>
         </div>
+
+        {/* Join a club (only for solo athletes without a club) */}
+        {!loading && !data?.club_id && (
+          <div className={cardCls}>
+            <h2 className={sectionTitleCls}>{t("profileJoinClubTitle" as any)}</h2>
+            <p className="text-sm text-white/80 mb-3">
+              {t("profileJoinClubDescription" as any)}
+            </p>
+            <div className="flex gap-2">
+              <Input
+                value={inviteCode}
+                onChange={(e) => setInviteCode(e.target.value)}
+                placeholder={t("profileJoinClubPlaceholder" as any)}
+                className="bg-white/5 border-white/10 text-white uppercase"
+                autoCapitalize="characters"
+                autoCorrect="off"
+                spellCheck={false}
+              />
+              <Button
+                onClick={handleJoinClub}
+                disabled={joining || !inviteCode.trim()}
+                style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
+              >
+                {t("profileJoinClubSubmit" as any)}
+              </Button>
+            </div>
+          </div>
+        )}
+
 
         {/* Sport & discipline */}
         <div className={cardCls}>
