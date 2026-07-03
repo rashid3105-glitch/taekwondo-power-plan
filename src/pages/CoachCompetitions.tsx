@@ -97,6 +97,7 @@ export default function CoachCompetitions() {
   const [saving, setSaving] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [reloadTick, setReloadTick] = useState(0);
 
   useEffect(() => {
     (async () => {
@@ -179,7 +180,7 @@ export default function CoachCompetitions() {
       }
       setLoading(false);
     })();
-  }, [activeClubId]);
+  }, [activeClubId, reloadTick]);
 
   const today = new Date().toISOString().slice(0, 10);
 
@@ -448,9 +449,7 @@ export default function CoachCompetitions() {
           <CoachBulkCreateCompetitionDialog
             athletes={myAthletes.map((a) => ({ user_id: a.user_id, display_name: a.display_name }))}
             onCreated={async () => {
-              // Re-fetch by re-triggering effect via bumping a state — simplest: call reload
-              const evt = new Event("focus");
-              window.dispatchEvent(evt);
+              setReloadTick((t) => t + 1);
             }}
           />
         </div>

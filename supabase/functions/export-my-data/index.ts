@@ -35,7 +35,7 @@ const OWN_DATA: Array<{ table: string; column: string }> = [
   { table: "recipe_photo_overrides", column: "user_id" },
   { table: "athlete_achievements", column: "user_id" },
   { table: "athlete_highlight_videos", column: "user_id" },
-  { table: "athlete_module_overrides", column: "athlete_id" },
+  { table: "athlete_module_overrides", column: "user_id" },
   { table: "athlete_modules", column: "athlete_id" },
   { table: "athlete_week_technique_focus", column: "athlete_id" },
   { table: "notification_preferences", column: "user_id" },
