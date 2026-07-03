@@ -532,6 +532,9 @@ export default function CoachDashboard() {
                 </>
               )}
 
+              {coachClubId && <TeamWeeklyScheduleCard clubId={coachClubId} />}
+              {coachClubId && <ClubActivityTypesCard clubId={coachClubId} />}
+
               {/* Club Members (read-only) — split into athletes and coaches, foldable */}
               {clubAthletes.length > 0 && (() => {
                 const memberAthletes = clubAthletes.filter((m) => !m.is_coach);
