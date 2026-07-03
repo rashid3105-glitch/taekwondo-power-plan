@@ -267,6 +267,7 @@ export default function CoachConsents() {
                   <TableHead>{t("consentsColApprover")}</TableHead>
                   <TableHead>{t("consentsColDate")}</TableHead>
                   <TableHead>{t("consentsColStatus")}</TableHead>
+                  <TableHead className="text-right">{t("consentsColAction")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -298,8 +299,38 @@ export default function CoachConsents() {
                       {fmtDate(r.granted_at, locale)}
                     </TableCell>
                     <TableCell><StatusBadge s={r.status} /></TableCell>
+                    <TableCell className="text-right">
+                      {r.status !== "granted" && r.is_minor ? (
+                        <div className="flex items-center gap-2 justify-end">
+                          <Input
+                            type="email"
+                            inputMode="email"
+                            placeholder={t("parentEmailPlaceholder")}
+                            value={emailDrafts[r.athlete_id] ?? r.parent_email_on_token ?? ""}
+                            onChange={(e) =>
+                              setEmailDrafts((d) => ({ ...d, [r.athlete_id]: e.target.value }))
+                            }
+                            className="h-8 text-xs w-48"
+                          />
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-8"
+                            onClick={() => sendParentRequest(r)}
+                            disabled={sendingId === r.athlete_id}
+                            title={t("consentSendParentBtn")}
+                          >
+                            <Mail className="h-3.5 w-3.5 mr-1" />
+                            {sendingId === r.athlete_id ? t("consentSendingParent") : t("consentsRemindBtn")}
+                          </Button>
+                        </div>
+                      ) : (
+                        <span className="text-muted-foreground">—</span>
+                      )}
+                    </TableCell>
                   </TableRow>
                 ))}
+
               </TableBody>
             </Table>
           )}
