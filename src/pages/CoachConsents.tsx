@@ -28,7 +28,9 @@ type Row = {
   granted_by_relation: "self" | "parent" | null;
   policy_version: string | null;
   is_minor: boolean;
+  parent_email_on_token: string | null;
 };
+
 
 function fmtDate(iso: string | null, locale: string) {
   if (!iso) return "—";
