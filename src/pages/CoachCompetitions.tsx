@@ -449,9 +449,7 @@ export default function CoachCompetitions() {
           <CoachBulkCreateCompetitionDialog
             athletes={myAthletes.map((a) => ({ user_id: a.user_id, display_name: a.display_name }))}
             onCreated={async () => {
-              // Re-fetch by re-triggering effect via bumping a state — simplest: call reload
-              const evt = new Event("focus");
-              window.dispatchEvent(evt);
+              setReloadTick((t) => t + 1);
             }}
           />
         </div>
