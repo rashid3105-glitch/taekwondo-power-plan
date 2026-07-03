@@ -169,6 +169,15 @@ export default function Dashboard() {
       return raw ? JSON.parse(raw) : DEFAULT_PINS;
     } catch { return DEFAULT_PINS; }
   });
+  const [profileSummaryOpen, setProfileSummaryOpen] = useState(() => {
+    try {
+      return localStorage.getItem("dashboard_profile_summary_open") !== "false";
+    } catch { return true; }
+  });
+  const toggleProfileSummary = (open: boolean) => {
+    setProfileSummaryOpen(open);
+    try { localStorage.setItem("dashboard_profile_summary_open", String(open)); } catch { /* ignore */ }
+  };
   const savePins = (keys: string[]) => {
     setPinnedKeys(keys);
     try { localStorage.setItem("hub_pinned_modules", JSON.stringify(keys)); } catch { /* ignore */ }
