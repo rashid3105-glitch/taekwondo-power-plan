@@ -176,15 +176,36 @@ export default function Profile() {
       if (!(res as any)?.ok) throw new Error((res as any)?.error || "error");
       toast.success(t("privacyConsentWithdrawDone" as any));
       setWithdrawOpen(false);
-      // Re-evaluating ConsentGate happens on next auth event / route change;
-      // a soft reload guarantees the gate immediately shows the consent screen
-      // again so health-sync stays blocked until consent is given anew.
       setTimeout(() => window.location.reload(), 400);
     } catch (e: any) {
       console.error("withdraw consent failed", e);
       toast.error(e?.message || t("privacyConsentWithdrawFailed" as any));
     } finally {
       setWithdrawing(false);
+    }
+  };
+
+  // Solo-athlete escape hatch: enter an invite code to join a club later.
+  const [inviteCode, setInviteCode] = useState("");
+  const [joining, setJoining] = useState(false);
+  const handleJoinClub = async () => {
+    const code = inviteCode.trim().toUpperCase();
+    if (!code) return;
+    setJoining(true);
+    try {
+      const { data: res, error } = await supabase.rpc("apply_invite_to_my_profile" as any, { _code: code });
+      if (error) throw error;
+      if (!(res as any)?.ok) {
+        toast.error(t("profileJoinClubInvalid" as any));
+        return;
+      }
+      toast.success(t("profileJoinClubSuccess" as any));
+      setTimeout(() => window.location.reload(), 400);
+    } catch (e: any) {
+      console.error("join club failed", e);
+      toast.error(t("profileJoinClubInvalid" as any));
+    } finally {
+      setJoining(false);
     }
   };
 
