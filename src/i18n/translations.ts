@@ -19725,5 +19725,11 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   coachSuperadminAllClubs: "Superadministrador ACTIVO — cambia de club en el selector para ver atletas de otros clubes",
   coachNoAthletesInClub: "0 atletas en este club",
   coachSwitchClubHint: "Cambia de club para ver atletas de otros clubes",
+  profileJoinClubTitle: "Unirse a un club",
+  profileJoinClubDescription: "¿Tienes un código de invitación de tu entrenador? Introdúcelo abajo para unirte al club.",
+  profileJoinClubPlaceholder: "Código de invitación",
+  profileJoinClubSubmit: "Unirse",
+  profileJoinClubSuccess: "Te has unido al club.",
+  profileJoinClubInvalid: "El código no es válido o ha caducado.",
 };
 export default translations;
