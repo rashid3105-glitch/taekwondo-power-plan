@@ -300,7 +300,7 @@ export default function CoachConsents() {
                     </TableCell>
                     <TableCell><StatusBadge s={r.status} /></TableCell>
                     <TableCell className="text-right">
-                      {r.status !== "granted" && r.is_minor ? (
+                      {r.is_minor ? (
                         <div className="flex items-center gap-2 justify-end">
                           <Input
                             type="email"
@@ -321,7 +321,11 @@ export default function CoachConsents() {
                             title={t("consentSendParentBtn")}
                           >
                             <Mail className="h-3.5 w-3.5 mr-1" />
-                            {sendingId === r.athlete_id ? t("consentSendingParent") : t("consentsRemindBtn")}
+                            {sendingId === r.athlete_id
+                              ? t("consentSendingParent")
+                              : r.parent_email_on_token || r.status === "granted"
+                                ? t("consentsResendBtn")
+                                : t("consentsRemindBtn")}
                           </Button>
                         </div>
                       ) : (

@@ -402,38 +402,6 @@ export function SquadOverview({
                         <TooltipContent side="left">{t("diary")}</TooltipContent>
                       </Tooltip>
                     )}
-                    {canRemove && (
-                      <AlertDialog>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <AlertDialogTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 text-destructive hover:bg-destructive/10"
-                                title={t("remove")}
-                                aria-label={t("remove")}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </AlertDialogTrigger>
-                          </TooltipTrigger>
-                          <TooltipContent side="left">{t("remove")}</TooltipContent>
-                        </Tooltip>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>{t("remove")}</AlertDialogTitle>
-                            <AlertDialogDescription>{r.display_name}</AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => onRemove?.(r.user_id)}>
-                              {t("remove")}
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    )}
 
 
                   </div>
