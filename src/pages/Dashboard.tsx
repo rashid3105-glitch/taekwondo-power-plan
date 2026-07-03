@@ -1228,55 +1228,70 @@ export default function Dashboard() {
             <BackToHub onBack={() => handleTabChange("hub")} label={t("back") || "Back"} />
             {/* Profile summary */}
             {profile && (
-              <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
-                  <div className="flex items-center gap-3">
-                    {profile.avatar_url ? (
-                      <AvatarImg avatarUrl={profile.avatar_url} className="h-10 w-10 sm:h-12 sm:w-12 rounded-full object-cover border-2 border-border flex-shrink-0" fallbackClassName="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-muted flex items-center justify-center border-2 border-border flex-shrink-0" />
-                    ) : (
-                      <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-muted flex items-center justify-center border-2 border-border flex-shrink-0">
-                        <User className="h-5 w-5 text-muted-foreground" />
-                      </div>
-                    )}
-                    <div>
-                      {profile.athlete_code && (
-                        <p className="text-[10px] text-muted-foreground font-mono">{t("yourAthleteCode")}: {profile.athlete_code}</p>
-                      )}
-                      {clubName && (
-                        <p className="text-xs text-muted-foreground mt-1">{t("club")}: <span className="text-foreground font-medium">{clubName}</span></p>
-                      )}
-                      <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-2">
-                        {profile.belt_level && (
-                          <span className="text-[10px] sm:text-xs bg-muted text-muted-foreground px-2 py-0.5 sm:py-1 rounded-full capitalize">
-                            {profile.belt_level} {t("belt")}
-                          </span>
-                        )}
-                        {profile.age && (
-                          <span className="text-[10px] sm:text-xs bg-muted text-muted-foreground px-2 py-0.5 sm:py-1 rounded-full">
-                            {profile.age}y
-                          </span>
-                        )}
-                        {profile.weight_kg && (
-                          <span className="text-[10px] sm:text-xs bg-muted text-muted-foreground px-2 py-0.5 sm:py-1 rounded-full">
-                            {profile.weight_kg}kg
-                          </span>
-                        )}
-                        <span className="text-[10px] sm:text-xs bg-muted text-muted-foreground px-2 py-0.5 sm:py-1 rounded-full">
-                          {profile.tkd_sessions_per_week}x {t("tkdPerWeek")}
-                        </span>
-                      </div>
-                      {profile.goals?.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-2">
-                          {profile.goals.map((g) => (
-                            <span key={g} className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                              {t(g) || g}
-                            </span>
-                          ))}
+              <Collapsible open={profileSummaryOpen} onOpenChange={toggleProfileSummary} className="rounded-xl border border-border bg-card shadow-card">
+                <div className="p-3 sm:p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      {profile.avatar_url ? (
+                        <AvatarImg avatarUrl={profile.avatar_url} className="h-9 w-9 sm:h-10 sm:w-10 rounded-full object-cover border-2 border-border flex-shrink-0" fallbackClassName="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-muted flex items-center justify-center border-2 border-border flex-shrink-0" />
+                      ) : (
+                        <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-muted flex items-center justify-center border-2 border-border flex-shrink-0">
+                          <User className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
                         </div>
                       )}
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-foreground truncate">{profile.display_name || t("profile")}</p>
+                        {profile.athlete_code && (
+                          <p className="text-[10px] text-muted-foreground font-mono truncate">{t("yourAthleteCode")}: {profile.athlete_code}</p>
+                        )}
+                      </div>
                     </div>
+                    <CollapsibleTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 flex-shrink-0"
+                        title={profileSummaryOpen ? t("collapse") : t("expand")}
+                      >
+                        {profileSummaryOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                      </Button>
+                    </CollapsibleTrigger>
                   </div>
-                  <div className="flex flex-col items-end gap-1 w-full sm:w-auto">
+                </div>
+                <CollapsibleContent>
+                  <div className="px-3 sm:px-4 pb-3 sm:pb-4 space-y-3">
+                    {clubName && (
+                      <p className="text-xs text-muted-foreground">{t("club")}: <span className="text-foreground font-medium">{clubName}</span></p>
+                    )}
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                      {profile.belt_level && (
+                        <span className="text-[10px] sm:text-xs bg-muted text-muted-foreground px-2 py-0.5 sm:py-1 rounded-full capitalize">
+                          {profile.belt_level} {t("belt")}
+                        </span>
+                      )}
+                      {profile.age && (
+                        <span className="text-[10px] sm:text-xs bg-muted text-muted-foreground px-2 py-0.5 sm:py-1 rounded-full">
+                          {profile.age}y
+                        </span>
+                      )}
+                      {profile.weight_kg && (
+                        <span className="text-[10px] sm:text-xs bg-muted text-muted-foreground px-2 py-0.5 sm:py-1 rounded-full">
+                          {profile.weight_kg}kg
+                        </span>
+                      )}
+                      <span className="text-[10px] sm:text-xs bg-muted text-muted-foreground px-2 py-0.5 sm:py-1 rounded-full">
+                        {profile.tkd_sessions_per_week}x {t("tkdPerWeek")}
+                      </span>
+                    </div>
+                    {profile.goals?.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {profile.goals.map((g) => (
+                          <span key={g} className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                            {t(g) || g}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                     <div className="flex items-center gap-2 w-full sm:w-auto">
                       <Button
                         variant="outline"
@@ -1295,13 +1310,13 @@ export default function Dashboard() {
                       </Button>
                     </div>
                     {isCoach && (
-                      <p className="text-[11px] text-muted-foreground text-right max-w-xs">
+                      <p className="text-[11px] text-muted-foreground max-w-xs">
                         {t("coachSelfPlanNote")}
                       </p>
                     )}
                   </div>
-                </div>
-              </div>
+                </CollapsibleContent>
+              </Collapsible>
             )}
 
             {/* Offline notice when there's no usable plan */}
