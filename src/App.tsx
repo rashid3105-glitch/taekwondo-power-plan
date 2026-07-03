@@ -41,6 +41,7 @@ import PendingApproval from "./pages/PendingApproval";
 import AdminApproval from "./pages/AdminApproval";
 import AdminModuleAccess from "./pages/AdminModuleAccess";
 import CoachDashboard from "./pages/CoachDashboard";
+import CoachConsents from "./pages/CoachConsents";
 import CoachToday from "./pages/CoachToday";
 import CoachMessages from "./pages/CoachMessages";
 import CoachMentalReview from "./pages/CoachMentalReview";
