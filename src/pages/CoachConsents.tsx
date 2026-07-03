@@ -51,7 +51,34 @@ export default function CoachConsents() {
   const [rows, setRows] = useState<Row[]>([]);
   const [filter, setFilter] = useState<Filter>("all");
   const [search, setSearch] = useState("");
+  const [emailDrafts, setEmailDrafts] = useState<Record<string, string>>({});
+  const [sendingId, setSendingId] = useState<string | null>(null);
   const clubName = (activeMembership as any)?.club?.name || (activeMembership as any)?.clubs?.name || "";
+
+  async function sendParentRequest(row: Row) {
+    const email = (emailDrafts[row.athlete_id] ?? row.parent_email_on_token ?? "").trim();
+    if (!email) { toast.error(t("consentParentRequestFailed")); return; }
+    setSendingId(row.athlete_id);
+    const { data, error } = await supabase.functions.invoke("consent-coach-actions", {
+      body: {
+        action: "send_parent_request",
+        athlete_id: row.athlete_id,
+        parent_email: email,
+        ...(activeClubId ? { club_id: activeClubId } : {}),
+      },
+    });
+    setSendingId(null);
+    if (error || !(data as any)?.ok || !(data as any)?.queued) {
+      toast.error(t("consentParentRequestFailed"));
+      return;
+    }
+    toast.success(t("consentParentRequestSent"));
+    setRows((rs) => rs.map((r) =>
+      r.athlete_id === row.athlete_id ? { ...r, parent_email_on_token: email } : r,
+    ));
+    setEmailDrafts((d) => ({ ...d, [row.athlete_id]: "" }));
+  }
+
 
   useEffect(() => {
     let cancelled = false;
