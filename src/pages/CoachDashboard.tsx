@@ -431,6 +431,9 @@ export default function CoachDashboard() {
             {/* Action buttons (previously in tab header) */}
             <div className="flex items-center gap-2 flex-wrap justify-end">
               <ConsentMissingButton />
+              <Button variant="outline" size="sm" onClick={() => navigate("/coach/consents")}>
+                {t("consentsPageTitle")}
+              </Button>
               {coachUserId && (
                 <AthleteAddMenu
                   coachId={coachUserId}
