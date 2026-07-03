@@ -73,6 +73,18 @@ export default function CoachConsents() {
       const byId = new Map<string, any>();
       (consents || []).forEach((c: any) => byId.set(c.athlete_id, c));
 
+      // Parent-email hints from previously issued consent tokens (minor athletes)
+      const parentEmailByAthlete = new Map<string, string>();
+      try {
+        const { data: missingData } = await supabase.functions.invoke("consent-coach-actions", {
+          body: { action: "list_missing", club_id: activeClubId },
+        });
+        const missing = (missingData as any)?.missing || [];
+        for (const m of missing) {
+          if (m.parent_email_on_token) parentEmailByAthlete.set(m.athlete_id, m.parent_email_on_token);
+        }
+      } catch { /* non-fatal */ }
+
       const out: Row[] = memberList.map((m: any) => {
         const c = byId.get(m.user_id);
         const age = effectiveAge(m.birth_date ?? null, m.age ?? null);
@@ -94,10 +106,12 @@ export default function CoachConsents() {
           granted_by_relation: c?.granted_by_relation ?? null,
           policy_version: c?.policy_version ?? null,
           is_minor: isMinor,
+          parent_email_on_token: parentEmailByAthlete.get(m.user_id) ?? null,
         };
       });
 
       out.sort((a, b) => a.display_name.localeCompare(b.display_name));
+
       if (!cancelled) { setRows(out); setLoading(false); }
     })();
     return () => { cancelled = true; };
