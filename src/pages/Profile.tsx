@@ -291,6 +291,35 @@ export default function Profile() {
           </div>
         </div>
 
+        {/* Join a club (only for solo athletes without a club) */}
+        {!loading && !data?.club_id && (
+          <div className={cardCls}>
+            <h2 className={sectionTitleCls}>{t("profileJoinClubTitle" as any)}</h2>
+            <p className="text-sm text-white/80 mb-3">
+              {t("profileJoinClubDescription" as any)}
+            </p>
+            <div className="flex gap-2">
+              <Input
+                value={inviteCode}
+                onChange={(e) => setInviteCode(e.target.value)}
+                placeholder={t("profileJoinClubPlaceholder" as any)}
+                className="bg-white/5 border-white/10 text-white uppercase"
+                autoCapitalize="characters"
+                autoCorrect="off"
+                spellCheck={false}
+              />
+              <Button
+                onClick={handleJoinClub}
+                disabled={joining || !inviteCode.trim()}
+                style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
+              >
+                {t("profileJoinClubSubmit" as any)}
+              </Button>
+            </div>
+          </div>
+        )}
+
+
         {/* Sport & discipline */}
         <div className={cardCls}>
           <h2 className={sectionTitleCls}>{t("profileSportDiscipline" as any)}</h2>
