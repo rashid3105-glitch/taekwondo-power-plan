@@ -32,6 +32,7 @@ interface ProfileData {
   display_name: string | null;
   avatar_url: string | null;
   discipline: string | null;
+  club_id: string | null;
   club_name: string | null;
   roles: string[] | null;
   birth_date: string | null;
