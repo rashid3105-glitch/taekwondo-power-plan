@@ -443,8 +443,6 @@ export default function CoachDashboard() {
               )}
             </div>
 
-            {coachClubId && <TeamWeeklyScheduleCard clubId={coachClubId} />}
-            {coachClubId && <ClubActivityTypesCard clubId={coachClubId} />}
 
             {/* Coach mental review entry — only shown when monthly check-in is due */}
             {coachMentalDue && (
