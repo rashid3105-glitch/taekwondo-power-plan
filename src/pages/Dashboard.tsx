@@ -11,6 +11,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { EventRemindersDropdown } from "@/components/EventRemindersDropdown";
 // MessagesIcon removed: chat is now a global floating button
 import { AvatarImg } from "@/components/AvatarImg";
@@ -44,7 +45,7 @@ import { SplashScreen } from "@/components/SplashScreen";
 import { RecoveryTile } from "@/components/RecoveryTile";
 import { ReflectionPromptCard } from "@/components/ReflectionPromptCard";
 import { EnablePasskeyCard } from "@/components/EnablePasskeyCard";
-import { Calendar as CalendarIcon, Sparkles, ArrowLeft, ChevronRight } from "lucide-react";
+import { Calendar as CalendarIcon, Sparkles, ArrowLeft, ChevronRight, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEntitlements, useAthleteModuleAccess } from "@/hooks/useEntitlements";
 import type { LockedModule } from "@/lib/entitlements";
