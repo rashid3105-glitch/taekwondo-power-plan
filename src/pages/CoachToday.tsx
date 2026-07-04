@@ -105,7 +105,7 @@ export default function CoachToday() {
               aria-label={t("attendanceStats")}
               title={t("attendanceStats")}
             >
-              <span className="hidden sm:inline text-base font-extrabold text-card-foreground">{t("attendanceStats")}</span>
+              <span className="text-sm sm:text-base font-extrabold text-card-foreground">{t("attendanceStats")}</span>
               <BarChart3 className="h-5 w-5" />
             </Button>
           </div>
