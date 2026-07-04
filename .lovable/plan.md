@@ -1,61 +1,61 @@
 ## Mål
-Ny side der viser alle **samtykker** i klubben — både voksne (self) og børn under 18 (parent) — så coachen kan dokumentere GDPR-grundlaget.
 
-## Mockup (layout)
+Gennemgå hele hjælpecentret (`src/pages/Help.tsx`) og bringe det op til dato med systemet, som det ser ud i dag. Alle tekster leveres på **da, en, sv, de, ar, no, es**.
 
-```text
-┌─────────────────────────────────────────────────────────────────────┐
-│  ← Tilbage                                                          │
-│  Samtykker · Copenhagen City                            [Eksport CSV]│
-│  42 aktive · 3 tilbagetrukket · 5 mangler                           │
-├─────────────────────────────────────────────────────────────────────┤
-│  [Alle] [Voksne] [Under 18] [Mangler]      🔎 Søg navn…             │
-├─────────────────────────────────────────────────────────────────────┤
-│  Atlet              Type      Godkendt af           Dato       Status│
-│  ─────────────────────────────────────────────────────────────────── │
-│  Adam Nielsen       Voksen    Adam Nielsen (selv)   03-07-2026  ●   │
-│  Liva Sørensen (14) Forælder  mor@mail.dk (forældre)28-06-2026  ●   │
-│  Noah Berg (12)     Forælder  —                     —           ⚠   │
-│  Sara Holm          Voksen    Sara Holm (selv)      12-05-2026 ⊘tilbage│
-│  …                                                                  │
-└─────────────────────────────────────────────────────────────────────┘
-● Aktiv    ⚠ Mangler    ⊘ Tilbagetrukket
-```
+## Nuværende tilstand
 
-Kolonner:
-- **Atlet** — navn (+ alder hvis under 18)
-- **Type** — Voksen (self) / Forælder (parent)
-- **Godkendt af** — `granted_by_email` + `granted_by_relation` (selv / forældre); tom hvis mangler
-- **Dato** — `granted_at` formateret dansk
-- **Status** — badge: aktiv / mangler / tilbagetrukket · policy-version som tooltip
+- 23 hjælpe-emner fordelt på 5 sektioner (Training / Health / Mental / Coach / Account).
+- Ca. 282 `Title` + `Steps` nøgler i `src/i18n/translations.ts` × 7 sprog.
+- Changelog stopper ved 2026-07-02 (`v1.2.9`). Sidste ~4 måneders arbejde er ikke dokumenteret.
 
-Øverst tællere + filterknapper + søgning. Eksport CSV-knap (navn, type, email, relation, dato, status, policy).
+## Del 1 — Audit af eksisterende emner
 
-## Adgang
-- Ny rute `/coach/consents`
-- Ny knap på **CoachDashboard** ved siden af `ConsentMissingButton` (linje 433): "Samtykker" (shield-icon, outline). "Mangler"-knappen forbliver som hurtig-adgang til de manglende.
+For hvert af de 23 emner læses den nuværende `helpXxxSteps` tekst og sammenholdes med den faktiske UI/flow. Rettelser omfatter:
 
-## Data
-Én query pr. klub (RLS tillader allerede coach-læsning):
-```sql
-select cr.athlete_id, cr.status, cr.granted_at, cr.granted_by_email,
-       cr.granted_by_relation, cr.policy_version, cr.withdrawn_at,
-       p.display_name, p.birth_date, p.age
-from consent_records cr
-join profiles p on p.user_id = cr.athlete_id
-where cr.club_id = :club_id
-  and cr.consent_type = 'health_data_processing';
-```
-+ liste af klubmedlemmer der **ikke** har nogen række → vises som "Mangler".
+- Forældede menu- og knapnavne (fx efter at "Fremmøde-rapport" er flyttet ind i "Dagens træning", trash-ikonet er flyttet fra dashboard til atlet-detalje, samtykke-flow med genudsend osv.).
+- Nye trin/valg der er kommet til (fx wearables recovery-trends, kostplan manuel indtastning, coach mental review, klub-landing, superadmin-flow).
+- Fjernelse af omtale af features der ikke længere findes.
+- Konsistent tone og ordvalg (dansk primær, oversat direkte).
 
-Alder beregnes klient-side via eksisterende `effectiveAge()`. Ingen migrations eller edge-functions nødvendige.
+Emner der ganske sikkert skal redigeres: `helpProfile`, `helpTrainingPlan`, `helpSeasonPlan`, `helpSeasonCalendar`, `helpWearables`, `helpCoachFeedback`, `helpMatchAnalysis`, `helpMatchReport`, `helpProgress`, `helpNutrition`, `helpRehabPlan`, `helpMentalPlan`, `helpDiary`, `helpReflection`, `helpAddStudents`, `helpStudentProgress`, `helpChat`, `helpWeeklyReport`, `helpParentPortal`, `helpRoles`, `helpRoleSwitcher`, `helpLibrary`, `helpPhysicalTesting`.
 
-## Filer
-- **Ny**: `src/pages/CoachConsents.tsx` — side (tabel, filtre, søg, CSV-eksport)
-- **Ret**: `src/App.tsx` — rute `/coach/consents`
-- **Ret**: `src/pages/CoachDashboard.tsx` — tilføj "Samtykker"-knap ved siden af `ConsentMissingButton`
-- **Ret**: `src/i18n/translations.ts` — nye nøgler i alle 7 sprog (titel, kolonner, filtre, statuslabels, CSV-headers, tom-state)
+## Del 2 — Nye emner der skal tilføjes
 
-## Ikke inkluderet (spørg hvis ønsket)
-- Handlingsknapper (send påmindelse, tilbagetræk) — findes allerede i `ConsentMissingPanel`
-- Historik/audit-log ud over nuværende `granted_at` / `withdrawn_at`
+| Nøgle | Sektion | Dækker |
+|---|---|---|
+| `helpConsents` | Coach | Samtykke-oversigt: status pr. atlet, send til forælder (mindreårig), send til atlet selv (voksen), genudsend, udløb af tokens. |
+| `helpAttendance` | Coach | Dagens træning: markering af fremmøde, skadet-status, fremmøde-rapport-knappen (`BarChart3`), statistik-dialogen. |
+| `helpDeleteAthlete` | Coach | Sletning af atlet fra atlet-detaljesiden inkl. bekræftelsesdialog og hvad der slettes/beholdes. |
+| `helpCoachMentalReview` | Mental | Månedlig coach-mental vurdering, hvorfor og hvordan. |
+| `helpSubscription` | Account | Abonnement, planer, valuta, ændring/opsigelse, betalings-status. |
+| `helpSecurity` | Account | Adgangskode, passkey/biometri, log ud af alle enheder. |
+| `helpDeleteAccount` | Account | Slet egen konto, hvad slettes, GDPR. |
+| `helpNotifications` | Account | Push-notifikationer, e-mails, afmelding via `/unsubscribe`. |
+
+Hver nøgle får `Title` + `Steps` i `translations.ts` på alle 7 sprog, indekseres i `TOPICS`, `SECTIONS` opdateres, og alle får `isNew: true` (eksisterende `isNew` flag som er >30 dage gamle fjernes samtidig så badgen ikke bliver meningsløs).
+
+## Del 3 — Changelog
+
+Tilføjes øverst i `CHANGELOG`-arrayet (nyeste først). Nye datoer dækker perioden 2026-07-03 → i dag med korte oneliners for:
+
+- Fremmøde-rapport-knap flyttet ind i "Dagens træning".
+- Coach-samtykke-side med send/genudsend for forældre og voksne atleter.
+- Sletning af atlet nu kun fra atlet-detalje med bekræftelse.
+- Papirkurv skjult i dashboard-oversigten.
+- Evt. andre relevante commits fra perioden (tjekkes ved implementering).
+
+Bumpes til passende semver (patch pr. tweak, minor for ny samtykke-flow). Hver post får `build`-tag.
+
+## Del 4 — Tekniske detaljer
+
+- Alle nye nøgler tilføjes i `src/i18n/translations.ts` under samme mønster som eksisterende (`helpXxxTitle`, `helpXxxSteps`, `changelogEntryNNN`, `changelog_YYYY_MM_DD`).
+- Ingen ændringer til `Help.tsx`-layout eller komponenter — kun `TOPICS`, `SECTIONS.topics` og `CHANGELOG` arrays.
+- Ikoner genbruges fra allerede importerede `lucide-react` symboler; enkelte nye kan tilføjes til import-listen (fx `Shield`, `Bell`, `Trash2`, `CreditCard`).
+- Ingen backend-ændringer.
+- Verifikation: build/typecheck, plus stikprøve-visning af Help-siden på DA og EN.
+
+## Leverance
+
+- Opdateret `src/pages/Help.tsx` (topics + changelog arrays).
+- Opdateret `src/i18n/translations.ts` med alle nye/reviderede strings × 7 sprog.
+- Kort ændringsoversigt i svaret.

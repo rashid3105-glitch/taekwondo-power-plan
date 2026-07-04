@@ -6,6 +6,7 @@ import {
   UserCircle, ClipboardList, HeartPulse, Brain, Users, BarChart3, Clock, ChevronDown,
   Activity, Apple, TrendingUp, BookOpen, BookHeart, Download, Video, CalendarRange,
   MessageSquare, MessageCircle, NotebookPen, Search, X, Dumbbell, Heart, Sparkles, UserCog, Settings, FileText, ArrowLeft,
+  ShieldCheck, ClipboardCheck, Trash2, CreditCard, Lock, UserX, Bell,
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PublicNav } from "@/components/PublicNav";
@@ -20,34 +21,44 @@ type TopicKey =
   | "helpNutrition" | "helpRehabPlan" | "helpMentalPlan" | "helpLibrary" | "helpDiary"
   | "helpReflection" | "helpParentPortal"
   | "helpAddStudents" | "helpStudentProgress" | "helpChat" | "helpWeeklyReport"
-  | "helpRoles" | "helpRoleSwitcher";
+  | "helpRoles" | "helpRoleSwitcher"
+  | "helpConsents" | "helpAttendance" | "helpDeleteAthlete" | "helpCoachMentalReview"
+  | "helpSubscription" | "helpSecurity" | "helpDeleteAccount" | "helpNotifications";
 
 type Topic = { key: TopicKey; icon: typeof UserCircle; isNew?: boolean };
 
 const TOPICS: Record<TopicKey, Topic> = {
   helpProfile: { key: "helpProfile", icon: UserCircle },
-  helpSeasonPlan: { key: "helpSeasonPlan", icon: CalendarRange, isNew: true },
-  helpWearables: { key: "helpWearables", icon: NotebookPen, isNew: true },
-  helpCoachFeedback: { key: "helpCoachFeedback", icon: MessageSquare, isNew: true },
+  helpSeasonPlan: { key: "helpSeasonPlan", icon: CalendarRange },
+  helpWearables: { key: "helpWearables", icon: NotebookPen },
+  helpCoachFeedback: { key: "helpCoachFeedback", icon: MessageSquare },
   helpMatchAnalysis: { key: "helpMatchAnalysis", icon: Video },
-  helpMatchReport: { key: "helpMatchReport", icon: FileText, isNew: true },
+  helpMatchReport: { key: "helpMatchReport", icon: FileText },
   helpTrainingPlan: { key: "helpTrainingPlan", icon: ClipboardList },
-  helpPhysicalTesting: { key: "helpPhysicalTesting", icon: Activity, isNew: true },
+  helpPhysicalTesting: { key: "helpPhysicalTesting", icon: Activity },
   helpProgress: { key: "helpProgress", icon: TrendingUp },
   helpNutrition: { key: "helpNutrition", icon: Apple },
-  helpRehabPlan: { key: "helpRehabPlan", icon: HeartPulse, isNew: true },
+  helpRehabPlan: { key: "helpRehabPlan", icon: HeartPulse },
   helpMentalPlan: { key: "helpMentalPlan", icon: Brain },
   helpLibrary: { key: "helpLibrary", icon: BookOpen },
   helpDiary: { key: "helpDiary", icon: BookHeart },
-  helpReflection: { key: "helpReflection", icon: NotebookPen, isNew: true },
-  helpParentPortal: { key: "helpParentPortal", icon: Users, isNew: true },
+  helpReflection: { key: "helpReflection", icon: NotebookPen },
+  helpParentPortal: { key: "helpParentPortal", icon: Users },
   helpAddStudents: { key: "helpAddStudents", icon: Users },
   helpStudentProgress: { key: "helpStudentProgress", icon: BarChart3 },
-  helpChat: { key: "helpChat", icon: MessageCircle, isNew: true },
-  helpWeeklyReport: { key: "helpWeeklyReport", icon: FileText, isNew: true },
-  helpSeasonCalendar: { key: "helpSeasonCalendar", icon: CalendarRange, isNew: true },
-  helpRoles: { key: "helpRoles", icon: UserCircle, isNew: true },
-  helpRoleSwitcher: { key: "helpRoleSwitcher", icon: Settings, isNew: true },
+  helpChat: { key: "helpChat", icon: MessageCircle },
+  helpWeeklyReport: { key: "helpWeeklyReport", icon: FileText },
+  helpSeasonCalendar: { key: "helpSeasonCalendar", icon: CalendarRange },
+  helpRoles: { key: "helpRoles", icon: UserCircle },
+  helpRoleSwitcher: { key: "helpRoleSwitcher", icon: Settings },
+  helpConsents: { key: "helpConsents", icon: ShieldCheck, isNew: true },
+  helpAttendance: { key: "helpAttendance", icon: ClipboardCheck, isNew: true },
+  helpDeleteAthlete: { key: "helpDeleteAthlete", icon: UserX, isNew: true },
+  helpCoachMentalReview: { key: "helpCoachMentalReview", icon: Sparkles, isNew: true },
+  helpSubscription: { key: "helpSubscription", icon: CreditCard, isNew: true },
+  helpSecurity: { key: "helpSecurity", icon: Lock, isNew: true },
+  helpDeleteAccount: { key: "helpDeleteAccount", icon: Trash2, isNew: true },
+  helpNotifications: { key: "helpNotifications", icon: Bell, isNew: true },
 };
 
 type SectionDef = {
@@ -87,7 +98,7 @@ const SECTIONS: SectionDef[] = [
     chipBg: "bg-tab-mental",
     chipFg: "text-white",
     accent: "bg-tab-mental",
-    topics: ["helpMentalPlan", "helpDiary", "helpReflection"],
+    topics: ["helpMentalPlan", "helpDiary", "helpReflection", "helpCoachMentalReview"],
   },
   {
     id: "coach",
@@ -96,7 +107,7 @@ const SECTIONS: SectionDef[] = [
     chipBg: "bg-tab-progress",
     chipFg: "text-white",
     accent: "bg-tab-progress",
-    topics: ["helpAddStudents", "helpStudentProgress", "helpSeasonCalendar", "helpCoachFeedback", "helpChat", "helpWeeklyReport"],
+    topics: ["helpAddStudents", "helpAttendance", "helpConsents", "helpStudentProgress", "helpDeleteAthlete", "helpSeasonCalendar", "helpCoachFeedback", "helpChat", "helpWeeklyReport"],
   },
   {
     id: "account",
@@ -105,7 +116,7 @@ const SECTIONS: SectionDef[] = [
     chipBg: "bg-tab-nutrition",
     chipFg: "text-white",
     accent: "bg-tab-nutrition",
-    topics: ["helpProfile", "helpLibrary", "helpParentPortal", "helpRoles", "helpRoleSwitcher"],
+    topics: ["helpProfile", "helpLibrary", "helpParentPortal", "helpRoles", "helpRoleSwitcher", "helpNotifications", "helpSecurity", "helpSubscription", "helpDeleteAccount"],
   },
 ];
 
@@ -491,6 +502,7 @@ export default function Help() {
 // Build numbers start at v1.0.0 on 2026-05-29 (first build with semantic versioning).
 // MINOR bumps for new features, PATCH bumps for small tweaks/fixes. Older releases left unversioned.
 const CHANGELOG: { dateKey: string; entries: string[]; build?: string }[] = [
+  { dateKey: "changelog_2026_07_04", entries: ["changelogEntry162", "changelogEntry163", "changelogEntry164", "changelogEntry165", "changelogEntry166"], build: "v1.3.0" },
   { dateKey: "changelog_2026_07_02", entries: ["changelogEntry161"], build: "v1.2.9" },
   { dateKey: "changelog_2026_06_27", entries: ["changelogEntry160", "changelogEntry159", "changelogEntry158", "changelogEntry157"], build: "v1.2.8" },
   { dateKey: "changelog_2026_06_26", entries: ["changelogEntry156"], build: "v1.2.6" },
