@@ -98,16 +98,6 @@ export default function CoachToday() {
           <span className="text-base font-extrabold text-card-foreground">{t("todayTab")}</span>
           <div className="ml-auto flex items-center gap-2">
             <ClubSwitcher />
-            <Button
-              variant="ghost"
-              className="gap-2 px-2"
-              onClick={() => setStatsOpen(true)}
-              aria-label={t("attendanceStats")}
-              title={t("attendanceStats")}
-            >
-              <span className="text-sm sm:text-base font-extrabold text-card-foreground">{t("attendanceStats")}</span>
-              <BarChart3 className="h-5 w-5" />
-            </Button>
           </div>
         </div>
       </header>
@@ -122,7 +112,7 @@ export default function CoachToday() {
           <span className="inline-flex items-center gap-1"><HeartCrack className="h-3.5 w-3.5 text-destructive" />{t("injured")}</span>
         </div>
         {coachUserId && (
-          <SessionAttendance coachId={coachUserId} athletes={athletes} activeClubId={activeClubId} />
+          <SessionAttendance coachId={coachUserId} athletes={athletes} activeClubId={activeClubId} onOpenStats={() => setStatsOpen(true)} />
         )}
       </main>
       {coachUserId && (
