@@ -4,7 +4,7 @@ import { AvatarImg } from "@/components/AvatarImg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
-import { Loader2, Check, X, Clock, HeartCrack } from "lucide-react";
+import { Loader2, Check, X, Clock, HeartCrack, BarChart3 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
