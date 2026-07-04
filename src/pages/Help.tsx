@@ -116,7 +116,7 @@ const SECTIONS: SectionDef[] = [
     chipBg: "bg-tab-nutrition",
     chipFg: "text-white",
     accent: "bg-tab-nutrition",
-    topics: ["helpProfile", "helpLibrary", "helpParentPortal", "helpRoles", "helpRoleSwitcher"],
+    topics: ["helpProfile", "helpLibrary", "helpParentPortal", "helpRoles", "helpRoleSwitcher", "helpNotifications", "helpSecurity", "helpSubscription", "helpDeleteAccount"],
   },
 ];
 
