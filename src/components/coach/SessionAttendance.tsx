@@ -24,9 +24,10 @@ interface Props {
   coachId: string;
   athletes: Athlete[];
   activeClubId?: string | null;
+  onOpenStats?: () => void;
 }
 
-export function SessionAttendance({ coachId, athletes, activeClubId }: Props) {
+export function SessionAttendance({ coachId, athletes, activeClubId, onOpenStats }: Props) {
   const { t } = useLanguage();
   const { toast } = useToast();
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
@@ -78,7 +79,22 @@ export function SessionAttendance({ coachId, athletes, activeClubId }: Props) {
     <div className="space-y-3">
       <div className="flex items-center justify-between gap-2">
         <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{t("todaysSession")}</h3>
-        <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-[160px] h-8 text-xs" />
+        <div className="flex items-center gap-2">
+          {onOpenStats && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 gap-1.5 px-2 text-xs"
+              onClick={onOpenStats}
+              aria-label={t("attendanceStats")}
+              title={t("attendanceStats")}
+            >
+              <BarChart3 className="h-4 w-4" />
+              <span className="hidden sm:inline">{t("attendanceStats")}</span>
+            </Button>
+          )}
+          <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-[160px] h-8 text-xs" />
+        </div>
       </div>
 
       {loading ? (
