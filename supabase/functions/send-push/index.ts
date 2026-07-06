@@ -1,140 +1,127 @@
-// Send a web-push notification to all subscriptions of one or many users
-// Auth model:
-//   - Service-role JWT: full trust (used by dispatch-scheduled-pushes / cron)
-//   - User JWT: caller must be a coach AND every recipient must either be the
-//     caller themselves or an athlete explicitly linked via coach_athletes.
-// `url` is restricted to internal app paths to prevent phishing.
+// Sends push notifications via Firebase Cloud Messaging (HTTP v1).
+//
+// LOCKED DOWN: this function is service-role ONLY. Regular user JWTs are
+// rejected. Client-facing flows (chat, diary) go through dedicated wrapper
+// functions (notify-chat-message, notify-diary-activity) which validate the
+// caller and then invoke this function using the service role.
+//
+// Input:
+//   {
+//     user_ids: string[]   // recipient user ids
+//     title:    string
+//     body:     string
+//     data?:    Record<string,string>
+//     url?:     string     // internal app path, must start with "/"
+//   }
+//
+// Behaviour:
+//   - Reads active FCM tokens from public.push_subscriptions.
+//   - Sends one FCM v1 request per token.
+//   - Marks tokens is_active=false when FCM reports UNREGISTERED / NOT_FOUND.
+//   - Respects profiles.push_enabled (default true).
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
-import webpush from "https://esm.sh/web-push@3.6.7";
 import { z } from "https://esm.sh/zod@3.23.8";
+import { getFcmAccessToken, sendFcmMessage } from "../_shared/fcm.ts";
 
-const corsHeaders = {
+const cors = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Accept & ignore legacy fields (category, tag) from older callers.
 const Body = z.object({
   user_ids: z.array(z.string().uuid()).min(1).max(500),
   title: z.string().min(1).max(120),
   body: z.string().max(400).default(""),
-  // Restricted to internal relative paths (must start with `/`, no protocol, no `//`)
-  url: z
-    .string()
-    .max(300)
-    .default("/dashboard")
-    .refine(
-      (u) => /^\/[A-Za-z0-9\-_/?=&%.#]*$/.test(u) && !u.startsWith("//"),
-      { message: "url must be an internal app path starting with /" },
-    ),
-  category: z.enum(["training", "diary", "events", "competition", "weight"]).optional(),
-  tag: z.string().max(60).optional(),
-});
+  data: z.record(z.string()).optional(),
+  url: z.string().max(300).default("/dashboard").refine(
+    (u) => /^\/[A-Za-z0-9\-_/?=&%.#]*$/.test(u) && !u.startsWith("//"),
+    { message: "url must be an internal app path" },
+  ),
+  category: z.string().optional(),
+  tag: z.string().optional(),
+}).passthrough();
 
-function jsonResponse(body: unknown, status = 200) {
+function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
+    status, headers: { ...cors, "Content-Type": "application/json" },
   });
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
 
   try {
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
 
-    // ----- Auth: require a valid JWT (service-role OR user) -----
+    // ---- Service-role only ---------------------------------------------
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return jsonResponse({ error: "Unauthorized" }, 401);
-    }
-    const token = authHeader.slice("Bearer ".length).trim();
+    if (!authHeader?.startsWith("Bearer ")) return json({ error: "Unauthorized" }, 401);
+    const token = authHeader.slice(7).trim();
 
-    const supaUser = createClient(SUPABASE_URL, ANON_KEY, {
+    // Reject anon/publishable key
+    if (token === ANON_KEY) return json({ error: "Forbidden" }, 403);
+
+    // Verify caller is service role. We call getUser with the token; service
+    // role tokens return a user with role === 'service_role'. User JWTs are
+    // rejected here — clients must use the wrapper functions instead.
+    const supaCheck = createClient(SUPABASE_URL, ANON_KEY, {
       global: { headers: { Authorization: authHeader } },
     });
-    const { data: userData, error: userErr } = await supaUser.auth.getUser(token);
-    if (userErr || !userData?.user) {
-      return jsonResponse({ error: "Unauthorized" }, 401);
+    const { data: userData } = await supaCheck.auth.getUser(token);
+    const callerRole = (userData?.user as any)?.role;
+    if (callerRole !== "service_role") {
+      return json({ error: "Forbidden — service role required" }, 403);
     }
-    const callerRole = (userData.user as any).role as string | undefined;
-    const callerId = userData.user.id;
-    const isServiceRole = callerRole === "service_role";
 
-    // ----- Validate body -----
     const parsed = Body.safeParse(await req.json());
-    if (!parsed.success) {
-      return jsonResponse({ error: parsed.error.flatten() }, 400);
-    }
-    const { user_ids, title, body, url, category, tag } = parsed.data;
+    if (!parsed.success) return json({ error: parsed.error.flatten() }, 400);
+    const { user_ids, title, body, data, url } = parsed.data;
 
     const supa = createClient(SUPABASE_URL, SERVICE_KEY);
 
-    // ----- Authorization: non-service-role callers must own the recipients -----
-    if (!isServiceRole) {
-      if (!callerId) return jsonResponse({ error: "Unauthorized" }, 401);
+    // Filter recipients by push_enabled preference
+    const { data: profs } = await supa.from("profiles")
+      .select("user_id, push_enabled").in("user_id", user_ids);
+    const enabled = new Set(
+      (profs || []).filter((p: any) => p.push_enabled !== false).map((p: any) => p.user_id),
+    );
+    // Default to enabled when no profile row exists
+    const targets = user_ids.filter((id) => enabled.has(id) || !profs?.find((p: any) => p.user_id === id));
+    if (targets.length === 0) return json({ sent: 0, reason: "opted_out" });
 
-      const otherIds = user_ids.filter((id) => id !== callerId);
-      if (otherIds.length > 0) {
-        const { data: isAdmin } = await supa.rpc("is_admin", { _user_id: callerId });
-        if (!isAdmin) {
-          // Allow if caller can chat with every recipient
-          // (coach-athlete link in either direction, or same club).
-          const checks = await Promise.all(
-            otherIds.map((id) =>
-              supa.rpc("can_chat_with", { _a: callerId, _b: id }).then((r) => !!r.data),
-            ),
-          );
-          if (checks.some((ok) => !ok)) {
-            return jsonResponse({ error: "Forbidden — recipient not reachable" }, 403);
-          }
-        }
-      }
-    }
+    const { data: subs } = await supa.from("push_subscriptions")
+      .select("id, fcm_token")
+      .in("user_id", targets)
+      .eq("is_active", true)
+      .not("fcm_token", "is", null);
+    if (!subs?.length) return json({ sent: 0, reason: "no_tokens" });
 
-    // ----- VAPID -----
-    const VAPID_PUBLIC = Deno.env.get("VAPID_PUBLIC_KEY")!;
-    const VAPID_PRIVATE = Deno.env.get("VAPID_PRIVATE_KEY")!;
-    const VAPID_SUBJECT = Deno.env.get("VAPID_SUBJECT") || "mailto:rashid3105@gmail.com";
-    webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC, VAPID_PRIVATE);
+    const { token: accessToken, projectId } = await getFcmAccessToken();
 
-    // Filter user_ids by category preference
-    let targets = user_ids;
-    if (category) {
-      const prefCol = {
-        training: "training_reminders",
-        diary: "diary_comments",
-        events: "event_reminders",
-        competition: "competition_countdown",
-        weight: "weight_log_reminders",
-      }[category];
-      const { data: prefs } = await supa.from("notification_preferences").select(`user_id, ${prefCol}`).in("user_id", user_ids);
-      const optedIn = new Set((prefs || []).filter((p: any) => p[prefCol] !== false).map((p: any) => p.user_id));
-      // Default: opted in if no row exists
-      targets = user_ids.filter((id) => !prefs?.find((p: any) => p.user_id === id) || optedIn.has(id));
-    }
-    if (targets.length === 0) return jsonResponse({ sent: 0 });
-
-    const { data: subs } = await supa.from("push_subscriptions").select("id, endpoint, p256dh, auth").in("user_id", targets);
-    if (!subs?.length) return jsonResponse({ sent: 0 });
-
-    const payload = JSON.stringify({ title, body, url, tag: tag || category || "sportstalent" });
-    let sent = 0; const dead: string[] = [];
+    let sent = 0;
+    const dead: string[] = [];
     await Promise.all(subs.map(async (s: any) => {
-      try {
-        await webpush.sendNotification({ endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } }, payload);
-        sent++;
-      } catch (err: any) {
-        if (err.statusCode === 404 || err.statusCode === 410) dead.push(s.id);
-      }
+      const r = await sendFcmMessage({
+        accessToken, projectId, token: s.fcm_token,
+        title, body, data, url,
+      });
+      if (r.ok) sent++;
+      else if (r.unregistered) dead.push(s.id);
+      else console.error("fcm send error", { id: s.id, err: r.error });
     }));
-    if (dead.length) await supa.from("push_subscriptions").delete().in("id", dead);
 
-    return jsonResponse({ sent, removed: dead.length });
+    if (dead.length) {
+      await supa.from("push_subscriptions")
+        .update({ is_active: false })
+        .in("id", dead);
+    }
+
+    return json({ sent, deactivated: dead.length });
   } catch (e) {
     console.error("send-push error", e);
-    return jsonResponse({ error: "server_error" }, 500);
+    return json({ error: (e as Error).message || "server_error" }, 500);
   }
 });

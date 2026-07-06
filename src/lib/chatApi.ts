@@ -201,35 +201,14 @@ export async function sendMessage(params: {
     .single();
   if (error) throw error;
 
-  // Fire-and-forget push to other thread members
-  (async () => {
-    try {
-      const { data: members } = await supabase
-        .from("chat_thread_members")
-        .select("user_id")
-        .eq("thread_id", params.threadId)
-        .neq("user_id", user.id);
-      const recipientIds = (members ?? []).map((m: any) => m.user_id);
-      if (recipientIds.length === 0) return;
-
-      const senderProfile = await supabase
-        .from("profiles")
-        .select("display_name")
-        .eq("user_id", user.id)
-        .maybeSingle();
-      const senderName = (senderProfile.data as any)?.display_name || "Nogen";
-
-      await supabase.functions.invoke("send-push", {
-        body: {
-          user_ids: recipientIds,
-          title: senderName,
-          body: params.body.trim().slice(0, 120),
-          url: "/dashboard",
-          tag: `chat-${params.threadId}`,
-        },
-      });
-    } catch { /* silent */ }
-  })();
+  // Fire-and-forget push notification via server-side wrapper.
+  // The wrapper validates thread membership and translates per recipient locale.
+  void supabase.functions.invoke("notify-chat-message", {
+    body: {
+      thread_id: params.threadId,
+      preview: params.body.trim().slice(0, 120),
+    },
+  }).catch(() => { /* silent */ });
 
   return data as ChatMessage;
 }
