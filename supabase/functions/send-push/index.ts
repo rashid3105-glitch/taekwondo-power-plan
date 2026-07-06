@@ -57,6 +57,10 @@ Deno.serve(async (req) => {
     const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
 
     // ---- Service-role only ---------------------------------------------
+    // Decode the JWT payload and require role === 'service_role'. We do NOT
+    // rely on supabase.auth.getUser(token): that call succeeds for user JWTs
+    // (which we must reject) and fails for service-role tokens (which we must
+    // accept), i.e. the opposite of what we need.
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) return json({ error: "Unauthorized" }, 401);
     const token = authHeader.slice(7).trim();
@@ -64,14 +68,16 @@ Deno.serve(async (req) => {
     // Reject anon/publishable key
     if (token === ANON_KEY) return json({ error: "Forbidden" }, 403);
 
-    // Verify caller is service role. We call getUser with the token; service
-    // role tokens return a user with role === 'service_role'. User JWTs are
-    // rejected here — clients must use the wrapper functions instead.
-    const supaCheck = createClient(SUPABASE_URL, ANON_KEY, {
-      global: { headers: { Authorization: authHeader } },
-    });
-    const { data: userData } = await supaCheck.auth.getUser(token);
-    const callerRole = (userData?.user as any)?.role;
+    let callerRole: string | undefined;
+    try {
+      const parts = token.split(".");
+      if (parts.length >= 2) {
+        const b64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+        const pad = b64 + "=".repeat((4 - (b64.length % 4)) % 4);
+        const payload = JSON.parse(atob(pad));
+        callerRole = payload?.role;
+      }
+    } catch { /* invalid token */ }
     if (callerRole !== "service_role") {
       return json({ error: "Forbidden — service role required" }, 403);
     }
