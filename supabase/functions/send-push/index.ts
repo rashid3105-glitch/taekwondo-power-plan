@@ -79,6 +79,7 @@ Deno.serve(async (req) => {
       }
     } catch { /* invalid token */ }
     if (callerRole !== "service_role") {
+      console.log("send-push denied", { callerRole, tokenPrefix: token.slice(0, 20) });
       return json({ error: "Forbidden — service role required" }, 403);
     }
 
