@@ -2268,6 +2268,7 @@ export type Database = {
           public_show_competitions: boolean
           public_show_prs: boolean
           public_show_videos: boolean
+          push_enabled: boolean
           rejection_reason: string | null
           role: string
           roles: string[] | null
@@ -2328,6 +2329,7 @@ export type Database = {
           public_show_competitions?: boolean
           public_show_prs?: boolean
           public_show_videos?: boolean
+          push_enabled?: boolean
           rejection_reason?: string | null
           role?: string
           roles?: string[] | null
@@ -2388,6 +2390,7 @@ export type Database = {
           public_show_competitions?: boolean
           public_show_prs?: boolean
           public_show_videos?: boolean
+          push_enabled?: boolean
           rejection_reason?: string | null
           role?: string
           roles?: string[] | null
@@ -2411,29 +2414,41 @@ export type Database = {
       }
       push_subscriptions: {
         Row: {
-          auth: string
+          auth: string | null
           created_at: string
-          endpoint: string
+          endpoint: string | null
+          fcm_token: string | null
           id: string
-          p256dh: string
+          is_active: boolean
+          last_seen_at: string
+          p256dh: string | null
+          platform: string | null
           user_agent: string | null
           user_id: string
         }
         Insert: {
-          auth: string
+          auth?: string | null
           created_at?: string
-          endpoint: string
+          endpoint?: string | null
+          fcm_token?: string | null
           id?: string
-          p256dh: string
+          is_active?: boolean
+          last_seen_at?: string
+          p256dh?: string | null
+          platform?: string | null
           user_agent?: string | null
           user_id: string
         }
         Update: {
-          auth?: string
+          auth?: string | null
           created_at?: string
-          endpoint?: string
+          endpoint?: string | null
+          fcm_token?: string | null
           id?: string
-          p256dh?: string
+          is_active?: boolean
+          last_seen_at?: string
+          p256dh?: string | null
+          platform?: string | null
           user_agent?: string | null
           user_id?: string
         }
