@@ -28,6 +28,7 @@ const cors = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Accept & ignore legacy fields (category, tag) from older callers.
 const Body = z.object({
   user_ids: z.array(z.string().uuid()).min(1).max(500),
   title: z.string().min(1).max(120),
@@ -37,7 +38,9 @@ const Body = z.object({
     (u) => /^\/[A-Za-z0-9\-_/?=&%.#]*$/.test(u) && !u.startsWith("//"),
     { message: "url must be an internal app path" },
   ),
-});
+  category: z.string().optional(),
+  tag: z.string().optional(),
+}).passthrough();
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
