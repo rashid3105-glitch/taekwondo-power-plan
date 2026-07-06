@@ -116,14 +116,9 @@ export function DiaryComments({ entryId, canComment = false }: DiaryCommentsProp
     if (error) {
       toast({ title: t("error"), description: error.message, variant: "destructive" });
     } else {
-      try {
-        const { data: entry } = await supabase.from("diary_entries").select("user_id").eq("id", entryId).maybeSingle();
-        if (entry?.user_id && entry.user_id !== user.id) {
-          void supabase.functions.invoke("send-push", {
-            body: { user_ids: [entry.user_id], title: "💬 New coach comment", body: newComment.trim().slice(0, 100), url: "/diary", category: "diary" },
-          });
-        }
-      } catch {}
+      // TODO(fcm): route coach→athlete diary-comment push through a dedicated
+      // server-side wrapper. send-push is now service-role only; a direct
+      // client call would be rejected. Tracked with the FCM native rollout.
       setNewComment("");
       await loadComments();
     }
