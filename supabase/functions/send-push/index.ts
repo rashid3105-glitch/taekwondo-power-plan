@@ -57,29 +57,29 @@ Deno.serve(async (req) => {
     const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
 
     // ---- Service-role only ---------------------------------------------
-    // Decode the JWT payload and require role === 'service_role'. We do NOT
-    // rely on supabase.auth.getUser(token): that call succeeds for user JWTs
-    // (which we must reject) and fails for service-role tokens (which we must
-    // accept), i.e. the opposite of what we need.
+    // Accept either:
+    //   - the raw SUPABASE_SERVICE_ROLE_KEY (new opaque sb_secret_… format), OR
+    //   - a legacy JWT whose payload role claim is 'service_role'.
+    // Anon keys and user JWTs are rejected.
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) return json({ error: "Unauthorized" }, 401);
     const token = authHeader.slice(7).trim();
 
-    // Reject anon/publishable key
     if (token === ANON_KEY) return json({ error: "Forbidden" }, 403);
 
-    let callerRole: string | undefined;
-    try {
-      const parts = token.split(".");
-      if (parts.length >= 2) {
-        const b64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
-        const pad = b64 + "=".repeat((4 - (b64.length % 4)) % 4);
-        const payload = JSON.parse(atob(pad));
-        callerRole = payload?.role;
-      }
-    } catch { /* invalid token */ }
-    if (callerRole !== "service_role") {
-      console.log("send-push denied", { callerRole, tokenPrefix: token.slice(0, 20) });
+    let isServiceRole = token === SERVICE_KEY;
+    if (!isServiceRole) {
+      try {
+        const parts = token.split(".");
+        if (parts.length >= 2) {
+          const b64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+          const pad = b64 + "=".repeat((4 - (b64.length % 4)) % 4);
+          const payload = JSON.parse(atob(pad));
+          isServiceRole = payload?.role === "service_role";
+        }
+      } catch { /* invalid token */ }
+    }
+    if (!isServiceRole) {
       return json({ error: "Forbidden — service role required" }, 403);
     }
 
