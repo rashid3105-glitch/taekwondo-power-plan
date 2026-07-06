@@ -1,61 +1,35 @@
-## Mål
 
-Gennemgå hele hjælpecentret (`src/pages/Help.tsx`) og bringe det op til dato med systemet, som det ser ud i dag. Alle tekster leveres på **da, en, sv, de, ar, no, es**.
+# FCM push pipeline — live smoke-test plan
 
-## Nuværende tilstand
+Goal: prove the full path works end-to-end before the Capacitor client is wired: **service-account JWT → OAuth token → FCM v1 send → device receives push → invalid token gets deactivated**.
 
-- 23 hjælpe-emner fordelt på 5 sektioner (Training / Health / Mental / Coach / Account).
-- Ca. 282 `Title` + `Steps` nøgler i `src/i18n/translations.ts` × 7 sprog.
-- Changelog stopper ved 2026-07-02 (`v1.2.9`). Sidste ~4 måneders arbejde er ikke dokumenteret.
+## What you need to provide
 
-## Del 1 — Audit af eksisterende emner
+One real FCM registration token from a test device. Easiest sources:
 
-For hvert af de 23 emner læses den nuværende `helpXxxSteps` tekst og sammenholdes med den faktiske UI/flow. Rettelser omfatter:
+- **Firebase Console → Cloud Messaging → "Send test message"** flow shows a field to paste an FCM token; you can also grab a token from a small standalone test app.
+- Or a browser using the Firebase JS SDK (`getToken()`).
+- Or from any iOS/Android test build with `@capacitor-firebase/messaging` (even a scratch project).
 
-- Forældede menu- og knapnavne (fx efter at "Fremmøde-rapport" er flyttet ind i "Dagens træning", trash-ikonet er flyttet fra dashboard til atlet-detalje, samtykke-flow med genudsend osv.).
-- Nye trin/valg der er kommet til (fx wearables recovery-trends, kostplan manuel indtastning, coach mental review, klub-landing, superadmin-flow).
-- Fjernelse af omtale af features der ikke længere findes.
-- Konsistent tone og ordvalg (dansk primær, oversat direkte).
+Also tell me the `user_id` in your Sportstalent account you want to receive the test push (I can look it up if you give me your email).
 
-Emner der ganske sikkert skal redigeres: `helpProfile`, `helpTrainingPlan`, `helpSeasonPlan`, `helpSeasonCalendar`, `helpWearables`, `helpCoachFeedback`, `helpMatchAnalysis`, `helpMatchReport`, `helpProgress`, `helpNutrition`, `helpRehabPlan`, `helpMentalPlan`, `helpDiary`, `helpReflection`, `helpAddStudents`, `helpStudentProgress`, `helpChat`, `helpWeeklyReport`, `helpParentPortal`, `helpRoles`, `helpRoleSwitcher`, `helpLibrary`, `helpPhysicalTesting`.
+## Steps
 
-## Del 2 — Nye emner der skal tilføjes
+1. **Insert a test subscription row** for that user with `platform`, `fcm_token`, `is_active = true`. (Data insert — no schema change.)
+2. **Call `send-push` as service role** with `{ user_ids: [<your_user_id>], title, body, url }`. I'll do this via a one-off service-role-authed request from the tool sandbox.
+3. **Expected outcomes**
+   - Response: `{ sent: 1, deactivated: 0 }`
+   - Push arrives on the test device within a few seconds
+   - `send-push` logs show FCM 200 responses, no auth errors
+4. **Invalid-token cleanup test**: repeat step 2 after uninstalling the test app (or edit the token to garbage). Expected: `{ sent: 0, deactivated: 1 }` and the row's `is_active` flips to false.
+5. **Preference gate test**: set `profiles.push_enabled = false` for the test user, resend. Expected: `{ sent: 0, reason: "opted_out" }`. Restore afterwards.
+6. **Chat wrapper test (optional)**: send a chat message in the app to a user who has a token registered — verify `notify-chat-message` fires, recipient's locale is respected, sender does not get a self-push.
+7. **Cleanup**: delete the test row, restore `push_enabled = true`.
 
-| Nøgle | Sektion | Dækker |
-|---|---|---|
-| `helpConsents` | Coach | Samtykke-oversigt: status pr. atlet, send til forælder (mindreårig), send til atlet selv (voksen), genudsend, udløb af tokens. |
-| `helpAttendance` | Coach | Dagens træning: markering af fremmøde, skadet-status, fremmøde-rapport-knappen (`BarChart3`), statistik-dialogen. |
-| `helpDeleteAthlete` | Coach | Sletning af atlet fra atlet-detaljesiden inkl. bekræftelsesdialog og hvad der slettes/beholdes. |
-| `helpCoachMentalReview` | Mental | Månedlig coach-mental vurdering, hvorfor og hvordan. |
-| `helpSubscription` | Account | Abonnement, planer, valuta, ændring/opsigelse, betalings-status. |
-| `helpSecurity` | Account | Adgangskode, passkey/biometri, log ud af alle enheder. |
-| `helpDeleteAccount` | Account | Slet egen konto, hvad slettes, GDPR. |
-| `helpNotifications` | Account | Push-notifikationer, e-mails, afmelding via `/unsubscribe`. |
+## Reporting back
 
-Hver nøgle får `Title` + `Steps` i `translations.ts` på alle 7 sprog, indekseres i `TOPICS`, `SECTIONS` opdateres, og alle får `isNew: true` (eksisterende `isNew` flag som er >30 dage gamle fjernes samtidig så badgen ikke bliver meningsløs).
+I'll report: HTTP status + body of each `send-push` call, relevant `send-push` log lines (FCM error codes if any), whether the device received the notification, and confirmation of the deactivation and opt-out branches.
 
-## Del 3 — Changelog
+## Fallback if you can't get a token right now
 
-Tilføjes øverst i `CHANGELOG`-arrayet (nyeste først). Nye datoer dækker perioden 2026-07-03 → i dag med korte oneliners for:
-
-- Fremmøde-rapport-knap flyttet ind i "Dagens træning".
-- Coach-samtykke-side med send/genudsend for forældre og voksne atleter.
-- Sletning af atlet nu kun fra atlet-detalje med bekræftelse.
-- Papirkurv skjult i dashboard-oversigten.
-- Evt. andre relevante commits fra perioden (tjekkes ved implementering).
-
-Bumpes til passende semver (patch pr. tweak, minor for ny samtykke-flow). Hver post får `build`-tag.
-
-## Del 4 — Tekniske detaljer
-
-- Alle nye nøgler tilføjes i `src/i18n/translations.ts` under samme mønster som eksisterende (`helpXxxTitle`, `helpXxxSteps`, `changelogEntryNNN`, `changelog_YYYY_MM_DD`).
-- Ingen ændringer til `Help.tsx`-layout eller komponenter — kun `TOPICS`, `SECTIONS.topics` og `CHANGELOG` arrays.
-- Ikoner genbruges fra allerede importerede `lucide-react` symboler; enkelte nye kan tilføjes til import-listen (fx `Shield`, `Bell`, `Trash2`, `CreditCard`).
-- Ingen backend-ændringer.
-- Verifikation: build/typecheck, plus stikprøve-visning af Help-siden på DA og EN.
-
-## Leverance
-
-- Opdateret `src/pages/Help.tsx` (topics + changelog arrays).
-- Opdateret `src/i18n/translations.ts` med alle nye/reviderede strings × 7 sprog.
-- Kort ændringsoversigt i svaret.
+If sourcing a real token is inconvenient, we can partially validate by calling `send-push` with a syntactically valid but bogus FCM token — we'll see the OAuth exchange succeed and the FCM call return `UNREGISTERED`, which still exercises ~90 % of the code path (everything except actual delivery). Tell me if you'd prefer that route instead.
