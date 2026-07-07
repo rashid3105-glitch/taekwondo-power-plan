@@ -1,4 +1,26 @@
-import { useRef, useState } from "react";
+import { useRef, useState, Fragment } from "react";
+
+const URL_REGEX = /(https?:\/\/[^\s]+)/g;
+function renderBodyWithLinks(body: string) {
+  const parts = body.split(URL_REGEX);
+  return parts.map((part, i) => {
+    if (i % 2 === 1) {
+      const isInternal = typeof window !== "undefined" && part.startsWith(window.location.origin);
+      return (
+        <a
+          key={i}
+          href={part}
+          target={isInternal ? undefined : "_blank"}
+          rel="noopener noreferrer"
+          className="underline underline-offset-2 hover:opacity-80"
+        >
+          {part}
+        </a>
+      );
+    }
+    return <Fragment key={i}>{part}</Fragment>;
+  });
+}
 import { MoreHorizontal, Pencil, Trash2, Check, X } from "lucide-react";
 import { useChatAttachmentUrl } from "@/hooks/useChatAttachmentUrl";
 import { cn } from "@/lib/utils";
@@ -185,7 +207,7 @@ export function MessageBubble({
             {url && isVideo && (
               <video src={url} controls className="rounded-lg max-h-60 mb-1" />
             )}
-            {message.body && <div className="whitespace-pre-wrap">{message.body}</div>}
+            {message.body && <div className="whitespace-pre-wrap break-words">{renderBodyWithLinks(message.body)}</div>}
           </div>
         </div>
       )}

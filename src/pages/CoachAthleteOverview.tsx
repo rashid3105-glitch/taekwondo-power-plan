@@ -96,6 +96,17 @@ export default function CoachAthleteOverview() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [athleteId, activeClubId]);
 
+  useEffect(() => {
+    if (!authorized) return;
+    if (searchParams.get("diary") === "1" && !diaryOpen) {
+      void openDiary();
+      const next = new URLSearchParams(searchParams);
+      next.delete("diary");
+      setSearchParams(next, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authorized, searchParams]);
+
 
   async function load() {
     setLoading(true);
