@@ -483,7 +483,8 @@ export function FoodScanner({ onLogged }: Props) {
       {!image && mode === "idle" ? (
         <div className="grid grid-cols-3 gap-2">
           <button
-            onClick={() => inputRef.current?.click()}
+            onClick={takePhoto}
+
             className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 py-6 hover:bg-primary/10 transition-colors"
           >
             <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center">
