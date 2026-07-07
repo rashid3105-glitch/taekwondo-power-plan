@@ -8,6 +8,8 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { Capacitor } from "@capacitor/core";
+
 
 interface ScanItem {
   name: string;
