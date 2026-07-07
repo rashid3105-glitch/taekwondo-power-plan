@@ -236,10 +236,12 @@ Deno.serve(async (req) => {
       }
       for (const [loc, ids] of byLocale) {
         const isDiary = activityType === "diary";
-        const title = isDiary ? t("diaryNewEntryTitle", loc as any) : t("diaryNewEntryTitle", loc as any);
+        const title = isDiary
+          ? t("diaryNewEntryTitle", loc as any)
+          : t("competitionReflectionTitle", loc as any);
         const body = isDiary
           ? t("diaryNewEntry", loc as any, athleteName)
-          : (competitionName || athleteName);
+          : t("competitionReflectionBody", loc as any, competitionName ? `${athleteName} — ${competitionName}` : athleteName);
         await admin.functions.invoke("send-push", {
           body: {
             user_ids: ids,
