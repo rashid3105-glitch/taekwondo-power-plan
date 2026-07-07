@@ -33,7 +33,21 @@ const STRINGS = {
     no: (n: string) => `${n} har fullført en stevne-evaluering`,
     es: (n: string) => `${n} completó una reflexión de competición`,
   },
+  diaryChatMessagePrefix: {
+    en: (n: string) => `📓 New diary update from ${n}`,
+    da: (n: string) => `📓 Ny dagbogsopdatering fra ${n}`,
+    sv: (n: string) => `📓 Ny dagboksuppdatering från ${n}`,
+    de: (n: string) => `📓 Neues Tagebuch-Update von ${n}`,
+    ar: (n: string) => `📓 تحديث جديد في المذكرة من ${n}`,
+    no: (n: string) => `📓 Ny dagbokoppdatering fra ${n}`,
+    es: (n: string) => `📓 Nueva actualización de diario de ${n}`,
+  },
+  openDiaryLinkLabel: {
+    en: "Open diary", da: "Åbn dagbog", sv: "Öppna dagbok",
+    de: "Tagebuch öffnen", ar: "افتح المذكرة", no: "Åpne dagbok", es: "Abrir diario",
+  },
 } as const;
+
 
 export function normalizeLocale(l: string | null | undefined): PushLocale {
   const v = (l || "da").toLowerCase();
