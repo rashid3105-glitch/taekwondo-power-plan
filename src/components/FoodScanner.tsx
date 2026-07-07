@@ -300,7 +300,16 @@ export function FoodScanner({ onLogged }: Props) {
         source: "ai_scan",
         logged_at: new Date().toISOString(),
         image_url: imageUrl,
+        items: items.map((it) => ({
+          name: it.name,
+          portion_g: it.portion_g,
+          calories: it.calories,
+          protein: it.protein,
+          carbs: it.carbs,
+          fat: it.fat,
+        })),
       } as any);
+
       if (error) throw error;
 
       toast.success(`${dishName || "Måltid"} ✓`);
