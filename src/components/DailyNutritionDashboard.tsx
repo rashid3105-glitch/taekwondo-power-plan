@@ -5,6 +5,15 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
+interface MealItem {
+  name: string;
+  portion_g?: number | null;
+  calories?: number | null;
+  protein?: number | null;
+  carbs?: number | null;
+  fat?: number | null;
+}
+
 interface MealLog {
   id: string;
   meal_name: string | null;
@@ -14,7 +23,9 @@ interface MealLog {
   fat_g: number | null;
   logged_at: string;
   image_url: string | null;
+  items: MealItem[] | null;
 }
+
 
 
 interface Props {
