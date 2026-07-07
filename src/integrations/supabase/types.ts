@@ -2031,6 +2031,7 @@ export type Database = {
           fat_g: number | null
           id: string
           image_url: string | null
+          items: Json | null
           logged_at: string
           meal_name: string | null
           portion: string | null
@@ -2046,6 +2047,7 @@ export type Database = {
           fat_g?: number | null
           id?: string
           image_url?: string | null
+          items?: Json | null
           logged_at?: string
           meal_name?: string | null
           portion?: string | null
@@ -2061,6 +2063,7 @@ export type Database = {
           fat_g?: number | null
           id?: string
           image_url?: string | null
+          items?: Json | null
           logged_at?: string
           meal_name?: string | null
           portion?: string | null
