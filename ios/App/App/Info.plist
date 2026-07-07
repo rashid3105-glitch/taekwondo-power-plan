@@ -32,6 +32,13 @@
 	<string>Main</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Brug Face ID til hurtigt at logge ind på Sportstalent.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Sportstalent bruger kameraet til at scanne dine måltider.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Sportstalent bruger fotos til at scanne dine måltider.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Sportstalent gemmer måltidsbilleder i dit fotobibliotek.</string>
+
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>

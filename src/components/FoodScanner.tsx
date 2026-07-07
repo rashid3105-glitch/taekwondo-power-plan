@@ -8,6 +8,8 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { Capacitor } from "@capacitor/core";
+
 
 interface ScanItem {
   name: string;
@@ -145,6 +147,42 @@ export function FoodScanner({ onLogged }: Props) {
       toast.error("Kunne ikke læse billedet");
     }
   };
+
+  const takePhoto = async () => {
+    // On native (iOS/Android) use the Capacitor Camera plugin so the OS returns
+    // a pre-sized JPEG. The <input capture> path decodes 12MP HEIC in the WebView
+    // and crashes iPhones out of memory.
+    if (Capacitor.isNativePlatform()) {
+      try {
+        const { Camera: CapCamera, CameraResultType, CameraSource } = await import("@capacitor/camera");
+        const photo = await CapCamera.getPhoto({
+          quality: 80,
+          resultType: CameraResultType.DataUrl,
+          source: CameraSource.Camera,
+          allowEditing: false,
+          width: 1280,
+          correctOrientation: true,
+        });
+        const dataUrl = photo.dataUrl;
+        if (!dataUrl) return;
+        setItems(null);
+        setSelected(null);
+        if (dataUrlByteLength(dataUrl) > MAX_SCAN_IMAGE_BYTES) {
+          toast.error("Billedet er for stort — prøv igen");
+          return;
+        }
+        setImage(dataUrl);
+      } catch (e: any) {
+        const msg = String(e?.message ?? e ?? "");
+        if (/cancel/i.test(msg) || /user\s*denied/i.test(msg)) return;
+        console.error("native camera failed", e);
+        toast.error("Kunne ikke åbne kameraet");
+      }
+      return;
+    }
+    inputRef.current?.click();
+  };
+
 
   const analyzeImage = async () => {
     if (!image) return;
@@ -445,7 +483,8 @@ export function FoodScanner({ onLogged }: Props) {
       {!image && mode === "idle" ? (
         <div className="grid grid-cols-3 gap-2">
           <button
-            onClick={() => inputRef.current?.click()}
+            onClick={takePhoto}
+
             className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 py-6 hover:bg-primary/10 transition-colors"
           >
             <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center">
