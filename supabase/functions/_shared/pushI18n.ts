@@ -20,6 +20,19 @@ const STRINGS = {
     en: "Athlete diary", da: "Atlet-dagbog", sv: "Atlet-dagbok",
     de: "Athleten-Tagebuch", ar: "مذكرة الرياضي", no: "Utøver-dagbok", es: "Diario del atleta",
   },
+  competitionReflectionTitle: {
+    en: "Competition reflection", da: "Stævne-evaluering", sv: "Tävlingsreflektion",
+    de: "Wettkampf-Reflexion", ar: "تقييم المنافسة", no: "Stevne-evaluering", es: "Reflexión de competición",
+  },
+  competitionReflectionBody: {
+    en: (n: string) => `${n} completed a competition reflection`,
+    da: (n: string) => `${n} har afsluttet en stævne-evaluering`,
+    sv: (n: string) => `${n} har slutfört en tävlingsreflektion`,
+    de: (n: string) => `${n} hat eine Wettkampf-Reflexion abgeschlossen`,
+    ar: (n: string) => `${n} أكمل تقييم المنافسة`,
+    no: (n: string) => `${n} har fullført en stevne-evaluering`,
+    es: (n: string) => `${n} completó una reflexión de competición`,
+  },
 } as const;
 
 export function normalizeLocale(l: string | null | undefined): PushLocale {
