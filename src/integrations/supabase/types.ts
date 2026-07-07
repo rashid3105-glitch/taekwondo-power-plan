@@ -2030,6 +2030,7 @@ export type Database = {
           date: string
           fat_g: number | null
           id: string
+          image_url: string | null
           logged_at: string
           meal_name: string | null
           portion: string | null
@@ -2044,6 +2045,7 @@ export type Database = {
           date?: string
           fat_g?: number | null
           id?: string
+          image_url?: string | null
           logged_at?: string
           meal_name?: string | null
           portion?: string | null
@@ -2058,6 +2060,7 @@ export type Database = {
           date?: string
           fat_g?: number | null
           id?: string
+          image_url?: string | null
           logged_at?: string
           meal_name?: string | null
           portion?: string | null

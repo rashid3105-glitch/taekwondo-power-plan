@@ -269,6 +269,23 @@ export function FoodScanner({ onLogged }: Props) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("not_authenticated");
 
+      // Best-effort upload of the scanned photo so it can be shown in the daily list.
+      let imageUrl: string | null = null;
+      if (image) {
+        try {
+          const blob = await (await fetch(image)).blob();
+          const path = `${user.id}/${crypto.randomUUID()}.jpg`;
+          const { error: upErr } = await supabase.storage
+            .from("meal-photos")
+            .upload(path, blob, { contentType: "image/jpeg", cacheControl: "31536000", upsert: false });
+          if (upErr) throw upErr;
+          const { data: pub } = supabase.storage.from("meal-photos").getPublicUrl(path);
+          imageUrl = pub.publicUrl;
+        } catch (e) {
+          console.warn("meal photo upload failed", e);
+        }
+      }
+
       const today = new Date().toISOString().slice(0, 10);
       const portion = totals.grams > 0 ? `1 tallerken (~${Math.round(totals.grams)}g)` : "1 tallerken";
       const { error } = await supabase.from("nutrition_logs").insert({
@@ -282,7 +299,8 @@ export function FoodScanner({ onLogged }: Props) {
         portion,
         source: "ai_scan",
         logged_at: new Date().toISOString(),
-      });
+        image_url: imageUrl,
+      } as any);
       if (error) throw error;
 
       toast.success(`${dishName || "Måltid"} ✓`);
@@ -296,6 +314,7 @@ export function FoodScanner({ onLogged }: Props) {
       setLogging(false);
     }
   };
+
 
   const resetManual = () => {
     setMode("idle");
