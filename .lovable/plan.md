@@ -1,35 +1,38 @@
+## Goal
+Show a small thumbnail of the scanned meal in the "Dagens måltider" list on the nutrition dashboard, so the user can see what their logged calories consist of instead of the picture disappearing after logging.
 
-# FCM push pipeline — live smoke-test plan
+## Scope
+Only the food‑scan → nutrition log path. Manual entries (no photo) stay as they are and just render without a thumbnail.
 
-Goal: prove the full path works end-to-end before the Capacitor client is wired: **service-account JWT → OAuth token → FCM v1 send → device receives push → invalid token gets deactivated**.
+## Changes
 
-## What you need to provide
+### 1. Backend
+- New migration adds `image_url text` column to `public.nutrition_logs` (nullable, no default). Existing rows stay untouched.
+- Create a public storage bucket `meal-photos` via the storage tool.
+- Add RLS policies on `storage.objects` so a user can insert/select/delete only their own files under a `{user_id}/…` path prefix. Public SELECT so the thumbnail loads without a signed URL.
 
-One real FCM registration token from a test device. Easiest sources:
+### 2. FoodScanner (`src/components/FoodScanner.tsx`)
+- After a successful scan, when the user taps "Log måltid":
+  1. Take the already‑compressed data URL currently in `image`, convert it to a `Blob`.
+  2. Upload to `meal-photos/{user_id}/{uuid}.jpg` (content‑type `image/jpeg`, cacheControl 1 year).
+  3. Get the public URL and include `image_url` in the `nutrition_logs.insert` payload.
+- Failure to upload is non‑fatal: log the meal without an image and toast a soft warning.
+- Manual‑entry flow (`logManual`) is unchanged (no image).
 
-- **Firebase Console → Cloud Messaging → "Send test message"** flow shows a field to paste an FCM token; you can also grab a token from a small standalone test app.
-- Or a browser using the Firebase JS SDK (`getToken()`).
-- Or from any iOS/Android test build with `@capacitor-firebase/messaging` (even a scratch project).
+### 3. Dashboard list (`src/components/DailyNutritionDashboard.tsx`)
+- Extend the `MealLog` type and the `select(...)` string with `image_url`.
+- In the meal `<li>`, render a 40×40 rounded thumbnail on the left when `image_url` is present; fall back to the existing `Utensils` icon in a muted square when it is null (manual entries).
+- Keep layout, delete button, and text unchanged otherwise.
 
-Also tell me the `user_id` in your Sportstalent account you want to receive the test push (I can look it up if you give me your email).
+### 4. Cleanup on delete
+- In `handleDelete`, if the deleted log had an `image_url`, best‑effort `supabase.storage.from("meal-photos").remove([path])` after the row delete succeeds. Ignore errors — the row is already gone.
 
-## Steps
+## Non‑goals
+- No change to the scanner UI itself, the AI prompt, macro math, or the manual entry flow.
+- No historical backfill — only meals logged after this change get a thumbnail.
+- No lightbox / full‑size preview yet (can be added later if wanted).
 
-1. **Insert a test subscription row** for that user with `platform`, `fcm_token`, `is_active = true`. (Data insert — no schema change.)
-2. **Call `send-push` as service role** with `{ user_ids: [<your_user_id>], title, body, url }`. I'll do this via a one-off service-role-authed request from the tool sandbox.
-3. **Expected outcomes**
-   - Response: `{ sent: 1, deactivated: 0 }`
-   - Push arrives on the test device within a few seconds
-   - `send-push` logs show FCM 200 responses, no auth errors
-4. **Invalid-token cleanup test**: repeat step 2 after uninstalling the test app (or edit the token to garbage). Expected: `{ sent: 0, deactivated: 1 }` and the row's `is_active` flips to false.
-5. **Preference gate test**: set `profiles.push_enabled = false` for the test user, resend. Expected: `{ sent: 0, reason: "opted_out" }`. Restore afterwards.
-6. **Chat wrapper test (optional)**: send a chat message in the app to a user who has a token registered — verify `notify-chat-message` fires, recipient's locale is respected, sender does not get a self-push.
-7. **Cleanup**: delete the test row, restore `push_enabled = true`.
-
-## Reporting back
-
-I'll report: HTTP status + body of each `send-push` call, relevant `send-push` log lines (FCM error codes if any), whether the device received the notification, and confirmation of the deactivation and opt-out branches.
-
-## Fallback if you can't get a token right now
-
-If sourcing a real token is inconvenient, we can partially validate by calling `send-push` with a syntactically valid but bogus FCM token — we'll see the OAuth exchange succeed and the FCM call return `UNREGISTERED`, which still exercises ~90 % of the code path (everything except actual delivery). Tell me if you'd prefer that route instead.
+## Technical notes
+- Image size is already capped in the scanner (`MAX_SCAN_IMAGE_BYTES`), so no extra compression step is needed before upload.
+- Storage path uses `crypto.randomUUID()` to avoid collisions and to make per‑user RLS trivial (`(storage.foldername(name))[1] = auth.uid()::text`).
+- Public bucket keeps the dashboard render synchronous (no signed‑URL round trip per row). Filenames are UUIDs so URLs are effectively unguessable.
