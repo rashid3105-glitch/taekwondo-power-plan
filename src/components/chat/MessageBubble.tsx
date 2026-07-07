@@ -185,7 +185,7 @@ export function MessageBubble({
             {url && isVideo && (
               <video src={url} controls className="rounded-lg max-h-60 mb-1" />
             )}
-            {message.body && <div className="whitespace-pre-wrap">{message.body}</div>}
+            {message.body && <div className="whitespace-pre-wrap break-words">{renderBodyWithLinks(message.body)}</div>}
           </div>
         </div>
       )}
