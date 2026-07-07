@@ -139,11 +139,22 @@ export function DailyNutritionDashboard({
   const calTarget = calorieTarget || 0;
 
   const handleDelete = async (id: string) => {
+    const target = logs.find((l) => l.id === id);
     const { error } = await (supabase.from as any)("nutrition_logs").delete().eq("id", id);
     if (error) { toast.error(error.message); return; }
     setLogs((prev) => prev.filter((l) => l.id !== id));
+    // Best-effort cleanup of the storage object.
+    if (target?.image_url) {
+      const marker = "/meal-photos/";
+      const idx = target.image_url.indexOf(marker);
+      if (idx >= 0) {
+        const path = target.image_url.slice(idx + marker.length);
+        supabase.storage.from("meal-photos").remove([path]).catch(() => {});
+      }
+    }
     toast.success(t("deleteMeal") || "Slettet");
   };
+
 
   return (
     <div className="rounded-2xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-4">
@@ -295,7 +306,19 @@ export function DailyNutritionDashboard({
         ) : (
           <ul className="space-y-1.5">
             {logs.map((l) => (
-              <li key={l.id} className="flex items-center justify-between gap-2 rounded-lg bg-muted/40 px-3 py-2">
+              <li key={l.id} className="flex items-center gap-2 rounded-lg bg-muted/40 px-2 py-2">
+                {l.image_url ? (
+                  <img
+                    src={l.image_url}
+                    alt={l.meal_name || ""}
+                    loading="lazy"
+                    className="h-10 w-10 rounded-md object-cover border border-border shrink-0"
+                  />
+                ) : (
+                  <div className="h-10 w-10 rounded-md bg-muted flex items-center justify-center shrink-0">
+                    <Utensils className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                )}
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium text-card-foreground truncate">{l.meal_name || "—"}</p>
                   <p className="text-[11px] text-muted-foreground">
@@ -312,6 +335,7 @@ export function DailyNutritionDashboard({
               </li>
             ))}
           </ul>
+
         )}
       </div>
     </div>
