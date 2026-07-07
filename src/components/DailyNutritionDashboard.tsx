@@ -92,6 +92,8 @@ export function DailyNutritionDashboard({
   const { t } = useLanguage();
   const [logs, setLogs] = useState<MealLog[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
 
   const [calcOpen, setCalcOpen] = useState(false);
   const [calcWeight, setCalcWeight] = useState("");
@@ -122,7 +124,7 @@ export function DailyNutritionDashboard({
       if (!user) { setLoading(false); return; }
       const today = new Date().toISOString().slice(0, 10);
       const { data, error } = await (supabase.from as any)("nutrition_logs")
-        .select("id, meal_name, calories, protein_g, carbs_g, fat_g, logged_at, image_url")
+        .select("id, meal_name, calories, protein_g, carbs_g, fat_g, logged_at, image_url, items")
         .eq("user_id", user.id)
         .eq("date", today)
         .order("logged_at", { ascending: true });
