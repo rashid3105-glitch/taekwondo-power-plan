@@ -5,6 +5,15 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
+interface MealItem {
+  name: string;
+  portion_g?: number | null;
+  calories?: number | null;
+  protein?: number | null;
+  carbs?: number | null;
+  fat?: number | null;
+}
+
 interface MealLog {
   id: string;
   meal_name: string | null;
@@ -14,7 +23,9 @@ interface MealLog {
   fat_g: number | null;
   logged_at: string;
   image_url: string | null;
+  items: MealItem[] | null;
 }
+
 
 
 interface Props {
@@ -81,6 +92,8 @@ export function DailyNutritionDashboard({
   const { t } = useLanguage();
   const [logs, setLogs] = useState<MealLog[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
 
   const [calcOpen, setCalcOpen] = useState(false);
   const [calcWeight, setCalcWeight] = useState("");
@@ -111,7 +124,7 @@ export function DailyNutritionDashboard({
       if (!user) { setLoading(false); return; }
       const today = new Date().toISOString().slice(0, 10);
       const { data, error } = await (supabase.from as any)("nutrition_logs")
-        .select("id, meal_name, calories, protein_g, carbs_g, fat_g, logged_at, image_url")
+        .select("id, meal_name, calories, protein_g, carbs_g, fat_g, logged_at, image_url, items")
         .eq("user_id", user.id)
         .eq("date", today)
         .order("logged_at", { ascending: true });
@@ -305,36 +318,84 @@ export function DailyNutritionDashboard({
           <p className="text-xs text-muted-foreground italic">{t("noMealsToday") || "Ingen måltider logget i dag"}</p>
         ) : (
           <ul className="space-y-1.5">
-            {logs.map((l) => (
-              <li key={l.id} className="flex items-center gap-2 rounded-lg bg-muted/40 px-2 py-2">
-                {l.image_url ? (
-                  <img
-                    src={l.image_url}
-                    alt={l.meal_name || ""}
-                    loading="lazy"
-                    className="h-10 w-10 rounded-md object-cover border border-border shrink-0"
-                  />
-                ) : (
-                  <div className="h-10 w-10 rounded-md bg-muted flex items-center justify-center shrink-0">
-                    <Utensils className="h-4 w-4 text-muted-foreground" />
+            {logs.map((l) => {
+              const hasBreakdown = Array.isArray(l.items) && l.items.length > 0;
+              const isOpen = expandedId === l.id;
+              const toggle = () => {
+                if (!hasBreakdown && !l.image_url) return;
+                setExpandedId(isOpen ? null : l.id);
+              };
+              return (
+                <li key={l.id} className="rounded-lg bg-muted/40 overflow-hidden">
+                  <div className="flex items-center gap-2 px-2 py-2">
+                    {l.image_url ? (
+                      <button
+                        type="button"
+                        onClick={toggle}
+                        className="shrink-0"
+                        aria-label={hasBreakdown ? (t("showItems") || "Vis indhold") : (l.meal_name || "")}
+                      >
+                        <img
+                          src={l.image_url}
+                          alt={l.meal_name || ""}
+                          loading="lazy"
+                          className={cn(
+                            "h-10 w-10 rounded-md object-cover border transition-colors",
+                            isOpen ? "border-tab-nutrition" : "border-border",
+                          )}
+                        />
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={toggle}
+                        disabled={!hasBreakdown}
+                        className="h-10 w-10 rounded-md bg-muted flex items-center justify-center shrink-0 disabled:cursor-default"
+                        aria-label={hasBreakdown ? (t("showItems") || "Vis indhold") : (l.meal_name || "")}
+                      >
+                        <Utensils className="h-4 w-4 text-muted-foreground" />
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={toggle}
+                      disabled={!hasBreakdown && !l.image_url}
+                      className="min-w-0 flex-1 text-left disabled:cursor-default"
+                    >
+                      <p className="text-sm font-medium text-card-foreground truncate">{l.meal_name || "—"}</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {Math.round(Number(l.calories) || 0)} kcal · {Math.round(Number(l.protein_g) || 0)}g protein
+                      </p>
+                    </button>
+                    <button
+                      onClick={() => handleDelete(l.id)}
+                      className="h-8 w-8 rounded-md flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                      aria-label={t("deleteMeal") || "Slet"}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
                   </div>
-                )}
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-card-foreground truncate">{l.meal_name || "—"}</p>
-                  <p className="text-[11px] text-muted-foreground">
-                    {Math.round(Number(l.calories) || 0)} kcal · {Math.round(Number(l.protein_g) || 0)}g protein
-                  </p>
-                </div>
-                <button
-                  onClick={() => handleDelete(l.id)}
-                  className="h-8 w-8 rounded-md flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                  aria-label={t("deleteMeal") || "Slet"}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </li>
-            ))}
+                  {isOpen && hasBreakdown && (
+                    <ul className="border-t border-border/60 px-3 py-2 space-y-1 bg-background/40">
+                      {l.items!.map((it, i) => (
+                        <li key={i} className="flex items-center justify-between gap-2 text-[11px]">
+                          <span className="text-card-foreground truncate">
+                            <span className="text-tab-nutrition mr-1">•</span>
+                            {it.name}
+                            {it.portion_g ? <span className="text-muted-foreground"> · {Math.round(Number(it.portion_g))}g</span> : null}
+                          </span>
+                          <span className="text-muted-foreground tabular-nums shrink-0">
+                            {Math.round(Number(it.calories) || 0)} kcal
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              );
+            })}
           </ul>
+
 
         )}
       </div>
