@@ -1,34 +1,31 @@
-## Goal
+## Problem
 
-When an athlete saves a diary entry, in addition to today's email + push, also drop a real chat message into each coach's inbox with a link that jumps straight to the athlete's diary.
+On iPhone (Capacitor native app), tapping **"Tag billede"** in the food scanner crashes the app. The current flow uses a hidden `<input type="file" accept="image/*" capture="environment">` which opens the system camera through the WKWebView. iOS returns the photo at full resolution (often 12MP HEIC / large JPEG). The app then decodes it via `new Image()` → `<canvas>` in `downscaleImage()`, which routinely exhausts WebView memory on iPhone and kills the process. HEIC files also decode inconsistently in WKWebView.
 
-## Changes
+The web upload path works because desktop/Android returns smaller files and HEIC isn't involved.
 
-### 1. Edge function — `supabase/functions/notify-coaches-athlete-activity/index.ts`
-After the existing email + push loops, for `activity_type === "diary"` only:
-- Reuse the already-resolved `coachProfiles` list and `athleteUserId` / `athleteName`.
-- For each coach:
-  1. Call the existing `start_direct_thread` RPC (service-role) with `_other_user` pairing coach ↔ athlete. Because `start_direct_thread` uses `auth.uid()`, we can't call it as service role on behalf of another user; instead insert directly:
-     - Look up an existing `direct` thread that has both `coach.user_id` and `athleteUserId` as members (query `chat_thread_members` twice / use existing helper SQL). If none, insert a new `chat_threads` row (`kind='direct'`, `created_by=athleteUserId`) and two `chat_thread_members` rows.
-  2. Insert a `chat_messages` row with `sender_id = athleteUserId`, `body` = localized text such as `"📓 Ny dagbogsopdatering – åbn dagbog"` followed by the deep link `${SITE_URL}/coach/athlete/${athleteUserId}?diary=1`. Localize via existing `pushI18n.ts` (add new keys `diaryChatMessage` / `openDiaryLink`).
-  3. Cooldown: skip insert if an identical system message from this athlete already exists in the thread within the last 24 h (query `chat_messages` filtered by `sender_id`, `thread_id`, `created_at >= now()-'24h'`, body starts with the localized prefix). This matches the existing email cooldown.
-- Wrap the whole block in `try/catch` — chat failure must not break email/push.
+## Fix
 
-### 2. Deep-link handling — `src/pages/CoachAthleteOverview.tsx`
-- Read `?diary=1` from `useSearchParams` in an effect after `authorized === true`; when present, call `openDiary()` once.
+Use the Capacitor Camera plugin on native (iOS + Android) so the photo is captured and downsized by the OS before it ever reaches the WebView. Keep the existing `<input type="file">` path as a fallback for web.
 
-### 3. Localization — `supabase/functions/_shared/pushI18n.ts`
-Add two keys per supported locale:
-- `diaryChatMessagePrefix` → e.g. Danish: `"📓 Ny dagbogsopdatering fra {name}"`.
-- `openDiaryLinkLabel` → `"Åbn dagbog"` (used only inside chat body as fallback text before the URL).
+### 1. Install plugin
+- Add `@capacitor/camera` to `package.json`.
+
+### 2. `src/components/FoodScanner.tsx`
+- Add a small helper `takePhotoNative()` that dynamically imports `@capacitor/camera` and calls `Camera.getPhoto({ quality: 80, resultType: DataUrl, source: CameraSource.Camera, allowEditing: false, width: 1280 })`. Returns a data URL.
+- In the **"Tag billede"** button `onClick`:
+  - If `Capacitor.isNativePlatform()` → call `takePhotoNative()`, then run the returned data URL through the existing `dataUrlByteLength` guard and `setImage(dataUrl)` (skip `downscaleImage` since Camera already sized it; only re-encode if it still exceeds the 4 MB cap).
+  - Otherwise → keep current `inputRef.current?.click()` behaviour.
+- Wrap the native call in try/catch; ignore `User cancelled` errors; toast a friendly message on other failures.
+- Leave the **"Upload billede"** button unchanged (it uses the gallery input, which is stable).
+
+### 3. iOS permissions
+- Add to `ios/App/App/Info.plist`:
+  - `NSCameraUsageDescription` — "Sportstalent bruger kameraet til at scanne dine måltider."
+  - `NSPhotoLibraryUsageDescription` — "Sportstalent bruger fotos til at scanne dine måltider."
+- User will need to run `npx cap sync ios` locally after pulling.
 
 ### Non-goals
-- No new tables, no schema migration (uses existing `chat_threads`, `chat_thread_members`, `chat_messages`).
-- No changes to competition-reflection flow (out of scope of this request).
-- No custom message-rendering; the deep link is plain text — existing chat UI already linkifies URLs (verify quickly; if it doesn't, add a minimal URL-detection render in the chat message component in a follow-up).
-- No changes to the athlete-side dashboard "messages" card — coaches will see the new message through the same unread-message counter and thread list that already power `/messages`.
-
-## Technical notes
-- Direct-thread lookup as service role: `select thread_id from chat_thread_members where user_id in (coach, athlete) group by thread_id having count(*) = 2` joined against `chat_threads.kind='direct'`.
-- `SITE_URL` already available in edge functions via `Deno.env.get("SITE_URL")` fallback to `https://sportstalent.dk`.
-- Push notification (already sent) already routes to `/coach`; chat message provides the deeper `/coach/athlete/:id?diary=1` link.
+- No changes to `scan-food` edge function, upload flow, manual entry, or the UI layout.
+- No change to the web/desktop camera path.
+- No change to Android beyond enabling the same plugin (Camera plugin auto-registers on both platforms).
