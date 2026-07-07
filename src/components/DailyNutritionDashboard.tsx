@@ -13,7 +13,9 @@ interface MealLog {
   carbs_g: number | null;
   fat_g: number | null;
   logged_at: string;
+  image_url: string | null;
 }
+
 
 interface Props {
   /** Daily calorie target, e.g. profile.custom_calories or plan.dailyCalorieEstimate */
@@ -109,7 +111,7 @@ export function DailyNutritionDashboard({
       if (!user) { setLoading(false); return; }
       const today = new Date().toISOString().slice(0, 10);
       const { data, error } = await (supabase.from as any)("nutrition_logs")
-        .select("id, meal_name, calories, protein_g, carbs_g, fat_g, logged_at")
+        .select("id, meal_name, calories, protein_g, carbs_g, fat_g, logged_at, image_url")
         .eq("user_id", user.id)
         .eq("date", today)
         .order("logged_at", { ascending: true });
