@@ -168,7 +168,8 @@ const Index = () => {
   ];
 
   return (
-    <div style={{ background: BG, color: "#fff", fontFamily: "Inter, sans-serif", overflowX: "hidden" }}>
+    <LandingLayout>
+      <div style={{ background: BG, color: "#fff", fontFamily: "Inter, sans-serif", overflowX: "hidden" }}>
       <PageMeta
         title={t("homeSeoTitle")}
         description={t("homeSeoDesc")}
@@ -193,32 +194,8 @@ const Index = () => {
         </div>
       )}
 
-      <header style={{ position: "sticky", top: 0, zIndex: 100, background: "rgba(11,12,20,0.92)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)", borderBottom: "0.5px solid rgba(255,255,255,0.08)" }}>
-        <nav style={{ padding: `0 ${pad}px`, height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-          <BrandLogo height={isMobile ? 36 : 44} onClick={() => navigate("/")} />
-          {!isMobile && (
-            <div style={{ display: "flex", gap: isTablet ? 14 : 24, fontSize: 14, color: "rgba(255,255,255,0.8)" }}>
-              {navItems.map(({ l, to }) => (
-                <span key={to} onClick={() => navigate(to)} style={{ cursor: "pointer" }}>{l}</span>
-              ))}
-            </div>
-          )}
-          <div style={{ display: "flex", gap: isMobile ? 6 : 10, alignItems: "center" }}>
-            <LanguageSwitcher />
-            <button onClick={() => navigate("/auth")} style={{ padding: isMobile ? "7px 14px" : "8px 18px", borderRadius: 8, border: "0.5px solid rgba(255,255,255,0.14)", background: "transparent", color: "#fff", fontSize: isMobile ? 13 : 14, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>{t("signIn")}</button>
-          </div>
-        </nav>
-        {isMobile && (
-          <div style={{ display: "flex", justifyContent: "center", gap: 18, padding: "8px 12px 10px", fontSize: 12, color: "rgba(255,255,255,0.7)", borderTop: "0.5px solid rgba(255,255,255,0.05)" }}>
-            {navItems.map(({ l, to }) => (
-              <span key={to} onClick={() => navigate(to)} style={{ cursor: "pointer" }}>{l}</span>
-            ))}
-          </div>
-        )}
-      </header>
-
-      <main>
       <section style={{ position: "relative", padding: `${isMobile ? 40 : 72}px ${pad}px ${isMobile ? 48 : 96}px`, overflow: "hidden" }}>
+
         <div aria-hidden style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 60% 50% at 50% 0%, rgba(245,200,66,0.08), transparent 70%)", pointerEvents: "none" }} />
         <div aria-hidden style={{
           position: "absolute", inset: 0, opacity: 0.35,
