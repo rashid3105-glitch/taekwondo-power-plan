@@ -26,7 +26,7 @@ const MONO = "ui-monospace, 'SF Mono', Menlo, Consolas, monospace";
 
 const Index = () => {
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const [checking, setChecking] = useState(true);
   const w = useWidth();
   const isMobile = w < 720;
