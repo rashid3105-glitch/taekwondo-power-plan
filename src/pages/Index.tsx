@@ -531,26 +531,9 @@ const Index = () => {
         </div>
       </section>
 
-      </main>
+      </div>
+    </LandingLayout>
 
-      <footer style={{ borderTop: "0.5px solid rgba(255,255,255,0.07)" }}>
-        <div style={{ maxWidth: 1080, margin: "0 auto", padding: `28px ${pad}px`, display: "flex", justifyContent: "space-between", alignItems: isMobile ? "flex-start" : "center", flexDirection: isMobile ? "column" : "row", flexWrap: "wrap", gap: 16 }}>
-          <div>
-            <BrandLogo height={36} onClick={() => navigate("/")} />
-            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.55)", marginTop: 4 }}>{t("homeFooterAddress")}</div>
-          </div>
-          <div style={{ display: "flex", gap: isMobile ? 16 : 24, fontSize: 12, color: "rgba(255,255,255,0.75)", flexWrap: "wrap" }}>
-            {[
-              { label: t("homeFooterPrivacy"), href: "/privacy" },
-              { label: t("homeFooterTerms"), href: "/terms" },
-              { label: t("homeFooterContact"), href: "/priser" },
-              { label: t("homeFooterBlog"), href: "/blog" },
-            ].map(l => <span key={l.href} onClick={() => navigate(l.href)} style={{ cursor: "pointer" }}>{l.label}</span>)}
-          </div>
-          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)" }}>© 2026 Sportstalent.dk</div>
-        </div>
-      </footer>
-    </div>
   );
 };
 
