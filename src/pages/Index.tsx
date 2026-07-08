@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageMeta } from "@/components/PageMeta";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { BrandLogo } from "@/components/BrandLogo";
+import { LandingLayout } from "@/components/landing/LandingLayout";
+
 import { isNativeApp } from "@/lib/platform";
 import { useLanguage } from "@/i18n/LanguageContext";
 import coachSittingAsset from "@/assets/coach-sitting.png";
