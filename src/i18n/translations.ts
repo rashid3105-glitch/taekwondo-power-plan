@@ -1450,7 +1450,6 @@ const translations = {
     faq5A: "Up to 25 athlete accounts, video analysis & notes, team statistics & PDF reports, collaborative season calendar, training plan builder, mental coaching & check-ins, injury follow-up and priority support.",
 
     // Navigation
-    navAbout: "About",
     navPrograms: "Programs",
     navMethodology: "Methodology",
     navContact: "Contact",
@@ -4794,7 +4793,6 @@ const translations = {
     faq5Q: "Hvad får klubben for 1.299 kr/md?",
     faq5A: "Op til 25 atletkonti, videoanalyse & noter, holdstatistik & PDF-rapporter, kollaborativ sæsonkalender, træningsplanbygger, mental coaching & check-ins, skadeopfølgning og prioriteret support.",
 
-    navAbout: "Om os",
     navPrograms: "Programmer",
     navMethodology: "Metode",
     navContact: "Kontakt",
@@ -8123,7 +8121,6 @@ const translations = {
     faq5Q: "Vad får klubben för 1 299 DKK/månad?",
     faq5A: "Upp till 25 atletkonton, videoanalys & anteckningar, lagstatistik & PDF-rapporter, kollaborativ säsongskalender, träningsplanbyggare, mental coaching & check-ins, skadeuppföljning och prioriterad support.",
 
-    navAbout: "Om oss",
     navPrograms: "Program",
     navMethodology: "Metodik",
     navContact: "Kontakt",
@@ -11405,7 +11402,6 @@ const translations = {
     faq5Q: "Was bekommt der Verein für 1.299 DKK/Monat?",
     faq5A: "Bis zu 25 Athletenkonten, Videoanalyse & Notizen, Teamstatistiken & PDF-Berichte, kollaborativer Saisonkalender, Trainingsplan-Builder, Mental Coaching & Check-ins, Verletzungsnachsorge und priorisierter Support.",
 
-    navAbout: "Über uns",
     navPrograms: "Programme",
     navMethodology: "Methodik",
     navContact: "Kontakt",
@@ -14691,7 +14687,6 @@ const translations = {
     faq5Q: "ماذا يحصل عليه النادي مقابل 1299 كرونة/شهر؟",
     faq5A: "حتى 25 حساب رياضي، تحليل الفيديو والملاحظات، إحصائيات الفريق وتقارير PDF، تقويم الموسم التعاوني، منشئ خطط التدريب، التدريب الذهني والفحوصات، متابعة الإصابات والدعم ذي الأولوية.",
 
-    navAbout: "من نحن",
     navPrograms: "البرامج",
     navMethodology: "المنهجية",
     navContact: "اتصل بنا",
@@ -17986,7 +17981,6 @@ const translations = {
     faq5Q: "Hva får klubben for 1 299 DKK/mnd?",
     faq5A: "Opptil 25 atletkontoer, videoanalyse & notater, lagstatistikk & PDF-rapporter, samarbeidende sesongkalender, treningsplanbygger, mental coaching & check-ins, skadeoppfølging og prioritert support.",
 
-    navAbout: "Om os",
     navPrograms: "Programmer",
     navMethodology: "Metode",
     navContact: "Kontakt",
