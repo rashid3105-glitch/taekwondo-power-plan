@@ -386,6 +386,12 @@ export default function ParentDashboard() {
               )}
             </Card>
 
+            {/* Parent guide AI chat */}
+            <ParentGuideChat
+              athleteId={a.profile.user_id}
+              athleteFirstName={(a.profile.display_name || "").split(" ")[0] || ""}
+            />
+
             {a.season?.plan && (
               <SeasonCalendarMini
                 seasonPlan={a.season.plan}
