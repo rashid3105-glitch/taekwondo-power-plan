@@ -1,67 +1,39 @@
-# Homepage redesign — Baseline-inspired
+## Hvad forældre kan se i dag (`/parent-dashboard`)
 
-## What Baseline does well (and we should borrow)
+Kilde: `src/pages/ParentDashboard.tsx`. Forældre kobles til atleter via `parent_athletes` (oprettes gennem `parent_invites` + edge function `parent-signup`). En forælder kan være linket til flere børn — hvert barn får sit eget kort med:
 
-- **Sticky, minimal nav** with a single yellow CTA and a subtle promo bar on top.
-- **Cinematic hero**: full-bleed dark background image/video, a "SYSTEM ACTIVE" status chip, a two-line headline with one word in an accent color, three benefit bullets, two CTAs (primary + "See how it works").
-- **Live data overlay** on the hero — a fake telemetry HUD (lap times, delta, pedal traces). For us this becomes an athlete cockpit: readiness score, HRV, load, week volume, mood.
-- **Problem → Solution → Features → How it works → Pricing → FAQ → Final CTA** — a classic long scroll.
-- **Feature cards** on a dark grid with monospace labels and thin dividers.
-- **Numbers/stats band** ("2,847 drivers, 156k laps").
-- **Consistent typography**: uppercase display font for headlines, mono for labels/data, sans for body.
+1. **Header-kort** — avatar, navn, bæltegrad, klub, land, "Forælder"-badge.
+2. **Træningsplan** — navn på aktiv plan, ugeskema (dag + type), knap "Se hele planen" (åbner `PlanViewDialog` med fuldt plan-indhold).
+3. **Stævner** — sidste 5 (kommende + resultater): navn, dato, sted, resultat.
+4. **Fremmøde** — sidste 10 træningsdage (✓/✗) + fremmødeprocent baseret på op til 200 workout-logs.
+5. **Kosttilskud & medicin** — foldbar `SupplementChecker` (aldersvenligt sprog).
+6. **Sæsonkalender** — hvis klubben har en aktiv sæsonplan: mini-visning med faser og ugeskabelon.
+7. **Kontoindstillinger** — eget navn + telefonnummer (kun sig selv, ikke barnet).
+8. Sprogvælger + log ud i toppen. Footer: "kun læseadgang"-note.
 
-All of this is compatible with the current Sportstalent "cockpit" aesthetic — no framework changes, no new dependencies.
+**Ikke synligt for forældre:** dagbog, mental assessments, chat/beskeder, readiness, ernæringslogs, vægt, testresultater, video, rehab, coach-noter.
 
-## Estimate
+**Adgang styret af RLS:** `parent_athletes` linket → forælder kan læse barnets `profiles`, `training_plans`, `competitions`, `workout_logs`, klubbens sæsonplan.
 
-- **Small (1–2 hours of work / 1 iteration):** Restyle current hero to match Baseline's layout — add status chip, accent-word headline, benefit bullets, live cockpit HUD, dual CTA. Keep the rest of the current page.
-- **Medium (half a day / 2–3 iterations, recommended):** Full section-by-section rebuild of `Index.tsx` (hero, problem, solution, features, how-it-works, stats, pricing teaser, FAQ, final CTA), reusing existing brand tokens, images, and translations. What I'd recommend.
-- **Large (1–2 days):** Medium + custom animations (scroll-reveal, animated counters, HUD values that update over time), new hero background photography/video, and matching restyle of `/platform`, `/funktioner`, `/priser`, and `/about` so the whole marketing surface feels coherent.
+---
 
-## Proposed structure for the new homepage
+## Foreslået test
 
-```text
-┌─ Promo bar: "Beta åben — 3 måneder gratis"           [CTA →]
-├─ Sticky nav (unchanged links, tighter styling)
-│
-├─ HERO
-│    [SYSTEM ACTIVE chip]
-│    "Hæv dit niveau.  Træn med præcision."
-│    Sub: én linje om hvad platformen gør
-│    • Consistency under pressure
-│    • Bedre restitution og form
-│    • Færre skader, mere tid på gulvet
-│    [Prøv gratis]  [Se hvordan det virker]
-│    ── Cockpit HUD overlay: readiness, HRV, load, mood
-│
-├─ PROBLEM  — 3 kort: "Ingen overblik / Spildt træning / Plateau"
-├─ SOLUTION — "Data slår mavefornemmelse", split med screenshot
-├─ FEATURES — 6 kort (Dagbog, Mental, Kamp, Ernæring, Tests, Klub)
-├─ HOW IT WORKS — 3 trin (Opret klub → Invitér atleter → Følg udvikling)
-├─ STATS band — atleter, klubber, sessioner logget
-├─ TESTIMONIAL — 1 citat, plads til flere senere
-├─ PRICING teaser — 3 tiers, "Se alle priser"
-├─ FAQ — 5 spørgsmål (accordion)
-└─ FINAL CTA — "Klar til at hæve niveauet?" + signup
-```
+Jeg opretter en rigtig forælder-konto koblet til en Sportstalent Demo-atlet og logger ind via Playwright, så vi ser præcis hvad de ser.
 
-## Technical notes
+### Trin
 
-- Edit only `src/pages/Index.tsx`; reuse `BrandLogo`, `LanguageSwitcher`, `PageMeta`, existing coach imagery in `src/assets/`.
-- Keep the inline-style approach the file already uses so I don't need to touch the design system.
-- All copy pulled from `useLanguage()` — I'll add new keys across all 7 locales (da, en, sv, de, ar, no, es), matching the memory rule.
-- Cockpit HUD is a static SVG/CSS composition of real metric names from the app (readiness, HRV, load, mood, weekly volume) — no live data, just visual.
-- Respect the "no AI jargon" rule — I'll use "System" / "Personaliseret", not "AI".
-- Native-app compliance: pricing teaser hidden when `isNativeApp()` is true, same as today.
-- Redirect for authenticated users stays intact.
+1. **Find en demo-atlet** — SELECT en atlet i klubben "Sportstalent Demo" fra `profiles` (helst en med aktiv plan, stævner og workout_logs, så alle sektioner har indhold).
+2. **Opret forælder-invite** — INSERT en række i `parent_invites` (kode, athlete_id, expires_at = nu + 7 dage) via service role.
+3. **Kør `parent-signup` edge function** med invite-koden, testemail (fx `test-parent+demo@sportstalent.dk`) og et testpassword. Det opretter auth-bruger, profil (`is_parent=true`), markerer invite brugt, og linker `parent_athletes`.
+4. **Playwright** — log ind som forælderen på `/auth` → naviger til `/parent-dashboard` → screenshot hver sektion (header, plan, plan-dialog åbnet, stævner, fremmøde, kosttilskud åbnet, sæsonkalender).
+5. **Rapport** — screenshots + observationer (tomme sektioner, sprogfejl, layout-issues på 882px viewport). Rører ikke kode.
+6. **Oprydning** — slet testforælder + invite + parent_athletes-link bagefter, så demoklubben er ren.
 
-## Open questions before build
+### Alternativ (uden ny bruger)
 
-1. Which size do you want — **Small**, **Medium (recommended)**, or **Large**?  
-Medium
-2. Should I keep the current yellow (#F5C842) as the accent color, or introduce a second accent (e.g. cyan/red) for the highlighted headline word like Baseline does?  
-yes please keep the current yellow
-3. Do you have real numbers to put in the stats band (athletes, clubs, sessions), or should I leave that section out until you do?  
-keep it out for now.  
-  
-Make sure that we dont miss anything important. Maybe let me see the new page before we put it to production. 
+Hvis du hellere vil undgå at oprette en testbruger: jeg kan i stedet lave en ren "gennemgang" — læse RLS-policies + koden og lave en checklist over hvad hver sektion viser + edge cases (barn uden plan, uden stævner osv.), uden Playwright og uden DB-writes.
+
+---
+
+Vil du have **fuld test med rigtig login (trin 1–6)**, eller **kode/RLS-gennemgang uden bruger-oprettelse**?
