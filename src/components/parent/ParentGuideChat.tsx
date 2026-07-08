@@ -105,7 +105,7 @@ export function ParentGuideChat({ athleteId, athleteFirstName }: Props) {
       </button>
 
       {open && (
-        <div className="space-y-3 pt-1" dir={language === "ar" ? "rtl" : "ltr"}>
+        <div className="space-y-3 pt-1" dir={locale === "ar" ? "rtl" : "ltr"}>
           <p className="text-xs text-muted-foreground leading-relaxed flex items-start gap-1.5">
             <Sparkles className="h-3 w-3 mt-0.5 text-primary shrink-0" />
             <span>
