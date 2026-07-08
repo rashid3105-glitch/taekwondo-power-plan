@@ -544,7 +544,7 @@ const Index = () => {
           </div>
           <h2 style={{ fontSize: "clamp(28px,5vw,48px)", fontWeight: 900, letterSpacing: "-0.04em", marginBottom: 18, lineHeight: 1.08 }}>
             {t("homeCtaTitleL1")}<br />
-            {t("homeCtaTitleL2Pre")}<span style={{ color: GOLD, fontStyle: "italic" }}>{t("homeCtaTitleL2Em")}</span>{t("homeCtaTitleL2Post")}
+            <span style={{ color: GOLD, fontStyle: "italic" }}>{t("homeCtaTitleL2Em")}</span>{t("homeCtaTitleL2Post")}
           </h2>
           <p style={{ fontSize: 16, color: "rgba(255,255,255,0.55)", maxWidth: 460, margin: "0 auto 32px", lineHeight: 1.65 }}>
             {t("homeCtaBody")}
