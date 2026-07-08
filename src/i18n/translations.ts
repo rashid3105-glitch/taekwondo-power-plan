@@ -3343,6 +3343,12 @@ const translations = {
     homeFooterBlog: "Blog",
     homeSeoTitle: "Sportstalent — The platform for sports coaches",
     homeSeoDesc: "Training plans, video analysis, mental coaching and athlete data in one cockpit. Built by coaches, for coaches.",
+    navHome: "Home",
+    navPlatform: "Platform",
+    navFeatures: "Features",
+    navPricing: "Pricing",
+    navAbout: "About",
+    navBlog: "Blog",
   },
   da: {
     defaultLanguage: "Standardsprog",
@@ -6673,6 +6679,12 @@ const translations = {
     homeFooterBlog: "Blog",
     homeSeoTitle: "Sportstalent — Platformen til sportscoaches",
     homeSeoDesc: "Træningsplaner, videoanalyse, mental coaching og atletdata samlet i ét cockpit. Bygget af coaches, til coaches.",
+    navHome: "Hjem",
+    navPlatform: "Platform",
+    navFeatures: "Funktioner",
+    navPricing: "Priser",
+    navAbout: "Om os",
+    navBlog: "Blog",
   },
   sv: {
     defaultLanguage: "Standardspråk",
@@ -10001,6 +10013,12 @@ const translations = {
     homeFooterBlog: "Blogg",
     homeSeoTitle: "Sportstalent — Plattformen för sportstränare",
     homeSeoDesc: "Träningsplaner, videoanalys, mental coaching och atletdata i en cockpit. Byggd av tränare, för tränare.",
+    navHome: "Hem",
+    navPlatform: "Plattform",
+    navFeatures: "Funktioner",
+    navPricing: "Priser",
+    navAbout: "Om oss",
+    navBlog: "Blogg",
   },
   de: {
     defaultLanguage: "Standardsprache",
@@ -13280,6 +13298,12 @@ const translations = {
     homeSeoTitle: "Sportstalent — Die Plattform für Sporttrainer",
     homeSeoDesc: "Trainingspläne, Videoanalyse, mentales Coaching und Athletendaten in einem Cockpit. Von Trainern, für Trainer.",
   },
+    navHome: "الرئيسية",
+    navPlatform: "المنصة",
+    navFeatures: "الميزات",
+    navPricing: "الأسعار",
+    navAbout: "معلومات عنا",
+    navBlog: "المدونة",
 
   ar: {
     onbWelcomeTitle: "مرحبًا بك في Sportstalent",
@@ -16558,6 +16582,12 @@ const translations = {
     homeFooterBlog: "المدونة",
     homeSeoTitle: "سبورتستالنت — منصة مدربي الرياضة",
     homeSeoDesc: "خطط تدريب، تحليل فيديو، تدريب ذهني وبيانات رياضيين في لوحة قيادة واحدة. من المدربين، للمدربين.",
+    navHome: "Startseite",
+    navPlatform: "Plattform",
+    navFeatures: "Funktionen",
+    navPricing: "Preise",
+    navAbout: "Über uns",
+    navBlog: "Blog",
   },
   no: {
     onbWelcomeTitle: "Velkommen til Sportstalent",
@@ -19889,6 +19919,12 @@ const translations = {
     homeFooterBlog: "Blogg",
     homeSeoTitle: "Sportstalent — Plattformen for sportstrenere",
     homeSeoDesc: "Treningsplaner, videoanalyse, mental coaching og utøverdata i én cockpit. Bygget av trenere, for trenere.",
+    navHome: "Hjem",
+    navPlatform: "Plattform",
+    navFeatures: "Funksjoner",
+    navPricing: "Priser",
+    navAbout: "Om oss",
+    navBlog: "Blogg",
   },
 } as const;
 
@@ -19898,6 +19934,12 @@ export type TranslationKey = keyof typeof translations.en;
 // AI-generated plans (training, nutrition, mental, rehab) are produced in
 // Spanish server-side regardless of UI string coverage.
 const esOverrides: Partial<Record<TranslationKey, string>> = {
+  navHome: "Inicio",
+  navPlatform: "Plataforma",
+  navFeatures: "Funciones",
+  navPricing: "Precios",
+  navAbout: "Sobre nosotros",
+  navBlog: "Blog",
   competitionInvitationPdf: "Invitación al torneo (PDF)",
   competitionInvitationPdfHint: "Adjunta el PDF oficial de la invitación (máx. 10 MB)",
   ptCat_reaction: "Reacción",
