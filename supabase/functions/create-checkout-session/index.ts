@@ -11,8 +11,8 @@ const corsHeaders = {
 const PRICE_IDS: Record<string, Record<string, string>> = {
   // 2026 DKK pricing
   athlete: {
-    monthly: "price_1TS2U1CrYQiZxdDX324WQLGt", // 49 DKK/md
-    yearly: "price_1TS2UYCrYQiZxdDXV6YlDmMh",  // 470 DKK/år
+    monthly: "price_1TqtnDCrYQiZxdDXjymoOFKk", // 59 DKK/md
+    yearly: "price_1TqtnECrYQiZxdDXNpxU9KEJ",  // 590 DKK/år
   },
   coach_solo: {
     monthly: "price_1TS2U4CrYQiZxdDXDlVynkBK", // 99 DKK/md
@@ -27,8 +27,8 @@ const PRICE_IDS: Record<string, Record<string, string>> = {
     yearly: "price_1TS2UkCrYQiZxdDX9yv9l5jB",  // 6.710 DKK/år
   },
   team_large: {
-    monthly: "price_1TS2U6CrYQiZxdDX8tM6AoTK", // 999 DKK/md
-    yearly: "price_1TS2UlCrYQiZxdDXuqRP67fU",  // 9.590 DKK/år
+    monthly: "price_1TqtnECrYQiZxdDXKmWrY5Xd", // 1299 DKK/md
+    yearly: "price_1TqtnFCrYQiZxdDXVYaBbiDA",  // 12.990 DKK/år
   },
   // Legacy aliases for grandfathered references
   personal: {
