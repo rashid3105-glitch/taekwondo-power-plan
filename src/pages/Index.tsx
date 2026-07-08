@@ -123,20 +123,40 @@ const Index = () => {
     <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: GOLD, marginBottom: 12, fontFamily: MONO }}>{children}</div>
   );
 
-  const Chapter = ({ n, label, title }: { n: string; label: string; title?: string }) => (
-    <div style={{ borderTop: "0.5px solid rgba(255,255,255,0.08)", borderBottom: "0.5px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.015)" }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: `${isMobile ? 22 : 30}px ${pad}px`, display: "flex", alignItems: "center", gap: isMobile ? 16 : 28 }}>
-        <div style={{ fontFamily: MONO, fontSize: isMobile ? 36 : 56, fontWeight: 900, color: GOLD, letterSpacing: "-0.04em", lineHeight: 1, flexShrink: 0 }}>{n}</div>
-        <div style={{ width: 1, alignSelf: "stretch", background: "rgba(255,255,255,0.1)" }} />
-        <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 0 }}>
-          <div style={{ fontFamily: MONO, fontSize: 10, letterSpacing: "0.2em", color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}>Chapter</div>
-          <div style={{ fontSize: isMobile ? 15 : 18, fontWeight: 800, letterSpacing: "-0.01em", color: "#fff" }}>{label}</div>
-          {title && !isMobile && <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)" }}>{title}</div>}
+  const Chapter = ({ n, label, title }: { n: string; label: string; title?: string }) => {
+    if (isMobile) {
+      return (
+        <div style={{ borderTop: "0.5px solid rgba(255,255,255,0.08)", borderBottom: "0.5px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.015)" }}>
+          <div style={{ maxWidth: 1200, margin: "0 auto", padding: `26px ${pad}px 22px` }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+              <div style={{ fontFamily: MONO, fontSize: 10, letterSpacing: "0.22em", color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}>Chapter</div>
+              <div style={{ fontFamily: MONO, fontSize: 9, color: "rgba(255,255,255,0.3)", letterSpacing: "0.16em" }}>/ SPORTSTALENT</div>
+            </div>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 14 }}>
+              <div style={{ fontFamily: MONO, fontSize: 64, fontWeight: 900, color: GOLD, letterSpacing: "-0.05em", lineHeight: 0.9 }}>{n}</div>
+              <div style={{ height: 1, flex: 1, background: "rgba(255,255,255,0.12)", transform: "translateY(-8px)" }} />
+            </div>
+            <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: "-0.02em", color: "#fff", marginTop: 10, lineHeight: 1.15 }}>{label}</div>
+            {title && <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", marginTop: 6, lineHeight: 1.35 }}>{title}</div>}
+          </div>
         </div>
-        <div style={{ marginLeft: "auto", fontFamily: MONO, fontSize: 10, color: "rgba(255,255,255,0.3)", letterSpacing: "0.14em", display: isMobile ? "none" : "block" }}>/ SPORTSTALENT</div>
+      );
+    }
+    return (
+      <div style={{ borderTop: "0.5px solid rgba(255,255,255,0.08)", borderBottom: "0.5px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.015)" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: `30px ${pad}px`, display: "flex", alignItems: "center", gap: 28 }}>
+          <div style={{ fontFamily: MONO, fontSize: 56, fontWeight: 900, color: GOLD, letterSpacing: "-0.04em", lineHeight: 1, flexShrink: 0 }}>{n}</div>
+          <div style={{ width: 1, alignSelf: "stretch", background: "rgba(255,255,255,0.1)" }} />
+          <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 0 }}>
+            <div style={{ fontFamily: MONO, fontSize: 10, letterSpacing: "0.2em", color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}>Chapter</div>
+            <div style={{ fontSize: 18, fontWeight: 800, letterSpacing: "-0.01em", color: "#fff" }}>{label}</div>
+            {title && <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)" }}>{title}</div>}
+          </div>
+          <div style={{ marginLeft: "auto", fontFamily: MONO, fontSize: 10, color: "rgba(255,255,255,0.3)", letterSpacing: "0.14em" }}>/ SPORTSTALENT</div>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
 
 
