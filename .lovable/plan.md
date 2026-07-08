@@ -1,36 +1,52 @@
-## Problem
+# Fælles topmenu + fix af sprogvælger
 
-On Android (and iOS) the language you pick in `LanguageSwitcher` doesn't stick between app launches. The switcher writes to `localStorage["tkd-lang"]`, but the Android WebView periodically clears `localStorage` (OS storage pressure, app updates, "Clear website data"). When the app relaunches, `localStorage` is empty, so `LanguageContext` falls back to timezone/navigator detection — which on many Android devices reports `en-US` even for Danish users — and the language appears to "reset".
+## Hvad brugeren oplever
 
-We already handle this exact problem for the Supabase auth token in `src/lib/nativeAuthStorage.ts` by mirroring `localStorage` → `@capacitor/preferences` (native durable KV) and hydrating it back before React mounts. Language preference needs the same treatment; it's currently the only user setting that's not mirrored, which is why auth survives a WebView wipe but locale doesn't.
+1. Sprogvælgeren "hopper tilbage" når man klikker på et menupunkt (Platform, Funktioner, Priser, Om os, Blog).
+2. Forsiden (`/`) har en anden topmenu end undersiderne — så headeren ser forskellig ud fra side til side.
 
-## Fix
+## Årsag til "sprog-reset"
 
-Mirror `tkd-lang` to Capacitor Preferences alongside the auth token, following the same pattern.
+Sproget bliver faktisk ikke nulstillet. Flagvælgeren viser stadig det valgte sprog, og valget gemmes korrekt. Problemet er at **menu-labels og "Log ind"-knappen i den fælles topbar (`LandingLayout`) er hardcodet på dansk** ("Platform", "Funktioner", "Priser", "Om os", "Blog", "Log ind"). Når man skifter til engelsk og klikker rundt, forbliver menuen på dansk — og det opleves som om sproget "hopper tilbage".
 
-### 1. New helper: `src/lib/nativeLangStorage.ts`
+Derudover bruger forsiden (`Index.tsx`) en helt egen header (uden menulinks), så udseendet skifter når man navigerer mellem `/` og fx `/about`.
 
-- `hydrateLangFromPreferences()` — before React mounts, if `Capacitor.isNativePlatform()` and `localStorage["tkd-lang"]` is empty, read from Preferences and copy into `localStorage`. No-op on web.
-- `writeLangToPreferences(locale)` — write current value to Preferences. No-op on web.
+## Løsning
 
-### 2. `src/main.tsx`
+### 1. Én fælles topbar på alle homepage-sider
 
-Call `hydrateLangFromPreferences()` in the existing pre-mount async IIFE, right next to `hydrateAuthFromPreferences()`.
+- Forsiden `src/pages/Index.tsx` skiftes til at bruge `LandingLayout` — dens nuværende private `<header>` (linje ~196-210) fjernes, og resten af siden wrappes i `<LandingLayout>`.
+- Alle offentlige sider bruger nu samme `LandingLayout`: `Index`, `About`, `Funktioner`, `Priser`, `PlatformMarketing`, `Blog`, `BlogPost`, `BlogCommentConfirm`, `Terms`, `PrivacyPolicy` (de sidste 8 gør det allerede).
 
-### 3. `src/i18n/LanguageContext.tsx`
+### 2. Aktiv side markeres med gul ramme
 
-- In `setLocale`, after `localStorage.setItem("tkd-lang", l)`, fire-and-forget `writeLangToPreferences(l)`.
-- In the profile-seed path (when we set locale from `profiles.default_locale`), also mirror to Preferences so the seeded value survives a WebView wipe.
+I `LandingLayout` opdateres nav-links så det aktive punkt får en **gul kant** (`border: 1px solid #F5C842`, let padding, afrundede hjørner) i stedet for kun gul tekst. Ikke-aktive links beholder deres nuværende stil.
 
-### Out of scope
+`/` tilføjes som første nav-link ("Hjem" / "Home") så forsiden også kan markeres aktiv.
 
-- No change to `LanguageSwitcher.tsx` — the UI already works; only persistence is broken on native.
-- No new dependency — `@capacitor/preferences` is already in use.
-- No web behavior change — all new code is guarded by `Capacitor.isNativePlatform()`.
+### 3. Fix sprog-"reset" — oversæt topbaren
 
-## Verification
+Nav-labels og "Log ind" i `LandingLayout` bindes til `useLanguage().t()` i stedet for hardcoded dansk. Nye i18n-nøgler tilføjes til **alle 7 sprog** i `src/i18n/translations.ts`:
 
-- Web: locale still lives in `localStorage`, unchanged.
-- Android: after picking Danish, force-stop app, clear WebView storage from device settings, relaunch → app opens in Danish because Preferences rehydrated it before React mounted.
+- `navHome` — Hjem / Home / Hem / Startseite / الرئيسية / Hjem / Inicio
+- `navPlatform` — Platform / Platform / Plattform / Plattform / المنصة / Plattform / Plataforma
+- `navFeatures` — Funktioner / Features / Funktioner / Funktionen / الميزات / Funksjoner / Funciones
+- `navPricing` — Priser / Pricing / Priser / Preise / الأسعار / Priser / Precios
+- `navAbout` — Om os / About / Om oss / Über uns / معلومات عنا / Om oss / Sobre nosotros
+- `navBlog` — Blog / Blog / Blogg / Blog / المدونة / Blogg / Blog
 
-write what to do after the update (release to ios and android?)
+"Log ind" bruger allerede eksisterende `signIn`-nøgle.
+
+Footer-links (`Privatlivspolitik`, `Vilkår`, `Kontakt`, `Blog`) oversættes tilsvarende — de har allerede eksisterende nøgler (`footerPrivacy`, `footerTerms`, osv.) eller får nye.
+
+## Tekniske detaljer
+
+- `LandingLayout.tsx`: flyt `NAV_LINKS` ind i komponenten så `t()` kan bruges; erstat aktiv-stil med gul border; tilføj `/` til listen.
+- `Index.tsx`: fjern egen `<header>` (linje 196-210) og "PROMO"-bar (linje ~180-195) hvis den ligger i header — verificér før fjernelse; wrap return-JSX i `<LandingLayout>`; behold PageMeta og alt sideindhold uændret.
+- `translations.ts`: tilføj 6 nye nøgler × 7 sprog.
+- Ingen ændringer i `LanguageContext` — den fungerer korrekt; det var kun labels der ikke oversatte.
+
+## Ude for scope
+
+- Ingen ændringer i dashboard-header (kun offentlige sider).
+- Ingen designoverhaling af hero, priser eller sektioner på forsiden — kun topbar udskiftes.

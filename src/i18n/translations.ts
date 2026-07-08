@@ -1450,7 +1450,6 @@ const translations = {
     faq5A: "Up to 25 athlete accounts, video analysis & notes, team statistics & PDF reports, collaborative season calendar, training plan builder, mental coaching & check-ins, injury follow-up and priority support.",
 
     // Navigation
-    navAbout: "About",
     navPrograms: "Programs",
     navMethodology: "Methodology",
     navContact: "Contact",
@@ -3343,6 +3342,12 @@ const translations = {
     homeFooterBlog: "Blog",
     homeSeoTitle: "Sportstalent — The platform for sports coaches",
     homeSeoDesc: "Training plans, video analysis, mental coaching and athlete data in one cockpit. Built by coaches, for coaches.",
+    navHome: "Home",
+    navPlatform: "Platform",
+    navFeatures: "Features",
+    navPricing: "Pricing",
+    navAbout: "About",
+    navBlog: "Blog",
   },
   da: {
     defaultLanguage: "Standardsprog",
@@ -4788,7 +4793,6 @@ const translations = {
     faq5Q: "Hvad får klubben for 1.299 kr/md?",
     faq5A: "Op til 25 atletkonti, videoanalyse & noter, holdstatistik & PDF-rapporter, kollaborativ sæsonkalender, træningsplanbygger, mental coaching & check-ins, skadeopfølgning og prioriteret support.",
 
-    navAbout: "Om os",
     navPrograms: "Programmer",
     navMethodology: "Metode",
     navContact: "Kontakt",
@@ -6673,6 +6677,12 @@ const translations = {
     homeFooterBlog: "Blog",
     homeSeoTitle: "Sportstalent — Platformen til sportscoaches",
     homeSeoDesc: "Træningsplaner, videoanalyse, mental coaching og atletdata samlet i ét cockpit. Bygget af coaches, til coaches.",
+    navHome: "Hjem",
+    navPlatform: "Platform",
+    navFeatures: "Funktioner",
+    navPricing: "Priser",
+    navAbout: "Om os",
+    navBlog: "Blog",
   },
   sv: {
     defaultLanguage: "Standardspråk",
@@ -8111,7 +8121,6 @@ const translations = {
     faq5Q: "Vad får klubben för 1 299 DKK/månad?",
     faq5A: "Upp till 25 atletkonton, videoanalys & anteckningar, lagstatistik & PDF-rapporter, kollaborativ säsongskalender, träningsplanbyggare, mental coaching & check-ins, skadeuppföljning och prioriterad support.",
 
-    navAbout: "Om oss",
     navPrograms: "Program",
     navMethodology: "Metodik",
     navContact: "Kontakt",
@@ -10001,6 +10010,12 @@ const translations = {
     homeFooterBlog: "Blogg",
     homeSeoTitle: "Sportstalent — Plattformen för sportstränare",
     homeSeoDesc: "Träningsplaner, videoanalys, mental coaching och atletdata i en cockpit. Byggd av tränare, för tränare.",
+    navHome: "Hem",
+    navPlatform: "Plattform",
+    navFeatures: "Funktioner",
+    navPricing: "Priser",
+    navAbout: "Om oss",
+    navBlog: "Blogg",
   },
   de: {
     defaultLanguage: "Standardsprache",
@@ -11387,7 +11402,6 @@ const translations = {
     faq5Q: "Was bekommt der Verein für 1.299 DKK/Monat?",
     faq5A: "Bis zu 25 Athletenkonten, Videoanalyse & Notizen, Teamstatistiken & PDF-Berichte, kollaborativer Saisonkalender, Trainingsplan-Builder, Mental Coaching & Check-ins, Verletzungsnachsorge und priorisierter Support.",
 
-    navAbout: "Über uns",
     navPrograms: "Programme",
     navMethodology: "Methodik",
     navContact: "Kontakt",
@@ -13279,8 +13293,13 @@ const translations = {
     homeFooterBlog: "Blog",
     homeSeoTitle: "Sportstalent — Die Plattform für Sporttrainer",
     homeSeoDesc: "Trainingspläne, Videoanalyse, mentales Coaching und Athletendaten in einem Cockpit. Von Trainern, für Trainer.",
+    navHome: "Startseite",
+    navPlatform: "Plattform",
+    navFeatures: "Funktionen",
+    navPricing: "Preise",
+    navAbout: "Über uns",
+    navBlog: "Blog",
   },
-
   ar: {
     onbWelcomeTitle: "مرحبًا بك في Sportstalent",
     onbWelcomeSubtitle: "لنقم بإعداد ملفك الشخصي — يستغرق الأمر أقل من دقيقتين.",
@@ -14668,7 +14687,6 @@ const translations = {
     faq5Q: "ماذا يحصل عليه النادي مقابل 1299 كرونة/شهر؟",
     faq5A: "حتى 25 حساب رياضي، تحليل الفيديو والملاحظات، إحصائيات الفريق وتقارير PDF، تقويم الموسم التعاوني، منشئ خطط التدريب، التدريب الذهني والفحوصات، متابعة الإصابات والدعم ذي الأولوية.",
 
-    navAbout: "من نحن",
     navPrograms: "البرامج",
     navMethodology: "المنهجية",
     navContact: "اتصل بنا",
@@ -16558,6 +16576,12 @@ const translations = {
     homeFooterBlog: "المدونة",
     homeSeoTitle: "سبورتستالنت — منصة مدربي الرياضة",
     homeSeoDesc: "خطط تدريب، تحليل فيديو، تدريب ذهني وبيانات رياضيين في لوحة قيادة واحدة. من المدربين، للمدربين.",
+    navHome: "الرئيسية",
+    navPlatform: "المنصة",
+    navFeatures: "الميزات",
+    navPricing: "الأسعار",
+    navAbout: "معلومات عنا",
+    navBlog: "المدونة",
   },
   no: {
     onbWelcomeTitle: "Velkommen til Sportstalent",
@@ -17957,7 +17981,6 @@ const translations = {
     faq5Q: "Hva får klubben for 1 299 DKK/mnd?",
     faq5A: "Opptil 25 atletkontoer, videoanalyse & notater, lagstatistikk & PDF-rapporter, samarbeidende sesongkalender, treningsplanbygger, mental coaching & check-ins, skadeoppfølging og prioritert support.",
 
-    navAbout: "Om os",
     navPrograms: "Programmer",
     navMethodology: "Metode",
     navContact: "Kontakt",
@@ -19889,6 +19912,12 @@ const translations = {
     homeFooterBlog: "Blogg",
     homeSeoTitle: "Sportstalent — Plattformen for sportstrenere",
     homeSeoDesc: "Treningsplaner, videoanalyse, mental coaching og utøverdata i én cockpit. Bygget av trenere, for trenere.",
+    navHome: "Hjem",
+    navPlatform: "Plattform",
+    navFeatures: "Funksjoner",
+    navPricing: "Priser",
+    navAbout: "Om oss",
+    navBlog: "Blogg",
   },
 } as const;
 
@@ -19898,6 +19927,12 @@ export type TranslationKey = keyof typeof translations.en;
 // AI-generated plans (training, nutrition, mental, rehab) are produced in
 // Spanish server-side regardless of UI string coverage.
 const esOverrides: Partial<Record<TranslationKey, string>> = {
+  navHome: "Inicio",
+  navPlatform: "Plataforma",
+  navFeatures: "Funciones",
+  navPricing: "Precios",
+  navAbout: "Sobre nosotros",
+  navBlog: "Blog",
   competitionInvitationPdf: "Invitación al torneo (PDF)",
   competitionInvitationPdfHint: "Adjunta el PDF oficial de la invitación (máx. 10 MB)",
   ptCat_reaction: "Reacción",

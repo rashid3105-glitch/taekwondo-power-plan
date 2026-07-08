@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageMeta } from "@/components/PageMeta";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { BrandLogo } from "@/components/BrandLogo";
+import { LandingLayout } from "@/components/landing/LandingLayout";
+
 import { isNativeApp } from "@/lib/platform";
 import { useLanguage } from "@/i18n/LanguageContext";
 import coachSittingAsset from "@/assets/coach-sitting.png";
@@ -168,7 +170,8 @@ const Index = () => {
   ];
 
   return (
-    <div style={{ background: BG, color: "#fff", fontFamily: "Inter, sans-serif", overflowX: "hidden" }}>
+    <LandingLayout>
+      <div style={{ background: BG, color: "#fff", fontFamily: "Inter, sans-serif", overflowX: "hidden" }}>
       <PageMeta
         title={t("homeSeoTitle")}
         description={t("homeSeoDesc")}
@@ -193,32 +196,8 @@ const Index = () => {
         </div>
       )}
 
-      <header style={{ position: "sticky", top: 0, zIndex: 100, background: "rgba(11,12,20,0.92)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)", borderBottom: "0.5px solid rgba(255,255,255,0.08)" }}>
-        <nav style={{ padding: `0 ${pad}px`, height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-          <BrandLogo height={isMobile ? 36 : 44} onClick={() => navigate("/")} />
-          {!isMobile && (
-            <div style={{ display: "flex", gap: isTablet ? 14 : 24, fontSize: 14, color: "rgba(255,255,255,0.8)" }}>
-              {navItems.map(({ l, to }) => (
-                <span key={to} onClick={() => navigate(to)} style={{ cursor: "pointer" }}>{l}</span>
-              ))}
-            </div>
-          )}
-          <div style={{ display: "flex", gap: isMobile ? 6 : 10, alignItems: "center" }}>
-            <LanguageSwitcher />
-            <button onClick={() => navigate("/auth")} style={{ padding: isMobile ? "7px 14px" : "8px 18px", borderRadius: 8, border: "0.5px solid rgba(255,255,255,0.14)", background: "transparent", color: "#fff", fontSize: isMobile ? 13 : 14, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>{t("signIn")}</button>
-          </div>
-        </nav>
-        {isMobile && (
-          <div style={{ display: "flex", justifyContent: "center", gap: 18, padding: "8px 12px 10px", fontSize: 12, color: "rgba(255,255,255,0.7)", borderTop: "0.5px solid rgba(255,255,255,0.05)" }}>
-            {navItems.map(({ l, to }) => (
-              <span key={to} onClick={() => navigate(to)} style={{ cursor: "pointer" }}>{l}</span>
-            ))}
-          </div>
-        )}
-      </header>
-
-      <main>
       <section style={{ position: "relative", padding: `${isMobile ? 40 : 72}px ${pad}px ${isMobile ? 48 : 96}px`, overflow: "hidden" }}>
+
         <div aria-hidden style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 60% 50% at 50% 0%, rgba(245,200,66,0.08), transparent 70%)", pointerEvents: "none" }} />
         <div aria-hidden style={{
           position: "absolute", inset: 0, opacity: 0.35,
@@ -554,26 +533,9 @@ const Index = () => {
         </div>
       </section>
 
-      </main>
+      </div>
+    </LandingLayout>
 
-      <footer style={{ borderTop: "0.5px solid rgba(255,255,255,0.07)" }}>
-        <div style={{ maxWidth: 1080, margin: "0 auto", padding: `28px ${pad}px`, display: "flex", justifyContent: "space-between", alignItems: isMobile ? "flex-start" : "center", flexDirection: isMobile ? "column" : "row", flexWrap: "wrap", gap: 16 }}>
-          <div>
-            <BrandLogo height={36} onClick={() => navigate("/")} />
-            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.55)", marginTop: 4 }}>{t("homeFooterAddress")}</div>
-          </div>
-          <div style={{ display: "flex", gap: isMobile ? 16 : 24, fontSize: 12, color: "rgba(255,255,255,0.75)", flexWrap: "wrap" }}>
-            {[
-              { label: t("homeFooterPrivacy"), href: "/privacy" },
-              { label: t("homeFooterTerms"), href: "/terms" },
-              { label: t("homeFooterContact"), href: "/priser" },
-              { label: t("homeFooterBlog"), href: "/blog" },
-            ].map(l => <span key={l.href} onClick={() => navigate(l.href)} style={{ cursor: "pointer" }}>{l.label}</span>)}
-          </div>
-          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)" }}>© 2026 Sportstalent.dk</div>
-        </div>
-      </footer>
-    </div>
   );
 };
 
