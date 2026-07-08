@@ -6,6 +6,7 @@ import {
   hydrateAuthFromPreferences,
   bindAuthPersistence,
 } from "./lib/nativeAuthStorage";
+import { hydrateLangFromPreferences } from "./lib/nativeLangStorage";
 
 // PWA service worker: ONLY register on the published *web* site.
 // Skip in editor preview iframe AND in any Capacitor native runtime
