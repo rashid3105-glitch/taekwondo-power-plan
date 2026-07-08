@@ -206,9 +206,6 @@ const Index = () => {
           <div style={{ display: "flex", gap: isMobile ? 6 : 10, alignItems: "center" }}>
             <LanguageSwitcher />
             <button onClick={() => navigate("/auth")} style={{ padding: isMobile ? "7px 14px" : "8px 18px", borderRadius: 8, border: "0.5px solid rgba(255,255,255,0.14)", background: "transparent", color: "#fff", fontSize: isMobile ? 13 : 14, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>{t("signIn")}</button>
-            {!isMobile && (
-              <button onClick={() => navigate("/auth?tab=signup")} style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: GOLD, color: BG, fontSize: 14, fontWeight: 800, cursor: "pointer" }}>{t("homeNavTryFree")}</button>
-            )}
           </div>
         </nav>
         {isMobile && (
