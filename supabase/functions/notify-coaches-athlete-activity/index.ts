@@ -254,94 +254,10 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Also drop an in-app chat message per coach for diary updates, so it
-    // shows in Beskeder with a direct link to the athlete's diary.
-    if (activityType === "diary") {
-      try {
-        const { normalizeLocale, t } = await import("../_shared/pushI18n.ts");
-        const { data: coachLocales } = await admin.from("profiles")
-          .select("user_id, default_locale")
-          .in("user_id", coachProfiles.map((c: any) => c.user_id));
-        const localeByUser = new Map<string, string>();
-        for (const c of coachLocales || []) {
-          localeByUser.set((c as any).user_id, normalizeLocale((c as any).default_locale));
-        }
-
-        const siteUrl = Deno.env.get("SITE_URL") || "https://sportstalent.dk";
-        const diaryLink = `${siteUrl}/coach/athlete/${athleteUserId}?diary=1`;
-        const sinceIso = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-
-        for (const coach of coachProfiles) {
-          const loc = (localeByUser.get(coach.user_id) || "da") as any;
-          const prefix = t("diaryChatMessagePrefix", loc, athleteName);
-          const linkLabel = t("openDiaryLinkLabel", loc);
-          const body = `${prefix}\n${linkLabel}: ${diaryLink}`;
-
-          // Find or create a direct thread between athlete and coach.
-          const { data: memRows } = await admin
-            .from("chat_thread_members")
-            .select("thread_id")
-            .in("user_id", [athleteUserId, coach.user_id]);
-          const counts = new Map<string, number>();
-          for (const r of memRows || []) {
-            counts.set((r as any).thread_id, (counts.get((r as any).thread_id) || 0) + 1);
-          }
-          const candidateIds = Array.from(counts.entries())
-            .filter(([, n]) => n === 2)
-            .map(([id]) => id);
-          let threadId: string | null = null;
-          if (candidateIds.length > 0) {
-            const { data: directThreads } = await admin
-              .from("chat_threads")
-              .select("id")
-              .in("id", candidateIds)
-              .eq("kind", "direct")
-              .limit(1);
-            threadId = (directThreads && directThreads[0]?.id) || null;
-          }
-          if (!threadId) {
-            const { data: newThread, error: tErr } = await admin
-              .from("chat_threads")
-              .insert({ kind: "direct", created_by: athleteUserId })
-              .select("id")
-              .single();
-            if (tErr || !newThread) {
-              console.error("chat_threads insert failed", tErr);
-              continue;
-            }
-            threadId = (newThread as any).id;
-            const { error: mErr } = await admin.from("chat_thread_members").insert([
-              { thread_id: threadId, user_id: athleteUserId, role: "owner" },
-              { thread_id: threadId, user_id: coach.user_id, role: "member" },
-            ]);
-            if (mErr) {
-              console.error("chat_thread_members insert failed", mErr);
-              continue;
-            }
-          }
-
-          // 24h cooldown: skip if the athlete already posted a diary link here recently.
-          const { data: recentMsg } = await admin
-            .from("chat_messages")
-            .select("id")
-            .eq("thread_id", threadId)
-            .eq("sender_id", athleteUserId)
-            .gte("created_at", sinceIso)
-            .ilike("body", `%${diaryLink}%`)
-            .limit(1);
-          if (recentMsg && recentMsg.length > 0) continue;
-
-          const { error: msgErr } = await admin.from("chat_messages").insert({
-            thread_id: threadId,
-            sender_id: athleteUserId,
-            body,
-          });
-          if (msgErr) console.error("chat_messages insert failed", msgErr);
-        }
-      } catch (chatErr) {
-        console.error("diary chat notification failed", chatErr);
-      }
-    }
+    // Note: previously this function also inserted a chat_message per coach
+    // for diary updates, but that surfaced the message in the athlete's own
+    // inbox (as sender) with a coach-only link. Push notifications above
+    // already inform coaches, so no in-app chat insert is needed.
 
 
 
