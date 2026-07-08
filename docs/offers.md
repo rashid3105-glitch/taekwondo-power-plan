@@ -16,9 +16,9 @@ Inkluderet (alle funktioner):
 - Flersproget (DA/EN/SV/DE/AR), multi-klub
 
 Pris:
-- 999 DKK/md (månedlig, fleksibel)
-- 9.990 DKK/år — 2 måneder gratis (~833 DKK/md)
-- Svarer til ~40 DKK pr. atlet/md. Flere end 25 atleter eller tung video: større tier.
+- 1299 DKK/md (månedlig, fleksibel)
+- 12.990 DKK/år — 2 måneder gratis (~1083 DKK/md)
+- Svarer til ~52 DKK pr. atlet/md. Flere end 25 atleter eller tung video: større tier.
 
 ## Tilbud 2 — Enkeltatlet (individuel): "Atlet"
 For den selvstændige atlet uden klub.
@@ -37,7 +37,7 @@ Ikke inkluderet (kræver klublicens):
 - Mental præstations-modul
 
 Pris:
-- 49 DKK/md eller 490 DKK/år (2 måneder gratis)
+- 59 DKK/md eller 590 DKK/år (2 måneder gratis)
 - Note: individuelle atleter dirigeres mod klublicens ("Bed din træner om en klublicens").
 
 ## Fair-use & marginbeskyttelse

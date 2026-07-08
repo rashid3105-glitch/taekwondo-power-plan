@@ -11,10 +11,10 @@ export interface PriceAmount {
 // Per-tier amounts in major units (kr / €). Must match Stripe currency_options.
 export const TIER_PRICES: Record<string, Record<SupportedCurrency, PriceAmount>> = {
   athlete: {
-    dkk: { monthly: 49, yearly: 470 },
-    nok: { monthly: 69, yearly: 660 },
-    sek: { monthly: 79, yearly: 760 },
-    eur: { monthly: 6.5, yearly: 63 },
+    dkk: { monthly: 59, yearly: 590 },
+    nok: { monthly: 83, yearly: 830 },
+    sek: { monthly: 95, yearly: 950 },
+    eur: { monthly: 7.8, yearly: 78 },
   },
   coach_solo: {
     dkk: { monthly: 99, yearly: 950 },
@@ -35,10 +35,10 @@ export const TIER_PRICES: Record<string, Record<SupportedCurrency, PriceAmount>>
     eur: { monthly: 94, yearly: 900 },
   },
   team_large: {
-    dkk: { monthly: 999, yearly: 9590 },
-    nok: { monthly: 1399, yearly: 13420 },
-    sek: { monthly: 1599, yearly: 15410 },
-    eur: { monthly: 134, yearly: 1287 },
+    dkk: { monthly: 1299, yearly: 12990 },
+    nok: { monthly: 1819, yearly: 18190 },
+    sek: { monthly: 2079, yearly: 20790 },
+    eur: { monthly: 174, yearly: 1740 },
   },
 };
 
