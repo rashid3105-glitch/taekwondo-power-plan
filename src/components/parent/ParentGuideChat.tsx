@@ -23,7 +23,7 @@ const SUGGESTIONS_FALLBACK = [
 ];
 
 export function ParentGuideChat({ athleteId, athleteFirstName }: Props) {
-  const { t, language } = useLanguage();
+  const { t, locale } = useLanguage();
   const [open, setOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [messages, setMessages] = useState<ChatMsg[]>([]);
