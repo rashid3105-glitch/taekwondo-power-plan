@@ -550,12 +550,12 @@ const Index = () => {
           </div>
           <div style={{ display: "grid", gap: 10 }}>
             {[
-              { q: "Hvem er Sportstalent til?", a: "Klubber, forbund og selvstændige coaches indenfor konkurrencesport. Platformen er født i taekwondo, men de fleste værktøjer virker på tværs af sportsgrene." },
-              { q: "Skal mine atleter bruge appen?", a: "Nej, men det anbefales. Coaches kan bruge platformen alene, men den fulde værdi kommer når atleterne også logger træning, humør og restitution." },
-              { q: "Hvor længe tager onboarding?", a: "Under en time. Du opretter klubben, inviterer atleter med en kode, og de udfylder selv deres profil." },
-              { q: "Hvad koster det?", a: "Fra 59 DKK/md for enkelte atleter, 1299 DKK/md for klublicens med op til 25 atleter. Se alle detaljer under Priser." },
-              { q: "Hvor er data gemt?", a: "Alt data er hostet i EU (Frankfurt) og krypteret. Vi følger GDPR og du kan altid eksportere eller slette dine data." },
-              { q: "Kan jeg opsige når som helst?", a: "Ja. Ingen binding. Sig op med ét klik — dine data er dine." },
+              { q: "Hvad koster enkelt atlet-licens?", a: "Enkelt atlet-licens koster 59 DKK/md. Den er til den individuelle udøver, der vil følge sin egen udvikling med personlig træningsplan og fremgangsstatistik." },
+              { q: "Hvad koster klublicens?", a: "Klublicens koster 1.299 DKK/md og dækker op til 25 brugere. Den giver adgang til alle funktioner — inklusive videoanalyse, holdstatistik, PDF-rapporter, sæsonkalender og prioriteret support." },
+              { q: "Kan jeg starte gratis?", a: "Ja. Du får 30 dages gratis prøveperiode. Når du opretter din klub, får du 2 måneder gratis, så du kan afprøve alle funktioner uden risiko." },
+              { q: "Hvad får jeg som enkelt atlet for 59 kr/md?", a: "Du får personlig træningsplan, stævneoversigt, beskeder fra din coach og fremgangsstatistik. Det er alt du skal bruge som individuel udøver." },
+              { q: "Hvad får klubben for 1.299 kr/md?", a: "Op til 25 atletkonti, videoanalyse & noter, holdstatistik & PDF-rapporter, kollaborativ sæsonkalender, træningsplanbygger, mental coaching & check-ins, skadeopfølgning og prioriteret support." },
+              { q: "Kan jeg opsige når som helst?", a: "Ja. Ingen binding. Opsig fra din profil med ét klik — virker med det samme, og dine data er dine." },
             ].map((f, i) => (
               <details key={i} style={{ background: "rgba(255,255,255,0.02)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: "14px 18px", cursor: "pointer" }}>
                 <summary style={{ fontSize: 14, fontWeight: 700, listStyle: "none", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, color: "#fff" }}>
