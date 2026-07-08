@@ -158,7 +158,7 @@ const Index = () => {
   const featuresLabel = ({ en: "Features", da: "Funktioner", sv: "Funktioner", de: "Funktionen", ar: "الميزات", no: "Funksjoner", es: "Funciones" } as const);
   const platformLabel = ({ en: "Platform", da: "Platform", sv: "Plattform", de: "Plattform", ar: "المنصة", no: "Plattform", es: "Plataforma" } as const);
   const blogLabel = "Blog";
-  const { locale } = useLanguage();
+  
   const navItems = [
     { l: platformLabel[locale] ?? "Platform", to: "/platform" },
     { l: featuresLabel[locale] ?? "Features", to: "/funktioner" },
