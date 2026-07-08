@@ -15,6 +15,7 @@ import { SeasonCalendarMini } from "@/components/hub/SeasonCalendarMini";
 import { PHONE_CODES } from "@/data/phoneCodes";
 import { PlanViewDialog } from "@/components/PlanViewDialog";
 import { SupplementChecker } from "@/components/SupplementChecker";
+import { ParentGuideChat } from "@/components/parent/ParentGuideChat";
 
 interface AthleteProfile {
   user_id: string;
@@ -385,6 +386,12 @@ export default function ParentDashboard() {
                 </div>
               )}
             </Card>
+
+            {/* Parent guide AI chat */}
+            <ParentGuideChat
+              athleteId={a.profile.user_id}
+              athleteFirstName={(a.profile.display_name || "").split(" ")[0] || ""}
+            />
 
             {a.season?.plan && (
               <SeasonCalendarMini

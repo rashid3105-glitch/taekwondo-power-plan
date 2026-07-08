@@ -2141,6 +2141,36 @@ export type Database = {
         }
         Relationships: []
       }
+      parent_guide_conversations: {
+        Row: {
+          athlete_id: string
+          created_at: string
+          id: string
+          message_count: number
+          messages: Json
+          parent_user_id: string
+          updated_at: string
+        }
+        Insert: {
+          athlete_id: string
+          created_at?: string
+          id?: string
+          message_count?: number
+          messages?: Json
+          parent_user_id: string
+          updated_at?: string
+        }
+        Update: {
+          athlete_id?: string
+          created_at?: string
+          id?: string
+          message_count?: number
+          messages?: Json
+          parent_user_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       parent_invites: {
         Row: {
           athlete_id: string
