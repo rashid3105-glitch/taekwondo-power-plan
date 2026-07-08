@@ -271,6 +271,7 @@ const Index = () => {
         </div>
       </section>
 
+      <Chapter n="01" label="Problemet" title="Hvorfor de fleste coaches står i stampe" />
       {/* PROBLEM ------------------------------------------------------------ */}
       <section style={{ background: CARD, borderTop: "0.5px solid rgba(255,255,255,0.07)", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
         <div style={{ maxWidth: 1080, margin: "0 auto", padding: `${isMobile ? 56 : 88}px ${pad}px` }}>
@@ -299,6 +300,7 @@ const Index = () => {
         </div>
       </section>
 
+      <Chapter n="02" label="Løsningen" title="Ét cockpit, én kilde til sandheden" />
       {/* SOLUTION ----------------------------------------------------------- */}
       <section style={{ maxWidth: 1080, margin: "0 auto", padding: `${isMobile ? 56 : 96}px ${pad}px` }}>
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 32 : 56, alignItems: "center" }}>
@@ -336,6 +338,7 @@ const Index = () => {
         </div>
       </section>
 
+      <Chapter n="03" label="Platformen" title="Alt hvad du behøver som sportscoach" />
       {/* FEATURES ----------------------------------------------------------- */}
       <section style={{ background: CARD, borderTop: "0.5px solid rgba(255,255,255,0.07)", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
         <div style={{ maxWidth: 1080, margin: "0 auto", padding: `${isMobile ? 56 : 88}px ${pad}px` }}>
@@ -365,6 +368,7 @@ const Index = () => {
         </div>
       </section>
 
+      <Chapter n="04" label="Sådan virker det" title="Op at køre på under en time" />
       {/* HOW IT WORKS ------------------------------------------------------- */}
       <section id="how-it-works" style={{ maxWidth: 1000, margin: "0 auto", padding: `${isMobile ? 56 : 96}px ${pad}px` }}>
         <div style={{ textAlign: "center", marginBottom: 44 }}>
@@ -386,6 +390,7 @@ const Index = () => {
         </div>
       </section>
 
+      <Chapter n="05" label="Hvorfor Sportstalent" title="Bygget af coaches. For coaches." />
       {/* WHY / COACH SPLIT -------------------------------------------------- */}
       <section style={{ background: CARD, borderTop: "0.5px solid rgba(255,255,255,0.07)", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
         <div style={{ maxWidth: 1080, margin: "0 auto", padding: `${isMobile ? 56 : 88}px ${pad}px`, display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 32 : 56, alignItems: "center" }}>
@@ -435,6 +440,7 @@ const Index = () => {
         <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", fontFamily: MONO, letterSpacing: "0.12em", textTransform: "uppercase" }}>Coach på platformen · Beta-tester</div>
       </section>
 
+      <Chapter n="06" label="Grundlæggeren" title="Skabt i sportshallen — ikke på et kontor" />
       {/* FOUNDER ------------------------------------------------------------ */}
       <section style={{ background: CARD, borderTop: "0.5px solid rgba(255,255,255,0.07)", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto", padding: `${isMobile ? 56 : 88}px ${pad}px`, display: "grid", gridTemplateColumns: isMobile ? "1fr" : "auto 1fr", gap: isMobile ? 28 : 48, alignItems: "start", justifyItems: isMobile ? "center" : "start", textAlign: isMobile ? "center" : "left" }}>
@@ -464,6 +470,7 @@ const Index = () => {
         </div>
       </section>
 
+      {!native && <Chapter n="07" label="Priser" title="Simpel, transparent prissætning" />}
       {/* PRICING TEASER ----------------------------------------------------- */}
       {!native && (
         <section style={{ maxWidth: 1080, margin: "0 auto", padding: `${isMobile ? 56 : 88}px ${pad}px` }}>
@@ -513,6 +520,7 @@ const Index = () => {
         </section>
       )}
 
+      <Chapter n={native ? "07" : "08"} label="FAQ" title="Spørgsmål vi ofte får" />
       {/* FAQ ---------------------------------------------------------------- */}
       <section style={{ background: CARD, borderTop: "0.5px solid rgba(255,255,255,0.07)", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
         <div style={{ maxWidth: 780, margin: "0 auto", padding: `${isMobile ? 56 : 88}px ${pad}px` }}>
