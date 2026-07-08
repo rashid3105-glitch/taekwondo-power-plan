@@ -108,10 +108,10 @@ export default function Priser() {
             <h2 style={{ fontSize: "clamp(22px,3vw,32px)", fontWeight: 900, letterSpacing: "-0.03em", marginTop: 8 }}>Ofte stillede spørgsmål</h2>
           </div>
           {[
-            { q: "Hvad sker der efter 30 dage?", a: "Du vælger selv om du vil fortsætte. Vi sender en reminder 7 dage inden. Intet kreditkort kræves ved opstart." },
-            { q: "Kan jeg opsige når som helst?", a: "Ja. Ingen binding. Opsig fra din profil med ét klik — virker med det samme." },
-            { q: "Hvad er forskellen på atlet og klublicens?", a: "Klublicensen giver adgang til alle funktioner inkl. videoanalyse, holdstatistik og PDF-rapporter. Atletlicensen er til den individuelle udøver med begrænsede moduler." },
-            { q: "Understøtter I andre sportsgrene end taekwondo?", a: "Platformen er bygget til taekwondo men kan bruges til alle kampsporter. Vi arbejder på bredere sportsunderstøttelse." },
+            { q: "Hvad koster enkelt atlet-licens?", a: "Enkelt atlet-licens koster 59 DKK/md. Den er til den individuelle udøver, der vil følge sin egen udvikling med personlig træningsplan og fremgangsstatistik." },
+            { q: "Hvad koster klublicens?", a: "Klublicens koster 1.299 DKK/md og dækker op til 25 brugere. Den giver adgang til alle funktioner — inklusive videoanalyse, holdstatistik, PDF-rapporter, sæsonkalender og prioriteret support." },
+            { q: "Kan jeg starte gratis?", a: "Ja. Du får 30 dages gratis prøveperiode. Når du opretter din klub, får du 2 måneder gratis, så du kan afprøve alle funktioner uden risiko." },
+            { q: "Kan jeg opsige når som helst?", a: "Ja. Ingen binding. Opsig fra din profil med ét klik — virker med det samme, og dine data er dine." },
           ].map((faq, i) => (
             <div key={i} style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: "20px" }}>
               <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>{faq.q}</div>
