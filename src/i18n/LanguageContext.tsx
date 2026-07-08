@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useCallback, useEffect, useRef, type ReactNode } from "react";
 import translations, { type Locale, type TranslationKey } from "./translations";
 import { supabase } from "@/integrations/supabase/client";
+import { writeLangToPreferences } from "@/lib/nativeLangStorage";
 
 interface LanguageContextType {
   locale: Locale;
@@ -85,6 +86,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const setLocale = useCallback((l: Locale) => {
     setLocaleState(l);
     localStorage.setItem("tkd-lang", l);
+    void writeLangToPreferences(l);
     document.documentElement.dir = RTL_LOCALES.includes(l) ? "rtl" : "ltr";
     document.documentElement.lang = l;
   }, []);
@@ -115,6 +117,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         const next: Locale = isLocale(dl) ? dl : "en";
         setLocaleState(next);
         localStorage.setItem("tkd-lang", next);
+        void writeLangToPreferences(next);
         document.documentElement.dir = RTL_LOCALES.includes(next) ? "rtl" : "ltr";
         document.documentElement.lang = next;
       } catch {

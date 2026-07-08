@@ -49,7 +49,10 @@ initNative();
 // Native auth persistence: hydrate token from Capacitor Preferences BEFORE
 // React mounts, then keep Preferences in sync on every auth change. No-op on web.
 (async () => {
-  await hydrateAuthFromPreferences();
+  await Promise.all([
+    hydrateAuthFromPreferences(),
+    hydrateLangFromPreferences(),
+  ]);
   createRoot(document.getElementById("root")!).render(<App />);
   // Bind listener after mount; supabase client is imported lazily inside.
   bindAuthPersistence();
