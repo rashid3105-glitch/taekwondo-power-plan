@@ -155,11 +155,15 @@ const Index = () => {
     );
   };
 
+  const featuresLabel = ({ en: "Features", da: "Funktioner", sv: "Funktioner", de: "Funktionen", ar: "الميزات", no: "Funksjoner", es: "Funciones" } as const);
+  const platformLabel = ({ en: "Platform", da: "Platform", sv: "Plattform", de: "Plattform", ar: "المنصة", no: "Plattform", es: "Plataforma" } as const);
+  const blogLabel = "Blog";
+  const { locale } = useLanguage();
   const navItems = [
-    { l: "Platform", to: "/platform" },
-    { l: t("navFeatures" as any) || "Funktioner", to: "/funktioner" },
+    { l: platformLabel[locale] ?? "Platform", to: "/platform" },
+    { l: featuresLabel[locale] ?? "Features", to: "/funktioner" },
     { l: t("viewPricing"), to: "/priser" },
-    { l: "Blog", to: "/blog" },
+    { l: blogLabel, to: "/blog" },
     { l: t("navAbout"), to: "/about" },
   ];
 
