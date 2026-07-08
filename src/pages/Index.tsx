@@ -20,7 +20,7 @@ const useWidth = () => {
 
 const GOLD = "#F5C842";
 const BG = "#0B0C14";
-const CARD = "#161A26";
+const CARD = "#1F2638";
 const MONO = "ui-monospace, 'SF Mono', Menlo, Consolas, monospace";
 
 const Index = () => {
@@ -155,7 +155,7 @@ const Index = () => {
             <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
               <span style={{ display: "inline-block", width: 6, height: 6, borderRadius: "50%", background: GOLD, boxShadow: `0 0 8px ${GOLD}` }} />
               <strong style={{ color: GOLD, letterSpacing: "0.08em", fontFamily: MONO, fontSize: 11 }}>BETA ÅBEN</strong>
-              <span style={{ color: "rgba(255,255,255,0.7)" }}>Få 3 måneder gratis når du opretter din klub</span>
+              <span style={{ color: "rgba(255,255,255,0.7)" }}>Få 2 måneder gratis når du opretter din klub</span>
             </span>
             {!isMobile && (
               <button onClick={() => navigate("/auth?tab=signup")} style={{ background: "transparent", color: GOLD, border: `1px solid ${GOLD}`, borderRadius: 6, padding: "3px 10px", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
