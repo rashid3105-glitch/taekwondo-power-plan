@@ -15,6 +15,7 @@ import { SeasonCalendarMini } from "@/components/hub/SeasonCalendarMini";
 import { PHONE_CODES } from "@/data/phoneCodes";
 import { PlanViewDialog } from "@/components/PlanViewDialog";
 import { SupplementChecker } from "@/components/SupplementChecker";
+import { ParentGuideChat } from "@/components/parent/ParentGuideChat";
 
 interface AthleteProfile {
   user_id: string;
