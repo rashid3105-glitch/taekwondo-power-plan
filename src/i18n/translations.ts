@@ -20141,5 +20141,14 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   profileJoinClubSubmit: "Unirse",
   profileJoinClubSuccess: "Te has unido al club.",
   profileJoinClubInvalid: "El código no es válido o ha caducado.",
+  parentGuideTitle: "Guía para padres deportivos",
+  parentGuideIntro: "Un espacio confidencial para reflexionar sobre tu papel como padre/madre de un atleta con talento. Solo tú puedes ver la conversación.",
+  parentGuideSuggestions: "Mi hijo está nervioso antes de una competición — ¿cómo lo apoyo mejor?|¿Cómo doy feedback tras un mal entrenamiento?|¿Cuánto debo exigir y cuánto apoyar?|¿Qué le digo tras un combate perdido?",
+  parentGuidePlaceholder: "Escribe tu pregunta…",
+  parentGuideThinking: "Pensando…",
+  parentGuideDisclaimer: "Orientación — no sustituye el asesoramiento profesional. Si te preocupa su bienestar, contacta con el entrenador, un médico o Team Danmark.",
+  parentGuideSourceLink: "Basado en la guía para padres de Team Danmark",
+  parentGuideDailyLimit: "Has alcanzado el límite diario de mensajes. Continúa mañana.",
+  parentGuideRemaining: "mensajes restantes hoy",
 };
 export default translations;
