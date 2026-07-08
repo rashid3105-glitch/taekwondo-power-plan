@@ -20,7 +20,7 @@ const useWidth = () => {
 
 const GOLD = "#F5C842";
 const BG = "#0B0C14";
-const CARD = "#13141F";
+const CARD = "#161A26";
 const MONO = "ui-monospace, 'SF Mono', Menlo, Consolas, monospace";
 
 const Index = () => {
@@ -483,7 +483,7 @@ const Index = () => {
             {/* Atlet */}
             <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: "26px" }}>
               <div style={{ fontFamily: MONO, fontSize: 10, letterSpacing: "0.14em", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", marginBottom: 10 }}>Atlet</div>
-              <div style={{ fontSize: 40, fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 1 }}>49<span style={{ fontSize: 14, color: "rgba(255,255,255,0.4)", fontWeight: 500, marginLeft: 6 }}>DKK/md</span></div>
+              <div style={{ fontSize: 40, fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 1 }}>59<span style={{ fontSize: 14, color: "rgba(255,255,255,0.4)", fontWeight: 500, marginLeft: 6 }}>DKK/md</span></div>
               <hr style={{ border: "none", borderTop: "0.5px solid rgba(255,255,255,0.07)", margin: "18px 0" }} />
               {["Personlig træningsplan", "Stævneoversigt", "Beskeder fra coach", "Fremgangsstatistik"].map((f, i) => (
                 <div key={i} style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", display: "flex", gap: 8, marginBottom: 8 }}><span style={{ color: GOLD }}>✓</span>{f}</div>
@@ -494,7 +494,7 @@ const Index = () => {
             <div style={{ background: "linear-gradient(180deg, rgba(245,200,66,0.08), rgba(245,200,66,0.03))", border: `0.5px solid rgba(245,200,66,0.35)`, borderRadius: 14, padding: "26px", position: "relative", boxShadow: "0 20px 60px rgba(245,200,66,0.08)" }}>
               <div style={{ position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)", background: GOLD, color: BG, borderRadius: 999, padding: "3px 14px", fontSize: 10, fontWeight: 800, whiteSpace: "nowrap", letterSpacing: "0.1em", fontFamily: MONO }}>MEST POPULÆR</div>
               <div style={{ fontFamily: MONO, fontSize: 10, letterSpacing: "0.14em", color: GOLD, textTransform: "uppercase", marginBottom: 10 }}>Klublicens</div>
-              <div style={{ fontSize: 40, fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 1 }}>999<span style={{ fontSize: 14, color: "rgba(255,255,255,0.5)", fontWeight: 500, marginLeft: 6 }}>DKK/md</span></div>
+              <div style={{ fontSize: 40, fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 1 }}>1299<span style={{ fontSize: 14, color: "rgba(255,255,255,0.5)", fontWeight: 500, marginLeft: 6 }}>DKK/md</span></div>
               <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", marginTop: 4 }}>Op til 25 atleter</div>
               <hr style={{ border: "none", borderTop: "0.5px solid rgba(245,200,66,0.15)", margin: "18px 0" }} />
               {["Op til 25 atleter", "Videoanalyse & noter", "Holdstatistik & PDF-rapporter", "Sæsonkalender (kollaborativ)", "Mental coaching & check-ins", "Skadeopfølgning", "Prioriteret support"].map((f, i) => (
@@ -533,7 +533,7 @@ const Index = () => {
               { q: "Hvem er Sportstalent til?", a: "Klubber, forbund og selvstændige coaches indenfor konkurrencesport. Platformen er født i taekwondo, men de fleste værktøjer virker på tværs af sportsgrene." },
               { q: "Skal mine atleter bruge appen?", a: "Nej, men det anbefales. Coaches kan bruge platformen alene, men den fulde værdi kommer når atleterne også logger træning, humør og restitution." },
               { q: "Hvor længe tager onboarding?", a: "Under en time. Du opretter klubben, inviterer atleter med en kode, og de udfylder selv deres profil." },
-              { q: "Hvad koster det?", a: "Fra 49 DKK/md for enkelte atleter, 999 DKK/md for klublicens med op til 25 atleter. Se alle detaljer under Priser." },
+              { q: "Hvad koster det?", a: "Fra 59 DKK/md for enkelte atleter, 1299 DKK/md for klublicens med op til 25 atleter. Se alle detaljer under Priser." },
               { q: "Hvor er data gemt?", a: "Alt data er hostet i EU (Frankfurt) og krypteret. Vi følger GDPR og du kan altid eksportere eller slette dine data." },
               { q: "Kan jeg opsige når som helst?", a: "Ja. Ingen binding. Sig op med ét klik — dine data er dine." },
             ].map((f, i) => (
