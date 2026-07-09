@@ -1,0 +1,2 @@
+ALTER TABLE public.chat_thread_members ADD COLUMN IF NOT EXISTS archived_at timestamptz;
+CREATE INDEX IF NOT EXISTS idx_chat_thread_members_archived ON public.chat_thread_members (user_id) WHERE archived_at IS NOT NULL;
