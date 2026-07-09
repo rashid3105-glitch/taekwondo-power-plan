@@ -1,7 +1,8 @@
 import { useRef, useState, Fragment } from "react";
 
 const URL_REGEX = /(https?:\/\/[^\s]+)/g;
-function renderBodyWithLinks(body: string) {
+function renderBodyWithLinks(body: string | null | undefined) {
+  if (!body) return null;
   const parts = body.split(URL_REGEX);
   return parts.map((part, i) => {
     if (i % 2 === 1) {
@@ -69,11 +70,11 @@ export function MessageBubble({
   reactions = [],
   onReact,
 }: Props) {
-  const url = useChatAttachmentUrl(message.attachment_path);
-  const isImage = message.attachment_type?.startsWith("image/");
-  const isVideo = message.attachment_type?.startsWith("video/");
+  const url = useChatAttachmentUrl(message?.attachment_path);
+  const isImage = message?.attachment_type?.startsWith("image/") ?? false;
+  const isVideo = message?.attachment_type?.startsWith("video/") ?? false;
   const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState(message.body);
+  const [draft, setDraft] = useState(message?.body ?? "");
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
   const [avatarError, setAvatarError] = useState(false);

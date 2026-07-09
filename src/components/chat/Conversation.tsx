@@ -34,6 +34,11 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
   const [isCreator, setIsCreator] = useState(false);
   const partnerAvatarUrl = useAvatarUrl((thread as any)?.partner?.avatar_url);
 
+  // Defensive: some threads (RLS edge cases, older rows) may not carry a
+  // members array. Deriving a safe local avoids crashing the whole view
+  // (and white-screening the native app) if that happens.
+  const members = Array.isArray(thread?.members) ? thread.members : [];
+
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       setMeId(user?.id ?? null);
@@ -52,9 +57,9 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
 
   useEffect(() => {
     if (thread.kind !== "direct" || !meId) return;
-    const partner = thread.members.find((m) => m.user_id !== meId);
+    const partner = members.find((m) => m.user_id !== meId);
     setPartnerReadAt((partner as any)?.last_read_at ?? null);
-  }, [thread, meId]);
+  }, [thread, meId, members]);
 
   const loadReactions = async () => {
     if (!messages.length) return;
@@ -87,14 +92,14 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
     loadReactions();
   }, [messages.length]);
 
-  const otherMembers = thread.members.filter((m) => m.user_id !== meId);
+  const otherMembers = members.filter((m) => m.user_id !== meId);
   const headerTitle =
     thread.kind === "group"
       ? thread.title || "Gruppe"
       : otherMembers[0]?.display_name || "Samtale";
   const headerAvatar = thread.kind === "direct" ? otherMembers[0]?.avatar_url : null;
 
-  const memberMap = new Map(thread.members.map((m) => [m.user_id, m]));
+  const memberMap = new Map(members.map((m) => [m.user_id, m]));
 
   return (
     <div className={cn("relative flex flex-col h-full bg-background min-h-0 pointer-events-auto touch-manipulation", variant === "floating" && "bg-card")}>
@@ -123,7 +128,7 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
           <div className="text-sm font-semibold truncate">{headerTitle}</div>
           {thread.kind === "group" && (
             <div className="text-[11px] text-muted-foreground truncate underline-offset-2 hover:underline">
-              {thread.members.length} medlemmer — tryk for at se
+              {members.length} medlemmer — tryk for at se
             </div>
           )}
         </div>
@@ -173,7 +178,7 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
                 i === lastOwnIdx &&
                 partnerReadAt &&
                 partnerReadAt >= m.created_at;
-              const partner = thread.members.find((p) => p.user_id !== meId);
+              const partner = members.find((p) => p.user_id !== meId);
               return (
                 <div key={m.id}>
                   <MessageBubble
@@ -241,7 +246,7 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
         open={addOpen}
         onOpenChange={setAddOpen}
         threadId={thread.id}
-        existingMemberIds={thread.members.map((m) => m.user_id)}
+        existingMemberIds={members.map((m) => m.user_id)}
         onAdded={refresh}
       />
 
@@ -253,13 +258,13 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
             </Button>
             <div className="flex-1 min-w-0">
               <div className="text-sm font-semibold">Gruppemedlemmer</div>
-              <div className="text-[11px] text-muted-foreground">{thread.members.length} personer</div>
+              <div className="text-[11px] text-muted-foreground">{members.length} personer</div>
             </div>
           </div>
 
           <ScrollArea className="flex-1">
             <div className="p-3 space-y-1">
-              {thread.members.map((member) => {
+              {members.map((member) => {
                 const isSelf = member.user_id === meId;
                 const canRemove = isCreator || isSelf;
                 const removeLabel = isSelf ? "Forlad gruppe" : "Fjern fra gruppe";
