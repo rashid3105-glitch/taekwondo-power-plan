@@ -38,10 +38,18 @@ Placer det uploadede billede i højre kolonne af hero-sektionen i `src/pages/Ind
 
 3. **Responsivt**
    - På tablet/mobil (grid `1fr`) ligger billedet naturligt over HUD i samme kolonne — ingen ekstra breakpoint-kode nødvendig.
-   - Ingen ændringer til andre sektioner, sprogfiler, nav eller changelog.
+
+4. **Mobil-justering efter feedback**
+   - Mere kompakt navbar i `src/components/landing/LandingLayout.tsx`: mindre højde, mindre logo, kompakt sprogvælger og mindre/tyndere "Log ind"-knap.
+   - Mindre hero-headline og tekst på mobil, tættere linjeafstand.
+   - Mindre CTA-knapper med reduceret skygge.
+   - Billedet begrænses til `maxHeight: 260px` på mobil, så det ikke dominerer skærmen, og holder stadig kvadratisk beskæring.
+   - Ingen ændringer til desktop eller andre sektioner.
 
 ### Filer der ændres
-- `src/pages/Index.tsx` (import + højre-kolonne markup)
+- `src/pages/Index.tsx` (import + højre-kolonne markup + mobil-typografi)
+- `src/components/landing/LandingLayout.tsx` (mobil-navbar)
+- `src/components/LanguageSwitcher.tsx` (valgfri `compact`-prop)
 - `src/assets/hero-deadlift.jpg.asset.json` (ny — CDN-pointer)
 
 Ingen ændringer i i18n, backend eller andre komponenter.
