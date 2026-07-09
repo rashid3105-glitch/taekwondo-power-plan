@@ -63,9 +63,9 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
         <div
           style={{
             display: "flex",
-            gap: 8,
+            gap: isTiny ? 4 : 8,
             justifyContent: "center",
-            padding: "8px 12px",
+            padding: isMobile ? "6px 10px" : "8px 12px",
             borderTop: "0.5px solid rgba(255,255,255,0.05)",
             overflowX: "auto",
           }}
@@ -83,10 +83,10 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
                   color: active ? GOLD : "rgba(255,255,255,0.7)",
                   cursor: "pointer",
                   fontWeight: active ? 700 : 500,
-                  fontSize: 12,
+                  fontSize: isTiny ? 11 : 12,
                   letterSpacing: "0.02em",
                   whiteSpace: "nowrap",
-                  padding: "6px 12px",
+                  padding: isMobile ? "5px 10px" : "6px 12px",
                   borderRadius: 6,
                   border: active ? `1px solid ${GOLD}` : "1px solid transparent",
                   background: active ? "rgba(245,200,66,0.08)" : "transparent",
