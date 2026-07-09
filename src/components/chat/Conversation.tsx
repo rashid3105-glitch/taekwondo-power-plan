@@ -92,14 +92,14 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
     loadReactions();
   }, [messages.length]);
 
-  const otherMembers = thread.members.filter((m) => m.user_id !== meId);
+  const otherMembers = members.filter((m) => m.user_id !== meId);
   const headerTitle =
     thread.kind === "group"
       ? thread.title || "Gruppe"
       : otherMembers[0]?.display_name || "Samtale";
   const headerAvatar = thread.kind === "direct" ? otherMembers[0]?.avatar_url : null;
 
-  const memberMap = new Map(thread.members.map((m) => [m.user_id, m]));
+  const memberMap = new Map(members.map((m) => [m.user_id, m]));
 
   return (
     <div className={cn("relative flex flex-col h-full bg-background min-h-0 pointer-events-auto touch-manipulation", variant === "floating" && "bg-card")}>
