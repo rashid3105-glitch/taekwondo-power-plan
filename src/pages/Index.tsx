@@ -10,6 +10,7 @@ import { isNativeApp } from "@/lib/platform";
 import { useLanguage } from "@/i18n/LanguageContext";
 import coachSittingAsset from "@/assets/coach-sitting.png";
 import coachStandingAsset from "@/assets/coach-standing.jpg";
+import heroDeadliftAsset from "@/assets/hero-deadlift.jpg.asset.json";
 
 const useWidth = () => {
   const [w, setW] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
@@ -242,7 +243,27 @@ const Index = () => {
             </div>
           </div>
 
-          <div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div style={{
+              aspectRatio: "1 / 1",
+              width: "100%",
+              borderRadius: 14,
+              overflow: "hidden",
+              border: "0.5px solid rgba(255,255,255,0.08)",
+              boxShadow: "0 30px 80px rgba(0,0,0,0.5)",
+            }}>
+              <img
+                src={heroDeadliftAsset.url}
+                alt="Atlet udfører deadlift"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  objectPosition: "center 30%",
+                  display: "block",
+                }}
+              />
+            </div>
             <HUD />
           </div>
         </div>

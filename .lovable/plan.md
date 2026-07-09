@@ -1,31 +1,47 @@
-## Status: Native chat bug resolved on build 16 ✅
+## Plan: Deadlift-billede i hero (over HUD)
 
-Tapping a conversation now works in TestFlight (iOS build 16) — no white screen, no error boundary triggered. That means the fix from the previous turn did the job:
+Placer det uploadede billede i højre kolonne af hero-sektionen i `src/pages/Index.tsx`, direkte over det eksisterende HUD-cockpit. Billedet beskæres kvadratisk med fokus på løftet.
 
-- `thread.members` defensive guard in `Conversation.tsx` (the most likely root cause)
-- Null-safe accessors in `MessageBubble.tsx`
-- `<ErrorBoundary>` around `<Conversation>` in `Messages.tsx` (safety net — never had to render)
+### Trin
 
-## Proposed cleanup plan
+1. **Upload billedet som CDN-asset**
+   - `lovable-assets create --file /mnt/user-uploads/Skærmbillede_2026-07-09_kl._14.54.35.png --filename hero-deadlift.jpg > src/assets/hero-deadlift.jpg.asset.json`
+   - Ingen binær fil ender i repoet.
 
-Now that native is stable, I'd like to tidy up the diagnostic + defensive scaffolding we added while hunting the bug, so it doesn't stay in production forever. Nothing here changes user-visible behavior.
+2. **Rediger `src/pages/Index.tsx`** (linje ~244–246, hvor `<HUD />` renderes i højre kolonne)
+   - Importér `heroDeadliftAsset from "@/assets/hero-deadlift.jpg.asset.json"`.
+   - Wrap `<HUD />` i en flex-column container med `gap: 16`.
+   - Indsæt over HUD:
+     ```tsx
+     <div style={{
+       aspectRatio: "1 / 1",
+       width: "100%",
+       borderRadius: 14,
+       overflow: "hidden",
+       border: "0.5px solid rgba(255,255,255,0.08)",
+       boxShadow: "0 30px 80px rgba(0,0,0,0.5)",
+     }}>
+       <img
+         src={heroDeadliftAsset.url}
+         alt="Atlet udfører deadlift"
+         style={{
+           width: "100%",
+           height: "100%",
+           objectFit: "cover",
+           objectPosition: "center 30%",
+           display: "block",
+         }}
+       />
+     </div>
+     ```
+   - Kvadratisk `aspect-ratio` + `object-fit: cover` giver den ønskede firkantede beskæring med fokus på stangen/overkroppen.
 
-### 1. Keep (permanent)
-- ✅ `ErrorBoundary` component + wrapping around `<Conversation>` — cheap insurance, keep forever.
-- ✅ `thread.members` defensive guard (`Array.isArray(...) ? ... : []`) — correct defensive coding, keep.
-- ✅ Null-safe accessors in `MessageBubble.tsx` — keep.
-- ✅ `BodyPointerEventsGuard` — keep, it protects against the earlier Radix scroll-lock issue.
+3. **Responsivt**
+   - På tablet/mobil (grid `1fr`) ligger billedet naturligt over HUD i samme kolonne — ingen ekstra breakpoint-kode nødvendig.
+   - Ingen ændringer til andre sektioner, sprogfiler, nav eller changelog.
 
-### 2. Remove (diagnostic-only, no longer needed)
-- `console.info("[chat] open thread", …)` diagnostic log in `src/pages/Messages.tsx` (`openThread`). Was only added to trace the "everything dead" state; native is confirmed working.
-- The `document.body.style.pointerEvents` inline clears inside `openThread` / `closeThread` — `BodyPointerEventsGuard` already handles this globally, so the inline clears are redundant.
+### Filer der ændres
+- `src/pages/Index.tsx` (import + højre-kolonne markup)
+- `src/assets/hero-deadlift.jpg.asset.json` (ny — CDN-pointer)
 
-### 3. Changelog
-- Add a v1.3.3 "Native chat stability confirmed" line in `src/pages/Help.tsx` (all 7 languages) noting the fix shipped in build 16.
-
-### Files touched
-- `src/pages/Messages.tsx` — remove diagnostic `console.info` + redundant pointer-events clears in `openThread`/`closeThread`.
-- `src/pages/Help.tsx` — add v1.3.3 changelog entry.
-- `src/i18n/translations.ts` — add `changelog_v133` / `changelogEntry169` keys in all 7 languages.
-
-Want me to proceed with this cleanup, or leave the diagnostics in for one more build cycle just in case?
+Ingen ændringer i i18n, backend eller andre komponenter.
