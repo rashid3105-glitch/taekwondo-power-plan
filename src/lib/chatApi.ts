@@ -382,17 +382,21 @@ export async function archiveThread(threadId: string): Promise<void> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("not_authenticated");
   const { error } = await supabase
-    .from("chat_threads")
-    .update({ archived_at: new Date().toISOString(), archived_by: user.id } as any)
-    .eq("id", threadId);
+    .from("chat_thread_members")
+    .update({ archived_at: new Date().toISOString() } as any)
+    .eq("thread_id", threadId)
+    .eq("user_id", user.id);
   if (error) throw error;
 }
 
 export async function unarchiveThread(threadId: string): Promise<void> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("not_authenticated");
   const { error } = await supabase
-    .from("chat_threads")
-    .update({ archived_at: null, archived_by: null } as any)
-    .eq("id", threadId);
+    .from("chat_thread_members")
+    .update({ archived_at: null } as any)
+    .eq("thread_id", threadId)
+    .eq("user_id", user.id);
   if (error) throw error;
 }
 
