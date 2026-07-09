@@ -13805,6 +13805,7 @@ const translations = {
     changelogEntry166: "Aufgeräumt in der Kader-Übersicht — das Papierkorb-Symbol erscheint nicht mehr neben jeder Athletenzeile.",
     changelog_2026_07_09: "9. Juli 2026",
     changelogEntry168: "Behoben: Chat-Unterhaltungen konnten in den App-Versionen einen leeren Bildschirm zeigen; jetzt wird stattdessen eine Fehlermeldung angezeigt.",
+    changelogEntry169: "Bestätigt: Chat-Unterhaltungen öffnen sich jetzt zuverlässig in den iOS- und Android-Apps (TestFlight Build 16).",
     changelog_2026_07_06: "6. Juli 2026",
     changelogEntry167: "Push-Benachrichtigungen (serverseitig) für Chat und Tagebuch vorbereitet — native iOS/Android-Zustellung folgt.",
     changelogEntry160: "Datenschutzerklärung finalisiert und aktualisiert.",
