@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { BrandLogo } from "@/components/BrandLogo";
@@ -5,10 +6,23 @@ import { useLanguage } from "@/i18n/LanguageContext";
 
 const GOLD = "#F5C842";
 
+const useWidth = () => {
+  const [w, setW] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
+  useEffect(() => {
+    const onR = () => setW(window.innerWidth);
+    window.addEventListener("resize", onR);
+    return () => window.removeEventListener("resize", onR);
+  }, []);
+  return w;
+};
+
 export function LandingLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useLanguage();
+  const w = useWidth();
+  const isMobile = w < 720;
+  const isTiny = w < 380;
 
   const NAV_LINKS = [
     { label: t("navHome"), href: "/" },
