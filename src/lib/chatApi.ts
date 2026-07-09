@@ -133,6 +133,7 @@ export async function listThreads(): Promise<ChatThread[]> {
           user_id: m.user_id,
           role: m.role,
           last_read_at: m.last_read_at,
+          archived_at: m.archived_at ?? null,
           display_name: profileMap.get(m.user_id)?.display_name ?? "Unknown",
           avatar_url: profileMap.get(m.user_id)?.avatar_url ?? null,
         })),
