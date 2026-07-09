@@ -1,0 +1,1 @@
+UPDATE auth.users SET banned_until = NULL WHERE banned_until IS NOT NULL AND banned_until::text !~ '^\d{4}-\d{2}-\d{2}';
