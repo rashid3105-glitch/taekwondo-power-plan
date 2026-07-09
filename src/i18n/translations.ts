@@ -10291,6 +10291,7 @@ const translations = {
     changelogEntry166: "Städat i tränarens lagöversikt — papperskorgsikonen visas inte längre bredvid varje atletrad.",
     changelog_2026_07_09: "9 juli 2026",
     changelogEntry168: "Rättat: chattkonversationer kunde ge en tom skärm i app-versionerna; nu visas ett felmeddelande i stället.",
+    changelogEntry169: "Bekräftat: chattkonversationer öppnas nu stabilt i iOS- och Android-appen (TestFlight build 16).",
     changelog_2026_07_06: "6 juli 2026",
     changelogEntry167: "Förberett push-notiser (server-side) för chatt och dagbok — native iOS/Android-leverans kommer härnäst.",
     changelogEntry160: "Integritetspolicyn är färdigställd och uppdaterad.",
