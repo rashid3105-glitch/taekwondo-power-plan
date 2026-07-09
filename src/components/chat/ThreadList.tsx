@@ -33,11 +33,11 @@ export function ThreadList({ threads, selectedId, onSelect, loading, onRefresh }
     return title.toLowerCase().includes(q);
   };
 
-  // A thread is only "archived" for the person who archived it.
-  // The other participants still see it as an active conversation.
-  const isArchivedForMe = (t: any) => !!t.archived_at && t.archived_by === meId;
-  const activeThreads = threads.filter((t: any) => !isArchivedForMe(t)).filter(matchesFilter);
-  const archivedThreads = threads.filter((t: any) => isArchivedForMe(t)).filter(matchesFilter);
+  // Per-user archive: stored on chat_thread_members.archived_at for the current user.
+  const isArchivedForMe = (t: ChatThread) =>
+    !!t.members.find((m) => m.user_id === meId)?.archived_at;
+  const activeThreads = threads.filter((t) => !isArchivedForMe(t)).filter(matchesFilter);
+  const archivedThreads = threads.filter((t) => isArchivedForMe(t)).filter(matchesFilter);
 
   const handleArchive = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
