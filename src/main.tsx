@@ -48,12 +48,28 @@ initNative();
 
 // Native auth persistence: hydrate token from Capacitor Preferences BEFORE
 // React mounts, then keep Preferences in sync on every auth change. No-op on web.
-(async () => {
-  await Promise.all([
-    hydrateAuthFromPreferences(),
-    hydrateLangFromPreferences(),
+//
+// Hardened: on native iOS a missing/unsynced Capacitor plugin can leave the
+// bridge promise hanging forever (instead of rejecting), which would keep
+// React from ever mounting → blank screen. We race every hydration promise
+// against a short timeout, and swallow rejections, so render ALWAYS runs.
+const withTimeout = <T,>(p: Promise<T>, ms: number): Promise<T | null> =>
+  Promise.race<T | null>([
+    p.catch(() => null),
+    new Promise<null>((resolve) => setTimeout(() => resolve(null), ms)),
   ]);
+
+(async () => {
+  try {
+    await Promise.all([
+      withTimeout(hydrateAuthFromPreferences(), 1500),
+      withTimeout(hydrateLangFromPreferences(), 1500),
+    ]);
+  } catch {
+    /* never block mount */
+  }
   createRoot(document.getElementById("root")!).render(<App />);
   // Bind listener after mount; supabase client is imported lazily inside.
   bindAuthPersistence();
 })();
+

@@ -1,52 +1,48 @@
-# Fælles topmenu + fix af sprogvælger
+# Fix: iPhone (native) viser blank sk\u00e6rm
 
-## Hvad brugeren oplever
+## Diagnose
 
-1. Sprogvælgeren "hopper tilbage" når man klikker på et menupunkt (Platform, Funktioner, Priser, Om os, Blog).
-2. Forsiden (`/`) har en anden topmenu end undersiderne — så headeren ser forskellig ud fra side til side.
+Sk\u00e6rmbilledet + konsollens `Unknown message type: RESET_BLANK_CHECK` (Capacitors indbyggede blank-sk\u00e6rm watchdog) viser at hele React-appen aldrig monterer p\u00e5 din iOS-build \u2014 det er ikke chat-funktionen der er brudt, men bootstrap.
 
-## Årsag til "sprog-reset"
+Skyldig: `src/main.tsx` mounter React inde i en `async` IIFE der f\u00f8rst `await`er to Capacitor-Preferences-kald:
 
-Sproget bliver faktisk ikke nulstillet. Flagvælgeren viser stadig det valgte sprog, og valget gemmes korrekt. Problemet er at **menu-labels og "Log ind"-knappen i den fælles topbar (`LandingLayout`) er hardcodet på dansk** ("Platform", "Funktioner", "Priser", "Om os", "Blog", "Log ind"). Når man skifter til engelsk og klikker rundt, forbliver menuen på dansk — og det opleves som om sproget "hopper tilbage".
+```ts
+await Promise.all([
+  hydrateAuthFromPreferences(),
+  hydrateLangFromPreferences(),   // ny \u2014 tilf\u00f8jet i sidste omgang
+]);
+createRoot(...).render(<App />);
+```
 
-Derudover bruger forsiden (`Index.tsx`) en helt egen header (uden menulinks), så udseendet skifter når man navigerer mellem `/` og fx `/about`.
+`hydrateLangFromPreferences` bruger `@capacitor/preferences` \u2014 en plugin der blev tilf\u00f8jet i package.json men som **ikke** findes i den .ipa der k\u00f8rer p\u00e5 din telefon (pods er ikke synket siden). N\u00e5r JS-bridgen kalder en plugin der ikke er installeret nativt, kan promisen h\u00e6nge for evigt p\u00e5 nogle iOS-versioner i stedet for at reject\u2019e \u2014 s\u00e5 `render()` kaldes aldrig, og WebView\u2019en forbliver blank.
 
-## Løsning
+Samme risiko g\u00e6lder fremadrettet enhver ny plugin.
 
-### 1. Én fælles topbar på alle homepage-sider
+## L\u00f8sning (kode)
 
-- Forsiden `src/pages/Index.tsx` skiftes til at bruge `LandingLayout` — dens nuværende private `<header>` (linje ~196-210) fjernes, og resten af siden wrappes i `<LandingLayout>`.
-- Alle offentlige sider bruger nu samme `LandingLayout`: `Index`, `About`, `Funktioner`, `Priser`, `PlatformMarketing`, `Blog`, `BlogPost`, `BlogCommentConfirm`, `Terms`, `PrivacyPolicy` (de sidste 8 gør det allerede).
+1. **`src/main.tsx`** \u2014 g\u00f8r render robust:
+   - Wrap hydrations i `Promise.race` med 1500 ms timeout, s\u00e5 React altid mounter selv hvis en native bridge h\u00e6nger.
+   - Fang eventuelle rejections eksplicit s\u00e5 en fejlende hydration ikke blokerer mount.
+   - K\u00f8r render f\u00f8rst, hydration-bindingen (`bindAuthPersistence`) efter \u2014 uden \u00e6ndring af r\u00e6kkef\u00f8lgen for auth-token-hydration (den beh\u00f8ves f\u00f8r mount for at undg\u00e5 flicker af login-sk\u00e6rmen).
 
-### 2. Aktiv side markeres med gul ramme
+2. **`index.html`** \u2014 tilf\u00f8j en minimal inline-fallback der viser en simpel besked hvis `#root` er tomt efter ~5s (ren defensiv sikkerhedsnet s\u00e5 en fremtidig bootstrap-fejl aldrig igen bliver en helt sort sk\u00e6rm p\u00e5 native).
 
-I `LandingLayout` opdateres nav-links så det aktive punkt får en **gul kant** (`border: 1px solid #F5C842`, let padding, afrundede hjørner) i stedet for kun gul tekst. Ikke-aktive links beholder deres nuværende stil.
+Ingen \u00e6ndringer til chat-koden \u2014 chat virker n\u00e5r appen f\u00f8rst monterer.
 
-`/` tilføjes som første nav-link ("Hjem" / "Home") så forsiden også kan markeres aktiv.
+## Bagefter (du selv i Xcode)
 
-### 3. Fix sprog-"reset" — oversæt topbaren
+For at f\u00e5 fixet + `@capacitor/preferences`-pluginet ind i den native binary:
 
-Nav-labels og "Log ind" i `LandingLayout` bindes til `useLanguage().t()` i stedet for hardcoded dansk. Nye i18n-nøgler tilføjes til **alle 7 sprog** i `src/i18n/translations.ts`:
+```
+npm install
+npm run build
+npx cap sync ios
+npx cap open ios     # byg + k\u00f8r fra Xcode
+```
 
-- `navHome` — Hjem / Home / Hem / Startseite / الرئيسية / Hjem / Inicio
-- `navPlatform` — Platform / Platform / Plattform / Plattform / المنصة / Plattform / Plataforma
-- `navFeatures` — Funktioner / Features / Funktioner / Funktionen / الميزات / Funksjoner / Funciones
-- `navPricing` — Priser / Pricing / Priser / Preise / الأسعار / Priser / Precios
-- `navAbout` — Om os / About / Om oss / Über uns / معلومات عنا / Om oss / Sobre nosotros
-- `navBlog` — Blog / Blog / Blogg / Blog / المدونة / Blogg / Blog
+Uden `cap sync` er telefonen stadig p\u00e5 gammel bundle.
 
-"Log ind" bruger allerede eksisterende `signIn`-nøgle.
+## Files touched
 
-Footer-links (`Privatlivspolitik`, `Vilkår`, `Kontakt`, `Blog`) oversættes tilsvarende — de har allerede eksisterende nøgler (`footerPrivacy`, `footerTerms`, osv.) eller får nye.
-
-## Tekniske detaljer
-
-- `LandingLayout.tsx`: flyt `NAV_LINKS` ind i komponenten så `t()` kan bruges; erstat aktiv-stil med gul border; tilføj `/` til listen.
-- `Index.tsx`: fjern egen `<header>` (linje 196-210) og "PROMO"-bar (linje ~180-195) hvis den ligger i header — verificér før fjernelse; wrap return-JSX i `<LandingLayout>`; behold PageMeta og alt sideindhold uændret.
-- `translations.ts`: tilføj 6 nye nøgler × 7 sprog.
-- Ingen ændringer i `LanguageContext` — den fungerer korrekt; det var kun labels der ikke oversatte.
-
-## Ude for scope
-
-- Ingen ændringer i dashboard-header (kun offentlige sider).
-- Ingen designoverhaling af hero, priser eller sektioner på forsiden — kun topbar udskiftes.
+- `src/main.tsx` \u2014 timeout-hardened bootstrap
+- `index.html` \u2014 5s blank-sk\u00e6rm fallback besked

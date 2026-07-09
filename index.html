@@ -151,5 +151,22 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Defensive blank-screen fallback: if React hasn't mounted anything
+      // into #root after 5s (e.g. a native plugin bridge hangs at boot),
+      // show a minimal message with a reload button so the user isn't
+      // stuck on an empty dark screen.
+      setTimeout(function () {
+        var root = document.getElementById("root");
+        if (!root || root.childElementCount > 0) return;
+        root.innerHTML =
+          '<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;color:#e5e7eb;background:#0F172A;text-align:center;">' +
+          '<div style="font-weight:700;font-size:18px;margin-bottom:8px;">Sportstalent</div>' +
+          '<div style="font-size:14px;opacity:0.8;margin-bottom:20px;max-width:320px;">Appen kunne ikke starte. Tjek din internetforbindelse og pr\u00f8v igen.</div>' +
+          '<button onclick="location.reload()" style="background:#F5C842;color:#0F172A;font-weight:600;border:0;border-radius:8px;padding:10px 20px;font-size:14px;">Genindl\u00e6s</button>' +
+          '</div>';
+      }, 5000);
+    </script>
   </body>
+
 </html>
