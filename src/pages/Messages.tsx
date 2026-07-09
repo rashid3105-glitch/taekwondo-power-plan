@@ -112,7 +112,7 @@ export default function Messages() {
             {active ? (
               <Conversation
                 thread={active}
-                onBack={() => setActive(null)}
+                onBack={closeThread}
                 onExit={() => navigate("/dashboard")}
               />
             ) : (
@@ -120,7 +120,7 @@ export default function Messages() {
                 threads={threads}
                 loading={loading}
                 selectedId={active?.id}
-                onSelect={setActive}
+                onSelect={openThread}
               />
             )}
           </div>
@@ -131,14 +131,14 @@ export default function Messages() {
                 threads={threads}
                 loading={loading}
                 selectedId={active?.id}
-                onSelect={setActive}
+                onSelect={openThread}
               />
             </div>
             <div className="h-full min-h-0">
               {active ? (
                 <Conversation
                   thread={active}
-                  onBack={() => setActive(null)}
+                  onBack={closeThread}
                   onExit={() => navigate("/dashboard")}
                 />
               ) : (
