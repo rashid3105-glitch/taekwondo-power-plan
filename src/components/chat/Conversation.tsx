@@ -34,6 +34,11 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
   const [isCreator, setIsCreator] = useState(false);
   const partnerAvatarUrl = useAvatarUrl((thread as any)?.partner?.avatar_url);
 
+  // Defensive: some threads (RLS edge cases, older rows) may not carry a
+  // members array. Deriving a safe local avoids crashing the whole view
+  // (and white-screening the native app) if that happens.
+  const members = Array.isArray(thread?.members) ? thread.members : [];
+
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       setMeId(user?.id ?? null);
@@ -52,9 +57,9 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
 
   useEffect(() => {
     if (thread.kind !== "direct" || !meId) return;
-    const partner = thread.members.find((m) => m.user_id !== meId);
+    const partner = members.find((m) => m.user_id !== meId);
     setPartnerReadAt((partner as any)?.last_read_at ?? null);
-  }, [thread, meId]);
+  }, [thread, meId, members]);
 
   const loadReactions = async () => {
     if (!messages.length) return;
