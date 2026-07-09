@@ -197,7 +197,7 @@ const Index = () => {
         </div>
       )}
 
-      <section style={{ position: "relative", padding: `${isMobile ? 40 : 72}px ${pad}px ${isMobile ? 48 : 96}px`, overflow: "hidden" }}>
+      <section style={{ position: "relative", padding: `${isMobile ? 28 : 72}px ${isMobile ? 16 : 32}px ${isMobile ? 36 : 96}px`, overflow: "hidden" }}>
 
         <div aria-hidden style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 60% 50% at 50% 0%, rgba(245,200,66,0.08), transparent 70%)", pointerEvents: "none" }} />
         <div aria-hidden style={{
@@ -209,7 +209,7 @@ const Index = () => {
           pointerEvents: "none",
         }} />
 
-        <div style={{ position: "relative", maxWidth: 1120, margin: "0 auto", display: "grid", gridTemplateColumns: isMobile || isTablet ? "1fr" : "1.05fr 1fr", gap: isMobile ? 32 : 56, alignItems: "center" }}>
+        <div style={{ position: "relative", maxWidth: 1120, margin: "0 auto", display: "grid", gridTemplateColumns: isMobile || isTablet ? "1fr" : "1.05fr 1fr", gap: isMobile ? 24 : 56, alignItems: "center" }}>
           <div>
             <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(245,200,66,0.08)", border: "0.5px solid rgba(245,200,66,0.28)", borderRadius: 999, padding: "5px 14px", fontSize: 11, color: GOLD, fontWeight: 700, letterSpacing: "0.14em", marginBottom: 22, fontFamily: MONO }}>
               <span style={{ width: 6, height: 6, borderRadius: "50%", background: GOLD, boxShadow: `0 0 8px ${GOLD}` }} />
