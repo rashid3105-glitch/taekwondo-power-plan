@@ -28,8 +28,11 @@ export function useMessages(threadId: string | null) {
   // Realtime per-thread INSERTs
   useEffect(() => {
     if (!threadId) return;
+    // Unique topic per subscription — Supabase caches channels by topic, so
+    // reusing `thread-${threadId}` across StrictMode remounts returns the
+    // already-subscribed channel and `.on()` then throws.
     const channel = supabase
-      .channel(`thread-${threadId}`)
+      .channel(`thread-${threadId}-${Math.random().toString(36).slice(2)}`)
       .on(
         "postgres_changes",
         {
@@ -49,6 +52,7 @@ export function useMessages(threadId: string | null) {
       supabase.removeChannel(channel);
     };
   }, [threadId]);
+
 
   return { messages, loading, refresh, setMessages };
 }
