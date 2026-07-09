@@ -181,10 +181,10 @@ const Index = () => {
 
       {promoOpen && (
         <div style={{ background: "#101322", borderBottom: "0.5px solid rgba(245,200,66,0.2)" }}>
-          <div style={{ maxWidth: 1200, margin: "0 auto", padding: `8px ${pad}px`, display: "flex", alignItems: "center", justifyContent: "center", gap: 12, fontSize: 12, color: "rgba(255,255,255,0.85)", position: "relative" }}>
+          <div style={{ maxWidth: 1200, margin: "0 auto", padding: `6px ${isMobile ? 14 : pad}px`, display: "flex", alignItems: "center", justifyContent: "center", gap: 12, fontSize: isMobile ? 11 : 12, color: "rgba(255,255,255,0.85)", position: "relative" }}>
             <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
               <span style={{ display: "inline-block", width: 6, height: 6, borderRadius: "50%", background: GOLD, boxShadow: `0 0 8px ${GOLD}` }} />
-              <strong style={{ color: GOLD, letterSpacing: "0.08em", fontFamily: MONO, fontSize: 11 }}>{t("homePromoLabel")}</strong>
+              <strong style={{ color: GOLD, letterSpacing: "0.08em", fontFamily: MONO, fontSize: isMobile ? 10 : 11 }}>{t("homePromoLabel")}</strong>
               <span style={{ color: "rgba(255,255,255,0.7)" }}>{t("homePromoText")}</span>
             </span>
             {!isMobile && (
@@ -192,12 +192,12 @@ const Index = () => {
                 {t("homePromoCta")}
               </button>
             )}
-            <button onClick={() => setPromoOpen(false)} aria-label={t("homePromoClose")} style={{ position: "absolute", right: pad, background: "transparent", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer", fontSize: 16 }}>×</button>
+            <button onClick={() => setPromoOpen(false)} aria-label={t("homePromoClose")} style={{ position: "absolute", right: isMobile ? 10 : pad, background: "transparent", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer", fontSize: 16 }}>×</button>
           </div>
         </div>
       )}
 
-      <section style={{ position: "relative", padding: `${isMobile ? 40 : 72}px ${pad}px ${isMobile ? 48 : 96}px`, overflow: "hidden" }}>
+      <section style={{ position: "relative", padding: `${isMobile ? 28 : 72}px ${isMobile ? 16 : 32}px ${isMobile ? 36 : 96}px`, overflow: "hidden" }}>
 
         <div aria-hidden style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 60% 50% at 50% 0%, rgba(245,200,66,0.08), transparent 70%)", pointerEvents: "none" }} />
         <div aria-hidden style={{
@@ -209,32 +209,32 @@ const Index = () => {
           pointerEvents: "none",
         }} />
 
-        <div style={{ position: "relative", maxWidth: 1120, margin: "0 auto", display: "grid", gridTemplateColumns: isMobile || isTablet ? "1fr" : "1.05fr 1fr", gap: isMobile ? 32 : 56, alignItems: "center" }}>
+        <div style={{ position: "relative", maxWidth: 1120, margin: "0 auto", display: "grid", gridTemplateColumns: isMobile || isTablet ? "1fr" : "1.05fr 1fr", gap: isMobile ? 24 : 56, alignItems: "center" }}>
           <div>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(245,200,66,0.08)", border: "0.5px solid rgba(245,200,66,0.28)", borderRadius: 999, padding: "5px 14px", fontSize: 11, color: GOLD, fontWeight: 700, letterSpacing: "0.14em", marginBottom: 22, fontFamily: MONO }}>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(245,200,66,0.08)", border: "0.5px solid rgba(245,200,66,0.28)", borderRadius: 999, padding: isMobile ? "4px 12px" : "5px 14px", fontSize: isMobile ? 10 : 11, color: GOLD, fontWeight: 700, letterSpacing: "0.14em", marginBottom: isMobile ? 14 : 22, fontFamily: MONO }}>
               <span style={{ width: 6, height: 6, borderRadius: "50%", background: GOLD, boxShadow: `0 0 8px ${GOLD}` }} />
               {t("homeHeroBadge")}
             </div>
-            <h1 style={{ fontSize: "clamp(34px,6.4vw,68px)", fontWeight: 900, lineHeight: 1.03, letterSpacing: "-0.045em", margin: "0 0 20px" }}>
+            <h1 style={{ fontSize: isMobile ? "clamp(30px, 7.5vw, 36px)" : "clamp(38px, 5vw, 68px)", fontWeight: 900, lineHeight: isMobile ? 1.05 : 1.03, letterSpacing: "-0.045em", margin: "0 0 16px" }}>
               {t("homeHeroTitle1")}<br />
               {t("homeHeroTitle2Prefix")}<span style={{ color: GOLD, fontStyle: "italic" }}>{t("homeHeroTitle2Em")}</span>
             </h1>
-            <p style={{ fontSize: isMobile ? 15 : 17, color: "rgba(255,255,255,0.55)", lineHeight: 1.65, maxWidth: 520, margin: "0 0 26px" }}>
+            <p style={{ fontSize: isMobile ? 14 : 17, color: "rgba(255,255,255,0.55)", lineHeight: 1.6, maxWidth: 520, margin: "0 0 22px" }}>
               {t("homeHeroSubtitle")}
             </p>
 
-            <ul style={{ listStyle: "none", padding: 0, margin: "0 0 32px", display: "grid", gap: 10 }}>
+            <ul style={{ listStyle: "none", padding: 0, margin: "0 0 26px", display: "grid", gap: isMobile ? 8 : 10 }}>
               {[t("homeHeroBullet1"), t("homeHeroBullet2"), t("homeHeroBullet3")].map((b, i) => (
-                <li key={i} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 14, color: "rgba(255,255,255,0.8)" }}>
+                <li key={i} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: isMobile ? 13 : 14, color: "rgba(255,255,255,0.8)" }}>
                   <span style={{ width: 6, height: 6, borderRadius: "50%", background: GOLD, flexShrink: 0 }} />
                   {b}
                 </li>
               ))}
             </ul>
 
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 14 }}>
-              <button onClick={() => navigate("/auth?tab=signup")} style={{ padding: "14px 28px", borderRadius: 10, border: "none", background: GOLD, color: BG, fontSize: 15, fontWeight: 800, cursor: "pointer", boxShadow: "0 10px 30px rgba(245,200,66,0.2)" }}>{t("homeHeroCtaStart")}</button>
-              <button onClick={() => scrollTo("how-it-works")} style={{ padding: "14px 24px", borderRadius: 10, border: "0.5px solid rgba(255,255,255,0.18)", background: "transparent", color: "#fff", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>{t("homeHeroCtaHow")}</button>
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 14 }}>
+              <button onClick={() => navigate("/auth?tab=signup")} style={{ padding: isMobile ? "12px 20px" : "14px 28px", borderRadius: 10, border: "none", background: GOLD, color: BG, fontSize: isMobile ? 13 : 15, fontWeight: 800, cursor: "pointer", boxShadow: isMobile ? "0 6px 18px rgba(245,200,66,0.18)" : "0 10px 30px rgba(245,200,66,0.2)" }}>{t("homeHeroCtaStart")}</button>
+              <button onClick={() => scrollTo("how-it-works")} style={{ padding: isMobile ? "12px 18px" : "14px 24px", borderRadius: 10, border: "0.5px solid rgba(255,255,255,0.18)", background: "transparent", color: "#fff", fontSize: isMobile ? 13 : 15, fontWeight: 600, cursor: "pointer" }}>{t("homeHeroCtaHow")}</button>
             </div>
             <div style={{ display: "flex", gap: 18, fontSize: 12, color: "rgba(255,255,255,0.4)", flexWrap: "wrap" }}>
               {[t("homeTrust1"), t("homeTrust2"), t("homeTrust3")].map((tt, i) => (
@@ -243,14 +243,15 @@ const Index = () => {
             </div>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: isMobile ? 12 : 16 }}>
             <div style={{
               aspectRatio: "1 / 1",
               width: "100%",
-              borderRadius: 14,
+              maxHeight: isMobile ? 260 : undefined,
+              borderRadius: isMobile ? 12 : 14,
               overflow: "hidden",
               border: "0.5px solid rgba(255,255,255,0.08)",
-              boxShadow: "0 30px 80px rgba(0,0,0,0.5)",
+              boxShadow: isMobile ? "0 18px 48px rgba(0,0,0,0.45)" : "0 30px 80px rgba(0,0,0,0.5)",
             }}>
               <img
                 src={heroDeadliftAsset.url}

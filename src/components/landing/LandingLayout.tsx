@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { BrandLogo } from "@/components/BrandLogo";
@@ -5,10 +6,23 @@ import { useLanguage } from "@/i18n/LanguageContext";
 
 const GOLD = "#F5C842";
 
+const useWidth = () => {
+  const [w, setW] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
+  useEffect(() => {
+    const onR = () => setW(window.innerWidth);
+    window.addEventListener("resize", onR);
+    return () => window.removeEventListener("resize", onR);
+  }, []);
+  return w;
+};
+
 export function LandingLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useLanguage();
+  const w = useWidth();
+  const isMobile = w < 720;
+  const isTiny = w < 380;
 
   const NAV_LINKS = [
     { label: t("navHome"), href: "/" },
@@ -23,21 +37,22 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
     <div style={{ background: "#0B0C14", color: "#fff", fontFamily: "Inter, sans-serif", minHeight: "100vh" }}>
       <nav style={{ background: "rgba(11,12,20,0.97)", borderBottom: "0.5px solid rgba(255,255,255,0.08)", position: "sticky", top: 0, zIndex: 100 }}>
         {/* Row 1: logo + utility */}
-        <div style={{ padding: "0 20px", height: 56, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <BrandLogo height={40} onClick={() => navigate("/")} />
+        <div style={{ padding: "0 16px", height: isMobile ? 48 : 56, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <BrandLogo height={isMobile ? 30 : 40} onClick={() => navigate("/")} />
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <LanguageSwitcher />
+            <LanguageSwitcher compact={isMobile} />
             <button
               onClick={() => navigate("/auth")}
               style={{
-                padding: "8px 16px",
+                padding: isMobile ? "6px 12px" : "8px 16px",
                 borderRadius: 8,
-                border: `0.5px solid ${GOLD}`,
-                background: GOLD,
-                color: "#0B0C14",
-                fontSize: 13,
+                border: isMobile ? `0.5px solid rgba(245,200,66,0.5)` : "none",
+                background: isMobile ? "transparent" : GOLD,
+                color: isMobile ? GOLD : "#0B0C14",
+                fontSize: isMobile ? 11 : 13,
                 fontWeight: 800,
                 cursor: "pointer",
+                transition: "all 0.15s ease",
               }}
             >
               {t("signIn")}
@@ -48,9 +63,9 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
         <div
           style={{
             display: "flex",
-            gap: 8,
+            gap: isTiny ? 4 : 8,
             justifyContent: "center",
-            padding: "8px 12px",
+            padding: isMobile ? "6px 10px" : "8px 12px",
             borderTop: "0.5px solid rgba(255,255,255,0.05)",
             overflowX: "auto",
           }}
@@ -68,10 +83,10 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
                   color: active ? GOLD : "rgba(255,255,255,0.7)",
                   cursor: "pointer",
                   fontWeight: active ? 700 : 500,
-                  fontSize: 12,
+                  fontSize: isTiny ? 11 : 12,
                   letterSpacing: "0.02em",
                   whiteSpace: "nowrap",
-                  padding: "6px 12px",
+                  padding: isMobile ? "5px 10px" : "6px 12px",
                   borderRadius: 6,
                   border: active ? `1px solid ${GOLD}` : "1px solid transparent",
                   background: active ? "rgba(245,200,66,0.08)" : "transparent",
