@@ -243,14 +243,15 @@ const Index = () => {
             </div>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: isMobile ? 12 : 16 }}>
             <div style={{
               aspectRatio: "1 / 1",
               width: "100%",
-              borderRadius: 14,
+              maxHeight: isMobile ? 260 : undefined,
+              borderRadius: isMobile ? 12 : 14,
               overflow: "hidden",
               border: "0.5px solid rgba(255,255,255,0.08)",
-              boxShadow: "0 30px 80px rgba(0,0,0,0.5)",
+              boxShadow: isMobile ? "0 18px 48px rgba(0,0,0,0.45)" : "0 30px 80px rgba(0,0,0,0.5)",
             }}>
               <img
                 src={heroDeadliftAsset.url}
