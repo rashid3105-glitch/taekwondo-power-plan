@@ -79,17 +79,9 @@ export default function Messages() {
       </header>
 
       <main className="container max-w-5xl mx-auto flex-1 w-full min-h-0">
-        <div className="grid md:grid-cols-[320px_1fr] h-full min-h-0 border-x border-border">
-          {/* Mobile: show one pane at a time */}
-          <div className={`${active ? "block md:block" : "block"} border-r border-border h-full min-h-0`}>
-            <ThreadList
-              threads={threads}
-              loading={loading}
-              selectedId={active?.id}
-              onSelect={setActive}
-            />
-          </div>
-          <div className="hidden md:block h-full min-h-0">
+        {/* Mobile: enten trådliste ELLER samtale (aldrig i Sheet — undgår stuck overlay på Android WebView) */}
+        {isMobileView ? (
+          <div className="h-full min-h-0">
             {active ? (
               <Conversation
                 thread={active}
@@ -97,54 +89,41 @@ export default function Messages() {
                 onExit={() => navigate("/dashboard")}
               />
             ) : (
-              <div className="flex items-center justify-center h-full text-sm text-muted-foreground p-6 text-center">
-                Vælg en samtale eller start en ny.
-              </div>
+              <ThreadList
+                threads={threads}
+                loading={loading}
+                selectedId={active?.id}
+                onSelect={setActive}
+              />
             )}
           </div>
-        </div>
-      </main>
-
-      <Sheet open={!!active && isMobileView} onOpenChange={(open) => !open && setActive(null)}>
-        <SheetContent
-          side="bottom"
-          hideClose
-          className="h-[100dvh] rounded-none border-0 p-0 pt-safe-min pb-safe sm:max-w-none"
-        >
-          <div className="flex h-full min-h-0 flex-col bg-card">
-            <div className="flex items-center justify-between border-b border-border px-4 py-3">
-              <div className="flex items-center gap-2 min-w-0">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
-                  <MessageCircle className="h-4 w-4" />
-                </div>
-                <div className="min-w-0">
-                  <div className="truncate text-sm font-semibold">Beskeder</div>
-                  <div className="truncate text-xs text-muted-foreground">Luk når du er færdig</div>
-                </div>
-              </div>
-              <Button
-                size="sm"
-                onClick={() => setActive(null)}
-                aria-label="Luk chat"
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              >
-                <X className="h-4 w-4" />
-                <span>Luk</span>
-              </Button>
+        ) : (
+          <div className="grid md:grid-cols-[320px_1fr] h-full min-h-0 border-x border-border">
+            <div className="border-r border-border h-full min-h-0">
+              <ThreadList
+                threads={threads}
+                loading={loading}
+                selectedId={active?.id}
+                onSelect={setActive}
+              />
             </div>
-
-            <div className="min-h-0 flex-1">
-              {active && (
+            <div className="h-full min-h-0">
+              {active ? (
                 <Conversation
                   thread={active}
                   onBack={() => setActive(null)}
-                  variant="floating"
+                  onExit={() => navigate("/dashboard")}
                 />
+              ) : (
+                <div className="flex items-center justify-center h-full text-sm text-muted-foreground p-6 text-center">
+                  Vælg en samtale eller start en ny.
+                </div>
               )}
             </div>
           </div>
-        </SheetContent>
-      </Sheet>
+        )}
+      </main>
+
 
       <StartChatPicker open={pickerOpen} onOpenChange={setPickerOpen} onStarted={onStarted} />
       <NewGroupDialog open={groupOpen} onOpenChange={setGroupOpen} onCreated={onStarted} />
