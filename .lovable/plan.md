@@ -1,4 +1,4 @@
-## Plan: Deadlift-billede i hero (over HUD)
+## Plan: Deadlift-billede i hero + mobil-justering
 
 Placer det uploadede billede i højre kolonne af hero-sektionen i `src/pages/Index.tsx`, direkte over det eksisterende HUD-cockpit. Billedet beskæres kvadratisk med fokus på løftet.
 
