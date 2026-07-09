@@ -238,6 +238,7 @@ const App = () => {
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <BodyPointerEventsGuard />
             <ActiveClubProvider>
               <RoleProvider>
                 <CoachModeProvider>
