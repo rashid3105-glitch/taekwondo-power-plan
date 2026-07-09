@@ -40,11 +40,38 @@ export default function Messages() {
     })();
   }, [navigate]);
 
+  const openThread = (t: ChatThread) => {
+    // Diagnostic: capture body pointer-events / open dialogs at tap time,
+    // so if the "everything dead" bug re-appears in TestFlight we know
+    // whether the guard fired or a different overlay is to blame.
+    // eslint-disable-next-line no-console
+    console.info(
+      "[chat] open thread",
+      t.id,
+      "body PE:",
+      document.body.style.pointerEvents || "(unset)",
+      "openDialogs:",
+      document.querySelectorAll('[data-state="open"][role="dialog"], [data-state="open"][role="alertdialog"]').length,
+    );
+    // Defensive: clear any stuck Radix scroll-lock before swapping views.
+    if (document.body.style.pointerEvents === "none") {
+      document.body.style.pointerEvents = "";
+    }
+    startTransition(() => setActive(t));
+  };
+
+  const closeThread = () => {
+    if (document.body.style.pointerEvents === "none") {
+      document.body.style.pointerEvents = "";
+    }
+    startTransition(() => setActive(null));
+  };
+
   const onStarted = async (id: string) => {
     await refresh();
     const ts = await listThreads();
     const t = ts.find((x) => x.id === id);
-    if (t) setActive(t);
+    if (t) openThread(t);
   };
 
   // Keep active thread in sync with refreshed list (so unread/preview update)
