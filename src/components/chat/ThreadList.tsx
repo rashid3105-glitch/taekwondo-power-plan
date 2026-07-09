@@ -70,10 +70,18 @@ export function ThreadList({ threads, selectedId, onSelect, loading, onRefresh }
     const unread = t.unread_count ?? 0;
     return (
       <div key={t.id} className={cn("relative group", archived && "opacity-60")}>
-        <button
+        <div
+          role="button"
+          tabIndex={0}
           onClick={() => onSelect(t)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              onSelect(t);
+            }
+          }}
           className={cn(
-            "w-full flex items-center gap-3 px-3 py-3 pr-10 border-b border-border text-left hover:bg-muted/50 transition",
+            "w-full flex items-center gap-3 px-3 py-3 pr-10 border-b border-border text-left hover:bg-muted/50 transition cursor-pointer",
             selectedId === t.id && "bg-muted",
           )}
         >
@@ -100,8 +108,9 @@ export function ThreadList({ threads, selectedId, onSelect, loading, onRefresh }
             </div>
             <div className="text-xs text-muted-foreground truncate">{preview}</div>
           </div>
-        </button>
+        </div>
         <button
+          type="button"
           className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity p-1.5 rounded text-muted-foreground hover:text-foreground hover:bg-muted"
           onClick={(e) => (archived ? handleUnarchive(e, t.id) : handleArchive(e, t.id))}
           title={archived ? "Gendan samtale" : "Arkivér samtale"}
