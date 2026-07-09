@@ -6727,6 +6727,7 @@ const translations = {
     changelogEntry166: "Ryddet op i trænerens holdoversigt — papirkurv-ikonet vises ikke længere ved hver atlet-række.",
     changelog_2026_07_09: "9. juli 2026",
     changelogEntry168: "Rettet: chat-samtaler kunne give blank skærm i app-versionerne; viser nu en fejlmeddelelse i stedet.",
+    changelogEntry169: "Bekræftet: chat-samtaler åbner nu stabilt i iOS- og Android-appen (TestFlight build 16).",
     changelog_2026_07_06: "6. juli 2026",
     changelogEntry167: "Forberedt push-notifikationer (server-side) for chat og dagbog — native iOS/Android-levering kommer næst.",
     changelogEntry160: "Privatlivspolitik færdiggjort og opdateret.",
