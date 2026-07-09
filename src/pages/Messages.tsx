@@ -8,6 +8,7 @@ import { ThreadList } from "@/components/chat/ThreadList";
 import { Conversation } from "@/components/chat/Conversation";
 import { StartChatPicker } from "@/components/chat/StartChatPicker";
 import { NewGroupDialog } from "@/components/chat/NewGroupDialog";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { listThreads, type ChatThread } from "@/lib/chatApi";
 import { PageMeta } from "@/components/PageMeta";
 import { useIosKeyboard } from "@/hooks/useIosKeyboard";
@@ -110,11 +111,17 @@ export default function Messages() {
         {isMobileView ? (
           <div className="h-full min-h-0">
             {active ? (
-              <Conversation
-                thread={active}
+              <ErrorBoundary
                 onBack={closeThread}
-                onExit={() => navigate("/dashboard")}
-              />
+                backLabel={t("chatErrorBack")}
+                retryLabel={t("chatErrorRetry")}
+              >
+                <Conversation
+                  thread={active}
+                  onBack={closeThread}
+                  onExit={() => navigate("/dashboard")}
+                />
+              </ErrorBoundary>
             ) : (
               <ThreadList
                 threads={threads}
@@ -136,11 +143,17 @@ export default function Messages() {
             </div>
             <div className="h-full min-h-0">
               {active ? (
-                <Conversation
-                  thread={active}
+                <ErrorBoundary
                   onBack={closeThread}
-                  onExit={() => navigate("/dashboard")}
-                />
+                  backLabel={t("chatErrorBack")}
+                  retryLabel={t("chatErrorRetry")}
+                >
+                  <Conversation
+                    thread={active}
+                    onBack={closeThread}
+                    onExit={() => navigate("/dashboard")}
+                  />
+                </ErrorBoundary>
               ) : (
                 <div className="flex items-center justify-center h-full text-sm text-muted-foreground p-6 text-center">
                   Vælg en samtale eller start en ny.
