@@ -23,28 +23,39 @@ export function useThreads() {
 
   // Realtime: refetch on any new message in any of my threads
   useEffect(() => {
-    let userId: string | null = null;
     let channel: ReturnType<typeof supabase.channel> | null = null;
+    let cancelled = false;
+
     (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      userId = user.id;
-      channel = supabase
-        .channel(`threads-${user.id}`)
-        .on(
-          "postgres_changes",
-          { event: "INSERT", schema: "public", table: "chat_messages" },
-          () => refresh(),
-        )
-        .on(
-          "postgres_changes",
-          { event: "INSERT", schema: "public", table: "chat_thread_members", filter: `user_id=eq.${user.id}` },
-          () => refresh(),
-        )
-        .subscribe();
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (cancelled || !user) return;
+
+        const suffix = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        channel = supabase
+          .channel(`threads-${user.id}-${suffix}`)
+          .on(
+            "postgres_changes",
+            { event: "INSERT", schema: "public", table: "chat_messages" },
+            () => refresh(),
+          )
+          .on(
+            "postgres_changes",
+            { event: "INSERT", schema: "public", table: "chat_thread_members", filter: `user_id=eq.${user.id}` },
+            () => refresh(),
+          )
+          .subscribe();
+      } catch (e) {
+        console.error("[useThreads:realtime]", e);
+      }
     })();
+
     return () => {
-      if (channel) supabase.removeChannel(channel);
+      cancelled = true;
+      if (channel) {
+        supabase.removeChannel(channel);
+        channel = null;
+      }
     };
   }, [refresh]);
 
