@@ -13,7 +13,7 @@ const FLAGS: Record<Locale, { emoji: string; label: string }> = {
   es: { emoji: "🇪🇸", label: "Español" },
 };
 
-export function LanguageSwitcher({ className }: { className?: string }) {
+export function LanguageSwitcher({ className, compact }: { className?: string; compact?: boolean }) {
   const { locale, setLocale } = useLanguage();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -30,11 +30,15 @@ export function LanguageSwitcher({ className }: { className?: string }) {
     <div ref={ref} className={cn("relative inline-block", className)}>
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 rounded-md border border-border bg-muted px-2.5 py-1.5 text-sm font-semibold transition-colors hover:bg-accent cursor-pointer"
+        className={cn(
+          "flex items-center gap-1.5 rounded-md border border-border bg-muted transition-colors hover:bg-accent cursor-pointer",
+          compact ? "px-2 py-1.5" : "px-2.5 py-1.5 text-sm font-semibold"
+        )}
+        aria-label={FLAGS[locale].label}
       >
         <span className="text-base leading-none">{FLAGS[locale].emoji}</span>
-        <span className="text-xs text-muted-foreground">{FLAGS[locale].label}</span>
-        <svg className="h-3 w-3 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        {!compact && <span className="text-xs text-muted-foreground">{FLAGS[locale].label}</span>}
+        <svg className={cn("text-muted-foreground", compact ? "h-3 w-3" : "h-3 w-3")} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
         </svg>
       </button>
