@@ -128,7 +128,7 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
           <div className="text-sm font-semibold truncate">{headerTitle}</div>
           {thread.kind === "group" && (
             <div className="text-[11px] text-muted-foreground truncate underline-offset-2 hover:underline">
-              {thread.members.length} medlemmer — tryk for at se
+              {members.length} medlemmer — tryk for at se
             </div>
           )}
         </div>
@@ -178,7 +178,7 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
                 i === lastOwnIdx &&
                 partnerReadAt &&
                 partnerReadAt >= m.created_at;
-              const partner = thread.members.find((p) => p.user_id !== meId);
+              const partner = members.find((p) => p.user_id !== meId);
               return (
                 <div key={m.id}>
                   <MessageBubble
@@ -246,7 +246,7 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
         open={addOpen}
         onOpenChange={setAddOpen}
         threadId={thread.id}
-        existingMemberIds={thread.members.map((m) => m.user_id)}
+        existingMemberIds={members.map((m) => m.user_id)}
         onAdded={refresh}
       />
 
@@ -258,13 +258,13 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
             </Button>
             <div className="flex-1 min-w-0">
               <div className="text-sm font-semibold">Gruppemedlemmer</div>
-              <div className="text-[11px] text-muted-foreground">{thread.members.length} personer</div>
+              <div className="text-[11px] text-muted-foreground">{members.length} personer</div>
             </div>
           </div>
 
           <ScrollArea className="flex-1">
             <div className="p-3 space-y-1">
-              {thread.members.map((member) => {
+              {members.map((member) => {
                 const isSelf = member.user_id === meId;
                 const canRemove = isCreator || isSelf;
                 const removeLabel = isSelf ? "Forlad gruppe" : "Fjern fra gruppe";
