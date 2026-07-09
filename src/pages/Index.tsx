@@ -181,10 +181,10 @@ const Index = () => {
 
       {promoOpen && (
         <div style={{ background: "#101322", borderBottom: "0.5px solid rgba(245,200,66,0.2)" }}>
-          <div style={{ maxWidth: 1200, margin: "0 auto", padding: `8px ${pad}px`, display: "flex", alignItems: "center", justifyContent: "center", gap: 12, fontSize: 12, color: "rgba(255,255,255,0.85)", position: "relative" }}>
+          <div style={{ maxWidth: 1200, margin: "0 auto", padding: `6px ${isMobile ? 14 : pad}px`, display: "flex", alignItems: "center", justifyContent: "center", gap: 12, fontSize: isMobile ? 11 : 12, color: "rgba(255,255,255,0.85)", position: "relative" }}>
             <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
               <span style={{ display: "inline-block", width: 6, height: 6, borderRadius: "50%", background: GOLD, boxShadow: `0 0 8px ${GOLD}` }} />
-              <strong style={{ color: GOLD, letterSpacing: "0.08em", fontFamily: MONO, fontSize: 11 }}>{t("homePromoLabel")}</strong>
+              <strong style={{ color: GOLD, letterSpacing: "0.08em", fontFamily: MONO, fontSize: isMobile ? 10 : 11 }}>{t("homePromoLabel")}</strong>
               <span style={{ color: "rgba(255,255,255,0.7)" }}>{t("homePromoText")}</span>
             </span>
             {!isMobile && (
@@ -192,7 +192,7 @@ const Index = () => {
                 {t("homePromoCta")}
               </button>
             )}
-            <button onClick={() => setPromoOpen(false)} aria-label={t("homePromoClose")} style={{ position: "absolute", right: pad, background: "transparent", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer", fontSize: 16 }}>×</button>
+            <button onClick={() => setPromoOpen(false)} aria-label={t("homePromoClose")} style={{ position: "absolute", right: isMobile ? 10 : pad, background: "transparent", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer", fontSize: 16 }}>×</button>
           </div>
         </div>
       )}
