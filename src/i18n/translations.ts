@@ -20872,6 +20872,7 @@ const translations = {
     changelogEntry166: "Ryddet opp i trenerens lagoversikt — søppelbøtte-ikonet vises ikke lenger ved hver utøverrad.",
     changelog_2026_07_09: "9. juli 2026",
     changelogEntry168: "Rettet: chat-samtaler kunne gi blank skjerm i app-versjonene; viser nå en feilmelding i stedet.",
+    changelogEntry169: "Bekreftet: chat-samtaler åpnes nå stabilt i iOS- og Android-appen (TestFlight build 16).",
     changelog_2026_07_06: "6. juli 2026",
     changelogEntry167: "Forberedt push-varsler (server-side) for chat og dagbok — native iOS/Android-levering kommer neste.",
     changelogEntry160: "Personvernerklæringen er ferdigstilt og oppdatert.",
