@@ -3161,6 +3161,7 @@ const translations = {
     changelogEntry166: "Cleaned up the coach squad overview — the trash icon no longer appears next to each athlete row.",
     changelog_2026_07_09: "July 9, 2026",
     changelogEntry168: "Fixed: chat conversations could show a blank screen in the app versions; an error message is now shown instead.",
+    changelogEntry169: "Confirmed: chat conversations now open reliably in the iOS and Android apps (TestFlight build 16).",
     changelog_2026_07_06: "July 6, 2026",
     changelogEntry167: "Prepared push notifications (server-side) for chat and diary — native iOS/Android delivery coming next.",
     changelogEntry160: "Privacy policy finalised and updated.",
