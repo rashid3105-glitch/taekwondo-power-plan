@@ -97,7 +97,7 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
   const memberMap = new Map(thread.members.map((m) => [m.user_id, m]));
 
   return (
-    <div className={cn("relative flex flex-col h-full bg-background min-h-0", variant === "floating" && "bg-card")}>
+    <div className={cn("relative flex flex-col h-full bg-background min-h-0 pointer-events-auto touch-manipulation", variant === "floating" && "bg-card")}>
       <div
         className={cn(
           "sticky top-0 z-10 flex items-center gap-2 border-b border-border bg-card px-3 py-2",
