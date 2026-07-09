@@ -383,6 +383,7 @@ export type Database = {
       }
       chat_thread_members: {
         Row: {
+          archived_at: string | null
           joined_at: string
           last_read_at: string
           muted: boolean
@@ -391,6 +392,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          archived_at?: string | null
           joined_at?: string
           last_read_at?: string
           muted?: boolean
@@ -399,6 +401,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          archived_at?: string | null
           joined_at?: string
           last_read_at?: string
           muted?: boolean
