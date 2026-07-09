@@ -22854,6 +22854,7 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   changelogEntry166: "Se limpió la vista general del equipo del entrenador — el icono de papelera ya no aparece junto a cada fila de atleta.",
   changelog_2026_07_09: "9 de julio de 2026",
   changelogEntry168: "Corregido: las conversaciones de chat podían mostrar pantalla en blanco en las versiones de la app; ahora se muestra un mensaje de error en su lugar.",
+  changelogEntry169: "Confirmado: las conversaciones de chat ahora se abren de forma estable en las apps de iOS y Android (TestFlight build 16).",
   changelog_2026_07_06: "6 de julio de 2026",
   changelogEntry167: "Notificaciones push preparadas (lado del servidor) para el chat y el diario — la entrega nativa en iOS/Android llegará después.",
   changelogEntry160: "Política de privacidad finalizada y actualizada.",
