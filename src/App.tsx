@@ -13,6 +13,7 @@ import { RoleProvider } from "@/contexts/RoleContext";
 import { ThemeSync } from "@/contexts/ThemeSync";
 import { ConsentGate } from "@/components/ConsentGate";
 import { GlobalAppMenu } from "@/components/GlobalAppMenu";
+import { BodyPointerEventsGuard } from "@/components/BodyPointerEventsGuard";
 
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { AppUpdateBanner } from "@/components/AppUpdateBanner";
