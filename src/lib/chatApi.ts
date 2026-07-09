@@ -12,6 +12,7 @@ export interface ChatThread {
     user_id: string;
     role: "owner" | "member";
     last_read_at: string;
+    archived_at: string | null;
     display_name: string;
     avatar_url: string | null;
   }>;
