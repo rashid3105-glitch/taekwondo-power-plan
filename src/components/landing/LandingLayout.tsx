@@ -211,8 +211,8 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
                   <Icon size={26} strokeWidth={1.8} />
                 </button>
               );
-
             })}
+
           </div>
 
           <div style={{ padding: "0 16px" }}>
