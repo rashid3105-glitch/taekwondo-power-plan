@@ -205,8 +205,10 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
                     cursor: "pointer",
                     transition: "all 0.15s ease",
                     minHeight: 88,
+                    position: "relative",
                   }}
                 >
+
                   <Icon size={26} strokeWidth={1.8} />
                   <span
                     style={{
