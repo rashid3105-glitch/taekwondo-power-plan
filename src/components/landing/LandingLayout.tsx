@@ -27,13 +27,14 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const NAV_LINKS = [
-    { label: t("navHome"), href: "/", icon: Home, ariaLabel: t("navHome") },
-    { label: t("navPlatform"), href: "/platform", icon: LayoutGrid, ariaLabel: t("navPlatform") },
-    { label: t("navFeatures"), href: "/funktioner", icon: Sparkles, ariaLabel: t("navFeatures") },
-    { label: t("navPricing"), href: "/priser", icon: CreditCard, ariaLabel: t("navPricing") },
-    { label: t("navAbout"), href: "/about", icon: Info, ariaLabel: t("navAbout") },
-    { label: t("navBlog"), href: "/blog", icon: Newspaper, ariaLabel: t("navBlog") },
+    { label: t("navHome"), href: "/", icon: Home },
+    { label: t("navPlatform"), href: "/platform", icon: LayoutGrid },
+    { label: t("navFeatures"), href: "/funktioner", icon: Sparkles },
+    { label: t("navPricing"), href: "/priser", icon: CreditCard },
+    { label: t("navAbout"), href: "/about", icon: Info },
+    { label: t("navBlog"), href: "/blog", icon: Newspaper },
   ];
+
 
 
   const isActive = (href: string) =>
