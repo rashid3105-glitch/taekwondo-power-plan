@@ -103,6 +103,7 @@ export function useOfflinePhysicalTests(targetUserId: string | null) {
         test_date: input.test_date,
         pending: true,
         created_at: Date.now(),
+        session_id: input.session_id ?? null,
       };
       await putCachedResult(rec);
       await queueTestIntent({
