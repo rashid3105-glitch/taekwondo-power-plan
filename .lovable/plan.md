@@ -1,55 +1,25 @@
-## Plan: Deadlift-billede i hero + mobil-justering
+## Mål
+På mobil (< 720px) skal den vandrette linkrække i toppen erstattes af et hamburger-ikon, der åbner en overlay-menu. Desktop-navigation forbliver uændret.
 
-Placer det uploadede billede i højre kolonne af hero-sektionen i `src/pages/Index.tsx`, direkte over det eksisterende HUD-cockpit. Billedet beskæres kvadratisk med fokus på løftet.
+## Ændringer i `src/components/landing/LandingLayout.tsx`
 
-### Trin
+1. **Row 2 (linkrækken) skjules på mobil.** Den vises kun når `!isMobile`.
+2. **Nyt hamburger-ikon** placeres i Row 1 til venstre for LanguageSwitcher (kun synligt når `isMobile`). Bruger `Menu`/`X` fra `lucide-react`, 40×40 tap-target, transparent baggrund, guldfarvet stroke ved aktiv.
+3. **Ny state `menuOpen`** styrer overlay.
+4. **Overlay-menu**:
+   - Fast position under navbaren (`top: 48px`), fylder viewporten (`left/right: 0`, `height: calc(100vh - 48px)`).
+   - Mørk baggrund (`#0B0C14`) med subtil gradient, `backdrop-filter: blur(8px)`.
+   - Links stakket lodret, centreret, `fontSize: 20`, `fontWeight: 600`, `padding: 16px`, aktivt link i guld med venstre-border.
+   - "Log ind"-knap gentages nederst i overlay som stor primær CTA (guld, fuld bredde minus 32px margin).
+   - Luk ved: klik på link (efter navigate), klik på X-ikon, `Escape`-tast.
+5. **Body scroll lock** når menuen er åben (`document.body.style.overflow`), ryddes op i `useEffect` cleanup.
+6. **Navbar-højde**: Row 1 forbliver 48px på mobil; da Row 2 fjernes, får hero mere plads over folden — løser samtidig "toppen tager ud over siden".
 
-1. **Upload billedet som CDN-asset**
-   - `lovable-assets create --file /mnt/user-uploads/Skærmbillede_2026-07-09_kl._14.54.35.png --filename hero-deadlift.jpg > src/assets/hero-deadlift.jpg.asset.json`
-   - Ingen binær fil ender i repoet.
+## Tekniske noter
+- Ingen ændringer i translations, routes eller andre sider.
+- Bruger inline styles (matcher eksisterende stil i filen).
+- `useLocation` bruges allerede til aktiv-tilstand — genbruges i overlay.
+- Ingen ny dependency (`lucide-react` er allerede i projektet).
 
-2. **Rediger `src/pages/Index.tsx`** (linje ~244–246, hvor `<HUD />` renderes i højre kolonne)
-   - Importér `heroDeadliftAsset from "@/assets/hero-deadlift.jpg.asset.json"`.
-   - Wrap `<HUD />` i en flex-column container med `gap: 16`.
-   - Indsæt over HUD:
-     ```tsx
-     <div style={{
-       aspectRatio: "1 / 1",
-       width: "100%",
-       borderRadius: 14,
-       overflow: "hidden",
-       border: "0.5px solid rgba(255,255,255,0.08)",
-       boxShadow: "0 30px 80px rgba(0,0,0,0.5)",
-     }}>
-       <img
-         src={heroDeadliftAsset.url}
-         alt="Atlet udfører deadlift"
-         style={{
-           width: "100%",
-           height: "100%",
-           objectFit: "cover",
-           objectPosition: "center 30%",
-           display: "block",
-         }}
-       />
-     </div>
-     ```
-   - Kvadratisk `aspect-ratio` + `object-fit: cover` giver den ønskede firkantede beskæring med fokus på stangen/overkroppen.
-
-3. **Responsivt**
-   - På tablet/mobil (grid `1fr`) ligger billedet naturligt over HUD i samme kolonne — ingen ekstra breakpoint-kode nødvendig.
-
-4. **Mobil-justering efter feedback**
-   - Mere kompakt navbar i `src/components/landing/LandingLayout.tsx`: mindre højde, mindre logo, kompakt sprogvælger og mindre/tyndere "Log ind"-knap.
-   - Mindre hero-headline og tekst på mobil, tættere linjeafstand.
-   - Mindre CTA-knapper med reduceret skygge.
-   - Billedet begrænses til `maxHeight: 260px` på mobil, så det ikke dominerer skærmen, og holder stadig kvadratisk beskæring.
-   - Ingen ændringer til desktop eller andre sektioner.
-
-### Filer der ændres
-- `src/pages/Index.tsx` (import + højre-kolonne markup + mobil-typografi)
-- `src/components/landing/LandingLayout.tsx` (mobil-navbar)
-- `src/components/LanguageSwitcher.tsx` (valgfri `compact`-prop)
-- `src/assets/hero-deadlift.jpg.asset.json` (ny — CDN-pointer)
-
-Ingen ændringer i i18n, backend eller andre komponenter.
+## Ikke omfattet
+- Desktop-nav, footer, sprogvælger og "Log ind"-knap i navbaren ændres ikke visuelt ud over tilføjelsen af hamburger-ikonet.

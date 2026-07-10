@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { Menu, X } from "lucide-react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { BrandLogo } from "@/components/BrandLogo";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -22,7 +23,7 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
   const { t } = useLanguage();
   const w = useWidth();
   const isMobile = w < 720;
-  const isTiny = w < 380;
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const NAV_LINKS = [
     { label: t("navHome"), href: "/" },
@@ -32,6 +33,36 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
     { label: t("navAbout"), href: "/about" },
     { label: t("navBlog"), href: "/blog" },
   ];
+
+  const isActive = (href: string) =>
+    href === "/"
+      ? location.pathname === "/"
+      : location.pathname === href || location.pathname.startsWith(href + "/");
+
+  // Body scroll lock + Escape to close
+  useEffect(() => {
+    if (!menuOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [menuOpen]);
+
+  // Close overlay on route change
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
+
+  const go = (href: string) => {
+    setMenuOpen(false);
+    navigate(href);
+  };
 
   return (
     <div style={{ background: "#0B0C14", color: "#fff", fontFamily: "Inter, sans-serif", minHeight: "100vh" }}>
@@ -57,48 +88,134 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
             >
               {t("signIn")}
             </button>
-          </div>
-        </div>
-        {/* Row 2: nav links */}
-        <div
-          style={{
-            display: "flex",
-            gap: isTiny ? 4 : 8,
-            justifyContent: "center",
-            padding: isMobile ? "6px 10px" : "8px 12px",
-            borderTop: "0.5px solid rgba(255,255,255,0.05)",
-            overflowX: "auto",
-          }}
-        >
-          {NAV_LINKS.map((l) => {
-            const active =
-              l.href === "/"
-                ? location.pathname === "/"
-                : location.pathname === l.href || location.pathname.startsWith(l.href + "/");
-            return (
-              <span
-                key={l.href}
-                onClick={() => navigate(l.href)}
+            {isMobile && (
+              <button
+                aria-label={menuOpen ? "Luk menu" : "Åbn menu"}
+                aria-expanded={menuOpen}
+                onClick={() => setMenuOpen((o) => !o)}
                 style={{
-                  color: active ? GOLD : "rgba(255,255,255,0.7)",
+                  width: 40,
+                  height: 40,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "transparent",
+                  border: "0.5px solid rgba(245,200,66,0.4)",
+                  borderRadius: 8,
+                  color: GOLD,
                   cursor: "pointer",
-                  fontWeight: active ? 700 : 500,
-                  fontSize: isTiny ? 11 : 12,
-                  letterSpacing: "0.02em",
-                  whiteSpace: "nowrap",
-                  padding: isMobile ? "5px 10px" : "6px 12px",
-                  borderRadius: 6,
-                  border: active ? `1px solid ${GOLD}` : "1px solid transparent",
-                  background: active ? "rgba(245,200,66,0.08)" : "transparent",
-                  transition: "all 0.15s ease",
+                  padding: 0,
                 }}
               >
-                {l.label}
-              </span>
-            );
-          })}
+                {menuOpen ? <X size={20} /> : <Menu size={20} />}
+              </button>
+            )}
+          </div>
         </div>
+        {/* Row 2: nav links (desktop only) */}
+        {!isMobile && (
+          <div
+            style={{
+              display: "flex",
+              gap: 8,
+              justifyContent: "center",
+              padding: "8px 12px",
+              borderTop: "0.5px solid rgba(255,255,255,0.05)",
+              overflowX: "auto",
+            }}
+          >
+            {NAV_LINKS.map((l) => {
+              const active = isActive(l.href);
+              return (
+                <span
+                  key={l.href}
+                  onClick={() => navigate(l.href)}
+                  style={{
+                    color: active ? GOLD : "rgba(255,255,255,0.7)",
+                    cursor: "pointer",
+                    fontWeight: active ? 700 : 500,
+                    fontSize: 12,
+                    letterSpacing: "0.02em",
+                    whiteSpace: "nowrap",
+                    padding: "6px 12px",
+                    borderRadius: 6,
+                    border: active ? `1px solid ${GOLD}` : "1px solid transparent",
+                    background: active ? "rgba(245,200,66,0.08)" : "transparent",
+                    transition: "all 0.15s ease",
+                  }}
+                >
+                  {l.label}
+                </span>
+              );
+            })}
+          </div>
+        )}
       </nav>
+
+      {/* Mobile overlay menu */}
+      {isMobile && menuOpen && (
+        <div
+          style={{
+            position: "fixed",
+            top: 48,
+            left: 0,
+            right: 0,
+            height: "calc(100vh - 48px)",
+            background: "linear-gradient(180deg, #0B0C14 0%, #10121c 100%)",
+            backdropFilter: "blur(8px)",
+            zIndex: 99,
+            display: "flex",
+            flexDirection: "column",
+            padding: "16px 0 24px",
+            overflowY: "auto",
+          }}
+        >
+          <div style={{ display: "flex", flexDirection: "column", gap: 4, padding: "8px 16px", flex: 1 }}>
+            {NAV_LINKS.map((l) => {
+              const active = isActive(l.href);
+              return (
+                <button
+                  key={l.href}
+                  onClick={() => go(l.href)}
+                  style={{
+                    textAlign: "left",
+                    background: active ? "rgba(245,200,66,0.06)" : "transparent",
+                    border: "none",
+                    borderLeft: active ? `3px solid ${GOLD}` : "3px solid transparent",
+                    color: active ? GOLD : "rgba(255,255,255,0.9)",
+                    fontSize: 20,
+                    fontWeight: active ? 700 : 600,
+                    padding: "16px 20px",
+                    cursor: "pointer",
+                    borderRadius: 6,
+                  }}
+                >
+                  {l.label}
+                </button>
+              );
+            })}
+          </div>
+          <div style={{ padding: "0 16px" }}>
+            <button
+              onClick={() => go("/auth")}
+              style={{
+                width: "100%",
+                padding: "14px",
+                borderRadius: 10,
+                border: "none",
+                background: GOLD,
+                color: "#0B0C14",
+                fontSize: 16,
+                fontWeight: 800,
+                cursor: "pointer",
+              }}
+            >
+              {t("signIn")}
+            </button>
+          </div>
+        </div>
+      )}
+
       <main>{children}</main>
       <footer style={{ borderTop: "0.5px solid rgba(255,255,255,0.07)" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto", padding: "28px 32px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
