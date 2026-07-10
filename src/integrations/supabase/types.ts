@@ -4144,6 +4144,10 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_athlete_in_team_session: {
+        Args: { _session_id: string; _user_id: string }
+        Returns: boolean
+      }
       is_chat_thread_member: {
         Args: { _thread: string; _uid: string }
         Returns: boolean
