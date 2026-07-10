@@ -1,20 +1,37 @@
-Gør menupunkterne i mobil-hamburger-menuen (`src/components/landing/LandingLayout.tsx`) ikon-only med tooltips/aria-labels.
+## Problem
+Hero-billedet på forsiden vises som en ødelagt-billede-firkant i TestFlight (iOS).
 
-Plan
-1. Opdatér `NAV_LINKS` med et passende Lucide-ikon pr. menupunkt:
-   - Hjem: Home
-   - Platform: LayoutGrid
-   - Funktioner: Sparkles
-   - Priser: CreditCard
-   - Om os: Info
-   - Blog: Newspaper
-2. Omskriv det mobile overlay-menu-område (`isMobile && menuOpen`) så hvert punkt viser ikon i en kompakt knap/grid frem for stor tekst.
-3. Behold tekst-labelen som `aria-label` og `title` på hver knap (tilgængelighed + hover-tooltip), så brugeren ser ikonet, men skærmlæsere og lange tryk/long-press viser betydningen.
-4. Bevar aktiv tilstand (gul kant/baggrund) og den eksisterende "Log ind"-knap nederst.
-5. Verificér menuen i preview ved mobil-viewport (~720 px og derunder).
+**Årsag:** `src/pages/Index.tsx` importerer hero-billedet via en Lovable Assets CDN-pointer:
 
-Tekniske detaljer
-- Fil: `src/components/landing/LandingLayout.tsx`
-- Importerer nye ikoner fra `lucide-react`.
-- `aria-label` sættes til `l.label` (allerede oversat via `t(...)`), så ingen nye i18n-nøgler er nødvendige.
-- Ingen ændringer af state, routes eller backend.
+```ts
+import heroDeadliftAsset from "@/assets/hero-deadlift.jpg.asset.json";
+// url: "/__l5e/assets-v1/.../hero-deadlift.jpg"
+```
+
+Denne URL er relativ og serveres kun af Lovables web-hosting. Når appen kører nativt via Capacitor, indlæses web-laget fra selve app-bundlen (`capacitor://localhost`), så `/__l5e/...` findes ikke → ødelagt billede.
+
+De andre billeder på siden (`coach-sitting.png`, `coach-standing.jpg`) virker, fordi de er rigtige filer i `src/assets/` og bundtes ind i `dist/` af Vite.
+
+## Fix
+Behandl hero-billedet som de andre — bundt det ind i appen i stedet for at hente det fra CDN.
+
+1. Download billedet fra CDN'et til `src/assets/hero-deadlift.jpg` (rigtig binær fil).
+2. Slet CDN-pointeren `src/assets/hero-deadlift.jpg.asset.json`.
+3. I `src/pages/Index.tsx` skift importen:
+   ```ts
+   import heroDeadliftAsset from "@/assets/hero-deadlift.jpg";
+   ```
+   og opdatér brugsstedet fra `heroDeadliftAsset.url` til bare `heroDeadliftAsset` (Vite giver en URL-streng direkte).
+
+## Efter fixet
+For at få billedet ind i selve iOS-appen skal du (som beskrevet i `ios-healthkit-info.md`):
+
+```bash
+git pull
+npm install         # kun hvis package.json ændrede sig
+npm run build
+npx cap sync ios
+# åbn Xcode og kør på device
+```
+
+Web-versionen (sportstalent.dk) påvirkes ikke negativt — billedet vises stadig, det ligger bare nu i app-bundlen i stedet for på CDN'et.
