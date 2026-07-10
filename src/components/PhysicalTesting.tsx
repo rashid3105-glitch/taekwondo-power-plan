@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import {
-  Loader2, Trash2, ClipboardList, WifiOff, Pencil,
+  Loader2, Trash2, ClipboardList, WifiOff, Pencil, Users,
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
@@ -255,6 +256,21 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
           )}
         </h2>
       </div>
+
+      {mode === "coach" && !athleteId && (
+        <div className="rounded-xl border border-primary/30 bg-primary/5 p-3 flex items-center gap-3">
+          <div className="h-10 w-10 rounded-full bg-primary/15 text-primary flex items-center justify-center shrink-0">
+            <Users className="h-5 w-5" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-sm font-bold text-foreground">{t("ptTeamSessions")}</div>
+            <div className="text-[11px] text-muted-foreground">{t("ptTeamSessionsSubtitle")}</div>
+          </div>
+          <Button asChild size="sm" variant="secondary">
+            <Link to="/coach/testing/sessions">{t("ptOpen")}</Link>
+          </Button>
+        </div>
+      )}
 
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="grid w-full" style={{ gridTemplateColumns: mode === "coach" ? "1fr 1fr 1fr" : "1fr 1fr" }}>
