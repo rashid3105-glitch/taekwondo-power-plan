@@ -24,6 +24,7 @@ export interface NewTestInput {
   tested_by: string | null;
   notes: string;
   test_date: string;
+  session_id?: string | null;
 }
 
 function uuid() {

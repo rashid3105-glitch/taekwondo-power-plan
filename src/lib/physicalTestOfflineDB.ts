@@ -18,6 +18,7 @@ export interface CachedTestResult {
   test_date: string;
   pending: boolean;
   created_at: number;
+  session_id?: string | null;
 }
 
 export interface TestIntent {
@@ -33,6 +34,7 @@ export interface TestIntent {
   test_date: string;
   // Active club at queue time so the row is stamped on INSERT.
   club_id?: string | null;
+  session_id?: string | null;
   queued_at: number;
 }
 
