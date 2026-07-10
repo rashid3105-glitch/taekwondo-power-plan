@@ -3615,10 +3615,6 @@ const translations = {
     ptSessionDeleteConfirm: "Delete this session and unlink its results?",
     ptNoSessionsYet: "No team sessions yet. Create one to get started.",
     ptRedo: "Redo",
-    notFound: "Not found",
-    back: "Back",
-    next: "Next",
-    search: "Search",
   },
   da: {
     defaultLanguage: "Standardsprog",
