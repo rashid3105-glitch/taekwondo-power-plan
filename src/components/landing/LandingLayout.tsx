@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Home, LayoutGrid, Sparkles, CreditCard, Info, Newspaper } from "lucide-react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { BrandLogo } from "@/components/BrandLogo";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 const GOLD = "#F5C842";
+
 
 const useWidth = () => {
   const [w, setW] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
@@ -26,15 +27,16 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const NAV_LINKS = [
-    { label: t("navHome"), href: "/" },
-    { label: t("navPlatform"), href: "/platform" },
-    { label: t("navFeatures"), href: "/funktioner" },
-    { label: t("navPricing"), href: "/priser" },
-    { label: t("navAbout"), href: "/about" },
-    { label: t("navBlog"), href: "/blog" },
+    { label: t("navHome"), href: "/", icon: Home },
+    { label: t("navPlatform"), href: "/platform", icon: LayoutGrid },
+    { label: t("navFeatures"), href: "/funktioner", icon: Sparkles },
+    { label: t("navPricing"), href: "/priser", icon: CreditCard },
+    { label: t("navAbout"), href: "/about", icon: Info },
+    { label: t("navBlog"), href: "/blog", icon: Newspaper },
   ];
 
   const isActive = (href: string) =>
+
     href === "/"
       ? location.pathname === "/"
       : location.pathname === href || location.pathname.startsWith(href + "/");
@@ -170,31 +172,49 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
             overflowY: "auto",
           }}
         >
-          <div style={{ display: "flex", flexDirection: "column", gap: 4, padding: "8px 16px", flex: 1 }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)",
+              gap: 12,
+              padding: "16px 16px 8px",
+              flex: 1,
+              alignContent: "start",
+            }}
+          >
             {NAV_LINKS.map((l) => {
               const active = isActive(l.href);
+              const Icon = l.icon;
               return (
                 <button
                   key={l.href}
                   onClick={() => go(l.href)}
+                  aria-label={l.label}
+                  title={l.label}
                   style={{
-                    textAlign: "left",
-                    background: active ? "rgba(245,200,66,0.06)" : "transparent",
-                    border: "none",
-                    borderLeft: active ? `3px solid ${GOLD}` : "3px solid transparent",
-                    color: active ? GOLD : "rgba(255,255,255,0.9)",
-                    fontSize: 20,
-                    fontWeight: active ? 700 : 600,
-                    padding: "16px 20px",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 8,
+                    background: active ? "rgba(245,200,66,0.1)" : "rgba(255,255,255,0.03)",
+                    border: active ? `1px solid ${GOLD}` : "1px solid rgba(255,255,255,0.08)",
+                    color: active ? GOLD : "rgba(255,255,255,0.85)",
+                    borderRadius: 12,
+                    padding: "18px 8px",
                     cursor: "pointer",
-                    borderRadius: 6,
+                    transition: "all 0.15s ease",
+                    minHeight: 88,
                   }}
                 >
-                  {l.label}
+                  <Icon size={26} strokeWidth={1.8} />
+
                 </button>
               );
             })}
+
           </div>
+
           <div style={{ padding: "0 16px" }}>
             <button
               onClick={() => go("/auth")}

@@ -1,25 +1,20 @@
-## Mål
-På mobil (< 720px) skal den vandrette linkrække i toppen erstattes af et hamburger-ikon, der åbner en overlay-menu. Desktop-navigation forbliver uændret.
+Gør menupunkterne i mobil-hamburger-menuen (`src/components/landing/LandingLayout.tsx`) ikon-only med tooltips/aria-labels.
 
-## Ændringer i `src/components/landing/LandingLayout.tsx`
+Plan
+1. Opdatér `NAV_LINKS` med et passende Lucide-ikon pr. menupunkt:
+   - Hjem: Home
+   - Platform: LayoutGrid
+   - Funktioner: Sparkles
+   - Priser: CreditCard
+   - Om os: Info
+   - Blog: Newspaper
+2. Omskriv det mobile overlay-menu-område (`isMobile && menuOpen`) så hvert punkt viser ikon i en kompakt knap/grid frem for stor tekst.
+3. Behold tekst-labelen som `aria-label` og `title` på hver knap (tilgængelighed + hover-tooltip), så brugeren ser ikonet, men skærmlæsere og lange tryk/long-press viser betydningen.
+4. Bevar aktiv tilstand (gul kant/baggrund) og den eksisterende "Log ind"-knap nederst.
+5. Verificér menuen i preview ved mobil-viewport (~720 px og derunder).
 
-1. **Row 2 (linkrækken) skjules på mobil.** Den vises kun når `!isMobile`.
-2. **Nyt hamburger-ikon** placeres i Row 1 til venstre for LanguageSwitcher (kun synligt når `isMobile`). Bruger `Menu`/`X` fra `lucide-react`, 40×40 tap-target, transparent baggrund, guldfarvet stroke ved aktiv.
-3. **Ny state `menuOpen`** styrer overlay.
-4. **Overlay-menu**:
-   - Fast position under navbaren (`top: 48px`), fylder viewporten (`left/right: 0`, `height: calc(100vh - 48px)`).
-   - Mørk baggrund (`#0B0C14`) med subtil gradient, `backdrop-filter: blur(8px)`.
-   - Links stakket lodret, centreret, `fontSize: 20`, `fontWeight: 600`, `padding: 16px`, aktivt link i guld med venstre-border.
-   - "Log ind"-knap gentages nederst i overlay som stor primær CTA (guld, fuld bredde minus 32px margin).
-   - Luk ved: klik på link (efter navigate), klik på X-ikon, `Escape`-tast.
-5. **Body scroll lock** når menuen er åben (`document.body.style.overflow`), ryddes op i `useEffect` cleanup.
-6. **Navbar-højde**: Row 1 forbliver 48px på mobil; da Row 2 fjernes, får hero mere plads over folden — løser samtidig "toppen tager ud over siden".
-
-## Tekniske noter
-- Ingen ændringer i translations, routes eller andre sider.
-- Bruger inline styles (matcher eksisterende stil i filen).
-- `useLocation` bruges allerede til aktiv-tilstand — genbruges i overlay.
-- Ingen ny dependency (`lucide-react` er allerede i projektet).
-
-## Ikke omfattet
-- Desktop-nav, footer, sprogvælger og "Log ind"-knap i navbaren ændres ikke visuelt ud over tilføjelsen af hamburger-ikonet.
+Tekniske detaljer
+- Fil: `src/components/landing/LandingLayout.tsx`
+- Importerer nye ikoner fra `lucide-react`.
+- `aria-label` sættes til `l.label` (allerede oversat via `t(...)`), så ingen nye i18n-nøgler er nødvendige.
+- Ingen ændringer af state, routes eller backend.
