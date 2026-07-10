@@ -172,31 +172,62 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
             overflowY: "auto",
           }}
         >
-          <div style={{ display: "flex", flexDirection: "column", gap: 4, padding: "8px 16px", flex: 1 }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)",
+              gap: 12,
+              padding: "16px 16px 8px",
+              flex: 1,
+              alignContent: "start",
+            }}
+          >
             {NAV_LINKS.map((l) => {
               const active = isActive(l.href);
+              const Icon = l.icon;
               return (
                 <button
                   key={l.href}
                   onClick={() => go(l.href)}
+                  aria-label={l.ariaLabel}
+                  title={l.label}
                   style={{
-                    textAlign: "left",
-                    background: active ? "rgba(245,200,66,0.06)" : "transparent",
-                    border: "none",
-                    borderLeft: active ? `3px solid ${GOLD}` : "3px solid transparent",
-                    color: active ? GOLD : "rgba(255,255,255,0.9)",
-                    fontSize: 20,
-                    fontWeight: active ? 700 : 600,
-                    padding: "16px 20px",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 8,
+                    background: active ? "rgba(245,200,66,0.1)" : "rgba(255,255,255,0.03)",
+                    border: active ? `1px solid ${GOLD}` : "1px solid rgba(255,255,255,0.08)",
+                    color: active ? GOLD : "rgba(255,255,255,0.85)",
+                    borderRadius: 12,
+                    padding: "18px 8px",
                     cursor: "pointer",
-                    borderRadius: 6,
+                    transition: "all 0.15s ease",
+                    minHeight: 88,
                   }}
                 >
-                  {l.label}
+                  <Icon size={26} strokeWidth={1.8} />
+                  <span
+                    style={{
+                      position: "absolute",
+                      width: 1,
+                      height: 1,
+                      padding: 0,
+                      margin: -1,
+                      overflow: "hidden",
+                      clip: "rect(0, 0, 0, 0)",
+                      whiteSpace: "nowrap",
+                      border: 0,
+                    }}
+                  >
+                    {l.label}
+                  </span>
                 </button>
               );
             })}
           </div>
+
           <div style={{ padding: "0 16px" }}>
             <button
               onClick={() => go("/auth")}
