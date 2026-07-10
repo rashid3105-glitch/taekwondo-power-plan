@@ -24,6 +24,7 @@ export interface NewTestInput {
   tested_by: string | null;
   notes: string;
   test_date: string;
+  session_id?: string | null;
 }
 
 function uuid() {
@@ -102,6 +103,7 @@ export function useOfflinePhysicalTests(targetUserId: string | null) {
         test_date: input.test_date,
         pending: true,
         created_at: Date.now(),
+        session_id: input.session_id ?? null,
       };
       await putCachedResult(rec);
       await queueTestIntent({

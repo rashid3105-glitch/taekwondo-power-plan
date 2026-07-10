@@ -2211,6 +2211,7 @@ export type Database = {
           created_at: string
           id: string
           notes: string | null
+          session_id: string | null
           test_date: string
           test_name: string
           test_type: string
@@ -2225,6 +2226,7 @@ export type Database = {
           created_at?: string
           id?: string
           notes?: string | null
+          session_id?: string | null
           test_date?: string
           test_name: string
           test_type?: string
@@ -2239,6 +2241,7 @@ export type Database = {
           created_at?: string
           id?: string
           notes?: string | null
+          session_id?: string | null
           test_date?: string
           test_name?: string
           test_type?: string
@@ -2253,6 +2256,13 @@ export type Database = {
             columns: ["club_id"]
             isOneToOne: false
             referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "physical_test_results_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "team_test_sessions"
             referencedColumns: ["id"]
           },
         ]
@@ -3193,6 +3203,117 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "taekwondo_drills_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_test_session_athletes: {
+        Row: {
+          added_at: string
+          athlete_id: string
+          session_id: string
+        }
+        Insert: {
+          added_at?: string
+          athlete_id: string
+          session_id: string
+        }
+        Update: {
+          added_at?: string
+          athlete_id?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_test_session_athletes_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "team_test_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_test_session_tests: {
+        Row: {
+          created_at: string
+          id: string
+          order_index: number
+          session_id: string
+          test_id: string
+          test_name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          order_index?: number
+          session_id: string
+          test_id: string
+          test_name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          order_index?: number
+          session_id?: string
+          test_id?: string
+          test_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_test_session_tests_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "team_test_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_test_sessions: {
+        Row: {
+          club_id: string
+          coach_id: string
+          created_at: string
+          entry_mode: string
+          focus_areas: string[]
+          id: string
+          name: string
+          notes: string
+          session_date: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          club_id: string
+          coach_id: string
+          created_at?: string
+          entry_mode?: string
+          focus_areas?: string[]
+          id?: string
+          name: string
+          notes?: string
+          session_date?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          club_id?: string
+          coach_id?: string
+          created_at?: string
+          entry_mode?: string
+          focus_areas?: string[]
+          id?: string
+          name?: string
+          notes?: string
+          session_date?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_test_sessions_club_id_fkey"
             columns: ["club_id"]
             isOneToOne: false
             referencedRelation: "clubs"

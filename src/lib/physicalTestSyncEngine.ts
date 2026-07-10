@@ -36,6 +36,7 @@ export async function syncPhysicalTests(): Promise<PhysicalTestSyncResult> {
             notes: intent.notes,
             test_date: intent.test_date,
             ...(intent.club_id ? { club_id: intent.club_id } : {}),
+            ...(intent.session_id ? { session_id: intent.session_id } : {}),
           } as any)
           .select()
           .single();

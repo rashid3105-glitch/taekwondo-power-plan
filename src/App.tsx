@@ -99,6 +99,8 @@ import Consent from "./pages/Consent";
 import { UpgradeGate } from "@/components/UpgradeGate";
 import CoachSurveys from "./pages/CoachSurveys";
 import AthleteSurveys from "./pages/AthleteSurveys";
+import CoachTestSessions from "./pages/CoachTestSessions";
+import CoachTestSession from "./pages/CoachTestSession";
 
 
 const queryClient = new QueryClient();
@@ -168,6 +170,8 @@ const AnimatedRoutes = () => {
         <Route path="/coach/athlete/:athleteId" element={<Page><CoachAthleteOverview /></Page>} />
         <Route path="/coach/competitions" element={<Page><CoachCompetitions /></Page>} />
         <Route path="/coach/season-calendar" element={<Page><SeasonCalendar /></Page>} />
+        <Route path="/coach/testing/sessions" element={<Page><CoachTestSessions /></Page>} />
+        <Route path="/coach/testing/sessions/:sessionId" element={<Page><CoachTestSession /></Page>} />
         <Route path="/coach/surveys" element={<Page><CoachSurveys /></Page>} />
         <Route path="/surveys" element={<Page><AthleteSurveys /></Page>} />
         <Route path="/pricing" element={<Navigate to="/#pricing" replace />} />
