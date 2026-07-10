@@ -34,6 +34,9 @@ serve(async (req) => {
       return new Response(JSON.stringify({ error: "Request too large" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
     const { profile, language } = JSON.parse(body);
+    if (!profile || typeof profile !== "object") {
+      return new Response(JSON.stringify({ error: "Missing profile data. Please complete your profile before generating a plan." }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
     if (profile?.current_injury && typeof profile.current_injury === "string" && profile.current_injury.length > 500) {
       return new Response(JSON.stringify({ error: "Injury description too long (max 500 characters)" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
