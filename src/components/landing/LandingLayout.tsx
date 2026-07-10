@@ -192,7 +192,6 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
                   onClick={() => go(l.href)}
                   aria-label={l.label}
                   title={l.label}
-
                   style={{
                     display: "flex",
                     flexDirection: "column",
@@ -212,8 +211,8 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
                 >
                   <Icon size={26} strokeWidth={1.8} />
                 </button>
-
               );
+
             })}
           </div>
 
