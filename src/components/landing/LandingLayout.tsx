@@ -35,9 +35,8 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
     { label: t("navBlog"), href: "/blog", icon: Newspaper },
   ];
 
-
-
   const isActive = (href: string) =>
+
     href === "/"
       ? location.pathname === "/"
       : location.pathname === href || location.pathname.startsWith(href + "/");
