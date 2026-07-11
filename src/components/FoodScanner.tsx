@@ -148,39 +148,53 @@ export function FoodScanner({ onLogged }: Props) {
     }
   };
 
+  const nativePickPhoto = async (fromCamera: boolean) => {
+    try {
+      const { Camera: CapCamera, CameraResultType, CameraSource } = await import("@capacitor/camera");
+      const photo = await CapCamera.getPhoto({
+        quality: 80,
+        resultType: CameraResultType.DataUrl,
+        source: fromCamera ? CameraSource.Camera : CameraSource.Photos,
+        allowEditing: false,
+        width: 1280,
+        correctOrientation: true,
+      });
+      const dataUrl = photo.dataUrl;
+      if (!dataUrl) return;
+      setItems(null);
+      setSelected(null);
+      if (dataUrlByteLength(dataUrl) > MAX_SCAN_IMAGE_BYTES) {
+        toast.error("Billedet er for stort — prøv igen");
+        return;
+      }
+      setImage(dataUrl);
+    } catch (e: any) {
+      const msg = String(e?.message ?? e ?? "");
+      if (/cancel/i.test(msg) || /user\s*denied/i.test(msg)) return;
+      console.error("native camera failed", e);
+      toast.error(fromCamera ? "Kunne ikke åbne kameraet" : "Kunne ikke åbne billeder");
+    }
+  };
+
   const takePhoto = async () => {
     // On native (iOS/Android) use the Capacitor Camera plugin so the OS returns
     // a pre-sized JPEG. The <input capture> path decodes 12MP HEIC in the WebView
     // and crashes iPhones out of memory.
     if (Capacitor.isNativePlatform()) {
-      try {
-        const { Camera: CapCamera, CameraResultType, CameraSource } = await import("@capacitor/camera");
-        const photo = await CapCamera.getPhoto({
-          quality: 80,
-          resultType: CameraResultType.DataUrl,
-          source: CameraSource.Camera,
-          allowEditing: false,
-          width: 1280,
-          correctOrientation: true,
-        });
-        const dataUrl = photo.dataUrl;
-        if (!dataUrl) return;
-        setItems(null);
-        setSelected(null);
-        if (dataUrlByteLength(dataUrl) > MAX_SCAN_IMAGE_BYTES) {
-          toast.error("Billedet er for stort — prøv igen");
-          return;
-        }
-        setImage(dataUrl);
-      } catch (e: any) {
-        const msg = String(e?.message ?? e ?? "");
-        if (/cancel/i.test(msg) || /user\s*denied/i.test(msg)) return;
-        console.error("native camera failed", e);
-        toast.error("Kunne ikke åbne kameraet");
-      }
+      await nativePickPhoto(true);
       return;
     }
     inputRef.current?.click();
+  };
+
+  const uploadPhoto = async () => {
+    // On native, <input type="file"> often cannot access the iOS photo library
+    // from the Capacitor WebView. Use the Camera plugin with Photos source.
+    if (Capacitor.isNativePlatform()) {
+      await nativePickPhoto(false);
+      return;
+    }
+    uploadRef.current?.click();
   };
 
 
@@ -493,7 +507,7 @@ export function FoodScanner({ onLogged }: Props) {
             <p className="text-[11px] font-semibold text-foreground text-center px-1 leading-tight">{t("foodScanTake") || "Tag billede"}</p>
           </button>
           <button
-            onClick={() => uploadRef.current?.click()}
+            onClick={uploadPhoto}
             className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 py-6 hover:bg-primary/10 transition-colors"
           >
             <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center">
