@@ -11,7 +11,7 @@ const MODULE_ROUTES: Record<string, string> = {
   compete:   '/competitions',
   chat:      '/messages',
   mental:    '/dashboard',
-  nutrition: '/kostplan',
+  nutrition: '/dashboard?tab=nutrition',
   rehab:     '/dashboard',
   video:     '/match-analysis/me',
 };
