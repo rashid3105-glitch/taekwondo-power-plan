@@ -207,8 +207,10 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
                     minHeight: 88,
                   }}
                 >
-                  <Icon size={26} strokeWidth={1.8} />
-
+                  <Icon size={24} strokeWidth={1.8} />
+                  <span style={{ fontSize: 11, fontWeight: 600, textAlign: "center", lineHeight: 1.2 }}>
+                    {l.label}
+                  </span>
                 </button>
               );
             })}
