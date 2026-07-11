@@ -507,7 +507,7 @@ export function FoodScanner({ onLogged }: Props) {
             <p className="text-[11px] font-semibold text-foreground text-center px-1 leading-tight">{t("foodScanTake") || "Tag billede"}</p>
           </button>
           <button
-            onClick={() => uploadRef.current?.click()}
+            onClick={uploadPhoto}
             className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 py-6 hover:bg-primary/10 transition-colors"
           >
             <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center">
