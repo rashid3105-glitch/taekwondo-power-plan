@@ -7,6 +7,7 @@ import { MentalLibrary } from "@/components/MentalLibrary";
 import { NutritionLibrary } from "@/components/NutritionLibrary";
 import { NutritionPlan } from "@/components/NutritionPlan";
 import { FoodScanner } from "@/components/FoodScanner";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { DailyNutritionDashboard } from "@/components/DailyNutritionDashboard";
 import { TestLibrary } from "@/components/TestLibrary";
 import { HiitLibrary } from "@/components/HiitLibrary";
@@ -174,7 +175,13 @@ export default function Library({ forcedSection }: { forcedSection?: string } = 
               calorieTarget={profile?.custom_calories ?? null}
               refreshKey={loggerRefresh}
             />
-            <FoodScanner onLogged={() => setLoggerRefresh((n) => n + 1)} />
+            <ErrorBoundary
+              onBack={() => setNutritionView("home")}
+              backLabel={t("chatErrorBack")}
+              retryLabel={t("chatErrorRetry")}
+            >
+              <FoodScanner onLogged={() => setLoggerRefresh((n) => n + 1)} />
+            </ErrorBoundary>
           </div>
         )}
         {section === "nutrition" && nutritionView === "recipes" && (
