@@ -3159,6 +3159,8 @@ const translations = {
     changelogEntry164: "Adult athletes now receive the consent request in their own inbox instead of a parent's.",
     changelogEntry165: "Deleting an athlete is now only possible from the athlete detail page and requires an explicit confirmation.",
     changelogEntry166: "Cleaned up the coach squad overview — the trash icon no longer appears next to each athlete row.",
+    changelog_2026_07_13: "July 13, 2026",
+    changelogEntry170: "Fixed: the food scanner could show a blank white screen in the app versions after tapping \"Use Photo\"; the image is now handled without extra memory copies, and any error is shown on screen instead of a white flash.",
     changelog_2026_07_09: "July 9, 2026",
     changelogEntry168: "Fixed: chat conversations could show a blank screen in the app versions; an error message is now shown instead.",
     changelogEntry169: "Confirmed: chat conversations now open reliably in the iOS and Android apps (TestFlight build 16).",
