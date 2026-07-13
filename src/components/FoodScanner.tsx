@@ -97,6 +97,7 @@ async function downscaleImage(file: File, maxDim = 1280, quality = 0.82): Promis
 
 export function FoodScanner({ onLogged }: Props) {
   const { t } = useLanguage();
+  const location = useLocation();
   const [image, setImage] = useState<string | null>(null);
   const [scanning, setScanning] = useState(false);
   const [items, setItems] = useState<ScanItem[] | null>(null);
