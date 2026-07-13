@@ -154,12 +154,15 @@ export function FoodScanner({ onLogged }: Props) {
     try {
       const { Camera: CapCamera, CameraResultType, CameraSource } = await import("@capacitor/camera");
 
-      // Initiate the native camera immediately while still inside the user gesture.
-      // We then save the current route so the app can resume here if iOS kills
-      // the backgrounded WebView while the camera UI is open.
+      // Ask the camera plugin for Base64 directly. Going through Uri -> fetch ->
+      // blob -> File -> FileReader -> Image -> canvas -> toDataURL kept several
+      // full copies of the photo alive at the same time and reliably crashed
+      // the iOS WKWebView content process (white screen with no error). The
+      // plugin already downscales to width 1280 and compresses at quality 80,
+      // so we can skip downscaleImage entirely on native.
       const photoPromise = CapCamera.getPhoto({
         quality: 80,
-        resultType: CameraResultType.Uri,
+        resultType: CameraResultType.Base64,
         source: fromCamera ? CameraSource.Camera : CameraSource.Photos,
         allowEditing: false,
         width: 1280,
@@ -179,13 +182,14 @@ export function FoodScanner({ onLogged }: Props) {
       }
 
       const photo = await photoPromise;
-      const webPath = photo.webPath;
-      if (!webPath) return;
+      const base64 = photo.base64String;
+      if (!base64) return;
 
-      const response = await fetch(webPath);
-      const blob = await response.blob();
-      const file = new File([blob], `scan-${Date.now()}.jpg`, { type: blob.type || "image/jpeg" });
-      await handleImage(file);
+      const format = photo.format || "jpeg";
+      const dataUrl = `data:image/${format};base64,${base64}`;
+      setItems(null);
+      setSelected(null);
+      setImage(dataUrl);
     } catch (e: any) {
       const msg = String(e?.message ?? e ?? "");
       if (/cancel/i.test(msg) || /user\s*denied/i.test(msg)) return;
