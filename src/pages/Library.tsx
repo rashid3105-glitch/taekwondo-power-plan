@@ -175,7 +175,13 @@ export default function Library({ forcedSection }: { forcedSection?: string } = 
               calorieTarget={profile?.custom_calories ?? null}
               refreshKey={loggerRefresh}
             />
-            <FoodScanner onLogged={() => setLoggerRefresh((n) => n + 1)} />
+            <ErrorBoundary
+              onBack={() => setNutritionView("home")}
+              backLabel={t("chatErrorBack")}
+              retryLabel={t("chatErrorRetry")}
+            >
+              <FoodScanner onLogged={() => setLoggerRefresh((n) => n + 1)} />
+            </ErrorBoundary>
           </div>
         )}
         {section === "nutrition" && nutritionView === "recipes" && (
