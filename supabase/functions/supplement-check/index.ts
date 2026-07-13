@@ -41,7 +41,6 @@ const worstFlag = (flags: Flag[]): Flag => {
   return "green";
 };
 
-const buildSystemPrompt = (band: AgeBand) => {
 // =====================================================================
 // WADA 2026 Prohibited List reference.
 // MUST be reviewed and updated yearly when WADA publishes a new list
