@@ -59,7 +59,31 @@ export default function Library({ forcedSection }: { forcedSection?: string } = 
   const Icon = ICONS[section || ""] || BookOpen;
   const titleKey = TITLE_KEYS[section || ""];
 
-  const [nutritionView, setNutritionView] = useState<NutritionView>("home");
+  const [nutritionView, setNutritionView] = useState<NutritionView>(() => {
+    try {
+      const v = sessionStorage.getItem("scanner:nutrition_view");
+      if (v === "planner" || v === "logger" || v === "recipes" || v === "home") return v;
+    } catch { /* ignore */ }
+    return "home";
+  });
+
+  // Persist nutritionView across WKWebView reloads (iOS may kill the web
+  // content process while the native camera UI is on top). Without this,
+  // users returning from Camera land back on the nutrition menu instead of
+  // the logger/scanner view they were in.
+  useEffect(() => {
+    try {
+      if (section === "nutrition") {
+        sessionStorage.setItem("scanner:nutrition_view", nutritionView);
+      }
+    } catch { /* ignore */ }
+  }, [section, nutritionView]);
+
+  useEffect(() => {
+    return () => {
+      try { sessionStorage.removeItem("scanner:nutrition_view"); } catch { /* ignore */ }
+    };
+  }, []);
   const [profile, setProfile] = useState<any>(null);
   const [loggerRefresh, setLoggerRefresh] = useState(0);
 
