@@ -1,65 +1,50 @@
-# Team Testing Sessions
+## Root cause (native iOS/Android only)
 
-Coaches can build a multi-test session for a chosen squad, either by picking tests manually or by describing the focus (strength, agility, flexibility, explosiveness, endurance, speed, power) and letting the system suggest a battery from the existing test library. Sessions are saved, resumable, and can be reopened to compare across dates.
+The food scanner uses `@capacitor/camera` with `CameraResultType.DataUrl`. While the native camera UI is on screen, the WKWebView is backgrounded. The `DataUrl` response returns the JPEG as one large base64 string, which we then:
+1. store in React state (`setImage`),
+2. re-decode inside `downscaleImage` and again during `analyzeImage` upload.
 
-## User flow (coach)
+On iPhones under any memory pressure, WKWebView is evicted, so when the camera dismisses ("Use Photo") Capacitor cold-starts the web layer. The app boots at `"/"` (Landing) instead of resuming `/dashboard?tab=nutrition` — that is the "back to front page" symptom.
 
-1. On the coach Testing page, new "Team session" tab next to today's individual/coach view.
-2. "New session" → wizard:
-   - **Step 1 – Athletes**: pick a subset from the coach's club (search + select-all).
-   - **Step 2 – Tests**:
-     - Tab A: **AI-suggested** — coach ticks one or more focus areas (Strength, Agility, Flexibility, Explosiveness, Endurance, Speed, Power, Reaction, Balance), optional intensity (short/full battery) and a free-text note. System calls an edge function that returns 4–8 tests picked from `TEST_CATALOG`. Coach reviews, can add/remove tests, then continues.
-     - Tab B: **Manual** — reuse `TestCatalogPicker` in multi-select mode.
-   - **Step 3 – Name + entry mode**: session name (auto-suggested), date, and entry mode: *Guided station-by-station* or *Free entry grid*.
-3. Session opens on the chosen entry screen. Coach can leave and resume anytime; it remains in "In progress" until they mark it complete.
-4. Completed sessions list shows date, athlete count, tests, and a "Compare with previous" link.
+A secondary contributor: on cold start `main.tsx` races `hydrateAuthFromPreferences()` against a 1500 ms timeout and renders regardless. If the race times out, the user renders as signed-out and RootRedirect sends them to `/`, so even the URL is lost.
 
-## Entry modes
+Web is unaffected because `<input type="file">` never backgrounds the page.
 
-- **Guided**: reuses existing `TestRunner` group mode. Iterates through the session's tests one at a time; each test records values for every athlete before advancing. Progress bar shows "Test 2 of 5".
-- **Grid**: matrix `athletes × tests` with inline numeric inputs; coach fills in any order. Stopwatch/countdown widgets available per cell via a small "Run" button that opens the same `TestRunner` for that one test.
+## Fix (two independent, together they resolve it)
 
-Saving in either mode writes rows to `physical_test_results` as today (so all existing progression/comparison views keep working) **and** links each result to the session.
+### 1. Stop returning the photo as base64 through the bridge — `src/components/FoodScanner.tsx`
 
-## AI suggestion
+Change `nativePickPhoto` to request `CameraResultType.Uri` instead of `DataUrl`, then read the file via `fetch(webPath).blob()` and feed it into the existing `handleImage(file: File)` path.
 
-Edge function `suggest-test-battery`:
-- Input: `{ focuses: TestCategory[], intensity: "short"|"full", notes?: string, locale }`
-- Uses Lovable AI Gateway (`google/gemini-3-flash-preview`) with structured output listing `test_ids` chosen only from the provided catalog id list, plus a one-line rationale.
-- Server validates every returned id against `TEST_CATALOG`; unknown ids dropped. Falls back to a deterministic pick (first N per focus) if AI returns nothing.
+- Removes the multi-MB base64 string from JS heap → eliminates the WKWebView eviction that drops the user back to `/`.
+- Reuses the existing `downscaleImage` pipeline (which already produces the compressed data URL that `analyzeImage` needs) so the rest of the component is untouched.
+- Keep the current `quality: 80`, `width: 1280`, `correctOrientation: true`, and both `CameraSource.Camera` / `CameraSource.Photos` variants.
+- Keep the cancel-detection branch (`/cancel/i`, `/user\s*denied/i`) unchanged.
 
-## Data model
+No other code paths in `FoodScanner.tsx` change — `handleImage`, `analyzeImage`, `logMeal`, and the manual entry flow are all correct.
 
-New migration:
+### 2. Make cold-start resilient so the URL survives even if a WebView kill still happens — `src/components/FoodScanner.tsx` + `src/main.tsx`
 
-- `team_test_sessions`
-  - `id uuid pk`, `club_id uuid`, `coach_id uuid`, `name text`, `session_date date`,
-    `entry_mode text check in ('guided','grid')`, `focus_areas text[]`, `notes text`,
-    `status text check in ('in_progress','completed')`, `created_at`, `updated_at`.
-- `team_test_session_tests`
-  - `id uuid pk`, `session_id uuid fk`, `test_id text` (catalog id), `test_name text` (dbTestName snapshot), `order_index int`.
-- `team_test_session_athletes`
-  - `session_id uuid`, `athlete_id uuid`, pk (session_id, athlete_id).
-- `physical_test_results`: add nullable `session_id uuid` fk to `team_test_sessions`.
+- In `FoodScanner.tsx`, right before calling `CapCamera.getPhoto(...)` on native, persist a short "resume hint" to Capacitor `Preferences` (key e.g. `scanner:last_route`) with the current `location.pathname + search`. On mount of `FoodScanner` (or in the nutrition tab), read and clear this hint; if present and it points at the nutrition tab, no-op (we're already here). This is a belt-and-braces resume marker — the primary fix in step 1 already prevents the kill.
+- In `src/main.tsx`, raise the `hydrateAuthFromPreferences` timeout from `1500 ms` to `4000 ms` and, additionally, do NOT render until either hydration resolves OR the timeout fires — current code already does this, so the change is just the longer timeout. This prevents the "rendered as signed-out on cold start → redirected to `/`" race on older iPhones.
 
-All new tables: `GRANT` to `authenticated` + `service_role`; RLS scoped by `club_id` (coach of that club can read/write; athletes can read sessions they're part of and their own results).
+### 3. Verification checklist (no speculative changes)
 
-## Files
+- `rg` search to confirm no other component uses `CameraResultType.DataUrl` for large photos — if any do (e.g. `AddRecipeForm` currently uses `<input>` only, so it's fine), leave them alone.
+- Build the web bundle; run `tsgo` on the changed file.
+- Manual test steps to give the user after they `git pull` + `npx cap sync ios`:
+  1. Open Nutrition tab → "Tag billede" → take a photo → tap "Use Photo" → expect to land back on the scanner with the photo preview, not on `/`.
+  2. Same for "Upload" → pick from library → "Choose".
+  3. Kill the app between steps to confirm the resume hint / longer hydration timeout also keep the user on the correct tab on a hard cold start.
 
-- New: `src/pages/CoachTestSession.tsx` (wizard + session run screen router).
-- New: `src/components/testing/TeamSessionWizard.tsx` (3-step wizard).
-- New: `src/components/testing/TeamSessionGuidedRun.tsx` (wraps existing `TestRunner`).
-- New: `src/components/testing/TeamSessionGridRun.tsx`.
-- New: `src/components/testing/TeamSessionsList.tsx` (list of past/in-progress sessions).
-- New: `supabase/functions/suggest-test-battery/index.ts`.
-- Edit: `src/components/PhysicalTesting.tsx` – add "Team sessions" sub-tab for coach mode linking to the new page.
-- Edit: `src/hooks/useOfflinePhysicalTests.ts` – accept optional `session_id` on `addResult`.
-- Edit: `src/lib/physicalTestOfflineDB.ts` + `physicalTestSyncEngine.ts` – carry `session_id` through queue.
-- Edit: `src/i18n/translations.ts` – add keys for all 7 languages (wizard labels, focus names, entry mode labels, statuses).
-- Edit: `src/pages/Help.tsx` – changelog + short docs entry.
+## Files to edit
 
-## Out of scope (can be follow-ups)
+- `src/components/FoodScanner.tsx` — swap `DataUrl` for `Uri` + blob fetch inside `nativePickPhoto`; add small resume-hint write/read (~15 lines).
+- `src/main.tsx` — bump the auth-hydration timeout from `1500` to `4000` ms.
 
-- Cross-session comparison charts beyond a link to existing progression view.
-- Offline-first for sessions themselves (results still queue offline; session metadata requires online).
-- Exporting session as PDF.
+## Explicitly NOT changing
+
+- `capacitor.config.ts` (no `server.url` reintroduction).
+- Native iOS/Android project files.
+- `AddRecipeForm.tsx` (uses `<input>`, not affected).
+- The `scan-food` edge function, storage bucket, or any DB schema.
