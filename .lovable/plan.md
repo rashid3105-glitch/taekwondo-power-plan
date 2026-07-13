@@ -1,39 +1,73 @@
-## Root cause (bekræftet af video)
+# Strava-løbedata integration
 
-Efter "Use Photo" lander brugeren tilbage på nutrition-forsiden — ikke hvid skærm, ikke bibliotek-roden. URL'en `/library/nutrition` er intakt, men `nutritionView`-state i `Library.tsx` er nulstillet fra `"logger"` til `"home"`. Det betyder: **WKWebView blev genstartet af iOS mens Camera UI lå foran**, og det ventende `Camera.getPhoto()`-promise blev tabt sammen med al React state. Base64-fixet i sidste runde løste intet fordi problemet ikke er en JS-crash — det er en OS-drevet WebView-reload.
+## Mål
+Giv brugerne mulighed for at forbinde deres Strava-konto og automatisk hente løbeaktiviteter (distance, pace, varighed, kalorier) ind i Sportstalent. Data vises både i dagbogen og på health-dashboardet. Synkronisering sker ved app-start og via manuel refresh.
 
-## Fix (3 ændringer)
+## Baggrund
+- Der findes **ingen færdig Strava-connector** i Lovable, så vi bygger en custom OAuth 2.0-integration.
+- Jeres `wearable_connections`-tabel findes allerede, men har pt. ingen kolonner til access/refresh tokens.
+- `/health`-siden er skjult for ikke-admin indtil native HealthKit er klar. Strava-integrationen kan bygges parallelt og gøres synlig for alle, når health-modulet åbnes.
 
-### 1. Skift Camera til `presentationStyle: 'popover'` + lavere kvalitet (`src/components/FoodScanner.tsx`)
-`fullscreen` presentation-mode skubber WebView'en helt i baggrunden på iOS og er hovedårsagen til at OS'et smider den ud. `popover` holder WebView'en synlig bagved kameraet og reducerer drastisk sandsynligheden for at den killes. Samtidig sænkes `quality` fra nuværende værdi til `70` og `width: 1280` for at holde base64-payloaden lille.
+## Teknisk løsning
 
-```ts
-await Camera.getPhoto({
-  quality: 70,
-  width: 1280,
-  resultType: CameraResultType.Base64,
-  source: fromCamera ? CameraSource.Camera : CameraSource.Photos,
-  presentationStyle: 'popover',
-  correctOrientation: true,
-});
-```
+### 1. Database
+Udvid `public.wearable_connections` med tokenfelter:
+- `access_token_encrypted` (text)
+- `refresh_token_encrypted` (text)
+- `token_expires_at` (timestamptz)
+- `provider_user_id` (text)
+- `provider_email` (text)
 
-### 2. Persister `nutritionView` i sessionStorage (`src/pages/Library.tsx`)
-Selv med popover-mode kan WebView'en stadig blive killed på pressede enheder. For at gøre flowet robust: gem `nutritionView` i `sessionStorage` når den ændres, og rehydrer ved mount. Hvis Camera kommer tilbage efter en reload, lander brugeren stadig i `logger`-viewet i stedet for på home-menuen. Photoen fra det tabte Camera-promise er stadig væk, men brugeren ser ikke ud som om "intet skete" — de er stadig i scanner-viewet klar til at prøve igen. Nøgle: `scanner:nutrition_view`, ryddes ved unmount af Library.
+Tokens krypteres i Edge Function med en `STRAVA_TOKEN_ENCRYPTION_KEY`-secret, før de skrives til databasen. Rækker scoperes til `auth.uid()` via RLS; service role bruges kun i Edge Functions.
 
-### 3. Tilføj den manglende oversættelsesnøgle `foodScanUpload` på alle 7 sprog (`src/i18n/translations.ts`)
-På screenshotet vises den rå nøgle `foodScanUpload` i knappen — nøglen findes ikke i `translations.ts`. Tilføjes ved siden af `foodScanTake` på alle 7 locales (da/en/sv/de/ar/no/es).
+### 2. Edge Functions
+Tre nye funktioner:
 
-## Ikke-ændringer
+**`strava-auth-start`**
+- Validerer brugerens JWT.
+- Genererer Strava OAuth URL med `activity:read_all` scope.
+- Returnerer `{ authUrl }` til frontend.
 
-- `App.tsx` resume-route-guarden røres ikke — den er irrelevant fordi URL'en allerede bevares.
-- Ingen `Preferences`-baseret photo-persistens — det tabte Camera-promise kan ikke reddes; vi accepterer at brugeren i værste fald skal trykke "Take photo" én gang til, men de er nu i det rigtige view.
-- Ingen ændringer i web-flowet.
-- Ingen ændringer i edge-funktioner eller database.
-- Ingen ny changelog-entry (afventer verificering på native build først).
+**`strava-callback`**
+- Modtager `code` fra Strava.
+- Bytter koden til access + refresh token hos Strava.
+- Krypterer tokens og upserter en række i `wearable_connections` med `provider = 'strava'`.
 
-## Verificering efter build
+**`strava-sync`**
+- Validerer JWT, finder brugerens Strava-forbindelse.
+- Refresher token hvis det er udløbet.
+- Henter seneste aktiviteter fra `https://www.strava.com/api/v3/athlete/activities`.
+- For hvert løb:
+  - Opretter/oppdaterer en `diary_entries`-række med `entry_type = 'running'` og felterne `run_distance_km`, `run_pace_seconds_per_km`, `run_duration_seconds`, `run_calories`.
+  - Opdaterer `wearable_daily_summary` med trin/workout-count for aktivitetsdatoen.
+- Returnerer `{ synced: n }`.
 
-- **Hvis kameraet nu kommer tilbage med billedet → problem løst**, popover-mode holdt WebView'en i live.
-- **Hvis brugeren stadig lander i logger-view uden billede → WebView blev alligevel killed**, men persistensen sikrer at de er i rigtigt view; næste skridt vil være at gemme photo-blob i IndexedDB via en `App.addListener('appRestoredResult')`-lignende bridge.
-- **Hvis skærmen er helt hvid → JS-crash**, ErrorBoundary'en fra sidste runde viser fejlteksten.
+### 3. Frontend
+- Ny komponent `StravaConnectButton` på Settings → Wearables og/eller Health-siden.
+- Viser status: ikke forbundet / forbundet / sidste sync.
+- "Synkroner nu"-knap, der kalder `strava-sync`.
+- Kald `strava-sync` automatisk ved app-start, hvis en forbindelse findes.
+- Løb vises automatisk i eksisterende dagbog og i Coach Athlete Overview (`AthleteRunningProgress`), da de nu har `entry_type = 'running'`.
+- Health-dashboard viser workout-count fra `wearable_daily_summary`.
+
+### 4. Oversættelser
+Nye nøgler på alle 7 sprog:
+- `stravaConnect`, `stravaDisconnect`, `stravaSyncNow`, `stravaLastSync`, `stravaConnected`, `stravaNotConnected`, `stravaRunsThisWeek`.
+
+### 5. Dokumentation
+- Opdater `Help.tsx` med changelog-entry for Strava-integrationen.
+- Opret kort opsætningsguide til Strava API-app (client ID/secret).
+
+## Forudsætninger / hvad I skal gøre
+1. Opret en Strava API-app på https://developers.strava.com/.
+2. Notér **Client ID** og **Client Secret**.
+3. Sæt følgende secrets i Lovable:
+   - `STRAVA_CLIENT_ID`
+   - `STRAVA_CLIENT_SECRET`
+   - `STRAVA_TOKEN_ENCRYPTION_KEY` (kan genereres automatisk)
+4. Godkend planen, så jeg implementerer den.
+
+## Noter
+- Strava OAuth kræver en autorisationsskærm; brugeren skal eksplicit tillade `activity:read_all`.
+- Hvis brugeren senere ønsker push/webhooks fra Strava, kan vi tilføje en `strava-webhook`-funktion i en opfølgende iteration.
+- Integrationen følger samme mønster som den eksisterende `health-sync-simple`-funktion, men med OAuth i stedet for email/password.
