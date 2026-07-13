@@ -10365,6 +10365,8 @@ const translations = {
     changelogEntry164: "Vuxna atleter tar nu emot samtyckesförfrågan i sin egen inkorg istället för en förälders.",
     changelogEntry165: "Att ta bort en atlet är nu bara möjligt från atletens detaljsida och kräver en uttrycklig bekräftelse.",
     changelogEntry166: "Städat i tränarens lagöversikt — papperskorgsikonen visas inte längre bredvid varje atletrad.",
+    changelog_2026_07_13: "13 juli 2026",
+    changelogEntry170: "Rättat: matskannern kunde visa en tom vit skärm i app-versionerna efter tryck på \"Använd foto\"; bilden hanteras nu utan extra minneskopior, och eventuella fel visas på skärmen i stället för en vit blixt.",
     changelog_2026_07_09: "9 juli 2026",
     changelogEntry168: "Rättat: chattkonversationer kunde ge en tom skärm i app-versionerna; nu visas ett felmeddelande i stället.",
     changelogEntry169: "Bekräftat: chattkonversationer öppnas nu stabilt i iOS- och Android-appen (TestFlight build 16).",
