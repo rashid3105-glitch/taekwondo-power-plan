@@ -161,12 +161,16 @@ export function FoodScanner({ onLogged }: Props) {
       // plugin already downscales to width 1280 and compresses at quality 80,
       // so we can skip downscaleImage entirely on native.
       const photoPromise = CapCamera.getPhoto({
-        quality: 80,
+        quality: 70,
         resultType: CameraResultType.Base64,
         source: fromCamera ? CameraSource.Camera : CameraSource.Photos,
         allowEditing: false,
         width: 1280,
         correctOrientation: true,
+        // popover keeps the WKWebView visible behind the camera UI so iOS
+        // is much less likely to kill the web content process while the
+        // camera is on top. fullscreen mode reliably killed it on pressure.
+        presentationStyle: "popover",
       });
 
       if (Capacitor.isNativePlatform()) {
