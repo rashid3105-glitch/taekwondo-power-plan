@@ -62,8 +62,8 @@ const withTimeout = <T,>(p: Promise<T>, ms: number): Promise<T | null> =>
 (async () => {
   try {
     await Promise.all([
-      withTimeout(hydrateAuthFromPreferences(), 1500),
-      withTimeout(hydrateLangFromPreferences(), 1500),
+      withTimeout(hydrateAuthFromPreferences(), 4000),
+      withTimeout(hydrateLangFromPreferences(), 4000),
     ]);
   } catch {
     /* never block mount */

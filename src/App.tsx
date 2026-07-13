@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { CoachModeProvider } from "@/contexts/CoachModeContext";
@@ -126,6 +126,31 @@ const Page = ({ children }: { children: React.ReactNode }) => (
 
 const AnimatedRoutes = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // On a native cold start after iOS killed the WebView (e.g. after the camera
+    // UI was dismissed), Capacitor reloads the app at "/". If the food scanner
+    // saved a resume route before opening the camera, restore it here.
+    if (location.pathname !== "/") return;
+    (async () => {
+      try {
+        const { Capacitor } = await import("@capacitor/core");
+        if (!Capacitor.isNativePlatform()) return;
+        const { Preferences } = await import("@capacitor/preferences");
+        const { value } = await Preferences.get({ key: "scanner:resume_route" });
+        if (value) {
+          await Preferences.remove({ key: "scanner:resume_route" });
+          if (value.startsWith("/dashboard") || value.startsWith("/nutrition")) {
+            navigate(value, { replace: true });
+          }
+        }
+      } catch {
+        /* ignore */
+      }
+    })();
+  }, []);
+
   return (
     <>
     <AnimatePresence mode="wait" initial={false}>

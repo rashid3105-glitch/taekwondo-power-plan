@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Capacitor } from "@capacitor/core";
+import { useLocation } from "react-router-dom";
 
 
 interface ScanItem {
@@ -96,6 +97,7 @@ async function downscaleImage(file: File, maxDim = 1280, quality = 0.82): Promis
 
 export function FoodScanner({ onLogged }: Props) {
   const { t } = useLanguage();
+  const location = useLocation();
   const [image, setImage] = useState<string | null>(null);
   const [scanning, setScanning] = useState(false);
   const [items, setItems] = useState<ScanItem[] | null>(null);
@@ -151,23 +153,39 @@ export function FoodScanner({ onLogged }: Props) {
   const nativePickPhoto = async (fromCamera: boolean) => {
     try {
       const { Camera: CapCamera, CameraResultType, CameraSource } = await import("@capacitor/camera");
-      const photo = await CapCamera.getPhoto({
+
+      // Initiate the native camera immediately while still inside the user gesture.
+      // We then save the current route so the app can resume here if iOS kills
+      // the backgrounded WebView while the camera UI is open.
+      const photoPromise = CapCamera.getPhoto({
         quality: 80,
-        resultType: CameraResultType.DataUrl,
+        resultType: CameraResultType.Uri,
         source: fromCamera ? CameraSource.Camera : CameraSource.Photos,
         allowEditing: false,
         width: 1280,
         correctOrientation: true,
       });
-      const dataUrl = photo.dataUrl;
-      if (!dataUrl) return;
-      setItems(null);
-      setSelected(null);
-      if (dataUrlByteLength(dataUrl) > MAX_SCAN_IMAGE_BYTES) {
-        toast.error("Billedet er for stort — prøv igen");
-        return;
+
+      if (Capacitor.isNativePlatform()) {
+        try {
+          const { Preferences } = await import("@capacitor/preferences");
+          await Preferences.set({
+            key: "scanner:resume_route",
+            value: location.pathname + location.search,
+          });
+        } catch {
+          /* ignore preference write errors */
+        }
       }
-      setImage(dataUrl);
+
+      const photo = await photoPromise;
+      const webPath = photo.webPath;
+      if (!webPath) return;
+
+      const response = await fetch(webPath);
+      const blob = await response.blob();
+      const file = new File([blob], `scan-${Date.now()}.jpg`, { type: blob.type || "image/jpeg" });
+      await handleImage(file);
     } catch (e: any) {
       const msg = String(e?.message ?? e ?? "");
       if (/cancel/i.test(msg) || /user\s*denied/i.test(msg)) return;
