@@ -20952,6 +20952,8 @@ const translations = {
     changelogEntry164: "Voksne utøvere mottar nå samtykkeforespørselen i sin egen innboks i stedet for en forelders.",
     changelogEntry165: "Å slette en utøver er nå bare mulig fra utøverens detaljside og krever eksplisitt bekreftelse.",
     changelogEntry166: "Ryddet opp i trenerens lagoversikt — søppelbøtte-ikonet vises ikke lenger ved hver utøverrad.",
+    changelog_2026_07_13: "13. juli 2026",
+    changelogEntry170: "Rettet: matskanneren kunne vise en blank hvit skjerm i app-versjonene etter å ha trykket \"Bruk bilde\"; bildet håndteres nå uten ekstra minnekopier, og eventuelle feil vises på skjermen i stedet for et hvitt blink.",
     changelog_2026_07_09: "9. juli 2026",
     changelogEntry168: "Rettet: chat-samtaler kunne gi blank skjerm i app-versjonene; viser nå en feilmelding i stedet.",
     changelogEntry169: "Bekreftet: chat-samtaler åpnes nå stabilt i iOS- og Android-appen (TestFlight build 16).",
