@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import { Camera, Loader2, X, Plus, Trash2, Upload, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Capacitor } from "@capacitor/core";
+import { useLocation } from "react-router-dom";
 
 
 interface ScanItem {
