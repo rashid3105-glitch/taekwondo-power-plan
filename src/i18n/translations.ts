@@ -6763,6 +6763,8 @@ const translations = {
     changelogEntry164: "Voksne atleter modtager nu selv samtykke-anmodningen i deres egen indbakke i stedet for en forælders.",
     changelogEntry165: "Sletning af en atlet kan nu kun ske fra atletens detaljeside og kræver en eksplicit bekræftelse.",
     changelogEntry166: "Ryddet op i trænerens holdoversigt — papirkurv-ikonet vises ikke længere ved hver atlet-række.",
+    changelog_2026_07_13: "13. juli 2026",
+    changelogEntry170: "Rettet: madscanneren kunne give hvid skærm i app-versionerne efter tryk på \"Brug billede\"; billedet håndteres nu uden ekstra hukommelseskopier, og en eventuel fejl vises på skærmen i stedet for et hvidt blink.",
     changelog_2026_07_09: "9. juli 2026",
     changelogEntry168: "Rettet: chat-samtaler kunne give blank skærm i app-versionerne; viser nu en fejlmeddelelse i stedet.",
     changelogEntry169: "Bekræftet: chat-samtaler åbner nu stabilt i iOS- og Android-appen (TestFlight build 16).",
