@@ -13881,6 +13881,8 @@ const translations = {
     changelogEntry164: "Erwachsene Athleten erhalten die Einwilligungsanfrage jetzt im eigenen Posteingang statt bei den Eltern.",
     changelogEntry165: "Athleten löschen ist jetzt nur noch von der Athleten-Detailseite möglich und erfordert eine explizite Bestätigung.",
     changelogEntry166: "Aufgeräumt in der Kader-Übersicht — das Papierkorb-Symbol erscheint nicht mehr neben jeder Athletenzeile.",
+    changelog_2026_07_13: "13. Juli 2026",
+    changelogEntry170: "Behoben: Der Essens-Scanner konnte in den App-Versionen nach dem Tippen auf \"Foto verwenden\" einen leeren weißen Bildschirm zeigen; das Bild wird jetzt ohne zusätzliche Speicherkopien verarbeitet, und Fehler werden auf dem Bildschirm angezeigt statt eines weißen Blitzes.",
     changelog_2026_07_09: "9. Juli 2026",
     changelogEntry168: "Behoben: Chat-Unterhaltungen konnten in den App-Versionen einen leeren Bildschirm zeigen; jetzt wird stattdessen eine Fehlermeldung angezeigt.",
     changelogEntry169: "Bestätigt: Chat-Unterhaltungen öffnen sich jetzt zuverlässig in den iOS- und Android-Apps (TestFlight Build 16).",
