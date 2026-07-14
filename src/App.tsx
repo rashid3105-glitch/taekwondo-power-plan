@@ -168,7 +168,7 @@ const AnimatedRoutes = () => {
         <Route path="/programs" element={<Page><Programs /></Page>} />
         <Route path="/platform" element={<Page><PlatformMarketing /></Page>} />
         <Route path="/funktioner" element={<Page><Funktioner /></Page>} />
-        <Route path="/priser" element={<Page><Priser /></Page>} />
+        <Route path="/priser" element={isNativeApp() ? <Navigate to="/dashboard" replace /> : <Page><Priser /></Page>} />
         <Route path="/terms" element={<Page><Terms /></Page>} />
         <Route path="/blog" element={<Page><Blog /></Page>} />
         <Route path="/blog/:slug" element={<Page><BlogPost /></Page>} />
