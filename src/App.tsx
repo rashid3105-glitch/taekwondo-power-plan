@@ -200,7 +200,7 @@ const AnimatedRoutes = () => {
         <Route path="/coach/testing/sessions/:sessionId" element={<Page><CoachTestSession /></Page>} />
         <Route path="/coach/surveys" element={<Page><CoachSurveys /></Page>} />
         <Route path="/surveys" element={<Page><AthleteSurveys /></Page>} />
-        <Route path="/pricing" element={<Navigate to="/#pricing" replace />} />
+        <Route path="/pricing" element={<Navigate to={isNativeApp() ? "/dashboard" : "/#pricing"} replace />} />
         {/* Pricing page hidden — uncomment to restore */}
         {/* <Route path="/pricing" element={<Page><Pricing /></Page>} /> */}
         <Route path="/settings/subscription" element={<Page><SubscriptionSettings /></Page>} />
