@@ -162,6 +162,10 @@ export default function AuthPage() {
             /* ignore */
           }
         }
+        try {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) registerPushToken(user.id);
+        } catch { /* non-blocking */ }
         navigate(redirectTo || "/dashboard");
       } else {
         const pwCheck = validatePassword(password);
