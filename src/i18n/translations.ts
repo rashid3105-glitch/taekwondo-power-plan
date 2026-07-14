@@ -6502,6 +6502,8 @@ const translations = {
     profileDeleteAccount: "Slet konto",
     profileDeleteAccountSub: "Download dine data først",
     profileLogout: "Log ud",
+    profilePushToggleTitle: "Push-beskeder",
+    profilePushToggleSub: "Modtag notifikationer om nye beskeder og dagbogsindførsler",
     videoNoteAdd: "Tilføj note",
     videoNoteAtFrame: "Note ved Frame {frame}",
     videoNoteSave: "Gem note",
