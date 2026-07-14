@@ -120,10 +120,11 @@ async function bindListenersOnce(userId: string) {
           navigateTo(`/messages?thread=${encodeURIComponent(String(data.thread_id))}`);
           return;
         }
-        if (
-          (type === "diary" || type === "competition_reflection") &&
-          data.athlete_id
-        ) {
+        if (type === "diary" && data.athlete_id) {
+          navigateTo(`/coach/athlete/${encodeURIComponent(String(data.athlete_id))}?diary=1`);
+          return;
+        }
+        if (type === "competition_reflection" && data.athlete_id) {
           navigateTo(`/coach/athlete/${encodeURIComponent(String(data.athlete_id))}`);
           return;
         }
