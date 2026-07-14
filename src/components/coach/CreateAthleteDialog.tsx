@@ -99,8 +99,18 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel, open: ope
         },
       });
 
-      if (error) throw error;
-      if ((data as any)?.error) throw new Error((data as any).error);
+      // supabase-js sets `error` on non-2xx and puts the real JSON body on
+      // error.context. Parse it so we can surface backend error codes instead
+      // of a generic "Edge Function returned a non-2xx status code".
+      let payload: any = (data as any) ?? {};
+      if (error && (error as any).context && typeof (error as any).context.clone === "function") {
+        try {
+          payload = await (error as any).context.clone().json();
+        } catch { /* keep empty */ }
+      }
+      const errCode: string | undefined = payload?.error || (error ? error.message : undefined);
+      if (errCode) throw new Error(errCode);
+
       toast({ title: t("athleteCreated"), description: t("athleteCreatedDesc") });
       reset();
       setOpen(false);
