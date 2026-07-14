@@ -129,6 +129,33 @@ const AnimatedRoutes = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Expose router-aware navigation to the native push handler so notification
+  // taps stay in-app instead of triggering a full page reload.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { setPushNavigator, registerPushToken } = await import("@/lib/nativePush");
+        if (cancelled) return;
+        setPushNavigator((path) => navigate(path));
+
+        // If the user is already signed in on native (persistent session),
+        // register the FCM token now — permission prompt is post-login only.
+        const { supabase } = await import("@/integrations/supabase/client");
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user?.id) {
+          registerPushToken(session.user.id);
+        }
+      } catch {
+        /* ignore */
+      }
+    })();
+    return () => {
+      cancelled = true;
+      import("@/lib/nativePush").then(({ setPushNavigator }) => setPushNavigator(null)).catch(() => {});
+    };
+  }, [navigate]);
+
   useEffect(() => {
     // On a native cold start after iOS killed the WebView (e.g. after the camera
     // UI was dismissed), Capacitor reloads the app at "/". If the food scanner
