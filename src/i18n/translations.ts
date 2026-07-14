@@ -13622,6 +13622,8 @@ const translations = {
     profileDeleteAccount: "Konto löschen",
     profileDeleteAccountSub: "Lade zuerst deine Daten herunter",
     profileLogout: "Abmelden",
+    profilePushToggleTitle: "Push-Benachrichtigungen",
+    profilePushToggleSub: "Erhalte Benachrichtigungen für neue Nachrichten und Tagebucheinträge",
     videoNoteAdd: "Notiz hinzufügen",
     videoNoteAtFrame: "Notiz bei Frame {frame}",
     videoNoteSave: "Notiz speichern",
