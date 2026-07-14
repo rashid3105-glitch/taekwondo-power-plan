@@ -15,6 +15,7 @@ import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { useClubTrial } from "@/hooks/useClubTrial";
 import { CoachAthleteDetail } from "@/components/CoachAthleteDetail";
 import { AvatarImg } from "@/components/AvatarImg";
+import { isNativeApp } from "@/lib/platform";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
