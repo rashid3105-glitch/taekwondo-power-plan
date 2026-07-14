@@ -10375,6 +10375,7 @@ const translations = {
     changelogEntry165: "Att ta bort en atlet är nu bara möjligt från atletens detaljsida och kräver en uttrycklig bekräftelse.",
     changelogEntry166: "Städat i tränarens lagöversikt — papperskorgsikonen visas inte längre bredvid varje atletrad.",
     changelog_2026_07_13: "13 juli 2026",
+    changelogEntry171: "Nytt: push-notiser i mobilappen för nya chattmeddelanden och dagboksinlägg. Du kan slå av eller på det under Profil → Konto.",
     changelogEntry170: "Rättat: matskannern kunde visa en tom vit skärm i app-versionerna efter tryck på \"Använd foto\"; bilden hanteras nu utan extra minneskopior, och eventuella fel visas på skärmen i stället för en vit blixt.",
     changelog_2026_07_09: "9 juli 2026",
     changelogEntry168: "Rättat: chattkonversationer kunde ge en tom skärm i app-versionerna; nu visas ett felmeddelande i stället.",
