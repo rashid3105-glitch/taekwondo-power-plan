@@ -44,10 +44,11 @@ Deno.serve(async (req) => {
     let sent = 0;
     for (const athlete of dueAthletes) {
       const { data: subs } = await admin
-        .from("push_subscriptions")
-        .select("endpoint")
-        .eq("user_id", athlete.user_id)
-        .limit(1);
+      .from("push_subscriptions")
+      .select("fcm_token")
+      .eq("user_id", athlete.user_id)
+      .eq("is_active", true)
+      .limit(1);
 
       if (subs?.length) {
         await admin.functions.invoke("send-push", {

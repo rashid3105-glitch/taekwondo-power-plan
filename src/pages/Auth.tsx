@@ -88,7 +88,13 @@ export default function AuthPage() {
       if (error) throw error;
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        if (user) registerPushToken(user.id);
+        if (user) {
+  console.log("👤 User found:", user.id);
+
+  await registerPushToken(user.id);
+
+  console.log("✅ registerPushToken returned");
+}
       } catch { /* non-blocking */ }
       navigate(redirectTo || "/dashboard");
     } catch (e: any) {
@@ -109,7 +115,13 @@ export default function AuthPage() {
       await signInWithPasskey(email || undefined);
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        if (user) registerPushToken(user.id);
+       if (user) {
+  console.log("👤 User found:", user.id);
+
+  await registerPushToken(user.id);
+
+  console.log("✅ registerPushToken returned");
+}
       } catch { /* non-blocking */ }
       navigate(redirectTo || "/dashboard");
     } catch (e: any) {
@@ -164,7 +176,13 @@ export default function AuthPage() {
         }
         try {
           const { data: { user } } = await supabase.auth.getUser();
-          if (user) registerPushToken(user.id);
+         if (user) {
+  console.log("👤 User found:", user.id);
+
+  await registerPushToken(user.id);
+
+  console.log("✅ registerPushToken returned");
+}
         } catch { /* non-blocking */ }
         navigate(redirectTo || "/dashboard");
       } else {

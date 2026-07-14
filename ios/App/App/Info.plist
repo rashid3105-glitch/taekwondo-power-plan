@@ -18,27 +18,30 @@
 	<string>$(PRODUCT_NAME)</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Sportstalent bruger kameraet til at scanne dine måltider.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Brug Face ID til hurtigt at logge ind på Sportstalent.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Sportstalent gemmer måltidsbilleder i dit fotobibliotek.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Sportstalent bruger fotos til at scanne dine måltider.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
-	<key>NSFaceIDUsageDescription</key>
-	<string>Brug Face ID til hurtigt at logge ind på Sportstalent.</string>
-	<key>NSCameraUsageDescription</key>
-	<string>Sportstalent bruger kameraet til at scanne dine måltider.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Sportstalent bruger fotos til at scanne dine måltider.</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Sportstalent gemmer måltidsbilleder i dit fotobibliotek.</string>
-
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>

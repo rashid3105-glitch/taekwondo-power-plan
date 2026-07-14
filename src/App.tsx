@@ -144,8 +144,8 @@ const AnimatedRoutes = () => {
         const { supabase } = await import("@/integrations/supabase/client");
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user?.id) {
-          registerPushToken(session.user.id);
-        }
+        await registerPushToken(session.user.id); 
+    }
       } catch {
         /* ignore */
       }

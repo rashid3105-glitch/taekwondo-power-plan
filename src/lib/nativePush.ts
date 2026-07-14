@@ -1,32 +1,15 @@
 // Native (iOS + Android) push notifications via Firebase Cloud Messaging.
-//
-// Uses @capacitor-firebase/messaging. All calls are guarded by
-// Capacitor.isNativePlatform() so this file is a full no-op in the browser /
-// Lovable preview — web push continues to run through pushNotifications.ts.
-//
-// Called from:
-//   - Auth.tsx after a successful sign-in                → registerPushToken()
-//   - ConsentGate.tsx on app start when a session exists → registerPushToken()
-//   - Profile / GlobalAppMenu just before signOut()      → unregisterPushToken()
-//
-// Notification payload contract (matches notify-chat-message /
-// notify-coaches-athlete-activity):
-//   data.type === "chat"   + data.thread_id
-//   data.type === "diary"  + data.athlete_id
-//   data.type === "competition_reflection" + data.athlete_id
-//
-// UX intentionally avoids requesting permission before login — the OS prompt
-// has one shot at "Allow"; asking it after the user is inside the app has a
-// much higher grant rate.
 
 import { Capacitor } from "@capacitor/core";
+import { FirebaseMessaging } from "@capacitor-firebase/messaging";
 import { supabase } from "@/integrations/supabase/client";
 
 type NavigateFn = (path: string) => void;
+
 let externalNavigate: NavigateFn | null = null;
 let listenersBound = false;
+let registeringPushToken = false;
 
-/** Register a router-aware navigator so notification taps stay in-app. */
 export function setPushNavigator(fn: NavigateFn | null) {
   externalNavigate = fn;
 }
@@ -39,21 +22,26 @@ function navigateTo(path: string) {
       window.location.assign(path);
     }
   } catch {
-    /* ignore */
+    // ignore
   }
 }
 
 function isNative(): boolean {
-  try { return Capacitor.isNativePlatform(); } catch { return false; }
+  try {
+    return Capacitor.isNativePlatform();
+  } catch {
+    return false;
+  }
 }
 
 function currentPlatform(): "ios" | "android" {
-  try { return Capacitor.getPlatform() === "ios" ? "ios" : "android"; } catch { return "android"; }
+  try {
+    return Capacitor.getPlatform() === "ios" ? "ios" : "android";
+  } catch {
+    return "android";
+  }
 }
 
-/** Upsert the token row keyed on (user_id, fcm_token). The table has no
- * unique constraint on that pair, so we do it manually: look up, then
- * update the timestamp / reactivate, else insert. */
 async function saveToken(userId: string, token: string) {
   const platform = currentPlatform();
   const now = new Date().toISOString();
@@ -68,7 +56,11 @@ async function saveToken(userId: string, token: string) {
   if (existing?.id) {
     await supabase
       .from("push_subscriptions")
-      .update({ is_active: true, last_seen_at: now, platform })
+      .update({
+        is_active: true,
+        last_seen_at: now,
+        platform,
+      })
       .eq("id", existing.id);
   } else {
     await supabase.from("push_subscriptions").insert({
@@ -81,109 +73,159 @@ async function saveToken(userId: string, token: string) {
   }
 }
 
-/** Lazy dynamic import so the module never touches the web bundle. */
-async function loadMessaging() {
-  const mod = await import("@capacitor-firebase/messaging");
-  return mod.FirebaseMessaging;
-}
-
 async function bindListenersOnce(userId: string) {
   if (listenersBound) return;
+
   listenersBound = true;
 
-  const FirebaseMessaging = await loadMessaging();
+  // Token refreshed
+  await FirebaseMessaging.addListener(
+    "tokenReceived",
+    async (event: any) => {
+      try {
+        const token = event?.token;
 
-  // Token refresh
-  await FirebaseMessaging.addListener("tokenReceived", async (event: any) => {
-    try {
-      const t = event?.token;
-      if (t && userId) await saveToken(userId, t);
-    } catch (e) {
-      console.warn("[push] tokenReceived failed", e);
+        console.log("🔄 Token refreshed");
+        console.log(token);
+
+        if (token && userId) {
+          await saveToken(userId, token);
+        }
+      } catch (e) {
+        console.error("❌ tokenReceived failed");
+        console.error(e);
+      }
     }
-  });
+  );
 
-  // Foreground: intentionally no-op. The app's own unread badges / chat list
-  // already surface the new item; adding a toast would be a duplicate.
-  await FirebaseMessaging.addListener("notificationReceived", () => {
-    /* no-op */
-  });
+  // Foreground notification
+  await FirebaseMessaging.addListener(
+    "notificationReceived",
+    (event: any) => {
+      console.log("📩 Notification received");
+      console.log(event);
+    }
+  );
 
-  // Tap on a notification (background / cold-start)
+  // User tapped notification
   await FirebaseMessaging.addListener(
     "notificationActionPerformed",
     (event: any) => {
+
+      console.log("👉 Notification tapped");
+      console.log(event);
+
       const data = event?.notification?.data || {};
       const type = data.type as string | undefined;
+
       try {
+
         if (type === "chat" && data.thread_id) {
-          navigateTo(`/messages?thread=${encodeURIComponent(String(data.thread_id))}`);
+          navigateTo(
+            `/messages?thread=${encodeURIComponent(
+              String(data.thread_id)
+            )}`
+          );
           return;
         }
-        if (type === "diary" && data.athlete_id) {
-          navigateTo(`/coach/athlete/${encodeURIComponent(String(data.athlete_id))}?diary=1`);
+if (type === "diary" && data.athlete_id) {
+  navigateTo(
+    `/coach/athlete/${encodeURIComponent(String(data.athlete_id))}?diary=1`
+  );
+  return;
+}
+
+if (type === "competition_reflection" && data.athlete_id) {
+  navigateTo(
+    `/coach/athlete/${encodeURIComponent(String(data.athlete_id))}`
+  );
+  return;
+}
           return;
         }
-        if (type === "competition_reflection" && data.athlete_id) {
-          navigateTo(`/coach/athlete/${encodeURIComponent(String(data.athlete_id))}`);
-          return;
-        }
+
         navigateTo("/dashboard");
+
       } catch {
+
         navigateTo("/dashboard");
+
       }
-    },
+    }
   );
 }
-
-/**
- * Ask for OS permission, obtain an FCM token and persist it. Silent no-op
- * on the web or when permission is denied — never throws.
- */
 export async function registerPushToken(userId: string): Promise<void> {
-  if (!isNative() || !userId) return;
+    if (registeringPushToken) {
+    return;
+  }
+
+  registeringPushToken = true;
+
+  console.log("========================================");
+  console.log("🚀 registerPushToken()");
+  console.log("Platform:", Capacitor.getPlatform());
+  console.log("User ID:", userId);
+  console.log("========================================");
+
+  if (!isNative()) {
+    console.log("❌ Not running on a native platform");
+    return;
+  }
+
+  if (!userId) {
+    console.log("❌ Missing user id");
+    return;
+  }
 
   try {
-    const FirebaseMessaging = await loadMessaging();
 
-    const perm = await FirebaseMessaging.requestPermissions();
-    if (perm.receive !== "granted") return;
+    console.log("📱 Requesting notification permission...");
 
-    const { token } = await FirebaseMessaging.getToken();
-    if (!token) return;
+    const permission = await FirebaseMessaging.requestPermissions();
 
-    await saveToken(userId, token);
+    console.log("Permission result:");
+    console.log(permission);
+
+    if (permission.receive !== "granted") {
+      console.log("❌ Notification permission denied");
+      return;
+    }
+
+    console.log("✅ Notification permission granted");
+
+    console.log("🎫 Requesting FCM token...");
+
+    const result = await FirebaseMessaging.getToken();
+
+    console.log("🔥 FCM TOKEN");
+    console.log(result.token);
+
+    if (!result.token) {
+      console.log("❌ Firebase returned an empty token");
+      return;
+    }
+
+    console.log("💾 Saving token...");
+
+    await saveToken(userId, result.token);
+
+    console.log("👂 Binding listeners...");
+
     await bindListenersOnce(userId);
-  } catch (e) {
-    console.warn("[push] registerPushToken failed", e);
-  }
+
+    console.log("✅ Push registration completed");
+
+  } catch (error: any) {
+
+  console.error("ERROR NAME:", error?.name);
+  console.error("ERROR MESSAGE:", error?.message);
+  console.error("ERROR STACK:", error?.stack);
+  console.error(error);
+
+} finally {
+
+  registeringPushToken = false;
+
 }
 
-/**
- * Called on sign-out. Deactivates the current device's token so the backend
- * stops sending to it. Best-effort — never throws.
- */
-export async function unregisterPushToken(userId: string): Promise<void> {
-  if (!isNative() || !userId) return;
-  try {
-    const FirebaseMessaging = await loadMessaging();
-    let token: string | null = null;
-    try {
-      const res = await FirebaseMessaging.getToken();
-      token = res?.token ?? null;
-    } catch {
-      /* token may already be gone — try deactivating all rows for the user */
-    }
-    const q = supabase
-      .from("push_subscriptions")
-      .update({ is_active: false })
-      .eq("user_id", userId);
-    if (token) {
-      await q.eq("fcm_token", token);
-    } else {
-      await q.not("fcm_token", "is", null);
-    }
-  } catch (e) {
-    console.warn("[push] unregisterPushToken failed", e);
-  }
 }
