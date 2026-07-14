@@ -62,6 +62,12 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      // `firebase/messaging` is a peer dep of @capacitor-firebase/messaging's
+      // web fallback only. We use FCM natively via Capacitor, never in the
+      // browser, so alias it to a no-op stub to avoid pulling firebase into
+      // the web bundle (and to fix the rollup "isSupported is not exported"
+      // build error when the peer dep isn't installed).
+      "firebase/messaging": path.resolve(__dirname, "./src/lib/stubs/firebase-messaging.ts"),
     },
   },
 }));
