@@ -10377,6 +10377,7 @@ const translations = {
     changelogEntry164: "Vuxna atleter tar nu emot samtyckesförfrågan i sin egen inkorg istället för en förälders.",
     changelogEntry165: "Att ta bort en atlet är nu bara möjligt från atletens detaljsida och kräver en uttrycklig bekräftelse.",
     changelogEntry166: "Städat i tränarens lagöversikt — papperskorgsikonen visas inte längre bredvid varje atletrad.",
+    changelog_2026_07_14: "14 juli 2026",
     changelog_2026_07_13: "13 juli 2026",
     changelogEntry171: "Nytt: push-notiser i mobilappen för nya chattmeddelanden och dagboksinlägg. Du kan slå av eller på det under Profil → Konto.",
     changelogEntry170: "Rättat: matskannern kunde visa en tom vit skärm i app-versionerna efter tryck på \"Använd foto\"; bilden hanteras nu utan extra minneskopior, och eventuella fel visas på skärmen i stället för en vit blixt.",
