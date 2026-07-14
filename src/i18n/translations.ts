@@ -10105,6 +10105,8 @@ const translations = {
     profileDeleteAccount: "Radera konto",
     profileDeleteAccountSub: "Ladda ner din data först",
     profileLogout: "Logga ut",
+    profilePushToggleTitle: "Push-notiser",
+    profilePushToggleSub: "Få notiser om nya meddelanden och dagboksinlägg",
     videoNoteAdd: "Lägg till anteckning",
     videoNoteAtFrame: "Anteckning vid Frame {frame}",
     videoNoteSave: "Spara anteckning",
