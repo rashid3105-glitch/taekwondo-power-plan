@@ -165,6 +165,30 @@ export default function Profile() {
     navigate("/auth");
   };
 
+  const handleTogglePush = async (next: boolean) => {
+    setPushSaving(true);
+    const prev = pushEnabled;
+    setPushEnabled(next);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("no user");
+      const { error } = await supabase
+        .from("profiles")
+        .update({ push_enabled: next })
+        .eq("user_id", user.id);
+      if (error) throw error;
+      if (next) {
+        // Re-register so the current device gets its token stored + activated.
+        registerPushToken(user.id);
+      }
+    } catch (e: any) {
+      setPushEnabled(prev);
+      toast.error(e?.message || t("error"));
+    } finally {
+      setPushSaving(false);
+    }
+  };
+
   const handleExport = async () => {
     if (!data) return;
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
