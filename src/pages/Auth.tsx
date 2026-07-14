@@ -13,6 +13,7 @@ import {
   signInWithPasskey,
 } from "@/lib/passkeys";
 import { haptics } from "@/lib/haptics";
+import { registerPushToken } from "@/lib/nativePush";
 import {
   isNative,
   isBiometricAvailable,
@@ -85,6 +86,10 @@ export default function AuthPage() {
         password: creds.password,
       });
       if (error) throw error;
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) registerPushToken(user.id);
+      } catch { /* non-blocking */ }
       navigate(redirectTo || "/dashboard");
     } catch (e: any) {
       toast({
@@ -102,6 +107,10 @@ export default function AuthPage() {
     haptics.tap();
     try {
       await signInWithPasskey(email || undefined);
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) registerPushToken(user.id);
+      } catch { /* non-blocking */ }
       navigate(redirectTo || "/dashboard");
     } catch (e: any) {
       toast({ title: t("passkeyLoginFailed"), description: e?.message, variant: "destructive" });
@@ -153,6 +162,10 @@ export default function AuthPage() {
             /* ignore */
           }
         }
+        try {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) registerPushToken(user.id);
+        } catch { /* non-blocking */ }
         navigate(redirectTo || "/dashboard");
       } else {
         const pwCheck = validatePassword(password);

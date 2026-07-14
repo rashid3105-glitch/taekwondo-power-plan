@@ -10,12 +10,15 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { LogOut, Pencil, Download, KeyRound, Trash2, ChevronLeft, Apple, Smartphone, ShieldOff } from "lucide-react";
+import { LogOut, Pencil, Download, KeyRound, Trash2, ChevronLeft, Apple, Smartphone, ShieldOff, Bell } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { PageMeta } from "@/components/PageMeta";
 import { AppFooter } from "@/components/AppFooter";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAvatarUrl } from "@/hooks/useAvatarUrl";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
+import { isNativeApp } from "@/lib/platform";
+import { registerPushToken } from "@/lib/nativePush";
 
 interface LicenseField {
   id: string;
@@ -84,7 +87,10 @@ export default function Profile() {
   const [licenseFields, setLicenseFields] = useState<LicenseField[]>([]);
   const [hasCoach, setHasCoach] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [pushEnabled, setPushEnabled] = useState<boolean>(true);
+  const [pushSaving, setPushSaving] = useState(false);
   const avatarDisplayUrl = useAvatarUrl(data?.avatar_url);
+  const isNative = isNativeApp();
 
   useEffect(() => {
     let mounted = true;
@@ -96,9 +102,10 @@ export default function Profile() {
       }
       const { data: prof } = await supabase
         .from("profiles")
-        .select("display_name, avatar_url, discipline, club_id, coach_club_name, roles, birth_date, belt_level, weight_kg, goals, license_values, clubs:club_id(name)")
+        .select("display_name, avatar_url, discipline, club_id, coach_club_name, roles, birth_date, belt_level, weight_kg, goals, license_values, push_enabled, clubs:club_id(name)")
         .eq("user_id", user.id)
         .maybeSingle();
+      setPushEnabled((prof as any)?.push_enabled !== false);
 
       const { data: ca } = await supabase
         .from("coach_athletes")
@@ -147,8 +154,39 @@ export default function Profile() {
   }, [navigate]);
 
   const handleLogout = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { unregisterPushToken } = await import("@/lib/nativePush");
+        await unregisterPushToken(user.id);
+      }
+    } catch { /* non-blocking */ }
     await supabase.auth.signOut();
     navigate("/auth");
+  };
+
+  const handleTogglePush = async (next: boolean) => {
+    setPushSaving(true);
+    const prev = pushEnabled;
+    setPushEnabled(next);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("no user");
+      const { error } = await supabase
+        .from("profiles")
+        .update({ push_enabled: next })
+        .eq("user_id", user.id);
+      if (error) throw error;
+      if (next) {
+        // Re-register so the current device gets its token stored + activated.
+        registerPushToken(user.id);
+      }
+    } catch (e: any) {
+      setPushEnabled(prev);
+      toast.error(e?.message || t("error"));
+    } finally {
+      setPushSaving(false);
+    }
   };
 
   const handleExport = async () => {
@@ -460,6 +498,25 @@ export default function Profile() {
         <div className={cardCls}>
           <h2 className={sectionTitleCls}>{t("profileAccountTitle" as any)}</h2>
           <Row label={t("profileAccountEmail" as any)} value={data?.email || "—"} />
+          {isNative && (
+            <>
+              <Separator className="bg-white/10" />
+              <div className="flex items-center justify-between py-3 px-1 gap-3">
+                <div className="flex items-start gap-3 min-w-0">
+                  <Bell className="h-4 w-4 mt-0.5 shrink-0 text-white/70" />
+                  <div className="min-w-0">
+                    <div className="text-sm text-white">{t("profilePushToggleTitle" as any)}</div>
+                    <div className="text-xs text-white/60">{t("profilePushToggleSub" as any)}</div>
+                  </div>
+                </div>
+                <Switch
+                  checked={pushEnabled}
+                  disabled={pushSaving}
+                  onCheckedChange={handleTogglePush}
+                />
+              </div>
+            </>
+          )}
           <Separator className="bg-white/10" />
           <ActionRow
             icon={<KeyRound className="h-4 w-4" />}
