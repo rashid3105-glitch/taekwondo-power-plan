@@ -3163,6 +3163,7 @@ const translations = {
     changelogEntry165: "Deleting an athlete is now only possible from the athlete detail page and requires an explicit confirmation.",
     changelogEntry166: "Cleaned up the coach squad overview — the trash icon no longer appears next to each athlete row.",
     changelog_2026_07_13: "July 13, 2026",
+    changelogEntry171: "New: push notifications in the mobile app for new chat messages and diary entries. Toggle on or off in Profile → Account.",
     changelogEntry170: "Fixed: the food scanner could show a blank white screen in the app versions after tapping \"Use Photo\"; the image is now handled without extra memory copies, and any error is shown on screen instead of a white flash.",
     changelog_2026_07_09: "July 9, 2026",
     changelogEntry168: "Fixed: chat conversations could show a blank screen in the app versions; an error message is now shown instead.",
