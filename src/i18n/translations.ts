@@ -6770,6 +6770,7 @@ const translations = {
     changelogEntry165: "Sletning af en atlet kan nu kun ske fra atletens detaljeside og kræver en eksplicit bekræftelse.",
     changelogEntry166: "Ryddet op i trænerens holdoversigt — papirkurv-ikonet vises ikke længere ved hver atlet-række.",
     changelog_2026_07_13: "13. juli 2026",
+    changelogEntry171: "Nyt: push-notifikationer i mobilappen for nye chatbeskeder og dagbogsindførsler. Du kan slå det til eller fra under Profil → Konto.",
     changelogEntry170: "Rettet: madscanneren kunne give hvid skærm i app-versionerne efter tryk på \"Brug billede\"; billedet håndteres nu uden ekstra hukommelseskopier, og en eventuel fejl vises på skærmen i stedet for et hvidt blink.",
     changelog_2026_07_09: "9. juli 2026",
     changelogEntry168: "Rettet: chat-samtaler kunne give blank skærm i app-versionerne; viser nu en fejlmeddelelse i stedet.",
