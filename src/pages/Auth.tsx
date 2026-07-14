@@ -86,6 +86,10 @@ export default function AuthPage() {
         password: creds.password,
       });
       if (error) throw error;
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) registerPushToken(user.id);
+      } catch { /* non-blocking */ }
       navigate(redirectTo || "/dashboard");
     } catch (e: any) {
       toast({
