@@ -107,6 +107,10 @@ export default function AuthPage() {
     haptics.tap();
     try {
       await signInWithPasskey(email || undefined);
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) registerPushToken(user.id);
+      } catch { /* non-blocking */ }
       navigate(redirectTo || "/dashboard");
     } catch (e: any) {
       toast({ title: t("passkeyLoginFailed"), description: e?.message, variant: "destructive" });
