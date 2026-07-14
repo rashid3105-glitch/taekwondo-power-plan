@@ -6,8 +6,9 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { BrandLogo } from "@/components/BrandLogo";
 import { cn } from "@/lib/utils";
+import { isNativeApp } from "@/lib/platform";
 
-const navLinks = [
+const allNavLinks = [
   { labelKey: "navAbout" as const, path: "/about" },
   { labelKey: "navPrograms" as const, path: "/programs" },
   { labelKey: "navMethodology" as const, path: "/methodology" },
@@ -15,6 +16,10 @@ const navLinks = [
   { labelKey: "navContact" as const, path: "/contact" },
   { labelKey: "help" as const, path: "/help" },
 ];
+// Native builds (App Store / Google Play) must not surface pricing links.
+const navLinks = isNativeApp()
+  ? allNavLinks.filter((l) => l.path !== "/pricing")
+  : allNavLinks;
 
 export function PublicNav() {
   const navigate = useNavigate();
