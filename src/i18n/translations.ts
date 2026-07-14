@@ -3162,6 +3162,7 @@ const translations = {
     changelogEntry164: "Adult athletes now receive the consent request in their own inbox instead of a parent's.",
     changelogEntry165: "Deleting an athlete is now only possible from the athlete detail page and requires an explicit confirmation.",
     changelogEntry166: "Cleaned up the coach squad overview — the trash icon no longer appears next to each athlete row.",
+    changelog_2026_07_14: "July 14, 2026",
     changelog_2026_07_13: "July 13, 2026",
     changelogEntry171: "New: push notifications in the mobile app for new chat messages and diary entries. Toggle on or off in Profile → Account.",
     changelogEntry170: "Fixed: the food scanner could show a blank white screen in the app versions after tapping \"Use Photo\"; the image is now handled without extra memory copies, and any error is shown on screen instead of a white flash.",
