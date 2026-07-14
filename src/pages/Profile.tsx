@@ -102,9 +102,10 @@ export default function Profile() {
       }
       const { data: prof } = await supabase
         .from("profiles")
-        .select("display_name, avatar_url, discipline, club_id, coach_club_name, roles, birth_date, belt_level, weight_kg, goals, license_values, clubs:club_id(name)")
+        .select("display_name, avatar_url, discipline, club_id, coach_club_name, roles, birth_date, belt_level, weight_kg, goals, license_values, push_enabled, clubs:club_id(name)")
         .eq("user_id", user.id)
         .maybeSingle();
+      setPushEnabled((prof as any)?.push_enabled !== false);
 
       const { data: ca } = await supabase
         .from("coach_athletes")
