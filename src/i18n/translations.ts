@@ -20695,6 +20695,8 @@ const translations = {
     profileDeleteAccount: "Slett konto",
     profileDeleteAccountSub: "Last ned dataene dine først",
     profileLogout: "Logg ut",
+    profilePushToggleTitle: "Push-varsler",
+    profilePushToggleSub: "Motta varsler om nye meldinger og dagboksinnlegg",
     videoNoteAdd: "Legg til notat",
     videoNoteAtFrame: "Notat ved Frame {frame}",
     videoNoteSave: "Lagre notat",
