@@ -13,6 +13,7 @@ import {
   signInWithPasskey,
 } from "@/lib/passkeys";
 import { haptics } from "@/lib/haptics";
+import { registerPushToken } from "@/lib/nativePush";
 import {
   isNative,
   isBiometricAvailable,
