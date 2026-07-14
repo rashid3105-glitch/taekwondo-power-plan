@@ -17139,6 +17139,8 @@ const translations = {
     profileDeleteAccount: "حذف الحساب",
     profileDeleteAccountSub: "قم بتنزيل بياناتك أولاً",
     profileLogout: "تسجيل الخروج",
+    profilePushToggleTitle: "الإشعارات",
+    profilePushToggleSub: "استلم تنبيهات للرسائل الجديدة وإدخالات المذكرة",
     videoNoteAdd: "إضافة ملاحظة",
     videoNoteAtFrame: "ملاحظة عند الإطار {frame}",
     videoNoteSave: "حفظ الملاحظة",
