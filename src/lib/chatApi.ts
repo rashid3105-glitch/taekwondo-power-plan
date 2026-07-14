@@ -111,13 +111,27 @@ export async function listThreads(): Promise<ChatThread[]> {
   if (threadsRes.error) throw threadsRes.error;
   if (membersRes.error) throw membersRes.error;
 
-  // Resolve member display names from profiles
+  // Resolve member display names from profiles.
+  // Primary source: club_directory (same-club users).
+  // Fallback: get_chat_members_display RPC (any user I share a chat thread with),
+  // so people in another club — or without a club_id on their profile — still
+  // show as their real name instead of "Unknown".
   const userIds = Array.from(new Set((membersRes.data ?? []).map((m) => m.user_id)));
   const { data: profiles } = await supabase
     .from("club_directory" as any)
     .select("user_id, display_name, avatar_url")
     .in("user_id", userIds);
   const profileMap = new Map(((profiles ?? []) as any[]).map((p: any) => [p.user_id, p]));
+
+  const missingIds = userIds.filter((id) => !profileMap.has(id));
+  if (missingIds.length > 0) {
+    const { data: chatProfiles } = await supabase.rpc("get_chat_members_display", {
+      _ids: missingIds,
+    });
+    for (const p of (chatProfiles ?? []) as any[]) {
+      profileMap.set(p.user_id, p);
+    }
+  }
 
   const lastMsgByThread = new Map<string, any>();
   (lastMsgRes.data ?? []).forEach((m: any) => {
