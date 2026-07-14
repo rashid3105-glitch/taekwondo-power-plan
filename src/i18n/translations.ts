@@ -22984,5 +22984,8 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   parentGuideSourceLink: "Basado en la guía para padres de Team Danmark",
   parentGuideDailyLimit: "Has alcanzado el límite diario de mensajes. Continúa mañana.",
   parentGuideRemaining: "mensajes restantes hoy",
+  profilePushToggleTitle: "Notificaciones push",
+  profilePushToggleSub: "Recibe avisos de nuevos mensajes y entradas de diario",
+  changelogEntry171: "Nuevo: notificaciones push en la app móvil para nuevos mensajes de chat y entradas de diario. Puedes activarlas o desactivarlas en Perfil → Cuenta.",
 };
 export default translations;
