@@ -31,10 +31,11 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
     { label: t("navHome"), href: "/", icon: Home },
     { label: t("navPlatform"), href: "/platform", icon: LayoutGrid },
     { label: t("navFeatures"), href: "/funktioner", icon: Sparkles },
-    { label: t("navPricing"), href: "/priser", icon: CreditCard },
+    ...(isNativeApp() ? [] : [{ label: t("navPricing"), href: "/priser", icon: CreditCard }]),
     { label: t("navAbout"), href: "/about", icon: Info },
     { label: t("navBlog"), href: "/blog", icon: Newspaper },
   ];
+
 
   const isActive = (href: string) =>
 
