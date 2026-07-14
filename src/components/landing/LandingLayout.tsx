@@ -4,6 +4,7 @@ import { Menu, X, Home, LayoutGrid, Sparkles, CreditCard, Info, Newspaper } from
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { BrandLogo } from "@/components/BrandLogo";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { isNativeApp } from "@/lib/platform";
 
 const GOLD = "#F5C842";
 
