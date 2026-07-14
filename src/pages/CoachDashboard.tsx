@@ -398,12 +398,14 @@ export default function CoachDashboard() {
                   : `${trialDaysLeft} dage tilbage af din gratis prøveperiode`}
               </span>
             </div>
-            <button
-              onClick={() => window.location.href = "/priser"}
-              className="shrink-0 text-xs font-semibold text-amber-600 dark:text-amber-400 hover:underline"
-            >
-              Opgrader →
-            </button>
+            {!isNativeApp() && (
+              <button
+                onClick={() => window.location.href = "/priser"}
+                className="shrink-0 text-xs font-semibold text-amber-600 dark:text-amber-400 hover:underline"
+              >
+                Opgrader →
+              </button>
+            )}
           </div>
         )}
 
@@ -415,12 +417,14 @@ export default function CoachDashboard() {
                 Prøveperioden er udløbet — visse funktioner er låst
               </span>
             </div>
-            <button
-              onClick={() => window.location.href = "/priser"}
-              className="shrink-0 text-xs font-semibold text-destructive hover:underline"
-            >
-              Se prisplaner →
-            </button>
+            {!isNativeApp() && (
+              <button
+                onClick={() => window.location.href = "/priser"}
+                className="shrink-0 text-xs font-semibold text-destructive hover:underline"
+              >
+                Se prisplaner →
+              </button>
+            )}
           </div>
         )}
 
