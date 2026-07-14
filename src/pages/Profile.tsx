@@ -147,6 +147,13 @@ export default function Profile() {
   }, [navigate]);
 
   const handleLogout = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { unregisterPushToken } = await import("@/lib/nativePush");
+        await unregisterPushToken(user.id);
+      }
+    } catch { /* non-blocking */ }
     await supabase.auth.signOut();
     navigate("/auth");
   };
