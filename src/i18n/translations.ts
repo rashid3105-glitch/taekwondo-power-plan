@@ -13897,6 +13897,7 @@ const translations = {
     changelogEntry164: "Erwachsene Athleten erhalten die Einwilligungsanfrage jetzt im eigenen Posteingang statt bei den Eltern.",
     changelogEntry165: "Athleten löschen ist jetzt nur noch von der Athleten-Detailseite möglich und erfordert eine explizite Bestätigung.",
     changelogEntry166: "Aufgeräumt in der Kader-Übersicht — das Papierkorb-Symbol erscheint nicht mehr neben jeder Athletenzeile.",
+    changelog_2026_07_14: "14. Juli 2026",
     changelog_2026_07_13: "13. Juli 2026",
     changelogEntry171: "Neu: Push-Benachrichtigungen in der Mobile-App für neue Chat-Nachrichten und Tagebucheinträge. Du kannst sie unter Profil → Konto aktivieren oder deaktivieren.",
     changelogEntry170: "Behoben: Der Essens-Scanner konnte in den App-Versionen nach dem Tippen auf \"Foto verwenden\" einen leeren weißen Bildschirm zeigen; das Bild wird jetzt ohne zusätzliche Speicherkopien verarbeitet, und Fehler werden auf dem Bildschirm angezeigt statt eines weißen Blitzes.",
