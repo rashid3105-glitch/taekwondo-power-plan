@@ -22962,6 +22962,7 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   changelogEntry164: "Los atletas adultos ahora reciben la solicitud de consentimiento en su propia bandeja en lugar de la de un tutor.",
   changelogEntry165: "Eliminar un atleta solo es posible desde la página de detalle del atleta y requiere confirmación explícita.",
   changelogEntry166: "Se limpió la vista general del equipo del entrenador — el icono de papelera ya no aparece junto a cada fila de atleta.",
+  changelog_2026_07_14: "14 de julio de 2026",
   changelog_2026_07_13: "13 de julio de 2026",
   changelogEntry170: "Corregido: el escáner de comida podía mostrar una pantalla blanca en blanco en las versiones de la app tras pulsar \"Usar foto\"; la imagen ahora se procesa sin copias adicionales en memoria y cualquier error se muestra en pantalla en lugar de un destello blanco.",
   changelog_2026_07_09: "9 de julio de 2026",
