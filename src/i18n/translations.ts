@@ -2896,6 +2896,8 @@ const translations = {
     profileDeleteAccount: "Delete account",
     profileDeleteAccountSub: "Download your data first",
     profileLogout: "Log out",
+    profilePushToggleTitle: "Push notifications",
+    profilePushToggleSub: "Get notified about new messages and diary entries",
     videoNoteAdd: "Add note",
     videoNoteAtFrame: "Note at Frame {frame}",
     videoNoteSave: "Save note",
