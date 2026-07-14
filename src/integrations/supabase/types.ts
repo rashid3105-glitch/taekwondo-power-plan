@@ -4086,6 +4086,14 @@ export type Database = {
           id: string
         }[]
       }
+      get_chat_members_display: {
+        Args: { _ids: string[] }
+        Returns: {
+          avatar_url: string
+          display_name: string
+          user_id: string
+        }[]
+      }
       get_club_member_profiles: {
         Args: { _club_id: string }
         Returns: {
