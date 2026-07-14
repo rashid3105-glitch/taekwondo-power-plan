@@ -18,6 +18,7 @@ import { BodyPointerEventsGuard } from "@/components/BodyPointerEventsGuard";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { AppUpdateBanner } from "@/components/AppUpdateBanner";
 import { SplashScreen } from "@/components/SplashScreen";
+import { isNativeApp } from "@/lib/platform";
 import Index from "./pages/Index";
 import Landing from "./pages/Landing";
 import CoachLanding from "./pages/CoachLanding";
