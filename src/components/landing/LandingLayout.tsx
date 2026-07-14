@@ -4,6 +4,7 @@ import { Menu, X, Home, LayoutGrid, Sparkles, CreditCard, Info, Newspaper } from
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { BrandLogo } from "@/components/BrandLogo";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { isNativeApp } from "@/lib/platform";
 
 const GOLD = "#F5C842";
 
@@ -30,10 +31,11 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
     { label: t("navHome"), href: "/", icon: Home },
     { label: t("navPlatform"), href: "/platform", icon: LayoutGrid },
     { label: t("navFeatures"), href: "/funktioner", icon: Sparkles },
-    { label: t("navPricing"), href: "/priser", icon: CreditCard },
+    ...(isNativeApp() ? [] : [{ label: t("navPricing"), href: "/priser", icon: CreditCard }]),
     { label: t("navAbout"), href: "/about", icon: Info },
     { label: t("navBlog"), href: "/blog", icon: Newspaper },
   ];
+
 
   const isActive = (href: string) =>
 
@@ -249,7 +251,7 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
             {[
               { label: t("homeFooterPrivacy"), href: "/privacy" },
               { label: t("homeFooterTerms"), href: "/terms" },
-              { label: t("homeFooterContact"), href: "/priser" },
+              ...(isNativeApp() ? [] : [{ label: t("homeFooterContact"), href: "/priser" }]),
               { label: t("navBlog"), href: "/blog" },
             ].map(l => <span key={l.href} onClick={() => navigate(l.href)} style={{ cursor: "pointer" }}>{l.label}</span>)}
           </div>

@@ -18,6 +18,7 @@ import { BodyPointerEventsGuard } from "@/components/BodyPointerEventsGuard";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { AppUpdateBanner } from "@/components/AppUpdateBanner";
 import { SplashScreen } from "@/components/SplashScreen";
+import { isNativeApp } from "@/lib/platform";
 import Index from "./pages/Index";
 import Landing from "./pages/Landing";
 import CoachLanding from "./pages/CoachLanding";
@@ -167,7 +168,7 @@ const AnimatedRoutes = () => {
         <Route path="/programs" element={<Page><Programs /></Page>} />
         <Route path="/platform" element={<Page><PlatformMarketing /></Page>} />
         <Route path="/funktioner" element={<Page><Funktioner /></Page>} />
-        <Route path="/priser" element={<Page><Priser /></Page>} />
+        <Route path="/priser" element={isNativeApp() ? <Navigate to="/dashboard" replace /> : <Page><Priser /></Page>} />
         <Route path="/terms" element={<Page><Terms /></Page>} />
         <Route path="/blog" element={<Page><Blog /></Page>} />
         <Route path="/blog/:slug" element={<Page><BlogPost /></Page>} />
@@ -199,7 +200,7 @@ const AnimatedRoutes = () => {
         <Route path="/coach/testing/sessions/:sessionId" element={<Page><CoachTestSession /></Page>} />
         <Route path="/coach/surveys" element={<Page><CoachSurveys /></Page>} />
         <Route path="/surveys" element={<Page><AthleteSurveys /></Page>} />
-        <Route path="/pricing" element={<Navigate to="/#pricing" replace />} />
+        <Route path="/pricing" element={<Navigate to={isNativeApp() ? "/dashboard" : "/#pricing"} replace />} />
         {/* Pricing page hidden — uncomment to restore */}
         {/* <Route path="/pricing" element={<Page><Pricing /></Page>} /> */}
         <Route path="/settings/subscription" element={<Page><SubscriptionSettings /></Page>} />

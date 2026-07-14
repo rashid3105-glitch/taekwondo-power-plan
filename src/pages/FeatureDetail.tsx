@@ -6,6 +6,7 @@ import { PublicNav } from "@/components/PublicNav";
 import { AppFooter } from "@/components/AppFooter";
 import { Watermark } from "@/components/Watermark";
 import { PageMeta } from "@/components/PageMeta";
+import { isNativeApp } from "@/lib/platform";
 
 import { FeatureDiagram } from "@/components/FeatureDiagram";
 import trainingImg from "@/assets/features/training-plan.jpg";
@@ -301,9 +302,11 @@ const FeatureDetail = () => {
               <Button onClick={() => navigate("/auth")} size="lg" className="px-8 font-semibold shadow-glow">
                 {t("getStarted")} <ArrowRight className="h-4 w-4 ml-1.5" />
               </Button>
-              <Button onClick={() => navigate("/pricing")} size="lg" variant="outline" className="px-8 font-semibold">
-                {t("viewPricing")}
-              </Button>
+              {!isNativeApp() && (
+                <Button onClick={() => navigate("/pricing")} size="lg" variant="outline" className="px-8 font-semibold">
+                  {t("viewPricing")}
+                </Button>
+              )}
             </div>
           </div>
         </section>
