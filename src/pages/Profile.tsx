@@ -87,7 +87,10 @@ export default function Profile() {
   const [licenseFields, setLicenseFields] = useState<LicenseField[]>([]);
   const [hasCoach, setHasCoach] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [pushEnabled, setPushEnabled] = useState<boolean>(true);
+  const [pushSaving, setPushSaving] = useState(false);
   const avatarDisplayUrl = useAvatarUrl(data?.avatar_url);
+  const isNative = isNativeApp();
 
   useEffect(() => {
     let mounted = true;
