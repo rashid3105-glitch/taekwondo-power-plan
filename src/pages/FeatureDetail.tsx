@@ -6,6 +6,7 @@ import { PublicNav } from "@/components/PublicNav";
 import { AppFooter } from "@/components/AppFooter";
 import { Watermark } from "@/components/Watermark";
 import { PageMeta } from "@/components/PageMeta";
+import { isNativeApp } from "@/lib/platform";
 
 import { FeatureDiagram } from "@/components/FeatureDiagram";
 import trainingImg from "@/assets/features/training-plan.jpg";
