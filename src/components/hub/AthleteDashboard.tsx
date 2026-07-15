@@ -484,7 +484,7 @@ export function AthleteDashboard() {
               {latestDiary.comments.length > 0 && (
                 <div className="space-y-2 pt-2 border-t border-white/10">
                   <p className="text-[11px] font-bold uppercase tracking-wider text-white/50">
-                    Coach-kommentarer
+                    {t("hubCoachComments")}
                   </p>
                   {latestDiary.comments.map((c) => (
                     <div
