@@ -107,13 +107,10 @@ async function bindListenersOnce(userId: string) {
     }
   );
 
-// User tapped notification
-await FirebaseMessaging.addListener(
-  "notificationActionPerformed",
-  (event: any) => {
-    console.log("👉 Notification tapped");
-    console.log(event);
-
+  // User tapped notification
+  await FirebaseMessaging.addListener(
+    "notificationActionPerformed",
+    (event: any) => {
       console.log("👉 Notification tapped");
       console.log(event);
 
@@ -121,69 +118,35 @@ await FirebaseMessaging.addListener(
       const type = data.type as string | undefined;
 
       try {
-
         if (type === "chat" && data.thread_id) {
           navigateTo(
-            `/messages?thread=${encodeURIComponent(
-              String(data.thread_id)
-            )}`
+            `/messages?thread=${encodeURIComponent(String(data.thread_id))}`
           );
           return;
         }
-if (type === "diary" && data.athlete_id) {
-  navigateTo(
-    `/coach/athlete/${encodeURIComponent(String(data.athlete_id))}?diary=1`
-  );
-  return;
-}
 
-if (type === "competition_reflection" && data.athlete_id) {
-  navigateTo(
-    `/coach/athlete/${encodeURIComponent(String(data.athlete_id))}`
-  );
-  return;
-}
+        if (type === "diary" && data.athlete_id) {
+          navigateTo(
+            `/coach/athlete/${encodeURIComponent(String(data.athlete_id))}?diary=1`
+          );
+          return;
+        }
 
-
+        if (type === "competition_reflection" && data.athlete_id) {
+          navigateTo(
+            `/coach/athlete/${encodeURIComponent(String(data.athlete_id))}`
+          );
+          return;
+        }
 
         navigateTo("/dashboard");
-
       } catch {
-
         navigateTo("/dashboard");
-        
-    const data = event?.notification?.data || {};
-    const type = data.type as string | undefined;
-
-    try {
-      if (type === "chat" && data.thread_id) {
-        navigateTo(
-          `/messages?thread=${encodeURIComponent(String(data.thread_id))}`
-        );
-        return;
       }
-
-      if (type === "diary" && data.athlete_id) {
-        navigateTo(
-          `/coach/athlete/${encodeURIComponent(String(data.athlete_id))}?diary=1`
-        );
-        return;
-      }
-
-      if (type === "competition_reflection" && data.athlete_id) {
-        navigateTo(
-          `/coach/athlete/${encodeURIComponent(String(data.athlete_id))}`
-        );
-        return;
-      }
-
-      navigateTo("/dashboard");
-    } catch {
-      navigateTo("/dashboard");
     }
-  }
-);
+  );
 }
+
 export async function registerPushToken(userId: string): Promise<void> {
     if (registeringPushToken) {
     return;
@@ -208,10 +171,8 @@ export async function registerPushToken(userId: string): Promise<void> {
   }
 
   try {
+    console.log("📱 Requesting notification permission...");
 
-  const FirebaseMessaging = await loadMessaging();
-
-  console.log("📱 Requesting notification permission...");
 
   const permission = await FirebaseMessaging.requestPermissions();
 
@@ -264,25 +225,25 @@ export async function registerPushToken(userId: string): Promise<void> {
 
 export async function unregisterPushToken(userId: string): Promise<void> {
   if (!userId) return;
+  // Only touch push subscriptions on native platforms, and only for the
+  // specific FCM token that belongs to THIS device. Otherwise we would
+  // deactivate push tokens for the user's other devices (e.g. signing out
+  // on the web would silence their phone).
+  if (!isNative()) return;
   try {
     let token: string | undefined;
-    if (isNative()) {
-      try {
-        const result = await FirebaseMessaging.getToken();
-        token = result?.token;
-      } catch {
-        // ignore
-      }
+    try {
+      const result = await FirebaseMessaging.getToken();
+      token = result?.token;
+    } catch {
+      // ignore
     }
-    const query = supabase
+    if (!token) return; // don't broad-match by platform
+    await supabase
       .from("push_subscriptions")
       .update({ is_active: false })
-      .eq("user_id", userId);
-    if (token) {
-      await query.eq("fcm_token", token);
-    } else {
-      await query.eq("platform", currentPlatform());
-    }
+      .eq("user_id", userId)
+      .eq("fcm_token", token);
   } catch (error) {
     console.error("[unregisterPushToken]", error);
   }
