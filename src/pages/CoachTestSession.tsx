@@ -35,7 +35,7 @@ export default function CoachTestSession() {
   const { t, locale } = useLanguage();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { activeClubId } = useActiveClub();
+  const { activeClubId, activeMembership } = useActiveClub();
 
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<TeamTestSession | null>(null);
