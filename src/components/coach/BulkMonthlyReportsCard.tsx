@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useToast } from "@/hooks/use-toast";
 import { AvatarImg } from "@/components/AvatarImg";
+import { cn } from "@/lib/utils";
 import { ChevronDown, ClipboardList, Loader2, Sparkles } from "lucide-react";
 
 interface AthleteLite {
