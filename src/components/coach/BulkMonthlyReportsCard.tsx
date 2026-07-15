@@ -35,6 +35,7 @@ export function BulkMonthlyReportsCard({ athletes }: Props) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [running, setRunning] = useState(false);
   const [progress, setProgress] = useState<{ done: number; total: number; ok: number } | null>(null);
+  const [open, setOpen] = useState(false);
 
   const sorted = useMemo(
     () => [...athletes].sort((a, b) => (a.display_name || "").localeCompare(b.display_name || "")),
