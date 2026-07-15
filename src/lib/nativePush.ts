@@ -107,10 +107,12 @@ async function bindListenersOnce(userId: string) {
     }
   );
 
-  // User tapped notification
-  await FirebaseMessaging.addListener(
-    "notificationActionPerformed",
-    (event: any) => {
+// User tapped notification
+await FirebaseMessaging.addListener(
+  "notificationActionPerformed",
+  (event: any) => {
+    console.log("👉 Notification tapped");
+    console.log(event);
 
       console.log("👉 Notification tapped");
       console.log(event);
@@ -149,10 +151,38 @@ if (type === "competition_reflection" && data.athlete_id) {
       } catch {
 
         navigateTo("/dashboard");
+        
+    const data = event?.notification?.data || {};
+    const type = data.type as string | undefined;
 
+    try {
+      if (type === "chat" && data.thread_id) {
+        navigateTo(
+          `/messages?thread=${encodeURIComponent(String(data.thread_id))}`
+        );
+        return;
       }
+
+      if (type === "diary" && data.athlete_id) {
+        navigateTo(
+          `/coach/athlete/${encodeURIComponent(String(data.athlete_id))}?diary=1`
+        );
+        return;
+      }
+
+      if (type === "competition_reflection" && data.athlete_id) {
+        navigateTo(
+          `/coach/athlete/${encodeURIComponent(String(data.athlete_id))}`
+        );
+        return;
+      }
+
+      navigateTo("/dashboard");
+    } catch {
+      navigateTo("/dashboard");
     }
-  );
+  }
+);
 }
 export async function registerPushToken(userId: string): Promise<void> {
     if (registeringPushToken) {
@@ -179,9 +209,11 @@ export async function registerPushToken(userId: string): Promise<void> {
 
   try {
 
-    console.log("📱 Requesting notification permission...");
+  const FirebaseMessaging = await loadMessaging();
 
-    const permission = await FirebaseMessaging.requestPermissions();
+  console.log("📱 Requesting notification permission...");
+
+  const permission = await FirebaseMessaging.requestPermissions();
 
     console.log("Permission result:");
     console.log(permission);
