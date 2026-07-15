@@ -141,8 +141,8 @@ if (type === "competition_reflection" && data.athlete_id) {
   );
   return;
 }
-          return;
-        }
+
+
 
         navigateTo("/dashboard");
 
