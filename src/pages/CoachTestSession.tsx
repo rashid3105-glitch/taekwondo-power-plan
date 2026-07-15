@@ -10,7 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, Loader2, CheckCircle2, PlayCircle, ChevronRight, Save, Clock } from "lucide-react";
+import { ArrowLeft, Loader2, CheckCircle2, PlayCircle, ChevronRight, Save, Clock, Printer } from "lucide-react";
+import { generateTestSheetsPdf } from "@/lib/testSheetPdf";
 import { TestRunner, type TestRunResult } from "@/components/testing/TestRunner";
 import {
   findTestByDbName,
@@ -27,7 +28,7 @@ import {
 } from "@/lib/teamTestSessionApi";
 import { useOfflinePhysicalTests } from "@/hooks/useOfflinePhysicalTests";
 
-interface AthleteInfo { id: string; name: string }
+interface AthleteInfo { id: string; name: string; birth_date?: string | null }
 
 export default function CoachTestSession() {
   const { sessionId } = useParams<{ sessionId: string }>();
