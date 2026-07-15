@@ -3994,33 +3994,7 @@ export type Database = {
           display_name: string | null
           user_id: string | null
         }
-        Insert: {
-          avatar_url?: string | null
-          belt_level?: string | null
-          club_id?: string | null
-          country?: string | null
-          discipline?: string | null
-          display_name?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          avatar_url?: string | null
-          belt_level?: string | null
-          club_id?: string | null
-          country?: string | null
-          discipline?: string | null
-          display_name?: string | null
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "profiles_club_id_fkey"
-            columns: ["club_id"]
-            isOneToOne: false
-            referencedRelation: "clubs"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
     }
     Functions: {
@@ -4174,6 +4148,18 @@ export type Database = {
       is_survey_target: {
         Args: { _survey_id: string; _user_id: string }
         Returns: boolean
+      }
+      list_club_directory: {
+        Args: never
+        Returns: {
+          avatar_url: string
+          belt_level: string
+          club_id: string
+          country: string
+          discipline: string
+          display_name: string
+          user_id: string
+        }[]
       }
       lookup_athlete_by_code: { Args: { _code: string }; Returns: string }
       mark_chat_thread_read: {
