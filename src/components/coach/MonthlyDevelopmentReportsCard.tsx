@@ -144,20 +144,43 @@ export function MonthlyDevelopmentReportsCard({ athleteId, athleteName }: Props)
 
   return (
     <div className="rounded-xl border border-border bg-card p-4 shadow-card space-y-3">
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex items-center justify-between gap-2 flex-wrap">
         <h4 className="font-semibold text-sm flex items-center gap-2 text-card-foreground">
           <ClipboardList className="h-4 w-4 text-primary" /> {t("monthlyDevReportsTitle")}
         </h4>
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-8 text-xs"
-          onClick={generateLastMonth}
-          disabled={generating}
-        >
-          {generating ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : <Sparkles className="h-3.5 w-3.5 mr-1" />}
-          {t("monthlyDevReportGenerate")}
-        </Button>
+        <div className="flex items-center gap-1.5">
+          <select
+            className="h-8 text-xs rounded-md border border-input bg-background px-2"
+            value={selMonth}
+            onChange={(e) => setSelMonth(Number(e.target.value))}
+            aria-label={t("monthLabel")}
+          >
+            {MONTH_LABEL_KEYS.map((k, i) => (
+              <option key={k} value={i + 1}>{t(k)}</option>
+            ))}
+          </select>
+          <select
+            className="h-8 text-xs rounded-md border border-input bg-background px-2"
+            value={selYear}
+            onChange={(e) => setSelYear(Number(e.target.value))}
+            aria-label={t("yearLabel")}
+          >
+            {Array.from({ length: 4 }).map((_, i) => {
+              const y = new Date().getUTCFullYear() - i;
+              return <option key={y} value={y}>{y}</option>;
+            })}
+          </select>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 text-xs"
+            onClick={generateSelected}
+            disabled={generating}
+          >
+            {generating ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : <Sparkles className="h-3.5 w-3.5 mr-1" />}
+            {t("monthlyDevReportGenerateFor")}
+          </Button>
+        </div>
       </div>
 
       {loading ? (
