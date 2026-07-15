@@ -543,6 +543,7 @@ export default function CoachDashboard() {
 
               {coachClubId && <TeamWeeklyScheduleCard clubId={coachClubId} />}
               {coachClubId && <ClubActivityTypesCard clubId={coachClubId} />}
+              {athletes.length > 0 && <BulkMonthlyReportsCard athletes={athletes as any} />}
 
               {/* Club Members (read-only) — split into athletes and coaches, foldable */}
               {clubAthletes.length > 0 && (() => {
