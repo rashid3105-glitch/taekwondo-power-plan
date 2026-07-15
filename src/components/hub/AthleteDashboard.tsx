@@ -275,7 +275,7 @@ export function AthleteDashboard() {
                   ))}
                   {todaySession.extraCount > 0 && (
                     <li className="text-xs text-white/50 leading-tight">
-                      +{todaySession.extraCount} flere
+                      +{todaySession.extraCount} {t("hubMoreSuffix")}
                     </li>
                   )}
                 </ul>
@@ -284,8 +284,8 @@ export function AthleteDashboard() {
           ) : (
             <EmptyState
               icon={<CalendarX size={24} style={accentStyle} />}
-              text="Ingen træning planlagt i dag"
-              sub="Tjek din træningsplan"
+              text={t("hubNoSessionToday")}
+              sub={t("hubCheckPlan")}
             />
           )}
         </section>
