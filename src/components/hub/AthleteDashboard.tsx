@@ -478,7 +478,7 @@ export function AthleteDashboard() {
           {latestDiary && (
             <div className="space-y-4">
               <p className="text-sm text-white whitespace-pre-wrap">
-                {latestDiary.content || <span className="text-white/50 italic">(tomt opslag)</span>}
+                {latestDiary.content || <span className="text-white/50 italic">{t("hubEmptyEntry")}</span>}
               </p>
 
               {latestDiary.comments.length > 0 && (
