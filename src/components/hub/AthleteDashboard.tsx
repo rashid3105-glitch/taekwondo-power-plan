@@ -345,18 +345,18 @@ export function AthleteDashboard() {
           <div className="flex items-center gap-2 mb-2">
             <NotebookPen className="h-4 w-4" style={accentStyle} />
             <h3 className="text-[11px] font-bold uppercase tracking-wider" style={accentStyle}>
-              Skriv nyt / se seneste opslag
+              {t("diaryWriteOrLatest")}
             </h3>
             {hasCoachComments && (
               <span
-                aria-label="Coach-kommentar"
+                aria-label={t("hubCoachComments")}
                 className="ml-auto h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.7)]"
               />
             )}
           </div>
           <p className="text-[11px] text-white/50">{diaryDateLabel}</p>
           <p className="text-sm text-white mt-1 line-clamp-2">
-            {diaryPreview || <span className="text-white/50 italic">(tomt opslag)</span>}
+            {diaryPreview || <span className="text-white/50 italic">{t("hubEmptyEntry")}</span>}
           </p>
         </section>
       ) : (
@@ -370,12 +370,12 @@ export function AthleteDashboard() {
           <div className="flex items-center gap-2 mb-2">
             <NotebookPen className="h-4 w-4" style={accentStyle} />
             <h3 className="text-[11px] font-bold uppercase tracking-wider" style={accentStyle}>
-              Skriv nyt / se seneste opslag
+              {t("diaryWriteOrLatest")}
             </h3>
           </div>
           <EmptyState
             icon={<Book size={24} style={accentStyle} />}
-            text="Ingen dagbogsopslag endnu"
+            text={t("hubNoDiaryYet")}
           />
         </section>
       )}
