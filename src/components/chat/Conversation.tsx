@@ -241,8 +241,8 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
               );
             });
           })()}
-        </div>
-      </ScrollArea>
+      </div>
+
 
       <MessageComposer threadId={thread.id} />
 
