@@ -473,7 +473,7 @@ export function AthleteDashboard() {
       <Dialog open={diaryOpen} onOpenChange={setDiaryOpen}>
         <DialogContent className="max-w-md bg-[#0a0a0a] border-white/10 text-white">
           <DialogHeader>
-            <DialogTitle className="text-white">{diaryDateLabel || "Dagbogsopslag"}</DialogTitle>
+            <DialogTitle className="text-white">{diaryDateLabel || t("hubDiaryTitleFallback")}</DialogTitle>
           </DialogHeader>
           {latestDiary && (
             <div className="space-y-4">
