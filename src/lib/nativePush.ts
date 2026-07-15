@@ -229,3 +229,29 @@ export async function registerPushToken(userId: string): Promise<void> {
 }
 
 }
+
+export async function unregisterPushToken(userId: string): Promise<void> {
+  if (!userId) return;
+  try {
+    let token: string | undefined;
+    if (isNative()) {
+      try {
+        const result = await FirebaseMessaging.getToken();
+        token = result?.token;
+      } catch {
+        // ignore
+      }
+    }
+    const query = supabase
+      .from("push_subscriptions")
+      .update({ is_active: false })
+      .eq("user_id", userId);
+    if (token) {
+      await query.eq("fcm_token", token);
+    } else {
+      await query.eq("platform", currentPlatform());
+    }
+  } catch (error) {
+    console.error("[unregisterPushToken]", error);
+  }
+}
