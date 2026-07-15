@@ -38,6 +38,12 @@ export function MonthlyDevelopmentReportsCard({ athleteId, athleteName }: Props)
   const [confirmDelete, setConfirmDelete] = useState<ReportRow | null>(null);
   const [deleting, setDeleting] = useState(false);
 
+  // Month/year selector — defaults to previous completed month
+  const _now = new Date();
+  const _prev = new Date(Date.UTC(_now.getUTCFullYear(), _now.getUTCMonth() - 1, 1));
+  const [selMonth, setSelMonth] = useState<number>(_prev.getUTCMonth() + 1);
+  const [selYear, setSelYear] = useState<number>(_prev.getUTCFullYear());
+
   useEffect(() => {
     void load();
     // Clear the unread badge for this coach
