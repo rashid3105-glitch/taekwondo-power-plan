@@ -171,10 +171,8 @@ export async function registerPushToken(userId: string): Promise<void> {
   }
 
   try {
+    console.log("📱 Requesting notification permission...");
 
-  const FirebaseMessaging = await loadMessaging();
-
-  console.log("📱 Requesting notification permission...");
 
   const permission = await FirebaseMessaging.requestPermissions();
 
