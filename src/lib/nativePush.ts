@@ -264,25 +264,25 @@ export async function registerPushToken(userId: string): Promise<void> {
 
 export async function unregisterPushToken(userId: string): Promise<void> {
   if (!userId) return;
+  // Only touch push subscriptions on native platforms, and only for the
+  // specific FCM token that belongs to THIS device. Otherwise we would
+  // deactivate push tokens for the user's other devices (e.g. signing out
+  // on the web would silence their phone).
+  if (!isNative()) return;
   try {
     let token: string | undefined;
-    if (isNative()) {
-      try {
-        const result = await FirebaseMessaging.getToken();
-        token = result?.token;
-      } catch {
-        // ignore
-      }
+    try {
+      const result = await FirebaseMessaging.getToken();
+      token = result?.token;
+    } catch {
+      // ignore
     }
-    const query = supabase
+    if (!token) return; // don't broad-match by platform
+    await supabase
       .from("push_subscriptions")
       .update({ is_active: false })
-      .eq("user_id", userId);
-    if (token) {
-      await query.eq("fcm_token", token);
-    } else {
-      await query.eq("platform", currentPlatform());
-    }
+      .eq("user_id", userId)
+      .eq("fcm_token", token);
   } catch (error) {
     console.error("[unregisterPushToken]", error);
   }
