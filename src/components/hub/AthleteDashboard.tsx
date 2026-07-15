@@ -395,8 +395,8 @@ export function AthleteDashboard() {
             </span>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-white">{totalUnread} ulæste beskeder</p>
-            <p className="text-xs text-white/60">Fra din coach</p>
+            <p className="text-sm font-semibold text-white">{totalUnread} {t("hubUnreadMessages")}</p>
+            <p className="text-xs text-white/60">{t("hubFromCoach")}</p>
           </div>
           <button
             type="button"
@@ -404,14 +404,14 @@ export function AthleteDashboard() {
             className="text-xs font-semibold px-3 py-1.5 rounded-lg"
             style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
           >
-            Se beskeder
+            {t("hubSeeMessages")}
           </button>
         </section>
       ) : (
         <section className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
           <EmptyState
             icon={<MessageCircle size={24} style={accentStyle} />}
-            text="Ingen nye beskeder"
+            text={t("hubNoNewMessages")}
           />
         </section>
       )}
