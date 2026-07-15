@@ -137,7 +137,7 @@ export function AthleteDashboard() {
               ? first.exercises.map((e: any) => e?.name).filter((n: any) => typeof n === "string" && n.trim())
               : [];
             today = {
-              weekdayLabel: WEEKDAYS_DA[todayDow],
+              weekdayLabel: weekdayLong(locale).toUpperCase(),
               type: first.label || first.type || d.focus || first.focus || "Træning",
               tags: tags.slice(0, 3),
               exercises: allExercises.slice(0, 5),
