@@ -10,7 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, Loader2, CheckCircle2, PlayCircle, ChevronRight, Save, Clock } from "lucide-react";
+import { ArrowLeft, Loader2, CheckCircle2, PlayCircle, ChevronRight, Save, Clock, Printer } from "lucide-react";
+import { generateTestSheetsPdf } from "@/lib/testSheetPdf";
 import { TestRunner, type TestRunResult } from "@/components/testing/TestRunner";
 import {
   findTestByDbName,
@@ -27,14 +28,14 @@ import {
 } from "@/lib/teamTestSessionApi";
 import { useOfflinePhysicalTests } from "@/hooks/useOfflinePhysicalTests";
 
-interface AthleteInfo { id: string; name: string }
+interface AthleteInfo { id: string; name: string; birth_date?: string | null }
 
 export default function CoachTestSession() {
   const { sessionId } = useParams<{ sessionId: string }>();
   const { t, locale } = useLanguage();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { activeClubId } = useActiveClub();
+  const { activeClubId, activeMembership } = useActiveClub();
 
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<TeamTestSession | null>(null);
@@ -62,8 +63,20 @@ export default function CoachTestSession() {
         const { data: members } = await supabase.rpc("get_club_member_profiles" as any, { _club_id: activeClubId });
         const nameById = new Map<string, string>();
         ((members as any[]) ?? []).forEach((m) => nameById.set(m.user_id, m.display_name ?? ""));
-        setAthletes(athletes.map((a) => ({ id: a.athlete_id, name: nameById.get(a.athlete_id) ?? "?" }))
-          .sort((a, b) => a.name.localeCompare(b.name)));
+        const ids = athletes.map((a) => a.athlete_id);
+        const bdayById = new Map<string, string | null>();
+        if (ids.length > 0) {
+          const { data: profs } = await supabase
+            .from("profiles")
+            .select("user_id, birth_date")
+            .in("user_id", ids);
+          ((profs as any[]) ?? []).forEach((p) => bdayById.set(p.user_id, p.birth_date ?? null));
+        }
+        setAthletes(athletes.map((a) => ({
+          id: a.athlete_id,
+          name: nameById.get(a.athlete_id) ?? "?",
+          birth_date: bdayById.get(a.athlete_id) ?? null,
+        })).sort((a, b) => a.name.localeCompare(b.name)));
       } else {
         setAthletes(athletes.map((a) => ({ id: a.athlete_id, name: "?" })));
       }
@@ -150,10 +163,39 @@ export default function CoachTestSession() {
             )}
           </div>
         </div>
-        <Button variant={session.status === "completed" ? "outline" : "default"} onClick={handleComplete} className="gap-1.5">
-          <CheckCircle2 className="h-4 w-4" />
-          {session.status === "completed" ? t("ptSessionReopen") : t("ptSessionMarkComplete")}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={async () => {
+              if (athletes.length === 0 || testDefs.length === 0) {
+                toast({ title: t("error"), description: t("ptNoAthletesOrTests") });
+                return;
+              }
+              try {
+                await generateTestSheetsPdf(
+                  athletes.map((a) => ({ id: a.id, name: a.name, birth_date: a.birth_date })),
+                  testDefs,
+                  {
+                    sessionName: session.name,
+                    sessionDate: session.session_date,
+                    clubName: activeMembership?.club_name ?? null,
+                    locale,
+                  },
+                );
+              } catch (e: any) {
+                toast({ title: t("error"), description: e?.message, variant: "destructive" });
+              }
+            }}
+            className="gap-1.5"
+          >
+            <Printer className="h-4 w-4" />
+            {t("ptPrintSheet")}
+          </Button>
+          <Button variant={session.status === "completed" ? "outline" : "default"} onClick={handleComplete} className="gap-1.5">
+            <CheckCircle2 className="h-4 w-4" />
+            {session.status === "completed" ? t("ptSessionReopen") : t("ptSessionMarkComplete")}
+          </Button>
+        </div>
       </div>
 
       <div className="space-y-1.5">
