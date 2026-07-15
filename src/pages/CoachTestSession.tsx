@@ -63,8 +63,20 @@ export default function CoachTestSession() {
         const { data: members } = await supabase.rpc("get_club_member_profiles" as any, { _club_id: activeClubId });
         const nameById = new Map<string, string>();
         ((members as any[]) ?? []).forEach((m) => nameById.set(m.user_id, m.display_name ?? ""));
-        setAthletes(athletes.map((a) => ({ id: a.athlete_id, name: nameById.get(a.athlete_id) ?? "?" }))
-          .sort((a, b) => a.name.localeCompare(b.name)));
+        const ids = athletes.map((a) => a.athlete_id);
+        const bdayById = new Map<string, string | null>();
+        if (ids.length > 0) {
+          const { data: profs } = await supabase
+            .from("profiles")
+            .select("user_id, birth_date")
+            .in("user_id", ids);
+          ((profs as any[]) ?? []).forEach((p) => bdayById.set(p.user_id, p.birth_date ?? null));
+        }
+        setAthletes(athletes.map((a) => ({
+          id: a.athlete_id,
+          name: nameById.get(a.athlete_id) ?? "?",
+          birth_date: bdayById.get(a.athlete_id) ?? null,
+        })).sort((a, b) => a.name.localeCompare(b.name)));
       } else {
         setAthletes(athletes.map((a) => ({ id: a.athlete_id, name: "?" })));
       }
