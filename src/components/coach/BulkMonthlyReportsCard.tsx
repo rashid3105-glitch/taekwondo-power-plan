@@ -88,96 +88,113 @@ export function BulkMonthlyReportsCard({ athletes }: Props) {
   if (sorted.length === 0) return null;
 
   return (
-    <div className="rounded-xl border border-border bg-card p-4 shadow-card space-y-3">
-      <div className="flex items-start justify-between gap-2 flex-wrap">
-        <div className="min-w-0">
-          <h4 className="font-semibold text-sm flex items-center gap-2 text-card-foreground">
-            <ClipboardList className="h-4 w-4 text-primary" /> {t("monthlyDevReportBulkTitle")}
-          </h4>
-          <p className="text-xs text-muted-foreground mt-0.5">{t("monthlyDevReportBulkDesc")}</p>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <select
-            className="h-8 text-xs rounded-md border border-input bg-background px-2"
-            value={selMonth}
-            onChange={(e) => setSelMonth(Number(e.target.value))}
-            aria-label={t("monthLabel")}
-            disabled={running}
+    <div className="rounded-xl border border-border bg-card p-4 shadow-card">
+      <Collapsible open={open} onOpenChange={setOpen} className="space-y-3">
+        <CollapsibleTrigger asChild>
+          <button
+            type="button"
+            className="w-full flex items-start justify-between gap-2 text-left"
+            aria-label={open ? t("collapse") : t("expand")}
           >
-            {MONTH_LABEL_KEYS.map((k, i) => (
-              <option key={k} value={i + 1}>{t(k)}</option>
-            ))}
-          </select>
-          <select
-            className="h-8 text-xs rounded-md border border-input bg-background px-2"
-            value={selYear}
-            onChange={(e) => setSelYear(Number(e.target.value))}
-            aria-label={t("yearLabel")}
-            disabled={running}
-          >
-            {Array.from({ length: 4 }).map((_, i) => {
-              const y = new Date().getUTCFullYear() - i;
-              return <option key={y} value={y}>{y}</option>;
+            <div className="min-w-0">
+              <h4 className="font-semibold text-sm flex items-center gap-2 text-card-foreground">
+                <ClipboardList className="h-4 w-4 text-primary" /> {t("monthlyDevReportBulkTitle")}
+              </h4>
+              <p className="text-xs text-muted-foreground mt-0.5">{t("monthlyDevReportBulkDesc")}</p>
+            </div>
+            <ChevronDown
+              className={cn(
+                "h-4 w-4 text-muted-foreground shrink-0 mt-1 transition-transform",
+                open && "rotate-180",
+              )}
+            />
+          </button>
+        </CollapsibleTrigger>
+
+        <CollapsibleContent className="space-y-3">
+          <div className="flex items-center justify-end gap-1.5">
+            <select
+              className="h-8 text-xs rounded-md border border-input bg-background px-2"
+              value={selMonth}
+              onChange={(e) => setSelMonth(Number(e.target.value))}
+              aria-label={t("monthLabel")}
+              disabled={running}
+            >
+              {MONTH_LABEL_KEYS.map((k, i) => (
+                <option key={k} value={i + 1}>{t(k)}</option>
+              ))}
+            </select>
+            <select
+              className="h-8 text-xs rounded-md border border-input bg-background px-2"
+              value={selYear}
+              onChange={(e) => setSelYear(Number(e.target.value))}
+              aria-label={t("yearLabel")}
+              disabled={running}
+            >
+              {Array.from({ length: 4 }).map((_, i) => {
+                const y = new Date().getUTCFullYear() - i;
+                return <option key={y} value={y}>{y}</option>;
+              })}
+            </select>
+          </div>
+
+          <div className="flex items-center justify-between gap-2">
+            <button
+              type="button"
+              onClick={toggleAll}
+              className="text-xs text-primary hover:underline disabled:opacity-50"
+              disabled={running}
+            >
+              {allSelected ? t("deselectAll") : t("selectAll")}
+            </button>
+            <span className="text-xs text-muted-foreground">
+              {selected.size}/{sorted.length}
+            </span>
+          </div>
+
+          <ul className="max-h-64 overflow-y-auto space-y-1 pr-1">
+            {sorted.map((a) => {
+              const isSel = selected.has(a.user_id);
+              return (
+                <li key={a.user_id}>
+                  <label
+                    className="flex items-center gap-2 rounded-lg border border-border bg-background/40 px-2.5 py-1.5 cursor-pointer hover:bg-accent/30 transition-colors"
+                  >
+                    <Checkbox
+                      checked={isSel}
+                      onCheckedChange={() => toggle(a.user_id)}
+                      disabled={running}
+                    />
+                    <AvatarImg avatarUrl={a.avatar_url ?? null} className="h-6 w-6 rounded-full object-cover" />
+                    <span className="text-xs text-card-foreground truncate flex-1">
+                      {a.display_name || "—"}
+                    </span>
+                  </label>
+                </li>
+              );
             })}
-          </select>
-        </div>
-      </div>
+          </ul>
 
-      <div className="flex items-center justify-between gap-2">
-        <button
-          type="button"
-          onClick={toggleAll}
-          className="text-xs text-primary hover:underline"
-          disabled={running}
-        >
-          {allSelected ? t("deselectAll") : t("selectAll")}
-        </button>
-        <span className="text-xs text-muted-foreground">
-          {selected.size}/{sorted.length}
-        </span>
-      </div>
-
-      <ul className="max-h-64 overflow-y-auto space-y-1 pr-1">
-        {sorted.map((a) => {
-          const isSel = selected.has(a.user_id);
-          return (
-            <li key={a.user_id}>
-              <label
-                className="flex items-center gap-2 rounded-lg border border-border bg-background/40 px-2.5 py-1.5 cursor-pointer hover:bg-accent/30 transition-colors"
-              >
-                <Checkbox
-                  checked={isSel}
-                  onCheckedChange={() => toggle(a.user_id)}
-                  disabled={running}
-                />
-                <AvatarImg avatarUrl={a.avatar_url ?? null} className="h-6 w-6 rounded-full object-cover" />
-                <span className="text-xs text-card-foreground truncate flex-1">
-                  {a.display_name || "—"}
-                </span>
-              </label>
-            </li>
-          );
-        })}
-      </ul>
-
-      <div className="flex items-center justify-between gap-2 pt-1">
-        <span className="text-xs text-muted-foreground">
-          {progress ? `${progress.done}/${progress.total} — ${progress.ok} ✓` : ""}
-        </span>
-        <Button
-          size="sm"
-          className="h-8 text-xs"
-          onClick={runBulk}
-          disabled={running || selected.size === 0}
-        >
-          {running ? (
-            <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" />
-          ) : (
-            <Sparkles className="h-3.5 w-3.5 mr-1" />
-          )}
-          {running ? t("monthlyDevReportBulkProgress") : t("monthlyDevReportGenerateFor")}
-        </Button>
-      </div>
+          <div className="flex items-center justify-between gap-2 pt-1">
+            <span className="text-xs text-muted-foreground">
+              {progress ? `${progress.done}/${progress.total} — ${progress.ok} ✓` : ""}
+            </span>
+            <Button
+              size="sm"
+              className="h-8 text-xs"
+              onClick={runBulk}
+              disabled={running || selected.size === 0}
+            >
+              {running ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" />
+              ) : (
+                <Sparkles className="h-3.5 w-3.5 mr-1" />
+              )}
+              {running ? t("monthlyDevReportBulkProgress") : t("monthlyDevReportGenerateFor")}
+            </Button>
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
     </div>
   );
 }
