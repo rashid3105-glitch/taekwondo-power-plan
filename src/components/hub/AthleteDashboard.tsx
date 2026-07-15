@@ -229,7 +229,7 @@ export function AthleteDashboard() {
             <div className="flex items-center gap-2 min-w-0">
               <Calendar className="h-4 w-4 shrink-0" style={accentStyle} />
               <h3 className="text-[11px] font-bold uppercase tracking-wider truncate" style={accentStyle}>
-                I DAG · {WEEKDAYS_DA[new Date().getDay()]}
+                {t("today").toUpperCase()} · {weekdayLong(locale).toUpperCase()}
               </h3>
             </div>
             <div className="shrink-0 flex items-center gap-1.5">
@@ -237,9 +237,9 @@ export function AthleteDashboard() {
                 type="button"
                 onClick={(e) => { e.stopPropagation(); setSelfLogOpen(true); }}
                 className="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1.5 rounded-lg border border-white/15 bg-white/[0.04] text-white hover:bg-white/[0.08] transition-colors"
-                aria-label="Log egen træning"
+                aria-label={t("hubOwnBtn")}
               >
-                <UserIcon className="h-3 w-3" /> Egen
+                <UserIcon className="h-3 w-3" /> {t("hubOwnBtn")}
               </button>
               {todaySession && (
                 <span
