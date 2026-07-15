@@ -60,7 +60,7 @@ function weekdayLong(locale: string, d: Date = new Date()) {
 export function AthleteDashboard() {
   const { role: activeRole } = useRole();
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const { totalUnread } = useThreads();
 
   const [todaySession, setTodaySession] = useState<TodaySession | null>(null);
