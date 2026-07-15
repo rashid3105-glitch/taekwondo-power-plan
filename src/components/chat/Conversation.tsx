@@ -157,8 +157,12 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
         )}
       </div>
 
-      <ScrollArea className="flex-1">
-        <div ref={scrollRef} className="px-3 py-3 h-full overflow-y-auto">
+      <div
+        ref={scrollRef}
+        className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-3"
+        style={{ WebkitOverflowScrolling: "touch" }}
+      >
+
           {loading && messages.length === 0 && (
             <div className="text-center text-xs text-muted-foreground py-6">Indlæser…</div>
           )}
