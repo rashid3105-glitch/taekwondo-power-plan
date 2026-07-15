@@ -42,7 +42,16 @@ interface LatestDiary {
   comments: DiaryComment[];
 }
 
-const WEEKDAYS_DA = ["SØNDAG", "MANDAG", "TIRSDAG", "ONSDAG", "TORSDAG", "FREDAG", "LØRDAG"];
+const LOCALE_BCP47: Record<string, string> = {
+  en: "en-GB", da: "da-DK", sv: "sv-SE", de: "de-DE", ar: "ar-SA", no: "nb-NO", es: "es-ES",
+};
+function weekdayLong(locale: string, d: Date = new Date()) {
+  try {
+    return new Intl.DateTimeFormat(LOCALE_BCP47[locale] || locale, { weekday: "long" }).format(d);
+  } catch {
+    return d.toLocaleDateString(undefined, { weekday: "long" });
+  }
+}
 
 /**
  * Self-contained athlete home dashboard.
