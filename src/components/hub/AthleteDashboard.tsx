@@ -306,7 +306,7 @@ export function AthleteDashboard() {
           <div className="flex items-center gap-2 mb-2">
             <Trophy className="h-4 w-4" style={accentStyle} />
             <h3 className="text-[11px] font-bold uppercase tracking-wider" style={accentStyle}>
-              Næste begivenhed
+              {t("nextEventTitle")}
             </h3>
           </div>
           {nextCompetition && countdown ? (
@@ -316,16 +316,16 @@ export function AthleteDashboard() {
                 {nextCompetition.dateLabel}{nextCompetition.location ? ` · ${nextCompetition.location}` : ""}
               </p>
               <div className="grid grid-cols-3 gap-2 mt-3">
-                <CountBox value={countdown.days} label="DAGE" accentStyle={accentStyle} />
-                <CountBox value={countdown.hours} label="TIMER" accentStyle={accentStyle} />
-                <CountBox value={countdown.minutes} label="MIN" accentStyle={accentStyle} />
+                <CountBox value={countdown.days} label={t("hubCountDays")} accentStyle={accentStyle} />
+                <CountBox value={countdown.hours} label={t("hubCountHours")} accentStyle={accentStyle} />
+                <CountBox value={countdown.minutes} label={t("hubCountMinutes")} accentStyle={accentStyle} />
               </div>
             </div>
           ) : (
             <EmptyState
               icon={<Trophy size={24} style={accentStyle} />}
-              text="Ingen kommende stævner"
-              sub="Tilføj dit næste stævne"
+              text={t("hubNoUpcomingComp")}
+              sub={t("hubAddNextComp")}
             />
           )}
         </section>
