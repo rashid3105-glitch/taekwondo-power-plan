@@ -64,7 +64,7 @@ export default function Messages() {
   }, [threads, active]);
 
   return (
-    <div className="min-h-[100dvh] bg-background flex flex-col">
+    <div className="h-[100dvh] bg-background flex flex-col overflow-hidden">
       <PageMeta title="Beskeder" description="Chat med din coach og dit hold" noindex />
       <header className="border-b border-border bg-card sticky top-0 z-10 pt-safe-min md:pt-safe">
         <div className="container max-w-5xl mx-auto px-3 py-3 flex items-center justify-between gap-2">
