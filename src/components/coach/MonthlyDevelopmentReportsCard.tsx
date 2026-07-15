@@ -63,15 +63,11 @@ export function MonthlyDevelopmentReportsCard({ athleteId, athleteName }: Props)
     setLoading(false);
   }
 
-  async function generateLastMonth() {
+  async function generateSelected() {
     setGenerating(true);
     try {
-      const now = new Date();
-      const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1));
-      const year = d.getUTCFullYear();
-      const month = d.getUTCMonth() + 1;
       const { data, error } = await supabase.functions.invoke("generate-monthly-report", {
-        body: { athlete_user_id: athleteId, year, month, force: true },
+        body: { athlete_user_id: athleteId, year: selYear, month: selMonth, force: true },
       });
       if (error) throw error;
       toast({ title: t("monthlyDevReportReady") });
