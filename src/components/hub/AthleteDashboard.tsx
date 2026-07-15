@@ -42,7 +42,16 @@ interface LatestDiary {
   comments: DiaryComment[];
 }
 
-const WEEKDAYS_DA = ["SØNDAG", "MANDAG", "TIRSDAG", "ONSDAG", "TORSDAG", "FREDAG", "LØRDAG"];
+const LOCALE_BCP47: Record<string, string> = {
+  en: "en-GB", da: "da-DK", sv: "sv-SE", de: "de-DE", ar: "ar-SA", no: "nb-NO", es: "es-ES",
+};
+function weekdayLong(locale: string, d: Date = new Date()) {
+  try {
+    return new Intl.DateTimeFormat(LOCALE_BCP47[locale] || locale, { weekday: "long" }).format(d);
+  } catch {
+    return d.toLocaleDateString(undefined, { weekday: "long" });
+  }
+}
 
 /**
  * Self-contained athlete home dashboard.
@@ -51,7 +60,7 @@ const WEEKDAYS_DA = ["SØNDAG", "MANDAG", "TIRSDAG", "ONSDAG", "TORSDAG", "FREDA
 export function AthleteDashboard() {
   const { role: activeRole } = useRole();
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const { totalUnread } = useThreads();
 
   const [todaySession, setTodaySession] = useState<TodaySession | null>(null);
@@ -128,7 +137,7 @@ export function AthleteDashboard() {
               ? first.exercises.map((e: any) => e?.name).filter((n: any) => typeof n === "string" && n.trim())
               : [];
             today = {
-              weekdayLabel: WEEKDAYS_DA[todayDow],
+              weekdayLabel: weekdayLong(locale).toUpperCase(),
               type: first.label || first.type || d.focus || first.focus || "Træning",
               tags: tags.slice(0, 3),
               exercises: allExercises.slice(0, 5),
@@ -220,7 +229,7 @@ export function AthleteDashboard() {
             <div className="flex items-center gap-2 min-w-0">
               <Calendar className="h-4 w-4 shrink-0" style={accentStyle} />
               <h3 className="text-[11px] font-bold uppercase tracking-wider truncate" style={accentStyle}>
-                I DAG · {WEEKDAYS_DA[new Date().getDay()]}
+                {t("today").toUpperCase()} · {weekdayLong(locale).toUpperCase()}
               </h3>
             </div>
             <div className="shrink-0 flex items-center gap-1.5">
@@ -228,9 +237,9 @@ export function AthleteDashboard() {
                 type="button"
                 onClick={(e) => { e.stopPropagation(); setSelfLogOpen(true); }}
                 className="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1.5 rounded-lg border border-white/15 bg-white/[0.04] text-white hover:bg-white/[0.08] transition-colors"
-                aria-label="Log egen træning"
+                aria-label={t("hubOwnBtn")}
               >
-                <UserIcon className="h-3 w-3" /> Egen
+                <UserIcon className="h-3 w-3" /> {t("hubOwnBtn")}
               </button>
               {todaySession && (
                 <span
@@ -266,7 +275,7 @@ export function AthleteDashboard() {
                   ))}
                   {todaySession.extraCount > 0 && (
                     <li className="text-xs text-white/50 leading-tight">
-                      +{todaySession.extraCount} flere
+                      +{todaySession.extraCount} {t("hubMoreSuffix")}
                     </li>
                   )}
                 </ul>
@@ -275,8 +284,8 @@ export function AthleteDashboard() {
           ) : (
             <EmptyState
               icon={<CalendarX size={24} style={accentStyle} />}
-              text="Ingen træning planlagt i dag"
-              sub="Tjek din træningsplan"
+              text={t("hubNoSessionToday")}
+              sub={t("hubCheckPlan")}
             />
           )}
         </section>
@@ -297,7 +306,7 @@ export function AthleteDashboard() {
           <div className="flex items-center gap-2 mb-2">
             <Trophy className="h-4 w-4" style={accentStyle} />
             <h3 className="text-[11px] font-bold uppercase tracking-wider" style={accentStyle}>
-              Næste begivenhed
+              {t("nextEventTitle")}
             </h3>
           </div>
           {nextCompetition && countdown ? (
@@ -307,16 +316,16 @@ export function AthleteDashboard() {
                 {nextCompetition.dateLabel}{nextCompetition.location ? ` · ${nextCompetition.location}` : ""}
               </p>
               <div className="grid grid-cols-3 gap-2 mt-3">
-                <CountBox value={countdown.days} label="DAGE" accentStyle={accentStyle} />
-                <CountBox value={countdown.hours} label="TIMER" accentStyle={accentStyle} />
-                <CountBox value={countdown.minutes} label="MIN" accentStyle={accentStyle} />
+                <CountBox value={countdown.days} label={t("hubCountDays")} accentStyle={accentStyle} />
+                <CountBox value={countdown.hours} label={t("hubCountHours")} accentStyle={accentStyle} />
+                <CountBox value={countdown.minutes} label={t("hubCountMinutes")} accentStyle={accentStyle} />
               </div>
             </div>
           ) : (
             <EmptyState
               icon={<Trophy size={24} style={accentStyle} />}
-              text="Ingen kommende stævner"
-              sub="Tilføj dit næste stævne"
+              text={t("hubNoUpcomingComp")}
+              sub={t("hubAddNextComp")}
             />
           )}
         </section>
@@ -336,18 +345,18 @@ export function AthleteDashboard() {
           <div className="flex items-center gap-2 mb-2">
             <NotebookPen className="h-4 w-4" style={accentStyle} />
             <h3 className="text-[11px] font-bold uppercase tracking-wider" style={accentStyle}>
-              Skriv nyt / se seneste opslag
+              {t("diaryWriteOrLatest")}
             </h3>
             {hasCoachComments && (
               <span
-                aria-label="Coach-kommentar"
+                aria-label={t("hubCoachComments")}
                 className="ml-auto h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.7)]"
               />
             )}
           </div>
           <p className="text-[11px] text-white/50">{diaryDateLabel}</p>
           <p className="text-sm text-white mt-1 line-clamp-2">
-            {diaryPreview || <span className="text-white/50 italic">(tomt opslag)</span>}
+            {diaryPreview || <span className="text-white/50 italic">{t("hubEmptyEntry")}</span>}
           </p>
         </section>
       ) : (
@@ -361,12 +370,12 @@ export function AthleteDashboard() {
           <div className="flex items-center gap-2 mb-2">
             <NotebookPen className="h-4 w-4" style={accentStyle} />
             <h3 className="text-[11px] font-bold uppercase tracking-wider" style={accentStyle}>
-              Skriv nyt / se seneste opslag
+              {t("diaryWriteOrLatest")}
             </h3>
           </div>
           <EmptyState
             icon={<Book size={24} style={accentStyle} />}
-            text="Ingen dagbogsopslag endnu"
+            text={t("hubNoDiaryYet")}
           />
         </section>
       )}
@@ -386,8 +395,8 @@ export function AthleteDashboard() {
             </span>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-white">{totalUnread} ulæste beskeder</p>
-            <p className="text-xs text-white/60">Fra din coach</p>
+            <p className="text-sm font-semibold text-white">{totalUnread} {t("hubUnreadMessages")}</p>
+            <p className="text-xs text-white/60">{t("hubFromCoach")}</p>
           </div>
           <button
             type="button"
@@ -395,14 +404,14 @@ export function AthleteDashboard() {
             className="text-xs font-semibold px-3 py-1.5 rounded-lg"
             style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
           >
-            Se beskeder
+            {t("hubSeeMessages")}
           </button>
         </section>
       ) : (
         <section className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
           <EmptyState
             icon={<MessageCircle size={24} style={accentStyle} />}
-            text="Ingen nye beskeder"
+            text={t("hubNoNewMessages")}
           />
         </section>
       )}
@@ -417,7 +426,7 @@ export function AthleteDashboard() {
               className="rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white"
             >
               <ClipboardList className="h-4 w-4" style={accentStyle} />
-              Testning
+              {t("ptTestingButton")}
             </button>
             <button
               type="button"
@@ -425,7 +434,7 @@ export function AthleteDashboard() {
               className="rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white"
             >
               <Video className="h-4 w-4" style={accentStyle} />
-              Video-analyse
+              {t("hubVideoAnalysis")}
             </button>
             <button
               type="button"
@@ -446,7 +455,7 @@ export function AthleteDashboard() {
               style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
             >
               <BarChart3 className="h-4 w-4" />
-              Fremgang
+              {t("progress")}
             </button>
             <button
               type="button"
@@ -454,7 +463,7 @@ export function AthleteDashboard() {
               className="rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white"
             >
               <Video className="h-4 w-4" style={accentStyle} />
-              Video-analyse
+              {t("hubVideoAnalysis")}
             </button>
           </>
         )}
@@ -464,18 +473,18 @@ export function AthleteDashboard() {
       <Dialog open={diaryOpen} onOpenChange={setDiaryOpen}>
         <DialogContent className="max-w-md bg-[#0a0a0a] border-white/10 text-white">
           <DialogHeader>
-            <DialogTitle className="text-white">{diaryDateLabel || "Dagbogsopslag"}</DialogTitle>
+            <DialogTitle className="text-white">{diaryDateLabel || t("hubDiaryTitleFallback")}</DialogTitle>
           </DialogHeader>
           {latestDiary && (
             <div className="space-y-4">
               <p className="text-sm text-white whitespace-pre-wrap">
-                {latestDiary.content || <span className="text-white/50 italic">(tomt opslag)</span>}
+                {latestDiary.content || <span className="text-white/50 italic">{t("hubEmptyEntry")}</span>}
               </p>
 
               {latestDiary.comments.length > 0 && (
                 <div className="space-y-2 pt-2 border-t border-white/10">
                   <p className="text-[11px] font-bold uppercase tracking-wider text-white/50">
-                    Coach-kommentarer
+                    {t("hubCoachComments")}
                   </p>
                   {latestDiary.comments.map((c) => (
                     <div
@@ -499,7 +508,7 @@ export function AthleteDashboard() {
                 className="w-full rounded-xl p-3 font-semibold text-sm"
                 style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
               >
-                Åbn i dagbog
+                {t("hubOpenInDiary")}
               </button>
             </div>
           )}
