@@ -426,7 +426,7 @@ export function AthleteDashboard() {
               className="rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white"
             >
               <ClipboardList className="h-4 w-4" style={accentStyle} />
-              Testning
+              {t("ptTestingButton")}
             </button>
             <button
               type="button"
@@ -434,7 +434,7 @@ export function AthleteDashboard() {
               className="rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white"
             >
               <Video className="h-4 w-4" style={accentStyle} />
-              Video-analyse
+              {t("hubVideoAnalysis")}
             </button>
             <button
               type="button"
@@ -455,7 +455,7 @@ export function AthleteDashboard() {
               style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
             >
               <BarChart3 className="h-4 w-4" />
-              Fremgang
+              {t("progress")}
             </button>
             <button
               type="button"
@@ -463,7 +463,7 @@ export function AthleteDashboard() {
               className="rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white"
             >
               <Video className="h-4 w-4" style={accentStyle} />
-              Video-analyse
+              {t("hubVideoAnalysis")}
             </button>
           </>
         )}
