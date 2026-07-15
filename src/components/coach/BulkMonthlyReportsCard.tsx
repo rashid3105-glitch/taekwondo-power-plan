@@ -3,9 +3,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useToast } from "@/hooks/use-toast";
 import { AvatarImg } from "@/components/AvatarImg";
-import { ClipboardList, Loader2, Sparkles } from "lucide-react";
+import { ChevronDown, ClipboardList, Loader2, Sparkles } from "lucide-react";
 
 interface AthleteLite {
   user_id: string;
