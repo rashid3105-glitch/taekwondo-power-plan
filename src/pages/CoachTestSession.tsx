@@ -163,10 +163,39 @@ export default function CoachTestSession() {
             )}
           </div>
         </div>
-        <Button variant={session.status === "completed" ? "outline" : "default"} onClick={handleComplete} className="gap-1.5">
-          <CheckCircle2 className="h-4 w-4" />
-          {session.status === "completed" ? t("ptSessionReopen") : t("ptSessionMarkComplete")}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={async () => {
+              if (athletes.length === 0 || testDefs.length === 0) {
+                toast({ title: t("error"), description: t("ptNoAthletesOrTests") });
+                return;
+              }
+              try {
+                await generateTestSheetsPdf(
+                  athletes.map((a) => ({ id: a.id, name: a.name, birth_date: a.birth_date })),
+                  testDefs,
+                  {
+                    sessionName: session.name,
+                    sessionDate: session.session_date,
+                    clubName: activeMembership?.club_name ?? null,
+                    locale,
+                  },
+                );
+              } catch (e: any) {
+                toast({ title: t("error"), description: e?.message, variant: "destructive" });
+              }
+            }}
+            className="gap-1.5"
+          >
+            <Printer className="h-4 w-4" />
+            {t("ptPrintSheet")}
+          </Button>
+          <Button variant={session.status === "completed" ? "outline" : "default"} onClick={handleComplete} className="gap-1.5">
+            <CheckCircle2 className="h-4 w-4" />
+            {session.status === "completed" ? t("ptSessionReopen") : t("ptSessionMarkComplete")}
+          </Button>
+        </div>
       </div>
 
       <div className="space-y-1.5">
