@@ -508,7 +508,7 @@ export function AthleteDashboard() {
                 className="w-full rounded-xl p-3 font-semibold text-sm"
                 style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
               >
-                Åbn i dagbog
+                {t("hubOpenInDiary")}
               </button>
             </div>
           )}
