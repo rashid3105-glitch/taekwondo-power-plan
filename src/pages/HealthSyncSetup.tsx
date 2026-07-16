@@ -11,7 +11,7 @@ import { haptics } from "@/lib/haptics";
 const ICLOUD_SHORTCUT_URL = "https://www.icloud.com/shortcuts/df745b596cd54e968913d6b403339fd6";
 const TOTAL_STEPS = 5;
 
-import { useIsAdmin } from "@/hooks/useIsAdmin";
+// Admin gate fjernet — Apple Health er nu åben for alle brugere.
 
 export default function HealthSyncSetup() {
   const navigate = useNavigate();
