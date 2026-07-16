@@ -32,6 +32,8 @@
 	<string>Brug Face ID til hurtigt at logge ind på Sportstalent.</string>
 	<key>NSHealthShareUsageDescription</key>
 	<string>Sportstalent læser dine sundhedsdata (søvn, puls, HRV og træning) fra Apple Health for at vise din restitution og dokumentere din træning.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Sportstalent anmoder om HealthKit-tilladelser som en del af integrationen med Apple Health. Appen skriver ikke sundhedsdata til Apple Health.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Sportstalent gemmer måltidsbilleder i dit fotobibliotek.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
