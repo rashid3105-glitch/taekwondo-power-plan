@@ -2,9 +2,9 @@ import Foundation
 import Capacitor
 import HealthKit
 
-// Local Capacitor 8 SPM plugin bridging HealthKit read access to the JS layer.
-// The App target registers this package instance from MainViewController so the
-// Swift package is explicitly loaded in the native Capacitor plugin registry.
+// Local Capacitor 8 App-target plugin bridging HealthKit read access to the JS layer.
+// MainViewController explicitly registers this instance in Capacitor's native
+// runtime registry, avoiding legacy Objective-C CAP_PLUGIN discovery.
 @objc(SportstalentHealthKit)
 public class SportstalentHealthKit: CAPPlugin, CAPBridgedPlugin {
 
