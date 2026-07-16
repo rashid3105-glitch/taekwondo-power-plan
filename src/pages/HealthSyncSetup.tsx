@@ -11,13 +11,12 @@ import { haptics } from "@/lib/haptics";
 const ICLOUD_SHORTCUT_URL = "https://www.icloud.com/shortcuts/df745b596cd54e968913d6b403339fd6";
 const TOTAL_STEPS = 5;
 
-import { useIsAdmin } from "@/hooks/useIsAdmin";
+// Admin gate fjernet — Apple Health er nu åben for alle brugere.
 
 export default function HealthSyncSetup() {
   const navigate = useNavigate();
   const { t } = useLanguage();
-  // TODO: health-sync skjult indtil native HealthKit (RN) er klar — vis for admin indtil da.
-  const { isAdmin: canSeeHealthSync, loading: adminLoading } = useIsAdmin();
+  // Admin gate fjernet — Apple Health / Shortcut-guide er nu åben for alle brugere.
   const [step, setStep] = useState(0);
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState<"idle" | "success" | "timeout">("idle");
@@ -31,9 +30,6 @@ export default function HealthSyncSetup() {
     })();
   }, [navigate]);
 
-  useEffect(() => {
-    if (!adminLoading && !canSeeHealthSync) navigate("/dashboard", { replace: true });
-  }, [adminLoading, canSeeHealthSync, navigate]);
 
   function goNext() {
     haptics.tap();

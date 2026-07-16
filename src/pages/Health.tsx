@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Activity, Footprints, Info, FileDown, ChevronDown } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PageMeta } from "@/components/PageMeta";
-import { useIsAdmin } from "@/hooks/useIsAdmin";
+import { isHealthKitAvailable, requestHealthKitPermission, syncHealthKit } from "@/lib/healthkit";
 import {
   Bar, LineChart, Line, ComposedChart,
   ReferenceArea, ReferenceLine,
@@ -35,17 +35,63 @@ interface DailyRow {
 export default function Health() {
   const navigate = useNavigate();
   const { t, locale } = useLanguage();
-  // TODO: health-sync skjult indtil native HealthKit (RN) er klar — vis for admin indtil da.
-  const { isAdmin: canSeeHealthSync, loading: adminLoading } = useIsAdmin();
-  useEffect(() => {
-    if (!adminLoading && !canSeeHealthSync) navigate("/dashboard", { replace: true });
-  }, [adminLoading, canSeeHealthSync, navigate]);
+  // Apple Health (HealthKit) er nu live: siden er åben for alle brugere,
+  // ikke længere admin-gated. Shortcut-vejen findes stadig som fallback.
   const [loaded, setLoaded] = useState(false);
   const [steps, setSteps] = useState<DailyRow[]>([]);
   const [reporting, setReporting] = useState(false);
   const [resyncing, setResyncing] = useState(false);
   const [show, setShow] = useState({ steps: true, sleep: true, rhr: true, hrv: true });
   const [whyOpen, setWhyOpen] = useState(false);
+  const [hkConnecting, setHkConnecting] = useState(false);
+  const [hkLastSync, setHkLastSync] = useState<string | null>(null);
+  const [hkConnected, setHkConnected] = useState(false);
+  const hkAvailable = isHealthKitAvailable();
+
+  useEffect(() => {
+    (async () => {
+      const { data: userRes } = await supabase.auth.getUser();
+      if (!userRes.user) return;
+      const { data } = await supabase
+        .from("wearable_connections")
+        .select("status,last_sync_at")
+        .eq("user_id", userRes.user.id)
+        .eq("provider", "apple_health")
+        .maybeSingle();
+      if (data) {
+        setHkConnected(data.status === "connected");
+        setHkLastSync(data.last_sync_at ?? null);
+      }
+    })();
+  }, []);
+
+  async function connectAppleHealth() {
+    if (hkConnecting) return;
+    setHkConnecting(true);
+    haptics.tap();
+    try {
+      const authorized = await requestHealthKitPermission();
+      if (!authorized) {
+        toast.error(t("healthAppleHealthDenied"));
+        return;
+      }
+      const res = await syncHealthKit({ force: true });
+      if (!res.ok) {
+        toast.error(t("healthAppleHealthSyncFailed"));
+        return;
+      }
+      setHkConnected(true);
+      setHkLastSync(new Date().toISOString());
+      toast.success(t("healthAppleHealthConnected"));
+      setTimeout(() => window.location.reload(), 800);
+    } catch (e) {
+      console.error(e);
+      toast.error(t("healthAppleHealthSyncFailed"));
+    } finally {
+      setHkConnecting(false);
+    }
+  }
+
 
   async function forceResync() {
     if (resyncing) return;
@@ -445,6 +491,39 @@ export default function Health() {
         </div>
       </div>
 
+      {/* Apple Health connection (iOS native only) */}
+      {hkAvailable && (
+        <Card className="mb-4 border-primary/30 bg-primary/5">
+          <CardContent className="pt-4 pb-4 flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-primary/10">
+              <Heart className="h-5 w-5 text-primary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-semibold">
+                {hkConnected ? t("healthAppleHealthConnected") : t("healthConnectAppleHealth")}
+              </div>
+              {hkConnected && hkLastSync && (
+                <div className="text-xs text-muted-foreground">
+                  {new Date(hkLastSync).toLocaleString()}
+                </div>
+              )}
+            </div>
+            <Button
+              size="sm"
+              variant={hkConnected ? "outline" : "default"}
+              onClick={connectAppleHealth}
+              disabled={hkConnecting}
+              className="h-11 sm:h-9"
+            >
+              {hkConnecting
+                ? t("healthAppleHealthSyncing")
+                : hkConnected
+                  ? t("healthForceSync")
+                  : t("healthConnectAppleHealth")}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
 
       {/* Why these metrics matter */}
