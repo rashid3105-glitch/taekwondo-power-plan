@@ -18,6 +18,10 @@ public class SportstalentHealthKit: CAPPlugin, CAPBridgedPlugin {
         CAPPluginMethod(name: "queryWorkouts", returnType: CAPPluginReturnPromise),
     ]
 
+    public override init() {
+        super.init()
+    }
+
     private let store = HKHealthStore()
 
     // MARK: - Type mapping (whitelist; do not accept arbitrary strings from JS)
