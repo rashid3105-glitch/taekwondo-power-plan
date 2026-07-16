@@ -242,8 +242,8 @@ const AnimatedRoutes = () => {
         <Route path="/hold/moduler" element={<Page><CoachModules /></Page>} />
         <Route path="/onboarding" element={<Page><Onboarding /></Page>} />
         <Route path="/health" element={<Page><Health /></Page>} />
-        <Route path="/health/sync-setup" element={<Page><HealthSyncSetup /></Page>} />
-        <Route path="/health/sync-setup-android" element={<Page><HealthSyncSetupAndroid /></Page>} />
+        <Route path="/health/sync-setup" element={<Navigate to="/health" replace />} />
+        <Route path="/health/sync-setup-android" element={<Navigate to="/health" replace />} />
         <Route path="/wearables" element={<Navigate to="/health" replace />} />
         <Route path="/wearables/sync" element={<Navigate to="/health" replace />} />
         <Route path="/dashboard" element={<Page><Dashboard /></Page>} />
