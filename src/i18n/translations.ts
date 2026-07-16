@@ -21193,6 +21193,8 @@ const translations = {
     changelog_2026_07_14: "14. juli 2026",
     changelog_2026_07_13: "13. juli 2026",
     changelogEntry174: "Fleksibilitetstester oppdatert: Sidesplitt, Spagat høyre og Spagat venstre — måles i cm fra skrittet til gulvet.",
+    changelog_2026_07_16: "16. juli 2026",
+    changelogEntry176: "Apple Health-integrasjon: automatisk import av søvn, puls, HRV og treningsøkter.",
     changelogEntry175: "Testøkter: skriv ut personlige testark (PDF) for utfylling for hånd i hallen.",
     changelogEntry173: "Rettet: trykk på dagboksvarsel åpner nå atlettens dagbok.",
     changelogEntry172: "Testbiblioteket utvidet med 15 nye fysiske tester og kategorien bevegelighet (planke, sideplanke V/H, 10/20 m sprint, T-test, jump lunges, 3-runder kontinuerlige spark, pull-ups maks, 60 sek armhevinger, Yo-Yo IR1, Wingate 5 m shuttle og sit-and-reach).",
