@@ -30,6 +30,9 @@ interface DailyRow {
   hrv_rmssd: number | null;
   baseline_hr_7d: number | null;
   baseline_hrv_7d: number | null;
+  heart_rate_avg: number | null;
+  active_energy_kcal: number | null;
+  workout_count: number | null;
 }
 
 export default function Health() {
@@ -295,7 +298,7 @@ export default function Health() {
     // is briefly behind).
     const [summaryRes, healthRes] = await Promise.all([
       supabase.from("wearable_daily_summary")
-        .select("summary_date,steps,sleep_minutes,resting_hr,hrv_rmssd,baseline_hr_7d,baseline_hrv_7d")
+        .select("summary_date,steps,sleep_minutes,resting_hr,hrv_rmssd,baseline_hr_7d,baseline_hrv_7d,heart_rate_avg,active_energy_kcal,workout_count")
         .eq("user_id", user.id)
         .gte("summary_date", since)
         .order("summary_date", { ascending: true }),
@@ -327,6 +330,9 @@ export default function Health() {
         hrv_rmssd: r.hrv_rmssd as number | null,
         baseline_hr_7d: r.baseline_hr_7d as number | null,
         baseline_hrv_7d: r.baseline_hrv_7d as number | null,
+        heart_rate_avg: (r as any).heart_rate_avg as number | null,
+        active_energy_kcal: (r as any).active_energy_kcal as number | null,
+        workout_count: (r as any).workout_count as number | null,
       });
     }
     for (const h of healthRes.data ?? []) {
@@ -334,13 +340,12 @@ export default function Health() {
         summary_date: h.date,
         steps: null, sleep_minutes: null, resting_hr: null, hrv_rmssd: null,
         baseline_hr_7d: null, baseline_hrv_7d: null,
+        heart_rate_avg: null, active_energy_kcal: null, workout_count: null,
       };
       const hSteps = h.steps != null ? Number(h.steps) : null;
       const hSleepMin = h.sleep_hours != null ? Math.round(Number(h.sleep_hours) * 60) : null;
       byDate.set(h.date, {
         ...existing,
-        // Prefer the bigger of the two so a fresher iPhone value never gets
-        // hidden behind a stale 0 in the summary table.
         steps: Math.max(existing.steps ?? 0, hSteps && hSteps > 0 ? hSteps : 0) || null,
         sleep_minutes: existing.sleep_minutes ?? (hSleepMin && hSleepMin > 0 ? hSleepMin : null),
         resting_hr: existing.resting_hr ?? (h.heart_rate_avg as number | null),
@@ -355,7 +360,10 @@ export default function Health() {
           (r.steps != null && r.steps > 0) ||
           (r.sleep_minutes != null && r.sleep_minutes > 0) ||
           r.resting_hr != null ||
-          r.hrv_rmssd != null,
+          r.hrv_rmssd != null ||
+          r.heart_rate_avg != null ||
+          (r.active_energy_kcal != null && r.active_energy_kcal > 0) ||
+          (r.workout_count != null && r.workout_count > 0),
       )
       .sort((a, b) => a.summary_date.localeCompare(b.summary_date));
     setSteps(merged);
@@ -430,6 +438,18 @@ export default function Health() {
   const hasRhr = steps.some(r => r.resting_hr != null);
   const hasHrv = steps.some(r => r.hrv_rmssd != null);
   const hasSteps = steps.some(r => r.steps != null && r.steps > 0);
+
+  // Additional HealthKit-only readings: average heart rate, active energy, workouts
+  const hrAvgLast = lastNonNull("heart_rate_avg");
+  const hrAvg7 = avgLast7("heart_rate_avg");
+  const kcalLast = lastNonNull("active_energy_kcal");
+  const kcal7Total = steps.slice(-7).reduce((a, r) => a + (r.active_energy_kcal ? Number(r.active_energy_kcal) : 0), 0);
+  const workoutsToday = steps.length ? Number(steps[steps.length - 1].workout_count ?? 0) : 0;
+  const workouts7 = steps.slice(-7).reduce((a, r) => a + (r.workout_count ? Number(r.workout_count) : 0), 0);
+  const hasHrAvg = steps.some(r => r.heart_rate_avg != null);
+  const hasEnergy = steps.some(r => r.active_energy_kcal != null && Number(r.active_energy_kcal) > 0);
+  const hasWorkouts = steps.some(r => r.workout_count != null && Number(r.workout_count) > 0);
+  const hasExtra = hasHrAvg || hasEnergy || hasWorkouts;
 
   // Build normalized 7-day overview chart data (0-100 per metric)
   const last7 = useMemo(() => steps.slice(-7), [steps]);
@@ -621,6 +641,48 @@ export default function Health() {
         </CardContent>
       </Card>
 
+
+      {/* Heart rate · Active energy · Workouts (HealthKit) */}
+      {hasExtra && (
+        <Card className="mb-4">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Heart className="h-4 w-4 text-red-500 fill-red-500" /> {t("healthExtraTitle" as any) || "Puls, energi & træning"}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-center">
+              <Stat
+                label={t("healthHrAvgLast" as any) || "Puls (seneste)"}
+                value={hrAvgLast != null ? `${Math.round(hrAvgLast)} bpm` : "—"}
+              />
+              <Stat
+                label={t("healthHrAvg7" as any) || "Puls · 7d gns"}
+                value={hrAvg7 != null ? `${Math.round(hrAvg7)} bpm` : "—"}
+              />
+              <Stat
+                label={t("healthEnergyLast" as any) || "Aktiv energi (seneste)"}
+                value={kcalLast != null ? `${Math.round(kcalLast)} kcal` : "—"}
+              />
+              <Stat
+                label={t("healthEnergy7" as any) || "Energi · 7d total"}
+                value={`${Math.round(kcal7Total)} kcal`}
+              />
+              <Stat
+                label={t("healthWorkoutsToday" as any) || "Træninger i dag"}
+                value={String(workoutsToday)}
+              />
+              <Stat
+                label={t("healthWorkouts7" as any) || "Træninger · 7 dage"}
+                value={String(workouts7)}
+              />
+            </div>
+            <p className="mt-3 text-[11px] text-muted-foreground">
+              {t("healthExtraNote" as any) || "Fra Apple Health / Apple Watch — puls, aktiv energi og registrerede træninger."}
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Steps */}
       <Card className="mb-4">
