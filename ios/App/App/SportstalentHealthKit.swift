@@ -236,7 +236,7 @@ public class SportstalentHealthKit: CAPPlugin {
         case .traditionalStrengthTraining, .functionalStrengthTraining: return "strength"
         case .highIntensityIntervalTraining: return "hiit"
         case .yoga: return "yoga"
-        case .martialArts, .taekwondo, .kickboxing, .boxing: return "martial_arts"
+        case .martialArts, .kickboxing, .boxing: return "martial_arts"
         case .soccer: return "soccer"
         case .basketball: return "basketball"
         case .tennis: return "tennis"
