@@ -35,11 +35,8 @@ interface DailyRow {
 export default function Health() {
   const navigate = useNavigate();
   const { t, locale } = useLanguage();
-  // TODO: health-sync skjult indtil native HealthKit (RN) er klar — vis for admin indtil da.
-  const { isAdmin: canSeeHealthSync, loading: adminLoading } = useIsAdmin();
-  useEffect(() => {
-    if (!adminLoading && !canSeeHealthSync) navigate("/dashboard", { replace: true });
-  }, [adminLoading, canSeeHealthSync, navigate]);
+  // Apple Health (HealthKit) er nu live: siden er åben for alle brugere,
+  // ikke længere admin-gated. Shortcut-vejen findes stadig som fallback.
   const [loaded, setLoaded] = useState(false);
   const [steps, setSteps] = useState<DailyRow[]>([]);
   const [reporting, setReporting] = useState(false);
