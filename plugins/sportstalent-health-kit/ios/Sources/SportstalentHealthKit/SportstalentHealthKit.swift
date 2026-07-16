@@ -2,9 +2,9 @@ import Foundation
 import Capacitor
 import HealthKit
 
-// Local Capacitor plugin bridging HealthKit read access to the JS layer.
-// Registered from JS as `registerPlugin<SportstalentHealthKit>("SportstalentHealthKit")`.
-// Exposed methods are declared via CAPBridgedPlugin below and registered from MainViewController.
+// Local Capacitor 8 SPM plugin bridging HealthKit read access to the JS layer.
+// The Capacitor CLI discovers this package from package.json, adds its class to
+// capacitor.config.json packageClassList, and the native bridge registers it at runtime.
 @objc(SportstalentHealthKit)
 public class SportstalentHealthKit: CAPPlugin, CAPBridgedPlugin {
 
