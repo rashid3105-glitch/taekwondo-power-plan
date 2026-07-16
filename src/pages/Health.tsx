@@ -642,6 +642,48 @@ export default function Health() {
       </Card>
 
 
+      {/* Heart rate · Active energy · Workouts (HealthKit) */}
+      {hasExtra && (
+        <Card className="mb-4">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Heart className="h-4 w-4 text-red-500 fill-red-500" /> {t("healthExtraTitle" as any) || "Puls, energi & træning"}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-center">
+              <Stat
+                label={t("healthHrAvgLast" as any) || "Puls (seneste)"}
+                value={hrAvgLast != null ? `${Math.round(hrAvgLast)} bpm` : "—"}
+              />
+              <Stat
+                label={t("healthHrAvg7" as any) || "Puls · 7d gns"}
+                value={hrAvg7 != null ? `${Math.round(hrAvg7)} bpm` : "—"}
+              />
+              <Stat
+                label={t("healthEnergyLast" as any) || "Aktiv energi (seneste)"}
+                value={kcalLast != null ? `${Math.round(kcalLast)} kcal` : "—"}
+              />
+              <Stat
+                label={t("healthEnergy7" as any) || "Energi · 7d total"}
+                value={`${Math.round(kcal7Total)} kcal`}
+              />
+              <Stat
+                label={t("healthWorkoutsToday" as any) || "Træninger i dag"}
+                value={String(workoutsToday)}
+              />
+              <Stat
+                label={t("healthWorkouts7" as any) || "Træninger · 7 dage"}
+                value={String(workouts7)}
+              />
+            </div>
+            <p className="mt-3 text-[11px] text-muted-foreground">
+              {t("healthExtraNote" as any) || "Fra Apple Health / Apple Watch — puls, aktiv energi og registrerede træninger."}
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Steps */}
       <Card className="mb-4">
         <CardHeader className="pb-3">
