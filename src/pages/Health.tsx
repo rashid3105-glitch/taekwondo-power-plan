@@ -439,6 +439,18 @@ export default function Health() {
   const hasHrv = steps.some(r => r.hrv_rmssd != null);
   const hasSteps = steps.some(r => r.steps != null && r.steps > 0);
 
+  // Additional HealthKit-only readings: average heart rate, active energy, workouts
+  const hrAvgLast = lastNonNull("heart_rate_avg");
+  const hrAvg7 = avgLast7("heart_rate_avg");
+  const kcalLast = lastNonNull("active_energy_kcal");
+  const kcal7Total = steps.slice(-7).reduce((a, r) => a + (r.active_energy_kcal ? Number(r.active_energy_kcal) : 0), 0);
+  const workoutsToday = steps.length ? Number(steps[steps.length - 1].workout_count ?? 0) : 0;
+  const workouts7 = steps.slice(-7).reduce((a, r) => a + (r.workout_count ? Number(r.workout_count) : 0), 0);
+  const hasHrAvg = steps.some(r => r.heart_rate_avg != null);
+  const hasEnergy = steps.some(r => r.active_energy_kcal != null && Number(r.active_energy_kcal) > 0);
+  const hasWorkouts = steps.some(r => r.workout_count != null && Number(r.workout_count) > 0);
+  const hasExtra = hasHrAvg || hasEnergy || hasWorkouts;
+
   // Build normalized 7-day overview chart data (0-100 per metric)
   const last7 = useMemo(() => steps.slice(-7), [steps]);
   const overviewData = useMemo(() => {
