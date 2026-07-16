@@ -8,7 +8,10 @@ type NavigateFn = (path: string) => void;
 
 let externalNavigate: NavigateFn | null = null;
 let listenersBound = false;
-let registeringPushToken = false;
+let registrationPromise: Promise<void> | null = null;
+let registeredTokenKey: string | null = null;
+let registeredUserId: string | null = null;
+let activeListenerUserId: string | null = null;
 
 export function setPushNavigator(fn: NavigateFn | null) {
   externalNavigate = fn;
@@ -74,6 +77,7 @@ async function saveToken(userId: string, token: string) {
 }
 
 async function bindListenersOnce(userId: string) {
+  activeListenerUserId = userId;
   if (listenersBound) return;
 
   listenersBound = true;
@@ -86,10 +90,12 @@ async function bindListenersOnce(userId: string) {
         const token = event?.token;
 
         console.log("🔄 Token refreshed");
-        console.log(token);
 
-        if (token && userId) {
-          await saveToken(userId, token);
+        const currentUserId = activeListenerUserId;
+        if (token && currentUserId) {
+          await saveToken(currentUserId, token);
+          registeredTokenKey = `${currentUserId}:${token}`;
+          registeredUserId = currentUserId;
         }
       } catch (e) {
         console.error("❌ tokenReceived failed");
@@ -148,79 +154,85 @@ async function bindListenersOnce(userId: string) {
 }
 
 export async function registerPushToken(userId: string): Promise<void> {
-    if (registeringPushToken) {
-    return;
-  }
+  if (registrationPromise) return registrationPromise;
 
-  registeringPushToken = true;
-
-  console.log("========================================");
-  console.log("🚀 registerPushToken()");
-  console.log("Platform:", Capacitor.getPlatform());
-  console.log("User ID:", userId);
-  console.log("========================================");
-
-  if (!isNative()) {
-    console.log("❌ Not running on a native platform");
-    return;
-  }
-
-  if (!userId) {
-    console.log("❌ Missing user id");
-    return;
-  }
-
-  try {
-    console.log("📱 Requesting notification permission...");
-
-
-  const permission = await FirebaseMessaging.requestPermissions();
-
-    console.log("Permission result:");
-    console.log(permission);
-
-    if (permission.receive !== "granted") {
-      console.log("❌ Notification permission denied");
+  registrationPromise = (async () => {
+    if (!isNative()) {
+      console.log("❌ Push registration skipped: not running on a native platform");
       return;
     }
 
-    console.log("✅ Notification permission granted");
-
-    console.log("🎫 Requesting FCM token...");
-
-    const result = await FirebaseMessaging.getToken();
-
-    console.log("🔥 FCM TOKEN");
-    console.log(result.token);
-
-    if (!result.token) {
-      console.log("❌ Firebase returned an empty token");
+    if (!userId) {
+      console.log("❌ Push registration skipped: missing user id");
       return;
     }
 
-    console.log("💾 Saving token...");
+    if (registeredUserId === userId) {
+      console.log("✅ Push already registered for this app session");
+      await bindListenersOnce(userId);
+      return;
+    }
 
-    await saveToken(userId, result.token);
+    console.log("========================================");
+    console.log("🚀 registerPushToken()");
+    console.log("Platform:", Capacitor.getPlatform());
+    console.log("User ID:", userId);
+    console.log("========================================");
 
-    console.log("👂 Binding listeners...");
+    try {
+      console.log("📱 Requesting notification permission...");
 
-    await bindListenersOnce(userId);
+      const permission = await FirebaseMessaging.requestPermissions();
 
-    console.log("✅ Push registration completed");
+      console.log("Permission result:");
+      console.log(permission);
 
-  } catch (error: any) {
+      if (permission.receive !== "granted") {
+        console.log("❌ Notification permission denied");
+        return;
+      }
 
-  console.error("ERROR NAME:", error?.name);
-  console.error("ERROR MESSAGE:", error?.message);
-  console.error("ERROR STACK:", error?.stack);
-  console.error(error);
+      console.log("✅ Notification permission granted");
+      console.log("🎫 Requesting FCM token...");
 
-} finally {
+      const result = await FirebaseMessaging.getToken();
+      const token = result.token;
 
-  registeringPushToken = false;
+      if (!token) {
+        console.log("❌ Firebase returned an empty token");
+        return;
+      }
 
-}
+      const tokenKey = `${userId}:${token}`;
+      if (registeredTokenKey === tokenKey) {
+        console.log("✅ Push token already registered for this app session");
+        await bindListenersOnce(userId);
+        return;
+      }
 
+      console.log("🔥 FCM token received");
+      console.log("💾 Saving token...");
+
+      await saveToken(userId, token);
+      registeredTokenKey = tokenKey;
+      registeredUserId = userId;
+
+      console.log("👂 Binding listeners...");
+
+      await bindListenersOnce(userId);
+
+      console.log("✅ Push registration completed");
+    } catch (error: any) {
+      console.error("ERROR NAME:", error?.name);
+      console.error("ERROR MESSAGE:", error?.message);
+      console.error("ERROR STACK:", error?.stack);
+      console.error(error);
+    }
+  })().finally(() => {
+    registrationPromise = null;
+  });
+
+  return registrationPromise;
 }
 
 export async function unregisterPushToken(userId: string): Promise<void> {
