@@ -60,7 +60,7 @@ async function collectMetrics(
         .lt("entry_date", end),
       admin
         .from("workout_logs")
-        .select("id, logged_date, completed, entry_type, exercise_type")
+        .select("id, logged_date, completed, entry_type")
         .eq("user_id", athleteId)
         .gte("logged_date", start)
         .lt("logged_date", end),
@@ -117,7 +117,7 @@ async function collectMetrics(
   // Workout type breakdown
   const sessionsByType: Record<string, number> = {};
   for (const w of workoutRows) {
-    const k = String(w.entry_type || w.exercise_type || "session");
+    const k = String(w.entry_type || "session");
     sessionsByType[k] = (sessionsByType[k] || 0) + 1;
   }
 
