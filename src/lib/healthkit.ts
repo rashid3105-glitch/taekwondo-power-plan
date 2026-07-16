@@ -57,6 +57,13 @@ interface WorkoutSample {
 }
 
 interface SportstalentHealthKitPlugin {
+  debugRegistration(): Promise<{
+    loaded: boolean;
+    identifier: string;
+    jsName: string;
+    methods: string[];
+    healthDataAvailable: boolean;
+  }>;
   isAvailable(): Promise<{ available: boolean }>;
   requestAuthorization(opts: { read: string[] }): Promise<{ granted: boolean }>;
   queryQuantity(opts: {
@@ -81,7 +88,12 @@ const HealthKit = registerPlugin<SportstalentHealthKitPlugin>(
 
 function isHealthKitPluginRegistered(): boolean {
   try {
-    return Capacitor.isPluginAvailable(HEALTHKIT_PLUGIN_NAME);
+    const headers = (globalThis as any).Capacitor?.PluginHeaders;
+    if (Array.isArray(headers)) {
+      return headers.some((header) => header?.name === HEALTHKIT_PLUGIN_NAME);
+    }
+
+    return false;
   } catch {
     return false;
   }
@@ -95,6 +107,7 @@ function logHealthKitBridgeStatus(context: string) {
       native: Capacitor.isNativePlatform(),
       plugin: HEALTHKIT_PLUGIN_NAME,
       available: Capacitor.isPluginAvailable(HEALTHKIT_PLUGIN_NAME),
+      nativeHeaderRegistered: isHealthKitPluginRegistered(),
     });
   } catch (e) {
     console.warn("HealthKit bridge status check failed", e);
@@ -122,6 +135,9 @@ export async function requestHealthKitPermission(): Promise<{
   }
 
   try {
+    const debug = await HealthKit.debugRegistration();
+    console.info("HealthKit native registration", debug);
+
     const res = await HealthKit.requestAuthorization({ read: READ_TYPES });
     return { ok: !!res?.granted, reason: res?.granted ? undefined : "not_granted" };
   } catch (e: any) {

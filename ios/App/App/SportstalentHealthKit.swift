@@ -11,6 +11,7 @@ public class SportstalentHealthKit: CAPPlugin, CAPBridgedPlugin {
     public let identifier = "SportstalentHealthKit"
     public let jsName = "SportstalentHealthKit"
     public let pluginMethods: [CAPPluginMethod] = [
+        CAPPluginMethod(name: "debugRegistration", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "isAvailable", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "requestAuthorization", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "queryQuantity", returnType: CAPPluginReturnPromise),
@@ -23,6 +24,11 @@ public class SportstalentHealthKit: CAPPlugin, CAPBridgedPlugin {
     }
 
     private let store = HKHealthStore()
+
+    public override func load() {
+        super.load()
+        NSLog("[SportstalentHealthKit] Plugin load() invoked")
+    }
 
     // MARK: - Type mapping (whitelist; do not accept arbitrary strings from JS)
 
@@ -56,6 +62,18 @@ public class SportstalentHealthKit: CAPPlugin, CAPBridgedPlugin {
         default:
             return HKUnit.count()
         }
+    }
+
+    // MARK: - debugRegistration
+
+    @objc public func debugRegistration(_ call: CAPPluginCall) {
+        call.resolve([
+            "loaded": true,
+            "identifier": identifier,
+            "jsName": jsName,
+            "methods": pluginMethods.map { $0.name ?? "" },
+            "healthDataAvailable": HKHealthStore.isHealthDataAvailable(),
+        ])
     }
 
     // MARK: - isAvailable
