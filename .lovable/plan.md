@@ -1,33 +1,16 @@
-## Findings from source verification
-
-- `SportstalentHealthKit` is on the Capacitor 8 manual registration path: `MainViewController.capacitorDidLoad()` calls `bridge?.registerPluginInstance(SportstalentHealthKit())`.
-- `MainViewController` is wired as the active root controller: `Info.plist` uses `UIMainStoryboardFile = Main`, and `Main.storyboard` sets the initial view controller to `customClass="MainViewController"` with module `App`.
-- `SportstalentHealthKit.swift` is in the App target Sources build phase together with `MainViewController.swift`.
-- The plugin class conforms to `CAPPlugin, CAPBridgedPlugin` and exposes `jsName = "SportstalentHealthKit"` plus `pluginMethods` including `requestAuthorization`.
-- I cannot truthfully confirm `Capacitor.isPluginAvailable("SportstalentHealthKit") === true` from this web sandbox, because that value is produced inside the iOS WebView at runtime. Source-level wiring says it should be true; the native runtime must be instrumented to prove it on-device.
+## Diagnosis
+- `wearable-ingest` is not registered in the live backend: a direct call returns `404 Requested function was not found`.
+- There are no recent logs for `wearable-ingest`, which confirms the iOS app cannot reach a deployed function.
+- The native HealthKit bridge is now working; this remaining issue is backend deployment/verification.
 
 ## Plan
+1. Deploy the existing `wearable-ingest` Edge Function.
+2. Verify it responds live by calling it directly with an authenticated empty payload.
+3. Check recent function logs after the test call.
+4. If deployment succeeds but the function returns a runtime error, fix only that backend function and redeploy.
+5. Leave the JS API and native HealthKit plugin unchanged.
 
-1. Add explicit native runtime verification in `MainViewController.swift`:
-   - Log when `MainViewController.capacitorDidLoad()` runs.
-   - Register `SportstalentHealthKit` with `bridge?.registerPluginInstance(...)`.
-   - Immediately check `bridge?.plugin(withName: "SportstalentHealthKit") != nil` and log success/failure.
-
-2. Add a defensive JS availability check in `src/lib/healthkit.ts` before `requestAuthorization(...)`:
-   - Call `Capacitor.isPluginAvailable("SportstalentHealthKit")`.
-   - If false, return a clear `plugin_not_registered` reason instead of only surfacing raw `UNIMPLEMENTED`.
-   - Log native platform, iOS status, and plugin availability for debugging.
-
-3. Keep the public JS API unchanged:
-   - Continue using `registerPlugin("SportstalentHealthKit")`.
-   - Do not rename methods or change call sites.
-
-4. Verify by static checks:
-   - Confirm no legacy `CAP_PLUGIN(...)`, bridging header, or stale local package references are still participating.
-   - Confirm `MainViewController.swift` and `SportstalentHealthKit.swift` remain in the App target Sources build phase.
-
-5. On-device validation steps after implementation:
-   - Run `npm run build && npx cap sync ios`.
-   - Clean Xcode build folder / delete DerivedData if needed.
-   - Launch the iOS app and confirm logs show `MainViewController.capacitorDidLoad` and `SportstalentHealthKit registered: true` before calling HealthKit.
-   - In the WebView console, confirm `Capacitor.isPluginAvailable("SportstalentHealthKit")` returns `true`.
+## Technical details
+- Target function: `supabase/functions/wearable-ingest/index.ts`
+- Expected post-deploy test with empty samples: `{ inserted: 0, workouts_inserted: 0 }`
+- Current live backend response: `404 NOT_FOUND`, so the immediate fix is deployment, not native registration.
