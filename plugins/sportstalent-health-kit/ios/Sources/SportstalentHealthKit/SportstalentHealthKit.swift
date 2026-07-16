@@ -3,8 +3,8 @@ import Capacitor
 import HealthKit
 
 // Local Capacitor 8 SPM plugin bridging HealthKit read access to the JS layer.
-// The Capacitor CLI discovers this package from package.json, adds its class to
-// capacitor.config.json packageClassList, and the native bridge registers it at runtime.
+// The App target registers this package instance from MainViewController so the
+// Swift package is explicitly loaded in the native Capacitor plugin registry.
 @objc(SportstalentHealthKit)
 public class SportstalentHealthKit: CAPPlugin, CAPBridgedPlugin {
 
@@ -17,6 +17,10 @@ public class SportstalentHealthKit: CAPPlugin, CAPBridgedPlugin {
         CAPPluginMethod(name: "queryCategory", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "queryWorkouts", returnType: CAPPluginReturnPromise),
     ]
+
+    public override init() {
+        super.init()
+    }
 
     private let store = HKHealthStore()
 
@@ -56,13 +60,13 @@ public class SportstalentHealthKit: CAPPlugin, CAPBridgedPlugin {
 
     // MARK: - isAvailable
 
-    @objc func isAvailable(_ call: CAPPluginCall) {
+    @objc public func isAvailable(_ call: CAPPluginCall) {
         call.resolve(["available": HKHealthStore.isHealthDataAvailable()])
     }
 
     // MARK: - requestAuthorization
 
-    @objc func requestAuthorization(_ call: CAPPluginCall) {
+    @objc public func requestAuthorization(_ call: CAPPluginCall) {
         guard HKHealthStore.isHealthDataAvailable() else {
             call.reject("HealthKit not available on this device")
             return
@@ -93,7 +97,7 @@ public class SportstalentHealthKit: CAPPlugin, CAPBridgedPlugin {
 
     // MARK: - queryQuantity
 
-    @objc func queryQuantity(_ call: CAPPluginCall) {
+    @objc public func queryQuantity(_ call: CAPPluginCall) {
         guard let sampleTypeId = call.getString("sampleType"),
               let startIso = call.getString("startDate"),
               let endIso = call.getString("endDate") else {
@@ -141,7 +145,7 @@ public class SportstalentHealthKit: CAPPlugin, CAPBridgedPlugin {
 
     // MARK: - queryCategory (used for sleepAnalysis)
 
-    @objc func queryCategory(_ call: CAPPluginCall) {
+    @objc public func queryCategory(_ call: CAPPluginCall) {
         guard let sampleTypeId = call.getString("sampleType"),
               let startIso = call.getString("startDate"),
               let endIso = call.getString("endDate") else {
@@ -179,7 +183,7 @@ public class SportstalentHealthKit: CAPPlugin, CAPBridgedPlugin {
 
     // MARK: - queryWorkouts
 
-    @objc func queryWorkouts(_ call: CAPPluginCall) {
+    @objc public func queryWorkouts(_ call: CAPPluginCall) {
         guard let startIso = call.getString("startDate"),
               let endIso = call.getString("endDate") else {
             call.reject("startDate, endDate are required")
