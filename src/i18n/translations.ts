@@ -14042,6 +14042,8 @@ const translations = {
     changelog_2026_07_14: "14. Juli 2026",
     changelog_2026_07_13: "13. Juli 2026",
     changelogEntry174: "Flexibilitätstests aktualisiert: Seitspagat, Spagat rechts und Spagat links — gemessen in cm vom Schritt bis zum Boden.",
+    changelog_2026_07_16: "16. Juli 2026",
+    changelogEntry176: "Apple-Health-Integration: automatischer Import von Schlaf, Herzfrequenz, HRV und Workouts.",
     changelogEntry175: "Testsessions: personalisierte Testbögen (PDF) zum handschriftlichen Ausfüllen drucken.",
     changelogEntry173: "Behoben: Tippen auf eine Tagebuch-Push-Benachrichtigung öffnet jetzt direkt das Tagebuch des Athleten.",
     changelogEntry172: "Testbibliothek um 15 neue physische Tests und die Kategorie Flexibilität erweitert (Plank, Seitstütz L/R, 10/20 m Sprint, T-Test, Jump Lunges, 3-Runden-Kontinuierliche Kicks, Klimmzüge Max, 60 s Liegestütze, Yo-Yo IR1, Wingate 5 m Shuttle und Sit-and-Reach).",
