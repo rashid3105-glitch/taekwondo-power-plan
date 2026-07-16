@@ -3906,6 +3906,7 @@ export type Database = {
           duration_minutes: number | null
           entry_type: string
           exercise_index: number | null
+          external_id: string | null
           id: string
           logged_date: string
           max_hr: number | null
@@ -3930,6 +3931,7 @@ export type Database = {
           duration_minutes?: number | null
           entry_type?: string
           exercise_index?: number | null
+          external_id?: string | null
           id?: string
           logged_date?: string
           max_hr?: number | null
@@ -3954,6 +3956,7 @@ export type Database = {
           duration_minutes?: number | null
           entry_type?: string
           exercise_index?: number | null
+          external_id?: string | null
           id?: string
           logged_date?: string
           max_hr?: number | null
