@@ -809,7 +809,7 @@ export default function Dashboard() {
             { key: "idag", label: t("today") || "I dag", icon: Home, active: activeTab === "hub", onClick: () => handleTabChange("hub") },
             { key: "traen", label: t("train") || "Træn", icon: Zap, active: activeTab === "plan", onClick: () => handleTabChange("plan") },
             { key: "kalender", label: t("seasonCalendar") || "Kalender", icon: CalendarRange, active: activeTab === "calendar", onClick: () => handleTabChange("calendar") },
-            { key: "dagbog", label: t("diary") || "Dagbog", icon: NotebookPen, active: false, onClick: () => navigate("/diary") },
+            { key: "health", label: t("healthNav" as any) || "Sundhed", icon: Heart, iconClassName: "text-red-500 fill-red-500", active: false, onClick: () => navigate("/health") },
             { key: "video", label: t("hubMatchTitle") || "Video", icon: VideoIcon, active: false, onClick: () => navigate("/match-analysis/me") },
           ]).map(({ key, label, icon: Icon, active, onClick, dot }: any) => (
             <button
