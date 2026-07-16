@@ -6,7 +6,17 @@ import HealthKit
 // Registered from JS as `registerPlugin<SportstalentHealthKit>("SportstalentHealthKit")`.
 // Exposed methods are wired in SportstalentHealthKit.m via CAP_PLUGIN_METHOD.
 @objc(SportstalentHealthKit)
-public class SportstalentHealthKit: CAPPlugin {
+public class SportstalentHealthKit: CAPPlugin, CAPBridgedPlugin {
+
+    public let identifier = "SportstalentHealthKit"
+    public let jsName = "SportstalentHealthKit"
+    public let pluginMethods: [CAPPluginMethod] = [
+        CAPPluginMethod(name: "isAvailable", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "requestAuthorization", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "queryQuantity", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "queryCategory", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "queryWorkouts", returnType: CAPPluginReturnPromise),
+    ]
 
     private let store = HKHealthStore()
 
