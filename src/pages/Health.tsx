@@ -43,6 +43,55 @@ export default function Health() {
   const [resyncing, setResyncing] = useState(false);
   const [show, setShow] = useState({ steps: true, sleep: true, rhr: true, hrv: true });
   const [whyOpen, setWhyOpen] = useState(false);
+  const [hkConnecting, setHkConnecting] = useState(false);
+  const [hkLastSync, setHkLastSync] = useState<string | null>(null);
+  const [hkConnected, setHkConnected] = useState(false);
+  const hkAvailable = isHealthKitAvailable();
+
+  useEffect(() => {
+    (async () => {
+      const { data: userRes } = await supabase.auth.getUser();
+      if (!userRes.user) return;
+      const { data } = await supabase
+        .from("wearable_connections")
+        .select("status,last_sync_at")
+        .eq("user_id", userRes.user.id)
+        .eq("provider", "apple_health")
+        .maybeSingle();
+      if (data) {
+        setHkConnected(data.status === "connected");
+        setHkLastSync(data.last_sync_at ?? null);
+      }
+    })();
+  }, []);
+
+  async function connectAppleHealth() {
+    if (hkConnecting) return;
+    setHkConnecting(true);
+    haptics.tap();
+    try {
+      const authorized = await requestHealthKitPermission();
+      if (!authorized) {
+        toast.error(t("healthAppleHealthDenied"));
+        return;
+      }
+      const res = await syncHealthKit({ force: true });
+      if (!res.ok) {
+        toast.error(t("healthAppleHealthSyncFailed"));
+        return;
+      }
+      setHkConnected(true);
+      setHkLastSync(new Date().toISOString());
+      toast.success(t("healthAppleHealthConnected"));
+      setTimeout(() => window.location.reload(), 800);
+    } catch (e) {
+      console.error(e);
+      toast.error(t("healthAppleHealthSyncFailed"));
+    } finally {
+      setHkConnecting(false);
+    }
+  }
+
 
   async function forceResync() {
     if (resyncing) return;
