@@ -474,22 +474,14 @@ export default function Profile() {
           )}
         </div>
 
-        {/* Health & devices — TODO: health-sync skjult indtil native HealthKit (RN) er klar — vis for admin indtil da. */}
+        {/* Health & devices */}
         {canSeeHealthSync && (
           <div className={cardCls}>
             <h2 className={sectionTitleCls}>{t("profileHealthSectionTitle" as any)}</h2>
             <ActionRow
               icon={<Apple className="h-4 w-4" />}
-              label={t("profileHealthAppleTitle" as any)}
-              sub={t("profileHealthAppleDesc" as any)}
-              onClick={() => navigate("/health/sync-setup")}
-            />
-            <Separator className="bg-white/10" />
-            <ActionRow
-              icon={<Smartphone className="h-4 w-4" />}
-              label={t("profileHealthAndroidTitle" as any)}
-              sub={t("profileHealthAndroidDesc" as any)}
-              onClick={() => navigate("/health/sync-setup-android")}
+              label={t("profileHealthWearablesTitle" as any)}
+              onClick={() => navigate("/health")}
             />
           </div>
         )}
