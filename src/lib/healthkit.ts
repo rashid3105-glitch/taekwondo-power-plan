@@ -116,8 +116,9 @@ async function queryOne(
 export async function syncHealthKit(
   opts: { force?: boolean } = {},
 ): Promise<{ ok: boolean; inserted?: number; workouts?: number; reason?: string }> {
-  const plugin = await getPlugin();
-  if (!plugin) return { ok: false, reason: "unavailable" };
+  const { plugin, reason: pluginReason } = await getPlugin();
+  if (!plugin) return { ok: false, reason: pluginReason ?? "unavailable" };
+
 
   if (!opts.force) {
     const last = await Preferences.get({ key: THROTTLE_KEY }).catch(() => ({
