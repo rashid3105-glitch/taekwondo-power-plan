@@ -1,53 +1,74 @@
-## Situation
 
-- DB: 0 `wearable_samples`, 0 `wearable_connections` for `apple_health`, 0 logs på `wearable-ingest`, 0 `workout_logs` med `wearable_source='apple_health'`.
-- Bruger: fysisk iPhone via Xcode/TestFlight, HealthKit-capability tilføjet, men **intet permission-ark** vises når "Connect Apple Health" trykkes.
-- Konklusion: JS-koden når frem til `requestHealthKitPermission`, men det native plugin svarer ikke → sheet vises aldrig.
+## Baggrund
 
-## Mest sandsynlige årsag
+`@perfood/capacitor-healthkit` distribueres kun via CocoaPods. Projektet bruger Swift Package Manager (`ios/App/CapApp-SPM/Package.swift`), ikke CocoaPods, så plugin'et bliver aldrig linket ind i binary → intet permission-ark på device. Løsningen er en lille lokal Swift-plugin der bor direkte i iOS-projektet og eksponeres til JS via Capacitors bridge.
 
-`@perfood/capacitor-healthkit@1.3.2` er tilføjet til `package.json`, men det tilhørende CocoaPods-modul er ikke installeret i `ios/App`. Uden `npx cap sync ios` + `pod install` findes Swift-klassen ikke i binary. Capacitor's JS-bridge returnerer så tomt/undefined og `getPlugin()` fanger fejlen stille i `console.warn`.
+## Hvad vi bygger
 
-## Trin 1 — Bekræfte hypotesen (ingen kodeændringer nødvendige for brugeren først)
+En intern Capacitor-plugin `SportstalentHealthKit` skrevet i Swift, placeret i `ios/App/App/`. Den dækker præcis de 6 metrikker `wearable-ingest` allerede forventer: sleep, restingHR, HRV, heartRate, activeEnergy, workouts. JS-siden i `src/lib/healthkit.ts` ombygges til at kalde det nye plugin via `registerPlugin` — samme sample-mapping og ingest-flow som i dag.
 
-Bede brugeren i terminalen i sin lokale checkout af repo'et:
+Ingen ændringer i: `wearable-ingest` edge-funktion, `recompute_wearable_summary` DB-funktion, Shortcut-vejen, readiness-score, DB-skema, UI.
+
+## Filer
+
+**Nye:**
+- `ios/App/App/SportstalentHealthKit.swift` — plugin-klasse: `requestAuthorization`, `queryQuantity`, `queryCategory`, `queryWorkouts`, `isAvailable`. Bruger `HKHealthStore`, `HKSampleQuery`.
+- `ios/App/App/SportstalentHealthKit.m` — Objective-C bridge macro (`CAP_PLUGIN` + `CAP_PLUGIN_METHOD`) så Capacitor kan finde metoderne.
+
+**Ændret:**
+- `src/lib/healthkit.ts` — udskift dynamisk `import("@perfood/capacitor-healthkit")` med `registerPlugin<SportstalentHealthKit>("SportstalentHealthKit")` fra `@capacitor/core`. Fjern `no_native_bridge`/`import_failed`-grene, behold `not_ios` og `auth_threw`. Mapper stadig til samme `IngestSample`-shape.
+- `package.json` — fjern `@perfood/capacitor-healthkit` dependency.
+- `ios-healthkit-info.md` — opdater setup-noter (ingen ekstern plugin, custom Swift; kun HealthKit-capability + Info.plist-nøgle skal sættes i Xcode).
+- `.lovable/plan.md` — noter beslutning.
+
+**Uændret bevidst:**
+- `supabase/functions/wearable-ingest/index.ts` — samme kontrakt.
+- `ios/App/App/Info.plist` — `NSHealthShareUsageDescription` er allerede sat korrekt.
+- `ios/App/App/App.entitlements` — HealthKit entitlement er allerede sat.
+- `ios/App/CapApp-SPM/Package.swift` — filer i App-target'et opdages automatisk; plugin registreres via `.m`-bridge.
+
+## Swift-plugin API (JS-kald → Swift)
+
+```text
+isAvailable() → { available: Bool }
+requestAuthorization({ read: [String] }) → { granted: Bool }
+queryQuantity({ sampleType, startDate, endDate }) → { samples: [{uuid, startDate, endDate, value, unit, sourceName}] }
+queryCategory({ sampleType, startDate, endDate }) → { samples: [{uuid, startDate, endDate, value, sourceName}] }
+queryWorkouts({ startDate, endDate }) → { workouts: [{uuid, startDate, endDate, duration, totalEnergyBurned, totalDistance, activityType, averageHeartRate, maxHeartRate, sourceName}] }
+```
+
+Sample type-strings mappes internt i Swift: `"sleepAnalysis" → HKCategoryTypeIdentifier.sleepAnalysis`, `"restingHeartRate" → HKQuantityTypeIdentifier.restingHeartRate`, osv. Ingen dynamiske identifiers fra JS — hvidliste på Swift-siden.
+
+For workouts beregnes `averageHeartRate`/`maxHeartRate` via `HKStatisticsQuery` over `heartRate` samples i workout-intervallet (kan udskydes til V1.1 hvis for meget — så sendes bare `nil`).
+
+## JS-side simplificering
+
+`src/lib/healthkit.ts` bliver:
+- `registerPlugin` køres én gang på modul-load — ingen dynamisk import, ingen `getPlugin()`-dance.
+- `isHealthKitAvailable()` kalder `plugin.isAvailable()` for at bekræfte binary faktisk har HealthKit-klassen.
+- `requestHealthKitPermission()` kalder direkte, returnerer `{ ok, reason? }`.
+- `syncHealthKit()` kalder `queryCategory("sleepAnalysis", ...)` for søvn, `queryQuantity` for RHR/HRV/HR/energy, `queryWorkouts` for træning. Mapping til `IngestSample` er stort set uændret.
+
+## Rækkefølge
+
+1. Skriv Swift + .m bridge.
+2. Omskriv `src/lib/healthkit.ts` til `registerPlugin`.
+3. Fjern `@perfood/capacitor-healthkit` fra `package.json`.
+4. Opdater `ios-healthkit-info.md` med de faktiske Xcode-trin (ingen `pod install`, kun `npx cap sync ios` + rebuild).
+
+## Hvad brugeren skal gøre lokalt bagefter
 
 ```bash
 git pull
-bun install                # eller npm install
+bun install
+npm run build
 npx cap sync ios
-cd ios/App && pod install  # kun hvis cap sync ikke gjorde det
 ```
+Åbn Xcode → verificer at `SportstalentHealthKit.swift` og `.m` er i App-target'et (skal ske automatisk hvis de ligger i `ios/App/App/`). Clean Build Folder → Run på device. Permission-ark skal nu dukke op ved "Connect Apple Health".
 
-Derefter i Xcode: **Product → Clean Build Folder**, genbyg og kør på device igen.
+## Ikke i denne omgang
 
-Hvis permission-arket nu dukker op → sagen løst.
-
-## Trin 2 — Hvis sheet stadig ikke vises, tilføj synlig diagnostik
-
-Jeg tilføjer midlertidig debug i `src/lib/healthkit.ts` så vi kan se præcis hvor det stopper. I dag sluger `getPlugin()` fejlen med `console.warn`; jeg ændrer det så `requestHealthKitPermission` returnerer en struktureret grund (`"no_plugin" | "no_native_bridge" | "auth_threw"`) og `Health.tsx` toaster grunden i stedet for kun "denied". Så kan brugeren aflæse på skærmen om plugin'et findes eller ej.
-
-Filer:
-- `src/lib/healthkit.ts` — udvid returtype for `requestHealthKitPermission` fra `boolean` til `{ ok: boolean; reason?: string }`.
-- `src/pages/Health.tsx` — vis `reason` i toast.
-
-## Trin 3 — Hvis diagnostik viser `no_native_bridge`
-
-Så er det bekræftet at plugin'et ikke er i binary. Reelle fixes vi da kan lave herfra:
-
-1. Tilføj `@perfood/capacitor-healthkit` til Podfile eksplicit hvis auto-linking svigter.
-2. Alternativt skifte til `capacitor-health` (Cordova-baseret HealthKit-plugin med bedre Capacitor-support) hvis perfood-plugin'et viser sig ustabilt.
-
-## Trin 4 — Hvis diagnostik viser `auth_threw`
-
-Så bliver plugin'et kaldt men iOS afviser. Typisk fordi READ_TYPES-strengene ikke matcher hvad plugin'et forventer. Jeg verificerer så mod plugin'ets faktiske API (læse `node_modules/@perfood/capacitor-healthkit/dist/esm/definitions.d.ts`) og retter strengene.
-
-## Hvad denne plan IKKE gør
-
-- Ændrer ikke edge-funktionen `wearable-ingest` — den er verificeret aldrig at være blevet kaldt, så fejlen er client-side.
-- Rører ikke Shortcut-vejen eller readiness-score.
-- Fjerner ikke debug-koden i samme omgang — den bliver stående til vi ser første succesfulde sync i DB, derefter rydder vi op.
-
-## Beslutningspunkt
-
-Skal jeg gå videre med Trin 2 (tilføje diagnostik i client-koden nu), eller vil du først prøve Trin 1 (`bun install && npx cap sync ios && pod install` + rebuild) på din maskine og rapportere om sheet dukker op?
+- Background delivery / observer queries (V2).
+- Skrive workouts *til* HealthKit.
+- Ny readiness-score baseret på HealthKit-data.
+- Oprydning af midlertidig `reason`-toast i `Health.tsx` — bliver stående til vi ser første succesfulde sync i `wearable_samples`.
