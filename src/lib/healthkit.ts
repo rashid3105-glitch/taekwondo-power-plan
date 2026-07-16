@@ -7,11 +7,9 @@
 // idempotently and calls the existing `recompute_wearable_summary` DB
 // function, which drives the existing Health.tsx / RecoveryTile UI.
 //
-// The native side is a local Capacitor plugin (`SportstalentHealthKit`) that
-// lives in `ios/App/App/SportstalentHealthKit.swift` + `.m`. No external
-// plugin package is required; the plugin is picked up automatically by
-// Capacitor's iOS bridge as long as the two files are members of the App
-// target in Xcode.
+// The native side is a local Capacitor 8 Swift Package Manager plugin
+// (`SportstalentHealthKit`) under plugins/sportstalent-health-kit. The CLI
+// adds it to CapApp-SPM and to the native packageClassList during cap sync.
 
 import { Capacitor, registerPlugin } from "@capacitor/core";
 import { Preferences } from "@capacitor/preferences";
