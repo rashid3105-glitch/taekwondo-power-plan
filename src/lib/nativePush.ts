@@ -10,6 +10,7 @@ let externalNavigate: NavigateFn | null = null;
 let listenersBound = false;
 let registrationPromise: Promise<void> | null = null;
 let registeredTokenKey: string | null = null;
+let registeredUserId: string | null = null;
 let activeListenerUserId: string | null = null;
 
 export function setPushNavigator(fn: NavigateFn | null) {
@@ -94,6 +95,7 @@ async function bindListenersOnce(userId: string) {
         if (token && currentUserId) {
           await saveToken(currentUserId, token);
           registeredTokenKey = `${currentUserId}:${token}`;
+          registeredUserId = currentUserId;
         }
       } catch (e) {
         console.error("❌ tokenReceived failed");
@@ -165,6 +167,12 @@ export async function registerPushToken(userId: string): Promise<void> {
       return;
     }
 
+    if (registeredUserId === userId) {
+      console.log("✅ Push already registered for this app session");
+      await bindListenersOnce(userId);
+      return;
+    }
+
     console.log("========================================");
     console.log("🚀 registerPushToken()");
     console.log("Platform:", Capacitor.getPlatform());
@@ -207,6 +215,7 @@ export async function registerPushToken(userId: string): Promise<void> {
 
       await saveToken(userId, token);
       registeredTokenKey = tokenKey;
+      registeredUserId = userId;
 
       console.log("👂 Binding listeners...");
 
