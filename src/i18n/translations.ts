@@ -3196,6 +3196,8 @@ const translations = {
     changelog_2026_07_14: "July 14, 2026",
     changelog_2026_07_13: "July 13, 2026",
     changelogEntry174: "Flexibility tests updated: Straddle Split, Front Split Right and Front Split Left — measured in cm from crotch to floor.",
+    changelog_2026_07_16: "July 16, 2026",
+    changelogEntry176: "Apple Health integration: automatic import of sleep, heart rate, HRV and workouts.",
     changelogEntry175: "Test sessions: print personal test sheets (PDF) for hand entry in the gym.",
     ptPrintSheet: "Print test sheet (PDF)",
     ptNoAthletesOrTests: "Add athletes and tests to the session first.",
