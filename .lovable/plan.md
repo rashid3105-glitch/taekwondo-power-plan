@@ -1,76 +1,53 @@
+## Situation
 
-# HealthKit V1 — rene observationer
+- DB: 0 `wearable_samples`, 0 `wearable_connections` for `apple_health`, 0 logs på `wearable-ingest`, 0 `workout_logs` med `wearable_source='apple_health'`.
+- Bruger: fysisk iPhone via Xcode/TestFlight, HealthKit-capability tilføjet, men **intet permission-ark** vises når "Connect Apple Health" trykkes.
+- Konklusion: JS-koden når frem til `requestHealthKitPermission`, men det native plugin svarer ikke → sheet vises aldrig.
 
-Ingen ny score, ingen anbefaling, ingen farvekodning. HealthKit fylder blot `wearable_samples`, den eksisterende `recompute_wearable_summary` genberegner `wearable_daily_summary`, og den eksisterende Health.tsx/RecoveryTile viser dagsværdi + 7-dages baseline + afvigelse.
+## Mest sandsynlige årsag
 
-## Plugin-valg
-`@perfood/capacitor-healthkit` (senest v9.x, aktiv, Cap 7/8 kompatibel gennem peer-range). Den er den mest vedligeholdte og eneste med solid workout+sleep-læsning. `capacitor-health` er nyere men understøtter primært aktivitet, ikke sleep/HRV workflows i den grad vi skal bruge. Version fastlåses ved install (rapporteres i slutrapport).
+`@perfood/capacitor-healthkit@1.3.2` er tilføjet til `package.json`, men det tilhørende CocoaPods-modul er ikke installeret i `ios/App`. Uden `npx cap sync ios` + `pod install` findes Swift-klassen ikke i binary. Capacitor's JS-bridge returnerer så tomt/undefined og `getPlugin()` fanger fejlen stille i `console.warn`.
 
-## Del A — Backend
+## Trin 1 — Bekræfte hypotesen (ingen kodeændringer nødvendige for brugeren først)
 
-**Migration** (én migration):
-- Unique index for idempotent upsert:
-  `CREATE UNIQUE INDEX IF NOT EXISTS wearable_samples_ext_uniq ON public.wearable_samples (user_id, provider, metric_type, external_id) WHERE external_id IS NOT NULL;`
-- Tilføj kolonner hvis de mangler: `provider text`, `external_id text`, `source_device text` (tjek types.ts først; hvis de findes, skip).
+Bede brugeren i terminalen i sin lokale checkout af repo'et:
 
-**Ny edge function `supabase/functions/wearable-ingest/index.ts`** (`verify_jwt = true`, default JWT check):
-- Auth: hent user fra `Authorization: Bearer <token>` med `supabase.auth.getUser(token)`.
-- Body: zod-valideret `{ samples: Array<{ metric_type, value_numeric, unit?, start_at, end_at?, source_device?, external_id?, payload? }> }`. Max 5000 samples/batch.
-- Insert med service-role client i `wearable_samples` med `provider='apple_health'`, `user_id` fra JWT, `ON CONFLICT (user_id, provider, metric_type, external_id) DO NOTHING`.
-- HKWorkout: for hver `metric_type='workout'` sample, opret også en `workout_logs`-række (`wearable_source='apple_health'`, `entry_type='wearable'`, `avg_hr`, `max_hr`, `duration_minutes`, `calories`, `activity_label`, `logged_date=start_at::date`) med idempotens: skip hvis `workout_logs` allerede har `wearable_source='apple_health'` + `external_id` matchende (tilføj `external_id text` kolonne til `workout_logs` hvis den ikke findes; unique index på `(user_id, wearable_source, external_id)`).
-- Beregn min/max af berørte datoer og kald `recompute_wearable_summary(user_id, min, max)`.
-- Opdatér `wearable_connections` for provider `apple_health`: `last_sync_at=now()`, `status='connected'`, `granted_scopes`, `device_label`.
-- Returnér `{ inserted, workouts_inserted, from, to }`.
+```bash
+git pull
+bun install                # eller npm install
+npx cap sync ios
+cd ios/App && pod install  # kun hvis cap sync ikke gjorde det
+```
 
-**Konflikt Shortcut vs HealthKit**: `mirror_health_data_to_summary` triggeren skriver rå Shortcut-værdier direkte i `wearable_daily_summary` og kalder derefter `recompute_wearable_summary`, som *overskriver* med aggregat fra `wearable_samples`. Nu hvor `wearable_samples` er ikke-tom, vil `recompute_wearable_summary` vinde — hvilket er det vi ønsker (HealthKit er sandhedskilde). Shortcut-brugere uden HealthKit påvirkes ikke (samples-aggregat bliver NULL for dem, men det bliver overskrevet af 0/null — det er en regression). **Løsning:** i `wearable-ingest` kalder vi kun `recompute_wearable_summary` for datoer hvor vi rent faktisk indsatte samples, så Shortcut-only brugere er urørte. Rapporteres i slutrapport.
+Derefter i Xcode: **Product → Clean Build Folder**, genbyg og kør på device igen.
 
-## Del B — Workout-import
-Håndteres inde i `wearable-ingest` (se ovenfor). Ingen auto-match mod plan (day_index/exercise_index) — udtrykkeligt fravalgt scope for V1.
+Hvis permission-arket nu dukker op → sagen løst.
 
-## Del C — Native klient
+## Trin 2 — Hvis sheet stadig ikke vises, tilføj synlig diagnostik
 
-`bun add @perfood/capacitor-healthkit` derefter `npx cap sync ios` (brugerens job).
+Jeg tilføjer midlertidig debug i `src/lib/healthkit.ts` så vi kan se præcis hvor det stopper. I dag sluger `getPlugin()` fejlen med `console.warn`; jeg ændrer det så `requestHealthKitPermission` returnerer en struktureret grund (`"no_plugin" | "no_native_bridge" | "auth_threw"`) og `Health.tsx` toaster grunden i stedet for kun "denied". Så kan brugeren aflæse på skærmen om plugin'et findes eller ej.
 
-**Ny fil `src/lib/healthkit.ts`**:
-- `isHealthKitAvailable()` — kun iOS + native.
-- `requestHealthKitPermission()` — læse-authorization for de 6 typer. Ved fejl: `console.warn`, returnér false.
-- `syncHealthKit(userId, opts?)` — læs sidste 30 dage (90 ved første sync via `wearable_connections.last_sync_at IS NULL`). Map til ingest-format, POST til `wearable-ingest`. Opdatér lokal last-sync throttle (Preferences), max 1/time.
-- Kald `syncHealthKit` i `nativeInit.ts` efter auth-ready + på `App.resume` (throttled).
+Filer:
+- `src/lib/healthkit.ts` — udvid returtype for `requestHealthKitPermission` fra `boolean` til `{ ok: boolean; reason?: string }`.
+- `src/pages/Health.tsx` — vis `reason` i toast.
 
-## Del D — Native config (dokumenteres i `ios-healthkit-info.md` opdatering + rapporten)
-- `ios/App/App/Info.plist`: `NSHealthShareUsageDescription` = "Sportstalent læser dine sundhedsdata (søvn, puls, HRV og træning) fra Apple Health for at vise din restitution og dokumentere din træning." Ingen write-usage-nøgle (kun læsning).
-- Xcode: App target → Signing & Capabilities → **+ HealthKit** (ingen Clinical Records, ingen Background Delivery i V1).
-- `capacitor.config.ts`: ingen ændringer nødvendige.
-- Podfile: auto-linked, `npx cap sync ios` genererer.
+## Trin 3 — Hvis diagnostik viser `no_native_bridge`
 
-## Del E — UI
-- Fjern `useIsAdmin` gate i `src/pages/Health.tsx` og `src/pages/HealthSyncSetup.tsx` (behold TODO-kommentar historisk fjernet).
-- I `Health.tsx`: tilføj "Forbind Apple Health"-knap (kun `isHealthKitAvailable()`). Viser status fra `wearable_connections` (connected/last_sync_at). Ved klik: request + sync + toast.
-- Ingen ny score. Ingen puls/energi som selvstændige daglige tal — kun søvn/RHR/HRV i den eksisterende observations-UI.
+Så er det bekræftet at plugin'et ikke er i binary. Reelle fixes vi da kan lave herfra:
 
-## Del F — i18n + Help + changelog
-Tilføj 3 nye keys på tværs af alle 7 sprog:
-- `healthConnectAppleHealth` — "Forbind Apple Health"
-- `healthAppleHealthConnected` — "Apple Health forbundet"
-- `healthAppleHealthSyncing` — "Synkroniserer …"
+1. Tilføj `@perfood/capacitor-healthkit` til Podfile eksplicit hvis auto-linking svigter.
+2. Alternativt skifte til `capacitor-health` (Cordova-baseret HealthKit-plugin med bedre Capacitor-support) hvis perfood-plugin'et viser sig ustabilt.
 
-Help.tsx changelog (alle 7 sprog): "Apple Health-integration: automatisk import af søvn, puls, HRV og træning."
+## Trin 4 — Hvis diagnostik viser `auth_threw`
 
-## RØR IKKE
-readiness_checkins/submit-readiness, Shortcut/health-sync-simple/resync-health, push, betaling, chat, indsendt App Store build.
+Så bliver plugin'et kaldt men iOS afviser. Typisk fordi READ_TYPES-strengene ikke matcher hvad plugin'et forventer. Jeg verificerer så mod plugin'ets faktiske API (læse `node_modules/@perfood/capacitor-healthkit/dist/esm/definitions.d.ts`) og retter strengene.
 
-## GDPR / App Store to-do (rapporteres, bygges ikke)
-- Privatlivspolitik: tilføj kategori "Sundhedsdata via Apple HealthKit (læsning): søvn, hvilepuls, HRV, puls, aktiv energi, træningspas".
-- App Privacy skema (App Store Connect): tilføj Health & Fitness → Health, brugsformål "App Functionality", ikke koblet til tredjepartsanalyse.
-- Skal opdateres FØR næste TestFlight/App Store submission.
+## Hvad denne plan IKKE gør
 
-## Teknisk sekvens
-1. Migration (unique-index + eventuelle kolonner).
-2. Edge function `wearable-ingest`.
-3. `bun add @perfood/capacitor-healthkit`.
-4. `src/lib/healthkit.ts` + hook i `nativeInit.ts`.
-5. UI: fjern admin-gate + knap i Health.tsx.
-6. i18n + Help changelog.
-7. Opdatér `ios-healthkit-info.md` med præcise Xcode-steps.
+- Ændrer ikke edge-funktionen `wearable-ingest` — den er verificeret aldrig at være blevet kaldt, så fejlen er client-side.
+- Rører ikke Shortcut-vejen eller readiness-score.
+- Fjerner ikke debug-koden i samme omgang — den bliver stående til vi ser første succesfulde sync i DB, derefter rydder vi op.
 
-Skal jeg gå videre og bygge dette?
+## Beslutningspunkt
+
+Skal jeg gå videre med Trin 2 (tilføje diagnostik i client-koden nu), eller vil du først prøve Trin 1 (`bun install && npx cap sync ios && pod install` + rebuild) på din maskine og rapportere om sheet dukker op?

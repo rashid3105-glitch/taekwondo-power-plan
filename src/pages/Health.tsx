@@ -70,16 +70,17 @@ export default function Health() {
     setHkConnecting(true);
     haptics.tap();
     try {
-      const authorized = await requestHealthKitPermission();
-      if (!authorized) {
-        toast.error(t("healthAppleHealthDenied"));
+      const auth = await requestHealthKitPermission();
+      if (!auth.ok) {
+        toast.error(`${t("healthAppleHealthDenied")} [${auth.reason ?? "unknown"}]`);
         return;
       }
       const res = await syncHealthKit({ force: true });
       if (!res.ok) {
-        toast.error(t("healthAppleHealthSyncFailed"));
+        toast.error(`${t("healthAppleHealthSyncFailed")} [${res.reason ?? "unknown"}]`);
         return;
       }
+
       setHkConnected(true);
       setHkLastSync(new Date().toISOString());
       toast.success(t("healthAppleHealthConnected"));
