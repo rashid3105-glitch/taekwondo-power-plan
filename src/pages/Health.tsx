@@ -360,7 +360,10 @@ export default function Health() {
           (r.steps != null && r.steps > 0) ||
           (r.sleep_minutes != null && r.sleep_minutes > 0) ||
           r.resting_hr != null ||
-          r.hrv_rmssd != null,
+          r.hrv_rmssd != null ||
+          r.heart_rate_avg != null ||
+          (r.active_energy_kcal != null && r.active_energy_kcal > 0) ||
+          (r.workout_count != null && r.workout_count > 0),
       )
       .sort((a, b) => a.summary_date.localeCompare(b.summary_date));
     setSteps(merged);
