@@ -34,32 +34,38 @@ export function isHealthKitAvailable(): boolean {
   }
 }
 
-async function getPlugin() {
-  if (!isHealthKitAvailable()) return null;
+async function getPlugin(): Promise<{ plugin: any | null; reason?: string }> {
+  if (!isHealthKitAvailable()) return { plugin: null, reason: "not_ios" };
   try {
     const mod: any = await import("@perfood/capacitor-healthkit");
-    return mod.CapacitorHealthkit ?? mod.default ?? null;
-  } catch (e) {
-    console.warn("HealthKit plugin not available", e);
-    return null;
+    const plugin = mod.CapacitorHealthkit ?? mod.default ?? null;
+    if (!plugin) return { plugin: null, reason: "no_export" };
+    if (typeof plugin.requestAuthorization !== "function") {
+      return { plugin: null, reason: "no_native_bridge" };
+    }
+    return { plugin };
+  } catch (e: any) {
+    console.warn("HealthKit plugin import failed", e);
+    return { plugin: null, reason: `import_failed:${e?.message ?? e}` };
   }
 }
 
-export async function requestHealthKitPermission(): Promise<boolean> {
-  const plugin = await getPlugin();
-  if (!plugin) return false;
+export async function requestHealthKitPermission(): Promise<{ ok: boolean; reason?: string }> {
+  const { plugin, reason } = await getPlugin();
+  if (!plugin) return { ok: false, reason: reason ?? "no_plugin" };
   try {
     await plugin.requestAuthorization({
       all: [],
       read: READ_TYPES,
       write: [],
     });
-    return true;
-  } catch (e) {
+    return { ok: true };
+  } catch (e: any) {
     console.warn("HealthKit authorization failed", e);
-    return false;
+    return { ok: false, reason: `auth_threw:${e?.message ?? e}` };
   }
 }
+
 
 type IngestSample = {
   metric_type:
