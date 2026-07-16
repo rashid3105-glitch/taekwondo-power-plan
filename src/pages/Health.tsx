@@ -491,6 +491,39 @@ export default function Health() {
         </div>
       </div>
 
+      {/* Apple Health connection (iOS native only) */}
+      {hkAvailable && (
+        <Card className="mb-4 border-primary/30 bg-primary/5">
+          <CardContent className="pt-4 pb-4 flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-primary/10">
+              <Heart className="h-5 w-5 text-primary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-semibold">
+                {hkConnected ? t("healthAppleHealthConnected") : t("healthConnectAppleHealth")}
+              </div>
+              {hkConnected && hkLastSync && (
+                <div className="text-xs text-muted-foreground">
+                  {new Date(hkLastSync).toLocaleString()}
+                </div>
+              )}
+            </div>
+            <Button
+              size="sm"
+              variant={hkConnected ? "outline" : "default"}
+              onClick={connectAppleHealth}
+              disabled={hkConnecting}
+              className="h-11 sm:h-9"
+            >
+              {hkConnecting
+                ? t("healthAppleHealthSyncing")
+                : hkConnected
+                  ? t("healthForceSync")
+                  : t("healthConnectAppleHealth")}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
 
       {/* Why these metrics matter */}
