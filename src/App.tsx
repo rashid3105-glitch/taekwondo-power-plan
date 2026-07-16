@@ -80,8 +80,6 @@ import AdminDrills from "./pages/AdminDrills";
 import Contact from "./pages/Contact";
 import Kostplan from "./pages/Kostplan";
 import Health from "./pages/Health";
-import HealthSyncSetup from "./pages/HealthSyncSetup";
-import HealthSyncSetupAndroid from "./pages/HealthSyncSetupAndroid";
 
 import Competitions from "./pages/Competitions";
 import CompetitionReflection from "./pages/CompetitionReflection";
