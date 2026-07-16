@@ -30,6 +30,9 @@ interface DailyRow {
   hrv_rmssd: number | null;
   baseline_hr_7d: number | null;
   baseline_hrv_7d: number | null;
+  heart_rate_avg: number | null;
+  active_energy_kcal: number | null;
+  workout_count: number | null;
 }
 
 export default function Health() {
