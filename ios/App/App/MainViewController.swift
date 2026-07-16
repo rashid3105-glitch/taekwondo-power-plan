@@ -2,7 +2,7 @@ import UIKit
 import Capacitor
 
 class MainViewController: CAPBridgeViewController {
-    override open func capacitorDidLoad() {
+    override func capacitorDidLoad() {
         super.capacitorDidLoad()
         bridge?.registerPluginInstance(SportstalentHealthKit())
     }

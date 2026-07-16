@@ -4,7 +4,7 @@ import HealthKit
 
 // Local Capacitor plugin bridging HealthKit read access to the JS layer.
 // Registered from JS as `registerPlugin<SportstalentHealthKit>("SportstalentHealthKit")`.
-// Exposed methods are wired in SportstalentHealthKit.m via CAP_PLUGIN_METHOD.
+// Exposed methods are declared via CAPBridgedPlugin below and registered from MainViewController.
 @objc(SportstalentHealthKit)
 public class SportstalentHealthKit: CAPPlugin, CAPBridgedPlugin {
 
