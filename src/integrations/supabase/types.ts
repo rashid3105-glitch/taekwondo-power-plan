@@ -3677,10 +3677,12 @@ export type Database = {
       }
       wearable_daily_summary: {
         Row: {
+          active_energy_kcal: number | null
           baseline_hr_7d: number | null
           baseline_hrv_7d: number | null
           club_id: string | null
           computed_at: string
+          heart_rate_avg: number | null
           hrv_rmssd: number | null
           resting_hr: number | null
           sleep_minutes: number | null
@@ -3690,10 +3692,12 @@ export type Database = {
           workout_count: number
         }
         Insert: {
+          active_energy_kcal?: number | null
           baseline_hr_7d?: number | null
           baseline_hrv_7d?: number | null
           club_id?: string | null
           computed_at?: string
+          heart_rate_avg?: number | null
           hrv_rmssd?: number | null
           resting_hr?: number | null
           sleep_minutes?: number | null
@@ -3703,10 +3707,12 @@ export type Database = {
           workout_count?: number
         }
         Update: {
+          active_energy_kcal?: number | null
           baseline_hr_7d?: number | null
           baseline_hrv_7d?: number | null
           club_id?: string | null
           computed_at?: string
+          heart_rate_avg?: number | null
           hrv_rmssd?: number | null
           resting_hr?: number | null
           sleep_minutes?: number | null
