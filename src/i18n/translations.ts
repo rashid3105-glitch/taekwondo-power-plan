@@ -23245,6 +23245,8 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   profilePushToggleTitle: "Notificaciones push",
   profilePushToggleSub: "Recibe avisos de nuevos mensajes y entradas de diario",
   changelogEntry174: "Tests de flexibilidad actualizados: Split lateral, Spagat derecha y Spagat izquierda — medidos en cm de la entrepierna al suelo.",
+  changelog_2026_07_16: "16 de julio de 2026",
+  changelogEntry176: "Integración con Apple Health: importación automática de sueño, frecuencia cardíaca, HRV y entrenamientos.",
   changelogEntry175: "Sesiones de test: imprime hojas de test personales (PDF) para rellenar a mano en la sala.",
   changelogEntry173: "Corregido: tocar una notificación push de diario abre ahora el diario del atleta.",
   changelogEntry172: "Biblioteca de tests ampliada con 15 nuevos tests físicos y la categoría flexibilidad (plancha, plancha lateral I/D, sprints 10/20 m, T-test, zancadas con salto, 3 rondas de patadas continuas, dominadas máx, flexiones 60 s, Yo-Yo IR1, Wingate shuttle 5 m y sit-and-reach).",
