@@ -6842,6 +6842,8 @@ const translations = {
     changelog_2026_07_14: "14. juli 2026",
     changelog_2026_07_13: "13. juli 2026",
     changelogEntry174: "Fleksibilitetstests opdateret: Split, Spagat højre og Spagat venstre — måles i cm fra skridt til gulv.",
+    changelog_2026_07_16: "16. juli 2026",
+    changelogEntry176: "Apple Health-integration: automatisk import af søvn, puls, HRV og træning.",
     changelogEntry175: "Testsessioner: udskriv personlige testark (PDF) til udfyldning i hånden.",
     ptPrintSheet: "Print testark (PDF)",
     ptNoAthletesOrTests: "Tilføj atleter og tests til sessionen først.",
