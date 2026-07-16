@@ -1,13 +1,11 @@
 # iOS HealthKit setup (Xcode + native build)
 
 The app integrates directly with Apple HealthKit through a **local Capacitor
-plugin** that lives inside the iOS project: `ios/App/App/SportstalentHealthKit.swift`
-(+ `.m` bridge). There is **no external npm package** for the HealthKit
-bridge — the project uses Swift Package Manager (SPM), and the earlier
-CocoaPods-based `@perfood/capacitor-healthkit` plugin never linked into the
-binary. The local plugin is picked up automatically by Capacitor as long as
-both files are members of the App target in Xcode (they are, since they sit
-under `ios/App/App/`).
+8 App-target plugin** that lives inside the iOS project:
+`ios/App/App/SportstalentHealthKit.swift`. There is **no external npm package**
+and no legacy Objective-C `.m` bridge for the HealthKit bridge. The active
+`MainViewController` registers the Swift `CAPBridgedPlugin` instance explicitly
+with Capacitor during `capacitorDidLoad()`.
 
 V1 scope is pure observations: we read 6 data types (sleep, resting HR,
 HRV, heart rate, active energy, workouts) and forward them to the
@@ -48,9 +46,10 @@ npx cap open ios
 Then press ▶ in Xcode with your iPhone connected. **No `pod install` step**
 — the project uses SPM, not CocoaPods.
 
-If you don't see `SportstalentHealthKit.swift` / `.m` in the Xcode project
-navigator under `App/App/`, drag them into the App target once (Xcode
-sometimes needs a manual add for new files that appeared via `git pull`).
+If you don't see `SportstalentHealthKit.swift` and `MainViewController.swift`
+in the Xcode project navigator under `App/App/`, drag them into the App target
+once (Xcode sometimes needs a manual add for new files that appeared via
+`git pull`).
 
 ## 4. In the app
 - Settings → **Health** → **Connect Apple Health** (button only shown on
