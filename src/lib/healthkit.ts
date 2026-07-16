@@ -7,16 +7,20 @@
 // idempotently and calls the existing `recompute_wearable_summary` DB
 // function, which drives the existing Health.tsx / RecoveryTile UI.
 //
-// No score, no recommendation, no color coding — those live elsewhere (or
-// not at all for HealthKit V1).
+// The native side is a local Capacitor plugin (`SportstalentHealthKit`) that
+// lives in `ios/App/App/SportstalentHealthKit.swift` + `.m`. No external
+// plugin package is required; the plugin is picked up automatically by
+// Capacitor's iOS bridge as long as the two files are members of the App
+// target in Xcode.
 
-import { Capacitor } from "@capacitor/core";
+import { Capacitor, registerPlugin } from "@capacitor/core";
 import { Preferences } from "@capacitor/preferences";
 import { supabase } from "@/integrations/supabase/client";
 
 const THROTTLE_KEY = "healthkit_last_sync_at";
 const THROTTLE_MS = 60 * 60 * 1000; // 1 hour
 
+// Native identifiers whitelisted on the Swift side.
 const READ_TYPES = [
   "sleepAnalysis",
   "restingHeartRate",
@@ -26,6 +30,56 @@ const READ_TYPES = [
   "workoutType",
 ];
 
+interface QuantitySample {
+  uuid: string;
+  startDate: string;
+  endDate: string;
+  value: number;
+  unit: string;
+  sourceName?: string;
+}
+interface CategorySample {
+  uuid: string;
+  startDate: string;
+  endDate: string;
+  value: number;
+  sourceName?: string;
+}
+interface WorkoutSample {
+  uuid: string;
+  startDate: string;
+  endDate: string;
+  duration: number; // seconds
+  activityType: number;
+  activityName: string;
+  sourceName?: string;
+  totalEnergyBurned?: number;
+  totalDistance?: number;
+}
+
+interface SportstalentHealthKitPlugin {
+  isAvailable(): Promise<{ available: boolean }>;
+  requestAuthorization(opts: { read: string[] }): Promise<{ granted: boolean }>;
+  queryQuantity(opts: {
+    sampleType: string;
+    startDate: string;
+    endDate: string;
+  }): Promise<{ samples: QuantitySample[] }>;
+  queryCategory(opts: {
+    sampleType: string;
+    startDate: string;
+    endDate: string;
+  }): Promise<{ samples: CategorySample[] }>;
+  queryWorkouts(opts: {
+    startDate: string;
+    endDate: string;
+  }): Promise<{ workouts: WorkoutSample[] }>;
+}
+
+const HealthKit = registerPlugin<SportstalentHealthKitPlugin>(
+  "SportstalentHealthKit",
+);
+
 export function isHealthKitAvailable(): boolean {
   try {
     return Capacitor.isNativePlatform() && Capacitor.getPlatform() === "ios";
@@ -34,38 +88,19 @@ export function isHealthKitAvailable(): boolean {
   }
 }
 
-async function getPlugin(): Promise<{ plugin: any | null; reason?: string }> {
-  if (!isHealthKitAvailable()) return { plugin: null, reason: "not_ios" };
+export async function requestHealthKitPermission(): Promise<{
+  ok: boolean;
+  reason?: string;
+}> {
+  if (!isHealthKitAvailable()) return { ok: false, reason: "not_ios" };
   try {
-    const mod: any = await import("@perfood/capacitor-healthkit");
-    const plugin = mod.CapacitorHealthkit ?? mod.default ?? null;
-    if (!plugin) return { plugin: null, reason: "no_export" };
-    if (typeof plugin.requestAuthorization !== "function") {
-      return { plugin: null, reason: "no_native_bridge" };
-    }
-    return { plugin };
-  } catch (e: any) {
-    console.warn("HealthKit plugin import failed", e);
-    return { plugin: null, reason: `import_failed:${e?.message ?? e}` };
-  }
-}
-
-export async function requestHealthKitPermission(): Promise<{ ok: boolean; reason?: string }> {
-  const { plugin, reason } = await getPlugin();
-  if (!plugin) return { ok: false, reason: reason ?? "no_plugin" };
-  try {
-    await plugin.requestAuthorization({
-      all: [],
-      read: READ_TYPES,
-      write: [],
-    });
-    return { ok: true };
+    const res = await HealthKit.requestAuthorization({ read: READ_TYPES });
+    return { ok: !!res?.granted, reason: res?.granted ? undefined : "not_granted" };
   } catch (e: any) {
     console.warn("HealthKit authorization failed", e);
     return { ok: false, reason: `auth_threw:${e?.message ?? e}` };
   }
 }
-
 
 type IngestSample = {
   metric_type:
@@ -84,41 +119,18 @@ type IngestSample = {
   payload?: Record<string, unknown> | null;
 };
 
-function iso(v: any): string | null {
-  if (!v) return null;
-  try {
-    return new Date(v).toISOString();
-  } catch {
-    return null;
-  }
-}
-
-async function queryOne(
-  plugin: any,
-  sampleName: string,
-  startDate: string,
-  endDate: string,
-): Promise<any[]> {
-  try {
-    const res = await plugin.queryHKitSampleType({
-      sampleName,
-      startDate,
-      endDate,
-      limit: 0,
-    });
-    return res?.resultData ?? [];
-  } catch (e) {
-    console.warn(`HealthKit query failed for ${sampleName}`, e);
-    return [];
-  }
-}
-
 export async function syncHealthKit(
   opts: { force?: boolean } = {},
 ): Promise<{ ok: boolean; inserted?: number; workouts?: number; reason?: string }> {
-  const { plugin, reason: pluginReason } = await getPlugin();
-  if (!plugin) return { ok: false, reason: pluginReason ?? "unavailable" };
+  if (!isHealthKitAvailable()) return { ok: false, reason: "not_ios" };
 
+  // Verify the native class is actually in the binary.
+  try {
+    const avail = await HealthKit.isAvailable();
+    if (!avail?.available) return { ok: false, reason: "hk_unavailable" };
+  } catch (e: any) {
+    return { ok: false, reason: `no_native_bridge:${e?.message ?? e}` };
+  }
 
   if (!opts.force) {
     const last = await Preferences.get({ key: THROTTLE_KEY }).catch(() => ({
@@ -130,7 +142,6 @@ export async function syncHealthKit(
     }
   }
 
-  // Determine window. First sync = 90 days, subsequent = 30 days.
   const { data: userRes } = await supabase.auth.getUser();
   const userId = userRes?.user?.id;
   if (!userId) return { ok: false, reason: "no_user" };
@@ -148,125 +159,133 @@ export async function syncHealthKit(
   const startIso = start.toISOString();
   const endIso = end.toISOString();
 
+  const safeQty = async (id: string) => {
+    try {
+      const r = await HealthKit.queryQuantity({
+        sampleType: id,
+        startDate: startIso,
+        endDate: endIso,
+      });
+      return r?.samples ?? [];
+    } catch (e) {
+      console.warn(`HealthKit queryQuantity ${id} failed`, e);
+      return [];
+    }
+  };
+  const safeCat = async (id: string) => {
+    try {
+      const r = await HealthKit.queryCategory({
+        sampleType: id,
+        startDate: startIso,
+        endDate: endIso,
+      });
+      return r?.samples ?? [];
+    } catch (e) {
+      console.warn(`HealthKit queryCategory ${id} failed`, e);
+      return [];
+    }
+  };
+  const safeWorkouts = async () => {
+    try {
+      const r = await HealthKit.queryWorkouts({ startDate: startIso, endDate: endIso });
+      return r?.workouts ?? [];
+    } catch (e) {
+      console.warn("HealthKit queryWorkouts failed", e);
+      return [];
+    }
+  };
+
   const [sleep, rhr, hrv, hr, energy, workouts] = await Promise.all([
-    queryOne(plugin, "sleepAnalysis", startIso, endIso),
-    queryOne(plugin, "restingHeartRate", startIso, endIso),
-    queryOne(plugin, "heartRateVariabilitySDNN", startIso, endIso),
-    queryOne(plugin, "heartRate", startIso, endIso),
-    queryOne(plugin, "activeEnergyBurned", startIso, endIso),
-    queryOne(plugin, "workoutType", startIso, endIso),
+    safeCat("sleepAnalysis"),
+    safeQty("restingHeartRate"),
+    safeQty("heartRateVariabilitySDNN"),
+    safeQty("heartRate"),
+    safeQty("activeEnergyBurned"),
+    safeWorkouts(),
   ]);
 
   const samples: IngestSample[] = [];
 
-  // Sleep — sum minutes of asleep periods. The plugin returns individual
-  // stage/state rows; we forward each row and let downstream aggregate.
+  // Sleep — HKCategoryValueSleepAnalysis: 0=inBed, 1=asleepUnspecified,
+  // 2=awake, 3=asleepCore, 4=asleepDeep, 5=asleepREM. Forward all "asleep"
+  // stages (1, 3, 4, 5). Skip inBed (0) and awake (2).
   for (const s of sleep) {
-    const startAt = iso(s.startDate);
-    const endAt = iso(s.endDate);
-    if (!startAt) continue;
-    const durMin =
-      typeof s.duration === "number"
-        ? s.duration / 60
-        : endAt
-          ? (Date.parse(endAt) - Date.parse(startAt)) / 60000
-          : null;
-    // Only forward "asleep" state (value 1 in HK). Fall back to include-all if
-    // the plugin doesn't expose value.
-    const val = s.value ?? s.sleepState ?? null;
-    const isAsleep = val === null || val === 1 || val === "asleep" || val === "inBed";
+    const isAsleep = [1, 3, 4, 5].includes(s.value);
     if (!isAsleep) continue;
+    const durMin = (Date.parse(s.endDate) - Date.parse(s.startDate)) / 60000;
     samples.push({
       metric_type: "sleep",
       value_numeric: durMin,
       unit: "min",
-      start_at: startAt,
-      end_at: endAt,
-      external_id: s.uuid ?? null,
+      start_at: s.startDate,
+      end_at: s.endDate,
+      external_id: s.uuid,
       source_device: s.sourceName ?? null,
-      payload: { raw_value: val },
+      payload: { hk_sleep_value: s.value },
     });
   }
 
   for (const s of rhr) {
-    const startAt = iso(s.startDate);
-    if (!startAt) continue;
     samples.push({
       metric_type: "resting_hr",
-      value_numeric: typeof s.value === "number" ? s.value : null,
+      value_numeric: s.value,
       unit: "bpm",
-      start_at: startAt,
-      end_at: iso(s.endDate),
-      external_id: s.uuid ?? null,
+      start_at: s.startDate,
+      end_at: s.endDate,
+      external_id: s.uuid,
       source_device: s.sourceName ?? null,
     });
   }
 
   for (const s of hrv) {
-    const startAt = iso(s.startDate);
-    if (!startAt) continue;
     samples.push({
       metric_type: "hrv",
-      value_numeric: typeof s.value === "number" ? s.value : null,
+      value_numeric: s.value,
       unit: "ms",
-      start_at: startAt,
-      end_at: iso(s.endDate),
-      external_id: s.uuid ?? null,
+      start_at: s.startDate,
+      end_at: s.endDate,
+      external_id: s.uuid,
       source_device: s.sourceName ?? null,
     });
   }
 
-  // Heart rate + active energy — forwarded but only used via workouts in UI.
   for (const s of hr) {
-    const startAt = iso(s.startDate);
-    if (!startAt) continue;
     samples.push({
       metric_type: "heart_rate",
-      value_numeric: typeof s.value === "number" ? s.value : null,
+      value_numeric: s.value,
       unit: "bpm",
-      start_at: startAt,
-      end_at: iso(s.endDate),
-      external_id: s.uuid ?? null,
+      start_at: s.startDate,
+      end_at: s.endDate,
+      external_id: s.uuid,
       source_device: s.sourceName ?? null,
     });
   }
 
   for (const s of energy) {
-    const startAt = iso(s.startDate);
-    if (!startAt) continue;
     samples.push({
       metric_type: "active_energy",
-      value_numeric: typeof s.value === "number" ? s.value : null,
+      value_numeric: s.value,
       unit: "kcal",
-      start_at: startAt,
-      end_at: iso(s.endDate),
-      external_id: s.uuid ?? null,
+      start_at: s.startDate,
+      end_at: s.endDate,
+      external_id: s.uuid,
       source_device: s.sourceName ?? null,
     });
   }
 
   for (const w of workouts) {
-    const startAt = iso(w.startDate);
-    if (!startAt) continue;
-    const endAt = iso(w.endDate);
-    const durationMin =
-      typeof w.duration === "number"
-        ? w.duration / 60
-        : endAt
-          ? (Date.parse(endAt) - Date.parse(startAt)) / 60000
-          : null;
+    const durationMin = w.duration ? w.duration / 60 : null;
     samples.push({
       metric_type: "workout",
-      value_numeric: typeof w.totalEnergyBurned === "number" ? w.totalEnergyBurned : null,
+      value_numeric: w.totalEnergyBurned ?? null,
       unit: "kcal",
-      start_at: startAt,
-      end_at: endAt,
-      external_id: w.uuid ?? null,
+      start_at: w.startDate,
+      end_at: w.endDate,
+      external_id: w.uuid,
       source_device: w.sourceName ?? null,
       payload: {
-        activity_label: w.workoutActivityName ?? w.workoutActivityId ?? null,
-        avg_hr: w.averageHeartRate ?? null,
-        max_hr: w.maxHeartRate ?? null,
+        activity_label: w.activityName,
+        activity_type: w.activityType,
         duration_minutes: durationMin,
         calories: w.totalEnergyBurned ?? null,
         distance: w.totalDistance ?? null,
@@ -279,7 +298,6 @@ export async function syncHealthKit(
     return { ok: true, inserted: 0, workouts: 0 };
   }
 
-  // Chunk to <= 2000 per request to stay comfortably under the 5000 cap.
   const CHUNK = 2000;
   let inserted = 0;
   let workoutsCount = 0;
