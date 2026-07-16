@@ -1,6 +1,5 @@
 import UIKit
 import Capacitor
-import SportstalentHealthKit
 
 @objc(MainViewController)
 class MainViewController: CAPBridgeViewController {
