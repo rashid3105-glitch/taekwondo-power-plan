@@ -1,72 +1,33 @@
-## Diagnosis
+## Findings from source verification
 
-The issue is not HealthKit permission or JavaScript naming. `UNIMPLEMENTED` means Capacitor’s native registry does not contain a plugin whose `jsName` is `SportstalentHealthKit` when the web layer calls `registerPlugin("SportstalentHealthKit")`.
-
-The current native setup is mixed:
-
-- Capacitor 8 SPM projects register package plugins from the generated native `capacitor.config.json` `packageClassList`, or from explicit `bridge.registerPluginInstance(...)` in the active `CAPBridgeViewController`.
-- Legacy `CAP_PLUGIN(...)` Objective-C registration can compile but is not a reliable registration path for this Capacitor 8 SPM setup.
-- The sandbox currently has an SPM package plugin plus manual `MainViewController` registration, while your local `git status` shows App-target Swift/Objective-C/bridging-header changes. These two approaches conflict and make it easy for the code to compile but never enter the runtime registry.
+- `SportstalentHealthKit` is on the Capacitor 8 manual registration path: `MainViewController.capacitorDidLoad()` calls `bridge?.registerPluginInstance(SportstalentHealthKit())`.
+- `MainViewController` is wired as the active root controller: `Info.plist` uses `UIMainStoryboardFile = Main`, and `Main.storyboard` sets the initial view controller to `customClass="MainViewController"` with module `App`.
+- `SportstalentHealthKit.swift` is in the App target Sources build phase together with `MainViewController.swift`.
+- The plugin class conforms to `CAPPlugin, CAPBridgedPlugin` and exposes `jsName = "SportstalentHealthKit"` plus `pluginMethods` including `requestAuthorization`.
+- I cannot truthfully confirm `Capacitor.isPluginAvailable("SportstalentHealthKit") === true` from this web sandbox, because that value is produced inside the iOS WebView at runtime. Source-level wiring says it should be true; the native runtime must be instrumented to prove it on-device.
 
 ## Plan
 
-1. **Use one canonical registration model**
-   - Keep the JavaScript API unchanged: `registerPlugin("SportstalentHealthKit")`.
-   - Use Capacitor 8’s Swift `CAPBridgedPlugin` model.
-   - Register the plugin explicitly from the active iOS bridge controller with `bridge?.registerPluginInstance(SportstalentHealthKit())`.
+1. Add explicit native runtime verification in `MainViewController.swift`:
+   - Log when `MainViewController.capacitorDidLoad()` runs.
+   - Register `SportstalentHealthKit` with `bridge?.registerPluginInstance(...)`.
+   - Immediately check `bridge?.plugin(withName: "SportstalentHealthKit") != nil` and log success/failure.
 
-2. **Remove legacy Objective-C registration**
-   - Remove any `.m` file containing `CAP_PLUGIN(...)` for `SportstalentHealthKit`.
-   - Remove the `App-Bridging-Header.h` if it only exists to support the legacy Objective-C plugin bridge.
-   - Remove `SWIFT_OBJC_BRIDGING_HEADER` entries if they were only added for this plugin.
+2. Add a defensive JS availability check in `src/lib/healthkit.ts` before `requestAuthorization(...)`:
+   - Call `Capacitor.isPluginAvailable("SportstalentHealthKit")`.
+   - If false, return a clear `plugin_not_registered` reason instead of only surfacing raw `UNIMPLEMENTED`.
+   - Log native platform, iOS status, and plugin availability for debugging.
 
-3. **Move/keep the plugin in the App target**
-   - Ensure `ios/App/App/SportstalentHealthKit.swift` is the single native plugin implementation.
-   - Make it conform to `CAPPlugin, CAPBridgedPlugin`.
-   - Include:
-     - `@objc(SportstalentHealthKit)`
-     - `let identifier = "SportstalentHealthKit"`
-     - `let jsName = "SportstalentHealthKit"`
-     - `pluginMethods` for `isAvailable`, `requestAuthorization`, `queryQuantity`, `queryCategory`, and `queryWorkouts`
-   - Ensure all exported methods are `@objc`.
+3. Keep the public JS API unchanged:
+   - Continue using `registerPlugin("SportstalentHealthKit")`.
+   - Do not rename methods or change call sites.
 
-4. **Ensure the active bridge controller registers it**
-   - Keep `ios/App/App/MainViewController.swift` in the App target.
-   - Confirm storyboard uses `MainViewController` as the initial bridge controller, not plain `CAPBridgeViewController`.
-   - Register the plugin in `capacitorDidLoad()` after `super.capacitorDidLoad()`.
+4. Verify by static checks:
+   - Confirm no legacy `CAP_PLUGIN(...)`, bridging header, or stale local package references are still participating.
+   - Confirm `MainViewController.swift` and `SportstalentHealthKit.swift` remain in the App target Sources build phase.
 
-5. **Clean up the SPM package plugin path**
-   - Remove `sportstalent-health-kit` from `package.json`, `package-lock.json`, and `bun.lock` if present.
-   - Remove `plugins/sportstalent-health-kit` if it is no longer used.
-   - Remove the `SportstalentHealthKit` dependency/product from `ios/App/CapApp-SPM/Package.swift` so native registration does not depend on generated package auto-discovery.
-
-6. **Audit Xcode project membership**
-   - Ensure `SportstalentHealthKit.swift` and `MainViewController.swift` are in the App target Sources build phase.
-   - Ensure no stale references remain to the deleted `.m`, bridging header, or package plugin.
-
-7. **Verification path**
-   - After implementation, locally run:
-     - `git pull`
-     - `npm install`
-     - `npm run build`
-     - `npx cap sync ios`
-     - Clean build folder in Xcode, then rebuild/run.
-   - Confirm native logs show the app is using `MainViewController` and that `SportstalentHealthKit` is registered before the web app calls HealthKit.
-
-## Expected result
-
-`registerPlugin("SportstalentHealthKit")` will resolve to the native Swift plugin instance instead of returning `UNIMPLEMENTED`, with no JavaScript API change.
-
-## Recovery options
-
-If the issue persists after this cleanup, use History to compare/restore the last known native state before the plugin migration:
-
-<presentation-actions>
-  <presentation-open-history>View History</presentation-open-history>
-</presentation-actions>
-
-After native Capacitor changes, also review the Capacitor blog/docs before testing again.
-
-<presentation-actions>
-<presentation-link url="https://docs.lovable.dev/tips-tricks/troubleshooting">Troubleshooting docs</presentation-link>
-</presentation-actions>
+5. On-device validation steps after implementation:
+   - Run `npm run build && npx cap sync ios`.
+   - Clean Xcode build folder / delete DerivedData if needed.
+   - Launch the iOS app and confirm logs show `MainViewController.capacitorDidLoad` and `SportstalentHealthKit registered: true` before calling HealthKit.
+   - In the WebView console, confirm `Capacitor.isPluginAvailable("SportstalentHealthKit")` returns `true`.
