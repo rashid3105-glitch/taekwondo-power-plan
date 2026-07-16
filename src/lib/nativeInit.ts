@@ -36,6 +36,23 @@ export async function initNative() {
   } catch {
     /* ignore */
   }
+
+  // Kick off a throttled HealthKit sync in the background (iOS only). Safe
+  // no-op if the plugin is missing, if the user hasn't authorized, or if we
+  // synced within the last hour. Runs on app open + resume.
+  try {
+    const { syncHealthKit, isHealthKitAvailable } = await import("@/lib/healthkit");
+    if (isHealthKitAvailable()) {
+      const runSync = () => {
+        syncHealthKit().catch((e) => console.warn("healthkit sync failed", e));
+      };
+      runSync();
+      const { App } = await import("@capacitor/app");
+      App.addListener("resume", runSync);
+    }
+  } catch {
+    /* ignore */
+  }
 }
 
 export const isNative = () => {
