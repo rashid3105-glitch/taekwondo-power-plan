@@ -17,6 +17,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 const THROTTLE_KEY = "healthkit_last_sync_at";
 const THROTTLE_MS = 60 * 60 * 1000; // 1 hour
+const HEALTHKIT_PLUGIN_NAME = "SportstalentHealthKit";
 
 // Native identifiers whitelisted on the Swift side.
 const READ_TYPES = [
@@ -75,8 +76,30 @@ interface SportstalentHealthKitPlugin {
 }
 
 const HealthKit = registerPlugin<SportstalentHealthKitPlugin>(
-  "SportstalentHealthKit",
+  HEALTHKIT_PLUGIN_NAME,
 );
+
+function isHealthKitPluginRegistered(): boolean {
+  try {
+    return Capacitor.isPluginAvailable(HEALTHKIT_PLUGIN_NAME);
+  } catch {
+    return false;
+  }
+}
+
+function logHealthKitBridgeStatus(context: string) {
+  try {
+    console.info("HealthKit bridge status", {
+      context,
+      platform: Capacitor.getPlatform(),
+      native: Capacitor.isNativePlatform(),
+      plugin: HEALTHKIT_PLUGIN_NAME,
+      available: Capacitor.isPluginAvailable(HEALTHKIT_PLUGIN_NAME),
+    });
+  } catch (e) {
+    console.warn("HealthKit bridge status check failed", e);
+  }
+}
 
 export function isHealthKitAvailable(): boolean {
   try {
@@ -91,6 +114,13 @@ export async function requestHealthKitPermission(): Promise<{
   reason?: string;
 }> {
   if (!isHealthKitAvailable()) return { ok: false, reason: "not_ios" };
+
+  logHealthKitBridgeStatus("requestHealthKitPermission");
+
+  if (!isHealthKitPluginRegistered()) {
+    return { ok: false, reason: "plugin_not_registered" };
+  }
+
   try {
     const res = await HealthKit.requestAuthorization({ read: READ_TYPES });
     return { ok: !!res?.granted, reason: res?.granted ? undefined : "not_granted" };
@@ -121,6 +151,12 @@ export async function syncHealthKit(
   opts: { force?: boolean } = {},
 ): Promise<{ ok: boolean; inserted?: number; workouts?: number; reason?: string }> {
   if (!isHealthKitAvailable()) return { ok: false, reason: "not_ios" };
+
+  logHealthKitBridgeStatus("syncHealthKit");
+
+  if (!isHealthKitPluginRegistered()) {
+    return { ok: false, reason: "plugin_not_registered" };
+  }
 
   // Verify the native class is actually in the binary.
   try {
