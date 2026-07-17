@@ -35,17 +35,18 @@ export function RecoveryTile() {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { setLoaded(true); return; }
-      const yday = new Date(Date.now() - 86400_000).toISOString().slice(0, 10);
       const today = new Date().toISOString().slice(0, 10);
+      const since = new Date(Date.now() - 7 * 86400_000).toISOString().slice(0, 10);
       const since3 = new Date(Date.now() - 3 * 86400_000).toISOString();
 
-      const [{ data: sum }, { data: todaySum }, { data: ws }] = await Promise.all([
+      const [{ data: recent }, { data: todaySum }, { data: ws }] = await Promise.all([
         supabase
           .from("wearable_daily_summary")
-          .select("sleep_minutes,resting_hr,hrv_rmssd,steps,baseline_hr_7d,baseline_hrv_7d")
+          .select("summary_date,sleep_minutes,resting_hr,hrv_rmssd,steps,baseline_hr_7d,baseline_hrv_7d")
           .eq("user_id", user.id)
-          .eq("summary_date", yday)
-          .maybeSingle(),
+          .gte("summary_date", since)
+          .order("summary_date", { ascending: false })
+          .limit(7),
         supabase
           .from("wearable_daily_summary")
           .select("steps")
@@ -61,6 +62,10 @@ export function RecoveryTile() {
           .order("start_at", { ascending: false })
           .limit(1),
       ]);
+
+      const sum = (recent ?? []).find((r: any) =>
+        r.sleep_minutes != null || r.resting_hr != null || r.hrv_rmssd != null
+      );
 
       const merged: Summary = {
         sleep_minutes: (sum as any)?.sleep_minutes ?? null,
