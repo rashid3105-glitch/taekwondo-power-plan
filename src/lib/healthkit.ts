@@ -154,6 +154,7 @@ type IngestSample = {
     | "hrv"
     | "heart_rate"
     | "active_energy"
+    | "steps"
     | "workout";
   value_numeric?: number | null;
   unit?: string | null;
