@@ -24,9 +24,9 @@ export function ClubSwitcher({
   if (memberships.length <= 1) return null;
 
   return (
-    <Select value={activeClubId ?? undefined} onValueChange={setActiveClubId}>
+    <Select value={activeClubId ?? undefined} onValueChange={setActiveClubId} className={className}>
       <SelectTrigger
-        className="h-9 min-w-[180px] gap-1.5 border-border bg-card/60 text-xs"
+        className={cn("h-9 min-w-[180px] gap-1.5 border-border bg-card/60 text-xs", triggerClassName)}
         aria-label={t("switchClub")}
       >
         <Building className="h-3.5 w-3.5 text-muted-foreground" />
