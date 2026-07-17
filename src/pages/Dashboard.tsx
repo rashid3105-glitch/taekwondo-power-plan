@@ -800,17 +800,17 @@ export default function Dashboard() {
       <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-card/95 backdrop-blur-sm sm:hidden pb-safe">
         <div className="flex items-stretch justify-around px-1 pt-1.5">
           {(coachAthleteMode === "coach" && isCoach ? [
-            { key: "coach-hold", label: t("coachNav") || "Hold", icon: Users, active: false, onClick: () => navigate("/coach"), dot: coachReportsUnread > 0 },
-            { key: "coach-traening", label: t("train") || "Træning", icon: CalendarRange, active: false, onClick: () => navigate("/coach/season-calendar") },
-            { key: "coach-staevner", label: t("competitions") || "Stævner", icon: Trophy, active: false, onClick: () => navigate("/coach/competitions") },
-            { key: "coach-surveys", label: t("surveysTitle") || "Spørgeskemaer", icon: ClipboardList, active: false, onClick: () => navigate("/coach/surveys") },
+            { key: "coach-hold", label: t("coachNav") || "Hold", icon: Users, iconClassName: "text-primary", active: false, onClick: () => navigate("/coach"), dot: coachReportsUnread > 0 },
+            { key: "coach-traening", label: t("train") || "Træning", icon: CalendarRange, iconClassName: "text-tab-plan", active: false, onClick: () => navigate("/coach/season-calendar") },
+            { key: "coach-staevner", label: t("competitions") || "Stævner", icon: Trophy, iconClassName: "text-amber-500", active: false, onClick: () => navigate("/coach/competitions") },
+            { key: "coach-surveys", label: t("surveysTitle") || "Spørgeskemaer", icon: ClipboardList, iconClassName: "text-tab-mental", active: false, onClick: () => navigate("/coach/surveys") },
 
           ] : [
-            { key: "idag", label: t("today") || "I dag", icon: Home, active: activeTab === "hub", onClick: () => handleTabChange("hub") },
-            { key: "traen", label: t("train") || "Træn", icon: Zap, active: activeTab === "plan", onClick: () => handleTabChange("plan") },
-            { key: "kalender", label: t("seasonCalendar") || "Kalender", icon: CalendarRange, active: activeTab === "calendar", onClick: () => handleTabChange("calendar") },
+            { key: "idag", label: t("today") || "I dag", icon: Home, iconClassName: "text-primary", active: activeTab === "hub", onClick: () => handleTabChange("hub") },
+            { key: "traen", label: t("train") || "Træn", icon: Zap, iconClassName: "text-tab-plan", active: activeTab === "plan", onClick: () => handleTabChange("plan") },
+            { key: "kalender", label: t("seasonCalendar") || "Kalender", icon: CalendarRange, iconClassName: "text-tab-progress", active: activeTab === "calendar", onClick: () => handleTabChange("calendar") },
             { key: "health", label: t("healthNav" as any) || "Sundhed", icon: Heart, iconClassName: "text-red-500 fill-red-500", active: false, onClick: () => navigate("/health") },
-            { key: "video", label: t("hubMatchTitle") || "Video", icon: VideoIcon, active: false, onClick: () => navigate("/match-analysis/me") },
+            { key: "video", label: t("hubMatchTitle") || "Video", icon: VideoIcon, iconClassName: "text-tab-mental", active: false, onClick: () => navigate("/match-analysis/me") },
           ]).map(({ key, label, icon: Icon, active, onClick, dot, iconClassName }: any) => (
             <button
               key={key}
