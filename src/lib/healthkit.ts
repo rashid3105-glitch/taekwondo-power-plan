@@ -247,12 +247,13 @@ export async function syncHealthKit(
     }
   };
 
-  const [sleep, rhr, hrv, hr, energy, workouts] = await Promise.all([
+  const [sleep, rhr, hrv, hr, energy, steps, workouts] = await Promise.all([
     safeCat("sleepAnalysis"),
     safeQty("restingHeartRate"),
     safeQty("heartRateVariabilitySDNN"),
     safeQty("heartRate"),
     safeQty("activeEnergyBurned"),
+    safeQty("stepCount"),
     safeWorkouts(),
   ]);
 
