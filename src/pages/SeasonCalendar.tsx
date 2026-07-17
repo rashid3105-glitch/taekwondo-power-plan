@@ -943,7 +943,7 @@ export default function SeasonCalendar() {
                       else setViewMonth((m) => m + 1);
                     }}><ChevronRight className="h-4 w-4" /></Button>
                     {selectedPlan && (
-                      <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => window.print()} aria-label={t("seasonPrint")} title={t("seasonPrint")}>
+                      <Button variant="outline" size="icon" className="h-8 w-8 print:hidden" onClick={() => window.print()} aria-label={t("seasonPrint")} title={t("seasonPrint")}>
                         <Printer className="h-4 w-4 text-primary" />
                       </Button>
                     )}
