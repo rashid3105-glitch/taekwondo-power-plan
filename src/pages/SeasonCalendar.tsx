@@ -547,7 +547,6 @@ export default function SeasonCalendar() {
             <span className="font-extrabold truncate">{t("seasonCalendar")}</span>
           </div>
           <div className="flex items-center gap-2 shrink-0 min-w-0">
-            <ClubSwitcher />
             <LanguageSwitcher />
           </div>
         </div>
@@ -556,6 +555,9 @@ export default function SeasonCalendar() {
       <main className="container max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 grid lg:grid-cols-[300px_1fr] gap-6">
         {/* Sidebar */}
         <aside className="space-y-4 print:hidden">
+          <Card className="p-3">
+            <ClubSwitcher triggerClassName="w-full" />
+          </Card>
           <Card className="p-4 space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="font-semibold text-sm">{t("seasonPlan")}</h2>
