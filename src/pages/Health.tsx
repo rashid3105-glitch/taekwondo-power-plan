@@ -102,6 +102,13 @@ export default function Health() {
     setResyncing(true);
     haptics.tap();
     try {
+      // On iOS: pull fresh samples from Apple Health first, then recompute.
+      if (isHealthKitAvailable()) {
+        const hk = await syncHealthKit({ force: true });
+        if (!hk.ok && hk.reason && hk.reason !== "throttled") {
+          console.warn("HealthKit sync returned", hk);
+        }
+      }
       const { data, error } = await supabase.functions.invoke("resync-health", { body: { days: 30 } });
       if (error) throw error;
       const n = (data as any)?.days_synced ?? 0;
