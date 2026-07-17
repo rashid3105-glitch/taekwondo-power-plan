@@ -139,6 +139,7 @@ public class SportstalentHealthKit: CAPPlugin, CAPBridgedPlugin {
             case "restingHeartRate", "heartRate": return "bpm"
             case "heartRateVariabilitySDNN": return "ms"
             case "activeEnergyBurned": return "kcal"
+            case "stepCount": return "count"
             default: return ""
             }
         }()
