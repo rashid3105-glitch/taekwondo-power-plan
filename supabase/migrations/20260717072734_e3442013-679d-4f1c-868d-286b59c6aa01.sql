@@ -1,0 +1,2 @@
+ALTER TABLE public.workout_logs DROP CONSTRAINT IF EXISTS workout_logs_entry_type_check;
+ALTER TABLE public.workout_logs ADD CONSTRAINT workout_logs_entry_type_check CHECK (entry_type IN ('plan', 'self', 'wearable'));
