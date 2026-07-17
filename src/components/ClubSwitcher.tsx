@@ -1,5 +1,6 @@
 import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -9,7 +10,13 @@ import {
 } from "@/components/ui/select";
 import { Building } from "lucide-react";
 
-export function ClubSwitcher() {
+export function ClubSwitcher({
+  className,
+  triggerClassName,
+}: {
+  className?: string;
+  triggerClassName?: string;
+}) {
   const { memberships, activeClubId, setActiveClubId } = useActiveClub();
   const { t } = useLanguage();
 
