@@ -16,7 +16,7 @@ import { Preferences } from "@capacitor/preferences";
 import { supabase } from "@/integrations/supabase/client";
 
 const THROTTLE_KEY = "healthkit_last_sync_at";
-const THROTTLE_MS = 60 * 60 * 1000; // 1 hour
+const THROTTLE_MS = 10 * 60 * 1000; // 10 minutes
 const HEALTHKIT_PLUGIN_NAME = "SportstalentHealthKit";
 
 // Native identifiers whitelisted on the Swift side.
@@ -26,6 +26,7 @@ const READ_TYPES = [
   "heartRateVariabilitySDNN",
   "heartRate",
   "activeEnergyBurned",
+  "stepCount",
   "workoutType",
 ];
 
