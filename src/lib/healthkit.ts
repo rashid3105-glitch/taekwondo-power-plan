@@ -326,6 +326,19 @@ export async function syncHealthKit(
     });
   }
 
+  for (const s of steps) {
+    samples.push({
+      metric_type: "steps",
+      value_numeric: s.value,
+      unit: "count",
+      start_at: s.startDate,
+      end_at: s.endDate,
+      external_id: s.uuid,
+      source_device: s.sourceName ?? null,
+    });
+  }
+
+
   for (const w of workouts) {
     const durationMin = w.duration ? w.duration / 60 : null;
     samples.push({
