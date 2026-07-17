@@ -548,11 +548,6 @@ export default function SeasonCalendar() {
           </div>
           <div className="flex items-center gap-2 shrink-0 min-w-0">
             <ClubSwitcher />
-            {selectedPlan && (
-              <Button variant="outline" size="icon" onClick={() => window.print()} aria-label={t("seasonPrint")} title={t("seasonPrint")}>
-                <Printer className="h-4 w-4" />
-              </Button>
-            )}
             <LanguageSwitcher />
           </div>
         </div>
@@ -942,10 +937,17 @@ export default function SeasonCalendar() {
                     else setViewMonth((m) => m - 1);
                   }}><ChevronLeft className="h-4 w-4" /></Button>
                   <span className="font-semibold text-sm">{MONTH_NAMES[viewMonth]} {viewYear}</span>
-                  <Button variant="ghost" size="icon" className="h-8 w-8" aria-label={t("next")} title={t("next")} onClick={() => {
-                    if (viewMonth === 11) { setViewMonth(0); setViewYear((y) => y + 1); }
-                    else setViewMonth((m) => m + 1);
-                  }}><ChevronRight className="h-4 w-4" /></Button>
+                  <div className="flex items-center gap-1">
+                    <Button variant="ghost" size="icon" className="h-8 w-8" aria-label={t("next")} title={t("next")} onClick={() => {
+                      if (viewMonth === 11) { setViewMonth(0); setViewYear((y) => y + 1); }
+                      else setViewMonth((m) => m + 1);
+                    }}><ChevronRight className="h-4 w-4" /></Button>
+                    {selectedPlan && (
+                      <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => window.print()} aria-label={t("seasonPrint")} title={t("seasonPrint")}>
+                        <Printer className="h-4 w-4 text-primary" />
+                      </Button>
+                    )}
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-7 border-b border-border">
