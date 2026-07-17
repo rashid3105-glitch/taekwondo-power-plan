@@ -24,24 +24,26 @@ export function ClubSwitcher({
   if (memberships.length <= 1) return null;
 
   return (
-    <Select value={activeClubId ?? undefined} onValueChange={setActiveClubId} className={className}>
-      <SelectTrigger
-        className={cn("h-9 min-w-[180px] gap-1.5 border-border bg-card/60 text-xs", triggerClassName)}
-        aria-label={t("switchClub")}
-      >
-        <Building className="h-3.5 w-3.5 text-muted-foreground" />
-        <SelectValue placeholder={t("activeClub")} />
-      </SelectTrigger>
-      <SelectContent>
-        {memberships.map((m) => (
-          <SelectItem key={m.club_id} value={m.club_id} className="text-sm">
-            <span className="font-medium">{m.club_name || m.club_id.slice(0, 6)}</span>
-            <span className="ml-2 text-[10px] uppercase tracking-wider text-muted-foreground">
-              {m.role_in_club}
-            </span>
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <div className={className}>
+      <Select value={activeClubId ?? undefined} onValueChange={setActiveClubId}>
+        <SelectTrigger
+          className={cn("h-9 min-w-[180px] gap-1.5 border-border bg-card/60 text-xs", triggerClassName)}
+          aria-label={t("switchClub")}
+        >
+          <Building className="h-3.5 w-3.5 text-muted-foreground" />
+          <SelectValue placeholder={t("activeClub")} />
+        </SelectTrigger>
+        <SelectContent>
+          {memberships.map((m) => (
+            <SelectItem key={m.club_id} value={m.club_id} className="text-sm">
+              <span className="font-medium">{m.club_name || m.club_id.slice(0, 6)}</span>
+              <span className="ml-2 text-[10px] uppercase tracking-wider text-muted-foreground">
+                {m.role_in_club}
+              </span>
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
   );
 }
