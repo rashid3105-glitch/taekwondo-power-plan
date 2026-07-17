@@ -41,6 +41,7 @@ const ALLOWED = new Set([
   "hrv",
   "heart_rate",
   "active_energy",
+  "steps",
   "workout",
 ]);
 

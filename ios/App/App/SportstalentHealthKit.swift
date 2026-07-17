@@ -38,6 +38,7 @@ public class SportstalentHealthKit: CAPPlugin, CAPBridgedPlugin {
             "heartRateVariabilitySDNN": .heartRateVariabilitySDNN,
             "heartRate": .heartRate,
             "activeEnergyBurned": .activeEnergyBurned,
+            "stepCount": .stepCount,
         ]
         guard let ident = map[id] else { return nil }
         return HKObjectType.quantityType(forIdentifier: ident)
@@ -138,6 +139,7 @@ public class SportstalentHealthKit: CAPPlugin, CAPBridgedPlugin {
             case "restingHeartRate", "heartRate": return "bpm"
             case "heartRateVariabilitySDNN": return "ms"
             case "activeEnergyBurned": return "kcal"
+            case "stepCount": return "count"
             default: return ""
             }
         }()

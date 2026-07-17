@@ -19,17 +19,21 @@ export function HubRecoveryStrip() {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { setLoaded(true); return; }
-      const yday = new Date(Date.now() - 86400_000).toISOString().slice(0, 10);
+      const since = new Date(Date.now() - 7 * 86400_000).toISOString().slice(0, 10);
       const { data } = await supabase
         .from("wearable_daily_summary")
-        .select("sleep_minutes,resting_hr,hrv_rmssd")
+        .select("summary_date,sleep_minutes,resting_hr,hrv_rmssd")
         .eq("user_id", user.id)
-        .eq("summary_date", yday)
-        .maybeSingle();
+        .gte("summary_date", since)
+        .order("summary_date", { ascending: false })
+        .limit(7);
+      const row = (data ?? []).find((r: any) =>
+        r.sleep_minutes != null || r.resting_hr != null || r.hrv_rmssd != null
+      );
       setSummary({
-        sleep_minutes: (data as any)?.sleep_minutes ?? null,
-        resting_hr: (data as any)?.resting_hr ?? null,
-        hrv_rmssd: (data as any)?.hrv_rmssd ?? null,
+        sleep_minutes: (row as any)?.sleep_minutes ?? null,
+        resting_hr: (row as any)?.resting_hr ?? null,
+        hrv_rmssd: (row as any)?.hrv_rmssd ?? null,
       });
       setLoaded(true);
     })();

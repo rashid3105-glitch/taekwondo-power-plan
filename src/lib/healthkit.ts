@@ -16,7 +16,7 @@ import { Preferences } from "@capacitor/preferences";
 import { supabase } from "@/integrations/supabase/client";
 
 const THROTTLE_KEY = "healthkit_last_sync_at";
-const THROTTLE_MS = 60 * 60 * 1000; // 1 hour
+const THROTTLE_MS = 10 * 60 * 1000; // 10 minutes
 const HEALTHKIT_PLUGIN_NAME = "SportstalentHealthKit";
 
 // Native identifiers whitelisted on the Swift side.
@@ -26,6 +26,7 @@ const READ_TYPES = [
   "heartRateVariabilitySDNN",
   "heartRate",
   "activeEnergyBurned",
+  "stepCount",
   "workoutType",
 ];
 
@@ -153,6 +154,7 @@ type IngestSample = {
     | "hrv"
     | "heart_rate"
     | "active_energy"
+    | "steps"
     | "workout";
   value_numeric?: number | null;
   unit?: string | null;
@@ -245,12 +247,13 @@ export async function syncHealthKit(
     }
   };
 
-  const [sleep, rhr, hrv, hr, energy, workouts] = await Promise.all([
+  const [sleep, rhr, hrv, hr, energy, steps, workouts] = await Promise.all([
     safeCat("sleepAnalysis"),
     safeQty("restingHeartRate"),
     safeQty("heartRateVariabilitySDNN"),
     safeQty("heartRate"),
     safeQty("activeEnergyBurned"),
+    safeQty("stepCount"),
     safeWorkouts(),
   ]);
 
@@ -322,6 +325,19 @@ export async function syncHealthKit(
       source_device: s.sourceName ?? null,
     });
   }
+
+  for (const s of steps) {
+    samples.push({
+      metric_type: "steps",
+      value_numeric: s.value,
+      unit: "count",
+      start_at: s.startDate,
+      end_at: s.endDate,
+      external_id: s.uuid,
+      source_device: s.sourceName ?? null,
+    });
+  }
+
 
   for (const w of workouts) {
     const durationMin = w.duration ? w.duration / 60 : null;
