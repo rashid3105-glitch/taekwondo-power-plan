@@ -173,8 +173,18 @@ export function GlobalAppMenu() {
     };
   }, [userId]);
 
-  if (authed !== true) return null;
-  if (shouldHide(pathname)) return null;
+  const hidden = authed !== true || shouldHide(pathname);
+
+  useEffect(() => {
+    if (hidden) {
+      document.body.classList.remove("has-app-menu");
+      return;
+    }
+    document.body.classList.add("has-app-menu");
+    return () => document.body.classList.remove("has-app-menu");
+  }, [hidden]);
+
+  if (hidden) return null;
 
   const isDemoLockedTab = (tab: TabKey) =>
     isDemo && !["hub", "plan"].includes(tab);
