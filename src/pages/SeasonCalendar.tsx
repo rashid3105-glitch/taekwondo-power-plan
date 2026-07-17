@@ -549,9 +549,8 @@ export default function SeasonCalendar() {
           <div className="flex items-center gap-2 shrink-0 min-w-0">
             <ClubSwitcher />
             {selectedPlan && (
-              <Button variant="outline" size="sm" onClick={() => window.print()}>
+              <Button variant="outline" size="icon" onClick={() => window.print()} aria-label={t("seasonPrint")} title={t("seasonPrint")}>
                 <Printer className="h-4 w-4" />
-                <span className="hidden sm:inline ml-1">{t("seasonPrint")}</span>
               </Button>
             )}
             <LanguageSwitcher />
