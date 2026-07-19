@@ -10,7 +10,7 @@ import { isNativeApp } from "@/lib/platform";
 import { useLanguage } from "@/i18n/LanguageContext";
 import coachSittingAsset from "@/assets/coach-sitting.png";
 import coachStandingAsset from "@/assets/coach-standing.jpg";
-import heroDeadliftAsset from "@/assets/hero-deadlift.jpg";
+// Hero image is served from /public as a preloaded WebP for LCP performance
 
 const useWidth = () => {
   const [w, setW] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
@@ -254,8 +254,12 @@ const Index = () => {
               boxShadow: isMobile ? "0 18px 48px rgba(0,0,0,0.45)" : "0 30px 80px rgba(0,0,0,0.5)",
             }}>
               <img
-                src={heroDeadliftAsset}
+                src="/hero-deadlift.webp"
                 alt="Atlet udfører deadlift"
+                width={650}
+                height={1244}
+                fetchpriority="high"
+                decoding="async"
                 style={{
                   width: "100%",
                   height: "100%",
