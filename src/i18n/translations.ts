@@ -22979,8 +22979,6 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   hubOpenInDiary: "Abrir en diario",
 
   privacyContactDesc: "Si tiene preguntas sobre el tratamiento de su información o desea ejercer sus derechos, puede contactarnos en:",
-  homeSeoTitle: "Sportstalent — Entrenamiento de ciencias del deporte para taekwondo",
-  homeSeoDesc: "La plataforma de ciencias del deporte para atletas y entrenadores de taekwondo. Entrenamiento periodizado y seguimiento del progreso en un solo lugar.",
 } as const;
 
 (translations as unknown as Record<string, Record<string, string>>).es = {
