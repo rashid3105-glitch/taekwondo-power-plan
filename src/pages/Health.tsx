@@ -289,7 +289,31 @@ export default function Health() {
       const disclaimer = "Norms are general-population reference ranges (NSF sleep, AHA resting HR, RMSSD HRV literature). Trained athletes often sit below the RHR band and above the HRV band — that is usually a positive sign. This report is informational, not medical advice.";
       doc.text(doc.splitTextToSize(disclaimer, maxW), margin, y);
 
-      doc.save(`health-report-${new Date().toISOString().slice(0, 10)}.pdf`);
+      const filename = `health-report-${new Date().toISOString().slice(0, 10)}.pdf`;
+      if (isNativeApp()) {
+        // On iOS/Android the standard <a download> path is silently blocked
+        // inside the Capacitor WebView. Write the PDF to the app cache and
+        // trigger the native share sheet so the user can Save to Files,
+        // AirDrop, mail it, etc.
+        const dataUri = doc.output("datauristring"); // "data:application/pdf;filename=...;base64,XXXX"
+        const base64 = dataUri.substring(dataUri.indexOf(",") + 1);
+        const written = await Filesystem.writeFile({
+          path: filename,
+          data: base64,
+          directory: Directory.Cache,
+        });
+        try {
+          await Share.share({
+            title: t("healthPdfTitle"),
+            url: written.uri,
+            dialogTitle: t("healthReportReady"),
+          });
+        } catch {
+          // user cancelled share sheet — file is still in cache, no error
+        }
+      } else {
+        doc.save(filename);
+      }
       toast.success(t("healthReportReady"));
     } catch (e) {
       console.error("downloadAIReport failed", e);
