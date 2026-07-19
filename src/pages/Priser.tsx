@@ -43,7 +43,7 @@ export default function Priser() {
 
   return (
     <LandingLayout>
-      <PageMeta title={`${t("navPricing")} — Sportstalent`} description={t("pricingSeoDesc")} canonical="https://sportstalent.dk/priser" />
+      <PageMeta title={t("pricingSeoTitle")} description={t("pricingSeoDesc")} canonical="https://sportstalent.dk/priser" />
 
       <section style={{ padding: "80px 32px", textAlign: "center", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
         <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(245,200,66,0.1)", border: "0.5px solid rgba(245,200,66,0.28)", borderRadius: 20, padding: "4px 14px", fontSize: 11, color: GOLD, fontWeight: 700, letterSpacing: "0.08em", marginBottom: 24 }}>
