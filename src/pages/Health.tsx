@@ -88,7 +88,7 @@ export default function Health() {
       setHkConnected(true);
       setHkLastSync(new Date().toISOString());
       toast.success(t("healthAppleHealthConnected"));
-      setTimeout(() => window.location.reload(), 800);
+      await load();
     } catch (e) {
       console.error(e);
       toast.error(t("healthAppleHealthSyncFailed"));
