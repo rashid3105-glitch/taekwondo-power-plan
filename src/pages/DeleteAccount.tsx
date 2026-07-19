@@ -262,14 +262,14 @@ function Section({ title, rows, unit }: { title: string; rows: CountRow[]; unit:
   if (visible.length === 0) {
     return (
       <div>
-        <h3 className="text-xs uppercase tracking-wider text-white/45 mb-2">{title}</h3>
-        <p className="text-xs text-white/40">—</p>
+        <h3 className="text-xs uppercase tracking-wider text-white/65 mb-2">{title}</h3>
+        <p className="text-xs text-white/60">—</p>
       </div>
     );
   }
   return (
     <div>
-      <h3 className="text-xs uppercase tracking-wider text-white/45 mb-2">{title}</h3>
+      <h3 className="text-xs uppercase tracking-wider text-white/65 mb-2">{title}</h3>
       <ul className="text-xs text-white/70 space-y-1">
         {visible.map((r) => (
           <li key={`${r.table}.${r.column}`} className="flex justify-between gap-2">
