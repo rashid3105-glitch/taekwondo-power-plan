@@ -90,7 +90,7 @@ const en: CLStrings = {
   navGetStarted: "Get Started",
 
   heroBadge: "BUILT FOR TAEKWONDO COACHES",
-  heroTitle: "You have 15 athletes.",
+  heroTitle: "Coaching Platform for Taekwondo Clubs",
   heroPhrases: [
     "You have time for 3.",
     "Sportstalent changes that.",
@@ -250,7 +250,7 @@ const da: CLStrings = {
   navGetStarted: "Kom i gang",
 
   heroBadge: "BYGGET TIL TAEKWONDO-TRÆNERE",
-  heroTitle: "Du har 15 atleter.",
+  heroTitle: "Coaching-platform til taekwondo-klubber",
   heroPhrases: [
     "Du har tid til 3.",
     "Sportstalent ændrer det.",
@@ -410,7 +410,7 @@ const sv: CLStrings = {
   navGetStarted: "Kom igång",
 
   heroBadge: "BYGGD FÖR TAEKWONDO-TRÄNARE",
-  heroTitle: "Du har 15 atleter.",
+  heroTitle: "Coachingplattform för taekwondo-klubbar",
   heroPhrases: [
     "Du hinner med 3.",
     "Sportstalent ändrar det.",
@@ -558,7 +558,7 @@ const no: CLStrings = {
   navGetStarted: "Kom i gang",
 
   heroBadge: "BYGD FOR TAEKWONDO-TRENERE",
-  heroTitle: "Du har 15 utøvere.",
+  heroTitle: "Coaching-plattform for taekwondo-klubber",
   heroPhrases: [
     "Du har tid til 3.",
     "Sportstalent endrer det.",
@@ -706,7 +706,7 @@ const de: CLStrings = {
   navGetStarted: "Loslegen",
 
   heroBadge: "GEBAUT FÜR TAEKWONDO-TRAINER",
-  heroTitle: "Du hast 15 Athleten.",
+  heroTitle: "Coaching-Plattform für Taekwondo-Vereine",
   heroPhrases: [
     "Du hast Zeit für 3.",
     "Sportstalent ändert das.",
@@ -854,7 +854,7 @@ const ar: CLStrings = {
   navGetStarted: "ابدأ الآن",
 
   heroBadge: "مصمم لمدربي التايكوندو",
-  heroTitle: "لديك 15 رياضياً.",
+  heroTitle: "منصة تدريب لأندية التايكوندو",
   heroPhrases: [
     "لديك وقت لـ 3 فقط.",
     "Sportstalent يغيّر ذلك.",
@@ -1005,7 +1005,7 @@ const es: CLStrings = {
   navGetStarted: "Empezar",
 
   heroBadge: "Creado para entrenadores de taekwondo",
-  heroTitle: "Tienes 15 atletas.",
+  heroTitle: "Plataforma de coaching para clubes de taekwondo",
   heroPhrases: [
     "Tienes tiempo para 3.",
     "Sportstalent cambia eso.",
