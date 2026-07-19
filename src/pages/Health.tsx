@@ -496,9 +496,9 @@ export default function Health() {
           title={t("healthForceSync")}
           className="group relative shrink-0 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
-          <div className="absolute -inset-1 rounded-2xl bg-primary/20 blur transition-all group-active:blur-md" />
-          <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-card border border-border text-primary shadow-lg active:scale-95 transition-transform">
-            <Activity className={cn("h-7 w-7", resyncing && "animate-spin")} />
+          <div className={cn("absolute -inset-1 rounded-2xl bg-red-500/30 blur transition-all group-active:blur-md", !resyncing && "animate-pulse")} />
+          <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-card border border-border shadow-lg active:scale-95 transition-transform">
+            <Heart className={cn("h-7 w-7 text-red-500 fill-red-500", resyncing ? "animate-ping" : "animate-pulse")} />
           </div>
         </button>
 
