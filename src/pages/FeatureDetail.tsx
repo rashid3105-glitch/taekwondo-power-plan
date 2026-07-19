@@ -220,7 +220,7 @@ const FeatureDetail = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col relative">
-      <PageMeta title={t(feature.titleKey)} description={feature.longDesc[lang]} />
+      <PageMeta title={t(feature.titleKey)} description={feature.longDesc[lang]} canonical={`https://sportstalent.dk/features/${section}`} />
       <Watermark />
       <PublicNav />
 
