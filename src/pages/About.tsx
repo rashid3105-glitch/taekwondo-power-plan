@@ -23,7 +23,7 @@ export default function About() {
       {
         "@type": "AboutPage",
         url: "https://sportstalent.dk/about",
-        name: `${t("navAbout")} — Sportstalent`,
+        name: t("aboutSeoTitle"),
         description: t("aboutSeoDesc"),
         inLanguage: locale,
       },
@@ -46,7 +46,7 @@ export default function About() {
 
   return (
     <LandingLayout>
-      <PageMeta title={`${t("navAbout")} — Sportstalent`} description={t("aboutSeoDesc")} canonical="https://sportstalent.dk/about" />
+      <PageMeta title={t("aboutSeoTitle")} description={t("aboutSeoDesc")} canonical="https://sportstalent.dk/about" />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutLd) }} />
 
       <section style={{ padding: "80px 32px", textAlign: "center", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
