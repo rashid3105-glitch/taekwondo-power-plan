@@ -22,6 +22,9 @@ import { toast } from "sonner";
 import { haptics } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 import jsPDF from "jspdf";
+import { isNativeApp } from "@/lib/platform";
+import { Filesystem, Directory } from "@capacitor/filesystem";
+import { Share } from "@capacitor/share";
 
 interface DailyRow {
   summary_date: string;
