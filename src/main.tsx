@@ -1,4 +1,5 @@
 import { createRoot } from "react-dom/client";
+import { HelmetProvider } from "react-helmet-async";
 import App from "./App.tsx";
 import "./index.css";
 import { initNative, isNative } from "./lib/nativeInit";
@@ -68,7 +69,9 @@ const withTimeout = <T,>(p: Promise<T>, ms: number): Promise<T | null> =>
   } catch {
     /* never block mount */
   }
-  createRoot(document.getElementById("root")!).render(<App />);
+  createRoot(document.getElementById("root")!).render(
+    <HelmetProvider><App /></HelmetProvider>
+  );
   // Bind listener after mount; supabase client is imported lazily inside.
   bindAuthPersistence();
 })();

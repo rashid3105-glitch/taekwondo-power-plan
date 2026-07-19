@@ -20,8 +20,8 @@ import { AppUpdateBanner } from "@/components/AppUpdateBanner";
 import { SplashScreen } from "@/components/SplashScreen";
 import { isNativeApp } from "@/lib/platform";
 import Index from "./pages/Index";
-import Landing from "./pages/Landing";
 import CoachLanding from "./pages/CoachLanding";
+import { PublicSeo } from "@/components/seo/SeoHead";
 import FeatureDetail from "./pages/FeatureDetail";
 import PlatformPage from "./pages/PlatformPage";
 import Auth from "./pages/Auth";
@@ -181,28 +181,29 @@ const AnimatedRoutes = () => {
     <>
     <AnimatePresence mode="wait" initial={false}>
       <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<Page><Index /></Page>} />
-        <Route path="/v3" element={<Page><CoachLanding /></Page>} />
-        <Route path="/v2" element={<Page><Landing /></Page>} />
+        <Route path="/" element={<Page><PublicSeo path="/" title="Sportstalent — Sport Science Training for Taekwondo Athletes" description="Sportstalent — the sport science platform for taekwondo athletes and coaches. Periodized training, progress tracking, and team management in one place." /><Index /></Page>} />
+        <Route path="/for-traenere" element={<Page><PublicSeo path="/for-traenere" title="For trænere og klubber — Sportstalent" description="Værktøjer til taekwondo-trænere og klubber: sæsonplaner, holdstyring, tests og fremgang for hver atlet — samlet ét sted." /><CoachLanding /></Page>} />
+        <Route path="/v3" element={<Navigate to="/for-traenere" replace />} />
         <Route path="/signup/coach" element={<Page><SignupCoach /></Page>} />
         <Route path="/invite/:code" element={<Page><InviteSignup /></Page>} />
         <Route path="/signup" element={<Navigate to="/auth?tab=signup" replace />} />
         <Route path="/login" element={<Navigate to="/auth?tab=signin" replace />} />
-        <Route path="/methodology" element={<Page><Methodology /></Page>} />
-        <Route path="/about" element={<Page><About /></Page>} />
-        <Route path="/programs" element={<Page><Programs /></Page>} />
-        <Route path="/platform" element={<Page><PlatformMarketing /></Page>} />
-        <Route path="/funktioner" element={<Page><Funktioner /></Page>} />
-        <Route path="/priser" element={isNativeApp() ? <Navigate to="/dashboard" replace /> : <Page><Priser /></Page>} />
-        <Route path="/terms" element={<Page><Terms /></Page>} />
-        <Route path="/blog" element={<Page><Blog /></Page>} />
+        <Route path="/methodology" element={<Page><PublicSeo path="/methodology" title="Metode — sportsvidenskab bag Sportstalent" description="Sådan bygger Sportstalent periodiserede taekwondo-programmer: styrke, hastighed, teknik og restitution baseret på sportsvidenskab." /><Methodology /></Page>} />
+        <Route path="/about" element={<Page><PublicSeo path="/about" title="Om Sportstalent — hold og mission" description="Sportstalent er bygget af taekwondo-atleter og trænere for at gøre sportsvidenskabelig træning tilgængelig for klubber i hele Skandinavien." /><About /></Page>} />
+        <Route path="/programs" element={<Page><PublicSeo path="/programs" title="Programmer — taekwondo styrke og kondition" description="Se de programtyper Sportstalent leverer: eksplosivitet, hastighed, sparring-kondition, teknik og restitution — tilpasset dit niveau og din uge." /><Programs /></Page>} />
+        <Route path="/platform" element={<Page><PublicSeo path="/platform" title="Platform — alt-i-én for taekwondo klubber" description="Sportstalent samler træningsplaner, dagbog, tests, stævnelog og trænerdashboard i én platform for klubber og landshold." /><PlatformMarketing /></Page>} />
+        <Route path="/funktioner" element={<Page><PublicSeo path="/funktioner" title="Funktioner — Sportstalent til taekwondo" description="Overblik over funktionerne i Sportstalent: sæsonkalender, træningsplaner, mental træning, kost, tests og trænerværktøjer." /><Funktioner /></Page>} />
+        <Route path="/priser" element={isNativeApp() ? <Navigate to="/dashboard" replace /> : <Page><PublicSeo path="/priser" title="Priser — Sportstalent for klubber og atleter" description="Se priser for Sportstalent til taekwondo-atleter, trænere og klubber. Klubpakker med mængderabat og prøveperiode." /><Priser /></Page>} />
+        <Route path="/terms" element={<Page><PublicSeo path="/terms" title="Vilkår — Sportstalent" description="Handelsbetingelser og brugervilkår for Sportstalent." /><Terms /></Page>} />
+        <Route path="/blog" element={<Page><PublicSeo path="/blog" title="Blog — taekwondo træning og sportsvidenskab" description="Artikler om taekwondo, styrke, hastighed, mental træning og restitution — skrevet af Sportstalent-teamet." /><Blog /></Page>} />
         <Route path="/blog/:slug" element={<Page><BlogPost /></Page>} />
         <Route path="/blog-comment/confirm" element={<Page><BlogCommentConfirm /></Page>} />
+
         <Route path="/admin/blog" element={<Page><AdminBlog /></Page>} />
         <Route path="/admin/blog/comments" element={<Page><AdminBlogComments /></Page>} />
         <Route path="/admin/blog/new" element={<Page><AdminBlogEditor /></Page>} />
         <Route path="/admin/blog/:id/edit" element={<Page><AdminBlogEditor /></Page>} />
-        <Route path="/contact" element={<Page><Contact /></Page>} />
+        <Route path="/contact" element={<Page><PublicSeo path="/contact" title="Kontakt Sportstalent" description="Kom i kontakt med Sportstalent for support, klubaftaler eller partnerskaber inden for taekwondo." /><Contact /></Page>} />
         <Route path="/features/:section" element={<Page><FeatureDetail /></Page>} />
         <Route path="/platform/:slug" element={<Page><PlatformPage /></Page>} />
         <Route path="/auth" element={<Page><Auth /></Page>} />
@@ -269,8 +270,9 @@ const AnimatedRoutes = () => {
         <Route path="/payment-success" element={<Page><PaymentSuccess /></Page>} />
 
         <Route path="/unsubscribe" element={<Page><Unsubscribe /></Page>} />
-        <Route path="/privacy" element={<Page><PrivacyPolicy /></Page>} />
-        <Route path="/taekwondo-training-program" element={<Page><SeoLanding /></Page>} />
+        <Route path="/privacy" element={<Page><PublicSeo path="/privacy" title="Privatlivspolitik — Sportstalent" description="Sådan behandler Sportstalent personoplysninger for atleter, forældre, trænere og klubber i overensstemmelse med GDPR." /><PrivacyPolicy /></Page>} />
+        <Route path="/taekwondo-training-program" element={<Page><PublicSeo path="/taekwondo-training-program" title="Taekwondo træningsprogram — bygget efter sportsvidenskab" description="Et periodiseret taekwondo-træningsprogram for eksplosivitet, hastighed og teknik — tilpasset dit niveau og dine ugentlige klubtræninger." /><SeoLanding /></Page>} />
+
         <Route path="/progress" element={<Navigate to="/dashboard" replace />} />
         <Route path="/mockup/season-onboarding" element={<Page><MockupSeasonOnboarding /></Page>} />
         <Route path="/mockup/athlete-goals" element={<Page><MockupAthleteGoals /></Page>} />
