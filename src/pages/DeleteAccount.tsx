@@ -171,7 +171,7 @@ export default function DeleteAccount() {
                 </p>
               )}
               <Collapsible className="mt-4">
-                <CollapsibleTrigger className="flex w-full items-center justify-between text-xs uppercase tracking-wider text-white/45 group">
+                <CollapsibleTrigger className="flex w-full items-center justify-between text-xs uppercase tracking-wider text-white/65 group">
                   <span>{t("deleteDryRunShowDetails" as any) || "Vis detaljer"}</span>
                   <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
                 </CollapsibleTrigger>
@@ -188,7 +188,7 @@ export default function DeleteAccount() {
                   />
                   {dryRun.storage.length > 0 && (
                     <div>
-                      <h3 className="text-xs uppercase tracking-wider text-white/45 mb-2">
+                      <h3 className="text-xs uppercase tracking-wider text-white/65 mb-2">
                         {t("deleteDryRunStorageSection" as any) || "Filer i lagring"}
                       </h3>
                       <ul className="text-xs text-white/70 space-y-1">
@@ -228,7 +228,7 @@ export default function DeleteAccount() {
           </div>
 
           <div className="space-y-2 mb-4">
-            <Label className="text-xs uppercase tracking-wider text-white/45">
+            <Label className="text-xs uppercase tracking-wider text-white/65">
               {t("typeToConfirm" as any) || "Skriv"} <span className="text-red-400 font-bold">{CONFIRM_PHRASE}</span>{" "}
               {t("toConfirm" as any) || "for at bekræfte"}
             </Label>
@@ -273,7 +273,7 @@ function Section({ title, rows, unit }: { title: string; rows: CountRow[]; unit:
       <ul className="text-xs text-white/70 space-y-1">
         {visible.map((r) => (
           <li key={`${r.table}.${r.column}`} className="flex justify-between gap-2">
-            <span className="truncate">{r.table} <span className="text-white/30">({r.column})</span></span>
+            <span className="truncate">{r.table} <span className="text-white/60">({r.column})</span></span>
             <span className={r.error ? "text-red-400" : ""}>
               {r.error ? r.error : `${r.count} ${unit}`}
             </span>
