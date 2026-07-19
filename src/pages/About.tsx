@@ -67,7 +67,7 @@ export default function About() {
             <img src="/founder-farooq.jpg" alt="Farooq Rashid" style={{ width: 210, height: 270, objectFit: "cover", borderRadius: 14, border: "0.5px solid rgba(255,255,255,0.08)", display: "block" }} onError={(e) => { e.currentTarget.style.display = "none"; }} />
             <div style={{ position: "absolute", bottom: -12, right: -12, background: "#0B0C14", border: "0.5px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "10px 14px" }}>
               <div style={{ fontSize: 20, fontWeight: 900, color: GOLD }}>30+</div>
-              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", marginTop: 1 }}>{t("aboutFounderYears")}</div>
+              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.5)", marginTop: 1 }}>{t("aboutFounderYears")}</div>
             </div>
           </div>
           <div>

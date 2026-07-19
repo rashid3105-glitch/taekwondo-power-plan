@@ -107,7 +107,7 @@ const Index = () => {
           })}
           <line x1={0} y1={20} x2={280} y2={20} stroke="rgba(245,200,66,0.25)" strokeDasharray="2 3" />
         </svg>
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9, color: "rgba(255,255,255,0.3)", marginTop: 6 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9, color: "rgba(255,255,255,0.5)", marginTop: 6 }}>
           <span>MON 22</span><span>SUN 04</span>
         </div>
       </div>
@@ -130,7 +130,7 @@ const Index = () => {
           <div style={{ maxWidth: 1200, margin: "0 auto", padding: `26px ${pad}px 22px` }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
               <div style={{ fontFamily: MONO, fontSize: 10, letterSpacing: "0.22em", color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}>{t("homeChapterLabel")}</div>
-              <div style={{ fontFamily: MONO, fontSize: 9, color: "rgba(255,255,255,0.3)", letterSpacing: "0.16em" }}>/ SPORTSTALENT</div>
+              <div style={{ fontFamily: MONO, fontSize: 9, color: "rgba(255,255,255,0.5)", letterSpacing: "0.16em" }}>/ SPORTSTALENT</div>
             </div>
             <div style={{ display: "flex", alignItems: "baseline", gap: 14 }}>
               <div style={{ fontFamily: MONO, fontSize: 64, fontWeight: 900, color: GOLD, letterSpacing: "-0.05em", lineHeight: 0.9 }}>{n}</div>
@@ -152,7 +152,7 @@ const Index = () => {
             <div style={{ fontSize: 18, fontWeight: 800, letterSpacing: "-0.01em", color: "#fff" }}>{label}</div>
             {title && <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)" }}>{title}</div>}
           </div>
-          <div style={{ marginLeft: "auto", fontFamily: MONO, fontSize: 10, color: "rgba(255,255,255,0.3)", letterSpacing: "0.14em" }}>/ SPORTSTALENT</div>
+          <div style={{ marginLeft: "auto", fontFamily: MONO, fontSize: 10, color: "rgba(255,255,255,0.5)", letterSpacing: "0.14em" }}>/ SPORTSTALENT</div>
         </div>
       </div>
     );
@@ -289,7 +289,7 @@ const Index = () => {
               { t: t("homeProblem3T"), d: t("homeProblem3D") },
             ].map((p, i) => (
               <div key={i} style={{ background: "rgba(255,255,255,0.02)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: "24px 22px" }}>
-                <div style={{ fontSize: 11, letterSpacing: "0.14em", color: "rgba(255,255,255,0.3)", fontFamily: MONO, marginBottom: 10 }}>0{i + 1}</div>
+                <div style={{ fontSize: 11, letterSpacing: "0.14em", color: "rgba(255,255,255,0.5)", fontFamily: MONO, marginBottom: 10 }}>0{i + 1}</div>
                 <div style={{ fontSize: 17, fontWeight: 700, marginBottom: 8 }}>{p.t}</div>
                 <div style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", lineHeight: 1.65 }}>{p.d}</div>
               </div>
@@ -377,7 +377,7 @@ const Index = () => {
             { n: "03", t: t("homeHow3T"), d: t("homeHow3D") },
           ].map((s, i) => (
             <div key={i} style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: "26px 22px", position: "relative" }}>
-              <div style={{ fontFamily: MONO, fontSize: 42, fontWeight: 900, color: "rgba(245,200,66,0.15)", letterSpacing: "-0.02em", lineHeight: 1 }}>{s.n}</div>
+              <div style={{ fontFamily: MONO, fontSize: 42, fontWeight: 900, color: "rgba(245,200,66,0.3)", letterSpacing: "-0.02em", lineHeight: 1 }}>{s.n}</div>
               <div style={{ fontSize: 17, fontWeight: 700, marginTop: 8, marginBottom: 8 }}>{s.t}</div>
               <div style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", lineHeight: 1.6 }}>{s.d}</div>
             </div>
@@ -551,7 +551,7 @@ const Index = () => {
             {t("homeCtaBody")}
           </p>
           <button onClick={() => navigate("/auth?tab=signup")} style={{ padding: "15px 38px", borderRadius: 10, border: "none", background: GOLD, color: BG, fontSize: 15, fontWeight: 800, cursor: "pointer", boxShadow: "0 15px 40px rgba(245,200,66,0.25)" }}>{t("homeCtaButton")}</button>
-          <div style={{ marginTop: 16, fontSize: 12, color: "rgba(255,255,255,0.35)", fontFamily: MONO, letterSpacing: "0.06em" }}>{t("homeCtaTrust")}</div>
+          <div style={{ marginTop: 16, fontSize: 12, color: "rgba(255,255,255,0.5)", fontFamily: MONO, letterSpacing: "0.06em" }}>{t("homeCtaTrust")}</div>
         </div>
       </section>
 

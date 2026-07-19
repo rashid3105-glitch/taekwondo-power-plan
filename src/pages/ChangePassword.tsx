@@ -11,8 +11,8 @@ import { toast } from "sonner";
 import { validatePassword } from "@/lib/passwordValidation";
 
 const cardCls = "rounded-xl bg-white/[0.03] border border-white/10 p-5 sm:p-6";
-const sectionTitleCls = "text-xs uppercase tracking-wider text-white/35 mb-4";
-const inputCls = "bg-white/[0.04] border-white/10 text-white placeholder:text-white/30 focus-visible:ring-white/20";
+const sectionTitleCls = "text-xs uppercase tracking-wider text-white/55 mb-4";
+const inputCls = "bg-white/[0.04] border-white/10 text-white placeholder:text-white/60 focus-visible:ring-white/20";
 
 export default function ChangePassword() {
   const navigate = useNavigate();
@@ -83,7 +83,7 @@ export default function ChangePassword() {
           </h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label className="text-xs uppercase tracking-wider text-white/45">
+              <Label className="text-xs uppercase tracking-wider text-white/65">
                 {t("currentPassword" as any) || "Nuværende adgangskode"}
               </Label>
               <Input
@@ -96,7 +96,7 @@ export default function ChangePassword() {
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-xs uppercase tracking-wider text-white/45">
+              <Label className="text-xs uppercase tracking-wider text-white/65">
                 {t("newPassword" as any) || "Ny adgangskode"}
               </Label>
               <Input
@@ -109,7 +109,7 @@ export default function ChangePassword() {
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-xs uppercase tracking-wider text-white/45">
+              <Label className="text-xs uppercase tracking-wider text-white/65">
                 {t("confirmNewPassword" as any) || "Bekræft ny adgangskode"}
               </Label>
               <Input
