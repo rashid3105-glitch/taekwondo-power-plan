@@ -68,18 +68,27 @@ export const PageMeta = ({ title, description, canonical, noindex, ogType, ogIma
       if (twDesc) twDesc.setAttribute("content", description);
     }
 
-    // Handle noindex
+    // Handle robots. Default in index.html is now noindex,nofollow (private-by-default).
+    // We only flip to index,follow when explicitly noindex=false OR a canonical is provided
+    // (which marks the page as a public, indexable route).
     const robotsMeta = document.querySelector('meta[name="robots"]');
+    const previousRobots = robotsMeta?.getAttribute("content") ?? null;
     if (robotsMeta) {
-      robotsMeta.setAttribute("content", noindex ? "noindex, nofollow" : "index, follow");
+      if (noindex) {
+        robotsMeta.setAttribute("content", "noindex, nofollow");
+      } else if (canonical || noindex === false) {
+        robotsMeta.setAttribute("content", "index, follow");
+      }
     }
 
     return () => {
-      // Reset robots on unmount
-      if (noindex && robotsMeta) {
-        robotsMeta.setAttribute("content", "index, follow");
+      // Restore the sitewide default on unmount so a public page's index,follow
+      // doesn't leak into a subsequently-rendered private page.
+      if (robotsMeta && previousRobots !== null) {
+        robotsMeta.setAttribute("content", previousRobots);
       }
     };
+
   }, [title, description, canonical, noindex, ogType, ogImage]);
 
   return null;
