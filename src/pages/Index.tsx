@@ -258,7 +258,7 @@ const Index = () => {
                 alt="Atlet udfører deadlift"
                 width={650}
                 height={1244}
-                fetchpriority="high"
+                fetchPriority="high"
                 decoding="async"
                 style={{
                   width: "100%",
