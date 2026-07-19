@@ -162,7 +162,7 @@ export function PlanProgramMobile({
                       const v = computeWeekVariant(ex, activeWeek, periodization);
                       return (
                         <li key={j} className="flex items-start gap-3 text-[12px]">
-                          <span className="text-white/30 font-mono tabular-nums w-6 shrink-0">
+                          <span className="text-white/60 font-mono tabular-nums w-6 shrink-0">
                             {String(j + 1).padStart(2, "0")}
                           </span>
                           <span className="flex-1 text-white/90 leading-snug">
@@ -290,7 +290,7 @@ export function PlanProgramMobile({
                   })}
                 </div>
               </div>
-              <ChevronRight className="h-4 w-4 text-white/30 shrink-0" />
+              <ChevronRight className="h-4 w-4 text-white/50 shrink-0" />
             </button>
           );
         })}

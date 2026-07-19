@@ -439,7 +439,7 @@ function LicenseFieldsSection({ coachId }: { coachId: string | null }) {
                   onChange={(e) => setNewValue(e.target.value)}
                   onKeyDown={(e) => { if (e.key === "Enter") addField(); if (e.key === "Escape") { setAdding(false); setNewValue(""); } }}
                   placeholder="F.eks. DTaF licensnr."
-                  className="flex-1 h-9 bg-transparent text-sm text-white placeholder:text-white/30 outline-none border-b border-white/20 focus:border-white/40"
+                  className="flex-1 h-9 bg-transparent text-sm text-white placeholder:text-white/60 outline-none border-b border-white/20 focus:border-white/40"
                 />
                 <button onClick={addField} aria-label="Tilføj" className="p-2" style={{ color: "var(--accent-hex, #ef4444)" }}>
                   <Check className="h-4 w-4" />

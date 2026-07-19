@@ -12,8 +12,8 @@ import { toast } from "sonner";
 import { DELETE_ACCOUNT_API_CONFIRMATION } from "@/lib/accountDeletion";
 
 const cardCls = "rounded-xl bg-white/[0.03] border border-white/10 p-5 sm:p-6";
-const sectionTitleCls = "text-xs uppercase tracking-wider text-white/35 mb-4";
-const inputCls = "bg-white/[0.04] border-white/10 text-white placeholder:text-white/30 focus-visible:ring-white/20";
+const sectionTitleCls = "text-xs uppercase tracking-wider text-white/55 mb-4";
+const inputCls = "bg-white/[0.04] border-white/10 text-white placeholder:text-white/60 focus-visible:ring-white/20";
 
 const CONFIRM_PHRASE = "SLET";
 
