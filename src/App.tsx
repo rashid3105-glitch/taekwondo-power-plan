@@ -63,6 +63,10 @@ import Methodology from "./pages/Methodology";
 import Unsubscribe from "./pages/Unsubscribe";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import SeoLanding from "./pages/SeoLanding";
+import TaekwondoTraeningsprogram from "./pages/seo/TaekwondoTraeningsprogram";
+import Poomsae from "./pages/seo/Poomsae";
+import TaekwondoTeknik from "./pages/seo/TaekwondoTeknik";
+import StaevneforberedelseTaekwondo from "./pages/seo/StaevneforberedelseTaekwondo";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import About from "./pages/About";
 import Programs from "./pages/Programs";
@@ -272,6 +276,10 @@ const AnimatedRoutes = () => {
         <Route path="/unsubscribe" element={<Page><Unsubscribe /></Page>} />
         <Route path="/privacy" element={<Page><PublicSeo path="/privacy" title="Privatlivspolitik — Sportstalent" description="Sådan behandler Sportstalent personoplysninger for atleter, forældre, trænere og klubber i overensstemmelse med GDPR." /><PrivacyPolicy /></Page>} />
         <Route path="/taekwondo-training-program" element={<Page><PublicSeo path="/taekwondo-training-program" title="Taekwondo træningsprogram — bygget efter sportsvidenskab" description="Et periodiseret taekwondo-træningsprogram for eksplosivitet, hastighed og teknik — tilpasset dit niveau og dine ugentlige klubtræninger." /><SeoLanding /></Page>} />
+        <Route path="/taekwondo-traeningsprogram" element={<Page><TaekwondoTraeningsprogram /></Page>} />
+        <Route path="/poomsae" element={<Page><Poomsae /></Page>} />
+        <Route path="/taekwondo-teknik" element={<Page><TaekwondoTeknik /></Page>} />
+        <Route path="/staevneforberedelse-taekwondo" element={<Page><StaevneforberedelseTaekwondo /></Page>} />
 
         <Route path="/progress" element={<Navigate to="/dashboard" replace />} />
         <Route path="/mockup/season-onboarding" element={<Page><MockupSeasonOnboarding /></Page>} />
