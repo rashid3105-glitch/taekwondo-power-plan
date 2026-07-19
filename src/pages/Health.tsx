@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Activity, Footprints, Info, FileDown, ChevronDown } from "lucide-react";
+import { ArrowLeft, Activity, Footprints, Info, FileDown, ChevronDown, RefreshCw } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PageMeta } from "@/components/PageMeta";
 import { isHealthKitAvailable, requestHealthKitPermission, syncHealthKit } from "@/lib/healthkit";
@@ -20,6 +20,7 @@ import { HealthSourceGuide } from "@/components/health/HealthSourceGuide";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { haptics } from "@/lib/haptics";
+import { cn } from "@/lib/utils";
 import jsPDF from "jspdf";
 
 interface DailyRow {
@@ -486,44 +487,45 @@ export default function Health() {
         <ArrowLeft className="h-4 w-4 mr-1" /> {t("back")}
       </Button>
 
-      <div className="flex items-start gap-3 mb-3">
-        <div className="p-3 rounded-lg bg-primary/10">
-          <Activity className="h-6 w-6 text-primary" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <h1 className="text-2xl font-bold">{t("healthPageTitle")}</h1>
-          <p className="text-sm text-muted-foreground">
+      {/* Cockpit header: icon-based sync + report actions */}
+      <div className="flex items-start gap-4 mb-6">
+        <button
+          type="button"
+          onClick={forceResync}
+          disabled={resyncing}
+          title={t("healthForceSync")}
+          className="group relative shrink-0 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        >
+          <div className="absolute -inset-1 rounded-2xl bg-primary/20 blur transition-all group-active:blur-md" />
+          <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-card border border-border text-primary shadow-lg active:scale-95 transition-transform">
+            <Activity className={cn("h-7 w-7", resyncing && "animate-spin")} />
+          </div>
+        </button>
+
+        <div className="flex-1 min-w-0 pt-0.5">
+          <div className="flex items-start justify-between gap-3">
+            <h1 className="text-3xl font-bold tracking-tight">{t("healthPageTitle")}</h1>
+            <button
+              type="button"
+              onClick={downloadAIReport}
+              disabled={reporting || steps.length === 0}
+              title={t("healthReportButton")}
+              className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-self text-self-foreground shadow-lg active:scale-95 transition-transform disabled:opacity-50 disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            >
+              <FileDown className={cn("h-5 w-5", reporting && "animate-pulse")} />
+            </button>
+          </div>
+          <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
             {t("healthPageSubtitleManual")}
           </p>
-        </div>
-        <div className="flex flex-col gap-2 shrink-0">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={forceResync}
-            disabled={resyncing}
-            className="h-11 sm:h-9 gap-2"
-          >
-            <Activity className={`h-4 w-4 ${resyncing ? "animate-pulse" : ""}`} />
-            {resyncing ? t("healthForceSyncRunning") : t("healthForceSync")}
-          </Button>
-          <Button
-            size="sm"
-            onClick={downloadAIReport}
-            disabled={reporting || steps.length === 0}
-            className="h-11 sm:h-9"
-          >
-            <FileDown className={`h-4 w-4 mr-2 ${reporting ? "animate-pulse" : ""}`} />
-            {reporting ? t("healthReportLoading") : t("healthReportButton")}
-          </Button>
         </div>
       </div>
 
       {/* Apple Health connection (iOS native only) */}
       {hkAvailable && (
-        <Card className="mb-4 border-primary/30 bg-primary/5">
+        <Card className="mb-4 border border-border/60 bg-card/80 backdrop-blur">
           <CardContent className="pt-4 pb-4 flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-primary/10">
+            <div className="p-2 rounded-xl bg-primary/10">
               <Heart className="h-5 w-5 text-primary" />
             </div>
             <div className="flex-1 min-w-0">
@@ -536,19 +538,15 @@ export default function Health() {
                 </div>
               )}
             </div>
-            <Button
-              size="sm"
-              variant={hkConnected ? "outline" : "default"}
+            <button
+              type="button"
               onClick={connectAppleHealth}
               disabled={hkConnecting}
-              className="h-11 sm:h-9"
+              title={hkConnected ? t("healthForceSync") : t("healthConnectAppleHealth")}
+              className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow active:scale-95 transition-transform disabled:opacity-50 disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
-              {hkConnecting
-                ? t("healthAppleHealthSyncing")
-                : hkConnected
-                  ? t("healthForceSync")
-                  : t("healthConnectAppleHealth")}
-            </Button>
+              <RefreshCw className={cn("h-5 w-5", hkConnecting && "animate-spin")} />
+            </button>
           </CardContent>
         </Card>
       )}

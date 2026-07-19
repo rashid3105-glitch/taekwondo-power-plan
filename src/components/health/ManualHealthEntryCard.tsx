@@ -123,7 +123,7 @@ export function ManualHealthEntryCard({ onSaved }: Props) {
   }
 
   return (
-    <Card className="mb-4 border-2 border-primary/30">
+    <Card className="mb-4 border border-border/60 bg-card/80 backdrop-blur shadow-lg">
       <CardHeader className="pb-3">
         <CardTitle className="text-base flex items-center gap-2">
           <Save className="h-4 w-4 text-primary" />
