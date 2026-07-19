@@ -303,6 +303,7 @@ const App = () => {
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <DefaultNoIndex />
             <BodyPointerEventsGuard />
             <ActiveClubProvider>
               <RoleProvider>
