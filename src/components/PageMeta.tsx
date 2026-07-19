@@ -24,13 +24,17 @@ export const PageMeta = ({ title, description, canonical, noindex, ogType, ogIma
       }
     }
 
-    // Update canonical link
-    const canonicalEl = document.querySelector('link[rel="canonical"]');
-    if (canonical && canonicalEl) {
-      canonicalEl.setAttribute("href", canonical);
-    } else if (canonicalEl) {
-      canonicalEl.setAttribute("href", "https://sportstalent.dk/");
+    // Ensure a canonical <link> exists so we can set it per-route
+    let canonicalEl = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+    if (!canonicalEl) {
+      canonicalEl = document.createElement("link");
+      canonicalEl.setAttribute("rel", "canonical");
+      document.head.appendChild(canonicalEl);
     }
+    if (canonical) {
+      canonicalEl.setAttribute("href", canonical);
+    }
+
 
     // Update og:url
     const ogUrl = document.querySelector('meta[property="og:url"]');
