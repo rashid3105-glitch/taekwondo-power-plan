@@ -22,6 +22,9 @@ import { toast } from "sonner";
 import { haptics } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 import jsPDF from "jspdf";
+import { isNativeApp } from "@/lib/platform";
+import { Filesystem, Directory } from "@capacitor/filesystem";
+import { Share } from "@capacitor/share";
 
 interface DailyRow {
   summary_date: string;
@@ -286,7 +289,31 @@ export default function Health() {
       const disclaimer = "Norms are general-population reference ranges (NSF sleep, AHA resting HR, RMSSD HRV literature). Trained athletes often sit below the RHR band and above the HRV band — that is usually a positive sign. This report is informational, not medical advice.";
       doc.text(doc.splitTextToSize(disclaimer, maxW), margin, y);
 
-      doc.save(`health-report-${new Date().toISOString().slice(0, 10)}.pdf`);
+      const filename = `health-report-${new Date().toISOString().slice(0, 10)}.pdf`;
+      if (isNativeApp()) {
+        // On iOS/Android the standard <a download> path is silently blocked
+        // inside the Capacitor WebView. Write the PDF to the app cache and
+        // trigger the native share sheet so the user can Save to Files,
+        // AirDrop, mail it, etc.
+        const dataUri = doc.output("datauristring"); // "data:application/pdf;filename=...;base64,XXXX"
+        const base64 = dataUri.substring(dataUri.indexOf(",") + 1);
+        const written = await Filesystem.writeFile({
+          path: filename,
+          data: base64,
+          directory: Directory.Cache,
+        });
+        try {
+          await Share.share({
+            title: t("healthPdfTitle"),
+            url: written.uri,
+            dialogTitle: t("healthReportReady"),
+          });
+        } catch {
+          // user cancelled share sheet — file is still in cache, no error
+        }
+      } else {
+        doc.save(filename);
+      }
       toast.success(t("healthReportReady"));
     } catch (e) {
       console.error("downloadAIReport failed", e);
@@ -487,38 +514,37 @@ export default function Health() {
         <ArrowLeft className="h-4 w-4 mr-1" /> {t("back")}
       </Button>
 
-      {/* Cockpit header: icon-based sync + report actions */}
-      <div className="flex items-start gap-4 mb-6">
-        <button
-          type="button"
-          onClick={forceResync}
-          disabled={resyncing}
-          title={t("healthForceSync")}
-          className="group relative shrink-0 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-        >
-          <div className={cn("absolute -inset-1 rounded-2xl bg-red-500/30 blur transition-all group-active:blur-md", !resyncing && "animate-pulse")} />
-          <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-card border border-border shadow-lg active:scale-95 transition-transform">
-            <Heart className={cn("h-7 w-7 text-red-500 fill-red-500", resyncing ? "animate-ping" : "animate-pulse")} />
-          </div>
-        </button>
-
-        <div className="flex-1 min-w-0 pt-0.5">
-          <div className="flex items-start justify-between gap-3">
-            <h1 className="text-3xl font-bold tracking-tight">{t("healthPageTitle")}</h1>
+      {/* Cockpit header: title + report + sync actions */}
+      <div className="mb-6">
+        <div className="flex items-start justify-between gap-3">
+          <h1 className="text-3xl font-bold tracking-tight flex-1 min-w-0">{t("healthPageTitle")}</h1>
+          <div className="flex items-center gap-2 shrink-0">
             <button
               type="button"
               onClick={downloadAIReport}
               disabled={reporting || steps.length === 0}
               title={t("healthReportButton")}
-              className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-self text-self-foreground shadow-lg active:scale-95 transition-transform disabled:opacity-50 disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-self text-self-foreground shadow-lg active:scale-95 transition-transform disabled:opacity-50 disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               <FileDown className={cn("h-5 w-5", reporting && "animate-pulse")} />
             </button>
+            <button
+              type="button"
+              onClick={forceResync}
+              disabled={resyncing}
+              title={t("healthForceSync")}
+              className="group relative rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            >
+              <div className={cn("absolute -inset-1 rounded-2xl bg-red-500/30 blur transition-all group-active:blur-md", !resyncing && "animate-pulse")} />
+              <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-card border border-border shadow-lg active:scale-95 transition-transform">
+                <Heart className={cn("h-5 w-5 text-red-500 fill-red-500", resyncing ? "animate-ping" : "animate-pulse")} />
+              </div>
+            </button>
           </div>
-          <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-            {t("healthPageSubtitleManual")}
-          </p>
         </div>
+        <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+          {t("healthPageSubtitleManual")}
+        </p>
       </div>
 
       {/* Apple Health connection (iOS native only) */}
