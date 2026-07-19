@@ -114,7 +114,7 @@ export default function Health() {
       if (error) throw error;
       const n = (data as any)?.days_synced ?? 0;
       toast.success(t("healthForceSyncDone").replace("{n}", String(n)));
-      setTimeout(() => window.location.reload(), 600);
+      await load();
     } catch (e) {
       console.error(e);
       toast.error(t("healthForceSyncFailed"));
