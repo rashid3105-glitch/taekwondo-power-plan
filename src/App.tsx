@@ -203,7 +203,7 @@ const AnimatedRoutes = () => {
         <Route path="/admin/blog/comments" element={<Page><AdminBlogComments /></Page>} />
         <Route path="/admin/blog/new" element={<Page><AdminBlogEditor /></Page>} />
         <Route path="/admin/blog/:id/edit" element={<Page><AdminBlogEditor /></Page>} />
-        <Route path="/contact" element={<Page><Contact /></Page>} />
+        <Route path="/contact" element={<Page><PublicSeo path="/contact" title="Kontakt Sportstalent" description="Kom i kontakt med Sportstalent for support, klubaftaler eller partnerskaber inden for taekwondo." /><Contact /></Page>} />
         <Route path="/features/:section" element={<Page><FeatureDetail /></Page>} />
         <Route path="/platform/:slug" element={<Page><PlatformPage /></Page>} />
         <Route path="/auth" element={<Page><Auth /></Page>} />
