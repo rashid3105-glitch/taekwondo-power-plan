@@ -48,6 +48,8 @@ export function SeoArticleShell({
   return (
     <div className="min-h-screen bg-background flex flex-col relative">
       <PageMeta title={title} description={description} canonical={canonical} ogType="article" />
+      <PublicSeo title={title} description={description} path={canonical.replace(/^https?:\/\/[^/]+/, "")} ogType="article" />
+
       <Watermark />
       <PublicNav />
 
