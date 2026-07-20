@@ -5,6 +5,7 @@ import { PublicNav } from "@/components/PublicNav";
 import { AppFooter } from "@/components/AppFooter";
 import { Watermark } from "@/components/Watermark";
 import { PageMeta } from "@/components/PageMeta";
+import { PublicSeo } from "@/components/seo/SeoHead";
 import { Button } from "@/components/ui/button";
 
 interface RelatedLink {
@@ -47,6 +48,8 @@ export function SeoArticleShell({
   return (
     <div className="min-h-screen bg-background flex flex-col relative">
       <PageMeta title={title} description={description} canonical={canonical} ogType="article" />
+      <PublicSeo title={title} description={description} path={canonical.replace(/^https?:\/\/[^/]+/, "")} ogType="article" />
+
       <Watermark />
       <PublicNav />
 
