@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 
 android {
     namespace = "dk.sportstalent.app"
@@ -22,6 +23,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    kotlinOptions {
+        jvmTarget = "17"
+    }
 }
 
 repositories {
@@ -40,6 +44,12 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
+
+    // Kotlin coroutines (used by the local SportstalentHealthConnect plugin).
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1"
+
+    // Health Connect client (androidx). Requires minSdk 26.
+    implementation "androidx.health.connect:connect-client:$healthConnectVersion"
 }
 
 apply from: 'capacitor.build.gradle'
