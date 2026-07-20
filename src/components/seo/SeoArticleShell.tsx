@@ -5,6 +5,7 @@ import { PublicNav } from "@/components/PublicNav";
 import { AppFooter } from "@/components/AppFooter";
 import { Watermark } from "@/components/Watermark";
 import { PageMeta } from "@/components/PageMeta";
+import { PublicSeo } from "@/components/seo/SeoHead";
 import { Button } from "@/components/ui/button";
 
 interface RelatedLink {
