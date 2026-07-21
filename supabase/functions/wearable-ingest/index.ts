@@ -78,6 +78,12 @@ Deno.serve(async (req) => {
     const grantedScopes: string[] = Array.isArray(body?.granted_scopes)
       ? body.granted_scopes
       : [];
+    // Provider defaults to apple_health for backwards compatibility with the
+    // iOS client shipped before Android/Health Connect existed.
+    const provider: string =
+      typeof body?.provider === "string" && body.provider.length > 0
+        ? body.provider
+        : "apple_health";
 
     if (samples.length === 0) {
       return json({ inserted: 0, workouts_inserted: 0 });
@@ -95,7 +101,7 @@ Deno.serve(async (req) => {
       if (!s.start_at || Number.isNaN(Date.parse(s.start_at))) continue;
       rows.push({
         user_id: userId,
-        provider: "apple_health",
+        provider,
         metric_type: s.metric_type,
         value_numeric: s.value_numeric ?? null,
         unit: s.unit ?? null,
@@ -122,7 +128,7 @@ Deno.serve(async (req) => {
               : null;
         workoutRows.push({
           user_id: userId,
-          wearable_source: "apple_health",
+          wearable_source: provider,
           external_id: s.external_id ?? null,
           entry_type: "wearable",
           completed: true,
@@ -208,12 +214,12 @@ Deno.serve(async (req) => {
       if (error) console.error("recompute failed", error);
     }
 
-    // Upsert wearable_connections row for provider apple_health.
+    // Upsert wearable_connections row for this provider.
     const { data: existing } = await svc
       .from("wearable_connections")
       .select("id")
       .eq("user_id", userId)
-      .eq("provider", "apple_health")
+      .eq("provider", provider)
       .maybeSingle();
     if (existing) {
       await svc
@@ -229,7 +235,7 @@ Deno.serve(async (req) => {
     } else {
       await svc.from("wearable_connections").insert({
         user_id: userId,
-        provider: "apple_health",
+        provider,
         status: "connected",
         last_sync_at: new Date().toISOString(),
         last_attempt_at: new Date().toISOString(),
@@ -237,6 +243,7 @@ Deno.serve(async (req) => {
         granted_scopes: grantedScopes,
       });
     }
+
 
     return json({
       inserted,
