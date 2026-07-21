@@ -314,6 +314,7 @@ const App = () => {
                     <AnimatedRoutes />
                   </ConsentGate>
                   <GlobalAppMenu />
+                  <AppBottomNav />
                   <ClubSwitchOverlay />
                 </CoachModeProvider>
               </RoleProvider>
