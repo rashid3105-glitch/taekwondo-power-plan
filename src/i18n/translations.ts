@@ -18124,6 +18124,11 @@ const translations = {
     pmCtaTitle: "مستعد للتدريب بذكاء؟",
     pmCtaSub: "ابدأ مجانًا 30 يومًا. بدون بطاقة ائتمان. ألغِ في أي وقت.",
     pmCtaBtn: "ابدأ مجانًا 30 يومًا →",
+    createAthleteAction: "إنشاء رياضي",
+    createAthleteShortDesc: "أنشئ حساب رياضي مباشرة تحت ناديك",
+    inviteAthletesShortDesc: "أرسل دعوات إلى الرياضيين عبر البريد الإلكتروني",
+    changelog_2026_07_21: "21 يوليو 2026",
+    changelogEntry177: "تظهر شريط التنقل السفلي الآن على الأجهزة اللوحية والويب — وليس فقط على الهاتف. اكتمال الترجمات الإسبانية. تم إصلاح التسميات المفقودة في قائمة 'إضافة رياضي'.",
   },
   no: {
     onbWelcomeTitle: "Velkommen til Sportstalent",
