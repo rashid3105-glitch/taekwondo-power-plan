@@ -157,6 +157,11 @@ export async function requestHealthConnectPermission(): Promise<{
     console.info("HealthConnect native registration", debug);
 
     const res = await HealthConnect.requestAuthorization({ read: READ_TYPES });
+    console.info("HC sync: requestAuthorization result", {
+      granted: res?.granted,
+      grantedPermissions: res?.grantedPermissions ?? [],
+      requestedTypes: READ_TYPES,
+    });
     return {
       ok: !!res?.granted,
       reason: res?.granted ? undefined : "not_granted",
