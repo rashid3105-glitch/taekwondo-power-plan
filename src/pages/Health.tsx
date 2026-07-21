@@ -115,11 +115,13 @@ export default function Health() {
     haptics.tap();
     try {
       const auth = await requestHealthConnectPermission();
+      console.info("HC UI: requestHealthConnectPermission →", auth);
       if (!auth.ok) {
         toast.error(`${t("healthHcDenied")} [${auth.reason ?? "unknown"}]`);
         return;
       }
       const res = await syncHealthConnect({ force: true });
+      console.info("HC UI: syncHealthConnect (connect) →", res);
       if (!res.ok) {
         toast.error(`${t("healthHcSyncFailed")} [${res.reason ?? "unknown"}]`);
         return;
@@ -152,6 +154,7 @@ export default function Health() {
       // On Android: pull fresh samples from Health Connect first, then recompute.
       if (isHealthConnectAvailable()) {
         const hc = await syncHealthConnect({ force: true });
+        console.info("HC UI: syncHealthConnect (forceResync) →", hc);
         if (!hc.ok && hc.reason && hc.reason !== "throttled") {
           console.warn("Health Connect sync returned", hc);
         }

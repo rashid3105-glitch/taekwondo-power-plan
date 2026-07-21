@@ -157,6 +157,11 @@ export async function requestHealthConnectPermission(): Promise<{
     console.info("HealthConnect native registration", debug);
 
     const res = await HealthConnect.requestAuthorization({ read: READ_TYPES });
+    console.info("HC sync: requestAuthorization result", {
+      granted: res?.granted,
+      grantedPermissions: res?.grantedPermissions ?? [],
+      requestedTypes: READ_TYPES,
+    });
     return {
       ok: !!res?.granted,
       reason: res?.granted ? undefined : "not_granted",
@@ -255,6 +260,11 @@ export async function syncHealthConnect(
   const start = new Date(Date.now() - days * 86400_000);
   const startIso = start.toISOString();
   const endIso = end.toISOString();
+  console.info("HC sync: window", { days, startIso, endIso, previousLastSync: conn?.last_sync_at ?? null });
+
+  // Collect native rejects so we can surface them in the returned reason,
+  // instead of silently swallowing them into empty arrays.
+  const nativeErrors: string[] = [];
 
   const safeQty = async (id: string) => {
     try {
@@ -264,8 +274,10 @@ export async function syncHealthConnect(
         endDate: endIso,
       });
       return r?.samples ?? [];
-    } catch (e) {
+    } catch (e: any) {
+      const msg = e?.message ?? String(e);
       console.warn(`HealthConnect queryQuantity ${id} failed`, e);
+      nativeErrors.push(`qty:${id}:${msg}`);
       return [];
     }
   };
@@ -277,8 +289,10 @@ export async function syncHealthConnect(
         endDate: endIso,
       });
       return r?.samples ?? [];
-    } catch (e) {
+    } catch (e: any) {
+      const msg = e?.message ?? String(e);
       console.warn(`HealthConnect queryCategory ${id} failed`, e);
+      nativeErrors.push(`cat:${id}:${msg}`);
       return [];
     }
   };
@@ -289,8 +303,10 @@ export async function syncHealthConnect(
         endDate: endIso,
       });
       return r?.workouts ?? [];
-    } catch (e) {
+    } catch (e: any) {
+      const msg = e?.message ?? String(e);
       console.warn("HealthConnect queryWorkouts failed", e);
+      nativeErrors.push(`workouts:${msg}`);
       return [];
     }
   };
@@ -304,6 +320,18 @@ export async function syncHealthConnect(
     safeQty("steps"),
     safeWorkouts(),
   ]);
+
+  const perType = {
+    sleep: sleep.length,
+    resting_hr: rhr.length,
+    hrv: hrv.length,
+    heart_rate: hr.length,
+    active_energy: energy.length,
+    steps: steps.length,
+    workouts: workouts.length,
+  };
+  console.info("HC sync: per-type counts", perType, { nativeErrors });
+
 
   const samples: IngestSample[] = [];
 
@@ -409,8 +437,17 @@ export async function syncHealthConnect(
 
   if (samples.length === 0) {
     await Preferences.set({ key: THROTTLE_KEY, value: String(Date.now()) });
-    return { ok: true, inserted: 0, workouts: 0 };
+    const countsStr = Object.entries(perType).map(([k, v]) => `${k}=${v}`).join(",");
+    const errStr = nativeErrors.length > 0 ? `;errors=${nativeErrors.join("|")}` : "";
+    console.info("HC sync: no samples to ingest", { perType, nativeErrors });
+    return {
+      ok: true,
+      inserted: 0,
+      workouts: 0,
+      reason: `no_samples:${countsStr}${errStr}`,
+    };
   }
+
 
   const CHUNK = 2000;
   let inserted = 0;

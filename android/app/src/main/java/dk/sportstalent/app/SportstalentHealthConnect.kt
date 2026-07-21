@@ -41,6 +41,7 @@ class SportstalentHealthConnect : Plugin() {
     private val scope = CoroutineScope(Dispatchers.Main)
 
     private var permissionLauncher: ActivityResultLauncher<Set<String>>? = null
+    private var permissionLauncherInitError: String? = null
     private var pendingPermissionCall: PluginCall? = null
     private var pendingPermissionRequested: Set<String> = emptySet()
 
@@ -48,7 +49,11 @@ class SportstalentHealthConnect : Plugin() {
         super.load()
         Log.i(tag, "Plugin load() invoked")
         try {
-            val activity = activity ?: return
+            val activity = activity ?: run {
+                permissionLauncherInitError = "activity_null_at_load"
+                Log.w(tag, "Plugin load(): activity was null")
+                return
+            }
             val contract: ActivityResultContract<Set<String>, Set<String>> =
                 PermissionController.createRequestPermissionResultContract()
             permissionLauncher = activity.registerForActivityResult(contract) { granted ->
@@ -57,7 +62,9 @@ class SportstalentHealthConnect : Plugin() {
                 val requested = pendingPermissionRequested
                 pendingPermissionRequested = emptySet()
                 val allGranted = requested.isNotEmpty() && granted.containsAll(requested)
-                Log.i(tag, "Permission result: granted=${granted.size}/${requested.size}")
+                Log.i(tag, "Permission result: granted=${granted.size}/${requested.size} allGranted=$allGranted")
+                Log.i(tag, "Permission result requested: ${requested.joinToString()}")
+                Log.i(tag, "Permission result granted names: ${granted.joinToString()}")
                 val res = JSObject()
                 res.put("granted", allGranted)
                 val list = JSArray()
@@ -66,9 +73,11 @@ class SportstalentHealthConnect : Plugin() {
                 call?.resolve(res)
             }
         } catch (t: Throwable) {
-            Log.w(tag, "Failed to register permission launcher: ${t.message}")
+            permissionLauncherInitError = "${t.javaClass.simpleName}:${t.message}"
+            Log.e(tag, "Failed to register permission launcher", t)
         }
     }
+
 
     // MARK: - Type mapping (whitelist)
 
@@ -141,11 +150,12 @@ class SportstalentHealthConnect : Plugin() {
             call.reject("Health Connect not available (sdkStatus=$status)")
             return
         }
-        Log.i(tag, "requestAuthorization launching for ${perms.size} permissions")
+        Log.i(tag, "requestAuthorization requested perms: ${perms.joinToString()}")
         scope.launch {
             try {
                 val client = HealthConnectClient.getOrCreate(context)
                 val already = client.permissionController.getGrantedPermissions()
+                Log.i(tag, "requestAuthorization already granted: ${already.joinToString()}")
                 if (already.containsAll(perms)) {
                     val res = JSObject()
                     res.put("granted", true)
@@ -157,7 +167,9 @@ class SportstalentHealthConnect : Plugin() {
                 }
                 val launcher = permissionLauncher
                 if (launcher == null) {
-                    call.reject("Permission launcher not initialised")
+                    val why = permissionLauncherInitError ?: "unknown"
+                    Log.e(tag, "requestAuthorization: launcher null ($why)")
+                    call.reject("Permission launcher not initialised: $why")
                     return@launch
                 }
                 pendingPermissionCall = call
@@ -170,6 +182,7 @@ class SportstalentHealthConnect : Plugin() {
             }
         }
     }
+
 
     // MARK: - Shared query helpers
 
@@ -269,6 +282,7 @@ class SportstalentHealthConnect : Plugin() {
                 }
                 val res = JSObject()
                 res.put("samples", samples)
+                Log.i(tag, "queryQuantity metricType=$metricType returned ${samples.length()} samples")
                 call.resolve(res)
             } catch (t: Throwable) {
                 Log.e(tag, "queryQuantity failed", t)
@@ -321,6 +335,7 @@ class SportstalentHealthConnect : Plugin() {
                 }
                 val res = JSObject()
                 res.put("samples", samples)
+                Log.i(tag, "queryCategory metricType=$metricType returned ${samples.length()} samples")
                 call.resolve(res)
             } catch (t: Throwable) {
                 Log.e(tag, "queryCategory failed", t)
@@ -406,6 +421,7 @@ class SportstalentHealthConnect : Plugin() {
                 }
                 val res = JSObject()
                 res.put("workouts", workouts)
+                Log.i(tag, "queryWorkouts returned ${workouts.length()} workouts")
                 call.resolve(res)
             } catch (t: Throwable) {
                 Log.e(tag, "queryWorkouts failed", t)
