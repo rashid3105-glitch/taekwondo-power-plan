@@ -218,16 +218,37 @@ export async function syncHealthConnect(
     }
   }
 
-  const { data: userRes } = await supabase.auth.getUser();
-  const userId = userRes?.user?.id;
+  let userId: string | undefined;
+  try {
+    const { data: userRes, error } = await supabase.auth.getUser();
+    if (error) {
+      console.error("HC sync: auth.getUser error", error);
+      return { ok: false, reason: `auth_error:${error.message}` };
+    }
+    userId = userRes?.user?.id;
+  } catch (e: any) {
+    console.error("HC sync: auth.getUser threw", e);
+    return { ok: false, reason: `auth_fetch_failed:${e?.message ?? e}` };
+  }
   if (!userId) return { ok: false, reason: "no_user" };
 
-  const { data: conn } = await supabase
-    .from("wearable_connections")
-    .select("last_sync_at")
-    .eq("user_id", userId)
-    .eq("provider", PROVIDER)
-    .maybeSingle();
+  let conn: { last_sync_at: string | null } | null = null;
+  try {
+    const { data, error } = await supabase
+      .from("wearable_connections")
+      .select("last_sync_at")
+      .eq("user_id", userId)
+      .eq("provider", PROVIDER)
+      .maybeSingle();
+    if (error) {
+      console.error("HC sync: wearable_connections select error", error);
+      return { ok: false, reason: `conn_select_error:${error.message}` };
+    }
+    conn = data;
+  } catch (e: any) {
+    console.error("HC sync: wearable_connections select threw", e);
+    return { ok: false, reason: `conn_fetch_failed:${e?.message ?? e}` };
+  }
 
   const days = conn?.last_sync_at ? 30 : 90;
   const end = new Date();
@@ -396,20 +417,25 @@ export async function syncHealthConnect(
   let workoutsCount = 0;
   for (let i = 0; i < samples.length; i += CHUNK) {
     const chunk = samples.slice(i, i + CHUNK);
-    const { data, error } = await supabase.functions.invoke("wearable-ingest", {
-      body: {
-        samples: chunk,
-        device_label: "Android",
-        granted_scopes: READ_TYPES,
-        provider: PROVIDER,
-      },
-    });
-    if (error) {
-      console.error("wearable-ingest failed", error);
-      return { ok: false, reason: "ingest_error" };
+    try {
+      const { data, error } = await supabase.functions.invoke("wearable-ingest", {
+        body: {
+          samples: chunk,
+          device_label: "Android",
+          granted_scopes: READ_TYPES,
+          provider: PROVIDER,
+        },
+      });
+      if (error) {
+        console.error("wearable-ingest failed", error);
+        return { ok: false, reason: `ingest_error:${error.message ?? "unknown"}` };
+      }
+      inserted += (data as any)?.inserted ?? 0;
+      workoutsCount += (data as any)?.workouts_inserted ?? 0;
+    } catch (e: any) {
+      console.error("wearable-ingest threw (fetch failed)", e);
+      return { ok: false, reason: `ingest_fetch_failed:${e?.message ?? e}` };
     }
-    inserted += (data as any)?.inserted ?? 0;
-    workoutsCount += (data as any)?.workouts_inserted ?? 0;
   }
 
   await Preferences.set({ key: THROTTLE_KEY, value: String(Date.now()) });
