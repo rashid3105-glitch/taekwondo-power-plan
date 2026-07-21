@@ -221,27 +221,33 @@ Deno.serve(async (req) => {
       .eq("user_id", userId)
       .eq("provider", provider)
       .maybeSingle();
+    // NOTE: wearable_connections.status CHECK constraint allows only
+    // 'active' | 'revoked' | 'error'. 'connected' silently fails the upsert
+    // (errors aren't surfaced below), which is why the table stayed empty
+    // even though iOS samples ingested fine. Use 'active'.
     if (existing) {
-      await svc
+      const { error: updErr } = await svc
         .from("wearable_connections")
         .update({
-          status: "connected",
+          status: "active",
           last_sync_at: new Date().toISOString(),
           last_attempt_at: new Date().toISOString(),
           device_label: deviceLabel ?? undefined,
           granted_scopes: grantedScopes.length > 0 ? grantedScopes : undefined,
         })
         .eq("id", existing.id);
+      if (updErr) console.error("wearable_connections update failed", updErr);
     } else {
-      await svc.from("wearable_connections").insert({
+      const { error: insErr } = await svc.from("wearable_connections").insert({
         user_id: userId,
         provider,
-        status: "connected",
+        status: "active",
         last_sync_at: new Date().toISOString(),
         last_attempt_at: new Date().toISOString(),
         device_label: deviceLabel,
         granted_scopes: grantedScopes,
       });
+      if (insErr) console.error("wearable_connections insert failed", insErr);
     }
 
 
