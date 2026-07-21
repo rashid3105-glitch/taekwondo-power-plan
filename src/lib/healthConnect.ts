@@ -437,8 +437,17 @@ export async function syncHealthConnect(
 
   if (samples.length === 0) {
     await Preferences.set({ key: THROTTLE_KEY, value: String(Date.now()) });
-    return { ok: true, inserted: 0, workouts: 0 };
+    const countsStr = Object.entries(perType).map(([k, v]) => `${k}=${v}`).join(",");
+    const errStr = nativeErrors.length > 0 ? `;errors=${nativeErrors.join("|")}` : "";
+    console.info("HC sync: no samples to ingest", { perType, nativeErrors });
+    return {
+      ok: true,
+      inserted: 0,
+      workouts: 0,
+      reason: `no_samples:${countsStr}${errStr}`,
+    };
   }
+
 
   const CHUNK = 2000;
   let inserted = 0;
