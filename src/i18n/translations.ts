@@ -21754,6 +21754,11 @@ const translations = {
     pmCtaTitle: "Klar til å coache smartere?",
     pmCtaSub: "Start gratis i 30 dager. Ingen kredittkort. Si opp når som helst.",
     pmCtaBtn: "Start gratis i 30 dager →",
+    createAthleteAction: "Opprett utøver",
+    createAthleteShortDesc: "Opprett en utøverkonto direkte under klubben din",
+    inviteAthletesShortDesc: "Send invitasjoner til utøvere via e-post",
+    changelog_2026_07_21: "21. juli 2026",
+    changelogEntry177: "Bunnmenyen vises nå også på nettbrett og web — ikke bare mobil. Spanske oversettelser fullført. Rettet manglende oversettelser i menyen 'Legg til utøver'.",
   },
 } as const;
 
