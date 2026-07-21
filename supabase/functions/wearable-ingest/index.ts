@@ -101,7 +101,7 @@ Deno.serve(async (req) => {
       if (!s.start_at || Number.isNaN(Date.parse(s.start_at))) continue;
       rows.push({
         user_id: userId,
-        provider: "apple_health",
+        provider,
         metric_type: s.metric_type,
         value_numeric: s.value_numeric ?? null,
         unit: s.unit ?? null,
