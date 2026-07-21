@@ -214,12 +214,12 @@ Deno.serve(async (req) => {
       if (error) console.error("recompute failed", error);
     }
 
-    // Upsert wearable_connections row for provider apple_health.
+    // Upsert wearable_connections row for this provider.
     const { data: existing } = await svc
       .from("wearable_connections")
       .select("id")
       .eq("user_id", userId)
-      .eq("provider", "apple_health")
+      .eq("provider", provider)
       .maybeSingle();
     if (existing) {
       await svc
@@ -235,7 +235,7 @@ Deno.serve(async (req) => {
     } else {
       await svc.from("wearable_connections").insert({
         user_id: userId,
-        provider: "apple_health",
+        provider,
         status: "connected",
         last_sync_at: new Date().toISOString(),
         last_attempt_at: new Date().toISOString(),
@@ -243,6 +243,7 @@ Deno.serve(async (req) => {
         granted_scopes: grantedScopes,
       });
     }
+
 
     return json({
       inserted,
