@@ -351,7 +351,6 @@ class SportstalentHealthConnect : Plugin() {
                             timeRangeFilter = TimeRangeFilter.between(start, end)
                         )
                     )
-                    val filter = TimeRangeFilter.between(start, end)
                     for (record in response.records) {
                         val meta = record.metadata
                         val obj = JSObject()
