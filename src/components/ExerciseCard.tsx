@@ -148,16 +148,16 @@ export function ExerciseCard({ exercise, index }: ExerciseCardProps) {
           {/* Details */}
           <div className="grid grid-cols-3 gap-3">
             <div className="rounded-md bg-muted p-3">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Sets × Reps</p>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">{t("exerciseSetsReps")}</p>
               <p className="text-sm font-bold text-foreground">{exercise.sets} × {exercise.reps}</p>
             </div>
             <div className="rounded-md bg-muted p-3">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Rest</p>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">{t("exerciseRest")}</p>
               <p className="text-sm font-bold text-foreground">{exercise.rest}</p>
             </div>
             {exercise.tempo && (
               <div className="rounded-md bg-muted p-3">
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">Tempo</p>
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">{t("exerciseTempo")}</p>
                 <p className="text-sm font-bold text-foreground">{exercise.tempo}</p>
               </div>
             )}
@@ -166,7 +166,7 @@ export function ExerciseCard({ exercise, index }: ExerciseCardProps) {
           {/* Why it matters */}
           <div className="space-y-2">
             <p className="text-xs leading-relaxed text-primary/80">
-              <span className="font-semibold text-primary">Why it matters for TKD: </span>
+              <span className="font-semibold text-primary">{t("exerciseWhyMattersTkd")} </span>
               {exercise.whyItMatters}
             </p>
           </div>
@@ -174,7 +174,7 @@ export function ExerciseCard({ exercise, index }: ExerciseCardProps) {
           {/* Alternatives */}
           {exercise.alternatives && exercise.alternatives.length > 0 && (
             <div className="rounded-md bg-muted/60 p-2.5 space-y-1">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Alternatives</p>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{t("exerciseAlternatives")}</p>
               {exercise.alternatives.map((alt, k) => (
                 <p key={k} className="text-xs text-foreground">
                   <span className="font-semibold">{alt.name}</span>

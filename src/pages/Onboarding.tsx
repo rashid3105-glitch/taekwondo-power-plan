@@ -107,6 +107,19 @@ export default function Onboarding() {
       const isCoach = wantsCoach || userRoles.includes("coach") || userRoles.includes("admin");
       setRole(isCoach ? "coach" : "athlete");
       setIsApproved((profile as any)?.is_approved === true);
+
+      // Pre-fill from existing profile (e.g. athlete created by a coach).
+      // Draft-restore effect below will still override with in-progress edits.
+      const p: any = profile || {};
+      if (p.age != null && p.age !== "") setAge(String(p.age));
+      if (p.weight_kg != null && p.weight_kg !== "") setWeight(String(p.weight_kg));
+      if (p.belt_level) setBelt(p.belt_level);
+      if (p.discipline === "sparring" || p.discipline === "poomsae") setDiscipline(p.discipline);
+      if (typeof p.experience_years === "number") {
+        const y = p.experience_years;
+        setExperience(y < 1 ? "under1" : y < 3 ? "1to3" : y < 7 ? "3to7" : "7plus");
+      }
+
       setLoading(false);
     })();
   }, [navigate]);

@@ -338,11 +338,11 @@ export const adultQuestions: MentalQuestion[] = [
     id: "mo2",
     category: "motivation",
     text: {
-      en: "When I hit a training plateau with no visible progress, I...",
-      da: "Når jeg rammer et træningsplateau uden synlige fremskridt, så...",
-      sv: "När jag når en träningsplatå utan synliga framsteg, så...",
-      de: "Wenn ich ein Trainingsplateau ohne sichtbaren Fortschritt erreiche, dann...",
-      ar: "عندما أصل لمرحلة ثبات في التدريب بدون تقدم ملحوظ، أنا..."
+      en: "When my training stops improving for a while, I...",
+      da: "Når min træning i en periode ikke giver fremskridt, så...",
+      sv: "När min träning under en period slutar ge framsteg, så...",
+      de: "Wenn mein Training eine Zeit lang keine Fortschritte bringt, dann...",
+      ar: "عندما يتوقف تدريبي عن التقدم لفترة، أنا..."
     },
     options: [
       { value: 1, label: { en: "Lose interest and consider quitting", da: "Mister interessen og overvejer at stoppe", sv: "Tappar intresset och överväger att sluta", de: "Verliere das Interesse und erwäge aufzuhören", ar: "أفقد الاهتمام وأفكر في الاستسلام" } },

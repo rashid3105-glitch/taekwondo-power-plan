@@ -19,7 +19,7 @@ export default function InviteSignup() {
   const { code } = useParams<{ code: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { locale } = useLanguage();
+  const { locale, t } = useLanguage();
 
   const [step, setStep] = useState<Step>("welcome");
   const [info, setInfo] = useState<{ valid: boolean; coach_name?: string; club_name?: string } | null>(null);
@@ -177,6 +177,7 @@ export default function InviteSignup() {
                       {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
+                  <p className="text-[10px] text-muted-foreground/70">{t("passwordRequirementsHint")}</p>
                 </div>
 
                 <Button type="submit" disabled={submitting} className="w-full h-11 rounded-xl font-bold bg-landing-red hover:bg-landing-red/90 text-white">
