@@ -154,6 +154,7 @@ export default function Health() {
       // On Android: pull fresh samples from Health Connect first, then recompute.
       if (isHealthConnectAvailable()) {
         const hc = await syncHealthConnect({ force: true });
+        console.info("HC UI: syncHealthConnect (forceResync) →", hc);
         if (!hc.ok && hc.reason && hc.reason !== "throttled") {
           console.warn("Health Connect sync returned", hc);
         }
