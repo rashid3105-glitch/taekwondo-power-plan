@@ -1,79 +1,48 @@
-## Hvor er vi nu?
+## Mål
+Finde hvorfor `syncHealthConnect()` melder succes uden at indsætte noget. Ikke løse noget endnu — kun gøre de tavse fejl synlige, så næste build fortæller os den præcise årsag.
 
-Android Health Connect-integrationen er bygget færdigt i koden gennem fase 0–3:
+## Hvad koden gør i dag (bekræftet ved gennemlæsning)
 
-- Fase 0: `minSdkVersion` hævet til 26 ✅
-- Fase 1: Lokalt Kotlin-plugin `SportstalentHealthConnect` + manifest + gradle dependency ✅
-- Fase 2: JS-laget `src/lib/healthConnect.ts` (spejler HealthKit) ✅
-- Fase 3: "Forbind Health Connect"-knap i `Health.tsx` (kun Android) ✅
+`src/lib/healthConnect.ts` og `SportstalentHealthConnect.kt` har fire steder der **tavst returnerer 0**, uden at logge årsagen tydeligt i UI:
 
-Backend (`wearable-ingest`) er allerede udvidet til at modtage `provider: 'health_connect'`, og `wearable_connections.status` er rettet til `'active'`.
+1. **`safeQty` / `safeCat` / `safeWorkouts`** (healthConnect.ts:259–296)
+   `catch { return [] }`. Enhver Kotlin-side reject (manglende permission, HC-klientfejl, tom SDK) bliver til et tomt array — sync fortsætter som om intet skete.
 
-## Hvad skal der gøres nu? — Fase 4: Byg & valider Android-appen
+2. **`samples.length === 0` early-return** (healthConnect.ts:410–413)
+   Skriver `ok:true, inserted:0, workouts:0` uden at fortælle *hvilke* metrikker der var tomme.
 
-Det næste skridt er at kompilere den native Android-app og teste Health Connect-flowet på en rigtig Android-enhed eller emulator. Dette er en bygge-/testfase, ikke mere kode-arkitektur.
+3. **`requestAuthorization` → `permissionController.getGrantedPermissions()`** (SportstalentHealthConnect.kt:148–166)
+   Hvis brugeren kun godkender et *subset* af de 7 permissions, kalder JS-siden bagefter `queryX` for typer den ikke må læse → Kotlin reject → tavst 0. Vi logger aldrig *hvilke* permissions der faktisk blev givet.
 
-### Trin 1: Byg web-assets
-```bash
-npm run build
-```
-Sikrer at den seneste React-kode (inkl. `healthConnect.ts` og `Health.tsx`) kompileres til `dist/`.
+4. **`permissionLauncher` kan være `null`** (SportstalentHealthConnect.kt:47–71)
+   `registerForActivityResult` i `load()` kaster hvis activity allerede er RESUMED. Så ryger permission-dialogen aldrig op, og brugeren tror den er godkendt fra forrige session.
 
-### Trin 2: Sync Capacitor Android
-```bash
-npx cap sync android
-```
-Dette kopierer web-assets ind i `android/app/src/main/assets/public`, opdaterer native dependencies og sikrer at det lokale plugin registreres korrekt.
+Derudover: første sync bruger 90 dage, senere 30. Hvis Health Connect-appen på testenheden ikke har nogen data-producenter (ingen wear-app, ingen Fit-sync), er 0 samples fuldstændig forventet — men det er svært at afgøre uden per-type-tælling.
 
-### Trin 3: Kompilér native Android-projekt
-Åbn `android/` i Android Studio og kør en **Clean → Rebuild**, eller brug kommandoen:
-```bash
-cd android
-./gradlew assembleDebug
-```
+## Plan — kun instrumentering (ingen adfærdsændring)
 
-Dette validerer at:
-- Kotlin-pluginet `SportstalentHealthConnect.kt` kompilerer uden fejl
-- `androidx.health.connect:connect-client` resolves korrekt
-- `MainActivity.kt` registrerer pluginnet før bridge-init
-- Alle Health Connect-permissioner er i manifestet
+### 1. `src/lib/healthConnect.ts`
+- Log hvad `requestHealthConnectPermission` faktisk fik tilbage fra native (`granted`, `grantedPermissions[]`).
+- I `syncHealthConnect` efter `Promise.all([...])`: log en per-type-tælling
+  `{ sleep: N, resting_hr: N, hrv: N, heart_rate: N, active_energy: N, steps: N, workouts: N }`.
+- Ændr `safeQty` / `safeCat` / `safeWorkouts` så fejlen bobles op via en delt `errors[]`-liste (ikke bare `console.warn`).
+- Når `samples.length === 0`: returnér `reason: "no_samples:sleep=0,rhr=0,..."` (inkl. eventuelle native errors) i stedet for stille `ok:true`.
+- Log `days`-vinduet (30 vs 90) og `startIso/endIso`.
 
-### Trin 4: Test på Android-enhed/emulator
-Kør appen på en Android-enhed (eller emulator med API 26+).
+### 2. `android/app/src/main/java/dk/sportstalent/app/SportstalentHealthConnect.kt`
+- I `requestAuthorization`: log de *anmodede* permission-strenge og de *faktisk givne* (allerede logget som antal — tilføj navnene).
+- I `queryQuantity` / `queryCategory` / `queryWorkouts`: log antal records returneret pr. type, før vi resolver.
+- I `load()`: hvis `registerForActivityResult` kaster, log stacktrace og gem årsagen så `requestAuthorization` senere kan reject'e med den præcise besked ("Permission launcher not initialised: <cause>") i stedet for en tom streng.
 
-Test følgende flow:
-1. Log ind som atlet
-2. Gå til **Sundhed** (Health)
-3. Tryk **Forbind Health Connect**
-4. Bekræft at Android viser Health Connect-tilladelsesdialogen
-5. Tillad læseadgang til søvn, puls, skridt, aktiv energi og træning
-6. Tryk det røde hjerte (resync)
-7. Verificér i app-logcat / browser-konsol at `syncHealthConnect` returnerer `ok: true` med `inserted > 0`
-8. Tjek at data vises i Health-siden (skridt, søvn, puls, energi, træning)
+### 3. UI-tråd i `src/pages/Health.tsx` (kun `console.info`, ingen visuelle ændringer)
+- Log hele objektet returneret af `syncHealthConnect` (inkl. `reason` og per-type-tællinger) ved klik på **Forbind Health Connect** og efterfølgende sync.
 
-### Trin 5: Verificér backend-end-to-end
-Efter en vellykket sync skal du tjekke at:
-- `wearable_samples` indeholder rækker med `provider = 'health_connect'`
-- `wearable_connections` har en aktiv række for `health_connect`
-- `wearable_daily_summary` er genberegnet for de berørte datoer
+## Hvad brugeren derefter skal sende
+Efter `npm run build && npx cap sync android` og en genstart af app'en:
+1. Toastens `reason`-streng.
+2. Logcat filtreret på `SportstalentHealthConnect` **og** `HC sync:` — mindst linjerne fra permission-resultatet og per-type-tællingen.
 
-### Forventede fejl vi skal rette undervejs
-Baseret på erfaringen fra iOS vil følgende sandsynligvis dukke op:
-- Plugin registreres ikke → tjek `MainActivity.kt` rækkefølge
-- `UNIMPLEMENTED` / `plugin_not_registered` → tjek Capacitor-plugin-header eller `cap sync`
-- `ingest_error` / edge function fejl → tjek CORS eller DB-constraints
-- Data vises ikke → tjek at `recompute_wearable_summary` kører over de rigtige datoer
+Med dét kan vi entydigt sige om årsagen er (a) manglende permissions, (b) tom Health Connect-datastore på enheden, (c) native reject i én specifik query, eller (d) launcher-registration-fejl i `load()`.
 
-## Alternativ: Vil du springe bygget over?
-
-Hvis du ikke har en Android-byggeopsætning klar lige nu, kan vi i stedet:
-
-A) **Gennemgå og forstærke fejlhåndtering i JS-laget** (fx bedre toast-beskeder, retry-logik, tydeligere fejlkoder fra `healthConnect.ts`).
-B) **Tilføje en "synkroniseret dato"-indikator** i Health UI, så brugeren kan se sidste sync.
-C) **Forberede Play Butik / Health Connect-politik-dokumentation** (privacy policy, rationale-tekster).
-
-## Anbefaling
-
-Jeg anbefaler at vi går videre med **Fase 4: Byg & valider Android-appen**. Det er den eneste måde at vide om Health Connect-integrationen rent faktisk virker.
-
-Hvis du er klar, skifter jeg til build-mode og kører `npm run build && npx cap sync android` først.
+## Uden for scope
+Ingen ændring i wearable-ingest, DB-constraints, throttling, eller UI ud over log-linjer. Ingen retry-logik. Vi fikser først når loggen peger på ét konkret sted.
