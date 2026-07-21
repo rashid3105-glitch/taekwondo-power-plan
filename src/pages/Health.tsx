@@ -64,15 +64,19 @@ export default function Health() {
     (async () => {
       const { data: userRes } = await supabase.auth.getUser();
       if (!userRes.user) return;
-      const { data } = await supabase
+      const { data: rows } = await supabase
         .from("wearable_connections")
-        .select("status,last_sync_at")
+        .select("provider,status,last_sync_at")
         .eq("user_id", userRes.user.id)
-        .eq("provider", "apple_health")
-        .maybeSingle();
-      if (data) {
-        setHkConnected(data.status === "connected");
-        setHkLastSync(data.last_sync_at ?? null);
+        .in("provider", ["apple_health", "health_connect"]);
+      for (const row of rows ?? []) {
+        if (row.provider === "apple_health") {
+          setHkConnected(row.status === "active" || row.status === "connected");
+          setHkLastSync(row.last_sync_at ?? null);
+        } else if (row.provider === "health_connect") {
+          setHcConnected(row.status === "active" || row.status === "connected");
+          setHcLastSync(row.last_sync_at ?? null);
+        }
       }
     })();
   }, []);
@@ -105,6 +109,33 @@ export default function Health() {
     }
   }
 
+  async function connectHealthConnect() {
+    if (hcConnecting) return;
+    setHcConnecting(true);
+    haptics.tap();
+    try {
+      const auth = await requestHealthConnectPermission();
+      if (!auth.ok) {
+        toast.error(`${t("healthHcDenied")} [${auth.reason ?? "unknown"}]`);
+        return;
+      }
+      const res = await syncHealthConnect({ force: true });
+      if (!res.ok) {
+        toast.error(`${t("healthHcSyncFailed")} [${res.reason ?? "unknown"}]`);
+        return;
+      }
+      setHcConnected(true);
+      setHcLastSync(new Date().toISOString());
+      toast.success(t("healthHcConnected"));
+      await load();
+    } catch (e) {
+      console.error(e);
+      toast.error(t("healthHcSyncFailed"));
+    } finally {
+      setHcConnecting(false);
+    }
+  }
+
 
   async function forceResync() {
     if (resyncing) return;
@@ -116,6 +147,13 @@ export default function Health() {
         const hk = await syncHealthKit({ force: true });
         if (!hk.ok && hk.reason && hk.reason !== "throttled") {
           console.warn("HealthKit sync returned", hk);
+        }
+      }
+      // On Android: pull fresh samples from Health Connect first, then recompute.
+      if (isHealthConnectAvailable()) {
+        const hc = await syncHealthConnect({ force: true });
+        if (!hc.ok && hc.reason && hc.reason !== "throttled") {
+          console.warn("Health Connect sync returned", hc);
         }
       }
       const { data, error } = await supabase.functions.invoke("resync-health", { body: { days: 30 } });
@@ -130,6 +168,7 @@ export default function Health() {
       setResyncing(false);
     }
   }
+
 
 
 
