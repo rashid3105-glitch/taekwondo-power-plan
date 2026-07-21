@@ -7,6 +7,7 @@ import { ArrowLeft, Activity, Footprints, Info, FileDown, ChevronDown, RefreshCw
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PageMeta } from "@/components/PageMeta";
 import { isHealthKitAvailable, requestHealthKitPermission, syncHealthKit } from "@/lib/healthkit";
+import { isHealthConnectAvailable, requestHealthConnectPermission, syncHealthConnect } from "@/lib/healthConnect";
 import {
   Bar, LineChart, Line, ComposedChart,
   ReferenceArea, ReferenceLine,
@@ -54,20 +55,28 @@ export default function Health() {
   const [hkLastSync, setHkLastSync] = useState<string | null>(null);
   const [hkConnected, setHkConnected] = useState(false);
   const hkAvailable = isHealthKitAvailable();
+  const [hcConnecting, setHcConnecting] = useState(false);
+  const [hcLastSync, setHcLastSync] = useState<string | null>(null);
+  const [hcConnected, setHcConnected] = useState(false);
+  const hcAvailable = isHealthConnectAvailable();
 
   useEffect(() => {
     (async () => {
       const { data: userRes } = await supabase.auth.getUser();
       if (!userRes.user) return;
-      const { data } = await supabase
+      const { data: rows } = await supabase
         .from("wearable_connections")
-        .select("status,last_sync_at")
+        .select("provider,status,last_sync_at")
         .eq("user_id", userRes.user.id)
-        .eq("provider", "apple_health")
-        .maybeSingle();
-      if (data) {
-        setHkConnected(data.status === "connected");
-        setHkLastSync(data.last_sync_at ?? null);
+        .in("provider", ["apple_health", "health_connect"]);
+      for (const row of rows ?? []) {
+        if (row.provider === "apple_health") {
+          setHkConnected(row.status === "active" || row.status === "connected");
+          setHkLastSync(row.last_sync_at ?? null);
+        } else if (row.provider === "health_connect") {
+          setHcConnected(row.status === "active" || row.status === "connected");
+          setHcLastSync(row.last_sync_at ?? null);
+        }
       }
     })();
   }, []);
@@ -100,6 +109,33 @@ export default function Health() {
     }
   }
 
+  async function connectHealthConnect() {
+    if (hcConnecting) return;
+    setHcConnecting(true);
+    haptics.tap();
+    try {
+      const auth = await requestHealthConnectPermission();
+      if (!auth.ok) {
+        toast.error(`${t("healthHcDenied")} [${auth.reason ?? "unknown"}]`);
+        return;
+      }
+      const res = await syncHealthConnect({ force: true });
+      if (!res.ok) {
+        toast.error(`${t("healthHcSyncFailed")} [${res.reason ?? "unknown"}]`);
+        return;
+      }
+      setHcConnected(true);
+      setHcLastSync(new Date().toISOString());
+      toast.success(t("healthHcConnected"));
+      await load();
+    } catch (e) {
+      console.error(e);
+      toast.error(t("healthHcSyncFailed"));
+    } finally {
+      setHcConnecting(false);
+    }
+  }
+
 
   async function forceResync() {
     if (resyncing) return;
@@ -111,6 +147,13 @@ export default function Health() {
         const hk = await syncHealthKit({ force: true });
         if (!hk.ok && hk.reason && hk.reason !== "throttled") {
           console.warn("HealthKit sync returned", hk);
+        }
+      }
+      // On Android: pull fresh samples from Health Connect first, then recompute.
+      if (isHealthConnectAvailable()) {
+        const hc = await syncHealthConnect({ force: true });
+        if (!hc.ok && hc.reason && hc.reason !== "throttled") {
+          console.warn("Health Connect sync returned", hc);
         }
       }
       const { data, error } = await supabase.functions.invoke("resync-health", { body: { days: 30 } });
@@ -125,6 +168,7 @@ export default function Health() {
       setResyncing(false);
     }
   }
+
 
 
 
@@ -572,6 +616,36 @@ export default function Health() {
               className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow active:scale-95 transition-transform disabled:opacity-50 disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               <RefreshCw className={cn("h-5 w-5", hkConnecting && "animate-spin")} />
+            </button>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Health Connect connection (Android native only) */}
+      {hcAvailable && (
+        <Card className="mb-4 border border-border/60 bg-card/80 backdrop-blur">
+          <CardContent className="pt-4 pb-4 flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-primary/10">
+              <Heart className="h-5 w-5 text-primary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-semibold">
+                {hcConnected ? t("healthHcConnected") : t("healthConnectHealthConnect")}
+              </div>
+              {hcConnected && hcLastSync && (
+                <div className="text-xs text-muted-foreground">
+                  {new Date(hcLastSync).toLocaleString()}
+                </div>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={connectHealthConnect}
+              disabled={hcConnecting}
+              title={hcConnected ? t("healthForceSync") : t("healthConnectHealthConnect")}
+              className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow active:scale-95 transition-transform disabled:opacity-50 disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            >
+              <RefreshCw className={cn("h-5 w-5", hcConnecting && "animate-spin")} />
             </button>
           </CardContent>
         </Card>
