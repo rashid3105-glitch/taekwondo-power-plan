@@ -403,8 +403,6 @@ class SportstalentHealthConnect : Plugin() {
 
                         workouts.put(obj)
                     }
-                    // 'filter' is only referenced to satisfy Kotlin unused-variable warnings.
-                    filter.hashCode()
                 }
                 val res = JSObject()
                 res.put("workouts", workouts)
