@@ -51,7 +51,7 @@ export function AppBottomNav() {
       ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-card/95 backdrop-blur-sm sm:hidden pb-safe">
+    <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-card/95 backdrop-blur-sm pb-safe">
       <div className="flex items-stretch justify-around px-1 pt-1.5">
         {items.map(({ key, label, icon: Icon, active, onClick, iconClassName }) => (
           <button
