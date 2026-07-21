@@ -168,7 +168,7 @@ export default function SignupCoach() {
                       {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
-                  <p className="text-[10px] text-muted-foreground/70">Minimum 8 tegn</p>
+                  <p className="text-[10px] text-muted-foreground/70">{t("passwordRequirementsHint")}</p>
                 </div>
 
                 <Button type="submit" disabled={loading} className="w-full h-11 rounded-xl font-bold bg-landing-red hover:bg-landing-red/90 text-white">
