@@ -218,16 +218,37 @@ export async function syncHealthConnect(
     }
   }
 
-  const { data: userRes } = await supabase.auth.getUser();
-  const userId = userRes?.user?.id;
+  let userId: string | undefined;
+  try {
+    const { data: userRes, error } = await supabase.auth.getUser();
+    if (error) {
+      console.error("HC sync: auth.getUser error", error);
+      return { ok: false, reason: `auth_error:${error.message}` };
+    }
+    userId = userRes?.user?.id;
+  } catch (e: any) {
+    console.error("HC sync: auth.getUser threw", e);
+    return { ok: false, reason: `auth_fetch_failed:${e?.message ?? e}` };
+  }
   if (!userId) return { ok: false, reason: "no_user" };
 
-  const { data: conn } = await supabase
-    .from("wearable_connections")
-    .select("last_sync_at")
-    .eq("user_id", userId)
-    .eq("provider", PROVIDER)
-    .maybeSingle();
+  let conn: { last_sync_at: string | null } | null = null;
+  try {
+    const { data, error } = await supabase
+      .from("wearable_connections")
+      .select("last_sync_at")
+      .eq("user_id", userId)
+      .eq("provider", PROVIDER)
+      .maybeSingle();
+    if (error) {
+      console.error("HC sync: wearable_connections select error", error);
+      return { ok: false, reason: `conn_select_error:${error.message}` };
+    }
+    conn = data;
+  } catch (e: any) {
+    console.error("HC sync: wearable_connections select threw", e);
+    return { ok: false, reason: `conn_fetch_failed:${e?.message ?? e}` };
+  }
 
   const days = conn?.last_sync_at ? 30 : 90;
   const end = new Date();
