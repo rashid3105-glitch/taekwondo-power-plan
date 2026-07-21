@@ -23392,5 +23392,21 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   changelogEntry173: "Corregido: tocar una notificación push de diario abre ahora el diario del atleta.",
   changelogEntry172: "Biblioteca de tests ampliada con 15 nuevos tests físicos y la categoría flexibilidad (plancha, plancha lateral I/D, sprints 10/20 m, T-test, zancadas con salto, 3 rondas de patadas continuas, dominadas máx, flexiones 60 s, Yo-Yo IR1, Wingate shuttle 5 m y sit-and-reach).",
   changelogEntry171: "Nuevo: notificaciones push en la app móvil para nuevos mensajes de chat y entradas de diario. Puedes activarlas o desactivarlas en Perfil → Cuenta.",
+  yearsOfExperience: "Experiencia (años)",
+  exerciseSetsReps: "Series × Reps",
+  exerciseRest: "Descanso",
+  exerciseTempo: "Tempo",
+  exerciseWhyMattersTkd: "Por qué es importante para TKD:",
+  exerciseAlternatives: "Alternativas",
+  filterByGoal: "Objetivo",
+  homeProblem3T: "El progreso se estanca",
+  homeProblem3D: "Sin datos claros sobre carga de entrenamiento, forma física y estado mental, es difícil ver dónde un atleta deja de mejorar.",
+  passwordRequirementsHint: "Mínimo 8 caracteres, con mayúsculas, minúsculas y un número.",
+  createAthleteAction: "Crear atleta",
+  createAthleteShortDesc: "Crea una cuenta de atleta directamente en tu club",
+  inviteAthletesShortDesc: "Envía invitaciones a atletas por correo electrónico",
+  changelog_2026_07_21: "21 de julio de 2026",
+  changelogEntry177: "La barra de navegación inferior ahora se muestra en tableta y web — no solo en móvil. Traducciones al español completadas en tarjetas de ejercicio y textos de bienvenida. Corregidas etiquetas sin traducir en el menú 'Añadir atleta'.",
 };
+
 export default translations;
