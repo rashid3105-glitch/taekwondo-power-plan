@@ -128,7 +128,7 @@ Deno.serve(async (req) => {
               : null;
         workoutRows.push({
           user_id: userId,
-          wearable_source: "apple_health",
+          wearable_source: provider,
           external_id: s.external_id ?? null,
           entry_type: "wearable",
           completed: true,
