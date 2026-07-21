@@ -115,11 +115,13 @@ export default function Health() {
     haptics.tap();
     try {
       const auth = await requestHealthConnectPermission();
+      console.info("HC UI: requestHealthConnectPermission →", auth);
       if (!auth.ok) {
         toast.error(`${t("healthHcDenied")} [${auth.reason ?? "unknown"}]`);
         return;
       }
       const res = await syncHealthConnect({ force: true });
+      console.info("HC UI: syncHealthConnect (connect) →", res);
       if (!res.ok) {
         toast.error(`${t("healthHcSyncFailed")} [${res.reason ?? "unknown"}]`);
         return;
