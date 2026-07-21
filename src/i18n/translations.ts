@@ -7343,6 +7343,11 @@ const translations = {
     ptSessionDeleteConfirm: "Slet denne session og fjern links til dens resultater?",
     ptNoSessionsYet: "Ingen hold-sessioner endnu. Opret én for at komme i gang.",
     ptRedo: "Gør om",
+    createAthleteAction: "Opret atlet",
+    createAthleteShortDesc: "Opret en atlet direkte under din klub",
+    inviteAthletesShortDesc: "Send invitationer til atleter via e-mail",
+    changelog_2026_07_21: "21. juli 2026",
+    changelogEntry177: "Bundmenuen vises nu på tablet og web — ikke kun mobil. Spanske oversættelser tilføjet på øvelseskort og forsidetekster. Rettet manglende oversættelser i 'Tilføj atlet'-menuen.",
   },
   sv: {
     defaultLanguage: "Standardspråk",
