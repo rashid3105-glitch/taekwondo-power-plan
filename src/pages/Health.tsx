@@ -555,7 +555,7 @@ export default function Health() {
 
   return (
     <TooltipProvider delayDuration={200}>
-    <div className="min-h-screen bg-background p-4 max-w-3xl mx-auto">
+    <div className="min-h-screen bg-background p-4 pb-28 max-w-3xl mx-auto">
       <PageMeta title="Health · Sportstalent" description="Log sleep, resting HR, HRV and steps to track recovery." noindex />
       <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")} className="mb-4">
         <ArrowLeft className="h-4 w-4 mr-1" /> {t("back")}
