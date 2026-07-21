@@ -421,6 +421,7 @@ class SportstalentHealthConnect : Plugin() {
                 }
                 val res = JSObject()
                 res.put("workouts", workouts)
+                Log.i(tag, "queryWorkouts returned ${workouts.length()} workouts")
                 call.resolve(res)
             } catch (t: Throwable) {
                 Log.e(tag, "queryWorkouts failed", t)
