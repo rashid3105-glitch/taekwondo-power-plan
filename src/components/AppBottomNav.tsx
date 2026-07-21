@@ -8,14 +8,16 @@ import { cn } from "@/lib/utils";
 // Paths that should NOT show the persistent bottom nav.
 // - Public marketing / auth / onboarding
 // - /dashboard renders its own nav (kept for legacy tab-switch UX)
+// Prefix matches when path === p OR path starts with p + "/".
 const HIDDEN_PREFIXES = [
-  "/auth", "/login", "/signup", "/invite/", "/join/", "/parent-join/",
-  "/reset-password", "/pending-approval", "/onboarding", "/consent/",
+  "/auth", "/login", "/signup", "/invite", "/join", "/parent-join",
+  "/reset-password", "/pending-approval", "/onboarding", "/consent",
   "/blog", "/pricing", "/priser", "/privacy", "/terms", "/about", "/contact",
   "/programs", "/platform", "/methodology", "/for-traenere", "/help",
-  "/funktioner", "/features/", "/taekwondo", "/poomsae", "/staevneforberedelse",
-  "/unsubscribe", "/payment-success", "/mockup/", "/athlete/", "/match/share/",
-  "/admin/blog", "/parent-dashboard", "/install", "/kostplan",
+  "/funktioner", "/features", "/poomsae", "/staevneforberedelse-taekwondo",
+  "/taekwondo-teknik", "/taekwondo-training-program", "/taekwondo-traeningsprogram",
+  "/unsubscribe", "/payment-success", "/mockup", "/athlete", "/match/share",
+  "/admin", "/parent-dashboard", "/install", "/kostplan",
 ];
 
 const EXACT_HIDDEN = new Set(["/", "/dashboard"]);
@@ -29,10 +31,7 @@ export function AppBottomNav() {
 
   const path = location.pathname;
   if (EXACT_HIDDEN.has(path)) return null;
-  if (HIDDEN_PREFIXES.some((p) => path === p || path.startsWith(p + "/") || path.startsWith(p))) {
-    // startsWith("/blog") also matches "/blog", but that's intentional
-    return null;
-  }
+  if (HIDDEN_PREFIXES.some((p) => path === p || path.startsWith(p + "/"))) return null;
 
   const coachMode = isCoachMode && hasCoachRole;
 
