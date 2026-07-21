@@ -3828,7 +3828,8 @@ const translations = {
     age: "Alder",
     weightKg: "Vægt (kg)",
     beltLevel: "Bælteniveau",
-    yearsOfExperience: "Års erfaring",
+    yearsOfExperience: "Erfaring (år)",
+
     birthDate: "Fødselsdato",
     birthDateHint: "Bruges til at beregne din alder automatisk",
     tkdStartDate: "Startede taekwondo",
