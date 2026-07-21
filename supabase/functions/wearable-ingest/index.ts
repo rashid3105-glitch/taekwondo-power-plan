@@ -78,6 +78,12 @@ Deno.serve(async (req) => {
     const grantedScopes: string[] = Array.isArray(body?.granted_scopes)
       ? body.granted_scopes
       : [];
+    // Provider defaults to apple_health for backwards compatibility with the
+    // iOS client shipped before Android/Health Connect existed.
+    const provider: string =
+      typeof body?.provider === "string" && body.provider.length > 0
+        ? body.provider
+        : "apple_health";
 
     if (samples.length === 0) {
       return json({ inserted: 0, workouts_inserted: 0 });
