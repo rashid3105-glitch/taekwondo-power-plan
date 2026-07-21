@@ -621,6 +621,36 @@ export default function Health() {
         </Card>
       )}
 
+      {/* Health Connect connection (Android native only) */}
+      {hcAvailable && (
+        <Card className="mb-4 border border-border/60 bg-card/80 backdrop-blur">
+          <CardContent className="pt-4 pb-4 flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-primary/10">
+              <Heart className="h-5 w-5 text-primary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-semibold">
+                {hcConnected ? t("healthHcConnected") : t("healthConnectHealthConnect")}
+              </div>
+              {hcConnected && hcLastSync && (
+                <div className="text-xs text-muted-foreground">
+                  {new Date(hcLastSync).toLocaleString()}
+                </div>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={connectHealthConnect}
+              disabled={hcConnecting}
+              title={hcConnected ? t("healthForceSync") : t("healthConnectHealthConnect")}
+              className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow active:scale-95 transition-transform disabled:opacity-50 disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            >
+              <RefreshCw className={cn("h-5 w-5", hcConnecting && "animate-spin")} />
+            </button>
+          </CardContent>
+        </Card>
+      )}
+
 
       {/* Why these metrics matter */}
       <Card className="mb-4 border-primary/30 bg-primary/5">
