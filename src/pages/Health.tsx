@@ -7,6 +7,7 @@ import { ArrowLeft, Activity, Footprints, Info, FileDown, ChevronDown, RefreshCw
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PageMeta } from "@/components/PageMeta";
 import { isHealthKitAvailable, requestHealthKitPermission, syncHealthKit } from "@/lib/healthkit";
+import { isHealthConnectAvailable, requestHealthConnectPermission, syncHealthConnect } from "@/lib/healthConnect";
 import {
   Bar, LineChart, Line, ComposedChart,
   ReferenceArea, ReferenceLine,
