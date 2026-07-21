@@ -14547,6 +14547,11 @@ const translations = {
     pmCtaTitle: "Bereit, smarter zu coachen?",
     pmCtaSub: "30 Tage kostenlos starten. Keine Kreditkarte. Jederzeit kündbar.",
     pmCtaBtn: "30 Tage kostenlos starten →",
+    createAthleteAction: "Athlet erstellen",
+    createAthleteShortDesc: "Athletenkonto direkt in deinem Verein anlegen",
+    inviteAthletesShortDesc: "Athleten per E-Mail einladen",
+    changelog_2026_07_21: "21. Juli 2026",
+    changelogEntry177: "Untere Navigationsleiste erscheint nun auf Tablet und Web — nicht nur Mobil. Spanische Übersetzungen ergänzt. Fehlende Beschriftungen im Menü 'Athlet hinzufügen' korrigiert.",
   },
   ar: {
     onbWelcomeTitle: "مرحبًا بك في Sportstalent",
