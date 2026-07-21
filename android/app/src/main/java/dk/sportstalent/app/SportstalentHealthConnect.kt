@@ -150,11 +150,12 @@ class SportstalentHealthConnect : Plugin() {
             call.reject("Health Connect not available (sdkStatus=$status)")
             return
         }
-        Log.i(tag, "requestAuthorization launching for ${perms.size} permissions")
+        Log.i(tag, "requestAuthorization requested perms: ${perms.joinToString()}")
         scope.launch {
             try {
                 val client = HealthConnectClient.getOrCreate(context)
                 val already = client.permissionController.getGrantedPermissions()
+                Log.i(tag, "requestAuthorization already granted: ${already.joinToString()}")
                 if (already.containsAll(perms)) {
                     val res = JSObject()
                     res.put("granted", true)
@@ -166,7 +167,9 @@ class SportstalentHealthConnect : Plugin() {
                 }
                 val launcher = permissionLauncher
                 if (launcher == null) {
-                    call.reject("Permission launcher not initialised")
+                    val why = permissionLauncherInitError ?: "unknown"
+                    Log.e(tag, "requestAuthorization: launcher null ($why)")
+                    call.reject("Permission launcher not initialised: $why")
                     return@launch
                 }
                 pendingPermissionCall = call
@@ -179,6 +182,7 @@ class SportstalentHealthConnect : Plugin() {
             }
         }
     }
+
 
     // MARK: - Shared query helpers
 
