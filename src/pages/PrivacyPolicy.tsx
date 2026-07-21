@@ -37,7 +37,7 @@ export default function PrivacyPolicy() {
         </h1>
 
         <p style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", marginBottom: 40 }}>
-          {t("privacyLastUpdated")}: 2026-06-27 · {t("privacyVersion")}
+          {t("privacyLastUpdated")}: 2026-07-21 · {t("privacyVersion")}
         </p>
 
 
@@ -74,6 +74,11 @@ export default function PrivacyPolicy() {
         <section style={section}>
           <h2 style={h2}>{t("privacyDataSharing")}</h2>
           <p style={p}>{t("privacyDataSharingDesc")}</p>
+        </section>
+
+        <section style={section}>
+          <h2 style={h2}>{t("privacyHealthDataTitle")}</h2>
+          <p style={p}>{t("privacyHealthDataDesc")}</p>
         </section>
 
         <section style={section}>
