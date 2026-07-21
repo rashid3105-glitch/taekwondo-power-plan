@@ -19,7 +19,7 @@ export default function InviteSignup() {
   const { code } = useParams<{ code: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { locale } = useLanguage();
+  const { locale, t } = useLanguage();
 
   const [step, setStep] = useState<Step>("welcome");
   const [info, setInfo] = useState<{ valid: boolean; coach_name?: string; club_name?: string } | null>(null);
