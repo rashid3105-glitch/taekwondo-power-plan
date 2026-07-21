@@ -10970,6 +10970,11 @@ const translations = {
     pmCtaTitle: "Redo att träna smartare?",
     pmCtaSub: "Starta gratis i 30 dagar. Inget kreditkort. Säg upp när som helst.",
     pmCtaBtn: "Starta gratis i 30 dagar →",
+    createAthleteAction: "Skapa atlet",
+    createAthleteShortDesc: "Skapa ett atletkonto direkt under din klubb",
+    inviteAthletesShortDesc: "Skicka inbjudningar till atleter via e-post",
+    changelog_2026_07_21: "21 juli 2026",
+    changelogEntry177: "Bottennavigeringen visas nu på surfplatta och webb — inte bara mobil. Spanska översättningar färdigställda. Åtgärdat oöversatta etiketter i menyn 'Lägg till atlet'.",
   },
   de: {
     defaultLanguage: "Standardsprache",
