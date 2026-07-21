@@ -417,20 +417,25 @@ export async function syncHealthConnect(
   let workoutsCount = 0;
   for (let i = 0; i < samples.length; i += CHUNK) {
     const chunk = samples.slice(i, i + CHUNK);
-    const { data, error } = await supabase.functions.invoke("wearable-ingest", {
-      body: {
-        samples: chunk,
-        device_label: "Android",
-        granted_scopes: READ_TYPES,
-        provider: PROVIDER,
-      },
-    });
-    if (error) {
-      console.error("wearable-ingest failed", error);
-      return { ok: false, reason: "ingest_error" };
+    try {
+      const { data, error } = await supabase.functions.invoke("wearable-ingest", {
+        body: {
+          samples: chunk,
+          device_label: "Android",
+          granted_scopes: READ_TYPES,
+          provider: PROVIDER,
+        },
+      });
+      if (error) {
+        console.error("wearable-ingest failed", error);
+        return { ok: false, reason: `ingest_error:${error.message ?? "unknown"}` };
+      }
+      inserted += (data as any)?.inserted ?? 0;
+      workoutsCount += (data as any)?.workouts_inserted ?? 0;
+    } catch (e: any) {
+      console.error("wearable-ingest threw (fetch failed)", e);
+      return { ok: false, reason: `ingest_fetch_failed:${e?.message ?? e}` };
     }
-    inserted += (data as any)?.inserted ?? 0;
-    workoutsCount += (data as any)?.workouts_inserted ?? 0;
   }
 
   await Preferences.set({ key: THROTTLE_KEY, value: String(Date.now()) });
