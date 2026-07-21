@@ -55,6 +55,10 @@ export default function Health() {
   const [hkLastSync, setHkLastSync] = useState<string | null>(null);
   const [hkConnected, setHkConnected] = useState(false);
   const hkAvailable = isHealthKitAvailable();
+  const [hcConnecting, setHcConnecting] = useState(false);
+  const [hcLastSync, setHcLastSync] = useState<string | null>(null);
+  const [hcConnected, setHcConnected] = useState(false);
+  const hcAvailable = isHealthConnectAvailable();
 
   useEffect(() => {
     (async () => {
