@@ -3675,6 +3675,11 @@ const translations = {
     ptSessionDeleteConfirm: "Delete this session and unlink its results?",
     ptNoSessionsYet: "No team sessions yet. Create one to get started.",
     ptRedo: "Redo",
+    createAthleteAction: "Create athlete",
+    createAthleteShortDesc: "Create an athlete account directly under your club",
+    inviteAthletesShortDesc: "Send invitations to athletes via email",
+    changelog_2026_07_21: "July 21, 2026",
+    changelogEntry177: "Bottom navigation now shows on tablet and web, not only phone. Spanish translations completed for exercise cards and onboarding hints. Fixed raw key labels in the 'Add athlete' menu.",
   },
   da: {
     defaultLanguage: "Standardsprog",
