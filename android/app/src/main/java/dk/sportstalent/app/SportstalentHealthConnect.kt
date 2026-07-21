@@ -41,6 +41,7 @@ class SportstalentHealthConnect : Plugin() {
     private val scope = CoroutineScope(Dispatchers.Main)
 
     private var permissionLauncher: ActivityResultLauncher<Set<String>>? = null
+    private var permissionLauncherInitError: String? = null
     private var pendingPermissionCall: PluginCall? = null
     private var pendingPermissionRequested: Set<String> = emptySet()
 
@@ -48,7 +49,11 @@ class SportstalentHealthConnect : Plugin() {
         super.load()
         Log.i(tag, "Plugin load() invoked")
         try {
-            val activity = activity ?: return
+            val activity = activity ?: run {
+                permissionLauncherInitError = "activity_null_at_load"
+                Log.w(tag, "Plugin load(): activity was null")
+                return
+            }
             val contract: ActivityResultContract<Set<String>, Set<String>> =
                 PermissionController.createRequestPermissionResultContract()
             permissionLauncher = activity.registerForActivityResult(contract) { granted ->
@@ -57,7 +62,9 @@ class SportstalentHealthConnect : Plugin() {
                 val requested = pendingPermissionRequested
                 pendingPermissionRequested = emptySet()
                 val allGranted = requested.isNotEmpty() && granted.containsAll(requested)
-                Log.i(tag, "Permission result: granted=${granted.size}/${requested.size}")
+                Log.i(tag, "Permission result: granted=${granted.size}/${requested.size} allGranted=$allGranted")
+                Log.i(tag, "Permission result requested: ${requested.joinToString()}")
+                Log.i(tag, "Permission result granted names: ${granted.joinToString()}")
                 val res = JSObject()
                 res.put("granted", allGranted)
                 val list = JSArray()
@@ -66,9 +73,11 @@ class SportstalentHealthConnect : Plugin() {
                 call?.resolve(res)
             }
         } catch (t: Throwable) {
-            Log.w(tag, "Failed to register permission launcher: ${t.message}")
+            permissionLauncherInitError = "${t.javaClass.simpleName}:${t.message}"
+            Log.e(tag, "Failed to register permission launcher", t)
         }
     }
+
 
     // MARK: - Type mapping (whitelist)
 
