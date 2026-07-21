@@ -282,6 +282,7 @@ class SportstalentHealthConnect : Plugin() {
                 }
                 val res = JSObject()
                 res.put("samples", samples)
+                Log.i(tag, "queryQuantity metricType=$metricType returned ${samples.length()} samples")
                 call.resolve(res)
             } catch (t: Throwable) {
                 Log.e(tag, "queryQuantity failed", t)
