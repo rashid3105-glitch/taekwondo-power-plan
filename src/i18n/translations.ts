@@ -23443,6 +23443,14 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   inviteAthletesShortDesc: "Envía invitaciones a atletas por correo electrónico",
   changelog_2026_07_21: "21 de julio de 2026",
   changelogEntry177: "La barra de navegación inferior ahora se muestra en tableta y web — no solo en móvil. Traducciones al español completadas en tarjetas de ejercicio y textos de bienvenida. Corregidas etiquetas sin traducir en el menú 'Añadir atleta'.",
+  signupInviteLabel: "Código de invitación del club",
+  signupInvitePlaceholder: "Ej. COACH-ABC123",
+  signupInviteRequired: "Necesitas una invitación o código de club para crear una cuenta. Ponte en contacto con tu entrenador.",
+  signupInviteInvalid: "Código de club no válido o caducado.",
+  signupInviteHint: "Los atletas se unen a través de su club. Pide a tu entrenador un enlace o código de invitación.",
+  signupAsCoachLink: "¿Eres entrenador? Crea una cuenta de entrenador aquí.",
+  changelog_2026_07_22: "22 de julio de 2026",
+  changelogEntry178: "Los nuevos atletas ahora se unen a través del código de invitación de su club. Retirada la suscripción individual para atletas — SportsTalent es un servicio para clubes y organizaciones. Los atletas actuales sin club conservan el acceso.",
 };
 
 export default translations;
