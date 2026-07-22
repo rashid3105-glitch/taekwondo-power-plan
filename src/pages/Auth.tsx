@@ -416,6 +416,17 @@ export default function AuthPage() {
             {isLogin ? t("signUp") : t("signIn")}
           </button>
         </p>
+        {!isLogin && (
+          <p style={{ textAlign: "center", fontSize: 13, color: "rgba(255,255,255,0.6)", marginTop: -16, marginBottom: 24 }}>
+            <button
+              type="button"
+              onClick={() => navigate("/signup/coach")}
+              style={{ background: "transparent", border: "none", color: GOLD, fontWeight: 700, cursor: "pointer", textDecoration: "underline", fontSize: 13, padding: 0 }}
+            >
+              {t("signupAsCoachLink")}
+            </button>
+          </p>
+        )}
 
         {isLogin && passkeyAvailable && (
           <>
