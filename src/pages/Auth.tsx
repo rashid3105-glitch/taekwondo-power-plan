@@ -493,17 +493,35 @@ export default function AuthPage() {
 
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           {!isLogin && (
-            <div>
-              <label style={labelStyle}>{t("displayName")}</label>
-              <input
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                placeholder={t("yourName")}
-                required
-                autoComplete="name"
-                style={inputStyle}
-              />
-            </div>
+            <>
+              <div>
+                <label style={labelStyle}>{t("displayName")}</label>
+                <input
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  placeholder={t("yourName")}
+                  required
+                  autoComplete="name"
+                  style={inputStyle}
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>{t("signupInviteLabel")}</label>
+                <input
+                  value={inviteCodeInput}
+                  onChange={(e) => setInviteCodeInput(e.target.value)}
+                  placeholder={t("signupInvitePlaceholder")}
+                  required
+                  autoCapitalize="characters"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  style={inputStyle}
+                />
+                <p style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginTop: 6 }}>
+                  {t("signupInviteHint")}
+                </p>
+              </div>
+            </>
           )}
           <div>
             <label style={labelStyle}>{t("email")}</label>
