@@ -29,7 +29,6 @@ export default function Priser() {
 
   const inputStyle = { width: "100%", background: "rgba(255,255,255,0.05)", border: "0.5px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "11px 14px", fontSize: 14, color: "#fff", outline: "none", boxSizing: "border-box" as const };
 
-  const athleteFeatures = [t("pricingAthleteF1"), t("pricingAthleteF2"), t("pricingAthleteF3"), t("pricingAthleteF4")];
   const starterFeatures = [t("pricingStarterF1"), t("pricingStarterF2"), t("pricingStarterF3"), t("pricingStarterF4"), t("pricingStarterF5"), t("pricingStarterF6"), t("pricingStarterF7")];
   const starterMissing = [t("pricingMissingVideo"), t("pricingMissingPdf"), t("pricingMissingCal")];
   const clubFeatures = [t("pricingClubF1"), t("pricingClubF2"), t("pricingClubF3"), t("pricingClubF4"), t("pricingClubF5"), t("pricingClubF6"), t("pricingClubF7"), t("pricingClubF8")];
