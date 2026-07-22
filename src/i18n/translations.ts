@@ -3687,6 +3687,7 @@ const translations = {
     changelog_2026_07_21: "July 21, 2026",
     changelogEntry177: "Bottom navigation now shows on tablet and web, not only phone. Spanish translations completed for exercise cards and onboarding hints. Fixed raw key labels in the 'Add athlete' menu.",
     changelog_2026_07_22: "July 22, 2026",
+    changelogEntry179: "Removed the individual \"Coach\" plan from the pricing page. SportsTalent is sold to clubs and organizations; athletes and coaches get access through their club. Existing subscribers keep their access.",
     changelogEntry178: "New athletes now join via their club's invitation code. Individual athlete subscription removed — SportsTalent is a club and organization service. Existing club-less athletes keep their access.",
   },
   da: {
@@ -7363,6 +7364,7 @@ const translations = {
     changelog_2026_07_21: "21. juli 2026",
     changelogEntry177: "Bundmenuen vises nu på tablet og web — ikke kun mobil. Spanske oversættelser tilføjet på øvelseskort og forsidetekster. Rettet manglende oversættelser i 'Tilføj atlet'-menuen.",
     changelog_2026_07_22: "22. juli 2026",
+    changelogEntry179: "Fjernet det individuelle \"Træner\"-abonnement fra prissiden. SportsTalent sælges til klubber og organisationer; atleter og trænere får adgang gennem deres klub. Eksisterende abonnenter beholder deres adgang.",
     changelogEntry178: "Nye atleter oprettes nu via en klub-invitationskode. Individuelt atlet-abonnement er fjernet — SportsTalent leveres til klubber og organisationer. Eksisterende atleter uden klub beholder deres adgang.",
   },
   sv: {
@@ -10998,6 +11000,7 @@ const translations = {
     changelog_2026_07_21: "21 juli 2026",
     changelogEntry177: "Bottennavigeringen visas nu på surfplatta och webb — inte bara mobil. Spanska översättningar färdigställda. Åtgärdat oöversatta etiketter i menyn 'Lägg till atlet'.",
     changelog_2026_07_22: "22 juli 2026",
+    changelogEntry179: "Tog bort det individuella \"Tränare\"-abonnemanget från prissidan. SportsTalent säljs till klubbar och organisationer; atleter och tränare får åtkomst via sin klubb. Befintliga abonnenter behåller sin åtkomst.",
     changelogEntry178: "Nya atleter ansluter nu via sin klubbs inbjudningskod. Individuellt atlet-abonnemang borttaget — SportsTalent är en tjänst för klubbar och organisationer. Befintliga atleter utan klubb behåller sin åtkomst.",
   },
   de: {
@@ -14583,6 +14586,7 @@ const translations = {
     changelog_2026_07_21: "21. Juli 2026",
     changelogEntry177: "Untere Navigationsleiste erscheint nun auf Tablet und Web — nicht nur Mobil. Spanische Übersetzungen ergänzt. Fehlende Beschriftungen im Menü 'Athlet hinzufügen' korrigiert.",
     changelog_2026_07_22: "22. Juli 2026",
+    changelogEntry179: "Individuelles \"Trainer\"-Abo von der Preisseite entfernt. SportsTalent wird an Vereine und Organisationen verkauft; Athleten und Trainer erhalten Zugang über ihren Verein. Bestehende Abonnenten behalten ihren Zugang.",
     changelogEntry178: "Neue Athleten treten jetzt über den Einladungscode ihres Vereins bei. Individuelles Athleten-Abonnement entfernt — SportsTalent ist ein Dienst für Vereine und Organisationen. Bestehende Athleten ohne Verein behalten ihren Zugang.",
   },
   ar: {
@@ -18168,6 +18172,7 @@ const translations = {
     changelog_2026_07_21: "21 يوليو 2026",
     changelogEntry177: "تظهر شريط التنقل السفلي الآن على الأجهزة اللوحية والويب — وليس فقط على الهاتف. اكتمال الترجمات الإسبانية. تم إصلاح التسميات المفقودة في قائمة 'إضافة رياضي'.",
     changelog_2026_07_22: "22 يوليو 2026",
+    changelogEntry179: "تمت إزالة اشتراك \"المدرب\" الفردي من صفحة الأسعار. يُباع SportsTalent للأندية والمنظمات؛ ويحصل الرياضيون والمدربون على الوصول عبر ناديهم. يحتفظ المشتركون الحاليون بوصولهم.",
     changelogEntry178: "ينضم الرياضيون الجدد الآن عبر رمز دعوة النادي. تم إلغاء اشتراك الرياضي الفردي — SportsTalent خدمة للأندية والمنظمات. يحتفظ الرياضيون الحاليون بدون نادٍ بوصولهم.",
   },
   no: {
@@ -21806,6 +21811,7 @@ const translations = {
     changelog_2026_07_21: "21. juli 2026",
     changelogEntry177: "Bunnmenyen vises nå også på nettbrett og web — ikke bare mobil. Spanske oversettelser fullført. Rettet manglende oversettelser i menyen 'Legg til utøver'.",
     changelog_2026_07_22: "22. juli 2026",
+    changelogEntry179: "Fjernet det individuelle \"Trener\"-abonnementet fra prissiden. SportsTalent selges til klubber og organisasjoner; utøvere og trenere får tilgang gjennom klubben sin. Eksisterende abonnenter beholder tilgangen.",
     changelogEntry178: "Nye utøvere blir nå med via klubbens invitasjonskode. Individuelt utøver-abonnement fjernet — SportsTalent er en tjeneste for klubber og organisasjoner. Eksisterende utøvere uten klubb beholder tilgangen.",
   },
 } as const;
@@ -23462,6 +23468,7 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   signupInviteHint: "Los atletas se unen a través de su club. Pide a tu entrenador un enlace o código de invitación.",
   signupAsCoachLink: "¿Eres entrenador? Crea una cuenta de entrenador aquí.",
   changelog_2026_07_22: "22 de julio de 2026",
+  changelogEntry179: "Retirado el plan individual \"Entrenador\" de la página de precios. SportsTalent se vende a clubes y organizaciones; atletas y entrenadores acceden a través de su club. Los suscriptores actuales conservan el acceso.",
   changelogEntry178: "Los nuevos atletas ahora se unen a través del código de invitación de su club. Retirada la suscripción individual para atletas — SportsTalent es un servicio para clubes y organizaciones. Los atletas actuales sin club conservan el acceso.",
 };
 
