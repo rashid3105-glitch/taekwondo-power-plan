@@ -10997,6 +10997,8 @@ const translations = {
     inviteAthletesShortDesc: "Skicka inbjudningar till atleter via e-post",
     changelog_2026_07_21: "21 juli 2026",
     changelogEntry177: "Bottennavigeringen visas nu på surfplatta och webb — inte bara mobil. Spanska översättningar färdigställda. Åtgärdat oöversatta etiketter i menyn 'Lägg till atlet'.",
+    changelog_2026_07_22: "22 juli 2026",
+    changelogEntry178: "Nya atleter ansluter nu via sin klubbs inbjudningskod. Individuellt atlet-abonnemang borttaget — SportsTalent är en tjänst för klubbar och organisationer. Befintliga atleter utan klubb behåller sin åtkomst.",
   },
   de: {
     defaultLanguage: "Standardsprache",
