@@ -48,9 +48,24 @@ export default function AuthPage() {
 
   const redirectTo = new URLSearchParams(window.location.search).get("redirect");
   const inviteCode = new URLSearchParams(window.location.search).get("invite");
+  const [inviteCodeInput, setInviteCodeInput] = useState<string>(() => {
+    try {
+      return (
+        inviteCode ||
+        sessionStorage.getItem("pending_invite_code") ||
+        localStorage.getItem("pending_invite_code") ||
+        ""
+      );
+    } catch {
+      return inviteCode || "";
+    }
+  });
 
   useEffect(() => {
-    if (inviteCode) sessionStorage.setItem("pending_invite_code", inviteCode);
+    if (inviteCode) {
+      sessionStorage.setItem("pending_invite_code", inviteCode);
+      setInviteCodeInput(inviteCode);
+    }
   }, [inviteCode]);
 
   useEffect(() => {
