@@ -5,7 +5,7 @@ import { PageMeta } from "@/components/PageMeta";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Zap, User, Users, Users2, Building2, Check, Mail, FlaskConical, Loader2, Settings, Trophy } from "lucide-react";
+import { Users, Users2, Building2, Check, Mail, FlaskConical, Loader2, Settings, Trophy } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PublicNav } from "@/components/PublicNav";
 import { supabase } from "@/integrations/supabase/client";
