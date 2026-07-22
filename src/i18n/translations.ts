@@ -3686,6 +3686,8 @@ const translations = {
     inviteAthletesShortDesc: "Send invitations to athletes via email",
     changelog_2026_07_21: "July 21, 2026",
     changelogEntry177: "Bottom navigation now shows on tablet and web, not only phone. Spanish translations completed for exercise cards and onboarding hints. Fixed raw key labels in the 'Add athlete' menu.",
+    changelog_2026_07_22: "July 22, 2026",
+    changelogEntry178: "New athletes now join via their club's invitation code. Individual athlete subscription removed — SportsTalent is a club and organization service. Existing club-less athletes keep their access.",
   },
   da: {
     defaultLanguage: "Standardsprog",
