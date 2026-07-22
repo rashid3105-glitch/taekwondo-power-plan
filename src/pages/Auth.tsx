@@ -207,6 +207,32 @@ export default function AuthPage() {
           setLoading(false);
           return;
         }
+
+        // App Store 3.1.3(c) compliance: SportsTalent is a club/organization
+        // service. New athlete accounts require a valid club invitation code.
+        const codeRaw = (inviteCodeInput || "").trim();
+        if (!codeRaw) {
+          toast({ title: t("error"), description: t("signupInviteRequired"), variant: "destructive" });
+          setLoading(false);
+          return;
+        }
+        try {
+          const { data: inviteInfo } = await supabase.rpc("get_invite_by_code" as any, { _code: codeRaw });
+          if (!(inviteInfo as any)?.valid) {
+            toast({ title: t("error"), description: t("signupInviteInvalid"), variant: "destructive" });
+            setLoading(false);
+            return;
+          }
+        } catch {
+          toast({ title: t("error"), description: t("signupInviteInvalid"), variant: "destructive" });
+          setLoading(false);
+          return;
+        }
+        try {
+          sessionStorage.setItem("pending_invite_code", codeRaw);
+          localStorage.setItem("pending_invite_code", codeRaw);
+        } catch {}
+
         const { data: signUpData, error } = await supabase.auth.signUp({
           email,
           password,
