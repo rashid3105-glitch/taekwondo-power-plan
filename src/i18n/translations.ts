@@ -14582,6 +14582,8 @@ const translations = {
     inviteAthletesShortDesc: "Athleten per E-Mail einladen",
     changelog_2026_07_21: "21. Juli 2026",
     changelogEntry177: "Untere Navigationsleiste erscheint nun auf Tablet und Web — nicht nur Mobil. Spanische Übersetzungen ergänzt. Fehlende Beschriftungen im Menü 'Athlet hinzufügen' korrigiert.",
+    changelog_2026_07_22: "22. Juli 2026",
+    changelogEntry178: "Neue Athleten treten jetzt über den Einladungscode ihres Vereins bei. Individuelles Athleten-Abonnement entfernt — SportsTalent ist ein Dienst für Vereine und Organisationen. Bestehende Athleten ohne Verein behalten ihren Zugang.",
   },
   ar: {
     onbWelcomeTitle: "مرحبًا بك في Sportstalent",
