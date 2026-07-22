@@ -96,7 +96,7 @@ export default function Pricing() {
   useEffect(() => {
     if (native) return;
     const currencyCode = currency.toUpperCase();
-    const allTiers = [...individualTiers, ...teamTiers];
+    const allTiers = [...teamTiers];
     const products = allTiers.map((tier) => {
       const monthly = getTierPrice(tier.key, currency, "monthly");
       const yearly = getTierPrice(tier.key, currency, "yearly");
