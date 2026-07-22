@@ -21805,6 +21805,8 @@ const translations = {
     inviteAthletesShortDesc: "Send invitasjoner til utøvere via e-post",
     changelog_2026_07_21: "21. juli 2026",
     changelogEntry177: "Bunnmenyen vises nå også på nettbrett og web — ikke bare mobil. Spanske oversettelser fullført. Rettet manglende oversettelser i menyen 'Legg til utøver'.",
+    changelog_2026_07_22: "22. juli 2026",
+    changelogEntry178: "Nye utøvere blir nå med via klubbens invitasjonskode. Individuelt utøver-abonnement fjernet — SportsTalent er en tjeneste for klubber og organisasjoner. Eksisterende utøvere uten klubb beholder tilgangen.",
   },
 } as const;
 
