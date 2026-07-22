@@ -15,29 +15,14 @@ import { detectCurrency, formatPrice, getTierPrice } from "@/lib/currency";
 import { isNativeApp } from "@/lib/platform";
 
 type Tier = {
-  key: "athlete" | "coach_solo" | "team_small" | "team_medium" | "team_large";
-  icon: typeof User;
+  key: "team_small" | "team_medium" | "team_large";
+  icon: typeof Users;
   nameKey: TranslationKey;
   descKey: TranslationKey;
   features: TranslationKey[];
   popular?: boolean;
 };
 
-const individualTiers: Tier[] = [
-  {
-    key: "coach_solo",
-    icon: Zap,
-    nameKey: "pricingTierCoachSolo",
-    descKey: "pricingTierCoachSoloDesc",
-    features: [
-      "pricingFeatureCoachSeat",
-      "pricingFeatureAllModules",
-      "pricingFeatureOnePlan",
-      "pricingFeatureNoAthletes",
-      "pricingFeatureLibrary",
-    ],
-  },
-];
 
 const teamTiers: Tier[] = [
   {
