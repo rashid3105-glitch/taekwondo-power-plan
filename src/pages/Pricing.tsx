@@ -365,17 +365,7 @@ export default function Pricing() {
             </button>
           </div>
 
-          {/* Individuals */}
-          <section className="space-y-4">
-            <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground text-center">
-              {t("pricingForIndividuals")}
-            </h2>
-            <div className="grid gap-6 md:grid-cols-2 max-w-3xl mx-auto">
-              {individualTiers.map(renderTierCard)}
-            </div>
-          </section>
-
-          {/* Teams */}
+          {/* Clubs & organisations */}
           <section className="space-y-4">
             <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground text-center">
               {t("pricingForTeams")}
@@ -384,6 +374,7 @@ export default function Pricing() {
               {teamTiers.map(renderTierCard)}
             </div>
           </section>
+
 
           {/* Federation */}
           <Card className="border-border bg-card shadow-sm">
