@@ -48,9 +48,24 @@ export default function AuthPage() {
 
   const redirectTo = new URLSearchParams(window.location.search).get("redirect");
   const inviteCode = new URLSearchParams(window.location.search).get("invite");
+  const [inviteCodeInput, setInviteCodeInput] = useState<string>(() => {
+    try {
+      return (
+        inviteCode ||
+        sessionStorage.getItem("pending_invite_code") ||
+        localStorage.getItem("pending_invite_code") ||
+        ""
+      );
+    } catch {
+      return inviteCode || "";
+    }
+  });
 
   useEffect(() => {
-    if (inviteCode) sessionStorage.setItem("pending_invite_code", inviteCode);
+    if (inviteCode) {
+      sessionStorage.setItem("pending_invite_code", inviteCode);
+      setInviteCodeInput(inviteCode);
+    }
   }, [inviteCode]);
 
   useEffect(() => {
@@ -192,6 +207,32 @@ export default function AuthPage() {
           setLoading(false);
           return;
         }
+
+        // App Store 3.1.3(c) compliance: SportsTalent is a club/organization
+        // service. New athlete accounts require a valid club invitation code.
+        const codeRaw = (inviteCodeInput || "").trim();
+        if (!codeRaw) {
+          toast({ title: t("error"), description: t("signupInviteRequired"), variant: "destructive" });
+          setLoading(false);
+          return;
+        }
+        try {
+          const { data: inviteInfo } = await supabase.rpc("get_invite_by_code" as any, { _code: codeRaw });
+          if (!(inviteInfo as any)?.valid) {
+            toast({ title: t("error"), description: t("signupInviteInvalid"), variant: "destructive" });
+            setLoading(false);
+            return;
+          }
+        } catch {
+          toast({ title: t("error"), description: t("signupInviteInvalid"), variant: "destructive" });
+          setLoading(false);
+          return;
+        }
+        try {
+          sessionStorage.setItem("pending_invite_code", codeRaw);
+          localStorage.setItem("pending_invite_code", codeRaw);
+        } catch {}
+
         const { data: signUpData, error } = await supabase.auth.signUp({
           email,
           password,
@@ -375,6 +416,17 @@ export default function AuthPage() {
             {isLogin ? t("signUp") : t("signIn")}
           </button>
         </p>
+        {!isLogin && (
+          <p style={{ textAlign: "center", fontSize: 13, color: "rgba(255,255,255,0.6)", marginTop: -16, marginBottom: 24 }}>
+            <button
+              type="button"
+              onClick={() => navigate("/signup/coach")}
+              style={{ background: "transparent", border: "none", color: GOLD, fontWeight: 700, cursor: "pointer", textDecoration: "underline", fontSize: 13, padding: 0 }}
+            >
+              {t("signupAsCoachLink")}
+            </button>
+          </p>
+        )}
 
         {isLogin && passkeyAvailable && (
           <>
@@ -452,17 +504,35 @@ export default function AuthPage() {
 
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           {!isLogin && (
-            <div>
-              <label style={labelStyle}>{t("displayName")}</label>
-              <input
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                placeholder={t("yourName")}
-                required
-                autoComplete="name"
-                style={inputStyle}
-              />
-            </div>
+            <>
+              <div>
+                <label style={labelStyle}>{t("displayName")}</label>
+                <input
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  placeholder={t("yourName")}
+                  required
+                  autoComplete="name"
+                  style={inputStyle}
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>{t("signupInviteLabel")}</label>
+                <input
+                  value={inviteCodeInput}
+                  onChange={(e) => setInviteCodeInput(e.target.value)}
+                  placeholder={t("signupInvitePlaceholder")}
+                  required
+                  autoCapitalize="characters"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  style={inputStyle}
+                />
+                <p style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginTop: 6 }}>
+                  {t("signupInviteHint")}
+                </p>
+              </div>
+            </>
           )}
           <div>
             <label style={labelStyle}>{t("email")}</label>

@@ -25,19 +25,6 @@ type Tier = {
 
 const individualTiers: Tier[] = [
   {
-    key: "athlete",
-    icon: User,
-    nameKey: "pricingTierAthlete",
-    descKey: "pricingTierAthleteDesc",
-    features: [
-      "pricingFeatureSingleAthlete",
-      "pricingFeatureLimitedModules",
-      "pricingFeatureOnePlan",
-      "pricingFeatureProgress",
-      "pricingFeatureMental",
-    ],
-  },
-  {
     key: "coach_solo",
     icon: Zap,
     nameKey: "pricingTierCoachSolo",
