@@ -5,7 +5,7 @@ import { PageMeta } from "@/components/PageMeta";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Zap, User, Users, Users2, Building2, Check, Mail, FlaskConical, Loader2, Settings, Trophy } from "lucide-react";
+import { Users, Users2, Building2, Check, Mail, FlaskConical, Loader2, Settings, Trophy } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PublicNav } from "@/components/PublicNav";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,29 +15,14 @@ import { detectCurrency, formatPrice, getTierPrice } from "@/lib/currency";
 import { isNativeApp } from "@/lib/platform";
 
 type Tier = {
-  key: "athlete" | "coach_solo" | "team_small" | "team_medium" | "team_large";
-  icon: typeof User;
+  key: "team_small" | "team_medium" | "team_large";
+  icon: typeof Users;
   nameKey: TranslationKey;
   descKey: TranslationKey;
   features: TranslationKey[];
   popular?: boolean;
 };
 
-const individualTiers: Tier[] = [
-  {
-    key: "coach_solo",
-    icon: Zap,
-    nameKey: "pricingTierCoachSolo",
-    descKey: "pricingTierCoachSoloDesc",
-    features: [
-      "pricingFeatureCoachSeat",
-      "pricingFeatureAllModules",
-      "pricingFeatureOnePlan",
-      "pricingFeatureNoAthletes",
-      "pricingFeatureLibrary",
-    ],
-  },
-];
 
 const teamTiers: Tier[] = [
   {
@@ -111,7 +96,7 @@ export default function Pricing() {
   useEffect(() => {
     if (native) return;
     const currencyCode = currency.toUpperCase();
-    const allTiers = [...individualTiers, ...teamTiers];
+    const allTiers = [...teamTiers];
     const products = allTiers.map((tier) => {
       const monthly = getTierPrice(tier.key, currency, "monthly");
       const yearly = getTierPrice(tier.key, currency, "yearly");
@@ -380,17 +365,7 @@ export default function Pricing() {
             </button>
           </div>
 
-          {/* Individuals */}
-          <section className="space-y-4">
-            <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground text-center">
-              {t("pricingForIndividuals")}
-            </h2>
-            <div className="grid gap-6 md:grid-cols-2 max-w-3xl mx-auto">
-              {individualTiers.map(renderTierCard)}
-            </div>
-          </section>
-
-          {/* Teams */}
+          {/* Clubs & organisations */}
           <section className="space-y-4">
             <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground text-center">
               {t("pricingForTeams")}
@@ -399,6 +374,7 @@ export default function Pricing() {
               {teamTiers.map(renderTierCard)}
             </div>
           </section>
+
 
           {/* Federation */}
           <Card className="border-border bg-card shadow-sm">
