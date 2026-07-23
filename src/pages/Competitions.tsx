@@ -34,7 +34,7 @@ interface WeightLog { log_date: string; weight_kg: number; }
 export default function Competitions() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const { activeClubId } = useActiveClub();
   const [comps, setComps] = useState<Competition[]>([]);
   const [pastComps, setPastComps] = useState<Competition[]>([]);
@@ -97,7 +97,7 @@ export default function Competitions() {
   async function generatePlan(id: string) {
     setGenerating(id);
     try {
-      const { data, error } = await supabase.functions.invoke("generate-competition-plan", { body: { competition_id: id } });
+      const { data, error } = await supabase.functions.invoke("generate-competition-plan", { body: { competition_id: id, locale } });
       if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
       toast({ title: t("competitionsPlanGenerated") });
       void load();
