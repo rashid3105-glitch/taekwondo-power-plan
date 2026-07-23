@@ -44,13 +44,22 @@ export default function SignupCoach() {
       toast({ title: "Adgangskoden skal være mindst 8 tegn", variant: "destructive" });
       return;
     }
+    if (!clubName.trim() || clubName.trim().length < 2) {
+      toast({ title: t("signupClubNameRequired"), variant: "destructive" });
+      return;
+    }
     setLoading(true);
     try {
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: { display_name: name, wants_coach: true, wants_demo: true },
+          data: {
+            display_name: name,
+            wants_coach: true,
+            wants_demo: true,
+            coach_club_name: clubName.trim(),
+          },
           emailRedirectTo: `${window.location.origin}/auth?tab=signin`,
         },
       });
@@ -131,6 +140,20 @@ export default function SignupCoach() {
                     autoCapitalize="words"
                     className="h-11 rounded-xl"
                   />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="clubName" className="text-xs font-medium">{t("signupClubNameLabel")}</Label>
+                  <Input
+                    id="clubName"
+                    value={clubName}
+                    onChange={(e) => setClubName(e.target.value)}
+                    required
+                    minLength={2}
+                    autoCapitalize="words"
+                    placeholder={t("signupClubNamePlaceholder")}
+                    className="h-11 rounded-xl"
+                  />
+                  <p className="text-[10px] text-muted-foreground/70">{t("signupClubNameHint")}</p>
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="email" className="text-xs font-medium">Email</Label>

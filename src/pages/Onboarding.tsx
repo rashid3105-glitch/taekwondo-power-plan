@@ -120,6 +120,14 @@ export default function Onboarding() {
         setExperience(y < 1 ? "under1" : y < 3 ? "1to3" : y < 7 ? "3to7" : "7plus");
       }
 
+      // Pre-fill club name for coaches who provided it during signup
+      if (isCoach) {
+        const metaClub = (meta.coach_club_name || "").toString().trim();
+        const profileClub = (p.coach_club_name || "").toString().trim();
+        const seed = metaClub || profileClub;
+        if (seed) setClubName(seed);
+      }
+
       setLoading(false);
     })();
   }, [navigate]);

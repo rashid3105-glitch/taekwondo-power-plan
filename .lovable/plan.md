@@ -1,41 +1,56 @@
-## Mål
-Gør `/auth` konsistent med klub-only beslutningen: siden viser kun **Log ind** + en tydelig **Opret trænerkonto**-vej. Atleter kan udelukkende oprette sig via invitationslink fra deres træner (`/join/:code` → `/invite-signup`).
+## Goal
 
-## Ændringer
+Ask new coaches for their club name during signup. If a club with that name already exists, add the coach to that club. Otherwise create a new club and give the coach 5 athlete invitation slots. remember to correct this in all places where you can sign up as a coach
 
-### 1. `src/pages/Auth.tsx`
-- Fjern `signup`-tilstanden helt fra denne side. `isLogin` bliver altid `true`; toggle-linket "Har du ikke en konto? Opret" fjernes.
-- Fjern `handleSubmit`s hele `else`-gren (atlet-signup, invite-kode-validering, `signUp`-kald, `pendingEmail`-state, "Tjek din indbakke"-skærmen).
-- Fjern felterne `displayName` + `inviteCodeInput` + `signupInviteHint` fra formen. Behold e-mail + password + forgot password + passkey/biometri.
-- Fjern "Er du træner? Opret trænerkonto her."-linket i sin nuværende diskrete form.
-- Under login-formen tilføjes en tydelig sekundær CTA-blok:
-  - Overskrift: "Er du træner eller klub?"
-  - Kort tekst: "Opret en trænerkonto og inviter dine atleter."
-  - Knap → `/signup/coach`
-- Under den: en lille hjælpelinje til atleter der lander her ved en fejl: "Er du atlet? Du kommer ind via invitationslinket fra din træner." (ingen knap — bevidst).
-- Håndtér `?tab=signup` og `?invite=…` ved at redirecte til `/signup/coach` hhv. `/invite-signup?code=…`, så gamle links ikke bryder.
-- Bevar logikken der anvender en gemt `pending_invite_code` efter login (så en atlet der klikkede et invitationslink først og loggede ind bagefter stadig får sin klub tilknyttet).
+## Changes
 
-### 2. Ingen ændringer nødvendige i
-- `/signup/coach` (`SignupCoach.tsx`) — fortsat den eneste selvbetjente signup-vej.
-- `/join/:code` og `/invite-signup` — atleters eneste indgang.
-- `Index.tsx` / landing-CTA'er — de peger allerede på `/auth` (log ind) og `/signup/coach`.
+### 1. `src/pages/SignupCoach.tsx` — add club name to the first step
 
-### 3. Oversættelser (`src/i18n/translations.ts`)
-Tilføj nye nøgler i alle 7 sprog (da, en, sv, de, ar, no, es):
-- `authCoachCtaTitle` — "Er du træner eller klub?"
-- `authCoachCtaBody` — "Opret en trænerkonto og inviter dine atleter."
-- `authCoachCtaButton` — "Opret trænerkonto"
-- `authAthleteHint` — "Er du atlet? Du kommer ind via invitationslinket fra din træner."
+- Add a **Klubnavn** input on the account step, positioned above the email field.
+- Live-lookup (debounced) against existing clubs by case-insensitive name match. When a match is found, show a subtle hint under the field: *"Denne klub findes allerede — du bliver tilføjet som træner."*
+- If no match: *"Ny klub — den oprettes med 5 pladser til atleter."*
+- Pass `club_name` in the `signUp` `options.data` so it survives email verification, and also into the existing `bootstrap-coach-trial` call.
+- Since the club step now runs before verify, remove the standalone `"club"` step from the flow. Keep the athlete-count "band" question as an optional light step (or drop entirely — see Question below).
 
-Fjern (eller lad ligge ubrugte) atlet-signup-nøgler som `createAthleteAccount`, `signupInviteLabel`, `signupInviteHint`, `signupInvitePlaceholder`, `signupInviteRequired`, `signupInviteInvalid`, `signupAsCoachLink`, `passwordRequirementsHint` — de er ikke længere brugt på /auth (behold i filen for at undgå bredere refaktor).
+### 2. `supabase/functions/bootstrap-coach-trial/index.ts` — join-or-create logic
 
-### 4. `PageMeta`
-Opdatér title/description til kun at handle om login, da signup ikke længere findes her.
+- Trim + normalize the incoming `club_name`.
+- Look up an existing club by case-insensitive name (`ilike` exact match on `name`).
+- **If found:** attach the coach to that club (`profiles.club_id = existing.id`) and insert a `club_memberships` row with role `coach`. Do **not** create a new club.
+- **If not found:** create a new club with `max_athletes: 5` (currently hardcoded to 100) and attach the coach as before.
+- Return `{ code, club_id, joined_existing: boolean }` so the UI can show the right confirmation.
 
-### 5. Changelog (`src/pages/Help.tsx`)
-Tilføj `changelogEntry180` (v1.4.4, 23. juli 2026):
-- "Atleter oprettes nu udelukkende via invitationslink fra deres træner. /auth er ren login-side."
+### 3. Invite step copy
 
-## Teknisk note
-Ingen database-ændringer. Ingen ændringer i RLS, edge functions eller Stripe. Rent frontend/UX.
+- When the coach joined an existing club, show: *"Du er nu træner i klubnavn. Del linket med dine atleter."*
+- When a new club was created, show: *"Din klub er oprettet med 5 pladser til atleter."*
+
+### 4. Translations
+
+Add keys in all 7 languages (`da, en, sv, de, ar, no, es`) for:
+
+- `signupClubNameLabel`, `signupClubNamePlaceholder`
+- `signupClubExistsHint`, `signupClubNewHint`
+- `signupJoinedExistingClub`, `signupNewClubCreated`
+
+### 5. Changelog
+
+Register `changelogEntry181` (v1.4.5) for 2026-07-23 in `src/pages/Help.tsx` and `src/i18n/translations.ts`.
+
+## Technical notes
+
+- Club matching uses exact case-insensitive name. No fuzzy matching to avoid accidental joins. Two clubs with the same real-world name in different cities will collide — accepted for MVP; coaches can request a rename later.
+- `clubs.max_athletes = 5` for new clubs created via signup. Existing clubs keep their current cap.
+- No new tables or RLS changes; `club_memberships` already exists.
+- Client-side club lookup uses the existing anon-readable `clubs.name` (already used elsewhere for club switcher search). If RLS blocks anon read, the lookup falls back to a lightweight `check-club-exists` edge function.
+
+## One thing to confirm
+
+Right now the flow after account creation is: verify email → **club step (name + athlete band)** → invite. Moving club name to the account form makes the athlete band question the only reason to keep the middle step.
+
+Should we:
+
+- **(A)** Drop the athlete-band question entirely and go straight from verify → invite, or
+- **(B)** Keep a small "Antal atleter du træner" step after verify?
+
+I'll default to **(A)** (simpler flow) unless you say otherwise.
