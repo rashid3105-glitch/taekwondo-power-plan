@@ -26,7 +26,6 @@ import { AthleteRunningProgress } from "@/components/coach/AthleteRunningProgres
 import { FormCurveChart } from "@/components/FormCurveChart";
 import { useNavigate } from "react-router-dom";
 import { Video as VideoIcon } from "lucide-react";
-import { CollapsiblePanel } from "@/components/coach/CollapsiblePanel";
 
 const COUNTRIES = [
   "Afghanistan","Albania","Algeria","Andorra","Angola","Argentina","Armenia","Australia","Austria","Azerbaijan",
@@ -333,16 +332,15 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
 
           <fieldset disabled={!editing} className="space-y-4 group">
           {/* Athlete Profile */}
-          <CollapsiblePanel
-            id="profile"
-            defaultOpen
-            title={<><UserCog className="h-4 w-4" /> {t("athleteProfile")}</>}
-            headerAction={
+          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3 group-disabled:opacity-70">
+            <div className="flex items-center justify-between">
+              <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+                <UserCog className="h-4 w-4" /> {t("athleteProfile")}
+              </h4>
               <Button size="sm" variant="outline" onClick={saveProfile} disabled={!editing || savingProfile}>
                 {savingProfile ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Save className="h-4 w-4 mr-1" /> {t("save")}</>}
               </Button>
-            }
-          >
+            </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="space-y-1">
                 <Label className="text-xs">{t("age")}</Label>
@@ -474,13 +472,13 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
                 </SelectContent>
               </Select>
             </div>
-          </CollapsiblePanel>
-
+          </div>
           {/* Weekly Schedule */}
-          <CollapsiblePanel
-            id="schedule"
-            title={<><Calendar className="h-4 w-4" /> {t("weeklySchedule")}</>}
-            headerAction={
+          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3 group-disabled:opacity-70">
+            <div className="flex items-center justify-between">
+              <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+                <Calendar className="h-4 w-4" /> {t("weeklySchedule")}
+              </h4>
               <Button
                 size="sm"
                 variant="outline"
@@ -489,17 +487,18 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
               >
                 {savingSchedule ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Save className="h-4 w-4 mr-1" /> {t("save")}</>}
               </Button>
-            }
-          >
+            </div>
             <p className="text-xs text-muted-foreground">{t("weeklyScheduleHint")}</p>
             <WeekSchedulePicker schedule={schedule} onChange={setSchedule} />
-          </CollapsiblePanel>
+          </div>
 
-          {/* Training Goals */}
-          <CollapsiblePanel
-            id="goals"
-            title={<><Target className="h-4 w-4" /> {t("trainingGoals")}</>}
-          >
+          {/* Training Goals & Plan */}
+          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3 group-disabled:opacity-70">
+            <div className="flex items-center justify-between">
+              <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+                <Target className="h-4 w-4" /> {t("trainingGoals")}
+              </h4>
+            </div>
             <p className="text-xs text-muted-foreground">{t("selectAllThatApply")}</p>
             <div className="flex flex-wrap gap-2">
               {GOAL_OPTIONS.map((goal) => (
@@ -518,13 +517,13 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
                 </button>
               ))}
             </div>
-          </CollapsiblePanel>
+          </div>
 
           {/* Program Length */}
-          <CollapsiblePanel
-            id="program-length"
-            title={<><Calendar className="h-4 w-4" /> {t("programLength")}</>}
-          >
+          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3 group-disabled:opacity-70">
+            <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+              <Calendar className="h-4 w-4" /> {t("programLength")}
+            </h4>
             <div className="flex items-center gap-4">
               <Slider
                 value={[programWeeks]}
@@ -537,19 +536,19 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
               />
               <span className="text-sm font-bold text-foreground min-w-[60px] text-right">{programWeeks} {t("weeks")}</span>
             </div>
-          </CollapsiblePanel>
+          </div>
           </fieldset>
 
 
 
           {/* Training Plan */}
-          <CollapsiblePanel
-            id="ai-plan"
-            defaultOpen
-            title={<><Zap className="h-4 w-4" /> {t("plan")}</>}
-            headerAction={
-              <div className="flex items-center gap-2 flex-wrap justify-end">
-                <span className="text-xs text-muted-foreground hidden sm:inline">
+          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3 group-disabled:opacity-70">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+                <Zap className="h-4 w-4" /> {t("plan")}
+              </h4>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs text-muted-foreground">
                   {t("generatingFor")} <span className="font-semibold text-foreground">{athlete.display_name}</span>
                 </span>
                 <Button onClick={generatePlan} disabled={generatingPlan} size="sm">
@@ -560,8 +559,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
                   )}
                 </Button>
               </div>
-            }
-          >
+            </div>
             {activePlan ? (
               <AIPlanCard plan={activePlan} coachMode athleteUserId={athlete.user_id} />
             ) : (
@@ -570,13 +568,13 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
                 <p className="text-sm text-muted-foreground">{t("noTrainingPlanYet")}</p>
               </div>
             )}
-          </CollapsiblePanel>
+          </div>
 
           {/* Rehab Plan */}
-          <CollapsiblePanel
-            id="rehab"
-            title={<><Heart className="h-4 w-4" /> {t("injuryRehabPlan")}</>}
-          >
+          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3 group-disabled:opacity-70">
+            <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+              <Heart className="h-4 w-4" /> {t("injuryRehabPlan")}
+            </h4>
             <p className="text-xs text-muted-foreground">{t("rehabDescription")}</p>
             <div className="flex flex-col sm:flex-row gap-2">
               <Input
@@ -605,9 +603,8 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
                 onRefresh();
               }} />
             )}
-          </CollapsiblePanel>
+          </div>
         </TabsContent>
-
 
         <TabsContent value="mental" className="space-y-4 mt-3">
           <CoachAthleteMental athleteId={athlete.user_id} />

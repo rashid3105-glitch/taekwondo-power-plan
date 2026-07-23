@@ -1,38 +1,56 @@
-## 1) Sammenklappelige paneler i "Administrer"-fanen
+## Goal
 
-I `src/components/CoachAthleteDetail.tsx` er der ~6 paneler i `TabsContent value="profile"` (Atletprofil, Licenser, Discipline, Goals, Weekly Schedule, AI-plan, Rehab-plan). De er i dag åbne `<div className="rounded-xl border …">`-kort.
+Ask new coaches for their club name during signup. If a club with that name already exists, add the coach to that club. Otherwise create a new club and give the coach 5 athlete invitation slots. remember to correct this in all places where you can sign up as a coach
 
-- Byg en lille lokal `CollapsiblePanel`-wrapper (bruger shadcn `Collapsible` + `ChevronDown`-rotation), der beholder samme kort-styling (`rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card`).
-- Hvert panel får en unik `id` (fx `profile`, `licenses`, `discipline`, `goals`, `schedule`, `ai-plan`, `rehab`).
-- Åben/lukket-status gemmes i `localStorage` pr. træner under nøglen `coach.athleteDetail.panels.v1` som `{ [panelId]: boolean }`. Læses ved mount, skrives ved toggle. Ingen backend/DB — det er en personlig UI-præference for træneren.
-- Standard-tilstand første gang: `Atletprofil` og `AI-plan` åbne, resten lukkede — så mobilvisningen ikke er én lang scroll.
-- Samme wrapper genbruges også i de andre 3 tabs (Mental, Præstation, Aktivitet) hvis de har flere paneler, så adfærden er konsistent.
+## Changes
 
-Ingen ændringer i felter, validering eller gem-knapper — kun UI-indpakning.
+### 1. `src/pages/SignupCoach.tsx` — add club name to the first step
 
-## 2) Nyt "Næste stævne"-panel i "Overblik"
+- Add a **Klubnavn** input on the account step, positioned above the email field.
+- Live-lookup (debounced) against existing clubs by case-insensitive name match. When a match is found, show a subtle hint under the field: *"Denne klub findes allerede — du bliver tilføjet som træner."*
+- If no match: *"Ny klub — den oprettes med 5 pladser til atleter."*
+- Pass `club_name` in the `signUp` `options.data` so it survives email verification, and also into the existing `bootstrap-coach-trial` call.
+- Since the club step now runs before verify, remove the standalone `"club"` step from the flow. Keep the athlete-count "band" question as an optional light step (or drop entirely — see Question below).
 
-I `src/components/coach/AthleteOverviewTab.tsx` findes allerede "Kommende stævner"-listen. Vi tilføjer et nyt, mere handlingsorienteret panel *øverst* efter KPI-strippen med fokus på det næste stævne:
+### 2. `supabase/functions/bootstrap-coach-trial/index.ts` — join-or-create logic
 
-**Indhold i panelet (kun for næste stævne, hvis der er ét):**
-- Stævnenavn + dato + nedtælling (dage) + prioritet-badge.
-- **Dagens vægt**: seneste `weight_logs` for atleten (samme kilde som `Competitions.tsx`).
-- **Målvægt**: `competitions.weight_class_kg` for stævnet (skjules ved poomsae-disciplin).
-- **Gap**: `latestWeight - weight_class_kg` med grøn/rød on-track/behind-indikator (samme formel som `Competitions.tsx`: `targetGap <= (days/7) * 0.7`).
-- **Plan-status**: hvis `plan_data.taperSummary` findes → knap "Vis plan" som åbner `CompetitionPlanDialog` (genbrug fra `src/components/CompetitionPlanDialog.tsx`). Ellers knap "Generér plan" som kalder edge function `generate-competition-plan` med `competition_id` + `locale` (samme kald som i `Competitions.tsx`) og viser spinner/toast.
-- Link "Åbn stævneside" → `/competitions` (atlet-siden vises kun i eget dashboard, så det er reelt et informations-link).
+- Trim + normalize the incoming `club_name`.
+- Look up an existing club by case-insensitive name (`ilike` exact match on `name`).
+- **If found:** attach the coach to that club (`profiles.club_id = existing.id`) and insert a `club_memberships` row with role `coach`. Do **not** create a new club.
+- **If not found:** create a new club with `max_athletes: 5` (currently hardcoded to 100) and attach the coach as before.
+- Return `{ code, club_id, joined_existing: boolean }` so the UI can show the right confirmation.
 
-**Datahentning:** udvid det eksisterende `load()` i `AthleteOverviewTab.tsx`:
-- Udvid `competitions`-select til også at hente `weight_class_kg, priority, plan_data`.
-- Tilføj `weight_logs`-query for atleten (seneste 1 række).
-- Tilføj `profiles.discipline` for at skjule vægt-blok ved poomsae.
+### 3. Invite step copy
 
-**Adfærd:** hvis der ikke er nogen kommende stævner, vises panelet ikke (så vi undgår tomt kort).
+- When the coach joined an existing club, show: *"Du er nu træner i klubnavn. Del linket med dine atleter."*
+- When a new club was created, show: *"Din klub er oprettet med 5 pladser til atleter."*
 
-Alle tekster går gennem `t()` med nye i18n-nøgler for alle 7 sprog: `nextCompPanelTitle`, `nextCompCountdown`, `nextCompTodayWeight`, `nextCompTargetWeight`, `nextCompGap`, `nextCompOnTrack`, `nextCompBehind`, `nextCompGeneratePlan`, `nextCompViewPlan`, `nextCompNoWeight`.
+### 4. Translations
 
-## Tekniske noter
-- Ingen DB-migrationer.
-- Ingen ændringer i edge functions.
-- localStorage-persistence er pr. browser/enhed (bevidst valg — enkel og hurtig; kan senere flyttes til `profiles`-tabel hvis I ønsker cross-device).
-- Genbrug af eksisterende `CompetitionPlanDialog` sikrer identisk visning som atletens egen side.
+Add keys in all 7 languages (`da, en, sv, de, ar, no, es`) for:
+
+- `signupClubNameLabel`, `signupClubNamePlaceholder`
+- `signupClubExistsHint`, `signupClubNewHint`
+- `signupJoinedExistingClub`, `signupNewClubCreated`
+
+### 5. Changelog
+
+Register `changelogEntry181` (v1.4.5) for 2026-07-23 in `src/pages/Help.tsx` and `src/i18n/translations.ts`.
+
+## Technical notes
+
+- Club matching uses exact case-insensitive name. No fuzzy matching to avoid accidental joins. Two clubs with the same real-world name in different cities will collide — accepted for MVP; coaches can request a rename later.
+- `clubs.max_athletes = 5` for new clubs created via signup. Existing clubs keep their current cap.
+- No new tables or RLS changes; `club_memberships` already exists.
+- Client-side club lookup uses the existing anon-readable `clubs.name` (already used elsewhere for club switcher search). If RLS blocks anon read, the lookup falls back to a lightweight `check-club-exists` edge function.
+
+## One thing to confirm
+
+Right now the flow after account creation is: verify email → **club step (name + athlete band)** → invite. Moving club name to the account form makes the athlete band question the only reason to keep the middle step.
+
+Should we:
+
+- **(A)** Drop the athlete-band question entirely and go straight from verify → invite, or
+- **(B)** Keep a small "Antal atleter du træner" step after verify?
+
+I'll default to **(A)** (simpler flow) unless you say otherwise.

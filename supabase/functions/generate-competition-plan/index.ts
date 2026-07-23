@@ -1,5 +1,6 @@
 // Generate a peaking + weight-cut plan using Lovable AI Gateway.
 // Safety rails enforced server-side: max 0.7 kg/week cut, no >5% body weight in <14 days.
+// Supports coach acting on behalf of an athlete (RLS-verified read, service-role write).
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { z } from "https://esm.sh/zod@3.23.8";
 import { checkAIEntitlement } from "../_shared/checkEntitlement.ts";
@@ -10,7 +11,12 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const Body = z.object({ competition_id: z.string().uuid(), locale: z.string().max(5).optional() });
+const Body = z.object({
+  competition_id: z.string().uuid(),
+  locale: z.string().max(5).optional(),
+  current_kg: z.number().positive().max(400).optional(),
+  target_kg: z.number().positive().max(400).optional(),
+});
 
 const LANG_NAMES: Record<string, string> = {
   da: "Danish", en: "English", sv: "Swedish", no: "Norwegian",
@@ -57,8 +63,14 @@ Deno.serve(async (req) => {
   try {
     const auth = req.headers.get("Authorization");
     if (!auth) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-    const supa = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, { global: { headers: { Authorization: auth } } });
-    const { data: { user } } = await supa.auth.getUser();
+
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+    const ANON = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const SERVICE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supaUser = createClient(SUPABASE_URL, ANON, { global: { headers: { Authorization: auth } } });
+    const supaAdmin = createClient(SUPABASE_URL, SERVICE);
+
+    const { data: { user } } = await supaUser.auth.getUser();
     if (!user) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
     const notEntitled = await checkAIEntitlement(user.id, corsHeaders);
@@ -67,13 +79,32 @@ Deno.serve(async (req) => {
     const parsed = Body.safeParse(await req.json());
     if (!parsed.success) return new Response(JSON.stringify({ error: "Bad input" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
-    const { data: comp } = await supa.from("competitions").select("*").eq("id", parsed.data.competition_id).eq("user_id", user.id).single();
-    if (!comp) return new Response(JSON.stringify({ error: "Not found" }), { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    // Verify caller access via RLS (owner, linked coach, parent, admin).
+    const { data: comp, error: compErr } = await supaUser
+      .from("competitions").select("*").eq("id", parsed.data.competition_id).maybeSingle();
+    if (compErr || !comp) {
+      return new Response(JSON.stringify({ error: "Not found or forbidden" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    const athleteId: string = comp.user_id;
+    const today = new Date().toISOString().slice(0, 10);
 
-    const { data: prof } = await supa.from("profiles").select("weight_kg, age, belt_level, discipline").eq("user_id", user.id).single();
-    const { data: latestWeight } = await supa.from("weight_logs").select("weight_kg, log_date").eq("user_id", user.id).order("log_date", { ascending: false }).limit(1).maybeSingle();
+    // Apply overrides using service role (coach may not have UPDATE on competitions / weight_logs INSERT).
+    if (typeof parsed.data.target_kg === "number" && parsed.data.target_kg !== Number(comp.weight_class_kg)) {
+      await supaAdmin.from("competitions").update({ weight_class_kg: parsed.data.target_kg }).eq("id", comp.id);
+      comp.weight_class_kg = parsed.data.target_kg;
+    }
+    if (typeof parsed.data.current_kg === "number") {
+      await supaAdmin.from("weight_logs").upsert(
+        { user_id: athleteId, weight_kg: parsed.data.current_kg, log_date: today },
+        { onConflict: "user_id,log_date" },
+      );
+      await supaAdmin.from("profiles").update({ weight_kg: parsed.data.current_kg }).eq("user_id", athleteId);
+    }
 
-    const currentKg = Number(latestWeight?.weight_kg ?? prof?.weight_kg ?? 0);
+    const { data: prof } = await supaAdmin.from("profiles").select("weight_kg, age, belt_level, discipline").eq("user_id", athleteId).single();
+    const { data: latestWeight } = await supaAdmin.from("weight_logs").select("weight_kg, log_date").eq("user_id", athleteId).order("log_date", { ascending: false }).limit(1).maybeSingle();
+
+    const currentKg = Number(parsed.data.current_kg ?? latestWeight?.weight_kg ?? prof?.weight_kg ?? 0);
     const targetKg = Number(comp.weight_class_kg ?? currentKg);
     const daysToEvent = Math.max(0, Math.round((new Date(comp.event_date).getTime() - Date.now()) / 86400000));
     const cutKg = Math.max(0, currentKg - targetKg);
@@ -84,6 +115,9 @@ Deno.serve(async (req) => {
     const langName = LANG_NAMES[locale] || "English";
 
     const warnings: string[] = [];
+    if (currentKg <= 0) {
+      return new Response(JSON.stringify({ error: "missing_weight", message: "Athlete weight is required" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
     if (cutKg > maxSafeCut) warnings.push(warnCutTooFast(locale, cutKg, daysToEvent));
     if (currentKg > 0 && cutKg / currentKg > 0.05 && daysToEvent < 14) warnings.push(warnFivePercent(locale));
     if (daysToEvent < 7 && cutKg > 1.5) warnings.push(warnLessThanWeek(locale));
@@ -107,6 +141,7 @@ Keep it concise. No markdown, only JSON.`;
     });
     if (!aiRes.ok) {
       const txt = await aiRes.text();
+      console.error("generate-competition-plan gateway", aiRes.status, txt.slice(0, 300));
       return new Response(JSON.stringify({ error: "AI gateway error", detail: txt.slice(0, 200) }), { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
     const aiJson = await aiRes.json();
@@ -115,7 +150,7 @@ Keep it concise. No markdown, only JSON.`;
     plan.warnings = warnings;
     plan.meta = { currentKg, targetKg, cutKg, daysToEvent, generatedAt: new Date().toISOString() };
 
-    const { error: upErr } = await supa.from("competitions").update({ plan_data: plan }).eq("id", comp.id);
+    const { error: upErr } = await supaAdmin.from("competitions").update({ plan_data: plan }).eq("id", comp.id);
     if (upErr) {
       console.error("generate-competition-plan upsert error", upErr);
       return new Response(JSON.stringify({ error: "server_error" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -124,6 +159,6 @@ Keep it concise. No markdown, only JSON.`;
     return new Response(JSON.stringify({ plan }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e) {
     console.error("generate-competition-plan error", e);
-    return new Response(JSON.stringify({ error: "server_error" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    return new Response(JSON.stringify({ error: "server_error", message: (e as Error).message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 });

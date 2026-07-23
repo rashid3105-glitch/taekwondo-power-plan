@@ -3,22 +3,23 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import {
-  Activity, AlertTriangle, Calendar, CalendarRange, ClipboardList, Flame,
-  Heart, Loader2, Scale, Smile, Sparkles, Target, Trophy, Video as VideoIcon, Zap,
+  Activity, AlertTriangle, Calendar, CalendarRange, ClipboardList, Eye, Flame,
+  Heart, Loader2, Scale, Smile, Trophy, Video as VideoIcon, Zap,
 } from "lucide-react";
 import {
   Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/hooks/use-toast";
 import { FormCurveChart } from "@/components/FormCurveChart";
 import { AthleteRecoveryTrend } from "@/components/coach/AthleteRecoveryTrend";
 import { PhysicalTestComparison } from "@/components/coach/PhysicalTestComparison";
 import { MonthlyDevelopmentReportsCard } from "@/components/coach/MonthlyDevelopmentReportsCard";
-import { CompetitionPlanDialog } from "@/components/CompetitionPlanDialog";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { CompetitionPlanDialog } from "@/components/CompetitionPlanDialog";
 
 interface Props {
   athleteId: string;
@@ -39,7 +40,7 @@ interface UpcomingComp {
   event_date: string;
   location: string | null;
   weight_class_kg: number | null;
-  priority: "A" | "B" | "C" | null;
+  priority: string | null;
   plan_data: any;
 }
 
@@ -63,7 +64,6 @@ function startOfWeek(d: Date): Date {
 export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerWeek = 0 }: Props) {
   const { t, locale } = useLanguage();
   const navigate = useNavigate();
-  const { toast } = useToast();
   const { activeClubId } = useActiveClub();
   const [loading, setLoading] = useState(true);
   const [sessions, setSessions] = useState<SessionBucket[]>([]);
@@ -73,9 +73,11 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
   const [latestReadiness, setLatestReadiness] = useState<number | null>(null);
   const [activePR, setActivePR] = useState<{ test_name: string; value: number; unit: string } | null>(null);
   const [latestWeight, setLatestWeight] = useState<number | null>(null);
-  const [isPoomsae, setIsPoomsae] = useState(false);
-  const [generatingPlanId, setGeneratingPlanId] = useState<string | null>(null);
-  const [viewPlan, setViewPlan] = useState<UpcomingComp | null>(null);
+  const [currentKgInput, setCurrentKgInput] = useState<string>("");
+  const [targetKgInput, setTargetKgInput] = useState<string>("");
+  const [generating, setGenerating] = useState(false);
+  const [planDialogOpen, setPlanDialogOpen] = useState(false);
+  const [planDialogComp, setPlanDialogComp] = useState<UpcomingComp | null>(null);
 
   useEffect(() => {
     void load();
@@ -90,7 +92,7 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
     eightWeeksAgo.setDate(eightWeeksAgo.getDate() - 7 * WEEKS);
     const isoStart = eightWeeksAgo.toISOString().slice(0, 10);
 
-    const [logsRes, compRes, diaryRes, readyRes, prRes, weightRes, profRes] = await Promise.all([
+    const [logsRes, compRes, diaryRes, readyRes, prRes] = await Promise.all([
       supabase
         .from("workout_logs")
         .select("logged_date, completed")
@@ -126,17 +128,6 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
         .eq("user_id", athleteId)
         .order("test_date", { ascending: false })
         .limit(1),
-      supabase
-        .from("weight_logs")
-        .select("weight_kg, log_date")
-        .eq("user_id", athleteId)
-        .order("log_date", { ascending: false })
-        .limit(1),
-      supabase
-        .from("profiles")
-        .select("discipline")
-        .eq("user_id", athleteId)
-        .maybeSingle(),
     ]);
 
     // Sessions vs planned (8 weeks)
@@ -158,8 +149,22 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
       });
     }
     setSessions(buckets);
-    setUpcoming((compRes.data as UpcomingComp[]) || []);
+    const comps = (compRes.data as UpcomingComp[]) || [];
+    setUpcoming(comps);
     setDiary((diaryRes.data as DiaryRow[]) || []);
+
+    // Latest logged weight for the athlete
+    const { data: wl } = await supabase
+      .from("weight_logs")
+      .select("weight_kg, log_date")
+      .eq("user_id", athleteId)
+      .order("log_date", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const lw = wl?.weight_kg != null ? Number(wl.weight_kg) : null;
+    setLatestWeight(lw);
+    setCurrentKgInput(lw != null ? String(lw) : "");
+    setTargetKgInput(comps[0]?.weight_class_kg != null ? String(comps[0].weight_class_kg) : "");
 
     const readyRows = (readyRes.data as { score: number }[]) || [];
     if (readyRows.length > 0) {
@@ -169,26 +174,7 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
     if (prRes.data && prRes.data.length > 0) {
       setActivePR(prRes.data[0] as any);
     }
-    const weightRow = (weightRes.data as { weight_kg: number }[] | null)?.[0];
-    setLatestWeight(weightRow?.weight_kg ?? null);
-    setIsPoomsae((profRes.data as any)?.discipline === "poomsae");
     setLoading(false);
-  }
-
-  async function generatePlanFor(compId: string) {
-    setGeneratingPlanId(compId);
-    try {
-      const { data, error } = await supabase.functions.invoke("generate-competition-plan", {
-        body: { competition_id: compId, locale },
-      });
-      if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
-      toast({ title: t("competitionsPlanGenerated") });
-      await load();
-    } catch (e: any) {
-      toast({ title: t("competitionsGenerationFailed"), description: e?.message, variant: "destructive" });
-    } finally {
-      setGeneratingPlanId(null);
-    }
   }
 
   const totals = useMemo(() => {
@@ -202,6 +188,44 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
     if (recent.length === 0) return null;
     return recent.reduce((s, d) => s + (d.mood || 0), 0) / recent.length;
   }, [diary]);
+
+  const nextComp = upcoming[0] || null;
+  const daysToNext = nextComp ? Math.max(0, Math.round((new Date(nextComp.event_date).getTime() - Date.now()) / 86400000)) : null;
+  const parsedCurrent = Number(currentKgInput);
+  const parsedTarget = Number(targetKgInput);
+  const cutKg = Number.isFinite(parsedCurrent) && Number.isFinite(parsedTarget) && parsedCurrent > 0 && parsedTarget > 0
+    ? Math.max(0, parsedCurrent - parsedTarget) : null;
+
+  async function generateForNext() {
+    if (!nextComp) return;
+    if (!Number.isFinite(parsedCurrent) || parsedCurrent <= 0) {
+      toast.error(t("compPlanNeedCurrentWeight") || "Angiv atletens aktuelle vægt først");
+      return;
+    }
+    setGenerating(true);
+    try {
+      const body: Record<string, unknown> = {
+        competition_id: nextComp.id,
+        locale,
+        current_kg: parsedCurrent,
+      };
+      if (Number.isFinite(parsedTarget) && parsedTarget > 0) body.target_kg = parsedTarget;
+      const { data, error } = await supabase.functions.invoke("generate-competition-plan", { body });
+      if (error) throw error;
+      toast.success(t("generated") || "Plan generated");
+      const updated: UpcomingComp = { ...nextComp, plan_data: (data as any)?.plan ?? nextComp.plan_data };
+      setUpcoming((prev) => prev.map((c, i) => (i === 0 ? updated : c)));
+      setLatestWeight(parsedCurrent);
+      if (Number.isFinite(parsedTarget) && parsedTarget > 0) updated.weight_class_kg = parsedTarget;
+      setPlanDialogComp(updated);
+      setPlanDialogOpen(true);
+    } catch (e: any) {
+      console.error("generate-competition-plan failed", e);
+      toast.error(`${t("generationFailed") || "Generering mislykkedes"}: ${e?.message || "unknown"}`);
+    } finally {
+      setGenerating(false);
+    }
+  }
 
   if (loading) {
     return (
@@ -273,106 +297,107 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
         />
       </div>
 
-      {/* Next competition — weight + plan action */}
-      {upcoming[0] && (() => {
-        const nextComp = upcoming[0];
-        const days = Math.max(0, Math.round((new Date(nextComp.event_date).getTime() - Date.now()) / 86400000));
-        const gap = nextComp.weight_class_kg != null && latestWeight != null ? latestWeight - nextComp.weight_class_kg : null;
-        const onTrack = gap !== null && gap <= (days / 7) * 0.7;
-        const hasPlan = !!nextComp.plan_data?.taperSummary;
-        const showWeight = !isPoomsae && nextComp.weight_class_kg != null;
-        return (
-          <div className="rounded-xl border border-border border-l-[3px] border-l-primary bg-card p-4 shadow-card space-y-3">
-            <div className="flex items-start justify-between gap-3 flex-wrap">
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-primary">
-                  <Trophy className="h-3.5 w-3.5" /> {t("nextEventTitle")}
-                </div>
-                <div className="mt-0.5 font-bold text-card-foreground truncate">{nextComp.name}</div>
-                <div className="flex flex-wrap gap-1.5 mt-1.5 text-xs">
-                  <Badge variant="secondary" className="gap-1"><Calendar className="h-3 w-3" />{days} {t("competitionsDays")}</Badge>
-                  {nextComp.priority && <Badge variant="outline">{t("competitionsPriorityLabel")} {nextComp.priority}</Badge>}
-                  {showWeight && <Badge variant="outline">{nextComp.weight_class_kg} kg</Badge>}
-                  {nextComp.location && <Badge variant="outline" className="max-w-[140px] truncate">{nextComp.location}</Badge>}
-                </div>
+      {/* Next competition — weight + plan */}
+      {nextComp && (
+        <div className="rounded-xl border border-primary/40 bg-card p-4 shadow-card space-y-3">
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <div className="flex items-center gap-2">
+              <Trophy className="h-4 w-4 text-primary" />
+              <div>
+                <div className="text-[10px] uppercase tracking-wide text-primary font-semibold">{t("nextEventTitle") || "Næste stævne"}</div>
+                <div className="font-semibold text-card-foreground text-sm">{nextComp.name}</div>
               </div>
             </div>
-
-            {showWeight && (
-              <div className="grid grid-cols-2 gap-2">
-                <div className="rounded-lg border border-border bg-muted/20 p-2.5">
-                  <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-muted-foreground">
-                    <Scale className="h-3 w-3" /> {t("competitionsTodayWeight")}
-                  </div>
-                  <div className="text-lg font-bold tabular-nums mt-0.5">
-                    {latestWeight != null ? `${latestWeight} kg` : "—"}
-                  </div>
-                </div>
-                <div className="rounded-lg border border-border bg-muted/20 p-2.5">
-                  <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-muted-foreground">
-                    <Target className="h-3 w-3" /> {t("competitionsTarget")}
-                  </div>
-                  <div className="text-lg font-bold tabular-nums mt-0.5">{nextComp.weight_class_kg} kg</div>
-                </div>
-              </div>
-            )}
-
-            {showWeight && gap !== null && (
-              <div
-                className={cn(
-                  "text-xs p-2 rounded border",
-                  onTrack
-                    ? "border-primary/40 bg-primary/10 text-primary"
-                    : "border-destructive/40 bg-destructive/10 text-destructive",
-                )}
-              >
-                {t("competitionsCurrent")} {latestWeight} kg → {t("competitionsTarget")} {nextComp.weight_class_kg} kg
-                {" "}({gap > 0 ? `${gap.toFixed(1)} ${t("competitionsToCut")}` : t("competitionsAtTarget")}) ·{" "}
-                {onTrack ? t("competitionsOnTrack") : t("competitionsBehind")}
-              </div>
-            )}
-
-            {nextComp.plan_data?.warnings?.length > 0 && (
-              <div className="text-xs space-y-1">
-                {nextComp.plan_data.warnings.slice(0, 2).map((w: string, i: number) => (
-                  <div key={i} className="flex items-start gap-1 text-destructive">
-                    <AlertTriangle className="h-3 w-3 mt-0.5 flex-shrink-0" />
-                    <span>{w}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {nextComp.plan_data?.taperSummary && (
-              <div className="text-xs text-muted-foreground border-l-2 border-primary/40 pl-2">
-                {nextComp.plan_data.taperSummary}
-              </div>
-            )}
-
-            <div className="flex gap-2 flex-wrap">
-              {hasPlan && (
-                <Button size="sm" variant="default" className="flex-1 min-w-[140px]" onClick={() => setViewPlan(nextComp)}>
-                  <Sparkles className="h-3.5 w-3.5 mr-1" /> {t("competitionsViewFull")}
-                </Button>
+            <div className="flex flex-wrap gap-1.5 text-[11px]">
+              <span className="rounded-md border border-border px-2 py-0.5 text-muted-foreground">
+                <Calendar className="inline h-3 w-3 mr-1" />{daysToNext} {t("compPlanDays") || "dage"}
+              </span>
+              {nextComp.priority && (
+                <span className="rounded-md border border-border px-2 py-0.5 text-muted-foreground">{t("priority") || "Prioritet"} {nextComp.priority}</span>
               )}
-              <Button
-                size="sm"
-                variant={hasPlan ? "outline" : "default"}
-                className="flex-1 min-w-[140px]"
-                onClick={() => generatePlanFor(nextComp.id)}
-                disabled={generatingPlanId === nextComp.id}
-              >
-                {generatingPlanId === nextComp.id ? (
-                  <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />
-                ) : (
-                  <Zap className="h-3.5 w-3.5 mr-1" />
-                )}
-                {hasPlan ? t("competitionsRegenerate") : t("competitionsGenerate")}
-              </Button>
+              {nextComp.location && (
+                <span className="rounded-md border border-border px-2 py-0.5 text-muted-foreground">{nextComp.location}</span>
+              )}
             </div>
           </div>
-        );
-      })()}
+
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <Label className="text-[10px] uppercase tracking-wide text-muted-foreground flex items-center gap-1">
+                <Scale className="h-3 w-3" /> {t("currentWeight") || "Dagens vægt"} (kg)
+              </Label>
+              <Input
+                type="number"
+                inputMode="decimal"
+                step="0.1"
+                min="20"
+                max="300"
+                value={currentKgInput}
+                onChange={(e) => setCurrentKgInput(e.target.value)}
+                placeholder={latestWeight != null ? String(latestWeight) : "—"}
+                className="mt-1 h-9"
+              />
+            </div>
+            <div>
+              <Label className="text-[10px] uppercase tracking-wide text-muted-foreground flex items-center gap-1">
+                <Trophy className="h-3 w-3" /> {t("targetWeight") || "Målvægt"} (kg)
+              </Label>
+              <Input
+                type="number"
+                inputMode="decimal"
+                step="0.1"
+                min="20"
+                max="300"
+                value={targetKgInput}
+                onChange={(e) => setTargetKgInput(e.target.value)}
+                placeholder="—"
+                className="mt-1 h-9"
+              />
+            </div>
+          </div>
+
+          {cutKg != null && cutKg > 0 && (
+            <div className="text-xs text-muted-foreground">
+              {t("compPlanCut") || "Cut:"} <span className="font-semibold text-card-foreground">{cutKg.toFixed(1)} kg</span>
+              {daysToNext != null && daysToNext > 0 && (
+                <> · {(cutKg / (daysToNext / 7)).toFixed(2)} kg/{t("weekShort") || "uge"}</>
+              )}
+            </div>
+          )}
+
+          {nextComp.plan_data?.warnings?.length > 0 && (
+            <div className="rounded-md border border-destructive/40 bg-destructive/5 p-2 space-y-1">
+              {nextComp.plan_data.warnings.slice(0, 2).map((w: string, i: number) => (
+                <div key={i} className="flex items-start gap-1.5 text-[11px] text-destructive">
+                  <AlertTriangle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+                  <span>{w}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="flex gap-2">
+            <Button onClick={generateForNext} disabled={generating} size="sm" className="flex-1">
+              {generating ? (
+                <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating") || "Genererer…"}</>
+              ) : (
+                <><Zap className="h-4 w-4 mr-1" /> {nextComp.plan_data ? (t("regenerate") || "Generér igen") : (t("generatePlan") || "Generér plan")}</>
+              )}
+            </Button>
+            {nextComp.plan_data && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => { setPlanDialogComp(nextComp); setPlanDialogOpen(true); }}
+              >
+                <Eye className="h-4 w-4 mr-1" /> {t("viewPlan") || "Vis plan"}
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
+
 
       {/* Sessions vs planned */}
       <div className="rounded-xl border border-border bg-card p-4 shadow-card space-y-3">
@@ -467,12 +492,12 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
 
       <MonthlyDevelopmentReportsCard athleteId={athleteId} athleteName={athleteName} />
 
-      {viewPlan && (
+      {planDialogComp && (
         <CompetitionPlanDialog
-          open={!!viewPlan}
-          onOpenChange={(o) => !o && setViewPlan(null)}
-          competitionName={viewPlan.name}
-          plan={viewPlan.plan_data}
+          open={planDialogOpen}
+          onOpenChange={setPlanDialogOpen}
+          competitionName={planDialogComp.name}
+          plan={planDialogComp.plan_data}
         />
       )}
     </div>
