@@ -97,7 +97,7 @@ export default function Competitions() {
   async function generatePlan(id: string) {
     setGenerating(id);
     try {
-      const { data, error } = await supabase.functions.invoke("generate-competition-plan", { body: { competition_id: id } });
+      const { data, error } = await supabase.functions.invoke("generate-competition-plan", { body: { competition_id: id, locale } });
       if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
       toast({ title: t("competitionsPlanGenerated") });
       void load();
