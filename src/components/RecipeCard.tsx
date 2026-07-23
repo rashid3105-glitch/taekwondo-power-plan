@@ -104,7 +104,7 @@ export function RecipeCard({ recipe, index, onPhotoChange }: RecipeCardProps) {
           {/* Image with optional edit overlay */}
           <div className="relative">
             <img
-              src={recipe.imageUrl || CATEGORY_IMAGES[recipe.category]}
+              src={recipe.imageUrl || RECIPE_IMAGES[recipe.id] || CATEGORY_IMAGES[recipe.category]}
               alt={recipe.name}
               loading="lazy"
               className="w-full h-40 sm:h-48 object-cover rounded-md border border-border"
