@@ -38,6 +38,9 @@ interface UpcomingComp {
   name: string;
   event_date: string;
   location: string | null;
+  weight_class_kg: number | null;
+  priority: "A" | "B" | "C" | null;
+  plan_data: any;
 }
 
 interface DiaryRow {
@@ -60,6 +63,7 @@ function startOfWeek(d: Date): Date {
 export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerWeek = 0 }: Props) {
   const { t, locale } = useLanguage();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const { activeClubId } = useActiveClub();
   const [loading, setLoading] = useState(true);
   const [sessions, setSessions] = useState<SessionBucket[]>([]);
@@ -68,6 +72,10 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
   const [readinessAvg7d, setReadinessAvg7d] = useState<number | null>(null);
   const [latestReadiness, setLatestReadiness] = useState<number | null>(null);
   const [activePR, setActivePR] = useState<{ test_name: string; value: number; unit: string } | null>(null);
+  const [latestWeight, setLatestWeight] = useState<number | null>(null);
+  const [isPoomsae, setIsPoomsae] = useState(false);
+  const [generatingPlanId, setGeneratingPlanId] = useState<string | null>(null);
+  const [viewPlan, setViewPlan] = useState<UpcomingComp | null>(null);
 
   useEffect(() => {
     void load();
