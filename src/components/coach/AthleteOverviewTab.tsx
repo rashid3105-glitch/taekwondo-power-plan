@@ -149,8 +149,22 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
       });
     }
     setSessions(buckets);
-    setUpcoming((compRes.data as UpcomingComp[]) || []);
+    const comps = (compRes.data as UpcomingComp[]) || [];
+    setUpcoming(comps);
     setDiary((diaryRes.data as DiaryRow[]) || []);
+
+    // Latest logged weight for the athlete
+    const { data: wl } = await supabase
+      .from("weight_logs")
+      .select("weight_kg, log_date")
+      .eq("user_id", athleteId)
+      .order("log_date", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const lw = wl?.weight_kg != null ? Number(wl.weight_kg) : null;
+    setLatestWeight(lw);
+    setCurrentKgInput(lw != null ? String(lw) : "");
+    setTargetKgInput(comps[0]?.weight_class_kg != null ? String(comps[0].weight_class_kg) : "");
 
     const readyRows = (readyRes.data as { score: number }[]) || [];
     if (readyRows.length > 0) {
