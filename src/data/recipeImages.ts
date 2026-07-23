@@ -29,6 +29,11 @@ import r22 from "@/assets/recipes/morgenmad-06-roeraeg-avocado-wrap_v1.jpg.asset
 import r23 from "@/assets/recipes/morgenmad-07-banan-protein-muffins_v1.jpg.asset.json";
 import r24 from "@/assets/recipes/morgenmad-08-bircher-muesli_v1.jpg.asset.json";
 import r4 from "@/assets/recipes/snacks-01-banan-havre-energikugler.jpg.asset.json";
+import r13 from "@/assets/recipes/snacks-02-hytteost-frugttallerken.jpg.asset.json";
+import r16 from "@/assets/recipes/snacks-03-hummus-groentsagsstave.jpg.asset.json";
+import r33 from "@/assets/recipes/snacks-04-hytteost-ananas.jpg.asset.json";
+import r34 from "@/assets/recipes/snacks-05-trail-mix-energikugler.jpg.asset.json";
+import r35 from "@/assets/recipes/snacks-06-graesk-yoghurt-granola.jpg.asset.json";
 
 // Per-recipe custom photos, keyed by recipe id in src/data/recipes.ts.
 export const RECIPE_IMAGES: Record<string, string> = {
@@ -43,7 +48,9 @@ export const RECIPE_IMAGES: Record<string, string> = {
   r10: r10.url,
   r11: r11.url,
   r12: r12.url,
+  r13: r13.url,
   r14: r14.url,
+  r16: r16.url,
   r17: r17.url,
   r18: r18.url,
   r19: r19.url,
@@ -59,6 +66,9 @@ export const RECIPE_IMAGES: Record<string, string> = {
   r30: r30.url,
   r31: r31.url,
   r32: r32.url,
+  r33: r33.url,
+  r34: r34.url,
+  r35: r35.url,
   r36: r36.url,
   r37: r37.url,
   r38: r38.url,
