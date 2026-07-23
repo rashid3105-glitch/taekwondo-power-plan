@@ -100,7 +100,7 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
         .gte("logged_date", isoStart),
       supabase
         .from("competitions")
-        .select("id, name, event_date, location")
+        .select("id, name, event_date, location, weight_class_kg, priority, plan_data")
         .eq("user_id", athleteId)
         .gte("event_date", today.toISOString().slice(0, 10))
         .order("event_date", { ascending: true })
