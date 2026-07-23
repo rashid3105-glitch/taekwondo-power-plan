@@ -320,6 +320,10 @@ const translations = {
     invalidResetLink: "This reset link is invalid or has expired.",
     backToSignIn: "Back to Sign In",
     passwordRequirementsHint: "At least 8 characters",
+    signupClubNameLabel: "Club name",
+    signupClubNamePlaceholder: "e.g. Copenhagen TKD",
+    signupClubNameHint: "If your club already exists, you'll be added as a coach. Otherwise a new club is created with 5 athlete slots.",
+    signupClubNameRequired: "Please enter your club name",
     passwordTooWeak: "Password is too weak. Use at least 8 characters with a letter and a number.",
 
     // Approval
@@ -4017,6 +4021,10 @@ const translations = {
     invalidResetLink: "Dette nulstillingslink er ugyldigt eller udløbet.",
     backToSignIn: "Tilbage til login",
     passwordRequirementsHint: "Mindst 8 tegn",
+    signupClubNameLabel: "Klubnavn",
+    signupClubNamePlaceholder: "F.eks. København TKD",
+    signupClubNameHint: "Findes din klub allerede, bliver du tilføjet som træner. Ellers oprettes en ny klub med 5 pladser til atleter.",
+    signupClubNameRequired: "Indtast venligst dit klubnavn",
     passwordTooWeak: "Adgangskoden er for svag. Brug mindst 8 tegn med et bogstav og et tal.",
 
     // Approval
@@ -7695,6 +7703,10 @@ const translations = {
     invalidResetLink: "Denna återställningslänk är ogiltig eller har upphört.",
     backToSignIn: "Tillbaka till inloggning",
     passwordRequirementsHint: "Minst 8 tecken",
+    signupClubNameLabel: "Klubbnamn",
+    signupClubNamePlaceholder: "T.ex. Stockholm TKD",
+    signupClubNameHint: "Finns din klubb redan läggs du till som tränare. Annars skapas en ny klubb med 5 platser för atleter.",
+    signupClubNameRequired: "Ange klubbens namn",
     passwordTooWeak: "Lösenordet är för svagt. Använd minst 8 tecken med en bokstav och en siffra.",
 
     // Approval
@@ -11319,6 +11331,10 @@ const translations = {
     invalidResetLink: "Dieser Zurücksetzungslink ist ungültig oder abgelaufen.",
     backToSignIn: "Zurück zur Anmeldung",
     passwordRequirementsHint: "Mindestens 8 Zeichen",
+    signupClubNameLabel: "Vereinsname",
+    signupClubNamePlaceholder: "z. B. Berlin TKD",
+    signupClubNameHint: "Falls dein Verein bereits existiert, wirst du als Trainer hinzugefügt. Andernfalls wird ein neuer Verein mit 5 Plätzen für Athleten angelegt.",
+    signupClubNameRequired: "Bitte gib den Vereinsnamen ein",
     passwordTooWeak: "Passwort ist zu schwach. Verwenden Sie mindestens 8 Zeichen mit einem Buchstaben und einer Zahl.",
     pendingApproval: "Konto wartet auf Genehmigung",
     pendingApprovalDesc: "Ihr Konto wurde erstellt, erfordert aber eine Admin-Genehmigung, bevor Sie auf die App zugreifen können. Bitte versuchen Sie es später erneut.",
@@ -14980,6 +14996,10 @@ const translations = {
     invalidResetLink: "رابط إعادة التعيين هذا غير صالح أو انتهت صلاحيته.",
     backToSignIn: "العودة إلى تسجيل الدخول",
     passwordRequirementsHint: "8 أحرف على الأقل",
+    signupClubNameLabel: "اسم النادي",
+    signupClubNamePlaceholder: "مثلاً: نادي التايكوندو",
+    signupClubNameHint: "إذا كان ناديك موجودًا مسبقًا، ستُضاف كمدرّب. وإلا سيتم إنشاء نادٍ جديد مع 5 مقاعد للاعبين.",
+    signupClubNameRequired: "يرجى إدخال اسم النادي",
     passwordTooWeak: "كلمة المرور ضعيفة جدًا. استخدم 8 أحرف على الأقل مع حرف ورقم.",
     pendingApproval: "الحساب قيد الموافقة",
     pendingApprovalDesc: "تم إنشاء حسابك ولكنه يتطلب موافقة المسؤول قبل أن تتمكن من الوصول إلى التطبيق. يرجى التحقق مرة أخرى لاحقًا.",
@@ -18590,6 +18610,10 @@ const translations = {
     invalidResetLink: "Dette tilbakestillingslink er ugyldigt eller udløbet.",
     backToSignIn: "Tilbake til login",
     passwordRequirementsHint: "Minst 8 tegn",
+    signupClubNameLabel: "Klubbnavn",
+    signupClubNamePlaceholder: "F.eks. Oslo TKD",
+    signupClubNameHint: "Finnes klubben din allerede, blir du lagt til som trener. Ellers opprettes en ny klubb med 5 plasser til utøvere.",
+    signupClubNameRequired: "Skriv inn klubbnavnet",
     passwordTooWeak: "Passordet er for svakt. Bruk minst 8 tegn med en bokstav og et tall.",
     
 
@@ -23499,6 +23523,10 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   homeProblem3T: "El progreso se estanca",
   homeProblem3D: "Sin datos claros sobre carga de entrenamiento, forma física y estado mental, es difícil ver dónde un atleta deja de mejorar.",
   passwordRequirementsHint: "Mínimo 8 caracteres, con mayúsculas, minúsculas y un número.",
+  signupClubNameLabel: "Nombre del club",
+  signupClubNamePlaceholder: "Ej.: Madrid TKD",
+  signupClubNameHint: "Si tu club ya existe, se te añadirá como entrenador. Si no, se crea un club nuevo con 5 plazas para atletas.",
+  signupClubNameRequired: "Introduce el nombre del club",
   createAthleteAction: "Crear atleta",
   createAthleteShortDesc: "Crea una cuenta de atleta directamente en tu club",
   inviteAthletesShortDesc: "Envía invitaciones a atletas por correo electrónico",
