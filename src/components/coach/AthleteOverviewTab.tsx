@@ -90,7 +90,7 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
     eightWeeksAgo.setDate(eightWeeksAgo.getDate() - 7 * WEEKS);
     const isoStart = eightWeeksAgo.toISOString().slice(0, 10);
 
-    const [logsRes, compRes, diaryRes, readyRes, prRes] = await Promise.all([
+    const [logsRes, compRes, diaryRes, readyRes, prRes, weightRes, profRes] = await Promise.all([
       supabase
         .from("workout_logs")
         .select("logged_date, completed")
@@ -98,7 +98,7 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
         .gte("logged_date", isoStart),
       supabase
         .from("competitions")
-        .select("id, name, event_date, location")
+        .select("id, name, event_date, location, weight_class_kg, priority, plan_data")
         .eq("user_id", athleteId)
         .gte("event_date", today.toISOString().slice(0, 10))
         .order("event_date", { ascending: true })
@@ -126,6 +126,17 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
         .eq("user_id", athleteId)
         .order("test_date", { ascending: false })
         .limit(1),
+      supabase
+        .from("weight_logs")
+        .select("weight_kg, log_date")
+        .eq("user_id", athleteId)
+        .order("log_date", { ascending: false })
+        .limit(1),
+      supabase
+        .from("profiles")
+        .select("discipline")
+        .eq("user_id", athleteId)
+        .maybeSingle(),
     ]);
 
     // Sessions vs planned (8 weeks)
@@ -158,7 +169,26 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
     if (prRes.data && prRes.data.length > 0) {
       setActivePR(prRes.data[0] as any);
     }
+    const weightRow = (weightRes.data as { weight_kg: number }[] | null)?.[0];
+    setLatestWeight(weightRow?.weight_kg ?? null);
+    setIsPoomsae((profRes.data as any)?.discipline === "poomsae");
     setLoading(false);
+  }
+
+  async function generatePlanFor(compId: string) {
+    setGeneratingPlanId(compId);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-competition-plan", {
+        body: { competition_id: compId, locale },
+      });
+      if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
+      toast({ title: t("competitionsPlanGenerated") });
+      await load();
+    } catch (e: any) {
+      toast({ title: t("competitionsGenerationFailed"), description: e?.message, variant: "destructive" });
+    } finally {
+      setGeneratingPlanId(null);
+    }
   }
 
   const totals = useMemo(() => {
