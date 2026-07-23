@@ -1,4 +1,28 @@
 import type { RecipeCategory } from "./recipes";
+import r3 from "@/assets/recipes/aftensmad-01-laks-soed-kartoffel.jpg.asset.json";
+import r7 from "@/assets/recipes/aftensmad-02-kalkun-koedbolle-pasta.jpg.asset.json";
+import r10 from "@/assets/recipes/aftensmad-03-oksekoeds-wok.jpg.asset.json";
+import r19 from "@/assets/recipes/aftensmad-04-linse-groentsagscurry.jpg.asset.json";
+import r29 from "@/assets/recipes/aftensmad-05-grillet-laks-ristede-groentsager.jpg.asset.json";
+import r30 from "@/assets/recipes/aftensmad-06-chicken-tikka-basmati.jpg.asset.json";
+import r31 from "@/assets/recipes/aftensmad-07-rejepasta-primavera.jpg.asset.json";
+import r32 from "@/assets/recipes/aftensmad-08-oksekoeds-bolognese.jpg.asset.json";
+import r5 from "@/assets/recipes/foer-01-foer-traening-toast.jpg.asset.json";
+import r14 from "@/assets/recipes/foer-02-energi-smoothie.jpg.asset.json";
+
+// Per-recipe custom photos, keyed by recipe id in src/data/recipes.ts.
+export const RECIPE_IMAGES: Record<string, string> = {
+  r3: r3.url,
+  r5: r5.url,
+  r7: r7.url,
+  r10: r10.url,
+  r14: r14.url,
+  r19: r19.url,
+  r29: r29.url,
+  r30: r30.url,
+  r31: r31.url,
+  r32: r32.url,
+};
 
 // Stable, free Unsplash photos per category (compressed via Unsplash CDN params).
 export const CATEGORY_IMAGES: Record<RecipeCategory, string> = {

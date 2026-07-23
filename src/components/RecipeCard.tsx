@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { type Recipe, RECIPE_CATEGORY_ICONS } from "@/data/recipes";
 import { ChevronDown, ChevronUp, Clock, Flame, ImagePlus, Loader2, Trash2 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { CATEGORY_IMAGES } from "@/data/recipeImages";
+import { CATEGORY_IMAGES, RECIPE_IMAGES } from "@/data/recipeImages";
 
 const CATEGORY_KEYS: Record<string, string> = {
   breakfast: "catBreakfast",
@@ -104,7 +104,7 @@ export function RecipeCard({ recipe, index, onPhotoChange }: RecipeCardProps) {
           {/* Image with optional edit overlay */}
           <div className="relative">
             <img
-              src={recipe.imageUrl || CATEGORY_IMAGES[recipe.category]}
+              src={recipe.imageUrl || RECIPE_IMAGES[recipe.id] || CATEGORY_IMAGES[recipe.category]}
               alt={recipe.name}
               loading="lazy"
               className="w-full h-40 sm:h-48 object-cover rounded-md border border-border"
