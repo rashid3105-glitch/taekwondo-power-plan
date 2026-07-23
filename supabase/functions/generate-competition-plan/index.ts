@@ -80,15 +80,19 @@ Deno.serve(async (req) => {
     const safeRatePerWeek = 0.7;
     const maxSafeCut = (daysToEvent / 7) * safeRatePerWeek;
 
+    const locale = (parsed.data.locale || "en").toLowerCase();
+    const langName = LANG_NAMES[locale] || "English";
+
     const warnings: string[] = [];
-    if (cutKg > maxSafeCut) warnings.push(`Cutting ${cutKg.toFixed(1)} kg in ${daysToEvent} days exceeds the safe rate of 0.7 kg/week. Consider moving up a weight class.`);
-    if (currentKg > 0 && cutKg / currentKg > 0.05 && daysToEvent < 14) warnings.push("Cut exceeds 5% bodyweight in <14 days — high risk of performance loss and dehydration.");
-    if (daysToEvent < 7 && cutKg > 1.5) warnings.push("Less than 1 week out: avoid aggressive cuts.");
+    if (cutKg > maxSafeCut) warnings.push(warnCutTooFast(locale, cutKg, daysToEvent));
+    if (currentKg > 0 && cutKg / currentKg > 0.05 && daysToEvent < 14) warnings.push(warnFivePercent(locale));
+    if (daysToEvent < 7 && cutKg > 1.5) warnings.push(warnLessThanWeek(locale));
 
     const apiKey = Deno.env.get("LOVABLE_API_KEY")!;
     const prompt = `You are a TKD performance coach. Generate a JSON peaking and weight-cut plan.
 Athlete: age ${prof?.age ? Number(prof.age) : "?"}, ${sanitizePromptText(prof?.belt_level ?? "?", 30)} belt, discipline ${sanitizePromptText(prof?.discipline ?? "sparring", 30)}.
 Current weight: ${currentKg} kg. Target: ${targetKg} kg. Days to event: ${daysToEvent}. Priority: ${sanitizePromptText(comp.priority, 20)}.
+IMPORTANT: All human-readable strings (taperSummary, focus, volumeChange, intensity, calorieAdjustment, fluid, carbCycling, hydration, peakDayProtocol) MUST be written in ${langName}. JSON keys stay in English.
 Return strict JSON: { "taperSummary": string (2-3 sentences), "weeklyTaper": [{"week": number, "focus": string, "volumeChange": string, "intensity": string}], "weightCut": [{"day": number, "targetKg": number, "calorieAdjustment": string, "fluid": string}], "nutritionAdjustments": { "dailyCalories": number, "carbCycling": string, "hydration": string }, "peakDayProtocol": string }.
 Keep it concise. No markdown, only JSON.`;
 
