@@ -80,6 +80,8 @@ export const RECIPE_IMAGES: Record<string, string> = {
   r36: r36.url,
   r37: r37.url,
   r38: r38.url,
+  r39: r39.url,
+  r40: r40.url,
 };
 
 // Stable, free Unsplash photos per category (compressed via Unsplash CDN params).
