@@ -19,22 +19,42 @@ import r17 from "@/assets/recipes/frokost-04-teriyaki-kylling-ris-skaal.jpg.asse
 import r25 from "@/assets/recipes/frokost-05-kalkun-quinoa-power-skaal.jpg.asset.json";
 import r26 from "@/assets/recipes/frokost-06-tun-nicoise-salat.jpg.asset.json";
 import r27 from "@/assets/recipes/frokost-07-sorte-boenner-soed-kartoffel.jpg.asset.json";
+import r28 from "@/assets/recipes/frokost-08-kylling-pesto-pastasalat.jpg.asset.json";
+import r1 from "@/assets/recipes/morgenmad-01-graesk-yoghurt-power-skaal_v1.jpg.asset.json";
+import r8 from "@/assets/recipes/morgenmad-02-aeg-groentsagsroeraeg_v1.jpg.asset.json";
+import r11 from "@/assets/recipes/morgenmad-03-overnight-havregryn_v1.jpg.asset.json";
+import r18 from "@/assets/recipes/morgenmad-04-protein-pandekager_v1.jpg.asset.json";
+import r21 from "@/assets/recipes/morgenmad-05-overnight-protein-havregryn_v1.jpg.asset.json";
+import r22 from "@/assets/recipes/morgenmad-06-roeraeg-avocado-wrap_v1.jpg.asset.json";
+import r23 from "@/assets/recipes/morgenmad-07-banan-protein-muffins_v1.jpg.asset.json";
+import r24 from "@/assets/recipes/morgenmad-08-bircher-muesli_v1.jpg.asset.json";
+import r4 from "@/assets/recipes/snacks-01-banan-havre-energikugler.jpg.asset.json";
 
 // Per-recipe custom photos, keyed by recipe id in src/data/recipes.ts.
 export const RECIPE_IMAGES: Record<string, string> = {
+  r1: r1.url,
   r2: r2.url,
   r3: r3.url,
+  r4: r4.url,
   r5: r5.url,
   r7: r7.url,
+  r8: r8.url,
   r9: r9.url,
   r10: r10.url,
+  r11: r11.url,
   r12: r12.url,
   r14: r14.url,
   r17: r17.url,
+  r18: r18.url,
   r19: r19.url,
+  r21: r21.url,
+  r22: r22.url,
+  r23: r23.url,
+  r24: r24.url,
   r25: r25.url,
   r26: r26.url,
   r27: r27.url,
+  r28: r28.url,
   r29: r29.url,
   r30: r30.url,
   r31: r31.url,
