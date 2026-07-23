@@ -34,7 +34,7 @@ interface WeightLog { log_date: string; weight_kg: number; }
 export default function Competitions() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const { activeClubId } = useActiveClub();
   const [comps, setComps] = useState<Competition[]>([]);
   const [pastComps, setPastComps] = useState<Competition[]>([]);
