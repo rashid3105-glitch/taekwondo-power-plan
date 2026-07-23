@@ -44,13 +44,22 @@ export default function SignupCoach() {
       toast({ title: "Adgangskoden skal være mindst 8 tegn", variant: "destructive" });
       return;
     }
+    if (!clubName.trim() || clubName.trim().length < 2) {
+      toast({ title: t("signupClubNameRequired"), variant: "destructive" });
+      return;
+    }
     setLoading(true);
     try {
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: { display_name: name, wants_coach: true, wants_demo: true },
+          data: {
+            display_name: name,
+            wants_coach: true,
+            wants_demo: true,
+            coach_club_name: clubName.trim(),
+          },
           emailRedirectTo: `${window.location.origin}/auth?tab=signin`,
         },
       });
