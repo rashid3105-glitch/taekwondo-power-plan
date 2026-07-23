@@ -297,6 +297,108 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
         />
       </div>
 
+      {/* Next competition — weight + plan */}
+      {nextComp && (
+        <div className="rounded-xl border border-primary/40 bg-card p-4 shadow-card space-y-3">
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <div className="flex items-center gap-2">
+              <Trophy className="h-4 w-4 text-primary" />
+              <div>
+                <div className="text-[10px] uppercase tracking-wide text-primary font-semibold">{t("nextEventTitle") || "Næste stævne"}</div>
+                <div className="font-semibold text-card-foreground text-sm">{nextComp.name}</div>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-1.5 text-[11px]">
+              <span className="rounded-md border border-border px-2 py-0.5 text-muted-foreground">
+                <Calendar className="inline h-3 w-3 mr-1" />{daysToNext} {t("compPlanDays") || "dage"}
+              </span>
+              {nextComp.priority && (
+                <span className="rounded-md border border-border px-2 py-0.5 text-muted-foreground">{t("priority") || "Prioritet"} {nextComp.priority}</span>
+              )}
+              {nextComp.location && (
+                <span className="rounded-md border border-border px-2 py-0.5 text-muted-foreground">{nextComp.location}</span>
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <Label className="text-[10px] uppercase tracking-wide text-muted-foreground flex items-center gap-1">
+                <Scale className="h-3 w-3" /> {t("currentWeight") || "Dagens vægt"} (kg)
+              </Label>
+              <Input
+                type="number"
+                inputMode="decimal"
+                step="0.1"
+                min="20"
+                max="300"
+                value={currentKgInput}
+                onChange={(e) => setCurrentKgInput(e.target.value)}
+                placeholder={latestWeight != null ? String(latestWeight) : "—"}
+                className="mt-1 h-9"
+              />
+            </div>
+            <div>
+              <Label className="text-[10px] uppercase tracking-wide text-muted-foreground flex items-center gap-1">
+                <Trophy className="h-3 w-3" /> {t("targetWeight") || "Målvægt"} (kg)
+              </Label>
+              <Input
+                type="number"
+                inputMode="decimal"
+                step="0.1"
+                min="20"
+                max="300"
+                value={targetKgInput}
+                onChange={(e) => setTargetKgInput(e.target.value)}
+                placeholder="—"
+                className="mt-1 h-9"
+              />
+            </div>
+          </div>
+
+          {cutKg != null && cutKg > 0 && (
+            <div className="text-xs text-muted-foreground">
+              {t("compPlanCut") || "Cut:"} <span className="font-semibold text-card-foreground">{cutKg.toFixed(1)} kg</span>
+              {daysToNext != null && daysToNext > 0 && (
+                <> · {(cutKg / (daysToNext / 7)).toFixed(2)} kg/{t("weekShort") || "uge"}</>
+              )}
+            </div>
+          )}
+
+          {nextComp.plan_data?.warnings?.length > 0 && (
+            <div className="rounded-md border border-destructive/40 bg-destructive/5 p-2 space-y-1">
+              {nextComp.plan_data.warnings.slice(0, 2).map((w: string, i: number) => (
+                <div key={i} className="flex items-start gap-1.5 text-[11px] text-destructive">
+                  <AlertTriangle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+                  <span>{w}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="flex gap-2">
+            <Button onClick={generateForNext} disabled={generating} size="sm" className="flex-1">
+              {generating ? (
+                <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating") || "Genererer…"}</>
+              ) : (
+                <><Zap className="h-4 w-4 mr-1" /> {nextComp.plan_data ? (t("regenerate") || "Generér igen") : (t("generatePlan") || "Generér plan")}</>
+              )}
+            </Button>
+            {nextComp.plan_data && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => { setPlanDialogComp(nextComp); setPlanDialogOpen(true); }}
+              >
+                <Eye className="h-4 w-4 mr-1" /> {t("viewPlan") || "Vis plan"}
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
+
+
       {/* Sessions vs planned */}
       <div className="rounded-xl border border-border bg-card p-4 shadow-card space-y-3">
         <h4 className="font-semibold text-sm flex items-center gap-2">
