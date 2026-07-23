@@ -61,6 +61,7 @@ export const RECIPE_IMAGES: Record<string, string> = {
   r17: r17.url,
   r18: r18.url,
   r19: r19.url,
+  r20: r20.url,
   r21: r21.url,
   r22: r22.url,
   r23: r23.url,
