@@ -273,6 +273,107 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
         />
       </div>
 
+      {/* Next competition — weight + plan action */}
+      {upcoming[0] && (() => {
+        const nextComp = upcoming[0];
+        const days = Math.max(0, Math.round((new Date(nextComp.event_date).getTime() - Date.now()) / 86400000));
+        const gap = nextComp.weight_class_kg != null && latestWeight != null ? latestWeight - nextComp.weight_class_kg : null;
+        const onTrack = gap !== null && gap <= (days / 7) * 0.7;
+        const hasPlan = !!nextComp.plan_data?.taperSummary;
+        const showWeight = !isPoomsae && nextComp.weight_class_kg != null;
+        return (
+          <div className="rounded-xl border border-border border-l-[3px] border-l-primary bg-card p-4 shadow-card space-y-3">
+            <div className="flex items-start justify-between gap-3 flex-wrap">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-primary">
+                  <Trophy className="h-3.5 w-3.5" /> {t("nextEventTitle")}
+                </div>
+                <div className="mt-0.5 font-bold text-card-foreground truncate">{nextComp.name}</div>
+                <div className="flex flex-wrap gap-1.5 mt-1.5 text-xs">
+                  <Badge variant="secondary" className="gap-1"><Calendar className="h-3 w-3" />{days} {t("competitionsDays")}</Badge>
+                  {nextComp.priority && <Badge variant="outline">{t("competitionsPriorityLabel")} {nextComp.priority}</Badge>}
+                  {showWeight && <Badge variant="outline">{nextComp.weight_class_kg} kg</Badge>}
+                  {nextComp.location && <Badge variant="outline" className="max-w-[140px] truncate">{nextComp.location}</Badge>}
+                </div>
+              </div>
+            </div>
+
+            {showWeight && (
+              <div className="grid grid-cols-2 gap-2">
+                <div className="rounded-lg border border-border bg-muted/20 p-2.5">
+                  <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-muted-foreground">
+                    <Scale className="h-3 w-3" /> {t("competitionsTodayWeight")}
+                  </div>
+                  <div className="text-lg font-bold tabular-nums mt-0.5">
+                    {latestWeight != null ? `${latestWeight} kg` : "—"}
+                  </div>
+                </div>
+                <div className="rounded-lg border border-border bg-muted/20 p-2.5">
+                  <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wide text-muted-foreground">
+                    <Target className="h-3 w-3" /> {t("competitionsTarget")}
+                  </div>
+                  <div className="text-lg font-bold tabular-nums mt-0.5">{nextComp.weight_class_kg} kg</div>
+                </div>
+              </div>
+            )}
+
+            {showWeight && gap !== null && (
+              <div
+                className={cn(
+                  "text-xs p-2 rounded border",
+                  onTrack
+                    ? "border-primary/40 bg-primary/10 text-primary"
+                    : "border-destructive/40 bg-destructive/10 text-destructive",
+                )}
+              >
+                {t("competitionsCurrent")} {latestWeight} kg → {t("competitionsTarget")} {nextComp.weight_class_kg} kg
+                {" "}({gap > 0 ? `${gap.toFixed(1)} ${t("competitionsToCut")}` : t("competitionsAtTarget")}) ·{" "}
+                {onTrack ? t("competitionsOnTrack") : t("competitionsBehind")}
+              </div>
+            )}
+
+            {nextComp.plan_data?.warnings?.length > 0 && (
+              <div className="text-xs space-y-1">
+                {nextComp.plan_data.warnings.slice(0, 2).map((w: string, i: number) => (
+                  <div key={i} className="flex items-start gap-1 text-destructive">
+                    <AlertTriangle className="h-3 w-3 mt-0.5 flex-shrink-0" />
+                    <span>{w}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {nextComp.plan_data?.taperSummary && (
+              <div className="text-xs text-muted-foreground border-l-2 border-primary/40 pl-2">
+                {nextComp.plan_data.taperSummary}
+              </div>
+            )}
+
+            <div className="flex gap-2 flex-wrap">
+              {hasPlan && (
+                <Button size="sm" variant="default" className="flex-1 min-w-[140px]" onClick={() => setViewPlan(nextComp)}>
+                  <Sparkles className="h-3.5 w-3.5 mr-1" /> {t("competitionsViewFull")}
+                </Button>
+              )}
+              <Button
+                size="sm"
+                variant={hasPlan ? "outline" : "default"}
+                className="flex-1 min-w-[140px]"
+                onClick={() => generatePlanFor(nextComp.id)}
+                disabled={generatingPlanId === nextComp.id}
+              >
+                {generatingPlanId === nextComp.id ? (
+                  <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />
+                ) : (
+                  <Zap className="h-3.5 w-3.5 mr-1" />
+                )}
+                {hasPlan ? t("competitionsRegenerate") : t("competitionsGenerate")}
+              </Button>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Sessions vs planned */}
       <div className="rounded-xl border border-border bg-card p-4 shadow-card space-y-3">
         <h4 className="font-semibold text-sm flex items-center gap-2">
