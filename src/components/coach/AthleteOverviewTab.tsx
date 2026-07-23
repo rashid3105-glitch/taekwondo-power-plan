@@ -189,6 +189,44 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
     return recent.reduce((s, d) => s + (d.mood || 0), 0) / recent.length;
   }, [diary]);
 
+  const nextComp = upcoming[0] || null;
+  const daysToNext = nextComp ? Math.max(0, Math.round((new Date(nextComp.event_date).getTime() - Date.now()) / 86400000)) : null;
+  const parsedCurrent = Number(currentKgInput);
+  const parsedTarget = Number(targetKgInput);
+  const cutKg = Number.isFinite(parsedCurrent) && Number.isFinite(parsedTarget) && parsedCurrent > 0 && parsedTarget > 0
+    ? Math.max(0, parsedCurrent - parsedTarget) : null;
+
+  async function generateForNext() {
+    if (!nextComp) return;
+    if (!Number.isFinite(parsedCurrent) || parsedCurrent <= 0) {
+      toast.error(t("compPlanNeedCurrentWeight") || "Angiv atletens aktuelle vægt først");
+      return;
+    }
+    setGenerating(true);
+    try {
+      const body: Record<string, unknown> = {
+        competition_id: nextComp.id,
+        locale,
+        current_kg: parsedCurrent,
+      };
+      if (Number.isFinite(parsedTarget) && parsedTarget > 0) body.target_kg = parsedTarget;
+      const { data, error } = await supabase.functions.invoke("generate-competition-plan", { body });
+      if (error) throw error;
+      toast.success(t("generated") || "Plan generated");
+      const updated: UpcomingComp = { ...nextComp, plan_data: (data as any)?.plan ?? nextComp.plan_data };
+      setUpcoming((prev) => prev.map((c, i) => (i === 0 ? updated : c)));
+      setLatestWeight(parsedCurrent);
+      if (Number.isFinite(parsedTarget) && parsedTarget > 0) updated.weight_class_kg = parsedTarget;
+      setPlanDialogComp(updated);
+      setPlanDialogOpen(true);
+    } catch (e: any) {
+      console.error("generate-competition-plan failed", e);
+      toast.error(`${t("generationFailed") || "Generering mislykkedes"}: ${e?.message || "unknown"}`);
+    } finally {
+      setGenerating(false);
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex justify-center py-12">
