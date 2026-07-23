@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { type Recipe, RECIPE_CATEGORY_ICONS } from "@/data/recipes";
 import { ChevronDown, ChevronUp, Clock, Flame, ImagePlus, Loader2, Trash2 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { CATEGORY_IMAGES } from "@/data/recipeImages";
+import { CATEGORY_IMAGES, RECIPE_IMAGES } from "@/data/recipeImages";
 
 const CATEGORY_KEYS: Record<string, string> = {
   breakfast: "catBreakfast",
