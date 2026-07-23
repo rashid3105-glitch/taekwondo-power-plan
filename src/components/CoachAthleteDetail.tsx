@@ -26,6 +26,7 @@ import { AthleteRunningProgress } from "@/components/coach/AthleteRunningProgres
 import { FormCurveChart } from "@/components/FormCurveChart";
 import { useNavigate } from "react-router-dom";
 import { Video as VideoIcon } from "lucide-react";
+import { CollapsiblePanel } from "@/components/coach/CollapsiblePanel";
 
 const COUNTRIES = [
   "Afghanistan","Albania","Algeria","Andorra","Angola","Argentina","Armenia","Australia","Austria","Azerbaijan",
