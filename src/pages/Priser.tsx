@@ -78,7 +78,7 @@ export default function Priser() {
           <div style={{ background: "rgba(245,200,66,0.06)", border: "0.5px solid rgba(245,200,66,0.28)", borderRadius: 14, padding: "28px 24px", position: "relative" }}>
             <div style={{ position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)", background: GOLD, color: "#0B0C14", borderRadius: 20, padding: "3px 14px", fontSize: 10, fontWeight: 800, whiteSpace: "nowrap" }}>{t("pricingMostPopular")}</div>
             <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: GOLD, marginBottom: 8 }}>{t("pricingTierClub")}</div>
-            <div style={{ fontSize: 44, fontWeight: 900, letterSpacing: "-0.04em" }}>1299</div>
+            <div style={{ fontSize: 44, fontWeight: 900, letterSpacing: "-0.04em" }}>1499</div>
             <div style={{ fontSize: 13, color: "rgba(255,255,255,0.35)", marginBottom: 8 }}>{t("pricingPerMonth")}</div>
             <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", marginBottom: 16, lineHeight: 1.5 }}>{t("pricingClubDesc")}</div>
             <hr style={{ border: "none", borderTop: "0.5px solid rgba(245,200,66,0.15)", margin: "12px 0" }} />
@@ -86,7 +86,6 @@ export default function Priser() {
               <div key={i} style={{ fontSize: 13, color: "rgba(255,255,255,0.75)", display: "flex", gap: 7, marginBottom: 8 }}><span style={{ color: GOLD }}>✓</span>{f}</div>
             ))}
             <button onClick={() => navigate("/auth")} style={{ width: "100%", marginTop: 20, padding: "12px", borderRadius: 8, border: "none", background: GOLD, color: "#0B0C14", fontSize: 13, fontWeight: 800, cursor: "pointer" }}>{t("pricingCtaTrialClub")}</button>
-            <div style={{ textAlign: "center", marginTop: 8, fontSize: 11, color: "rgba(255,255,255,0.3)" }}>{t("pricingClubYearly")}</div>
           </div>
 
           <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: "28px 24px" }}>
