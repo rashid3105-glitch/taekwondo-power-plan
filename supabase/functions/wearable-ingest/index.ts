@@ -134,10 +134,15 @@ Deno.serve(async (req) => {
           completed: true,
           logged_date: isoDate(s.start_at),
           activity_label: p.activity_label ?? null,
-          avg_hr: p.avg_hr ?? null,
-          max_hr: p.max_hr ?? null,
+          avg_hr: typeof p.avg_hr === "number" ? Math.round(p.avg_hr) : null,
+          max_hr: typeof p.max_hr === "number" ? Math.round(p.max_hr) : null,
           duration_minutes: durationMin,
-          calories: p.calories ?? s.value_numeric ?? null,
+          calories:
+            typeof p.calories === "number"
+              ? Math.round(p.calories)
+              : typeof s.value_numeric === "number"
+                ? Math.round(s.value_numeric)
+                : null,
         });
       }
     }
