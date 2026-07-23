@@ -39,6 +39,9 @@ interface UpcomingComp {
   name: string;
   event_date: string;
   location: string | null;
+  weight_class_kg: number | null;
+  priority: string | null;
+  plan_data: any;
 }
 
 interface DiaryRow {
