@@ -3,8 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import {
-  Activity, AlertTriangle, Calendar, CalendarRange, ClipboardList, Flame,
-  Heart, Loader2, Smile, Trophy, Video as VideoIcon, Zap,
+  Activity, AlertTriangle, Calendar, CalendarRange, ClipboardList, Eye, Flame,
+  Heart, Loader2, Scale, Smile, Trophy, Video as VideoIcon, Zap,
 } from "lucide-react";
 import {
   Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis,
@@ -15,6 +15,11 @@ import { AthleteRecoveryTrend } from "@/components/coach/AthleteRecoveryTrend";
 import { PhysicalTestComparison } from "@/components/coach/PhysicalTestComparison";
 import { MonthlyDevelopmentReportsCard } from "@/components/coach/MonthlyDevelopmentReportsCard";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { CompetitionPlanDialog } from "@/components/CompetitionPlanDialog";
 
 interface Props {
   athleteId: string;
