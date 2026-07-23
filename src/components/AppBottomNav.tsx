@@ -46,7 +46,7 @@ export function AppBottomNav() {
         { key: "idag", label: t("today") || "I dag", icon: Home, iconClassName: "text-primary", active: false, onClick: () => navigate("/dashboard?tab=hub") },
         { key: "traen", label: t("train") || "Træn", icon: Zap, iconClassName: "text-tab-plan", active: false, onClick: () => navigate("/dashboard?tab=plan") },
         { key: "kalender", label: t("seasonCalendar") || "Kalender", icon: CalendarRange, iconClassName: "text-tab-progress", active: false, onClick: () => navigate("/dashboard?tab=calendar") },
-        { key: "health", label: (t as any)("healthNav") || "Sundhed", icon: Heart, iconClassName: "text-red-500 fill-red-500", active: path.startsWith("/health"), onClick: () => navigate("/health") },
+        { key: "health", label: "Sundhed", icon: Heart, iconClassName: "text-red-500 fill-red-500", active: path.startsWith("/health"), onClick: () => navigate("/health") },
         { key: "video", label: t("hubMatchTitle") || "Video", icon: VideoIcon, iconClassName: "text-tab-mental", active: path.startsWith("/match-analysis"), onClick: () => navigate("/match-analysis/me") },
       ];
 
