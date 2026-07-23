@@ -466,6 +466,15 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
       </div>
 
       <MonthlyDevelopmentReportsCard athleteId={athleteId} athleteName={athleteName} />
+
+      {viewPlan && (
+        <CompetitionPlanDialog
+          open={!!viewPlan}
+          onOpenChange={(o) => !o && setViewPlan(null)}
+          competitionName={viewPlan.name}
+          plan={viewPlan.plan_data}
+        />
+      )}
     </div>
   );
 }
