@@ -34,6 +34,11 @@ import r16 from "@/assets/recipes/snacks-03-hummus-groentsagsstave.jpg.asset.jso
 import r33 from "@/assets/recipes/snacks-04-hytteost-ananas.jpg.asset.json";
 import r34 from "@/assets/recipes/snacks-05-trail-mix-energikugler.jpg.asset.json";
 import r35 from "@/assets/recipes/snacks-06-graesk-yoghurt-granola.jpg.asset.json";
+import r6 from "@/assets/recipes/efter-01-protein-shake.jpg.asset.json";
+import r15 from "@/assets/recipes/efter-02-restitutions-kyllingesuppe.jpg.asset.json";
+import r20 from "@/assets/recipes/efter-03-chokolademaelk.jpg.asset.json";
+import r39 from "@/assets/recipes/efter-04-tun-ris-restitutionsskaal.jpg.asset.json";
+import r40 from "@/assets/recipes/efter-05-baer-protein-smoothie-skaal.jpg.asset.json";
 
 // Per-recipe custom photos, keyed by recipe id in src/data/recipes.ts.
 export const RECIPE_IMAGES: Record<string, string> = {
@@ -42,6 +47,7 @@ export const RECIPE_IMAGES: Record<string, string> = {
   r3: r3.url,
   r4: r4.url,
   r5: r5.url,
+  r6: r6.url,
   r7: r7.url,
   r8: r8.url,
   r9: r9.url,
@@ -50,10 +56,12 @@ export const RECIPE_IMAGES: Record<string, string> = {
   r12: r12.url,
   r13: r13.url,
   r14: r14.url,
+  r15: r15.url,
   r16: r16.url,
   r17: r17.url,
   r18: r18.url,
   r19: r19.url,
+  r20: r20.url,
   r21: r21.url,
   r22: r22.url,
   r23: r23.url,
@@ -72,6 +80,8 @@ export const RECIPE_IMAGES: Record<string, string> = {
   r36: r36.url,
   r37: r37.url,
   r38: r38.url,
+  r39: r39.url,
+  r40: r40.url,
 };
 
 // Stable, free Unsplash photos per category (compressed via Unsplash CDN params).
