@@ -4,16 +4,20 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import {
   Activity, AlertTriangle, Calendar, CalendarRange, ClipboardList, Flame,
-  Heart, Loader2, Smile, Trophy, Video as VideoIcon, Zap,
+  Heart, Loader2, Scale, Smile, Sparkles, Trophy, Video as VideoIcon, Zap,
 } from "lucide-react";
 import {
   Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
 import { FormCurveChart } from "@/components/FormCurveChart";
 import { AthleteRecoveryTrend } from "@/components/coach/AthleteRecoveryTrend";
 import { PhysicalTestComparison } from "@/components/coach/PhysicalTestComparison";
 import { MonthlyDevelopmentReportsCard } from "@/components/coach/MonthlyDevelopmentReportsCard";
+import { CompetitionPlanDialog } from "@/components/CompetitionPlanDialog";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
 
 interface Props {
