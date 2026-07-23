@@ -72,6 +72,12 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
   const [readinessAvg7d, setReadinessAvg7d] = useState<number | null>(null);
   const [latestReadiness, setLatestReadiness] = useState<number | null>(null);
   const [activePR, setActivePR] = useState<{ test_name: string; value: number; unit: string } | null>(null);
+  const [latestWeight, setLatestWeight] = useState<number | null>(null);
+  const [currentKgInput, setCurrentKgInput] = useState<string>("");
+  const [targetKgInput, setTargetKgInput] = useState<string>("");
+  const [generating, setGenerating] = useState(false);
+  const [planDialogOpen, setPlanDialogOpen] = useState(false);
+  const [planDialogComp, setPlanDialogComp] = useState<UpcomingComp | null>(null);
 
   useEffect(() => {
     void load();
