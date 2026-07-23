@@ -9,19 +9,39 @@ import r31 from "@/assets/recipes/aftensmad-07-rejepasta-primavera.jpg.asset.jso
 import r32 from "@/assets/recipes/aftensmad-08-oksekoeds-bolognese.jpg.asset.json";
 import r5 from "@/assets/recipes/foer-01-foer-traening-toast.jpg.asset.json";
 import r14 from "@/assets/recipes/foer-02-energi-smoothie.jpg.asset.json";
+import r36 from "@/assets/recipes/foer-03-riskager-mandelsmoer-banan.jpg.asset.json";
+import r37 from "@/assets/recipes/foer-04-banan-daddel-smoothie.jpg.asset.json";
+import r38 from "@/assets/recipes/foer-05-havre-honning-energibarer.jpg.asset.json";
+import r2 from "@/assets/recipes/frokost-01-kylling-ris-meal-prep.jpg.asset.json";
+import r9 from "@/assets/recipes/frokost-02-tun-avocado-ris-skaal.jpg.asset.json";
+import r12 from "@/assets/recipes/frokost-03-kylling-caesar-wrap.jpg.asset.json";
+import r17 from "@/assets/recipes/frokost-04-teriyaki-kylling-ris-skaal.jpg.asset.json";
+import r25 from "@/assets/recipes/frokost-05-kalkun-quinoa-power-skaal.jpg.asset.json";
+import r26 from "@/assets/recipes/frokost-06-tun-nicoise-salat.jpg.asset.json";
+import r27 from "@/assets/recipes/frokost-07-sorte-boenner-soed-kartoffel.jpg.asset.json";
 
 // Per-recipe custom photos, keyed by recipe id in src/data/recipes.ts.
 export const RECIPE_IMAGES: Record<string, string> = {
+  r2: r2.url,
   r3: r3.url,
   r5: r5.url,
   r7: r7.url,
+  r9: r9.url,
   r10: r10.url,
+  r12: r12.url,
   r14: r14.url,
+  r17: r17.url,
   r19: r19.url,
+  r25: r25.url,
+  r26: r26.url,
+  r27: r27.url,
   r29: r29.url,
   r30: r30.url,
   r31: r31.url,
   r32: r32.url,
+  r36: r36.url,
+  r37: r37.url,
+  r38: r38.url,
 };
 
 // Stable, free Unsplash photos per category (compressed via Unsplash CDN params).
