@@ -10,7 +10,47 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const Body = z.object({ competition_id: z.string().uuid() });
+const Body = z.object({ competition_id: z.string().uuid(), locale: z.string().max(5).optional() });
+
+const LANG_NAMES: Record<string, string> = {
+  da: "Danish", en: "English", sv: "Swedish", no: "Norwegian",
+  de: "German", ar: "Arabic", es: "Spanish",
+};
+
+function warnCutTooFast(locale: string, cutKg: number, days: number): string {
+  const cut = cutKg.toFixed(1);
+  switch (locale) {
+    case "da": return `At tabe ${cut} kg på ${days} dage overstiger den sikre rate på 0,7 kg/uge. Overvej at rykke op i en højere vægtklasse.`;
+    case "sv": return `Att gå ner ${cut} kg på ${days} dagar överstiger den säkra takten på 0,7 kg/vecka. Överväg att gå upp en viktklass.`;
+    case "no": return `Å gå ned ${cut} kg på ${days} dager overstiger den trygge raten på 0,7 kg/uke. Vurder å rykke opp en vektklasse.`;
+    case "de": return `${cut} kg in ${days} Tagen abzunehmen überschreitet die sichere Rate von 0,7 kg/Woche. Erwäge, in eine höhere Gewichtsklasse zu wechseln.`;
+    case "es": return `Perder ${cut} kg en ${days} días supera la tasa segura de 0,7 kg/semana. Considera subir de categoría de peso.`;
+    case "ar": return `فقدان ${cut} كجم في ${days} يومًا يتجاوز المعدل الآمن 0.7 كجم/أسبوع. فكّر في الانتقال إلى فئة وزن أعلى.`;
+    default: return `Cutting ${cut} kg in ${days} days exceeds the safe rate of 0.7 kg/week. Consider moving up a weight class.`;
+  }
+}
+function warnFivePercent(locale: string): string {
+  switch (locale) {
+    case "da": return "Vægttabet overstiger 5% af kropsvægten på under 14 dage — høj risiko for præstationstab og dehydrering.";
+    case "sv": return "Viktnedgången överstiger 5% av kroppsvikten på under 14 dagar — hög risk för prestationsförlust och uttorkning.";
+    case "no": return "Vekttapet overstiger 5% av kroppsvekten på under 14 dager — høy risiko for prestasjonstap og dehydrering.";
+    case "de": return "Der Gewichtsverlust überschreitet 5% des Körpergewichts in unter 14 Tagen — hohes Risiko für Leistungsverlust und Dehydration.";
+    case "es": return "La bajada supera el 5% del peso corporal en menos de 14 días — alto riesgo de pérdida de rendimiento y deshidratación.";
+    case "ar": return "خفض الوزن يتجاوز 5٪ من وزن الجسم في أقل من 14 يومًا — خطر مرتفع لفقدان الأداء والجفاف.";
+    default: return "Cut exceeds 5% bodyweight in <14 days — high risk of performance loss and dehydration.";
+  }
+}
+function warnLessThanWeek(locale: string): string {
+  switch (locale) {
+    case "da": return "Mindre end 1 uge til stævnet: undgå aggressive vægttab.";
+    case "sv": return "Mindre än 1 vecka kvar: undvik aggressiva viktnedgångar.";
+    case "no": return "Mindre enn 1 uke igjen: unngå aggressive vekttap.";
+    case "de": return "Weniger als 1 Woche bis zum Wettkampf: vermeide aggressive Gewichtsreduktionen.";
+    case "es": return "Menos de 1 semana para la competición: evita bajadas agresivas.";
+    case "ar": return "أقل من أسبوع على البطولة: تجنّب خفض الوزن الحاد.";
+    default: return "Less than 1 week out: avoid aggressive cuts.";
+  }
+}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
