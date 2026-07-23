@@ -6,7 +6,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { PageMeta } from "@/components/PageMeta";
-import { validatePassword } from "@/lib/passwordValidation";
 import {
   passkeysSupported,
   platformAuthenticatorAvailable,
@@ -28,11 +27,8 @@ const GOLD = "#F5C842";
 const BG = "#0B0C14";
 
 export default function AuthPage() {
-  const initialTab = new URLSearchParams(window.location.search).get("tab");
-  const [isLogin, setIsLogin] = useState(initialTab !== "signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [displayName, setDisplayName] = useState("");
   const [loading, setLoading] = useState(false);
   const [passkeyAvailable, setPasskeyAvailable] = useState(false);
   const [passkeyLoading, setPasskeyLoading] = useState(false);
@@ -40,33 +36,27 @@ export default function AuthPage() {
   const [bioHasCreds, setBioHasCreds] = useState(false);
   const [bioLabel, setBioLabel] = useState("Face ID");
   const [bioLoading, setBioLoading] = useState(false);
-  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
-  const [resendLoading, setResendLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
 
-  const redirectTo = new URLSearchParams(window.location.search).get("redirect");
-  const inviteCode = new URLSearchParams(window.location.search).get("invite");
-  const [inviteCodeInput, setInviteCodeInput] = useState<string>(() => {
-    try {
-      return (
-        inviteCode ||
-        sessionStorage.getItem("pending_invite_code") ||
-        localStorage.getItem("pending_invite_code") ||
-        ""
-      );
-    } catch {
-      return inviteCode || "";
-    }
-  });
+  const params = new URLSearchParams(window.location.search);
+  const redirectTo = params.get("redirect");
+  const inviteCode = params.get("invite");
+  const tab = params.get("tab");
 
+  // Redirect legacy signup/invite entry points to the correct flows.
+  // Athletes now only join via invitation link; coaches sign up on /signup/coach.
   useEffect(() => {
     if (inviteCode) {
-      sessionStorage.setItem("pending_invite_code", inviteCode);
-      setInviteCodeInput(inviteCode);
+      try { sessionStorage.setItem("pending_invite_code", inviteCode); } catch {}
+      navigate(`/invite-signup?code=${encodeURIComponent(inviteCode)}`, { replace: true });
+      return;
     }
-  }, [inviteCode]);
+    if (tab === "signup") {
+      navigate("/signup/coach", { replace: true });
+    }
+  }, [inviteCode, tab, navigate]);
 
   useEffect(() => {
     (async () => {
@@ -88,6 +78,21 @@ export default function AuthPage() {
     })();
   }, []);
 
+  const applyPendingInviteAndPush = async () => {
+    const pendingInvite =
+      sessionStorage.getItem("pending_invite_code") ||
+      localStorage.getItem("pending_invite_code");
+    if (pendingInvite) {
+      sessionStorage.removeItem("pending_invite_code");
+      try { localStorage.removeItem("pending_invite_code"); } catch {}
+      try { await supabase.rpc("apply_invite_to_my_profile" as any, { _code: pendingInvite }); } catch {}
+    }
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) await registerPushToken(user.id);
+    } catch { /* non-blocking */ }
+  };
+
   const handleBiometricLogin = async () => {
     setBioLoading(true);
     haptics.tap();
@@ -101,16 +106,7 @@ export default function AuthPage() {
         password: creds.password,
       });
       if (error) throw error;
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-  console.log("👤 User found:", user.id);
-
-  await registerPushToken(user.id);
-
-  console.log("✅ registerPushToken returned");
-}
-      } catch { /* non-blocking */ }
+      await applyPendingInviteAndPush();
       navigate(redirectTo || "/dashboard");
     } catch (e: any) {
       toast({
@@ -128,16 +124,7 @@ export default function AuthPage() {
     haptics.tap();
     try {
       await signInWithPasskey(email || undefined);
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-       if (user) {
-  console.log("👤 User found:", user.id);
-
-  await registerPushToken(user.id);
-
-  console.log("✅ registerPushToken returned");
-}
-      } catch { /* non-blocking */ }
+      await applyPendingInviteAndPush();
       navigate(redirectTo || "/dashboard");
     } catch (e: any) {
       toast({ title: t("passkeyLoginFailed"), description: e?.message, variant: "destructive" });
@@ -166,96 +153,20 @@ export default function AuthPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        const pendingInvite =
-          sessionStorage.getItem("pending_invite_code") ||
-          localStorage.getItem("pending_invite_code");
-        if (pendingInvite) {
-          sessionStorage.removeItem("pending_invite_code");
-          try { localStorage.removeItem("pending_invite_code"); } catch {}
-          await supabase.rpc("apply_invite_to_my_profile" as any, { _code: pendingInvite });
-        }
-        // Offer to save credentials for biometric login on native
-        if (bioAvailable && !bioHasCreds) {
-          try {
-            const ok = window.confirm(`Vil du aktivere ${bioLabel} til hurtigt login næste gang?`);
-            if (ok) {
-              await saveBiometricCredentials(email, password);
-              setBioHasCreds(true);
-            }
-          } catch {
-            /* ignore */
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      await applyPendingInviteAndPush();
+      // Offer to save credentials for biometric login on native
+      if (bioAvailable && !bioHasCreds) {
+        try {
+          const ok = window.confirm(`Vil du aktivere ${bioLabel} til hurtigt login næste gang?`);
+          if (ok) {
+            await saveBiometricCredentials(email, password);
+            setBioHasCreds(true);
           }
-        }
-        try {
-          const { data: { user } } = await supabase.auth.getUser();
-         if (user) {
-  console.log("👤 User found:", user.id);
-
-  await registerPushToken(user.id);
-
-  console.log("✅ registerPushToken returned");
-}
-        } catch { /* non-blocking */ }
-        navigate(redirectTo || "/dashboard");
-      } else {
-        const pwCheck = validatePassword(password);
-        if (!pwCheck.ok) {
-          toast({ title: t("error"), description: t("passwordTooWeak"), variant: "destructive" });
-          setLoading(false);
-          return;
-        }
-
-        // App Store 3.1.3(c) compliance: SportsTalent is a club/organization
-        // service. New athlete accounts require a valid club invitation code.
-        const codeRaw = (inviteCodeInput || "").trim();
-        if (!codeRaw) {
-          toast({ title: t("error"), description: t("signupInviteRequired"), variant: "destructive" });
-          setLoading(false);
-          return;
-        }
-        try {
-          const { data: inviteInfo } = await supabase.rpc("get_invite_by_code" as any, { _code: codeRaw });
-          if (!(inviteInfo as any)?.valid) {
-            toast({ title: t("error"), description: t("signupInviteInvalid"), variant: "destructive" });
-            setLoading(false);
-            return;
-          }
-        } catch {
-          toast({ title: t("error"), description: t("signupInviteInvalid"), variant: "destructive" });
-          setLoading(false);
-          return;
-        }
-        try {
-          sessionStorage.setItem("pending_invite_code", codeRaw);
-          localStorage.setItem("pending_invite_code", codeRaw);
-        } catch {}
-
-        const { data: signUpData, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: { display_name: displayName },
-            emailRedirectTo: `${window.location.origin}/auth`,
-          },
-        });
-        if (error) throw error;
-        try {
-          await supabase.functions.invoke("send-transactional-email", {
-            body: {
-              templateName: "new-user-notification",
-              recipientEmail: "rashid3105@gmail.com",
-              idempotencyKey: `new-user-${signUpData.user?.id || Date.now()}`,
-              templateData: { userName: displayName, userEmail: email, isDemo: false },
-            },
-          });
-        } catch (emailErr) {
-          console.error("Failed to send admin notification email", emailErr);
-        }
-        setPendingEmail(email);
+        } catch { /* ignore */ }
       }
+      navigate(redirectTo || "/dashboard");
     } catch (err: any) {
       const msg = String(err?.message ?? "");
       const isPreviewProxyFailure =
@@ -294,8 +205,8 @@ export default function AuthPage() {
   return (
     <div style={{ minHeight: "100vh", background: BG, color: "#fff", fontFamily: "Inter, sans-serif" }}>
       <PageMeta
-        title={isLogin ? "Log ind – Sportstalent" : "Opret konto – Sportstalent"}
-        description="Log ind eller opret din Sportstalent-konto."
+        title="Log ind – Sportstalent"
+        description="Log ind på din Sportstalent-konto."
         noindex
       />
 
@@ -319,116 +230,19 @@ export default function AuthPage() {
       </nav>
 
       <div style={{ maxWidth: 440, margin: "0 auto", padding: "48px 24px 80px" }}>
-        {pendingEmail ? (
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: 48, marginBottom: 16 }}>📬</div>
-            <h1 style={{ fontSize: 28, fontWeight: 900, letterSpacing: "-0.02em", marginBottom: 12 }}>
-              Tjek din indbakke
-            </h1>
-            <p style={{ fontSize: 15, color: "rgba(255,255,255,0.75)", lineHeight: 1.5, marginBottom: 8 }}>
-              Vi har sendt et bekræftelseslink til
-            </p>
-            <p style={{ fontSize: 15, fontWeight: 700, color: GOLD, marginBottom: 24, wordBreak: "break-all" }}>
-              {pendingEmail}
-            </p>
-            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", lineHeight: 1.5, marginBottom: 32 }}>
-              Klik på linket i mailen for at aktivere din konto. Tjek også spam-mappen.
-            </p>
-            <button
-              type="button"
-              disabled={resendLoading}
-              onClick={async () => {
-                setResendLoading(true);
-                try {
-                  const { error } = await supabase.auth.resend({
-                    type: "signup",
-                    email: pendingEmail,
-                    options: { emailRedirectTo: `${window.location.origin}/auth` },
-                  });
-                  if (error) throw error;
-                  toast({ title: "Mail sendt igen" });
-                } catch (e: any) {
-                  toast({ title: "Fejl", description: e.message, variant: "destructive" });
-                } finally {
-                  setResendLoading(false);
-                }
-              }}
-              style={{
-                background: "transparent",
-                border: `1px solid ${GOLD}`,
-                color: GOLD,
-                fontWeight: 700,
-                padding: "12px 24px",
-                borderRadius: 10,
-                cursor: "pointer",
-                fontSize: 14,
-                marginRight: 8,
-              }}
-            >
-              {resendLoading ? "Sender…" : "Send mailen igen"}
-            </button>
-            <button
-              type="button"
-              onClick={() => { setPendingEmail(null); setIsLogin(true); }}
-              style={{
-                background: "transparent",
-                border: "1px solid rgba(255,255,255,0.2)",
-                color: "#fff",
-                fontWeight: 700,
-                padding: "12px 24px",
-                borderRadius: 10,
-                cursor: "pointer",
-                fontSize: 14,
-              }}
-            >
-              Tilbage til login
-            </button>
-          </div>
-        ) : (
-        <>
-
         <h1
           style={{
             fontSize: 32,
             fontWeight: 900,
             letterSpacing: "-0.02em",
             textAlign: "center",
-            marginBottom: 8,
+            marginBottom: 32,
           }}
         >
-          {isLogin ? t("signInToAccount") : t("createAthleteAccount")}
+          {t("signInToAccount")}
         </h1>
-        <p style={{ textAlign: "center", fontSize: 14, color: "rgba(255,255,255,0.6)", marginBottom: 32 }}>
-          {isLogin ? t("dontHaveAccount") : t("alreadyHaveAccount")}{" "}
-          <button
-            onClick={() => setIsLogin(!isLogin)}
-            style={{
-              background: "transparent",
-              border: "none",
-              color: GOLD,
-              fontWeight: 700,
-              cursor: "pointer",
-              textDecoration: "underline",
-              fontSize: 14,
-              padding: 0,
-            }}
-          >
-            {isLogin ? t("signUp") : t("signIn")}
-          </button>
-        </p>
-        {!isLogin && (
-          <p style={{ textAlign: "center", fontSize: 13, color: "rgba(255,255,255,0.6)", marginTop: -16, marginBottom: 24 }}>
-            <button
-              type="button"
-              onClick={() => navigate("/signup/coach")}
-              style={{ background: "transparent", border: "none", color: GOLD, fontWeight: 700, cursor: "pointer", textDecoration: "underline", fontSize: 13, padding: 0 }}
-            >
-              {t("signupAsCoachLink")}
-            </button>
-          </p>
-        )}
 
-        {isLogin && passkeyAvailable && (
+        {passkeyAvailable && (
           <>
             <button
               type="button"
@@ -465,7 +279,7 @@ export default function AuthPage() {
           </>
         )}
 
-        {isLogin && bioAvailable && bioHasCreds && !passkeyAvailable && (
+        {bioAvailable && bioHasCreds && !passkeyAvailable && (
           <>
             <button
               type="button"
@@ -503,37 +317,6 @@ export default function AuthPage() {
         )}
 
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          {!isLogin && (
-            <>
-              <div>
-                <label style={labelStyle}>{t("displayName")}</label>
-                <input
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder={t("yourName")}
-                  required
-                  autoComplete="name"
-                  style={inputStyle}
-                />
-              </div>
-              <div>
-                <label style={labelStyle}>{t("signupInviteLabel")}</label>
-                <input
-                  value={inviteCodeInput}
-                  onChange={(e) => setInviteCodeInput(e.target.value)}
-                  placeholder={t("signupInvitePlaceholder")}
-                  required
-                  autoCapitalize="characters"
-                  autoCorrect="off"
-                  spellCheck={false}
-                  style={inputStyle}
-                />
-                <p style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginTop: 6 }}>
-                  {t("signupInviteHint")}
-                </p>
-              </div>
-            </>
-          )}
           <div>
             <label style={labelStyle}>{t("email")}</label>
             <input
@@ -541,7 +324,7 @@ export default function AuthPage() {
               inputMode="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="athlete@example.com"
+              placeholder="you@example.com"
               required
               autoComplete="email"
               autoCapitalize="none"
@@ -553,22 +336,20 @@ export default function AuthPage() {
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
               <label style={{ ...labelStyle, marginBottom: 0 }}>{t("password")}</label>
-              {isLogin && (
-                <button
-                  type="button"
-                  onClick={handleForgotPassword}
-                  style={{
-                    background: "transparent",
-                    border: "none",
-                    color: "rgba(255,255,255,0.55)",
-                    fontSize: 12,
-                    cursor: "pointer",
-                    padding: 0,
-                  }}
-                >
-                  {t("forgotPassword")}
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "rgba(255,255,255,0.55)",
+                  fontSize: 12,
+                  cursor: "pointer",
+                  padding: 0,
+                }}
+              >
+                {t("forgotPassword")}
+              </button>
             </div>
             <input
               type="password"
@@ -576,15 +357,10 @@ export default function AuthPage() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
-              minLength={isLogin ? 6 : 8}
-              autoComplete={isLogin ? "current-password" : "new-password"}
+              minLength={6}
+              autoComplete="current-password"
               style={inputStyle}
             />
-            {!isLogin && (
-              <p style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginTop: 6 }}>
-                {t("passwordRequirementsHint")}
-              </p>
-            )}
           </div>
 
           <button
@@ -604,17 +380,53 @@ export default function AuthPage() {
               opacity: loading ? 0.7 : 1,
             }}
           >
-            {loading ? t("pleaseWait") : isLogin ? t("signIn") : t("createAccount")}
+            {loading ? t("pleaseWait") : t("signIn")}
           </button>
         </form>
 
-        <p style={{ textAlign: "center", fontSize: 11, color: "rgba(255,255,255,0.45)", marginTop: 16 }}>
-          {t("ctaSubtext")}
+        {/* Coach / club sign-up CTA */}
+        <div
+          style={{
+            marginTop: 32,
+            padding: "20px 20px 22px",
+            borderRadius: 14,
+            background: "rgba(245,200,66,0.06)",
+            border: "1px solid rgba(245,200,66,0.28)",
+            textAlign: "center",
+          }}
+        >
+          <div style={{ fontSize: 15, fontWeight: 800, marginBottom: 6 }}>
+            {t("authCoachCtaTitle" as any)}
+          </div>
+          <div style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", marginBottom: 14, lineHeight: 1.5 }}>
+            {t("authCoachCtaBody" as any)}
+          </div>
+          <button
+            type="button"
+            onClick={() => navigate("/signup/coach")}
+            style={{
+              width: "100%",
+              height: 44,
+              borderRadius: 10,
+              border: "none",
+              background: GOLD,
+              color: BG,
+              fontWeight: 800,
+              fontSize: 14,
+              cursor: "pointer",
+            }}
+          >
+            {t("authCoachCtaButton" as any)}
+          </button>
+        </div>
+
+        <p style={{ textAlign: "center", fontSize: 12, color: "rgba(255,255,255,0.5)", marginTop: 20, lineHeight: 1.5 }}>
+          {t("authAthleteHint" as any)}
         </p>
 
         <div
           style={{
-            marginTop: 48,
+            marginTop: 40,
             borderRadius: 16,
             overflow: "hidden",
             border: "0.5px solid rgba(255,255,255,0.08)",
@@ -626,10 +438,7 @@ export default function AuthPage() {
             style={{ width: "100%", display: "block" }}
           />
         </div>
-        </>
-        )}
       </div>
-
     </div>
   );
 }
