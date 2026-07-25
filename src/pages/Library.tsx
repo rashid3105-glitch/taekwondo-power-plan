@@ -13,7 +13,8 @@ import { TestLibrary } from "@/components/TestLibrary";
 import { HiitLibrary } from "@/components/HiitLibrary";
 import { SupplementChecker } from "@/components/SupplementChecker";
 import { DrillLibrary } from "@/components/DrillLibrary";
-import { Dumbbell, Brain, UtensilsCrossed, ClipboardList, ArrowLeft, BookOpen, Zap, ChefHat, Camera, ShieldCheck, Swords } from "lucide-react";
+import { RunningLibrary } from "@/components/RunningLibrary";
+import { Dumbbell, Brain, UtensilsCrossed, ClipboardList, ArrowLeft, BookOpen, Zap, ChefHat, Camera, ShieldCheck, Swords, Footprints } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,6 +22,7 @@ import type { TranslationKey } from "@/i18n/translations";
 
 const TITLE_KEYS: Record<string, TranslationKey> = {
   exercise: "exercisesTitle",
+  running: "runningTitle",
   mental: "hubMentalTitle",
   nutrition: "hubNutritionTitle",
   testing: "libTestingLabel",
@@ -31,6 +33,7 @@ const TITLE_KEYS: Record<string, TranslationKey> = {
 
 const ICONS: Record<string, typeof Dumbbell> = {
   exercise: Dumbbell,
+  running: Footprints,
   mental: Brain,
   nutrition: UtensilsCrossed,
   testing: ClipboardList,
@@ -41,6 +44,7 @@ const ICONS: Record<string, typeof Dumbbell> = {
 
 const COLORS: Record<string, string> = {
   exercise: "text-primary",
+  running: "text-sky-500",
   mental: "text-tab-mental",
   nutrition: "text-tab-nutrition",
   testing: "text-primary",
@@ -160,6 +164,7 @@ export default function Library({ forcedSection }: { forcedSection?: string } = 
 
       <main className="container max-w-4xl mx-auto px-4 py-6 space-y-6">
         {section === "exercise" && <ExerciseLibrary />}
+        {section === "running" && <RunningLibrary />}
         {section === "mental" && <MentalLibrary />}
         {section === "testing" && <TestLibrary />}
         {section === "hiit" && <HiitLibrary />}
