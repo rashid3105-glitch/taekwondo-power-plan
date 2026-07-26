@@ -100,8 +100,9 @@ export function RunningLibrary() {
       <div className="space-y-3">
         {displayed.map((p) => {
           const isOpen = openId === p.id;
+          const isActive = enrollment?.program_id === p.id;
           return (
-            <div key={p.id} className="rounded-xl border border-border bg-card overflow-hidden">
+            <div key={p.id} className={`rounded-xl border bg-card overflow-hidden ${isActive ? "border-emerald-500/50" : "border-border"}`}>
               <button
                 onClick={() => setOpenId(isOpen ? null : p.id)}
                 className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary/40 transition-colors text-left"
@@ -119,10 +120,17 @@ export function RunningLibrary() {
                     <span className={`inline-flex items-center px-1.5 rounded border text-[10px] font-semibold ${LEVEL_STYLE[p.level]}`}>
                       {t(LEVEL_KEY[p.level])}
                     </span>
+                    {isActive && enrollment && (
+                      <span className="inline-flex items-center gap-1 px-1.5 rounded border border-emerald-500/40 bg-emerald-500/15 text-emerald-600 text-[10px] font-semibold">
+                        <Check className="h-3 w-3" />
+                        {t("runProgActive")} · {t("runningWeekLabel")} {programWeekIndex(enrollment.start_date, enrollment.weeks)}/{enrollment.weeks}
+                      </span>
+                    )}
                   </div>
                 </div>
                 {isOpen ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
               </button>
+
 
               {isOpen && (
                 <div className="px-4 pb-4 pt-1 space-y-3 animate-slide-up">
