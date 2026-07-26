@@ -3737,7 +3737,10 @@ const translations = {
     changelogEntry177: "Bottom navigation now shows on tablet and web, not only phone. Spanish translations completed for exercise cards and onboarding hints. Fixed raw key labels in the 'Add athlete' menu.",
     changelog_2026_07_22: "July 22, 2026",
     changelogEntry179: "Removed the individual \"Coach\" plan from the pricing page. SportsTalent is sold to clubs and organizations; athletes and coaches get access through their club. Existing subscribers keep their access.",
+    changelog_2026_07_26: "July 26, 2026",
+    changelogEntry181: "New running tracking: activate a running program from the library and follow planned vs. actual kilometres per week on the Progress page — including quick run logging.",
     changelog_2026_07_23: "July 23, 2026",
+
     changelogEntry180: "Athlete signup is now invitation-only. Athletes get access through the invitation link from their coach; /auth is a dedicated sign-in page.",
     changelogEntry178: "New athletes now join via their club's invitation code. Individual athlete subscription removed — SportsTalent is a club and organization service. Existing club-less athletes keep their access.",
   },
