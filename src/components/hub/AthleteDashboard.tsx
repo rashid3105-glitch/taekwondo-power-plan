@@ -13,20 +13,28 @@ import {
 } from "@/components/ui/dialog";
 import { SelfTrainingLogDialog } from "@/components/SelfTrainingLogDialog";
 import {
-  resolveSessionForDate,
+  resolveSessionsForDate,
   sessionLabelKey,
   seasonWeekNumber,
   phaseForWeek,
   PHASE_FOCUS_TAGS,
+  type AthleteSeasonOverride,
 } from "@/lib/seasonCalendar";
+import { findPlanDayForToday, normalizeDaySessions, isRestDay } from "@/lib/planSessionUtils";
 
 interface TodaySession {
-  weekdayLabel: string;
   type: string;
   tags: string[];
   exercises: string[];
   extraCount: number;
 }
+
+interface TodayPlan {
+  weekdayLabel: string;
+  sessions: TodaySession[];
+  isRest: boolean;
+}
+
 
 interface NextCompetition {
   name: string;
@@ -76,7 +84,7 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
   const { t, locale } = useLanguage();
   const { totalUnread } = useThreads();
 
-  const [todaySession, setTodaySession] = useState<TodaySession | null>(null);
+  const [todayPlan, setTodayPlan] = useState<TodayPlan | null>(null);
   const [nextCompetition, setNextCompetition] = useState<NextCompetition | null>(null);
   const [latestDiary, setLatestDiary] = useState<LatestDiary | null>(null);
   const [diaryLoading, setDiaryLoading] = useState(true);
@@ -85,15 +93,22 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
   const [now, setNow] = useState(() => new Date());
   const [isLoading, setIsLoading] = useState(true);
   const [planView, setPlanView] = useState<"mine" | "club">("mine");
+  const [seasonOverrides, setSeasonOverrides] = useState<AthleteSeasonOverride[]>([]);
+  const [competitionDates, setCompetitionDates] = useState<Set<string>>(() => new Set());
 
-  // Today's session derived from the club season plan (visibility already
+  // Today's sessions derived from the club season plan (visibility already
   // filtered upstream in Dashboard — no extra access logic here).
   const clubToday = useMemo(() => {
     if (!clubSeason?.plan || !Array.isArray(clubSeason.template)) return null;
     const iso = new Date().toISOString().slice(0, 10);
     if (clubSeason.plan.start_date > iso || clubSeason.plan.end_date < iso) return null;
-    const resolved = resolveSessionForDate(iso, clubSeason.template as any, [], new Set<string>());
-    if (!resolved || resolved.type === "rest") return null;
+    const resolved = resolveSessionsForDate(
+      iso,
+      clubSeason.template as any,
+      seasonOverrides,
+      competitionDates,
+    );
+    if (!resolved || resolved.length === 0) return null;
     const week = seasonWeekNumber(clubSeason.plan.start_date, iso);
     const phase = phaseForWeek((clubSeason.phases ?? []) as any, week);
     const tags: string[] = ((phase?.focus_tags ?? []) as string[])
@@ -102,20 +117,25 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
         return found ? t(found.labelKey as any) : v;
       });
     const dow = (new Date(iso + "T00:00:00").getDay() + 6) % 7; // 0 = Monday
-    const note = (clubSeason.template as any[]).find(
-      (d) => d.day_of_week === dow && d.session_type === resolved.type,
-    )?.notes as string | undefined;
+    const isRest = resolved.every((r) => r.type === "rest");
     return {
-      typeLabel: t(sessionLabelKey(resolved.type) as any),
-      location: resolved.location,
+      isRest,
+      sessions: resolved.map((r) => ({
+        typeLabel: t(sessionLabelKey(r.type) as any),
+        location: r.location,
+        fromOverride: r.fromOverride,
+        note: ((clubSeason.template as any[]).find(
+          (d) => d.day_of_week === dow && d.session_type === r.type,
+        )?.notes as string | undefined) ?? null,
+      })),
       phaseName: phase?.name ?? null,
       tags,
-      note: note ?? null,
     };
-  }, [clubSeason, t]);
+  }, [clubSeason, t, seasonOverrides, competitionDates]);
 
-  const hasBothPlans = !!todaySession && !!clubToday;
-  const showMine = hasBothPlans ? planView === "mine" : !!todaySession;
+  const hasBothPlans = !!todayPlan && !!clubToday;
+  const showMine = hasBothPlans ? planView === "mine" : !!todayPlan;
+
 
   // Live countdown tick
   useEffect(() => {
@@ -153,7 +173,24 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
         });
       }
 
-      // Active plan -> today's session
+      // Athlete overrides + competition dates for the club season plan
+      if (clubSeason?.plan?.id) {
+        const { data: ovs } = await supabase
+          .from("club_athlete_season_overrides")
+          .select("id, season_plan_id, athlete_id, override_date, session_type, notes")
+          .eq("season_plan_id", clubSeason.plan.id)
+          .eq("athlete_id", user.id);
+        if (mounted) setSeasonOverrides((ovs || []) as any as AthleteSeasonOverride[]);
+      }
+      const { data: allComps } = await supabase
+        .from("competitions")
+        .select("event_date")
+        .eq("user_id", user.id);
+      if (mounted) {
+        setCompetitionDates(new Set((allComps || []).map((c: any) => c.event_date)));
+      }
+
+      // Active plan -> today's sessions
       const { data: plan } = await supabase
         .from("training_plans")
         .select("plan_data")
@@ -163,38 +200,45 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
 
       const pd: any = plan?.plan_data || {};
       const days: any[] = pd.weeklySchedule || pd.days || pd.week || [];
-      const todayDow = new Date().getDay();
-      const todayIdx = (todayDow + 6) % 7;
-      let today: TodaySession | null = null;
-      if (Array.isArray(days) && days.length > 0) {
-        const d: any = days[todayIdx];
-        if (d) {
-          const sessions = Array.isArray(d.sessions) ? d.sessions : (d.session ? [d.session] : []);
-          const first = sessions.find((s: any) => s && (s.label || s.type || s.focus || s.exercises?.length));
-          if (first) {
+      let today: TodayPlan | null = null;
+      const d: any = findPlanDayForToday(days);
+      if (d) {
+        const daySessions = normalizeDaySessions(d).filter(
+          (s: any) => s && (s.label || s.type || s.focus || s.exercises?.length),
+        );
+        const rest = isRestDay(d);
+        const mapped: TodaySession[] = daySessions
+          .filter((s: any) => rest || (s.type !== "rest" && s.type !== "recovery"))
+          .map((s: any) => {
             const tags: string[] = [];
-            if (first.focus) tags.push(String(first.focus));
-            if (d.focus && d.focus !== first.focus) tags.push(String(d.focus));
-            if (first.duration || first.duration_minutes) {
-              tags.push(`${first.duration || first.duration_minutes} min`);
+            if (s.focus) tags.push(String(s.focus));
+            if (d.focus && d.focus !== s.focus) tags.push(String(d.focus));
+            if (s.duration || s.duration_minutes) {
+              tags.push(`${s.duration || s.duration_minutes} min`);
             }
-            const allExercises: string[] = Array.isArray(first.exercises)
-              ? first.exercises.map((e: any) => e?.name).filter((n: any) => typeof n === "string" && n.trim())
+            const allExercises: string[] = Array.isArray(s.exercises)
+              ? s.exercises.map((e: any) => e?.name).filter((n: any) => typeof n === "string" && n.trim())
               : [];
-            today = {
-              weekdayLabel: weekdayLong(locale).toUpperCase(),
-              type: first.label || first.type || d.focus || first.focus || "Træning",
+            return {
+              type: s.label || s.type || d.focus || s.focus || t("train"),
               tags: tags.slice(0, 3),
               exercises: allExercises.slice(0, 5),
               extraCount: Math.max(0, allExercises.length - 5),
             };
-          }
+          });
+        if (mapped.length > 0 || rest) {
+          today = {
+            weekdayLabel: weekdayLong(locale).toUpperCase(),
+            sessions: rest ? [] : mapped,
+            isRest: rest,
+          };
         }
       }
 
       if (!mounted) return;
-      setTodaySession(today);
+      setTodayPlan(today);
       setIsLoading(false);
+
 
       // Latest diary entry + comments
       const { data: entry } = await supabase
@@ -225,7 +269,7 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
     })();
 
     return () => { mounted = false; };
-  }, []);
+  }, [clubSeason?.plan?.id]);
 
 
   const countdown = useMemo(() => {
@@ -286,7 +330,7 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
               >
                 <UserIcon className="h-3 w-3" /> {t("hubOwnBtn")}
               </button>
-              {todaySession && showMine && (
+              {todayPlan && !todayPlan.isRest && showMine && (
                 <span
                   className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-lg"
                   style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
@@ -318,45 +362,77 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
             </div>
           )}
 
-          {showMine && todaySession ? (
-            <div>
-              <p className="text-sm font-semibold text-white">{todaySession.type}</p>
-              {todaySession.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 mt-2">
-                  {todaySession.tags.map((tag, i) => (
-                    <span
-                      key={i}
-                      className="text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-md bg-white/[0.06] text-white/70"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              )}
-              {todaySession.exercises.length > 0 && (
-                <ul className="mt-3 space-y-1">
-                  {todaySession.exercises.map((name, i) => (
-                    <li key={i} className="text-xs text-white/80 leading-tight truncate">
-                      • {name}
-                    </li>
-                  ))}
-                  {todaySession.extraCount > 0 && (
-                    <li className="text-xs text-white/50 leading-tight">
-                      +{todaySession.extraCount} {t("hubMoreSuffix")}
-                    </li>
-                  )}
-                </ul>
-              )}
-            </div>
+          {showMine && todayPlan ? (
+            todayPlan.isRest ? (
+              <div>
+                <p className="text-sm font-semibold text-white">{t("hubRestDay")}</p>
+                <p className="text-xs text-white/60 mt-1">{t("hubRestDaySub")}</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {todayPlan.sessions.map((s, si) => (
+                  <div key={si} className={si > 0 ? "pt-3 border-t border-white/10" : undefined}>
+                    <p className="text-sm font-semibold text-white">{s.type}</p>
+                    {s.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mt-2">
+                        {s.tags.map((tag, i) => (
+                          <span
+                            key={i}
+                            className="text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-md bg-white/[0.06] text-white/70"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    {s.exercises.length > 0 && (
+                      <ul className="mt-3 space-y-1">
+                        {s.exercises.map((name, i) => (
+                          <li key={i} className="text-xs text-white/80 leading-tight truncate">
+                            • {name}
+                          </li>
+                        ))}
+                        {s.extraCount > 0 && (
+                          <li className="text-xs text-white/50 leading-tight">
+                            +{s.extraCount} {t("hubMoreSuffix")}
+                          </li>
+                        )}
+                      </ul>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )
           ) : !showMine && clubToday ? (
             <div>
               <p className="text-[10px] uppercase tracking-wider text-white/50">
                 {t("hubPlanToggleClub")}
               </p>
-              <p className="text-sm font-semibold text-white mt-0.5">
-                {clubToday.typeLabel}
-                {clubToday.location ? ` · ${clubToday.location}` : ""}
-              </p>
+              {clubToday.isRest ? (
+                <>
+                  <p className="text-sm font-semibold text-white mt-0.5">{t("hubRestDay")}</p>
+                  <p className="text-xs text-white/60 mt-1">{t("hubRestDaySub")}</p>
+                </>
+              ) : (
+                <div className="space-y-2 mt-0.5">
+                  {clubToday.sessions.map((s, i) => (
+                    <div key={i}>
+                      <p className="text-sm font-semibold text-white">
+                        {s.typeLabel}
+                        {s.location ? ` · ${s.location}` : ""}
+                        {s.fromOverride && (
+                          <span className="ml-2 text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded bg-white/[0.08] text-white/70">
+                            {t("hubOverrideBadge")}
+                          </span>
+                        )}
+                      </p>
+                      {s.note && (
+                        <p className="text-xs text-white/70 mt-1 leading-snug">{s.note}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
               {clubToday.phaseName && (
                 <p className="text-xs text-white/60 mt-1">{clubToday.phaseName}</p>
               )}
@@ -372,11 +448,9 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
                   ))}
                 </div>
               )}
-              {clubToday.note && (
-                <p className="text-xs text-white/70 mt-2 leading-snug">{clubToday.note}</p>
-              )}
             </div>
           ) : (
+
             <EmptyState
               icon={<CalendarX size={24} style={accentStyle} />}
               text={t("hubNoSessionToday")}
