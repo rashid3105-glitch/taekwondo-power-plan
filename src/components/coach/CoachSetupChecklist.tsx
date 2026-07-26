@@ -68,7 +68,7 @@ export function CoachSetupChecklist() {
         const { data: visData } = await supabase
           .from("club_season_plan_visibility" as any)
           .select("id")
-          .in("plan_id", planIds)
+          .in("season_plan_id", planIds)
           .limit(1);
         if (!mounted) return;
         setHasVisibility(((visData as any[]) ?? []).length > 0);
