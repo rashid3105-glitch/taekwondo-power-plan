@@ -23823,7 +23823,10 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   authCoachCtaBody: "Crea una cuenta de entrenador e invita a tus atletas.",
   authCoachCtaButton: "Crear cuenta de entrenador",
   authAthleteHint: "¿Eres atleta? Accedes mediante el enlace de invitación de tu entrenador.",
+  changelog_2026_07_26: "26 de julio de 2026",
+  changelogEntry181: "Nuevo seguimiento de carrera: activa un programa de carrera desde la biblioteca y sigue en Progreso los kilómetros planificados frente a los reales por semana, con registro rápido de carreras.",
   changelog_2026_07_23: "23 de julio de 2026",
+
   changelogEntry180: "Los atletas ahora solo se registran mediante el enlace de invitación de su entrenador. /auth es una página exclusiva para iniciar sesión.",
   changelogEntry179: "Retirado el plan individual \"Entrenador\" de la página de precios. SportsTalent se vende a clubes y organizaciones; atletas y entrenadores acceden a través de su club. Los suscriptores actuales conservan el acceso.",
   changelogEntry178: "Los nuevos atletas ahora se unen a través del código de invitación de su club. Retirada la suscripción individual para atletas — SportsTalent es un servicio para clubes y organizaciones. Los atletas actuales sin club conservan el acceso.",
