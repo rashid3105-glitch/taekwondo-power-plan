@@ -173,7 +173,24 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
         });
       }
 
-      // Active plan -> today's session
+      // Athlete overrides + competition dates for the club season plan
+      if (clubSeason?.plan?.id) {
+        const { data: ovs } = await supabase
+          .from("club_athlete_season_overrides")
+          .select("id, season_plan_id, athlete_id, override_date, session_type, notes")
+          .eq("season_plan_id", clubSeason.plan.id)
+          .eq("athlete_id", user.id);
+        if (mounted) setSeasonOverrides((ovs || []) as any as AthleteSeasonOverride[]);
+      }
+      const { data: allComps } = await supabase
+        .from("competitions")
+        .select("event_date")
+        .eq("user_id", user.id);
+      if (mounted) {
+        setCompetitionDates(new Set((allComps || []).map((c: any) => c.event_date)));
+      }
+
+      // Active plan -> today's sessions
       const { data: plan } = await supabase
         .from("training_plans")
         .select("plan_data")
@@ -183,38 +200,45 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
 
       const pd: any = plan?.plan_data || {};
       const days: any[] = pd.weeklySchedule || pd.days || pd.week || [];
-      const todayDow = new Date().getDay();
-      const todayIdx = (todayDow + 6) % 7;
-      let today: TodaySession | null = null;
-      if (Array.isArray(days) && days.length > 0) {
-        const d: any = days[todayIdx];
-        if (d) {
-          const sessions = Array.isArray(d.sessions) ? d.sessions : (d.session ? [d.session] : []);
-          const first = sessions.find((s: any) => s && (s.label || s.type || s.focus || s.exercises?.length));
-          if (first) {
+      let today: TodayPlan | null = null;
+      const d: any = findPlanDayForToday(days);
+      if (d) {
+        const daySessions = normalizeDaySessions(d).filter(
+          (s: any) => s && (s.label || s.type || s.focus || s.exercises?.length),
+        );
+        const rest = isRestDay(d);
+        const mapped: TodaySession[] = daySessions
+          .filter((s: any) => rest || (s.type !== "rest" && s.type !== "recovery"))
+          .map((s: any) => {
             const tags: string[] = [];
-            if (first.focus) tags.push(String(first.focus));
-            if (d.focus && d.focus !== first.focus) tags.push(String(d.focus));
-            if (first.duration || first.duration_minutes) {
-              tags.push(`${first.duration || first.duration_minutes} min`);
+            if (s.focus) tags.push(String(s.focus));
+            if (d.focus && d.focus !== s.focus) tags.push(String(d.focus));
+            if (s.duration || s.duration_minutes) {
+              tags.push(`${s.duration || s.duration_minutes} min`);
             }
-            const allExercises: string[] = Array.isArray(first.exercises)
-              ? first.exercises.map((e: any) => e?.name).filter((n: any) => typeof n === "string" && n.trim())
+            const allExercises: string[] = Array.isArray(s.exercises)
+              ? s.exercises.map((e: any) => e?.name).filter((n: any) => typeof n === "string" && n.trim())
               : [];
-            today = {
-              weekdayLabel: weekdayLong(locale).toUpperCase(),
-              type: first.label || first.type || d.focus || first.focus || "Træning",
+            return {
+              type: s.label || s.type || d.focus || s.focus || t("train"),
               tags: tags.slice(0, 3),
               exercises: allExercises.slice(0, 5),
               extraCount: Math.max(0, allExercises.length - 5),
             };
-          }
+          });
+        if (mapped.length > 0 || rest) {
+          today = {
+            weekdayLabel: weekdayLong(locale).toUpperCase(),
+            sessions: rest ? [] : mapped,
+            isRest: rest,
+          };
         }
       }
 
       if (!mounted) return;
-      setTodaySession(today);
+      setTodayPlan(today);
       setIsLoading(false);
+
 
       // Latest diary entry + comments
       const { data: entry } = await supabase
