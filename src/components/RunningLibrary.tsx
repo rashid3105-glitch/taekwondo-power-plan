@@ -131,10 +131,20 @@ export function RunningLibrary() {
                 {isOpen ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
               </button>
 
-
               {isOpen && (
                 <div className="px-4 pb-4 pt-1 space-y-3 animate-slide-up">
                   <p className="text-xs text-card-foreground/80 leading-relaxed">{p.overview}</p>
+                  {isActive ? (
+                    <Button size="sm" variant="outline" className="w-full" disabled={busyId === p.id} onClick={handleStop}>
+                      {t("runProgStop")}
+                    </Button>
+                  ) : (
+                    <Button size="sm" className="w-full" disabled={busyId === p.id} onClick={() => handleStart(p)}>
+                      <Play className="h-3.5 w-3.5 mr-1" />
+                      {enrollment ? t("runProgSwitch") : t("runProgStart")}
+                    </Button>
+                  )}
+
                   <div className="space-y-2">
                     {p.plan.map((w) => (
                       <div key={w.week} className="rounded-lg border border-border bg-background/50 p-3">
