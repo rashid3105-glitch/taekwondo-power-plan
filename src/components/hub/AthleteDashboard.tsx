@@ -84,7 +84,7 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
   const { t, locale } = useLanguage();
   const { totalUnread } = useThreads();
 
-  const [todaySession, setTodaySession] = useState<TodaySession | null>(null);
+  const [todayPlan, setTodayPlan] = useState<TodayPlan | null>(null);
   const [nextCompetition, setNextCompetition] = useState<NextCompetition | null>(null);
   const [latestDiary, setLatestDiary] = useState<LatestDiary | null>(null);
   const [diaryLoading, setDiaryLoading] = useState(true);
@@ -93,15 +93,22 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
   const [now, setNow] = useState(() => new Date());
   const [isLoading, setIsLoading] = useState(true);
   const [planView, setPlanView] = useState<"mine" | "club">("mine");
+  const [seasonOverrides, setSeasonOverrides] = useState<AthleteSeasonOverride[]>([]);
+  const [competitionDates, setCompetitionDates] = useState<Set<string>>(() => new Set());
 
-  // Today's session derived from the club season plan (visibility already
+  // Today's sessions derived from the club season plan (visibility already
   // filtered upstream in Dashboard — no extra access logic here).
   const clubToday = useMemo(() => {
     if (!clubSeason?.plan || !Array.isArray(clubSeason.template)) return null;
     const iso = new Date().toISOString().slice(0, 10);
     if (clubSeason.plan.start_date > iso || clubSeason.plan.end_date < iso) return null;
-    const resolved = resolveSessionForDate(iso, clubSeason.template as any, [], new Set<string>());
-    if (!resolved || resolved.type === "rest") return null;
+    const resolved = resolveSessionsForDate(
+      iso,
+      clubSeason.template as any,
+      seasonOverrides,
+      competitionDates,
+    );
+    if (!resolved || resolved.length === 0) return null;
     const week = seasonWeekNumber(clubSeason.plan.start_date, iso);
     const phase = phaseForWeek((clubSeason.phases ?? []) as any, week);
     const tags: string[] = ((phase?.focus_tags ?? []) as string[])
@@ -110,20 +117,25 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
         return found ? t(found.labelKey as any) : v;
       });
     const dow = (new Date(iso + "T00:00:00").getDay() + 6) % 7; // 0 = Monday
-    const note = (clubSeason.template as any[]).find(
-      (d) => d.day_of_week === dow && d.session_type === resolved.type,
-    )?.notes as string | undefined;
+    const isRest = resolved.every((r) => r.type === "rest");
     return {
-      typeLabel: t(sessionLabelKey(resolved.type) as any),
-      location: resolved.location,
+      isRest,
+      sessions: resolved.map((r) => ({
+        typeLabel: t(sessionLabelKey(r.type) as any),
+        location: r.location,
+        fromOverride: r.fromOverride,
+        note: ((clubSeason.template as any[]).find(
+          (d) => d.day_of_week === dow && d.session_type === r.type,
+        )?.notes as string | undefined) ?? null,
+      })),
       phaseName: phase?.name ?? null,
       tags,
-      note: note ?? null,
     };
-  }, [clubSeason, t]);
+  }, [clubSeason, t, seasonOverrides, competitionDates]);
 
-  const hasBothPlans = !!todaySession && !!clubToday;
-  const showMine = hasBothPlans ? planView === "mine" : !!todaySession;
+  const hasBothPlans = !!todayPlan && !!clubToday;
+  const showMine = hasBothPlans ? planView === "mine" : !!todayPlan;
+
 
   // Live countdown tick
   useEffect(() => {
