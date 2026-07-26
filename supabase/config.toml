@@ -1,30 +1,21 @@
 project_id = "zklwergsziidgyxewbkw"
 
-[functions.parent-signup]
-verify_jwt = false
-
-[functions.consent-confirm]
-verify_jwt = false
-
-[functions.consent-self]
-verify_jwt = true
-
-[functions.account-deletion-dry-run]
-verify_jwt = true
-
-[functions.export-my-data]
-verify_jwt = true
-
-[functions.delete-my-account]
-verify_jwt = true
-
-[functions.submit-blog-comment]
-verify_jwt = false
-
-[functions.confirm-blog-comment]
-verify_jwt = false
-
-
-
-
-
+[functions]
+  [functions.account-deletion-dry-run]
+    verify_jwt = true
+  [functions.auth-email-hook]
+    verify_jwt = false
+  [functions.confirm-blog-comment]
+    verify_jwt = false
+  [functions.consent-confirm]
+    verify_jwt = false
+  [functions.consent-self]
+    verify_jwt = true
+  [functions.delete-my-account]
+    verify_jwt = true
+  [functions.export-my-data]
+    verify_jwt = true
+  [functions.parent-signup]
+    verify_jwt = false
+  [functions.submit-blog-comment]
+    verify_jwt = false
