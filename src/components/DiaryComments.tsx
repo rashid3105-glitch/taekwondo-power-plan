@@ -222,7 +222,7 @@ export function DiaryComments({ entryId, canComment = false }: DiaryCommentsProp
                 placeholder={t("coachCommentPlaceholder") || "Write a comment..."}
                 rows={1}
                 maxLength={2000}
-                className="resize-none text-xs min-h-[36px] py-2 pr-10"
+                className="resize-none text-base md:text-xs min-h-[40px] py-2 pr-10"
               />
               <Button
                 type="button"
