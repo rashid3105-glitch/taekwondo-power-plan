@@ -806,7 +806,7 @@ export default function Dashboard() {
             { key: "coach-surveys", label: t("surveysTitle") || "Spørgeskemaer", icon: ClipboardList, iconClassName: "text-tab-mental", active: false, onClick: () => navigate("/coach/surveys") },
 
           ] : [
-            { key: "idag", label: t("today") || "I dag", icon: Home, iconClassName: "text-primary", active: activeTab === "hub", onClick: () => handleTabChange("hub") },
+            { key: "idag", label: t("today") || "I dag", icon: Home, iconClassName: "text-primary", active: activeTab === "hub", dot: !seenDots.has("hub_today_multisession"), onClick: () => { markDotSeen("hub_today_multisession"); handleTabChange("hub"); } },
             { key: "traen", label: t("train") || "Træn", icon: Zap, iconClassName: "text-tab-plan", active: activeTab === "plan", onClick: () => handleTabChange("plan") },
             { key: "kalender", label: t("seasonCalendar") || "Kalender", icon: CalendarRange, iconClassName: "text-tab-progress", active: activeTab === "calendar", onClick: () => handleTabChange("calendar") },
             { key: "health", label: t("healthNav") || "Sundhed", icon: Heart, iconClassName: "text-red-500 fill-red-500", active: false, onClick: () => navigate("/health") },
