@@ -22116,7 +22116,10 @@ const translations = {
     changelogEntry177: "Bunnmenyen vises nå også på nettbrett og web — ikke bare mobil. Spanske oversettelser fullført. Rettet manglende oversettelser i menyen 'Legg til utøver'.",
     changelog_2026_07_22: "22. juli 2026",
     changelogEntry179: "Fjernet det individuelle \"Trener\"-abonnementet fra prissiden. SportsTalent selges til klubber og organisasjoner; utøvere og trenere får tilgang gjennom klubben sin. Eksisterende abonnenter beholder tilgangen.",
+    changelog_2026_07_26: "26. juli 2026",
+    changelogEntry181: "Ny løpeoppfølging: aktiver et løpeprogram fra biblioteket og følg planlagte mot faktiske kilometer per uke under Fremgang – med rask registrering av løp.",
     changelog_2026_07_23: "23. juli 2026",
+
     changelogEntry180: "Utøvere registrerer seg nå kun via invitasjonslenke fra treneren sin. /auth er en dedikert innloggingsside.",
     changelogEntry178: "Nye utøvere blir nå med via klubbens invitasjonskode. Individuelt utøver-abonnement fjernet — SportsTalent er en tjeneste for klubber og organisasjoner. Eksisterende utøvere uten klubb beholder tilgangen.",
   },
