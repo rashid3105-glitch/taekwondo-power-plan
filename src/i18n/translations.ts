@@ -7474,7 +7474,7 @@ const translations = {
     changelog_2026_07_22: "22. juli 2026",
     changelogEntry179: "Fjernet det individuelle \"Træner\"-abonnement fra prissiden. SportsTalent sælges til klubber og organisationer; atleter og trænere får adgang gennem deres klub. Eksisterende abonnenter beholder deres adgang.",
     changelog_2026_07_26: "26. juli 2026",
-    changelogEntry182: ""I dag"-kortet kan nu skifte mellem din egen plan og klubbens sæsonplan.",
+    changelogEntry182: "\"I dag\"-kortet kan nu skifte mellem din egen plan og klubbens sæsonplan.",
     changelogEntry181: "Ny løbeopfølgning: aktivér et løbeprogram fra biblioteket og følg planlagte mod faktiske kilometer pr. uge under Fremgang – med hurtig registrering af løb.",
     changelog_2026_07_23: "23. juli 2026",
 
@@ -11167,7 +11167,7 @@ const translations = {
     changelog_2026_07_22: "22 juli 2026",
     changelogEntry179: "Tog bort det individuella \"Tränare\"-abonnemanget från prissidan. SportsTalent säljs till klubbar och organisationer; atleter och tränare får åtkomst via sin klubb. Befintliga abonnenter behåller sin åtkomst.",
     changelog_2026_07_26: "26 juli 2026",
-    changelogEntry182: "Kortet "Idag" kan nu växla mellan din egen plan och klubbens säsongsplan.",
+    changelogEntry182: "Kortet \"Idag\" kan nu växla mellan din egen plan och klubbens säsongsplan.",
     changelogEntry181: "Ny löpuppföljning: aktivera ett löpprogram från biblioteket och följ planerade mot faktiska kilometer per vecka under Framsteg – med snabb registrering av löprundor.",
     changelog_2026_07_23: "23 juli 2026",
 
@@ -18453,7 +18453,7 @@ const translations = {
     changelog_2026_07_22: "22 يوليو 2026",
     changelogEntry179: "تمت إزالة اشتراك \"المدرب\" الفردي من صفحة الأسعار. يُباع SportsTalent للأندية والمنظمات؛ ويحصل الرياضيون والمدربون على الوصول عبر ناديهم. يحتفظ المشتركون الحاليون بوصولهم.",
     changelog_2026_07_26: "26 يوليو 2026",
-    changelogEntry182: "يمكن الآن التبديل في بطاقة "اليوم" بين خطتك الخاصة وخطة موسم النادي.",
+    changelogEntry182: "يمكن الآن التبديل في بطاقة \"اليوم\" بين خطتك الخاصة وخطة موسم النادي.",
     changelogEntry181: "متابعة جديدة للجري: فعّل برنامج جري من المكتبة وتابع في صفحة التقدّم الكيلومترات المخططة مقابل الفعلية أسبوعيًا مع تسجيل سريع للجري.",
     changelog_2026_07_23: "23 يوليو 2026",
 
@@ -22149,7 +22149,7 @@ const translations = {
     changelog_2026_07_22: "22. juli 2026",
     changelogEntry179: "Fjernet det individuelle \"Trener\"-abonnementet fra prissiden. SportsTalent selges til klubber og organisasjoner; utøvere og trenere får tilgang gjennom klubben sin. Eksisterende abonnenter beholder tilgangen.",
     changelog_2026_07_26: "26. juli 2026",
-    changelogEntry182: ""I dag"-kortet kan nå veksle mellom din egen plan og klubbens sesongplan.",
+    changelogEntry182: "\"I dag\"-kortet kan nå veksle mellom din egen plan og klubbens sesongplan.",
     changelogEntry181: "Ny løpeoppfølging: aktiver et løpeprogram fra biblioteket og følg planlagte mot faktiske kilometer per uke under Fremgang – med rask registrering av løp.",
     changelog_2026_07_23: "23. juli 2026",
 
@@ -23862,7 +23862,7 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   authCoachCtaButton: "Crear cuenta de entrenador",
   authAthleteHint: "¿Eres atleta? Accedes mediante el enlace de invitación de tu entrenador.",
   changelog_2026_07_26: "26 de julio de 2026",
-  changelogEntry182: "La tarjeta "Hoy" ahora permite alternar entre tu propio plan y el plan de temporada del club.",
+  changelogEntry182: "La tarjeta \"Hoy\" ahora permite alternar entre tu propio plan y el plan de temporada del club.",
   changelogEntry181: "Nuevo seguimiento de carrera: activa un programa de carrera desde la biblioteca y sigue en Progreso los kilómetros planificados frente a los reales por semana, con registro rápido de carreras.",
   changelog_2026_07_23: "23 de julio de 2026",
 
