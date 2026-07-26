@@ -110,7 +110,7 @@ export default function ChangePassword() {
             </div>
             <div className="space-y-2">
               <Label className="text-xs uppercase tracking-wider text-white/65">
-                {t("confirmNewPassword" as any) || "Bekræft ny adgangskode"}
+                {t("confirmNewPassword" as any)}
               </Label>
               <Input
                 type="password"
