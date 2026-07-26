@@ -3,8 +3,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Card } from "@/components/ui/card";
 import { Footprints } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import {
+  LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
+  ComposedChart, Bar, Legend,
+} from "recharts";
 import { cn } from "@/lib/utils";
+import {
+  buildWeekSeries, fetchActiveEnrollment, fetchRunLogs, programWeekIndex, toISODate, weekStart,
+  type RunningEnrollment, type WeekPoint,
+} from "@/lib/runningProgram";
 
 interface RunEntry {
   entry_date: string;
@@ -31,6 +38,8 @@ export function AthleteRunningProgress({ athleteId }: Props) {
   const [entries, setEntries] = useState<RunEntry[]>([]);
   const [metric, setMetric] = useState<Metric>("distance");
   const [loading, setLoading] = useState(true);
+  const [enrollment, setEnrollment] = useState<RunningEnrollment | null>(null);
+  const [series, setSeries] = useState<WeekPoint[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -44,11 +53,23 @@ export function AthleteRunningProgress({ athleteId }: Props) {
         .order("entry_date", { ascending: true })
         .limit(60);
       setEntries(((data ?? []) as any[]).filter((e) => e.run_distance_km > 0));
+
+      const enr = await fetchActiveEnrollment(athleteId);
+      setEnrollment(enr);
+      if (enr) {
+        const logs = await fetchRunLogs(athleteId, enr.start_date);
+        setSeries(buildWeekSeries(logs, enr, 12, "U"));
+      } else {
+        const back = new Date();
+        back.setDate(back.getDate() - 12 * 7);
+        const logs = await fetchRunLogs(athleteId, toISODate(weekStart(back)));
+        setSeries(buildWeekSeries(logs, null, 12, "U"));
+      }
       setLoading(false);
     })();
   }, [athleteId]);
 
-  if (loading || entries.length === 0) return null;
+  if (loading || (entries.length === 0 && !enrollment)) return null;
 
   const totalDistance = entries.reduce((a, e) => a + (e.run_distance_km ?? 0), 0);
   const totalCalories = entries.reduce((a, e) => a + (e.run_calories ?? 0), 0);
@@ -74,9 +95,14 @@ export function AthleteRunningProgress({ athleteId }: Props) {
 
   return (
     <Card className="p-4 space-y-4">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-wrap">
         <Footprints className="h-4 w-4 text-emerald-500" />
         <h3 className="text-sm font-semibold">{t("runningProgress") || "Løbefremgang"}</h3>
+        {enrollment && (
+          <span className="text-[10px] font-bold uppercase tracking-wide rounded-full px-2 py-0.5 bg-emerald-500/15 text-emerald-600">
+            {enrollment.goal_km} km · {t("runningWeekLabel")} {programWeekIndex(enrollment.start_date, enrollment.weeks)}/{enrollment.weeks}
+          </span>
+        )}
         <span className="text-xs text-muted-foreground ml-auto">{entries.length} {t("runTotalRuns") || "løb"}</span>
       </div>
 
@@ -95,6 +121,28 @@ export function AthleteRunningProgress({ athleteId }: Props) {
           <div className="text-[10px] text-muted-foreground">{t("runTotalCalories") || "Kalorier"}</div>
         </div>
       </div>
+
+      {/* Planned vs actual per week */}
+      {series.length > 0 && (
+        <div className="h-44">
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart data={series} margin={{ top: 4, right: 4, left: -22, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <XAxis dataKey="label" tick={{ fontSize: 9 }} tickLine={false} axisLine={false} interval="preserveStartEnd" />
+              <YAxis tick={{ fontSize: 9 }} tickLine={false} axisLine={false} />
+              <Tooltip
+                contentStyle={{ fontSize: 11, background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }}
+                formatter={(v: number, name: string) => [`${v} km`, name]}
+              />
+              <Legend wrapperStyle={{ fontSize: 10 }} />
+              <Bar dataKey="actual" name={t("runProgActual")} fill="#10b981" radius={[4, 4, 0, 0]} maxBarSize={20} />
+              {enrollment && (
+                <Line type="monotone" dataKey="planned" name={t("runProgPlanned")} stroke="#0ea5e9" strokeWidth={2} strokeDasharray="4 3" dot={{ r: 2 }} connectNulls />
+              )}
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+      )}
 
       {/* Metric toggle */}
       <div className="flex gap-1.5">
