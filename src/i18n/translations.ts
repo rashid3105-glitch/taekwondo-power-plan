@@ -11152,7 +11152,10 @@ const translations = {
     changelogEntry177: "Bottennavigeringen visas nu på surfplatta och webb — inte bara mobil. Spanska översättningar färdigställda. Åtgärdat oöversatta etiketter i menyn 'Lägg till atlet'.",
     changelog_2026_07_22: "22 juli 2026",
     changelogEntry179: "Tog bort det individuella \"Tränare\"-abonnemanget från prissidan. SportsTalent säljs till klubbar och organisationer; atleter och tränare får åtkomst via sin klubb. Befintliga abonnenter behåller sin åtkomst.",
+    changelog_2026_07_26: "26 juli 2026",
+    changelogEntry181: "Ny löpuppföljning: aktivera ett löpprogram från biblioteket och följ planerade mot faktiska kilometer per vecka under Framsteg – med snabb registrering av löprundor.",
     changelog_2026_07_23: "23 juli 2026",
+
     changelogEntry180: "Atleter registreras nu endast via inbjudningslänk från sin tränare. /auth är en dedikerad inloggningssida.",
     changelogEntry178: "Nya atleter ansluter nu via sin klubbs inbjudningskod. Individuellt atlet-abonnemang borttaget — SportsTalent är en tjänst för klubbar och organisationer. Befintliga atleter utan klubb behåller sin åtkomst.",
   },
