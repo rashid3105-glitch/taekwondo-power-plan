@@ -101,8 +101,9 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
         const found = PHASE_FOCUS_TAGS.find((f) => f.value === v);
         return found ? t(found.labelKey as any) : v;
       });
+    const dow = (new Date(iso + "T00:00:00").getDay() + 6) % 7; // 0 = Monday
     const note = (clubSeason.template as any[]).find(
-      (d) => d.day_of_week === new Date(iso + "T00:00:00").getDay() === 0 ? 6 : ((new Date(iso + "T00:00:00").getDay() + 6) % 7),
+      (d) => d.day_of_week === dow && d.session_type === resolved.type,
     )?.notes as string | undefined;
     return {
       typeLabel: t(sessionLabelKey(resolved.type) as any),
