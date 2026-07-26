@@ -1,11 +1,18 @@
-import { useMemo, useState } from "react";
-import { ChevronDown, ChevronUp, Footprints, Sparkles, Trophy } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { ChevronDown, ChevronUp, Footprints, Sparkles, Trophy, Play, Check } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { TranslationKey } from "@/i18n/translations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import {
+  fetchActiveEnrollment, programWeekIndex, startProgram, stopProgram,
+  type RunningEnrollment,
+} from "@/lib/runningProgram";
 import { RUNNING_PROGRAMS, buildCustomProgram, type RunLevel, type RunProgram } from "@/data/runningPrograms";
+
 
 const LEVEL_KEY: Record<RunLevel, TranslationKey> = {
   beginner: "runningLevelBeginner",
