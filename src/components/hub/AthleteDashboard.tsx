@@ -330,7 +330,7 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
               >
                 <UserIcon className="h-3 w-3" /> {t("hubOwnBtn")}
               </button>
-              {todaySession && showMine && (
+              {todayPlan && !todayPlan.isRest && showMine && (
                 <span
                   className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-lg"
                   style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
