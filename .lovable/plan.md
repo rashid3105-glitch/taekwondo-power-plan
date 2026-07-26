@@ -1,19 +1,20 @@
-## Mål
-Give dig et brugbart login til demokontoen "Demo Athlete – Emma" (bekræftet i databasen, `is_demo = true`, godkendt, tilknyttet demoklub, atletkode TKD-634802).
+## Hvad jeg har tjekket (læsning, ingen ændringer)
 
-## Vigtigt om adgangskoder
-Adgangskoder gemmes kun som hash og kan ikke læses ud. Den eksisterende kode kan derfor ikke findes — den skal sættes til en ny, kendt værdi.
+- Kontoen findes: `eliejbadr@gmail.com`, oprettet 18. marts 2026, e-mail bekræftet, sidste login 18. marts 2026.
+- Adressen er **ikke** på spærrelisten (kun én anden adresse er blokeret pga. bounce).
+- E-mail-domænet `notify.sportstalent.dk` er verificeret, og køen er sund (13 sendte de sidste 7 dage).
+- **Årsagen:** projektet har ingen auth-mailskabeloner opsat. Der er aldrig logget en eneste auth-mail (nulstilling, bekræftelse, magisk link) i afsendelsesloggen — kun app-mails (aktivitetsnotifikationer, samtykke). Nulstillingsmails sendes derfor via standardafsenderen udenom vores egen mailinfrastruktur, uden logning og uden retry, hvilket typisk ender i spam eller slet ikke leveres.
 
 ## Hvad jeg gør
-1. Slår Emmas e-mail op på hendes bruger-id via admin-API'et (auth-tabellen kan ikke læses direkte).
-2. Sætter en ny adgangskode på kontoen og bekræfter e-mailen, så login virker med det samme.
-3. Verificerer at login faktisk lykkes med de nye oplysninger.
-4. Rydder op i det midlertidige værktøj, der bruges til opdateringen.
-5. Giver dig e-mail + adgangskode i chatten.
 
-## Valg du kan tage
-Hvis du vil have en bestemt adgangskode (fx til App Review), så skriv den — ellers bruger jeg `DemoEmma2026!`.
+1. Sætter adgangskoden på kontoen til `test1234!` via en midlertidig admin-funktion (adgangskoder kan ikke læses, kun overskrives), og bekræfter at login virker.
+2. Rydder den midlertidige funktion op bagefter.
+
+## Anbefaling (kan tages i næste runde, ikke med her)
+
+Sæt auth-mailskabeloner op på `notify.sportstalent.dk`, så nulstilling af adgangskode, bekræftelse og magiske links sendes gennem vores egen infrastruktur — med logning, retry og korrekt afsender. Uden det vil "glemt adgangskode" fortsætte med at fejle for andre brugere.
 
 ## Teknisk
-- Midlertidig edge function med service-role, der kalder `auth.admin.getUserById` + `auth.admin.updateUserById` for `b430750e-7ad9-4f36-a2c3-326670ff86ea`.
-- Ingen ændringer i skema, RLS, native, push eller betaling.
+
+- Midlertidig edge function med service-role, som kalder `auth.admin.updateUserById` for bruger-id `874b624c-352a-425a-b144-1dfb9e729597`.
+- Ingen ændringer i skema, RLS, frontend, native, push eller betaling.
