@@ -2627,6 +2627,54 @@ export type Database = {
           },
         ]
       }
+      running_program_enrollments: {
+        Row: {
+          club_id: string | null
+          created_at: string
+          goal_km: number
+          id: string
+          is_active: boolean
+          level: string
+          per_week: number
+          plan: Json
+          program_id: string
+          start_date: string
+          updated_at: string
+          user_id: string
+          weeks: number
+        }
+        Insert: {
+          club_id?: string | null
+          created_at?: string
+          goal_km: number
+          id?: string
+          is_active?: boolean
+          level?: string
+          per_week?: number
+          plan?: Json
+          program_id: string
+          start_date?: string
+          updated_at?: string
+          user_id: string
+          weeks: number
+        }
+        Update: {
+          club_id?: string | null
+          created_at?: string
+          goal_km?: number
+          id?: string
+          is_active?: boolean
+          level?: string
+          per_week?: number
+          plan?: Json
+          program_id?: string
+          start_date?: string
+          updated_at?: string
+          user_id?: string
+          weeks?: number
+        }
+        Relationships: []
+      }
       season_plans: {
         Row: {
           club_id: string | null

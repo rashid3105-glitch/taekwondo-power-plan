@@ -1,11 +1,18 @@
-import { useMemo, useState } from "react";
-import { ChevronDown, ChevronUp, Footprints, Sparkles, Trophy } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { ChevronDown, ChevronUp, Footprints, Sparkles, Trophy, Play, Check } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { TranslationKey } from "@/i18n/translations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import {
+  fetchActiveEnrollment, programWeekIndex, startProgram, stopProgram,
+  type RunningEnrollment,
+} from "@/lib/runningProgram";
 import { RUNNING_PROGRAMS, buildCustomProgram, type RunLevel, type RunProgram } from "@/data/runningPrograms";
+
 
 const LEVEL_KEY: Record<RunLevel, TranslationKey> = {
   beginner: "runningLevelBeginner",
@@ -34,6 +41,44 @@ export function RunningLibrary() {
   const [currentKm, setCurrentKm] = useState("3");
 
   const programs = useMemo(() => RUNNING_PROGRAMS, []);
+  const { toast } = useToast();
+  const [enrollment, setEnrollment] = useState<RunningEnrollment | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  async function loadEnrollment() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    setEnrollment(await fetchActiveEnrollment(user.id));
+  }
+
+  useEffect(() => { void loadEnrollment(); }, []);
+
+  async function handleStart(p: RunProgram) {
+    setBusyId(p.id);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("not_authenticated");
+      await startProgram(user.id, p);
+      await loadEnrollment();
+      toast({ title: t("runProgStarted") });
+    } catch (e: any) {
+      toast({ title: t("error"), description: e.message, variant: "destructive" });
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function handleStop() {
+    if (!enrollment) return;
+    setBusyId(enrollment.program_id);
+    try {
+      await stopProgram(enrollment.id);
+      await loadEnrollment();
+      toast({ title: t("runProgStopped") });
+    } finally {
+      setBusyId(null);
+    }
+  }
 
   function handleBuild() {
     const g = parseFloat(goalKm);
@@ -47,6 +92,7 @@ export function RunningLibrary() {
 
   const displayed: RunProgram[] = custom ? [...programs, custom] : programs;
 
+
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">{t("runningIntro")}</p>
@@ -54,8 +100,9 @@ export function RunningLibrary() {
       <div className="space-y-3">
         {displayed.map((p) => {
           const isOpen = openId === p.id;
+          const isActive = enrollment?.program_id === p.id;
           return (
-            <div key={p.id} className="rounded-xl border border-border bg-card overflow-hidden">
+            <div key={p.id} className={`rounded-xl border bg-card overflow-hidden ${isActive ? "border-emerald-500/50" : "border-border"}`}>
               <button
                 onClick={() => setOpenId(isOpen ? null : p.id)}
                 className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary/40 transition-colors text-left"
@@ -73,6 +120,12 @@ export function RunningLibrary() {
                     <span className={`inline-flex items-center px-1.5 rounded border text-[10px] font-semibold ${LEVEL_STYLE[p.level]}`}>
                       {t(LEVEL_KEY[p.level])}
                     </span>
+                    {isActive && enrollment && (
+                      <span className="inline-flex items-center gap-1 px-1.5 rounded border border-emerald-500/40 bg-emerald-500/15 text-emerald-600 text-[10px] font-semibold">
+                        <Check className="h-3 w-3" />
+                        {t("runProgActive")} · {t("runningWeekLabel")} {programWeekIndex(enrollment.start_date, enrollment.weeks)}/{enrollment.weeks}
+                      </span>
+                    )}
                   </div>
                 </div>
                 {isOpen ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
@@ -81,6 +134,17 @@ export function RunningLibrary() {
               {isOpen && (
                 <div className="px-4 pb-4 pt-1 space-y-3 animate-slide-up">
                   <p className="text-xs text-card-foreground/80 leading-relaxed">{p.overview}</p>
+                  {isActive ? (
+                    <Button size="sm" variant="outline" className="w-full" disabled={busyId === p.id} onClick={handleStop}>
+                      {t("runProgStop")}
+                    </Button>
+                  ) : (
+                    <Button size="sm" className="w-full" disabled={busyId === p.id} onClick={() => handleStart(p)}>
+                      <Play className="h-3.5 w-3.5 mr-1" />
+                      {enrollment ? t("runProgSwitch") : t("runProgStart")}
+                    </Button>
+                  )}
+
                   <div className="space-y-2">
                     {p.plan.map((w) => (
                       <div key={w.week} className="rounded-lg border border-border bg-background/50 p-3">
