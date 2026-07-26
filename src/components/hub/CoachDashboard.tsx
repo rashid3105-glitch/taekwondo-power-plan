@@ -5,6 +5,7 @@ import { useRole } from "@/contexts/RoleContext";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { Users, AlertTriangle, Dumbbell, FileText, Send, ChevronRight, CalendarDays, CheckCircle } from "lucide-react";
 import { EmptyState } from "./AthleteDashboard";
+import { CoachSetupChecklist } from "@/components/coach/CoachSetupChecklist";
 
 
 interface CoachStats {
