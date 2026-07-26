@@ -14789,7 +14789,10 @@ const translations = {
     changelogEntry177: "Untere Navigationsleiste erscheint nun auf Tablet und Web — nicht nur Mobil. Spanische Übersetzungen ergänzt. Fehlende Beschriftungen im Menü 'Athlet hinzufügen' korrigiert.",
     changelog_2026_07_22: "22. Juli 2026",
     changelogEntry179: "Individuelles \"Trainer\"-Abo von der Preisseite entfernt. SportsTalent wird an Vereine und Organisationen verkauft; Athleten und Trainer erhalten Zugang über ihren Verein. Bestehende Abonnenten behalten ihren Zugang.",
+    changelog_2026_07_26: "26. Juli 2026",
+    changelogEntry181: "Neues Lauf-Tracking: Aktiviere ein Laufprogramm aus der Bibliothek und verfolge unter Fortschritt geplante gegenüber tatsächlichen Kilometern pro Woche – inklusive schneller Lauferfassung.",
     changelog_2026_07_23: "23. Juli 2026",
+
     changelogEntry180: "Athleten registrieren sich jetzt ausschließlich über den Einladungslink ihres Trainers. /auth ist eine reine Anmeldeseite.",
     changelogEntry178: "Neue Athleten treten jetzt über den Einladungscode ihres Vereins bei. Individuelles Athleten-Abonnement entfernt — SportsTalent ist ein Dienst für Vereine und Organisationen. Bestehende Athleten ohne Verein behalten ihren Zugang.",
   },
