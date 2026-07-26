@@ -1,56 +1,55 @@
-## Goal
+## Mål
 
-Ask new coaches for their club name during signup. If a club with that name already exists, add the coach to that club. Otherwise create a new club and give the coach 5 athlete invitation slots. remember to correct this in all places where you can sign up as a coach
+Man kan vælge ét aktivt løbeprogram fra biblioteket, registrere sine løb (fra dagbogen eller direkte fra Fremgang), og følge sin progression i en graf: **planlagt km pr. uge vs. faktisk løbet km pr. uge**.
 
-## Changes
+## 1. Aktivt løbeprogram (database)
 
-### 1. `src/pages/SignupCoach.tsx` — add club name to the first step
+Ny tabel `running_program_enrollments`:
+- `user_id`, `program_id` (fx `run-10k` eller `custom-7km-8w`)
+- `goal_km`, `weeks`, `per_week`, `level`
+- `plan` (JSON – hele ugeplanen, så custom-programmer også kan gemmes og grafens "planlagt" er stabil)
+- `start_date` (default i dag), `is_active`
+- Adgangsregler: hver bruger kan kun se og redigere sine egne tilmeldinger; trænere kan læse for deres egne atleter (samme mønster som resten af appen).
+- Kun ét aktivt program ad gangen — nyt valg deaktiverer det gamle.
 
-- Add a **Klubnavn** input on the account step, positioned above the email field.
-- Live-lookup (debounced) against existing clubs by case-insensitive name match. When a match is found, show a subtle hint under the field: *"Denne klub findes allerede — du bliver tilføjet som træner."*
-- If no match: *"Ny klub — den oprettes med 5 pladser til atleter."*
-- Pass `club_name` in the `signUp` `options.data` so it survives email verification, and also into the existing `bootstrap-coach-trial` call.
-- Since the club step now runs before verify, remove the standalone `"club"` step from the flow. Keep the athlete-count "band" question as an optional light step (or drop entirely — see Question below).
+## 2. Biblioteket — "Start dette program"
 
-### 2. `supabase/functions/bootstrap-coach-trial/index.ts` — join-or-create logic
+I `RunningLibrary.tsx` får hvert program (og det custom-genererede) en **Start program**-knap.
+- Vælger man et nyt, spørges der om bekræftelse hvis der allerede er et aktivt.
+- Det aktive program markeres med et badge ("Aktivt – uge 3 af 10") og kan stoppes igen.
 
-- Trim + normalize the incoming `club_name`.
-- Look up an existing club by case-insensitive name (`ilike` exact match on `name`).
-- **If found:** attach the coach to that club (`profiles.club_id = existing.id`) and insert a `club_memberships` row with role `coach`. Do **not** create a new club.
-- **If not found:** create a new club with `max_athletes: 5` (currently hardcoded to 100) and attach the coach as before.
-- Return `{ code, club_id, joined_existing: boolean }` so the UI can show the right confirmation.
+## 3. Registrering af løb
 
-### 3. Invite step copy
+Løb ender altid samme sted: `diary_entries` med type "løb" (distance, tid, pace, kalorier) — præcis som i dag.
+- **Dagbogen**: uændret.
+- **Fremgang**: ny "Registrér løb"-knap i løbekortet, som åbner en lille dialog (dato, distance, tid, evt. kalorier) og gemmer samme sted. Pace beregnes automatisk ud fra distance/tid.
 
-- When the coach joined an existing club, show: *"Du er nu træner i klubnavn. Del linket med dine atleter."*
-- When a new club was created, show: *"Din klub er oprettet med 5 pladser til atleter."*
+## 4. Progressionsgraf på Fremgang
 
-### 4. Translations
+`RunningStatsCard` udbygges til et løbepanel:
 
-Add keys in all 7 languages (`da, en, sv, de, ar, no, es`) for:
+**Hvis der er et aktivt program:**
+- Header: programnavn, "Uge X af Y", fremdriftsbjælke.
+- **Kombineret graf pr. uge**: søjler = faktisk løbet km, linje = programmets planlagte km. Uger uden data vises tomme, så man tydeligt ser efterslæb/overskud.
+- Nøgletal: km denne uge vs. planlagt, samlet gennemførsel i %, længste tur, bedste pace.
+- Under grafen: ugens planlagte sessioner (Let / Tempo / Lang tur) med afkrydsning af hvor mange løbeture der er registreret i indeværende uge.
 
-- `signupClubNameLabel`, `signupClubNamePlaceholder`
-- `signupClubExistsHint`, `signupClubNewHint`
-- `signupJoinedExistingClub`, `signupNewClubCreated`
+**Uden aktivt program:**
+- Samme graf, men kun faktisk km pr. uge (sidste 12 uger) + link til biblioteket: "Vælg et løbeprogram".
+- Metrik-skifter: Distance / Pace / Kalorier (samme mønster som trænerens løbepanel).
 
-### 5. Changelog
+## 5. Træner
 
-Register `changelogEntry181` (v1.4.5) for 2026-07-23 in `src/pages/Help.tsx` and `src/i18n/translations.ts`.
+Trænerens `AthleteRunningProgress` får samme "planlagt vs. faktisk"-visning når atleten har et aktivt program, så træneren kan se om atleten følger sit løbeprogram.
 
-## Technical notes
+## 6. Oversættelser og changelog
 
-- Club matching uses exact case-insensitive name. No fuzzy matching to avoid accidental joins. Two clubs with the same real-world name in different cities will collide — accepted for MVP; coaches can request a rename later.
-- `clubs.max_athletes = 5` for new clubs created via signup. Existing clubs keep their current cap.
-- No new tables or RLS changes; `club_memberships` already exists.
-- Client-side club lookup uses the existing anon-readable `clubs.name` (already used elsewhere for club switcher search). If RLS blocks anon read, the lookup falls back to a lightweight `check-club-exists` edge function.
+Alle nye tekster tilføjes i alle 7 sprog i `src/i18n/translations.ts`, og der registreres en ny changelog-post i `Help.tsx`.
 
-## One thing to confirm
+## Teknisk
 
-Right now the flow after account creation is: verify email → **club step (name + athlete band)** → invite. Moving club name to the account form makes the athlete band question the only reason to keep the middle step.
-
-Should we:
-
-- **(A)** Drop the athlete-band question entirely and go straight from verify → invite, or
-- **(B)** Keep a small "Antal atleter du træner" step after verify?
-
-I'll default to **(A)** (simpler flow) unless you say otherwise.
+- Ny migration med tabel, grants, RLS og `updated_at`-trigger.
+- Ugeberegning: uge-index = antal hele uger siden `start_date`; ugestart mandag, konsistent med resten af appen.
+- Planlagt km pr. uge tages fra `plan[i].totalKm` i den gemte JSON.
+- Graf via recharts `ComposedChart` (Bar + Line), som allerede bruges i projektet.
+- Ingen ændringer i native, push, betaling, HealthKit eller Health Connect.
