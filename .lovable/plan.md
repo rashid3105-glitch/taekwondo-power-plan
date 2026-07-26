@@ -1,55 +1,19 @@
 ## Mål
+Give dig et brugbart login til demokontoen "Demo Athlete – Emma" (bekræftet i databasen, `is_demo = true`, godkendt, tilknyttet demoklub, atletkode TKD-634802).
 
-Man kan vælge ét aktivt løbeprogram fra biblioteket, registrere sine løb (fra dagbogen eller direkte fra Fremgang), og følge sin progression i en graf: **planlagt km pr. uge vs. faktisk løbet km pr. uge**.
+## Vigtigt om adgangskoder
+Adgangskoder gemmes kun som hash og kan ikke læses ud. Den eksisterende kode kan derfor ikke findes — den skal sættes til en ny, kendt værdi.
 
-## 1. Aktivt løbeprogram (database)
+## Hvad jeg gør
+1. Slår Emmas e-mail op på hendes bruger-id via admin-API'et (auth-tabellen kan ikke læses direkte).
+2. Sætter en ny adgangskode på kontoen og bekræfter e-mailen, så login virker med det samme.
+3. Verificerer at login faktisk lykkes med de nye oplysninger.
+4. Rydder op i det midlertidige værktøj, der bruges til opdateringen.
+5. Giver dig e-mail + adgangskode i chatten.
 
-Ny tabel `running_program_enrollments`:
-- `user_id`, `program_id` (fx `run-10k` eller `custom-7km-8w`)
-- `goal_km`, `weeks`, `per_week`, `level`
-- `plan` (JSON – hele ugeplanen, så custom-programmer også kan gemmes og grafens "planlagt" er stabil)
-- `start_date` (default i dag), `is_active`
-- Adgangsregler: hver bruger kan kun se og redigere sine egne tilmeldinger; trænere kan læse for deres egne atleter (samme mønster som resten af appen).
-- Kun ét aktivt program ad gangen — nyt valg deaktiverer det gamle.
-
-## 2. Biblioteket — "Start dette program"
-
-I `RunningLibrary.tsx` får hvert program (og det custom-genererede) en **Start program**-knap.
-- Vælger man et nyt, spørges der om bekræftelse hvis der allerede er et aktivt.
-- Det aktive program markeres med et badge ("Aktivt – uge 3 af 10") og kan stoppes igen.
-
-## 3. Registrering af løb
-
-Løb ender altid samme sted: `diary_entries` med type "løb" (distance, tid, pace, kalorier) — præcis som i dag.
-- **Dagbogen**: uændret.
-- **Fremgang**: ny "Registrér løb"-knap i løbekortet, som åbner en lille dialog (dato, distance, tid, evt. kalorier) og gemmer samme sted. Pace beregnes automatisk ud fra distance/tid.
-
-## 4. Progressionsgraf på Fremgang
-
-`RunningStatsCard` udbygges til et løbepanel:
-
-**Hvis der er et aktivt program:**
-- Header: programnavn, "Uge X af Y", fremdriftsbjælke.
-- **Kombineret graf pr. uge**: søjler = faktisk løbet km, linje = programmets planlagte km. Uger uden data vises tomme, så man tydeligt ser efterslæb/overskud.
-- Nøgletal: km denne uge vs. planlagt, samlet gennemførsel i %, længste tur, bedste pace.
-- Under grafen: ugens planlagte sessioner (Let / Tempo / Lang tur) med afkrydsning af hvor mange løbeture der er registreret i indeværende uge.
-
-**Uden aktivt program:**
-- Samme graf, men kun faktisk km pr. uge (sidste 12 uger) + link til biblioteket: "Vælg et løbeprogram".
-- Metrik-skifter: Distance / Pace / Kalorier (samme mønster som trænerens løbepanel).
-
-## 5. Træner
-
-Trænerens `AthleteRunningProgress` får samme "planlagt vs. faktisk"-visning når atleten har et aktivt program, så træneren kan se om atleten følger sit løbeprogram.
-
-## 6. Oversættelser og changelog
-
-Alle nye tekster tilføjes i alle 7 sprog i `src/i18n/translations.ts`, og der registreres en ny changelog-post i `Help.tsx`.
+## Valg du kan tage
+Hvis du vil have en bestemt adgangskode (fx til App Review), så skriv den — ellers bruger jeg `DemoEmma2026!`.
 
 ## Teknisk
-
-- Ny migration med tabel, grants, RLS og `updated_at`-trigger.
-- Ugeberegning: uge-index = antal hele uger siden `start_date`; ugestart mandag, konsistent med resten af appen.
-- Planlagt km pr. uge tages fra `plan[i].totalKm` i den gemte JSON.
-- Graf via recharts `ComposedChart` (Bar + Line), som allerede bruges i projektet.
-- Ingen ændringer i native, push, betaling, HealthKit eller Health Connect.
+- Midlertidig edge function med service-role, der kalder `auth.admin.getUserById` + `auth.admin.updateUserById` for `b430750e-7ad9-4f36-a2c3-326670ff86ea`.
+- Ingen ændringer i skema, RLS, native, push eller betaling.
