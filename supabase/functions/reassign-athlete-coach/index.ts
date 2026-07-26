@@ -113,7 +113,7 @@ Deno.serve(async (req) => {
       }
       // Restrict newCoachId to an active coach/admin in this club.
       if (newCoachId) {
-        const [{ data: targetRoles }, { data: targetMembership }] = await Promise.all([
+        const [{ data: targetRoles }, { data: targetMembership }, { data: targetProfile }] = await Promise.all([
           admin.from("user_roles").select("role").eq("user_id", newCoachId),
           admin
             .from("club_memberships" as any)
@@ -121,12 +121,16 @@ Deno.serve(async (req) => {
             .eq("user_id", newCoachId)
             .eq("club_id", clubId)
             .maybeSingle(),
+          admin.from("profiles").select("club_id").eq("user_id", newCoachId).maybeSingle(),
         ]);
         const targetHasCoachRole = (targetRoles ?? []).some((r: any) => r.role === "coach" || r.role === "admin");
-        const targetIsClubCoach = (targetMembership as any)?.status === "active"
-          && ["coach", "admin"].includes((targetMembership as any)?.role_in_club);
+        const targetIsClubCoach = ((targetMembership as any)?.status === "active"
+          && ["coach", "admin"].includes((targetMembership as any)?.role_in_club))
+          // Fallback: coach whose only club anchor is profiles.club_id (no membership row yet).
+          || (targetProfile as any)?.club_id === clubId;
         if (!targetHasCoachRole || !targetIsClubCoach) return json({ error: "target coach must be in same club" }, 400);
       }
+
       await admin.from("coach_athletes").delete().eq("athlete_id", athleteId).eq("club_id", clubId);
       if (newCoachId) {
         const { error } = await admin
