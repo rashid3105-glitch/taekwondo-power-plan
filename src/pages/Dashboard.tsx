@@ -974,7 +974,7 @@ export default function Dashboard() {
             </div>
 
             {/* Athlete dashboard (coaches are redirected to /coach) */}
-            <AthleteDashboard />
+            <AthleteDashboard clubSeason={clubSeason} />
 
 
             {/* 1. Today's session hero — hidden behind feature flag (erstattet af AthleteDashboard) */}

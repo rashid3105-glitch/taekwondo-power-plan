@@ -12,6 +12,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { SelfTrainingLogDialog } from "@/components/SelfTrainingLogDialog";
+import {
+  resolveSessionForDate,
+  sessionLabelKey,
+  seasonWeekNumber,
+  phaseForWeek,
+  PHASE_FOCUS_TAGS,
+} from "@/lib/seasonCalendar";
 
 interface TodaySession {
   weekdayLabel: string;
@@ -57,7 +64,13 @@ function weekdayLong(locale: string, d: Date = new Date()) {
  * Self-contained athlete home dashboard.
  * Rendered only when role === "athlete".
  */
-export function AthleteDashboard() {
+interface ClubSeasonData {
+  plan: any;
+  phases: any[];
+  template: any[];
+}
+
+export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData | null }) {
   const { role: activeRole } = useRole();
   const navigate = useNavigate();
   const { t, locale } = useLanguage();
@@ -71,6 +84,38 @@ export function AthleteDashboard() {
   const [selfLogOpen, setSelfLogOpen] = useState(false);
   const [now, setNow] = useState(() => new Date());
   const [isLoading, setIsLoading] = useState(true);
+  const [planView, setPlanView] = useState<"mine" | "club">("mine");
+
+  // Today's session derived from the club season plan (visibility already
+  // filtered upstream in Dashboard — no extra access logic here).
+  const clubToday = useMemo(() => {
+    if (!clubSeason?.plan || !Array.isArray(clubSeason.template)) return null;
+    const iso = new Date().toISOString().slice(0, 10);
+    if (clubSeason.plan.start_date > iso || clubSeason.plan.end_date < iso) return null;
+    const resolved = resolveSessionForDate(iso, clubSeason.template as any, [], new Set<string>());
+    if (!resolved || resolved.type === "rest") return null;
+    const week = seasonWeekNumber(clubSeason.plan.start_date, iso);
+    const phase = phaseForWeek((clubSeason.phases ?? []) as any, week);
+    const tags: string[] = ((phase?.focus_tags ?? []) as string[])
+      .map((v) => {
+        const found = PHASE_FOCUS_TAGS.find((f) => f.value === v);
+        return found ? t(found.labelKey as any) : v;
+      });
+    const dow = (new Date(iso + "T00:00:00").getDay() + 6) % 7; // 0 = Monday
+    const note = (clubSeason.template as any[]).find(
+      (d) => d.day_of_week === dow && d.session_type === resolved.type,
+    )?.notes as string | undefined;
+    return {
+      typeLabel: t(sessionLabelKey(resolved.type) as any),
+      location: resolved.location,
+      phaseName: phase?.name ?? null,
+      tags,
+      note: note ?? null,
+    };
+  }, [clubSeason, t]);
+
+  const hasBothPlans = !!todaySession && !!clubToday;
+  const showMine = hasBothPlans ? planView === "mine" : !!todaySession;
 
   // Live countdown tick
   useEffect(() => {
@@ -241,7 +286,7 @@ export function AthleteDashboard() {
               >
                 <UserIcon className="h-3 w-3" /> {t("hubOwnBtn")}
               </button>
-              {todaySession && (
+              {todaySession && showMine && (
                 <span
                   className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-lg"
                   style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
@@ -251,7 +296,29 @@ export function AthleteDashboard() {
               )}
             </div>
           </div>
-          {todaySession ? (
+
+          {hasBothPlans && (
+            <div
+              className="flex items-center gap-1 mb-3 p-0.5 rounded-lg bg-white/[0.05] w-fit"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {(["mine", "club"] as const).map((v) => (
+                <button
+                  key={v}
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); setPlanView(v); }}
+                  aria-pressed={planView === v}
+                  className={`text-[11px] font-semibold px-3 py-1 rounded-md transition-colors ${
+                    planView === v ? "bg-white/[0.14] text-white" : "text-white/60 hover:text-white/90"
+                  }`}
+                >
+                  {v === "mine" ? t("hubPlanToggleMine") : t("hubPlanToggleClub")}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {showMine && todaySession ? (
             <div>
               <p className="text-sm font-semibold text-white">{todaySession.type}</p>
               {todaySession.tags.length > 0 && (
@@ -279,6 +346,34 @@ export function AthleteDashboard() {
                     </li>
                   )}
                 </ul>
+              )}
+            </div>
+          ) : !showMine && clubToday ? (
+            <div>
+              <p className="text-[10px] uppercase tracking-wider text-white/50">
+                {t("hubPlanToggleClub")}
+              </p>
+              <p className="text-sm font-semibold text-white mt-0.5">
+                {clubToday.typeLabel}
+                {clubToday.location ? ` · ${clubToday.location}` : ""}
+              </p>
+              {clubToday.phaseName && (
+                <p className="text-xs text-white/60 mt-1">{clubToday.phaseName}</p>
+              )}
+              {clubToday.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {clubToday.tags.map((tag, i) => (
+                    <span
+                      key={i}
+                      className="text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-md bg-white/[0.06] text-white/70"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+              {clubToday.note && (
+                <p className="text-xs text-white/70 mt-2 leading-snug">{clubToday.note}</p>
               )}
             </div>
           ) : (
