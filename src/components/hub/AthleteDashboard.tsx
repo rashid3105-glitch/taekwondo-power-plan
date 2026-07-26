@@ -362,45 +362,77 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
             </div>
           )}
 
-          {showMine && todaySession ? (
-            <div>
-              <p className="text-sm font-semibold text-white">{todaySession.type}</p>
-              {todaySession.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 mt-2">
-                  {todaySession.tags.map((tag, i) => (
-                    <span
-                      key={i}
-                      className="text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-md bg-white/[0.06] text-white/70"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              )}
-              {todaySession.exercises.length > 0 && (
-                <ul className="mt-3 space-y-1">
-                  {todaySession.exercises.map((name, i) => (
-                    <li key={i} className="text-xs text-white/80 leading-tight truncate">
-                      • {name}
-                    </li>
-                  ))}
-                  {todaySession.extraCount > 0 && (
-                    <li className="text-xs text-white/50 leading-tight">
-                      +{todaySession.extraCount} {t("hubMoreSuffix")}
-                    </li>
-                  )}
-                </ul>
-              )}
-            </div>
+          {showMine && todayPlan ? (
+            todayPlan.isRest ? (
+              <div>
+                <p className="text-sm font-semibold text-white">{t("hubRestDay")}</p>
+                <p className="text-xs text-white/60 mt-1">{t("hubRestDaySub")}</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {todayPlan.sessions.map((s, si) => (
+                  <div key={si} className={si > 0 ? "pt-3 border-t border-white/10" : undefined}>
+                    <p className="text-sm font-semibold text-white">{s.type}</p>
+                    {s.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mt-2">
+                        {s.tags.map((tag, i) => (
+                          <span
+                            key={i}
+                            className="text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-md bg-white/[0.06] text-white/70"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    {s.exercises.length > 0 && (
+                      <ul className="mt-3 space-y-1">
+                        {s.exercises.map((name, i) => (
+                          <li key={i} className="text-xs text-white/80 leading-tight truncate">
+                            • {name}
+                          </li>
+                        ))}
+                        {s.extraCount > 0 && (
+                          <li className="text-xs text-white/50 leading-tight">
+                            +{s.extraCount} {t("hubMoreSuffix")}
+                          </li>
+                        )}
+                      </ul>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )
           ) : !showMine && clubToday ? (
             <div>
               <p className="text-[10px] uppercase tracking-wider text-white/50">
                 {t("hubPlanToggleClub")}
               </p>
-              <p className="text-sm font-semibold text-white mt-0.5">
-                {clubToday.typeLabel}
-                {clubToday.location ? ` · ${clubToday.location}` : ""}
-              </p>
+              {clubToday.isRest ? (
+                <>
+                  <p className="text-sm font-semibold text-white mt-0.5">{t("hubRestDay")}</p>
+                  <p className="text-xs text-white/60 mt-1">{t("hubRestDaySub")}</p>
+                </>
+              ) : (
+                <div className="space-y-2 mt-0.5">
+                  {clubToday.sessions.map((s, i) => (
+                    <div key={i}>
+                      <p className="text-sm font-semibold text-white">
+                        {s.typeLabel}
+                        {s.location ? ` · ${s.location}` : ""}
+                        {s.fromOverride && (
+                          <span className="ml-2 text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded bg-white/[0.08] text-white/70">
+                            {t("hubOverrideBadge")}
+                          </span>
+                        )}
+                      </p>
+                      {s.note && (
+                        <p className="text-xs text-white/70 mt-1 leading-snug">{s.note}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
               {clubToday.phaseName && (
                 <p className="text-xs text-white/60 mt-1">{clubToday.phaseName}</p>
               )}
@@ -416,11 +448,9 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
                   ))}
                 </div>
               )}
-              {clubToday.note && (
-                <p className="text-xs text-white/70 mt-2 leading-snug">{clubToday.note}</p>
-              )}
             </div>
           ) : (
+
             <EmptyState
               icon={<CalendarX size={24} style={accentStyle} />}
               text={t("hubNoSessionToday")}
