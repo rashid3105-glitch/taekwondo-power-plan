@@ -110,7 +110,12 @@ export default function SignupCoach() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <PageMeta title="Opret coach-konto" description="Kom i gang gratis med Sportstalent." noindex />
+      <PageMeta
+        title="Opret coach-konto"
+        description="Kom i gang gratis med Sportstalent. Opret en trænerkonto til din klub og styr træning, sæsonplan og atleter ét sted."
+        canonical="https://sportstalent.dk/signup/coach"
+        noindex={false}
+      />
 
       <header className="px-5 pt-6 pb-4 flex items-center gap-3">
         <img src={logo} alt="Sportstalent" className="h-8 w-8 rounded-lg object-contain" />
