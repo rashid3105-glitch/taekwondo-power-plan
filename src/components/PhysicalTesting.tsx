@@ -384,9 +384,9 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
                                       <div className="flex gap-2 flex-wrap">
                                         <Input type="text" inputMode="decimal" value={editValue}
                                           onChange={e => setEditValue(e.target.value)}
-                                          className="h-8 w-24 text-sm" placeholder={t("ptValue")} />
+                                          className="h-8 w-24 text-base md:text-sm" placeholder={t("ptValue")} />
                                         <Input value={editNotes} onChange={e => setEditNotes(e.target.value)}
-                                          className="h-8 flex-1 text-sm" placeholder={t("ptNotes")} />
+                                          className="h-8 flex-1 text-base md:text-sm" placeholder={t("ptNotes")} />
                                         <Button size="sm" className="h-8" onClick={async () => {
                                           const parsed = Number(editValue.replace(",", "."));
                                           if (!Number.isFinite(parsed)) return;

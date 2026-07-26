@@ -249,12 +249,12 @@ export function AddRecipeForm({ onClose, onAdded }: AddRecipeFormProps) {
 
         <div>
           <Label className="text-xs">{t("recipeIngredientsLabel")}</Label>
-          <Textarea value={ingredients} onChange={(e) => setIngredients(e.target.value)} placeholder={"200g chicken breast\n150g brown rice\n100g broccoli"} rows={4} className="mt-1 text-xs" />
+          <Textarea value={ingredients} onChange={(e) => setIngredients(e.target.value)} placeholder={"200g chicken breast\n150g brown rice\n100g broccoli"} rows={4} className="mt-1 text-base md:text-xs" />
         </div>
 
         <div>
           <Label className="text-xs">{t("recipeStepsLabel")}</Label>
-          <Textarea value={steps} onChange={(e) => setSteps(e.target.value)} placeholder={"Season chicken with salt and pepper.\nGrill for 6-7 min per side.\nServe over rice with broccoli."} rows={4} className="mt-1 text-xs" />
+          <Textarea value={steps} onChange={(e) => setSteps(e.target.value)} placeholder={"Season chicken with salt and pepper.\nGrill for 6-7 min per side.\nServe over rice with broccoli."} rows={4} className="mt-1 text-base md:text-xs" />
         </div>
 
         <div>
