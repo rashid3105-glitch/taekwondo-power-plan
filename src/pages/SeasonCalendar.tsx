@@ -849,7 +849,7 @@ export default function SeasonCalendar() {
                 </div>
                 {showTechForm && (
                   <div className="space-y-2 border border-border rounded-lg p-3 bg-muted/20">
-                    <Input placeholder={t("seasonTechniqueName") || "Tekniknavn"} value={newTechName} onChange={(e) => setNewTechName(e.target.value)} className="h-8 text-xs" />
+                    <Input placeholder={t("seasonTechniqueName") || "Tekniknavn"} value={newTechName} onChange={(e) => setNewTechName(e.target.value)} className="h-8 text-base md:text-xs" />
                     <Select value={newTechCategory} onValueChange={setNewTechCategory}>
                       <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                       <SelectContent>
