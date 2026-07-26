@@ -5,6 +5,7 @@ import { useRole } from "@/contexts/RoleContext";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { Users, AlertTriangle, Dumbbell, FileText, Send, ChevronRight, CalendarDays, CheckCircle } from "lucide-react";
 import { EmptyState } from "./AthleteDashboard";
+import { CoachSetupChecklist } from "@/components/coach/CoachSetupChecklist";
 
 
 interface CoachStats {
@@ -148,6 +149,9 @@ export function CoachDashboard() {
       className="space-y-4 rounded-2xl p-4"
       style={{ backgroundColor: "#0a0a0a" }}
     >
+      {/* 0. Kom godt i gang-tjekliste */}
+      <CoachSetupChecklist />
+
       {/* 1. Atletoverblik */}
       {loading ? (
         <SkeletonBlock className="h-[96px]" />
