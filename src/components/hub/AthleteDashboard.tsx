@@ -13,20 +13,28 @@ import {
 } from "@/components/ui/dialog";
 import { SelfTrainingLogDialog } from "@/components/SelfTrainingLogDialog";
 import {
-  resolveSessionForDate,
+  resolveSessionsForDate,
   sessionLabelKey,
   seasonWeekNumber,
   phaseForWeek,
   PHASE_FOCUS_TAGS,
+  type AthleteSeasonOverride,
 } from "@/lib/seasonCalendar";
+import { findPlanDayForToday, normalizeDaySessions, isRestDay } from "@/lib/planSessionUtils";
 
 interface TodaySession {
-  weekdayLabel: string;
   type: string;
   tags: string[];
   exercises: string[];
   extraCount: number;
 }
+
+interface TodayPlan {
+  weekdayLabel: string;
+  sessions: TodaySession[];
+  isRest: boolean;
+}
+
 
 interface NextCompetition {
   name: string;
