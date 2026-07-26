@@ -12,6 +12,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { SelfTrainingLogDialog } from "@/components/SelfTrainingLogDialog";
+import {
+  resolveSessionForDate,
+  sessionLabelKey,
+  seasonWeekNumber,
+  phaseForWeek,
+  PHASE_FOCUS_TAGS,
+} from "@/lib/seasonCalendar";
 
 interface TodaySession {
   weekdayLabel: string;
@@ -57,7 +64,13 @@ function weekdayLong(locale: string, d: Date = new Date()) {
  * Self-contained athlete home dashboard.
  * Rendered only when role === "athlete".
  */
-export function AthleteDashboard() {
+interface ClubSeasonData {
+  plan: any;
+  phases: any[];
+  template: any[];
+}
+
+export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData | null }) {
   const { role: activeRole } = useRole();
   const navigate = useNavigate();
   const { t, locale } = useLanguage();
@@ -71,6 +84,34 @@ export function AthleteDashboard() {
   const [selfLogOpen, setSelfLogOpen] = useState(false);
   const [now, setNow] = useState(() => new Date());
   const [isLoading, setIsLoading] = useState(true);
+  const [planView, setPlanView] = useState<"mine" | "club">("mine");
+
+  // Today's session derived from the club season plan (visibility already
+  // filtered upstream in Dashboard — no extra access logic here).
+  const clubToday = useMemo(() => {
+    if (!clubSeason?.plan || !Array.isArray(clubSeason.template)) return null;
+    const iso = new Date().toISOString().slice(0, 10);
+    if (clubSeason.plan.start_date > iso || clubSeason.plan.end_date < iso) return null;
+    const resolved = resolveSessionForDate(iso, clubSeason.template as any, [], new Set<string>());
+    if (!resolved || resolved.type === "rest") return null;
+    const week = seasonWeekNumber(clubSeason.plan.start_date, iso);
+    const phase = phaseForWeek((clubSeason.phases ?? []) as any, week);
+    const tags: string[] = ((phase?.focus_tags ?? []) as string[])
+      .map((v) => {
+        const found = PHASE_FOCUS_TAGS.find((f) => f.value === v);
+        return found ? t(found.labelKey as any) : v;
+      });
+    const note = (clubSeason.template as any[]).find(
+      (d) => d.day_of_week === new Date(iso + "T00:00:00").getDay() === 0 ? 6 : ((new Date(iso + "T00:00:00").getDay() + 6) % 7),
+    )?.notes as string | undefined;
+    return {
+      typeLabel: t(sessionLabelKey(resolved.type) as any),
+      location: resolved.location,
+      phaseName: phase?.name ?? null,
+      tags,
+      note: note ?? null,
+    };
+  }, [clubSeason, t]);
 
   // Live countdown tick
   useEffect(() => {
