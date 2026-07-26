@@ -114,6 +114,9 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
     };
   }, [clubSeason, t]);
 
+  const hasBothPlans = !!todaySession && !!clubToday;
+  const showMine = hasBothPlans ? planView === "mine" : !!todaySession;
+
   // Live countdown tick
   useEffect(() => {
     if (!nextCompetition) return;
