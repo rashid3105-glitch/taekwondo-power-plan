@@ -283,7 +283,7 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
               >
                 <UserIcon className="h-3 w-3" /> {t("hubOwnBtn")}
               </button>
-              {todaySession && (
+              {todaySession && showMine && (
                 <span
                   className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-lg"
                   style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
@@ -293,7 +293,29 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
               )}
             </div>
           </div>
-          {todaySession ? (
+
+          {hasBothPlans && (
+            <div
+              className="flex items-center gap-1 mb-3 p-0.5 rounded-lg bg-white/[0.05] w-fit"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {(["mine", "club"] as const).map((v) => (
+                <button
+                  key={v}
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); setPlanView(v); }}
+                  aria-pressed={planView === v}
+                  className={`text-[11px] font-semibold px-3 py-1 rounded-md transition-colors ${
+                    planView === v ? "bg-white/[0.14] text-white" : "text-white/60 hover:text-white/90"
+                  }`}
+                >
+                  {v === "mine" ? t("hubPlanToggleMine") : t("hubPlanToggleClub")}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {showMine && todaySession ? (
             <div>
               <p className="text-sm font-semibold text-white">{todaySession.type}</p>
               {todaySession.tags.length > 0 && (
@@ -321,6 +343,34 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
                     </li>
                   )}
                 </ul>
+              )}
+            </div>
+          ) : !showMine && clubToday ? (
+            <div>
+              <p className="text-[10px] uppercase tracking-wider text-white/50">
+                {t("hubPlanToggleClub")}
+              </p>
+              <p className="text-sm font-semibold text-white mt-0.5">
+                {clubToday.typeLabel}
+                {clubToday.location ? ` · ${clubToday.location}` : ""}
+              </p>
+              {clubToday.phaseName && (
+                <p className="text-xs text-white/60 mt-1">{clubToday.phaseName}</p>
+              )}
+              {clubToday.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {clubToday.tags.map((tag, i) => (
+                    <span
+                      key={i}
+                      className="text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-md bg-white/[0.06] text-white/70"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+              {clubToday.note && (
+                <p className="text-xs text-white/70 mt-2 leading-snug">{clubToday.note}</p>
               )}
             </div>
           ) : (
