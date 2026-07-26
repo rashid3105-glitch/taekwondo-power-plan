@@ -41,6 +41,44 @@ export function RunningLibrary() {
   const [currentKm, setCurrentKm] = useState("3");
 
   const programs = useMemo(() => RUNNING_PROGRAMS, []);
+  const { toast } = useToast();
+  const [enrollment, setEnrollment] = useState<RunningEnrollment | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  async function loadEnrollment() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    setEnrollment(await fetchActiveEnrollment(user.id));
+  }
+
+  useEffect(() => { void loadEnrollment(); }, []);
+
+  async function handleStart(p: RunProgram) {
+    setBusyId(p.id);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("not_authenticated");
+      await startProgram(user.id, p);
+      await loadEnrollment();
+      toast({ title: t("runProgStarted") });
+    } catch (e: any) {
+      toast({ title: t("error"), description: e.message, variant: "destructive" });
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function handleStop() {
+    if (!enrollment) return;
+    setBusyId(enrollment.program_id);
+    try {
+      await stopProgram(enrollment.id);
+      await loadEnrollment();
+      toast({ title: t("runProgStopped") });
+    } finally {
+      setBusyId(null);
+    }
+  }
 
   function handleBuild() {
     const g = parseFloat(goalKm);
@@ -53,6 +91,7 @@ export function RunningLibrary() {
   }
 
   const displayed: RunProgram[] = custom ? [...programs, custom] : programs;
+
 
   return (
     <div className="space-y-4">
