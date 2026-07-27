@@ -87,7 +87,7 @@ export default function PlatformMarketing() {
           {STATS.map((s, i, arr) => (
             <div key={i} style={{ textAlign: "center", padding: "16px", borderRight: i < arr.length - 1 ? "0.5px solid rgba(255,255,255,0.07)" : "none" }}>
               <div style={{ fontSize: 40, fontWeight: 900, color: GOLD, letterSpacing: "-0.04em", lineHeight: 1 }}>{s.num}</div>
-              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 6 }}>{s.label}</div>
+              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.62)", marginTop: 6 }}>{s.label}</div>
             </div>
           ))}
         </div>

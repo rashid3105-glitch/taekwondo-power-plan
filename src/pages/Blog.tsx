@@ -79,9 +79,9 @@ const Blog = () => {
         </div>
 
         {loading ? (
-          <div style={{ textAlign: "center", color: "rgba(255,255,255,0.4)", padding: 60 }}>…</div>
+          <div style={{ textAlign: "center", color: "rgba(255,255,255,0.62)", padding: 60 }}>…</div>
         ) : posts.length === 0 ? (
-          <div style={{ textAlign: "center", color: "rgba(255,255,255,0.4)", padding: 80, border: "0.5px dashed rgba(255,255,255,0.1)", borderRadius: 16 }}>
+          <div style={{ textAlign: "center", color: "rgba(255,255,255,0.62)", padding: 80, border: "0.5px dashed rgba(255,255,255,0.1)", borderRadius: 16 }}>
             {t.empty}
           </div>
         ) : (
@@ -110,7 +110,7 @@ const Blog = () => {
                 )}
                 <div style={{ padding: "18px 20px 20px" }}>
                   {p.published_at && (
-                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 8, letterSpacing: "0.05em" }}>
+                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.62)", marginBottom: 8, letterSpacing: "0.05em" }}>
                       {new Date(p.published_at).toLocaleDateString(locale === "da" ? "da-DK" : "en-US", { year: "numeric", month: "long", day: "numeric" })}
                     </div>
                   )}

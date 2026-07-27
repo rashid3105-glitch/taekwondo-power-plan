@@ -273,7 +273,7 @@ export default function AuthPage() {
                 </>
               )}
             </button>
-            <div style={{ textAlign: "center", fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 16, letterSpacing: "0.1em" }}>
+            <div style={{ textAlign: "center", fontSize: 11, color: "rgba(255,255,255,0.62)", marginBottom: 16, letterSpacing: "0.1em" }}>
               {t("usePasswordInstead")}
             </div>
           </>
@@ -310,7 +310,7 @@ export default function AuthPage() {
                 </>
               )}
             </button>
-            <div style={{ textAlign: "center", fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 16, letterSpacing: "0.1em" }}>
+            <div style={{ textAlign: "center", fontSize: 11, color: "rgba(255,255,255,0.62)", marginBottom: 16, letterSpacing: "0.1em" }}>
               {t("usePasswordInstead")}
             </div>
           </>

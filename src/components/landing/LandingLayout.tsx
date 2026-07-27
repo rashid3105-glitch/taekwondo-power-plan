@@ -255,7 +255,7 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
               { label: t("navBlog"), href: "/blog" },
             ].map(l => <span key={l.href} onClick={() => navigate(l.href)} style={{ cursor: "pointer" }}>{l.label}</span>)}
           </div>
-          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.2)" }}>© 2026 Sportstalent.dk</div>
+          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.6)" }}>© 2026 Sportstalent.dk</div>
         </div>
       </footer>
     </div>

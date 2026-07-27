@@ -66,7 +66,7 @@ const Index = () => {
         boxShadow: "0 30px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03)",
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 10, color: "rgba(255,255,255,0.4)", letterSpacing: "0.12em", marginBottom: 14, textTransform: "uppercase" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 10, color: "rgba(255,255,255,0.62)", letterSpacing: "0.12em", marginBottom: 14, textTransform: "uppercase" }}>
         <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
           <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#3ADB7C", boxShadow: "0 0 8px #3ADB7C" }} />
           {t("homeHudLive")}
@@ -82,10 +82,10 @@ const Index = () => {
           { label: t("homeHudMood"), val: "8.4", unit: "/10", delta: "+0.3", good: true },
         ].map((m, i) => (
           <div key={i} style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "10px 12px" }}>
-            <div style={{ fontSize: 9, letterSpacing: "0.14em", color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}>{m.label}</div>
+            <div style={{ fontSize: 9, letterSpacing: "0.14em", color: "rgba(255,255,255,0.62)", textTransform: "uppercase" }}>{m.label}</div>
             <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginTop: 4 }}>
               <span style={{ fontSize: 22, fontWeight: 700, color: "#fff" }}>{m.val}</span>
-              <span style={{ fontSize: 10, color: "rgba(255,255,255,0.4)" }}>{m.unit}</span>
+              <span style={{ fontSize: 10, color: "rgba(255,255,255,0.62)" }}>{m.unit}</span>
               <span style={{ marginLeft: "auto", fontSize: 10, color: m.good ? "#3ADB7C" : "#FF6B6B" }}>{m.delta}</span>
             </div>
           </div>
@@ -93,7 +93,7 @@ const Index = () => {
       </div>
 
       <div style={{ background: "rgba(255,255,255,0.02)", border: "0.5px solid rgba(255,255,255,0.05)", borderRadius: 10, padding: "12px 14px", marginBottom: 14 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9, letterSpacing: "0.14em", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", marginBottom: 10 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9, letterSpacing: "0.14em", color: "rgba(255,255,255,0.62)", textTransform: "uppercase", marginBottom: 10 }}>
           <span>{t("homeHudTrainingLoad")}</span>
           <span style={{ color: GOLD }}>{t("homeHudPeak")}</span>
         </div>
@@ -129,7 +129,7 @@ const Index = () => {
         <div style={{ borderTop: "0.5px solid rgba(255,255,255,0.08)", borderBottom: "0.5px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.015)" }}>
           <div style={{ maxWidth: 1200, margin: "0 auto", padding: `26px ${pad}px 22px` }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-              <div style={{ fontFamily: MONO, fontSize: 10, letterSpacing: "0.22em", color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}>{t("homeChapterLabel")}</div>
+              <div style={{ fontFamily: MONO, fontSize: 10, letterSpacing: "0.22em", color: "rgba(255,255,255,0.62)", textTransform: "uppercase" }}>{t("homeChapterLabel")}</div>
               <div style={{ fontFamily: MONO, fontSize: 9, color: "rgba(255,255,255,0.5)", letterSpacing: "0.16em" }}>/ SPORTSTALENT</div>
             </div>
             <div style={{ display: "flex", alignItems: "baseline", gap: 14 }}>
@@ -148,7 +148,7 @@ const Index = () => {
           <div style={{ fontFamily: MONO, fontSize: 56, fontWeight: 900, color: GOLD, letterSpacing: "-0.04em", lineHeight: 1, flexShrink: 0 }}>{n}</div>
           <div style={{ width: 1, alignSelf: "stretch", background: "rgba(255,255,255,0.1)" }} />
           <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 0 }}>
-            <div style={{ fontFamily: MONO, fontSize: 10, letterSpacing: "0.2em", color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}>{t("homeChapterLabel")}</div>
+            <div style={{ fontFamily: MONO, fontSize: 10, letterSpacing: "0.2em", color: "rgba(255,255,255,0.62)", textTransform: "uppercase" }}>{t("homeChapterLabel")}</div>
             <div style={{ fontSize: 18, fontWeight: 800, letterSpacing: "-0.01em", color: "#fff" }}>{label}</div>
             {title && <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)" }}>{title}</div>}
           </div>
@@ -192,7 +192,7 @@ const Index = () => {
                 {t("homePromoCta")}
               </button>
             )}
-            <button onClick={() => setPromoOpen(false)} aria-label={t("homePromoClose")} style={{ position: "absolute", right: isMobile ? 10 : pad, background: "transparent", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer", fontSize: 16 }}>×</button>
+            <button onClick={() => setPromoOpen(false)} aria-label={t("homePromoClose")} style={{ position: "absolute", right: isMobile ? 10 : pad, background: "transparent", border: "none", color: "rgba(255,255,255,0.62)", cursor: "pointer", fontSize: 16 }}>×</button>
           </div>
         </div>
       )}
@@ -236,7 +236,7 @@ const Index = () => {
               <button onClick={() => navigate("/auth?tab=signup")} style={{ padding: isMobile ? "12px 20px" : "14px 28px", borderRadius: 10, border: "none", background: GOLD, color: BG, fontSize: isMobile ? 13 : 15, fontWeight: 800, cursor: "pointer", boxShadow: isMobile ? "0 6px 18px rgba(245,200,66,0.18)" : "0 10px 30px rgba(245,200,66,0.2)" }}>{t("homeHeroCtaStart")}</button>
               <button onClick={() => scrollTo("how-it-works")} style={{ padding: isMobile ? "12px 18px" : "14px 24px", borderRadius: 10, border: "0.5px solid rgba(255,255,255,0.18)", background: "transparent", color: "#fff", fontSize: isMobile ? 13 : 15, fontWeight: 600, cursor: "pointer" }}>{t("homeHeroCtaHow")}</button>
             </div>
-            <div style={{ display: "flex", gap: 18, fontSize: 12, color: "rgba(255,255,255,0.4)", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", gap: 18, fontSize: 12, color: "rgba(255,255,255,0.62)", flexWrap: "wrap" }}>
               {[t("homeTrust1"), t("homeTrust2"), t("homeTrust3")].map((tt, i) => (
                 <span key={i} style={{ display: "inline-flex", gap: 6 }}><span style={{ color: GOLD }}>✓</span>{tt}</span>
               ))}
@@ -332,7 +332,7 @@ const Index = () => {
           <div style={{ position: "relative" }}>
             <img src={coachSittingAsset} alt={t("homeSolImgAlt")} style={{ width: "100%", borderRadius: 14, border: "0.5px solid rgba(255,255,255,0.08)", display: "block" }} />
             <div style={{ position: "absolute", bottom: -14, right: -14, background: BG, borderRadius: 10, padding: "12px 16px", border: "0.5px solid rgba(255,255,255,0.1)", fontFamily: MONO }}>
-              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", letterSpacing: "0.14em", textTransform: "uppercase" }}>{t("homeSolAthletesReady")}</div>
+              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.62)", letterSpacing: "0.14em", textTransform: "uppercase" }}>{t("homeSolAthletesReady")}</div>
               <div style={{ fontSize: 22, fontWeight: 900, color: GOLD, marginTop: 2 }}>18 / 24</div>
             </div>
           </div>
@@ -396,7 +396,7 @@ const Index = () => {
             <img src={coachStandingAsset} alt={t("homeWhyImgAlt")} style={{ width: "100%", borderRadius: 14, border: "0.5px solid rgba(255,255,255,0.08)", display: "block" }} />
             <div style={{ position: "absolute", bottom: -14, left: -14, background: BG, borderRadius: 10, padding: "12px 16px", border: "0.5px solid rgba(255,255,255,0.1)", fontFamily: MONO }}>
               <div style={{ fontSize: 22, fontWeight: 900, color: GOLD }}>67%</div>
-              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", letterSpacing: "0.14em", textTransform: "uppercase", marginTop: 2 }}>{t("homeWhyStat")}</div>
+              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.62)", letterSpacing: "0.14em", textTransform: "uppercase", marginTop: 2 }}>{t("homeWhyStat")}</div>
             </div>
           </div>
           <div style={{ order: isMobile ? 1 : 2 }}>
@@ -444,7 +444,7 @@ const Index = () => {
             <img src="/founder-farooq.jpg" alt="Farooq Rashid" style={{ width: isMobile ? 160 : 200, height: isMobile ? 210 : 260, objectFit: "cover", borderRadius: 14, border: "0.5px solid rgba(255,255,255,0.08)", display: "block" }} onError={(e) => { e.currentTarget.style.display = "none"; }} />
             <div style={{ position: "absolute", bottom: -12, right: -12, background: BG, border: "0.5px solid rgba(255,255,255,0.1)", borderRadius: 10, padding: "10px 14px", fontFamily: MONO }}>
               <div style={{ fontSize: 20, fontWeight: 900, color: GOLD }}>30+</div>
-              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 1 }}>{t("homeFounderYears")}</div>
+              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.62)", letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 1 }}>{t("homeFounderYears")}</div>
             </div>
           </div>
           <div>
@@ -476,8 +476,8 @@ const Index = () => {
           </div>
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3,1fr)", gap: 16, alignItems: "start" }}>
             <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: "26px" }}>
-              <div style={{ fontFamily: MONO, fontSize: 10, letterSpacing: "0.14em", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", marginBottom: 10 }}>{t("homePriceAthleteTier")}</div>
-              <div style={{ fontSize: 40, fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 1 }}>59<span style={{ fontSize: 14, color: "rgba(255,255,255,0.4)", fontWeight: 500, marginLeft: 6 }}>{t("homePriceAthletePeriod")}</span></div>
+              <div style={{ fontFamily: MONO, fontSize: 10, letterSpacing: "0.14em", color: "rgba(255,255,255,0.62)", textTransform: "uppercase", marginBottom: 10 }}>{t("homePriceAthleteTier")}</div>
+              <div style={{ fontSize: 40, fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 1 }}>59<span style={{ fontSize: 14, color: "rgba(255,255,255,0.62)", fontWeight: 500, marginLeft: 6 }}>{t("homePriceAthletePeriod")}</span></div>
               <hr style={{ border: "none", borderTop: "0.5px solid rgba(255,255,255,0.07)", margin: "18px 0" }} />
               {[t("homePriceAthlete1"), t("homePriceAthlete2"), t("homePriceAthlete3"), t("homePriceAthlete4")].map((f, i) => (
                 <div key={i} style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", display: "flex", gap: 8, marginBottom: 8 }}><span style={{ color: GOLD }}>✓</span>{f}</div>
@@ -496,7 +496,7 @@ const Index = () => {
               <button onClick={() => navigate("/auth?tab=signup")} style={{ width: "100%", marginTop: 18, padding: "13px", borderRadius: 8, border: "none", background: GOLD, color: BG, fontSize: 14, fontWeight: 800, cursor: "pointer" }}>{t("homePriceClubCta")}</button>
             </div>
             <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: "26px" }}>
-              <div style={{ fontFamily: MONO, fontSize: 10, letterSpacing: "0.14em", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", marginBottom: 10 }}>{t("homePriceFedTier")}</div>
+              <div style={{ fontFamily: MONO, fontSize: 10, letterSpacing: "0.14em", color: "rgba(255,255,255,0.62)", textTransform: "uppercase", marginBottom: 10 }}>{t("homePriceFedTier")}</div>
               <div style={{ fontSize: 24, fontWeight: 900, letterSpacing: "-0.02em", marginBottom: 4 }}>{t("homePriceFedPrice")}</div>
               <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>{t("homePriceFedNote")}</div>
               <hr style={{ border: "none", borderTop: "0.5px solid rgba(255,255,255,0.07)", margin: "18px 0" }} />
