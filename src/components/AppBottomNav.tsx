@@ -16,6 +16,7 @@ const HIDDEN_PREFIXES = [
   "/programs", "/platform", "/methodology", "/for-traenere", "/help",
   "/funktioner", "/features", "/poomsae", "/staevneforberedelse-taekwondo",
   "/taekwondo-teknik", "/taekwondo-training-program", "/taekwondo-traeningsprogram",
+  "/fysisk-test-taekwondo",
   "/unsubscribe", "/payment-success", "/mockup", "/athlete", "/match/share",
   "/admin", "/parent-dashboard", "/install", "/kostplan",
 ];
