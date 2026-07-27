@@ -281,7 +281,9 @@ const AnimatedRoutes = () => {
         <Route path="/taekwondo-traeningsprogram" element={<Page><TaekwondoTraeningsprogram /></Page>} />
         <Route path="/poomsae" element={<Page><Poomsae /></Page>} />
         <Route path="/taekwondo-teknik" element={<Page><TaekwondoTeknik /></Page>} />
+        <Route path="/staevneforberedelse-taekwondo" element={<Page><StaevneforberedelseTaekwondo /></Page>} />
         <Route path="/fysisk-test-taekwondo" element={<Page><FysiskTestTaekwondo /></Page>} />
+
 
         <Route path="/progress" element={<Navigate to="/dashboard" replace />} />
         <Route path="/mockup/season-onboarding" element={<Page><MockupSeasonOnboarding /></Page>} />
