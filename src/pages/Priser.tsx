@@ -64,7 +64,7 @@ export default function Priser() {
             <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", marginBottom: 8 }}>{t("pricingTierStarter")}</div>
             <div style={{ fontSize: 44, fontWeight: 900, letterSpacing: "-0.04em" }}>499</div>
             <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", marginBottom: 8 }}>{t("pricingPerMonth")}</div>
-            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", marginBottom: 16, lineHeight: 1.5 }}>{t("pricingStarterDesc")}</div>
+            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.62)", marginBottom: 16, lineHeight: 1.5 }}>{t("pricingStarterDesc")}</div>
             <hr style={{ border: "none", borderTop: "0.5px solid rgba(255,255,255,0.07)", margin: "12px 0" }} />
             {starterFeatures.map((f, i) => (
               <div key={i} style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", display: "flex", gap: 7, marginBottom: 8 }}><span style={{ color: GOLD }}>✓</span>{f}</div>
@@ -80,7 +80,7 @@ export default function Priser() {
             <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: GOLD, marginBottom: 8 }}>{t("pricingTierClub")}</div>
             <div style={{ fontSize: 44, fontWeight: 900, letterSpacing: "-0.04em" }}>1499</div>
             <div style={{ fontSize: 13, color: "rgba(255,255,255,0.35)", marginBottom: 8 }}>{t("pricingPerMonth")}</div>
-            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", marginBottom: 16, lineHeight: 1.5 }}>{t("pricingClubDesc")}</div>
+            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.62)", marginBottom: 16, lineHeight: 1.5 }}>{t("pricingClubDesc")}</div>
             <hr style={{ border: "none", borderTop: "0.5px solid rgba(245,200,66,0.15)", margin: "12px 0" }} />
             {clubFeatures.map((f, i) => (
               <div key={i} style={{ fontSize: 13, color: "rgba(255,255,255,0.75)", display: "flex", gap: 7, marginBottom: 8 }}><span style={{ color: GOLD }}>✓</span>{f}</div>
@@ -92,7 +92,7 @@ export default function Priser() {
             <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", marginBottom: 8 }}>{t("pricingTierFed")}</div>
             <div style={{ fontSize: 18, fontWeight: 800, letterSpacing: "-0.01em", marginBottom: 4 }}>kontakt@sportstalent.dk</div>
             <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", marginBottom: 16 }}>{t("pricingContactUs")}</div>
-            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", marginBottom: 16, lineHeight: 1.5 }}>{t("pricingFedDesc")}</div>
+            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.62)", marginBottom: 16, lineHeight: 1.5 }}>{t("pricingFedDesc")}</div>
             <hr style={{ border: "none", borderTop: "0.5px solid rgba(255,255,255,0.07)", margin: "12px 0" }} />
             {fedFeatures.map((f, i) => (
               <div key={i} style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", display: "flex", gap: 7, marginBottom: 8 }}><span style={{ color: GOLD }}>✓</span>{f}</div>
@@ -135,20 +135,20 @@ export default function Priser() {
             <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.08)", borderRadius: 14, padding: "32px", display: "flex", flexDirection: "column", gap: 14 }}>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                 <div>
-                  <label style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", display: "block", marginBottom: 6 }}>{t("pricingLabelName")}</label>
+                  <label style={{ fontSize: 11, color: "rgba(255,255,255,0.62)", display: "block", marginBottom: 6 }}>{t("pricingLabelName")}</label>
                   <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder={t("pricingPHName")} style={inputStyle} />
                 </div>
                 <div>
-                  <label style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", display: "block", marginBottom: 6 }}>{t("pricingLabelEmail")}</label>
+                  <label style={{ fontSize: 11, color: "rgba(255,255,255,0.62)", display: "block", marginBottom: 6 }}>{t("pricingLabelEmail")}</label>
                   <input type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} placeholder={t("pricingPHEmail")} style={inputStyle} />
                 </div>
               </div>
               <div>
-                <label style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", display: "block", marginBottom: 6 }}>{t("pricingLabelClub")}</label>
+                <label style={{ fontSize: 11, color: "rgba(255,255,255,0.62)", display: "block", marginBottom: 6 }}>{t("pricingLabelClub")}</label>
                 <input value={form.club} onChange={e => setForm(f => ({ ...f, club: e.target.value }))} placeholder={t("pricingPHClub")} style={inputStyle} />
               </div>
               <div>
-                <label style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", display: "block", marginBottom: 6 }}>{t("pricingLabelMessage")}</label>
+                <label style={{ fontSize: 11, color: "rgba(255,255,255,0.62)", display: "block", marginBottom: 6 }}>{t("pricingLabelMessage")}</label>
                 <textarea value={form.message} onChange={e => setForm(f => ({ ...f, message: e.target.value }))} placeholder={t("pricingPHMessage")} rows={4} style={{ ...inputStyle, resize: "none" }} />
               </div>
               <button onClick={handleSubmit} disabled={sending || !form.name || !form.email} style={{ padding: "13px", borderRadius: 8, border: "none", background: form.name && form.email ? GOLD : "rgba(255,255,255,0.1)", color: form.name && form.email ? "#0B0C14" : "rgba(255,255,255,0.3)", fontSize: 14, fontWeight: 800, cursor: form.name && form.email ? "pointer" : "not-allowed" }}>

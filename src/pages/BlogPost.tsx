@@ -48,7 +48,7 @@ const BlogPostPage = () => {
   if (loading) {
     return (
       <LandingLayout>
-        <div style={{ padding: 80, textAlign: "center", color: "rgba(255,255,255,0.4)" }}>…</div>
+        <div style={{ padding: 80, textAlign: "center", color: "rgba(255,255,255,0.62)" }}>…</div>
       </LandingLayout>
     );
   }
@@ -116,7 +116,7 @@ const BlogPostPage = () => {
           ← Blog
         </button>
 
-        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 12, letterSpacing: "0.05em" }}>
+        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.62)", marginBottom: 12, letterSpacing: "0.05em" }}>
           {post.published_at && new Date(post.published_at).toLocaleDateString(post.locale === "da" ? "da-DK" : "en-US", { year: "numeric", month: "long", day: "numeric" })}
           <span style={{ marginLeft: 12, padding: "2px 8px", border: "0.5px solid rgba(255,255,255,0.15)", borderRadius: 20, fontSize: 10, fontWeight: 700 }}>
             {post.locale.toUpperCase()}
