@@ -68,6 +68,7 @@ import TaekwondoTraeningsprogram from "./pages/seo/TaekwondoTraeningsprogram";
 import Poomsae from "./pages/seo/Poomsae";
 import TaekwondoTeknik from "./pages/seo/TaekwondoTeknik";
 import StaevneforberedelseTaekwondo from "./pages/seo/StaevneforberedelseTaekwondo";
+import FysiskTestTaekwondo from "./pages/seo/FysiskTestTaekwondo";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import About from "./pages/About";
 import Programs from "./pages/Programs";
