@@ -36,8 +36,8 @@ export function BrandLogo({
     >
       <img
         src={runnerIcon}
-        alt=""
-        aria-hidden
+        alt={withText ? "" : "Sportstalent logo"}
+        aria-hidden={withText || undefined}
         style={{
           height: iconH,
           width: "auto",
