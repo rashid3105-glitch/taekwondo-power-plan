@@ -7,6 +7,7 @@ import {
   Activity, Apple, TrendingUp, BookOpen, BookHeart, Download, Video, CalendarRange,
   MessageSquare, MessageCircle, NotebookPen, Search, X, Dumbbell, Heart, Sparkles, UserCog, Settings, FileText, ArrowLeft,
   ShieldCheck, ClipboardCheck, Trash2, CreditCard, Lock, UserX, Bell,
+  Footprints, Trophy, ListChecks, LayoutGrid,
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { PublicNav } from "@/components/PublicNav";
@@ -23,7 +24,9 @@ type TopicKey =
   | "helpAddStudents" | "helpStudentProgress" | "helpChat" | "helpWeeklyReport"
   | "helpRoles" | "helpRoleSwitcher"
   | "helpConsents" | "helpAttendance" | "helpDeleteAthlete" | "helpCoachMentalReview"
-  | "helpSubscription" | "helpSecurity" | "helpDeleteAccount" | "helpNotifications";
+  | "helpSubscription" | "helpSecurity" | "helpDeleteAccount" | "helpNotifications"
+  | "helpTodayCard" | "helpRunning" | "helpCompetitions" | "helpCoachChecklist"
+  | "helpModuleAccess" | "helpSurveys" | "helpTeamTests";
 
 type Topic = { key: TopicKey; icon: typeof UserCircle; isNew?: boolean };
 
@@ -59,6 +62,13 @@ const TOPICS: Record<TopicKey, Topic> = {
   helpSecurity: { key: "helpSecurity", icon: Lock, isNew: true },
   helpDeleteAccount: { key: "helpDeleteAccount", icon: Trash2, isNew: true },
   helpNotifications: { key: "helpNotifications", icon: Bell, isNew: true },
+  helpTodayCard: { key: "helpTodayCard", icon: Clock, isNew: true },
+  helpRunning: { key: "helpRunning", icon: Footprints, isNew: true },
+  helpCompetitions: { key: "helpCompetitions", icon: Trophy, isNew: true },
+  helpCoachChecklist: { key: "helpCoachChecklist", icon: ListChecks, isNew: true },
+  helpModuleAccess: { key: "helpModuleAccess", icon: LayoutGrid, isNew: true },
+  helpSurveys: { key: "helpSurveys", icon: ClipboardList, isNew: true },
+  helpTeamTests: { key: "helpTeamTests", icon: Activity, isNew: true },
 };
 
 type SectionDef = {
@@ -80,7 +90,7 @@ const SECTIONS: SectionDef[] = [
     chipBg: "bg-primary",
     chipFg: "text-primary-foreground",
     accent: "bg-primary",
-    topics: ["helpTrainingPlan", "helpSeasonPlan", "helpPhysicalTesting", "helpMatchAnalysis", "helpMatchReport", "helpProgress"],
+    topics: ["helpTodayCard", "helpTrainingPlan", "helpSeasonPlan", "helpRunning", "helpPhysicalTesting", "helpCompetitions", "helpMatchAnalysis", "helpMatchReport", "helpProgress"],
   },
   {
     id: "health",
@@ -107,7 +117,7 @@ const SECTIONS: SectionDef[] = [
     chipBg: "bg-tab-progress",
     chipFg: "text-white",
     accent: "bg-tab-progress",
-    topics: ["helpAddStudents", "helpAttendance", "helpConsents", "helpStudentProgress", "helpDeleteAthlete", "helpSeasonCalendar", "helpCoachFeedback", "helpChat", "helpWeeklyReport"],
+    topics: ["helpCoachChecklist", "helpAddStudents", "helpAttendance", "helpConsents", "helpStudentProgress", "helpModuleAccess", "helpTeamTests", "helpSurveys", "helpDeleteAthlete", "helpSeasonCalendar", "helpCoachFeedback", "helpChat", "helpWeeklyReport"],
   },
   {
     id: "account",
@@ -502,7 +512,8 @@ export default function Help() {
 // Build numbers start at v1.0.0 on 2026-05-29 (first build with semantic versioning).
 // MINOR bumps for new features, PATCH bumps for small tweaks/fixes. Older releases left unversioned.
 const CHANGELOG: { dateKey: string; entries: string[]; build?: string }[] = [
- { dateKey: "changelog_2026_07_26", entries: ["changelogEntry184"], build: "v1.5.3" },
+ { dateKey: "changelog_2026_07_27", entries: ["changelogEntry185"], build: "v1.5.4" },
+  { dateKey: "changelog_2026_07_26", entries: ["changelogEntry184"], build: "v1.5.3" },
  { dateKey: "changelog_2026_07_26", entries: ["changelogEntry183", "changelogEntry182", "changelogEntry181"], build: "v1.5.2" },
 
  { dateKey: "changelog_2026_07_23", entries: ["changelogEntry180"], build: "v1.4.4" },
