@@ -255,7 +255,7 @@ const Index = () => {
             }}>
               <img
                 src="/hero-deadlift.webp"
-                alt="Atlet udfører deadlift"
+                alt="Taekwondo-atlet udfører deadlift med vægtstang under styrketræning i træningscenter"
                 width={650}
                 height={1244}
                 fetchPriority="high"
