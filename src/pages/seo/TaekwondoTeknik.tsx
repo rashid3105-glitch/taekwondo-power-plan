@@ -8,8 +8,9 @@ const jsonLd = {
     "Detaljeret guide til taekwondo-teknik: bandal chagi, dollyo, footwork, timing og de drills, der faktisk forbedrer teknikken.",
   author: { "@type": "Organization", name: "Sportstalent" },
   publisher: { "@type": "Organization", name: "Sportstalent" },
-  mainEntityOfPage: "https://sportstalent.dk/taekwondo-teknik",
+  mainEntityOfPage: "https://sportstalent.dk/tekniktraening",
   inLanguage: "da",
+
 };
 
 export default function TaekwondoTeknik() {
@@ -17,20 +18,21 @@ export default function TaekwondoTeknik() {
     <SeoArticleShell
       title="Taekwondo teknik — komplet guide til spark og footwork"
       description="Sådan forbedrer du taekwondo-teknik: udførelse af bandal chagi, dollyo og naeryo, footwork-mønstre, timing-drills og de mest effektive øvelser til hver teknik."
-      canonical="https://sportstalent.dk/taekwondo-teknik"
-      breadcrumbLabel="Taekwondo teknik"
-      h1="Taekwondo teknik — sådan bygger du præcise spark og skarp footwork"
+      canonical="https://sportstalent.dk/tekniktraening"
+      breadcrumbLabel="Tekniktræning"
+      h1="Tekniktræning — sådan bygger du præcise spark og skarp footwork"
       jsonLd={jsonLd}
       intro={
         <>
-          Teknik i taekwondo handler ikke om at spark højere — det handler om <strong>præcision, timing og hoftedrejning</strong>. Denne guide gennemgår de vigtigste spark, footwork-mønstre og drills, der faktisk overføres til sparring.
+          Tekniktræning handler ikke om at bevæge sig hurtigere — det handler om <strong>præcision, timing og hoftedrejning</strong>. Denne guide gennemgår de vigtigste spark, footwork-mønstre og drills, der faktisk overføres til kamp — vist med taekwondo som eksempel.
         </>
       }
       related={[
-        { to: "/taekwondo-traeningsprogram", title: "Taekwondo træningsprogram", desc: "Periodiseret ugeplan med teknik indbygget." },
+        { to: "/traeningsprogram", title: "Træningsprogram", desc: "Periodiseret ugeplan med teknik indbygget." },
         { to: "/poomsae", title: "Poomsae", desc: "Teknisk mesterskab gennem formløb." },
-        { to: "/staevneforberedelse-taekwondo", title: "Stævneforberedelse", desc: "Peak-plan til stævnedagen." },
+        { to: "/staevneforberedelse", title: "Stævneforberedelse", desc: "Peak-plan til konkurrencedagen." },
       ]}
+
     >
       <h2>De 5 spark hver taekwondo-atlet skal mestre</h2>
       <h3>1. Bandal chagi (roundhouse — hurtig scorer)</h3>

@@ -457,10 +457,11 @@ function StoryRows() {
                 >
                   <img
                     src={STORY_PHOTOS[i % STORY_PHOTOS.length]}
-                    alt={`Taekwondo-træner og atleter i Sportstalent-platformen — ${row.title}`}
+                    alt={`Træner og atleter i Sportstalent-platformen — ${row.title}`}
                     loading="lazy"
                     className="block h-auto w-full object-contain"
                   />
+
                 </div>
               </div>
               <div>

@@ -27,10 +27,11 @@ export default function Poomsae() {
         </>
       }
       related={[
-        { to: "/taekwondo-traeningsprogram", title: "Taekwondo træningsprogram", desc: "Periodiseret ugeplan med styrke, hastighed og teknik." },
-        { to: "/taekwondo-teknik", title: "Taekwondo teknik", desc: "Drills til spark, footwork og præcision." },
-        { to: "/staevneforberedelse-taekwondo", title: "Stævneforberedelse", desc: "6-ugers peak-plan til stævne." },
+        { to: "/traeningsprogram", title: "Træningsprogram", desc: "Periodiseret ugeplan med styrke, hastighed og teknik." },
+        { to: "/tekniktraening", title: "Tekniktræning", desc: "Drills til spark, footwork og præcision." },
+        { to: "/staevneforberedelse", title: "Stævneforberedelse", desc: "6-ugers peak-plan til konkurrence." },
       ]}
+
     >
       <h2>Bedømmelseskriterier — hvad giver point i poomsae?</h2>
       <p>

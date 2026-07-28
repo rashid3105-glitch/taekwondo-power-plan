@@ -1,7 +1,7 @@
 {
-  "name": "Sportstalent — Taekwondo Training",
+  "name": "Sportstalent — Elite Talent Development",
   "short_name": "Sportstalent",
-  "description": "Sport science strength & conditioning for taekwondo athletes.",
+  "description": "The secure operating system for Danish sports clubs. Plans, data, communication, and athlete development in one place.",
   "start_url": "/dashboard",
   "scope": "/",
   "display": "standalone",

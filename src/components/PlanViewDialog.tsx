@@ -13,10 +13,11 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { localizeExerciseName } from "@/lib/planTranslation";
 
 const TYPE_BADGES: Record<string, { label: string; className: string; icon: typeof Shield }> = {
-  tkd: { label: "Taekwondo", className: "bg-gradient-energy", icon: Shield },
+  tkd: { label: "Technique", className: "bg-gradient-energy", icon: Shield },
   gym: { label: "Gym Session", className: "bg-gradient-power", icon: Dumbbell },
   recovery: { label: "Recovery", className: "bg-speed/20 text-speed", icon: Battery },
 };
+
 
 const CATEGORY_DOT: Record<string, string> = {
   power: "bg-accent",
@@ -275,7 +276,8 @@ function TrainingPlanContent({ plan }: { plan: NonNullable<PlanViewDialogProps["
                               )}
                               {ex.whyItMatters && (
                                 <p className="text-xs text-primary/80">
-                                  <span className="font-semibold text-primary">Why for TKD:</span> {ex.whyItMatters}
+                                  <span className="font-semibold text-primary">Why it matters:</span> {ex.whyItMatters}
+
                                 </p>
                               )}
                               {ex.alternatives?.length > 0 && (
