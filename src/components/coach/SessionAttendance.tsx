@@ -15,7 +15,7 @@ interface Athlete {
   avatar_url: string | null;
 }
 type Status = "present" | "absent" | "late" | "injured";
-interface Record {
+interface AttRecord {
   athlete_id: string;
   status: Status;
   rpe: number | null;
@@ -28,7 +28,7 @@ interface Props {
   onOpenStats?: () => void;
 }
 
-const STATUS_TONE: Record<Status, { dot: string; text: string; chip: string; active: string; hover: string; ring: string }> = {
+const STATUS_TONE: { [K in Status]: , { dot: string; text: string; chip: string; active: string; hover: string; ring: string } = {
   present: {
     dot: "bg-emerald-500",
     text: "text-emerald-500",
@@ -64,7 +64,7 @@ const STATUS_TONE: Record<Status, { dot: string; text: string; chip: string; act
 };
 
 const STATUS_ORDER: Status[] = ["present", "late", "absent", "injured"];
-const STATUS_ICON: Record<Status, typeof Check> = {
+const STATUS_ICON: { [K in Status]: typeof Check } = {
   present: Check,
   late: Clock,
   absent: X,
@@ -75,7 +75,7 @@ export function SessionAttendance({ coachId, athletes, activeClubId, onOpenStats
   const { t } = useLanguage();
   const { toast } = useToast();
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
-  const [records, setRecords] = useState<Map<string, Record>>(new Map());
+  const [records, setRecords] = useState<Map<string, AttRecord>>(new Map());
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -88,7 +88,7 @@ export function SessionAttendance({ coachId, athletes, activeClubId, onOpenStats
       if (activeClubId) q = q.eq("club_id", activeClubId);
       else q = q.eq("coach_id", coachId);
       const { data } = await q;
-      const map = new Map<string, Record>();
+      const map = new Map<string, AttRecord>();
       ((data as any[]) || []).forEach((r) => map.set(r.athlete_id, r as Record));
       setRecords(map);
       setLoading(false);
@@ -97,7 +97,7 @@ export function SessionAttendance({ coachId, athletes, activeClubId, onOpenStats
 
   const setStatus = async (athleteId: string, status: Status) => {
     const existing = records.get(athleteId);
-    const next: Record = { athlete_id: athleteId, status, rpe: existing?.rpe ?? null };
+    const next: AttRecord = { athlete_id: athleteId, status, rpe: existing?.rpe ?? null };
     setRecords(new Map(records).set(athleteId, next));
     const payload: any = { coach_id: coachId, athlete_id: athleteId, session_date: date, status, rpe: next.rpe };
     if (activeClubId) payload.club_id = activeClubId;
