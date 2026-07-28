@@ -4,7 +4,7 @@ import { AvatarImg } from "@/components/AvatarImg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
-import { Loader2, Check, X, Clock, HeartCrack, BarChart3 } from "lucide-react";
+import { Loader2, Check, X, Palmtree, HeartCrack, BarChart3 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -14,7 +14,7 @@ interface Athlete {
   display_name: string;
   avatar_url: string | null;
 }
-type Status = "present" | "absent" | "late" | "injured";
+type Status = "present" | "absent" | "vacation" | "injured";
 interface AttRecord {
   athlete_id: string;
   status: Status;
@@ -37,13 +37,13 @@ const STATUS_TONE: { [K in Status]: { dot: string; text: string; chip: string; a
     hover: "hover:text-emerald-500",
     ring: "border-emerald-500/40",
   },
-  late: {
-    dot: "bg-amber-500",
-    text: "text-amber-500",
-    chip: "bg-amber-500/10 border-amber-500/25 text-amber-500",
-    active: "bg-amber-500 text-white shadow-lg shadow-amber-500/20",
-    hover: "hover:text-amber-500",
-    ring: "border-amber-500/40",
+  vacation: {
+    dot: "bg-sky-500",
+    text: "text-sky-500",
+    chip: "bg-sky-500/10 border-sky-500/25 text-sky-500",
+    active: "bg-sky-500 text-white shadow-lg shadow-sky-500/20",
+    hover: "hover:text-sky-500",
+    ring: "border-sky-500/40",
   },
   absent: {
     dot: "bg-rose-500",
@@ -54,19 +54,19 @@ const STATUS_TONE: { [K in Status]: { dot: string; text: string; chip: string; a
     ring: "border-rose-500/40",
   },
   injured: {
-    dot: "bg-fuchsia-500",
-    text: "text-fuchsia-500",
-    chip: "bg-fuchsia-500/10 border-fuchsia-500/25 text-fuchsia-500",
-    active: "bg-fuchsia-500 text-white shadow-lg shadow-fuchsia-500/20",
-    hover: "hover:text-fuchsia-500",
-    ring: "border-fuchsia-500/40",
+    dot: "bg-amber-400",
+    text: "text-amber-400",
+    chip: "bg-amber-400/10 border-amber-400/25 text-amber-400",
+    active: "bg-amber-400 text-black shadow-lg shadow-amber-400/20",
+    hover: "hover:text-amber-400",
+    ring: "border-amber-400/40",
   },
 };
 
-const STATUS_ORDER: Status[] = ["present", "late", "absent", "injured"];
+const STATUS_ORDER: Status[] = ["present", "vacation", "absent", "injured"];
 const STATUS_ICON: { [K in Status]: typeof Check } = {
   present: Check,
-  late: Clock,
+  vacation: Palmtree,
   absent: X,
   injured: HeartCrack,
 };
@@ -123,7 +123,7 @@ export function SessionAttendance({ coachId, athletes, activeClubId, onOpenStats
     const known = athletes.filter((a) => records.has(a.user_id));
     const present = known.filter((a) => {
       const s = records.get(a.user_id)!.status;
-      return s === "present" || s === "late";
+      return s === "present";
     });
     const rpes = present.map((a) => records.get(a.user_id)!.rpe).filter((v): v is number => typeof v === "number");
     const avgRpe = rpes.length ? (rpes.reduce((s, v) => s + v, 0) / rpes.length) : null;
@@ -131,7 +131,7 @@ export function SessionAttendance({ coachId, athletes, activeClubId, onOpenStats
   }, [athletes, records]);
 
   return (
-    <div className="rounded-3xl border border-border bg-card/60 backdrop-blur-sm overflow-hidden">
+    <div className="rounded-3xl border border-border bg-card/60 overflow-hidden antialiased subpixel-antialiased">
       {/* Header */}
       <div className="p-4 sm:p-6 border-b border-border/60 bg-gradient-to-b from-muted/20 to-transparent">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -141,18 +141,18 @@ export function SessionAttendance({ coachId, athletes, activeClubId, onOpenStats
                 <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-75 animate-ping" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
               </span>
-              <span className="text-[10px] font-black tracking-[0.25em] text-muted-foreground uppercase">
+              <span className="text-[11px] font-semibold tracking-[0.18em] text-muted-foreground uppercase">
                 {t("attendanceLive")}
               </span>
             </div>
-            <h3 className="text-xl sm:text-2xl font-black tracking-tight text-card-foreground">{t("todaysSession")}</h3>
+            <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-card-foreground">{t("todaysSession")}</h3>
           </div>
           <div className="flex items-center gap-2">
             {onOpenStats && (
               <Button
                 variant="outline"
                 size="sm"
-                className="h-11 sm:h-10 rounded-2xl gap-2 px-4 font-bold"
+                className="h-11 sm:h-10 rounded-2xl gap-2 px-4 font-semibold"
                 onClick={onOpenStats}
                 aria-label={t("attendanceStats")}
                 title={t("attendanceStats")}
@@ -165,7 +165,7 @@ export function SessionAttendance({ coachId, athletes, activeClubId, onOpenStats
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-[150px] h-11 sm:h-10 rounded-2xl text-xs font-bold"
+              className="w-[150px] h-11 sm:h-10 rounded-2xl text-xs font-medium"
             />
           </div>
         </div>
@@ -176,11 +176,11 @@ export function SessionAttendance({ coachId, athletes, activeClubId, onOpenStats
             <span
               key={s}
               className={cn(
-                "py-1.5 px-3 rounded-xl border text-[10px] font-black uppercase tracking-widest",
+                "py-1.5 px-3 rounded-xl border text-[11px] font-semibold uppercase tracking-[0.14em]",
                 STATUS_TONE[s].chip,
               )}
             >
-              {t(s === "present" ? "present" : s === "late" ? "late" : s === "absent" ? "absent" : "injured")}
+              {t(s === "present" ? "present" : s === "vacation" ? "vacation" : s === "absent" ? "absent" : "injured")}
             </span>
           ))}
         </div>
@@ -196,7 +196,7 @@ export function SessionAttendance({ coachId, athletes, activeClubId, onOpenStats
           {athletes.map((a) => {
             const rec = records.get(a.user_id);
             const tone = rec ? STATUS_TONE[rec.status] : null;
-            const showRpe = rec && (rec.status === "present" || rec.status === "late");
+            const showRpe = rec?.status === "present";
             const StatusIcon = rec ? STATUS_ICON[rec.status] : null;
             return (
               <div
@@ -224,15 +224,15 @@ export function SessionAttendance({ coachId, athletes, activeClubId, onOpenStats
                       )}
                     </div>
                     <div className="min-w-0">
-                      <h4 className={cn("font-black text-base sm:text-lg tracking-tight truncate", !rec && "text-muted-foreground")}>
+                      <h4 className={cn("font-semibold text-base sm:text-lg tracking-normal truncate", !rec && "text-muted-foreground")}>
                         {a.display_name}
                       </h4>
-                      <span className={cn("text-[10px] font-black uppercase tracking-widest", tone ? tone.text : "text-muted-foreground/60")}>
+                      <span className={cn("text-[11px] font-semibold uppercase tracking-[0.14em]", tone ? tone.text : "text-muted-foreground/60")}>
                         {rec
                           ? rec.status === "present"
                             ? t("attendanceSessionActive")
-                            : rec.status === "late"
-                              ? t("late")
+                            : rec.status === "vacation"
+                              ? t("vacation")
                               : rec.status === "absent"
                                 ? t("absent")
                                 : t("injured")
@@ -246,7 +246,7 @@ export function SessionAttendance({ coachId, athletes, activeClubId, onOpenStats
                     {STATUS_ORDER.map((s) => {
                       const Icon = STATUS_ICON[s];
                       const isActive = rec?.status === s;
-                      const label = s === "present" ? t("present") : s === "late" ? t("late") : s === "absent" ? t("absent") : t("injured");
+                      const label = s === "present" ? t("present") : s === "vacation" ? t("vacation") : s === "absent" ? t("absent") : t("injured");
                       return (
                         <button
                           key={s}
@@ -272,11 +272,11 @@ export function SessionAttendance({ coachId, athletes, activeClubId, onOpenStats
                   <div className="mt-5 rounded-3xl border border-border/60 bg-background/40 p-4 sm:p-5">
                     <div className="flex justify-between items-end mb-4">
                       <div>
-                        <span className="block text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">
+                        <span className="block text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.14em]">
                           {t("trainingIntensity")} (RPE)
                         </span>
                       </div>
-                      <div className="text-3xl font-black tracking-tighter tabular-nums text-card-foreground">
+                      <div className="text-3xl font-bold tracking-tight tabular-nums text-card-foreground">
                         {rec!.rpe ?? "—"}
                         <span className="text-muted-foreground/50 text-base ml-1 font-medium">/10</span>
                       </div>
@@ -290,9 +290,9 @@ export function SessionAttendance({ coachId, athletes, activeClubId, onOpenStats
                       className="w-full"
                     />
                     <div className="flex justify-between mt-3">
-                      <span className="text-[9px] font-black uppercase tracking-widest text-emerald-500/70">{t("attendanceRpeLow")}</span>
-                      <span className="text-[9px] font-black uppercase tracking-widest text-amber-500/70">{t("attendanceRpeModerate")}</span>
-                      <span className="text-[9px] font-black uppercase tracking-widest text-rose-500/70">{t("attendanceRpeMax")}</span>
+                      <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-500/70">{t("attendanceRpeLow")}</span>
+                      <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-500/70">{t("attendanceRpeModerate")}</span>
+                      <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-rose-500/70">{t("attendanceRpeMax")}</span>
                     </div>
                   </div>
                 )}
@@ -306,19 +306,19 @@ export function SessionAttendance({ coachId, athletes, activeClubId, onOpenStats
       {!loading && athletes.length > 0 && (
         <div className="p-4 sm:p-6 border-t border-border/60 bg-background/40 flex flex-wrap gap-6 sm:gap-12">
           <div className="flex flex-col">
-            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.25em] mb-1">
+            <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.16em] mb-1">
               {t("attendanceParticipation")}
             </span>
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-black tabular-nums text-card-foreground">{summary.presentCount}</span>
-              <span className="text-muted-foreground/60 font-black text-xs uppercase">/ {summary.total}</span>
+              <span className="text-2xl font-bold tabular-nums text-card-foreground">{summary.presentCount}</span>
+              <span className="text-muted-foreground/60 font-semibold text-xs uppercase">/ {summary.total}</span>
             </div>
           </div>
           <div className="flex flex-col">
-            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.25em] mb-1">
+            <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.16em] mb-1">
               {t("attendanceTeamRpe")}
             </span>
-            <span className="text-2xl font-black tabular-nums tracking-tighter text-primary">
+            <span className="text-2xl font-bold tabular-nums tracking-tight text-primary">
               {summary.avgRpe !== null ? summary.avgRpe.toFixed(1) : "—"}
             </span>
           </div>
