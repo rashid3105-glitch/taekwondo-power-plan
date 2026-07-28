@@ -17,9 +17,7 @@ import { ClubSwitcher } from "@/components/ClubSwitcher";
 import { WeekTemplateEditor } from "@/components/season/WeekTemplateEditor";
 
 import { toast } from "@/hooks/use-toast";
-import { ArrowLeft, Loader2, Plus, Printer, Trash2, CalendarRange, Eye, ChevronLeft, ChevronRight, ChevronDown, Target, Sparkles, Info } from "lucide-react";
-import { GENERIC_DEFAULT_SCHEDULE } from "@/components/coach/TeamWeeklyScheduleCard";
-import type { DaySchedule } from "@/components/WeekSchedulePicker";
+import { ArrowLeft, Loader2, Plus, Printer, Trash2, CalendarRange, Eye, ChevronLeft, ChevronRight, ChevronDown, Target, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   type ClubSeasonPlan,
