@@ -2,6 +2,10 @@ export type Locale = "en" | "da" | "sv" | "de" | "ar" | "no" | "es";
 
 const translations = {
   en: {
+    antidopingCourse: "Anti-doping course",
+    antidopingCourseDate: "Anti-doping course — date completed",
+    antidopingCourseCompleted: "Completed",
+    antidopingCourseMissing: "Not registered",
     defaultLanguage: "Default language",
     defaultLanguageHint: "Your app will start in this language each time you sign in. You can still switch any time.",
     // Common
@@ -3836,6 +3840,10 @@ const translations = {
     changelogEntry178: "New athletes now join via their club's invitation code. Individual athlete subscription removed — SportsTalent is a club and organization service. Existing club-less athletes keep their access.",
   },
   da: {
+    antidopingCourse: "Antidoping-kursus",
+    antidopingCourseDate: "Antidoping-kursus — dato for gennemførsel",
+    antidopingCourseCompleted: "Gennemført",
+    antidopingCourseMissing: "Ikke registreret",
     defaultLanguage: "Standardsprog",
     defaultLanguageHint: "Appen starter på dette sprog hver gang du logger ind. Du kan stadig skifte når som helst.",
     // Common
@@ -7653,6 +7661,10 @@ const translations = {
     changelogEntry178: "Nye atleter oprettes nu via en klub-invitationskode. Individuelt atlet-abonnement er fjernet — SportsTalent leveres til klubber og organisationer. Eksisterende atleter uden klub beholder deres adgang.",
   },
   sv: {
+    antidopingCourse: "Antidopingkurs",
+    antidopingCourseDate: "Antidopingkurs — datum för genomförande",
+    antidopingCourseCompleted: "Genomförd",
+    antidopingCourseMissing: "Inte registrerad",
     defaultLanguage: "Standardspråk",
     defaultLanguageHint: "Appen startar på detta språk varje gång du loggar in. Du kan fortfarande byta när som helst.",
     // Common
@@ -11429,6 +11441,10 @@ const translations = {
     changelogEntry178: "Nya atleter ansluter nu via sin klubbs inbjudningskod. Individuellt atlet-abonnemang borttaget — SportsTalent är en tjänst för klubbar och organisationer. Befintliga atleter utan klubb behåller sin åtkomst.",
   },
   de: {
+    antidopingCourse: "Anti-Doping-Kurs",
+    antidopingCourseDate: "Anti-Doping-Kurs — Datum des Abschlusses",
+    antidopingCourseCompleted: "Abgeschlossen",
+    antidopingCourseMissing: "Nicht erfasst",
     defaultLanguage: "Standardsprache",
     defaultLanguageHint: "Die App startet bei jeder Anmeldung in dieser Sprache. Du kannst sie jederzeit wechseln.",
     plan: "Plan",
@@ -15155,6 +15171,10 @@ const translations = {
     changelogEntry178: "Neue Athleten treten jetzt über den Einladungscode ihres Vereins bei. Individuelles Athleten-Abonnement entfernt — SportsTalent ist ein Dienst für Vereine und Organisationen. Bestehende Athleten ohne Verein behalten ihren Zugang.",
   },
   ar: {
+    antidopingCourse: "دورة مكافحة المنشطات",
+    antidopingCourseDate: "دورة مكافحة المنشطات — تاريخ الإتمام",
+    antidopingCourseCompleted: "مُنجزة",
+    antidopingCourseMissing: "غير مسجلة",
     onbWelcomeTitle: "مرحبًا بك في Sportstalent",
     onbWelcomeSubtitle: "لنقم بإعداد ملفك الشخصي — يستغرق الأمر أقل من دقيقتين.",
     onbWelcomeCta: "ابدأ",
@@ -18881,6 +18901,10 @@ const translations = {
     changelogEntry178: "ينضم الرياضيون الجدد الآن عبر رمز دعوة النادي. تم إلغاء اشتراك الرياضي الفردي — SportsTalent خدمة للأندية والمنظمات. يحتفظ الرياضيون الحاليون بدون نادٍ بوصولهم.",
   },
   no: {
+    antidopingCourse: "Antidoping-kurs",
+    antidopingCourseDate: "Antidoping-kurs — dato for gjennomføring",
+    antidopingCourseCompleted: "Gjennomført",
+    antidopingCourseMissing: "Ikke registrert",
     onbWelcomeTitle: "Velkommen til Sportstalent",
     onbWelcomeSubtitle: "La oss sette opp profilen din — det tar under 2 minutter.",
     onbWelcomeCta: "Kom i gang",
@@ -22667,6 +22691,10 @@ export type TranslationKey = keyof typeof translations.en;
 // AI-generated plans (training, nutrition, mental, rehab) are produced in
 // Spanish server-side regardless of UI string coverage.
 const esOverrides: Partial<Record<TranslationKey, string>> = {
+  antidopingCourse: "Curso antidopaje",
+  antidopingCourseDate: "Curso antidopaje — fecha de realización",
+  antidopingCourseCompleted: "Completado",
+  antidopingCourseMissing: "No registrado",
   adCertTitle: "Curso y certificado antidopaje",
   adCertIntro: "Realiza el curso oficial de antidopaje en línea, introduce la fecha de la prueba y sube tu certificado aquí.",
   adCertOpenCourse: "Abrir el curso",
