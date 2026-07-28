@@ -500,3 +500,19 @@ body.capacitor {
 [dir="rtl"] .group:hover .group-hover\:translate-x-0\.5 {
   --tw-translate-x: -0.125rem;
 }
+
+/* Make native date/time picker icons visible on dark backgrounds (gold) */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+input[type="month"]::-webkit-calendar-picker-indicator,
+input[type="week"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(72%) sepia(60%) saturate(720%) hue-rotate(3deg) brightness(103%) contrast(96%);
+  opacity: 1;
+  cursor: pointer;
+}
+input[type="date"]::-webkit-calendar-picker-indicator:hover,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover,
+input[type="time"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 0.8;
+}
