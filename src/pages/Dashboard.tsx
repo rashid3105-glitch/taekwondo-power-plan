@@ -594,7 +594,9 @@ export default function Dashboard() {
             .eq("season_plan_id", seasonRow.id);
 
           const hasAnyVisibilitySet = visRows && visRows.length > 0;
-          const athleteIsIncluded = visRows?.some((v: any) => v.athlete_id === user.id) || seasonRow.created_by === user.id;
+          // Coaches/admins always see the club plan — they are the ones creating it.
+          const athleteIsIncluded = visRows?.some((v: any) => v.athlete_id === user.id) || seasonRow.created_by === user.id || coachOrAdmin;
+
 
           if (!hasAnyVisibilitySet || athleteIsIncluded) {
             setClubSeason({
