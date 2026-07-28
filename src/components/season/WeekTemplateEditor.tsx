@@ -3,24 +3,44 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Plus, Trash2, CopyPlus } from "lucide-react";
+import { Loader2, Plus, Trash2, CopyPlus, Shield, Dumbbell, User, Battery, Trophy, ChevronDown } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { GENERIC_DEFAULT_SCHEDULE } from "@/components/coach/TeamWeeklyScheduleCard";
 import type { DaySchedule } from "@/components/WeekSchedulePicker";
 import {
   type ClubSeasonDayTemplate, type SessionType,
-  SESSION_TYPES, sessionLabelKey, sessionRowClass,
+  SESSION_TYPES, sessionLabelKey,
 } from "@/lib/seasonCalendar";
 import { cn } from "@/lib/utils";
 
-const DAY_LABELS_LONG = ["Ma", "Ti", "On", "To", "Fr", "Lø", "Sø"];
+const DAY_LABELS = ["Ma", "Ti", "On", "To", "Fr", "Lø", "Sø"];
+
+const SESSION_ICON: Record<SessionType, typeof Shield> = {
+  tkd: Shield,
+  gym: Dumbbell,
+  styrke: Dumbbell,
+  selftraining: User,
+  "stævne": Trophy,
+  rest: Battery,
+};
+
+/** Solid-ish tint + text color per session type (design tokens only). */
+function chipClass(t: SessionType, active: boolean): string {
+  const base: Record<SessionType, string> = {
+    tkd: "border-primary/50 bg-primary/10 text-primary",
+    gym: "border-accent/50 bg-accent/10 text-accent",
+    styrke: "border-accent/50 bg-accent/10 text-accent",
+    selftraining: "border-self/50 bg-self/10 text-self",
+    "stævne": "border-destructive/50 bg-destructive/10 text-destructive",
+    rest: "border-border bg-muted text-muted-foreground",
+  };
+  return cn(base[t], active && "ring-2 ring-offset-1 ring-offset-background ring-current");
+}
 
 interface Props {
   seasonPlanId: string;
   clubId: string | null;
-  /** Called with the current rows whenever they change, so the calendar grid stays in sync. */
   onTemplateChange: (rows: ClubSeasonDayTemplate[]) => void;
 }
 
@@ -29,6 +49,7 @@ export function WeekTemplateEditor({ seasonPlanId, clubId, onTemplateChange }: P
   const [rows, setRows] = useState<ClubSeasonDayTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
+  const [openDay, setOpenDay] = useState<number | null>(null);
 
   const publish = useCallback((next: ClubSeasonDayTemplate[]) => {
     setRows(next);
@@ -53,11 +74,11 @@ export function WeekTemplateEditor({ seasonPlanId, clubId, onTemplateChange }: P
     setBusy(false);
     if (error) { toast({ title: error.message, variant: "destructive" }); return; }
     publish([...rows, data as ClubSeasonDayTemplate].sort((a, b) => a.day_of_week - b.day_of_week));
+    setOpenDay(dow);
   }
 
   async function updateRow(id: string, patch: Partial<ClubSeasonDayTemplate>) {
-    const next = rows.map((r) => (r.id === id ? { ...r, ...patch } : r));
-    publish(next);
+    publish(rows.map((r) => (r.id === id ? { ...r, ...patch } : r)));
     const { error } = await (supabase.from as any)("club_season_day_templates").update(patch).eq("id", id);
     if (error) toast({ title: error.message, variant: "destructive" });
   }
@@ -111,78 +132,124 @@ export function WeekTemplateEditor({ seasonPlanId, clubId, onTemplateChange }: P
         {t("seasonWeekTemplateHelp")}
       </p>
 
-      <div className="space-y-2">
-        {DAY_LABELS_LONG.map((label, dow) => {
+      {/* Week overview: 7 compact day columns, tap to edit */}
+      <div className="grid grid-cols-7 gap-1">
+        {DAY_LABELS.map((label, dow) => {
           const dayRows = rows.filter((r) => r.day_of_week === dow);
+          const isOpen = openDay === dow;
           return (
-            <div key={dow} className="rounded-md border border-border/60 p-2">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-semibold">{label}</span>
-                <Button
-                  size="icon" variant="ghost" className="h-6 w-6"
-                  disabled={busy}
-                  onClick={() => addSession(dow)}
-                  aria-label={t("seasonWeekTemplateAddSession")}
-                  title={t("seasonWeekTemplateAddSession")}
-                >
-                  <Plus className="h-3.5 w-3.5" />
-                </Button>
-              </div>
-
+            <button
+              key={dow}
+              type="button"
+              onClick={() => setOpenDay(isOpen ? null : dow)}
+              className={cn(
+                "flex flex-col items-center gap-1 rounded-lg border p-1.5 min-h-[62px] transition-colors",
+                isOpen ? "border-primary bg-primary/5" : "border-border/60 hover:bg-muted/50",
+              )}
+            >
+              <span className="text-[10px] font-semibold uppercase text-muted-foreground">{label}</span>
               {dayRows.length === 0 ? (
-                <p className="text-[11px] text-muted-foreground italic">{t("sessionTypeRest")}</p>
+                <span className="text-[10px] text-muted-foreground/60">–</span>
               ) : (
-                <div className="space-y-1.5">
-                  {dayRows.map((r) => (
-                    <div key={r.id} className={cn("rounded p-1.5 space-y-1", sessionRowClass(r.session_type))}>
-                      <div className="flex items-center gap-1">
-                        <Select
-                          value={r.session_type}
-                          onValueChange={(v) => updateRow(r.id, { session_type: v as SessionType })}
-                        >
-                          <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
-                          <SelectContent>
-                            {SESSION_TYPES.map((st) => (
-                              <SelectItem key={st} value={st}>{t(sessionLabelKey(st) as any)}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <Button
-                          size="icon" variant="ghost" className="h-7 w-7 shrink-0"
-                          onClick={() => deleteRow(r.id)}
-                          aria-label={t("delete")} title={t("delete")}
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
-                      </div>
-                      <Input
-                        className="h-7 text-xs"
-                        placeholder={t("seasonWeekTemplateLocation")}
-                        defaultValue={r.location ?? ""}
-                        onBlur={(e) => {
-                          const v = e.target.value.trim();
-                          if (v !== (r.location ?? "")) updateRow(r.id, { location: v || null });
-                        }}
-                      />
-                      <Input
-                        className="h-7 text-xs"
-                        placeholder={t("seasonWeekTemplateNote")}
-                        defaultValue={r.notes ?? ""}
-                        onBlur={(e) => {
-                          const v = e.target.value.trim();
-                          if (v !== (r.notes ?? "")) updateRow(r.id, { notes: v || null });
-                        }}
-                      />
-                    </div>
-                  ))}
+                <div className="flex flex-col items-center gap-0.5">
+                  {dayRows.map((r) => {
+                    const Icon = SESSION_ICON[r.session_type] ?? Shield;
+                    return (
+                      <span
+                        key={r.id}
+                        className={cn("rounded p-0.5 border", chipClass(r.session_type, false))}
+                      >
+                        <Icon className="h-3 w-3" />
+                      </span>
+                    );
+                  })}
                 </div>
               )}
-            </div>
+            </button>
           );
         })}
       </div>
 
-      <Button variant="outline" size="sm" className="w-full" disabled={busy || !clubId} onClick={copyFromClubDefault}>
+      {/* Editor for the selected day */}
+      {openDay !== null && (
+        <div className="rounded-lg border border-primary/40 bg-primary/5 p-2.5 space-y-2 animate-in fade-in slide-in-from-top-1">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold">{DAY_LABELS[openDay]}</span>
+            <button
+              type="button"
+              onClick={() => setOpenDay(null)}
+              className="text-muted-foreground p-1"
+              aria-label={t("close")}
+            >
+              <ChevronDown className="h-4 w-4" />
+            </button>
+          </div>
+
+          {rows.filter((r) => r.day_of_week === openDay).map((r) => (
+            <div key={r.id} className="rounded-md border border-border/60 bg-background p-2 space-y-2">
+              <div className="flex flex-wrap gap-1">
+                {SESSION_TYPES.map((st) => {
+                  const Icon = SESSION_ICON[st] ?? Shield;
+                  const active = r.session_type === st;
+                  return (
+                    <button
+                      key={st}
+                      type="button"
+                      onClick={() => updateRow(r.id, { session_type: st })}
+                      className={cn(
+                        "flex items-center gap-1 rounded-full border px-2 py-1 text-[11px] font-semibold min-h-8",
+                        chipClass(st, active),
+                        !active && "opacity-70",
+                      )}
+                    >
+                      <Icon className="h-3 w-3" />
+                      {t(sessionLabelKey(st) as any)}
+                    </button>
+                  );
+                })}
+                <Button
+                  size="icon" variant="ghost" className="h-8 w-8 ml-auto shrink-0"
+                  onClick={() => deleteRow(r.id)}
+                  aria-label={t("delete")} title={t("delete")}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                <Input
+                  className="h-9 text-sm"
+                  placeholder={t("seasonWeekTemplateLocation")}
+                  defaultValue={r.location ?? ""}
+                  onBlur={(e) => {
+                    const v = e.target.value.trim();
+                    if (v !== (r.location ?? "")) updateRow(r.id, { location: v || null });
+                  }}
+                />
+                <Input
+                  className="h-9 text-sm"
+                  placeholder={t("seasonWeekTemplateNote")}
+                  defaultValue={r.notes ?? ""}
+                  onBlur={(e) => {
+                    const v = e.target.value.trim();
+                    if (v !== (r.notes ?? "")) updateRow(r.id, { notes: v || null });
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+
+          <Button
+            variant="outline" size="sm" className="w-full h-9"
+            disabled={busy}
+            onClick={() => addSession(openDay)}
+          >
+            <Plus className="h-3.5 w-3.5 mr-1" />
+            {t("seasonWeekTemplateAddSession")}
+          </Button>
+        </div>
+      )}
+
+      <Button variant="outline" size="sm" className="w-full h-9" disabled={busy || !clubId} onClick={copyFromClubDefault}>
         {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : <CopyPlus className="h-3.5 w-3.5 mr-1" />}
         {t("seasonWeekTemplateCopyFromClub")}
       </Button>
