@@ -264,7 +264,7 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
     })();
 
     return () => { mounted = false; };
-  }, [clubSeason?.plan?.id, locale]);
+  }, [clubSeason?.plan?.id, locale, t]);
 
 
   const countdown = useMemo(() => {
