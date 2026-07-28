@@ -89,7 +89,7 @@ export function SessionAttendance({ coachId, athletes, activeClubId, onOpenStats
       else q = q.eq("coach_id", coachId);
       const { data } = await q;
       const map = new Map<string, AttRecord>();
-      ((data as any[]) || []).forEach((r) => map.set(r.athlete_id, r as Record));
+      ((data as any[]) || []).forEach((r) => map.set(r.athlete_id, r as AttRecord));
       setRecords(map);
       setLoading(false);
     })();
