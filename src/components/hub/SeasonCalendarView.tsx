@@ -335,11 +335,13 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
                 }}
                 title={wkNum !== null ? (weekFocusMap.get(wkNum)?.teamNote || undefined) : undefined}
                 className={cn(
-                  "min-h-[58px] border-b border-r border-border/30 p-1.5 flex flex-col cursor-pointer transition-colors hover:bg-muted/30",
+                  "min-h-[68px] border-b border-r border-border/30 p-1.5 flex flex-col cursor-pointer transition-colors hover:bg-muted/30",
                   !inSeason && "opacity-30 cursor-default pointer-events-none",
                   isSelected && "ring-2 ring-inset ring-primary",
+                  inSeason && !isCompetition ? sessionRowClass(s?.type) : "",
                   isCompetition ? "bg-destructive/15" : "",
                 )}
+
                 style={phase && inSeason ? { borderBottom: `2px solid ${phase.color}40` } : undefined}
               >
                 <span
