@@ -276,7 +276,8 @@ function TrainingPlanContent({ plan }: { plan: NonNullable<PlanViewDialogProps["
                               )}
                               {ex.whyItMatters && (
                                 <p className="text-xs text-primary/80">
-                                  <span className="font-semibold text-primary">Why for TKD:</span> {ex.whyItMatters}
+                                  <span className="font-semibold text-primary">Why it matters:</span> {ex.whyItMatters}
+
                                 </p>
                               )}
                               {ex.alternatives?.length > 0 && (

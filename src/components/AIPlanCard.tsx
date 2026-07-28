@@ -126,7 +126,8 @@ function renderSessionExercisesPDF(doc: any, session: PlanSession, margin: numbe
         checkSpace(8);
         doc.setFontSize(8);
         doc.setTextColor(0, 130, 130);
-        const whyLines = doc.splitTextToSize(`Why for TKD: ${ex.whyItMatters}`, pageW - 12);
+        const whyLines = doc.splitTextToSize(`Why it matters: ${ex.whyItMatters}`, pageW - 12);
+
         doc.text(whyLines, margin + 10, y);
         y += whyLines.length * 3.5;
         doc.setTextColor(0);
@@ -843,7 +844,8 @@ function AIExerciseRow({ exercise, index, log, pending, onToggleComplete, onUpda
             {exercise.coachingCue}
           </p>
           <p className="text-xs text-primary/80">
-            <span className="font-semibold text-primary">Why for TKD: </span>
+            <span className="font-semibold text-primary">Why it matters: </span>
+
             {exercise.whyItMatters}
           </p>
           {exercise.alternatives?.length > 0 && (
