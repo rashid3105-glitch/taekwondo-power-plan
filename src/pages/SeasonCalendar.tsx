@@ -871,22 +871,15 @@ export default function SeasonCalendar() {
                 </div>
               </Card>
 
-              {/* Info: weekly schedule comes from team standard week */}
-              <Card className="p-3 bg-muted/30 border-dashed">
-                <div className="flex items-start gap-2 text-xs text-muted-foreground">
-                  <Info className="h-3.5 w-3.5 mt-0.5 shrink-0" />
-                  <div className="space-y-1">
-                    <p>{t("seasonWeeklyFromTeam")}</p>
-                    <button
-                      type="button"
-                      onClick={() => navigate("/coach")}
-                      className="text-primary hover:underline font-medium"
-                    >
-                      {t("editTeamWeeklySchedule")} →
-                    </button>
-                  </div>
-                </div>
-              </Card>
+              {/* Weekly session template for this season plan */}
+              {selectedPlanId && (
+                <WeekTemplateEditor
+                  seasonPlanId={selectedPlanId}
+                  clubId={clubId}
+                  onTemplateChange={setTemplate}
+                />
+              )}
+
             </>
           )}
         </aside>
