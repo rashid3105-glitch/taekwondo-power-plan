@@ -179,7 +179,7 @@ export function WeekTemplateEditor({ seasonPlanId, clubId, onTemplateChange }: P
               type="button"
               onClick={() => setOpenDay(null)}
               className="text-muted-foreground p-1"
-              aria-label={t("close")}
+              aria-label={t("cancel")}
             >
               <ChevronDown className="h-4 w-4" />
             </button>
