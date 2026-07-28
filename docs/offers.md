@@ -1,45 +1,36 @@
-# Sportstalent.dk — Tilbud (klub + enkeltatlet)
+# Sportstalent.dk — Priser (klublicens pr. atlet)
 
-> Intern reference. Priser baseret på subscription_tiers. To adskilte produktlinjer; enkeltatlet bevidst begrænset så den ikke kannibaliserer klubsalget.
+> Intern reference. Prisen beregnes pr. atlet med trappemodel og 5% rabat pr. trin. Faktureres årligt.
 
-## Tilbud 1 — Klublicens (op til 25 atleter): "Klub Large"
-Én samlet licens til hele holdet. Coach + op til 25 atleter.
+## Trappemodel (DKK pr. atlet pr. måned)
 
-Inkluderet (alle funktioner):
-- AI-træningsplaner (ubegrænset rimelig brug)
-- Træningsdagbog, readiness & wearables/health-sync
-- Stævnehåndtering + AI-stævneevaluering
-- Mental præstation & coping-værktøjer
-- Antidoping- & kosttilskuds-tjek
-- Video- & matchanalyse (fair-use: 50 GB lagring inkluderet, ~600+ klip)
-- Sæsonkalender, holdoverblik, coach-feedback
-- Flersproget (DA/EN/SV/DE/AR), multi-klub
+| Trin | Antal atleter | Rabat | Pris pr. atlet/md |
+|------|---------------|-------|-------------------|
+| 1 | 1–10  | —    | 49 kr |
+| 2 | 11–20 | 5 %  | 47 kr |
+| 3 | 21–30 | 10 % | 44 kr |
+| 4 | 31–40 | 15 % | 42 kr |
+| 5 | 41–50 | 20 % | 39 kr |
 
-Pris:
-- 1299 DKK/md (månedlig, fleksibel)
-- 12.990 DKK/år — 2 måneder gratis (~1083 DKK/md)
-- Svarer til ~52 DKK pr. atlet/md. Flere end 25 atleter eller tung video: større tier.
+Over 50 atleter / forbund: kontakt kontakt@sportstalent.dk.
 
-## Tilbud 2 — Enkeltatlet (individuel): "Atlet"
-For den selvstændige atlet uden klub.
+## Eksempler
 
-Inkluderet:
-- Træningsdagbog, readiness & health/wearable-sync
-- Stævnehåndtering + AI-stævneevaluering
-- 1 AI-træningsplan ad gangen pr. type
-- Antidoping- & kosttilskuds-tjek (inkluderet af sikkerhedshensyn)
-- Egen fremgangsoversigt
+| Atleter | Sats | Pr. måned | Pr. år (12×) |
+|---------|------|-----------|--------------|
+| 10 | 49 kr | 490 kr   | 5.880 kr  |
+| 20 | 47 kr | 940 kr   | 11.280 kr |
+| 30 | 44 kr | 1.320 kr | 15.840 kr |
+| 40 | 42 kr | 1.680 kr | 20.160 kr |
+| 50 | 39 kr | 1.950 kr | 23.400 kr |
 
-Ikke inkluderet (kræver klublicens):
-- Video- & matchanalyse
-- Ubegrænsede AI-planer
-- Coach-tilknytning, holdoverblik & træner-feedback
-- Mental præstations-modul
+## Inkluderet i alle trin
+- AI-træningsplaner, dagbog, readiness & wearables/health-sync
+- Stævnehåndtering + evaluering, mental præstation, antidoping-tjek
+- Video- & matchanalyse (fair-use: 50 GB lagring)
+- Sæsonkalender, holdoverblik, PDF-rapporter, coach-feedback
+- Flersproget (DA/EN/SV/DE/AR/NO/ES), multi-klub
 
-Pris:
-- 59 DKK/md eller 590 DKK/år (2 måneder gratis)
-- Note: individuelle atleter dirigeres mod klublicens ("Bed din træner om en klublicens").
-
-## Fair-use & marginbeskyttelse
-- Klub-tier: 50 GB video-lagring inkluderet; blød håndtering ved overskridelse (arkivér eller opgradér), ingen hård afskæring midt i sæson.
-- AI-omkostning er ~1-9% af klubprisen i alle realistiske scenarier; ingen optælling nødvendig.
+## Vilkår
+- Faktureres årligt. 30 dages gratis prøveperiode.
+- Rabatten ligger i trappen — årsprisen er 12 × månedsprisen.
