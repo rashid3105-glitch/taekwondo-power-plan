@@ -28,7 +28,7 @@ interface Props {
   onOpenStats?: () => void;
 }
 
-const STATUS_TONE: { [K in Status]: , { dot: string; text: string; chip: string; active: string; hover: string; ring: string } = {
+const STATUS_TONE: { [K in Status]: { dot: string; text: string; chip: string; active: string; hover: string; ring: string } } = {
   present: {
     dot: "bg-emerald-500",
     text: "text-emerald-500",
