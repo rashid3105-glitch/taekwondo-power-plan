@@ -73,9 +73,9 @@ function weekdayLong(locale: string, d: Date = new Date()) {
  * Rendered only when role === "athlete".
  */
 interface ClubSeasonData {
-  plan: any;
-  phases: any[];
-  template: any[];
+  plan: { id: string; start_date: string; end_date: string } | null;
+  phases: { name?: string; focus_tags?: string[]; start_week?: number; end_week?: number }[];
+  template: { day_of_week: number; session_type: string; location?: string; notes?: string }[];
 }
 
 export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData | null }) {
@@ -92,7 +92,6 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
   const [selfLogOpen, setSelfLogOpen] = useState(false);
   const [now, setNow] = useState(() => new Date());
   const [isLoading, setIsLoading] = useState(true);
-  const [planView, setPlanView] = useState<"mine" | "club">("mine");
   const [seasonOverrides, setSeasonOverrides] = useState<AthleteSeasonOverride[]>([]);
   const [competitionDates, setCompetitionDates] = useState<Set<string>>(() => new Set());
 
@@ -132,10 +131,6 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
       tags,
     };
   }, [clubSeason, t, seasonOverrides, competitionDates]);
-
-  const hasBothPlans = !!todayPlan && !!clubToday;
-  const showMine = hasBothPlans ? planView === "mine" : !!todayPlan;
-
 
   // Live countdown tick
   useEffect(() => {
@@ -269,7 +264,7 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
     })();
 
     return () => { mounted = false; };
-  }, [clubSeason?.plan?.id]);
+  }, [clubSeason?.plan?.id, locale, t]);
 
 
   const countdown = useMemo(() => {
@@ -284,8 +279,11 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
 
   
 
-  const accentStyle = { color: "var(--accent-hex)" } as const;
-  const accentLeftBorder = { borderLeft: "3px solid var(--accent-hex)" } as const;
+  const goldStyle = { color: "var(--gold)" } as const;
+  const goldLightStyle = { color: "var(--gold-light)" } as const;
+  const goldBgStyle = { backgroundColor: "var(--gold)" } as const;
+  const goldBorderLeft = { borderLeft: "3px solid var(--gold)" } as const;
+  const goldLightBorderLeft = { borderLeft: "3px solid var(--gold-light)" } as const;
 
   const hasCoachComments = !!latestDiary && latestDiary.comments.length > 0;
   const diaryDateLabel = latestDiary
@@ -297,124 +295,152 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
     ? (latestDiary.content || "").trim().split("\n").slice(0, 2).join(" ").slice(0, 140)
     : "";
 
+  const todayDateLabel = new Date().toLocaleDateString(LOCALE_BCP47[locale] || locale, {
+    day: "numeric",
+    month: "long",
+  });
+
   return (
     <div
-      className="space-y-4 rounded-2xl p-4"
+      className="space-y-5 rounded-2xl p-4"
       style={{ backgroundColor: "#0a0a0a" }}
     >
-      {/* 1. TODAY card — fully clickable */}
-      {isLoading ? (
-        <SkeletonBlock className="h-[112px]" />
-      ) : (
-        <section
-          role="button"
-          tabIndex={0}
-          onClick={() => navigate("/dashboard?tab=plan")}
-          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate("/dashboard?tab=plan"); } }}
-          className="rounded-xl border border-white/10 bg-white/[0.03] p-4 cursor-pointer hover:bg-white/[0.05] transition-colors"
-          style={accentLeftBorder}
+      {/* Header */}
+      <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-[#c9a84c]/20 pb-4">
+        <div>
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white font-['Sora'] uppercase">
+            {t("today").toUpperCase()}<span className="text-[#c9a84c]">.</span>
+          </h1>
+          <p className="text-xs font-bold uppercase tracking-widest text-[#c9a84c]/60 mt-1 font-['Manrope']">
+            {weekdayLong(locale).toUpperCase()} · {todayDateLabel}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => navigate(activeRole === "coach" ? "/coach/today" : "/dashboard?tab=plan")}
+          className="px-4 py-2.5 bg-[#c9a84c] text-[#0d0d0d] font-bold text-xs rounded-lg hover:bg-[#f0d78c] transition-colors flex items-center justify-center gap-2 font-['Manrope']"
         >
-          <div className="flex items-start justify-between gap-3 mb-2">
-            <div className="flex items-center gap-2 min-w-0">
-              <Calendar className="h-4 w-4 shrink-0" style={accentStyle} />
-              <h3 className="text-[11px] font-bold uppercase tracking-wider truncate" style={accentStyle}>
-                {t("today").toUpperCase()} · {weekdayLong(locale).toUpperCase()}
-              </h3>
-            </div>
-            <div className="shrink-0 flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={(e) => { e.stopPropagation(); setSelfLogOpen(true); }}
-                className="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1.5 rounded-lg border border-white/15 bg-white/[0.04] text-white hover:bg-white/[0.08] transition-colors"
-                aria-label={t("hubOwnBtn")}
-              >
-                <UserIcon className="h-3 w-3" /> {t("hubOwnBtn")}
-              </button>
-              {todayPlan && !todayPlan.isRest && showMine && (
-                <span
-                  className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-lg"
-                  style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
-                >
-                  <Play className="h-3 w-3" fill="currentColor" /> Start
-                </span>
-              )}
-            </div>
-          </div>
+          <CalendarCheck className="h-4 w-4" />
+          {activeRole === "coach" ? t("todayTab") : t("hubCheckIn")}
+        </button>
+      </header>
 
-          {hasBothPlans && (
-            <div
-              className="flex items-center gap-1 mb-3 p-0.5 rounded-lg bg-white/[0.05] w-fit"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {(["mine", "club"] as const).map((v) => (
-                <button
-                  key={v}
-                  type="button"
-                  onClick={(e) => { e.stopPropagation(); setPlanView(v); }}
-                  aria-pressed={planView === v}
-                  className={`text-[11px] font-semibold px-3 py-1 rounded-md transition-colors ${
-                    planView === v ? "bg-white/[0.14] text-white" : "text-white/60 hover:text-white/90"
-                  }`}
-                >
-                  {v === "mine" ? t("hubPlanToggleMine") : t("hubPlanToggleClub")}
-                </button>
-              ))}
+      {/* Plans: two separate panels */}
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <SkeletonBlock className="h-40" />
+          <SkeletonBlock className="h-40" />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* My plan */}
+          <section
+            role="button"
+            tabIndex={0}
+            onClick={() => navigate("/dashboard?tab=plan")}
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate("/dashboard?tab=plan"); } }}
+            className="relative overflow-hidden rounded-xl border border-white/10 bg-[#111] p-5 cursor-pointer hover:bg-[#161616] transition-colors"
+            style={goldBorderLeft}
+          >
+            <div className="flex items-start justify-between gap-3 mb-4">
+              <div className="flex items-center gap-2 min-w-0">
+                <Calendar className="h-5 w-5 shrink-0" style={goldStyle} />
+                <h2 className="font-['Sora'] text-lg font-bold text-white uppercase tracking-tight">
+                  {t("hubPlanToggleMine")}
+                </h2>
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-tighter px-2 py-1 rounded border border-[#c9a84c]/30 bg-[#c9a84c]/10 text-[#c9a84c]">
+                {t("hubPlanIndividualBadge")}
+              </span>
             </div>
-          )}
 
-          {showMine && todayPlan ? (
-            todayPlan.isRest ? (
-              <div>
-                <p className="text-sm font-semibold text-white">{t("hubRestDay")}</p>
-                <p className="text-xs text-white/60 mt-1">{t("hubRestDaySub")}</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {todayPlan.sessions.map((s, si) => (
-                  <div key={si} className={si > 0 ? "pt-3 border-t border-white/10" : undefined}>
-                    <p className="text-sm font-semibold text-white">{s.type}</p>
-                    {s.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5 mt-2">
-                        {s.tags.map((tag, i) => (
-                          <span
-                            key={i}
-                            className="text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-md bg-white/[0.06] text-white/70"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                    {s.exercises.length > 0 && (
-                      <ul className="mt-3 space-y-1">
-                        {s.exercises.map((name, i) => (
-                          <li key={i} className="text-xs text-white/80 leading-tight truncate">
-                            • {name}
-                          </li>
-                        ))}
-                        {s.extraCount > 0 && (
-                          <li className="text-xs text-white/50 leading-tight">
-                            +{s.extraCount} {t("hubMoreSuffix")}
-                          </li>
-                        )}
-                      </ul>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )
-          ) : !showMine && clubToday ? (
-            <div>
-              <p className="text-[10px] uppercase tracking-wider text-white/50">
-                {t("hubPlanToggleClub")}
-              </p>
-              {clubToday.isRest ? (
-                <>
-                  <p className="text-sm font-semibold text-white mt-0.5">{t("hubRestDay")}</p>
+            {todayPlan ? (
+              todayPlan.isRest ? (
+                <div>
+                  <p className="text-sm font-semibold text-white">{t("hubRestDay")}</p>
                   <p className="text-xs text-white/60 mt-1">{t("hubRestDaySub")}</p>
-                </>
+                </div>
               ) : (
-                <div className="space-y-2 mt-0.5">
+                <div className="space-y-3">
+                  {todayPlan.sessions.map((s, si) => (
+                    <div key={si} className={si > 0 ? "pt-3 border-t border-white/10" : undefined}>
+                      <p className="text-sm font-semibold text-white">{s.type}</p>
+                      {s.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mt-2">
+                          {s.tags.map((tag, i) => (
+                            <span
+                              key={i}
+                              className="text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-md bg-white/[0.06] text-white/70"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      {s.exercises.length > 0 && (
+                        <ul className="mt-3 space-y-1">
+                          {s.exercises.map((name, i) => (
+                            <li key={i} className="text-xs text-white/80 leading-tight truncate">
+                              • {name}
+                            </li>
+                          ))}
+                          {s.extraCount > 0 && (
+                            <li className="text-xs text-white/50 leading-tight">
+                              +{s.extraCount} {t("hubMoreSuffix")}
+                            </li>
+                          )}
+                        </ul>
+                      )}
+                    </div>
+                  ))}
+                  <div className="pt-2">
+                    <span
+                      className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-lg"
+                      style={{ backgroundColor: "var(--gold)", color: "#000" }}
+                    >
+                      <Play className="h-3 w-3" fill="currentColor" /> {t("startSession")}
+                    </span>
+                  </div>
+                </div>
+              )
+            ) : (
+              <EmptyState
+                icon={<CalendarX size={24} style={goldStyle} />}
+                text={t("hubNoSessionToday")}
+                sub={t("hubCheckPlan")}
+              />
+            )}
+          </section>
+
+          {/* Team plan */}
+          <section
+            role="button"
+            tabIndex={0}
+            onClick={() => navigate("/dashboard?tab=calendar")}
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate("/dashboard?tab=calendar"); } }}
+            className="relative overflow-hidden rounded-xl border border-white/10 bg-[#111] p-5 cursor-pointer hover:bg-[#161616] transition-colors"
+            style={goldLightBorderLeft}
+          >
+            <div className="flex items-start justify-between gap-3 mb-4">
+              <div className="flex items-center gap-2 min-w-0">
+                <BookOpen className="h-5 w-5 shrink-0" style={goldLightStyle} />
+                <h2 className="font-['Sora'] text-lg font-bold text-white uppercase tracking-tight">
+                  {t("hubPlanToggleClub")}
+                </h2>
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-tighter px-2 py-1 rounded border border-[#f0d78c]/30 bg-[#f0d78c]/10 text-[#f0d78c]">
+                {t("hubPlanClubBadge")}
+              </span>
+            </div>
+
+            {clubToday ? (
+              clubToday.isRest ? (
+                <div>
+                  <p className="text-sm font-semibold text-white">{t("hubRestDay")}</p>
+                  <p className="text-xs text-white/60 mt-1">{t("hubRestDaySub")}</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
                   {clubToday.sessions.map((s, i) => (
                     <div key={i}>
                       <p className="text-sm font-semibold text-white">
@@ -431,212 +457,244 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
                       )}
                     </div>
                   ))}
+                  {clubToday.phaseName && (
+                    <p className="text-xs text-white/60 mt-1">{clubToday.phaseName}</p>
+                  )}
+                  {clubToday.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {clubToday.tags.map((tag, i) => (
+                        <span
+                          key={i}
+                          className="text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-md bg-white/[0.06] text-white/70"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              )}
-              {clubToday.phaseName && (
-                <p className="text-xs text-white/60 mt-1">{clubToday.phaseName}</p>
-              )}
-              {clubToday.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 mt-2">
-                  {clubToday.tags.map((tag, i) => (
-                    <span
-                      key={i}
-                      className="text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-md bg-white/[0.06] text-white/70"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-          ) : (
-
-            <EmptyState
-              icon={<CalendarX size={24} style={accentStyle} />}
-              text={t("hubNoSessionToday")}
-              sub={t("hubCheckPlan")}
-            />
-          )}
-        </section>
-      )}
-
-      {/* 2. Next event — fully clickable */}
-      {isLoading ? (
-        <SkeletonBlock className="h-[140px]" />
-      ) : (
-        <section
-          role="button"
-          tabIndex={0}
-          onClick={() => navigate("/competitions")}
-          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate("/competitions"); } }}
-          className="rounded-xl border border-white/10 bg-white/[0.03] p-4 cursor-pointer hover:bg-white/[0.05] transition-colors"
-          style={accentLeftBorder}
-        >
-          <div className="flex items-center gap-2 mb-2">
-            <Trophy className="h-4 w-4" style={accentStyle} />
-            <h3 className="text-[11px] font-bold uppercase tracking-wider" style={accentStyle}>
-              {t("nextEventTitle")}
-            </h3>
-          </div>
-          {nextCompetition && countdown ? (
-            <div>
-              <p className="text-sm font-semibold text-white">{nextCompetition.name}</p>
-              <p className="text-xs text-white/60 mt-1">
-                {nextCompetition.dateLabel}{nextCompetition.location ? ` · ${nextCompetition.location}` : ""}
-              </p>
-              <div className="grid grid-cols-3 gap-2 mt-3">
-                <CountBox value={countdown.days} label={t("hubCountDays")} accentStyle={accentStyle} />
-                <CountBox value={countdown.hours} label={t("hubCountHours")} accentStyle={accentStyle} />
-                <CountBox value={countdown.minutes} label={t("hubCountMinutes")} accentStyle={accentStyle} />
-              </div>
-            </div>
-          ) : (
-            <EmptyState
-              icon={<Trophy size={24} style={accentStyle} />}
-              text={t("hubNoUpcomingComp")}
-              sub={t("hubAddNextComp")}
-            />
-          )}
-        </section>
-      )}
-
-      {/* 3. Diary — write new / view latest */}
-      {diaryLoading ? (
-        <SkeletonBlock className="h-[96px]" />
-      ) : latestDiary ? (
-        <section
-          role="button"
-          tabIndex={0}
-          onClick={() => setDiaryOpen(true)}
-          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setDiaryOpen(true); } }}
-          className="relative rounded-xl border border-white/10 bg-white/[0.03] p-4 cursor-pointer hover:bg-white/[0.05] transition-colors"
-        >
-          <div className="flex items-center gap-2 mb-2">
-            <NotebookPen className="h-4 w-4" style={accentStyle} />
-            <h3 className="text-[11px] font-bold uppercase tracking-wider" style={accentStyle}>
-              {t("diaryWriteOrLatest")}
-            </h3>
-            {hasCoachComments && (
-              <span
-                aria-label={t("hubCoachComments")}
-                className="ml-auto h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.7)]"
+              )
+            ) : (
+              <EmptyState
+                icon={<CalendarX size={24} style={goldLightStyle} />}
+                text={t("hubNoSessionToday")}
+                sub={t("hubCheckPlan")}
               />
             )}
-          </div>
-          <p className="text-[11px] text-white/50">{diaryDateLabel}</p>
-          <p className="text-sm text-white mt-1 line-clamp-2">
-            {diaryPreview || <span className="text-white/50 italic">{t("hubEmptyEntry")}</span>}
-          </p>
-        </section>
-      ) : (
-        <section
-          role="button"
-          tabIndex={0}
-          onClick={() => navigate("/diary")}
-          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate("/diary"); } }}
-          className="rounded-xl border border-white/10 bg-white/[0.03] p-4 cursor-pointer hover:bg-white/[0.05] transition-colors"
-        >
-          <div className="flex items-center gap-2 mb-2">
-            <NotebookPen className="h-4 w-4" style={accentStyle} />
-            <h3 className="text-[11px] font-bold uppercase tracking-wider" style={accentStyle}>
-              {t("diaryWriteOrLatest")}
-            </h3>
-          </div>
-          <EmptyState
-            icon={<Book size={24} style={accentStyle} />}
-            text={t("hubNoDiaryYet")}
-          />
-        </section>
+          </section>
+        </div>
       )}
 
-      {/* 4. Messages */}
-      {isLoading ? (
-        <SkeletonBlock className="h-[72px]" />
-      ) : totalUnread > 0 ? (
-        <section className="rounded-xl border border-white/10 bg-white/[0.03] p-4 flex items-center gap-3">
-          <div className="h-9 w-9 rounded-lg bg-white/[0.06] flex items-center justify-center relative">
-            <MessageCircle className="h-4 w-4" style={accentStyle} />
-            <span
-              className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center text-black"
-              style={{ backgroundColor: "var(--accent-hex)" }}
-            >
-              {totalUnread}
-            </span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-white">{totalUnread} {t("hubUnreadMessages")}</p>
-            <p className="text-xs text-white/60">{t("hubFromCoach")}</p>
-          </div>
-          <button
-            type="button"
-            onClick={() => navigate("/messages")}
-            className="text-xs font-semibold px-3 py-1.5 rounded-lg"
-            style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
+      {/* Diary + Messages side-by-side */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Diary */}
+        {diaryLoading ? (
+          <SkeletonBlock className="h-32" />
+        ) : latestDiary ? (
+          <section
+            role="button"
+            tabIndex={0}
+            onClick={() => setDiaryOpen(true)}
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setDiaryOpen(true); } }}
+            className="relative rounded-xl border border-white/10 bg-[#111] p-5 cursor-pointer hover:bg-[#161616] transition-colors"
+            style={goldBorderLeft}
           >
-            {t("hubSeeMessages")}
-          </button>
-        </section>
-      ) : (
-        <section className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
-          <EmptyState
-            icon={<MessageCircle size={24} style={accentStyle} />}
-            text={t("hubNoNewMessages")}
-          />
-        </section>
-      )}
-
-      {/* 5. Quick access */}
-      <section className="grid grid-cols-2 gap-3">
-        {activeRole === "coach" ? (
-          <>
-            <button
-              type="button"
-              onClick={() => navigate("/library/testing")}
-              className="rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white"
-            >
-              <ClipboardList className="h-4 w-4" style={accentStyle} />
-              {t("ptTestingButton")}
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate("/match-analysis/me")}
-              className="rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white"
-            >
-              <Video className="h-4 w-4" style={accentStyle} />
-              {t("hubVideoAnalysis")}
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate("/coach/today")}
-              className="col-span-2 rounded-xl p-4 flex items-center gap-2 font-semibold text-sm"
-              style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
-            >
-              <CalendarCheck className="h-4 w-4" />
-              {t("todayTab")}
-            </button>
-          </>
+            <div className="flex items-center gap-2 mb-3">
+              <NotebookPen className="h-5 w-5" style={goldStyle} />
+              <h2 className="font-['Sora'] text-lg font-bold text-white uppercase tracking-tight">
+                {t("diaryWriteOrLatest")}
+              </h2>
+              {hasCoachComments && (
+                <span
+                  aria-label={t("hubCoachComments")}
+                  className="ml-auto h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.7)]"
+                />
+              )}
+            </div>
+            <p className="text-[11px] text-white/50">{diaryDateLabel}</p>
+            <p className="text-sm text-white mt-1 line-clamp-2">
+              {diaryPreview || <span className="text-white/50 italic">{t("hubEmptyEntry")}</span>}
+            </p>
+          </section>
         ) : (
-          <>
-            <button
-              type="button"
-              onClick={() => navigate("/dashboard?tab=progress")}
-              className="rounded-xl p-4 flex items-center gap-2 font-semibold text-sm"
-              style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
-            >
-              <BarChart3 className="h-4 w-4" />
-              {t("progress")}
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate("/match-analysis/me")}
-              className="rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white"
-            >
-              <Video className="h-4 w-4" style={accentStyle} />
-              {t("hubVideoAnalysis")}
-            </button>
-          </>
+          <section
+            role="button"
+            tabIndex={0}
+            onClick={() => navigate("/diary")}
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate("/diary"); } }}
+            className="rounded-xl border border-white/10 bg-[#111] p-5 cursor-pointer hover:bg-[#161616] transition-colors"
+            style={goldBorderLeft}
+          >
+            <div className="flex items-center gap-2 mb-3">
+              <NotebookPen className="h-5 w-5" style={goldStyle} />
+              <h2 className="font-['Sora'] text-lg font-bold text-white uppercase tracking-tight">
+                {t("diaryWriteOrLatest")}
+              </h2>
+            </div>
+            <EmptyState
+              icon={<Book size={24} style={goldStyle} />}
+              text={t("hubNoDiaryYet")}
+            />
+          </section>
         )}
-      </section>
+
+        {/* Messages */}
+        {isLoading ? (
+          <SkeletonBlock className="h-32" />
+        ) : totalUnread > 0 ? (
+          <section
+            role="button"
+            tabIndex={0}
+            onClick={() => navigate("/messages")}
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate("/messages"); } }}
+            className="rounded-xl border border-white/10 bg-[#111] p-5 cursor-pointer hover:bg-[#161616] transition-colors flex flex-col justify-between"
+            style={goldLightBorderLeft}
+          >
+            <div className="flex items-center gap-2 mb-3">
+              <div className="h-9 w-9 rounded-lg bg-white/[0.06] flex items-center justify-center relative">
+                <MessageCircle className="h-5 w-5" style={goldLightStyle} />
+                <span
+                  className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center text-black"
+                  style={{ backgroundColor: "var(--gold)" }}
+                >
+                  {totalUnread}
+                </span>
+              </div>
+              <h2 className="font-['Sora'] text-lg font-bold text-white uppercase tracking-tight">
+                {t("messages")}
+              </h2>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-white">{totalUnread} {t("hubUnreadMessages")}</p>
+              <p className="text-xs text-white/60">{t("hubFromCoach")}</p>
+            </div>
+            <div className="pt-3">
+              <span
+                className="inline-flex items-center text-xs font-bold px-3 py-1.5 rounded-lg"
+                style={{ backgroundColor: "var(--gold)", color: "#000" }}
+              >
+                {t("hubSeeMessages")}
+              </span>
+            </div>
+          </section>
+        ) : (
+          <section
+            role="button"
+            tabIndex={0}
+            onClick={() => navigate("/messages")}
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate("/messages"); } }}
+            className="rounded-xl border border-white/10 bg-[#111] p-5 cursor-pointer hover:bg-[#161616] transition-colors"
+            style={goldLightBorderLeft}
+          >
+            <div className="flex items-center gap-2 mb-3">
+              <MessageCircle className="h-5 w-5" style={goldLightStyle} />
+              <h2 className="font-['Sora'] text-lg font-bold text-white uppercase tracking-tight">
+                {t("messages")}
+              </h2>
+            </div>
+            <EmptyState
+              icon={<MessageCircle size={24} style={goldLightStyle} />}
+              text={t("hubNoNewMessages")}
+            />
+          </section>
+        )}
+      </div>
+
+      {/* Next event + quick access */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Next event */}
+        {isLoading ? (
+          <SkeletonBlock className="h-40" />
+        ) : (
+          <section
+            role="button"
+            tabIndex={0}
+            onClick={() => navigate("/competitions")}
+            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate("/competitions"); } }}
+            className="rounded-xl border border-white/10 bg-[#111] p-5 cursor-pointer hover:bg-[#161616] transition-colors"
+            style={goldBorderLeft}
+          >
+            <div className="flex items-center gap-2 mb-3">
+              <Trophy className="h-5 w-5" style={goldStyle} />
+              <h2 className="font-['Sora'] text-lg font-bold text-white uppercase tracking-tight">
+                {t("nextEventTitle")}
+              </h2>
+            </div>
+            {nextCompetition && countdown ? (
+              <div>
+                <p className="text-sm font-semibold text-white">{nextCompetition.name}</p>
+                <p className="text-xs text-white/60 mt-1">
+                  {nextCompetition.dateLabel}{nextCompetition.location ? ` · ${nextCompetition.location}` : ""}
+                </p>
+                <div className="grid grid-cols-3 gap-2 mt-3">
+                  <CountBox value={countdown.days} label={t("hubCountDays")} accentStyle={goldStyle} />
+                  <CountBox value={countdown.hours} label={t("hubCountHours")} accentStyle={goldStyle} />
+                  <CountBox value={countdown.minutes} label={t("hubCountMinutes")} accentStyle={goldStyle} />
+                </div>
+              </div>
+            ) : (
+              <EmptyState
+                icon={<Trophy size={24} style={goldStyle} />}
+                text={t("hubNoUpcomingComp")}
+                sub={t("hubAddNextComp")}
+              />
+            )}
+          </section>
+        )}
+
+        {/* Quick access */}
+        <section className="grid grid-cols-2 gap-3">
+          {activeRole === "coach" ? (
+            <>
+              <button
+                type="button"
+                onClick={() => navigate("/library/testing")}
+                className="rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white hover:bg-white/[0.08] transition-colors"
+              >
+                <ClipboardList className="h-4 w-4" style={goldStyle} />
+                {t("ptTestingButton")}
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate("/match-analysis/me")}
+                className="rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white hover:bg-white/[0.08] transition-colors"
+              >
+                <Video className="h-4 w-4" style={goldStyle} />
+                {t("hubVideoAnalysis")}
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate("/coach/today")}
+                className="col-span-2 rounded-xl p-4 flex items-center gap-2 font-semibold text-sm hover:opacity-90 transition-opacity"
+                style={{ backgroundColor: "var(--gold)", color: "#000" }}
+              >
+                <CalendarCheck className="h-4 w-4" />
+                {t("todayTab")}
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={() => navigate("/dashboard?tab=progress")}
+                className="rounded-xl p-4 flex items-center gap-2 font-semibold text-sm hover:opacity-90 transition-opacity"
+                style={{ backgroundColor: "var(--gold)", color: "#000" }}
+              >
+                <BarChart3 className="h-4 w-4" />
+                {t("progress")}
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate("/match-analysis/me")}
+                className="rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white hover:bg-white/[0.08] transition-colors"
+              >
+                <Video className="h-4 w-4" style={goldStyle} />
+                {t("hubVideoAnalysis")}
+              </button>
+            </>
+          )}
+        </section>
+      </div>
 
       {/* Diary read-only modal */}
       <Dialog open={diaryOpen} onOpenChange={setDiaryOpen}>
@@ -674,8 +732,8 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
               <button
                 type="button"
                 onClick={() => { setDiaryOpen(false); navigate("/diary"); }}
-                className="w-full rounded-xl p-3 font-semibold text-sm"
-                style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}
+                className="w-full rounded-xl p-3 font-semibold text-sm hover:opacity-90 transition-opacity"
+                style={{ backgroundColor: "var(--gold)", color: "#000" }}
               >
                 {t("hubOpenInDiary")}
               </button>
