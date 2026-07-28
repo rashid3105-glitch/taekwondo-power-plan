@@ -2,7 +2,8 @@
 
 > Operating System for Elite Talent Development in Danish Clubs. A secure, GDPR-compliant platform for plans, athlete data, communication, and progress tracking — built by a 40-year veteran coach.
 
-Sportstalent helps sports clubs run their roster, build periodized training programs, monitor athlete readiness, and turn every event into a structured lesson. The platform is bilingual (Danish, English, Swedish, German, Norwegian, Arabic) and works offline in the gym or on the field.
+Sportstalent helps Danish sports clubs run their roster, build periodized training programs, monitor athlete readiness, and turn every event into a structured lesson. The platform is multilingual (Danish, English, Swedish, German, Norwegian, Arabic, Spanish) and works offline in the gym or on the field.
+
 
 ## Pages
 
