@@ -444,9 +444,13 @@ export default function Dashboard() {
           .select("athlete_id")
           .eq("season_plan_id", seasonRow.id);
         if (cancelled) return;
+        // Coaches/admins always see the club plan — they are the ones creating it.
+        const { data: roleRows } = await supabase.from("user_roles").select("role").eq("user_id", user.id);
+        const isCoachOrAdmin = roleRows?.some((r: any) => r.role === "coach" || r.role === "admin") ?? false;
         const hasAnyVisibilitySet = visRows && visRows.length > 0;
-        const athleteIsIncluded = visRows?.some((v: any) => v.athlete_id === user.id) || seasonRow.created_by === user.id;
+        const athleteIsIncluded = visRows?.some((v: any) => v.athlete_id === user.id) || seasonRow.created_by === user.id || isCoachOrAdmin;
         if (!hasAnyVisibilitySet || athleteIsIncluded) {
+
           setClubSeason({
             plan: seasonRow,
             phases: seasonRow.club_season_phases || [],
