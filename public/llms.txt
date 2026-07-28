@@ -10,7 +10,7 @@ Sportstalent helps Danish sports clubs run their roster, build periodized traini
 - [Home](/): Operating system overview for sports clubs and elite talent development.
 - [Programs](/programs): Periodized training programs — competition prep, general S&C, technical development.
 - [Methodology](/methodology): The sport science behind the periodization, readiness and rehab models.
-- [Pricing](/pricing): Personal and Coach plans for athletes and clubs.
+- [Pricing](/pricing): Club-only plans for Danish sports clubs.
 - [About](/about): Mission, vision and the veteran coaching team behind Sportstalent.
 - [Contact](/contact): Get in touch.
 - [Help Center](/help): Feature guides and changelog.
