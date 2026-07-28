@@ -280,16 +280,29 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
         );
       })()}
 
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden season-print-area">
         <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={prevMonth} aria-label={t("iconHintPrevious")} title={t("iconHintPrevious")}>
+          <Button variant="ghost" size="icon" className="h-8 w-8 print:hidden" onClick={prevMonth} aria-label={t("iconHintPrevious")} title={t("iconHintPrevious")}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <span className="font-semibold text-sm">{MONTH_NAMES[viewMonth]} {viewYear}</span>
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={nextMonth} aria-label={t("next")} title={t("next")}>
-            <ChevronRight className="h-4 w-4" />
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" className="h-8 w-8 print:hidden" onClick={nextMonth} aria-label={t("next")} title={t("next")}>
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8 print:hidden"
+              onClick={() => window.print()}
+              aria-label={t("seasonPrint")}
+              title={t("seasonPrint")}
+            >
+              <Printer className="h-4 w-4 text-primary" />
+            </Button>
+          </div>
         </div>
+
 
         <div className="grid grid-cols-7 border-b border-border">
           {DAY_LABELS_SHORT.map(d => (
