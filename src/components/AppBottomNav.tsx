@@ -14,12 +14,12 @@ const HIDDEN_PREFIXES = [
   "/reset-password", "/pending-approval", "/onboarding", "/consent",
   "/blog", "/pricing", "/priser", "/privacy", "/terms", "/about", "/contact",
   "/programs", "/platform", "/methodology", "/for-traenere", "/help",
-  "/funktioner", "/features", "/poomsae", "/staevneforberedelse-taekwondo",
-  "/taekwondo-teknik", "/taekwondo-training-program", "/taekwondo-traeningsprogram",
-  "/fysisk-test-taekwondo",
+  "/funktioner", "/features", "/poomsae", "/staevneforberedelse",
+  "/tekniktraening", "/traeningsprogram", "/fysiske-test",
   "/unsubscribe", "/payment-success", "/mockup", "/athlete", "/match/share",
   "/admin", "/parent-dashboard", "/install", "/kostplan",
 ];
+
 
 const EXACT_HIDDEN = new Set(["/", "/dashboard"]);
 

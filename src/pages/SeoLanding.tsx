@@ -62,10 +62,11 @@ const SeoLanding = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col relative">
       <PageMeta
-        title="Smart Training Program for Taekwondo Athletes | Sportstalent"
-        description="Get a structured strength and conditioning program tailored to your taekwondo training. Improve performance, reduce injuries, and train smarter with Sportstalent."
-        canonical="https://sportstalent.dk/taekwondo-training-program"
+        title="Smart Training Program for Athletes | Sportstalent"
+        description="Get a structured strength and conditioning program tailored to your sport training. Improve performance, reduce injuries, and train smarter with Sportstalent."
+        canonical="https://sportstalent.dk/traeningsprogram"
       />
+
       <Watermark />
 
       {/* JSON-LD */}

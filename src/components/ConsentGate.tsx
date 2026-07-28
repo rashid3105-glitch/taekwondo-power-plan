@@ -16,9 +16,11 @@ const PUBLIC_PREFIXES = [
 ];
 const PUBLIC_EXACT = new Set([
   "/", "/v1", "/v2", "/pricing", "/help", "/about", "/contact",
-  "/methodology", "/programs", "/signup/coach", "/taekwondo-training-program",
+  "/methodology", "/programs", "/signup/coach", "/traeningsprogram",
+  "/tekniktraening", "/staevneforberedelse", "/fysiske-test", "/poomsae",
   "/payment-success",
 ]);
+
 
 const isPublicRoute = (pathname: string) => {
   if (PUBLIC_EXACT.has(pathname)) return true;

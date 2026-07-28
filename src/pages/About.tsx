@@ -11,7 +11,7 @@ export default function About() {
   const { t, locale } = useLanguage();
 
   const VALUES = [
-    { icon: "🥋", title: t("aboutV1Title"), desc: t("aboutV1Desc") },
+    { icon: "🎯", title: t("aboutV1Title"), desc: t("aboutV1Desc") },
     { icon: "📊", title: t("aboutV2Title"), desc: t("aboutV2Desc") },
     { icon: "🤝", title: t("aboutV3Title"), desc: t("aboutV3Desc") },
     { icon: "🏆", title: t("aboutV4Title"), desc: t("aboutV4Desc") },
@@ -51,7 +51,7 @@ export default function About() {
 
       <section style={{ padding: "80px 32px", textAlign: "center", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
         <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(245,200,66,0.1)", border: "0.5px solid rgba(245,200,66,0.28)", borderRadius: 20, padding: "4px 14px", fontSize: 11, color: GOLD, fontWeight: 700, letterSpacing: "0.08em", marginBottom: 24 }}>
-          🥋 {t("aboutBadge")}
+          🏅 {t("aboutBadge")}
         </div>
         <h1 style={{ fontSize: "clamp(32px,5vw,54px)", fontWeight: 900, lineHeight: 1.07, letterSpacing: "-0.04em", margin: "0 0 20px", maxWidth: 640, marginLeft: "auto", marginRight: "auto" }}>
           {t("aboutH1a")}<br /><span style={{ color: GOLD }}>{t("aboutH1b")}</span>

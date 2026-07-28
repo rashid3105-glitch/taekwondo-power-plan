@@ -8,8 +8,9 @@ const jsonLd = {
     "Komplet 6-ugers stævneforberedelse i taekwondo: periodisering, taper, vægtstyring, mental træning og drills til stævnedagen.",
   author: { "@type": "Organization", name: "Sportstalent" },
   publisher: { "@type": "Organization", name: "Sportstalent" },
-  mainEntityOfPage: "https://sportstalent.dk/staevneforberedelse-taekwondo",
+  mainEntityOfPage: "https://sportstalent.dk/staevneforberedelse",
   inLanguage: "da",
+
 };
 
 export default function StaevneforberedelseTaekwondo() {
@@ -17,20 +18,21 @@ export default function StaevneforberedelseTaekwondo() {
     <SeoArticleShell
       title="Stævneforberedelse taekwondo — 6-ugers peak-plan"
       description="Komplet guide til stævneforberedelse i taekwondo: 6-ugers peak-plan, taper, vægtstyring, mental træning, sparringsdrills og tjekliste til stævnedagen."
-      canonical="https://sportstalent.dk/staevneforberedelse-taekwondo"
+      canonical="https://sportstalent.dk/staevneforberedelse"
       breadcrumbLabel="Stævneforberedelse"
-      h1="Stævneforberedelse i taekwondo — 6-ugers peak-plan"
+      h1="Stævneforberedelse — 6-ugers peak-plan"
       jsonLd={jsonLd}
       intro={
         <>
-          Stævneforberedelse er ikke "træn hårdere". Det er <strong>periodisering, taper, teknisk skarphed og mental parathed</strong> — timet så du toppes præcis på stævnedagen. Her er 6-ugers planen.
+          Konkurrenceforberedelse er ikke "træn hårdere". Det er <strong>periodisering, taper, teknisk skarphed og mental parathed</strong> — timet så du topper præcis på konkurrencedagen. Her er 6-ugers planen, vist med taekwondo som eksempel.
         </>
       }
       related={[
-        { to: "/taekwondo-traeningsprogram", title: "Taekwondo træningsprogram", desc: "Årsplanen som fører til stævne-peak." },
-        { to: "/taekwondo-teknik", title: "Taekwondo teknik", desc: "Drills der virker i sparring." },
-        { to: "/poomsae", title: "Poomsae", desc: "Peak-plan for formløb-stævner." },
+        { to: "/traeningsprogram", title: "Træningsprogram", desc: "Årsplanen som fører til konkurrence-peak." },
+        { to: "/tekniktraening", title: "Tekniktræning", desc: "Drills der virker under pres." },
+        { to: "/poomsae", title: "Poomsae", desc: "Peak-plan for formløb-konkurrencer." },
       ]}
+
     >
       <h2>Principperne bag et vellykket peak</h2>
       <ul>

@@ -1,6 +1,6 @@
 import { SeoArticleShell } from "@/components/seo/SeoArticleShell";
 
-const canonical = "https://sportstalent.dk/fysisk-test-taekwondo";
+const canonical = "https://sportstalent.dk/fysiske-test";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -31,11 +31,12 @@ export default function FysiskTestTaekwondo() {
       }
       jsonLd={jsonLd}
       related={[
-        { to: "/taekwondo-traeningsprogram", title: "Taekwondo træningsprogram", desc: "Periodiseret program tilpasset klubtræningen." },
-        { to: "/taekwondo-teknik", title: "Teknik og kvalitet", desc: "Sådan kobles teknisk arbejde til fysisk kapacitet." },
-        { to: "/staevneforberedelse-taekwondo", title: "Stævneforberedelse", desc: "Peaking og nedtrapning frem mod konkurrence." },
+        { to: "/traeningsprogram", title: "Træningsprogram", desc: "Periodiseret program tilpasset klubtræningen." },
+        { to: "/tekniktraening", title: "Teknik og kvalitet", desc: "Sådan kobles teknisk arbejde til fysisk kapacitet." },
+        { to: "/staevneforberedelse", title: "Stævneforberedelse", desc: "Peaking og nedtrapning frem mod konkurrence." },
         { to: "/platform/coach-dashboard", title: "Trænerens overblik", desc: "Registrér tests og følg udviklingen for hele holdet." },
       ]}
+
     >
       <h2>Hvorfor teste?</h2>
       <p>

@@ -89,8 +89,8 @@ const en: CLStrings = {
   navLogin: "Log in",
   navGetStarted: "Get Started",
 
-  heroBadge: "BUILT FOR TAEKWONDO COACHES",
-  heroTitle: "Coaching Platform for Taekwondo Clubs",
+  heroBadge: "THE OPERATING SYSTEM FOR ELITE TALENT DEVELOPMENT",
+  heroTitle: "Coaching Platform for Danish Sports Clubs",
   heroPhrases: [
     "You have time for 3.",
     "Sportstalent changes that.",
@@ -117,9 +117,9 @@ const en: CLStrings = {
   mockTrimpDay: "TRIMP/day",
 
   trustEyebrow: "Trusted by",
-  trustLine: "Used by clubs specialized in sparring and poomsae — and built so any club can benefit.",
+  trustLine: "Trusted by Danish sports clubs to run elite talent development — GDPR compliant and locally owned.",
 
-  featuresTitle1: "Everything your club needs.",
+  featuresTitle1: "Everything your club needs to develop elite talent.",
   featuresTitle2: "Nothing it doesn't.",
   features: [
     {
@@ -249,8 +249,8 @@ const da: CLStrings = {
   navLogin: "Log ind",
   navGetStarted: "Kom i gang",
 
-  heroBadge: "BYGGET TIL TAEKWONDO-TRÆNERE",
-  heroTitle: "Coaching-platform til taekwondo-klubber",
+  heroBadge: "OPERATIVSYSTEMET FOR ELITE TALENTUDVIKLING",
+  heroTitle: "Coaching-platform til danske sportsklubber",
   heroPhrases: [
     "Du har tid til 3.",
     "Sportstalent ændrer det.",
@@ -277,9 +277,9 @@ const da: CLStrings = {
   mockTrimpDay: "TRIMP/dag",
 
   trustEyebrow: "Brugt af",
-  trustLine: "Brugt af klubber med fokus på kamp og poomsae — bygget så alle klubber kan få gavn.",
+  trustLine: "Betroet af danske sportsklubber til elite talentudvikling — GDPR-overholdende og dansk ejet.",
 
-  featuresTitle1: "Alt din klub har brug for.",
+  featuresTitle1: "Alt din klub har brug for til elite talentudvikling.",
   featuresTitle2: "Intet den ikke har.",
   features: [
     {
@@ -409,8 +409,8 @@ const sv: CLStrings = {
   navLogin: "Logga in",
   navGetStarted: "Kom igång",
 
-  heroBadge: "BYGGD FÖR TAEKWONDO-TRÄNARE",
-  heroTitle: "Coachingplattform för taekwondo-klubbar",
+  heroBadge: "OPERATIVSYSTEMET FÖR ELIT-TALANGUTVECKLING",
+  heroTitle: "Coachingplattform för idrottsklubbar",
   heroPhrases: [
     "Du hinner med 3.",
     "Sportstalent ändrar det.",
@@ -437,9 +437,9 @@ const sv: CLStrings = {
   mockTrimpDay: "TRIMP/dag",
 
   trustEyebrow: "Används av",
-  trustLine: "Används av klubbar specialiserade på sparring och poomsae — byggd så alla klubbar kan dra nytta.",
+  trustLine: "Anlitas av skandinaviska idrottsklubbar för elitutveckling — GDPR-kompatibel plattform.",
 
-  featuresTitle1: "Allt din klubb behöver.",
+  featuresTitle1: "Allt din klubb behöver för elitutveckling.",
   featuresTitle2: "Inget den inte gör.",
   features: [
     { title: "Tränarassistent", desc: "Få passrekommendationer, teknikvägledning och träningsråd från djup sportkunskap. Som en extra tränare i salen." },
@@ -557,8 +557,8 @@ const no: CLStrings = {
   navLogin: "Logg inn",
   navGetStarted: "Kom i gang",
 
-  heroBadge: "BYGD FOR TAEKWONDO-TRENERE",
-  heroTitle: "Coaching-plattform for taekwondo-klubber",
+  heroBadge: "OPERATIVSYSTEMET FOR ELITETALENTUTVIKLING",
+  heroTitle: "Coaching-plattform for idrettsklubber",
   heroPhrases: [
     "Du har tid til 3.",
     "Sportstalent endrer det.",
@@ -585,9 +585,9 @@ const no: CLStrings = {
   mockTrimpDay: "TRIMP/dag",
 
   trustEyebrow: "Brukt av",
-  trustLine: "Brukt av klubber spesialisert på sparring og poomsae — bygget så alle klubber kan dra nytte.",
+  trustLine: "Brukt av skandinaviske idrettsklubber for elitetalentutvikling — GDPR-kompatibel plattform.",
 
-  featuresTitle1: "Alt klubben din trenger.",
+  featuresTitle1: "Alt klubben din trenger for elitetalentutvikling.",
   featuresTitle2: "Ingenting den ikke trenger.",
   features: [
     { title: "Treningsassistent", desc: "Få øktanbefalinger, teknikkveiledning og treningsråd basert på dyp sportkunnskap. Som å ha en ekstra trener i salen." },

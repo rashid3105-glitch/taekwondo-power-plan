@@ -8,8 +8,9 @@ const jsonLd = {
     "Et komplet, periodiseret taekwondo-træningsprogram med ugeeksempler til styrke, hastighed, teknik og restitution — bygget efter sportsvidenskab.",
   author: { "@type": "Organization", name: "Sportstalent" },
   publisher: { "@type": "Organization", name: "Sportstalent" },
-  mainEntityOfPage: "https://sportstalent.dk/taekwondo-traeningsprogram",
+  mainEntityOfPage: "https://sportstalent.dk/traeningsprogram",
   inLanguage: "da",
+
 };
 
 export default function TaekwondoTraeningsprogram() {
@@ -17,20 +18,21 @@ export default function TaekwondoTraeningsprogram() {
     <SeoArticleShell
       title="Taekwondo træningsprogram — komplet eksempel og skabelon"
       description="Se et periodiseret taekwondo-træningsprogram med uge-, måneds- og sæsonstruktur. Eksempler på styrke, hastighed, sparring og restitution — klar til brug."
-      canonical="https://sportstalent.dk/taekwondo-traeningsprogram"
-      breadcrumbLabel="Taekwondo træningsprogram"
-      h1="Taekwondo træningsprogram — struktur, eksempler og skabelon"
+      canonical="https://sportstalent.dk/traeningsprogram"
+      breadcrumbLabel="Træningsprogram"
+      h1="Træningsprogram — struktur, eksempler og skabelon"
       jsonLd={jsonLd}
       intro={
         <>
-          Et effektivt taekwondo-træningsprogram balancerer <strong>klubtræning, styrke, hastighed og restitution</strong> hen over ugen. Her får du en færdig ugeplan, periodiseringen bag og de fejl, der bremser de fleste udøvere.
+          Et effektivt klubtræningsprogram balancerer <strong>klubtræning, styrke, hastighed og restitution</strong> hen over ugen. Her får du en færdig ugeplan, periodiseringen bag og de fejl, der bremser de fleste udøvere. Artiklen viser taekwondo som eksempel — samme struktur kan tilpasses din sport.
         </>
       }
       related={[
         { to: "/poomsae", title: "Poomsae træning", desc: "Struktur, principper og drills til teknisk mesterskab." },
-        { to: "/taekwondo-teknik", title: "Taekwondo teknik", desc: "Præcise drills til spark, footwork og balance." },
-        { to: "/staevneforberedelse-taekwondo", title: "Stævneforberedelse", desc: "6-ugers peak-plan frem mod stævnedagen." },
+        { to: "/tekniktraening", title: "Tekniktræning", desc: "Præcise drills til spark, footwork og balance." },
+        { to: "/staevneforberedelse", title: "Stævneforberedelse", desc: "6-ugers peak-plan frem mod konkurrencedagen." },
       ]}
+
     >
       <h2>Sådan er et periodiseret taekwondo-program bygget op</h2>
       <p>

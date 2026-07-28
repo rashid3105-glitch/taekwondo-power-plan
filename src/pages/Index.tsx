@@ -255,8 +255,8 @@ const Index = () => {
               boxShadow: isMobile ? "0 18px 48px rgba(0,0,0,0.45)" : "0 30px 80px rgba(0,0,0,0.5)",
             }}>
               <img
-                src="/hero-deadlift.webp"
-                alt="Taekwondo-atlet udfører deadlift med vægtstang under styrketræning i træningscenter"
+                src="/hero-athlete-club.webp"
+                alt="Atlet i en dansk elitesportsklub under styrketræning med fokus på struktureret udvikling"
                 width={650}
                 height={1244}
                 fetchPriority="high"
