@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Loader2, CalendarCheck, Check, Clock, X, HeartCrack } from "lucide-react";
+import { ArrowLeft, Loader2, CalendarCheck } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { ClubSwitcher } from "@/components/ClubSwitcher";
@@ -103,14 +103,7 @@ export default function CoachToday() {
       </header>
 
       <main className="container max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4">
-        {/* Icon legend */}
-        <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground rounded-lg border border-border bg-card/60 px-3 py-2">
-          <span className="font-semibold uppercase tracking-wider">{t("legend")}:</span>
-          <span className="inline-flex items-center gap-1"><Check className="h-3.5 w-3.5 text-emerald-500" />{t("present")}</span>
-          <span className="inline-flex items-center gap-1"><Clock className="h-3.5 w-3.5 text-orange-500" />{t("late")}</span>
-          <span className="inline-flex items-center gap-1"><X className="h-3.5 w-3.5 text-destructive" />{t("absent")}</span>
-          <span className="inline-flex items-center gap-1"><HeartCrack className="h-3.5 w-3.5 text-destructive" />{t("injured")}</span>
-        </div>
+
         {coachUserId && (
           <SessionAttendance coachId={coachUserId} athletes={athletes} activeClubId={activeClubId} onOpenStats={() => setStatsOpen(true)} />
         )}
