@@ -69,9 +69,9 @@ export function AttendanceStatsDialog({ open, onOpenChange, coachId, athletes, a
   const { sessionsHeld, teamRate, perAthlete } = useMemo(() => {
     const dates = new Set(rows.map((r) => r.session_date));
     const sessionsHeld = dates.size;
-    const per = new Map<string, { present: number; late: number; absent: number; injured: number; rpeSum: number; rpeN: number }>();
+    const per = new Map<string, { present: number; late: number; vacation: number; absent: number; injured: number; rpeSum: number; rpeN: number }>();
     rows.forEach((r) => {
-      const cur = per.get(r.athlete_id) || { present: 0, late: 0, absent: 0, injured: 0, rpeSum: 0, rpeN: 0 };
+      const cur = per.get(r.athlete_id) || { present: 0, late: 0, vacation: 0, absent: 0, injured: 0, rpeSum: 0, rpeN: 0 };
       cur[r.status] += 1;
       if (r.rpe != null && r.status !== "absent" && r.status !== "injured" && r.status !== "vacation") {
         cur.rpeSum += r.rpe;
@@ -83,7 +83,7 @@ export function AttendanceStatsDialog({ open, onOpenChange, coachId, athletes, a
     let totalSlots = 0;
     const perAthlete = athletes
       .map((a) => {
-        const s = per.get(a.user_id) || { present: 0, late: 0, absent: 0, injured: 0, rpeSum: 0, rpeN: 0 };
+        const s = per.get(a.user_id) || { present: 0, late: 0, vacation: 0, absent: 0, injured: 0, rpeSum: 0, rpeN: 0 };
         const attended = s.present + s.late;
         const pct = sessionsHeld > 0 ? Math.round((attended / sessionsHeld) * 100) : 0;
         const avgRpe = s.rpeN > 0 ? Math.round((s.rpeSum / s.rpeN) * 10) / 10 : null;
