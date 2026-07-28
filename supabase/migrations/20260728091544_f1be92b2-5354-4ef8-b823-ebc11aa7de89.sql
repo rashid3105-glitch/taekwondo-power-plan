@@ -1,0 +1,2 @@
+ALTER TABLE public.session_attendance DROP CONSTRAINT IF EXISTS session_attendance_status_check;
+ALTER TABLE public.session_attendance ADD CONSTRAINT session_attendance_status_check CHECK (status = ANY (ARRAY['present'::text, 'absent'::text, 'late'::text, 'injured'::text, 'vacation'::text]));
