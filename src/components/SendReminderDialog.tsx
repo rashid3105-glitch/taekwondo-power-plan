@@ -74,8 +74,9 @@ export function SendReminderDialog({ athleteId, athleteName, athleteEmail }: Sen
               eventTitle: title.trim(),
               eventDate,
               message: message.trim(),
-              diaryUrl: "https://taekwondo-power-plan.lovable.app/diary",
+              diaryUrl: `${window.location.origin}/diary`,
             },
+
           },
         });
       }
