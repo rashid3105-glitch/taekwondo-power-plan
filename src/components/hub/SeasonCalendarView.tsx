@@ -166,6 +166,15 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
 
   return (
     <div className="space-y-3">
+      <style>{`
+        @media print {
+          @page { size: A4 landscape; margin: 10mm; }
+          body { background: white !important; }
+          header, footer, nav, .print\\:hidden { display: none !important; }
+          .season-print-area { break-inside: avoid; }
+        }
+      `}</style>
+
       {currentPhase && (
         <div
           className="rounded-xl px-4 py-2.5 flex items-start gap-3"
