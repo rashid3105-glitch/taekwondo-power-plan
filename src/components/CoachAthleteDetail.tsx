@@ -79,6 +79,7 @@ interface AthleteProfile {
   gal_license_expires_at: string | null;
   has_myfightbook: boolean | null;
   myfightbook_expires_at: string | null;
+  antidoping_course_date: string | null;
 }
 
 interface AthletePlan {
@@ -147,6 +148,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
   const [galLicenseExpires, setGalLicenseExpires] = useState(athlete.gal_license_expires_at || "");
   const [hasMyFightBook, setHasMyFightBook] = useState(!!athlete.has_myfightbook);
   const [myFightBookExpires, setMyFightBookExpires] = useState(athlete.myfightbook_expires_at || "");
+  const [antidopingDate, setAntidopingDate] = useState(athlete.antidoping_course_date || "");
 
   const toggleGoal = (goal: string) => {
     setSelectedGoals((prev) =>
@@ -170,6 +172,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
         gal_license_expires_at: galLicenseExpires || null,
         has_myfightbook: hasMyFightBook,
         myfightbook_expires_at: hasMyFightBook && myFightBookExpires ? myFightBookExpires : null,
+        antidoping_course_date: antidopingDate || null,
       };
       if (age) updates.age = Math.min(Math.max(parseInt(age), 5), 99);
       if (experienceYears) updates.experience_years = Math.min(Math.max(parseInt(experienceYears), 0), 50);
@@ -446,6 +449,16 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
                   )}
                 </div>
               )}
+              <div className="space-y-1 pt-2 border-t border-border/60">
+                <Label className="text-xs">{t("antidopingCourseDate") || "Antidoping-kursus — dato for gennemførsel"}</Label>
+                <Input
+                  type="date"
+                  value={antidopingDate}
+                  onChange={(e) => setAntidopingDate(e.target.value)}
+                  disabled={!editing}
+                  className="h-9"
+                />
+              </div>
             </div>
             <div className="space-y-1">
               <Label className="text-xs">{t("discipline")}</Label>

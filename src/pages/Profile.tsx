@@ -43,6 +43,7 @@ interface ProfileData {
   weight_kg: number | null;
   goals: string[] | null;
   license_values: Record<string, LicenseValue> | null;
+  antidoping_course_date: string | null;
   email: string | null;
 }
 
@@ -102,7 +103,7 @@ export default function Profile() {
       }
       const { data: prof } = await supabase
         .from("profiles")
-        .select("display_name, avatar_url, discipline, club_id, coach_club_name, roles, birth_date, belt_level, weight_kg, goals, license_values, push_enabled, clubs:club_id(name)")
+        .select("display_name, avatar_url, discipline, club_id, coach_club_name, roles, birth_date, belt_level, weight_kg, goals, license_values, antidoping_course_date, push_enabled, clubs:club_id(name)")
         .eq("user_id", user.id)
         .maybeSingle();
       setPushEnabled((prof as any)?.push_enabled !== false);
@@ -143,6 +144,7 @@ export default function Profile() {
         weight_kg: p?.weight_kg ?? null,
         goals: p?.goals ?? null,
         license_values: p?.license_values ?? {},
+        antidoping_course_date: p?.antidoping_course_date ?? null,
         email: user.email ?? null,
       });
       setHasCoach(!!fieldsOwner);
@@ -448,6 +450,26 @@ export default function Profile() {
               );
             })
           )}
+          <Separator className="bg-white/10" />
+          <div className="flex items-start justify-between gap-3 py-3">
+            <div className="min-w-0 flex-1">
+              <p className="text-xs text-white">{t("antidopingCourse") || "Antidoping-kursus"}</p>
+              {data?.antidoping_course_date ? (
+                <p className="text-sm text-white mt-1">
+                  {t("antidopingCourseCompleted") || "Gennemført"}: {fmtDate(data.antidoping_course_date, locale)}
+                </p>
+              ) : (
+                <p className="text-sm text-white italic mt-1">
+                  {t("antidopingCourseMissing") || "Ikke registreret"}
+                </p>
+              )}
+            </div>
+            {data?.antidoping_course_date && (
+              <span className="shrink-0 px-2 py-1 rounded-md text-xs font-medium" style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}>
+                {t("profileLicenseActive" as any)}
+              </span>
+            )}
+          </div>
           <Separator className="bg-white/10" />
           <p className="text-xs text-white pt-3">
             {t("profileLicensesFooter" as any)}
