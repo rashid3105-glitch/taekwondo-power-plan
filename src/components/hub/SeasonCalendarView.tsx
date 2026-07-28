@@ -373,7 +373,16 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
                     </div>
                   );
                 })()}
-                
+                {inSeason && dotTypes.length > 0 && (
+                  <div className="flex flex-col gap-0.5 mt-0.5">
+                    {dotTypes.map((type) => (
+                      <span key={type} className="text-[9px] font-bold leading-tight truncate">
+                        {t(sessionLabelKey(type) as any)}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
                 {focusTechs.length > 0 && (
                   <div className="flex flex-wrap gap-0.5 mt-1">
                     {focusTechs.slice(0, 2).map((tech, i) => (
