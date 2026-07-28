@@ -475,20 +475,12 @@ const Index = () => {
             <h2 style={{ fontSize: "clamp(26px,4vw,38px)", fontWeight: 900, letterSpacing: "-0.035em", margin: 0 }}>{t("homePriceTitle")}</h2>
             <p style={{ fontSize: 15, color: "rgba(255,255,255,0.5)", maxWidth: 460, margin: "14px auto 0" }}>{t("homePriceSub")}</p>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3,1fr)", gap: 16, alignItems: "start" }}>
-            <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: "26px" }}>
-              <div style={{ fontFamily: MONO, fontSize: 10, letterSpacing: "0.14em", color: "rgba(255,255,255,0.62)", textTransform: "uppercase", marginBottom: 10 }}>{t("homePriceAthleteTier")}</div>
-              <div style={{ fontSize: 40, fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 1 }}>59<span style={{ fontSize: 14, color: "rgba(255,255,255,0.62)", fontWeight: 500, marginLeft: 6 }}>{t("homePriceAthletePeriod")}</span></div>
-              <hr style={{ border: "none", borderTop: "0.5px solid rgba(255,255,255,0.07)", margin: "18px 0" }} />
-              {[t("homePriceAthlete1"), t("homePriceAthlete2"), t("homePriceAthlete3"), t("homePriceAthlete4")].map((f, i) => (
-                <div key={i} style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", display: "flex", gap: 8, marginBottom: 8 }}><span style={{ color: GOLD }}>✓</span>{f}</div>
-              ))}
-              <button onClick={() => navigate("/auth")} style={{ width: "100%", marginTop: 18, padding: "11px", borderRadius: 8, border: "0.5px solid rgba(255,255,255,0.14)", background: "transparent", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>{t("homePriceAthleteCta")}</button>
-            </div>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2,1fr)", gap: 16, alignItems: "start", maxWidth: 760, margin: "0 auto" }}>
+
             <div style={{ background: "linear-gradient(180deg, rgba(245,200,66,0.08), rgba(245,200,66,0.03))", border: `0.5px solid rgba(245,200,66,0.35)`, borderRadius: 14, padding: "26px", position: "relative", boxShadow: "0 20px 60px rgba(245,200,66,0.08)" }}>
               <div style={{ position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)", background: GOLD, color: BG, borderRadius: 999, padding: "3px 14px", fontSize: 10, fontWeight: 800, whiteSpace: "nowrap", letterSpacing: "0.1em", fontFamily: MONO }}>{t("homePriceMostPopular")}</div>
               <div style={{ fontFamily: MONO, fontSize: 10, letterSpacing: "0.14em", color: GOLD, textTransform: "uppercase", marginBottom: 10 }}>{t("homePriceClubTier")}</div>
-              <div style={{ fontSize: 40, fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 1 }}>1299<span style={{ fontSize: 14, color: "rgba(255,255,255,0.5)", fontWeight: 500, marginLeft: 6 }}>{t("homePriceClubPeriod")}</span></div>
+              <div style={{ fontSize: 40, fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 1 }}>49<span style={{ fontSize: 14, color: "rgba(255,255,255,0.5)", fontWeight: 500, marginLeft: 6 }}>{t("homePriceClubPeriod")}</span></div>
               <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", marginTop: 4 }}>{t("homePriceClubSeats")}</div>
               <hr style={{ border: "none", borderTop: "0.5px solid rgba(245,200,66,0.15)", margin: "18px 0" }} />
               {[t("homePriceClub1"), t("homePriceClub2"), t("homePriceClub3"), t("homePriceClub4"), t("homePriceClub5"), t("homePriceClub6"), t("homePriceClub7")].map((f, i) => (
