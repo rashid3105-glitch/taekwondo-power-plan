@@ -73,9 +73,9 @@ function weekdayLong(locale: string, d: Date = new Date()) {
  * Rendered only when role === "athlete".
  */
 interface ClubSeasonData {
-  plan: any;
-  phases: any[];
-  template: any[];
+  plan: { id: string; start_date: string; end_date: string } | null;
+  phases: { name?: string; focus_tags?: string[]; start_week?: number; end_week?: number }[];
+  template: { day_of_week: number; session_type: string; location?: string; notes?: string }[];
 }
 
 export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData | null }) {
