@@ -1,8 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { Camera, Loader2, ShieldAlert, ShieldCheck, ShieldQuestion, X, Search, History, ExternalLink, Pill, Type } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
