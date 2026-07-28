@@ -154,7 +154,7 @@ const en: CLStrings = {
     "Full roster view across all athletes",
     "Training load trends and recovery flags",
     "One-click weekly reports per athlete",
-    "Drill and technique library with 100+ taekwondo-specific entries",
+    "Drill and technique library with 100+ sport-specific drills and progressions",
     "Competition prep planning tools",
   ],
   athletesLabel: "For Athletes",
@@ -168,7 +168,7 @@ const en: CLStrings = {
 
   testimonialsTitle: "Coaches who switched, didn't switch back",
   testimonials: [
-    { stat: "20 years", quote: "Finally a platform that actually understands taekwondo — not just generic fitness.", name: "Coach Sami", club: "Klub i København" },
+    { stat: "20 years", quote: "Finally a platform built for how clubs actually develop athletes — not generic fitness.", name: "Coach Sami", club: "Klub i København" },
     { stat: "+3 hrs/week", quote: "My athletes log sessions themselves now. I get back 3 hours every week.", name: "Coach Janne", club: "Klub i Malmø" },
     { stat: "Parents on-board", quote: "The weekly report alone is worth it. Parents finally understand what we're building.", name: "Coach Michael", club: "Klub i London" },
   ],
@@ -223,7 +223,7 @@ const en: CLStrings = {
       { label: "Start free", href: "/auth?tab=signup" },
     ] },
   ],
-  footerCopy: "© 2025 Sportstalent.dk · Made for taekwondo, by people who love the sport 🥋",
+  footerCopy: "© 2025 Sportstalent.dk · Made for Danish clubs. Built to develop elite talent.",
   footerPrivacy: "Privacy",
   footerContact: "Contact",
   galleryEyebrow: "REAL ATHLETES · REAL MOMENTS",
@@ -231,14 +231,14 @@ const en: CLStrings = {
   gallerySub: "From the corner to the mat — Sportstalent is shaped by the moments coaches and athletes live every weekend.",
   storyRows: [
     { eyebrow: "IN THE CORNER", title: "Coach every athlete like they're your only one.", body: "Sportstalent gives you the structured plan, readiness data and reminders so the conversation in the corner is always sharp — not improvised.", bullets: ["Daily readiness from every athlete", "Auto-rolling weekly plans", "One tap to log the session"] },
-    { eyebrow: "ON THE MAT", title: "Sport-specific science, not generic fitness.", body: "Plans built around taekwondo: kicks, footwork, sparring intensities and weight management — calibrated to age, belt and goal.", bullets: ["Periodized 4–12 week programs", "Pre-, intra- and post-competition phases", "Pork-free nutrition that fits weight class"] },
+    { eyebrow: "ON THE MAT", title: "Sport-specific science, not generic fitness.", body: "Plans built around your sport: speed, power, technical work and recovery — calibrated to age, level and goal.", bullets: ["Periodized 4–12 week programs", "Pre-, intra- and post-competition phases", "Nutrition that fits training load and weight targets"] },
     { eyebrow: "BEFORE THE FIGHT", title: "See who's ready — and who isn't.", body: "One squad view shows mood, energy, sleep and load for every athlete, so you can adjust the session before warm-up, not after the loss.", bullets: ["Squad pulse with traffic-light status", "Overtraining flags two weeks early", "Coach notes synced to the athlete"] },
     { eyebrow: "AFTER THE FIGHT", title: "Turn every match into a lesson.", body: "Post-competition reflections, video tagging and SMART goals make sure the next training cycle starts where the last one ended.", bullets: ["4-step reflection on every match", "Video tags by technique & outcome", "3 personalized SMART goals per cycle"] },
   ],
 
-  metaTitle: "Sportstalent — Coaching Platform for Taekwondo Clubs",
+  metaTitle: "Sportstalent — Coaching Platform for Danish Sports Clubs",
   metaDesc:
-    "The coaching platform built for taekwondo clubs. Run your roster, track readiness, build periodized plans, and send weekly reports — all in one place.",
+    "The coaching platform built for Danish sports clubs. Run your roster, track readiness, build periodized plans, and send weekly reports — all in one place.",
 };
 
 const da: CLStrings = {
@@ -314,7 +314,7 @@ const da: CLStrings = {
     "Fuldt rosteroverblik over alle atleter",
     "Træningsbelastning og restitutionsflag",
     "Ugentlige rapporter pr. atlet med ét klik",
-    "Drill- og teknikbibliotek med 100+ taekwondo-specifikke øvelser",
+    "Drill- og teknikbibliotek med 100+ sportsspecifikke øvelser og progressioner",
     "Værktøjer til konkurrenceforberedelse",
   ],
   athletesLabel: "For atleter",
@@ -328,7 +328,7 @@ const da: CLStrings = {
 
   testimonialsTitle: "Trænere der skiftede, skiftede ikke tilbage",
   testimonials: [
-    { stat: "20 år", quote: "Endelig en platform der faktisk forstår taekwondo — ikke bare generel fitness.", name: "Træner Sami", club: "Klub i København" },
+    { stat: "20 år", quote: "Endelig en platform bygget til, hvordan klubber faktisk udvikler atleter — ikke generel fitness.", name: "Træner Sami", club: "Klub i København" },
     { stat: "+3 t/uge", quote: "Mine atleter logger selv sessionerne nu. Jeg får 3 timer tilbage om ugen.", name: "Træner Janne", club: "Klub i Malmø" },
     { stat: "Forældre med", quote: "Den ugentlige rapport alene er det værd. Forældre forstår endelig, hvad vi bygger.", name: "Træner Michael", club: "Klub i London" },
   ],
@@ -383,7 +383,7 @@ const da: CLStrings = {
       { label: "Kom i gang gratis", href: "/auth?tab=signup" },
     ] },
   ],
-  footerCopy: "© 2025 Sportstalent.dk · Lavet til taekwondo, af folk der elsker sporten 🥋",
+  footerCopy: "© 2025 Sportstalent.dk · Lavet til danske klubber. Bygget til at udvikle elitetalent.",
   footerPrivacy: "Privatliv",
   footerContact: "Kontakt",
   galleryEyebrow: "RIGTIGE ATLETER · RIGTIGE ØJEBLIKKE",
@@ -391,14 +391,14 @@ const da: CLStrings = {
   gallerySub: "Fra hjørnet til måtten — Sportstalent er formet af de øjeblikke trænere og atleter lever hver weekend.",
   storyRows: [
     { eyebrow: "I HJØRNET", title: "Coach hver atlet som om de var din eneste.", body: "Sportstalent giver dig den strukturerede plan, parathedsdata og påmindelser, så samtalen i hjørnet altid er skarp — ikke improviseret.", bullets: ["Daglig parathed fra hver atlet", "Automatisk rullende ugeplaner", "Ét tryk for at logge træningen"] },
-    { eyebrow: "PÅ MÅTTEN", title: "Sportsspecifik videnskab — ikke generisk fitness.", body: "Planer bygget om taekwondo: spark, fodarbejde, sparringsintensiteter og vægtkontrol — tilpasset alder, bælte og mål.", bullets: ["Periodiserede 4–12 ugers programmer", "Faser før, under og efter konkurrence", "Svinekødfri kost der passer til vægtklassen"] },
+    { eyebrow: "PÅ MÅTTEN", title: "Sportsspecifik videnskab — ikke generisk fitness.", body: "Planer bygget om din sport: fart, styrke, teknisk arbejde og restitution — kalibreret til alder, niveau og mål.", bullets: ["Periodiserede 4–12 ugers programmer", "Faser før, under og efter konkurrence", "Kost der passer til træningsbelastning og vægtmål"] },
     { eyebrow: "FØR KAMPEN", title: "Se hvem der er klar — og hvem der ikke er.", body: "Én squad-visning viser humør, energi, søvn og belastning for hver atlet, så du kan justere før opvarmningen — ikke efter nederlaget.", bullets: ["Squad-puls med trafiklys-status", "Overtrænings-flag to uger tidligere", "Trænernotater synkroniseret med atleten"] },
     { eyebrow: "EFTER KAMPEN", title: "Gør hver kamp til en lektion.", body: "Refleksioner efter konkurrence, video-tagging og SMART-mål sikrer, at næste cyklus starter dér, hvor den sidste sluttede.", bullets: ["4-trins refleksion efter hver kamp", "Video-tags på teknik & udfald", "3 personlige SMART-mål pr. cyklus"] },
   ],
 
-  metaTitle: "Sportstalent — Træningsplatform for taekwondo-klubber",
+  metaTitle: "Sportstalent — Træningsplatform for danske sportsklubber",
   metaDesc:
-    "Træningsplatformen bygget til taekwondo-klubber. Driv dit roster, følg parathed, byg periodiserede planer og send ugentlige rapporter — alt ét sted.",
+    "Træningsplatformen bygget til danske sportsklubber. Driv dit roster, følg parathed, byg periodiserede planer og send ugentlige rapporter — alt ét sted.",
 };
 
 const sv: CLStrings = {
@@ -462,7 +462,7 @@ const sv: CLStrings = {
     "Full rosteröversikt över alla atleter",
     "Belastningstrender och återhämtningsflaggor",
     "Veckorapporter per atlet med ett klick",
-    "Övnings- och teknikbibliotek med 100+ taekwondo-specifika poster",
+    "Övnings- och teknikbibliotek med 100+ sportspecifika övningar och progressioner",
     "Verktyg för tävlingsförberedelse",
   ],
   athletesLabel: "För atleter",
@@ -476,7 +476,7 @@ const sv: CLStrings = {
 
   testimonialsTitle: "Tränare som bytte, bytte inte tillbaka",
   testimonials: [
-    { stat: "20 år", quote: "Äntligen en plattform som verkligen förstår taekwondo — inte bara generell fitness.", name: "Tränare Sami", club: "Klub i København" },
+    { stat: "20 år", quote: "Äntligen en plattform byggd för hur klubbar faktiskt utvecklar atleter — inte generell fitness.", name: "Tränare Sami", club: "Klub i København" },
     { stat: "+3 h/vecka", quote: "Mina atleter loggar sina pass själva nu. Jag får tillbaka 3 timmar i veckan.", name: "Tränare Janne", club: "Klub i Malmø" },
     { stat: "Föräldrar med", quote: "Bara veckorapporten är värd det. Föräldrar förstår äntligen vad vi bygger.", name: "Tränare Michael", club: "Klub i London" },
   ],
@@ -531,7 +531,7 @@ const sv: CLStrings = {
       { label: "Börja gratis", href: "/auth?tab=signup" },
     ] },
   ],
-  footerCopy: "© 2025 Sportstalent.dk · Gjord för taekwondo, av människor som älskar sporten 🥋",
+  footerCopy: "© 2025 Sportstalent.dk · Gjord för danska klubbar. Byggd för att utveckla elittalanger.",
   footerPrivacy: "Integritet",
   footerContact: "Kontakt",
   galleryEyebrow: "RIKTIGA ATLETER · RIKTIGA ÖGONBLICK",
@@ -539,14 +539,14 @@ const sv: CLStrings = {
   gallerySub: "Från hörnet till mattan — Sportstalent formas av ögonblicken som tränare och atleter lever varje helg.",
   storyRows: [
     { eyebrow: "I HÖRNAN", title: "Coacha varje atlet som om de var din enda.", body: "Sportstalent ger dig den strukturerade planen, beredskapsdata och påminnelser så samtalet i hörnan alltid är skarpt — inte improviserat.", bullets: ["Daglig beredskap från varje atlet", "Automatiskt rullande veckoplaner", "Ett tryck för att logga passet"] },
-    { eyebrow: "PÅ MATTAN", title: "Sportspecifik vetenskap — inte generisk träning.", body: "Planer byggda kring taekwondo: sparkar, fotarbete, sparringintensitet och viktkontroll — anpassat till ålder, bälte och mål.", bullets: ["Periodiserade 4–12-veckorsprogram", "Faser före, under och efter tävling", "Fläskfri kost som passar viktklassen"] },
+    { eyebrow: "PÅ MATTAN", title: "Sportspecifik vetenskap — inte generisk träning.", body: "Planer byggda kring din sport: snabbhet, styrka, tekniskt arbete och återhämtning — kalibrerat efter ålder, nivå och mål.", bullets: ["Periodiserade 4–12-veckorsprogram", "Faser före, under och efter tävling", "Kost som passar träningsbelastning och viktmål"] },
     { eyebrow: "FÖRE MATCHEN", title: "Se vem som är redo — och vem som inte är det.", body: "En squad-vy visar humör, energi, sömn och belastning för varje atlet, så du kan justera före uppvärmningen — inte efter förlusten.", bullets: ["Squad-puls med trafikljusstatus", "Överträningsflaggor två veckor tidigare", "Tränarens anteckningar synkade till atleten"] },
     { eyebrow: "EFTER MATCHEN", title: "Gör varje match till en lektion.", body: "Reflektioner efter tävling, videotaggning och SMART-mål säkerställer att nästa cykel börjar där förra slutade.", bullets: ["4-stegs reflektion efter varje match", "Videotaggar på teknik & utfall", "3 personliga SMART-mål per cykel"] },
   ],
 
-  metaTitle: "Sportstalent — Plattform för taekwondo-klubbar",
+  metaTitle: "Sportstalent — Plattform för svenska idrottsklubbar",
   metaDesc:
-    "Träningsplattformen byggd för taekwondo-klubbar. Driv ditt roster, följ beredskap, bygg periodiserade planer och skicka veckorapporter — allt på ett ställe.",
+    "Träningsplattformen byggd för svenska idrottsklubbar. Driv ditt roster, följ beredskap, bygg periodiserade planer och skicka veckorapporter — allt på ett ställe.",
 };
 
 const no: CLStrings = {
@@ -610,7 +610,7 @@ const no: CLStrings = {
     "Fullt rosteroverblikk over alle utøvere",
     "Belastningstrender og restitusjonsflagg",
     "Ukentlige rapporter per utøver med ett klikk",
-    "Øvelses- og teknikkbibliotek med 100+ taekwondo-spesifikke oppføringer",
+    "Øvelses- og teknikkbibliotek med 100+ sportsspesifikke øvelser og progresjoner",
     "Verktøy for konkurranseforberedelse",
   ],
   athletesLabel: "For utøvere",
@@ -624,7 +624,7 @@ const no: CLStrings = {
 
   testimonialsTitle: "Trenere som byttet, byttet ikke tilbake",
   testimonials: [
-    { stat: "20 år", quote: "Endelig en plattform som faktisk forstår taekwondo — ikke bare generell fitness.", name: "Trener Sami", club: "Klub i København" },
+    { stat: "20 år", quote: "Endelig en plattform bygget for hvordan klubber faktisk utvikler utøvere — ikke generell fitness.", name: "Trener Sami", club: "Klub i København" },
     { stat: "+3 t/uke", quote: "Utøverne mine logger øktene selv nå. Jeg får tilbake 3 timer i uken.", name: "Trener Janne", club: "Klub i Malmø" },
     { stat: "Foreldre med", quote: "Den ukentlige rapporten alene er verdt det. Foreldre forstår endelig hva vi bygger.", name: "Trener Michael", club: "Klub i London" },
   ],
@@ -679,7 +679,7 @@ const no: CLStrings = {
       { label: "Start gratis", href: "/auth?tab=signup" },
     ] },
   ],
-  footerCopy: "© 2025 Sportstalent.dk · Laget for taekwondo, av folk som elsker sporten 🥋",
+  footerCopy: "© 2025 Sportstalent.dk · Laget for danske klubber. Bygget for å utvikle elitetalent.",
   footerPrivacy: "Personvern",
   footerContact: "Kontakt",
   galleryEyebrow: "EKTE UTØVERE · EKTE ØYEBLIKK",
@@ -687,14 +687,14 @@ const no: CLStrings = {
   gallerySub: "Fra hjørnet til matten — Sportstalent formes av øyeblikkene trenere og utøvere lever hver helg.",
   storyRows: [
     { eyebrow: "I HJØRNET", title: "Coach hver utøver som om de var din eneste.", body: "Sportstalent gir deg den strukturerte planen, beredskapsdataene og påminnelsene så samtalen i hjørnet alltid er skarp — ikke improvisert.", bullets: ["Daglig beredskap fra hver utøver", "Automatisk rullerende ukeplaner", "Ett trykk for å logge økten"] },
-    { eyebrow: "PÅ MATTEN", title: "Sportsspesifikk vitenskap — ikke generisk trening.", body: "Planer bygget rundt taekwondo: spark, fotarbeid, sparringsintensitet og vektkontroll — tilpasset alder, belte og mål.", bullets: ["Periodiserte 4–12 ukers programmer", "Faser før, under og etter konkurranse", "Svinefri kost som passer vektklassen"] },
+    { eyebrow: "PÅ MATTEN", title: "Sportsspesifikk vitenskap — ikke generisk trening.", body: "Planer bygget rundt din idrett: fart, styrke, teknisk arbeid og restitusjon — kalibrert til alder, nivå og mål.", bullets: ["Periodiserte 4–12 ukers programmer", "Faser før, under og etter konkurranse", "Kost tilpasset treningsbelastning og vektmål"] },
     { eyebrow: "FØR KAMPEN", title: "Se hvem som er klar — og hvem som ikke er det.", body: "Én squad-visning viser humør, energi, søvn og belastning for hver utøver, så du kan justere før oppvarmingen — ikke etter tapet.", bullets: ["Squad-puls med trafikklys-status", "Overtreningsflagg to uker tidligere", "Trenernotater synkronisert med utøveren"] },
     { eyebrow: "ETTER KAMPEN", title: "Gjør hver kamp til en lekse.", body: "Refleksjoner etter konkurranse, video-tagging og SMART-mål sikrer at neste syklus starter der den forrige sluttet.", bullets: ["4-stegs refleksjon etter hver kamp", "Video-tags på teknikk & utfall", "3 personlige SMART-mål per syklus"] },
   ],
 
-  metaTitle: "Sportstalent — Plattform for taekwondo-klubber",
+  metaTitle: "Sportstalent — Plattform for danske idrettsklubber",
   metaDesc:
-    "Treningsplattformen bygd for taekwondo-klubber. Driv rosteret ditt, følg beredskap, bygg periodiserte planer og send ukentlige rapporter — alt på ett sted.",
+    "Treningsplattformen bygd for danske idrettsklubber. Driv rosteret ditt, følg beredskap, bygg periodiserte planer og send ukentlige rapporter — alt på ett sted.",
 };
 
 const de: CLStrings = {
@@ -706,7 +706,7 @@ const de: CLStrings = {
   navGetStarted: "Loslegen",
 
   heroBadge: "GEBAUT FÜR TAEKWONDO-TRAINER",
-  heroTitle: "Coaching-Plattform für Taekwondo-Vereine",
+  heroTitle: "Coaching-Plattform für Sportvereine",
   heroPhrases: [
     "Du hast Zeit für 3.",
     "Sportstalent ändert das.",
@@ -758,7 +758,7 @@ const de: CLStrings = {
     "Vollständiger Kader-Überblick",
     "Belastungstrends und Erholungs-Flags",
     "Wochenberichte pro Athlet mit einem Klick",
-    "Übungs- und Technikbibliothek mit 100+ Taekwondo-spezifischen Einträgen",
+    "Übungs- und Technikbibliothek mit 100+ sportartspezifischen Übungen und Progressionen",
     "Werkzeuge zur Wettkampfvorbereitung",
   ],
   athletesLabel: "Für Athleten",
@@ -772,7 +772,7 @@ const de: CLStrings = {
 
   testimonialsTitle: "Trainer, die wechselten, blieben dabei",
   testimonials: [
-    { stat: "20 Jahre", quote: "Endlich eine Plattform, die Taekwondo wirklich versteht — nicht nur generisches Fitness.", name: "Trainer Sami", club: "Klub i København" },
+    { stat: "20 Jahre", quote: "Endlich eine Plattform, die versteht, wie Vereine wirklich Athleten entwickeln — nicht generisches Fitness.", name: "Trainer Sami", club: "Klub i København" },
     { stat: "+3 Std/Woche", quote: "Meine Athleten loggen ihre Einheiten selbst. Ich gewinne 3 Stunden pro Woche zurück.", name: "Trainer Janne", club: "Klub i Malmø" },
     { stat: "Eltern dabei", quote: "Allein der Wochenbericht ist es wert. Eltern verstehen endlich, was wir aufbauen.", name: "Trainer Michael", club: "Klub i London" },
   ],
@@ -827,7 +827,7 @@ const de: CLStrings = {
       { label: "Kostenlos starten", href: "/auth?tab=signup" },
     ] },
   ],
-  footerCopy: "© 2025 Sportstalent.dk · Gemacht für Taekwondo, von Menschen, die den Sport lieben 🥋",
+  footerCopy: "© 2025 Sportstalent.dk · Gemacht für dänische Vereine. Entwickelt, um Elitetalente zu fördern.",
   footerPrivacy: "Datenschutz",
   footerContact: "Kontakt",
   galleryEyebrow: "ECHTE ATHLETEN · ECHTE MOMENTE",
@@ -835,14 +835,14 @@ const de: CLStrings = {
   gallerySub: "Von der Ecke bis zur Matte – Sportstalent entsteht aus den Momenten, die Trainer und Athleten jedes Wochenende erleben.",
   storyRows: [
     { eyebrow: "IN DER ECKE", title: "Trainiere jeden Athleten, als wäre er der einzige.", body: "Sportstalent liefert dir den strukturierten Plan, Bereitschaftsdaten und Erinnerungen, damit das Gespräch in der Ecke immer scharf ist — nicht improvisiert.", bullets: ["Tägliche Bereitschaft jedes Athleten", "Automatisch rollende Wochenpläne", "Ein Tipp, um die Einheit zu loggen"] },
-    { eyebrow: "AUF DER MATTE", title: "Sportspezifische Wissenschaft – kein generisches Fitness.", body: "Pläne rund um Taekwondo: Tritte, Beinarbeit, Sparring-Intensitäten und Gewichtsmanagement – kalibriert auf Alter, Gürtel und Ziel.", bullets: ["Periodisierte 4–12-Wochen-Programme", "Phasen vor, während und nach dem Wettkampf", "Schweinefleischfreie Ernährung passend zur Gewichtsklasse"] },
+    { eyebrow: "AUF DER MATTE", title: "Sportspezifische Wissenschaft – kein generisches Fitness.", body: "Pläne rund um deinen Sport: Schnelligkeit, Kraft, technisches Training und Erholung – kalibriert auf Alter, Niveau und Ziel.", bullets: ["Periodisierte 4–12-Wochen-Programme", "Phasen vor, während und nach dem Wettkampf", "Ernährung passend zu Trainingsbelastung und Gewichtszielen"] },
     { eyebrow: "VOR DEM KAMPF", title: "Sieh, wer bereit ist — und wer nicht.", body: "Eine Squad-Ansicht zeigt Stimmung, Energie, Schlaf und Belastung jedes Athleten, damit du vor dem Aufwärmen nachjustieren kannst — nicht nach der Niederlage.", bullets: ["Squad-Puls mit Ampelstatus", "Übertraining-Warnungen zwei Wochen früher", "Trainernotizen mit dem Athleten synchronisiert"] },
     { eyebrow: "NACH DEM KAMPF", title: "Mach jeden Kampf zur Lektion.", body: "Reflexionen nach dem Wettkampf, Video-Tagging und SMART-Ziele sorgen dafür, dass der nächste Zyklus dort beginnt, wo der letzte aufhörte.", bullets: ["4-Schritte-Reflexion nach jedem Kampf", "Video-Tags nach Technik & Ergebnis", "3 persönliche SMART-Ziele pro Zyklus"] },
   ],
 
-  metaTitle: "Sportstalent — Plattform für Taekwondo-Vereine",
+  metaTitle: "Sportstalent — Plattform für dänische Sportvereine",
   metaDesc:
-    "Die Trainingsplattform für Taekwondo-Vereine. Verwalte deinen Kader, verfolge die Bereitschaft, baue periodisierte Pläne und sende wöchentliche Berichte — alles an einem Ort.",
+    "Die Trainingsplattform für dänische Sportvereine. Verwalte deinen Kader, verfolge die Bereitschaft, baue periodisierte Pläne und sende wöchentliche Berichte — alles an einem Ort.",
 };
 
 const ar: CLStrings = {
@@ -906,7 +906,7 @@ const ar: CLStrings = {
     "نظرة كاملة على جميع الرياضيين",
     "اتجاهات الحمل وعلامات التعافي",
     "تقارير أسبوعية لكل رياضي بنقرة واحدة",
-    "مكتبة تمارين وفنيات تتضمن أكثر من 100 إدخال خاص بالتايكوندو",
+    "مكتبة تمارين وفنيات تتضمن أكثر من 100 تمرين وتدرّج خاص بالرياضة",
     "أدوات للتحضير للبطولات",
   ],
   athletesLabel: "للرياضيين",
@@ -920,7 +920,7 @@ const ar: CLStrings = {
 
   testimonialsTitle: "المدربون الذين انتقلوا، لم يعودوا",
   testimonials: [
-    { stat: "20 سنة", quote: "أخيراً منصة تفهم التايكوندو فعلاً — وليست لياقة عامة فحسب.", name: "المدرب سامي", club: "Klub i København" },
+    { stat: "20 سنة", quote: "أخيراً منصة مبنية لكيفية تطوير الأندية للرياضيين فعلاً — وليست لياقة عامة فحسب.", name: "المدرب سامي", club: "Klub i København" },
     { stat: "+3 ساعات/أسبوع", quote: "رياضيوني يسجلون جلساتهم بأنفسهم الآن. أوفر 3 ساعات أسبوعياً.", name: "المدرب جني", club: "Klub i Malmø" },
     { stat: "الأهل معنا", quote: "التقرير الأسبوعي وحده يستحق ذلك. أصبح الأهل يفهمون ما نبنيه.", name: "المدرب مايكل", club: "Klub i London" },
   ],
@@ -978,7 +978,7 @@ const ar: CLStrings = {
       { label: "ابدأ مجاناً", href: "/auth?tab=signup" },
     ] },
   ],
-  footerCopy: "© 2025 Sportstalent.dk · صُنع لأجل التايكوندو، من قبل أشخاص يحبّون الرياضة 🥋",
+  footerCopy: "© 2025 Sportstalent.dk · صُنع للأندية الدنماركية. مبني لتطوير المواهب النخبوية.",
   footerPrivacy: "الخصوصية",
   footerContact: "تواصل",
   galleryEyebrow: "رياضيون حقيقيون · لحظات حقيقية",
@@ -986,14 +986,14 @@ const ar: CLStrings = {
   gallerySub: "من الزاوية إلى البساط — يتشكل Sportstalent من اللحظات التي يعيشها المدربون والرياضيون كل عطلة أسبوع.",
   storyRows: [
     { eyebrow: "في الزاوية", title: "درّب كل رياضي وكأنه الوحيد لديك.", body: "يمنحك Sportstalent الخطة المنظمة وبيانات الجاهزية والتذكيرات حتى تكون الحوارات في الزاوية حادة دائماً — لا ارتجال.", bullets: ["جاهزية يومية من كل رياضي", "خطط أسبوعية تتدحرج تلقائياً", "ضغطة واحدة لتسجيل الجلسة"] },
-    { eyebrow: "على البساط", title: "علم رياضي متخصص — لا لياقة عامة.", body: "خطط مبنية حول التايكوندو: الركلات، حركة القدمين، شدّات السبارينغ وإدارة الوزن — معايرة للعمر والحزام والهدف.", bullets: ["برامج مُجدولة 4–12 أسبوعاً", "مراحل قبل وأثناء وبعد المنافسة", "تغذية خالية من لحم الخنزير تناسب فئة الوزن"] },
+    { eyebrow: "على البساط", title: "علم رياضي متخصص — لا لياقة عامة.", body: "خطط مبنية حول رياضتك: السرعة والقوة والعمل التقني والتعافي — معايرة للعمر والمستوى والهدف.", bullets: ["برامج مُجدولة 4–12 أسبوعاً", "مراحل قبل وأثناء وبعد المنافسة", "تغذية تناسب حمل التدريب وأهداف الوزن"] },
     { eyebrow: "قبل المباراة", title: "شاهد من هو جاهز — ومن ليس كذلك.", body: "عرض واحد للفريق يُظهر المزاج والطاقة والنوم والحمل لكل رياضي، فتعدّل قبل الإحماء — لا بعد الخسارة.", bullets: ["نبض الفريق بحالة إشارة المرور", "إنذار الإفراط في التدريب قبل أسبوعين", "ملاحظات المدرّب متزامنة مع الرياضي"] },
     { eyebrow: "بعد المباراة", title: "حوّل كل مباراة إلى درس.", body: "التأملات بعد المنافسة، ووسم الفيديو، وأهداف SMART تضمن أن تبدأ الدورة التالية من حيث انتهت السابقة.", bullets: ["تأمل من 4 خطوات بعد كل مباراة", "وسوم فيديو حسب التقنية والنتيجة", "3 أهداف SMART شخصية لكل دورة"] },
   ],
 
-  metaTitle: "Sportstalent — منصة تدريب مصممة لأندية التايكوندو",
+  metaTitle: "Sportstalent — منصة تدريب مصممة للأندية الرياضية الدنماركية",
   metaDesc:
-    "منصة التدريب المصممة لأندية التايكوندو. أدر القائمة، تابع الجاهزية، ابنِ خططاً مرحلية وأرسل تقارير أسبوعية — كل ذلك في مكان واحد.",
+    "منصة التدريب المصممة للأندية الرياضية الدنماركية. أدر القائمة، تابع الجاهزية، ابنِ خططاً مرحلية وأرسل تقارير أسبوعية — كل ذلك في مكان واحد.",
 };
 
 const es: CLStrings = {
@@ -1004,8 +1004,8 @@ const es: CLStrings = {
   navLogin: "Iniciar sesión",
   navGetStarted: "Empezar",
 
-  heroBadge: "Creado para entrenadores de taekwondo",
-  heroTitle: "Plataforma de coaching para clubes de taekwondo",
+  heroBadge: "El sistema operativo para el desarrollo de talento de élite",
+  heroTitle: "Plataforma de coaching para clubes deportivos",
   heroPhrases: [
     "Tienes tiempo para 3.",
     "Sportstalent cambia eso.",
@@ -1057,7 +1057,7 @@ const es: CLStrings = {
     "Vista completa de toda la plantilla",
     "Tendencias de carga de entrenamiento y alertas de recuperación",
     "Informes semanales por atleta con un solo clic",
-    "Biblioteca de ejercicios y técnicas con más de 100 entradas específicas de taekwondo",
+    "Biblioteca de ejercicios y técnicas con más de 100 ejercicios y progresiones específicas del deporte",
     "Herramientas de planificación para la preparación de competiciones",
   ],
   athletesLabel: "Para atletas",
@@ -1071,7 +1071,7 @@ const es: CLStrings = {
 
   testimonialsTitle: "Los entrenadores que cambiaron, no volvieron atrás",
   testimonials: [
-    { stat: "20 años", quote: "Por fin una plataforma que realmente entiende el taekwondo — no solo fitness genérico.", name: "Coach Sami", club: "Klub i København" },
+    { stat: "20 años", quote: "Por fin una plataforma construida para cómo los clubes realmente desarrollan atletas — no fitness genérico.", name: "Coach Sami", club: "Klub i København" },
     { stat: "+3 h/semana", quote: "Mis atletas ahora registran las sesiones ellos mismos. Recupero 3 horas cada semana.", name: "Coach Janne", club: "Klub i Malmø" },
     { stat: "Padres implicados", quote: "Solo el informe semanal ya merece la pena. Los padres por fin entienden lo que estamos construyendo.", name: "Coach Michael", club: "Klub i London" },
   ],
@@ -1126,7 +1126,7 @@ const es: CLStrings = {
       { label: "Empezar gratis", href: "/auth?tab=signup" },
     ] },
   ],
-  footerCopy: "© 2025 Sportstalent.dk · Hecho para el taekwondo, por gente que ama este deporte 🥋",
+  footerCopy: "© 2025 Sportstalent.dk · Hecho para clubes daneses. Creado para desarrollar talento de élite.",
   footerPrivacy: "Privacidad",
   footerContact: "Contacto",
   galleryEyebrow: "ATLETAS REALES · MOMENTOS REALES",
@@ -1134,14 +1134,14 @@ const es: CLStrings = {
   gallerySub: "Desde la esquina hasta el tatami — Sportstalent toma forma a partir de los momentos que entrenadores y atletas viven cada fin de semana.",
   storyRows: [
     { eyebrow: "EN LA ESQUINA", title: "Entrena a cada atleta como si fuera el único.", body: "Sportstalent te da el plan estructurado, los datos de preparación y los recordatorios para que la conversación en la esquina sea siempre precisa — no improvisada.", bullets: ["Preparación diaria de cada atleta", "Planes semanales automáticos", "Un toque para registrar la sesión"] },
-    { eyebrow: "EN EL TATAMI", title: "Ciencia específica del deporte, no fitness genérico.", body: "Planes pensados para el taekwondo: patadas, juego de pies, intensidades de combate y control de peso — calibrados según edad, cinturón y objetivo.", bullets: ["Programas periodizados de 4 a 12 semanas", "Fases pre, intra y post competición", "Nutrición sin cerdo adaptada a la categoría de peso"] },
+    { eyebrow: "EN EL TATAMI", title: "Ciencia específica del deporte, no fitness genérico.", body: "Planes pensados para tu deporte: velocidad, potencia, trabajo técnico y recuperación — calibrados según edad, nivel y objetivo.", bullets: ["Programas periodizados de 4 a 12 semanas", "Fases pre, intra y post competición", "Nutrición ajustada a la carga de entrenamiento y objetivos de peso"] },
     { eyebrow: "ANTES DEL COMBATE", title: "Ve quién está listo — y quién no.", body: "Una sola vista del equipo muestra el ánimo, energía, sueño y carga de cada atleta, para que ajustes la sesión antes del calentamiento, no después de la derrota.", bullets: ["Pulso del equipo con semáforo de estado", "Alertas de sobreentrenamiento con dos semanas de antelación", "Notas del entrenador sincronizadas con el atleta"] },
     { eyebrow: "DESPUÉS DEL COMBATE", title: "Convierte cada combate en una lección.", body: "Las reflexiones post-competición, el etiquetado de vídeo y los objetivos SMART aseguran que el siguiente ciclo empiece justo donde acabó el anterior.", bullets: ["Reflexión en 4 pasos tras cada combate", "Etiquetas de vídeo por técnica y resultado", "3 objetivos SMART personalizados por ciclo"] },
   ],
 
-  metaTitle: "Sportstalent — Plataforma de entrenamiento para clubs de taekwondo",
+  metaTitle: "Sportstalent — Plataforma de entrenamiento para clubes deportivos daneses",
   metaDesc:
-    "Plataforma de entrenamiento creada para clubs de taekwondo. Gestión del equipo, preparación, planes periódicos e informes semanales — todo en un lugar.",
+    "Plataforma de entrenamiento creada para clubes deportivos daneses. Gestión del equipo, preparación, planes periódicos e informes semanales — todo en un lugar.",
 };
 
 export const COACH_LANDING_STRINGS: Record<Locale, CLStrings> = { en, da, sv, no, de, ar, es };
