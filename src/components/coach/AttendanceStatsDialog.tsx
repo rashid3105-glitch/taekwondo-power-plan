@@ -25,7 +25,7 @@ interface Props {
 interface Row {
   athlete_id: string;
   session_date: string;
-  status: "present" | "absent" | "late" | "injured";
+  status: "present" | "absent" | "late" | "vacation" | "injured";
   rpe: number | null;
 }
 
@@ -73,7 +73,7 @@ export function AttendanceStatsDialog({ open, onOpenChange, coachId, athletes, a
     rows.forEach((r) => {
       const cur = per.get(r.athlete_id) || { present: 0, late: 0, absent: 0, injured: 0, rpeSum: 0, rpeN: 0 };
       cur[r.status] += 1;
-      if (r.rpe != null && r.status !== "absent" && r.status !== "injured") {
+      if (r.rpe != null && r.status !== "absent" && r.status !== "injured" && r.status !== "vacation") {
         cur.rpeSum += r.rpe;
         cur.rpeN += 1;
       }
@@ -168,7 +168,7 @@ export function AttendanceStatsDialog({ open, onOpenChange, coachId, athletes, a
           if (y > 280) { doc.addPage(); y = 20; }
           const r = rows.find((rr) => rr.session_date === d && rr.athlete_id === selectedAthleteId);
           const statusKey = r?.status;
-          const statusLabel = statusKey === "present" ? t("present") : statusKey === "late" ? t("late") : statusKey === "absent" ? t("absent") : statusKey === "injured" ? t("injured") : "—";
+          const statusLabel = statusKey === "present" ? t("present") : statusKey === "late" ? t("late") : statusKey === "vacation" ? t("vacation") : statusKey === "absent" ? t("absent") : statusKey === "injured" ? t("injured") : "—";
           doc.text(d, margin, y);
           doc.text(statusLabel, margin + 60, y);
           doc.text(r?.rpe != null ? String(r.rpe) : "—", margin + 110, y);
