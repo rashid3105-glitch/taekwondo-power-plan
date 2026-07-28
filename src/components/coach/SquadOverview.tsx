@@ -316,7 +316,7 @@ export function SquadOverview({
             const staleClass =
               days === null ? "text-muted-foreground" : days >= 7 ? "text-destructive" : days >= 3 ? "text-orange-400" : "text-emerald-500";
             const lastLabel =
-              days === null ? "—" : days === 0 ? t("squadToday") : `${days} ${t("squadDaysAgoSuffix")}`;
+              days === null ? "—" : days === 0 ? t("squadToday") : `${days} ${t(days === 1 ? "squadDayAgoSuffix" : "squadDaysAgoSuffix")}`;
             const canRemove = !!onRemove && (!removableUserIds || removableUserIds.includes(r.user_id));
 
             return (
