@@ -1,8 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { Camera, Loader2, ShieldAlert, ShieldCheck, ShieldQuestion, X, Search, History, ExternalLink, Pill, Type } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
@@ -147,200 +144,224 @@ export function SupplementChecker({ athleteId }: SupplementCheckerProps = {}) {
   };
 
   return (
-    <div className="theme-light-section relative z-10 space-y-4">
-      <Card className="p-4 space-y-3">
-        <div className="flex items-center gap-2">
-          <Pill className="h-5 w-5 text-primary" />
-          <h2 className="font-bold text-foreground">{t("supplementCheckerTitle") || "Tjek kosttilskud & medicin"}</h2>
-        </div>
-        <p className="text-xs text-muted-foreground">
-          {t("supplementCheckerIntro") || "Tjek baseret på viden om antidoping og WADA's liste. Resultatet er vejledende — ikke en garanti."}
-        </p>
+    <div className="relative z-10 space-y-5 font-['Manrope'] antialiased">
+      {/* Main search card */}
+      <div className="relative overflow-hidden rounded-3xl border border-white/5 bg-[#121212]/80 backdrop-blur-xl p-5 md:p-7 shadow-2xl">
+        <div className="pointer-events-none absolute -top-24 -left-24 h-48 w-48 rounded-full blur-[100px]" style={{ backgroundColor: "var(--gold)", opacity: 0.07 }} />
+        <div className="relative">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="rounded-xl border p-2.5" style={{ borderColor: "color-mix(in srgb, var(--gold) 25%, transparent)", backgroundColor: "color-mix(in srgb, var(--gold) 10%, transparent)" }}>
+              <Search className="h-5 w-5" style={{ color: "var(--gold)" }} />
+            </div>
+            <h2 className="font-['Sora'] text-xl md:text-2xl font-bold tracking-tight text-white">
+              {t("supplementCheckerTitle") || "Tjek kosttilskud & medicin"}
+            </h2>
+          </div>
+          <p className="text-sm text-white/50 mb-6">
+            {t("supplementCheckerIntro") || "Tjek baseret på viden om antidoping og WADA's liste. Resultatet er vejledende — ikke en garanti."}
+          </p>
 
-        {/* Mode toggle */}
-        <div className="grid grid-cols-2 gap-2">
-          <button
-            type="button"
-            onClick={() => { setMode("text"); setResult(null); }}
-            className={cn(
-              "flex items-center justify-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
-              mode === "text" ? "border-primary bg-primary/10 text-foreground" : "border-border bg-card text-card-foreground hover:bg-secondary"
-            )}
-          >
-            <Type className="h-4 w-4" /> {t("supplementModeText") || "Tekst"}
-          </button>
-          <button
-            type="button"
-            onClick={() => { setMode("image"); setResult(null); }}
-            className={cn(
-              "flex items-center justify-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
-              mode === "image" ? "border-primary bg-primary/10 text-foreground" : "border-border bg-card text-card-foreground hover:bg-secondary"
-            )}
-          >
-            <Camera className="h-4 w-4" /> {t("supplementModeImage") || "Billede"}
-          </button>
-        </div>
+          {/* Mode toggle */}
+          <div className="flex p-1 mb-5 rounded-2xl border border-white/5 bg-black/40">
+            <button
+              type="button"
+              onClick={() => { setMode("text"); setResult(null); }}
+              className={cn(
+                "flex-1 flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold transition-all",
+                mode === "text" ? "text-black" : "text-white/50 hover:text-white font-semibold"
+              )}
+              style={mode === "text" ? { backgroundColor: "var(--gold)" } : undefined}
+            >
+              <Type className="h-4 w-4" /> {t("supplementModeText") || "Tekst"}
+            </button>
+            <button
+              type="button"
+              onClick={() => { setMode("image"); setResult(null); }}
+              className={cn(
+                "flex-1 flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold transition-all",
+                mode === "image" ? "text-black" : "text-white/50 hover:text-white font-semibold"
+              )}
+              style={mode === "image" ? { backgroundColor: "var(--gold)" } : undefined}
+            >
+              <Camera className="h-4 w-4" /> {t("supplementModeImage") || "Billede"}
+            </button>
+          </div>
 
-        {mode === "text" ? (
-          <Input
-            placeholder={t("supplementProductPlaceholder") || "Produktnavn eller indholdsstof"}
-            value={productName}
-            onChange={(e) => setProductName(e.target.value)}
-            maxLength={200}
-          />
-        ) : (
-          <>
+          {mode === "text" ? (
             <input
-              ref={cameraInputRef}
-              type="file"
-              accept="image/*"
-              capture="environment"
-              className="hidden"
-              onChange={(e) => e.target.files?.[0] && handleImage(e.target.files[0])}
+              type="text"
+              placeholder={t("supplementProductPlaceholder") || "Produktnavn eller indholdsstof"}
+              value={productName}
+              onChange={(e) => setProductName(e.target.value)}
+              maxLength={200}
+              className="w-full rounded-xl border border-white/10 bg-black/40 px-5 py-4 text-base text-white placeholder:text-white/30 outline-none transition-all focus:border-white/25"
             />
-            <input
-              ref={galleryInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => e.target.files?.[0] && handleImage(e.target.files[0])}
-            />
-            {!image ? (
-              <div className="space-y-2">
-                <div className="rounded-2xl border-2 border-dashed border-border bg-background py-6 px-4 flex flex-col items-center justify-center gap-2">
-                  <div className="h-12 w-12 rounded-2xl bg-primary/15 flex items-center justify-center">
-                    <Camera className="h-6 w-6 text-primary" />
-                  </div>
-                  <p className="text-sm font-semibold text-foreground text-center">
-                    {t("supplementTakePhoto") || "Tag billede af etiketten eller vælg fra galleri"}
-                  </p>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <Button type="button" variant="outline" className="gap-2" onClick={() => cameraInputRef.current?.click()}>
-                    <Camera className="h-4 w-4" /> {t("supplementCamera") || "Kamera"}
-                  </Button>
-                  <Button type="button" variant="outline" className="gap-2" onClick={() => galleryInputRef.current?.click()}>
-                    <Pill className="h-4 w-4" /> {t("supplementGallery") || "Galleri"}
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <div className="relative rounded-2xl overflow-hidden">
-                <img src={image} alt="" className="w-full max-h-64 object-cover rounded-2xl" />
-                <button
-                  onClick={() => setImage(null)}
-                  className="absolute top-2 right-2 h-8 w-8 rounded-full bg-black/60 flex items-center justify-center text-white"
-                  aria-label="x"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-            )}
-          </>
-        )}
-
-        <Button
-          className="w-full gap-2"
-          onClick={runCheck}
-          disabled={checking || (mode === "text" ? !productName.trim() : !image)}
-        >
-          {checking ? (
-            <><Loader2 className="h-4 w-4 animate-spin" /> {t("supplementChecking") || "Tjekker…"}</>
           ) : (
-            <><Search className="h-4 w-4" /> {t("supplementCheckButton") || "Tjek produkt"}</>
+            <>
+              <input
+                ref={cameraInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                onChange={(e) => e.target.files?.[0] && handleImage(e.target.files[0])}
+              />
+              <input
+                ref={galleryInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => e.target.files?.[0] && handleImage(e.target.files[0])}
+              />
+              {!image ? (
+                <div className="space-y-3">
+                  <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-white/10 bg-black/40 px-4 py-7">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl" style={{ backgroundColor: "color-mix(in srgb, var(--gold) 12%, transparent)" }}>
+                      <Camera className="h-6 w-6" style={{ color: "var(--gold)" }} />
+                    </div>
+                    <p className="text-center text-sm font-semibold text-white/80">
+                      {t("supplementTakePhoto") || "Tag billede af etiketten eller vælg fra galleri"}
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button type="button" onClick={() => cameraInputRef.current?.click()}
+                      className="flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] py-3 text-sm font-semibold text-white hover:bg-white/[0.08] transition-colors">
+                      <Camera className="h-4 w-4" style={{ color: "var(--gold)" }} /> {t("supplementCamera") || "Kamera"}
+                    </button>
+                    <button type="button" onClick={() => galleryInputRef.current?.click()}
+                      className="flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] py-3 text-sm font-semibold text-white hover:bg-white/[0.08] transition-colors">
+                      <Pill className="h-4 w-4" style={{ color: "var(--gold)" }} /> {t("supplementGallery") || "Galleri"}
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="relative overflow-hidden rounded-2xl">
+                  <img src={image} alt="" className="max-h-64 w-full rounded-2xl object-cover" />
+                  <button
+                    onClick={() => setImage(null)}
+                    className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/70 text-white"
+                    aria-label="x"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              )}
+            </>
           )}
-        </Button>
-      </Card>
+
+          <button
+            type="button"
+            onClick={runCheck}
+            disabled={checking || (mode === "text" ? !productName.trim() : !image)}
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl py-4 font-['Sora'] text-sm font-bold uppercase tracking-wider text-black shadow-lg transition-all hover:brightness-110 active:scale-[0.99] disabled:opacity-40"
+            style={{ background: "linear-gradient(90deg, var(--gold), color-mix(in srgb, var(--gold) 70%, #7a5c00))" }}
+          >
+            {checking ? (
+              <><Loader2 className="h-4 w-4 animate-spin" /> {t("supplementChecking") || "Tjekker…"}</>
+            ) : (
+              <><Search className="h-4 w-4" /> {t("supplementCheckButton") || "Tjek produkt"}</>
+            )}
+          </button>
+        </div>
+      </div>
 
       {/* Result */}
       {result && (
-        <Card className={cn("p-4 space-y-3 border-2 bg-card", flagStyles[result.flag_status].border)}>
+        <div className={cn("rounded-3xl border-2 bg-[#121212]/80 backdrop-blur-xl p-5 space-y-3 animate-fade-in", flagStyles[result.flag_status].border)}>
           <div className="flex items-start gap-3">
             {(() => { const Icon = flagStyles[result.flag_status].icon; return <Icon className={cn("h-8 w-8 shrink-0", flagStyles[result.flag_status].text)} />; })()}
-            <div className="flex-1 min-w-0">
-              <p className="font-extrabold text-base text-card-foreground">{flagLabel(result.flag_status)}</p>
-              <div className="flex items-center gap-2 mt-0.5">
+            <div className="min-w-0 flex-1">
+              <p className="font-['Sora'] text-base font-bold text-white">{flagLabel(result.flag_status)}</p>
+              <div className="mt-0.5 flex items-center gap-2">
                 <span className={cn("inline-block h-2 w-2 rounded-full", result.flag_status === "green" ? "bg-emerald-500" : result.flag_status === "yellow" ? "bg-amber-500" : "bg-red-500")} />
                 <span className={cn("text-xs font-bold uppercase", flagStyles[result.flag_status].text)}>{result.flag_status}</span>
               </div>
               {result.product_name && (
-                <p className="text-sm font-semibold text-card-foreground truncate mt-1">{result.product_name}</p>
+                <p className="mt-1 truncate text-sm font-semibold text-white/80">{result.product_name}</p>
               )}
             </div>
           </div>
 
           {result.substances.length > 0 && (
             <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-white/40">
                 {t("supplementSubstances") || "Stoffer"}
               </p>
               {result.substances.map((s, i) => (
-                <div key={i} className={cn("rounded-lg border p-2 bg-background", flagStyles[s.flag].border)}>
+                <div key={i} className={cn("rounded-xl border bg-black/40 p-3", flagStyles[s.flag].border)}>
                   <div className="flex items-center justify-between gap-2">
-                    <span className="font-semibold text-sm text-card-foreground">{s.navn}</span>
-                    <span className={cn("text-xs font-bold uppercase shrink-0", flagStyles[s.flag].text)}>
+                    <span className="text-sm font-semibold text-white">{s.navn}</span>
+                    <span className={cn("shrink-0 text-xs font-bold uppercase", flagStyles[s.flag].text)}>
                       {s.kategori ? `${s.kategori} · ` : ""}{s.flag}
                     </span>
                   </div>
-                  {s.note && <p className="text-xs text-foreground/80 mt-1">{s.note}</p>}
+                  {s.note && <p className="mt-1 text-xs text-white/60">{s.note}</p>}
                 </div>
               ))}
             </div>
           )}
 
           {result.summary && (
-            <div className="rounded-lg bg-background border border-border p-3 text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+            <div className="whitespace-pre-wrap rounded-xl border border-white/5 bg-black/40 p-3 text-sm leading-relaxed text-white/80">
               {result.summary}
             </div>
           )}
 
           {savedNote && (
-            <p className="text-xs text-muted-foreground italic">
+            <p className="text-xs italic text-white/40">
               ✓ {t("supplementSavedNote") || "Gemt i din historik"}
             </p>
           )}
 
-          <Button variant="outline" size="sm" className="w-full" onClick={resetForNew}>
+          <button
+            type="button"
+            onClick={resetForNew}
+            className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 text-sm font-semibold text-white hover:bg-white/[0.08] transition-colors"
+          >
             {t("supplementCheckAnother") || "Tjek et nyt produkt"}
-          </Button>
-        </Card>
+          </button>
+        </div>
       )}
 
       {/* Always-visible disclaimer */}
-      <Card className="p-4 border-l-4 border-l-amber-500 border border-border bg-card space-y-2">
-        <div className="flex items-center gap-2">
-          <ShieldAlert className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-          <p className="font-bold text-sm text-card-foreground">
-            {t("supplementDisclaimerTitle") || "Vigtigt — vejledende screening"}
-          </p>
+      <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-5 backdrop-blur-sm">
+        <div className="flex items-start gap-4">
+          <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0" style={{ color: "var(--gold)" }} />
+          <div className="space-y-2">
+            <p className="font-['Sora'] text-sm font-bold text-white">
+              {t("supplementDisclaimerTitle") || "Vigtigt — vejledende screening"}
+            </p>
+            <p className="text-xs leading-relaxed text-white/55">
+              {t("supplementDisclaimerBody") || "Dette er en vejledende screening, ikke en garanti. WADA's liste er ikke udtømmende, og du er selv ansvarlig (strict liability) for hvad du indtager. Kosttilskud dækkes IKKE af Global DRO og kan være forurenede eller fejlmærkede. Verificér altid officielt og tal med din træner, læge eller en voksen."}
+            </p>
+            <div className="flex flex-wrap gap-4 pt-1">
+              <a href="https://www.antidoping.dk" target="_blank" rel="noopener noreferrer"
+                 className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide hover:underline" style={{ color: "var(--gold)" }}>
+                <ExternalLink className="h-3 w-3" /> Antidoping.dk
+              </a>
+              <a href="https://www.globaldro.com" target="_blank" rel="noopener noreferrer"
+                 className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide hover:underline" style={{ color: "var(--gold)" }}>
+                <ExternalLink className="h-3 w-3" /> Global DRO
+              </a>
+            </div>
+          </div>
         </div>
-        <p className="text-xs text-card-foreground/90 leading-relaxed">
-          {t("supplementDisclaimerBody") || "Dette er en vejledende screening, ikke en garanti. WADA's liste er ikke udtømmende, og du er selv ansvarlig (strict liability) for hvad du indtager. Kosttilskud dækkes IKKE af Global DRO og kan være forurenede eller fejlmærkede. Verificér altid officielt og tal med din træner, læge eller en voksen."}
-        </p>
-        <div className="flex flex-col gap-1.5 pt-1">
-          <a href="https://www.antidoping.dk" target="_blank" rel="noopener noreferrer"
-             className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline">
-            <ExternalLink className="h-3 w-3" /> Anti Doping Danmark (antidoping.dk)
-          </a>
-          <a href="https://www.globaldro.com" target="_blank" rel="noopener noreferrer"
-             className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline">
-            <ExternalLink className="h-3 w-3" /> Global DRO (globaldro.com)
-          </a>
-        </div>
-      </Card>
+      </div>
 
       {/* History */}
-      <Card className="p-4 space-y-3">
-        <div className="flex items-center gap-2">
-          <History className="h-4 w-4 text-muted-foreground" />
-          <h3 className="font-bold text-card-foreground text-sm">{t("supplementHistoryTitle") || "Din historik"}</h3>
+      <div className="rounded-3xl border border-white/5 bg-[#121212]/80 p-5 backdrop-blur-xl">
+        <div className="mb-4 flex items-center gap-3">
+          <History className="h-5 w-5 text-white/40" />
+          <h3 className="font-['Sora'] text-sm font-bold uppercase tracking-wide text-white">{t("supplementHistoryTitle") || "Din historik"}</h3>
         </div>
         {historyLoading ? (
-          <div className="flex items-center justify-center py-4"><Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /></div>
+          <div className="flex items-center justify-center py-6"><Loader2 className="h-4 w-4 animate-spin text-white/40" /></div>
         ) : history.length === 0 ? (
-          <p className="text-xs text-muted-foreground">{t("supplementHistoryEmpty") || "Ingen tidligere tjek endnu."}</p>
+          <div className="flex items-center justify-center rounded-xl border border-dashed border-white/10 py-6">
+            <p className="text-sm text-white/35">{t("supplementHistoryEmpty") || "Ingen tidligere tjek endnu."}</p>
+          </div>
         ) : (
-          <ul className="divide-y divide-border">
+          <ul className="divide-y divide-white/5">
             {history.map((h) => {
               const style = flagStyles[h.flag_status];
               const Icon = style.icon;
@@ -348,12 +369,12 @@ export function SupplementChecker({ athleteId }: SupplementCheckerProps = {}) {
                 <li key={h.id}>
                   <button
                     onClick={() => showResult(h)}
-                    className="w-full flex items-center gap-3 py-2 text-left hover:bg-accent rounded-md px-2 -mx-2 cursor-pointer"
+                    className="-mx-2 flex w-full cursor-pointer items-center gap-3 rounded-lg px-2 py-2.5 text-left transition-colors hover:bg-white/[0.05]"
                   >
                     <Icon className={cn("h-4 w-4 shrink-0", style.text)} />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-card-foreground truncate">{h.product_name || "—"}</p>
-                      <p className="text-[11px] text-muted-foreground">{new Date(h.created_at).toLocaleString()}</p>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold text-white">{h.product_name || "—"}</p>
+                      <p className="text-[11px] text-white/40">{new Date(h.created_at).toLocaleString()}</p>
                     </div>
                     <span className={cn("text-[10px] font-bold uppercase", style.text)}>{h.flag_status}</span>
                   </button>
@@ -362,7 +383,8 @@ export function SupplementChecker({ athleteId }: SupplementCheckerProps = {}) {
             })}
           </ul>
         )}
-      </Card>
+      </div>
     </div>
   );
 }
+

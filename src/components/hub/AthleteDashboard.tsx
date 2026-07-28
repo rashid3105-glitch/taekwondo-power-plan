@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useRole } from "@/contexts/RoleContext";
 import { useThreads } from "@/hooks/useThreads";
-import { Calendar, MessageCircle, Play, BookOpen, Trophy, NotebookPen, CalendarX, Book, Video, BarChart3, CalendarCheck, ClipboardList, User as UserIcon } from "lucide-react";
+import { Calendar, MessageCircle, Play, BookOpen, Trophy, NotebookPen, CalendarX, Book, Video, BarChart3, CalendarCheck, ClipboardList, ShieldCheck, User as UserIcon } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -664,13 +664,14 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
               </button>
               <button
                 type="button"
-                onClick={() => navigate("/coach/today")}
+                onClick={() => navigate("/library/supplement")}
                 className="col-span-2 rounded-xl p-4 flex items-center gap-2 font-semibold text-sm hover:opacity-90 transition-opacity"
                 style={{ backgroundColor: "var(--gold)", color: "#000" }}
               >
-                <CalendarCheck className="h-4 w-4" />
-                {t("todayTab")}
+                <ShieldCheck className="h-4 w-4" />
+                {t("libSupplementLabel")}
               </button>
+
             </>
           ) : (
             <>
