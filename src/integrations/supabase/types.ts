@@ -2298,6 +2298,7 @@ export type Database = {
         Row: {
           active_role: string | null
           age: number | null
+          antidoping_course_date: string | null
           athlete_code: string | null
           avatar_url: string | null
           belt_level: string
@@ -2359,6 +2360,7 @@ export type Database = {
         Insert: {
           active_role?: string | null
           age?: number | null
+          antidoping_course_date?: string | null
           athlete_code?: string | null
           avatar_url?: string | null
           belt_level?: string
@@ -2420,6 +2422,7 @@ export type Database = {
         Update: {
           active_role?: string | null
           age?: number | null
+          antidoping_course_date?: string | null
           athlete_code?: string | null
           avatar_url?: string | null
           belt_level?: string
