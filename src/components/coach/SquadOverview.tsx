@@ -67,6 +67,16 @@ interface Props {
 
 const BELT_ORDER = ["white", "yellow", "green", "blue", "red", "black"];
 
+const BELT_CHIP: Record<string, string> = {
+  white: "bg-slate-200 text-slate-700",
+  yellow: "bg-yellow-400 text-yellow-950",
+  green: "bg-emerald-500 text-white",
+  blue: "bg-sky-500 text-white",
+  red: "bg-red-500 text-white",
+  black: "bg-neutral-900 text-white",
+};
+
+
 function daysSince(date: string | null): number | null {
   if (!date) return null;
   const diff = Date.now() - new Date(date).getTime();
