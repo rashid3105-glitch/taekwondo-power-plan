@@ -67,7 +67,7 @@ export function CompetitionPlanDialog({ open, onOpenChange, competitionName, pla
       }
 
       if (warnings.length > 0) {
-        heading(t("warning"));
+        heading(t("compPlanWarningsTitle"));
         warnings.forEach((w: string) => body(`• ${w}`, 3));
         y += 3;
       }
