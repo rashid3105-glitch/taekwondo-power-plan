@@ -57,50 +57,64 @@ export default function Priser() {
       </section>
 
       <div style={sec}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16, alignItems: "start" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 12, alignItems: "stretch" }}>
+          {TIERS.map((tier) => {
+            const active = athletes >= tier.min && athletes <= tier.max;
+            return (
+              <div key={tier.min} style={{
+                background: active ? "rgba(245,200,66,0.07)" : "rgba(255,255,255,0.03)",
+                border: `0.5px solid ${active ? "rgba(245,200,66,0.35)" : "rgba(255,255,255,0.07)"}`,
+                borderRadius: 14, padding: "20px 18px",
+              }}>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: active ? GOLD : "rgba(255,255,255,0.5)", marginBottom: 8 }}>
+                  {tier.min}–{tier.max} {t("pricingAthletesWord")}
+                </div>
+                <div style={{ fontSize: 38, fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 1 }}>{tier.rate}</div>
+                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", marginTop: 6 }}>{t("pricingPerAthleteMonth")}</div>
+                <div style={{ fontSize: 11, color: tier.discount ? GOLD : "rgba(255,255,255,0.35)", marginTop: 10, fontWeight: 700 }}>
+                  {tier.discount ? `−${tier.discount}% ${t("pricingDiscountWord")}` : "—"}
+                </div>
+              </div>
+            );
+          })}
+        </div>
 
+        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", marginTop: 14, lineHeight: 1.6 }}>{t("pricingTierNote")}</div>
 
-          <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: "28px 24px" }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", marginBottom: 8 }}>{t("pricingTierStarter")}</div>
-            <div style={{ fontSize: 44, fontWeight: 900, letterSpacing: "-0.04em" }}>499</div>
-            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", marginBottom: 8 }}>{t("pricingPerMonth")}</div>
-            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.62)", marginBottom: 16, lineHeight: 1.5 }}>{t("pricingStarterDesc")}</div>
-            <hr style={{ border: "none", borderTop: "0.5px solid rgba(255,255,255,0.07)", margin: "12px 0" }} />
-            {starterFeatures.map((f, i) => (
-              <div key={i} style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", display: "flex", gap: 7, marginBottom: 8 }}><span style={{ color: GOLD }}>✓</span>{f}</div>
-            ))}
-            {starterMissing.map((f, i) => (
-              <div key={`x-${i}`} style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", display: "flex", gap: 7, marginBottom: 8 }}><span>✕</span>{f}</div>
-            ))}
-            <button onClick={() => navigate("/auth")} style={{ width: "100%", marginTop: 20, padding: "11px", borderRadius: 8, border: "0.5px solid rgba(255,255,255,0.12)", background: "transparent", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>{t("pricingCtaStart")}</button>
+        <div style={{ marginTop: 28, background: "rgba(245,200,66,0.06)", border: "0.5px solid rgba(245,200,66,0.28)", borderRadius: 14, padding: "26px 24px" }}>
+          <div style={{ fontSize: 15, fontWeight: 800, marginBottom: 16 }}>{t("pricingCalcTitle")}</div>
+          <label style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", display: "block", marginBottom: 8 }}>
+            {t("pricingCalcAthletes")}: <span style={{ color: GOLD, fontWeight: 800 }}>{athletes}</span>
+          </label>
+          <input type="range" min={1} max={50} value={athletes} onChange={(e) => setAthletes(Number(e.target.value))}
+            style={{ width: "100%", accentColor: GOLD }} />
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 20 }}>
+            <div>
+              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginBottom: 4 }}>{t("pricingCalcMonthly")}</div>
+              <div style={{ fontSize: 28, fontWeight: 900, letterSpacing: "-0.03em" }}>{monthly.toLocaleString("da-DK")} kr</div>
+            </div>
+            <div>
+              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginBottom: 4 }}>{t("pricingCalcYearly")}</div>
+              <div style={{ fontSize: 28, fontWeight: 900, letterSpacing: "-0.03em", color: GOLD }}>{yearly.toLocaleString("da-DK")} kr</div>
+            </div>
           </div>
+          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", marginTop: 12 }}>{t("pricingBilledYearly")}</div>
+          <button onClick={() => navigate("/auth")} style={{ width: "100%", marginTop: 20, padding: "13px", borderRadius: 8, border: "none", background: GOLD, color: "#0B0C14", fontSize: 14, fontWeight: 800, cursor: "pointer" }}>{t("pricingCtaTrialClub")}</button>
+        </div>
 
-          <div style={{ background: "rgba(245,200,66,0.06)", border: "0.5px solid rgba(245,200,66,0.28)", borderRadius: 14, padding: "28px 24px", position: "relative" }}>
-            <div style={{ position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)", background: GOLD, color: "#0B0C14", borderRadius: 20, padding: "3px 14px", fontSize: 10, fontWeight: 800, whiteSpace: "nowrap" }}>{t("pricingMostPopular")}</div>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: GOLD, marginBottom: 8 }}>{t("pricingTierClub")}</div>
-            <div style={{ fontSize: 44, fontWeight: 900, letterSpacing: "-0.04em" }}>1499</div>
-            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.35)", marginBottom: 8 }}>{t("pricingPerMonth")}</div>
-            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.62)", marginBottom: 16, lineHeight: 1.5 }}>{t("pricingClubDesc")}</div>
-            <hr style={{ border: "none", borderTop: "0.5px solid rgba(245,200,66,0.15)", margin: "12px 0" }} />
-            {clubFeatures.map((f, i) => (
-              <div key={i} style={{ fontSize: 13, color: "rgba(255,255,255,0.75)", display: "flex", gap: 7, marginBottom: 8 }}><span style={{ color: GOLD }}>✓</span>{f}</div>
-            ))}
-            <button onClick={() => navigate("/auth")} style={{ width: "100%", marginTop: 20, padding: "12px", borderRadius: 8, border: "none", background: GOLD, color: "#0B0C14", fontSize: 13, fontWeight: 800, cursor: "pointer" }}>{t("pricingCtaTrialClub")}</button>
-          </div>
-
-          <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: "28px 24px" }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", marginBottom: 8 }}>{t("pricingTierFed")}</div>
-            <div style={{ fontSize: 18, fontWeight: 800, letterSpacing: "-0.01em", marginBottom: 4 }}>kontakt@sportstalent.dk</div>
-            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", marginBottom: 16 }}>{t("pricingContactUs")}</div>
-            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.62)", marginBottom: 16, lineHeight: 1.5 }}>{t("pricingFedDesc")}</div>
-            <hr style={{ border: "none", borderTop: "0.5px solid rgba(255,255,255,0.07)", margin: "12px 0" }} />
+        <div style={{ marginTop: 20, background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: "24px" }}>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", marginBottom: 8 }}>{t("pricingTierFed")}</div>
+          <div style={{ fontSize: 16, fontWeight: 800, marginBottom: 4 }}>kontakt@sportstalent.dk</div>
+          <div style={{ fontSize: 13, color: "rgba(255,255,255,0.62)", marginBottom: 14, lineHeight: 1.5 }}>{t("pricingFedDesc")}</div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 8, marginBottom: 16 }}>
             {fedFeatures.map((f, i) => (
-              <div key={i} style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", display: "flex", gap: 7, marginBottom: 8 }}><span style={{ color: GOLD }}>✓</span>{f}</div>
+              <div key={i} style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", display: "flex", gap: 7 }}><span style={{ color: GOLD }}>✓</span>{f}</div>
             ))}
-            <button style={{ width: "100%", marginTop: 20, padding: "11px", borderRadius: 8, border: "0.5px solid rgba(255,255,255,0.12)", background: "transparent", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer" }} onClick={() => document.getElementById("contact-form")?.scrollIntoView({ behavior: "smooth" })}>{t("pricingFedCta")}</button>
           </div>
+          <button style={{ padding: "11px 22px", borderRadius: 8, border: "0.5px solid rgba(255,255,255,0.12)", background: "transparent", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer" }} onClick={() => document.getElementById("contact-form")?.scrollIntoView({ behavior: "smooth" })}>{t("pricingFedCta")}</button>
         </div>
       </div>
+
 
       <div style={{ background: "#13141F", borderTop: "0.5px solid rgba(255,255,255,0.07)", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
         <div style={{ ...sec, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
