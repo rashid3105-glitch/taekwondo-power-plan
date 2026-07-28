@@ -288,7 +288,7 @@ export function SquadOverview({
           {t("noMatchingAthletes")}
         </div>
       ) : (
-        <div className={cn("grid gap-2", view === "cards" && "sm:grid-cols-2")}>
+        <div className={cn("grid gap-3", view === "cards" && "sm:grid-cols-2")}>
           {sorted.map((r) => {
             const { status } = rowSeverity(r);
             const days = daysSince(r.last_seen_at);
@@ -297,66 +297,118 @@ export function SquadOverview({
             const completion = r.planned_sessions_7d > 0 ? r.sessions_logged_7d / r.planned_sessions_7d : 0;
             const borderClass =
               status === "red" ? "border-l-destructive" : status === "amber" ? "border-l-orange-400" : "border-l-emerald-500";
+            const scoreClass =
+              status === "red" ? "text-destructive" : status === "amber" ? "text-orange-400" : "text-emerald-500";
+            const barClass =
+              completion >= 0.8 ? "bg-emerald-500" : completion >= 0.5 ? "bg-primary" : "bg-orange-400";
+            const staleClass =
+              days === null ? "text-muted-foreground" : days >= 7 ? "text-destructive" : days >= 3 ? "text-orange-400" : "text-emerald-500";
+            const lastLabel =
+              days === null ? "—" : days === 0 ? t("squadToday") : `${days} ${t("squadDaysAgoSuffix")}`;
             const canRemove = !!onRemove && (!removableUserIds || removableUserIds.includes(r.user_id));
 
             return (
               <div
                 key={r.user_id}
                 className={cn(
-                  "rounded-lg border bg-card p-3 border-l-4 transition-colors hover:bg-accent/30",
+                  "group relative rounded-lg border bg-card border-l-4 p-4 transition-colors hover:bg-accent/30",
                   borderClass,
                 )}
               >
-                <div className="flex items-center gap-3">
+                {/* Top: identity + readiness */}
+                <div className="flex items-start justify-between gap-3">
                   <button
                     type="button"
                     onClick={() => onSelectAthlete?.(r.user_id)}
-                    className="flex items-center gap-3 flex-1 min-w-0 text-left"
+                    className="flex items-start gap-3 min-w-0 flex-1 text-left"
                   >
-                    <AvatarImg avatarUrl={r.avatar_url} />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <p className="font-medium text-sm text-card-foreground truncate">{r.display_name}</p>
-                        {r.has_active_injury && (
-                          <Heart className="h-3 w-3 text-destructive flex-shrink-0" />
+                    <div className="relative flex-shrink-0">
+                      <AvatarImg avatarUrl={r.avatar_url} />
+                      <span
+                        className={cn(
+                          "absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-card flex items-center justify-center text-[8px] font-bold uppercase",
+                          BELT_CHIP[r.belt_level] || "bg-muted text-muted-foreground",
                         )}
-                        {!r.has_active_plan && (
-                          <span className="text-[9px] bg-orange-400/10 text-orange-500 px-1.5 py-0.5 rounded-full">
-                            {t("noPlan")}
-                          </span>
-                        )}
+                        title={t(r.belt_level)}
+                      >
+                        {(r.belt_level || "?").charAt(0)}
+                      </span>
+                    </div>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <p className="font-semibold text-sm text-card-foreground truncate">{r.display_name}</p>
+                        {r.has_active_injury && <Heart className="h-3 w-3 text-destructive flex-shrink-0" />}
                       </div>
-                      <div className="flex flex-wrap items-center gap-2.5 mt-1 text-[11px] text-muted-foreground">
-                        {r.club_name && (
-                          <span className="inline-flex items-center gap-0.5">
-                            <Building className="h-3 w-3" />
-                            <span className="truncate max-w-[100px]">{r.club_name}</span>
-                          </span>
-                        )}
-                        <span className="inline-flex items-center gap-1" title={t("readiness")}>
-                          <Activity className="h-3 w-3" />
-                          {r.latest_readiness_score ?? "—"}
-                        </span>
-                        <span className="inline-flex items-center gap-1" title={t("mood")}>
-                          <MoodIcon className="h-3 w-3" />
-                          {r.latest_mood ?? "—"}/5
-                        </span>
-                        <span className="inline-flex items-center gap-1" title={t("sessions7d")}>
-                          <Calendar className="h-3 w-3" />
-                          {r.sessions_logged_7d}/{r.planned_sessions_7d || "?"}
-                        </span>
-                        {days !== null && days >= 3 && (
-                          <span className="inline-flex items-center gap-1 text-amber-500">
-                            <AlertTriangle className="h-3 w-3" />
-                            {days}d
-                          </span>
-                        )}
-                        <span className="capitalize">{r.belt_level}</span>
-                        <span>{Math.round(completion * 100)}%</span>
-                      </div>
+                      <p className="text-[11px] text-muted-foreground truncate mt-0.5">
+                        {r.club_name || r.athlete_code || "—"}
+                      </p>
                     </div>
                   </button>
-                  <div className="flex items-center gap-0.5 flex-shrink-0">
+                  <div className="text-right flex-shrink-0">
+                    <div className={cn("text-2xl font-bold leading-none tabular-nums", scoreClass)}>
+                      {r.latest_readiness_score ?? "—"}
+                    </div>
+                    <div className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mt-1">
+                      {t("squadReadinessLabel")}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Middle: activity + last seen */}
+                <div className="mt-4 grid grid-cols-2 gap-4 border-t border-border pt-3">
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between text-[10px] font-semibold">
+                      <span className="text-muted-foreground uppercase tracking-tight truncate">
+                        {t("squadWeeklyActivity")}
+                      </span>
+                      <span className="text-card-foreground tabular-nums">
+                        {r.sessions_logged_7d} / {r.planned_sessions_7d || "?"}
+                      </span>
+                    </div>
+                    <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                      <div
+                        className={cn("h-full rounded-full", barClass)}
+                        style={{ width: `${Math.min(100, Math.round(completion * 100))}%` }}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex flex-col justify-end text-right">
+                    <span className={cn("text-xs font-semibold", staleClass)}>{lastLabel}</span>
+                    <span className="text-[9px] uppercase font-bold tracking-tight text-muted-foreground">
+                      {days !== null && days >= 7 ? t("squadWarning") : t("squadLastActivity")}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Footer: status + actions */}
+                <div className="mt-3 flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    {r.has_active_plan ? (
+                      <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-500 text-[9px] font-bold uppercase tracking-wider border border-emerald-500/20">
+                        {t("squadPlanActive")}
+                      </span>
+                    ) : (
+                      <span className="px-2 py-0.5 rounded bg-orange-400/10 text-orange-500 text-[9px] font-bold uppercase tracking-wider border border-orange-400/20">
+                        {t("noPlan")}
+                      </span>
+                    )}
+                    <span className="text-[10px] text-muted-foreground truncate">
+                      {Math.round(completion * 100)}% {t("squadCompleted")}
+                    </span>
+                    <span
+                      className="inline-flex items-center gap-1 text-[10px] text-muted-foreground"
+                      title={t("mood")}
+                    >
+                      <MoodIcon className="h-3 w-3" />
+                      {r.latest_mood ?? "—"}/5
+                    </span>
+                  </div>
+                  <div
+                    className={cn(
+                      "flex items-center gap-0.5 flex-shrink-0 transition-opacity",
+                      isMobile ? "opacity-100" : "opacity-0 group-hover:opacity-100 focus-within:opacity-100",
+                    )}
+                  >
                     {onSelectAthlete && (
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -365,6 +417,7 @@ export function SquadOverview({
                             size="icon"
                             className="h-8 w-8 hover:bg-primary/10 hover:text-primary"
                             onClick={() => onSelectAthlete(r.user_id)}
+                            aria-label={t("manageAthlete")}
                           >
                             <UserCog className="h-4 w-4" />
                           </Button>
@@ -380,6 +433,7 @@ export function SquadOverview({
                             size="icon"
                             className="h-8 w-8"
                             onClick={() => onViewPlan(r.user_id)}
+                            aria-label={t("viewPlan")}
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
@@ -395,6 +449,7 @@ export function SquadOverview({
                             size="icon"
                             className="h-8 w-8"
                             onClick={() => onDiary(r.user_id, r.display_name)}
+                            aria-label={t("diary")}
                           >
                             <NotebookPen className="h-4 w-4" />
                           </Button>
@@ -402,8 +457,6 @@ export function SquadOverview({
                         <TooltipContent side="left">{t("diary")}</TooltipContent>
                       </Tooltip>
                     )}
-
-
                   </div>
                 </div>
               </div>
@@ -411,6 +464,7 @@ export function SquadOverview({
           })}
         </div>
       )}
+
     </div>
   );
 }
