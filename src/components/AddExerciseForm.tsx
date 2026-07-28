@@ -179,9 +179,10 @@ export function AddExerciseForm({ onClose, onAdded }: AddExerciseFormProps) {
             <Input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Key form cues..." maxLength={500} className="mt-1" />
           </div>
           <div>
-            <Label className="text-xs text-card-foreground">Why It Matters for TKD</Label>
+            <Label className="text-xs text-card-foreground">Why It Matters</Label>
             <Input value={whyItMatters} onChange={(e) => setWhyItMatters(e.target.value)} placeholder="Builds explosive..." maxLength={500} className="mt-1" />
           </div>
+
         </div>
 
         {/* Video URL */}
