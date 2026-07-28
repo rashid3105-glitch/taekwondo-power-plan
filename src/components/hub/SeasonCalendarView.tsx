@@ -446,6 +446,14 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
         </div>
       </Card>
 
+      {template.length === 0 && (
+        <p className="text-xs text-muted-foreground italic px-1">
+          {t("seasonNoWeeklyTemplate") || "Der er endnu ikke sat ugentlige træningsdage op for denne sæsonplan."}
+        </p>
+      )}
+
+
+
       {selectedWeek !== null && (() => {
         const focus = weekFocusMap.get(selectedWeek);
         const teamTechs = (focus?.teamTechIds ?? []).map(id => techMap.get(id)).filter(Boolean) as { name: string; category: string }[];
