@@ -48,6 +48,7 @@ interface AthleteProfile {
   gal_license_expires_at: string | null;
   has_myfightbook: boolean | null;
   myfightbook_expires_at: string | null;
+  antidoping_course_date: string | null;
   club_id?: string | null;
   club_name?: string | null;
 }
@@ -139,7 +140,7 @@ export default function CoachAthleteOverview() {
     const [profileRes, plansRes, rehabRes, clubsRes] = await Promise.all([
       supabase
         .from("profiles")
-        .select("user_id, display_name, athlete_code, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, current_injury, program_weeks, weekly_schedule, avatar_url, discipline, club_id, country, gal_license, gal_license_expires_at, has_myfightbook, myfightbook_expires_at")
+        .select("user_id, display_name, athlete_code, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, current_injury, program_weeks, weekly_schedule, avatar_url, discipline, club_id, country, gal_license, gal_license_expires_at, has_myfightbook, myfightbook_expires_at, antidoping_course_date")
         .eq("user_id", athleteId)
         .maybeSingle(),
       plansQ,
