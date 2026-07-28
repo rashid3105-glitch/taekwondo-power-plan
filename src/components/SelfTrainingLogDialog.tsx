@@ -30,7 +30,7 @@ interface ClubActivityType {
   is_active: boolean;
 }
 
-const FALLBACK_TYPES = ["Taekwondo", "Styrke", "Kondisjon", "Andet"];
+const FALLBACK_TYPES = ["Tekniktræning", "Styrke", "Kondisjon", "Andet"];
 
 export interface SelfLogEditTarget {
   id: string;
