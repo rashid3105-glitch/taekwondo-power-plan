@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Trophy } from "lucide-react";
+import { ChevronLeft, ChevronRight, Trophy, Printer } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
@@ -166,6 +166,15 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
 
   return (
     <div className="space-y-3">
+      <style>{`
+        @media print {
+          @page { size: A4 landscape; margin: 10mm; }
+          body { background: white !important; }
+          header, footer, nav, .print\\:hidden { display: none !important; }
+          .season-print-area { break-inside: avoid; }
+        }
+      `}</style>
+
       {currentPhase && (
         <div
           className="rounded-xl px-4 py-2.5 flex items-start gap-3"
@@ -280,16 +289,29 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
         );
       })()}
 
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden season-print-area">
         <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={prevMonth} aria-label={t("iconHintPrevious")} title={t("iconHintPrevious")}>
+          <Button variant="ghost" size="icon" className="h-8 w-8 print:hidden" onClick={prevMonth} aria-label={t("iconHintPrevious")} title={t("iconHintPrevious")}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <span className="font-semibold text-sm">{MONTH_NAMES[viewMonth]} {viewYear}</span>
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={nextMonth} aria-label={t("next")} title={t("next")}>
-            <ChevronRight className="h-4 w-4" />
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" className="h-8 w-8 print:hidden" onClick={nextMonth} aria-label={t("next")} title={t("next")}>
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8 print:hidden"
+              onClick={() => window.print()}
+              aria-label={t("seasonPrint")}
+              title={t("seasonPrint")}
+            >
+              <Printer className="h-4 w-4 text-primary" />
+            </Button>
+          </div>
         </div>
+
 
         <div className="grid grid-cols-7 border-b border-border">
           {DAY_LABELS_SHORT.map(d => (
@@ -315,8 +337,8 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
             )].slice(0, 3);
             const wkNum = inSeason ? seasonWeekNumber(seasonPlan.start_date, iso) : null;
             const phase = wkNum ? phaseForWeek(phases, wkNum) : null;
-            const hasTkd = sessions.some((ss) => ss.type === "tkd");
-            const hasFocus = wkNum !== null && hasTkd && (weekFocusMap.get(wkNum)?.teamTechIds?.length ?? 0) > 0;
+            const hasTraining = sessions.some((ss) => ss.type !== "rest");
+            const hasFocus = wkNum !== null && hasTraining && (weekFocusMap.get(wkNum)?.teamTechIds?.length ?? 0) > 0;
             const isSelected = wkNum !== null && wkNum === selectedWeek;
 
             const focusTechs = hasFocus
@@ -324,6 +346,7 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
                   .map(id => techMap.get(id))
                   .filter(Boolean) as { name: string; category: string }[]
               : [];
+
 
             return (
               <div
@@ -334,11 +357,13 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
                 }}
                 title={wkNum !== null ? (weekFocusMap.get(wkNum)?.teamNote || undefined) : undefined}
                 className={cn(
-                  "min-h-[58px] border-b border-r border-border/30 p-1.5 flex flex-col cursor-pointer transition-colors hover:bg-muted/30",
+                  "min-h-[68px] border-b border-r border-border/30 p-1.5 flex flex-col cursor-pointer transition-colors hover:bg-muted/30",
                   !inSeason && "opacity-30 cursor-default pointer-events-none",
                   isSelected && "ring-2 ring-inset ring-primary",
+                  inSeason && !isCompetition ? sessionRowClass(s?.type) : "",
                   isCompetition ? "bg-destructive/15" : "",
                 )}
+
                 style={phase && inSeason ? { borderBottom: `2px solid ${phase.color}40` } : undefined}
               >
                 <span
@@ -373,7 +398,16 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
                     </div>
                   );
                 })()}
-                
+                {inSeason && dotTypes.length > 0 && (
+                  <div className="flex flex-col gap-0.5 mt-0.5">
+                    {dotTypes.map((type) => (
+                      <span key={type} className="text-[9px] font-bold leading-tight truncate">
+                        {t(sessionLabelKey(type) as any)}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
                 {focusTechs.length > 0 && (
                   <div className="flex flex-wrap gap-0.5 mt-1">
                     {focusTechs.slice(0, 2).map((tech, i) => (
