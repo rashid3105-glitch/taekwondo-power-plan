@@ -30,14 +30,23 @@ const PHASE_COLORS: Record<string, string> = {
 
 const PHASE_KEYS: Record<string, string> = {
   "anatomical adaptation": "phaseAnatomicalAdaptation",
+  "foundation": "phaseAnatomicalAdaptation",
+  "movement": "phaseAnatomicalAdaptation",
+  "base": "phaseAnatomicalAdaptation",
   "accumulation": "phaseAccumulation",
+  "volume": "phaseAccumulation",
   "intensification": "phaseIntensification",
+  "max power": "phaseIntensification",
+  "power": "phaseIntensification",
+  "speed": "phaseIntensification",
   "peaking": "phasePeaking",
   "peak": "phasePeaking",
+  "toptræning": "phasePeaking",
   "deload": "phaseDeload",
   "competition": "phaseCompetition",
   "recovery": "phaseRecovery",
 };
+
 
 function getPhaseColor(phase: string) {
   const key = phase.toLowerCase();

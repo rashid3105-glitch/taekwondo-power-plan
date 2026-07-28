@@ -141,7 +141,7 @@ IMPORTANT: Each day in weeklySchedule MUST use the "sessions" array format. A da
 The weeklySchedule represents the BASE WEEK template. The periodization array describes how to modify volume/intensity across the entire program duration. Create realistic periodization phases that make sense for the athlete's level and goals.
 
 IMPORTANT: Return ONLY the JSON object, no markdown, no code fences, no explanatory text.
-IMPORTANT: ALL text content (planName, labels, focus descriptions, exercise names where appropriate, coachingCues, whyItMatters, alternative reasons) MUST be written in ${lang}.`;
+IMPORTANT: ALL text content MUST be written in ${lang} — with NO exceptions and NO mixing of languages. This explicitly includes: planName, every periodization entry ("phase" name, "focus" and "keyChanges"), session labels, session focus, exercise names where a natural ${lang} name exists, coachingCues, whyItMatters and alternative reasons. The English examples in the JSON schema above are format hints ONLY — translate them into ${lang}. Never output an English phase name such as "Foundation & Movement", "Max Power & Speed" or "Peaking" when ${lang} is not English.`;
 
     const weeklySchedule = profile.weekly_schedule || [];
     const scheduleDescription = weeklySchedule.length > 0
