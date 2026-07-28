@@ -18508,9 +18508,9 @@ const translations = {
     homeNavTryFree: "جرّب مجانًا →",
     homeHeroBadge: "SYSTEM V1.0 · ACTIVE",
     homeHeroTitle1: "سبورتستالنت —",
-    homeHeroTitle2Prefix: "",
     homeHeroTitle2Prefix: "نظام التشغيل ",
     homeHeroTitle2Em: "لتطوير المواهب النخبة",
+
     homeHeroSubtitle: "سبورتستالنت يجمع خطط التدريب وتحليل الفيديو والتدريب الذهني وبيانات الرياضيين في لوحة قيادة واحدة — صُنعت من قِبَل المدربين، للمدربين.",
     homeHeroBullet1: "كن أكثر ثباتًا تحت الضغط",
     homeHeroBullet2: "شاهد التعافي واللياقة والإصابات — عبر الفريق",
