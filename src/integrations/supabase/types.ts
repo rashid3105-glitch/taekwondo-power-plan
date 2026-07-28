@@ -41,6 +41,33 @@ export type Database = {
         }
         Relationships: []
       }
+      antidoping_certificates: {
+        Row: {
+          created_at: string
+          file_name: string | null
+          file_path: string | null
+          id: string
+          test_date: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          file_name?: string | null
+          file_path?: string | null
+          id?: string
+          test_date: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          file_name?: string | null
+          file_path?: string | null
+          id?: string
+          test_date?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       athlete_achievements: {
         Row: {
           created_at: string

@@ -4,6 +4,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { AntidopingCertificate } from "@/components/AntidopingCertificate";
 
 type Flag = "green" | "yellow" | "red";
 
@@ -347,6 +348,9 @@ export function SupplementChecker({ athleteId }: SupplementCheckerProps = {}) {
           </div>
         </div>
       </div>
+
+      {/* Antidoping course + certificate */}
+      <AntidopingCertificate />
 
       {/* History */}
       <div className="rounded-3xl border border-white/5 bg-[#121212]/80 p-5 backdrop-blur-xl">
