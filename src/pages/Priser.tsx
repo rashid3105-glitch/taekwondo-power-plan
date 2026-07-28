@@ -8,12 +8,31 @@ import { useLanguage } from "@/i18n/LanguageContext";
 const GOLD = "#F5C842";
 const sec = { maxWidth: 1000, margin: "0 auto", padding: "72px 32px" };
 
+// Per-athlete price ladder (DKK/athlete/month), 5% discount per tier.
+const TIERS = [
+  { min: 1, max: 10, rate: 49, discount: 0 },
+  { min: 11, max: 20, rate: 47, discount: 5 },
+  { min: 21, max: 30, rate: 44, discount: 10 },
+  { min: 31, max: 40, rate: 42, discount: 15 },
+  { min: 41, max: 50, rate: 39, discount: 20 },
+];
+
+function rateFor(count: number): number {
+  const tier = TIERS.find((tr) => count >= tr.min && count <= tr.max);
+  return tier ? tier.rate : TIERS[TIERS.length - 1].rate;
+}
+
 export default function Priser() {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const [form, setForm] = useState({ name: "", email: "", club: "", message: "" });
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
+  const [athletes, setAthletes] = useState(20);
+
+  const monthly = athletes * rateFor(athletes);
+  const yearly = monthly * 12;
+
 
   const handleSubmit = async () => {
     if (!form.email || !form.name) return;
