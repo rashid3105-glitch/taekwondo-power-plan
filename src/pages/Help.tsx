@@ -527,7 +527,7 @@ const CHANGELOG: { dateKey: string; entries: string[]; build?: string }[] = [
 
   { dateKey: "changelog_2026_07_14", entries: ["changelogEntry172", "changelogEntry171"], build: "v1.3.6" },
   { dateKey: "changelog_2026_07_13", entries: ["changelogEntry170"], build: "v1.3.4" },
-  { dateKey: "changelog_2026_07_28", entries: ["changelogEntry187"], build: "v1.5.6" },
+  { dateKey: "changelog_2026_07_28", entries: ["changelogEntry188", "changelogEntry187"], build: "v1.5.7" },
   { dateKey: "changelog_2026_07_09", entries: ["changelogEntry169"], build: "v1.3.3" },
   { dateKey: "changelog_2026_07_09", entries: ["changelogEntry168"], build: "v1.3.2" },
   { dateKey: "changelog_2026_07_06", entries: ["changelogEntry167"], build: "v1.3.1" },

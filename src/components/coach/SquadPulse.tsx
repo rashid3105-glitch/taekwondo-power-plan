@@ -83,7 +83,7 @@ export function SquadPulse({ stats, active, onChange, headerAction }: Props) {
           {headerAction}
         </div>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {tiles.map((tile) => {
           const Icon = tile.icon;
           const isActive = active === tile.key;
@@ -93,20 +93,21 @@ export function SquadPulse({ stats, active, onChange, headerAction }: Props) {
               type="button"
               onClick={() => onChange(isActive ? "all" : tile.key)}
               className={cn(
-                "rounded-lg border p-3 text-left transition-colors hover:bg-accent/40",
+                "rounded-xl border p-4 text-left transition-colors hover:bg-accent/30",
                 isActive ? tile.activeTone : tile.tone,
               )}
               aria-pressed={isActive}
             >
-              <div className="flex items-center justify-between">
-                <Icon className="h-4 w-4 opacity-80" />
-                <span className="text-xl font-bold tabular-nums">{tile.value}</span>
-              </div>
-              <p className="mt-1 text-[11px] text-muted-foreground leading-tight">{tile.label}</p>
+              <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground leading-tight">
+                <Icon className="h-3 w-3 opacity-70 flex-shrink-0" />
+                <span className="truncate">{tile.label}</span>
+              </p>
+              <p className="mt-1.5 text-2xl font-bold tabular-nums">{tile.value}</p>
             </button>
           );
         })}
       </div>
+
     </div>
   );
 }
