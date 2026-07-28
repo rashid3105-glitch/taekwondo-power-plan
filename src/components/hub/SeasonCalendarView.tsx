@@ -315,8 +315,8 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
             )].slice(0, 3);
             const wkNum = inSeason ? seasonWeekNumber(seasonPlan.start_date, iso) : null;
             const phase = wkNum ? phaseForWeek(phases, wkNum) : null;
-            const hasTkd = sessions.some((ss) => ss.type === "tkd");
-            const hasFocus = wkNum !== null && hasTkd && (weekFocusMap.get(wkNum)?.teamTechIds?.length ?? 0) > 0;
+            const hasTraining = sessions.some((ss) => ss.type !== "rest");
+            const hasFocus = wkNum !== null && hasTraining && (weekFocusMap.get(wkNum)?.teamTechIds?.length ?? 0) > 0;
             const isSelected = wkNum !== null && wkNum === selectedWeek;
 
             const focusTechs = hasFocus
@@ -324,6 +324,7 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
                   .map(id => techMap.get(id))
                   .filter(Boolean) as { name: string; category: string }[]
               : [];
+
 
             return (
               <div
