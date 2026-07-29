@@ -54,35 +54,58 @@ export default function AdminHeroImages() {
     setLoading(false);
   };
 
-  const onPick = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files ?? []);
+  const onPick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     e.target.value = "";
-    if (!files.length) return;
-    const room = MAX_IMAGES - images.length;
-    if (room <= 0) {
+    if (!file) return;
+    if (images.length >= MAX_IMAGES) {
       toast({ title: "Maks. 5 billeder", description: "Slet et billede før du tilføjer et nyt.", variant: "destructive" });
       return;
     }
+    setCropTarget(null);
+    setCropSource(file);
+  };
+
+  const uploadBlob = async (blob: Blob) => {
+    const path = `${crypto.randomUUID()}.webp`;
+    const { error: upErr } = await supabase.storage
+      .from("landing-hero")
+      .upload(path, blob, { contentType: "image/webp", cacheControl: "31536000" });
+    if (upErr) throw upErr;
+    const { data: pub } = supabase.storage.from("landing-hero").getPublicUrl(path);
+    return { path, url: pub.publicUrl };
+  };
+
+  const onCropped = async (blob: Blob) => {
     setUploading(true);
     try {
-      for (const file of files.slice(0, room)) {
-        const blob = await compressToWebp(file);
-        const path = `${crypto.randomUUID()}.webp`;
-        const { error: upErr } = await supabase.storage
-          .from("landing-hero")
-          .upload(path, blob, { contentType: "image/webp", cacheControl: "31536000" });
-        if (upErr) throw upErr;
-        const { data: pub } = supabase.storage.from("landing-hero").getPublicUrl(path);
-        const { error: insErr } = await supabase.from("landing_hero_images" as any).insert({
-          url: pub.publicUrl,
+      const { path, url } = await uploadBlob(blob);
+      if (cropTarget) {
+        const { error } = await supabase
+          .from("landing_hero_images" as any)
+          .update({ url, storage_path: path } as any)
+          .eq("id", cropTarget.id);
+        if (error) throw error;
+        if (cropTarget.storage_path) {
+          await supabase.storage.from("landing-hero").remove([cropTarget.storage_path]);
+        }
+        toast({ title: "Billede beskåret" });
+      } else {
+        const name = typeof cropSource === "object" && cropSource
+          ? (cropSource as File).name.replace(/\.[^.]+$/, "")
+          : "";
+        const { error } = await supabase.from("landing_hero_images" as any).insert({
+          url,
           storage_path: path,
-          alt: file.name.replace(/\.[^.]+$/, ""),
+          alt: name,
           sort_order: images.length,
           active: true,
         } as any);
-        if (insErr) throw insErr;
+        if (error) throw error;
+        toast({ title: "Billede uploadet" });
       }
-      toast({ title: "Billeder uploadet" });
+      setCropSource(null);
+      setCropTarget(null);
       await load();
     } catch (err: any) {
       toast({ title: "Upload fejlede", description: err.message, variant: "destructive" });
@@ -90,6 +113,7 @@ export default function AdminHeroImages() {
       setUploading(false);
     }
   };
+
 
   const patch = async (id: string, values: Partial<HeroImage>) => {
     setImages((list) => list.map((i) => (i.id === id ? { ...i, ...values } : i)));
