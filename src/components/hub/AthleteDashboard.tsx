@@ -94,6 +94,8 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
   const [isLoading, setIsLoading] = useState(true);
   const [seasonOverrides, setSeasonOverrides] = useState<AthleteSeasonOverride[]>([]);
   const [competitionDates, setCompetitionDates] = useState<Set<string>>(() => new Set());
+  const [weekTechniques, setWeekTechniques] = useState<string[]>([]);
+  const [weekCoachNote, setWeekCoachNote] = useState<string | null>(null);
 
   // Today's sessions derived from the club season plan (visibility already
   // filtered upstream in Dashboard — no extra access logic here).
@@ -176,6 +178,29 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
           .eq("season_plan_id", clubSeason.plan.id)
           .eq("athlete_id", user.id);
         if (mounted) setSeasonOverrides((ovs || []) as any as AthleteSeasonOverride[]);
+
+        // Team technique focus for the current season week
+        const todayIso = new Date().toISOString().slice(0, 10);
+        const wk = seasonWeekNumber(clubSeason.plan.start_date, todayIso);
+        if (wk && wk > 0) {
+          const { data: wf } = await (supabase.from as any)("club_week_technique_focus")
+            .select("technique_ids, coach_note")
+            .eq("season_plan_id", clubSeason.plan.id)
+            .eq("season_week", wk)
+            .maybeSingle();
+          const techIds: string[] = (wf?.technique_ids ?? []) as string[];
+          let names: string[] = [];
+          if (techIds.length > 0) {
+            const { data: techs } = await (supabase.from as any)("club_techniques")
+              .select("id, name")
+              .in("id", techIds);
+            names = ((techs ?? []) as any[]).map((x) => x.name as string);
+          }
+          if (mounted) {
+            setWeekTechniques(names);
+            setWeekCoachNote((wf?.coach_note as string | null)?.trim() || null);
+          }
+        }
       }
       const { data: allComps } = await supabase
         .from("competitions")
@@ -470,6 +495,26 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
                           {tag}
                         </span>
                       ))}
+                    </div>
+                  )}
+                  {weekTechniques.length > 0 && (
+                    <div className="pt-2 mt-2 border-t border-white/10">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-white/50 mb-1.5">
+                        {t("seasonTeamFocus" as any)?.toString().split("(")[0].trim()}
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {weekTechniques.map((name, i) => (
+                          <span
+                            key={i}
+                            className="text-[10px] font-medium px-2 py-0.5 rounded-full border border-[#f0d78c]/30 bg-[#f0d78c]/10 text-[#f0d78c]"
+                          >
+                            {name}
+                          </span>
+                        ))}
+                      </div>
+                      {weekCoachNote && (
+                        <p className="text-[11px] text-white/60 italic mt-1.5 leading-snug">"{weekCoachNote}"</p>
+                      )}
                     </div>
                   )}
                 </div>
