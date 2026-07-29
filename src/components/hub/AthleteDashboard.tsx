@@ -21,6 +21,7 @@ import {
   type AthleteSeasonOverride,
 } from "@/lib/seasonCalendar";
 import { findPlanDayForToday, normalizeDaySessions, isRestDay } from "@/lib/planSessionUtils";
+import ComplianceAlertsCard from "@/components/ComplianceAlertsCard";
 
 interface TodaySession {
   type: string;
