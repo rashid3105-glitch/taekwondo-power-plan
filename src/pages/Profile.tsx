@@ -605,9 +605,6 @@ export default function Profile() {
         onOpenChange={setMfaDialogOpen}
         onChanged={() => {
           setMfaDialogOpen(false);
-          setMfaLoading(true);
-          // Re-check status after a short delay so the dialog closes first
-          setTimeout(() => setMfaLoading(false), 0);
         }}
       />
 
