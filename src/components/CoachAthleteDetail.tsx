@@ -26,6 +26,12 @@ import { AthleteRunningProgress } from "@/components/coach/AthleteRunningProgres
 import { FormCurveChart } from "@/components/FormCurveChart";
 import { useNavigate } from "react-router-dom";
 import { Video as VideoIcon } from "lucide-react";
+import { CollapsiblePanel } from "@/components/coach/CollapsiblePanel";
+
+/** High-contrast save button — must stand out everywhere in the system. */
+const SAVE_BTN = "bg-foreground text-background hover:bg-foreground/90 border-transparent font-semibold";
+
+
 
 const COUNTRIES = [
   "Afghanistan","Albania","Algeria","Andorra","Angola","Argentina","Armenia","Australia","Austria","Azerbaijan",
