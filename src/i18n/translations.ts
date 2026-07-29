@@ -22939,6 +22939,9 @@ export type TranslationKey = keyof typeof translations.en;
 // Spanish server-side regardless of UI string coverage.
 const esOverrides: Partial<Record<TranslationKey, string>> = {
   installLink: "Instalar como Web App",
+  diaryPrivateToggle: "Mantener esta nota privada",
+  diaryPrivateHint: "Oculta para los entrenadores. Tú siempre puedes verla.",
+
   antidopingCourse: "Curso antidopaje",
   antidopingCourseDate: "Curso antidopaje — fecha de realización",
   antidopingCourseCompleted: "Completado",
