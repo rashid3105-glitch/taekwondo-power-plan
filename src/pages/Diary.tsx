@@ -17,6 +17,8 @@ import {
   Zap, ArrowLeft, Plus, Trash2, Edit2, Save, X, SmilePlus,
   Frown, Meh, Smile, Laugh, BatteryLow, BatteryMedium, BatteryFull,
   Search, ChevronDown, ChevronRight, Filter, Mic, MicOff, Footprints,
+  Lock, Unlock,
+
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Watermark } from "@/components/Watermark";
