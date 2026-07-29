@@ -13,7 +13,6 @@ Sportstalent helps Danish sports clubs run their roster, build periodized traini
 - [Pricing](/pricing): Club-only plans for Danish sports clubs.
 - [About](/about): Mission, vision and the veteran coaching team behind Sportstalent.
 - [Contact](/contact): Get in touch.
-- [Help Center](/help): Feature guides and changelog.
 - [Sign up](/signup): Create an athlete account.
 - [Sign up as coach](/signup/coach): Create a coach account for your club.
 - [Training program](/traeningsprogram): Sample sport-specific development plan.

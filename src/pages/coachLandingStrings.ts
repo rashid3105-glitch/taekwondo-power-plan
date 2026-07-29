@@ -199,7 +199,6 @@ const en: CLStrings = {
       { label: "Plans", href: "#pricing" },
       { label: "Methodology", href: "/methodology" },
       { label: "Programs", href: "/programs" },
-      { label: "Help Center", href: "/help" },
     ] },
     { title: "For Coaches", links: [
       { label: "Coach Dashboard", href: "/platform/coach-dashboard" },
@@ -359,7 +358,6 @@ const da: CLStrings = {
       { label: "Planer", href: "#pricing" },
       { label: "Metode", href: "/methodology" },
       { label: "Programmer", href: "/programs" },
-      { label: "Hjælp", href: "/help" },
     ] },
     { title: "For trænere", links: [
       { label: "Træner-dashboard", href: "/platform/coach-dashboard" },
@@ -507,7 +505,6 @@ const sv: CLStrings = {
       { label: "Planer", href: "#pricing" },
       { label: "Metod", href: "/methodology" },
       { label: "Program", href: "/programs" },
-      { label: "Hjälp", href: "/help" },
     ] },
     { title: "För tränare", links: [
       { label: "Tränardashboard", href: "/platform/coach-dashboard" },
@@ -655,7 +652,6 @@ const no: CLStrings = {
       { label: "Planer", href: "#pricing" },
       { label: "Metode", href: "/methodology" },
       { label: "Programmer", href: "/programs" },
-      { label: "Hjelp", href: "/help" },
     ] },
     { title: "For trenere", links: [
       { label: "Trenerdashboard", href: "/platform/coach-dashboard" },
@@ -815,7 +811,6 @@ const de: CLStrings = {
       { label: "Pläne", href: "#pricing" },
       { label: "Methodik", href: "/methodology" },
       { label: "Programme", href: "/programs" },
-      { label: "Hilfe", href: "/help" },
     ] },
     { title: "Für Trainer", links: [
       { label: "Trainer-Dashboard", href: "/platform/coach-dashboard" },
@@ -975,7 +970,6 @@ const ar: CLStrings = {
       { label: "الخطط", href: "#pricing" },
       { label: "المنهجية", href: "/methodology" },
       { label: "البرامج", href: "/programs" },
-      { label: "مركز المساعدة", href: "/help" },
     ] },
     { title: "للمدربين", links: [
       { label: "لوحة المدرب", href: "/platform/coach-dashboard" },
@@ -1135,7 +1129,6 @@ const es: CLStrings = {
       { label: "Planes", href: "#pricing" },
       { label: "Metodología", href: "/methodology" },
       { label: "Programas", href: "/programs" },
-      { label: "Centro de ayuda", href: "/help" },
     ] },
     { title: "Para entrenadores", links: [
       { label: "Panel del entrenador", href: "/platform/coach-dashboard" },

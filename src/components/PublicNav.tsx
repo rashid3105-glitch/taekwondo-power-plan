@@ -14,7 +14,6 @@ const allNavLinks = [
   { labelKey: "navMethodology" as const, path: "/methodology" },
   { labelKey: "viewPricing" as const, path: "/pricing" },
   { labelKey: "navContact" as const, path: "/contact" },
-  { labelKey: "help" as const, path: "/help" },
 ];
 // Native builds (App Store / Google Play) must not surface pricing links.
 const navLinks = isNativeApp()
