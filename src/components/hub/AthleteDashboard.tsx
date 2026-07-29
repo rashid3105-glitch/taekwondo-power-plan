@@ -351,6 +351,8 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
         </button>
       </header>
 
+      <AnnouncementsCard />
+
       <ComplianceAlertsCard />
 
       {/* Plans: two separate panels */}
