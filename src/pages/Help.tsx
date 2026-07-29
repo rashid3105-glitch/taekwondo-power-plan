@@ -7,12 +7,12 @@ import {
   Activity, Apple, TrendingUp, BookOpen, BookHeart, Download, Video, CalendarRange,
   MessageSquare, MessageCircle, NotebookPen, Search, X, Dumbbell, Heart, Sparkles, UserCog, Settings, FileText, ArrowLeft,
   ShieldCheck, ClipboardCheck, Trash2, CreditCard, Lock, UserX, Bell,
-  Footprints, Trophy, ListChecks, LayoutGrid,
+  Footprints, Trophy, ListChecks, LayoutGrid, LifeBuoy,
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { PublicNav } from "@/components/PublicNav";
-import { Watermark } from "@/components/Watermark";
+import { Button } from "@/components/ui/button";
 import { PageMeta } from "@/components/PageMeta";
+
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
