@@ -3,6 +3,8 @@ project_id = "zklwergsziidgyxewbkw"
 [functions]
   [functions.account-deletion-dry-run]
     verify_jwt = true
+  [functions.check-compliance-alerts]
+    verify_jwt = true
   [functions.auth-email-hook]
     verify_jwt = false
   [functions.confirm-blog-comment]

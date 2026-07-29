@@ -21,6 +21,7 @@ import {
   type AthleteSeasonOverride,
 } from "@/lib/seasonCalendar";
 import { findPlanDayForToday, normalizeDaySessions, isRestDay } from "@/lib/planSessionUtils";
+import ComplianceAlertsCard from "@/components/ComplianceAlertsCard";
 
 interface TodaySession {
   type: string;
@@ -349,6 +350,8 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
           {activeRole === "coach" ? t("todayTab") : t("hubCheckIn")}
         </button>
       </header>
+
+      <ComplianceAlertsCard />
 
       {/* Plans: two separate panels */}
       {isLoading ? (
