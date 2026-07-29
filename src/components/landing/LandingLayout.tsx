@@ -244,9 +244,10 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
         </div>
       )}
 
-      <main>
+      <main className="landing-main">
         <ScrollReveal>{children}</ScrollReveal>
       </main>
+
       <footer style={{ borderTop: "0.5px solid rgba(255,255,255,0.07)" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto", padding: "28px 32px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
           <div>
