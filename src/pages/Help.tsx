@@ -6,7 +6,7 @@ import {
   UserCircle, ClipboardList, HeartPulse, Brain, Users, BarChart3, Clock, ChevronDown,
   Activity, Apple, TrendingUp, BookOpen, BookHeart, Download, Video, CalendarRange,
   MessageSquare, MessageCircle, NotebookPen, Search, X, Dumbbell, Heart, Sparkles, UserCog, Settings, FileText, ArrowLeft,
-  ShieldCheck, ClipboardCheck, Trash2, CreditCard, Lock, UserX, Bell,
+  ShieldCheck, ShieldAlert, ClipboardCheck, Trash2, CreditCard, Lock, UserX, Bell,
   Footprints, Trophy, ListChecks, LayoutGrid, LifeBuoy,
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -26,7 +26,7 @@ type TopicKey =
   | "helpConsents" | "helpAttendance" | "helpDeleteAthlete" | "helpCoachMentalReview"
   | "helpSubscription" | "helpSecurity" | "helpDeleteAccount" | "helpNotifications"
   | "helpTodayCard" | "helpRunning" | "helpCompetitions" | "helpCoachChecklist"
-  | "helpModuleAccess" | "helpSurveys" | "helpTeamTests";
+  | "helpModuleAccess" | "helpSurveys" | "helpTeamTests" | "helpCompliance";
 
 type Topic = { key: TopicKey; icon: typeof UserCircle; isNew?: boolean };
 
@@ -69,6 +69,7 @@ const TOPICS: Record<TopicKey, Topic> = {
   helpModuleAccess: { key: "helpModuleAccess", icon: LayoutGrid, isNew: true },
   helpSurveys: { key: "helpSurveys", icon: ClipboardList, isNew: true },
   helpTeamTests: { key: "helpTeamTests", icon: Activity, isNew: true },
+  helpCompliance: { key: "helpCompliance", icon: ShieldAlert, isNew: true },
 };
 
 type SectionDef = {
@@ -126,7 +127,7 @@ const SECTIONS: SectionDef[] = [
     chipBg: "bg-tab-nutrition",
     chipFg: "text-white",
     accent: "bg-tab-nutrition",
-    topics: ["helpProfile", "helpLibrary", "helpParentPortal", "helpRoles", "helpRoleSwitcher", "helpNotifications", "helpSecurity", "helpSubscription", "helpDeleteAccount"],
+    topics: ["helpProfile", "helpLibrary", "helpParentPortal", "helpRoles", "helpRoleSwitcher", "helpNotifications", "helpCompliance", "helpSecurity", "helpSubscription", "helpDeleteAccount"],
   },
 ];
 
@@ -524,6 +525,7 @@ export default function Help() {
 // Build numbers start at v1.0.0 on 2026-05-29 (first build with semantic versioning).
 // MINOR bumps for new features, PATCH bumps for small tweaks/fixes. Older releases left unversioned.
 const CHANGELOG: { dateKey: string; entries: string[]; build?: string }[] = [
+  { dateKey: "changelog_2026_07_30", entries: ["changelogEntry192"], build: "v1.5.11" },
   { dateKey: "changelog_2026_07_30", entries: ["changelogEntry191"], build: "v1.5.10" },
   { dateKey: "changelog_2026_07_29", entries: ["changelogEntry190"], build: "v1.5.9" },
  { dateKey: "changelog_2026_07_28", entries: ["changelogEntry186"], build: "v1.5.5" },
