@@ -23,6 +23,7 @@ interface NewEntry {
   tags: string[];
   entry_type: DiaryEntryType;
   entry_types?: string[] | null;
+  is_private?: boolean;
   run_distance_km?: number | null;
   run_duration_seconds?: number | null;
   run_pace_seconds_per_km?: number | null;
@@ -67,6 +68,7 @@ export function useOfflineDiary() {
           tags: (e.tags as string[]) || [],
           entry_type: (e.entry_type as DiaryEntryType) || "general",
           entry_types: (e.entry_types as string[] | null) ?? null,
+          is_private: e.is_private === true,
           run_distance_km: e.run_distance_km ?? null,
           run_duration_seconds: e.run_duration_seconds ?? null,
           run_pace_seconds_per_km: e.run_pace_seconds_per_km ?? null,
@@ -113,6 +115,7 @@ export function useOfflineDiary() {
         tags: input.tags,
         entry_type: input.entry_type,
         entry_types: input.entry_types ?? null,
+        is_private: input.is_private === true,
         run_distance_km: input.run_distance_km ?? null,
         run_duration_seconds: input.run_duration_seconds ?? null,
         run_pace_seconds_per_km: input.run_pace_seconds_per_km ?? null,
@@ -160,6 +163,7 @@ export function useOfflineDiary() {
         tags: input.tags,
         entry_type: input.entry_type,
         entry_types: input.entry_types ?? null,
+        is_private: input.is_private === true,
         run_distance_km: input.run_distance_km ?? null,
         run_duration_seconds: input.run_duration_seconds ?? null,
         run_pace_seconds_per_km: input.run_pace_seconds_per_km ?? null,

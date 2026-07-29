@@ -22,6 +22,7 @@ export interface DiaryOutboxIntent {
   tags: string[];
   entry_type: DiaryEntryType;
   entry_types?: string[] | null;
+  is_private?: boolean;
   run_distance_km?: number | null;
   run_duration_seconds?: number | null;
   run_pace_seconds_per_km?: number | null;
@@ -41,6 +42,7 @@ export interface CachedDiaryEntry {
   tags: string[];
   entry_type: DiaryEntryType;
   entry_types?: string[] | null;
+  is_private?: boolean;
   run_distance_km?: number | null;
   run_duration_seconds?: number | null;
   run_pace_seconds_per_km?: number | null;
