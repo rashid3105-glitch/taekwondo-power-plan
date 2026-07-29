@@ -159,6 +159,23 @@ export default function Profile() {
     return () => { mounted = false; };
   }, [navigate]);
 
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const { data, error } = await supabase.auth.mfa.listFactors();
+        if (error) throw error;
+        const verified = (data?.all || []).some((f: any) => f.status === "verified");
+        if (mounted) setMfaEnabled(verified);
+      } catch (e) {
+        console.error("mfa list failed", e);
+      } finally {
+        if (mounted) setMfaLoading(false);
+      }
+    })();
+    return () => { mounted = false; };
+  }, [mfaDialogOpen]);
+
   const handleLogout = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
