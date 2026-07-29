@@ -83,6 +83,7 @@ export default function Diary() {
   const [mood, setMood] = useState(3);
   const [energy, setEnergy] = useState(3);
   const [tags, setTags] = useState<string[]>([]);
+  const [isPrivate, setIsPrivate] = useState(false);
   const [entryTypes, setEntryTypes] = useState<DiaryEntryType[]>(["general"]);
 
   const toggleEntryType = (type: DiaryEntryType) => {
@@ -171,6 +172,7 @@ export default function Diary() {
     setMood(3);
     setEnergy(3);
     setTags([]);
+    setIsPrivate(false);
     setEntryTypes(["general"]);
     setRunDistanceKm("");
     setRunDurationMin("");
@@ -185,6 +187,7 @@ export default function Diary() {
     setMood(entry.mood);
     setEnergy(entry.energy);
     setTags(entry.tags || []);
+    setIsPrivate(entry.is_private === true);
     setEntryTypes(entry.entry_types && entry.entry_types.length > 0 ? (entry.entry_types as DiaryEntryType[]) : [entry.entry_type || "general"]);
     const types = entry.entry_types && entry.entry_types.length > 0 ? entry.entry_types : [entry.entry_type || "general"];
     if (types.includes("running")) {
@@ -215,6 +218,7 @@ export default function Diary() {
       tags,
       entry_type: entryTypes[0],
       entry_types: entryTypes,
+      is_private: isPrivate,
       run_distance_km: entryTypes.includes("running") && runDistNum > 0 ? runDistNum : null,
       run_duration_seconds: entryTypes.includes("running") && runTotalSec > 0 ? runTotalSec : null,
       run_pace_seconds_per_km: entryTypes.includes("running") && runPace > 0 ? runPace : null,
