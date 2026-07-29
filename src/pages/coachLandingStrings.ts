@@ -92,13 +92,13 @@ const en: CLStrings = {
   heroBadge: "THE OPERATING SYSTEM FOR ELITE TALENT DEVELOPMENT",
   heroTitle: "Coaching Platform for Danish Sports Clubs",
   heroPhrases: [
-    "You have time for 3.",
-    "Sportstalent changes that.",
-    "Every athlete. Every week.",
-    "Your best season starts now.",
+    "No more spreadsheets.",
+    "No more scattered notes.",
+    "No more knowledge walking out the door.",
+    "One system for the whole club.",
   ],
   heroDesc:
-    "Sportstalent gives every athlete in your club a personalised training plan, readiness tracking and competition prep — automatically. So you coach. Not administrate.",
+    "Sportstalent replaces the spreadsheets, notebooks and group chats clubs use to track training. Every athlete gets a personalised plan, readiness tracking and competition prep, automatically. Data stays in the EU. You coach. You don't administrate.",
   heroCtaPrimary: "Start Free — No Card Needed",
   heroCtaSecondary: "See How It Works",
   heroFinePrint: "14-day free trial · no commitment · cancel anytime",
@@ -117,34 +117,34 @@ const en: CLStrings = {
   mockTrimpDay: "TRIMP/day",
 
   trustEyebrow: "Trusted by",
-  trustLine: "Trusted by Danish sports clubs to run elite talent development — GDPR compliant and locally owned.",
+  trustLine: "Built by a coach with 40 years on the floor. Trusted by Danish clubs and federations — GDPR-compliant, data hosted in the EU.",
 
-  featuresTitle1: "Everything your club needs to develop elite talent.",
-  featuresTitle2: "Nothing it doesn't.",
+  featuresTitle1: "Everything your club needs to develop talent.",
+  featuresTitle2: "Nothing that gets in the way.",
   features: [
     {
       title: "Coaching Assistant",
-      desc: "Get session recommendations, technique guidance, and training advice drawn from deep sport-specific knowledge. Like having a second coach in the room.",
+      desc: "Session recommendations, technique guidance and training advice drawn from forty years of coaching knowledge. Like having a second coach in the room.",
     },
     {
       title: "Training Plan Builder",
-      desc: "Build periodized plans for any belt level in minutes. Tailored to age, competition schedule, and individual goals.",
+      desc: "Build periodized plans for any age and level in minutes. Tailored to the season, the competition calendar and individual goals.",
     },
     {
       title: "Athlete Progress Tracker",
-      desc: "Every session logged. Every readiness check recorded. Spot patterns before they become injuries.",
+      desc: "Every session logged. Every readiness check recorded. No more digging through notebooks to spot a pattern before it becomes an injury.",
     },
     {
       title: "Weekly Performance Reports",
-      desc: "A clear, shareable summary of each athlete's week — ready for parents, assistant coaches, or federation reviews.",
+      desc: "A clear, shareable summary of each athlete's week — ready for parents, assistant coaches, or federation reviews. No more writing it up by hand.",
     },
   ],
 
   howTitle: "How it works",
   steps: [
-    { title: "Add your athletes", desc: "Set up your club roster in under 5 minutes" },
+    { title: "Add your athletes", desc: "Set up your club roster in under 5 minutes — no spreadsheet needed" },
     { title: "Athletes log their training", desc: "Session type, effort level, how they feel — takes 60 seconds after practice" },
-    { title: "You coach with clarity", desc: "Weekly summaries, load trends, and guidance surface automatically so you can focus on the mat" },
+    { title: "You coach with clarity", desc: "Weekly summaries, load trends, and guidance surface automatically, so nothing depends on memory or on one coach staying forever" },
   ],
 
   splitTitle: "Built for both sides of the equation",
@@ -154,7 +154,7 @@ const en: CLStrings = {
     "Full roster view across all athletes",
     "Training load trends and recovery flags",
     "One-click weekly reports per athlete",
-    "Drill and technique library with 100+ sport-specific drills and progressions",
+    "A drill and technique library with 100+ progressions — the club's knowledge, not one coach's memory",
     "Competition prep planning tools",
   ],
   athletesLabel: "For Athletes",
@@ -162,14 +162,14 @@ const en: CLStrings = {
   athleteFeatures: [
     "Personal session diary",
     "Daily readiness check-in",
-    "Progress over time — belt to belt",
+    "Progress tracked automatically over time",
     "See this week's training focus from your coach",
   ],
 
   testimonialsTitle: "Coaches who switched, didn't switch back",
   testimonials: [
     { stat: "20 years", quote: "Finally a platform built for how clubs actually develop athletes — not generic fitness.", name: "Coach Sami", club: "Klub i København" },
-    { stat: "+3 hrs/week", quote: "My athletes log sessions themselves now. I get back 3 hours every week.", name: "Coach Janne", club: "Klub i Malmø" },
+    { stat: "+3 hrs/week", quote: "My athletes log their own sessions now. I get three hours back every week.", name: "Coach Janne", club: "Klub i Malmø" },
     { stat: "Parents on-board", quote: "The weekly report alone is worth it. Parents finally understand what we're building.", name: "Coach Michael", club: "Klub i London" },
   ],
 
@@ -190,7 +190,7 @@ const en: CLStrings = {
   pricingFootnoteContact: "Write to Farooq@Sportstalent.dk",
 
   finalCtaTitle: "Your next champion is already in your club.",
-  finalCtaDesc: "Give every athlete the coaching they deserve — without burning out doing it.",
+  finalCtaDesc: "Give every athlete the coaching they deserve — without the spreadsheets and the burnout.",
   finalCtaButton: "Start Free Today",
 
   footerCols: [
@@ -223,22 +223,22 @@ const en: CLStrings = {
       { label: "Start free", href: "/auth?tab=signup" },
     ] },
   ],
-  footerCopy: "© 2025 Sportstalent.dk · Made for Danish clubs. Built to develop elite talent.",
+  footerCopy: "© 2025 Sportstalent.dk · Built for Danish clubs and federations. No more spreadsheets. Just elite development.",
   footerPrivacy: "Privacy",
   footerContact: "Contact",
   galleryEyebrow: "REAL ATHLETES · REAL MOMENTS",
-  galleryTitle: "Built ringside, not behind a desk.",
-  gallerySub: "From the corner to the mat — Sportstalent is shaped by the moments coaches and athletes live every weekend.",
+  galleryTitle: "Built on the training ground, not behind a desk.",
+  gallerySub: "Sportstalent is shaped by the moments coaches and athletes live every week, not by a spreadsheet.",
   storyRows: [
-    { eyebrow: "IN THE CORNER", title: "Coach every athlete like they're your only one.", body: "Sportstalent gives you the structured plan, readiness data and reminders so the conversation in the corner is always sharp — not improvised.", bullets: ["Daily readiness from every athlete", "Auto-rolling weekly plans", "One tap to log the session"] },
-    { eyebrow: "ON THE MAT", title: "Sport-specific science, not generic fitness.", body: "Plans built around your sport: speed, power, technical work and recovery — calibrated to age, level and goal.", bullets: ["Periodized 4–12 week programs", "Pre-, intra- and post-competition phases", "Nutrition that fits training load and weight targets"] },
-    { eyebrow: "BEFORE THE FIGHT", title: "See who's ready — and who isn't.", body: "One squad view shows mood, energy, sleep and load for every athlete, so you can adjust the session before warm-up, not after the loss.", bullets: ["Squad pulse with traffic-light status", "Overtraining flags two weeks early", "Coach notes synced to the athlete"] },
-    { eyebrow: "AFTER THE FIGHT", title: "Turn every match into a lesson.", body: "Post-competition reflections, video tagging and SMART goals make sure the next training cycle starts where the last one ended.", bullets: ["4-step reflection on every match", "Video tags by technique & outcome", "3 personalized SMART goals per cycle"] },
+    { eyebrow: "ON THE SIDELINE", title: "Coach every athlete like they're your only one.", body: "Sportstalent gives you the structured plan, readiness data and reminders so every conversation is sharp — not improvised from memory.", bullets: ["Daily readiness from every athlete", "Auto-rolling weekly plans", "One tap to log the session"] },
+    { eyebrow: "IN TRAINING", title: "Sport-specific planning, not generic fitness.", body: "Plans built around your sport: speed, power, technical work and recovery — calibrated to age, level and goal.", bullets: ["Periodized 4–12 week programs", "Pre-, mid- and post-competition phases", "Nutrition that fits training load and performance targets"] },
+    { eyebrow: "BEFORE COMPETITION", title: "See who's ready — and who isn't.", body: "One squad view shows mood, energy, sleep and load for every athlete, so you can adjust the session before it starts, not after the result.", bullets: ["Squad pulse with traffic-light status", "Overtraining flags two weeks early", "Coach notes synced to the athlete"] },
+    { eyebrow: "AFTER COMPETITION", title: "Turn every result into a lesson.", body: "Post-competition reflections, video tagging and SMART goals make sure the next training cycle starts where the last one ended.", bullets: ["4-step reflection after every event", "Video tags by technique & outcome", "3 personalized SMART goals per cycle"] },
   ],
 
   metaTitle: "Sportstalent — Coaching Platform for Danish Sports Clubs",
   metaDesc:
-    "The coaching platform built for Danish sports clubs. Run your roster, track readiness, build periodized plans, and send weekly reports — all in one place.",
+    "The coaching platform built for Danish sports clubs and federations. Run your roster, track readiness, build periodized plans, and send weekly reports — all in one place, GDPR-compliant.",
 };
 
 const da: CLStrings = {
@@ -252,13 +252,13 @@ const da: CLStrings = {
   heroBadge: "OPERATIVSYSTEMET FOR ELITE TALENTUDVIKLING",
   heroTitle: "Coaching-platform til danske sportsklubber",
   heroPhrases: [
-    "Du har tid til 3.",
-    "Sportstalent ændrer det.",
-    "Alle atleter. Hver uge.",
-    "Din bedste sæson starter nu.",
+    "Ikke flere regneark.",
+    "Ikke flere spredte notater.",
+    "Ikke mere viden der forsvinder ud ad døren.",
+    "Ét system til hele klubben.",
   ],
   heroDesc:
-    "Sportstalent giver alle atleter i din klub en personlig træningsplan, parathedsmåling og konkurrenceforberedelse — automatisk. Så du træner. Ikke administrerer.",
+    "Sportstalent erstatter de regneark, notesbøger og gruppechats, klubber bruger til at holde styr på træningen. Hver atlet får en personlig plan, parathedsmåling og konkurrenceforberedelse — automatisk. Data ligger i EU. Du træner. Du administrerer ikke.",
   heroCtaPrimary: "Start gratis — intet kreditkort",
   heroCtaSecondary: "Se hvordan det virker",
   heroFinePrint: "14 dages gratis prøve · ingen binding · opsig når som helst",
@@ -277,34 +277,34 @@ const da: CLStrings = {
   mockTrimpDay: "TRIMP/dag",
 
   trustEyebrow: "Brugt af",
-  trustLine: "Betroet af danske sportsklubber til elite talentudvikling — GDPR-overholdende og dansk ejet.",
+  trustLine: "Bygget af en træner med 40 år på gulvet. Betroet af danske klubber og forbund — GDPR-overholdende, data ligger i EU.",
 
-  featuresTitle1: "Alt din klub har brug for til elite talentudvikling.",
-  featuresTitle2: "Intet den ikke har.",
+  featuresTitle1: "Alt din klub har brug for til at udvikle talent.",
+  featuresTitle2: "Intet der står i vejen.",
   features: [
     {
       title: "Træner-assistent",
-      desc: "Få anbefalinger til sessioner, teknikvejledning og træningsråd baseret på dyb sportsfaglig viden. Som at have en ekstra træner i salen.",
+      desc: "Anbefalinger til sessioner, teknikvejledning og træningsråd baseret på fyrre års trænererfaring. Som at have en ekstra træner i salen.",
     },
     {
       title: "Træningsplan-bygger",
-      desc: "Byg periodiserede planer for ethvert bæltetrin på minutter. Tilpasset alder, konkurrenceprogram og individuelle mål.",
+      desc: "Byg periodiserede planer for enhver alder og ethvert niveau på minutter. Tilpasset sæsonen, konkurrenceprogrammet og individuelle mål.",
     },
     {
       title: "Atletfremgang",
-      desc: "Hver session logget. Hver paratheds-tjek registreret. Opdag mønstre før de bliver til skader.",
+      desc: "Hver session logget. Hvert paratheds-tjek registreret. Ikke mere gennemgang af notesbøger for at fange et mønster, før det bliver til en skade.",
     },
     {
       title: "Ugentlige rapporter",
-      desc: "En tydelig, delbar opsummering af hver atlets uge — klar til forældre, assistenttrænere eller forbund.",
+      desc: "En tydelig, delbar opsummering af hver atlets uge — klar til forældre, assistenttrænere eller forbund. Ingen manuel rapportskrivning.",
     },
   ],
 
   howTitle: "Sådan virker det",
   steps: [
-    { title: "Tilføj dine atleter", desc: "Opsæt klubbens roster på under 5 minutter" },
+    { title: "Tilføj dine atleter", desc: "Opsæt klubbens roster på under 5 minutter — uden regneark" },
     { title: "Atleter logger deres træning", desc: "Sessionstype, intensitet, hvordan de føler sig — tager 60 sekunder efter træning" },
-    { title: "Du træner med klarhed", desc: "Ugentlige opsummeringer, belastningstrends og vejledning kommer automatisk, så du kan fokusere på måtten" },
+    { title: "Du træner med klarhed", desc: "Ugentlige opsummeringer, belastningstrends og vejledning kommer automatisk, så intet afhænger af hukommelse eller af, at én træner bliver for evigt" },
   ],
 
   splitTitle: "Bygget til begge sider af ligningen",
@@ -314,7 +314,7 @@ const da: CLStrings = {
     "Fuldt rosteroverblik over alle atleter",
     "Træningsbelastning og restitutionsflag",
     "Ugentlige rapporter pr. atlet med ét klik",
-    "Drill- og teknikbibliotek med 100+ sportsspecifikke øvelser og progressioner",
+    "Øvelses- og teknikbibliotek med 100+ progressioner — klubbens viden, ikke én træners hukommelse",
     "Værktøjer til konkurrenceforberedelse",
   ],
   athletesLabel: "For atleter",
@@ -322,7 +322,7 @@ const da: CLStrings = {
   athleteFeatures: [
     "Personlig træningsdagbog",
     "Dagligt paratheds-tjek",
-    "Fremgang over tid — bælte for bælte",
+    "Fremgang registreret automatisk over tid",
     "Se ugens træningsfokus fra din træner",
   ],
 
@@ -350,7 +350,7 @@ const da: CLStrings = {
   pricingFootnoteContact: "Skriv til Farooq@Sportstalent.dk",
 
   finalCtaTitle: "Din næste mester er allerede i din klub.",
-  finalCtaDesc: "Giv alle atleter den træning de fortjener — uden at brænde ud.",
+  finalCtaDesc: "Giv alle atleter den træning de fortjener — uden regneark og udbrændthed.",
   finalCtaButton: "Start gratis i dag",
 
   footerCols: [
@@ -383,22 +383,22 @@ const da: CLStrings = {
       { label: "Kom i gang gratis", href: "/auth?tab=signup" },
     ] },
   ],
-  footerCopy: "© 2025 Sportstalent.dk · Lavet til danske klubber. Bygget til at udvikle elitetalent.",
+  footerCopy: "© 2025 Sportstalent.dk · Bygget til danske klubber og forbund. Ikke flere regneark. Bare elite talentudvikling.",
   footerPrivacy: "Privatliv",
   footerContact: "Kontakt",
   galleryEyebrow: "RIGTIGE ATLETER · RIGTIGE ØJEBLIKKE",
-  galleryTitle: "Bygget ringside — ikke bag et skrivebord.",
-  gallerySub: "Fra hjørnet til måtten — Sportstalent er formet af de øjeblikke trænere og atleter lever hver weekend.",
+  galleryTitle: "Bygget på træningsbanen — ikke bag et skrivebord.",
+  gallerySub: "Sportstalent er formet af de øjeblikke trænere og atleter lever hver eneste uge, ikke af et regneark.",
   storyRows: [
-    { eyebrow: "I HJØRNET", title: "Coach hver atlet som om de var din eneste.", body: "Sportstalent giver dig den strukturerede plan, parathedsdata og påmindelser, så samtalen i hjørnet altid er skarp — ikke improviseret.", bullets: ["Daglig parathed fra hver atlet", "Automatisk rullende ugeplaner", "Ét tryk for at logge træningen"] },
-    { eyebrow: "PÅ MÅTTEN", title: "Sportsspecifik videnskab — ikke generisk fitness.", body: "Planer bygget om din sport: fart, styrke, teknisk arbejde og restitution — kalibreret til alder, niveau og mål.", bullets: ["Periodiserede 4–12 ugers programmer", "Faser før, under og efter konkurrence", "Kost der passer til træningsbelastning og vægtmål"] },
-    { eyebrow: "FØR KAMPEN", title: "Se hvem der er klar — og hvem der ikke er.", body: "Én squad-visning viser humør, energi, søvn og belastning for hver atlet, så du kan justere før opvarmningen — ikke efter nederlaget.", bullets: ["Squad-puls med trafiklys-status", "Overtrænings-flag to uger tidligere", "Trænernotater synkroniseret med atleten"] },
-    { eyebrow: "EFTER KAMPEN", title: "Gør hver kamp til en lektion.", body: "Refleksioner efter konkurrence, video-tagging og SMART-mål sikrer, at næste cyklus starter dér, hvor den sidste sluttede.", bullets: ["4-trins refleksion efter hver kamp", "Video-tags på teknik & udfald", "3 personlige SMART-mål pr. cyklus"] },
+    { eyebrow: "PÅ SIDELINJEN", title: "Coach hver atlet som om de var din eneste.", body: "Sportstalent giver dig den strukturerede plan, parathedsdata og påmindelser, så hver samtale er skarp — ikke improviseret fra hukommelsen.", bullets: ["Daglig parathed fra hver atlet", "Automatisk rullende ugeplaner", "Ét tryk for at logge træningen"] },
+    { eyebrow: "TIL TRÆNING", title: "Sportsspecifik planlægning — ikke generisk fitness.", body: "Planer bygget om din sport: fart, styrke, teknisk arbejde og restitution — kalibreret til alder, niveau og mål.", bullets: ["Periodiserede 4–12 ugers programmer", "Faser før, under og efter konkurrence", "Kost der passer til træningsbelastning og præstationsmål"] },
+    { eyebrow: "FØR KONKURRENCEN", title: "Se hvem der er klar — og hvem der ikke er.", body: "Én holdvisning viser humør, energi, søvn og belastning for hver atlet, så du kan justere før sessionen starter — ikke efter resultatet.", bullets: ["Holdets puls med trafiklys-status", "Overtrænings-flag to uger tidligere", "Trænernotater synkroniseret med atleten"] },
+    { eyebrow: "EFTER KONKURRENCEN", title: "Gør hvert resultat til en lektion.", body: "Refleksioner efter konkurrence, video-tagging og SMART-mål sikrer, at næste cyklus starter dér, hvor den sidste sluttede.", bullets: ["4-trins refleksion efter hver konkurrence", "Video-tags på teknik & udfald", "3 personlige SMART-mål pr. cyklus"] },
   ],
 
   metaTitle: "Sportstalent — Træningsplatform for danske sportsklubber",
   metaDesc:
-    "Træningsplatformen bygget til danske sportsklubber. Driv dit roster, følg parathed, byg periodiserede planer og send ugentlige rapporter — alt ét sted.",
+    "Træningsplatformen bygget til danske sportsklubber og forbund. Driv dit roster, følg parathed, byg periodiserede planer og send ugentlige rapporter — alt ét sted, GDPR-overholdende.",
 };
 
 const sv: CLStrings = {
@@ -412,13 +412,13 @@ const sv: CLStrings = {
   heroBadge: "OPERATIVSYSTEMET FÖR ELIT-TALANGUTVECKLING",
   heroTitle: "Coachingplattform för idrottsklubbar",
   heroPhrases: [
-    "Du hinner med 3.",
-    "Sportstalent ändrar det.",
-    "Alla atleter. Varje vecka.",
-    "Din bästa säsong börjar nu.",
+    "Inga fler kalkylblad.",
+    "Inga fler lösa anteckningar.",
+    "Ingen kunskap som försvinner ut genom dörren.",
+    "Ett system för hela klubben.",
   ],
   heroDesc:
-    "Sportstalent ger varje atlet i din klubb en personlig träningsplan, beredskapsmätning och tävlingsförberedelse — automatiskt. Så att du tränar. Inte administrerar.",
+    "Sportstalent ersätter kalkylblad, anteckningsböcker och gruppchattar som klubbar använder för att hålla koll på träningen. Varje atlet får en personlig plan, beredskapsmätning och tävlingsförberedelse — automatiskt. Data ligger i EU. Du tränar. Du administrerar inte.",
   heroCtaPrimary: "Börja gratis — inget kort",
   heroCtaSecondary: "Se hur det fungerar",
   heroFinePrint: "14 dagars gratis prov · ingen bindning · avsluta när som helst",
@@ -437,22 +437,22 @@ const sv: CLStrings = {
   mockTrimpDay: "TRIMP/dag",
 
   trustEyebrow: "Används av",
-  trustLine: "Anlitas av skandinaviska idrottsklubbar för elitutveckling — GDPR-kompatibel plattform.",
+  trustLine: "Byggd av en tränare med 40 år på golvet. Anlitas av klubbar och förbund — GDPR-kompatibel, data lagras i EU.",
 
-  featuresTitle1: "Allt din klubb behöver för elitutveckling.",
-  featuresTitle2: "Inget den inte gör.",
+  featuresTitle1: "Allt din klubb behöver för att utveckla talang.",
+  featuresTitle2: "Inget som står i vägen.",
   features: [
-    { title: "Tränarassistent", desc: "Få passrekommendationer, teknikvägledning och träningsråd från djup sportkunskap. Som en extra tränare i salen." },
-    { title: "Träningsplansbyggare", desc: "Bygg periodiserade planer för varje bältesnivå på minuter. Anpassad efter ålder, tävlingsschema och individuella mål." },
-    { title: "Atletutveckling", desc: "Varje pass loggat. Varje beredskapscheck registrerad. Upptäck mönster innan de blir skador." },
-    { title: "Veckorapporter", desc: "En tydlig, delbar sammanfattning av varje atlets vecka — redo för föräldrar, assisterande tränare eller förbund." },
+    { title: "Tränarassistent", desc: "Passrekommendationer, teknikvägledning och träningsråd byggda på fyrtio års tränarerfarenhet. Som en extra tränare i salen." },
+    { title: "Träningsplansbyggare", desc: "Bygg periodiserade planer för alla åldrar och nivåer på minuter. Anpassad efter säsong, tävlingsschema och individuella mål." },
+    { title: "Atletutveckling", desc: "Varje pass loggat. Varje beredskapscheck registrerad. Slipp leta i anteckningsböcker för att upptäcka ett mönster innan det blir en skada." },
+    { title: "Veckorapporter", desc: "En tydlig, delbar sammanfattning av varje atlets vecka — redo för föräldrar, assisterande tränare eller förbund. Ingen manuell rapportskrivning." },
   ],
 
   howTitle: "Så fungerar det",
   steps: [
-    { title: "Lägg till dina atleter", desc: "Sätt upp klubbens roster på under 5 minuter" },
+    { title: "Lägg till dina atleter", desc: "Sätt upp klubbens roster på under 5 minuter — utan kalkylblad" },
     { title: "Atleter loggar sin träning", desc: "Passtyp, intensitet, hur de mår — tar 60 sekunder efter passet" },
-    { title: "Du tränar med klarhet", desc: "Veckosammanfattningar, belastningstrender och vägledning dyker upp automatiskt så du kan fokusera på mattan" },
+    { title: "Du tränar med klarhet", desc: "Veckosammanfattningar, belastningstrender och vägledning dyker upp automatiskt, så inget beror på minnet eller på att en tränare stannar för evigt" },
   ],
 
   splitTitle: "Byggd för båda sidor av ekvationen",
@@ -462,7 +462,7 @@ const sv: CLStrings = {
     "Full rosteröversikt över alla atleter",
     "Belastningstrender och återhämtningsflaggor",
     "Veckorapporter per atlet med ett klick",
-    "Övnings- och teknikbibliotek med 100+ sportspecifika övningar och progressioner",
+    "Övnings- och teknikbibliotek med 100+ progressioner — klubbens kunskap, inte en enskild tränares minne",
     "Verktyg för tävlingsförberedelse",
   ],
   athletesLabel: "För atleter",
@@ -470,7 +470,7 @@ const sv: CLStrings = {
   athleteFeatures: [
     "Personlig träningsdagbok",
     "Daglig beredskapscheck",
-    "Framsteg över tid — bälte för bälte",
+    "Framsteg registrerade automatiskt över tid",
     "Se veckans träningsfokus från din tränare",
   ],
 
@@ -498,7 +498,7 @@ const sv: CLStrings = {
   pricingFootnoteContact: "Skriv till Farooq@Sportstalent.dk",
 
   finalCtaTitle: "Din nästa mästare finns redan i din klubb.",
-  finalCtaDesc: "Ge varje atlet den träning de förtjänar — utan att bränna ut dig.",
+  finalCtaDesc: "Ge varje atlet den träning de förtjänar — utan kalkylblad och utan att bränna ut dig.",
   finalCtaButton: "Börja gratis idag",
 
   footerCols: [
@@ -531,22 +531,22 @@ const sv: CLStrings = {
       { label: "Börja gratis", href: "/auth?tab=signup" },
     ] },
   ],
-  footerCopy: "© 2025 Sportstalent.dk · Gjord för danska klubbar. Byggd för att utveckla elittalanger.",
+  footerCopy: "© 2025 Sportstalent.dk · Byggd för klubbar och förbund. Inga fler kalkylblad. Bara elitutveckling.",
   footerPrivacy: "Integritet",
   footerContact: "Kontakt",
   galleryEyebrow: "RIKTIGA ATLETER · RIKTIGA ÖGONBLICK",
-  galleryTitle: "Byggt vid ringen, inte bakom ett skrivbord.",
-  gallerySub: "Från hörnet till mattan — Sportstalent formas av ögonblicken som tränare och atleter lever varje helg.",
+  galleryTitle: "Byggt på träningsplanen, inte bakom ett skrivbord.",
+  gallerySub: "Sportstalent formas av ögonblicken tränare och atleter lever varje vecka, inte av ett kalkylblad.",
   storyRows: [
-    { eyebrow: "I HÖRNAN", title: "Coacha varje atlet som om de var din enda.", body: "Sportstalent ger dig den strukturerade planen, beredskapsdata och påminnelser så samtalet i hörnan alltid är skarpt — inte improviserat.", bullets: ["Daglig beredskap från varje atlet", "Automatiskt rullande veckoplaner", "Ett tryck för att logga passet"] },
-    { eyebrow: "PÅ MATTAN", title: "Sportspecifik vetenskap — inte generisk träning.", body: "Planer byggda kring din sport: snabbhet, styrka, tekniskt arbete och återhämtning — kalibrerat efter ålder, nivå och mål.", bullets: ["Periodiserade 4–12-veckorsprogram", "Faser före, under och efter tävling", "Kost som passar träningsbelastning och viktmål"] },
-    { eyebrow: "FÖRE MATCHEN", title: "Se vem som är redo — och vem som inte är det.", body: "En squad-vy visar humör, energi, sömn och belastning för varje atlet, så du kan justera före uppvärmningen — inte efter förlusten.", bullets: ["Squad-puls med trafikljusstatus", "Överträningsflaggor två veckor tidigare", "Tränarens anteckningar synkade till atleten"] },
-    { eyebrow: "EFTER MATCHEN", title: "Gör varje match till en lektion.", body: "Reflektioner efter tävling, videotaggning och SMART-mål säkerställer att nästa cykel börjar där förra slutade.", bullets: ["4-stegs reflektion efter varje match", "Videotaggar på teknik & utfall", "3 personliga SMART-mål per cykel"] },
+    { eyebrow: "VID SIDLINJEN", title: "Coacha varje atlet som om de var din enda.", body: "Sportstalent ger dig den strukturerade planen, beredskapsdata och påminnelser så varje samtal alltid är skarpt — inte improviserat ur minnet.", bullets: ["Daglig beredskap från varje atlet", "Automatiskt rullande veckoplaner", "Ett tryck för att logga passet"] },
+    { eyebrow: "PÅ TRÄNINGEN", title: "Sportspecifik planering — inte generisk träning.", body: "Planer byggda kring din sport: snabbhet, styrka, tekniskt arbete och återhämtning — kalibrerat efter ålder, nivå och mål.", bullets: ["Periodiserade 4–12-veckorsprogram", "Faser före, under och efter tävling", "Kost som passar träningsbelastning och prestationsmål"] },
+    { eyebrow: "FÖRE TÄVLING", title: "Se vem som är redo — och vem som inte är det.", body: "En lagvy visar humör, energi, sömn och belastning för varje atlet, så du kan justera innan passet börjar — inte efter resultatet.", bullets: ["Lagets puls med trafikljusstatus", "Överträningsflaggor två veckor tidigare", "Tränarens anteckningar synkade till atleten"] },
+    { eyebrow: "EFTER TÄVLING", title: "Gör varje resultat till en lektion.", body: "Reflektioner efter tävling, videotaggning och SMART-mål säkerställer att nästa cykel börjar där förra slutade.", bullets: ["4-stegs reflektion efter varje tävling", "Videotaggar på teknik & utfall", "3 personliga SMART-mål per cykel"] },
   ],
 
   metaTitle: "Sportstalent — Plattform för svenska idrottsklubbar",
   metaDesc:
-    "Träningsplattformen byggd för svenska idrottsklubbar. Driv ditt roster, följ beredskap, bygg periodiserade planer och skicka veckorapporter — allt på ett ställe.",
+    "Träningsplattformen byggd för svenska idrottsklubbar och förbund. Driv ditt roster, följ beredskap, bygg periodiserade planer och skicka veckorapporter — allt på ett ställe, GDPR-kompatibelt.",
 };
 
 const no: CLStrings = {
@@ -560,13 +560,13 @@ const no: CLStrings = {
   heroBadge: "OPERATIVSYSTEMET FOR ELITETALENTUTVIKLING",
   heroTitle: "Coaching-plattform for idrettsklubber",
   heroPhrases: [
-    "Du har tid til 3.",
-    "Sportstalent endrer det.",
-    "Alle utøvere. Hver uke.",
-    "Din beste sesong starter nå.",
+    "Ikke flere regneark.",
+    "Ikke flere spredte notater.",
+    "Ikke mer kunnskap som forsvinner ut døren.",
+    "Ett system for hele klubben.",
   ],
   heroDesc:
-    "Sportstalent gir hver utøver i klubben en personlig treningsplan, beredskapsmåling og konkurranseforberedelse — automatisk. Slik at du trener. Ikke administrerer.",
+    "Sportstalent erstatter regnearkene, notatbøkene og gruppechattene klubber bruker for å holde styr på treningen. Hver utøver får en personlig plan, beredskapsmåling og konkurranseforberedelse — automatisk. Data ligger i EU. Du trener. Du administrerer ikke.",
   heroCtaPrimary: "Start gratis — intet kort",
   heroCtaSecondary: "Se hvordan det fungerer",
   heroFinePrint: "14 dagers gratis prøve · ingen binding · si opp når som helst",
@@ -585,22 +585,22 @@ const no: CLStrings = {
   mockTrimpDay: "TRIMP/dag",
 
   trustEyebrow: "Brukt av",
-  trustLine: "Brukt av skandinaviske idrettsklubber for elitetalentutvikling — GDPR-kompatibel plattform.",
+  trustLine: "Bygget av en trener med 40 år på gulvet. Brukt av klubber og forbund — GDPR-kompatibel, data lagres i EU.",
 
-  featuresTitle1: "Alt klubben din trenger for elitetalentutvikling.",
-  featuresTitle2: "Ingenting den ikke trenger.",
+  featuresTitle1: "Alt klubben din trenger for å utvikle talent.",
+  featuresTitle2: "Ingenting som er i veien.",
   features: [
-    { title: "Treningsassistent", desc: "Få øktanbefalinger, teknikkveiledning og treningsråd basert på dyp sportkunnskap. Som å ha en ekstra trener i salen." },
-    { title: "Treningsplan-bygger", desc: "Bygg periodiserte planer for hvert beltenivå på minutter. Tilpasset alder, konkurranseplan og individuelle mål." },
-    { title: "Utøverutvikling", desc: "Hver økt logget. Hver beredskapssjekk registrert. Oppdag mønstre før de blir skader." },
-    { title: "Ukentlige rapporter", desc: "En tydelig, delbar oppsummering av hver utøvers uke — klar for foreldre, assistenttrenere eller forbund." },
+    { title: "Treningsassistent", desc: "Øktanbefalinger, teknikkveiledning og treningsråd bygget på førti års trenererfaring. Som å ha en ekstra trener i salen." },
+    { title: "Treningsplan-bygger", desc: "Bygg periodiserte planer for enhver alder og ethvert nivå på minutter. Tilpasset sesongen, konkurranseplanen og individuelle mål." },
+    { title: "Utøverutvikling", desc: "Hver økt logget. Hver beredskapssjekk registrert. Slipp å lete i notatbøker for å oppdage et mønster før det blir en skade." },
+    { title: "Ukentlige rapporter", desc: "En tydelig, delbar oppsummering av hver utøvers uke — klar for foreldre, assistenttrenere eller forbund. Ingen manuell rapportskriving." },
   ],
 
   howTitle: "Slik fungerer det",
   steps: [
-    { title: "Legg til utøverne dine", desc: "Sett opp klubbens roster på under 5 minutter" },
+    { title: "Legg til utøverne dine", desc: "Sett opp klubbens roster på under 5 minutter — uten regneark" },
     { title: "Utøvere logger treningen sin", desc: "Økttype, intensitet, hvordan de føler seg — tar 60 sekunder etter trening" },
-    { title: "Du trener med klarhet", desc: "Ukentlige oppsummeringer, belastningstrender og veiledning kommer automatisk så du kan fokusere på matten" },
+    { title: "Du trener med klarhet", desc: "Ukentlige oppsummeringer, belastningstrender og veiledning kommer automatisk, så ingenting avhenger av hukommelse eller av at én trener blir for alltid" },
   ],
 
   splitTitle: "Bygd for begge sider av ligningen",
@@ -610,7 +610,7 @@ const no: CLStrings = {
     "Fullt rosteroverblikk over alle utøvere",
     "Belastningstrender og restitusjonsflagg",
     "Ukentlige rapporter per utøver med ett klikk",
-    "Øvelses- og teknikkbibliotek med 100+ sportsspesifikke øvelser og progresjoner",
+    "Øvelses- og teknikkbibliotek med 100+ progresjoner — klubbens kunnskap, ikke én treners hukommelse",
     "Verktøy for konkurranseforberedelse",
   ],
   athletesLabel: "For utøvere",
@@ -618,7 +618,7 @@ const no: CLStrings = {
   athleteFeatures: [
     "Personlig treningsdagbok",
     "Daglig beredskapssjekk",
-    "Fremgang over tid — belte for belte",
+    "Fremgang registrert automatisk over tid",
     "Se ukens treningsfokus fra treneren din",
   ],
 
@@ -646,7 +646,7 @@ const no: CLStrings = {
   pricingFootnoteContact: "Skriv til Farooq@Sportstalent.dk",
 
   finalCtaTitle: "Din neste mester er allerede i klubben din.",
-  finalCtaDesc: "Gi hver utøver treningen de fortjener — uten å brenne ut.",
+  finalCtaDesc: "Gi hver utøver treningen de fortjener — uten regneark og uten å brenne ut.",
   finalCtaButton: "Start gratis i dag",
 
   footerCols: [
@@ -679,22 +679,22 @@ const no: CLStrings = {
       { label: "Start gratis", href: "/auth?tab=signup" },
     ] },
   ],
-  footerCopy: "© 2025 Sportstalent.dk · Laget for danske klubber. Bygget for å utvikle elitetalent.",
+  footerCopy: "© 2025 Sportstalent.dk · Bygget for klubber og forbund. Ikke flere regneark. Bare elitetalentutvikling.",
   footerPrivacy: "Personvern",
   footerContact: "Kontakt",
   galleryEyebrow: "EKTE UTØVERE · EKTE ØYEBLIKK",
-  galleryTitle: "Bygget ringside — ikke bak et skrivebord.",
-  gallerySub: "Fra hjørnet til matten — Sportstalent formes av øyeblikkene trenere og utøvere lever hver helg.",
+  galleryTitle: "Bygget på treningsfeltet, ikke bak et skrivebord.",
+  gallerySub: "Sportstalent formes av øyeblikkene trenere og utøvere lever hver uke, ikke av et regneark.",
   storyRows: [
-    { eyebrow: "I HJØRNET", title: "Coach hver utøver som om de var din eneste.", body: "Sportstalent gir deg den strukturerte planen, beredskapsdataene og påminnelsene så samtalen i hjørnet alltid er skarp — ikke improvisert.", bullets: ["Daglig beredskap fra hver utøver", "Automatisk rullerende ukeplaner", "Ett trykk for å logge økten"] },
-    { eyebrow: "PÅ MATTEN", title: "Sportsspesifikk vitenskap — ikke generisk trening.", body: "Planer bygget rundt din idrett: fart, styrke, teknisk arbeid og restitusjon — kalibrert til alder, nivå og mål.", bullets: ["Periodiserte 4–12 ukers programmer", "Faser før, under og etter konkurranse", "Kost tilpasset treningsbelastning og vektmål"] },
-    { eyebrow: "FØR KAMPEN", title: "Se hvem som er klar — og hvem som ikke er det.", body: "Én squad-visning viser humør, energi, søvn og belastning for hver utøver, så du kan justere før oppvarmingen — ikke etter tapet.", bullets: ["Squad-puls med trafikklys-status", "Overtreningsflagg to uker tidligere", "Trenernotater synkronisert med utøveren"] },
-    { eyebrow: "ETTER KAMPEN", title: "Gjør hver kamp til en lekse.", body: "Refleksjoner etter konkurranse, video-tagging og SMART-mål sikrer at neste syklus starter der den forrige sluttet.", bullets: ["4-stegs refleksjon etter hver kamp", "Video-tags på teknikk & utfall", "3 personlige SMART-mål per syklus"] },
+    { eyebrow: "PÅ SIDELINJEN", title: "Coach hver utøver som om de var din eneste.", body: "Sportstalent gir deg den strukturerte planen, beredskapsdataene og påminnelsene så hver samtale alltid er skarp — ikke improvisert fra hukommelsen.", bullets: ["Daglig beredskap fra hver utøver", "Automatisk rullerende ukeplaner", "Ett trykk for å logge økten"] },
+    { eyebrow: "PÅ TRENING", title: "Sportsspesifikk planlegging — ikke generisk trening.", body: "Planer bygget rundt din idrett: fart, styrke, teknisk arbeid og restitusjon — kalibrert til alder, nivå og mål.", bullets: ["Periodiserte 4–12 ukers programmer", "Faser før, under og etter konkurranse", "Kost tilpasset treningsbelastning og prestasjonsmål"] },
+    { eyebrow: "FØR KONKURRANSEN", title: "Se hvem som er klar — og hvem som ikke er det.", body: "Én lagvisning viser humør, energi, søvn og belastning for hver utøver, så du kan justere før økten starter — ikke etter resultatet.", bullets: ["Squad-puls med trafikklys-status", "Overtreningsflagg to uker tidligere", "Trenernotater synkronisert med utøveren"] },
+    { eyebrow: "ETTER KONKURRANSEN", title: "Gjør hvert resultat til en lekse.", body: "Refleksjoner etter konkurranse, video-tagging og SMART-mål sikrer at neste syklus starter der den forrige sluttet.", bullets: ["4-stegs refleksjon etter hver konkurranse", "Video-tags på teknikk & utfall", "3 personlige SMART-mål per syklus"] },
   ],
 
-  metaTitle: "Sportstalent — Plattform for danske idrettsklubber",
+  metaTitle: "Sportstalent — Plattform for norske idrettsklubber",
   metaDesc:
-    "Treningsplattformen bygd for danske idrettsklubber. Driv rosteret ditt, følg beredskap, bygg periodiserte planer og send ukentlige rapporter — alt på ett sted.",
+    "Treningsplattformen bygd for idrettsklubber og forbund. Driv rosteret ditt, følg beredskap, bygg periodiserte planer og send ukentlige rapporter — alt på ett sted, GDPR-kompatibelt.",
 };
 
 const de: CLStrings = {
