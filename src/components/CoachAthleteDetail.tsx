@@ -316,11 +316,11 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
         <TabsContent value="profile" className="space-y-4 mt-3">
           {/* Lock / Edit toggle */}
           <div className="flex items-center justify-between rounded-lg border border-border bg-muted/30 px-3 py-2">
-            <span className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+            <span className="text-xs font-medium text-foreground flex items-center gap-1.5">
               {editing ? (
                 <><Pencil className="h-3.5 w-3.5 text-primary" /> {t("editAction")}</>
               ) : (
-                <><Lock className="h-3.5 w-3.5" /> {t("readOnly")}</>
+                <><Lock className="h-3.5 w-3.5 text-primary" /> {t("readOnly")}</>
               )}
             </span>
             <Button
@@ -329,6 +329,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
               onClick={() => setEditing((v) => !v)}
               aria-label={editing ? t("lockAction") : t("editAction")}
               title={editing ? t("lockAction") : t("editAction")}
+              className={editing ? undefined : "text-primary border-primary/50 hover:text-primary"}
             >
               {editing ? <Lock className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
             </Button>
@@ -336,15 +337,17 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
 
           <fieldset disabled={!editing} className="space-y-4 group">
           {/* Athlete Profile */}
-          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3 group-disabled:opacity-70">
-            <div className="flex items-center justify-between">
-              <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
-                <UserCog className="h-4 w-4" /> {t("athleteProfile")}
-              </h4>
-              <Button size="sm" variant="outline" onClick={saveProfile} disabled={!editing || savingProfile}>
+          <CollapsiblePanel
+            title={t("athleteProfile")}
+            icon={UserCog}
+            iconClass="text-tab-plan"
+            className="group-disabled:opacity-70"
+            action={
+              <Button size="sm" onClick={saveProfile} disabled={!editing || savingProfile} className={SAVE_BTN}>
                 {savingProfile ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Save className="h-4 w-4 mr-1" /> {t("save")}</>}
               </Button>
-            </div>
+            }
+          >
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="space-y-1">
                 <Label className="text-xs">{t("age")}</Label>
@@ -486,33 +489,31 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
                 </SelectContent>
               </Select>
             </div>
-          </div>
+          </CollapsiblePanel>
+
           {/* Weekly Schedule */}
-          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3 group-disabled:opacity-70">
-            <div className="flex items-center justify-between">
-              <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
-                <Calendar className="h-4 w-4" /> {t("weeklySchedule")}
-              </h4>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={saveSchedule}
-                disabled={!editing || savingSchedule}
-              >
+          <CollapsiblePanel
+            title={t("weeklySchedule")}
+            icon={Calendar}
+            iconClass="text-tab-plan"
+            className="group-disabled:opacity-70"
+            action={
+              <Button size="sm" onClick={saveSchedule} disabled={!editing || savingSchedule} className={SAVE_BTN}>
                 {savingSchedule ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Save className="h-4 w-4 mr-1" /> {t("save")}</>}
               </Button>
-            </div>
+            }
+          >
             <p className="text-xs text-muted-foreground">{t("weeklyScheduleHint")}</p>
             <WeekSchedulePicker schedule={schedule} onChange={setSchedule} />
-          </div>
+          </CollapsiblePanel>
 
           {/* Training Goals & Plan */}
-          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3 group-disabled:opacity-70">
-            <div className="flex items-center justify-between">
-              <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
-                <Target className="h-4 w-4" /> {t("trainingGoals")}
-              </h4>
-            </div>
+          <CollapsiblePanel
+            title={t("trainingGoals")}
+            icon={Target}
+            iconClass="text-tab-nutrition"
+            className="group-disabled:opacity-70"
+          >
             <p className="text-xs text-muted-foreground">{t("selectAllThatApply")}</p>
             <div className="flex flex-wrap gap-2">
               {GOAL_OPTIONS.map((goal) => (
@@ -524,20 +525,22 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
                   data-active={selectedGoals.includes(goal)}
                   className="rounded-full px-3 py-1.5 text-xs font-medium border border-border transition-colors cursor-pointer
                     data-[active=true]:bg-primary data-[active=true]:text-primary-foreground
-                    data-[active=false]:text-muted-foreground hover:text-foreground
-                    disabled:cursor-not-allowed disabled:hover:text-muted-foreground"
+                    data-[active=false]:text-foreground hover:text-foreground
+                    disabled:cursor-not-allowed"
                 >
                   {t(goal)}
                 </button>
               ))}
             </div>
-          </div>
+          </CollapsiblePanel>
 
           {/* Program Length */}
-          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3 group-disabled:opacity-70">
-            <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
-              <Calendar className="h-4 w-4" /> {t("programLength")}
-            </h4>
+          <CollapsiblePanel
+            title={t("programLength")}
+            icon={Calendar}
+            iconClass="text-tab-plan"
+            className="group-disabled:opacity-70"
+          >
             <div className="flex items-center gap-4">
               <Slider
                 value={[programWeeks]}
@@ -550,29 +553,22 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
               />
               <span className="text-sm font-bold text-foreground min-w-[60px] text-right">{programWeeks} {t("weeks")}</span>
             </div>
-          </div>
+          </CollapsiblePanel>
           </fieldset>
 
-
-
           {/* Training Plan */}
-          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3 group-disabled:opacity-70">
-            <div className="flex items-center justify-between gap-2 flex-wrap">
-              <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
-                <Zap className="h-4 w-4" /> {t("plan")}
-              </h4>
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs text-muted-foreground">
-                  {t("generatingFor")} <span className="font-semibold text-foreground">{athlete.display_name}</span>
-                </span>
-                <Button onClick={generatePlan} disabled={generatingPlan} size="sm">
-                  {generatingPlan ? (
-                    <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
-                  ) : (
-                    <><Plus className="h-4 w-4 mr-1" /> {t("generatePlan")}</>
-                  )}
-                </Button>
-              </div>
+          <CollapsiblePanel title={t("plan")} icon={Zap} iconClass="text-primary">
+            <div className="flex items-center gap-2 flex-wrap justify-end">
+              <span className="text-xs text-muted-foreground">
+                {t("generatingFor")} <span className="font-semibold text-foreground">{athlete.display_name}</span>
+              </span>
+              <Button onClick={generatePlan} disabled={generatingPlan} size="sm">
+                {generatingPlan ? (
+                  <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
+                ) : (
+                  <><Plus className="h-4 w-4 mr-1" /> {t("generatePlan")}</>
+                )}
+              </Button>
             </div>
             {activePlan ? (
               <AIPlanCard plan={activePlan} coachMode athleteUserId={athlete.user_id} />
@@ -582,13 +578,10 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
                 <p className="text-sm text-muted-foreground">{t("noTrainingPlanYet")}</p>
               </div>
             )}
-          </div>
+          </CollapsiblePanel>
 
           {/* Rehab Plan */}
-          <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3 group-disabled:opacity-70">
-            <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
-              <Heart className="h-4 w-4" /> {t("injuryRehabPlan")}
-            </h4>
+          <CollapsiblePanel title={t("injuryRehabPlan")} icon={Heart} iconClass="text-tab-rehab">
             <p className="text-xs text-muted-foreground">{t("rehabDescription")}</p>
             <div className="flex flex-col sm:flex-row gap-2">
               <Input
@@ -617,13 +610,18 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
                 onRefresh();
               }} />
             )}
-          </div>
+          </CollapsiblePanel>
         </TabsContent>
 
         <TabsContent value="mental" className="space-y-4 mt-3">
-          <CoachAthleteMental athleteId={athlete.user_id} />
-          <CoachAthleteReflections athleteId={athlete.user_id} athleteName={athlete.display_name} />
+          <CollapsiblePanel title={t("tabMental")} icon={Brain} iconClass="text-tab-mental">
+            <CoachAthleteMental athleteId={athlete.user_id} />
+          </CollapsiblePanel>
+          <CollapsiblePanel title={t("competitionReflections") || t("tabMental")} icon={Brain} iconClass="text-tab-mental">
+            <CoachAthleteReflections athleteId={athlete.user_id} athleteName={athlete.display_name} />
+          </CollapsiblePanel>
         </TabsContent>
+
 
         <TabsContent value="performance" className="space-y-4 mt-3">
           <AthleteRunningProgress athleteId={athlete.user_id} />
