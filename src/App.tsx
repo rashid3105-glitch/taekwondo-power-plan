@@ -307,7 +307,9 @@ const AnimatedRoutes = () => {
 };
 
 const App = () => {
-  const [showSplash, setShowSplash] = useState(true);
+  // Splash is a native-app affordance only. On the web it covered the page for
+  // ~3s and made the landing pages feel unscrollable.
+  const [showSplash, setShowSplash] = useState(() => isNativeApp());
 
   return (
     <QueryClientProvider client={queryClient}>
