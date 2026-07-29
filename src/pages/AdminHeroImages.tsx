@@ -5,11 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, ImagePlus, Loader2, Trash2, ArrowUp, ArrowDown } from "lucide-react";
+import { ArrowLeft, ImagePlus, Loader2, Trash2, ArrowUp, ArrowDown, Crop } from "lucide-react";
+import { ImageCropDialog, CROP_OUTPUT_PX } from "@/components/admin/ImageCropDialog";
 
 const MAX_IMAGES = 5;
-const MAX_EDGE = 1200; // px — hero is shown in a 1:1 box, 1200 covers retina desktop
-const QUALITY = 0.78;
 
 interface HeroImage {
   id: string;
@@ -20,26 +19,6 @@ interface HeroImage {
   active: boolean;
 }
 
-/** Downscale + convert to WebP in the browser so uploads stay small. */
-async function compressToWebp(file: File): Promise<Blob> {
-  const bitmap = await createImageBitmap(file);
-  const scale = Math.min(1, MAX_EDGE / Math.max(bitmap.width, bitmap.height));
-  const w = Math.round(bitmap.width * scale);
-  const h = Math.round(bitmap.height * scale);
-  const canvas = document.createElement("canvas");
-  canvas.width = w;
-  canvas.height = h;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("Canvas ikke tilgængelig");
-  ctx.drawImage(bitmap, 0, 0, w, h);
-  bitmap.close?.();
-  const blob = await new Promise<Blob | null>((resolve) =>
-    canvas.toBlob(resolve, "image/webp", QUALITY)
-  );
-  if (!blob) throw new Error("Kunne ikke komprimere billedet");
-  return blob;
-}
-
 export default function AdminHeroImages() {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -48,6 +27,9 @@ export default function AdminHeroImages() {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [images, setImages] = useState<HeroImage[]>([]);
+  const [cropSource, setCropSource] = useState<File | string | null>(null);
+  const [cropTarget, setCropTarget] = useState<HeroImage | null>(null);
+
 
   useEffect(() => {
     (async () => {
