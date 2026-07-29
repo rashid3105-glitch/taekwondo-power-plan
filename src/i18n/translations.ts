@@ -1602,7 +1602,7 @@ const translations = {
     installBenefit1: "Opens in full screen — no browser bar",
     installBenefit2: "Dedicated icon on your home screen",
     installBenefit3: "Faster loading and easier access",
-    installLink: "Install as app",
+    installLink: "Install as Web App",
     offlineBanner: "You're offline — some features may be unavailable",
 
     // Readiness check
@@ -5469,7 +5469,7 @@ const translations = {
     installBenefit1: "Åbner i fuld skærm uden browserlinje",
     installBenefit2: "Eget ikon på hjemmeskærmen",
     installBenefit3: "Hurtigere indlæsning og nem adgang",
-    installLink: "Installer som app",
+    installLink: "Installer som Web App",
     offlineBanner: "Du er offline — nogle funktioner er muligvis ikke tilgængelige",
 
     // Readiness check
@@ -13088,7 +13088,7 @@ const translations = {
     installBenefit1: "Öffnet im Vollbild ohne Browserleiste",
     installBenefit2: "Eigenes Symbol auf dem Startbildschirm",
     installBenefit3: "Schnelleres Laden und einfacher Zugriff",
-    installLink: "Als App installieren",
+    installLink: "Als Web-App installieren",
     offlineBanner: "Du bist offline — einige Funktionen sind möglicherweise nicht verfügbar",
 
     // Readiness check
@@ -16859,7 +16859,7 @@ const translations = {
     installBenefit1: "يفتح بملء الشاشة بدون شريط المتصفح",
     installBenefit2: "أيقونة خاصة على شاشتك الرئيسية",
     installBenefit3: "تحميل أسرع ووصول سهل",
-    installLink: "ثبّت كتطبيق",
+    installLink: "ثبّت كتطبيق ويب (Web App)",
     offlineBanner: "أنت غير متصل بالإنترنت — قد لا تتوفر بعض الميزات",
 
     // Readiness check
@@ -20640,7 +20640,7 @@ const translations = {
     installBenefit1: "Åpner i fuld skærm uden browserlinje",
     installBenefit2: "Eget ikon på hjemmeskærmen",
     installBenefit3: "Hurtigere indlæsning og nem adgang",
-    installLink: "Installer som app",
+    installLink: "Installer som Web App",
     offlineBanner: "Du er offline — noen funksjoner er muligens ikke tilgjengelige",
 
     // Readiness check
