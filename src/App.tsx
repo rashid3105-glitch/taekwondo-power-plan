@@ -83,6 +83,8 @@ import AdminBlogComments from "./pages/AdminBlogComments";
 import AdminBlog from "./pages/AdminBlog";
 import AdminBlogEditor from "./pages/AdminBlogEditor";
 import AdminDrills from "./pages/AdminDrills";
+import AdminHeroImages from "./pages/AdminHeroImages";
+
 import Contact from "./pages/Contact";
 import Kostplan from "./pages/Kostplan";
 import Health from "./pages/Health";
