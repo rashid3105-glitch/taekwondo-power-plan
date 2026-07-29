@@ -1,38 +1,36 @@
-## Leverance
+## 1. Beskæring og centrering i Admin → Forsidebilleder
 
-To .pptx-filer og to elevator pitches — dansk og engelsk — som downloadbare artefakter. Ingen ændringer i app-koden.
+I `/admin/hero` tilføjes et beskæringstrin, når man uploader (og et "Beskær"-ikon på eksisterende billeder):
 
-1. `Sportstalent-pitch-DA.pptx` (14 slides)
-2. `Sportstalent-pitch-EN.pptx` (14 slides)
-3. `Sportstalent-elevator-pitch.md` — kort (20 sek.), mellem (45 sek.) og lang (90 sek.) version på begge sprog
+- Dialog med billedet i en ramme, hvor man kan **zoome** (slider) og **flytte/centrere** motivet (træk med mus/finger).
+- **Aspect ratio-vælger** med de formater forsiden faktisk bruger: 1:1 (hero-feltet i dag), samt 4:3 og 16:9 som valgmuligheder til fremtidige placeringer. 1:1 er standard.
+- Knappen "Centrér" nulstiller position/zoom.
+- Ved Gem beskæres billedet i browseren og eksporteres som **WebP i 800 px** på den lange kant (i stedet for de nuværende 1200 px), kvalitet ~0,8. Gamle filer i storage slettes ved re-beskæring, så der ikke ophobes ubrugte filer.
 
-## Indhold (samme struktur, to sprog)
+Ingen serverændringer nødvendige — beskæring sker i canvas før upload til det eksisterende `landing-hero` bucket.
 
-Salgsvinkel til klubber/forbund, men med nok forretning til at fungere over for partnere og investorer.
+## 2. Scroll-overgang som på bfrst.pro
 
-1. Titel — "Operating System for Elite Talent Development" + slogan
-2. Virkeligheden i klubben i dag (kort scene-sætning)
-3. Smertepunkter — regneark, spredt viden, gæt på periodisering, trænerskifte tager viden med ud af klubben
-4. Konsekvensen — talent tabes, ingen rød tråd, ingen dokumentation
-5. Løsningen — ét system, én sandhed, viden bliver i klubben
-6. Sådan virker det — 4 trin (opsæt klub → planlæg sæson → atleter udfører → klubben ser data)
-7. Modulerne — træning, ernæring, restitution/rehab, mental, video, test, kalender, rapporter
-8. For træneren — hvad man slipper for
-9. For atleten — hvad man får
-10. For klubben/ledelsen — overblik, dokumentation, kontinuitet
-11. Bygget af en træner — 40+ års erfaring, ikke en generisk app
-12. Sikkerhed og GDPR — data i klubben, 7 sprog, virker offline
-13. Priser — trappemodel pr. atlet, klub-only
-14. Næste skridt — CTA, kontakt, svar inden for 48 timer
+Effekten der: indhold glider blødt op og toner ind, når sektionen kommer i viewport — én gang, aldrig igen, aldrig "hoppende".
 
-Al tekst hentes fra den nuværende site-copy i `src/i18n/translations.ts` (da/en), så decket matcher hjemmesiden 1:1. Ingen opdigtede tal, kundenavne eller resultater — hvis en slide kræver et tal vi ikke har, indsættes en tydeligt markeret pladsholder, og jeg oplyser hvilke.
+- Ny lille hook + wrapper-komponent (`Reveal`) baseret på IntersectionObserver.
+- Anvendes på sektionerne på forsiden (`Index.tsx`) og de øvrige landingssider (platform, funktioner, priser, om os) — overskrift, brødtekst og kort får en let forskudt (stagger) indtoning.
+- Bevægelse: 16–24 px op + opacity 0→1, ca. 600 ms, blød easing.
+- Respekterer `prefers-reduced-motion` (så vises alt bare med det samme).
 
-## Design
+## 3. Mere "guld"-agtig gul
 
-Noir & Gold, samme identitet som sitet: mørk baggrund `0B0C14`, panel `13141F`, guld accent `F5C842`, hvid/grå tekst. Mørke title- og afslutningsslides, lysere kontrast-slides midtvejs så decket ikke bliver monotont. Ét gennemgående motiv (guld hairline + nummererede kapitler). Store overskrifter (40-54pt), læsbar brødtekst (20-24pt), ingen bullet-tunge slides — ikoner, stat-callouts og to-kolonne-layouts.
+Den nuværende `#F5C842` er en lys, gullig tone. Den erstattes af en varmere guldtone:
 
-## Teknisk
+- Primær guld: **`#D4AF37`** (klassisk guld)
+- Lysere variant til hover/highlights: `#E8C86A`
+- Hvor guld bruges som flade med mørk tekst (knapper, aktive chips) bruges den lysere variant, så kontrasten holder.
 
-- Genereres med pptxgenjs efter pptx-skillen
-- Validering af filerne, derefter konvertering til billeder og visuel gennemgang af alle 28 slides for overløb, kollisioner og kontrast — rettes og re-verificeres før levering
-- Filer lægges i `/mnt/documents` og vises som artefakter i chatten
+Farven ligger i dag hårdkodet som `const GOLD = "#F5C842"` i 17 filer. Jeg samler den ét sted (`src/lib/brand.ts` + CSS-variabler) og opdaterer alle steder, inkl. de rgba-skygger der er afledt af farven.
+
+### Teknisk
+- `src/pages/AdminHeroImages.tsx`: nyt crop-flow, eksport 800 px WebP.
+- Ny `src/components/admin/ImageCropDialog.tsx`.
+- Ny `src/components/Reveal.tsx` + keyframes/utility i `src/index.css`.
+- Ny `src/lib/brand.ts` med guld-tokens; alle 17 filer med `#F5C842` opdateres.
+- Web-only: ingen ændringer i database, edge functions eller native builds.
