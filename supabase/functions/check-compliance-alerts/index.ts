@@ -5,7 +5,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import * as React from "npm:react@18.3.1";
 import { renderAsync } from "npm:@react-email/components@0.0.22";
 import { TEMPLATES } from "../_shared/transactional-email-templates/registry.ts";
-import { checkCronAuth } from "../_shared/cronAuth.ts";
+
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -51,8 +51,19 @@ function daysUntil(dateStr: string): number {
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
 
-  const unauthorized = checkCronAuth(req, cors);
-  if (unauthorized) return unauthorized;
+  // Only service-role callers (pg_cron via pg_net) may trigger this scan.
+  // verify_jwt = true already validates the signature at the gateway.
+  const authHeader = req.headers.get("Authorization") ?? "";
+  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7).trim() : "";
+  let role: string | undefined;
+  try {
+    role = JSON.parse(atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))).role;
+  } catch { role = undefined; }
+  if (role !== "service_role") {
+    return new Response(JSON.stringify({ error: "Forbidden" }), {
+      status: 403, headers: { ...cors, "Content-Type": "application/json" },
+    });
+  }
 
   try {
     const admin = createClient(
