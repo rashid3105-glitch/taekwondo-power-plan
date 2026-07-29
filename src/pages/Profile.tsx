@@ -550,14 +550,21 @@ export default function Profile() {
                   onCheckedChange={handleTogglePush}
                 />
               </div>
-            </>
-          )}
-          <Separator className="bg-white/10" />
-          <ActionRow
-            icon={<KeyRound className="h-4 w-4" />}
-            label={t("profileChangePassword" as any)}
-            onClick={() => navigate("/change-password")}
-          />
+          </>
+        )}
+        <Separator className="bg-white/10" />
+        <ActionRow
+          icon={<Shield className="h-4 w-4" />}
+          label={t("mfaTitle" as any)}
+          sub={mfaLoading ? "…" : mfaEnabled ? t("mfaStatusEnabled" as any) : t("mfaStatusDisabled" as any)}
+          onClick={() => setMfaDialogOpen(true)}
+        />
+        <Separator className="bg-white/10" />
+        <ActionRow
+          icon={<KeyRound className="h-4 w-4" />}
+          label={t("profileChangePassword" as any)}
+          onClick={() => navigate("/change-password")}
+        />
           <Separator className="bg-white/10" />
           <ActionRow
             icon={<Download className="h-4 w-4" />}
