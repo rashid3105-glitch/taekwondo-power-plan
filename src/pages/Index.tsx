@@ -5,6 +5,8 @@ import { PageMeta } from "@/components/PageMeta";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { BrandLogo } from "@/components/BrandLogo";
 import { LandingLayout } from "@/components/landing/LandingLayout";
+import { HeroSlideshow } from "@/components/landing/HeroSlideshow";
+
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 
 import { isNativeApp } from "@/lib/platform";
