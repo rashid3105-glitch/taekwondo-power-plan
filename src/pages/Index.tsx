@@ -5,6 +5,8 @@ import { PageMeta } from "@/components/PageMeta";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { BrandLogo } from "@/components/BrandLogo";
 import { LandingLayout } from "@/components/landing/LandingLayout";
+import { HeroSlideshow } from "@/components/landing/HeroSlideshow";
+
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 
 import { isNativeApp } from "@/lib/platform";
@@ -254,22 +256,9 @@ const Index = () => {
               border: "0.5px solid rgba(255,255,255,0.08)",
               boxShadow: isMobile ? "0 18px 48px rgba(0,0,0,0.45)" : "0 30px 80px rgba(0,0,0,0.5)",
             }}>
-              <img
-                src="/hero-deadlift.webp"
-                alt="Atlet i en dansk elitesportsklub under styrketræning med fokus på struktureret udvikling"
-                width={650}
-                height={1244}
-                fetchPriority="high"
-                decoding="async"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  objectPosition: "center 30%",
-                  display: "block",
-                }}
-              />
+              <HeroSlideshow radius={isMobile ? 12 : 14} />
             </div>
+
             <HUD />
           </div>
         </div>
