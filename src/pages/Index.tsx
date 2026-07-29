@@ -255,7 +255,7 @@ const Index = () => {
               boxShadow: isMobile ? "0 18px 48px rgba(0,0,0,0.45)" : "0 30px 80px rgba(0,0,0,0.5)",
             }}>
               <img
-                src="/hero-athlete-club.webp"
+                src="/hero-deadlift.webp"
                 alt="Atlet i en dansk elitesportsklub under styrketræning med fokus på struktureret udvikling"
                 width={650}
                 height={1244}
@@ -274,6 +274,51 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* ── Any sport ───────────────────────────────────────────── */}
+      <section style={{ borderTop: "0.5px solid rgba(255,255,255,0.07)", background: CARD }}>
+        <div style={{ maxWidth: 1080, margin: "0 auto", padding: `${isMobile ? 40 : 64}px ${pad}px` }}>
+          <SectionEyebrow>{t("homeSportsEyebrow")}</SectionEyebrow>
+          <h2 style={{ fontSize: "clamp(22px,3.4vw,34px)", fontWeight: 900, letterSpacing: "-0.035em", lineHeight: 1.12, margin: "0 0 12px" }}>
+            {t("homeSportsTitle")}
+          </h2>
+          <p style={{ fontSize: isMobile ? 14 : 15, color: "rgba(255,255,255,0.55)", lineHeight: 1.65, maxWidth: 620, margin: "0 0 22px" }}>
+            {t("homeSportsBody")}
+          </p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {[
+              { k: "sportFootball", on: false }, { k: "sportHandball", on: true }, { k: "sportSwimming", on: false },
+              { k: "sportAthletics", on: false }, { k: "sportBadminton", on: true }, { k: "sportMartialArts", on: false },
+              { k: "sportCycling", on: false }, { k: "sportRowing", on: false }, { k: "sportGymnastics", on: true },
+              { k: "sportVolleyball", on: false }, { k: "sportIceHockey", on: false }, { k: "sportBasketball", on: false },
+            ].map((s) => (
+              <span
+                key={s.k}
+                style={{
+                  padding: isMobile ? "7px 13px" : "8px 16px",
+                  borderRadius: 999,
+                  fontSize: isMobile ? 11 : 12,
+                  fontFamily: MONO,
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  border: s.on ? `0.5px solid ${GOLD}` : "0.5px solid rgba(255,255,255,0.14)",
+                  background: s.on ? GOLD : "transparent",
+                  color: s.on ? BG : "rgba(255,255,255,0.7)",
+                  fontWeight: s.on ? 800 : 500,
+                }}
+              >
+                {t(s.k as never)}
+              </span>
+            ))}
+            <span style={{ padding: isMobile ? "7px 13px" : "8px 16px", borderRadius: 999, fontSize: isMobile ? 11 : 12, fontFamily: MONO, letterSpacing: "0.1em", textTransform: "uppercase", border: "0.5px dashed rgba(255,255,255,0.22)", color: "rgba(255,255,255,0.5)" }}>
+              {t("sportYours")}
+            </span>
+          </div>
+          <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 18 }}>{t("homeSportsFootnote")}</div>
+        </div>
+      </section>
+
+
 
       <Chapter n="01" label={t("homeCh1Label")} title={t("homeCh1Title")} />
       <section style={{ background: CARD, borderTop: "0.5px solid rgba(255,255,255,0.07)", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
@@ -444,7 +489,7 @@ const Index = () => {
           <div style={{ position: "relative", flexShrink: 0 }}>
             <img src="/founder-farooq.jpg" alt="Farooq Rashid" style={{ width: isMobile ? 160 : 200, height: isMobile ? 210 : 260, objectFit: "cover", borderRadius: 14, border: "0.5px solid rgba(255,255,255,0.08)", display: "block" }} onError={(e) => { e.currentTarget.style.display = "none"; }} />
             <div style={{ position: "absolute", bottom: -12, right: -12, background: BG, border: "0.5px solid rgba(255,255,255,0.1)", borderRadius: 10, padding: "10px 14px", fontFamily: MONO }}>
-              <div style={{ fontSize: 20, fontWeight: 900, color: GOLD }}>30+</div>
+              <div style={{ fontSize: 20, fontWeight: 900, color: GOLD }}>40+</div>
               <div style={{ fontSize: 10, color: "rgba(255,255,255,0.62)", letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 1 }}>{t("homeFounderYears")}</div>
             </div>
           </div>
@@ -463,6 +508,13 @@ const Index = () => {
                 <span key={i} style={{ display: "inline-flex", background: "rgba(245,200,66,0.1)", border: "0.5px solid rgba(245,200,66,0.22)", borderRadius: 999, padding: "4px 12px", fontSize: 11, fontWeight: 700, color: GOLD, fontFamily: MONO, letterSpacing: "0.06em" }}>{tag}</span>
               ))}
             </div>
+            <button
+              onClick={() => navigate("/about")}
+              style={{ marginTop: 20, background: "transparent", border: "none", padding: 0, color: GOLD, fontSize: 14, fontWeight: 700, cursor: "pointer", textDecoration: "underline", textUnderlineOffset: 4 }}
+            >
+              {t("homeFounderReadMore")} →
+            </button>
+
           </div>
         </div>
       </section>
