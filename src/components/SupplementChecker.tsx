@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { AntidopingCertificate } from "@/components/AntidopingCertificate";
+import { isDanishCountry } from "@/lib/danishFederation";
 
 type Flag = "green" | "yellow" | "red";
 
@@ -75,6 +76,20 @@ export function SupplementChecker({ athleteId }: SupplementCheckerProps = {}) {
   };
 
   useEffect(() => { loadHistory(); }, [athleteId]);
+
+  const [isDanish, setIsDanish] = useState(false);
+  useEffect(() => {
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase
+        .from("profiles")
+        .select("country")
+        .eq("user_id", athleteId || user.id)
+        .maybeSingle();
+      setIsDanish(isDanishCountry((data as any)?.country));
+    })();
+  }, [athleteId]);
 
   const handleImage = (file: File) => {
     if (!file.type.startsWith("image/")) return;
@@ -349,8 +364,8 @@ export function SupplementChecker({ athleteId }: SupplementCheckerProps = {}) {
         </div>
       </div>
 
-      {/* Antidoping course + certificate */}
-      <AntidopingCertificate />
+      {/* Antidoping course + certificate (Danish federation requirement only) */}
+      {isDanish && <AntidopingCertificate />}
 
       {/* History */}
       <div className="rounded-3xl border border-white/5 bg-[#121212]/80 p-5 backdrop-blur-xl">
