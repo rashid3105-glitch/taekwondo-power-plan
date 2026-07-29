@@ -600,6 +600,17 @@ export default function Profile() {
       </div>
       <AppFooter />
 
+      <MfaSetupDialog
+        open={mfaDialogOpen}
+        onOpenChange={setMfaDialogOpen}
+        onChanged={() => {
+          setMfaDialogOpen(false);
+          setMfaLoading(true);
+          // Re-check status after a short delay so the dialog closes first
+          setTimeout(() => setMfaLoading(false), 0);
+        }}
+      />
+
       <AlertDialog open={withdrawOpen} onOpenChange={(o) => !withdrawing && setWithdrawOpen(o)}>
         <AlertDialogContent>
           <AlertDialogHeader>
