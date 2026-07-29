@@ -47,7 +47,6 @@ export default function MfaSetupDialog({ open, onOpenChange, onChanged }: Props)
         }
         const unverified = (data?.all || []).find((f: any) => f.status === "unverified");
         if (unverified) {
-          // Clean up stale unverified factor and re-enroll
           await supabase.auth.mfa.unenroll({ factorId: unverified.id });
         }
         const { data: enroll, error: enrollErr } = await supabase.auth.mfa.enroll({
@@ -182,7 +181,18 @@ export default function MfaSetupDialog({ open, onOpenChange, onChanged }: Props)
               <p className="text-xs mt-1">{t("mfaEnabledDesc")}</p>
             </div>
             <p className="text-xs text-muted-foreground">{t("mfaNoRecoveryCodes")}</p>
-            <Button onClick={() => onOpenChange(false)} className="w-full">{t("close")}</Button>
+            <div className="flex flex-col gap-2">
+              <Button onClick={() => onOpenChange(false)} className="w-full">{t("close")}</Button>
+              <Button
+                variant="outline"
+                onClick={handleDisable}
+                disabled={busy}
+                className="w-full border-destructive text-destructive hover:bg-destructive/10"
+              >
+                {busy ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                {t("mfaDisable")}
+              </Button>
+            </div>
           </div>
         )}
 
@@ -193,20 +203,6 @@ export default function MfaSetupDialog({ open, onOpenChange, onChanged }: Props)
               <p className="text-xs text-muted-foreground mt-1">{t("mfaDisabledDesc")}</p>
             </div>
             <Button onClick={() => onOpenChange(false)} className="w-full">{t("close")}</Button>
-          </div>
-        )}
-
-        {step === "enabled" && (
-          <div className="pt-2 border-t border-border">
-            <Button
-              variant="destructive"
-              onClick={handleDisable}
-              disabled={busy}
-              className="w-full"
-            >
-              {busy ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-              {t("mfaDisable")}
-            </Button>
           </div>
         )}
       </DialogContent>
