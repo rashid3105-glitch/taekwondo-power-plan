@@ -5,6 +5,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { BrandLogo } from "@/components/BrandLogo";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { isNativeApp } from "@/lib/platform";
+import { ScrollReveal } from "@/components/Reveal";
 
 const GOLD = "#D4AF37";
 
