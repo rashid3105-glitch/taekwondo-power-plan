@@ -163,16 +163,18 @@ export default function Help() {
       if (cancelled) return;
       setIsLoggedIn(!!user);
       setAuthChecked(true);
-      if (!user) return;
+      if (!user) { navigate("/auth", { replace: true }); return; }
       const { data } = await supabase.rpc("is_admin", { _user_id: user.id });
       if (!cancelled && data === true) setIsAdmin(true);
     })();
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
       setIsLoggedIn(!!session?.user);
       setAuthChecked(true);
+      if (!session?.user) navigate("/auth", { replace: true });
     });
     return () => { cancelled = true; sub.subscription.unsubscribe(); };
-  }, []);
+  }, [navigate]);
+
 
   // Translation helper with safe fallback for new section keys
   const tr = (key: string) => {
