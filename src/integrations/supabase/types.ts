@@ -1472,6 +1472,7 @@ export type Database = {
           entry_type: string
           entry_types: string[] | null
           id: string
+          is_private: boolean
           mood: number
           run_calories: number | null
           run_distance_km: number | null
@@ -1490,6 +1491,7 @@ export type Database = {
           entry_type?: string
           entry_types?: string[] | null
           id?: string
+          is_private?: boolean
           mood?: number
           run_calories?: number | null
           run_distance_km?: number | null
@@ -1508,6 +1510,7 @@ export type Database = {
           entry_type?: string
           entry_types?: string[] | null
           id?: string
+          is_private?: boolean
           mood?: number
           run_calories?: number | null
           run_distance_km?: number | null

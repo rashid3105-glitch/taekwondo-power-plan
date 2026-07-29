@@ -17,6 +17,8 @@ import {
   Zap, ArrowLeft, Plus, Trash2, Edit2, Save, X, SmilePlus,
   Frown, Meh, Smile, Laugh, BatteryLow, BatteryMedium, BatteryFull,
   Search, ChevronDown, ChevronRight, Filter, Mic, MicOff, Footprints,
+  Lock, Unlock,
+
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Watermark } from "@/components/Watermark";
@@ -81,6 +83,7 @@ export default function Diary() {
   const [mood, setMood] = useState(3);
   const [energy, setEnergy] = useState(3);
   const [tags, setTags] = useState<string[]>([]);
+  const [isPrivate, setIsPrivate] = useState(false);
   const [entryTypes, setEntryTypes] = useState<DiaryEntryType[]>(["general"]);
 
   const toggleEntryType = (type: DiaryEntryType) => {
@@ -169,6 +172,7 @@ export default function Diary() {
     setMood(3);
     setEnergy(3);
     setTags([]);
+    setIsPrivate(false);
     setEntryTypes(["general"]);
     setRunDistanceKm("");
     setRunDurationMin("");
@@ -183,6 +187,7 @@ export default function Diary() {
     setMood(entry.mood);
     setEnergy(entry.energy);
     setTags(entry.tags || []);
+    setIsPrivate(entry.is_private === true);
     setEntryTypes(entry.entry_types && entry.entry_types.length > 0 ? (entry.entry_types as DiaryEntryType[]) : [entry.entry_type || "general"]);
     const types = entry.entry_types && entry.entry_types.length > 0 ? entry.entry_types : [entry.entry_type || "general"];
     if (types.includes("running")) {
@@ -213,6 +218,7 @@ export default function Diary() {
       tags,
       entry_type: entryTypes[0],
       entry_types: entryTypes,
+      is_private: isPrivate,
       run_distance_km: entryTypes.includes("running") && runDistNum > 0 ? runDistNum : null,
       run_duration_seconds: entryTypes.includes("running") && runTotalSec > 0 ? runTotalSec : null,
       run_pace_seconds_per_km: entryTypes.includes("running") && runPace > 0 ? runPace : null,
@@ -548,9 +554,30 @@ export default function Diary() {
               </div>
             </div>
 
+
+            <button
+              type="button"
+              onClick={() => setIsPrivate((v) => !v)}
+              className={`w-full flex items-start gap-3 rounded-xl border p-3 text-left transition-colors ${
+                isPrivate ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
+              }`}
+              aria-pressed={isPrivate}
+            >
+              {isPrivate ? (
+                <Lock className="h-4 w-4 mt-0.5 text-primary shrink-0" />
+              ) : (
+                <Unlock className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
+              )}
+              <span className="min-w-0">
+                <span className="block text-sm font-semibold text-card-foreground">{t("diaryPrivateToggle")}</span>
+                <span className="block text-xs text-muted-foreground mt-0.5">{t("diaryPrivateHint")}</span>
+              </span>
+            </button>
+
             <Button onClick={handleSave} className="w-full sm:w-auto h-11">
               <Save className="h-4 w-4 mr-1" /> {t("save")}
             </Button>
+
           </div>
         )}
 
