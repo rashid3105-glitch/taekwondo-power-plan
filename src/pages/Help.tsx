@@ -515,8 +515,9 @@ export default function Help() {
             )}
           </div>
         </div>
-      </div>
+      </main>
     </div>
+
   );
 }
 
