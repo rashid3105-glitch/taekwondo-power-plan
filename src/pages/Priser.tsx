@@ -121,16 +121,26 @@ export default function Priser() {
           <button onClick={() => navigate("/auth")} style={{ width: "100%", marginTop: 20, padding: "13px", borderRadius: 8, border: "none", background: GOLD, color: "#0B0C14", fontSize: 14, fontWeight: 800, cursor: "pointer" }}>{t("pricingCtaTrialClub")}</button>
         </div>
 
-        <div style={{ marginTop: 20, background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: "24px" }}>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", marginBottom: 8 }}>{t("pricingTierFed")}</div>
-          <div style={{ fontSize: 16, fontWeight: 800, marginBottom: 4 }}>kontakt@sportstalent.dk</div>
-          <div style={{ fontSize: 13, color: "rgba(255,255,255,0.62)", marginBottom: 14, lineHeight: 1.5 }}>{t("pricingFedDesc")}</div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 8, marginBottom: 16 }}>
-            {fedFeatures.map((f, i) => (
-              <div key={i} style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", display: "flex", gap: 7 }}><span style={{ color: GOLD }}>✓</span>{f}</div>
+      </div>
+
+      {/* ── Let's talk ─────────────────────────────────────────── */}
+      <div style={sec}>
+        <div style={{ background: "linear-gradient(135deg, rgba(245,200,66,0.07), rgba(255,255,255,0.02))", border: "0.5px solid rgba(245,200,66,0.22)", borderRadius: 16, padding: "32px 26px" }}>
+          <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: GOLD }}>{t("pricingTalkEyebrow")}</span>
+          <h2 style={{ fontSize: "clamp(22px,3.2vw,32px)", fontWeight: 900, letterSpacing: "-0.03em", margin: "10px 0 12px" }}>{t("pricingTalkTitle")}</h2>
+          <p style={{ fontSize: 14, color: "rgba(255,255,255,0.55)", lineHeight: 1.7, maxWidth: 620, marginBottom: 20 }}>{t("pricingTalkBody")}</p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 10, marginBottom: 24 }}>
+            {[t("pricingTalk1"), t("pricingTalk2"), t("pricingTalk3"), t("pricingTalk4"), ...fedFeatures].map((f, i) => (
+              <div key={i} style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", display: "flex", gap: 8, lineHeight: 1.55 }}>
+                <span style={{ color: GOLD, flexShrink: 0 }}>✓</span>{f}
+              </div>
             ))}
           </div>
-          <button style={{ padding: "11px 22px", borderRadius: 8, border: "0.5px solid rgba(255,255,255,0.12)", background: "transparent", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer" }} onClick={() => document.getElementById("contact-form")?.scrollIntoView({ behavior: "smooth" })}>{t("pricingFedCta")}</button>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+            <button onClick={() => document.getElementById("contact-form")?.scrollIntoView({ behavior: "smooth" })} style={{ padding: "13px 28px", borderRadius: 8, border: "none", background: GOLD, color: "#0B0C14", fontSize: 14, fontWeight: 800, cursor: "pointer" }}>{t("pricingTalkCta")}</button>
+            <span style={{ fontSize: 12, color: "rgba(255,255,255,0.45)" }}>{t("pricingTalkNote")}</span>
+          </div>
         </div>
       </div>
 
