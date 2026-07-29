@@ -1788,6 +1788,36 @@ export type Database = {
         }
         Relationships: []
       }
+      landing_hero_images: {
+        Row: {
+          active: boolean
+          alt: string | null
+          created_at: string
+          id: string
+          sort_order: number
+          storage_path: string | null
+          url: string
+        }
+        Insert: {
+          active?: boolean
+          alt?: string | null
+          created_at?: string
+          id?: string
+          sort_order?: number
+          storage_path?: string | null
+          url: string
+        }
+        Update: {
+          active?: boolean
+          alt?: string | null
+          created_at?: string
+          id?: string
+          sort_order?: number
+          storage_path?: string | null
+          url?: string
+        }
+        Relationships: []
+      }
       match_tags: {
         Row: {
           created_at: string
