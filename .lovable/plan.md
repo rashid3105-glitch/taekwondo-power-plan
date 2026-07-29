@@ -1,44 +1,38 @@
-## Mål
+## Leverance
 
-Skarpere, mere selvsikker marketing-copy i hele det offentlige lag — inspireret af referencens direkte, korte sætningsrytme, men 100 % nyskrevet tekst i Sportstalents egen stemme (dansk klubfokus, 40 års trænererfaring, GDPR, "Operating System for Elite Talent Development"). Ingen kopiering af referenceformuleringer, ingen "AI"-jargon, ingen sportsspecifikke (kampsports-)referencer.
+To .pptx-filer og to elevator pitches — dansk og engelsk — som downloadbare artefakter. Ingen ændringer i app-koden.
 
-Tone: niveau 3 af 5 — direkte og kompromisløs i overskrifter, rolig og troværdig i brødtekst. Korte hovedsætninger. Ingen buzzwords, ingen udråbstegn.
+1. `Sportstalent-pitch-DA.pptx` (14 slides)
+2. `Sportstalent-pitch-EN.pptx` (14 slides)
+3. `Sportstalent-elevator-pitch.md` — kort (20 sek.), mellem (45 sek.) og lang (90 sek.) version på begge sprog
 
-## Hvad der skrives om
+## Indhold (samme struktur, to sprog)
 
-Al tekst ligger allerede i `src/i18n/translations.ts` som nøgler, så arbejdet er primært tekst — ikke struktur.
+Salgsvinkel til klubber/forbund, men med nok forretning til at fungere over for partnere og investorer.
 
-**1. Forsiden (`src/pages/Index.tsx`)**
-- Hero: ny badge, H1, underrubrik, 3 bullets, CTA-labels, trust-linje.
-- Kapitel 01 Problem, 02 Løsning, 03 Funktioner (8 kort), 04 Sådan virker det, samt FAQ/afslutnings-CTA.
-- SEO-titel og -beskrivelse justeres til den nye positionering.
+1. Titel — "Operating System for Elite Talent Development" + slogan
+2. Virkeligheden i klubben i dag (kort scene-sætning)
+3. Smertepunkter — regneark, spredt viden, gæt på periodisering, trænerskifte tager viden med ud af klubben
+4. Konsekvensen — talent tabes, ingen rød tråd, ingen dokumentation
+5. Løsningen — ét system, én sandhed, viden bliver i klubben
+6. Sådan virker det — 4 trin (opsæt klub → planlæg sæson → atleter udfører → klubben ser data)
+7. Modulerne — træning, ernæring, restitution/rehab, mental, video, test, kalender, rapporter
+8. For træneren — hvad man slipper for
+9. For atleten — hvad man får
+10. For klubben/ledelsen — overblik, dokumentation, kontinuitet
+11. Bygget af en træner — 40+ års erfaring, ikke en generisk app
+12. Sikkerhed og GDPR — data i klubben, 7 sprog, virker offline
+13. Priser — trappemodel pr. atlet, klub-only
+14. Næste skridt — CTA, kontakt, svar inden for 48 timer
 
-**2. Funktioner + Platform (`FeatureDetail.tsx`, `PlatformMarketing.tsx`)**
-- Modulbeskrivelser omskrives til én skarp påstandslinje + kort forklaring + 4 konkrete punkter pr. modul (samme rytme på tværs af moduler: Træning, Ernæring, Restitution/Rehab, Mental, Video, Test, Kalender, Rapporter).
-- Stat-blokken får ærlige, klub-relevante labels.
+Al tekst hentes fra den nuværende site-copy i `src/i18n/translations.ts` (da/en), så decket matcher hjemmesiden 1:1. Ingen opdigtede tal, kundenavne eller resultater — hvis en slide kræver et tal vi ikke har, indsættes en tydeligt markeret pladsholder, og jeg oplyser hvilke.
 
-**3. Om + Trænerlanding (`About.tsx`, `CoachLanding.tsx`)**
-- Grundlægger-noten skrives om til en personlig, første-persons tekst i 3 korte afsnit, underskrevet af grundlæggeren — placeret under billedet (den eksisterende `.founder-grid`-stak bevares).
-- Værdikortene (4 stk.) får nye titler/tekster.
-- Trænerlandingen får en skarpere "hvad du slipper for"-vinkel.
+## Design
 
-**4. Priser (`Priser.tsx`)**
-- H1, underrubrik, tier-noter, kalkulator-labels og de 4 FAQ'er omskrives.
-- Ingen ændring af priser eller trappemodellens tal.
-
-## Nye sektioner (3 stk.)
-
-1. **"Enhver sport"-chips** på forsiden under hero: klikbare/statiske pill-tags (Fodbold, Håndbold, Svømning, Atletik, Badminton, Kampsport, Cykling, Roning, Gymnastik, Volleyball, Ishockey, Basketball + "Din sport"). Understreger den nye sport-neutrale positionering. Aktive tags i guld, øvrige som outline — Noir & Gold, ikke ny farvepalet.
-2. **Grundlægger-note som selvstændig sektion** på forsiden (kort uddrag med link til /about), i samme stil som på Om-siden.
-3. **"Lad os tale om det"-blok nederst på Priser**: kort tekst om at prisen tilpasses klubbens størrelse og rollout, punktliste over hvad der er inkluderet ved opstart, og en kontakt-CTA med "svar inden for 48 timer".
-
-## Sprog
-
-Alle 7 sprog opdateres: da, en, sv, de, no, es, ar. Dansk skrives først som kilde, derefter idiomatiske oversættelser (ikke ordret). Arabisk holdes RTL-kompatibelt. Nye nøgler tilføjes i alle 7 blokke — ingen engelske fallbacks.
+Noir & Gold, samme identitet som sitet: mørk baggrund `0B0C14`, panel `13141F`, guld accent `F5C842`, hvid/grå tekst. Mørke title- og afslutningsslides, lysere kontrast-slides midtvejs så decket ikke bliver monotont. Ét gennemgående motiv (guld hairline + nummererede kapitler). Store overskrifter (40-54pt), læsbar brødtekst (20-24pt), ingen bullet-tunge slides — ikoner, stat-callouts og to-kolonne-layouts.
 
 ## Teknisk
 
-- Ændringer i `src/i18n/translations.ts` (omskrivning + nye nøgler) og i de fem sidefiler for de nye sektioner.
-- Nye sektioner bygges med eksisterende Noir & Gold-tokens og samme inline-stilmønster som resten af siderne; mobil-first (chips wrapper, ingen vandret scroll).
-- Kun offentlige marketingsider berøres — ingen ændringer i app-UI, backend, priser eller SEO-ruter.
-- Verificeres med en Playwright-gennemgang af /, /funktioner, /platform, /about, /for-traenere og /priser i mobil- og desktopbredde.
+- Genereres med pptxgenjs efter pptx-skillen
+- Validering af filerne, derefter konvertering til billeder og visuel gennemgang af alle 28 slides for overløb, kollisioner og kontrast — rettes og re-verificeres før levering
+- Filer lægges i `/mnt/documents` og vises som artefakter i chatten
