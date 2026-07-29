@@ -5,11 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, ImagePlus, Loader2, Trash2, ArrowUp, ArrowDown } from "lucide-react";
+import { ArrowLeft, ImagePlus, Loader2, Trash2, ArrowUp, ArrowDown, Crop } from "lucide-react";
+import { ImageCropDialog, CROP_OUTPUT_PX } from "@/components/admin/ImageCropDialog";
 
 const MAX_IMAGES = 5;
-const MAX_EDGE = 1200; // px — hero is shown in a 1:1 box, 1200 covers retina desktop
-const QUALITY = 0.78;
 
 interface HeroImage {
   id: string;
@@ -20,26 +19,6 @@ interface HeroImage {
   active: boolean;
 }
 
-/** Downscale + convert to WebP in the browser so uploads stay small. */
-async function compressToWebp(file: File): Promise<Blob> {
-  const bitmap = await createImageBitmap(file);
-  const scale = Math.min(1, MAX_EDGE / Math.max(bitmap.width, bitmap.height));
-  const w = Math.round(bitmap.width * scale);
-  const h = Math.round(bitmap.height * scale);
-  const canvas = document.createElement("canvas");
-  canvas.width = w;
-  canvas.height = h;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("Canvas ikke tilgængelig");
-  ctx.drawImage(bitmap, 0, 0, w, h);
-  bitmap.close?.();
-  const blob = await new Promise<Blob | null>((resolve) =>
-    canvas.toBlob(resolve, "image/webp", QUALITY)
-  );
-  if (!blob) throw new Error("Kunne ikke komprimere billedet");
-  return blob;
-}
-
 export default function AdminHeroImages() {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -48,6 +27,9 @@ export default function AdminHeroImages() {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [images, setImages] = useState<HeroImage[]>([]);
+  const [cropSource, setCropSource] = useState<File | string | null>(null);
+  const [cropTarget, setCropTarget] = useState<HeroImage | null>(null);
+
 
   useEffect(() => {
     (async () => {
@@ -72,35 +54,58 @@ export default function AdminHeroImages() {
     setLoading(false);
   };
 
-  const onPick = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files ?? []);
+  const onPick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     e.target.value = "";
-    if (!files.length) return;
-    const room = MAX_IMAGES - images.length;
-    if (room <= 0) {
+    if (!file) return;
+    if (images.length >= MAX_IMAGES) {
       toast({ title: "Maks. 5 billeder", description: "Slet et billede før du tilføjer et nyt.", variant: "destructive" });
       return;
     }
+    setCropTarget(null);
+    setCropSource(file);
+  };
+
+  const uploadBlob = async (blob: Blob) => {
+    const path = `${crypto.randomUUID()}.webp`;
+    const { error: upErr } = await supabase.storage
+      .from("landing-hero")
+      .upload(path, blob, { contentType: "image/webp", cacheControl: "31536000" });
+    if (upErr) throw upErr;
+    const { data: pub } = supabase.storage.from("landing-hero").getPublicUrl(path);
+    return { path, url: pub.publicUrl };
+  };
+
+  const onCropped = async (blob: Blob) => {
     setUploading(true);
     try {
-      for (const file of files.slice(0, room)) {
-        const blob = await compressToWebp(file);
-        const path = `${crypto.randomUUID()}.webp`;
-        const { error: upErr } = await supabase.storage
-          .from("landing-hero")
-          .upload(path, blob, { contentType: "image/webp", cacheControl: "31536000" });
-        if (upErr) throw upErr;
-        const { data: pub } = supabase.storage.from("landing-hero").getPublicUrl(path);
-        const { error: insErr } = await supabase.from("landing_hero_images" as any).insert({
-          url: pub.publicUrl,
+      const { path, url } = await uploadBlob(blob);
+      if (cropTarget) {
+        const { error } = await supabase
+          .from("landing_hero_images" as any)
+          .update({ url, storage_path: path } as any)
+          .eq("id", cropTarget.id);
+        if (error) throw error;
+        if (cropTarget.storage_path) {
+          await supabase.storage.from("landing-hero").remove([cropTarget.storage_path]);
+        }
+        toast({ title: "Billede beskåret" });
+      } else {
+        const name = typeof cropSource === "object" && cropSource
+          ? (cropSource as File).name.replace(/\.[^.]+$/, "")
+          : "";
+        const { error } = await supabase.from("landing_hero_images" as any).insert({
+          url,
           storage_path: path,
-          alt: file.name.replace(/\.[^.]+$/, ""),
+          alt: name,
           sort_order: images.length,
           active: true,
         } as any);
-        if (insErr) throw insErr;
+        if (error) throw error;
+        toast({ title: "Billede uploadet" });
       }
-      toast({ title: "Billeder uploadet" });
+      setCropSource(null);
+      setCropTarget(null);
       await load();
     } catch (err: any) {
       toast({ title: "Upload fejlede", description: err.message, variant: "destructive" });
@@ -108,6 +113,7 @@ export default function AdminHeroImages() {
       setUploading(false);
     }
   };
+
 
   const patch = async (id: string, values: Partial<HeroImage>) => {
     setImages((list) => list.map((i) => (i.id === id ? { ...i, ...values } : i)));
@@ -149,12 +155,12 @@ export default function AdminHeroImages() {
         <h1 className="text-2xl font-black tracking-tight text-foreground">Forsidebilleder</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Op til {MAX_IMAGES} billeder i hero-feltet på forsiden. Vises som slideshow når der er flere end ét.
-          Billeder konverteres automatisk til WebP og skaleres til maks. {MAX_EDGE}px, så siden forbliver hurtig.
-          Brug gerne kvadratiske motiver (1:1).
+          Når du tilføjer et billede, kan du beskære og centrere motivet og vælge format (1:1, 4:3, 16:9).
+          Alt gemmes som WebP i maks. {CROP_OUTPUT_PX} px, så forsiden forbliver hurtig.
         </p>
 
         <div className="mt-5 flex items-center gap-3">
-          <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={onPick} />
+          <input ref={fileRef} type="file" accept="image/*" hidden onChange={onPick} />
           <Button onClick={() => fileRef.current?.click()} disabled={uploading || images.length >= MAX_IMAGES}>
             {uploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ImagePlus className="mr-2 h-4 w-4" />}
             Tilføj billede
@@ -186,6 +192,15 @@ export default function AdminHeroImages() {
                       Vist på forsiden
                     </label>
                     <div className="flex items-center gap-1">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8"
+                        title="Beskær og centrér"
+                        onClick={() => { setCropTarget(img); setCropSource(img.url); }}
+                      >
+                        <Crop className="h-4 w-4" />
+                      </Button>
                       <Button variant="outline" size="icon" className="h-8 w-8" disabled={i === 0} onClick={() => move(img.id, -1)}>
                         <ArrowUp className="h-4 w-4" />
                       </Button>
@@ -203,6 +218,13 @@ export default function AdminHeroImages() {
           </ul>
         )}
       </div>
+
+      <ImageCropDialog
+        open={!!cropSource}
+        source={cropSource}
+        onCancel={() => { setCropSource(null); setCropTarget(null); }}
+        onCropped={onCropped}
+      />
     </div>
   );
 }

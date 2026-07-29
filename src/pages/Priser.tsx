@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 
-const GOLD = "#F5C842";
+const GOLD = "#D4AF37";
 const sec = { maxWidth: 1000, margin: "0 auto", padding: "72px 32px" };
 
 // Per-athlete price ladder (DKK/athlete/month), 5% discount per tier.
@@ -64,7 +64,7 @@ export default function Priser() {
       <PageMeta title={t("pricingSeoTitle")} description={t("pricingSeoDesc")} canonical="https://sportstalent.dk/priser" />
 
       <section style={{ padding: "80px 32px", textAlign: "center", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
-        <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(245,200,66,0.1)", border: "0.5px solid rgba(245,200,66,0.28)", borderRadius: 20, padding: "4px 14px", fontSize: 11, color: GOLD, fontWeight: 700, letterSpacing: "0.08em", marginBottom: 24 }}>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(212,175,55,0.1)", border: "0.5px solid rgba(212,175,55,0.28)", borderRadius: 20, padding: "4px 14px", fontSize: 11, color: GOLD, fontWeight: 700, letterSpacing: "0.08em", marginBottom: 24 }}>
           💰 {t("pricingBadge")}
         </div>
         <h1 style={{ fontSize: "clamp(32px,5vw,54px)", fontWeight: 900, lineHeight: 1.07, letterSpacing: "-0.04em", margin: "0 0 20px" }}>
@@ -81,8 +81,8 @@ export default function Priser() {
             const active = athletes >= tier.min && athletes <= tier.max;
             return (
               <div key={tier.min} style={{
-                background: active ? "rgba(245,200,66,0.07)" : "rgba(255,255,255,0.03)",
-                border: `0.5px solid ${active ? "rgba(245,200,66,0.35)" : "rgba(255,255,255,0.07)"}`,
+                background: active ? "rgba(212,175,55,0.07)" : "rgba(255,255,255,0.03)",
+                border: `0.5px solid ${active ? "rgba(212,175,55,0.35)" : "rgba(255,255,255,0.07)"}`,
                 borderRadius: 14, padding: "20px 18px",
               }}>
                 <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: active ? GOLD : "rgba(255,255,255,0.5)", marginBottom: 8 }}>
@@ -100,7 +100,7 @@ export default function Priser() {
 
         <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", marginTop: 14, lineHeight: 1.6 }}>{t("pricingTierNote")}</div>
 
-        <div style={{ marginTop: 28, background: "rgba(245,200,66,0.06)", border: "0.5px solid rgba(245,200,66,0.28)", borderRadius: 14, padding: "26px 24px" }}>
+        <div style={{ marginTop: 28, background: "rgba(212,175,55,0.06)", border: "0.5px solid rgba(212,175,55,0.28)", borderRadius: 14, padding: "26px 24px" }}>
           <div style={{ fontSize: 15, fontWeight: 800, marginBottom: 16 }}>{t("pricingCalcTitle")}</div>
           <label style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", display: "block", marginBottom: 8 }}>
             {t("pricingCalcAthletes")}: <span style={{ color: GOLD, fontWeight: 800 }}>{athletes}</span>
@@ -125,7 +125,7 @@ export default function Priser() {
 
       {/* ── Let's talk ─────────────────────────────────────────── */}
       <div style={sec}>
-        <div style={{ background: "linear-gradient(135deg, rgba(245,200,66,0.07), rgba(255,255,255,0.02))", border: "0.5px solid rgba(245,200,66,0.22)", borderRadius: 16, padding: "32px 26px" }}>
+        <div style={{ background: "linear-gradient(135deg, rgba(212,175,55,0.07), rgba(255,255,255,0.02))", border: "0.5px solid rgba(212,175,55,0.22)", borderRadius: 16, padding: "32px 26px" }}>
           <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: GOLD }}>{t("pricingTalkEyebrow")}</span>
           <h2 style={{ fontSize: "clamp(22px,3.2vw,32px)", fontWeight: 900, letterSpacing: "-0.03em", margin: "10px 0 12px" }}>{t("pricingTalkTitle")}</h2>
           <p style={{ fontSize: 14, color: "rgba(255,255,255,0.55)", lineHeight: 1.7, maxWidth: 620, marginBottom: 20 }}>{t("pricingTalkBody")}</p>
@@ -169,7 +169,7 @@ export default function Priser() {
           </div>
 
           {sent ? (
-            <div style={{ background: "rgba(245,200,66,0.08)", border: "0.5px solid rgba(245,200,66,0.28)", borderRadius: 14, padding: "32px", textAlign: "center" }}>
+            <div style={{ background: "rgba(212,175,55,0.08)", border: "0.5px solid rgba(212,175,55,0.28)", borderRadius: 14, padding: "32px", textAlign: "center" }}>
               <div style={{ fontSize: 32, marginBottom: 12 }}>✅</div>
               <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>{t("pricingContactSuccess")}</div>
               <div style={{ fontSize: 14, color: "rgba(255,255,255,0.5)" }}>{t("pricingContactSuccessSub")}</div>

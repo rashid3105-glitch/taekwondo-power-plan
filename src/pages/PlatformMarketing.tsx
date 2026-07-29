@@ -2,7 +2,7 @@ import { LandingLayout } from "@/components/landing/LandingLayout";
 import { PageMeta } from "@/components/PageMeta";
 import { useLanguage } from "@/i18n/LanguageContext";
 
-const GOLD = "#F5C842";
+const GOLD = "#D4AF37";
 const sec = { maxWidth: 1000, margin: "0 auto", padding: "72px 32px" };
 const label = { fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: GOLD, display: "block", marginBottom: 10 };
 const h2 = { fontSize: "clamp(24px,4vw,38px)", fontWeight: 900, letterSpacing: "-0.03em", marginBottom: 14, lineHeight: 1.1 };
@@ -36,7 +36,7 @@ export default function PlatformMarketing() {
       <PageMeta title={`${t("navPlatform")} — Sportstalent`} description={t("pmSeoDesc")} canonical="https://sportstalent.dk/platform" />
 
       <section style={{ padding: "80px 32px", textAlign: "center", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
-        <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(245,200,66,0.1)", border: "0.5px solid rgba(245,200,66,0.28)", borderRadius: 20, padding: "4px 14px", fontSize: 11, color: GOLD, fontWeight: 700, letterSpacing: "0.08em", marginBottom: 24 }}>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(212,175,55,0.1)", border: "0.5px solid rgba(212,175,55,0.28)", borderRadius: 20, padding: "4px 14px", fontSize: 11, color: GOLD, fontWeight: 700, letterSpacing: "0.08em", marginBottom: 24 }}>
           🏅 {t("pmBadge")}
         </div>
         <h1 style={{ fontSize: "clamp(32px,5vw,54px)", fontWeight: 900, lineHeight: 1.07, letterSpacing: "-0.04em", margin: "0 0 20px", maxWidth: 700, marginLeft: "auto", marginRight: "auto" }}>
@@ -72,7 +72,7 @@ export default function PlatformMarketing() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 24 }}>
             {STEPS.map((s, i) => (
               <div key={i} style={{ position: "relative" }}>
-                <div style={{ fontSize: 36, fontWeight: 900, color: "rgba(245,200,66,0.15)", letterSpacing: "-0.04em", marginBottom: 8 }}>{s.num}</div>
+                <div style={{ fontSize: 36, fontWeight: 900, color: "rgba(212,175,55,0.15)", letterSpacing: "-0.04em", marginBottom: 8 }}>{s.num}</div>
                 <div style={{ width: 32, height: 2, background: GOLD, borderRadius: 1, marginBottom: 12 }} />
                 <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 8 }}>{s.title}</div>
                 <div style={{ fontSize: 13, color: "rgba(255,255,255,0.45)", lineHeight: 1.65 }}>{s.desc}</div>

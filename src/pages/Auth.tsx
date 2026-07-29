@@ -23,7 +23,7 @@ import {
 } from "@/lib/biometricAuth";
 import coachAthlete from "@/assets/coach-athlete.jpg";
 
-const GOLD = "#F5C842";
+const GOLD = "#D4AF37";
 const BG = "#0B0C14";
 
 export default function AuthPage() {
@@ -252,8 +252,8 @@ export default function AuthPage() {
                 width: "100%",
                 height: 46,
                 borderRadius: 10,
-                background: "rgba(245,200,66,0.1)",
-                border: "1px solid rgba(245,200,66,0.35)",
+                background: "rgba(212,175,55,0.1)",
+                border: "1px solid rgba(212,175,55,0.35)",
                 color: GOLD,
                 fontWeight: 700,
                 fontSize: 14,
@@ -289,8 +289,8 @@ export default function AuthPage() {
                 width: "100%",
                 height: 46,
                 borderRadius: 10,
-                background: "rgba(245,200,66,0.1)",
-                border: "1px solid rgba(245,200,66,0.35)",
+                background: "rgba(212,175,55,0.1)",
+                border: "1px solid rgba(212,175,55,0.35)",
                 color: GOLD,
                 fontWeight: 700,
                 fontSize: 14,
@@ -390,8 +390,8 @@ export default function AuthPage() {
             marginTop: 32,
             padding: "20px 20px 22px",
             borderRadius: 14,
-            background: "rgba(245,200,66,0.06)",
-            border: "1px solid rgba(245,200,66,0.28)",
+            background: "rgba(212,175,55,0.06)",
+            border: "1px solid rgba(212,175,55,0.28)",
             textAlign: "center",
           }}
         >

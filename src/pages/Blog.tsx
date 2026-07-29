@@ -5,7 +5,7 @@ import { PageMeta } from "@/components/PageMeta";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { listPublishedPosts, type BlogPost, type BlogLocale } from "@/lib/blogApi";
 
-const GOLD = "#F5C842";
+const GOLD = "#D4AF37";
 
 const COPY = {
   da: {
@@ -98,7 +98,7 @@ const Blog = () => {
                   cursor: "pointer",
                   transition: "border-color 0.2s, transform 0.2s",
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(245,200,66,0.4)"; }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(212,175,55,0.4)"; }}
                 onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; }}
               >
                 {p.cover_image_url && (

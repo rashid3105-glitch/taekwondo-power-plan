@@ -5,7 +5,7 @@ import { PageMeta } from "@/components/PageMeta";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 
-const GOLD = "#F5C842";
+const GOLD = "#D4AF37";
 
 export default function BlogCommentConfirm() {
   const [params] = useSearchParams();

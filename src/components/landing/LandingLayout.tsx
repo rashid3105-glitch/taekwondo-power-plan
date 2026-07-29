@@ -5,8 +5,9 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { BrandLogo } from "@/components/BrandLogo";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { isNativeApp } from "@/lib/platform";
+import { ScrollReveal } from "@/components/Reveal";
 
-const GOLD = "#F5C842";
+const GOLD = "#D4AF37";
 
 
 const useWidth = () => {
@@ -81,7 +82,7 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
               style={{
                 padding: isMobile ? "6px 12px" : "8px 16px",
                 borderRadius: 8,
-                border: isMobile ? `0.5px solid rgba(245,200,66,0.5)` : "none",
+                border: isMobile ? `0.5px solid rgba(212,175,55,0.5)` : "none",
                 background: isMobile ? "transparent" : GOLD,
                 color: isMobile ? GOLD : "#0B0C14",
                 fontSize: isMobile ? 11 : 13,
@@ -104,7 +105,7 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
                   alignItems: "center",
                   justifyContent: "center",
                   background: "transparent",
-                  border: "0.5px solid rgba(245,200,66,0.4)",
+                  border: "0.5px solid rgba(212,175,55,0.4)",
                   borderRadius: 8,
                   color: GOLD,
                   cursor: "pointer",
@@ -144,7 +145,7 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
                     padding: "6px 12px",
                     borderRadius: 6,
                     border: active ? `1px solid ${GOLD}` : "1px solid transparent",
-                    background: active ? "rgba(245,200,66,0.08)" : "transparent",
+                    background: active ? "rgba(212,175,55,0.08)" : "transparent",
                     transition: "all 0.15s ease",
                   }}
                 >
@@ -199,7 +200,7 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
                     alignItems: "center",
                     justifyContent: "center",
                     gap: 8,
-                    background: active ? "rgba(245,200,66,0.1)" : "rgba(255,255,255,0.03)",
+                    background: active ? "rgba(212,175,55,0.1)" : "rgba(255,255,255,0.03)",
                     border: active ? `1px solid ${GOLD}` : "1px solid rgba(255,255,255,0.08)",
                     color: active ? GOLD : "rgba(255,255,255,0.85)",
                     borderRadius: 12,
@@ -240,7 +241,9 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
         </div>
       )}
 
-      <main>{children}</main>
+      <main>
+        <ScrollReveal>{children}</ScrollReveal>
+      </main>
       <footer style={{ borderTop: "0.5px solid rgba(255,255,255,0.07)" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto", padding: "28px 32px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
           <div>

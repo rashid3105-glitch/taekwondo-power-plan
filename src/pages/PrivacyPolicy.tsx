@@ -4,7 +4,7 @@ import { LandingLayout } from "@/components/landing/LandingLayout";
 import { PageMeta } from "@/components/PageMeta";
 import { useNavigate } from "react-router-dom";
 
-const GOLD = "#F5C842";
+const GOLD = "#D4AF37";
 
 export default function PrivacyPolicy() {
   const { t } = useLanguage();

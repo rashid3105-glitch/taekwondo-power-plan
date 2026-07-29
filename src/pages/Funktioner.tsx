@@ -4,7 +4,7 @@ import { LandingLayout } from "@/components/landing/LandingLayout";
 import { PageMeta } from "@/components/PageMeta";
 import { useLanguage } from "@/i18n/LanguageContext";
 
-const GOLD = "#F5C842";
+const GOLD = "#D4AF37";
 
 const MODULE_DEFS = [
   { icon: "📋", tag: "funcTagCoach", n: 1 },
@@ -39,7 +39,7 @@ export default function Funktioner() {
       <PageMeta title={`${t("navFeatures")} — Sportstalent`} description={t("funcSeoDesc")} canonical="https://sportstalent.dk/funktioner" />
 
       <section style={{ padding: "56px 20px 40px", textAlign: "center", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
-        <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(245,200,66,0.1)", border: "0.5px solid rgba(245,200,66,0.28)", borderRadius: 20, padding: "4px 14px", fontSize: 11, color: GOLD, fontWeight: 700, letterSpacing: "0.08em", marginBottom: 20 }}>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(212,175,55,0.1)", border: "0.5px solid rgba(212,175,55,0.28)", borderRadius: 20, padding: "4px 14px", fontSize: 11, color: GOLD, fontWeight: 700, letterSpacing: "0.08em", marginBottom: 20 }}>
           ⚡ {t("funcBadge")}
         </div>
         <h1 style={{ fontSize: "clamp(30px,5vw,54px)", fontWeight: 900, lineHeight: 1.07, letterSpacing: "-0.04em", margin: "0 0 16px", maxWidth: 600, marginLeft: "auto", marginRight: "auto" }}>
@@ -58,7 +58,7 @@ export default function Funktioner() {
               key={i}
               style={{
                 background: "rgba(255,255,255,0.03)",
-                border: `0.5px solid ${open ? "rgba(245,200,66,0.4)" : "rgba(255,255,255,0.08)"}`,
+                border: `0.5px solid ${open ? "rgba(212,175,55,0.4)" : "rgba(255,255,255,0.08)"}`,
                 borderRadius: 14,
                 overflow: "hidden",
                 transition: "border-color 0.2s",

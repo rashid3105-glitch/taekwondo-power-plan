@@ -8,7 +8,7 @@ export function BrandLogo({
   height = 44,
   withText = true,
   textColor = "#fff",
-  accentColor = "#F5C842",
+  accentColor = "#D4AF37",
   onClick,
   className,
 }: {

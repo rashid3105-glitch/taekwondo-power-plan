@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-const GOLD = "#F5C842";
+const GOLD = "#D4AF37";
 
 interface Comment {
   id: string;
