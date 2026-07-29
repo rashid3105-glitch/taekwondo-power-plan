@@ -35,6 +35,7 @@ import {
   FileText,
   CreditCard,
   Dumbbell,
+  Image as ImageIcon,
 } from "lucide-react";
 import { BracketIcon } from "@/components/icons/BracketIcon";
 import { useLanguage } from "@/i18n/LanguageContext";
