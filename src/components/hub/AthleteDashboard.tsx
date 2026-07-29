@@ -497,6 +497,26 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
                       ))}
                     </div>
                   )}
+                  {weekTechniques.length > 0 && (
+                    <div className="pt-2 mt-2 border-t border-white/10">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-white/50 mb-1.5">
+                        {t("seasonTeamFocus" as any)?.toString().split("(")[0].trim()}
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {weekTechniques.map((name, i) => (
+                          <span
+                            key={i}
+                            className="text-[10px] font-medium px-2 py-0.5 rounded-full border border-[#f0d78c]/30 bg-[#f0d78c]/10 text-[#f0d78c]"
+                          >
+                            {name}
+                          </span>
+                        ))}
+                      </div>
+                      {weekCoachNote && (
+                        <p className="text-[11px] text-white/60 italic mt-1.5 leading-snug">"{weekCoachNote}"</p>
+                      )}
+                    </div>
+                  )}
                 </div>
               )
             ) : (
