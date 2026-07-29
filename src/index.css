@@ -534,15 +534,34 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
 /* Scroll reveal — sections glide up and fade in once, bfrst-style */
 .reveal {
   opacity: 0;
-  transform: translateY(22px);
-  transition: opacity 640ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 640ms cubic-bezier(0.22, 1, 0.36, 1);
+  transform: translateY(34px);
+  transition: opacity 900ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 900ms cubic-bezier(0.16, 1, 0.3, 1);
   will-change: opacity, transform;
 }
 .reveal-in {
   opacity: 1;
   transform: none;
 }
+
+/* More breathing room between the marketing sections (bfrst-like air).
+   Only applies where the section doesn't set its own inline padding. */
+.landing-main > div > section {
+  padding-block: 56px;
+}
+@media (min-width: 768px) {
+  .landing-main > div > section {
+    padding-block: 88px;
+  }
+}
+.landing-main h1,
+.landing-main h2 {
+  margin-bottom: 0.5em;
+}
+.landing-main p {
+  line-height: 1.75;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .reveal {
     opacity: 1;
@@ -550,3 +569,4 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
     transition: none;
   }
 }
+
