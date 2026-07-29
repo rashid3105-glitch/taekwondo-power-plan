@@ -119,9 +119,6 @@ export function ImageCropDialog({ open, source, onCancel, onCropped }: Props) {
     touchAction: "none",
   };
 
-  const base = img ? Math.max(1, 1) : 1;
-  void base;
-
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onCancel()}>
       <DialogContent className="max-w-lg">
