@@ -46,15 +46,18 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
 
   // Body scroll lock + Escape to close
   useEffect(() => {
-    if (!menuOpen) return;
-    const prev = document.body.style.overflow;
+    if (!menuOpen) {
+      // Safety net: never leave the page locked (e.g. unmount mid-close).
+      if (document.body.style.overflow === "hidden") document.body.style.overflow = "";
+      return;
+    }
     document.body.style.overflow = "hidden";
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setMenuOpen(false);
     };
     window.addEventListener("keydown", onKey);
     return () => {
-      document.body.style.overflow = prev;
+      document.body.style.overflow = "";
       window.removeEventListener("keydown", onKey);
     };
   }, [menuOpen]);
