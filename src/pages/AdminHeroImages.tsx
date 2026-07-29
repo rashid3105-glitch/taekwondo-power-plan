@@ -218,6 +218,13 @@ export default function AdminHeroImages() {
           </ul>
         )}
       </div>
+
+      <ImageCropDialog
+        open={!!cropSource}
+        source={cropSource}
+        onCancel={() => { setCropSource(null); setCropTarget(null); }}
+        onCropped={onCropped}
+      />
     </div>
   );
 }
