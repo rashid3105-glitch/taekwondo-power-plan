@@ -84,6 +84,7 @@ import AdminBlog from "./pages/AdminBlog";
 import AdminBlogEditor from "./pages/AdminBlogEditor";
 import AdminDrills from "./pages/AdminDrills";
 import AdminHeroImages from "./pages/AdminHeroImages";
+import AdminAnnouncements from "./pages/AdminAnnouncements";
 
 import Contact from "./pages/Contact";
 import Kostplan from "./pages/Kostplan";
