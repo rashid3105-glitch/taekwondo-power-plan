@@ -422,6 +422,8 @@ export function GlobalAppMenu() {
                       { to: "/admin/clubs", icon: Building, label: t("adminClubs") || "Clubs", color: "text-primary" },
                       { to: "/admin/payments", icon: CreditCard, label: t("adminPayments") || "Payments", color: "text-emerald-500" },
                       { to: "/admin/modules", icon: LayoutGrid, label: t("adminModules") || "Modules", color: "text-tab-nutrition" },
+                      { to: "/admin/hero", icon: ImageIcon, label: "Forsidebilleder", color: "text-tab-plan" },
+
                     ].map((it) => (
                       <button
                         key={it.to}
