@@ -192,6 +192,15 @@ export default function AdminHeroImages() {
                       Vist på forsiden
                     </label>
                     <div className="flex items-center gap-1">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8"
+                        title="Beskær og centrér"
+                        onClick={() => { setCropTarget(img); setCropSource(img.url); }}
+                      >
+                        <Crop className="h-4 w-4" />
+                      </Button>
                       <Button variant="outline" size="icon" className="h-8 w-8" disabled={i === 0} onClick={() => move(img.id, -1)}>
                         <ArrowUp className="h-4 w-4" />
                       </Button>
