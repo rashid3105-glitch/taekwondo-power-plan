@@ -91,6 +91,9 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [pushEnabled, setPushEnabled] = useState<boolean>(true);
   const [pushSaving, setPushSaving] = useState(false);
+  const [mfaEnabled, setMfaEnabled] = useState(false);
+  const [mfaLoading, setMfaLoading] = useState(true);
+  const [mfaDialogOpen, setMfaDialogOpen] = useState(false);
   const avatarDisplayUrl = useAvatarUrl(data?.avatar_url);
   const isNative = isNativeApp();
 
