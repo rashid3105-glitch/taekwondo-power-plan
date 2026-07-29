@@ -84,6 +84,7 @@ import AdminBlog from "./pages/AdminBlog";
 import AdminBlogEditor from "./pages/AdminBlogEditor";
 import AdminDrills from "./pages/AdminDrills";
 import AdminHeroImages from "./pages/AdminHeroImages";
+import AdminAnnouncements from "./pages/AdminAnnouncements";
 
 import Contact from "./pages/Contact";
 import Kostplan from "./pages/Kostplan";
@@ -223,6 +224,7 @@ const AnimatedRoutes = () => {
         <Route path="/admin/clubs" element={<Page><AdminClubs /></Page>} />
         <Route path="/admin/drills" element={<Page><AdminDrills /></Page>} />
         <Route path="/admin/hero" element={<Page><AdminHeroImages /></Page>} />
+        <Route path="/admin/announcements" element={<Page><AdminAnnouncements /></Page>} />
 
         <Route path="/coach" element={<Page><CoachDashboard /></Page>} />
         <Route path="/coach/consents" element={<Page><CoachConsents /></Page>} />

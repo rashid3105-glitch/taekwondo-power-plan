@@ -14,6 +14,74 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_announcement_recipients: {
+        Row: {
+          announcement_id: string
+          created_at: string
+          id: string
+          is_read: boolean
+          recipient_id: string
+        }
+        Insert: {
+          announcement_id: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          recipient_id: string
+        }
+        Update: {
+          announcement_id?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          recipient_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_announcement_recipients_announcement_id_fkey"
+            columns: ["announcement_id"]
+            isOneToOne: false
+            referencedRelation: "admin_announcements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      admin_announcements: {
+        Row: {
+          audience: string
+          body: string
+          club_ids: string[]
+          created_at: string
+          id: string
+          link_url: string | null
+          recipient_count: number
+          sent_by: string
+          title: string
+        }
+        Insert: {
+          audience?: string
+          body: string
+          club_ids?: string[]
+          created_at?: string
+          id?: string
+          link_url?: string | null
+          recipient_count?: number
+          sent_by: string
+          title: string
+        }
+        Update: {
+          audience?: string
+          body?: string
+          club_ids?: string[]
+          created_at?: string
+          id?: string
+          link_url?: string | null
+          recipient_count?: number
+          sent_by?: string
+          title?: string
+        }
+        Relationships: []
+      }
       ai_assistant_logs: {
         Row: {
           answer: string

@@ -22,6 +22,7 @@ import {
 } from "@/lib/seasonCalendar";
 import { findPlanDayForToday, normalizeDaySessions, isRestDay } from "@/lib/planSessionUtils";
 import ComplianceAlertsCard from "@/components/ComplianceAlertsCard";
+import AnnouncementsCard from "@/components/AnnouncementsCard";
 
 interface TodaySession {
   type: string;
@@ -350,6 +351,8 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
           {activeRole === "coach" ? t("todayTab") : t("hubCheckIn")}
         </button>
       </header>
+
+      <AnnouncementsCard />
 
       <ComplianceAlertsCard />
 
