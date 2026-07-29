@@ -76,7 +76,7 @@ Deno.serve(async (req) => {
 
     const { data: athletes, error: profileErr } = await admin
       .from("profiles")
-      .select("user_id, display_name, club_id, gal_license_expires_at, has_myfightbook, myfightbook_expires_at, antidoping_course_date")
+      .select("user_id, display_name, club_id, country, gal_license_expires_at, has_myfightbook, myfightbook_expires_at, antidoping_course_date")
       .eq("is_approved", true)
       .eq("is_parent", false)
       .not("club_id", "is", null);
@@ -120,6 +120,11 @@ Deno.serve(async (req) => {
           });
         }
       }
+
+      // Anti-doping course is a Danish federation requirement only.
+      const country = ((p as any).country ?? "").trim().toLowerCase();
+      const isDanish = country === "denmark" || country === "danmark" || country === "dk";
+      if (!isDanish) continue;
 
       // Anti-doping course: missing or older than 1 year
       const anti = (p as any).antidoping_course_date as string | null;

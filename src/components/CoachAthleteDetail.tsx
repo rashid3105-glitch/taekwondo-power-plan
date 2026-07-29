@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { isDanishCountry } from "@/lib/danishFederation";
 import { PhysicalTesting } from "@/components/PhysicalTesting";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -459,16 +460,18 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
                   )}
                 </div>
               )}
-              <div className="space-y-1 pt-2 border-t border-border/60">
-                <Label className="text-xs">{t("antidopingCourseDate") || "Antidoping-kursus — dato for gennemførsel"}</Label>
-                <Input
-                  type="date"
-                  value={antidopingDate}
-                  onChange={(e) => setAntidopingDate(e.target.value)}
-                  disabled={!editing}
-                  className="h-9"
-                />
-              </div>
+              {isDanishCountry(country) && (
+                <div className="space-y-1 pt-2 border-t border-border/60">
+                  <Label className="text-xs">{t("antidopingCourseDate") || "Antidoping-kursus — dato for gennemførsel"}</Label>
+                  <Input
+                    type="date"
+                    value={antidopingDate}
+                    onChange={(e) => setAntidopingDate(e.target.value)}
+                    disabled={!editing}
+                    className="h-9"
+                  />
+                </div>
+              )}
             </div>
             <div className="space-y-1">
               <Label className="text-xs">{t("discipline")}</Label>

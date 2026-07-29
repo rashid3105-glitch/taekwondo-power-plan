@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { isDanishCountry } from "@/lib/danishFederation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -45,6 +46,7 @@ interface ProfileData {
   goals: string[] | null;
   license_values: Record<string, LicenseValue> | null;
   antidoping_course_date: string | null;
+  country: string | null;
   email: string | null;
 }
 
@@ -107,7 +109,7 @@ export default function Profile() {
       }
       const { data: prof } = await supabase
         .from("profiles")
-        .select("display_name, avatar_url, discipline, club_id, coach_club_name, roles, birth_date, belt_level, weight_kg, goals, license_values, antidoping_course_date, push_enabled, clubs:club_id(name)")
+        .select("display_name, avatar_url, discipline, club_id, coach_club_name, roles, birth_date, belt_level, weight_kg, goals, license_values, antidoping_course_date, country, push_enabled, clubs:club_id(name)")
         .eq("user_id", user.id)
         .maybeSingle();
       setPushEnabled((prof as any)?.push_enabled !== false);
@@ -149,6 +151,7 @@ export default function Profile() {
         goals: p?.goals ?? null,
         license_values: p?.license_values ?? {},
         antidoping_course_date: p?.antidoping_course_date ?? null,
+        country: (p as any)?.country ?? null,
         email: user.email ?? null,
       });
       setHasCoach(!!fieldsOwner);
@@ -471,6 +474,8 @@ export default function Profile() {
               );
             })
           )}
+          {isDanishCountry(data?.country) && (
+          <>
           <Separator className="bg-white/10" />
           <div className="flex items-start justify-between gap-3 py-3">
             <div className="min-w-0 flex-1">
@@ -491,6 +496,8 @@ export default function Profile() {
               </span>
             )}
           </div>
+          </>
+          )}
           <Separator className="bg-white/10" />
           <p className="text-xs text-white pt-3">
             {t("profileLicensesFooter" as any)}
