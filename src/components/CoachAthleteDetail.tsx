@@ -284,7 +284,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 [&_label]:text-foreground [&_.text-muted-foreground]:text-foreground/85">
       <div className="flex items-center justify-between">
         <h3 className="font-bold text-foreground">{athlete.display_name}</h3>
         <SendReminderDialog athleteId={athlete.user_id} athleteName={athlete.display_name} />
@@ -295,22 +295,23 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
       <Tabs defaultValue="profile" className="w-full">
         <TabsList className="w-full grid grid-cols-4 h-auto p-1">
           <TabsTrigger value="profile" className="flex flex-col gap-0.5 py-2 px-1 text-[11px] sm:text-xs sm:flex-row sm:gap-1.5">
-            <UserCog className="h-3.5 w-3.5" />
+            <UserCog className="h-3.5 w-3.5 text-tab-plan" />
             <span className="leading-tight">{t("tabProfilePlan")}</span>
           </TabsTrigger>
           <TabsTrigger value="mental" className="flex flex-col gap-0.5 py-2 px-1 text-[11px] sm:text-xs sm:flex-row sm:gap-1.5">
-            <Brain className="h-3.5 w-3.5" />
+            <Brain className="h-3.5 w-3.5 text-tab-mental" />
             <span className="leading-tight">{t("tabMental")}</span>
           </TabsTrigger>
           <TabsTrigger value="performance" className="flex flex-col gap-0.5 py-2 px-1 text-[11px] sm:text-xs sm:flex-row sm:gap-1.5">
-            <ActivityIcon className="h-3.5 w-3.5" />
+            <ActivityIcon className="h-3.5 w-3.5 text-tab-progress" />
             <span className="leading-tight">{t("tabPerformance")}</span>
           </TabsTrigger>
           <TabsTrigger value="activity" className="flex flex-col gap-0.5 py-2 px-1 text-[11px] sm:text-xs sm:flex-row sm:gap-1.5">
-            <ListChecks className="h-3.5 w-3.5" />
+            <ListChecks className="h-3.5 w-3.5 text-speed" />
             <span className="leading-tight">{t("tabActivity")}</span>
           </TabsTrigger>
         </TabsList>
+
 
         <TabsContent value="profile" className="space-y-4 mt-3">
           {/* Lock / Edit toggle */}
