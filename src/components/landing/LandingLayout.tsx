@@ -6,6 +6,8 @@ import { BrandLogo } from "@/components/BrandLogo";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { isNativeApp } from "@/lib/platform";
 import { ScrollReveal } from "@/components/Reveal";
+import { useSmoothScroll } from "@/hooks/useSmoothScroll";
+
 
 const GOLD = "#D4AF37";
 
