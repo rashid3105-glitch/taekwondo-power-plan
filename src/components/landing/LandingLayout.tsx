@@ -30,6 +30,10 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
   const isMobile = w < 720;
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // bfrst-style inertia scrolling (paused while the mobile menu is open)
+  useSmoothScroll(!isNativeApp() && !menuOpen);
+
+
   const NAV_LINKS = [
     { label: t("navHome"), href: "/", icon: Home },
     { label: t("navPlatform"), href: "/platform", icon: LayoutGrid },
