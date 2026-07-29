@@ -9321,7 +9321,7 @@ const translations = {
     installBenefit1: "Öppnas i fullskärm utan webbläsarrad",
     installBenefit2: "Egen ikon på hemskärmen",
     installBenefit3: "Snabbare laddning och enkel åtkomst",
-    installLink: "Installera som app",
+    installLink: "Installera som Web App",
     offlineBanner: "Du är offline — vissa funktioner kanske inte är tillgängliga",
 
     // Readiness check
