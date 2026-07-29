@@ -1316,6 +1316,45 @@ export type Database = {
           },
         ]
       }
+      compliance_alerts: {
+        Row: {
+          alert_type: string
+          athlete_id: string
+          club_id: string | null
+          created_at: string
+          due_date: string | null
+          id: string
+          is_read: boolean
+          period_key: string
+          recipient_id: string
+          severity: string
+        }
+        Insert: {
+          alert_type: string
+          athlete_id: string
+          club_id?: string | null
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          is_read?: boolean
+          period_key: string
+          recipient_id: string
+          severity?: string
+        }
+        Update: {
+          alert_type?: string
+          athlete_id?: string
+          club_id?: string | null
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          is_read?: boolean
+          period_key?: string
+          recipient_id?: string
+          severity?: string
+        }
+        Relationships: []
+      }
       consent_records: {
         Row: {
           athlete_id: string
