@@ -424,6 +424,7 @@ export function GlobalAppMenu() {
                       { to: "/admin/payments", icon: CreditCard, label: t("adminPayments") || "Payments", color: "text-emerald-500" },
                       { to: "/admin/modules", icon: LayoutGrid, label: t("adminModules") || "Modules", color: "text-tab-nutrition" },
                       { to: "/admin/hero", icon: ImageIcon, label: "Forsidebilleder", color: "text-tab-plan" },
+                      { to: "/admin/announcements", icon: Megaphone, label: "Besked til brugere", color: "text-amber-500" },
 
                     ].map((it) => (
                       <button
