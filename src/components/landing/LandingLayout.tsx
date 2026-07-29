@@ -6,6 +6,8 @@ import { BrandLogo } from "@/components/BrandLogo";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { isNativeApp } from "@/lib/platform";
 import { ScrollReveal } from "@/components/Reveal";
+import { useSmoothScroll } from "@/hooks/useSmoothScroll";
+
 
 const GOLD = "#D4AF37";
 
@@ -27,6 +29,10 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
   const w = useWidth();
   const isMobile = w < 720;
   const [menuOpen, setMenuOpen] = useState(false);
+
+  // bfrst-style inertia scrolling (paused while the mobile menu is open)
+  useSmoothScroll(!isNativeApp() && !menuOpen);
+
 
   const NAV_LINKS = [
     { label: t("navHome"), href: "/", icon: Home },
@@ -244,9 +250,10 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
         </div>
       )}
 
-      <main>
+      <main className="landing-main">
         <ScrollReveal>{children}</ScrollReveal>
       </main>
+
       <footer style={{ borderTop: "0.5px solid rgba(255,255,255,0.07)" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto", padding: "28px 32px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
           <div>
