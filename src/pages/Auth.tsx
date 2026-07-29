@@ -21,6 +21,7 @@ import {
   saveBiometricCredentials,
   getBiometryLabel,
 } from "@/lib/biometricAuth";
+import MfaChallengeDialog from "@/components/MfaChallengeDialog";
 import coachAthlete from "@/assets/coach-athlete.jpg";
 
 const GOLD = "#D4AF37";
@@ -36,6 +37,8 @@ export default function AuthPage() {
   const [bioHasCreds, setBioHasCreds] = useState(false);
   const [bioLabel, setBioLabel] = useState("Face ID");
   const [bioLoading, setBioLoading] = useState(false);
+  const [mfaChallengeOpen, setMfaChallengeOpen] = useState(false);
+  const [mfaFactorId, setMfaFactorId] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
@@ -149,24 +152,44 @@ export default function AuthPage() {
     }
   };
 
+  const completeLogin = async () => {
+    await applyPendingInviteAndPush();
+    // Offer to save credentials for biometric login on native
+    if (bioAvailable && !bioHasCreds) {
+      try {
+        const ok = window.confirm(`Vil du aktivere ${bioLabel} til hurtigt login næste gang?`);
+        if (ok) {
+          await saveBiometricCredentials(email, password);
+          setBioHasCreds(true);
+        }
+      } catch { /* ignore */ }
+    }
+    navigate(redirectTo || "/dashboard");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      await applyPendingInviteAndPush();
-      // Offer to save credentials for biometric login on native
-      if (bioAvailable && !bioHasCreds) {
-        try {
-          const ok = window.confirm(`Vil du aktivere ${bioLabel} til hurtigt login næste gang?`);
-          if (ok) {
-            await saveBiometricCredentials(email, password);
-            setBioHasCreds(true);
-          }
-        } catch { /* ignore */ }
+
+      // Check if MFA is required
+      try {
+        const { data, error: mfaErr } = await supabase.auth.mfa.listFactors();
+        if (mfaErr) throw mfaErr;
+        const verified = (data?.all || []).find((f: any) => f.status === "verified");
+        if (verified) {
+          setMfaFactorId(verified.id);
+          setMfaChallengeOpen(true);
+          return;
+        }
+      } catch (mfaErr: any) {
+        console.error("mfa check failed", mfaErr);
+        // Continue login even if MFA check fails; backend will enforce if configured.
       }
-      navigate(redirectTo || "/dashboard");
+
+      await completeLogin();
     } catch (err: any) {
       const msg = String(err?.message ?? "");
       const isPreviewProxyFailure =
@@ -438,6 +461,23 @@ export default function AuthPage() {
             style={{ width: "100%", display: "block" }}
           />
         </div>
+
+        {mfaFactorId && (
+          <MfaChallengeDialog
+            open={mfaChallengeOpen}
+            factorId={mfaFactorId}
+            onVerified={async () => {
+              setMfaChallengeOpen(false);
+              setMfaFactorId(null);
+              await completeLogin();
+            }}
+            onCancel={() => {
+              setMfaChallengeOpen(false);
+              setMfaFactorId(null);
+              supabase.auth.signOut();
+            }}
+          />
+        )}
       </div>
     </div>
   );

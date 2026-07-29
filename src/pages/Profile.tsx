@@ -10,7 +10,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { LogOut, Pencil, Download, KeyRound, Trash2, ChevronLeft, Apple, Smartphone, ShieldOff, Bell } from "lucide-react";
+import { LogOut, Pencil, Download, KeyRound, Trash2, ChevronLeft, Apple, Smartphone, ShieldOff, Bell, Shield } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { PageMeta } from "@/components/PageMeta";
 import { AppFooter } from "@/components/AppFooter";
@@ -19,6 +19,7 @@ import { useAvatarUrl } from "@/hooks/useAvatarUrl";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { isNativeApp } from "@/lib/platform";
 import { registerPushToken } from "@/lib/nativePush";
+import MfaSetupDialog from "@/components/MfaSetupDialog";
 
 interface LicenseField {
   id: string;
@@ -90,6 +91,9 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [pushEnabled, setPushEnabled] = useState<boolean>(true);
   const [pushSaving, setPushSaving] = useState(false);
+  const [mfaEnabled, setMfaEnabled] = useState(false);
+  const [mfaLoading, setMfaLoading] = useState(true);
+  const [mfaDialogOpen, setMfaDialogOpen] = useState(false);
   const avatarDisplayUrl = useAvatarUrl(data?.avatar_url);
   const isNative = isNativeApp();
 
@@ -154,6 +158,23 @@ export default function Profile() {
     })();
     return () => { mounted = false; };
   }, [navigate]);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const { data, error } = await supabase.auth.mfa.listFactors();
+        if (error) throw error;
+        const verified = (data?.all || []).some((f: any) => f.status === "verified");
+        if (mounted) setMfaEnabled(verified);
+      } catch (e) {
+        console.error("mfa list failed", e);
+      } finally {
+        if (mounted) setMfaLoading(false);
+      }
+    })();
+    return () => { mounted = false; };
+  }, [mfaDialogOpen]);
 
   const handleLogout = async () => {
     try {
@@ -529,14 +550,21 @@ export default function Profile() {
                   onCheckedChange={handleTogglePush}
                 />
               </div>
-            </>
-          )}
-          <Separator className="bg-white/10" />
-          <ActionRow
-            icon={<KeyRound className="h-4 w-4" />}
-            label={t("profileChangePassword" as any)}
-            onClick={() => navigate("/change-password")}
-          />
+          </>
+        )}
+        <Separator className="bg-white/10" />
+        <ActionRow
+          icon={<Shield className="h-4 w-4" />}
+          label={t("mfaTitle" as any)}
+          sub={mfaLoading ? "…" : mfaEnabled ? t("mfaStatusEnabled" as any) : t("mfaStatusDisabled" as any)}
+          onClick={() => setMfaDialogOpen(true)}
+        />
+        <Separator className="bg-white/10" />
+        <ActionRow
+          icon={<KeyRound className="h-4 w-4" />}
+          label={t("profileChangePassword" as any)}
+          onClick={() => navigate("/change-password")}
+        />
           <Separator className="bg-white/10" />
           <ActionRow
             icon={<Download className="h-4 w-4" />}
@@ -571,6 +599,14 @@ export default function Profile() {
         </Button>
       </div>
       <AppFooter />
+
+      <MfaSetupDialog
+        open={mfaDialogOpen}
+        onOpenChange={setMfaDialogOpen}
+        onChanged={() => {
+          setMfaDialogOpen(false);
+        }}
+      />
 
       <AlertDialog open={withdrawOpen} onOpenChange={(o) => !withdrawing && setWithdrawOpen(o)}>
         <AlertDialogContent>
