@@ -516,3 +516,17 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover,
 input[type="time"]::-webkit-calendar-picker-indicator:hover {
   opacity: 0.8;
 }
+
+/* About page founder section: stack image above text on mobile */
+.founder-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 52px;
+  align-items: start;
+}
+@media (max-width: 768px) {
+  .founder-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
