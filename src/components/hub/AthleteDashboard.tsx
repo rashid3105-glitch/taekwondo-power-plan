@@ -178,6 +178,29 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
           .eq("season_plan_id", clubSeason.plan.id)
           .eq("athlete_id", user.id);
         if (mounted) setSeasonOverrides((ovs || []) as any as AthleteSeasonOverride[]);
+
+        // Team technique focus for the current season week
+        const todayIso = new Date().toISOString().slice(0, 10);
+        const wk = seasonWeekNumber(clubSeason.plan.start_date, todayIso);
+        if (wk && wk > 0) {
+          const { data: wf } = await (supabase.from as any)("club_week_technique_focus")
+            .select("technique_ids, coach_note")
+            .eq("season_plan_id", clubSeason.plan.id)
+            .eq("season_week", wk)
+            .maybeSingle();
+          const techIds: string[] = (wf?.technique_ids ?? []) as string[];
+          let names: string[] = [];
+          if (techIds.length > 0) {
+            const { data: techs } = await (supabase.from as any)("club_techniques")
+              .select("id, name")
+              .in("id", techIds);
+            names = ((techs ?? []) as any[]).map((x) => x.name as string);
+          }
+          if (mounted) {
+            setWeekTechniques(names);
+            setWeekCoachNote((wf?.coach_note as string | null)?.trim() || null);
+          }
+        }
       }
       const { data: allComps } = await supabase
         .from("competitions")
