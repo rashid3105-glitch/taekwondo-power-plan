@@ -155,12 +155,12 @@ export default function AdminHeroImages() {
         <h1 className="text-2xl font-black tracking-tight text-foreground">Forsidebilleder</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Op til {MAX_IMAGES} billeder i hero-feltet på forsiden. Vises som slideshow når der er flere end ét.
-          Billeder konverteres automatisk til WebP og skaleres til maks. {MAX_EDGE}px, så siden forbliver hurtig.
-          Brug gerne kvadratiske motiver (1:1).
+          Når du tilføjer et billede, kan du beskære og centrere motivet og vælge format (1:1, 4:3, 16:9).
+          Alt gemmes som WebP i maks. {CROP_OUTPUT_PX} px, så forsiden forbliver hurtig.
         </p>
 
         <div className="mt-5 flex items-center gap-3">
-          <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={onPick} />
+          <input ref={fileRef} type="file" accept="image/*" hidden onChange={onPick} />
           <Button onClick={() => fileRef.current?.click()} disabled={uploading || images.length >= MAX_IMAGES}>
             {uploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ImagePlus className="mr-2 h-4 w-4" />}
             Tilføj billede
