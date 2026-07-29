@@ -21,6 +21,7 @@ import {
   saveBiometricCredentials,
   getBiometryLabel,
 } from "@/lib/biometricAuth";
+import MfaChallengeDialog from "@/components/MfaChallengeDialog";
 import coachAthlete from "@/assets/coach-athlete.jpg";
 
 const GOLD = "#D4AF37";
