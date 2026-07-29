@@ -94,6 +94,8 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
   const [isLoading, setIsLoading] = useState(true);
   const [seasonOverrides, setSeasonOverrides] = useState<AthleteSeasonOverride[]>([]);
   const [competitionDates, setCompetitionDates] = useState<Set<string>>(() => new Set());
+  const [weekTechniques, setWeekTechniques] = useState<string[]>([]);
+  const [weekCoachNote, setWeekCoachNote] = useState<string | null>(null);
 
   // Today's sessions derived from the club season plan (visibility already
   // filtered upstream in Dashboard — no extra access logic here).
