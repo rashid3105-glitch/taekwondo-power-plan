@@ -6,7 +6,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { getPostBySlug, getTranslations, sanitizeHtml, type BlogPost, type BlogLocale } from "@/lib/blogApi";
 import BlogComments from "@/components/blog/BlogComments";
 
-const GOLD = "#F5C842";
+const GOLD = "#D4AF37";
 
 const BlogPostPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -135,7 +135,7 @@ const BlogPostPage = () => {
           <div style={{ marginBottom: 28, fontSize: 13 }}>
             <button
               onClick={() => navigate(`/blog/${otherLangPost.slug}`)}
-              style={{ background: "rgba(245,200,66,0.1)", border: `0.5px solid ${GOLD}`, color: GOLD, borderRadius: 8, padding: "6px 14px", fontWeight: 700, cursor: "pointer", fontSize: 12 }}
+              style={{ background: "rgba(212,175,55,0.1)", border: `0.5px solid ${GOLD}`, color: GOLD, borderRadius: 8, padding: "6px 14px", fontWeight: 700, cursor: "pointer", fontSize: 12 }}
             >
               {otherLangPost.locale === "en" ? "Read in English" : "Læs på dansk"}
             </button>

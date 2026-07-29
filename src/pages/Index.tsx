@@ -25,7 +25,7 @@ const useWidth = () => {
   return w;
 };
 
-const GOLD = "#F5C842";
+const GOLD = "#D4AF37";
 const BG = "#0B0C14";
 const CARD = "#1F2638";
 const MONO = "ui-monospace, 'SF Mono', Menlo, Consolas, monospace";
@@ -108,14 +108,14 @@ const Index = () => {
                 fill={peak ? GOLD : "rgba(255,255,255,0.55)"} opacity={peak ? 1 : 0.6} />
             );
           })}
-          <line x1={0} y1={20} x2={280} y2={20} stroke="rgba(245,200,66,0.25)" strokeDasharray="2 3" />
+          <line x1={0} y1={20} x2={280} y2={20} stroke="rgba(212,175,55,0.25)" strokeDasharray="2 3" />
         </svg>
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9, color: "rgba(255,255,255,0.5)", marginTop: 6 }}>
           <span>MON 22</span><span>SUN 04</span>
         </div>
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 10, background: "rgba(245,200,66,0.06)", border: "0.5px solid rgba(245,200,66,0.2)", borderRadius: 10, padding: "10px 12px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, background: "rgba(212,175,55,0.06)", border: "0.5px solid rgba(212,175,55,0.2)", borderRadius: 10, padding: "10px 12px" }}>
         <span style={{ fontSize: 10, letterSpacing: "0.14em", color: GOLD, textTransform: "uppercase", fontWeight: 700 }}>{t("homeHudCoach")}</span>
         <span style={{ fontSize: 12, color: "rgba(255,255,255,0.75)", fontFamily: "Inter, sans-serif" }}>{t("homeHudCoachMsg")}</span>
       </div>
@@ -183,7 +183,7 @@ const Index = () => {
       />
 
       {promoOpen && (
-        <div style={{ background: "#101322", borderBottom: "0.5px solid rgba(245,200,66,0.2)" }}>
+        <div style={{ background: "#101322", borderBottom: "0.5px solid rgba(212,175,55,0.2)" }}>
           <div style={{ maxWidth: 1200, margin: "0 auto", padding: `6px ${isMobile ? 14 : pad}px`, display: "flex", alignItems: "center", justifyContent: "center", gap: 12, fontSize: isMobile ? 11 : 12, color: "rgba(255,255,255,0.85)", position: "relative" }}>
             <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
               <span style={{ display: "inline-block", width: 6, height: 6, borderRadius: "50%", background: GOLD, boxShadow: `0 0 8px ${GOLD}` }} />
@@ -202,7 +202,7 @@ const Index = () => {
 
       <section style={{ position: "relative", padding: `${isMobile ? 28 : 72}px ${isMobile ? 16 : 32}px ${isMobile ? 36 : 96}px`, overflow: "hidden" }}>
 
-        <div aria-hidden style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 60% 50% at 50% 0%, rgba(245,200,66,0.08), transparent 70%)", pointerEvents: "none" }} />
+        <div aria-hidden style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 60% 50% at 50% 0%, rgba(212,175,55,0.08), transparent 70%)", pointerEvents: "none" }} />
         <div aria-hidden style={{
           position: "absolute", inset: 0, opacity: 0.35,
           backgroundImage: "linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)",
@@ -214,7 +214,7 @@ const Index = () => {
 
         <div style={{ position: "relative", maxWidth: 1120, margin: "0 auto", display: "grid", gridTemplateColumns: isMobile || isTablet ? "1fr" : "1.05fr 1fr", gap: isMobile ? 24 : 56, alignItems: "center" }}>
           <div>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(245,200,66,0.08)", border: "0.5px solid rgba(245,200,66,0.28)", borderRadius: 999, padding: isMobile ? "4px 12px" : "5px 14px", fontSize: isMobile ? 10 : 11, color: GOLD, fontWeight: 700, letterSpacing: "0.14em", marginBottom: isMobile ? 14 : 22, fontFamily: MONO }}>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(212,175,55,0.08)", border: "0.5px solid rgba(212,175,55,0.28)", borderRadius: 999, padding: isMobile ? "4px 12px" : "5px 14px", fontSize: isMobile ? 10 : 11, color: GOLD, fontWeight: 700, letterSpacing: "0.14em", marginBottom: isMobile ? 14 : 22, fontFamily: MONO }}>
               <span style={{ width: 6, height: 6, borderRadius: "50%", background: GOLD, boxShadow: `0 0 8px ${GOLD}` }} />
               {t("homeHeroBadge")}
             </div>
@@ -236,7 +236,7 @@ const Index = () => {
             </ul>
 
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 14 }}>
-              <button onClick={() => navigate("/auth?tab=signup")} style={{ padding: isMobile ? "12px 20px" : "14px 28px", borderRadius: 10, border: "none", background: GOLD, color: BG, fontSize: isMobile ? 13 : 15, fontWeight: 800, cursor: "pointer", boxShadow: isMobile ? "0 6px 18px rgba(245,200,66,0.18)" : "0 10px 30px rgba(245,200,66,0.2)" }}>{t("homeHeroCtaStart")}</button>
+              <button onClick={() => navigate("/auth?tab=signup")} style={{ padding: isMobile ? "12px 20px" : "14px 28px", borderRadius: 10, border: "none", background: GOLD, color: BG, fontSize: isMobile ? 13 : 15, fontWeight: 800, cursor: "pointer", boxShadow: isMobile ? "0 6px 18px rgba(212,175,55,0.18)" : "0 10px 30px rgba(212,175,55,0.2)" }}>{t("homeHeroCtaStart")}</button>
               <button onClick={() => scrollTo("how-it-works")} style={{ padding: isMobile ? "12px 18px" : "14px 24px", borderRadius: 10, border: "0.5px solid rgba(255,255,255,0.18)", background: "transparent", color: "#fff", fontSize: isMobile ? 13 : 15, fontWeight: 600, cursor: "pointer" }}>{t("homeHeroCtaHow")}</button>
             </div>
             <div style={{ display: "flex", gap: 18, fontSize: 12, color: "rgba(255,255,255,0.62)", flexWrap: "wrap" }}>
@@ -355,7 +355,7 @@ const Index = () => {
                 { h: t("homeSol3H"), d: t("homeSol3D") },
               ].map((s, i) => (
                 <div key={i} style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
-                  <div style={{ marginTop: 4, width: 24, height: 24, borderRadius: 6, background: "rgba(245,200,66,0.12)", border: `0.5px solid ${GOLD}`, display: "flex", alignItems: "center", justifyContent: "center", color: GOLD, fontFamily: MONO, fontSize: 12, fontWeight: 700, flexShrink: 0 }}>{i + 1}</div>
+                  <div style={{ marginTop: 4, width: 24, height: 24, borderRadius: 6, background: "rgba(212,175,55,0.12)", border: `0.5px solid ${GOLD}`, display: "flex", alignItems: "center", justifyContent: "center", color: GOLD, fontFamily: MONO, fontSize: 12, fontWeight: 700, flexShrink: 0 }}>{i + 1}</div>
                   <div>
                     <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 4 }}>{s.h}</div>
                     <div style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", lineHeight: 1.6 }}>{s.d}</div>
@@ -416,7 +416,7 @@ const Index = () => {
             { n: "03", t: t("homeHow3T"), d: t("homeHow3D") },
           ].map((s, i) => (
             <div key={i} style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: "26px 22px", position: "relative" }}>
-              <div style={{ fontFamily: MONO, fontSize: 42, fontWeight: 900, color: "rgba(245,200,66,0.3)", letterSpacing: "-0.02em", lineHeight: 1 }}>{s.n}</div>
+              <div style={{ fontFamily: MONO, fontSize: 42, fontWeight: 900, color: "rgba(212,175,55,0.3)", letterSpacing: "-0.02em", lineHeight: 1 }}>{s.n}</div>
               <div style={{ fontSize: 17, fontWeight: 700, marginTop: 8, marginBottom: 8 }}>{s.t}</div>
               <div style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", lineHeight: 1.6 }}>{s.d}</div>
             </div>
@@ -494,7 +494,7 @@ const Index = () => {
             </p>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: isMobile ? "center" : "flex-start" }}>
               {[t("homeFounderTag1"), t("homeFounderTag2"), t("homeFounderTag3")].map((tag, i) => (
-                <span key={i} style={{ display: "inline-flex", background: "rgba(245,200,66,0.1)", border: "0.5px solid rgba(245,200,66,0.22)", borderRadius: 999, padding: "4px 12px", fontSize: 11, fontWeight: 700, color: GOLD, fontFamily: MONO, letterSpacing: "0.06em" }}>{tag}</span>
+                <span key={i} style={{ display: "inline-flex", background: "rgba(212,175,55,0.1)", border: "0.5px solid rgba(212,175,55,0.22)", borderRadius: 999, padding: "4px 12px", fontSize: 11, fontWeight: 700, color: GOLD, fontFamily: MONO, letterSpacing: "0.06em" }}>{tag}</span>
               ))}
             </div>
             <button
@@ -518,12 +518,12 @@ const Index = () => {
           </div>
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2,1fr)", gap: 16, alignItems: "start", maxWidth: 760, margin: "0 auto" }}>
 
-            <div style={{ background: "linear-gradient(180deg, rgba(245,200,66,0.08), rgba(245,200,66,0.03))", border: `0.5px solid rgba(245,200,66,0.35)`, borderRadius: 14, padding: "26px", position: "relative", boxShadow: "0 20px 60px rgba(245,200,66,0.08)" }}>
+            <div style={{ background: "linear-gradient(180deg, rgba(212,175,55,0.08), rgba(212,175,55,0.03))", border: `0.5px solid rgba(212,175,55,0.35)`, borderRadius: 14, padding: "26px", position: "relative", boxShadow: "0 20px 60px rgba(212,175,55,0.08)" }}>
               <div style={{ position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)", background: GOLD, color: BG, borderRadius: 999, padding: "3px 14px", fontSize: 10, fontWeight: 800, whiteSpace: "nowrap", letterSpacing: "0.1em", fontFamily: MONO }}>{t("homePriceMostPopular")}</div>
               <div style={{ fontFamily: MONO, fontSize: 10, letterSpacing: "0.14em", color: GOLD, textTransform: "uppercase", marginBottom: 10 }}>{t("homePriceClubTier")}</div>
               <div style={{ fontSize: 40, fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 1 }}>49<span style={{ fontSize: 14, color: "rgba(255,255,255,0.5)", fontWeight: 500, marginLeft: 6 }}>{t("homePriceClubPeriod")}</span></div>
               <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", marginTop: 4 }}>{t("homePriceClubSeats")}</div>
-              <hr style={{ border: "none", borderTop: "0.5px solid rgba(245,200,66,0.15)", margin: "18px 0" }} />
+              <hr style={{ border: "none", borderTop: "0.5px solid rgba(212,175,55,0.15)", margin: "18px 0" }} />
               {[t("homePriceClub1"), t("homePriceClub2"), t("homePriceClub3"), t("homePriceClub4"), t("homePriceClub5"), t("homePriceClub6"), t("homePriceClub7")].map((f, i) => (
                 <div key={i} style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", display: "flex", gap: 8, marginBottom: 8 }}><span style={{ color: GOLD }}>✓</span>{f}</div>
               ))}
@@ -575,7 +575,7 @@ const Index = () => {
       </section>
 
       <section style={{ position: "relative", padding: `${isMobile ? 64 : 100}px ${pad}px`, textAlign: "center", overflow: "hidden" }}>
-        <div aria-hidden style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 50% 60% at 50% 50%, rgba(245,200,66,0.12), transparent 70%)", pointerEvents: "none" }} />
+        <div aria-hidden style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 50% 60% at 50% 50%, rgba(212,175,55,0.12), transparent 70%)", pointerEvents: "none" }} />
         <div style={{ position: "relative", maxWidth: 700, margin: "0 auto" }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 11, color: GOLD, fontFamily: MONO, letterSpacing: "0.14em", marginBottom: 20 }}>
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: GOLD, boxShadow: `0 0 8px ${GOLD}` }} />
@@ -588,7 +588,7 @@ const Index = () => {
           <p style={{ fontSize: 16, color: "rgba(255,255,255,0.55)", maxWidth: 460, margin: "0 auto 32px", lineHeight: 1.65 }}>
             {t("homeCtaBody")}
           </p>
-          <button onClick={() => navigate("/auth?tab=signup")} style={{ padding: "15px 38px", borderRadius: 10, border: "none", background: GOLD, color: BG, fontSize: 15, fontWeight: 800, cursor: "pointer", boxShadow: "0 15px 40px rgba(245,200,66,0.25)" }}>{t("homeCtaButton")}</button>
+          <button onClick={() => navigate("/auth?tab=signup")} style={{ padding: "15px 38px", borderRadius: 10, border: "none", background: GOLD, color: BG, fontSize: 15, fontWeight: 800, cursor: "pointer", boxShadow: "0 15px 40px rgba(212,175,55,0.25)" }}>{t("homeCtaButton")}</button>
           <div style={{ marginTop: 16, fontSize: 12, color: "rgba(255,255,255,0.5)", fontFamily: MONO, letterSpacing: "0.06em" }}>{t("homeCtaTrust")}</div>
         </div>
       </section>

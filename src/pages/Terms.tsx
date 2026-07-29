@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { LandingLayout } from "@/components/landing/LandingLayout";
 import { PageMeta } from "@/components/PageMeta";
 
-const GOLD = "#F5C842";
+const GOLD = "#D4AF37";
 
 const Terms = () => {
   const navigate = useNavigate();
@@ -13,8 +13,8 @@ const Terms = () => {
       <div style={{ maxWidth: 800, margin: "0 auto", padding: "64px 32px" }}>
         <div
           style={{
-            background: "rgba(245,200,66,0.1)",
-            border: "1px solid rgba(245,200,66,0.35)",
+            background: "rgba(212,175,55,0.1)",
+            border: "1px solid rgba(212,175,55,0.35)",
             color: GOLD,
             padding: "12px 16px",
             borderRadius: 10,

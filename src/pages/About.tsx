@@ -3,7 +3,7 @@ import { PageMeta } from "@/components/PageMeta";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 
-const GOLD = "#F5C842";
+const GOLD = "#D4AF37";
 const sec = { maxWidth: 1000, margin: "0 auto", padding: "72px 32px" };
 
 export default function About() {
@@ -50,7 +50,7 @@ export default function About() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutLd) }} />
 
       <section style={{ padding: "80px 32px", textAlign: "center", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
-        <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(245,200,66,0.1)", border: "0.5px solid rgba(245,200,66,0.28)", borderRadius: 20, padding: "4px 14px", fontSize: 11, color: GOLD, fontWeight: 700, letterSpacing: "0.08em", marginBottom: 24 }}>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(212,175,55,0.1)", border: "0.5px solid rgba(212,175,55,0.28)", borderRadius: 20, padding: "4px 14px", fontSize: 11, color: GOLD, fontWeight: 700, letterSpacing: "0.08em", marginBottom: 24 }}>
           🏅 {t("aboutBadge")}
         </div>
         <h1 style={{ fontSize: "clamp(32px,5vw,54px)", fontWeight: 900, lineHeight: 1.07, letterSpacing: "-0.04em", margin: "0 0 20px", maxWidth: 640, marginLeft: "auto", marginRight: "auto" }}>
@@ -86,7 +86,7 @@ export default function About() {
             </p>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
               {[t("aboutTag1"), t("aboutTag2"), t("aboutTag3"), t("aboutTag4")].map((tag, i) => (
-                <span key={i} style={{ display: "inline-flex", background: "rgba(245,200,66,0.1)", border: "0.5px solid rgba(245,200,66,0.22)", borderRadius: 20, padding: "4px 12px", fontSize: 11, fontWeight: 700, color: GOLD }}>{tag}</span>
+                <span key={i} style={{ display: "inline-flex", background: "rgba(212,175,55,0.1)", border: "0.5px solid rgba(212,175,55,0.22)", borderRadius: 20, padding: "4px 12px", fontSize: 11, fontWeight: 700, color: GOLD }}>{tag}</span>
               ))}
             </div>
           </div>

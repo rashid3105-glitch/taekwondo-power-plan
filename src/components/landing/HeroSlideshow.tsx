@@ -81,7 +81,7 @@ export function HeroSlideshow({ radius }: { radius: number }) {
                 border: "none",
                 padding: 0,
                 cursor: "pointer",
-                background: i === index ? "#F5C842" : "rgba(255,255,255,0.45)",
+                background: i === index ? "#D4AF37" : "rgba(255,255,255,0.45)",
                 transition: "all 0.3s ease",
               }}
             />

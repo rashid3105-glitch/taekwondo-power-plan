@@ -3,7 +3,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { Link } from "react-router-dom";
 import { Cookie } from "lucide-react";
 
-const GOLD = "#F5C842";
+const GOLD = "#D4AF37";
 const STORAGE_KEY = "st-cookie-consent";
 
 export function CookieConsentBanner() {
@@ -43,7 +43,7 @@ export function CookieConsentBanner() {
         right: 0,
         zIndex: 9999,
         background: "rgba(11,12,20,0.98)",
-        borderTop: "0.5px solid rgba(245,200,66,0.25)",
+        borderTop: "0.5px solid rgba(212,175,55,0.25)",
         backdropFilter: "blur(10px)",
       }}
     >

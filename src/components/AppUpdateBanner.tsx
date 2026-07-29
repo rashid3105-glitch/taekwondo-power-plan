@@ -68,7 +68,7 @@ export function AppUpdateBanner() {
         display: "flex",
         alignItems: "center",
         gap: 10,
-        background: "#F5C842",
+        background: "#D4AF37",
         color: "#0B0C14",
         borderRadius: 12,
         padding: "10px 16px",
