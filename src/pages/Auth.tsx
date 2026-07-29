@@ -461,6 +461,23 @@ export default function AuthPage() {
             style={{ width: "100%", display: "block" }}
           />
         </div>
+
+        {mfaFactorId && (
+          <MfaChallengeDialog
+            open={mfaChallengeOpen}
+            factorId={mfaFactorId}
+            onVerified={async () => {
+              setMfaChallengeOpen(false);
+              setMfaFactorId(null);
+              await completeLogin();
+            }}
+            onCancel={() => {
+              setMfaChallengeOpen(false);
+              setMfaFactorId(null);
+              supabase.auth.signOut();
+            }}
+          />
+        )}
       </div>
     </div>
   );
