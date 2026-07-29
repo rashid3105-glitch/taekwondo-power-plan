@@ -7,12 +7,12 @@ import {
   Activity, Apple, TrendingUp, BookOpen, BookHeart, Download, Video, CalendarRange,
   MessageSquare, MessageCircle, NotebookPen, Search, X, Dumbbell, Heart, Sparkles, UserCog, Settings, FileText, ArrowLeft,
   ShieldCheck, ClipboardCheck, Trash2, CreditCard, Lock, UserX, Bell,
-  Footprints, Trophy, ListChecks, LayoutGrid,
+  Footprints, Trophy, ListChecks, LayoutGrid, LifeBuoy,
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { PublicNav } from "@/components/PublicNav";
-import { Watermark } from "@/components/Watermark";
+import { Button } from "@/components/ui/button";
 import { PageMeta } from "@/components/PageMeta";
+
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
@@ -163,16 +163,18 @@ export default function Help() {
       if (cancelled) return;
       setIsLoggedIn(!!user);
       setAuthChecked(true);
-      if (!user) return;
+      if (!user) { navigate("/auth", { replace: true }); return; }
       const { data } = await supabase.rpc("is_admin", { _user_id: user.id });
       if (!cancelled && data === true) setIsAdmin(true);
     })();
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
       setIsLoggedIn(!!session?.user);
       setAuthChecked(true);
+      if (!session?.user) navigate("/auth", { replace: true });
     });
     return () => { cancelled = true; sub.subscription.unsubscribe(); };
-  }, []);
+  }, [navigate]);
+
 
   // Translation helper with safe fallback for new section keys
   const tr = (key: string) => {
@@ -300,44 +302,53 @@ export default function Help() {
     );
   };
 
+  if (!authChecked) {
+    return (
+      <div className="min-h-screen bg-background">
+        <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10 pt-safe">
+          <div className="container max-w-3xl mx-auto px-3 sm:px-4 py-3 flex items-center gap-3">
+            <div className="h-9 w-9 rounded-md bg-muted animate-pulse" />
+            <div className="h-5 w-28 rounded bg-muted animate-pulse" />
+          </div>
+        </header>
+        <main className="container max-w-3xl mx-auto px-3 sm:px-4 py-4 space-y-3">
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="h-16 rounded-xl bg-muted animate-pulse" />
+          ))}
+        </main>
+      </div>
+    );
+  }
+
+  if (!isLoggedIn) return null;
+
   return (
     <div className="min-h-screen bg-background relative">
-      <PageMeta title="Help Center" description="Get help with Sportstalent features and training tools." canonical="https://sportstalent.dk/help" />
-      {!isLoggedIn && <Watermark />}
-      {authChecked && !isLoggedIn && <PublicNav />}
+      <PageMeta title="Help Center" description="Get help with Sportstalent features and training tools." noindex />
 
-      {isLoggedIn && (
-        <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-md border-b border-border">
-          <div className="mx-auto max-w-3xl px-4 py-3 flex items-center">
-            <button
-              type="button"
-              onClick={() => navigate("/dashboard")}
-              className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-foreground hover:bg-muted transition-colors -ml-2"
-              aria-label={t("backToDashboard")}
-            >
-              <ArrowLeft className="h-5 w-5" />
-              <span>{t("backToDashboard")}</span>
-            </button>
+      {/* Header — same shell as the rest of the app */}
+      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-30 pt-safe">
+        <div className="container max-w-3xl mx-auto px-3 sm:px-4 py-3 flex items-center gap-2">
+          <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")} aria-label={t("backToDashboard")} title={t("backToDashboard")}>
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="h-8 w-8 rounded-lg bg-gradient-energy flex items-center justify-center shrink-0">
+              <LifeBuoy className="h-4 w-4 text-primary-foreground" />
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-sm font-extrabold text-card-foreground truncate">{t("helpTitle")}</h1>
+              <p className="text-[11px] text-muted-foreground truncate">{t("helpSubtitle")}</p>
+            </div>
           </div>
         </div>
-      )}
+      </header>
 
-      {/* Hero */}
-      <div className="px-4 py-8">
-        <div className="mx-auto max-w-3xl space-y-3 text-center">
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-foreground">{t("helpTitle")}</h1>
-          <p className="text-muted-foreground">{t("helpSubtitle")}</p>
-        </div>
-      </div>
-
-
-      {/* Gradient transition */}
-      <div className="h-12 bg-gradient-to-b from-background to-[hsl(210,20%,97%)]" aria-hidden="true" />
-
-      <div className="theme-light-section px-4 pb-12">
-        <div className="mx-auto max-w-3xl">
+      <main className="container max-w-3xl mx-auto px-3 sm:px-4 pb-16">
+        <div>
           {/* Sticky search + chips */}
-          <div className="sticky top-0 z-20 -mx-4 px-4 py-3 bg-[hsl(210,20%,97%)]/85 backdrop-blur-md border-b border-border/40">
+          <div className="sticky top-[61px] z-20 -mx-3 sm:-mx-4 px-3 sm:px-4 py-3 bg-background/95 backdrop-blur-md border-b border-border">
+
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
               <Input
@@ -504,8 +515,9 @@ export default function Help() {
             )}
           </div>
         </div>
-      </div>
+      </main>
     </div>
+
   );
 }
 

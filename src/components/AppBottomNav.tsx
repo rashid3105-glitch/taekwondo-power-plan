@@ -13,7 +13,7 @@ const HIDDEN_PREFIXES = [
   "/auth", "/login", "/signup", "/invite", "/join", "/parent-join",
   "/reset-password", "/pending-approval", "/onboarding", "/consent",
   "/blog", "/pricing", "/priser", "/privacy", "/terms", "/about", "/contact",
-  "/programs", "/platform", "/methodology", "/for-traenere", "/help",
+  "/programs", "/platform", "/methodology", "/for-traenere",
   "/funktioner", "/features", "/poomsae", "/staevneforberedelse",
   "/tekniktraening", "/traeningsprogram", "/fysiske-test",
   "/unsubscribe", "/payment-success", "/mockup", "/athlete", "/match/share",
