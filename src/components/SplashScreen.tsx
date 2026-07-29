@@ -39,7 +39,7 @@ export const SplashScreen = ({ duration = 2500, onFinish }: SplashScreenProps) =
     <div
       aria-hidden="true"
       style={{ backgroundColor: "#0a0a0a" }}
-      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center transition-opacity duration-500 ${
+      className={`pointer-events-none fixed inset-0 z-[9999] flex flex-col items-center justify-center transition-opacity duration-500 ${
         fading ? "opacity-0" : "opacity-100"
       }`}
     >
