@@ -548,9 +548,30 @@ export default function Diary() {
               </div>
             </div>
 
+
+            <button
+              type="button"
+              onClick={() => setIsPrivate((v) => !v)}
+              className={`w-full flex items-start gap-3 rounded-xl border p-3 text-left transition-colors ${
+                isPrivate ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
+              }`}
+              aria-pressed={isPrivate}
+            >
+              {isPrivate ? (
+                <Lock className="h-4 w-4 mt-0.5 text-primary shrink-0" />
+              ) : (
+                <Unlock className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
+              )}
+              <span className="min-w-0">
+                <span className="block text-sm font-semibold text-card-foreground">{t("diaryPrivateToggle")}</span>
+                <span className="block text-xs text-muted-foreground mt-0.5">{t("diaryPrivateHint")}</span>
+              </span>
+            </button>
+
             <Button onClick={handleSave} className="w-full sm:w-auto h-11">
               <Save className="h-4 w-4 mr-1" /> {t("save")}
             </Button>
+
           </div>
         )}
 
