@@ -10,7 +10,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { LogOut, Pencil, Download, KeyRound, Trash2, ChevronLeft, Apple, Smartphone, ShieldOff, Bell } from "lucide-react";
+import { LogOut, Pencil, Download, KeyRound, Trash2, ChevronLeft, Apple, Smartphone, ShieldOff, Bell, Shield } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { PageMeta } from "@/components/PageMeta";
 import { AppFooter } from "@/components/AppFooter";
@@ -19,6 +19,7 @@ import { useAvatarUrl } from "@/hooks/useAvatarUrl";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { isNativeApp } from "@/lib/platform";
 import { registerPushToken } from "@/lib/nativePush";
+import MfaSetupDialog from "@/components/MfaSetupDialog";
 
 interface LicenseField {
   id: string;
