@@ -1,67 +1,51 @@
-# Plan: Frivillig 2FA / MFA for alle brugere
-
 ## Mål
-Give alle brugere (atleter, forældre, trænere og admins) mulighed for frivilligt at aktivere TOTP-baseret to-faktor-autentificering (2FA) via en autentificeringsapp. 2FA skal være valgfrit, og der genereres ikke gendannelseskoder.
 
-## Forudsætning og afhængighed
-Supabase Auth understøtter MFA/2FA, men funktionen skal aktiveres på projektniveau. Da dette er et Lovable Cloud-projekt uden adgang til Supabase-dashboardet, skal vi enten:
-- anmode Lovable Cloud-support om at slå MFA til på projektet, eller
-- aktivere det programmatisk via Supabase Management API, hvis det er tilgængeligt.
+Appen skal kunne åbnes og bruges uden internet — både som web/PWA og som native iOS/Android-app — og synkronisere ændringer, når nettet kommer tilbage.
 
-Resten af planen forudsætter, at backend-MFA er slået til.
+## Hvad jeg fandt (verificeret i koden)
 
-## 1. Backend / auth-konfiguration
-- Bekræft, at Supabase Auth MFA er aktiveret for projektet.
-- Ingen nye tabeller er nødvendige — Supabase håndterer faktorer i `auth`-skemaet internt.
-- (Valgfrit) Tilføj `mfa_enrolled_at` timestamp på `profiles` for at kunne vise status i UI.
+1. **Hvid skærm på web/PWA skyldes to konkurrerende service workers.** `public/sw.js` er en håndskrevet push-only worker uden cache, og `vite-plugin-pwa` genererer også `/sw.js` med precache af app-shell. Filen i `public/` overskriver den genererede ved build, så appen har i praksis **ingen offline-cache** — derfor blank skærm uden net.
+2. **Ingen navigations-fallback.** Workbox-konfigurationen cacher kun billeder/scripts/fonts, ikke selve HTML-dokumentet, så SPA-ruter kan ikke åbnes offline.
+3. **"Åbner, men ingen data" skyldes `supabase.auth.getUser()`.** Det er et netværkskald og bruges 170 steder (bl.a. `Dashboard.tsx`, `useOfflineDiary.ts`, `ReadinessCard.tsx`). Offline fejler det eller hænger — flere steder sender det brugeren til `/auth`. `getSession()` læser fra lokal storage og virker offline.
+4. **Der findes allerede solid offline-infrastruktur**: IndexedDB + outbox + sync-engines for dagbog, træningslog, readiness, mental, coach-mental, fysiske tests, stævne-refleksion, plan, profil og videoanalyse. Den mangler bare at kunne køre, fordi shell/auth fejler.
+5. **Ikke offline i dag**: sæsonkalender/holdplan og chat.
 
-## 2. Login-flow med MFA-udfordring
-Opdater `src/pages/Auth.tsx`:
-- Efter `signInWithPassword` tjekkes brugerens `aal`-niveau og aktive verificerede faktorer.
-- Hvis brugeren har aktiveret 2FA, vises et ekstra trin, hvor brugeren indtaster 6-cifret TOTP-kode.
-- Ved korrekt kode kaldes `mfa.verify`, og sessionen opgraderes til `aal2`, før brugeren sendes videre.
-- Håndter fejl (forkert kode, udløbet kode) med toast-beskeder.
+## Plan
 
-## 3. Opsætning og styring af 2FA i profilen
-Opret ny komponent / sektion under profil/indstillinger:
-- "Sikkerhed"-sektion med 2FA-status.
-- Hvis 2FA ikke er aktiveret: knap "Aktiver 2FA".
-- Ved aktivering:
-  - Kald `mfa.enroll({ factorType: 'totp' })`.
-  - Vis QR-kode og hemmelig nøgletekst.
-  - Bruger indtaster bekræftelseskode fra app.
-  - Kald `mfa.challenge` + `mfa.verify` for at bekræfte og aktivere faktoren.
-- Hvis 2FA er aktiveret: knap "Deaktiver 2FA" med bekræftelsesdialog.
-- Vis oplysning om, at gendannelseskoder ikke genereres, og at brugeren skal kontakte support ved mistet telefon.
+### Fase 1 — App-shell der åbner offline (web + PWA)
+- Omdøb `public/sw.js` til `public/push-sw.js` (kun push/notification-handlers, uændret logik) og opdatér `src/lib/pushNotifications.ts` til fortsat at bruge `/sw.js`.
+- Lad `vite-plugin-pwa` (generateSW) eje `/sw.js` og indlæse push-workeren via `workbox.importScripts: ["/push-sw.js"]` — så én worker giver både push og offline-cache.
+- Tilføj `navigateFallback: "/index.html"` med `NetworkFirst` for navigationer (deny-list for `/~oauth`, `/api`) og bevar `NetworkOnly` for backend-kald.
+- Bevar de eksisterende guards: ingen registrering i Lovable-preview, iframe eller native runtime.
 
-## 4. Oversættelser
-Tilføj nye nøgler på alle 7 sprog (da, en, sv, de, ar, no, es):
-- `mfaTitle`, `mfaEnable`, `mfaDisable`, `mfaStatusEnabled`, `mfaStatusDisabled`
-- `mfaScanQr`, `mfaEnterCode`, `mfaVerify`, `mfaSetupSuccess`, `mfaDisableConfirm`
-- `mfaChallengeTitle`, `mfaChallengeDesc`, `mfaCodePlaceholder`, `mfaInvalidCode`
-- `mfaNoRecoveryCodes`, `mfaLostPhoneHint`
+### Fase 2 — Offline-sikker login-tilstand
+- Indfør en fælles hjælper `getCurrentUser()` i `src/lib/authSession.ts`, som bruger `getSession()` (lokal) og kun falder tilbage til netværk når man er online.
+- Udskift `auth.getUser()` i de skærme, der skal virke offline: Dashboard, alle `useOffline*`-hooks, ReadinessCard, PhysicalTesting, MentalAssessment, Diary, PostCompetitionReflection, Profile.
+- Fjern redirect til `/auth` når fejlen skyldes manglende netværk (kun redirect ved reelt manglende session).
+- Native: sørg for at hydrering fra Capacitor Preferences ikke blokerer mount uden net (timeout findes allerede — udvides med offline-tjek).
 
-## 5. Hjælp og changelog
-- Opdater `src/pages/Help.tsx` med ny changelog-version (f.eks. v1.5.10) og beskrivelse af 2FA.
-- Tilføj hjælpetrin om, hvordan man aktiverer 2FA under sikkerheds-/konto-emnet.
-- Markér relevant emne med `isNew: true` og rød prik.
+### Fase 3 — Min plan + sæsonkalender offline (læsning)
+- Ny `src/lib/seasonOfflineDB.ts`: cache klubbens sæsonplan, faser, dags-skabeloner og ugens teknikfokus i IndexedDB ved hver online-indlæsning.
+- `SeasonCalendarView` (atlet) og "I dag"-kortet læser fra cache, når `navigator.onLine` er falsk, med "Sidst opdateret …"-mærkat.
+- Individuel træningsplan bruger allerede `planOfflineDB` — sikres, at den også vises, når Dashboard indlæses offline.
 
-## 6. Test
-- Test TOTP-opsætning for en almindelig bruger.
-- Test login med og uden 2FA aktiveret.
-- Test deaktivering af 2FA.
-- Verificér oversættelser og RTL-layout for arabisk.
+### Fase 4 — Chat offline (læs + kø)
+- Ny `chatOfflineDB` + `chatSyncEngine` i samme mønster som dagbogen: cache seneste ~100 beskeder pr. tråd, og læg nye beskeder i en outbox.
+- Beskeder sendt offline vises med "afventer"-ikon og sendes automatisk ved reconnect (idempotent via klient-genereret nøgle).
+- Realtime-abonnement genstartes ved reconnect, så tråden opdateres.
 
-## Teknisk detalje
-```text
-Supabase MFA API:
-- enroll:    supabase.auth.mfa.enroll({ factorType: 'totp' })
-- challenge: supabase.auth.mfa.challenge({ factorId })
-- verify:    supabase.auth.mfa.verify({ factorId, challengeId, code })
-- unenroll:  supabase.auth.mfa.unenroll({ factorId })
-- list:      supabase.auth.mfa.listFactors()
-- aal:       supabase.auth.mfa.getAuthenticatorAssuranceLevel()
-```
+### Fase 5 — Synlighed og hjælp
+- Udvid `OfflineBanner` med antal ventende ændringer og en "Synkronisér nu"-knap.
+- Central sync-orchestrator, der kører alle sync-engines ved `online`-event og ved app-resume (native).
+- Opdatér `src/pages/Help.tsx` med et afsnit om offline-brug + changelog v1.6.0, og tilføj nye tekstnøgler på alle 7 sprog.
 
-## Udestående afklaring
-Skal vi gå i gang med at implementere frontend-flowet, mens vi afventer backend-aktivering — eller vil du først have mig til at undersøge, om Lovable Cloud kan slå MFA til på projektet?
+## Tekniske detaljer
+
+- Ingen databaseændringer er nødvendige; chat-outboxen bruger en klientgenereret idempotensnøgle mod eksisterende `chat_messages`.
+- Workbox-strategier: `NetworkFirst` for HTML-navigationer, `StaleWhileRevalidate` for statiske assets, `NetworkOnly` for backend-domænet (auth/data må aldrig serveres fra cache).
+- Native builds bruger ikke service worker — der løses offline udelukkende af Fase 2–4 (IndexedDB + lokal session).
+- Efter merge kræves `git pull` → `npm install` → `npm run build` → `npx cap sync` for iOS/Android-builds.
+
+## Uden for scope
+
+Coach-administration, health-sync, ernæring, surveys og admin-sider forbliver online-only.

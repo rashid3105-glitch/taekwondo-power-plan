@@ -18,6 +18,8 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: "autoUpdate",
+      // main.tsx is the only registrar (guarded against preview/iframe/native)
+      injectRegister: null,
       // Never run service worker in dev / Lovable preview iframe
       devOptions: {
         enabled: false,
@@ -33,15 +35,32 @@ export default defineConfig(({ mode }) => ({
       workbox: {
         // Allow large JS bundles to be precached (main chunk grew past 5MB)
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
+        // Push/notification handlers live in their own file so the generated
+        // Workbox worker can own /sw.js and provide the offline app shell.
+        importScripts: ["/push-sw.js"],
+        clientsClaim: true,
+        skipWaiting: true,
+        // Serve the SPA shell for offline navigations
+        navigateFallback: "/index.html",
         // Don't intercept Lovable internal routes or API/auth calls
         navigateFallbackDenylist: [/^\/~oauth/, /^\/api/],
-        // Network-first for Supabase (auth + data must be fresh)
         runtimeCaching: [
           {
+            // Auth + data must never be served from cache
             urlPattern: ({ url }) =>
               url.hostname.endsWith(".supabase.co") ||
               url.hostname.endsWith(".supabase.in"),
             handler: "NetworkOnly",
+          },
+          {
+            // HTML navigations: fresh when online, cached shell when offline
+            urlPattern: ({ request }) => request.mode === "navigate",
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "html-navigations",
+              networkTimeoutSeconds: 5,
+              expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 7 },
+            },
           },
           {
             urlPattern: ({ request }) =>
@@ -52,7 +71,7 @@ export default defineConfig(({ mode }) => ({
             handler: "StaleWhileRevalidate",
             options: {
               cacheName: "app-shell",
-              expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 30 },
+              expiration: { maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 30 },
             },
           },
         ],

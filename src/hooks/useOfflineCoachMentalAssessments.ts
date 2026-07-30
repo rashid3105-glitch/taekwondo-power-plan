@@ -12,6 +12,7 @@ import {
   type CachedCoachAssessment,
 } from "@/lib/coachMentalAssessmentOfflineDB";
 import { syncCoachMentalAssessments } from "@/lib/coachMentalAssessmentSyncEngine";
+import { getCurrentUser } from "@/lib/authSession";
 
 interface SubmitInput {
   total_score: number;
@@ -43,7 +44,7 @@ export function useOfflineCoachMentalAssessments() {
   const [userId, setUserId] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await getCurrentUser();
     if (!user) {
       setAssessments([]);
       setLoading(false);
@@ -92,7 +93,7 @@ export function useOfflineCoachMentalAssessments() {
     async (input: SubmitInput) => {
       let uid = userId;
       if (!uid) {
-        const { data: { user } } = await supabase.auth.getUser();
+        const user = await getCurrentUser();
         if (!user) return null;
         uid = user.id;
         setUserId(uid);

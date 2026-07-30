@@ -1,4 +1,9 @@
 import { supabase } from "@/integrations/supabase/client";
+import { getCurrentUser } from "@/lib/authSession";
+import {
+  cacheThreads, readCachedThreads, cacheMessages, readCachedMessages,
+  queueChatIntent, listChatOutboxForThread,
+} from "@/lib/chatOfflineDB";
 
 export const MAX_ATTACHMENT_BYTES = 1_048_576; // 1 MB
 
@@ -85,8 +90,13 @@ export async function getUnreadCounts(): Promise<Record<string, number>> {
 }
 
 export async function listThreads(): Promise<ChatThread[]> {
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return [];
+
+  // Offline: serve the last synced thread list instead of an empty inbox.
+  if (!navigator.onLine) {
+    return (await readCachedThreads<ChatThread>()) ?? [];
+  }
 
   const { data: memberships, error: e1 } = await supabase
     .from("chat_thread_members")
@@ -138,7 +148,7 @@ export async function listThreads(): Promise<ChatThread[]> {
     if (!lastMsgByThread.has(m.thread_id)) lastMsgByThread.set(m.thread_id, m);
   });
 
-  return (threadsRes.data ?? [])
+  const threads = (threadsRes.data ?? [])
     .map((t: any) => ({
       ...t,
       members: (membersRes.data ?? [])
@@ -158,9 +168,31 @@ export async function listThreads(): Promise<ChatThread[]> {
       (a: ChatThread, b: ChatThread) =>
         new Date(b.last_message_at).getTime() - new Date(a.last_message_at).getTime(),
     );
+
+  void cacheThreads(threads);
+  return threads;
 }
 
 export async function listMessages(threadId: string, limit = 100): Promise<ChatMessage[]> {
+  // Pending (queued) messages are appended so the user sees what they wrote offline.
+  const pending = (await listChatOutboxForThread(threadId)).map((i) => ({
+    id: i.key,
+    thread_id: i.thread_id,
+    sender_id: i.sender_id,
+    body: i.body,
+    attachment_path: null,
+    attachment_type: null,
+    attachment_size_bytes: null,
+    created_at: new Date(i.queued_at).toISOString(),
+    deleted_at: null,
+    edited_at: null,
+  })) as ChatMessage[];
+
+  if (!navigator.onLine) {
+    const cached = (await readCachedMessages<ChatMessage>(threadId)) ?? [];
+    return [...cached, ...pending];
+  }
+
   const { data, error } = await supabase
     .from("chat_messages")
     .select("*")
@@ -169,7 +201,9 @@ export async function listMessages(threadId: string, limit = 100): Promise<ChatM
     .order("created_at", { ascending: false })
     .limit(limit);
   if (error) throw error;
-  return ((data ?? []) as ChatMessage[]).reverse();
+  const rows = ((data ?? []) as ChatMessage[]).reverse();
+  void cacheMessages(threadId, rows);
+  return [...rows, ...pending];
 }
 
 export async function sendMessage(params: {
@@ -177,8 +211,31 @@ export async function sendMessage(params: {
   body: string;
   file?: File | null;
 }): Promise<ChatMessage> {
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) throw new Error("not_authenticated");
+
+  // Offline: queue text messages for later delivery. Attachments need the network.
+  if (!navigator.onLine) {
+    if (params.file) throw new Error("attachment_requires_connection");
+    const key = crypto.randomUUID();
+    const queued_at = Date.now();
+    await queueChatIntent({
+      key, thread_id: params.threadId, sender_id: user.id,
+      body: params.body.trim(), queued_at,
+    });
+    return {
+      id: key,
+      thread_id: params.threadId,
+      sender_id: user.id,
+      body: params.body.trim(),
+      attachment_path: null,
+      attachment_type: null,
+      attachment_size_bytes: null,
+      created_at: new Date(queued_at).toISOString(),
+      deleted_at: null,
+      edited_at: null,
+    };
+  }
 
   let attachment_path: string | null = null;
   let attachment_type: string | null = null;

@@ -57,6 +57,8 @@ import { HubTodayHero } from "@/components/hub/HubTodayHero";
 import { HubNextEvent } from "@/components/hub/HubNextEvent";
 import { HubRecoveryStrip } from "@/components/hub/HubRecoveryStrip";
 import { SeasonCalendarView } from "@/components/hub/SeasonCalendarView";
+import { getCurrentUser } from "@/lib/authSession";
+import { cacheSeasonBundle, readCachedSeasonBundle } from "@/lib/seasonOfflineDB";
 
 import { HubOtherModules } from "@/components/hub/HubOtherModules";
 import { HubReadinessBanner } from "@/components/hub/HubReadinessBanner";
@@ -265,7 +267,7 @@ export default function Dashboard() {
     let cancelled = false;
     (async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const user = await getCurrentUser();
         if (!user || cancelled) return;
         const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
         const mentalTable = hasCoachRole ? "coach_mental_assessments" : "mental_assessments";
@@ -418,8 +420,16 @@ export default function Dashboard() {
     if (!clubId) return;
     let cancelled = false;
     (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await getCurrentUser();
       if (!user || cancelled) return;
+
+      // Offline: serve the last known season plan from IndexedDB.
+      if (!navigator.onLine) {
+        const cached = await readCachedSeasonBundle(clubId);
+        if (!cancelled && cached) setClubSeason(cached.payload as any);
+        return;
+      }
+
       const { data: clubData } = await supabase
         .from("clubs" as any)
         .select("name")
@@ -433,7 +443,7 @@ export default function Dashboard() {
           .eq("club_id", clubId).eq("is_active", true);
         if (cancelled) return;
         const rows = (seasonRows ?? []) as any[];
-        if (rows.length === 0) { setClubSeason(null); return; }
+        if (rows.length === 0) { setClubSeason(null); void cacheSeasonBundle(clubId, null); return; }
         const todayIso = new Date().toISOString().slice(0, 10);
         const covering = rows
           .filter((r) => r.start_date <= todayIso && r.end_date >= todayIso)
@@ -450,16 +460,22 @@ export default function Dashboard() {
         const hasAnyVisibilitySet = visRows && visRows.length > 0;
         const athleteIsIncluded = visRows?.some((v: any) => v.athlete_id === user.id) || seasonRow.created_by === user.id || isCoachOrAdmin;
         if (!hasAnyVisibilitySet || athleteIsIncluded) {
-
-          setClubSeason({
+          const bundle = {
             plan: seasonRow,
             phases: seasonRow.club_season_phases || [],
             template: seasonRow.club_season_day_templates || [],
-          });
+          };
+          setClubSeason(bundle);
+          void cacheSeasonBundle(clubId, bundle);
         } else {
           setClubSeason(null);
+          void cacheSeasonBundle(clubId, null);
         }
-      } catch { /* ignore */ }
+      } catch {
+        // Network hiccup — fall back to the cached bundle rather than showing nothing.
+        const cached = await readCachedSeasonBundle(clubId);
+        if (!cancelled && cached) setClubSeason(cached.payload as any);
+      }
     })();
     return () => { cancelled = true; };
   }, [activeMembership?.club_id]);
@@ -478,7 +494,7 @@ export default function Dashboard() {
 
 
   const loadData = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await getCurrentUser();
     if (!user) { navigate("/auth"); return; }
 
     const PLANS_CACHE_KEY = `cached_training_plans:${user.id}`;
@@ -489,7 +505,16 @@ export default function Dashboard() {
       try {
         const cachedProfile = localStorage.getItem(PROFILE_CACHE_KEY);
         const cachedPlans = localStorage.getItem(PLANS_CACHE_KEY);
-        if (cachedProfile) setProfile(JSON.parse(cachedProfile) as Profile);
+        if (cachedProfile) {
+          const parsedProfile = JSON.parse(cachedProfile) as Profile;
+          setProfile(parsedProfile);
+          // Club season plan (read-only) from IndexedDB so the team calendar works offline.
+          const clubId = (parsedProfile as any)?.club_id as string | undefined;
+          if (clubId) {
+            const cachedSeason = await readCachedSeasonBundle(clubId);
+            if (cachedSeason?.payload) setClubSeason(cachedSeason.payload as any);
+          }
+        }
         if (cachedPlans) setPlans(JSON.parse(cachedPlans) as TrainingPlan[]);
       } catch { /* ignore cache parse errors */ }
       setLoading(false);
@@ -599,11 +624,13 @@ export default function Dashboard() {
 
 
           if (!hasAnyVisibilitySet || athleteIsIncluded) {
-            setClubSeason({
+            const bundle = {
               plan: seasonRow,
               phases: seasonRow.club_season_phases || [],
               template: seasonRow.club_season_day_templates || [],
-            });
+            };
+            setClubSeason(bundle);
+            void cacheSeasonBundle(profileData.club_id, bundle);
           }
         }
       } catch { /* table may not exist yet */ }
@@ -662,7 +689,7 @@ export default function Dashboard() {
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await getCurrentUser();
       if (!user) throw new Error("Not authenticated");
 
       // Deactivate existing plans before inserting new one
@@ -702,7 +729,7 @@ export default function Dashboard() {
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await getCurrentUser();
       if (!user) throw new Error("Not authenticated");
 
       await supabase.from("rehab_plans").update({ is_active: false } as any).eq("user_id", user.id);
@@ -729,7 +756,7 @@ export default function Dashboard() {
 
   const handleSignOut = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await getCurrentUser();
       if (user) {
         const { unregisterPushToken } = await import("@/lib/nativePush");
         await unregisterPushToken(user.id);
@@ -1213,7 +1240,7 @@ export default function Dashboard() {
                       </div>
                       <div className="flex gap-2">
                         <Button variant="outline" size="sm" onClick={async () => {
-                          const { data: { user } } = await supabase.auth.getUser();
+                          const user = await getCurrentUser();
                           if (!user) return;
                           await supabase.from("rehab_plans").update({ is_active: false } as any).eq("user_id", user.id);
                           await supabase.from("rehab_plans").update({ is_active: true } as any).eq("id", rp.id);
@@ -1388,7 +1415,7 @@ export default function Dashboard() {
                       {(!hasCoach || isPaid) && (
                         <div className="flex items-center gap-1">
                           <Button variant="outline" size="sm" onClick={async () => {
-                            const { data: { user } } = await supabase.auth.getUser();
+                            const user = await getCurrentUser();
                             if (!user) return;
                             await supabase.from("training_plans").update({ is_active: false }).eq("user_id", user.id);
                             await supabase.from("training_plans").update({ is_active: true }).eq("id", plan.id);

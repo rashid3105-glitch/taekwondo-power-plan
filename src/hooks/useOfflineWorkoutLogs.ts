@@ -10,6 +10,7 @@ import {
   type LocalLogRecord,
 } from "@/lib/workoutLogOfflineDB";
 import { syncWorkoutLogs } from "@/lib/workoutLogSyncEngine";
+import { getCurrentUser } from "@/lib/authSession";
 
 // Mirrors the shape consumed by AIPlanCard so this hook is drop-in compatible
 // with the previous online-only useWorkoutLogs hook.
@@ -126,8 +127,8 @@ export function useOfflineWorkoutLogs(
 
   // Keep userId cached so we can write logs even when momentarily offline.
   useEffect(() => {
-    void supabase.auth.getUser().then(({ data }) => {
-      userIdRef.current = data.user?.id ?? null;
+    void getCurrentUser().then((user) => {
+      userIdRef.current = user?.id ?? null;
     });
   }, []);
 
@@ -155,7 +156,7 @@ export function useOfflineWorkoutLogs(
   const upsertLog = useCallback(
     async (exerciseIndex: number, updates: Partial<WorkoutLog>) => {
       if (dayIndex === null) return;
-      const userId = userIdRef.current ?? (await supabase.auth.getUser()).data.user?.id;
+      const userId = userIdRef.current ?? (await getCurrentUser())?.id;
       if (!userId) return;
       userIdRef.current = userId;
 

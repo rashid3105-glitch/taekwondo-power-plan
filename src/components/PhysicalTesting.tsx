@@ -25,6 +25,7 @@ import {
   findTestByDbName,
   localizedTestName,
 } from "@/lib/testCatalog";
+import { getCurrentUser } from "@/lib/authSession";
 
 interface TestResult {
   id: string;
@@ -77,7 +78,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
   const [tab, setTab] = useState<string>("results");
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => setCurrentUserId(user?.id ?? null));
+    getCurrentUser().then((user) => setCurrentUserId(user?.id ?? null));
   }, []);
 
   useEffect(() => {
@@ -113,7 +114,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
 
   async function loadAthletes() {
     setLoadingAthletes(true);
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await getCurrentUser();
     if (!user || !activeClubId) {
       setAthletes([]);
       setLoadingAthletes(false);
@@ -163,7 +164,7 @@ export function PhysicalTesting({ mode, athleteId, athleteName }: PhysicalTestin
       | { entries: Array<{ athleteId: string; value: number }>; unit: string },
   ) {
     if (!runnerDef) return;
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await getCurrentUser();
     const today = new Date().toISOString().split("T")[0];
 
     // Group mode

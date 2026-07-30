@@ -13,6 +13,7 @@ import {
 } from "@/lib/mentalAssessmentOfflineDB";
 import { syncMentalAssessments } from "@/lib/mentalAssessmentSyncEngine";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
+import { getCurrentUser } from "@/lib/authSession";
 
 interface SubmitInput {
   total_score: number;
@@ -54,7 +55,7 @@ export function useOfflineMentalAssessments() {
   const { activeClubId } = useActiveClub();
 
   const refresh = useCallback(async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await getCurrentUser();
     if (!user) {
       setAssessments([]);
       setLoading(false);
@@ -113,7 +114,7 @@ export function useOfflineMentalAssessments() {
       // may not be set yet if the component mounts and the user submits quickly.
       let uid = userId;
       if (!uid) {
-        const { data: { user } } = await supabase.auth.getUser();
+        const user = await getCurrentUser();
         if (!user) return null;
         uid = user.id;
         setUserId(uid);

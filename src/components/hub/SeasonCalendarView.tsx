@@ -14,6 +14,10 @@ import {
   sessionLabelKey, sessionRowClass,
 } from "@/lib/seasonCalendar";
 import { cn } from "@/lib/utils";
+import { getCurrentUser } from "@/lib/authSession";
+import {
+  cacheSeasonFocus, readCachedSeasonFocus, type SeasonFocusSnapshot,
+} from "@/lib/seasonOfflineDB";
 
 interface Props {
   seasonPlan: ClubSeasonPlan;
@@ -53,9 +57,56 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
 
   useEffect(() => {
     let cancelled = false;
+
+    // Shared projection so cached and fresh data render identically.
+    const applySnapshot = (snap: SeasonFocusSnapshot) => {
+      const compRows = snap.competitions ?? [];
+      setCompetitionDates(new Set(compRows.map((c: any) => c.event_date as string)));
+      // Group by date and dedupe by name so multi-athlete tournaments show once per day.
+      const byDate = new Map<string, { name: string; priority: string | null }[]>();
+      for (const c of compRows as any[]) {
+        const iso = c.event_date as string;
+        const list = byDate.get(iso) ?? [];
+        if (!list.some((x) => x.name === c.name)) {
+          list.push({ name: c.name as string, priority: (c.priority as string | null) ?? null });
+        }
+        byDate.set(iso, list);
+      }
+      setCompetitionsByDate(byDate);
+      setOverrides(((snap.overrides ?? []) as any[]).map((o) => ({
+        ...o,
+        session_type: o.session_type as SessionType | null,
+      })) as AthleteSeasonOverride[]);
+
+      const tm = new Map<string, { name: string; category: string }>();
+      for (const tt of (snap.techniques ?? []) as any[]) {
+        tm.set(tt.id, { name: tt.name, category: tt.category });
+      }
+
+      const wfm = new Map<number, WeekFocus>();
+      for (const row of (snap.teamFocus ?? []) as any[]) {
+        wfm.set(row.season_week, { teamTechIds: row.technique_ids ?? [], teamNote: row.coach_note ?? "", athleteTechIds: [] });
+      }
+      for (const row of (snap.athleteFocus ?? []) as any[]) {
+        const existing = wfm.get(row.season_week) ?? { teamTechIds: [], teamNote: "", athleteTechIds: [] };
+        wfm.set(row.season_week, { ...existing, athleteTechIds: row.technique_ids ?? [] });
+      }
+
+      setWeekFocusMap(wfm);
+      setTechMap(tm);
+    };
+
     (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      const user = await getCurrentUser();
+      if (!user || cancelled) return;
+
+      // Offline: render the last snapshot instead of an empty calendar.
+      if (!navigator.onLine) {
+        const cached = await readCachedSeasonFocus(seasonPlan.id);
+        if (!cancelled && cached) applySnapshot(cached.payload);
+        return;
+      }
+
       const compsQuery = supabase
         .from("competitions")
         .select("event_date, name, priority, user_id, club_id")
@@ -83,48 +134,29 @@ export function SeasonCalendarView({ seasonPlan, phases, template }: Props) {
           .eq("athlete_id", user.id),
       ]);
       if (cancelled) return;
-      const compRows = (compsRes.data ?? []) as any[];
-      setCompetitionDates(new Set(compRows.map((c) => c.event_date as string)));
-      // Group by date and dedupe by name so multi-athlete tournaments show once per day.
-      const byDate = new Map<string, { name: string; priority: string | null }[]>();
-      for (const c of compRows) {
-        const iso = c.event_date as string;
-        const list = byDate.get(iso) ?? [];
-        if (!list.some((x) => x.name === c.name)) {
-          list.push({ name: c.name as string, priority: (c.priority as string | null) ?? null });
-        }
-        byDate.set(iso, list);
-      }
-      setCompetitionsByDate(byDate);
-      setOverrides(((ovRes.data ?? []) as any[]).map((o) => ({
-        ...o,
-        session_type: o.session_type as SessionType | null,
-      })) as AthleteSeasonOverride[]);
 
       const allTechIds = [
         ...((techFocusRes.data ?? []) as any[]).flatMap((r: any) => r.technique_ids ?? []),
         ...((athTechRes.data ?? []) as any[]).flatMap((r: any) => r.technique_ids ?? []),
       ];
       const uniqueTechIds = [...new Set(allTechIds)];
-      const tm = new Map<string, { name: string; category: string }>();
+      let techs: any[] = [];
       if (uniqueTechIds.length > 0) {
-        const { data: techs } = await (supabase.from as any)("club_techniques")
+        const { data } = await (supabase.from as any)("club_techniques")
           .select("id, name, category").in("id", uniqueTechIds);
-        for (const tt of (techs ?? []) as any[]) tm.set(tt.id, { name: tt.name, category: tt.category });
+        techs = (data ?? []) as any[];
       }
-
-      const wfm = new Map<number, WeekFocus>();
-      for (const row of (techFocusRes.data ?? []) as any[]) {
-        wfm.set(row.season_week, { teamTechIds: row.technique_ids ?? [], teamNote: row.coach_note ?? "", athleteTechIds: [] });
-      }
-      for (const row of (athTechRes.data ?? []) as any[]) {
-        const existing = wfm.get(row.season_week) ?? { teamTechIds: [], teamNote: "", athleteTechIds: [] };
-        wfm.set(row.season_week, { ...existing, athleteTechIds: row.technique_ids ?? [] });
-      }
-
       if (cancelled) return;
-      setWeekFocusMap(wfm);
-      setTechMap(tm);
+
+      const snapshot: SeasonFocusSnapshot = {
+        competitions: (compsRes.data ?? []) as any[],
+        overrides: (ovRes.data ?? []) as any[],
+        teamFocus: (techFocusRes.data ?? []) as any[],
+        athleteFocus: (athTechRes.data ?? []) as any[],
+        techniques: techs,
+      };
+      applySnapshot(snapshot);
+      void cacheSeasonFocus(seasonPlan.id, snapshot);
     })();
     return () => { cancelled = true; };
   }, [seasonPlan.id, seasonPlan.start_date, seasonPlan.end_date, activeClubId]);

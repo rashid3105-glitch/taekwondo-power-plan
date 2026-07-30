@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { getCachedPlan, setCachedPlan } from "@/lib/planOfflineDB";
+import { getCurrentUser } from "@/lib/authSession";
 
 export function useOfflinePlan() {
   const [plan, setPlan] = useState<any | null>(null);
@@ -12,7 +13,7 @@ export function useOfflinePlan() {
 
   const refresh = useCallback(async () => {
     setLoading(true);
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await getCurrentUser();
     if (!user) {
       setPlan(null);
       setLoading(false);

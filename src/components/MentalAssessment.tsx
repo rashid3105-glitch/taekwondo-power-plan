@@ -40,6 +40,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { getCurrentUser } from "@/lib/authSession";
 
 interface Profile {
   belt_level: string;
@@ -467,7 +468,7 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
   const saveToDiary = async () => {
     setSavingDiary(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await getCurrentUser();
       if (!user) throw new Error("Not authenticated");
 
       const scoreLines = Object.entries(scores)
