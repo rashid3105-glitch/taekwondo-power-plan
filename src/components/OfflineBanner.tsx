@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { WifiOff } from "lucide-react";
 import { LanguageContext } from "@/i18n/LanguageContext";
+import { startChatSyncListener } from "@/lib/chatSyncEngine";
 
 export const OfflineBanner = () => {
   const ctx = useContext(LanguageContext);
@@ -13,9 +14,12 @@ export const OfflineBanner = () => {
     const handleOffline = () => setOnline(false);
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
+    // Flush chat messages composed while offline as soon as we reconnect.
+    const stopChatSync = startChatSyncListener();
     return () => {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
+      stopChatSync();
     };
   }, []);
 
