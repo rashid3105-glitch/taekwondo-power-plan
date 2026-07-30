@@ -421,6 +421,14 @@ export default function Dashboard() {
     (async () => {
       const user = await getCurrentUser();
       if (!user || cancelled) return;
+
+      // Offline: serve the last known season plan from IndexedDB.
+      if (!navigator.onLine) {
+        const cached = await readCachedSeasonBundle(clubId);
+        if (!cancelled && cached) setClubSeason(cached.payload as any);
+        return;
+      }
+
       const { data: clubData } = await supabase
         .from("clubs" as any)
         .select("name")
@@ -434,7 +442,7 @@ export default function Dashboard() {
           .eq("club_id", clubId).eq("is_active", true);
         if (cancelled) return;
         const rows = (seasonRows ?? []) as any[];
-        if (rows.length === 0) { setClubSeason(null); return; }
+        if (rows.length === 0) { setClubSeason(null); void cacheSeasonBundle(clubId, null); return; }
         const todayIso = new Date().toISOString().slice(0, 10);
         const covering = rows
           .filter((r) => r.start_date <= todayIso && r.end_date >= todayIso)
@@ -451,16 +459,22 @@ export default function Dashboard() {
         const hasAnyVisibilitySet = visRows && visRows.length > 0;
         const athleteIsIncluded = visRows?.some((v: any) => v.athlete_id === user.id) || seasonRow.created_by === user.id || isCoachOrAdmin;
         if (!hasAnyVisibilitySet || athleteIsIncluded) {
-
-          setClubSeason({
+          const bundle = {
             plan: seasonRow,
             phases: seasonRow.club_season_phases || [],
             template: seasonRow.club_season_day_templates || [],
-          });
+          };
+          setClubSeason(bundle);
+          void cacheSeasonBundle(clubId, bundle);
         } else {
           setClubSeason(null);
+          void cacheSeasonBundle(clubId, null);
         }
-      } catch { /* ignore */ }
+      } catch {
+        // Network hiccup — fall back to the cached bundle rather than showing nothing.
+        const cached = await readCachedSeasonBundle(clubId);
+        if (!cancelled && cached) setClubSeason(cached.payload as any);
+      }
     })();
     return () => { cancelled = true; };
   }, [activeMembership?.club_id]);
