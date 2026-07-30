@@ -28,6 +28,8 @@ import { SquadPulse, type PulseFilter } from "@/components/coach/SquadPulse";
 import { WeeklySquadExport } from "@/components/coach/WeeklySquadExport";
 import { AthleteAddMenu } from "@/components/coach/AthleteAddMenu";
 import { PendingAthletesSection } from "@/components/coach/PendingAthletesSection";
+import ComplianceAlertsCard from "@/components/ComplianceAlertsCard";
+import AnnouncementsCard from "@/components/AnnouncementsCard";
 import { BulkMonthlyReportsCard } from "@/components/coach/BulkMonthlyReportsCard";
 
 import { TeamWeeklyScheduleCard } from "@/components/coach/TeamWeeklyScheduleCard";
