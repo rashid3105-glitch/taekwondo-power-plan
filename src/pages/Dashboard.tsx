@@ -505,7 +505,16 @@ export default function Dashboard() {
       try {
         const cachedProfile = localStorage.getItem(PROFILE_CACHE_KEY);
         const cachedPlans = localStorage.getItem(PLANS_CACHE_KEY);
-        if (cachedProfile) setProfile(JSON.parse(cachedProfile) as Profile);
+        if (cachedProfile) {
+          const parsedProfile = JSON.parse(cachedProfile) as Profile;
+          setProfile(parsedProfile);
+          // Club season plan (read-only) from IndexedDB so the team calendar works offline.
+          const clubId = (parsedProfile as any)?.club_id as string | undefined;
+          if (clubId) {
+            const cachedSeason = await readCachedSeasonBundle(clubId);
+            if (cachedSeason?.payload) setClubSeason(cachedSeason.payload as any);
+          }
+        }
         if (cachedPlans) setPlans(JSON.parse(cachedPlans) as TrainingPlan[]);
       } catch { /* ignore cache parse errors */ }
       setLoading(false);
