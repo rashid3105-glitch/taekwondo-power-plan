@@ -47,7 +47,7 @@ export function CollapsiblePanel({
           />
           {Icon && <Icon className={cn("h-4 w-4 shrink-0", iconClass)} />}
           <span className="font-semibold text-sm text-foreground truncate">{title}</span>
-        </button>
+        </div>
         {action && <div onClick={(e) => e.stopPropagation()}>{action}</div>}
       </div>
       {open && <div className="px-4 sm:px-5 pb-4 sm:pb-5 space-y-3">{children}</div>}
