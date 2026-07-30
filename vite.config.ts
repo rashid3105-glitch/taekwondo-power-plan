@@ -18,6 +18,8 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: "autoUpdate",
+      // main.tsx is the only registrar (guarded against preview/iframe/native)
+      injectRegister: null,
       // Never run service worker in dev / Lovable preview iframe
       devOptions: {
         enabled: false,
