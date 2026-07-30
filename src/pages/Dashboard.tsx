@@ -58,6 +58,7 @@ import { HubNextEvent } from "@/components/hub/HubNextEvent";
 import { HubRecoveryStrip } from "@/components/hub/HubRecoveryStrip";
 import { SeasonCalendarView } from "@/components/hub/SeasonCalendarView";
 import { getCurrentUser } from "@/lib/authSession";
+import { cacheSeasonBundle, readCachedSeasonBundle } from "@/lib/seasonOfflineDB";
 
 import { HubOtherModules } from "@/components/hub/HubOtherModules";
 import { HubReadinessBanner } from "@/components/hub/HubReadinessBanner";
