@@ -26,6 +26,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { getCurrentUser } from "@/lib/authSession";
 
 type SupportedLocale = "en" | "da" | "sv" | "de" | "ar" | "no";
 
@@ -127,7 +128,7 @@ export function PostCompetitionReflection({ competition, upcomingCompetitions, o
   async function handleSubmit() {
     setSubmitting(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await getCurrentUser();
       if (!user) { toast({ title: t("error"), description: "Not signed in", variant: "destructive" }); return; }
 
       const [{ data: profile }, { data: lastBaseline }] = await Promise.all([

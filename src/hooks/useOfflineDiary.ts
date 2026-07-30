@@ -14,6 +14,7 @@ import {
   type DiaryEntryType,
 } from "@/lib/diaryOfflineDB";
 import { syncDiary } from "@/lib/diarySyncEngine";
+import { getCurrentUser } from "@/lib/authSession";
 
 interface NewEntry {
   entry_date: string;
@@ -43,7 +44,7 @@ export function useOfflineDiary() {
 
   // Load: prefer the network, fall back to the cache when offline.
   const refresh = useCallback(async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await getCurrentUser();
     if (!user) {
       setEntries([]);
       setLoading(false);

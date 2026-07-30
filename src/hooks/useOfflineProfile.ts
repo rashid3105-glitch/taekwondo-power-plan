@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { getCachedProfile, setCachedProfile } from "@/lib/profileOfflineDB";
+import { getCurrentUser } from "@/lib/authSession";
 
 export function useOfflineProfile() {
   const [profile, setProfile] = useState<any | null>(null);
@@ -13,7 +14,7 @@ export function useOfflineProfile() {
 
   const refresh = useCallback(async () => {
     setLoading(true);
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await getCurrentUser();
     if (!user) {
       setProfile(null);
       setLoading(false);

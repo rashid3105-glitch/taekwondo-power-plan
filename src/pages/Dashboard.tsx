@@ -57,6 +57,7 @@ import { HubTodayHero } from "@/components/hub/HubTodayHero";
 import { HubNextEvent } from "@/components/hub/HubNextEvent";
 import { HubRecoveryStrip } from "@/components/hub/HubRecoveryStrip";
 import { SeasonCalendarView } from "@/components/hub/SeasonCalendarView";
+import { getCurrentUser } from "@/lib/authSession";
 
 import { HubOtherModules } from "@/components/hub/HubOtherModules";
 import { HubReadinessBanner } from "@/components/hub/HubReadinessBanner";
@@ -265,7 +266,7 @@ export default function Dashboard() {
     let cancelled = false;
     (async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const user = await getCurrentUser();
         if (!user || cancelled) return;
         const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
         const mentalTable = hasCoachRole ? "coach_mental_assessments" : "mental_assessments";
@@ -418,7 +419,7 @@ export default function Dashboard() {
     if (!clubId) return;
     let cancelled = false;
     (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await getCurrentUser();
       if (!user || cancelled) return;
       const { data: clubData } = await supabase
         .from("clubs" as any)
@@ -478,7 +479,7 @@ export default function Dashboard() {
 
 
   const loadData = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await getCurrentUser();
     if (!user) { navigate("/auth"); return; }
 
     const PLANS_CACHE_KEY = `cached_training_plans:${user.id}`;
@@ -662,7 +663,7 @@ export default function Dashboard() {
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await getCurrentUser();
       if (!user) throw new Error("Not authenticated");
 
       // Deactivate existing plans before inserting new one
@@ -702,7 +703,7 @@ export default function Dashboard() {
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await getCurrentUser();
       if (!user) throw new Error("Not authenticated");
 
       await supabase.from("rehab_plans").update({ is_active: false } as any).eq("user_id", user.id);
@@ -729,7 +730,7 @@ export default function Dashboard() {
 
   const handleSignOut = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await getCurrentUser();
       if (user) {
         const { unregisterPushToken } = await import("@/lib/nativePush");
         await unregisterPushToken(user.id);
@@ -1213,7 +1214,7 @@ export default function Dashboard() {
                       </div>
                       <div className="flex gap-2">
                         <Button variant="outline" size="sm" onClick={async () => {
-                          const { data: { user } } = await supabase.auth.getUser();
+                          const user = await getCurrentUser();
                           if (!user) return;
                           await supabase.from("rehab_plans").update({ is_active: false } as any).eq("user_id", user.id);
                           await supabase.from("rehab_plans").update({ is_active: true } as any).eq("id", rp.id);
@@ -1388,7 +1389,7 @@ export default function Dashboard() {
                       {(!hasCoach || isPaid) && (
                         <div className="flex items-center gap-1">
                           <Button variant="outline" size="sm" onClick={async () => {
-                            const { data: { user } } = await supabase.auth.getUser();
+                            const user = await getCurrentUser();
                             if (!user) return;
                             await supabase.from("training_plans").update({ is_active: false }).eq("user_id", user.id);
                             await supabase.from("training_plans").update({ is_active: true }).eq("id", plan.id);

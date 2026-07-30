@@ -30,6 +30,7 @@ import {
   filterEntries, groupByMonth, currentMonthKey,
   type DateRange, type ViewMode,
 } from "@/lib/diaryFilters";
+import { getCurrentUser } from "@/lib/authSession";
 
 type DiaryEntry = CachedDiaryEntry;
 
@@ -149,7 +150,7 @@ export default function Diary() {
 
   useEffect(() => {
     void (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await getCurrentUser();
       if (!user) { navigate("/auth"); return; }
       const { data } = await supabase
         .from("profiles")

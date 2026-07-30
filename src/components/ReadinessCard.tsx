@@ -17,6 +17,7 @@ import {
   makeCheckinKey,
 } from "@/lib/readinessOfflineDB";
 import { syncReadiness } from "@/lib/readinessSyncEngine";
+import { getCurrentUser } from "@/lib/authSession";
 
 interface Checkin {
   id?: string;
@@ -72,7 +73,7 @@ export function ReadinessCard() {
   }, []);
 
   async function load() {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await getCurrentUser();
     if (!user) return;
     const todayStr = new Date().toISOString().slice(0, 10);
 
@@ -108,7 +109,7 @@ export function ReadinessCard() {
   async function submit() {
     setSubmitting(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await getCurrentUser();
       if (!user) throw new Error("Not authenticated");
       const todayStr = new Date().toISOString().slice(0, 10);
       const payload = {
@@ -180,7 +181,7 @@ export function ReadinessCard() {
     // Best-effort prefill from yesterday's manually-logged summary.
     try {
       const yday = new Date(Date.now() - 86400_000).toISOString().slice(0, 10);
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await getCurrentUser();
       if (!user) return;
       const { data: s } = await supabase
         .from("wearable_daily_summary")

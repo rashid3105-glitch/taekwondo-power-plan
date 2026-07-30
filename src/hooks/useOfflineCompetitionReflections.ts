@@ -17,6 +17,7 @@ import {
   type ReflectionSyncResult,
 } from "@/lib/competitionReflectionSyncEngine";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
+import { getCurrentUser } from "@/lib/authSession";
 
 interface SubmitInput {
   competition_id: string | null;
@@ -65,7 +66,7 @@ export function useOfflineCompetitionReflections() {
   }, []);
 
   const refresh = useCallback(async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await getCurrentUser();
     if (!user) {
       setReflections([]);
       setLoading(false);
