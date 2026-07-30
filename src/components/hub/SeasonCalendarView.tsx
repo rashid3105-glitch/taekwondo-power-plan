@@ -14,6 +14,10 @@ import {
   sessionLabelKey, sessionRowClass,
 } from "@/lib/seasonCalendar";
 import { cn } from "@/lib/utils";
+import { getCurrentUser } from "@/lib/authSession";
+import {
+  cacheSeasonFocus, readCachedSeasonFocus, type SeasonFocusSnapshot,
+} from "@/lib/seasonOfflineDB";
 
 interface Props {
   seasonPlan: ClubSeasonPlan;
