@@ -475,6 +475,8 @@ export default function CoachDashboard() {
 
             {/* Squad content (formerly the "squad" tab) */}
             <div className="space-y-4">
+              <AnnouncementsCard />
+              <ComplianceAlertsCard />
               {coachUserId && <PendingAthletesSection coachId={coachUserId} />}
               
               {!isAdmin && athletes.length >= MAX_ATHLETES && (
