@@ -615,11 +615,13 @@ export default function Dashboard() {
 
 
           if (!hasAnyVisibilitySet || athleteIsIncluded) {
-            setClubSeason({
+            const bundle = {
               plan: seasonRow,
               phases: seasonRow.club_season_phases || [],
               template: seasonRow.club_season_day_templates || [],
-            });
+            };
+            setClubSeason(bundle);
+            void cacheSeasonBundle(profileData.club_id, bundle);
           }
         }
       } catch { /* table may not exist yet */ }
