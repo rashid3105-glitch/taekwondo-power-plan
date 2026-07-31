@@ -1,51 +1,43 @@
-## Mål
+## Goal
 
-Appen skal kunne åbnes og bruges uden internet — både som web/PWA og som native iOS/Android-app — og synkronisere ændringer, når nettet kommer tilbage.
+A new admin-only page at `/admin/stats` that shows platform user statistics: a KPI summary at the top and a detailed, filterable table of users below.
 
-## Hvad jeg fandt (verificeret i koden)
+## Summary section (KPI cards)
 
-1. **Hvid skærm på web/PWA skyldes to konkurrerende service workers.** `public/sw.js` er en håndskrevet push-only worker uden cache, og `vite-plugin-pwa` genererer også `/sw.js` med precache af app-shell. Filen i `public/` overskriver den genererede ved build, så appen har i praksis **ingen offline-cache** — derfor blank skærm uden net.
-2. **Ingen navigations-fallback.** Workbox-konfigurationen cacher kun billeder/scripts/fonts, ikke selve HTML-dokumentet, så SPA-ruter kan ikke åbnes offline.
-3. **"Åbner, men ingen data" skyldes `supabase.auth.getUser()`.** Det er et netværkskald og bruges 170 steder (bl.a. `Dashboard.tsx`, `useOfflineDiary.ts`, `ReadinessCard.tsx`). Offline fejler det eller hænger — flere steder sender det brugeren til `/auth`. `getSession()` læser fra lokal storage og virker offline.
-4. **Der findes allerede solid offline-infrastruktur**: IndexedDB + outbox + sync-engines for dagbog, træningslog, readiness, mental, coach-mental, fysiske tests, stævne-refleksion, plan, profil og videoanalyse. Den mangler bare at kunne køre, fordi shell/auth fejler.
-5. **Ikke offline i dag**: sæsonkalender/holdplan og chat.
+- Total users
+- Active last 7 days / last 30 days (based on most recent activity: diary entries, workout logs, readiness check-ins, chat messages)
+- New signups this month (plus previous-month comparison)
+- Approved vs. pending approval
+- Paid vs. demo vs. unpaid
+- Role split: athletes / coaches / parents / admins
+- Clubs: total clubs, users without a club
+- Small bar chart: signups per month, last 12 months (recharts, already in project)
 
-## Plan
+## Table section
 
-### Fase 1 — App-shell der åbner offline (web + PWA)
-- Omdøb `public/sw.js` til `public/push-sw.js` (kun push/notification-handlers, uændret logik) og opdatér `src/lib/pushNotifications.ts` til fortsat at bruge `/sw.js`.
-- Lad `vite-plugin-pwa` (generateSW) eje `/sw.js` og indlæse push-workeren via `workbox.importScripts: ["/push-sw.js"]` — så én worker giver både push og offline-cache.
-- Tilføj `navigateFallback: "/index.html"` med `NetworkFirst` for navigationer (deny-list for `/~oauth`, `/api`) og bevar `NetworkOnly` for backend-kald.
-- Bevar de eksisterende guards: ingen registrering i Lovable-preview, iframe eller native runtime.
+One row per user with columns:
+- Name, email, club, country
+- Role (athlete/coach/parent/admin)
+- Approved, payment status, demo expiry
+- Created date, last activity date
+- Activity counters: diary entries, workout logs, tests, competitions
 
-### Fase 2 — Offline-sikker login-tilstand
-- Indfør en fælles hjælper `getCurrentUser()` i `src/lib/authSession.ts`, som bruger `getSession()` (lokal) og kun falder tilbage til netværk når man er online.
-- Udskift `auth.getUser()` i de skærme, der skal virke offline: Dashboard, alle `useOffline*`-hooks, ReadinessCard, PhysicalTesting, MentalAssessment, Diary, PostCompetitionReflection, Profile.
-- Fjern redirect til `/auth` når fejlen skyldes manglende netværk (kun redirect ved reelt manglende session).
-- Native: sørg for at hydrering fra Capacitor Preferences ikke blokerer mount uden net (timeout findes allerede — udvides med offline-tjek).
+Controls:
+- Search by name/email/club
+- Filters: club, role, status (approved/pending, paid/unpaid/demo), activity (active 30d / inactive 30d)
+- Sortable columns (created, last activity, name)
+- CSV export of the currently filtered rows
+- Pagination (50 per row page)
 
-### Fase 3 — Min plan + sæsonkalender offline (læsning)
-- Ny `src/lib/seasonOfflineDB.ts`: cache klubbens sæsonplan, faser, dags-skabeloner og ugens teknikfokus i IndexedDB ved hver online-indlæsning.
-- `SeasonCalendarView` (atlet) og "I dag"-kortet læser fra cache, når `navigator.onLine` er falsk, med "Sidst opdateret …"-mærkat.
-- Individuel træningsplan bruger allerede `planOfflineDB` — sikres, at den også vises, når Dashboard indlæses offline.
+## Technical approach
 
-### Fase 4 — Chat offline (læs + kø)
-- Ny `chatOfflineDB` + `chatSyncEngine` i samme mønster som dagbogen: cache seneste ~100 beskeder pr. tråd, og læg nye beskeder i en outbox.
-- Beskeder sendt offline vises med "afventer"-ikon og sendes automatisk ved reconnect (idempotent via klient-genereret nøgle).
-- Realtime-abonnement genstartes ved reconnect, så tråden opdateres.
+- New page `src/pages/AdminStats.tsx`, route `/admin/stats` in `src/App.tsx`, entry in the admin block of `src/components/GlobalAppMenu.tsx`. Page guards with the existing `is_admin` RPC (same pattern as `AdminPayments.tsx`).
+- New security-definer DB function `public.get_admin_user_stats()` that returns one JSON payload: summary aggregates + per-user rows (profile fields, role from `user_roles`, club name, last-activity timestamp and counts computed with lateral aggregates). It raises `not_admin` unless `is_admin(auth.uid())`, so no data leaks to non-admins and the client makes a single call instead of many table queries.
+- Emails come from the existing `get-admin-users` edge function (already returns an id→email map) and are merged client-side.
+- Styling follows the existing Noir & Gold admin pages; all labels go through `t()` with keys added for all 7 languages.
+- Help page/changelog updated with a short entry for the new admin statistics page.
 
-### Fase 5 — Synlighed og hjælp
-- Udvid `OfflineBanner` med antal ventende ændringer og en "Synkronisér nu"-knap.
-- Central sync-orchestrator, der kører alle sync-engines ved `online`-event og ved app-resume (native).
-- Opdatér `src/pages/Help.tsx` med et afsnit om offline-brug + changelog v1.6.0, og tilføj nye tekstnøgler på alle 7 sprog.
+## Notes
 
-## Tekniske detaljer
-
-- Ingen databaseændringer er nødvendige; chat-outboxen bruger en klientgenereret idempotensnøgle mod eksisterende `chat_messages`.
-- Workbox-strategier: `NetworkFirst` for HTML-navigationer, `StaleWhileRevalidate` for statiske assets, `NetworkOnly` for backend-domænet (auth/data må aldrig serveres fra cache).
-- Native builds bruger ikke service worker — der løses offline udelukkende af Fase 2–4 (IndexedDB + lokal session).
-- Efter merge kræves `git pull` → `npm install` → `npm run build` → `npx cap sync` for iOS/Android-builds.
-
-## Uden for scope
-
-Coach-administration, health-sync, ernæring, surveys og admin-sider forbliver online-only.
+- Read-only page: no writes, no schema changes to existing tables.
+- "Last activity" is derived from existing tables; there is no login-timestamp table, so it reflects in-app activity rather than sessions.
