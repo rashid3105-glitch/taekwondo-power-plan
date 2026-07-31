@@ -4266,6 +4266,7 @@ export type Database = {
         Returns: number
       }
       enqueue_monthly_reports: { Args: never; Returns: number }
+      get_admin_user_stats: { Args: never; Returns: Json }
       get_athlete_recovery_trend: {
         Args: { _athlete_id: string; _days?: number }
         Returns: {
