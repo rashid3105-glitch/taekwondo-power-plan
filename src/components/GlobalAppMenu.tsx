@@ -426,6 +426,7 @@ export function GlobalAppMenu() {
                       { to: "/admin/modules", icon: LayoutGrid, label: t("adminModules") || "Modules", color: "text-tab-nutrition" },
                       { to: "/admin/hero", icon: ImageIcon, label: "Forsidebilleder", color: "text-tab-plan" },
                       { to: "/admin/announcements", icon: Megaphone, label: "Besked til brugere", color: "text-amber-500" },
+                      { to: "/admin/stats", icon: BarChart3, label: t("adminStats"), color: "text-sky-400" },
 
                     ].map((it) => (
                       <button

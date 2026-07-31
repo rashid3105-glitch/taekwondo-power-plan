@@ -147,7 +147,7 @@ export default function AdminStats() {
 
   const exportCsv = () => {
     const head = [
-      t("name"), "Email", t("club"), t("country"), t("statsRole"), t("statsStatus"),
+      t("statsName"), "Email", t("club"), t("country"), t("statsRole"), t("statsStatus"),
       t("statsCreated"), t("statsLastActivity"),
       t("statsDiary"), t("statsWorkouts"), t("statsTests"), t("statsCompetitions"),
     ];
@@ -341,7 +341,7 @@ export default function AdminStats() {
                   <tr className="border-b border-border text-[11px] uppercase tracking-wider text-muted-foreground">
                     <th className="px-3 py-2 text-left">
                       <button onClick={() => toggleSort("display_name")} className="inline-flex items-center gap-1">
-                        {t("name")} <ArrowUpDown className="h-3 w-3" />
+                        {t("statsName")} <ArrowUpDown className="h-3 w-3" />
                       </button>
                     </th>
                     <th className="px-3 py-2 text-left">{t("club")}</th>
@@ -411,7 +411,7 @@ export default function AdminStats() {
         {pageCount > 1 && (
           <div className="flex items-center justify-between gap-2 pb-8">
             <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage((p) => p - 1)}>
-              {t("previous")}
+              {t("statsPrevPage")}
             </Button>
             <span className="text-xs text-muted-foreground">{page + 1} / {pageCount}</span>
             <Button variant="outline" size="sm" disabled={page >= pageCount - 1} onClick={() => setPage((p) => p + 1)}>
