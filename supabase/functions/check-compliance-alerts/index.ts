@@ -237,6 +237,10 @@ Deno.serve(async (req) => {
 
         if (insertErr || !inserted) continue; // duplicate → already notified
         alertsCreated++;
+        if (f.alertType === "antidoping") {
+          recentAntidoping.add(`${recipientId}|${f.athleteId}`);
+        }
+
 
         // Email
         const recipientEmail = await emailFor(recipientId);
