@@ -3,13 +3,13 @@ import { Send, Image, X, Mic, MicOff, Smile } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { sendMessage, MAX_ATTACHMENT_BYTES } from "@/lib/chatApi";
+import { sendMessage, MAX_ATTACHMENT_BYTES, type ChatMessage } from "@/lib/chatApi";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 interface Props {
   threadId: string;
-  onSent?: () => void;
+  onSent?: (message: ChatMessage) => void;
 }
 
 export function MessageComposer({ threadId, onSent }: Props) {
@@ -75,11 +75,11 @@ export function MessageComposer({ threadId, onSent }: Props) {
     setShowEmoji(false);
     setSending(true);
     try {
-      await sendMessage({ threadId, body, file });
+      const sent = await sendMessage({ threadId, body, file });
       setBody("");
       setFile(null);
       if (fileRef.current) fileRef.current.value = "";
-      onSent?.();
+      onSent?.(sent);
     } catch (e: any) {
       toast.error(e?.message || "Kunne ikke sende");
     } finally {
