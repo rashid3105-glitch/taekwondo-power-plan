@@ -23,7 +23,7 @@ interface Props {
 
 export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props) {
   const { t } = useLanguage();
-  const { messages, loading, refresh } = useMessages(thread.id);
+  const { messages, loading, refresh, setMessages } = useMessages(thread.id);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [meId, setMeId] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
@@ -244,7 +244,12 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
       </div>
 
 
-      <MessageComposer threadId={thread.id} />
+      <MessageComposer
+        threadId={thread.id}
+        onSent={(m) =>
+          setMessages((prev) => (prev.some((x) => x.id === m.id) ? prev : [...prev, m]))
+        }
+      />
 
       <AddMembersDialog
         open={addOpen}
