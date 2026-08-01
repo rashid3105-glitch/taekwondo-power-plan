@@ -26,7 +26,7 @@ type TopicKey =
   | "helpConsents" | "helpAttendance" | "helpDeleteAthlete" | "helpCoachMentalReview"
   | "helpSubscription" | "helpSecurity" | "helpDeleteAccount" | "helpNotifications"
   | "helpTodayCard" | "helpRunning" | "helpCompetitions" | "helpCoachChecklist"
-  | "helpModuleAccess" | "helpSurveys" | "helpTeamTests" | "helpCompliance";
+  | "helpModuleAccess" | "helpSurveys" | "helpTeamTests" | "helpCompliance" | "helpClubAssessment";
 
 type Topic = { key: TopicKey; icon: typeof UserCircle; isNew?: boolean };
 
