@@ -142,6 +142,9 @@ const SECTION_FALLBACK: Record<string, string> = {
   helpNoResults: "No matching topics",
   helpClear: "Clear",
   helpResults: "Results",
+  helpClubAssessmentTitle: "Klubanalysen (offentlig selvevaluering)",
+  helpClubAssessmentSteps:
+    "1. Åbn sportstalent.dk/klubanalyse — ingen login nødvendig.\n2. Besvar 15 spørgsmål fordelt på fem områder: rød tråd, trænerkapacitet, data og dokumentation, kultur og fastholdelse samt ledelse og retning.\n3. Angiv e-mail og samtykke for at se resultatet.\n4. Klubbens niveau (1-5) sættes af det svageste område — ikke af gennemsnittet.\n5. Resultatet viser de tre huller, der koster mest, med et konkret første skridt til hvert.\n6. Du kan frivilligt tilføje klubnavn, sportsgren og rolle efter resultatet.\nBemærk: siden er offentlig og må gerne deles med bestyrelse og trænerteam. Rapporten sendes ikke på mail endnu.",
 };
 
 const normalize = (s: string) =>
