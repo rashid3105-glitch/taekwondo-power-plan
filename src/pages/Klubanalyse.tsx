@@ -48,6 +48,9 @@ export default function Klubanalyse() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [assessmentId, setAssessmentId] = useState<string | null>(null);
+  // Kortlivet profil-token. Kun i hukommelsen — aldrig i URL eller localStorage.
+  const [profileToken, setProfileToken] = useState<string | null>(null);
+  const [profileFailed, setProfileFailed] = useState(false);
 
   const [clubName, setClubName] = useState("");
   const [sport, setSport] = useState("");
@@ -128,6 +131,7 @@ export default function Klubanalyse() {
       });
       if (fnError || (data as any)?.error) throw new Error((data as any)?.error || "fejl");
       setAssessmentId((data as any)?.id ?? null);
+      setProfileToken((data as any)?.token ?? null);
       setStage("result");
       window.scrollTo({ top: 0 });
     } catch {
@@ -138,15 +142,25 @@ export default function Klubanalyse() {
   };
 
   const saveProfile = async () => {
-    if (!assessmentId) return;
+    if (!assessmentId || !profileToken) {
+      setProfileFailed(true);
+      return;
+    }
     setSaving(true);
+    setProfileFailed(false);
     try {
-      await supabase.functions.invoke("submit-club-assessment", {
-        body: { action: "profile", id: assessmentId, club_name: clubName, sport, role },
+      const { data, error: fnError } = await supabase.functions.invoke("submit-club-assessment", {
+        body: { action: "profile", token: profileToken, club_name: clubName, sport, role },
       });
-      setProfileSaved(true);
+      if (fnError || (data as any)?.error) {
+        // Felterne er frivillige — fejl stille, der er intet at redde.
+        setProfileFailed(true);
+        setProfileToken(null);
+      } else {
+        setProfileSaved(true);
+      }
     } catch {
-      setError("Kunne ikke gemme oplysningerne.");
+      setProfileFailed(true);
     } finally {
       setSaving(false);
     }
@@ -489,6 +503,12 @@ export default function Klubanalyse() {
                 >
                   {profileSaved ? "Tak — oplysningerne er gemt" : "Gem oplysninger"}
                 </button>
+                {profileFailed && !profileSaved && (
+                  <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.6 }}>
+                    Oplysningerne kunne ikke gemmes. Det er frivilligt — din analyse er registreret.
+                  </div>
+                )}
+
               </div>
             </div>
           </div>

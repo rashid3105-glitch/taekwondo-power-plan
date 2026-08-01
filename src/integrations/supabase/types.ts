@@ -591,6 +591,24 @@ export type Database = {
           },
         ]
       }
+      club_assessment_profile_attempts: {
+        Row: {
+          created_at: string
+          id: string
+          ip_hash: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ip_hash: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ip_hash?: string
+        }
+        Relationships: []
+      }
       club_assessments: {
         Row: {
           answers: Json | null
@@ -602,10 +620,13 @@ export type Database = {
           ip_hash: string | null
           level: number | null
           profile_completed_at: string | null
+          report_sent_at: string | null
           role: string | null
           scores: Json | null
           sport: string | null
           strongest: string | null
+          subject_variant: string | null
+          unsubscribed_at: string | null
           weakest: string | null
         }
         Insert: {
@@ -618,10 +639,13 @@ export type Database = {
           ip_hash?: string | null
           level?: number | null
           profile_completed_at?: string | null
+          report_sent_at?: string | null
           role?: string | null
           scores?: Json | null
           sport?: string | null
           strongest?: string | null
+          subject_variant?: string | null
+          unsubscribed_at?: string | null
           weakest?: string | null
         }
         Update: {
@@ -634,10 +658,13 @@ export type Database = {
           ip_hash?: string | null
           level?: number | null
           profile_completed_at?: string | null
+          report_sent_at?: string | null
           role?: string | null
           scores?: Json | null
           sport?: string | null
           strongest?: string | null
+          subject_variant?: string | null
+          unsubscribed_at?: string | null
           weakest?: string | null
         }
         Relationships: []

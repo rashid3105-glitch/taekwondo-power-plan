@@ -144,7 +144,8 @@ const SECTION_FALLBACK: Record<string, string> = {
   helpResults: "Results",
   helpClubAssessmentTitle: "Klubanalysen (offentlig selvevaluering)",
   helpClubAssessmentSteps:
-    "1. Åbn sportstalent.dk/klubanalyse — ingen login nødvendig.\n2. Besvar 15 spørgsmål fordelt på fem områder: rød tråd, trænerkapacitet, data og dokumentation, kultur og fastholdelse samt ledelse og retning.\n3. Angiv e-mail og samtykke for at se resultatet.\n4. Klubbens niveau (1-5) sættes af det svageste område — ikke af gennemsnittet.\n5. Resultatet viser de tre huller, der koster mest, med et konkret første skridt til hvert.\n6. Du kan frivilligt tilføje klubnavn, sportsgren og rolle efter resultatet.\nBemærk: siden er offentlig og må gerne deles med bestyrelse og trænerteam. Rapporten sendes ikke på mail endnu.",
+    "1. Åbn sportstalent.dk/klubanalyse — ingen login nødvendig.\n2. Besvar 15 spørgsmål fordelt på fem områder: rød tråd, trænerkapacitet, data og dokumentation, kultur og fastholdelse samt ledelse og retning.\n3. Angiv e-mail og samtykke for at se resultatet.\n4. Klubbens niveau (1-5) sættes af det svageste område — ikke af gennemsnittet.\n5. Resultatet viser de tre huller, der koster mest, med et konkret første skridt til hvert.\n6. Du kan frivilligt tilføje klubnavn, sportsgren og rolle efter resultatet — det skal ske i samme browserfane inden for 30 minutter, ellers kan oplysningerne ikke gemmes.\n7. Rapportmail: når afsenderdomænet er DNS-verificeret og flaget slås til, sendes rapporten straks efter gennemførsel til den angivne adresse — med niveau, fordeling på de fem områder og de tre skridt i den rækkefølge, de skal tages (Dag 1-30, 31-60, 61-90). Mailen indeholder et afmeld-link, der virker uden login.\nBemærk: siden er offentlig og må gerne deles med bestyrelse og trænerteam.",
+
 };
 
 const normalize = (s: string) =>
@@ -529,6 +530,7 @@ export default function Help() {
 // Build numbers start at v1.0.0 on 2026-05-29 (first build with semantic versioning).
 // MINOR bumps for new features, PATCH bumps for small tweaks/fixes. Older releases left unversioned.
 const CHANGELOG: { dateKey: string; entries: string[]; build?: string }[] = [
+  { dateKey: "changelog_2026_08_01", entries: ["changelogEntry194"], build: "v1.5.13" },
   { dateKey: "changelog_2026_08_01", entries: ["changelogEntry193"], build: "v1.5.12" },
   { dateKey: "changelog_2026_07_30", entries: ["changelogEntry192"], build: "v1.5.11" },
   { dateKey: "changelog_2026_07_30", entries: ["changelogEntry191"], build: "v1.5.10" },
