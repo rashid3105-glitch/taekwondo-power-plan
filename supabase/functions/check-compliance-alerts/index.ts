@@ -191,6 +191,23 @@ Deno.serve(async (req) => {
       return name;
     }
 
+    // Rolling 30-day throttle for anti-doping reminders: regardless of severity
+    // or calendar month, a recipient gets at most one anti-doping reminder per
+    // 30 days for the same athlete.
+    const cutoff = new Date(Date.now() - 30 * 86400000).toISOString();
+    const recentAntidoping = new Set<string>();
+    if (findings.some((f) => f.alertType === "antidoping")) {
+      const { data: recentRows } = await admin
+        .from("compliance_alerts")
+        .select("recipient_id, athlete_id")
+        .eq("alert_type", "antidoping")
+        .in("athlete_id", athleteIds)
+        .gte("created_at", cutoff);
+      for (const r of recentRows ?? []) {
+        recentAntidoping.add(`${(r as any).recipient_id}|${(r as any).athlete_id}`);
+      }
+    }
+
     const templateEntry = TEMPLATES["compliance-alert"];
     let alertsCreated = 0;
     let emailsQueued = 0;
@@ -199,6 +216,10 @@ Deno.serve(async (req) => {
       const recipients = Array.from(new Set([f.athleteId, ...(coachesByAthlete.get(f.athleteId) ?? [])]));
 
       for (const recipientId of recipients) {
+        if (f.alertType === "antidoping" && recentAntidoping.has(`${recipientId}|${f.athleteId}`)) {
+          continue; // reminded within the last 30 days
+        }
+
         // In-app alert (unique constraint dedupes repeated daily runs)
         const { data: inserted, error: insertErr } = await admin
           .from("compliance_alerts")
@@ -216,6 +237,10 @@ Deno.serve(async (req) => {
 
         if (insertErr || !inserted) continue; // duplicate → already notified
         alertsCreated++;
+        if (f.alertType === "antidoping") {
+          recentAntidoping.add(`${recipientId}|${f.athleteId}`);
+        }
+
 
         // Email
         const recipientEmail = await emailFor(recipientId);
