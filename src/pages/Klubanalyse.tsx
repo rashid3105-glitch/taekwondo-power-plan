@@ -503,6 +503,12 @@ export default function Klubanalyse() {
                 >
                   {profileSaved ? "Tak — oplysningerne er gemt" : "Gem oplysninger"}
                 </button>
+                {profileFailed && !profileSaved && (
+                  <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.6 }}>
+                    Oplysningerne kunne ikke gemmes. Det er frivilligt — din analyse er registreret.
+                  </div>
+                )}
+
               </div>
             </div>
           </div>
