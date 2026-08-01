@@ -391,8 +391,9 @@ export default function Klubanalyse() {
                 Niveauet sættes af det svageste led, ikke af gennemsnittet. Det er ikke en karakter — det er et loft.
               </p>
               <p style={{ fontSize: 13, lineHeight: 1.65, color: "rgba(255,255,255,0.42)", margin: "8px 0 0" }}>
-                {DIMENSIONS[strongestIdx].name} står stærkest hos jer — men det tæller først for alvor, når hullet i{" "}
-                {DIMENSIONS[weakestIdx].name} er lukket.
+                {strongestIdx === weakestIdx
+                  ? "Jeres fem områder ligger lige — ingen af dem trækker fra endnu. Løftet skal komme bredt."
+                  : `${DIMENSIONS[strongestIdx].name} står stærkest hos jer — men det tæller først for alvor, når hullet i ${DIMENSIONS[weakestIdx].name} er lukket.`}
               </p>
             </div>
 
