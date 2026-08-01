@@ -22,6 +22,7 @@ import { SplashScreen } from "@/components/SplashScreen";
 import { isNativeApp } from "@/lib/platform";
 import Index from "./pages/Index";
 import CoachLanding from "./pages/CoachLanding";
+import Klubanalyse from "./pages/Klubanalyse";
 import { PublicSeo, DefaultNoIndex } from "@/components/seo/SeoHead";
 import FeatureDetail from "./pages/FeatureDetail";
 import PlatformPage from "./pages/PlatformPage";
