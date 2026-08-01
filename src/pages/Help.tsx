@@ -70,6 +70,7 @@ const TOPICS: Record<TopicKey, Topic> = {
   helpSurveys: { key: "helpSurveys", icon: ClipboardList, isNew: true },
   helpTeamTests: { key: "helpTeamTests", icon: Activity, isNew: true },
   helpCompliance: { key: "helpCompliance", icon: ShieldAlert, isNew: true },
+  helpClubAssessment: { key: "helpClubAssessment", icon: LifeBuoy, isNew: true },
 };
 
 type SectionDef = {
