@@ -118,7 +118,7 @@ const SECTIONS: SectionDef[] = [
     chipBg: "bg-tab-progress",
     chipFg: "text-white",
     accent: "bg-tab-progress",
-    topics: ["helpCoachChecklist", "helpAddStudents", "helpAttendance", "helpConsents", "helpStudentProgress", "helpModuleAccess", "helpTeamTests", "helpSurveys", "helpDeleteAthlete", "helpSeasonCalendar", "helpCoachFeedback", "helpChat", "helpWeeklyReport"],
+    topics: ["helpCoachChecklist", "helpAddStudents", "helpAttendance", "helpConsents", "helpStudentProgress", "helpModuleAccess", "helpTeamTests", "helpSurveys", "helpClubAssessment", "helpDeleteAthlete", "helpSeasonCalendar", "helpCoachFeedback", "helpChat", "helpWeeklyReport"],
   },
   {
     id: "account",
