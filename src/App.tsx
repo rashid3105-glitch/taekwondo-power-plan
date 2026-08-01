@@ -194,6 +194,7 @@ const AnimatedRoutes = () => {
         <Route path="/" element={<Page><PublicSeo path="/" title="Sportstalent — Operating System for Elite Talent Development in Danish Clubs" description="Sportstalent is the operating system Danish sports clubs use to develop elite talent: periodized training, readiness tracking, and squad management in one place." /><Index /></Page>} />
         <Route path="/for-traenere" element={<Page><PublicSeo path="/for-traenere" title="For trænere og klubber — Sportstalent" description="Værktøjer til trænere og klubber i enhver sportsgren: sæsonplaner, holdstyring, tests og fremgang for hver atlet — samlet ét sted." /><CoachLanding /></Page>} />
         <Route path="/v3" element={<Navigate to="/for-traenere" replace />} />
+        <Route path="/klubanalyse" element={<Page><PublicSeo path="/klubanalyse" title="Klubanalysen — hvor står jeres klub? | Sportstalent" description="15 spørgsmål og et ærligt billede af klubbens modenhed: rød tråd, trænerkapacitet, data, kultur og ledelse. Gratis selvevaluering for sportsklubber." /><Klubanalyse /></Page>} />
         <Route path="/signup/coach" element={<Page><SignupCoach /></Page>} />
         <Route path="/invite/:code" element={<Page><InviteSignup /></Page>} />
         <Route path="/signup" element={<Navigate to="/auth?tab=signup" replace />} />
