@@ -3,6 +3,13 @@ project_id = "zklwergsziidgyxewbkw"
 [functions]
   [functions.account-deletion-dry-run]
     verify_jwt = true
+  [functions.assessment-unsubscribe]
+    verify_jwt = false
+  [functions.send-assessment-report]
+    verify_jwt = false
+  [functions.submit-club-assessment]
+    verify_jwt = false
+
   [functions.check-compliance-alerts]
     verify_jwt = true
   [functions.auth-email-hook]
