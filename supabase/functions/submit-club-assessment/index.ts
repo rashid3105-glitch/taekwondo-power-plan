@@ -1,4 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
+import { signToken, verifyToken } from '../_shared/assessment-token.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -43,15 +44,41 @@ Deno.serve(async (req) => {
 
   const action = String(body.action || 'submit')
 
+  const clientIp =
+    req.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
+    req.headers.get('cf-connecting-ip') ||
+    'unknown'
+  const clientIpHash = await hashIp(clientIp)
+  const tokenSecret = Deno.env.get('ASSESSMENT_TOKEN_SECRET')
+
   // ---- Profile update on an existing (just created) assessment ----
+  // Kræver en kortlivet, signeret token udstedt ved selve indsendelsen.
   if (action === 'profile') {
-    const id = String(body.id || '').trim()
-    if (!id) return json({ error: 'missing_id' }, 400)
+    if (!tokenSecret) return json({ error: 'not_configured' }, 500)
+
+    // Samme IP-rate limit som på indsendelsen: max 5 i timen.
+    const hourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
+    const { count: attempts } = await admin
+      .from('club_assessment_profile_attempts')
+      .select('id', { count: 'exact', head: true })
+      .eq('ip_hash', clientIpHash)
+      .gte('created_at', hourAgo)
+    if ((attempts ?? 0) >= 5) return json({ error: 'rate_limited' }, 429)
+    await admin.from('club_assessment_profile_attempts').insert({ ip_hash: clientIpHash })
+
+    const providedToken = String(body.token || '').trim()
+    const verified = await verifyToken(tokenSecret, 'profile', providedToken)
+    if (!verified.ok) {
+      return json({ error: verified.reason === 'expired' ? 'token_expired' : 'invalid_token' }, 403)
+    }
+
+    const id = verified.id
     const clubName = body.club_name ? String(body.club_name).slice(0, 120) : null
     const sport = body.sport ? String(body.sport).slice(0, 80) : null
     const role = body.role ? String(body.role).slice(0, 60) : null
 
-    const { error } = await admin
+    // Engangsbrug: kun rækker der ikke allerede har fået profildata.
+    const { data: updated, error } = await admin
       .from('club_assessments')
       .update({
         club_name: clubName,
@@ -61,8 +88,10 @@ Deno.serve(async (req) => {
       })
       .eq('id', id)
       .is('profile_completed_at', null)
+      .select('id')
 
     if (error) return json({ error: 'update_failed' }, 500)
+    if (!updated || updated.length === 0) return json({ error: 'token_used' }, 403)
     return json({ success: true })
   }
 
@@ -87,11 +116,7 @@ Deno.serve(async (req) => {
   }
   if (!Number.isInteger(level) || level < 1 || level > 5) return json({ error: 'invalid_level' }, 400)
 
-  const ip =
-    req.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
-    req.headers.get('cf-connecting-ip') ||
-    'unknown'
-  const ipHash = await hashIp(ip)
+  const ipHash = clientIpHash
 
   // Simple rate limit: max 5 submissions per IP per hour
   const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
@@ -119,5 +144,30 @@ Deno.serve(async (req) => {
     .single()
 
   if (error) return json({ error: 'insert_failed' }, 500)
-  return json({ success: true, id: data.id })
+
+  // Kortlivet (30 min), engangsbrug-token bundet til den oprettede række.
+  // Klienten holder den kun i hukommelsen — aldrig i URL eller localStorage.
+  let profileToken: string | null = null
+  if (tokenSecret) {
+    profileToken = await signToken(tokenSecret, 'profile', data.id, 30 * 60)
+  }
+
+  // Rapportmail — må ALDRIG få indsendelsen til at fejle.
+  try {
+    const res = await fetch(`${supabaseUrl}/functions/v1/send-assessment-report`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${serviceKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id: data.id }),
+    })
+    if (!res.ok) {
+      console.error(`send-assessment-report returned ${res.status}: ${await res.text()}`)
+    }
+  } catch (e) {
+    console.error('send-assessment-report invocation failed', e)
+  }
+
+  return json({ success: true, id: data.id, token: profileToken })
 })
