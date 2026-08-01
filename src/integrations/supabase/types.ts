@@ -591,6 +591,57 @@ export type Database = {
           },
         ]
       }
+      club_assessments: {
+        Row: {
+          answers: Json | null
+          club_name: string | null
+          consent: boolean
+          created_at: string
+          email: string
+          id: string
+          ip_hash: string | null
+          level: number | null
+          profile_completed_at: string | null
+          role: string | null
+          scores: Json | null
+          sport: string | null
+          strongest: string | null
+          weakest: string | null
+        }
+        Insert: {
+          answers?: Json | null
+          club_name?: string | null
+          consent: boolean
+          created_at?: string
+          email: string
+          id?: string
+          ip_hash?: string | null
+          level?: number | null
+          profile_completed_at?: string | null
+          role?: string | null
+          scores?: Json | null
+          sport?: string | null
+          strongest?: string | null
+          weakest?: string | null
+        }
+        Update: {
+          answers?: Json | null
+          club_name?: string | null
+          consent?: boolean
+          created_at?: string
+          email?: string
+          id?: string
+          ip_hash?: string | null
+          level?: number | null
+          profile_completed_at?: string | null
+          role?: string | null
+          scores?: Json | null
+          sport?: string | null
+          strongest?: string | null
+          weakest?: string | null
+        }
+        Relationships: []
+      }
       club_athlete_season_overrides: {
         Row: {
           athlete_id: string

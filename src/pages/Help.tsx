@@ -26,7 +26,7 @@ type TopicKey =
   | "helpConsents" | "helpAttendance" | "helpDeleteAthlete" | "helpCoachMentalReview"
   | "helpSubscription" | "helpSecurity" | "helpDeleteAccount" | "helpNotifications"
   | "helpTodayCard" | "helpRunning" | "helpCompetitions" | "helpCoachChecklist"
-  | "helpModuleAccess" | "helpSurveys" | "helpTeamTests" | "helpCompliance";
+  | "helpModuleAccess" | "helpSurveys" | "helpTeamTests" | "helpCompliance" | "helpClubAssessment";
 
 type Topic = { key: TopicKey; icon: typeof UserCircle; isNew?: boolean };
 
@@ -70,6 +70,7 @@ const TOPICS: Record<TopicKey, Topic> = {
   helpSurveys: { key: "helpSurveys", icon: ClipboardList, isNew: true },
   helpTeamTests: { key: "helpTeamTests", icon: Activity, isNew: true },
   helpCompliance: { key: "helpCompliance", icon: ShieldAlert, isNew: true },
+  helpClubAssessment: { key: "helpClubAssessment", icon: LifeBuoy, isNew: true },
 };
 
 type SectionDef = {
@@ -118,7 +119,7 @@ const SECTIONS: SectionDef[] = [
     chipBg: "bg-tab-progress",
     chipFg: "text-white",
     accent: "bg-tab-progress",
-    topics: ["helpCoachChecklist", "helpAddStudents", "helpAttendance", "helpConsents", "helpStudentProgress", "helpModuleAccess", "helpTeamTests", "helpSurveys", "helpDeleteAthlete", "helpSeasonCalendar", "helpCoachFeedback", "helpChat", "helpWeeklyReport"],
+    topics: ["helpCoachChecklist", "helpAddStudents", "helpAttendance", "helpConsents", "helpStudentProgress", "helpModuleAccess", "helpTeamTests", "helpSurveys", "helpClubAssessment", "helpDeleteAthlete", "helpSeasonCalendar", "helpCoachFeedback", "helpChat", "helpWeeklyReport"],
   },
   {
     id: "account",
@@ -141,6 +142,9 @@ const SECTION_FALLBACK: Record<string, string> = {
   helpNoResults: "No matching topics",
   helpClear: "Clear",
   helpResults: "Results",
+  helpClubAssessmentTitle: "Klubanalysen (offentlig selvevaluering)",
+  helpClubAssessmentSteps:
+    "1. Åbn sportstalent.dk/klubanalyse — ingen login nødvendig.\n2. Besvar 15 spørgsmål fordelt på fem områder: rød tråd, trænerkapacitet, data og dokumentation, kultur og fastholdelse samt ledelse og retning.\n3. Angiv e-mail og samtykke for at se resultatet.\n4. Klubbens niveau (1-5) sættes af det svageste område — ikke af gennemsnittet.\n5. Resultatet viser de tre huller, der koster mest, med et konkret første skridt til hvert.\n6. Du kan frivilligt tilføje klubnavn, sportsgren og rolle efter resultatet.\nBemærk: siden er offentlig og må gerne deles med bestyrelse og trænerteam. Rapporten sendes ikke på mail endnu.",
 };
 
 const normalize = (s: string) =>
@@ -525,6 +529,7 @@ export default function Help() {
 // Build numbers start at v1.0.0 on 2026-05-29 (first build with semantic versioning).
 // MINOR bumps for new features, PATCH bumps for small tweaks/fixes. Older releases left unversioned.
 const CHANGELOG: { dateKey: string; entries: string[]; build?: string }[] = [
+  { dateKey: "changelog_2026_08_01", entries: ["changelogEntry193"], build: "v1.5.12" },
   { dateKey: "changelog_2026_07_30", entries: ["changelogEntry192"], build: "v1.5.11" },
   { dateKey: "changelog_2026_07_30", entries: ["changelogEntry191"], build: "v1.5.10" },
   { dateKey: "changelog_2026_07_29", entries: ["changelogEntry190"], build: "v1.5.9" },
