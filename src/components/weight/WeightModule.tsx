@@ -70,8 +70,10 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
           weightKg: currentWeight ?? 65,
           age: profile?.age ?? null,
           sessionsPerWeek: profile?.tkd_sessions_per_week ?? null,
+          activityLevel: (goal?.activity_level as any) ?? null,
+          sex: (goal?.sex as any) ?? null,
         }),
-    [profile, currentWeight],
+    [profile, currentWeight, goal],
   );
 
   const saveWeighIn = async () => {
