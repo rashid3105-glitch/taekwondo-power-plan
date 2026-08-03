@@ -13,7 +13,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { AIPlanCard } from "@/components/AIPlanCard";
 import { RehabPlanCard } from "@/components/RehabPlanCard";
 import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekSchedulePicker";
-import { Loader2, Plus, Zap, Heart, Save, Calendar, UserCog, Target, CalendarRange, Brain, Activity as ActivityIcon, ListChecks, Pencil, Lock } from "lucide-react";
+import { Loader2, Plus, Zap, Heart, Save, Calendar, UserCog, Target, CalendarRange, Brain, Activity as ActivityIcon, ListChecks, Pencil, Lock, Scale } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { SendReminderDialog } from "@/components/SendReminderDialog";
 import { ReminderHistory } from "@/components/ReminderHistory";
@@ -27,6 +27,7 @@ import { AthleteRunningProgress } from "@/components/coach/AthleteRunningProgres
 import { FormCurveChart } from "@/components/FormCurveChart";
 import { useNavigate } from "react-router-dom";
 import { Video as VideoIcon } from "lucide-react";
+import { WeightModule } from "@/components/weight/WeightModule";
 import { CollapsiblePanel } from "@/components/coach/CollapsiblePanel";
 
 /** High-contrast save button — must stand out everywhere in the system. */
@@ -622,7 +623,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
           </CollapsiblePanel>
 
           <CollapsiblePanel title={t("wpTitle")} icon={Scale} iconClass="text-emerald-500">
-            <WeightModule userId={athlete.user_id} profile={athlete} compact canEditGoal={!readOnly} readOnly={readOnly} />
+            <WeightModule userId={athlete.user_id} profile={athlete} compact canEditGoal readOnly={false} />
           </CollapsiblePanel>
         </TabsContent>
 
