@@ -50,7 +50,7 @@ const COLORS: Record<string, string> = {
   drills: "text-amber-500",
 };
 
-type NutritionView = "home" | "planner" | "logger" | "recipes";
+type NutritionView = "home" | "weight" | "recipes";
 
 export default function Library({ forcedSection }: { forcedSection?: string } = {}) {
   const { section: paramSection } = useParams<{ section: string }>();
