@@ -53,9 +53,11 @@ Alt tekst gennem `t()` på alle 7 sprog. Ingen røde prikker i bundnavigationen 
 
 **Frontend**
 - `src/lib/weightPlanner.ts`: ren logik — glidende gennemsnit, lineær prognose, ETA, kalorieunder-/overskud, sikkerhedsvurdering (rate, 5 %-regel, <18 år), milepæle. Enhedstestbar, ingen UI.
-- `src/components/weight/WeightModule.tsx`: hovedvisning, tager `userId` + `readOnly`/`canEditGoal`.
+- `src/components/weight/WeightModule.tsx`: hovedvisning med faner (Status · I dag · Kostplan), tager `userId` + `readOnly`/`canEditGoal`.
 - Underkomponenter: `WeightStatusCard`, `WeightGoalDialog`, `WeightTrendChart` (recharts, allerede i projektet), `CompetitionWeightCard`.
-- Wiring: ny `nutritionView === "weight"` i `src/pages/Dashboard.tsx` med genvejskort; samt et sammenklappeligt panel i `src/components/CoachAthleteDetail.tsx` via eksisterende `CollapsiblePanel`.
+- Genbrug uden omskrivning: `NutritionPlan.tsx`, `FoodScanner.tsx` og madloggen monteres inde i modulets faner; kun indgangspunktet flyttes.
+- Wiring: `nutritionView` i `src/pages/Dashboard.tsx` ændres fra `"planner"` til `"weight"` (planner-kortet fjernes); samt et sammenklappeligt panel i `src/components/CoachAthleteDetail.tsx` via eksisterende `CollapsiblePanel`.
+
 - Stævnekortet genbruger `generate-competition-plan` og `CompetitionPlanDialog` uden ændringer i edge-funktionen.
 
 **Øvrigt**
