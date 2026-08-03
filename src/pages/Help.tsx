@@ -7,7 +7,7 @@ import {
   Activity, Apple, TrendingUp, BookOpen, BookHeart, Download, Video, CalendarRange,
   MessageSquare, MessageCircle, NotebookPen, Search, X, Dumbbell, Heart, Sparkles, UserCog, Settings, FileText, ArrowLeft,
   ShieldCheck, ShieldAlert, ClipboardCheck, Trash2, CreditCard, Lock, UserX, Bell,
-  Footprints, Trophy, ListChecks, LayoutGrid, LifeBuoy,
+  Footprints, Trophy, ListChecks, LayoutGrid, LifeBuoy, Scale,
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
