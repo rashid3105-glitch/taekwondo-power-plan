@@ -245,23 +245,8 @@ export function NutritionPlan({ profile, readOnly = false, userId, goal = null, 
       y += 8;
     }
 
-    // Key principles
-    if (plan.keyPrinciples?.length) {
-      doc.setFontSize(12);
-      doc.setFont("helvetica", "bold");
-      checkPage(10);
-      doc.text(t("keyPrinciples"), margin, y);
-      y += 6;
-      doc.setFontSize(9);
-      doc.setFont("helvetica", "normal");
-      for (const p of plan.keyPrinciples) {
-        const lines = doc.splitTextToSize(`• ${p}`, maxWidth);
-        checkPage(lines.length * 4 + 2);
-        doc.text(lines, margin, y);
-        y += lines.length * 4 + 2;
-      }
-      y += 4;
-    }
+
+
 
     // Meals
     if (plan.meals?.length) {
