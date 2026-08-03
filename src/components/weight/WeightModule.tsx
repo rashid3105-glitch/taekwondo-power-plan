@@ -65,18 +65,20 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
   const ma = useMemo(() => movingAverage(logs), [logs]);
   const currentWeight = ma.length ? Number(ma[ma.length - 1].weight_kg) : (profile?.weight_kg ? Number(profile.weight_kg) : null);
   const maintenance = useMemo(
-    () => profile?.custom_calories
-      ? Number(profile.custom_calories)
-      : estimateMaintenanceCalories({
-          weightKg: currentWeight ?? 65,
-          age: profile?.age ?? null,
-          sessionsPerWeek: profile?.tkd_sessions_per_week ?? null,
-          activityLevel: (goal?.activity_level as any) ?? null,
-          sex: (goal?.sex as any) ?? null,
-        }),
+    () => estimateMaintenanceCalories({
+      weightKg: currentWeight ?? 65,
+      age: profile?.age ?? null,
+      sessionsPerWeek: profile?.tkd_sessions_per_week ?? null,
+      activityLevel: (goal?.activity_level as any) ?? null,
+      sex: (goal?.sex as any) ?? null,
+    }),
     [profile, currentWeight, goal],
   );
-  const dailyTarget = Math.max(1200, maintenance + (goal ? dailyCalorieDelta(goal) : 0));
+  // custom_calories is the athlete's own daily *intake* target — it already
+  // includes any deficit/surplus, so never subtract the goal delta from it.
+  const dailyTarget = profile?.custom_calories
+    ? Math.max(1200, Number(profile.custom_calories))
+    : Math.max(1200, maintenance + (goal ? dailyCalorieDelta(goal) : 0));
 
 
 
@@ -155,6 +157,7 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
         goal={goal}
         logs={logs}
         maintenanceKcal={maintenance}
+        dailyTargetKcal={dailyTarget}
         weighIn={weighIn}
         onWeighInChange={setWeighIn}
         onWeighInSave={saveWeighIn}

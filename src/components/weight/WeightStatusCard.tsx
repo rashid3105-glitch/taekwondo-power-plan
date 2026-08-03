@@ -19,6 +19,8 @@ interface Props {
   goal: WeightGoal | null;
   logs: WeightPoint[];
   maintenanceKcal: number;
+  /** Pre-computed daily intake target (overrides maintenance + goal delta). */
+  dailyTargetKcal?: number;
   weighIn: string;
   onWeighInChange: (v: string) => void;
   onWeighInSave: () => void;
@@ -45,7 +47,7 @@ function Ring({ pct }: { pct: number }) {
 }
 
 export function WeightStatusCard({
-  goal, logs, maintenanceKcal, weighIn, onWeighInChange, onWeighInSave, saving, canEditGoal, onEditGoal, setByCoach,
+  goal, logs, maintenanceKcal, dailyTargetKcal, weighIn, onWeighInChange, onWeighInSave, saving, canEditGoal, onEditGoal, setByCoach,
 }: Props) {
   const { t } = useLanguage();
 
@@ -59,7 +61,7 @@ export function WeightStatusCard({
   const pct = goal && currentAvg != null ? progressPercent(goal, currentAvg) : 0;
   const toGo = goal && currentAvg != null ? Math.round((goal.target_weight_kg - currentAvg) * 10) / 10 : null;
   const delta = goal ? dailyCalorieDelta(goal) : 0;
-  const dailyTarget = Math.max(1200, maintenanceKcal + delta);
+  const dailyTarget = dailyTargetKcal ?? Math.max(1200, maintenanceKcal + delta);
 
   const DirIcon = goal?.direction === "loss" ? TrendingDown : goal?.direction === "gain" ? TrendingUp : Minus;
 
