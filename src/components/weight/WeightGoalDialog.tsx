@@ -3,7 +3,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import {
@@ -126,12 +125,10 @@ export function WeightGoalDialog({ open, onOpenChange, goal, currentWeight, age,
           </div>
 
           {safety.reasons.length > 0 && (
-            <Alert variant={safety.level === "danger" ? "destructive" : "default"}>
-              <AlertTriangle className="h-4 w-4" />
-              <AlertDescription className="text-xs space-y-1">
-                {safety.reasons.map((r) => <p key={r}>{reasonText(r)}</p>)}
-              </AlertDescription>
-            </Alert>
+            <p className={`text-[11px] flex items-start gap-1.5 ${safety.level === "danger" ? "text-destructive" : "text-muted-foreground"}`}>
+              <AlertTriangle className="h-3.5 w-3.5 mt-px shrink-0" />
+              <span>{reasonText(safety.reasons[0])}</span>
+            </p>
           )}
         </div>
 
