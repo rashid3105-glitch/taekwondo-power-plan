@@ -5,6 +5,19 @@ export interface WeightPoint {
   weight_kg: number;
 }
 
+export type ActivityLevel = "sedentary" | "light" | "moderate" | "high" | "extra";
+
+export const ACTIVITY_LEVELS: ActivityLevel[] = ["sedentary", "light", "moderate", "high", "extra"];
+
+/** Multiplier applied on top of the training-session based activity factor. */
+export const ACTIVITY_FACTOR: Record<ActivityLevel, number> = {
+  sedentary: 0.92,
+  light: 0.97,
+  moderate: 1,
+  high: 1.06,
+  extra: 1.12,
+};
+
 export interface WeightGoal {
   id?: string;
   user_id?: string;
@@ -16,6 +29,11 @@ export interface WeightGoal {
   direction: "loss" | "maintain" | "gain";
   set_by?: string | null;
   is_active?: boolean;
+  activity_level?: ActivityLevel | null;
+  sex?: "female" | "male" | null;
+  motivations?: string[];
+  challenges?: string[];
+  onboarded_at?: string | null;
 }
 
 export const KCAL_PER_KG = 7700;
@@ -90,18 +108,20 @@ export function dailyCalorieDelta(goal: Pick<WeightGoal, "rate_kg_per_week" | "d
   return Math.round(goal.direction === "loss" ? -perDay : perDay);
 }
 
-/** Mifflin–St Jeor + activity factor. Height is optional; falls back to a TKD-athlete estimate. */
+/** Mifflin–St Jeor style estimate. Height is optional; falls back to an athlete estimate. */
 export function estimateMaintenanceCalories(opts: {
   weightKg: number;
   age?: number | null;
   sessionsPerWeek?: number | null;
+  activityLevel?: ActivityLevel | null;
+  sex?: "female" | "male" | null;
 }): number {
-  const { weightKg, age, sessionsPerWeek } = opts;
+  const { weightKg, age, sessionsPerWeek, activityLevel, sex } = opts;
   const a = age && age > 0 ? age : 20;
   // Height-free approximation: BMR ≈ 24 kcal per kg lean-ish bodyweight, age-adjusted.
-  const bmr = weightKg * 24 * (a < 18 ? 1.08 : a > 40 ? 0.94 : 1);
+  const bmr = weightKg * 24 * (a < 18 ? 1.08 : a > 40 ? 0.94 : 1) * (sex === "female" ? 0.94 : 1);
   const sessions = sessionsPerWeek && sessionsPerWeek > 0 ? sessionsPerWeek : 3;
-  const activity = 1.35 + Math.min(sessions, 10) * 0.05;
+  const activity = (1.35 + Math.min(sessions, 10) * 0.05) * (activityLevel ? ACTIVITY_FACTOR[activityLevel] : 1);
   return Math.round((bmr * activity) / 10) * 10;
 }
 

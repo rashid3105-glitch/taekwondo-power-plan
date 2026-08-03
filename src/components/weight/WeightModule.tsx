@@ -9,6 +9,7 @@ import { WeightStatusCard } from "./WeightStatusCard";
 import { WeightTrendChart } from "./WeightTrendChart";
 import { WeightGoalDialog } from "./WeightGoalDialog";
 import { CompetitionWeightCard } from "./CompetitionWeightCard";
+import { WeightOnboarding } from "./onboarding/WeightOnboarding";
 import { FoodScanner } from "@/components/FoodScanner";
 import { NutritionPlan } from "@/components/NutritionPlan";
 import {
@@ -36,6 +37,7 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
   const [weighIn, setWeighIn] = useState("");
   const [saving, setSaving] = useState(false);
   const [goalOpen, setGoalOpen] = useState(false);
+  const [rerunOnboarding, setRerunOnboarding] = useState(false);
 
   useEffect(() => {
     if (userId) { setResolvedId(userId); return; }
@@ -68,8 +70,10 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
           weightKg: currentWeight ?? 65,
           age: profile?.age ?? null,
           sessionsPerWeek: profile?.tkd_sessions_per_week ?? null,
+          activityLevel: (goal?.activity_level as any) ?? null,
+          sex: (goal?.sex as any) ?? null,
         }),
-    [profile, currentWeight],
+    [profile, currentWeight, goal],
   );
 
   const saveWeighIn = async () => {
@@ -104,6 +108,7 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
     setSaving(false);
     if (error) { toast.error(error.message); return; }
     setGoalOpen(false);
+    setRerunOnboarding(false);
     toast.success(t("wpGoalSaved"));
     void load();
   };
@@ -123,6 +128,21 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
 
   if (loading) {
     return <div className="flex justify-center py-10"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>;
+  }
+
+  const showOnboarding = canEditGoal && !readOnly && (rerunOnboarding || !goal);
+  if (showOnboarding) {
+    return (
+      <div className="max-w-md mx-auto py-2">
+        <WeightOnboarding
+          currentWeight={currentWeight}
+          age={profile?.age ?? null}
+          saving={saving}
+          onCancel={rerunOnboarding ? () => setRerunOnboarding(false) : undefined}
+          onComplete={saveGoal}
+        />
+      </div>
+    );
   }
 
   const statusView = (
@@ -187,6 +207,7 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
         saving={saving}
         onSave={saveGoal}
         onDelete={goal ? deleteGoal : undefined}
+        onRerunSetup={canEditGoal && !readOnly ? () => setRerunOnboarding(true) : undefined}
       />
     </div>
   );

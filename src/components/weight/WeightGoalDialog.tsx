@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, RotateCcw } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import {
   RATE_PRESETS, assessSafety, daysBetween, inferDirection, rateFromTargetDate, todayISO,
@@ -19,9 +19,10 @@ interface Props {
   saving?: boolean;
   onSave: (g: Omit<WeightGoal, "id">) => void;
   onDelete?: () => void;
+  onRerunSetup?: () => void;
 }
 
-export function WeightGoalDialog({ open, onOpenChange, goal, currentWeight, age, saving, onSave, onDelete }: Props) {
+export function WeightGoalDialog({ open, onOpenChange, goal, currentWeight, age, saving, onSave, onDelete, onRerunSetup }: Props) {
   const { t } = useLanguage();
   const [startWeight, setStartWeight] = useState("");
   const [targetWeight, setTargetWeight] = useState("");
@@ -71,6 +72,11 @@ export function WeightGoalDialog({ open, onOpenChange, goal, currentWeight, age,
       rate_kg_per_week: Math.round((effectiveRate || 0.5) * 100) / 100,
       direction,
       is_active: true,
+      activity_level: goal?.activity_level ?? null,
+      sex: goal?.sex ?? null,
+      motivations: goal?.motivations ?? [],
+      challenges: goal?.challenges ?? [],
+      onboarded_at: goal?.onboarded_at ?? null,
     });
   };
 
@@ -129,6 +135,19 @@ export function WeightGoalDialog({ open, onOpenChange, goal, currentWeight, age,
               <AlertTriangle className="h-3.5 w-3.5 mt-px shrink-0" />
               <span>{reasonText(safety.reasons[0])}</span>
             </p>
+          )}
+
+          {onRerunSetup && (
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full h-11 gap-2"
+              onClick={() => { onOpenChange(false); onRerunSetup(); }}
+              disabled={saving}
+            >
+              <RotateCcw className="h-4 w-4" />
+              {t("woRerun")}
+            </Button>
           )}
         </div>
 

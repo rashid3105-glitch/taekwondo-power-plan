@@ -1,0 +1,1 @@
+ALTER TABLE public.weight_goals ADD COLUMN IF NOT EXISTS sex text;

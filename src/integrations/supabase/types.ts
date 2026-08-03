@@ -4104,13 +4104,18 @@ export type Database = {
       }
       weight_goals: {
         Row: {
+          activity_level: string | null
+          challenges: string[]
           club_id: string | null
           created_at: string
           direction: string
           id: string
           is_active: boolean
+          motivations: string[]
+          onboarded_at: string | null
           rate_kg_per_week: number
           set_by: string | null
+          sex: string | null
           start_date: string
           start_weight_kg: number
           target_date: string | null
@@ -4119,13 +4124,18 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          activity_level?: string | null
+          challenges?: string[]
           club_id?: string | null
           created_at?: string
           direction?: string
           id?: string
           is_active?: boolean
+          motivations?: string[]
+          onboarded_at?: string | null
           rate_kg_per_week?: number
           set_by?: string | null
+          sex?: string | null
           start_date?: string
           start_weight_kg: number
           target_date?: string | null
@@ -4134,13 +4144,18 @@ export type Database = {
           user_id: string
         }
         Update: {
+          activity_level?: string | null
+          challenges?: string[]
           club_id?: string | null
           created_at?: string
           direction?: string
           id?: string
           is_active?: boolean
+          motivations?: string[]
+          onboarded_at?: string | null
           rate_kg_per_week?: number
           set_by?: string | null
+          sex?: string | null
           start_date?: string
           start_weight_kg?: number
           target_date?: string | null
