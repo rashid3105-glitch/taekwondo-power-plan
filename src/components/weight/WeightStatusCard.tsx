@@ -19,6 +19,8 @@ interface Props {
   goal: WeightGoal | null;
   logs: WeightPoint[];
   maintenanceKcal: number;
+  /** Pre-computed daily intake target (overrides maintenance + goal delta). */
+  dailyTargetKcal?: number;
   weighIn: string;
   onWeighInChange: (v: string) => void;
   onWeighInSave: () => void;
