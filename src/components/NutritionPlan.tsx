@@ -409,6 +409,8 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
             </div>
           )}
 
+          <AssistantDisclosure />
+
           <Button onClick={generatePlan} disabled={generating || selectedGoals.length === 0} size="sm" className="w-full sm:w-auto">
             {generating ? (
               <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
@@ -416,6 +418,7 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
               <><Apple className="h-4 w-4 mr-1" /> {t("generateNutritionPlan")}</>
             )}
           </Button>
+
         </div>
       )}
 
