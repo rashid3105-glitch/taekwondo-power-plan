@@ -215,17 +215,8 @@ export function NutritionPlan({ profile, readOnly = false, userId, goal = null, 
     doc.text(plan.planName || t("nutrition"), margin, y);
     y += 10;
 
-    // Health warning
-    if (plan.healthWarning) {
-      doc.setFontSize(9);
-      doc.setFont("helvetica", "bold");
-      doc.setTextColor(180, 0, 0);
-      const warnLines = doc.splitTextToSize(`⚠ ${plan.healthWarning}`, maxWidth);
-      checkPage(warnLines.length * 4 + 4);
-      doc.text(warnLines, margin, y);
-      y += warnLines.length * 4 + 6;
-      doc.setTextColor(0, 0, 0);
-    }
+
+
 
     // Macros overview
     doc.setFontSize(11);
