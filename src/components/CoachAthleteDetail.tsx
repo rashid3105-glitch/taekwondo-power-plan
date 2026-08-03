@@ -620,7 +620,12 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
               }} />
             )}
           </CollapsiblePanel>
+
+          <CollapsiblePanel title={t("wpTitle")} icon={Scale} iconClass="text-emerald-500">
+            <WeightModule userId={athlete.user_id} profile={athlete} compact canEditGoal={!readOnly} readOnly={readOnly} />
+          </CollapsiblePanel>
         </TabsContent>
+
 
         <TabsContent value="mental" className="space-y-4 mt-3">
           <CollapsiblePanel title={t("tabMental")} icon={Brain} iconClass="text-tab-mental">
