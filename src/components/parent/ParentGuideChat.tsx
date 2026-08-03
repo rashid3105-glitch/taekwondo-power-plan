@@ -6,7 +6,9 @@ import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { AssistantDisclosure } from "@/components/AssistantDisclosure";
 import { ChevronDown, Loader2, MessageCircleHeart, Send, User, Sparkles, ExternalLink } from "lucide-react";
+
 
 interface Props {
   athleteId: string;
@@ -114,6 +116,9 @@ export function ParentGuideChat({ athleteId, athleteFirstName }: Props) {
             </span>
           </p>
 
+          <AssistantDisclosure />
+
+
           {messages.length === 0 && (
             <div className="space-y-1.5">
               {suggestions.slice(0, 4).map((s) => (
@@ -191,6 +196,10 @@ export function ParentGuideChat({ athleteId, athleteFirstName }: Props) {
               {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             </Button>
           </form>
+
+          <AssistantDisclosure variant="short" />
+
+
 
           <p className="text-[10px] text-muted-foreground leading-relaxed">
             {t("parentGuideDisclaimer" as any) ||
