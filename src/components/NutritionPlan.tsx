@@ -186,7 +186,7 @@ export function NutritionPlan({ profile, readOnly = false, userId, goal = null, 
       if (error) throw error;
       setPlan(null);
       setSavedPlanId(null);
-      setSelectedGoals([]);
+      setCustomCalories("");
       toast({ title: t("planDeleted") || "Plan slettet" });
     } catch (err: any) {
       toast({ title: t("error"), description: err?.message, variant: "destructive" });
