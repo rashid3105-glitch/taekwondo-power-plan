@@ -373,73 +373,63 @@ export function NutritionPlan({ profile, readOnly = false, userId, goal = null, 
 
   return (
     <div className="space-y-4">
-      {/* Health Warning Banner */}
-      <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-4 flex gap-3">
-        <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 shrink-0 mt-0.5" />
-        <div>
-          <p className="text-sm font-bold text-foreground">{t("nutritionDisclaimer")}</p>
-          <p className="text-xs text-muted-foreground mt-1">{t("nutritionDisclaimerDesc")}</p>
-        </div>
-      </div>
-
-      {/* Goal Selection */}
+      {/* Plan source: goals come from the guided nutrition setup */}
       {!readOnly && (
         <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
           <div className="flex items-center gap-2">
             <Apple className="h-5 w-5 text-tab-nutrition" />
-            <h3 className="font-bold text-card-foreground">{t("nutritionGoals")}</h3>
-          </div>
-          <p className="text-xs text-muted-foreground">{t("selectNutritionGoals")}</p>
-          <div className="flex flex-wrap gap-2">
-            {NUTRITION_GOALS.map((goal) => (
-              <button
-                key={goal}
-                type="button"
-                onClick={() => toggleGoal(goal)}
-                data-active={selectedGoals.includes(goal)}
-                className="rounded-full px-3 py-1.5 text-xs font-medium border border-border transition-colors cursor-pointer
-                  data-[active=true]:bg-primary data-[active=true]:text-primary-foreground
-                  data-[active=false]:text-muted-foreground hover:text-foreground"
-              >
-                {t(goal) || goal}
-              </button>
-            ))}
+            <h3 className="font-bold text-card-foreground">{t("nutritionPlanTitle")}</h3>
           </div>
 
-          {/* Weight Loss Warning */}
-          {hasWeightLossGoal && (
-            <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 flex gap-2">
-              <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
-              <div>
-                <p className="text-xs font-bold text-destructive">{t("weightLossWarningTitle")}</p>
-                <p className="text-xs text-muted-foreground mt-1">{t("weightLossWarningDesc")}</p>
+          {selectedGoals.length === 0 ? (
+            <>
+              <p className="text-xs text-muted-foreground">{t("nutritionNeedsGoalDesc")}</p>
+              {onSetGoals && (
+                <Button onClick={onSetGoals} size="sm" variant="outline" className="w-full sm:w-auto">
+                  <Target className="h-4 w-4 mr-1" /> {t("wpSetGoal")}
+                </Button>
+              )}
+            </>
+          ) : (
+            <>
+              <div className="flex flex-wrap items-center gap-1.5">
+                {selectedGoals.map((g) => (
+                  <span key={g} className="rounded-full bg-primary/15 border border-primary/30 text-primary px-2.5 py-1 text-[11px] font-medium">
+                    {t(g) || g}
+                  </span>
+                ))}
+                {dailyTargetKcal ? (
+                  <span className="rounded-full border border-border px-2.5 py-1 text-[11px] text-muted-foreground">
+                    {dailyTargetKcal} kcal
+                  </span>
+                ) : null}
               </div>
-            </div>
+
+              <AssistantDisclosure />
+
+              <Button onClick={generatePlan} disabled={generating} size="sm" className="w-full sm:w-auto">
+                {generating ? (
+                  <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
+                ) : (
+                  <><Apple className="h-4 w-4 mr-1" /> {t("generateNutritionPlan")}</>
+                )}
+              </Button>
+            </>
           )}
 
-          <AssistantDisclosure />
-
-          <Button onClick={generatePlan} disabled={generating || selectedGoals.length === 0} size="sm" className="w-full sm:w-auto">
-            {generating ? (
-              <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
-            ) : (
-              <><Apple className="h-4 w-4 mr-1" /> {t("generateNutritionPlan")}</>
-            )}
-          </Button>
-
+          <Link
+            to="/help#helpNutritionFaq"
+            className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground hover:text-primary"
+          >
+            <Info className="h-3.5 w-3.5" /> {t("nutritionPlanGuidanceLink")}
+          </Link>
         </div>
       )}
 
       {/* Generated Plan */}
       {plan && (
         <div className="space-y-4">
-          {/* Health Warning from AI */}
-          {plan.healthWarning && (
-            <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4 flex gap-3">
-              <AlertTriangle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
-              <p className="text-sm text-card-foreground">{plan.healthWarning}</p>
-            </div>
-          )}
+
 
           {/* Overview */}
           <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
