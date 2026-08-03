@@ -61,7 +61,7 @@ export function WeightStatusCard({
   const pct = goal && currentAvg != null ? progressPercent(goal, currentAvg) : 0;
   const toGo = goal && currentAvg != null ? Math.round((goal.target_weight_kg - currentAvg) * 10) / 10 : null;
   const delta = goal ? dailyCalorieDelta(goal) : 0;
-  const dailyTarget = Math.max(1200, maintenanceKcal + delta);
+  const dailyTarget = dailyTargetKcal ?? Math.max(1200, maintenanceKcal + delta);
 
   const DirIcon = goal?.direction === "loss" ? TrendingDown : goal?.direction === "gain" ? TrendingUp : Minus;
 
