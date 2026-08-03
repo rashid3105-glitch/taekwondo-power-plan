@@ -76,6 +76,9 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
         }),
     [profile, currentWeight, goal],
   );
+  const dailyTarget = Math.max(1200, maintenance + (goal ? dailyCalorieDelta(goal) : 0));
+
+
 
   const saveWeighIn = async () => {
     if (!resolvedId) return;
