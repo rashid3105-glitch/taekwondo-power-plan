@@ -47,7 +47,7 @@ function Ring({ pct }: { pct: number }) {
 }
 
 export function WeightStatusCard({
-  goal, logs, maintenanceKcal, weighIn, onWeighInChange, onWeighInSave, saving, canEditGoal, onEditGoal, setByCoach,
+  goal, logs, maintenanceKcal, dailyTargetKcal, weighIn, onWeighInChange, onWeighInSave, saving, canEditGoal, onEditGoal, setByCoach,
 }: Props) {
   const { t } = useLanguage();
 
