@@ -6,6 +6,8 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { Loader2, Apple, AlertTriangle, Droplets, Pill, Utensils, Flame, ChevronDown, ChevronUp, Download, Trash2 } from "lucide-react";
 import jsPDF from "jspdf";
 import { getMealImage } from "@/data/recipeImages";
+import { AssistantDisclosure } from "@/components/AssistantDisclosure";
+
 
 const NUTRITION_GOALS = [
   "Improve performance",
