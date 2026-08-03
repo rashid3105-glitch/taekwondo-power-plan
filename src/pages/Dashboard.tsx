@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { BrandLogo } from "@/components/BrandLogo";
 import { Button } from "@/components/ui/button";
-import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, ShieldCheck, Users, Brain, Clock, Apple, Home, Lock, NotebookPen, AlertTriangle, ClipboardList, HelpCircle, Trash2, Menu, Video as VideoIcon, CalendarRange, Watch, Swords, Trophy, MessageCircle, Pencil, X, LayoutGrid, Settings, Camera, User as UserRoundIcon } from "lucide-react";
+import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, ShieldCheck, Users, Brain, Clock, Apple, Home, Lock, NotebookPen, AlertTriangle, ClipboardList, HelpCircle, Trash2, Menu, Video as VideoIcon, CalendarRange, Watch, Swords, Trophy, MessageCircle, Pencil, X, LayoutGrid, Settings, Camera, Scale, User as UserRoundIcon } from "lucide-react";
 import { SelfTrainingLogDialog } from "@/components/SelfTrainingLogDialog";
 import { ChatDrawer } from "@/components/chat/ChatDrawer";
 import {
@@ -34,6 +34,7 @@ import { CoachMentalAssessment } from "@/components/CoachMentalAssessment";
 import { ProgressDashboard } from "@/components/ProgressDashboard";
 import { NutritionPlan } from "@/components/NutritionPlan";
 import { NutritionLibrary } from "@/components/NutritionLibrary";
+import { WeightModule } from "@/components/weight/WeightModule";
 import { FoodScanner } from "@/components/FoodScanner";
 import { Card } from "@/components/ui/card";
 import { AppFooter } from "@/components/AppFooter";
@@ -137,7 +138,7 @@ export default function Dashboard() {
   })();
   const [activeTab, setActiveTab] = useState<TabKey>(initialTab);
   const [selfLogOpen, setSelfLogOpen] = useState(false);
-  const [nutritionView, setNutritionView] = useState<"home" | "planner" | "recipes">("home");
+  const [nutritionView, setNutritionView] = useState<"home" | "weight" | "recipes">("home");
   const [seenDots, setSeenDots] = useState<Set<string>>(() => {
     try {
       const raw = localStorage.getItem("navDots_seen");
@@ -1130,19 +1131,20 @@ export default function Dashboard() {
                 <div className="space-y-4">
                   <Card
                     className="p-4 cursor-pointer hover:border-primary/40 transition-colors"
-                    onClick={() => setNutritionView("planner")}
+                    onClick={() => setNutritionView("weight")}
                   >
                     <div className="flex items-center gap-3">
                       <div className="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
-                        <Camera className="h-5 w-5 text-emerald-500" />
+                        <Scale className="h-5 w-5 text-emerald-500" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-sm font-bold">{t("nutritionPlannerTitle") || "Kostplanlægger & madregistrering"}</p>
-                        <p className="text-xs text-muted-foreground">{t("nutritionPlannerDesc") || "AI madscanner, log måltider og se dagens kalorier"}</p>
+                        <p className="text-sm font-bold">{t("wpTitle")}</p>
+                        <p className="text-xs text-muted-foreground">{t("wpDesc")}</p>
                       </div>
                       <ChevronRight className="h-4 w-4 text-muted-foreground ml-auto shrink-0" />
                     </div>
                   </Card>
+
                   <Card
                     className="p-4 cursor-pointer hover:border-primary/40 transition-colors"
                     onClick={() => setNutritionView("recipes")}
@@ -1159,15 +1161,15 @@ export default function Dashboard() {
                     </div>
                   </Card>
                 </div>
-              ) : nutritionView === "planner" ? (
+              ) : nutritionView === "weight" ? (
                 <div className="space-y-4">
                   <button onClick={() => setNutritionView("home")} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
                     <ArrowLeft className="h-4 w-4" /> {t("back") || "Tilbage"}
                   </button>
-                  <h2 className="font-bold">{t("nutritionPlannerTitle") || "Kostplanlægger & madregistrering"}</h2>
-                  <FoodScanner />
-                  <NutritionPlan profile={profile} readOnly={hasCoach && !isPaid} />
+                  <h2 className="font-bold">{t("wpTitle")}</h2>
+                  <WeightModule profile={profile} readOnly={hasCoach && !isPaid} />
                 </div>
+
               ) : (
                 <div className="space-y-4">
                   <button onClick={() => setNutritionView("home")} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">

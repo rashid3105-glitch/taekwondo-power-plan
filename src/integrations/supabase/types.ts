@@ -4102,6 +4102,62 @@ export type Database = {
         }
         Relationships: []
       }
+      weight_goals: {
+        Row: {
+          club_id: string | null
+          created_at: string
+          direction: string
+          id: string
+          is_active: boolean
+          rate_kg_per_week: number
+          set_by: string | null
+          start_date: string
+          start_weight_kg: number
+          target_date: string | null
+          target_weight_kg: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          club_id?: string | null
+          created_at?: string
+          direction?: string
+          id?: string
+          is_active?: boolean
+          rate_kg_per_week?: number
+          set_by?: string | null
+          start_date?: string
+          start_weight_kg: number
+          target_date?: string | null
+          target_weight_kg: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          club_id?: string | null
+          created_at?: string
+          direction?: string
+          id?: string
+          is_active?: boolean
+          rate_kg_per_week?: number
+          set_by?: string | null
+          start_date?: string
+          start_weight_kg?: number
+          target_date?: string | null
+          target_weight_kg?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "weight_goals_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       weight_logs: {
         Row: {
           club_id: string | null
