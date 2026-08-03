@@ -191,27 +191,8 @@ export default function Library({ forcedSection }: { forcedSection?: string } = 
           </div>
         )}
 
-        {section === "nutrition" && nutritionView === "planner" && (
-          <div className="space-y-4">
-            <DailyNutritionDashboard calorieTarget={profile?.custom_calories ?? null} />
-            <NutritionPlan profile={profile} />
-          </div>
-        )}
-        {section === "nutrition" && nutritionView === "logger" && (
-          <div className="space-y-4">
-            <DailyNutritionDashboard
-              key={loggerRefresh}
-              calorieTarget={profile?.custom_calories ?? null}
-              refreshKey={loggerRefresh}
-            />
-            <ErrorBoundary
-              onBack={() => setNutritionView("home")}
-              backLabel={t("chatErrorBack")}
-              retryLabel={t("chatErrorRetry")}
-            >
-              <FoodScanner onLogged={() => setLoggerRefresh((n) => n + 1)} />
-            </ErrorBoundary>
-          </div>
+        {section === "nutrition" && nutritionView === "weight" && (
+          <WeightModule profile={profile} />
         )}
         {section === "nutrition" && nutritionView === "recipes" && (
           <NutritionLibrary />
