@@ -486,19 +486,8 @@ export function NutritionPlan({ profile, readOnly = false, userId, goal = null, 
             )}
           </div>
 
-          {/* Key Principles */}
-          {plan.keyPrinciples?.length > 0 && (
-            <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-2">
-              <h4 className="font-semibold text-sm text-card-foreground">{t("keyPrinciples")}</h4>
-              <ul className="space-y-1.5">
-                {plan.keyPrinciples.map((p: string, i: number) => (
-                  <li key={i} className="text-xs text-muted-foreground flex gap-2">
-                    <span className="text-primary font-bold">•</span> {p}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+
+
 
           {/* Meals */}
           {plan.meals?.length > 0 && (
