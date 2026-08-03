@@ -43,41 +43,32 @@ export function CompetitionWeightCard({ competition, logs, age }: Props) {
       : r === "minorCaution" ? t("wpSafetyMinor")
       : t("wpSafetyWeek");
 
+  const warn = toCut > 0 && safety.reasons.length > 0;
+
   return (
-    <Card className="p-4 space-y-3">
+    <Card className="p-4 space-y-2">
       <div className="flex items-center gap-2">
-        <Trophy className="h-4 w-4 text-primary" />
-        <p className="text-sm font-bold">{t("wpCompetition")}</p>
-        <Badge variant="outline" className={`ml-auto text-[10px] ${toneClass}`}>{toneLabel}</Badge>
+        <Trophy className="h-4 w-4 text-primary shrink-0" />
+        <p className="text-sm font-bold truncate">{competition.name}</p>
+        <Badge variant="outline" className={`ml-auto text-[10px] shrink-0 ${toneClass}`}>{toneLabel}</Badge>
       </div>
-      <div className="grid grid-cols-3 gap-2 text-center">
-        <div>
-          <p className="text-[11px] text-muted-foreground">{t("wpDaysLeft")}</p>
-          <p className="text-xl font-black tabular-nums">{days}</p>
-        </div>
-        <div>
-          <p className="text-[11px] text-muted-foreground">{t("wpWeightClass")}</p>
-          <p className="text-xl font-black tabular-nums">{competition.weight_class_kg}</p>
-        </div>
-        <div>
-          <p className="text-[11px] text-muted-foreground">{t("wpKgToClass")}</p>
-          <p className={`text-xl font-black tabular-nums ${toneClass}`}>{toCut > 0 ? toCut.toFixed(1) : "0"}</p>
-        </div>
-      </div>
-      <p className="text-[11px] text-muted-foreground truncate">{competition.name}</p>
-      {toCut > 0 && safety.reasons.length > 0 ? (
-        <div className="flex items-start gap-2 rounded-lg bg-destructive/10 p-2.5">
-          <AlertTriangle className="h-4 w-4 text-destructive mt-0.5 shrink-0" />
-          <div className="text-[11px] text-foreground space-y-1">
-            {safety.reasons.map((r) => <p key={r}>{reasonText(r)}</p>)}
-          </div>
-        </div>
-      ) : (
-        <div className="flex items-center gap-2 rounded-lg bg-emerald-500/10 p-2.5">
-          <ShieldCheck className="h-4 w-4 text-emerald-500 shrink-0" />
-          <p className="text-[11px] text-foreground">{t("wpSafeCut")}</p>
-        </div>
-      )}
+      <p className="text-xs text-muted-foreground tabular-nums">
+        {days} {t("wpDaysLeft").toLowerCase()} · {t("wpWeightClass")} {competition.weight_class_kg} {t("wpKg")} ·{" "}
+        <span className={toneClass}>{toCut > 0 ? `${toCut.toFixed(1)} ${t("wpKg")}` : "0"} {t("wpKgToClass").toLowerCase()}</span>
+      </p>
+      <p className="text-[11px] flex items-start gap-1.5 text-muted-foreground">
+        {warn ? (
+          <>
+            <AlertTriangle className="h-3.5 w-3.5 text-destructive mt-px shrink-0" />
+            <span>{reasonText(safety.reasons[0])}</span>
+          </>
+        ) : (
+          <>
+            <ShieldCheck className="h-3.5 w-3.5 text-emerald-500 mt-px shrink-0" />
+            <span>{t("wpSafeCut")}</span>
+          </>
+        )}
+      </p>
     </Card>
   );
 }
