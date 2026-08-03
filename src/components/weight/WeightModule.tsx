@@ -182,21 +182,34 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
   return (
     <div className="space-y-4">
       {compact ? statusView : (
-        <Tabs defaultValue="status">
+        <Tabs defaultValue="today">
           <TabsList className="grid grid-cols-3 w-full">
-            <TabsTrigger value="status">{t("wpTabStatus")}</TabsTrigger>
             <TabsTrigger value="today">{t("wpTabToday")}</TabsTrigger>
+            <TabsTrigger value="status">{t("wpTabStatus")}</TabsTrigger>
             <TabsTrigger value="plan">{t("wpTabPlan")}</TabsTrigger>
           </TabsList>
-          <TabsContent value="status" className="mt-4">{statusView}</TabsContent>
-          <TabsContent value="today" className="mt-4 space-y-4">
-            <FoodScanner />
+          <TabsContent value="today" className="mt-4">
+            {resolvedId && (
+              <DailyOverview
+                userId={resolvedId}
+                goal={goal}
+                currentWeight={currentWeight}
+                dailyTargetKcal={dailyTarget}
+                readOnly={readOnly}
+                weighIn={weighIn}
+                onWeighInChange={setWeighIn}
+                onWeighInSave={saveWeighIn}
+                saving={saving}
+              />
+            )}
           </TabsContent>
+          <TabsContent value="status" className="mt-4">{statusView}</TabsContent>
           <TabsContent value="plan" className="mt-4">
             <NutritionPlan profile={profile} readOnly={readOnly} />
           </TabsContent>
         </Tabs>
       )}
+
 
       <WeightGoalDialog
         open={goalOpen}
