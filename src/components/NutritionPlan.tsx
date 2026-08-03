@@ -129,15 +129,10 @@ export function NutritionPlan({ profile, readOnly = false, userId, goal = null, 
     }
   }, []);
 
-  const toggleGoal = (goal: string) => {
-    setSelectedGoals((prev) =>
-      prev.includes(goal) ? prev.filter((g) => g !== goal) : [...prev, goal]
-    );
-  };
-
   const hasWeightLossGoal = selectedGoals.some(
     (g) => g === "Weight loss" || g === "Competition prep (weight class)"
   );
+
 
   const generatePlan = async () => {
     let age = profile?.age ?? null;
