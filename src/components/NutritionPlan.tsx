@@ -545,55 +545,8 @@ export function NutritionPlan({ profile, readOnly = false, userId, goal = null, 
             </div>
           )}
 
-          {/* Hydration */}
-          {plan.hydration && (
-            <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-2">
-              <h4 className="font-semibold text-sm text-card-foreground flex items-center gap-2">
-                <Droplets className="h-4 w-4" /> {t("hydration")}
-              </h4>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="rounded-lg bg-muted/50 p-2">
-                  <p className="text-[10px] text-muted-foreground">{t("daily")}</p>
-                  <p className="text-xs font-medium text-card-foreground">{plan.hydration.daily}</p>
-                </div>
-                <div className="rounded-lg bg-muted/50 p-2">
-                  <p className="text-[10px] text-muted-foreground">{t("preTraining")}</p>
-                  <p className="text-xs font-medium text-card-foreground">{plan.hydration.preTrain}</p>
-                </div>
-                <div className="rounded-lg bg-muted/50 p-2">
-                  <p className="text-[10px] text-muted-foreground">{t("duringTraining")}</p>
-                  <p className="text-xs font-medium text-card-foreground">{plan.hydration.duringTrain}</p>
-                </div>
-                <div className="rounded-lg bg-muted/50 p-2">
-                  <p className="text-[10px] text-muted-foreground">{t("postTraining")}</p>
-                  <p className="text-xs font-medium text-card-foreground">{plan.hydration.postTrain}</p>
-                </div>
-              </div>
-            </div>
-          )}
+          {/* Hydration and supplement guidance now lives in the help section */}
 
-          {/* Supplements */}
-          {plan.supplements?.length > 0 && (
-            <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-2">
-              <h4 className="font-semibold text-sm text-card-foreground flex items-center gap-2">
-                <Pill className="h-4 w-4" /> {t("supplements")}
-              </h4>
-              <div className="space-y-2">
-                {plan.supplements.map((s: any, i: number) => (
-                  <div key={i} className="rounded-lg bg-muted/30 p-3 space-y-1">
-                    <p className="text-sm font-medium text-card-foreground">{s.name}</p>
-                    <p className="text-xs text-muted-foreground">{s.dosage} · {s.timing}</p>
-                    <p className="text-xs text-muted-foreground">{s.reason}</p>
-                    {s.warning && (
-                      <p className="text-xs text-yellow-600 dark:text-yellow-400 flex items-center gap-1">
-                        <AlertTriangle className="h-3 w-3" /> {s.warning}
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* Weekly Variation */}
           {plan.weeklyVariation && (
