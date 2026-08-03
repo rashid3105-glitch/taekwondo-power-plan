@@ -9,6 +9,7 @@ import { WeightStatusCard } from "./WeightStatusCard";
 import { WeightTrendChart } from "./WeightTrendChart";
 import { WeightGoalDialog } from "./WeightGoalDialog";
 import { CompetitionWeightCard } from "./CompetitionWeightCard";
+import { WeightOnboarding } from "./onboarding/WeightOnboarding";
 import { FoodScanner } from "@/components/FoodScanner";
 import { NutritionPlan } from "@/components/NutritionPlan";
 import {
