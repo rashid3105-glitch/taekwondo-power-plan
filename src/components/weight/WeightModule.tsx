@@ -4,7 +4,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Target } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { WeightStatusCard } from "./WeightStatusCard";
 import { WeightTrendChart } from "./WeightTrendChart";
 import { WeightGoalDialog } from "./WeightGoalDialog";
@@ -127,15 +127,6 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
 
   const statusView = (
     <div className="space-y-4">
-      {!goal && (
-        <Card className="p-4 flex items-start gap-3">
-          <Target className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-          <div>
-            <p className="text-sm font-bold">{t("wpNoGoal")}</p>
-            <p className="text-xs text-muted-foreground">{t("wpNoGoalDesc")}</p>
-          </div>
-        </Card>
-      )}
       <WeightStatusCard
         goal={goal}
         logs={logs}

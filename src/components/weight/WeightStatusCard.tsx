@@ -2,8 +2,7 @@ import { useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Flame, Pencil, Scale, TrendingDown, TrendingUp, Minus, Trophy } from "lucide-react";
+import { Flame, Pencil, Check, TrendingDown, TrendingUp, Minus } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import {
   dailyCalorieDelta,
@@ -29,6 +28,22 @@ interface Props {
   setByCoach?: boolean;
 }
 
+function Ring({ pct }: { pct: number }) {
+  const r = 46;
+  const c = 2 * Math.PI * r;
+  return (
+    <svg viewBox="0 0 110 110" className="h-28 w-28 -rotate-90">
+      <circle cx="55" cy="55" r={r} fill="none" stroke="hsl(var(--muted))" strokeWidth="8" />
+      <circle
+        cx="55" cy="55" r={r} fill="none"
+        stroke="hsl(var(--primary))" strokeWidth="8" strokeLinecap="round"
+        strokeDasharray={c} strokeDashoffset={c - (c * Math.min(100, Math.max(0, pct))) / 100}
+        className="transition-all duration-500"
+      />
+    </svg>
+  );
+}
+
 export function WeightStatusCard({
   goal, logs, maintenanceKcal, weighIn, onWeighInChange, onWeighInSave, saving, canEditGoal, onEditGoal, setByCoach,
 }: Props) {
@@ -49,120 +64,78 @@ export function WeightStatusCard({
   const DirIcon = goal?.direction === "loss" ? TrendingDown : goal?.direction === "gain" ? TrendingUp : Minus;
 
   return (
-    <div className="space-y-4">
-      <Card className="p-5 space-y-4">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <p className="text-xs text-muted-foreground">{t("wpCurrent")}</p>
-            <p className="text-4xl font-black tabular-nums">
+    <Card className="p-5 space-y-4">
+      <div className="flex items-center gap-4">
+        <div className="relative shrink-0">
+          <Ring pct={pct} />
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <span className="text-2xl font-black tabular-nums leading-none">
               {latest != null ? latest.toFixed(1) : "–"}
-              <span className="text-base font-bold text-muted-foreground ml-1">{t("wpKg")}</span>
-            </p>
-            {currentAvg != null && (
-              <p className="text-[11px] text-muted-foreground mt-0.5">
-                {t("wpMovingAvg")}: {currentAvg.toFixed(1)} {t("wpKg")}
-              </p>
-            )}
+            </span>
+            <span className="text-[10px] text-muted-foreground mt-0.5">{t("wpKg")}</span>
           </div>
-          {goal && (
-            <div className="text-right">
-              <p className="text-xs text-muted-foreground">{t("wpGoal")}</p>
-              <p className="text-2xl font-black tabular-nums text-primary">
-                {Number(goal.target_weight_kg).toFixed(1)}
+        </div>
+
+        <div className="min-w-0 flex-1 space-y-1">
+          {goal ? (
+            <>
+              <p className="text-sm font-bold">
+                {t("wpGoal")} <span className="text-primary tabular-nums">{Number(goal.target_weight_kg).toFixed(1)}</span> {t("wpKg")}
               </p>
               {toGo != null && (
-                <p className="text-[11px] text-muted-foreground">
-                  {Math.abs(toGo).toFixed(1)} {t("wpKg")} {t("wpToGo")}
+                <p className="text-xs text-muted-foreground tabular-nums">
+                  {Math.abs(toGo).toFixed(1)} {t("wpKg")} {t("wpToGo")} · {pct}%
                 </p>
               )}
-            </div>
-          )}
-        </div>
-
-        {goal && (
-          <div className="space-y-1.5">
-            <div className="h-2.5 rounded-full bg-muted overflow-hidden">
-              <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${pct}%` }} />
-            </div>
-            <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-              <span>{pct}% · {t("wpProgress")}</span>
-              <span className="flex items-center gap-1">
+              <p className="text-xs text-muted-foreground flex items-center gap-1 tabular-nums">
                 <DirIcon className="h-3 w-3 text-primary" />
                 {goal.rate_kg_per_week} {t("wpKg")}/{t("week").toLowerCase()}
-              </span>
-            </div>
-          </div>
-        )}
-
-        <div className="flex items-center gap-2">
-          <Input
-            type="number"
-            inputMode="decimal"
-            step="0.1"
-            value={weighIn}
-            onChange={(e) => onWeighInChange(e.target.value)}
-            placeholder={t("wpWeighInPlaceholder")}
-            className="h-11"
-          />
-          <Button onClick={onWeighInSave} disabled={saving || !weighIn} className="h-11 shrink-0">
-            <Scale className="h-4 w-4 mr-1.5" />
-            {t("wpLogWeight")}
-          </Button>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          {loggedToday && <Badge variant="secondary" className="text-[10px]">{t("wpLoggedToday")}</Badge>}
-          {streak > 1 && (
-            <Badge variant="outline" className="text-[10px] gap-1">
-              <Flame className="h-3 w-3 text-primary" /> {streak} {t("wpStreak")}
-            </Badge>
+                {projection?.trendKgPerWeek != null && (
+                  <span className="opacity-70">
+                    · {t("wpTrend")} {projection.trendKgPerWeek > 0 ? "+" : ""}{projection.trendKgPerWeek.toFixed(2)}
+                  </span>
+                )}
+              </p>
+            </>
+          ) : (
+            <p className="text-xs text-muted-foreground">{t("wpNoGoalDesc")}</p>
           )}
-          {setByCoach && <Badge variant="outline" className="text-[10px]">{t("wpSetByCoach")}</Badge>}
+          {canEditGoal && (
+            <button onClick={onEditGoal} className="text-xs text-primary font-semibold flex items-center gap-1">
+              <Pencil className="h-3 w-3" />
+              {goal ? t("wpEditGoal") : t("wpSetGoal")}
+            </button>
+          )}
         </div>
-      </Card>
-
-      <div className="grid grid-cols-2 gap-3">
-        <Card className="p-4">
-          <p className="text-xs text-muted-foreground">{t("wpDailyTarget")}</p>
-          <p className="text-2xl font-black tabular-nums">{dailyTarget}</p>
-          <p className="text-[11px] text-muted-foreground">
-            {delta === 0 ? t("wpMaintain") : `${delta < 0 ? t("wpDeficit") : t("wpSurplus")}: ${Math.abs(delta)} ${t("wpKcal")}`}
-          </p>
-        </Card>
-        <Card className="p-4">
-          <p className="text-xs text-muted-foreground">{t("wpTrend")}</p>
-          <p className="text-2xl font-black tabular-nums">
-            {projection?.trendKgPerWeek != null ? `${projection.trendKgPerWeek > 0 ? "+" : ""}${projection.trendKgPerWeek.toFixed(2)}` : "–"}
-          </p>
-          <p className="text-[11px] text-muted-foreground">{t("wpTrendPerWeek")}</p>
-        </Card>
       </div>
 
-      {goal && projection && (
-        <Card className="p-4 flex items-start gap-3">
-          <Trophy className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-          <div className="text-xs">
-            <p className="font-semibold text-foreground">
-              {projection.etaDate
-                ? `${t("wpEta")}: ${new Date(projection.etaDate).toLocaleDateString()}`
-                : t("wpEtaNone")}
-            </p>
-            {projection.aheadDays != null && (
-              <p className="text-muted-foreground mt-0.5">
-                {projection.aheadDays >= 0
-                  ? `${projection.aheadDays} ${t("wpAhead")}`
-                  : `${Math.abs(projection.aheadDays)} ${t("wpBehind")}`}
-              </p>
-            )}
-          </div>
-        </Card>
-      )}
-
-      {canEditGoal && (
-        <Button variant="outline" className="w-full h-11" onClick={onEditGoal}>
-          <Pencil className="h-4 w-4 mr-2 text-primary" />
-          {goal ? t("wpEditGoal") : t("wpSetGoal")}
+      <div className="flex items-center gap-2">
+        <Input
+          type="number"
+          inputMode="decimal"
+          step="0.1"
+          value={weighIn}
+          onChange={(e) => onWeighInChange(e.target.value)}
+          placeholder={t("wpWeighInPlaceholder")}
+          className="h-11"
+        />
+        <Button onClick={onWeighInSave} disabled={saving || !weighIn} className="h-11 shrink-0">
+          {t("wpLogWeight")}
         </Button>
-      )}
-    </div>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground tabular-nums">
+        <span className="font-semibold text-foreground">
+          {dailyTarget} {t("wpKcal")}
+        </span>
+        <span>{delta === 0 ? t("wpMaintain") : `${delta < 0 ? t("wpDeficit") : t("wpSurplus")} ${Math.abs(delta)}`}</span>
+        {goal && projection?.etaDate && (
+          <span>· {t("wpEta")} {new Date(projection.etaDate).toLocaleDateString()}</span>
+        )}
+        {loggedToday && <span className="flex items-center gap-0.5 text-primary"><Check className="h-3 w-3" />{t("wpLoggedToday")}</span>}
+        {streak > 1 && <span className="flex items-center gap-0.5"><Flame className="h-3 w-3 text-primary" />{streak}</span>}
+        {setByCoach && <span>· {t("wpSetByCoach")}</span>}
+      </div>
+    </Card>
   );
 }
