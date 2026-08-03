@@ -157,6 +157,7 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
         goal={goal}
         logs={logs}
         maintenanceKcal={maintenance}
+        dailyTargetKcal={dailyTarget}
         weighIn={weighIn}
         onWeighInChange={setWeighIn}
         onWeighInSave={saveWeighIn}
