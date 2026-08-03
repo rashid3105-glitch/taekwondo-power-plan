@@ -190,7 +190,19 @@ export default function Help() {
     return SECTION_FALLBACK[key] ?? key;
   };
 
+  // Deep link support: /help#helpNutritionFaq opens and scrolls to that topic
+  useEffect(() => {
+    const key = window.location.hash.replace("#", "") as TopicKey;
+    if (!key || !TOPICS[key]) return;
+    setActiveTopic(key);
+    const timer = window.setTimeout(() => {
+      document.getElementById(`help-topic-${key}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 250);
+    return () => window.clearTimeout(timer);
+  }, []);
+
   // Focus search on "/" key
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "/" && document.activeElement?.tagName !== "INPUT" && document.activeElement?.tagName !== "TEXTAREA") {
