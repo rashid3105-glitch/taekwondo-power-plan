@@ -9,8 +9,8 @@ import { WeightStatusCard } from "./WeightStatusCard";
 import { WeightTrendChart } from "./WeightTrendChart";
 import { WeightGoalDialog } from "./WeightGoalDialog";
 import { CompetitionWeightCard } from "./CompetitionWeightCard";
-import FoodScanner from "@/components/FoodScanner";
-import NutritionPlan from "@/components/NutritionPlan";
+import { FoodScanner } from "@/components/FoodScanner";
+import { NutritionPlan } from "@/components/NutritionPlan";
 import {
   estimateMaintenanceCalories, milestones, movingAverage, todayISO,
   type WeightGoal, type WeightPoint,
