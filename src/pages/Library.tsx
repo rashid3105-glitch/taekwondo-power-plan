@@ -63,15 +63,13 @@ export default function Library({ forcedSection }: { forcedSection?: string } = 
   const [nutritionView, setNutritionView] = useState<NutritionView>(() => {
     try {
       const v = sessionStorage.getItem("scanner:nutrition_view");
-      if (v === "planner" || v === "logger" || v === "recipes" || v === "home") return v;
+      if (v === "weight" || v === "recipes" || v === "home") return v;
     } catch { /* ignore */ }
     return "home";
   });
 
   // Persist nutritionView across WKWebView reloads (iOS may kill the web
-  // content process while the native camera UI is on top). Without this,
-  // users returning from Camera land back on the nutrition menu instead of
-  // the logger/scanner view they were in.
+  // content process while the native camera UI is on top).
   useEffect(() => {
     try {
       if (section === "nutrition") {
@@ -86,7 +84,6 @@ export default function Library({ forcedSection }: { forcedSection?: string } = 
     };
   }, []);
   const [profile, setProfile] = useState<any>(null);
-  const [loggerRefresh, setLoggerRefresh] = useState(0);
 
   useEffect(() => {
     if (section !== "nutrition") return;
