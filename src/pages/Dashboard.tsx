@@ -1160,15 +1160,15 @@ export default function Dashboard() {
                     </div>
                   </Card>
                 </div>
-              ) : nutritionView === "planner" ? (
+              ) : nutritionView === "weight" ? (
                 <div className="space-y-4">
                   <button onClick={() => setNutritionView("home")} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
                     <ArrowLeft className="h-4 w-4" /> {t("back") || "Tilbage"}
                   </button>
-                  <h2 className="font-bold">{t("nutritionPlannerTitle") || "Kostplanlægger & madregistrering"}</h2>
-                  <FoodScanner />
-                  <NutritionPlan profile={profile} readOnly={hasCoach && !isPaid} />
+                  <h2 className="font-bold">{t("wpTitle")}</h2>
+                  <WeightModule profile={profile} readOnly={hasCoach && !isPaid} />
                 </div>
+
               ) : (
                 <div className="space-y-4">
                   <button onClick={() => setNutritionView("home")} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
