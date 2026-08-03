@@ -10,9 +10,10 @@ import { WeightTrendChart } from "./WeightTrendChart";
 import { WeightGoalDialog } from "./WeightGoalDialog";
 import { CompetitionWeightCard } from "./CompetitionWeightCard";
 import { WeightOnboarding } from "./onboarding/WeightOnboarding";
-import { FoodScanner } from "@/components/FoodScanner";
+import { DailyOverview } from "./today/DailyOverview";
 import { NutritionPlan } from "@/components/NutritionPlan";
 import {
+  dailyCalorieDelta,
   estimateMaintenanceCalories, milestones, movingAverage, todayISO,
   type WeightGoal, type WeightPoint,
 } from "@/lib/weightPlanner";
