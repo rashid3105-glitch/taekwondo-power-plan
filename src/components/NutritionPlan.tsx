@@ -1,24 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
+import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { Loader2, Apple, AlertTriangle, Droplets, Pill, Utensils, Flame, ChevronDown, ChevronUp, Download, Trash2 } from "lucide-react";
+import { Loader2, Apple, Utensils, Flame, ChevronDown, ChevronUp, Download, Trash2, Info, Target } from "lucide-react";
 import jsPDF from "jspdf";
 import { getMealImage } from "@/data/recipeImages";
 import { AssistantDisclosure } from "@/components/AssistantDisclosure";
-
-
-const NUTRITION_GOALS = [
-  "Improve performance",
-  "Build lean muscle",
-  "Weight loss",
-  "Better recovery",
-  "More energy for training",
-  "Competition prep (weight class)",
-  "General healthy eating",
-  "Reduce inflammation",
-];
+import type { WeightGoal } from "@/lib/weightPlanner";
 
 interface NutritionPlanProps {
   profile: {
@@ -34,18 +24,39 @@ interface NutritionPlanProps {
   } | null;
   readOnly?: boolean;
   userId?: string;
+  /** Active weight goal from the nutrition setup — the plan is derived from it. */
+  goal?: (WeightGoal & { id?: string }) | null;
+  /** Daily calorie target already computed by the weight module. */
+  dailyTargetKcal?: number | null;
+  /** Opens the guided nutrition setup when no goal exists yet. */
+  onSetGoals?: () => void;
 }
 
-export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPlanProps) {
+/** Maps the answers from the guided setup to nutrition goals for the plan. */
+function deriveGoals(goal?: (WeightGoal & { id?: string }) | null): string[] {
+  if (!goal) return [];
+  const base =
+    goal.direction === "loss"
+      ? "Weight loss"
+      : goal.direction === "gain"
+        ? "Build lean muscle"
+        : "Improve performance";
+  const extras = (goal.motivations ?? []).slice(0, 3).filter(Boolean);
+  return [base, ...extras];
+}
+
+export function NutritionPlan({ profile, readOnly = false, userId, goal = null, dailyTargetKcal = null, onSetGoals }: NutritionPlanProps) {
   const { toast } = useToast();
   const { t, locale } = useLanguage();
-  const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
   const [generating, setGenerating] = useState(false);
   const [plan, setPlan] = useState<any>(null);
   const [expandedMeal, setExpandedMeal] = useState<number | null>(null);
   const [customCalories, setCustomCalories] = useState<string>("");
   const [savedPlanId, setSavedPlanId] = useState<string | null>(null);
   const [loadingPlan, setLoadingPlan] = useState(true);
+
+  const selectedGoals = deriveGoals(goal);
+
 
   // Load saved plan on mount
   useEffect(() => {
@@ -67,7 +78,7 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
         if (error) throw error;
         if (data) {
           setPlan(data.plan_data);
-          setSelectedGoals(data.goals || []);
+          setCustomCalories(data.custom_calories?.toString() || "");
           setCustomCalories(data.custom_calories?.toString() || "");
           setSavedPlanId(data.id);
           toast({ title: t("savedNutritionPlan") });
@@ -118,15 +129,10 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
     }
   }, []);
 
-  const toggleGoal = (goal: string) => {
-    setSelectedGoals((prev) =>
-      prev.includes(goal) ? prev.filter((g) => g !== goal) : [...prev, goal]
-    );
-  };
-
   const hasWeightLossGoal = selectedGoals.some(
     (g) => g === "Weight loss" || g === "Competition prep (weight class)"
   );
+
 
   const generatePlan = async () => {
     let age = profile?.age ?? null;
@@ -149,8 +155,14 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
     setGenerating(true);
     try {
       const { data, error } = await supabase.functions.invoke("generate-nutrition-plan", {
-        body: { profile: { ...profile, age }, goals: selectedGoals, language: locale, custom_calories: profile?.custom_calories || null },
+        body: {
+          profile: { ...profile, age },
+          goals: selectedGoals,
+          language: locale,
+          custom_calories: dailyTargetKcal ?? profile?.custom_calories ?? null,
+        },
       });
+
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
       if (!data?.plan) throw new Error("No plan returned");
@@ -180,7 +192,7 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
       if (error) throw error;
       setPlan(null);
       setSavedPlanId(null);
-      setSelectedGoals([]);
+      setCustomCalories("");
       toast({ title: t("planDeleted") || "Plan slettet" });
     } catch (err: any) {
       toast({ title: t("error"), description: err?.message, variant: "destructive" });
@@ -209,17 +221,8 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
     doc.text(plan.planName || t("nutrition"), margin, y);
     y += 10;
 
-    // Health warning
-    if (plan.healthWarning) {
-      doc.setFontSize(9);
-      doc.setFont("helvetica", "bold");
-      doc.setTextColor(180, 0, 0);
-      const warnLines = doc.splitTextToSize(`⚠ ${plan.healthWarning}`, maxWidth);
-      checkPage(warnLines.length * 4 + 4);
-      doc.text(warnLines, margin, y);
-      y += warnLines.length * 4 + 6;
-      doc.setTextColor(0, 0, 0);
-    }
+
+
 
     // Macros overview
     doc.setFontSize(11);
@@ -239,23 +242,8 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
       y += 8;
     }
 
-    // Key principles
-    if (plan.keyPrinciples?.length) {
-      doc.setFontSize(12);
-      doc.setFont("helvetica", "bold");
-      checkPage(10);
-      doc.text(t("keyPrinciples"), margin, y);
-      y += 6;
-      doc.setFontSize(9);
-      doc.setFont("helvetica", "normal");
-      for (const p of plan.keyPrinciples) {
-        const lines = doc.splitTextToSize(`• ${p}`, maxWidth);
-        checkPage(lines.length * 4 + 2);
-        doc.text(lines, margin, y);
-        y += lines.length * 4 + 2;
-      }
-      y += 4;
-    }
+
+
 
     // Meals
     if (plan.meals?.length) {
@@ -297,62 +285,8 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
       }
     }
 
-    // Hydration
-    if (plan.hydration) {
-      doc.setFontSize(12);
-      doc.setFont("helvetica", "bold");
-      checkPage(10);
-      doc.text(t("hydration"), margin, y);
-      y += 6;
-      doc.setFontSize(9);
-      doc.setFont("helvetica", "normal");
-      const h = plan.hydration;
-      const hydLines = [
-        `${t("daily")}: ${h.daily}`,
-        `${t("preTraining")}: ${h.preTrain}`,
-        `${t("duringTraining")}: ${h.duringTrain}`,
-        `${t("postTraining")}: ${h.postTrain}`,
-      ];
-      for (const line of hydLines) {
-        checkPage(5);
-        doc.text(line, margin, y);
-        y += 5;
-      }
-      y += 4;
-    }
 
-    // Supplements
-    if (plan.supplements?.length) {
-      doc.setFontSize(12);
-      doc.setFont("helvetica", "bold");
-      checkPage(10);
-      doc.text(t("supplements"), margin, y);
-      y += 6;
-      for (const s of plan.supplements) {
-        doc.setFontSize(10);
-        doc.setFont("helvetica", "bold");
-        checkPage(12);
-        doc.text(s.name, margin, y);
-        y += 5;
-        doc.setFontSize(9);
-        doc.setFont("helvetica", "normal");
-        doc.text(`${s.dosage} · ${s.timing}`, margin, y);
-        y += 4;
-        const rLines = doc.splitTextToSize(s.reason, maxWidth);
-        checkPage(rLines.length * 4);
-        doc.text(rLines, margin, y);
-        y += rLines.length * 4;
-        if (s.warning) {
-          doc.setTextColor(180, 100, 0);
-          const wLines = doc.splitTextToSize(`⚠ ${s.warning}`, maxWidth);
-          checkPage(wLines.length * 4);
-          doc.text(wLines, margin, y);
-          y += wLines.length * 4;
-          doc.setTextColor(0, 0, 0);
-        }
-        y += 3;
-      }
-    }
+
 
     doc.save(`${plan.planName || "nutrition-plan"}.pdf`);
   };
@@ -367,73 +301,63 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
 
   return (
     <div className="space-y-4">
-      {/* Health Warning Banner */}
-      <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-4 flex gap-3">
-        <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 shrink-0 mt-0.5" />
-        <div>
-          <p className="text-sm font-bold text-foreground">{t("nutritionDisclaimer")}</p>
-          <p className="text-xs text-muted-foreground mt-1">{t("nutritionDisclaimerDesc")}</p>
-        </div>
-      </div>
-
-      {/* Goal Selection */}
+      {/* Plan source: goals come from the guided nutrition setup */}
       {!readOnly && (
         <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
           <div className="flex items-center gap-2">
             <Apple className="h-5 w-5 text-tab-nutrition" />
-            <h3 className="font-bold text-card-foreground">{t("nutritionGoals")}</h3>
-          </div>
-          <p className="text-xs text-muted-foreground">{t("selectNutritionGoals")}</p>
-          <div className="flex flex-wrap gap-2">
-            {NUTRITION_GOALS.map((goal) => (
-              <button
-                key={goal}
-                type="button"
-                onClick={() => toggleGoal(goal)}
-                data-active={selectedGoals.includes(goal)}
-                className="rounded-full px-3 py-1.5 text-xs font-medium border border-border transition-colors cursor-pointer
-                  data-[active=true]:bg-primary data-[active=true]:text-primary-foreground
-                  data-[active=false]:text-muted-foreground hover:text-foreground"
-              >
-                {t(goal) || goal}
-              </button>
-            ))}
+            <h3 className="font-bold text-card-foreground">{t("nutritionPlanTitle")}</h3>
           </div>
 
-          {/* Weight Loss Warning */}
-          {hasWeightLossGoal && (
-            <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 flex gap-2">
-              <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
-              <div>
-                <p className="text-xs font-bold text-destructive">{t("weightLossWarningTitle")}</p>
-                <p className="text-xs text-muted-foreground mt-1">{t("weightLossWarningDesc")}</p>
+          {selectedGoals.length === 0 ? (
+            <>
+              <p className="text-xs text-muted-foreground">{t("nutritionNeedsGoalDesc")}</p>
+              {onSetGoals && (
+                <Button onClick={onSetGoals} size="sm" variant="outline" className="w-full sm:w-auto">
+                  <Target className="h-4 w-4 mr-1" /> {t("wpSetGoal")}
+                </Button>
+              )}
+            </>
+          ) : (
+            <>
+              <div className="flex flex-wrap items-center gap-1.5">
+                {selectedGoals.map((g) => (
+                  <span key={g} className="rounded-full bg-primary/15 border border-primary/30 text-primary px-2.5 py-1 text-[11px] font-medium">
+                    {t(g) || g}
+                  </span>
+                ))}
+                {dailyTargetKcal ? (
+                  <span className="rounded-full border border-border px-2.5 py-1 text-[11px] text-muted-foreground">
+                    {dailyTargetKcal} kcal
+                  </span>
+                ) : null}
               </div>
-            </div>
+
+              <AssistantDisclosure />
+
+              <Button onClick={generatePlan} disabled={generating} size="sm" className="w-full sm:w-auto">
+                {generating ? (
+                  <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
+                ) : (
+                  <><Apple className="h-4 w-4 mr-1" /> {t("generateNutritionPlan")}</>
+                )}
+              </Button>
+            </>
           )}
 
-          <AssistantDisclosure />
-
-          <Button onClick={generatePlan} disabled={generating || selectedGoals.length === 0} size="sm" className="w-full sm:w-auto">
-            {generating ? (
-              <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> {t("generating")}</>
-            ) : (
-              <><Apple className="h-4 w-4 mr-1" /> {t("generateNutritionPlan")}</>
-            )}
-          </Button>
-
+          <Link
+            to="/help#helpNutritionFaq"
+            className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground hover:text-primary"
+          >
+            <Info className="h-3.5 w-3.5" /> {t("nutritionPlanGuidanceLink")}
+          </Link>
         </div>
       )}
 
       {/* Generated Plan */}
       {plan && (
         <div className="space-y-4">
-          {/* Health Warning from AI */}
-          {plan.healthWarning && (
-            <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4 flex gap-3">
-              <AlertTriangle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
-              <p className="text-sm text-card-foreground">{plan.healthWarning}</p>
-            </div>
-          )}
+
 
           {/* Overview */}
           <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-3">
@@ -490,19 +414,8 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
             )}
           </div>
 
-          {/* Key Principles */}
-          {plan.keyPrinciples?.length > 0 && (
-            <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-2">
-              <h4 className="font-semibold text-sm text-card-foreground">{t("keyPrinciples")}</h4>
-              <ul className="space-y-1.5">
-                {plan.keyPrinciples.map((p: string, i: number) => (
-                  <li key={i} className="text-xs text-muted-foreground flex gap-2">
-                    <span className="text-primary font-bold">•</span> {p}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+
+
 
           {/* Meals */}
           {plan.meals?.length > 0 && (
@@ -549,55 +462,8 @@ export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPl
             </div>
           )}
 
-          {/* Hydration */}
-          {plan.hydration && (
-            <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-2">
-              <h4 className="font-semibold text-sm text-card-foreground flex items-center gap-2">
-                <Droplets className="h-4 w-4" /> {t("hydration")}
-              </h4>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="rounded-lg bg-muted/50 p-2">
-                  <p className="text-[10px] text-muted-foreground">{t("daily")}</p>
-                  <p className="text-xs font-medium text-card-foreground">{plan.hydration.daily}</p>
-                </div>
-                <div className="rounded-lg bg-muted/50 p-2">
-                  <p className="text-[10px] text-muted-foreground">{t("preTraining")}</p>
-                  <p className="text-xs font-medium text-card-foreground">{plan.hydration.preTrain}</p>
-                </div>
-                <div className="rounded-lg bg-muted/50 p-2">
-                  <p className="text-[10px] text-muted-foreground">{t("duringTraining")}</p>
-                  <p className="text-xs font-medium text-card-foreground">{plan.hydration.duringTrain}</p>
-                </div>
-                <div className="rounded-lg bg-muted/50 p-2">
-                  <p className="text-[10px] text-muted-foreground">{t("postTraining")}</p>
-                  <p className="text-xs font-medium text-card-foreground">{plan.hydration.postTrain}</p>
-                </div>
-              </div>
-            </div>
-          )}
+          {/* Hydration and supplement guidance now lives in the help section */}
 
-          {/* Supplements */}
-          {plan.supplements?.length > 0 && (
-            <div className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-card space-y-2">
-              <h4 className="font-semibold text-sm text-card-foreground flex items-center gap-2">
-                <Pill className="h-4 w-4" /> {t("supplements")}
-              </h4>
-              <div className="space-y-2">
-                {plan.supplements.map((s: any, i: number) => (
-                  <div key={i} className="rounded-lg bg-muted/30 p-3 space-y-1">
-                    <p className="text-sm font-medium text-card-foreground">{s.name}</p>
-                    <p className="text-xs text-muted-foreground">{s.dosage} · {s.timing}</p>
-                    <p className="text-xs text-muted-foreground">{s.reason}</p>
-                    {s.warning && (
-                      <p className="text-xs text-yellow-600 dark:text-yellow-400 flex items-center gap-1">
-                        <AlertTriangle className="h-3 w-3" /> {s.warning}
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* Weekly Variation */}
           {plan.weeklyVariation && (

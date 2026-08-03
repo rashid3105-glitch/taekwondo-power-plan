@@ -26,7 +26,7 @@ type TopicKey =
   | "helpConsents" | "helpAttendance" | "helpDeleteAthlete" | "helpCoachMentalReview"
   | "helpSubscription" | "helpSecurity" | "helpDeleteAccount" | "helpNotifications"
   | "helpTodayCard" | "helpRunning" | "helpCompetitions" | "helpCoachChecklist"
-  | "helpModuleAccess" | "helpSurveys" | "helpTeamTests" | "helpCompliance" | "helpClubAssessment" | "helpWeightPlanner";
+  | "helpModuleAccess" | "helpSurveys" | "helpTeamTests" | "helpCompliance" | "helpClubAssessment" | "helpWeightPlanner" | "helpNutritionFaq";
 
 type Topic = { key: TopicKey; icon: typeof UserCircle; isNew?: boolean };
 
@@ -72,6 +72,7 @@ const TOPICS: Record<TopicKey, Topic> = {
   helpCompliance: { key: "helpCompliance", icon: ShieldAlert, isNew: true },
   helpClubAssessment: { key: "helpClubAssessment", icon: LifeBuoy, isNew: true },
   helpWeightPlanner: { key: "helpWeightPlanner", icon: Scale, isNew: true },
+  helpNutritionFaq: { key: "helpNutritionFaq", icon: Apple, isNew: true },
 };
 
 type SectionDef = {
@@ -102,7 +103,7 @@ const SECTIONS: SectionDef[] = [
     chipBg: "bg-tab-rehab",
     chipFg: "text-white",
     accent: "bg-tab-rehab",
-    topics: ["helpWeightPlanner", "helpRehabPlan", "helpNutrition", "helpWearables"],
+    topics: ["helpWeightPlanner", "helpNutritionFaq", "helpRehabPlan", "helpNutrition", "helpWearables"],
   },
   {
     id: "mental",
@@ -190,7 +191,19 @@ export default function Help() {
     return SECTION_FALLBACK[key] ?? key;
   };
 
+  // Deep link support: /help#helpNutritionFaq opens and scrolls to that topic
+  useEffect(() => {
+    const key = window.location.hash.replace("#", "") as TopicKey;
+    if (!key || !TOPICS[key]) return;
+    setActiveTopic(key);
+    const timer = window.setTimeout(() => {
+      document.getElementById(`help-topic-${key}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 250);
+    return () => window.clearTimeout(timer);
+  }, []);
+
   // Focus search on "/" key
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "/" && document.activeElement?.tagName !== "INPUT" && document.activeElement?.tagName !== "TEXTAREA") {
@@ -233,7 +246,7 @@ export default function Help() {
     const isActive = activeTopic === topic.key;
     const titleRaw = tr(`${topic.key}Title`);
     return (
-      <div key={topic.key} className="space-y-2">
+      <div key={topic.key} id={`help-topic-${topic.key}`} className="space-y-2 scroll-mt-24">
         <button
           onClick={() => setActiveTopic(isActive ? null : topic.key)}
           className={cn(
@@ -531,6 +544,7 @@ export default function Help() {
 // Build numbers start at v1.0.0 on 2026-05-29 (first build with semantic versioning).
 // MINOR bumps for new features, PATCH bumps for small tweaks/fixes. Older releases left unversioned.
 const CHANGELOG: { dateKey: string; entries: string[]; build?: string }[] = [
+  { dateKey: "changelog_2026_08_04", entries: ["changelogEntry200"], build: "v1.5.18" },
   { dateKey: "changelog_2026_08_04", entries: ["changelogEntry199"], build: "v1.5.17" },
   { dateKey: "changelog_2026_08_04", entries: ["changelogEntry198", "changelogEntry197", "changelogEntry196"], build: "v1.5.16" },
   { dateKey: "changelog_2026_08_03", entries: ["changelogEntry195"], build: "v1.5.14" },

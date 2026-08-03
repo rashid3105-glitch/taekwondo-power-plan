@@ -212,7 +212,15 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
           </TabsContent>
           <TabsContent value="status" className="mt-4">{statusView}</TabsContent>
           <TabsContent value="plan" className="mt-4">
-            <NutritionPlan profile={profile} readOnly={readOnly} />
+            <NutritionPlan
+              profile={profile}
+              readOnly={readOnly}
+              userId={resolvedId ?? undefined}
+              goal={goal}
+              dailyTargetKcal={dailyTarget}
+              onSetGoals={canEditGoal && !readOnly ? () => setRerunOnboarding(true) : undefined}
+            />
+
           </TabsContent>
         </Tabs>
       )}
