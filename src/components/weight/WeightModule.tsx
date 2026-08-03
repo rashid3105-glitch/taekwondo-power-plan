@@ -108,6 +108,7 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
     setSaving(false);
     if (error) { toast.error(error.message); return; }
     setGoalOpen(false);
+    setRerunOnboarding(false);
     toast.success(t("wpGoalSaved"));
     void load();
   };
@@ -127,6 +128,21 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
 
   if (loading) {
     return <div className="flex justify-center py-10"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>;
+  }
+
+  const showOnboarding = canEditGoal && !readOnly && (rerunOnboarding || !goal);
+  if (showOnboarding) {
+    return (
+      <div className="max-w-md mx-auto py-2">
+        <WeightOnboarding
+          currentWeight={currentWeight}
+          age={profile?.age ?? null}
+          saving={saving}
+          onCancel={rerunOnboarding ? () => setRerunOnboarding(false) : undefined}
+          onComplete={saveGoal}
+        />
+      </div>
+    );
   }
 
   const statusView = (
