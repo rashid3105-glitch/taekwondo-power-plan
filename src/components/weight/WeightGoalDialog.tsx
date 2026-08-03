@@ -136,6 +136,19 @@ export function WeightGoalDialog({ open, onOpenChange, goal, currentWeight, age,
               <span>{reasonText(safety.reasons[0])}</span>
             </p>
           )}
+
+          {onRerunSetup && (
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full h-11 gap-2"
+              onClick={() => { onOpenChange(false); onRerunSetup(); }}
+              disabled={saving}
+            >
+              <RotateCcw className="h-4 w-4" />
+              {t("woRerun")}
+            </Button>
+          )}
         </div>
 
         <DialogFooter className="gap-2 sm:gap-2">
