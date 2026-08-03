@@ -4115,6 +4115,7 @@ export type Database = {
           onboarded_at: string | null
           rate_kg_per_week: number
           set_by: string | null
+          sex: string | null
           start_date: string
           start_weight_kg: number
           target_date: string | null
@@ -4134,6 +4135,7 @@ export type Database = {
           onboarded_at?: string | null
           rate_kg_per_week?: number
           set_by?: string | null
+          sex?: string | null
           start_date?: string
           start_weight_kg: number
           target_date?: string | null
@@ -4153,6 +4155,7 @@ export type Database = {
           onboarded_at?: string | null
           rate_kg_per_week?: number
           set_by?: string | null
+          sex?: string | null
           start_date?: string
           start_weight_kg?: number
           target_date?: string | null
