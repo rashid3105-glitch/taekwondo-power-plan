@@ -1,24 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
+import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { Loader2, Apple, AlertTriangle, Droplets, Pill, Utensils, Flame, ChevronDown, ChevronUp, Download, Trash2 } from "lucide-react";
+import { Loader2, Apple, Utensils, Flame, ChevronDown, ChevronUp, Download, Trash2, Info, Target } from "lucide-react";
 import jsPDF from "jspdf";
 import { getMealImage } from "@/data/recipeImages";
 import { AssistantDisclosure } from "@/components/AssistantDisclosure";
-
-
-const NUTRITION_GOALS = [
-  "Improve performance",
-  "Build lean muscle",
-  "Weight loss",
-  "Better recovery",
-  "More energy for training",
-  "Competition prep (weight class)",
-  "General healthy eating",
-  "Reduce inflammation",
-];
+import type { WeightGoal } from "@/lib/weightPlanner";
 
 interface NutritionPlanProps {
   profile: {
@@ -34,18 +24,39 @@ interface NutritionPlanProps {
   } | null;
   readOnly?: boolean;
   userId?: string;
+  /** Active weight goal from the nutrition setup — the plan is derived from it. */
+  goal?: (WeightGoal & { id?: string }) | null;
+  /** Daily calorie target already computed by the weight module. */
+  dailyTargetKcal?: number | null;
+  /** Opens the guided nutrition setup when no goal exists yet. */
+  onSetGoals?: () => void;
 }
 
-export function NutritionPlan({ profile, readOnly = false, userId }: NutritionPlanProps) {
+/** Maps the answers from the guided setup to nutrition goals for the plan. */
+function deriveGoals(goal?: (WeightGoal & { id?: string }) | null): string[] {
+  if (!goal) return [];
+  const base =
+    goal.direction === "loss"
+      ? "Weight loss"
+      : goal.direction === "gain"
+        ? "Build lean muscle"
+        : "Improve performance";
+  const extras = (goal.motivations ?? []).slice(0, 3).filter(Boolean);
+  return [base, ...extras];
+}
+
+export function NutritionPlan({ profile, readOnly = false, userId, goal = null, dailyTargetKcal = null, onSetGoals }: NutritionPlanProps) {
   const { toast } = useToast();
   const { t, locale } = useLanguage();
-  const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
   const [generating, setGenerating] = useState(false);
   const [plan, setPlan] = useState<any>(null);
   const [expandedMeal, setExpandedMeal] = useState<number | null>(null);
   const [customCalories, setCustomCalories] = useState<string>("");
   const [savedPlanId, setSavedPlanId] = useState<string | null>(null);
   const [loadingPlan, setLoadingPlan] = useState(true);
+
+  const selectedGoals = deriveGoals(goal);
+
 
   // Load saved plan on mount
   useEffect(() => {
