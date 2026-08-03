@@ -78,7 +78,7 @@ export function NutritionPlan({ profile, readOnly = false, userId, goal = null, 
         if (error) throw error;
         if (data) {
           setPlan(data.plan_data);
-          setSelectedGoals(data.goals || []);
+          setCustomCalories(data.custom_calories?.toString() || "");
           setCustomCalories(data.custom_calories?.toString() || "");
           setSavedPlanId(data.id);
           toast({ title: t("savedNutritionPlan") });
