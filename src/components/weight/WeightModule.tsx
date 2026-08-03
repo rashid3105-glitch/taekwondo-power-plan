@@ -37,6 +37,7 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
   const [weighIn, setWeighIn] = useState("");
   const [saving, setSaving] = useState(false);
   const [goalOpen, setGoalOpen] = useState(false);
+  const [rerunOnboarding, setRerunOnboarding] = useState(false);
 
   useEffect(() => {
     if (userId) { setResolvedId(userId); return; }
