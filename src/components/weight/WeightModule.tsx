@@ -207,6 +207,7 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
         saving={saving}
         onSave={saveGoal}
         onDelete={goal ? deleteGoal : undefined}
+        onRerunSetup={canEditGoal && !readOnly ? () => setRerunOnboarding(true) : undefined}
       />
     </div>
   );
