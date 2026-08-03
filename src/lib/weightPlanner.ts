@@ -263,3 +263,24 @@ export function weighInStreak(logs: WeightPoint[]): number {
   }
   return streak;
 }
+
+export interface MacroTargets {
+  protein_g: number;
+  carbs_g: number;
+  fat_g: number;
+}
+
+/** Macro split derived from the daily calorie budget and the goal direction. */
+export function macroTargets(kcal: number, direction: WeightGoal["direction"] | null | undefined, weightKg?: number | null): MacroTargets {
+  const w = weightKg && weightKg > 0 ? weightKg : Math.max(40, kcal / 33);
+  const perKg = direction === "loss" ? 2.2 : direction === "gain" ? 1.8 : 1.9;
+  let protein = Math.round(w * perKg);
+  const fat = Math.round((kcal * 0.25) / 9);
+  let carbs = Math.round((kcal - protein * 4 - fat * 9) / 4);
+  if (carbs < 0) {
+    protein = Math.max(0, Math.round((kcal - fat * 9) / 4));
+    carbs = 0;
+  }
+  return { protein_g: protein, carbs_g: carbs, fat_g: fat };
+}
+
