@@ -3356,6 +3356,10 @@ const translations = {
     parentGuidePlaceholder: "Write your question…",
     parentGuideThinking: "Thinking…",
     parentGuideDisclaimer: "Guidance only — not a substitute for professional advice. If you're worried about wellbeing, contact the coach, your doctor or Team Danmark.",
+    assistantDisclosure: "This feature gives automated answers based on your data and established training principles. The answers are guidance only and do not replace your own or your coach"s judgement."
+    assistantDisclosureShort: "Automated answer · guidance only'
+    privacyAutomatedTitle: "Automated assistant'
+    privacyAutomatedDesc: "Sportstalent includes an automated assistant feature that generates guiding answers and suggestions based on the information you enter and your training data. The feature does not make independent decisions about your training or your health, does not provide diagnoses and does not replace professional advice. The final choice always rests with you and your coach.'
     parentGuideSourceLink: "Based on Team Danmark's parent guide",
     parentGuideDailyLimit: "Daily message limit reached. Please continue tomorrow.",
     parentGuideRemaining: "messages left today",
@@ -7434,6 +7438,10 @@ const translations = {
     parentGuidePlaceholder: "Skriv dit spørgsmål…",
     parentGuideThinking: "Tænker…",
     parentGuideDisclaimer: "Vejledende samtale — erstatter ikke professionel rådgivning. Ved bekymring om trivsel, kontakt træner, egen læge eller Team Danmark.",
+    assistantDisclosure: "Denne funktion giver automatiserede svar baseret på dine data og træningsfaglige principper. Svarene er vejledende og erstatter ikke din egen eller din træners vurdering.'
+    assistantDisclosureShort: "Automatiseret svar · vejledende'
+    privacyAutomatedTitle: "Automatiseret assistent'
+    privacyAutomatedDesc: "Sportstalent indeholder en automatiseret assistentfunktion, der genererer vejledende svar og forslag ud fra dine indtastede oplysninger og træningsdata. Funktionen træffer ikke selvstændige beslutninger om din træning eller dit helbred, stiller ikke diagnoser og erstatter ikke professionel rådgivning. Det endelige valg ligger altid hos dig og din træner.'
     parentGuideSourceLink: "Baseret på Team Danmarks forældreguide",
     parentGuideDailyLimit: "Du har nået dagens beskedgrænse. Fortsæt i morgen.",
     parentGuideRemaining: "beskeder tilbage i dag",
@@ -11508,6 +11516,10 @@ const translations = {
     parentGuidePlaceholder: "Skriv din fråga…",
     parentGuideThinking: "Tänker…",
     parentGuideDisclaimer: "Vägledande samtal — ersätter inte professionell rådgivning. Vid oro för välmående, kontakta tränare, läkare eller Team Danmark.",
+    assistantDisclosure: "Den här funktionen ger automatiserade svar baserade på dina data och träningsvetenskapliga principer. Svaren är vägledande och ersätter inte din egen eller din tränares bedömning.'
+    assistantDisclosureShort: "Automatiserat svar · vägledande'
+    privacyAutomatedTitle: "Automatiserad assistent'
+    privacyAutomatedDesc: "Sportstalent innehåller en automatiserad assistentfunktion som genererar vägledande svar och förslag utifrån de uppgifter du anger och dina träningsdata. Funktionen fattar inga självständiga beslut om din träning eller din hälsa, ställer inga diagnoser och ersätter inte professionell rådgivning. Det slutliga valet ligger alltid hos dig och din tränare.'
     parentGuideSourceLink: "Baserat på Team Danmarks föräldraguide",
     parentGuideDailyLimit: "Du har nått dagens meddelandegräns. Fortsätt imorgon.",
     parentGuideRemaining: "meddelanden kvar idag",
@@ -15494,6 +15506,10 @@ const translations = {
     parentGuidePlaceholder: "Schreiben Sie Ihre Frage…",
     parentGuideThinking: "Denke nach…",
     parentGuideDisclaimer: "Nur zur Orientierung — ersetzt keine professionelle Beratung. Bei Sorgen um das Wohlbefinden Trainer, Arzt oder Team Danmark kontaktieren.",
+    assistantDisclosure: "Diese Funktion liefert automatisierte Antworten auf Grundlage deiner Daten und trainingswissenschaftlicher Prinzipien. Die Antworten dienen nur zur Orientierung und ersetzen weder deine eigene noch die Einschätzung deines Trainers.'
+    assistantDisclosureShort: "Automatisierte Antwort · Orientierung'
+    privacyAutomatedTitle: "Automatisierter Assistent'
+    privacyAutomatedDesc: "Sportstalent enthält eine automatisierte Assistenzfunktion, die auf Grundlage der von dir eingegebenen Angaben und deiner Trainingsdaten orientierende Antworten und Vorschläge erzeugt. Die Funktion trifft keine eigenständigen Entscheidungen über dein Training oder deine Gesundheit, stellt keine Diagnosen und ersetzt keine professionelle Beratung. Die endgültige Entscheidung liegt immer bei dir und deinem Trainer.'
     parentGuideSourceLink: "Basierend auf dem Elternguide von Team Danmark",
     parentGuideDailyLimit: "Tageslimit erreicht. Bitte morgen fortsetzen.",
     parentGuideRemaining: "Nachrichten heute übrig",
@@ -19480,6 +19496,10 @@ const translations = {
     parentGuidePlaceholder: "اكتب سؤالك…",
     parentGuideThinking: "يفكر…",
     parentGuideDisclaimer: "إرشاد فقط — لا يغني عن الاستشارة المهنية. إذا كنت قلقًا على رفاهيته، تواصل مع المدرب أو الطبيب أو Team Danmark.",
+    assistantDisclosure: "تقدّم هذه الوظيفة إجابات آلية استنادًا إلى بياناتك ومبادئ علوم التدريب. الإجابات إرشادية ولا تحل محل تقديرك أو تقدير مدربك.'
+    assistantDisclosureShort: "إجابة آلية · إرشادية'
+    privacyAutomatedTitle: "مساعد آلي'
+    privacyAutomatedDesc: "يتضمّن Sportstalent وظيفة مساعد آلي تُنشئ إجابات واقتراحات إرشادية بناءً على المعلومات التي تدخلها وبيانات تدريبك. لا تتخذ الوظيفة قرارات مستقلة بشأن تدريبك أو صحتك، ولا تقدم تشخيصًا، ولا تحل محل الاستشارة المهنية. القرار النهائي يعود دائمًا إليك وإلى مدربك.'
     parentGuideSourceLink: "استنادًا إلى دليل والدَي Team Danmark",
     parentGuideDailyLimit: "تم الوصول إلى حد الرسائل اليومي. تابع غدًا.",
     parentGuideRemaining: "رسائل متبقية اليوم",
@@ -23506,6 +23526,10 @@ const translations = {
     parentGuidePlaceholder: "Skriv spørsmålet ditt…",
     parentGuideThinking: "Tenker…",
     parentGuideDisclaimer: "Kun veiledende — erstatter ikke profesjonell rådgivning. Ved bekymring for trivsel, kontakt trener, lege eller Team Danmark.",
+    assistantDisclosure: "Denne funksjonen gir automatiserte svar basert på dine data og treningsfaglige prinsipper. Svarene er veiledende og erstatter ikke din egen eller trenerens vurdering.'
+    assistantDisclosureShort: "Automatisert svar · veiledende'
+    privacyAutomatedTitle: "Automatisert assistent'
+    privacyAutomatedDesc: "Sportstalent inneholder en automatisert assistentfunksjon som genererer veiledende svar og forslag ut fra opplysningene du taster inn og treningsdataene dine. Funksjonen tar ikke selvstendige beslutninger om treningen eller helsen din, stiller ikke diagnoser og erstatter ikke profesjonell rådgivning. Det endelige valget ligger alltid hos deg og treneren din.'
     parentGuideSourceLink: "Basert på Team Danmarks foreldreguide",
     parentGuideDailyLimit: "Du har nådd dagens meldingsgrense. Fortsett i morgen.",
     parentGuideRemaining: "meldinger igjen i dag",
@@ -26173,6 +26197,10 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   parentGuidePlaceholder: "Escribe tu pregunta…",
   parentGuideThinking: "Pensando…",
   parentGuideDisclaimer: "Orientación — no sustituye el asesoramiento profesional. Si te preocupa su bienestar, contacta con el entrenador, un médico o Team Danmark.",
+  assistantDisclosure: "Esta función ofrece respuestas automatizadas basadas en tus datos y en principios de ciencias del entrenamiento. Las respuestas son orientativas y no sustituyen tu propio criterio ni el de tu entrenador.'
+  assistantDisclosureShort: "Respuesta automatizada · orientativa'
+  privacyAutomatedTitle: "Asistente automatizado'
+  privacyAutomatedDesc: "Sportstalent incluye una función de asistente automatizado que genera respuestas y sugerencias orientativas a partir de la información que introduces y de tus datos de entrenamiento. La función no toma decisiones independientes sobre tu entrenamiento o tu salud, no realiza diagnósticos y no sustituye el asesoramiento profesional. La decisión final siempre es tuya y de tu entrenador.'
   parentGuideSourceLink: "Basado en la guía para padres de Team Danmark",
   parentGuideDailyLimit: "Has alcanzado el límite diario de mensajes. Continúa mañana.",
   parentGuideRemaining: "mensajes restantes hoy",
