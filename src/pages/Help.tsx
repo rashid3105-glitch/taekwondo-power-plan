@@ -26,7 +26,7 @@ type TopicKey =
   | "helpConsents" | "helpAttendance" | "helpDeleteAthlete" | "helpCoachMentalReview"
   | "helpSubscription" | "helpSecurity" | "helpDeleteAccount" | "helpNotifications"
   | "helpTodayCard" | "helpRunning" | "helpCompetitions" | "helpCoachChecklist"
-  | "helpModuleAccess" | "helpSurveys" | "helpTeamTests" | "helpCompliance" | "helpClubAssessment";
+  | "helpModuleAccess" | "helpSurveys" | "helpTeamTests" | "helpCompliance" | "helpClubAssessment" | "helpWeightPlanner";
 
 type Topic = { key: TopicKey; icon: typeof UserCircle; isNew?: boolean };
 
@@ -71,6 +71,7 @@ const TOPICS: Record<TopicKey, Topic> = {
   helpTeamTests: { key: "helpTeamTests", icon: Activity, isNew: true },
   helpCompliance: { key: "helpCompliance", icon: ShieldAlert, isNew: true },
   helpClubAssessment: { key: "helpClubAssessment", icon: LifeBuoy, isNew: true },
+  helpWeightPlanner: { key: "helpWeightPlanner", icon: Scale, isNew: true },
 };
 
 type SectionDef = {
@@ -101,7 +102,7 @@ const SECTIONS: SectionDef[] = [
     chipBg: "bg-tab-rehab",
     chipFg: "text-white",
     accent: "bg-tab-rehab",
-    topics: ["helpRehabPlan", "helpNutrition", "helpWearables"],
+    topics: ["helpWeightPlanner", "helpRehabPlan", "helpNutrition", "helpWearables"],
   },
   {
     id: "mental",
@@ -530,6 +531,7 @@ export default function Help() {
 // Build numbers start at v1.0.0 on 2026-05-29 (first build with semantic versioning).
 // MINOR bumps for new features, PATCH bumps for small tweaks/fixes. Older releases left unversioned.
 const CHANGELOG: { dateKey: string; entries: string[]; build?: string }[] = [
+  { dateKey: "changelog_2026_08_03", entries: ["changelogEntry195"], build: "v1.5.14" },
   { dateKey: "changelog_2026_08_01", entries: ["changelogEntry194"], build: "v1.5.13" },
   { dateKey: "changelog_2026_08_01", entries: ["changelogEntry193"], build: "v1.5.12" },
   { dateKey: "changelog_2026_07_30", entries: ["changelogEntry192"], build: "v1.5.11" },
