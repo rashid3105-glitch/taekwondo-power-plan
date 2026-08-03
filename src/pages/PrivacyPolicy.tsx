@@ -82,9 +82,15 @@ export default function PrivacyPolicy() {
         </section>
 
         <section style={section}>
+          <h2 style={h2}>{t("privacyAutomatedTitle")}</h2>
+          <p style={p}>{t("privacyAutomatedDesc")}</p>
+        </section>
+
+        <section style={section}>
           <h2 style={h2}>{t("privacyAiTitle")}</h2>
           <p style={p}>{t("privacyAiDesc")}</p>
         </section>
+
 
         <section style={section}>
           <h2 style={h2}>{t("privacyHosting")}</h2>
