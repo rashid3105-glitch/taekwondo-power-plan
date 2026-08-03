@@ -1,10 +1,18 @@
 # Vægtmodul — professionel vægtplanlægger
 
-Et samlet vægtmodul under Kost/Ernæring, der dækker både daglig vægtstyring (Lifesum-stil: mål, kurve, budget) og stævne-vægtudtag med sikkerhedsgrænser. Coach kan se og redigere atletens mål.
+Et samlet vægtmodul, der **erstatter den nuværende kostplanlægger** under Kost/Ernæring. Det dækker både daglig vægtstyring (Lifesum-stil: mål, kurve, kaloriebudget) og stævne-vægtudtag med sikkerhedsgrænser. Coach kan se og redigere atletens mål.
+
+## Erstatning af kostplanlæggeren
+
+- Genvejskortet "Kostplanlægger & madregistrering" på Kost-forsiden udskiftes med "Vægt & kalorier", som åbner det nye modul.
+- Madregistrering (madscanner, måltidslog, dagens kalorier) flyttes med ind i det nye modul som fanen "I dag", så intet funktionalitet går tabt — den ligger nu under vægtbudgettet i stedet for som selvstændig planlægger.
+- Den AI-genererede kostplan (`generate-nutrition-plan`) bevares som en fane/sektion inde i modulet, men er ikke længere hovedindgangen.
+- "Alle opskrifter" står uændret som eget genvejskort.
 
 ## Sådan opleves det
 
-Ny genvej "Vægt" på Kost-forsiden (ved siden af Kostplanlægger og Opskrifter), som åbner vægtsiden med:
+Vægtmodulet åbner på status og indeholder:
+
 
 1. **Toppen — status**
    - Stor aktuel vægt, ændring siden start, afstand til mål.
