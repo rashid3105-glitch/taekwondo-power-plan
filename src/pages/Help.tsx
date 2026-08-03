@@ -233,7 +233,7 @@ export default function Help() {
     const isActive = activeTopic === topic.key;
     const titleRaw = tr(`${topic.key}Title`);
     return (
-      <div key={topic.key} className="space-y-2">
+      <div key={topic.key} id={`help-topic-${topic.key}`} className="space-y-2 scroll-mt-24">
         <button
           onClick={() => setActiveTopic(isActive ? null : topic.key)}
           className={cn(
