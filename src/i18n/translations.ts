@@ -24294,6 +24294,12 @@ export type TranslationKey = keyof typeof translations.en;
 // AI-generated plans (training, nutrition, mental, rehab) are produced in
 // Spanish server-side regardless of UI string coverage.
 const esOverrides: Partial<Record<TranslationKey, string>> = {
+  nutritionPlanTitle: "Plan de comidas",
+  nutritionNeedsGoalDesc: "Completa primero la configuración de nutrición — el plan se crea con esas respuestas.",
+  nutritionPlanGuidanceLink: "Solo orientativo — lee sobre control de peso seguro",
+  helpNutritionFaqTitle: "Nutrición y peso — preguntas y respuestas",
+  helpNutritionFaqSteps: "¿De dónde salen los objetivos del plan?\nDe la configuración guiada de nutrición: enfoque, sexo, edad, peso actual y objetivo, ritmo y nivel de actividad. Si cambias la configuración, el plan cambia.\n\n¿Cuánto puedo perder con seguridad por semana?\n0,25–0,5 kg por semana funciona para la mayoría. Por encima de 0,7 kg por semana arriesgas masa muscular, fuerza y recuperación. Menor de 18 años: no planifiques pérdida de peso sin médico o dietista.\n\n¿Hasta dónde pueden bajar las calorías?\nNunca por debajo de 1500 kcal al día en mujeres ni 1800 kcal en hombres, ni por debajo de lo que exige tu carga de entrenamiento. Si el plan parece bajo, revisa el objetivo calórico en la configuración.\n\n¿Cuánto debo beber?\nUnos 30–40 ml por kg de peso corporal al día, más 400–600 ml en las 2 horas previas al entrenamiento, 150–250 ml cada 15–20 minutos durante y 1,5 litros por kg de peso perdido después.\n\n¿Y los suplementos?\nPrimero la comida. Los suplementos solo tienen sentido con una carencia documentada o por indicación médica. Revisa siempre los productos en el control de suplementos antes de tomarlos — la responsabilidad es tuya.\n\n¿Qué no es el plan?\nEs orientación, no tratamiento. Con trastorno alimentario, enfermedad, embarazo o medicación, habla con tu médico antes de cambiar la dieta.",
+  changelogEntry200: "Plan de comidas más limpio: los objetivos vienen directamente de tu configuración de nutrición y los consejos generales sobre hidratación, suplementos y advertencias se han movido a una nueva sección de preguntas y respuestas en Ayuda.",
   adminStats: "Estadísticas de usuarios",
   statsSummary: "Resumen",
   statsUsersTable: "Usuarios",
