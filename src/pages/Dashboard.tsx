@@ -1130,19 +1130,20 @@ export default function Dashboard() {
                 <div className="space-y-4">
                   <Card
                     className="p-4 cursor-pointer hover:border-primary/40 transition-colors"
-                    onClick={() => setNutritionView("planner")}
+                    onClick={() => setNutritionView("weight")}
                   >
                     <div className="flex items-center gap-3">
                       <div className="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
-                        <Camera className="h-5 w-5 text-emerald-500" />
+                        <Scale className="h-5 w-5 text-emerald-500" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-sm font-bold">{t("nutritionPlannerTitle") || "Kostplanlægger & madregistrering"}</p>
-                        <p className="text-xs text-muted-foreground">{t("nutritionPlannerDesc") || "AI madscanner, log måltider og se dagens kalorier"}</p>
+                        <p className="text-sm font-bold">{t("wpTitle")}</p>
+                        <p className="text-xs text-muted-foreground">{t("wpDesc")}</p>
                       </div>
                       <ChevronRight className="h-4 w-4 text-muted-foreground ml-auto shrink-0" />
                     </div>
                   </Card>
+
                   <Card
                     className="p-4 cursor-pointer hover:border-primary/40 transition-colors"
                     onClick={() => setNutritionView("recipes")}
