@@ -115,23 +115,16 @@ export default function Library({ forcedSection }: { forcedSection?: string } = 
 
   const nutritionCards = [
     {
-      key: "planner" as const,
-      label: t("libNutritionPlannerLabel") || "Kostplanlægger",
-      desc: t("libNutritionPlannerDesc") || "Din personlige kostplan",
-      icon: ChefHat,
+      key: "weight" as const,
+      label: t("wpTitle"),
+      desc: t("wpDesc"),
+      icon: Scale,
       color: "text-emerald-500",
-    },
-    {
-      key: "logger" as const,
-      label: t("libNutritionLoggerLabel") || "Madregistrering",
-      desc: t("libNutritionLoggerDesc") || "Scan og log dine måltider",
-      icon: Camera,
-      color: "text-tab-nutrition",
     },
     {
       key: "recipes" as const,
       label: t("libNutritionRecipesLabel") || "Opskrifter",
-      desc: t("libNutritionRecipesDesc") || "Sund mad tilpasset taekwondo-atleter",
+      desc: t("libNutritionRecipesDesc") || "Sund mad tilpasset atleter",
       icon: BookOpen,
       color: "text-amber-500",
     },
