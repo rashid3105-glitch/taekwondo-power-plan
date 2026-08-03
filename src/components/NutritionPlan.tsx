@@ -303,62 +303,8 @@ export function NutritionPlan({ profile, readOnly = false, userId, goal = null, 
       }
     }
 
-    // Hydration
-    if (plan.hydration) {
-      doc.setFontSize(12);
-      doc.setFont("helvetica", "bold");
-      checkPage(10);
-      doc.text(t("hydration"), margin, y);
-      y += 6;
-      doc.setFontSize(9);
-      doc.setFont("helvetica", "normal");
-      const h = plan.hydration;
-      const hydLines = [
-        `${t("daily")}: ${h.daily}`,
-        `${t("preTraining")}: ${h.preTrain}`,
-        `${t("duringTraining")}: ${h.duringTrain}`,
-        `${t("postTraining")}: ${h.postTrain}`,
-      ];
-      for (const line of hydLines) {
-        checkPage(5);
-        doc.text(line, margin, y);
-        y += 5;
-      }
-      y += 4;
-    }
 
-    // Supplements
-    if (plan.supplements?.length) {
-      doc.setFontSize(12);
-      doc.setFont("helvetica", "bold");
-      checkPage(10);
-      doc.text(t("supplements"), margin, y);
-      y += 6;
-      for (const s of plan.supplements) {
-        doc.setFontSize(10);
-        doc.setFont("helvetica", "bold");
-        checkPage(12);
-        doc.text(s.name, margin, y);
-        y += 5;
-        doc.setFontSize(9);
-        doc.setFont("helvetica", "normal");
-        doc.text(`${s.dosage} · ${s.timing}`, margin, y);
-        y += 4;
-        const rLines = doc.splitTextToSize(s.reason, maxWidth);
-        checkPage(rLines.length * 4);
-        doc.text(rLines, margin, y);
-        y += rLines.length * 4;
-        if (s.warning) {
-          doc.setTextColor(180, 100, 0);
-          const wLines = doc.splitTextToSize(`⚠ ${s.warning}`, maxWidth);
-          checkPage(wLines.length * 4);
-          doc.text(wLines, margin, y);
-          y += wLines.length * 4;
-          doc.setTextColor(0, 0, 0);
-        }
-        y += 3;
-      }
-    }
+
 
     doc.save(`${plan.planName || "nutrition-plan"}.pdf`);
   };
