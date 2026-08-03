@@ -5,16 +5,13 @@ import { Watermark } from "@/components/Watermark";
 import { ExerciseLibrary } from "@/components/ExerciseLibrary";
 import { MentalLibrary } from "@/components/MentalLibrary";
 import { NutritionLibrary } from "@/components/NutritionLibrary";
-import { NutritionPlan } from "@/components/NutritionPlan";
-import { FoodScanner } from "@/components/FoodScanner";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { DailyNutritionDashboard } from "@/components/DailyNutritionDashboard";
+import { WeightModule } from "@/components/weight/WeightModule";
 import { TestLibrary } from "@/components/TestLibrary";
 import { HiitLibrary } from "@/components/HiitLibrary";
 import { SupplementChecker } from "@/components/SupplementChecker";
 import { DrillLibrary } from "@/components/DrillLibrary";
 import { RunningLibrary } from "@/components/RunningLibrary";
-import { Dumbbell, Brain, UtensilsCrossed, ClipboardList, ArrowLeft, BookOpen, Zap, ChefHat, Camera, ShieldCheck, Swords, Footprints } from "lucide-react";
+import { Dumbbell, Brain, UtensilsCrossed, ClipboardList, ArrowLeft, BookOpen, Zap, Scale, ShieldCheck, Swords, Footprints } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -53,7 +50,7 @@ const COLORS: Record<string, string> = {
   drills: "text-amber-500",
 };
 
-type NutritionView = "home" | "planner" | "logger" | "recipes";
+type NutritionView = "home" | "weight" | "recipes";
 
 export default function Library({ forcedSection }: { forcedSection?: string } = {}) {
   const { section: paramSection } = useParams<{ section: string }>();
@@ -66,15 +63,13 @@ export default function Library({ forcedSection }: { forcedSection?: string } = 
   const [nutritionView, setNutritionView] = useState<NutritionView>(() => {
     try {
       const v = sessionStorage.getItem("scanner:nutrition_view");
-      if (v === "planner" || v === "logger" || v === "recipes" || v === "home") return v;
+      if (v === "weight" || v === "recipes" || v === "home") return v;
     } catch { /* ignore */ }
     return "home";
   });
 
   // Persist nutritionView across WKWebView reloads (iOS may kill the web
-  // content process while the native camera UI is on top). Without this,
-  // users returning from Camera land back on the nutrition menu instead of
-  // the logger/scanner view they were in.
+  // content process while the native camera UI is on top).
   useEffect(() => {
     try {
       if (section === "nutrition") {
@@ -89,7 +84,6 @@ export default function Library({ forcedSection }: { forcedSection?: string } = 
     };
   }, []);
   const [profile, setProfile] = useState<any>(null);
-  const [loggerRefresh, setLoggerRefresh] = useState(0);
 
   useEffect(() => {
     if (section !== "nutrition") return;
@@ -115,23 +109,16 @@ export default function Library({ forcedSection }: { forcedSection?: string } = 
 
   const nutritionCards = [
     {
-      key: "planner" as const,
-      label: t("libNutritionPlannerLabel") || "Kostplanlægger",
-      desc: t("libNutritionPlannerDesc") || "Din personlige kostplan",
-      icon: ChefHat,
+      key: "weight" as const,
+      label: t("wpTitle"),
+      desc: t("wpDesc"),
+      icon: Scale,
       color: "text-emerald-500",
-    },
-    {
-      key: "logger" as const,
-      label: t("libNutritionLoggerLabel") || "Madregistrering",
-      desc: t("libNutritionLoggerDesc") || "Scan og log dine måltider",
-      icon: Camera,
-      color: "text-tab-nutrition",
     },
     {
       key: "recipes" as const,
       label: t("libNutritionRecipesLabel") || "Opskrifter",
-      desc: t("libNutritionRecipesDesc") || "Sund mad tilpasset taekwondo-atleter",
+      desc: t("libNutritionRecipesDesc") || "Sund mad tilpasset atleter",
       icon: BookOpen,
       color: "text-amber-500",
     },
@@ -191,27 +178,8 @@ export default function Library({ forcedSection }: { forcedSection?: string } = 
           </div>
         )}
 
-        {section === "nutrition" && nutritionView === "planner" && (
-          <div className="space-y-4">
-            <DailyNutritionDashboard calorieTarget={profile?.custom_calories ?? null} />
-            <NutritionPlan profile={profile} />
-          </div>
-        )}
-        {section === "nutrition" && nutritionView === "logger" && (
-          <div className="space-y-4">
-            <DailyNutritionDashboard
-              key={loggerRefresh}
-              calorieTarget={profile?.custom_calories ?? null}
-              refreshKey={loggerRefresh}
-            />
-            <ErrorBoundary
-              onBack={() => setNutritionView("home")}
-              backLabel={t("chatErrorBack")}
-              retryLabel={t("chatErrorRetry")}
-            >
-              <FoodScanner onLogged={() => setLoggerRefresh((n) => n + 1)} />
-            </ErrorBoundary>
-          </div>
+        {section === "nutrition" && nutritionView === "weight" && (
+          <WeightModule profile={profile} />
         )}
         {section === "nutrition" && nutritionView === "recipes" && (
           <NutritionLibrary />
