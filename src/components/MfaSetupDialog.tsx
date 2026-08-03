@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Loader2, Shield, Copy, Check } from "lucide-react";
+import { forgetDevice } from "@/lib/mfaRemember";
 
 interface Props {
   open: boolean;
@@ -98,6 +99,10 @@ export default function MfaSetupDialog({ open, onOpenChange, onChanged }: Props)
       if (!verified) throw new Error(t("error"));
       const { error: unenrollErr } = await supabase.auth.mfa.unenroll({ factorId: verified.id });
       if (unenrollErr) throw unenrollErr;
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) forgetDevice(user.id);
+      } catch { /* ignore */ }
       setStep("disabled");
       onChanged();
       toast.success(t("mfaDisabledSuccess"));

@@ -22,6 +22,7 @@ import {
   getBiometryLabel,
 } from "@/lib/biometricAuth";
 import MfaChallengeDialog from "@/components/MfaChallengeDialog";
+import { isDeviceRemembered, rememberDevice } from "@/lib/mfaRemember";
 import coachAthlete from "@/assets/coach-athlete.jpg";
 
 const GOLD = "#D4AF37";
@@ -180,9 +181,12 @@ export default function AuthPage() {
         if (mfaErr) throw mfaErr;
         const verified = (data?.all || []).find((f: any) => f.status === "verified");
         if (verified) {
-          setMfaFactorId(verified.id);
-          setMfaChallengeOpen(true);
-          return;
+          const { data: { user } } = await supabase.auth.getUser();
+          if (!user || !isDeviceRemembered(user.id)) {
+            setMfaFactorId(verified.id);
+            setMfaChallengeOpen(true);
+            return;
+          }
         }
       } catch (mfaErr: any) {
         console.error("mfa check failed", mfaErr);
@@ -466,7 +470,13 @@ export default function AuthPage() {
           <MfaChallengeDialog
             open={mfaChallengeOpen}
             factorId={mfaFactorId}
-            onVerified={async () => {
+            onVerified={async (remember) => {
+              if (remember) {
+                try {
+                  const { data: { user } } = await supabase.auth.getUser();
+                  if (user) rememberDevice(user.id);
+                } catch { /* ignore */ }
+              }
               setMfaChallengeOpen(false);
               setMfaFactorId(null);
               await completeLogin();
