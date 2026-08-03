@@ -19,9 +19,10 @@ interface Props {
   saving?: boolean;
   onSave: (g: Omit<WeightGoal, "id">) => void;
   onDelete?: () => void;
+  onRerunSetup?: () => void;
 }
 
-export function WeightGoalDialog({ open, onOpenChange, goal, currentWeight, age, saving, onSave, onDelete }: Props) {
+export function WeightGoalDialog({ open, onOpenChange, goal, currentWeight, age, saving, onSave, onDelete, onRerunSetup }: Props) {
   const { t } = useLanguage();
   const [startWeight, setStartWeight] = useState("");
   const [targetWeight, setTargetWeight] = useState("");
