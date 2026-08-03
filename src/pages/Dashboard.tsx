@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { BrandLogo } from "@/components/BrandLogo";
 import { Button } from "@/components/ui/button";
-import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, ShieldCheck, Users, Brain, Clock, Apple, Home, Lock, NotebookPen, AlertTriangle, ClipboardList, HelpCircle, Trash2, Menu, Video as VideoIcon, CalendarRange, Watch, Swords, Trophy, MessageCircle, Pencil, X, LayoutGrid, Settings, Camera, User as UserRoundIcon } from "lucide-react";
+import { Zap, User, BookOpen, Plus, LogOut, Loader2, BarChart3, Heart, Shield, ShieldCheck, Users, Brain, Clock, Apple, Home, Lock, NotebookPen, AlertTriangle, ClipboardList, HelpCircle, Trash2, Menu, Video as VideoIcon, CalendarRange, Watch, Swords, Trophy, MessageCircle, Pencil, X, LayoutGrid, Settings, Camera, Scale, User as UserRoundIcon } from "lucide-react";
 import { SelfTrainingLogDialog } from "@/components/SelfTrainingLogDialog";
 import { ChatDrawer } from "@/components/chat/ChatDrawer";
 import {
@@ -34,6 +34,7 @@ import { CoachMentalAssessment } from "@/components/CoachMentalAssessment";
 import { ProgressDashboard } from "@/components/ProgressDashboard";
 import { NutritionPlan } from "@/components/NutritionPlan";
 import { NutritionLibrary } from "@/components/NutritionLibrary";
+import { WeightModule } from "@/components/weight/WeightModule";
 import { FoodScanner } from "@/components/FoodScanner";
 import { Card } from "@/components/ui/card";
 import { AppFooter } from "@/components/AppFooter";
@@ -137,7 +138,7 @@ export default function Dashboard() {
   })();
   const [activeTab, setActiveTab] = useState<TabKey>(initialTab);
   const [selfLogOpen, setSelfLogOpen] = useState(false);
-  const [nutritionView, setNutritionView] = useState<"home" | "planner" | "recipes">("home");
+  const [nutritionView, setNutritionView] = useState<"home" | "weight" | "recipes">("home");
   const [seenDots, setSeenDots] = useState<Set<string>>(() => {
     try {
       const raw = localStorage.getItem("navDots_seen");
