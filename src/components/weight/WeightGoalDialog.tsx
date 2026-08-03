@@ -72,6 +72,11 @@ export function WeightGoalDialog({ open, onOpenChange, goal, currentWeight, age,
       rate_kg_per_week: Math.round((effectiveRate || 0.5) * 100) / 100,
       direction,
       is_active: true,
+      activity_level: goal?.activity_level ?? null,
+      sex: goal?.sex ?? null,
+      motivations: goal?.motivations ?? [],
+      challenges: goal?.challenges ?? [],
+      onboarded_at: goal?.onboarded_at ?? null,
     });
   };
 
