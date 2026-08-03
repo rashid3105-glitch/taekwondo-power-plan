@@ -197,6 +197,10 @@ export function ParentGuideChat({ athleteId, athleteFirstName }: Props) {
             </Button>
           </form>
 
+          <AssistantDisclosure variant="short" />
+
+
+
           <p className="text-[10px] text-muted-foreground leading-relaxed">
             {t("parentGuideDisclaimer" as any) ||
               "Vejledende samtale — erstatter ikke professionel rådgivning. Ved bekymring om trivsel, kontakt træner, egen læge eller Team Danmark."}
