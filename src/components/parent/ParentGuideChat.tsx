@@ -6,7 +6,9 @@ import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { AssistantDisclosure } from "@/components/AssistantDisclosure";
 import { ChevronDown, Loader2, MessageCircleHeart, Send, User, Sparkles, ExternalLink } from "lucide-react";
+
 
 interface Props {
   athleteId: string;
