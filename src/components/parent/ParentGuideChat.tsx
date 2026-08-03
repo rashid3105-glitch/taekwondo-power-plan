@@ -114,6 +114,9 @@ export function ParentGuideChat({ athleteId, athleteFirstName }: Props) {
             </span>
           </p>
 
+          <AssistantDisclosure />
+
+
           {messages.length === 0 && (
             <div className="space-y-1.5">
               {suggestions.slice(0, 4).map((s) => (
