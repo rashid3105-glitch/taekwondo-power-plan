@@ -108,18 +108,20 @@ export function dailyCalorieDelta(goal: Pick<WeightGoal, "rate_kg_per_week" | "d
   return Math.round(goal.direction === "loss" ? -perDay : perDay);
 }
 
-/** Mifflin–St Jeor + activity factor. Height is optional; falls back to a TKD-athlete estimate. */
+/** Mifflin–St Jeor style estimate. Height is optional; falls back to an athlete estimate. */
 export function estimateMaintenanceCalories(opts: {
   weightKg: number;
   age?: number | null;
   sessionsPerWeek?: number | null;
+  activityLevel?: ActivityLevel | null;
+  sex?: "female" | "male" | null;
 }): number {
-  const { weightKg, age, sessionsPerWeek } = opts;
+  const { weightKg, age, sessionsPerWeek, activityLevel, sex } = opts;
   const a = age && age > 0 ? age : 20;
   // Height-free approximation: BMR ≈ 24 kcal per kg lean-ish bodyweight, age-adjusted.
-  const bmr = weightKg * 24 * (a < 18 ? 1.08 : a > 40 ? 0.94 : 1);
+  const bmr = weightKg * 24 * (a < 18 ? 1.08 : a > 40 ? 0.94 : 1) * (sex === "female" ? 0.94 : 1);
   const sessions = sessionsPerWeek && sessionsPerWeek > 0 ? sessionsPerWeek : 3;
-  const activity = 1.35 + Math.min(sessions, 10) * 0.05;
+  const activity = (1.35 + Math.min(sessions, 10) * 0.05) * (activityLevel ? ACTIVITY_FACTOR[activityLevel] : 1);
   return Math.round((bmr * activity) / 10) * 10;
 }
 
