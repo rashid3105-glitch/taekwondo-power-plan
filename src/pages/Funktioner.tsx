@@ -50,6 +50,42 @@ export default function Funktioner() {
         </p>
       </section>
 
+      <section style={{ maxWidth: 720, margin: "0 auto", padding: "32px 16px 0" }}>
+        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 10 }}>
+          {t("funcNewSectionTitle")}
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 10 }}>
+          {[
+            { icon: "🔐", title: t("funcNew1Title"), desc: t("funcNew1Desc") },
+            { icon: "🥗", title: t("funcNew2Title"), desc: t("funcNew2Desc") },
+          ].map((p, i) => (
+            <div
+              key={i}
+              style={{
+                background: "rgba(255,255,255,0.03)",
+                border: "0.5px solid rgba(212,175,55,0.28)",
+                borderRadius: 14,
+                padding: "16px 18px",
+                display: "flex",
+                gap: 12,
+                alignItems: "flex-start",
+              }}
+            >
+              <span style={{ fontSize: 24, flexShrink: 0 }}>{p.icon}</span>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap", marginBottom: 4 }}>
+                  <span style={{ fontSize: 15, fontWeight: 800 }}>{p.title}</span>
+                  <span style={{ fontSize: 9, color: GOLD, fontWeight: 800, letterSpacing: "0.08em", border: `0.5px solid rgba(212,175,55,0.4)`, borderRadius: 20, padding: "1px 7px" }}>
+                    {t("funcNewBadge")}
+                  </span>
+                </div>
+                <p style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", lineHeight: 1.55, margin: 0 }}>{p.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <div style={{ maxWidth: 720, margin: "0 auto", padding: "32px 16px 56px", display: "flex", flexDirection: "column", gap: 10 }}>
         {MODULES.map((m, i) => {
           const open = openIdx === i;
