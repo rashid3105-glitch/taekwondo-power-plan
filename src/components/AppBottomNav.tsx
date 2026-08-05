@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Home, Zap, CalendarRange, Heart, Video as VideoIcon, Users, Trophy, ClipboardList } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -8,6 +9,8 @@ import { cn } from "@/lib/utils";
 // Paths that should NOT show the persistent bottom nav.
 // - Public marketing / auth / onboarding
 // - /dashboard renders its own nav (kept for legacy tab-switch UX)
+// - /messages is a focused full-screen chat with its own back/close controls;
+//   a fixed nav there covers the message composer.
 // Prefix matches when path === p OR path starts with p + "/".
 const HIDDEN_PREFIXES = [
   "/auth", "/login", "/signup", "/invite", "/join", "/parent-join",
@@ -17,7 +20,7 @@ const HIDDEN_PREFIXES = [
   "/funktioner", "/features", "/poomsae", "/staevneforberedelse",
   "/tekniktraening", "/traeningsprogram", "/fysiske-test",
   "/unsubscribe", "/payment-success", "/mockup", "/athlete", "/match/share",
-  "/admin", "/parent-dashboard", "/install", "/kostplan",
+  "/admin", "/parent-dashboard", "/install", "/kostplan", "/messages",
 ];
 
 
@@ -31,10 +34,24 @@ export function AppBottomNav() {
   const { isCoachMode } = useCoachMode();
 
   const path = location.pathname;
-  if (EXACT_HIDDEN.has(path)) return null;
-  if (HIDDEN_PREFIXES.some((p) => path === p || path.startsWith(p + "/"))) return null;
+  const hidden =
+    EXACT_HIDDEN.has(path) ||
+    HIDDEN_PREFIXES.some((p) => path === p || path.startsWith(p + "/"));
+
+  // Lets sticky bottom bars (chat composer etc.) reserve space via .pb-nav-safe.
+  useEffect(() => {
+    if (hidden) {
+      document.body.classList.remove("has-bottom-nav");
+      return;
+    }
+    document.body.classList.add("has-bottom-nav");
+    return () => document.body.classList.remove("has-bottom-nav");
+  }, [hidden]);
+
+  if (hidden) return null;
 
   const coachMode = isCoachMode && hasCoachRole;
+
 
   const items = coachMode
     ? [

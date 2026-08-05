@@ -365,7 +365,16 @@ body.has-app-menu header.sticky > div {
   .pr-safe {
     padding-right: max(env(safe-area-inset-right), 0px);
   }
+  /* Bottom clearance for sticky action bars (chat composer etc.).
+     Grows automatically when the persistent app bottom nav is mounted. */
+  .pb-nav-safe {
+    padding-bottom: max(env(safe-area-inset-bottom), 0px);
+  }
+  body.has-bottom-nav .pb-nav-safe {
+    padding-bottom: calc(max(env(safe-area-inset-bottom), 0px) + 4.25rem);
+  }
 }
+
 
 /* ===== iOS / Android standalone (PWA + Capacitor) safe-area =====
    When the app runs without browser chrome (Home-screen install,
