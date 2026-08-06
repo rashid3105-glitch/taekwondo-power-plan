@@ -173,11 +173,12 @@ export function MessageBubble({
           )}
           <div
             className={cn(
-              "relative rounded-2xl px-3 py-2 text-sm break-words",
+              "relative rounded-2xl px-4 py-2.5 text-[13px] leading-relaxed break-words",
               isOwn
-                ? "bg-primary text-primary-foreground rounded-br-sm"
-                : "bg-muted text-card-foreground rounded-bl-sm",
+                ? "bg-primary text-primary-foreground rounded-tr-sm shadow-[0_4px_12px_hsl(var(--primary)/0.15)]"
+                : "bg-card text-foreground border border-border rounded-tl-sm",
             )}
+
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
             onTouchMove={handleTouchEnd}
