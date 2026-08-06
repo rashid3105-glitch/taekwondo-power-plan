@@ -24,6 +24,8 @@ export function BrandLogo({
   const iconH = height;
   // Text ~70% of icon height → icon visibly taller than the wordmark.
   const textSize = Math.round(iconH * 0.55);
+  const branding = useClubBranding();
+  const clubLogo = branding.enabled ? branding.logoUrl : null;
   return (
     <span
       onClick={onClick}
@@ -37,16 +39,19 @@ export function BrandLogo({
       }}
     >
       <img
-        src={runnerIcon}
-        alt={withText ? "" : "Sportstalent logo"}
-        aria-hidden={withText || undefined}
+        src={clubLogo || runnerIcon}
+        alt={clubLogo ? `${branding.clubName ?? ""} logo` : withText ? "" : "Sportstalent logo"}
+        aria-hidden={!clubLogo && (withText || undefined) ? true : undefined}
         style={{
           height: iconH,
           width: "auto",
+          maxWidth: iconH * 2.4,
+          objectFit: "contain",
           display: "block",
           flexShrink: 0,
         }}
       />
+
       {withText && (
         <span
           style={{
