@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { AppFooter } from "@/components/AppFooter";
 import { Watermark } from "@/components/Watermark";
 import { useNavigate } from "react-router-dom";
+import { BrandLogo } from "@/components/BrandLogo";
+import { useClubBranding } from "@/components/ClubThemeProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -120,6 +122,7 @@ export default function CoachDashboard() {
   const [coachMentalDue, setCoachMentalDue] = useState(false);
   // Messages/reminders moved to /coach/messages page
   const navigate = useNavigate();
+  const { enabled: clubBrandingEnabled } = useClubBranding();
   const { setCoachMode } = useCoachMode();
   const { toast } = useToast();
   const { t, locale } = useLanguage();
@@ -366,10 +369,16 @@ export default function CoachDashboard() {
       <header className="app-header border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10 pt-safe">
         <div className="container max-w-4xl mx-auto px-3 sm:px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2 min-w-0">
-            <div className="h-8 w-8 rounded-lg bg-gradient-energy flex items-center justify-center shrink-0">
-              <Zap className="h-4 w-4 text-primary-foreground" />
-            </div>
-            <span className="text-sm sm:text-base font-extrabold text-card-foreground truncate">{t("coachDashboard")}</span>
+            {clubBrandingEnabled ? (
+              <BrandLogo height={32} mode="club-only" />
+            ) : (
+              <>
+                <div className="h-8 w-8 rounded-lg bg-gradient-energy flex items-center justify-center shrink-0">
+                  <Zap className="h-4 w-4 text-primary-foreground" />
+                </div>
+                <span className="text-sm sm:text-base font-extrabold text-card-foreground truncate">{t("coachDashboard")}</span>
+              </>
+            )}
           </div>
           <div className="flex items-center gap-1 shrink-0">
             <Button variant="ghost" size="sm" onClick={() => navigate("/coach/today")} className="gap-1">

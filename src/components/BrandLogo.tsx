@@ -11,6 +11,7 @@ export function BrandLogo({
   withText = true,
   textColor = "#fff",
   accentColor = "#D4AF37",
+  mode = "default",
   onClick,
   className,
 }: {
@@ -18,6 +19,7 @@ export function BrandLogo({
   withText?: boolean;
   textColor?: string;
   accentColor?: string;
+  mode?: "default" | "club-only";
   onClick?: () => void;
   className?: string;
 }) {
@@ -26,6 +28,29 @@ export function BrandLogo({
   const textSize = Math.round(iconH * 0.55);
   const branding = useClubBranding();
   const clubLogo = branding.enabled ? branding.logoUrl : null;
+
+  // Club-only mode: show the club logo by itself. Falls back to the runner
+  // icon when no club logo has been uploaded yet.
+  if (mode === "club-only") {
+    return (
+      <img
+        src={clubLogo || runnerIcon}
+        alt={clubLogo ? `${branding.clubName ?? ""} logo` : "Sportstalent logo"}
+        onClick={onClick}
+        className={className}
+        style={{
+          height: iconH,
+          width: "auto",
+          maxWidth: iconH * 2.4,
+          objectFit: "contain",
+          display: "block",
+          flexShrink: 0,
+          cursor: onClick ? "pointer" : undefined,
+        }}
+      />
+    );
+  }
+
   return (
     <span
       onClick={onClick}
