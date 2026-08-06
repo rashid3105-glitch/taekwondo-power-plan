@@ -333,17 +333,20 @@ const App = () => {
             <ActiveClubProvider>
               <RoleProvider>
                 <CoachModeProvider>
-                  <ThemeSync />
-                  <OfflineBanner />
-                  <ConsentGate>
-                    <AnimatedRoutes />
-                  </ConsentGate>
-                  <GlobalAppMenu />
-                  <AppBottomNav />
-                  <ClubSwitchOverlay />
+                  <ClubThemeProvider>
+                    <ThemeSync />
+                    <OfflineBanner />
+                    <ConsentGate>
+                      <AnimatedRoutes />
+                    </ConsentGate>
+                    <GlobalAppMenu />
+                    <AppBottomNav />
+                    <ClubSwitchOverlay />
+                  </ClubThemeProvider>
                 </CoachModeProvider>
               </RoleProvider>
             </ActiveClubProvider>
+
           </BrowserRouter>
         </TooltipProvider>
       </LanguageProvider>
