@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+
 import { useLanguage } from "@/i18n/LanguageContext";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
