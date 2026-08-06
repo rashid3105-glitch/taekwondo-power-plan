@@ -1,4 +1,6 @@
 import runnerIcon from "@/assets/runner-icon.png";
+import { useClubBranding } from "@/components/ClubThemeProvider";
+
 
 /**
  * Sportstalent brand lockup: runner icon + wordmark.
