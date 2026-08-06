@@ -14,7 +14,23 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
 
+function isSameDay(a: string, b: string) {
+  const da = new Date(a), db = new Date(b);
+  return da.toDateString() === db.toDateString();
+}
+
+function dayLabel(iso: string) {
+  const d = new Date(iso);
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+  if (d.toDateString() === today.toDateString()) return "I dag";
+  if (d.toDateString() === yesterday.toDateString()) return "I går";
+  return d.toLocaleDateString(undefined, { day: "numeric", month: "long" });
+}
+
 interface Props {
+
   thread: ChatThread;
   onBack?: () => void;
   onExit?: () => void;
