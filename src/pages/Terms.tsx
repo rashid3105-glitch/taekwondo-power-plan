@@ -30,7 +30,7 @@ const Terms = () => {
           Vilkår og betingelser
         </h1>
         <div style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", marginBottom: 40 }}>
-          Sidst opdateret: 15. juni 2026 · Version 0.1 — udkast
+          Sidst opdateret: 6. august 2026 · Version 0.1 — udkast
         </div>
 
         <Section title="1. Aftalens omfang">
@@ -65,18 +65,35 @@ const Terms = () => {
           .
         </Section>
 
-        <Section title="6. Ansvarsfraskrivelse">
+        <Section title="6. Immaterielle rettigheder og kopiering">
+          Alt indhold på og i Sportstalent-platformen — herunder træningsprogrammer, øvelsesbeskrivelser,
+          ernærings- og rehabiliteringsmateriale, tekster, guides, grafik, design, struktur og software — tilhører
+          Sportstalent eller vores licensgivere og er beskyttet af ophavsret og anden immaterialret.
+          <br /><br />
+          Din adgang til platformen giver dig ret til at bruge indholdet i forbindelse med din egen eller din
+          klubs træning. Den giver dig ikke ret til at kopiere, gengive, distribuere, offentliggøre, videresælge
+          eller på anden måde udnytte indholdet uden for platformen.
+          <br /><br />
+          Du må ikke bruge din adgang til platformen — herunder en træner- eller demokonto — til at kopiere,
+          systematisk indsamle eller reproducere indhold med henblik på at skabe et konkurrerende eller
+          lignende produkt eller tjeneste. Overtrædelse kan medføre øjeblikkelig lukning af din konto og
+          retsligt ansvar.
+          <br /><br />
+          Vandmærker og kildeangivelser på materiale må ikke fjernes eller sløres.
+        </Section>
+
+        <Section title="7. Ansvarsfraskrivelse">
           Platformen leveres "som den er". Trænings-, ernærings- og rehabiliteringsindhold er
           vejledende og erstatter ikke professionel medicinsk rådgivning. Sportstalent er ikke
           ansvarlig for skader, tab eller konsekvenser som følge af brug af indholdet.
         </Section>
 
-        <Section title="7. Ændringer">
+        <Section title="8. Ændringer">
           Vi kan opdatere disse vilkår løbende. Væsentlige ændringer varsles via platformen eller
           e-mail. Fortsat brug efter ændringer betragtes som accept af de opdaterede vilkår.
         </Section>
 
-        <Section title="8. Kontakt">
+        <Section title="9. Kontakt">
           Spørgsmål til vilkårene kan sendes via vores{" "}
           <span onClick={() => navigate("/priser")} style={{ color: GOLD, cursor: "pointer", textDecoration: "underline" }}>
             kontaktformular
