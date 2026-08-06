@@ -122,6 +122,7 @@ export default function CoachDashboard() {
   const [coachMentalDue, setCoachMentalDue] = useState(false);
   // Messages/reminders moved to /coach/messages page
   const navigate = useNavigate();
+  const { enabled: clubBrandingEnabled } = useClubBranding();
   const { setCoachMode } = useCoachMode();
   const { toast } = useToast();
   const { t, locale } = useLanguage();
