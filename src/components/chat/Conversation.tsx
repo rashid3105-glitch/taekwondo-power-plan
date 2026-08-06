@@ -260,7 +260,7 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
                             {((partner as any)?.display_name || "?").slice(0, 1).toUpperCase()}
                           </div>
                         )}
-                        <span className="text-[10px] text-muted-foreground">Set</span>
+                        <span className="text-[10px] text-primary/80 font-medium">Set</span>
                       </div>
                     </div>
                   )}
