@@ -23,6 +23,8 @@ import {
   Users,
   FileText,
   CalendarRange,
+  Palette,
+
 } from "lucide-react";
 
 const REQUIRED_MODULES = [
