@@ -131,7 +131,7 @@ export default function AdminModuleAccess() {
     if (!selectedClubId) return;
     const d = allDefaults[selectedClubId] || {};
     const draft: Record<string, boolean> = {};
-    for (const m of OPTIONAL_MODULES) draft[m.key] = d[m.key] ??? moduleFallback(m.key);
+    for (const m of OPTIONAL_MODULES) draft[m.key] = d[m.key] ?? moduleFallback(m.key);
     setDefaultsDraft(draft);
     setSelectedAthleteId("");
     setMode("defaults");
@@ -144,7 +144,7 @@ export default function AdminModuleAccess() {
     const ov = overridesByAthlete[selectedAthleteId] || {};
     const draft: Record<string, boolean> = {};
     for (const m of OPTIONAL_MODULES) {
-      draft[m.key] = ov[m.key] ?? clubDef[m.key] ??? moduleFallback(m.key);
+      draft[m.key] = ov[m.key] ?? clubDef[m.key] ?? moduleFallback(m.key);
     }
     setAthleteDraft(draft);
     setMode("athlete");
@@ -165,7 +165,7 @@ export default function AdminModuleAccess() {
     const def = allDefaults[a.club_id || ""] || {};
     let enabled = REQUIRED_MODULES.length;
     for (const m of OPTIONAL_MODULES) {
-      const v = ov[m.key] ?? def[m.key] ??? moduleFallback(m.key);
+      const v = ov[m.key] ?? def[m.key] ?? moduleFallback(m.key);
       if (v) enabled++;
     }
     return { enabled, total: REQUIRED_MODULES.length + OPTIONAL_MODULES.length };
