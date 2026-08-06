@@ -333,14 +333,18 @@ export function ExerciseLibrary() {
                       <ExerciseCard exercise={exercise} index={i + 1} />
                       {"isCustom" in exercise && exercise.isCustom && (
                         <div className="absolute top-2 right-2 flex items-center gap-1.5 z-10">
-                          <span className="text-[9px] bg-primary/15 text-primary px-1.5 py-0.5 rounded-full font-bold uppercase">{t("customLabel")}</span>
-                          <button
-                            onClick={() => deleteCustomExercise(exercise.dbId)}
-                            className="h-6 w-6 rounded-full bg-destructive/15 text-destructive flex items-center justify-center hover:bg-destructive/25 transition-colors"
-                            title={t("deleteExercise")}
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </button>
+                          <span className="text-[9px] bg-primary/15 text-primary px-1.5 py-0.5 rounded-full font-bold uppercase">
+                            {exercise.isOwn ? t("customLabel") : t("exClubBadge")}
+                          </span>
+                          {exercise.isOwn && (
+                            <button
+                              onClick={() => deleteCustomExercise(exercise.dbId)}
+                              className="h-6 w-6 rounded-full bg-destructive/15 text-destructive flex items-center justify-center hover:bg-destructive/25 transition-colors"
+                              title={t("deleteExercise")}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          )}
                         </div>
                       )}
                     </div>
