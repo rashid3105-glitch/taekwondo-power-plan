@@ -565,13 +565,14 @@ export function FoodScanner({ onLogged }: Props) {
           </button>
           <button
             onClick={() => setMode("manual")}
-            className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 py-6 hover:bg-primary/10 transition-colors"
+            className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-solid border-primary bg-primary/10 py-6 hover:bg-primary/20 transition-colors"
           >
-            <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center">
+            <div className="h-10 w-10 rounded-2xl bg-primary/20 flex items-center justify-center">
               <Pencil className="h-5 w-5 text-primary" />
             </div>
-            <p className="text-[11px] font-semibold text-foreground text-center px-1 leading-tight">{t("manualEntry") || "Skriv manuelt"}</p>
+            <p className="text-[11px] font-bold text-foreground text-center px-1 leading-tight">{t("manualEntry") || "Skriv manuelt"}</p>
           </button>
+
         </div>
       ) : mode === "manual" ? (
         <Card className="p-4 space-y-3">
