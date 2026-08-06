@@ -88,7 +88,7 @@ export function MessageComposer({ threadId, onSent }: Props) {
   };
 
   return (
-    <div className="border-t border-border bg-card p-2 pb-nav-safe relative">
+    <div className="border-t border-border bg-card p-3 pb-nav-safe relative">
       {file && (
         <div className="flex items-center gap-2 mb-2 text-xs bg-muted rounded-md px-2 py-1">
           <Image className="h-3 w-3" />
@@ -99,7 +99,7 @@ export function MessageComposer({ threadId, onSent }: Props) {
           </button>
         </div>
       )}
-      <div className="flex items-end gap-1.5">
+      <div className="flex items-end gap-1 rounded-2xl border border-border bg-background p-1.5 focus-within:border-primary/50 transition-colors">
         <input
           ref={fileRef}
           type="file"
@@ -108,43 +108,37 @@ export function MessageComposer({ threadId, onSent }: Props) {
           onChange={(e) => handleFile(e.target.files?.[0] ?? null)}
         />
         {/* Image attach */}
-        <Button
+        <button
           type="button"
-          variant="ghost"
-          size="icon"
-          className="h-9 w-9 text-muted-foreground hover:text-foreground flex-shrink-0"
+          className="h-9 w-9 shrink-0 flex items-center justify-center rounded-lg text-muted-foreground hover:text-primary transition-colors"
           onClick={() => fileRef.current?.click()}
           aria-label={t("iconHintAttachImage")} title={t("iconHintAttachImage")}
         >
           <Image className="h-5 w-5" />
-        </Button>
+        </button>
         {/* Mic — voice to text */}
-        <Button
+        <button
           type="button"
-          variant="ghost"
-          size="icon"
           className={cn(
-            "h-9 w-9 flex-shrink-0 transition-colors",
+            "h-9 w-9 shrink-0 flex items-center justify-center rounded-lg transition-colors",
             recording
               ? "text-destructive animate-pulse"
-              : "text-muted-foreground hover:text-foreground"
+              : "text-muted-foreground hover:text-primary"
           )}
           onClick={toggleRecording}
           aria-label={recording ? t("iconHintStopRecording") : t("iconHintVoiceRecord")} title={recording ? t("iconHintStopRecording") : t("iconHintVoiceRecord")}
         >
           {recording ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
-        </Button>
+        </button>
         {/* Emoji picker toggle */}
-        <Button
+        <button
           type="button"
-          variant="ghost"
-          size="icon"
-          className="h-9 w-9 text-muted-foreground hover:text-foreground flex-shrink-0"
+          className="h-9 w-9 shrink-0 flex items-center justify-center rounded-lg text-muted-foreground hover:text-primary transition-colors"
           onClick={() => setShowEmoji((s) => !s)}
           aria-label={t("iconHintEmoji")} title={t("iconHintEmoji")}
         >
           <Smile className="h-5 w-5" />
-        </Button>
+        </button>
         {showEmoji && (
           <div className="absolute bottom-16 left-2 z-20 flex flex-wrap gap-1 p-2 bg-card border border-border rounded-lg shadow-lg max-w-[260px]">
             {EMOJIS.map((e) => (
@@ -168,7 +162,7 @@ export function MessageComposer({ threadId, onSent }: Props) {
           placeholder={recording ? "Optager…" : "Skriv en besked…"}
           rows={1}
           maxLength={2000}
-          className="min-h-[44px] max-h-32 flex-1 resize-none text-base"
+          className="min-h-[36px] max-h-32 flex-1 resize-none border-0 bg-transparent px-2 py-2 text-base leading-snug shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
@@ -177,17 +171,17 @@ export function MessageComposer({ threadId, onSent }: Props) {
           }}
         />
         {/* Send */}
-        <Button
+        <button
           type="button"
-          size="icon"
-          className="h-9 w-9 flex-shrink-0"
+          className="h-10 w-10 shrink-0 flex items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-[0_2px_8px_hsl(var(--primary)/0.25)] transition-transform active:scale-95 disabled:opacity-40 disabled:shadow-none"
           onClick={send}
           disabled={sending || (!body.trim() && !file)}
           aria-label={t("iconHintSend")} title={t("iconHintSend")}
         >
           <Send className="h-4 w-4" />
-        </Button>
+        </button>
       </div>
     </div>
   );
 }
+
