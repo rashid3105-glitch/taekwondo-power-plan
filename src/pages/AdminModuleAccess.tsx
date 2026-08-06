@@ -45,6 +45,10 @@ const OPTIONAL_MODULES = [
   { key: "branding", icon: Palette, label: "Club branding", desc: "Club logo & colors (add-on)" },
 ] as const;
 
+/** Paid add-ons are off unless an admin explicitly switches them on. */
+const ADDON_MODULES = new Set<string>(["branding"]);
+const moduleFallback = (key: string) => !ADDON_MODULES.has(key);
+
 
 type Club = { id: string; name: string };
 type Athlete = { user_id: string; display_name: string; club_id: string | null };
