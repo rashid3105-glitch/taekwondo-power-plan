@@ -176,17 +176,19 @@ const AnimatedRoutes = () => {
         if (!Capacitor.isNativePlatform()) return;
         const { Preferences } = await import("@capacitor/preferences");
         const { value } = await Preferences.get({ key: "scanner:resume_route" });
-        if (value) {
-          await Preferences.remove({ key: "scanner:resume_route" });
-          if (value.startsWith("/dashboard") || value.startsWith("/nutrition")) {
-            navigate(value, { replace: true });
-          }
+        const { value: reopen } = await Preferences.get({ key: "scanner:resume_open" });
+        await Preferences.remove({ key: "scanner:resume_route" });
+        await Preferences.remove({ key: "scanner:resume_open" });
+        // Accept any in-app path; reject protocol-relative / external targets.
+        if (value && value.startsWith("/") && !value.startsWith("//")) {
+          navigate(value, { replace: true, state: { reopenMealLog: reopen === "1" } });
         }
       } catch {
         /* ignore */
       }
     })();
   }, []);
+
 
   return (
     <>

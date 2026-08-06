@@ -154,25 +154,9 @@ export function FoodScanner({ onLogged }: Props) {
     try {
       const { Camera: CapCamera, CameraResultType, CameraSource } = await import("@capacitor/camera");
 
-      // Ask the camera plugin for Base64 directly. Going through Uri -> fetch ->
-      // blob -> File -> FileReader -> Image -> canvas -> toDataURL kept several
-      // full copies of the photo alive at the same time and reliably crashed
-      // the iOS WKWebView content process (white screen with no error). The
-      // plugin already downscales to width 1280 and compresses at quality 80,
-      // so we can skip downscaleImage entirely on native.
-      const photoPromise = CapCamera.getPhoto({
-        quality: 70,
-        resultType: CameraResultType.Base64,
-        source: fromCamera ? CameraSource.Camera : CameraSource.Photos,
-        allowEditing: false,
-        width: 1280,
-        correctOrientation: true,
-        // popover keeps the WKWebView visible behind the camera UI so iOS
-        // is much less likely to kill the web content process while the
-        // camera is on top. fullscreen mode reliably killed it on pressure.
-        presentationStyle: "popover",
-      });
-
+      // Persist the resume route BEFORE the camera opens. iOS can kill the
+      // WebView content process the moment the camera UI appears, so writing
+      // it afterwards is a race we regularly lose.
       if (Capacitor.isNativePlatform()) {
         try {
           const { Preferences } = await import("@capacitor/preferences");
@@ -180,14 +164,44 @@ export function FoodScanner({ onLogged }: Props) {
             key: "scanner:resume_route",
             value: location.pathname + location.search,
           });
+          await Preferences.set({ key: "scanner:resume_open", value: "1" });
         } catch {
           /* ignore preference write errors */
         }
       }
 
-      const photo = await photoPromise;
+      // Ask the camera plugin for Base64 directly. Going through Uri -> fetch ->
+      // blob -> File -> FileReader -> Image -> canvas -> toDataURL kept several
+      // full copies of the photo alive at the same time and reliably crashed
+      // the iOS WKWebView content process (white screen with no error). The
+      // plugin already downscales and compresses, so we skip downscaleImage.
+      const photo = await CapCamera.getPhoto({
+        quality: 60,
+        resultType: CameraResultType.Base64,
+        source: fromCamera ? CameraSource.Camera : CameraSource.Photos,
+        allowEditing: false,
+        width: 1024,
+        correctOrientation: true,
+        // popover keeps the WKWebView visible behind the camera UI so iOS
+        // is much less likely to kill the web content process while the
+        // camera is on top. fullscreen mode reliably killed it on pressure.
+        presentationStyle: "popover",
+      });
+
+      // Survived the camera — clear the resume markers again.
+      try {
+        const { Preferences } = await import("@capacitor/preferences");
+        await Preferences.remove({ key: "scanner:resume_route" });
+        await Preferences.remove({ key: "scanner:resume_open" });
+      } catch {
+        /* ignore */
+      }
+
       const base64 = photo.base64String;
-      if (!base64) return;
+      if (!base64) {
+        toast.error(t("foodScanNoImage") || "Intet billede modtaget — prøv igen");
+        return;
+      }
 
       const format = photo.format || "jpeg";
       const dataUrl = `data:image/${format};base64,${base64}`;
@@ -195,12 +209,20 @@ export function FoodScanner({ onLogged }: Props) {
       setSelected(null);
       setImage(dataUrl);
     } catch (e: any) {
+      try {
+        const { Preferences } = await import("@capacitor/preferences");
+        await Preferences.remove({ key: "scanner:resume_route" });
+        await Preferences.remove({ key: "scanner:resume_open" });
+      } catch {
+        /* ignore */
+      }
       const msg = String(e?.message ?? e ?? "");
       if (/cancel/i.test(msg) || /user\s*denied/i.test(msg)) return;
       console.error("native camera failed", e);
       toast.error(fromCamera ? "Kunne ikke åbne kameraet" : "Kunne ikke åbne billeder");
     }
   };
+
 
   const takePhoto = async () => {
     // On native (iOS/Android) use the Capacitor Camera plugin so the OS returns
@@ -543,13 +565,14 @@ export function FoodScanner({ onLogged }: Props) {
           </button>
           <button
             onClick={() => setMode("manual")}
-            className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 py-6 hover:bg-primary/10 transition-colors"
+            className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-solid border-primary bg-primary/10 py-6 hover:bg-primary/20 transition-colors"
           >
-            <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center">
+            <div className="h-10 w-10 rounded-2xl bg-primary/20 flex items-center justify-center">
               <Pencil className="h-5 w-5 text-primary" />
             </div>
-            <p className="text-[11px] font-semibold text-foreground text-center px-1 leading-tight">{t("manualEntry") || "Skriv manuelt"}</p>
+            <p className="text-[11px] font-bold text-foreground text-center px-1 leading-tight">{t("manualEntry") || "Skriv manuelt"}</p>
           </button>
+
         </div>
       ) : mode === "manual" ? (
         <Card className="p-4 space-y-3">

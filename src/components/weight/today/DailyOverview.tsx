@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+
 import { useLanguage } from "@/i18n/LanguageContext";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
@@ -43,8 +45,21 @@ export function DailyOverview({
   const [loading, setLoading] = useState(true);
   const [scannerOpen, setScannerOpen] = useState(false);
   const [weighOpen, setWeighOpen] = useState(false);
+  const location = useLocation();
+
+  // If the native WebView was killed while the camera was open, App.tsx restores
+  // this route with a reopen flag — bring the meal log sheet back up.
+  useEffect(() => {
+    if ((location.state as any)?.reopenMealLog && !readOnly) {
+      setScannerOpen(true);
+      toast.info(t("wpdMealLogRestored") || "Prøv igen — billedet gik tabt da kameraet lukkede.");
+      window.history.replaceState({}, "");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const isToday = date === todayISO();
+
 
   const load = useCallback(async () => {
     setLoading(true);
