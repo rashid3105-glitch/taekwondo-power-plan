@@ -179,6 +179,7 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
             return messages.map((m, i) => {
               const prev = messages[i - 1];
               const senderChanged = !prev || prev.sender_id !== m.sender_id;
+              const dayChanged = !prev || !isSameDay(prev.created_at, m.created_at);
               const showRead =
                 thread.kind === "direct" &&
                 i === lastOwnIdx &&
@@ -187,6 +188,14 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
               const partner = members.find((p) => p.user_id !== meId);
               return (
                 <div key={m.id}>
+                  {dayChanged && (
+                    <div className="flex justify-center py-3">
+                      <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground/70">
+                        {dayLabel(m.created_at)}
+                      </span>
+                    </div>
+                  )}
+
                   <MessageBubble
                     message={m}
                     isOwn={m.sender_id === meId}
