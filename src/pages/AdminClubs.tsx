@@ -8,6 +8,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 import { Switch } from "@/components/ui/switch";
+import { ClubBrandingSection } from "@/components/admin/ClubBrandingSection";
+
 
 interface Club {
   id: string;
