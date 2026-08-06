@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { AppFooter } from "@/components/AppFooter";
 import { Watermark } from "@/components/Watermark";
 import { useNavigate } from "react-router-dom";
+import { BrandLogo } from "@/components/BrandLogo";
+import { useClubBranding } from "@/components/ClubThemeProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
