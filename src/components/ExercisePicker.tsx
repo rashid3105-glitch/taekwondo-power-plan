@@ -49,10 +49,12 @@ export function ExercisePicker({ open, onClose, onSelect, title = "Pick an Exerc
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+      // Own exercises + exercises a coach shared with the club.
+      // RLS limits the club rows to clubs the user is an active member of.
       const { data } = await supabase
         .from("user_exercises")
         .select("*")
-        .eq("user_id", user.id);
+        .or(`user_id.eq.${user.id},visibility.eq.club`);
       if (data) {
         setCustomExercises(data.map(ue => ({
           id: `custom-${ue.id}`,

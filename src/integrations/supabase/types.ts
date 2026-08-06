@@ -3662,6 +3662,7 @@ export type Database = {
         Row: {
           alternatives: Json | null
           category: string
+          club_id: string | null
           created_at: string
           id: string
           muscle_groups: string[]
@@ -3674,11 +3675,13 @@ export type Database = {
           updated_at: string
           user_id: string
           video_url: string | null
+          visibility: string
           why_it_matters: string
         }
         Insert: {
           alternatives?: Json | null
           category?: string
+          club_id?: string | null
           created_at?: string
           id?: string
           muscle_groups?: string[]
@@ -3691,11 +3694,13 @@ export type Database = {
           updated_at?: string
           user_id: string
           video_url?: string | null
+          visibility?: string
           why_it_matters?: string
         }
         Update: {
           alternatives?: Json | null
           category?: string
+          club_id?: string | null
           created_at?: string
           id?: string
           muscle_groups?: string[]
@@ -3708,9 +3713,18 @@ export type Database = {
           updated_at?: string
           user_id?: string
           video_url?: string | null
+          visibility?: string
           why_it_matters?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_exercises_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_passkeys: {
         Row: {

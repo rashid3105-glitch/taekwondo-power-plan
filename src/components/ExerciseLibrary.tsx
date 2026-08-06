@@ -61,13 +61,16 @@ interface UserExercise {
   video_url: string | null;
   why_it_matters: string;
   alternatives: any;
+  user_id: string;
+  visibility?: string | null;
 }
 
-function toExercise(ue: UserExercise): Exercise & { isCustom: true; dbId: string } {
+function toExercise(ue: UserExercise, currentUserId: string): Exercise & { isCustom: true; dbId: string; isOwn: boolean } {
   return {
     id: `custom-${ue.id}`,
     dbId: ue.id,
     isCustom: true,
+    isOwn: ue.user_id === currentUserId,
     name: ue.name,
     category: ue.category as ExerciseCategory,
     muscleGroups: ue.muscle_groups as any,
@@ -87,7 +90,7 @@ export function ExerciseLibrary() {
   const [goalFilters, setGoalFilters] = useState<Set<ExerciseGoal>>(new Set());
   const [riskFilters, setRiskFilters] = useState<Set<RiskLevel>>(new Set());
   const [showForm, setShowForm] = useState(false);
-  const [userExercises, setUserExercises] = useState<(Exercise & { isCustom: true; dbId: string })[]>([]);
+  const [userExercises, setUserExercises] = useState<(Exercise & { isCustom: true; dbId: string; isOwn: boolean })[]>([]);
   const [videoOverrides, setVideoOverrides] = useState<Record<string, string>>({});
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { toast } = useToast();
@@ -113,11 +116,11 @@ export function ExerciseLibrary() {
     const { data } = await supabase
       .from("user_exercises")
       .select("*")
-      .eq("user_id", user.id)
+      .or(`user_id.eq.${user.id},visibility.eq.club`)
       .order("created_at", { ascending: false });
 
     if (data) {
-      setUserExercises((data as unknown as UserExercise[]).map(toExercise));
+      setUserExercises((data as unknown as UserExercise[]).map((ue) => toExercise(ue, user.id)));
     }
   };
 
@@ -333,14 +336,18 @@ export function ExerciseLibrary() {
                       <ExerciseCard exercise={exercise} index={i + 1} />
                       {"isCustom" in exercise && exercise.isCustom && (
                         <div className="absolute top-2 right-2 flex items-center gap-1.5 z-10">
-                          <span className="text-[9px] bg-primary/15 text-primary px-1.5 py-0.5 rounded-full font-bold uppercase">{t("customLabel")}</span>
-                          <button
-                            onClick={() => deleteCustomExercise(exercise.dbId)}
-                            className="h-6 w-6 rounded-full bg-destructive/15 text-destructive flex items-center justify-center hover:bg-destructive/25 transition-colors"
-                            title={t("deleteExercise")}
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </button>
+                          <span className="text-[9px] bg-primary/15 text-primary px-1.5 py-0.5 rounded-full font-bold uppercase">
+                            {exercise.isOwn ? t("customLabel") : t("exClubBadge")}
+                          </span>
+                          {exercise.isOwn && (
+                            <button
+                              onClick={() => deleteCustomExercise(exercise.dbId)}
+                              className="h-6 w-6 rounded-full bg-destructive/15 text-destructive flex items-center justify-center hover:bg-destructive/25 transition-colors"
+                              title={t("deleteExercise")}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          )}
                         </div>
                       )}
                     </div>
