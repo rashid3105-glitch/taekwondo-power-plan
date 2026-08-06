@@ -103,7 +103,7 @@ export function MessageBubble({
   };
 
   return (
-    <div className={cn("flex flex-col mb-2 group max-w-[78%]", isOwn ? "items-end ml-auto" : "items-start mr-auto")}>
+    <div className={cn("flex flex-col mb-3 group max-w-[85%]", isOwn ? "items-end ml-auto" : "items-start mr-auto")}>
       {showSender && !isOwn && senderName && (
         <span className="text-[10px] text-muted-foreground ml-2 mb-0.5">{senderName}</span>
       )}
@@ -173,11 +173,12 @@ export function MessageBubble({
           )}
           <div
             className={cn(
-              "relative rounded-2xl px-3 py-2 text-sm break-words",
+              "relative rounded-2xl px-4 py-2.5 text-[13px] leading-relaxed break-words",
               isOwn
-                ? "bg-primary text-primary-foreground rounded-br-sm"
-                : "bg-muted text-card-foreground rounded-bl-sm",
+                ? "bg-primary text-primary-foreground rounded-tr-sm shadow-[0_4px_12px_hsl(var(--primary)/0.15)]"
+                : "bg-card text-foreground border border-border rounded-tl-sm",
             )}
+
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
             onTouchMove={handleTouchEnd}
@@ -233,10 +234,11 @@ export function MessageBubble({
         </div>
       )}
 
-      <span className="text-[10px] text-muted-foreground mt-0.5 mx-2">
+      <span className="text-[10px] text-muted-foreground/70 mt-1 mx-1.5 tabular-nums">
         {time}
         {message.edited_at && <span className="ml-1">(redigeret)</span>}
       </span>
+
 
       <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
         <AlertDialogContent>
