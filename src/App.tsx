@@ -6,6 +6,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { LanguageProvider } from "@/i18n/LanguageContext";
+import { ClubThemeProvider } from "@/components/ClubThemeProvider";
+
 import { CoachModeProvider } from "@/contexts/CoachModeContext";
 import { ActiveClubProvider } from "@/contexts/ActiveClubContext";
 import { ClubSwitchOverlay } from "@/components/ClubSwitchOverlay";
