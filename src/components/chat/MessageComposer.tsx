@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { Send, Image, X, Mic, MicOff, Smile } from "lucide-react";
-import { Button } from "@/components/ui/button";
+
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { sendMessage, MAX_ATTACHMENT_BYTES, type ChatMessage } from "@/lib/chatApi";
