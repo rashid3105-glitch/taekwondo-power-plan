@@ -8,6 +8,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 import { Switch } from "@/components/ui/switch";
+import { ClubBrandingSection } from "@/components/admin/ClubBrandingSection";
+
 
 interface Club {
   id: string;
@@ -20,7 +22,9 @@ interface Club {
 export default function AdminClubs() {
   const [clubs, setClubs] = useState<Club[]>([]);
   const [originalClubs, setOriginalClubs] = useState<Record<string, Club>>({});
+  const [brandingEnabled, setBrandingEnabled] = useState<Record<string, boolean>>({});
   const [savingId, setSavingId] = useState<string | null>(null);
+
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [newClubName, setNewClubName] = useState("");
@@ -57,7 +61,19 @@ export default function AdminClubs() {
       list.forEach(c => { map[c.id] = { ...c }; });
       setOriginalClubs(map);
     }
+
+    const { data: mods } = await supabase
+      .from("club_module_defaults" as any)
+      .select("club_id, enabled")
+      .eq("module", "branding");
+    const flags: Record<string, boolean> = {};
+    for (const m of ((mods as any) || []) as { club_id: string; enabled: boolean }[]) {
+      flags[m.club_id] = m.enabled;
+    }
+    setBrandingEnabled(flags);
+
     setLoading(false);
+
   };
 
   const updateLocal = (clubId: string, patch: Partial<Club>) => {
@@ -210,7 +226,13 @@ export default function AdminClubs() {
                   onCheckedChange={(v) => updateLocal(club.id, { license_active: v })}
                 />
               </div>
+              <ClubBrandingSection
+                clubId={club.id}
+                clubName={club.name}
+                enabled={!!brandingEnabled[club.id]}
+              />
               <div className="flex justify-end border-t border-border pt-3">
+
                 <Button
                   size="sm"
                   onClick={() => saveClub(club)}

@@ -23,6 +23,8 @@ import {
   Users,
   FileText,
   CalendarRange,
+  Palette,
+
 } from "lucide-react";
 
 const REQUIRED_MODULES = [
@@ -40,7 +42,13 @@ const OPTIONAL_MODULES = [
   { key: "season_calendar", icon: CalendarRange, label: "Season Calendar", desc: "Collaborative planning" },
   { key: "rehab", icon: Heart, label: "Rehab", desc: "Injury plans" },
   { key: "diary", icon: NotebookPen, label: "Diary", desc: "Notes & mood" },
+  { key: "branding", icon: Palette, label: "Club branding", desc: "Club logo & colors (add-on)" },
 ] as const;
+
+/** Paid add-ons are off unless an admin explicitly switches them on. */
+const ADDON_MODULES = new Set<string>(["branding"]);
+const moduleFallback = (key: string) => !ADDON_MODULES.has(key);
+
 
 type Club = { id: string; name: string };
 type Athlete = { user_id: string; display_name: string; club_id: string | null };
@@ -123,7 +131,7 @@ export default function AdminModuleAccess() {
     if (!selectedClubId) return;
     const d = allDefaults[selectedClubId] || {};
     const draft: Record<string, boolean> = {};
-    for (const m of OPTIONAL_MODULES) draft[m.key] = d[m.key] ?? true;
+    for (const m of OPTIONAL_MODULES) draft[m.key] = d[m.key] ?? moduleFallback(m.key);
     setDefaultsDraft(draft);
     setSelectedAthleteId("");
     setMode("defaults");
@@ -136,7 +144,7 @@ export default function AdminModuleAccess() {
     const ov = overridesByAthlete[selectedAthleteId] || {};
     const draft: Record<string, boolean> = {};
     for (const m of OPTIONAL_MODULES) {
-      draft[m.key] = ov[m.key] ?? clubDef[m.key] ?? true;
+      draft[m.key] = ov[m.key] ?? clubDef[m.key] ?? moduleFallback(m.key);
     }
     setAthleteDraft(draft);
     setMode("athlete");
@@ -157,7 +165,7 @@ export default function AdminModuleAccess() {
     const def = allDefaults[a.club_id || ""] || {};
     let enabled = REQUIRED_MODULES.length;
     for (const m of OPTIONAL_MODULES) {
-      const v = ov[m.key] ?? def[m.key] ?? true;
+      const v = ov[m.key] ?? def[m.key] ?? moduleFallback(m.key);
       if (v) enabled++;
     }
     return { enabled, total: REQUIRED_MODULES.length + OPTIONAL_MODULES.length };

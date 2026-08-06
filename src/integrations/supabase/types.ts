@@ -1004,35 +1004,44 @@ export type Database = {
       }
       clubs: {
         Row: {
+          accent_color: string | null
           created_at: string
           default_weekly_schedule: Json | null
           deleted_at: string | null
           id: string
           license_active: boolean
+          logo_url: string | null
           max_athletes: number
           name: string
+          primary_color: string | null
           share_coach_notes: boolean
           slug: string
         }
         Insert: {
+          accent_color?: string | null
           created_at?: string
           default_weekly_schedule?: Json | null
           deleted_at?: string | null
           id?: string
           license_active?: boolean
+          logo_url?: string | null
           max_athletes?: number
           name: string
+          primary_color?: string | null
           share_coach_notes?: boolean
           slug: string
         }
         Update: {
+          accent_color?: string | null
           created_at?: string
           default_weekly_schedule?: Json | null
           deleted_at?: string | null
           id?: string
           license_active?: boolean
+          logo_url?: string | null
           max_athletes?: number
           name?: string
+          primary_color?: string | null
           share_coach_notes?: boolean
           slug?: string
         }
