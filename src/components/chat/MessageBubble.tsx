@@ -234,10 +234,11 @@ export function MessageBubble({
         </div>
       )}
 
-      <span className="text-[10px] text-muted-foreground mt-0.5 mx-2">
+      <span className="text-[10px] text-muted-foreground/70 mt-1 mx-1.5 tabular-nums">
         {time}
         {message.edited_at && <span className="ml-1">(redigeret)</span>}
       </span>
+
 
       <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
         <AlertDialogContent>
