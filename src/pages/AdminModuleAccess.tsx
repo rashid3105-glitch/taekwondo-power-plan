@@ -40,7 +40,9 @@ const OPTIONAL_MODULES = [
   { key: "season_calendar", icon: CalendarRange, label: "Season Calendar", desc: "Collaborative planning" },
   { key: "rehab", icon: Heart, label: "Rehab", desc: "Injury plans" },
   { key: "diary", icon: NotebookPen, label: "Diary", desc: "Notes & mood" },
+  { key: "branding", icon: Palette, label: "Club branding", desc: "Club logo & colors (add-on)" },
 ] as const;
+
 
 type Club = { id: string; name: string };
 type Athlete = { user_id: string; display_name: string; club_id: string | null };
