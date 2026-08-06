@@ -61,7 +61,19 @@ export default function AdminClubs() {
       list.forEach(c => { map[c.id] = { ...c }; });
       setOriginalClubs(map);
     }
+
+    const { data: mods } = await supabase
+      .from("club_module_defaults" as any)
+      .select("club_id, enabled")
+      .eq("module", "branding");
+    const flags: Record<string, boolean> = {};
+    for (const m of ((mods as any) || []) as { club_id: string; enabled: boolean }[]) {
+      flags[m.club_id] = m.enabled;
+    }
+    setBrandingEnabled(flags);
+
     setLoading(false);
+
   };
 
   const updateLocal = (clubId: string, patch: Partial<Club>) => {
