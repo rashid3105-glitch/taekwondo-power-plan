@@ -210,7 +210,13 @@ export default function AdminClubs() {
                   onCheckedChange={(v) => updateLocal(club.id, { license_active: v })}
                 />
               </div>
+              <ClubBrandingSection
+                clubId={club.id}
+                clubName={club.name}
+                enabled={!!brandingEnabled[club.id]}
+              />
               <div className="flex justify-end border-t border-border pt-3">
+
                 <Button
                   size="sm"
                   onClick={() => saveClub(club)}
