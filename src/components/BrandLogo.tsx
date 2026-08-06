@@ -11,6 +11,7 @@ export function BrandLogo({
   withText = true,
   textColor = "#fff",
   accentColor = "#D4AF37",
+  mode = "default",
   onClick,
   className,
 }: {
@@ -18,6 +19,7 @@ export function BrandLogo({
   withText?: boolean;
   textColor?: string;
   accentColor?: string;
+  mode?: "default" | "club-only";
   onClick?: () => void;
   className?: string;
 }) {

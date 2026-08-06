@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from
 import { AnimatePresence, motion } from "framer-motion";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { ClubThemeProvider } from "@/components/ClubThemeProvider";
+import { PoweredBySportstalent } from "@/components/PoweredBySportstalent";
 
 import { CoachModeProvider } from "@/contexts/CoachModeContext";
 import { ActiveClubProvider } from "@/contexts/ActiveClubContext";
@@ -343,6 +344,7 @@ const App = () => {
                     </ConsentGate>
                     <GlobalAppMenu />
                     <AppBottomNav />
+                    <PoweredBySportstalent />
                     <ClubSwitchOverlay />
                   </ClubThemeProvider>
                 </CoachModeProvider>
