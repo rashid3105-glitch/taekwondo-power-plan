@@ -22,7 +22,9 @@ interface Club {
 export default function AdminClubs() {
   const [clubs, setClubs] = useState<Club[]>([]);
   const [originalClubs, setOriginalClubs] = useState<Record<string, Club>>({});
+  const [brandingEnabled, setBrandingEnabled] = useState<Record<string, boolean>>({});
   const [savingId, setSavingId] = useState<string | null>(null);
+
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [newClubName, setNewClubName] = useState("");
