@@ -8,6 +8,7 @@ interface ClubBranding {
   logoUrl: string | null;
   primaryColor: string | null;
   accentColor: string | null;
+  backgroundColor: string | null;
   enabled: boolean;
 }
 
@@ -17,6 +18,7 @@ const EMPTY: ClubBranding = {
   logoUrl: null,
   primaryColor: null,
   accentColor: null,
+  backgroundColor: null,
   enabled: false,
 };
 
@@ -31,17 +33,28 @@ const VARS: Record<string, string> = {
   primaryForeground: "--primary-foreground",
   accent: "--accent",
   accentForeground: "--accent-foreground",
+  background: "--background",
+  foreground: "--foreground",
+  card: "--card",
+  cardForeground: "--card-foreground",
+  popover: "--popover",
+  popoverForeground: "--popover-foreground",
+  muted: "--muted",
+  mutedForeground: "--muted-foreground",
+  border: "--border",
+  input: "--input",
 };
 
-function applyTheme(primary?: string | null, accent?: string | null) {
+function applyTheme(primary?: string | null, accent?: string | null, background?: string | null) {
   const root = document.documentElement;
-  const tokens = buildClubTheme(primary, accent) as Record<string, string>;
+  const tokens = buildClubTheme(primary, accent, background) as Record<string, string>;
   for (const [key, cssVar] of Object.entries(VARS)) {
     const value = tokens[key];
     if (value) root.style.setProperty(cssVar, value);
     else root.style.removeProperty(cssVar);
   }
 }
+
 
 /**
  * Loads the signed-in user's club branding (when the "branding" add-on is
