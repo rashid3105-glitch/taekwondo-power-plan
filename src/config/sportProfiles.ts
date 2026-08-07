@@ -31,6 +31,7 @@ export interface SportProfile {
   testBattery: string[];
   /** Term overrides for session/plan wording. */
   sessionLabel: string;
+  sessionLabelEn: string;
   /** Whether the sport has a match/bout analysis module. */
   hasMatchAnalysis: boolean;
 }
@@ -69,6 +70,7 @@ export const SPORT_PROFILES: Record<SportSlug, SportProfile> = {
     competitionFormats: ["Kamp (kyorugi)", "Poomsae"],
     testBattery: ["sprint_10m", "cmj", "sit_and_reach", "yoyo", "kick_frequency", "core_endurance"],
     sessionLabel: "Taekwondo-træning",
+    sessionLabelEn: "Taekwondo session",
     hasMatchAnalysis: true,
   },
   karate: {
@@ -102,6 +104,7 @@ export const SPORT_PROFILES: Record<SportSlug, SportProfile> = {
     competitionFormats: ["Kumite", "Kata"],
     testBattery: ["sprint_10m", "cmj", "sit_and_reach", "yoyo", "core_endurance"],
     sessionLabel: "Karate-træning",
+    sessionLabelEn: "Karate session",
     hasMatchAnalysis: true,
   },
   kickboxing: {
@@ -130,6 +133,7 @@ export const SPORT_PROFILES: Record<SportSlug, SportProfile> = {
     competitionFormats: ["Full contact", "Light contact", "K1", "Point fighting"],
     testBattery: ["sprint_10m", "cmj", "yoyo", "core_endurance", "grip_strength"],
     sessionLabel: "Kickboxing-træning",
+    sessionLabelEn: "Kickboxing session",
     hasMatchAnalysis: true,
   },
   fitness: {
@@ -150,6 +154,7 @@ export const SPORT_PROFILES: Record<SportSlug, SportProfile> = {
     competitionFormats: [],
     testBattery: ["sprint_10m", "cmj", "sit_and_reach", "yoyo", "grip_strength", "core_endurance"],
     sessionLabel: "Træningspas",
+    sessionLabelEn: "Training session",
     hasMatchAnalysis: false,
   },
 };

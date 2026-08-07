@@ -2,6 +2,8 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { checkAIEntitlement } from "../_shared/checkEntitlement.ts";
 import { sanitizePromptText, asUserDataBlock } from "../_shared/sanitizePrompt.ts";
+import { getSportProfile } from "../_shared/sportProfiles.ts";
+
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -33,7 +35,22 @@ serve(async (req) => {
     if (body.length > 10000) {
       return new Response(JSON.stringify({ error: "Request too large" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
-    const { profile, language } = JSON.parse(body);
+    const parsedBody = body ? JSON.parse(body) : {};
+    const language = parsedBody.language;
+    let profile = parsedBody.profile;
+
+    const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+
+    // The onboarding flow fires this function without a body — load the athlete's
+    // own profile server-side so background generation still works.
+    if (!profile || typeof profile !== "object") {
+      const { data: ownProfile } = await admin
+        .from("profiles")
+        .select("*")
+        .eq("user_id", userId)
+        .maybeSingle();
+      profile = ownProfile;
+    }
     if (!profile || typeof profile !== "object") {
       return new Response(JSON.stringify({ error: "Missing profile data. Please complete your profile before generating a plan." }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
@@ -44,52 +61,77 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const discipline = profile.discipline || 'sparring';
-    const isSparring = discipline === 'sparring';
+    // ---- Resolve the club's sport (falls back to taekwondo) ----
+    let clubId: string | null = (profile as any)?.club_id ?? null;
+    if (!clubId) {
+      const { data: profileRow } = await admin.from("profiles").select("club_id").eq("user_id", userId).maybeSingle();
+      clubId = (profileRow as any)?.club_id ?? null;
+    }
+    let sportSlug: string | null = null;
+    if (clubId) {
+      const { data: clubRow } = await admin.from("clubs").select("sport").eq("id", clubId).maybeSingle();
+      sportSlug = (clubRow as any)?.sport ?? null;
+    }
+    const sport = getSportProfile(sportSlug);
+    const sportName = sport.nameEn;
 
-    const disciplineContext = isSparring
-      ? `This athlete is a SPARRING (fighter) specialist. Programs must emphasize:
-- Explosive power and speed for kicks, punches, and footwork
-- Rate of force development (RFD) for fast-twitch muscle activation
-- Reaction time and agility drills
-- Combat-specific conditioning (intervals mimicking round structure)
-- Ability to absorb and deliver impact
-- Quick direction changes and lateral movement`
-      : `This athlete is a POOMSAE (forms) specialist. Programs must emphasize:
-- Balance, stability, and proprioception
-- Controlled strength through full range of motion
-- Core stability for stances and transitions
-- Flexibility and mobility for aesthetic technique execution
-- Muscular endurance for sustained performance
-- Precision and body control over raw power
-- Slow-tempo strength work for movement quality`;
+    // Discipline only applies to sports that actually split into disciplines.
+    const disciplineKey = profile.discipline || "sparring";
+    const activeDiscipline = sport.disciplines.length
+      ? (sport.disciplines.find((d) => d.key === disciplineKey) ?? sport.disciplines[0])
+      : null;
+    const athleteLabel = activeDiscipline ? `${sportName} ${activeDiscipline.label}` : `${sportName}`;
 
-    const systemPrompt = `You are an expert strength & conditioning coach specializing in taekwondo athletic performance. You create training programs for ${isSparring ? 'SPARRING (fighter)' : 'POOMSAE (forms)'} athletes.
-Write ALL instructions in plain, everyday language that a teenager can understand.
-Avoid sports science jargon, Latin muscle names, and technical terminology. Instead of "eccentric contraction", say "the lowering phase". Instead of "hip flexion ROM", say "how high you can kick". Instead of "periodized mesocycle", say "this block of training". Keep exercise descriptions short and practical — what to do, how to do it, why it helps for taekwondo.
+    const skillContext = sport.skillGroups
+      .map((g) => `- ${g.group}: ${g.skills.join(", ")}`)
+      .join("\n");
 
-${disciplineContext}
+    const disciplineContext = activeDiscipline
+      ? `This athlete is a ${activeDiscipline.label} specialist in ${sportName}. Programs must emphasize:
+${activeDiscipline.focus}`
+      : `This athlete trains ${sportName}. Programs must serve these demands:
+${sport.demands.map((d) => `- ${d}`).join("\n")}`;
 
-Your programs must:
-- Be specific with exercises, sets, reps, tempo, and rest periods
-- Fit around the athlete's existing taekwondo schedule
-${isSparring
-  ? `- Minimize risk of becoming slow or heavy
+
+    const isFighter = activeDiscipline?.key === "sparring";
+    const isForms = activeDiscipline?.key === "poomsae";
+    const programRules = isFighter
+      ? `- Minimize risk of becoming slow or heavy
 - Focus on neural drive over hypertrophy (low reps, explosive intent)
 - Include injury prevention work (hamstrings, hip flexors, adductors)
-- Include mobility work for high kicks`
-  : `- Focus on balance and stability exercises
+- Include mobility work for the sport's kicking and striking range`
+      : isForms
+      ? `- Focus on balance and stability exercises
 - Include proprioception and body control drills
 - Emphasize slow, controlled tempos for strength
 - Include extensive flexibility and mobility work
-- Build muscular endurance for sustained poomsae performance`}
+- Build muscular endurance for sustained form performance`
+      : `- Match the physical demands listed above
+- Balance strength, power, conditioning and mobility across the week
+- Keep progression realistic for the athlete's stated level and goals
+- Include injury prevention work for the joints this sport loads most`;
+
+    const systemPrompt = `You are an expert strength & conditioning coach specializing in ${sportName} athletic performance. You create training programs for ${athleteLabel} athletes.
+Write ALL instructions in plain, everyday language that a teenager can understand.
+Avoid sports science jargon, Latin muscle names, and technical terminology. Instead of "eccentric contraction", say "the lowering phase". Instead of "hip flexion ROM", say "how high you can kick". Instead of "periodized mesocycle", say "this block of training". Keep exercise descriptions short and practical — what to do, how to do it, why it helps for ${sportName}.
+
+${disciplineContext}
+
+Key ${sport.skillLabelEn.toLowerCase()} in this sport (use these only as context for coaching cues — do NOT program them as gym exercises):
+${skillContext}
+
+Your programs must:
+- Be specific with exercises, sets, reps, tempo, and rest periods
+- Fit around the athlete's existing ${sportName} schedule
+${programRules}
 
 For each exercise, include:
 - Name, sets, reps, tempo (if relevant), rest period
 - Brief coaching cue
-- Why it matters for ${isSparring ? 'taekwondo sparring' : 'poomsae performance'} specifically
+- Why it matters for ${activeDiscipline ? `${sportName} ${activeDiscipline.label.toLowerCase()}` : sportName} specifically
 - A category: "power", "speed", "strength", "plyometric", or "mobility"
 - Two alternative exercises (with name + brief reason) the athlete can do if the primary exercise isn't possible in their gym
+
 
 Return a valid JSON object with this exact structure:
 {
@@ -111,8 +153,9 @@ Return a valid JSON object with this exact structure:
       "dayOfWeek": "Monday",
       "sessions": [
         {
-          "type": "tkd" | "gym" | "selftraining" | "recovery",
-          "label": "string (e.g. 'Morning Strength' or 'Evening TKD')",
+          "type": "tkd" | "gym" | "selftraining" | "recovery"  ("tkd" means a club session in the athlete's sport — ${sport.sessionLabelEn}),
+          "label": "string (e.g. 'Morning Strength' or 'Evening ${sportName}')",
+
           "focus": "string",
           "exercises": [
             {
@@ -136,7 +179,7 @@ Return a valid JSON object with this exact structure:
   ]
 }
 
-IMPORTANT: Each day in weeklySchedule MUST use the "sessions" array format. A day can have ONE or MULTIPLE sessions. For example, a day with both morning gym training and evening TKD would have two session objects in the sessions array. Rest days should have a single session with type "recovery" and an empty exercises array. For "selftraining" days, build a self-guided session the athlete can run alone at home or in the dojang without a coach present — lower volume than gym day, 4-6 movements blending bodyweight strength, mobility, light technical drills, and conditioning, with clear coaching cues so the athlete can self-correct.
+IMPORTANT: Each day in weeklySchedule MUST use the "sessions" array format. A day can have ONE or MULTIPLE sessions. For example, a day with both morning gym training and an evening ${sport.sessionLabelEn.toLowerCase()} would have two session objects in the sessions array. Rest days should have a single session with type "recovery" and an empty exercises array. For "selftraining" days, build a self-guided session the athlete can run alone at home or at the club without a coach present — lower volume than gym day, 4-6 movements blending bodyweight strength, mobility, light technical drills, and conditioning, with clear coaching cues so the athlete can self-correct.
 
 The weeklySchedule represents the BASE WEEK template. The periodization array describes how to modify volume/intensity across the entire program duration. Create realistic periodization phases that make sense for the athlete's level and goals.
 
@@ -197,10 +240,11 @@ IMPORTANT: ALL text content MUST be written in ${lang} — with NO exceptions an
       console.warn("season phase lookup failed:", e);
     }
 
-    const userPrompt = `Generate a training plan for a taekwondo ${isSparring ? 'SPARRING' : 'POOMSAE'} athlete:
+    const userPrompt = `Generate a training plan for a ${athleteLabel} athlete:
 - Goals: ${safeGoals.length ? safeGoals.join(', ') : 'general performance improvement'}
 - Weekly schedule: ${scheduleDescription}${injuryInfo}
-- Sessions per week: ${profile.tkd_sessions_per_week || 4}
+- Club sessions per week: ${profile.tkd_sessions_per_week || 4}
+- Level: ${sanitizePromptText(profile.belt_level, 60) || 'not specified'} (${sport.gradeLabelEn})
 
 Design the program for ${profile.program_weeks || 8} weeks with appropriate periodization.${injuryInstructions}${currentPhaseContext}`;
 
