@@ -92,7 +92,7 @@ export default function Library({ forcedSection }: { forcedSection?: string } = 
       if (!user) return;
       const { data } = await supabase
         .from("profiles")
-        .select("age, weight_kg, belt_level, discipline, tkd_sessions_per_week, experience_years, current_injury, custom_calories, birth_date")
+        .select("age, weight_kg, belt_level, discipline, sessions_per_week, experience_years, current_injury, custom_calories, birth_date")
         .eq("user_id", user.id)
         .maybeSingle();
       if (data && data.age == null && data.birth_date) {

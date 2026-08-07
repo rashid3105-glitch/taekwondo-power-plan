@@ -41,7 +41,7 @@ interface PendingUser {
   belt_level: string;
   experience_years: number | null;
   goals: string[] | null;
-  tkd_sessions_per_week: number;
+  sessions_per_week: number;
   payment_status: string;
   payment_date: string | null;
   is_demo: boolean;
@@ -59,7 +59,7 @@ interface PendingUser {
   current_injury?: string | null;
   last_seen_at?: string | null;
   birth_date?: string | null;
-  tkd_start_date?: string | null;
+  sport_start_date?: string | null;
   phone?: string | null;
   phone_country_code?: string | null;
   athlete_code?: string | null;
@@ -132,7 +132,7 @@ export default function AdminApproval() {
     const [profilesRes, emailsRes, plansRes, rolesRes, coachAthletesRes, clubsRes] = await Promise.all([
       supabase
         .from("profiles")
-        .select("user_id, display_name, created_at, is_approved, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, payment_status, payment_date, is_demo, demo_full_access, demo_expires_at, club_id, discipline, country, current_injury, last_seen_at, birth_date, tkd_start_date, phone, phone_country_code, athlete_code")
+        .select("user_id, display_name, created_at, is_approved, age, weight_kg, belt_level, experience_years, goals, sessions_per_week, payment_status, payment_date, is_demo, demo_full_access, demo_expires_at, club_id, discipline, country, current_injury, last_seen_at, birth_date, sport_start_date, phone, phone_country_code, athlete_code")
         .or("is_parent.is.null,is_parent.eq.false")
         .order("created_at", { ascending: false }),
       supabase.functions.invoke("get-admin-users"),
@@ -409,13 +409,13 @@ export default function AdminApproval() {
       weight_kg: u.weight_kg ?? "",
       belt_level: u.belt_level || (isTkdBeltSystem(u.sport) ? "white" : (getSportProfile(u.sport).grades[0] || "")),
       experience_years: u.experience_years ?? "",
-      tkd_sessions_per_week: u.tkd_sessions_per_week || 3,
+      sessions_per_week: u.sessions_per_week || 3,
       discipline: u.discipline || "sparring",
       country: u.country || "",
       current_injury: u.current_injury || "",
       club_id: u.club_id || "",
       birth_date: u.birth_date || "",
-      tkd_start_date: u.tkd_start_date || "",
+      sport_start_date: u.sport_start_date || "",
       phone: u.phone || "",
       phone_country_code: u.phone_country_code || "+45",
     });
@@ -430,12 +430,12 @@ export default function AdminApproval() {
         display_name: editForm.display_name,
         belt_level: editForm.belt_level,
         discipline: editForm.discipline,
-        tkd_sessions_per_week: Number(editForm.tkd_sessions_per_week) || 3,
+        sessions_per_week: Number(editForm.sessions_per_week) || 3,
         age: editForm.birth_date ? calcAge(editForm.birth_date) : (editForm.age ? Number(editForm.age) : null),
         weight_kg: editForm.weight_kg ? Number(editForm.weight_kg) : null,
-        experience_years: editForm.tkd_start_date ? calcExperience(editForm.tkd_start_date) : (editForm.experience_years ? Number(editForm.experience_years) : null),
+        experience_years: editForm.sport_start_date ? calcExperience(editForm.sport_start_date) : (editForm.experience_years ? Number(editForm.experience_years) : null),
         birth_date: editForm.birth_date || null,
-        tkd_start_date: editForm.tkd_start_date || null,
+        sport_start_date: editForm.sport_start_date || null,
         country: editForm.country || null,
         current_injury: editForm.current_injury || null,
         club_id: editForm.club_id || null,
@@ -616,7 +616,7 @@ export default function AdminApproval() {
               </span>
             )}
             <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
-              {u.tkd_sessions_per_week}x {t("tkdPerWeek")}
+              {u.sessions_per_week}x {t("tkdPerWeek")}
             </span>
             {u.discipline && (
               <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full capitalize">
@@ -1190,13 +1190,13 @@ export default function AdminApproval() {
                 <p className="text-xs text-muted-foreground">{t("tkdStartDateHint") || "Used to calculate experience automatically"}</p>
                 <Input
                   type="date"
-                  value={editForm.tkd_start_date || ""}
-                  onChange={(e) => setEditForm(f => ({ ...f, tkd_start_date: e.target.value }))}
+                  value={editForm.sport_start_date || ""}
+                  onChange={(e) => setEditForm(f => ({ ...f, sport_start_date: e.target.value }))}
                   max={new Date().toISOString().split("T")[0]}
                 />
-                {editForm.tkd_start_date && calcExperience(editForm.tkd_start_date) !== null && (
+                {editForm.sport_start_date && calcExperience(editForm.sport_start_date) !== null && (
                   <p className="text-xs text-muted-foreground">
-                    {t("profileExperience") || "Experience"}: <span className="font-semibold text-foreground">{calcExperience(editForm.tkd_start_date)} {t("years") || "years"}</span>
+                    {t("profileExperience") || "Experience"}: <span className="font-semibold text-foreground">{calcExperience(editForm.sport_start_date)} {t("years") || "years"}</span>
                   </p>
                 )}
               </div>
@@ -1204,7 +1204,7 @@ export default function AdminApproval() {
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label>Sessions/week</Label>
-                <Input type="number" inputMode="numeric" value={editForm.tkd_sessions_per_week || 3} onChange={(e) => setEditForm(f => ({ ...f, tkd_sessions_per_week: e.target.value }))} />
+                <Input type="number" inputMode="numeric" value={editForm.sessions_per_week || 3} onChange={(e) => setEditForm(f => ({ ...f, sessions_per_week: e.target.value }))} />
               </div>
               <div className="space-y-2">
                 <Label>Discipline</Label>

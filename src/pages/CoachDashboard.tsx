@@ -55,7 +55,7 @@ interface AthleteProfile {
   belt_level: string;
   experience_years: number | null;
   goals: string[] | null;
-  tkd_sessions_per_week: number;
+  sessions_per_week: number;
   current_injury: string | null;
   program_weeks: number | null;
   weekly_schedule: any;

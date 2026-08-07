@@ -84,7 +84,7 @@ interface Profile {
   weight_kg: number | null;
   belt_level: string;
   goals: string[];
-  tkd_sessions_per_week: number;
+  sessions_per_week: number;
   experience_years: number | null;
   avatar_url: string | null;
   program_weeks: number | null;
@@ -1326,7 +1326,7 @@ export default function Dashboard() {
                         </span>
                       )}
                       <span className="text-[10px] sm:text-xs bg-muted text-muted-foreground px-2 py-0.5 sm:py-1 rounded-full">
-                        {profile.tkd_sessions_per_week}x {t("tkdPerWeek")}
+                        {profile.sessions_per_week}x {t("tkdPerWeek")}
                       </span>
                     </div>
                     {profile.goals?.length > 0 && (

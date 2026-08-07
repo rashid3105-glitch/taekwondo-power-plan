@@ -135,7 +135,7 @@ export default function ProfileSetup() {
           supabase.from("clubs" as any).select("id, name").order("name"),
           supabase
             .from("profiles")
-            .select("age, weight_kg, belt_level, experience_years, discipline, goals, weekly_schedule, program_weeks, current_injury, avatar_url, club_id, country, custom_calories, default_locale, gal_license, gal_license_expires_at, has_myfightbook, myfightbook_expires_at, tkd_start_date, birth_date, is_parent, phone, phone_country_code")
+            .select("age, weight_kg, belt_level, experience_years, discipline, goals, weekly_schedule, program_weeks, current_injury, avatar_url, club_id, country, custom_calories, default_locale, gal_license, gal_license_expires_at, has_myfightbook, myfightbook_expires_at, sport_start_date, birth_date, is_parent, phone, phone_country_code")
             .eq("user_id", user.id)
             .maybeSingle(),
         ]);
@@ -172,7 +172,7 @@ export default function ProfileSetup() {
           setGalLicenseExpires(profileData.gal_license_expires_at || "");
           setHasMyFightBook(!!profileData.has_myfightbook);
           setMyFightBookExpires(profileData.myfightbook_expires_at || "");
-          setTkdStartDate(profileData.tkd_start_date || "");
+          setTkdStartDate(profileData.sport_start_date || "");
           setBirthDate(profileData.birth_date || "");
           
         }
@@ -362,7 +362,7 @@ export default function ProfileSetup() {
         weight_kg: weight ? parseFloat(weight) : null,
         belt_level: belt,
         experience_years: derivedExperience ? parseInt(derivedExperience) : null,
-        tkd_sessions_per_week: tkdCount,
+        sessions_per_week: tkdCount,
         goals,
         weekly_schedule: schedule,
         program_weeks: programWeeks,
@@ -378,7 +378,7 @@ export default function ProfileSetup() {
         gal_license_expires_at: galLicenseExpires || null,
         has_myfightbook: hasMyFightBook,
         myfightbook_expires_at: hasMyFightBook && myFightBookExpires ? myFightBookExpires : null,
-        tkd_start_date: tkdStartDate || null,
+        sport_start_date: tkdStartDate || null,
         birth_date: birthDate || null,
         avatar_url: cleanAvatarUrl,
       };

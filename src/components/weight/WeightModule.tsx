@@ -68,7 +68,7 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
     () => estimateMaintenanceCalories({
       weightKg: currentWeight ?? 65,
       age: profile?.age ?? null,
-      sessionsPerWeek: profile?.tkd_sessions_per_week ?? null,
+      sessionsPerWeek: profile?.sessions_per_week ?? null,
       activityLevel: (goal?.activity_level as any) ?? null,
       sex: (goal?.sex as any) ?? null,
     }),
