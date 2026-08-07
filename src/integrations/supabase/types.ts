@@ -2582,9 +2582,9 @@ export type Database = {
           rejection_reason: string | null
           role: string
           roles: string[] | null
+          sessions_per_week: number
+          sport_start_date: string | null
           superadmin_active: boolean
-          tkd_sessions_per_week: number
-          tkd_start_date: string | null
           updated_at: string
           user_id: string
           weekly_schedule: Json | null
@@ -2644,9 +2644,9 @@ export type Database = {
           rejection_reason?: string | null
           role?: string
           roles?: string[] | null
+          sessions_per_week?: number
+          sport_start_date?: string | null
           superadmin_active?: boolean
-          tkd_sessions_per_week?: number
-          tkd_start_date?: string | null
           updated_at?: string
           user_id: string
           weekly_schedule?: Json | null
@@ -2706,9 +2706,9 @@ export type Database = {
           rejection_reason?: string | null
           role?: string
           roles?: string[] | null
+          sessions_per_week?: number
+          sport_start_date?: string | null
           superadmin_active?: boolean
-          tkd_sessions_per_week?: number
-          tkd_start_date?: string | null
           updated_at?: string
           user_id?: string
           weekly_schedule?: Json | null
@@ -4490,7 +4490,7 @@ export type Database = {
           goals: string[]
           is_coach: boolean
           program_weeks: number
-          tkd_sessions_per_week: number
+          sessions_per_week: number
           user_id: string
           weekly_schedule: Json
           weight_kg: number
