@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useRole } from "@/contexts/RoleContext";
 import type { TranslationKey } from "@/i18n/translations";
+import { useMySportProfile } from "@/hooks/useMySportProfile";
+import { drillsLabel } from "@/lib/sportTerms";
 
 const libraries: {
   id: string;
@@ -26,7 +28,8 @@ const libraries: {
 
 export default function LibraryChooser() {
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
+  const { profile: sportProfile } = useMySportProfile();
   const { hasCoachRole } = useRole();
 
   const visibleLibraries = hasCoachRole
@@ -74,7 +77,7 @@ export default function LibraryChooser() {
                 <lib.icon className={`h-6 w-6 ${lib.color}`} />
               </div>
               <div>
-                <div className="font-bold text-zinc-100 text-base">{t(lib.labelKey)}</div>
+                <div className="font-bold text-zinc-100 text-base">{lib.id === "drills" ? drillsLabel(sportProfile.slug, t, locale) : t(lib.labelKey)}</div>
                 <div className="text-sm text-zinc-400">{t(lib.descKey)}</div>
               </div>
             </button>

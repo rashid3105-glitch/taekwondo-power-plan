@@ -16,6 +16,8 @@ import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import type { TranslationKey } from "@/i18n/translations";
+import { useMySportProfile } from "@/hooks/useMySportProfile";
+import { drillsLabel } from "@/lib/sportTerms";
 
 const TITLE_KEYS: Record<string, TranslationKey> = {
   exercise: "exercisesTitle",
@@ -56,7 +58,8 @@ export default function Library({ forcedSection }: { forcedSection?: string } = 
   const { section: paramSection } = useParams<{ section: string }>();
   const section = forcedSection ?? paramSection;
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
+  const { profile: sportProfile } = useMySportProfile();
   const Icon = ICONS[section || ""] || BookOpen;
   const titleKey = TITLE_KEYS[section || ""];
 
