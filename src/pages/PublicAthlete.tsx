@@ -9,6 +9,8 @@ import { PageMeta } from "@/components/PageMeta";
 import { AppFooter } from "@/components/AppFooter";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { getSportProfile } from "@/config/sportProfiles";
+import { formatGrade, gradeLabelFor } from "@/lib/sportGrade";
 
 interface ProfileData {
   display_name: string;
