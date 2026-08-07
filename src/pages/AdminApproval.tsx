@@ -561,7 +561,7 @@ export default function AdminApproval() {
                     {u.club_name}
                   </span>
                 )}
-                {u.belt_level && <span className="text-[10px] text-muted-foreground capitalize">• {u.belt_level}</span>}
+                {u.belt_level && <span className="text-[10px] text-muted-foreground">• {formatGrade(u.sport, u.belt_level, t)}</span>}
                 {u.age && <span className="text-[10px] text-muted-foreground">• {u.age}y</span>}
                 {(() => {
                   if (!u.last_seen_at) {
@@ -596,8 +596,8 @@ export default function AdminApproval() {
               </span>
             )}
             {u.belt_level && (
-              <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full capitalize">
-                {u.belt_level} {t("belt")}
+              <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
+                {formatGrade(u.sport, u.belt_level, t)} {gradeLabelFor(u.sport, t, locale)}
               </span>
             )}
             {u.age && (
