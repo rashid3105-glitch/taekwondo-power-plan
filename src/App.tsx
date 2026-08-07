@@ -61,6 +61,7 @@ import Help from "./pages/Help";
 import Diary from "./pages/Diary";
 import AdminPayments from "./pages/AdminPayments";
 import AdminClubs from "./pages/AdminClubs";
+import AdminSportPreview from "./pages/AdminSportPreview";
 import NotFound from "./pages/NotFound";
 import MockupSeasonOnboarding from "./pages/MockupSeasonOnboarding";
 import MockupAthleteGoals from "./pages/MockupAthleteGoals";
