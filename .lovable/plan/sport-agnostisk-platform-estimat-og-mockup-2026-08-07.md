@@ -1,3 +1,7 @@
+det må ikke ødelægge noget af det der er lige nu. Så det laves som et preview. 
+
+4 sportsgrene: taekwondo, karate, kickboxing og generel fitness
+
 # Sport-agnostisk platform — estimat og mockup
 
 Målet: når en klub oprettes, vælger træneren en sportsgren, og appen tilpasser terminologi, gradsystem, teknik-/færdighedsbibliotek, tests og planer til den sport. Der findes allerede et oplæg i `docs/multi-sport-roadmap.md` (Model 2: sport som tenant-dimension på klub-niveau) — denne plan er den konkrete udmøntning af det.
@@ -60,15 +64,17 @@ Admin får en "Sportsprofiler"-side hvor hver sport har: navn, gradstige, færdi
 
 ## Estimat
 
-| Fase | Indhold | Størrelse |
-|---|---|---|
-| 0 | Taksonomi-design: definér sportsprofil-format og de første 3–4 sportsgrene (indhold, ikke kode) | 1 runde, mest din beslutning |
-| 1 | `sport`-felt på klubber + sportsprofil-tabeller, backfill alt til taekwondo, sportsvalg i klubopsætning | Lille-mellem |
-| 2 | Gradsystem abstraheret (`belt_level` → sport-drevet grad, dual-read) | Mellem |
-| 3 | Teknik/færdigheder gjort sport-scoped + seed pr. sport, match-tags | Stor |
-| 4 | Indhold og generatorer sport-bevidste (øvelser, drills, HIIT, edge function-prompts) | Stor |
-| 5 | Terminologi/i18n: sport-drevne labels i alle 7 sprog, omdøbte felter | Mellem |
-| 6 | Onboarding/routing pr. sport + admin sportsprofil-side | Mellem |
+
+| Fase | Indhold                                                                                                 | Størrelse                    |
+| ---- | ------------------------------------------------------------------------------------------------------- | ---------------------------- |
+| 0    | Taksonomi-design: definér sportsprofil-format og de første 3–4 sportsgrene (indhold, ikke kode)         | 1 runde, mest din beslutning |
+| 1    | `sport`-felt på klubber + sportsprofil-tabeller, backfill alt til taekwondo, sportsvalg i klubopsætning | Lille-mellem                 |
+| 2    | Gradsystem abstraheret (`belt_level` → sport-drevet grad, dual-read)                                    | Mellem                       |
+| 3    | Teknik/færdigheder gjort sport-scoped + seed pr. sport, match-tags                                      | Stor                         |
+| 4    | Indhold og generatorer sport-bevidste (øvelser, drills, HIIT, edge function-prompts)                    | Stor                         |
+| 5    | Terminologi/i18n: sport-drevne labels i alle 7 sprog, omdøbte felter                                    | Mellem                       |
+| 6    | Onboarding/routing pr. sport + admin sportsprofil-side                                                  | Mellem                       |
+
 
 Samlet: en større flerrunde-indsats — realistisk 12–20 arbejdsrunder afhængigt af hvor mange sportsgrene der seedes. Fase 1+2 alene giver allerede "vælg sport ved klubopsætning" og korrekt gradterminologi og kan leveres først som synligt delresultat.
 

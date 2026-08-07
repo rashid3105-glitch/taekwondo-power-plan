@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, ArrowLeft, Building, Plus, Save } from "lucide-react";
+import { Loader2, ArrowLeft, Building, Plus, Save, Trophy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 
@@ -144,6 +144,9 @@ export default function AdminClubs() {
         <div className="flex flex-wrap gap-2">
           <Button variant="ghost" size="sm" onClick={() => navigate("/admin/approval")}>
             <ArrowLeft className="h-4 w-4 mr-1" /> {t("backToDashboard")}
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => navigate("/admin/sport-preview")}>
+            <Trophy className="h-4 w-4 mr-1" /> Sportsgren (preview)
           </Button>
         </div>
 

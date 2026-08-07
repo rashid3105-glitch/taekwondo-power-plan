@@ -61,6 +61,7 @@ import Help from "./pages/Help";
 import Diary from "./pages/Diary";
 import AdminPayments from "./pages/AdminPayments";
 import AdminClubs from "./pages/AdminClubs";
+import AdminSportPreview from "./pages/AdminSportPreview";
 import NotFound from "./pages/NotFound";
 import MockupSeasonOnboarding from "./pages/MockupSeasonOnboarding";
 import MockupAthleteGoals from "./pages/MockupAthleteGoals";
@@ -230,6 +231,8 @@ const AnimatedRoutes = () => {
         <Route path="/admin/modules" element={<Page><AdminModuleAccess /></Page>} />
         <Route path="/admin/payments" element={<Page><AdminPayments /></Page>} />
         <Route path="/admin/clubs" element={<Page><AdminClubs /></Page>} />
+        <Route path="/admin/sport-preview" element={<Page><AdminSportPreview /></Page>} />
+
         <Route path="/admin/drills" element={<Page><AdminDrills /></Page>} />
         <Route path="/admin/hero" element={<Page><AdminHeroImages /></Page>} />
         <Route path="/admin/announcements" element={<Page><AdminAnnouncements /></Page>} />

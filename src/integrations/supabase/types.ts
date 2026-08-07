@@ -1017,6 +1017,7 @@ export type Database = {
           primary_color: string | null
           share_coach_notes: boolean
           slug: string
+          sport: string
         }
         Insert: {
           accent_color?: string | null
@@ -1032,6 +1033,7 @@ export type Database = {
           primary_color?: string | null
           share_coach_notes?: boolean
           slug: string
+          sport?: string
         }
         Update: {
           accent_color?: string | null
@@ -1047,6 +1049,7 @@ export type Database = {
           primary_color?: string | null
           share_coach_notes?: boolean
           slug?: string
+          sport?: string
         }
         Relationships: []
       }
