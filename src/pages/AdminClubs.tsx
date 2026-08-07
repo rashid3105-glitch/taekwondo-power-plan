@@ -145,6 +145,9 @@ export default function AdminClubs() {
           <Button variant="ghost" size="sm" onClick={() => navigate("/admin/approval")}>
             <ArrowLeft className="h-4 w-4 mr-1" /> {t("backToDashboard")}
           </Button>
+          <Button variant="outline" size="sm" onClick={() => navigate("/admin/sport-preview")}>
+            <Trophy className="h-4 w-4 mr-1" /> Sportsgren (preview)
+          </Button>
         </div>
 
         <h1 className="text-xl font-extrabold text-foreground flex items-center gap-2">
