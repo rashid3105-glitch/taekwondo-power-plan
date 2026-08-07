@@ -117,6 +117,8 @@ export function SquadOverview({
   allClubs = false,
 }: Props) {
   const { t } = useLanguage();
+  const { profile: sportProfile } = useMySportProfile();
+  const isTkd = isTkdBeltSystem(sportProfile.slug);
   const { activeClubId } = useActiveClub();
   const isMobile = useIsMobile();
   const [rows, setRows] = useState<SquadRow[]>([]);
