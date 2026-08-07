@@ -92,6 +92,7 @@ export default function ProfileSetup() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, locale, setLocale } = useLanguage();
+  const { profile: sportProfile } = useSportProfile(clubId || null);
 
   const isBirthdayToday = useMemo(() => {
     if (!birthDate) return false;
