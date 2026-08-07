@@ -119,6 +119,8 @@ export function GlobalAppMenu() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { t } = useLanguage();
+  const { profile: sportProfile } = useMySportProfile();
+  const { activeMembership } = useActiveClub();
   const { hasCoachRole } = useRole();
   const { isCoachMode, setCoachMode } = useCoachMode();
   const { activeMembership } = useActiveClub();
@@ -264,8 +266,8 @@ export function GlobalAppMenu() {
                   <p className="text-xs text-muted-foreground truncate">{clubName}</p>
                 )}
                 {profile?.belt_level && (
-                  <Badge variant="outline" className="capitalize text-[10px] mt-1">
-                    {profile.belt_level}
+                  <Badge variant="outline" className="text-[10px] mt-1">
+                    {formatGrade(sportProfile.slug, profile.belt_level, t)}
                   </Badge>
                 )}
               </div>

@@ -25,6 +25,7 @@ const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
 
 export function WeeklySquadExport({ athletes, variant = "icon" }: Props) {
   const { t, locale } = useLanguage();
+  const { profile: sportProfile } = useMySportProfile();
   const [busy, setBusy] = useState(false);
 
   const handleExport = async () => {
