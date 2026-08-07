@@ -76,13 +76,53 @@ export interface ClubThemeTokens {
   primaryForeground: string;
   accent: string;
   accentForeground: string;
+  background: string;
+  foreground: string;
+  card: string;
+  cardForeground: string;
+  popover: string;
+  popoverForeground: string;
+  muted: string;
+  mutedForeground: string;
+  border: string;
+  input: string;
+}
+
+/**
+ * Derive readable surface + text tokens from a background colour, so panels,
+ * borders and text stay visible on both light and dark club backgrounds.
+ */
+export function deriveSurfaces(backgroundHex: string): Partial<ClubThemeTokens> {
+  const { h, s, l } = hexToHsl(backgroundHex);
+  // Clamp so extreme values can't produce an unusable UI.
+  const bgL = Math.min(97, Math.max(4, l));
+  const sat = Math.min(40, s);
+  const isDark = bgL < 50;
+  const step = (d: number) => Math.min(99, Math.max(2, isDark ? bgL + d : bgL - d));
+
+  return {
+    background: hslTriplet(h, sat, bgL),
+    foreground: isDark ? hslTriplet(h, Math.min(15, sat), 97) : hslTriplet(h, Math.min(20, sat), 10),
+    card: hslTriplet(h, sat, step(4)),
+    cardForeground: isDark ? hslTriplet(h, Math.min(15, sat), 96) : hslTriplet(h, Math.min(20, sat), 12),
+    popover: hslTriplet(h, sat, step(6)),
+    popoverForeground: isDark ? hslTriplet(h, Math.min(15, sat), 96) : hslTriplet(h, Math.min(20, sat), 12),
+    muted: hslTriplet(h, sat, step(8)),
+    mutedForeground: isDark ? hslTriplet(h, Math.min(15, sat), 68) : hslTriplet(h, Math.min(20, sat), 38),
+    border: hslTriplet(h, sat, step(14)),
+    input: hslTriplet(h, sat, step(14)),
+  };
 }
 
 /**
  * Convert club hex colours into token values, clamping lightness to a range
  * that stays visible on both the light public pages and the dark cockpit.
  */
-export function buildClubTheme(primaryHex?: string | null, accentHex?: string | null): Partial<ClubThemeTokens> {
+export function buildClubTheme(
+  primaryHex?: string | null,
+  accentHex?: string | null,
+  backgroundHex?: string | null,
+): Partial<ClubThemeTokens> {
   const out: Partial<ClubThemeTokens> = {};
   if (isValidHex(primaryHex)) {
     const { h, s, l } = hexToHsl(primaryHex);
@@ -96,8 +136,13 @@ export function buildClubTheme(primaryHex?: string | null, accentHex?: string | 
     out.accent = hslTriplet(h, Math.min(100, Math.max(15, s)), cl);
     out.accentForeground = readableForeground(accentHex);
   }
+  if (isValidHex(backgroundHex)) {
+    Object.assign(out, deriveSurfaces(backgroundHex));
+  }
   return out;
 }
 
 export const DEFAULT_PRIMARY = "#D4AF37";
 export const DEFAULT_ACCENT = "#1A1A1A";
+export const DEFAULT_BACKGROUND = COCKPIT_BG;
+
