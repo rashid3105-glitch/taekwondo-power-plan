@@ -207,6 +207,7 @@ export default function Dashboard() {
   const { plan: offlinePlan, online: planOnline } = useOfflinePlan();
   const { role, hasCoachRole, loading: roleLoading } = useRole();
   const { enabled: clubBrandingEnabled } = useClubBranding();
+  const { profile: sportProfile } = useMySportProfile();
   const { memberships, activeMembership, loading: activeClubLoading } = useActiveClub();
 
   // Stay in the coach dashboard when coach mode is explicitly active,
