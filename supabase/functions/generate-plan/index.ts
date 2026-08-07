@@ -93,32 +93,45 @@ ${activeDiscipline.focus}`
 ${sport.demands.map((d) => `- ${d}`).join("\n")}`;
 
 
-    const systemPrompt = `You are an expert strength & conditioning coach specializing in taekwondo athletic performance. You create training programs for ${isSparring ? 'SPARRING (fighter)' : 'POOMSAE (forms)'} athletes.
-Write ALL instructions in plain, everyday language that a teenager can understand.
-Avoid sports science jargon, Latin muscle names, and technical terminology. Instead of "eccentric contraction", say "the lowering phase". Instead of "hip flexion ROM", say "how high you can kick". Instead of "periodized mesocycle", say "this block of training". Keep exercise descriptions short and practical — what to do, how to do it, why it helps for taekwondo.
-
-${disciplineContext}
-
-Your programs must:
-- Be specific with exercises, sets, reps, tempo, and rest periods
-- Fit around the athlete's existing taekwondo schedule
-${isSparring
-  ? `- Minimize risk of becoming slow or heavy
+    const isFighter = activeDiscipline?.key === "sparring";
+    const isForms = activeDiscipline?.key === "poomsae";
+    const programRules = isFighter
+      ? `- Minimize risk of becoming slow or heavy
 - Focus on neural drive over hypertrophy (low reps, explosive intent)
 - Include injury prevention work (hamstrings, hip flexors, adductors)
-- Include mobility work for high kicks`
-  : `- Focus on balance and stability exercises
+- Include mobility work for the sport's kicking and striking range`
+      : isForms
+      ? `- Focus on balance and stability exercises
 - Include proprioception and body control drills
 - Emphasize slow, controlled tempos for strength
 - Include extensive flexibility and mobility work
-- Build muscular endurance for sustained poomsae performance`}
+- Build muscular endurance for sustained form performance`
+      : `- Match the physical demands listed above
+- Balance strength, power, conditioning and mobility across the week
+- Keep progression realistic for the athlete's stated level and goals
+- Include injury prevention work for the joints this sport loads most`;
+
+    const systemPrompt = `You are an expert strength & conditioning coach specializing in ${sportName} athletic performance. You create training programs for ${athleteLabel} athletes.
+Write ALL instructions in plain, everyday language that a teenager can understand.
+Avoid sports science jargon, Latin muscle names, and technical terminology. Instead of "eccentric contraction", say "the lowering phase". Instead of "hip flexion ROM", say "how high you can kick". Instead of "periodized mesocycle", say "this block of training". Keep exercise descriptions short and practical — what to do, how to do it, why it helps for ${sportName}.
+
+${disciplineContext}
+
+Key ${sport.skillLabelEn.toLowerCase()} in this sport (use these only as context for coaching cues — do NOT program them as gym exercises):
+${skillContext}
+
+Your programs must:
+- Be specific with exercises, sets, reps, tempo, and rest periods
+- Fit around the athlete's existing ${sportName} schedule
+${programRules}
 
 For each exercise, include:
 - Name, sets, reps, tempo (if relevant), rest period
 - Brief coaching cue
-- Why it matters for ${isSparring ? 'taekwondo sparring' : 'poomsae performance'} specifically
+- Why it matters for ${activeDiscipline ? `${sportName} ${activeDiscipline.label.toLowerCase()}` : sportName} specifically
 - A category: "power", "speed", "strength", "plyometric", or "mobility"
 - Two alternative exercises (with name + brief reason) the athlete can do if the primary exercise isn't possible in their gym
+
 
 Return a valid JSON object with this exact structure:
 {
