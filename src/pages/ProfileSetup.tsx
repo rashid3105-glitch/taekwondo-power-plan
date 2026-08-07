@@ -19,12 +19,13 @@ import { PasskeySettings } from "@/components/PasskeySettings";
 import { PublicProfileSettings } from "@/components/profile/PublicProfileSettings";
 import { Switch } from "@/components/ui/switch";
 import { isPushSupported, getCurrentSubscriptionStatus, subscribeToPush, unsubscribeFromPush } from "@/lib/pushNotifications";
+import { useSportProfile } from "@/hooks/useSportProfile";
+import { GradePickerNative } from "@/components/GradePicker";
+import { gradeLabelFor } from "@/lib/sportGrade";
 
 
 import { COUNTRIES } from "@/data/countries";
 import { PHONE_CODES } from "@/data/phoneCodes";
-
-const BELT_LEVELS = ["white", "yellow", "green", "blue", "red", "black"];
 const GOAL_OPTIONS = [
   "Faster kicks",
   "More explosive footwork",
@@ -91,6 +92,7 @@ export default function ProfileSetup() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, locale, setLocale } = useLanguage();
+  const { profile: sportProfile } = useSportProfile(clubId || null);
 
   const isBirthdayToday = useMemo(() => {
     if (!birthDate) return false;
@@ -670,17 +672,14 @@ export default function ProfileSetup() {
           </div>
 
           <div>
-            <Label htmlFor="belt">{t("beltLevel")}</Label>
-            <select
+            <Label htmlFor="belt">{gradeLabelFor(sportProfile.slug, t, locale)}</Label>
+            <GradePickerNative
               id="belt"
+              profile={sportProfile}
               value={belt}
-              onChange={(e) => setBelt(e.target.value)}
+              onChange={setBelt}
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              {BELT_LEVELS.map((b) => (
-                <option key={b} value={b}>{t(b)} {t("belt")}</option>
-              ))}
-            </select>
+            />
           </div>
 
           <div className="rounded-lg border border-border bg-muted/20 p-3 space-y-3">

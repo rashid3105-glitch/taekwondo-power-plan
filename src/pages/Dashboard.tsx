@@ -24,6 +24,8 @@ import { RehabPlanCard } from "@/components/RehabPlanCard";
 import { MedicalDocumentTranslator } from "@/components/MedicalDocumentTranslator";
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useMySportProfile } from "@/hooks/useMySportProfile";
+import { formatGrade } from "@/lib/sportGrade";
 import { useCoachMode } from "@/contexts/CoachModeContext";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { useRole } from "@/contexts/RoleContext";
@@ -207,6 +209,7 @@ export default function Dashboard() {
   const { plan: offlinePlan, online: planOnline } = useOfflinePlan();
   const { role, hasCoachRole, loading: roleLoading } = useRole();
   const { enabled: clubBrandingEnabled } = useClubBranding();
+  const { profile: sportProfile } = useMySportProfile();
   const { memberships, activeMembership, loading: activeClubLoading } = useActiveClub();
 
   // Stay in the coach dashboard when coach mode is explicitly active,
@@ -1308,8 +1311,8 @@ export default function Dashboard() {
                     )}
                     <div className="flex flex-wrap gap-1.5 sm:gap-2">
                       {profile.belt_level && (
-                        <span className="text-[10px] sm:text-xs bg-muted text-muted-foreground px-2 py-0.5 sm:py-1 rounded-full capitalize">
-                          {profile.belt_level} {t("belt")}
+                        <span className="text-[10px] sm:text-xs bg-muted text-muted-foreground px-2 py-0.5 sm:py-1 rounded-full">
+                          {formatGrade(sportProfile.slug, profile.belt_level, t)}
                         </span>
                       )}
                       {profile.age && (

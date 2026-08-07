@@ -16,6 +16,8 @@ import { Switch } from "@/components/ui/switch";
 import { PageMeta } from "@/components/PageMeta";
 import { AppFooter } from "@/components/AppFooter";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useMySportProfile } from "@/hooks/useMySportProfile";
+import { formatGrade, gradeLabelFor } from "@/lib/sportGrade";
 import { useAvatarUrl } from "@/hooks/useAvatarUrl";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { isNativeApp } from "@/lib/platform";
@@ -85,6 +87,7 @@ function fmtDate(dateStr: string | undefined, locale: string): string {
 export default function Profile() {
   const navigate = useNavigate();
   const { t, locale } = useLanguage();
+  const { profile: sportProfile } = useMySportProfile();
   // TODO: health-sync skjult indtil native HealthKit (RN) er klar — vis for admin indtil da.
   const { isAdmin: canSeeHealthSync } = useIsAdmin();
   const [data, setData] = useState<ProfileData | null>(null);
@@ -347,7 +350,7 @@ export default function Profile() {
                   label={t("profileBirthDate" as any)}
                   value={data?.birth_date ? `${fmtDate(data.birth_date, locale)}${age != null ? ` (${age})` : ""}` : "—"}
                 />
-                <MetaCell label={t("profileBeltLevel" as any)} value={data?.belt_level || "—"} />
+                <MetaCell label={gradeLabelFor(sportProfile.slug, t, locale)} value={formatGrade(sportProfile.slug, data?.belt_level, t)} />
                 <MetaCell label={t("profileHeight" as any)} value="—" />
                 <MetaCell label={t("profileWeight" as any)} value={data?.weight_kg ? `${data.weight_kg} kg` : "—"} />
               </div>

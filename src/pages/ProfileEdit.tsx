@@ -9,6 +9,8 @@ import { PageMeta } from "@/components/PageMeta";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAvatarUrl } from "@/hooks/useAvatarUrl";
 import { toast } from "sonner";
+import { useSportProfile } from "@/hooks/useSportProfile";
+import { gradeLabelFor } from "@/lib/sportGrade";
 
 const cardCls = "rounded-xl bg-white/[0.03] border border-white/10 p-5 sm:p-6";
 const sectionTitleCls = "text-xs uppercase tracking-wider text-white mb-4";
@@ -26,6 +28,7 @@ export default function ProfileEdit() {
   const [saving, setSaving] = useState(false);
 
   const [userId, setUserId] = useState<string>("");
+  const [clubId, setClubId] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const [beltLevel, setBeltLevel] = useState("");
@@ -57,7 +60,7 @@ export default function ProfileEdit() {
       setUserId(user.id);
       const { data: p } = await supabase
         .from("profiles")
-        .select("display_name, birth_date, belt_level, weight_kg, discipline, goals, avatar_url, roles, license_values")
+        .select("display_name, birth_date, belt_level, weight_kg, discipline, goals, avatar_url, roles, license_values, club_id")
         .eq("user_id", user.id)
         .maybeSingle();
       if (p) {
@@ -69,6 +72,7 @@ export default function ProfileEdit() {
         setGoalsText(Array.isArray(p.goals) ? p.goals.join(", ") : "");
         setAvatarUrl(p.avatar_url ?? null);
         setLicenseValues(((p as any).license_values ?? {}) as Record<string, LicenseValue>);
+        setClubId((p as any).club_id ?? null);
       }
 
       const roles: string[] = (p as any)?.roles ?? [];
@@ -97,6 +101,8 @@ export default function ProfileEdit() {
     })();
   }, [navigate]);
 
+  const { profile: sportProfile } = useSportProfile(clubId);
+  const { locale } = useLanguage();
 
   useEffect(() => {
     return () => {
@@ -402,8 +408,8 @@ export default function ProfileEdit() {
               <Field label={t("profileBirthDate" as any)}>
                 <Input type="date" className={inputCls} value={birthDate} onChange={(e) => setBirthDate(e.target.value)} />
               </Field>
-              <Field label={t("profileBeltLevel" as any)}>
-                <Input className={inputCls} value={beltLevel} onChange={(e) => setBeltLevel(e.target.value)} placeholder="e.g. 1. dan" />
+              <Field label={gradeLabelFor(sportProfile.slug, t, locale)}>
+                <Input className={inputCls} value={beltLevel} onChange={(e) => setBeltLevel(e.target.value)} placeholder={sportProfile.slug === "taekwondo" ? "e.g. 1. dan" : "—"} />
               </Field>
               <Field label={t("profileWeight" as any)}>
                 <Input
@@ -423,7 +429,7 @@ export default function ProfileEdit() {
           <h2 className={sectionTitleCls}>{t("profileSportDiscipline" as any)}</h2>
           <div className="space-y-4">
             <Field label={t("profileSport" as any)}>
-              <Input className={inputCls} value="Taekwondo" disabled />
+              <Input className={inputCls} value={locale === "da" ? sportProfile.name : sportProfile.nameEn} disabled />
             </Field>
 
             <Field label={t("profileDiscipline" as any)}>

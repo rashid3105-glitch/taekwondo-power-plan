@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { FileText, Loader2 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useMySportProfile } from "@/hooks/useMySportProfile";
+import { formatGrade } from "@/lib/sportGrade";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -23,6 +25,7 @@ const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
 
 export function WeeklySquadExport({ athletes, variant = "icon" }: Props) {
   const { t, locale } = useLanguage();
+  const { profile: sportProfile } = useMySportProfile();
   const [busy, setBusy] = useState(false);
 
   const handleExport = async () => {
@@ -165,7 +168,7 @@ export function WeeklySquadExport({ athletes, variant = "icon" }: Props) {
         // Title row
         doc.setFont("helvetica", "bold");
         doc.setFontSize(12);
-        doc.text(`${athlete.display_name} — ${athlete.belt_level || ""}`, margin, y);
+        doc.text(`${athlete.display_name} — ${formatGrade(sportProfile.slug, athlete.belt_level, t)}`, margin, y);
         doc.setFont("helvetica", "normal");
         doc.setFontSize(9);
         doc.setTextColor(90);

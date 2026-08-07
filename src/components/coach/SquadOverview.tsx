@@ -7,6 +7,8 @@ import {
   Search, LayoutGrid, List as ListIcon, UserCog, NotebookPen, Trash2, Building, Eye,
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useMySportProfile } from "@/hooks/useMySportProfile";
+import { formatGrade, isTkdBeltSystem } from "@/lib/sportGrade";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -115,6 +117,8 @@ export function SquadOverview({
   allClubs = false,
 }: Props) {
   const { t } = useLanguage();
+  const { profile: sportProfile } = useMySportProfile();
+  const isTkd = isTkdBeltSystem(sportProfile.slug);
   const { activeClubId } = useActiveClub();
   const isMobile = useIsMobile();
   const [rows, setRows] = useState<SquadRow[]>([]);
@@ -180,7 +184,7 @@ export function SquadOverview({
         return d !== null && d >= 7;
       });
     }
-    if (beltFilter !== "all") out = out.filter((r) => r.belt_level === beltFilter);
+    if (isTkd && beltFilter !== "all") out = out.filter((r) => r.belt_level === beltFilter);
     const q = search.trim().toLowerCase();
     if (q) {
       out = out.filter(
@@ -191,7 +195,7 @@ export function SquadOverview({
       );
     }
     return out;
-  }, [rows, pulseFilter, beltFilter, search]);
+  }, [rows, pulseFilter, beltFilter, search, isTkd]);
 
   const sorted = useMemo(() => {
     return [...filtered].sort((a, b) => {
@@ -200,7 +204,10 @@ export function SquadOverview({
         const firstB = (b.display_name || "").trim().split(/\s+/)[0] || "";
         return firstA.localeCompare(firstB, undefined, { sensitivity: "base" });
       }
-      if (sort === "belt") return BELT_ORDER.indexOf(a.belt_level) - BELT_ORDER.indexOf(b.belt_level);
+      if (sort === "belt") {
+        if (isTkd) return BELT_ORDER.indexOf(a.belt_level) - BELT_ORDER.indexOf(b.belt_level);
+        return sportProfile.grades.indexOf(a.belt_level) - sportProfile.grades.indexOf(b.belt_level);
+      }
       if (sort === "lastActive") {
         const da = a.last_seen_at ? new Date(a.last_seen_at).getTime() : 0;
         const db = b.last_seen_at ? new Date(b.last_seen_at).getTime() : 0;
@@ -208,7 +215,7 @@ export function SquadOverview({
       }
       return rowSeverity(b).score - rowSeverity(a).score;
     });
-  }, [filtered, sort]);
+  }, [filtered, sort, isTkd, sportProfile]);
 
   if (loading) {
     return (
@@ -266,17 +273,19 @@ export function SquadOverview({
           </div>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          <Select value={beltFilter} onValueChange={setBeltFilter}>
-            <SelectTrigger className="h-8 w-[130px] text-xs">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t("allBelts")}</SelectItem>
-              {BELT_ORDER.map((b) => (
-                <SelectItem key={b} value={b}>{t(b)}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {isTkd && (
+            <Select value={beltFilter} onValueChange={setBeltFilter}>
+              <SelectTrigger className="h-8 w-[130px] text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t("allBelts")}</SelectItem>
+                {BELT_ORDER.map((b) => (
+                  <SelectItem key={b} value={b}>{t(b)}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
           <Select value={sort} onValueChange={(v) => setSort(v as SortKey)}>
             <SelectTrigger className="h-8 w-[170px] text-xs">
               <SelectValue />
@@ -284,7 +293,7 @@ export function SquadOverview({
             <SelectContent>
               <SelectItem value="attention">{t("sortNeedsAttention")}</SelectItem>
               <SelectItem value="name">{t("sortByName")}</SelectItem>
-              <SelectItem value="belt">{t("sortByBelt")}</SelectItem>
+              {isTkd && <SelectItem value="belt">{t("sortByBelt")}</SelectItem>}
               <SelectItem value="lastActive">{t("sortLastActive")}</SelectItem>
             </SelectContent>
           </Select>
@@ -336,15 +345,21 @@ export function SquadOverview({
                   >
                     <div className="relative flex-shrink-0">
                       <AvatarImg avatarUrl={r.avatar_url} />
-                      <span
-                        className={cn(
-                          "absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-card flex items-center justify-center text-[8px] font-bold uppercase",
-                          BELT_CHIP[r.belt_level] || "bg-muted text-muted-foreground",
-                        )}
-                        title={t(r.belt_level)}
-                      >
-                        {(r.belt_level || "?").charAt(0)}
-                      </span>
+                      {r.belt_level && (
+                        <span
+                          className={cn(
+                            "absolute -bottom-1 -right-1 rounded-full border-2 border-card flex items-center justify-center text-[8px] font-bold uppercase",
+                            isTkd
+                              ? cn("h-4 w-4", BELT_CHIP[r.belt_level] || "bg-muted text-muted-foreground")
+                              : "h-5 px-1 bg-primary/20 text-primary",
+                          )}
+                          title={formatGrade(sportProfile.slug, r.belt_level, t)}
+                        >
+                          {isTkd
+                            ? (r.belt_level || "?").charAt(0)
+                            : (r.belt_level || "").slice(0, 3)}
+                        </span>
+                      )}
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5">

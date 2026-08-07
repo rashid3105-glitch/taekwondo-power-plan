@@ -14,6 +14,8 @@ import { Label } from "@/components/ui/label";
 import { Loader2, CheckCircle, XCircle, ArrowLeft, Download, Shield, Trash2, Users, CreditCard, CalendarIcon, FlaskConical, ChevronDown, KeyRound, Search, Pencil, UserCheck, UserX, Crown, Building, LayoutGrid, FileText, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { getSportProfile } from "@/config/sportProfiles";
+import { formatGrade, gradeLabelFor, gradeOptions, gradeOptionLabel, isTkdBeltSystem } from "@/lib/sportGrade";
 import { format } from "date-fns";
 import { COUNTRIES } from "@/data/countries";
 import { PHONE_CODES } from "@/data/phoneCodes";
@@ -61,12 +63,13 @@ interface PendingUser {
   phone?: string | null;
   phone_country_code?: string | null;
   athlete_code?: string | null;
+  sport?: string | null;
 }
 
 export default function AdminApproval() {
   const [users, setUsers] = useState<PendingUser[]>([]);
   const [coaches, setCoaches] = useState<{ user_id: string; display_name: string }[]>([]);
-  const [clubs, setClubs] = useState<{ id: string; name: string; max_athletes: number }[]>([]);
+  const [clubs, setClubs] = useState<{ id: string; name: string; max_athletes: number; sport?: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [reassigning, setReassigning] = useState<string | null>(null);
@@ -104,7 +107,7 @@ export default function AdminApproval() {
   const [saving, setSaving] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
 
   useEffect(() => {
     checkAdminAndLoad();
@@ -139,7 +142,7 @@ export default function AdminApproval() {
         .order("created_at", { ascending: false }),
       supabase.from("user_roles").select("user_id, role"),
       supabase.from("coach_athletes").select("coach_id, athlete_id"),
-      supabase.from("clubs" as any).select("id, name, max_athletes").order("name"),
+      supabase.from("clubs" as any).select("id, name, max_athletes, sport").order("name"),
     ]);
 
     const profiles = ((profilesRes.data || []) as PendingUser[]).filter((p) => p.user_id !== DELETED_USER_ID);
@@ -147,9 +150,10 @@ export default function AdminApproval() {
     const plans = (plansRes.data || []) as (UserPlan & { user_id: string })[];
     const roles = (rolesRes.data || []) as { user_id: string; role: string }[];
     const coachAthleteLinks = (coachAthletesRes.data || []) as { coach_id: string; athlete_id: string }[];
-    const clubsList = ((clubsRes.data as unknown as { id: string; name: string; max_athletes: number }[] | null) ?? []);
+    const clubsList = ((clubsRes.data as unknown as { id: string; name: string; max_athletes: number; sport?: string }[] | null) ?? []);
     setClubs(clubsList);
     const clubMap = new Map<string, string>(clubsList.map((club) => [club.id, club.name]));
+    const clubSportMap = new Map<string, string>(clubsList.map((club) => [club.id, club.sport || "taekwondo"]));
 
     const coachSet = new Set(roles.filter(r => r.role === "coach").map(r => r.user_id));
 
@@ -173,6 +177,7 @@ export default function AdminApproval() {
     setUsers(profiles.map(p => ({
       ...p,
       club_name: p.club_id ? clubMap.get(p.club_id) || "" : "",
+      sport: p.club_id ? clubSportMap.get(p.club_id) || "taekwondo" : "taekwondo",
       email: emailMap[p.user_id] || "",
       plans: plansByUser[p.user_id] || [],
       isCoach: coachSet.has(p.user_id),
@@ -402,7 +407,7 @@ export default function AdminApproval() {
       display_name: u.display_name || "",
       age: u.age ?? "",
       weight_kg: u.weight_kg ?? "",
-      belt_level: u.belt_level || "white",
+      belt_level: u.belt_level || (isTkdBeltSystem(u.sport) ? "white" : (getSportProfile(u.sport).grades[0] || "")),
       experience_years: u.experience_years ?? "",
       tkd_sessions_per_week: u.tkd_sessions_per_week || 3,
       discipline: u.discipline || "sparring",
@@ -556,7 +561,7 @@ export default function AdminApproval() {
                     {u.club_name}
                   </span>
                 )}
-                {u.belt_level && <span className="text-[10px] text-muted-foreground capitalize">• {u.belt_level}</span>}
+                {u.belt_level && <span className="text-[10px] text-muted-foreground">• {formatGrade(u.sport, u.belt_level, t)}</span>}
                 {u.age && <span className="text-[10px] text-muted-foreground">• {u.age}y</span>}
                 {(() => {
                   if (!u.last_seen_at) {
@@ -591,8 +596,8 @@ export default function AdminApproval() {
               </span>
             )}
             {u.belt_level && (
-              <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full capitalize">
-                {u.belt_level} {t("belt")}
+              <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
+                {formatGrade(u.sport, u.belt_level, t)} {gradeLabelFor(u.sport, t, locale)}
               </span>
             )}
             {u.age && (
@@ -1170,12 +1175,12 @@ export default function AdminApproval() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label>{t("beltLevel") || "Belt Level"}</Label>
-                <Select value={editForm.belt_level || "white"} onValueChange={(v) => setEditForm(f => ({ ...f, belt_level: v }))}>
+                <Label>{gradeLabelFor(editingUser?.sport, t, locale) || t("beltLevel")}</Label>
+                <Select value={editForm.belt_level || (isTkdBeltSystem(editingUser?.sport) ? "white" : "")} onValueChange={(v) => setEditForm(f => ({ ...f, belt_level: v }))}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    {["white", "yellow", "green", "blue", "red", "black", "1st dan", "2nd dan", "3rd dan", "4th dan", "5th dan"].map(b => (
-                      <SelectItem key={b} value={b} className="capitalize">{b}</SelectItem>
+                    {gradeOptions(editingUser?.sport).map(b => (
+                      <SelectItem key={b} value={b}>{gradeOptionLabel(editingUser?.sport, b, t)}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

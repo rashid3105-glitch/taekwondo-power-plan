@@ -21,6 +21,8 @@ import {
 
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useMySportProfile } from "@/hooks/useMySportProfile";
+import { formatGrade } from "@/lib/sportGrade";
 import { CoachAthleteDetail } from "@/components/CoachAthleteDetail";
 import { AthleteOverviewTab } from "@/components/coach/AthleteOverviewTab";
 import { CoachDiaryView } from "@/components/coach/CoachDiaryView";
@@ -70,6 +72,7 @@ export default function CoachAthleteOverview() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
+  const { profile: sportProfile } = useMySportProfile();
   const [searchParams, setSearchParams] = useSearchParams();
   const { activeClubId } = useActiveClub();
 
@@ -245,7 +248,7 @@ export default function CoachAthleteOverview() {
                   </Badge>
                 )}
                 {athlete.belt_level && (
-                  <Badge variant="outline" className="text-[10px] capitalize">{athlete.belt_level}</Badge>
+                  <Badge variant="outline" className="text-[10px]">{formatGrade(sportProfile.slug, athlete.belt_level, t)}</Badge>
                 )}
                 {athlete.discipline && (
                   <Badge variant="outline" className="text-[10px] capitalize">{t(athlete.discipline)}</Badge>

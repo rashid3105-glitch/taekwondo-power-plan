@@ -14,6 +14,9 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekSchedulePicker";
 import { haptics } from "@/lib/haptics";
 import { isNativeApp } from "@/lib/platform";
+import { useMySportProfile } from "@/hooks/useMySportProfile";
+import { GradePicker } from "@/components/GradePicker";
+import { gradeLabelFor } from "@/lib/sportGrade";
 
 const DEFAULT_SCHEDULE: DaySchedule[] = [
   { day: "Monday", type: "tkd" },
@@ -29,7 +32,8 @@ type Role = "athlete" | "coach";
 
 export default function Onboarding() {
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
+  const { profile: sportProfile } = useMySportProfile();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [generating, setGenerating] = useState(false);
@@ -434,11 +438,7 @@ export default function Onboarding() {
     { id: "recruitment", label: t("onbFocusRecruitment") },
     { id: "fitness", label: t("onbFocusFitness") },
   ];
-  const beltOptions = ["white", "yellow", "green", "blue", "red", "black"];
-  const beltLabel: Record<string, string> = {
-    white: t("onbBeltWhite"), yellow: t("onbBeltYellow"), green: t("onbBeltGreen"),
-    blue: t("onbBeltBlue"), red: t("onbBeltRed"), black: t("onbBeltBlack"),
-  };
+  // Belt options now driven by sportProfile via GradePicker
 
   const coachSlides = [
     { icon: Users, title: t("onbCoachSlide1Title"), body: t("onbCoachSlide1Body") },
@@ -535,15 +535,13 @@ export default function Onboarding() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>{t("onbBeltLevel")}</Label>
-                    <Select value={belt} onValueChange={setBelt}>
-                      <SelectTrigger className="h-11 bg-card text-card-foreground"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        {beltOptions.map((b) => (
-                          <SelectItem key={b} value={b}>{beltLabel[b]}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Label>{gradeLabelFor(sportProfile.slug, t, locale)}</Label>
+                    <GradePicker
+                      profile={sportProfile}
+                      value={belt}
+                      onChange={setBelt}
+                      className="h-11 bg-card text-card-foreground"
+                    />
                   </div>
 
                   <div className="space-y-2">

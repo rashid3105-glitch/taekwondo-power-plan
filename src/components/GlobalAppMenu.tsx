@@ -40,6 +40,8 @@ import {
 } from "lucide-react";
 import { BracketIcon } from "@/components/icons/BracketIcon";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useMySportProfile } from "@/hooks/useMySportProfile";
+import { formatGrade } from "@/lib/sportGrade";
 import { useRole } from "@/contexts/RoleContext";
 import { useCoachMode } from "@/contexts/CoachModeContext";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
@@ -117,6 +119,7 @@ export function GlobalAppMenu() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { t } = useLanguage();
+  const { profile: sportProfile } = useMySportProfile();
   const { hasCoachRole } = useRole();
   const { isCoachMode, setCoachMode } = useCoachMode();
   const { activeMembership } = useActiveClub();
@@ -262,8 +265,8 @@ export function GlobalAppMenu() {
                   <p className="text-xs text-muted-foreground truncate">{clubName}</p>
                 )}
                 {profile?.belt_level && (
-                  <Badge variant="outline" className="capitalize text-[10px] mt-1">
-                    {profile.belt_level}
+                  <Badge variant="outline" className="text-[10px] mt-1">
+                    {formatGrade(sportProfile.slug, profile.belt_level, t)}
                   </Badge>
                 )}
               </div>
