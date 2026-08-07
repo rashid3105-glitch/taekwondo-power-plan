@@ -168,7 +168,7 @@ export function WeeklySquadExport({ athletes, variant = "icon" }: Props) {
         // Title row
         doc.setFont("helvetica", "bold");
         doc.setFontSize(12);
-        doc.text(`${athlete.display_name} — ${athlete.belt_level || ""}`, margin, y);
+        doc.text(`${athlete.display_name} — ${formatGrade(sportProfile.slug, athlete.belt_level, t)}`, margin, y);
         doc.setFont("helvetica", "normal");
         doc.setFontSize(9);
         doc.setTextColor(90);

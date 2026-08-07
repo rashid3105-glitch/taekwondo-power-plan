@@ -20,6 +20,7 @@ interface ProfileData {
   country: string | null;
   avatar_url: string | null;
   club_name: string | null;
+  sport?: string | null;
 }
 interface Achievement { id: string; title: string; year: number | null; medal: string | null; }
 interface Video { id: string; url: string; title: string | null; }
