@@ -204,7 +204,10 @@ export function SquadOverview({
         const firstB = (b.display_name || "").trim().split(/\s+/)[0] || "";
         return firstA.localeCompare(firstB, undefined, { sensitivity: "base" });
       }
-      if (sort === "belt") return BELT_ORDER.indexOf(a.belt_level) - BELT_ORDER.indexOf(b.belt_level);
+      if (sort === "belt") {
+        if (isTkd) return BELT_ORDER.indexOf(a.belt_level) - BELT_ORDER.indexOf(b.belt_level);
+        return sportProfile.grades.indexOf(a.belt_level) - sportProfile.grades.indexOf(b.belt_level);
+      }
       if (sort === "lastActive") {
         const da = a.last_seen_at ? new Date(a.last_seen_at).getTime() : 0;
         const db = b.last_seen_at ? new Date(b.last_seen_at).getTime() : 0;
