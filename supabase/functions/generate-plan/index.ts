@@ -35,7 +35,22 @@ serve(async (req) => {
     if (body.length > 10000) {
       return new Response(JSON.stringify({ error: "Request too large" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
-    const { profile, language } = JSON.parse(body);
+    const parsedBody = body ? JSON.parse(body) : {};
+    const language = parsedBody.language;
+    let profile = parsedBody.profile;
+
+    const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+
+    // The onboarding flow fires this function without a body — load the athlete's
+    // own profile server-side so background generation still works.
+    if (!profile || typeof profile !== "object") {
+      const { data: ownProfile } = await admin
+        .from("profiles")
+        .select("*")
+        .eq("user_id", userId)
+        .maybeSingle();
+      profile = ownProfile;
+    }
     if (!profile || typeof profile !== "object") {
       return new Response(JSON.stringify({ error: "Missing profile data. Please complete your profile before generating a plan." }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
@@ -46,25 +61,37 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const discipline = profile.discipline || 'sparring';
-    const isSparring = discipline === 'sparring';
+    // ---- Resolve the club's sport (falls back to taekwondo) ----
+    let clubId: string | null = (profile as any)?.club_id ?? null;
+    if (!clubId) {
+      const { data: profileRow } = await admin.from("profiles").select("club_id").eq("user_id", userId).maybeSingle();
+      clubId = (profileRow as any)?.club_id ?? null;
+    }
+    let sportSlug: string | null = null;
+    if (clubId) {
+      const { data: clubRow } = await admin.from("clubs").select("sport").eq("id", clubId).maybeSingle();
+      sportSlug = (clubRow as any)?.sport ?? null;
+    }
+    const sport = getSportProfile(sportSlug);
+    const sportName = sport.nameEn;
 
-    const disciplineContext = isSparring
-      ? `This athlete is a SPARRING (fighter) specialist. Programs must emphasize:
-- Explosive power and speed for kicks, punches, and footwork
-- Rate of force development (RFD) for fast-twitch muscle activation
-- Reaction time and agility drills
-- Combat-specific conditioning (intervals mimicking round structure)
-- Ability to absorb and deliver impact
-- Quick direction changes and lateral movement`
-      : `This athlete is a POOMSAE (forms) specialist. Programs must emphasize:
-- Balance, stability, and proprioception
-- Controlled strength through full range of motion
-- Core stability for stances and transitions
-- Flexibility and mobility for aesthetic technique execution
-- Muscular endurance for sustained performance
-- Precision and body control over raw power
-- Slow-tempo strength work for movement quality`;
+    // Discipline only applies to sports that actually split into disciplines.
+    const disciplineKey = profile.discipline || "sparring";
+    const activeDiscipline = sport.disciplines.length
+      ? (sport.disciplines.find((d) => d.key === disciplineKey) ?? sport.disciplines[0])
+      : null;
+    const athleteLabel = activeDiscipline ? `${sportName} ${activeDiscipline.label}` : `${sportName}`;
+
+    const skillContext = sport.skillGroups
+      .map((g) => `- ${g.group}: ${g.skills.join(", ")}`)
+      .join("\n");
+
+    const disciplineContext = activeDiscipline
+      ? `This athlete is a ${activeDiscipline.label} specialist in ${sportName}. Programs must emphasize:
+${activeDiscipline.focus}`
+      : `This athlete trains ${sportName}. Programs must serve these demands:
+${sport.demands.map((d) => `- ${d}`).join("\n")}`;
+
 
     const systemPrompt = `You are an expert strength & conditioning coach specializing in taekwondo athletic performance. You create training programs for ${isSparring ? 'SPARRING (fighter)' : 'POOMSAE (forms)'} athletes.
 Write ALL instructions in plain, everyday language that a teenager can understand.
