@@ -148,7 +148,10 @@ export default function PublicAthlete() {
 
   const { profile, achievements, videos, competitions, personal_records } = bundle;
   const title = `${profile.display_name} · ${t("publicProfileTitle")}`;
-  const description = `${profile.display_name} — ${profile.belt_level} belt · ${profile.discipline}${profile.club_name ? ` · ${profile.club_name}` : ""}`;
+  const sportProfile = getSportProfile(profile.sport);
+  const gradeText = formatGrade(sportProfile.slug, profile.belt_level, t);
+  const gradeLabelText = gradeLabelFor(sportProfile.slug, t, locale);
+  const description = `${profile.display_name} — ${gradeText} ${gradeLabelText} · ${profile.discipline}${profile.club_name ? ` · ${profile.club_name}` : ""}`;
   const canonical = `https://sportstalent.dk/athlete/${profile.athlete_code}`;
 
   // JSON-LD Person schema
@@ -184,7 +187,7 @@ export default function PublicAthlete() {
               <div className="flex-1 min-w-0">
                 <h1 className="text-xl md:text-2xl font-extrabold tracking-tight uppercase">{profile.display_name}</h1>
                 <div className="flex flex-wrap gap-1.5 mt-2">
-                  <Badge variant="secondary" className="capitalize">{profile.belt_level} belt</Badge>
+                  <Badge variant="secondary">{gradeText} {gradeLabelText}</Badge>
                   <Badge variant="secondary" className="capitalize">{profile.discipline}</Badge>
                   {profile.country && <Badge variant="outline">{profile.country}</Badge>}
                 </div>
