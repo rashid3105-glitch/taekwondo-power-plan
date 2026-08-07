@@ -150,7 +150,7 @@ export default function PublicAthlete() {
   const title = `${profile.display_name} · ${t("publicProfileTitle")}`;
   const sportProfile = getSportProfile(profile.sport);
   const gradeText = formatGrade(sportProfile.slug, profile.belt_level, t);
-  const gradeLabelText = gradeLabelFor(sportProfile.slug, t, locale);
+  
   const description = `${profile.display_name} — ${gradeText} · ${profile.discipline}${profile.club_name ? ` · ${profile.club_name}` : ""}`;
   const canonical = `https://sportstalent.dk/athlete/${profile.athlete_code}`;
 
