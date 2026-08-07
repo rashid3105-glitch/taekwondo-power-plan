@@ -345,15 +345,21 @@ export function SquadOverview({
                   >
                     <div className="relative flex-shrink-0">
                       <AvatarImg avatarUrl={r.avatar_url} />
-                      <span
-                        className={cn(
-                          "absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-card flex items-center justify-center text-[8px] font-bold uppercase",
-                          BELT_CHIP[r.belt_level] || "bg-muted text-muted-foreground",
-                        )}
-                        title={t(r.belt_level)}
-                      >
-                        {(r.belt_level || "?").charAt(0)}
-                      </span>
+                      {r.belt_level && (
+                        <span
+                          className={cn(
+                            "absolute -bottom-1 -right-1 rounded-full border-2 border-card flex items-center justify-center text-[8px] font-bold uppercase",
+                            isTkd
+                              ? cn("h-4 w-4", BELT_CHIP[r.belt_level] || "bg-muted text-muted-foreground")
+                              : "h-5 px-1 bg-primary/20 text-primary",
+                          )}
+                          title={formatGrade(sportProfile.slug, r.belt_level, t)}
+                        >
+                          {isTkd
+                            ? (r.belt_level || "?").charAt(0)
+                            : (r.belt_level || "").slice(0, 3)}
+                        </span>
+                      )}
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5">
