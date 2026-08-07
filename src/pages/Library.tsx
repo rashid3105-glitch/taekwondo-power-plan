@@ -146,7 +146,7 @@ export default function Library({ forcedSection }: { forcedSection?: string } = 
           <div className="flex items-center gap-2">
             <Icon className={`h-5 w-5 ${COLORS[section || ""] || "text-primary"}`} />
             <span className="text-base font-extrabold text-card-foreground">
-              {titleKey ? t(titleKey) : t("library")}
+              {section === "drills" ? drillsLabel(sportProfile.slug, t, locale) : titleKey ? t(titleKey) : t("library")}
             </span>
           </div>
         </div>
