@@ -1311,8 +1311,8 @@ export default function Dashboard() {
                     )}
                     <div className="flex flex-wrap gap-1.5 sm:gap-2">
                       {profile.belt_level && (
-                        <span className="text-[10px] sm:text-xs bg-muted text-muted-foreground px-2 py-0.5 sm:py-1 rounded-full capitalize">
-                          {profile.belt_level} {t("belt")}
+                        <span className="text-[10px] sm:text-xs bg-muted text-muted-foreground px-2 py-0.5 sm:py-1 rounded-full">
+                          {formatGrade(sportProfile.slug, profile.belt_level, t)}
                         </span>
                       )}
                       {profile.age && (
