@@ -21,6 +21,7 @@ import { COUNTRIES } from "@/data/countries";
 import { PHONE_CODES } from "@/data/phoneCodes";
 import { AnnouncementEditor } from "@/components/admin/AnnouncementEditor";
 import { SuperadminToggle } from "@/components/admin/SuperadminToggle";
+import { sessionsPerWeekLabel, startDateLabel } from "@/lib/sportTerms";
 
 const DELETED_USER_ID = "00000000-0000-0000-0000-0000deadbeef";
 
@@ -616,7 +617,7 @@ export default function AdminApproval() {
               </span>
             )}
             <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
-              {u.sessions_per_week}x {t("tkdPerWeek")}
+              {u.sessions_per_week}x {sessionsPerWeekLabel(u.sport, t, locale)}
             </span>
             {u.discipline && (
               <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full capitalize">
@@ -1186,7 +1187,7 @@ export default function AdminApproval() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>{t("tkdStartDate") || "Started taekwondo"}</Label>
+                <Label>{startDateLabel(editingUser?.sport, t, locale)}</Label>
                 <p className="text-xs text-muted-foreground">{t("tkdStartDateHint") || "Used to calculate experience automatically"}</p>
                 <Input
                   type="date"

@@ -72,6 +72,7 @@ import { CoachDashboard } from "@/components/hub/CoachDashboard";
 
 import { useOfflineProfile } from "@/hooks/useOfflineProfile";
 import { useOfflinePlan } from "@/hooks/useOfflinePlan";
+import { sessionsPerWeekLabel } from "@/lib/sportTerms";
 
 // Feature flag — sæt til true for at genaktivere de gamle hub-sektioner
 // (Restitution-strip, Fastgjorte moduler, Øvrige moduler chips)
@@ -1326,7 +1327,7 @@ export default function Dashboard() {
                         </span>
                       )}
                       <span className="text-[10px] sm:text-xs bg-muted text-muted-foreground px-2 py-0.5 sm:py-1 rounded-full">
-                        {profile.sessions_per_week}x {t("tkdPerWeek")}
+                        {profile.sessions_per_week}x {sessionsPerWeekLabel(sportProfile.slug, t, locale)}
                       </span>
                     </div>
                     {profile.goals?.length > 0 && (

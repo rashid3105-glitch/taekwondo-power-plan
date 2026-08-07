@@ -26,6 +26,7 @@ import { gradeLabelFor } from "@/lib/sportGrade";
 
 import { COUNTRIES } from "@/data/countries";
 import { PHONE_CODES } from "@/data/phoneCodes";
+import { startDateLabel, disciplineHintFor } from "@/lib/sportTerms";
 const GOAL_OPTIONS = [
   "Faster kicks",
   "More explosive footwork",
@@ -608,7 +609,7 @@ export default function ProfileSetup() {
               )}
             </div>
             <div>
-              <Label htmlFor="tkdStartDate">{t("tkdStartDate")}</Label>
+              <Label htmlFor="tkdStartDate">{startDateLabel(sportProfile.slug, t, locale)}</Label>
               <p className="text-xs text-muted-foreground mb-1">{t("tkdStartDateHint")}</p>
               <Input
                 id="tkdStartDate"
@@ -739,7 +740,7 @@ export default function ProfileSetup() {
 
           <div>
             <Label>{t("discipline")}</Label>
-            <p className="text-xs text-muted-foreground mb-2">{t("disciplineHint")}</p>
+            <p className="text-xs text-muted-foreground mb-2">{disciplineHintFor(sportProfile.slug, t)}</p>
             <div className="flex gap-2">
               {(["sparring", "poomsae"] as const).map((d) => (
                 <button
