@@ -48,7 +48,7 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel, open: ope
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [age, setAge] = useState("");
-  const [belt, setBelt] = useState("white");
+  const [belt, setBelt] = useState(() => isTkdBeltSystem(sportProfile.slug) ? "white" : sportProfile.grades[0] || "");
   const [expYears, setExpYears] = useState("");
   const [discipline, setDiscipline] = useState("sparring");
   const [parentEmail, setParentEmail] = useState("");
