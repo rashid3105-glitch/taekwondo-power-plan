@@ -7,6 +7,8 @@ import {
   Search, LayoutGrid, List as ListIcon, UserCog, NotebookPen, Trash2, Building, Eye,
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useMySportProfile } from "@/hooks/useMySportProfile";
+import { formatGrade, isTkdBeltSystem } from "@/lib/sportGrade";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
