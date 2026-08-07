@@ -97,7 +97,7 @@ export function ClubThemeProvider({ children }: { children: ReactNode }) {
       const [clubRes, moduleRes] = await Promise.all([
         supabase
           .from("clubs" as any)
-          .select("id, name, logo_url, primary_color, accent_color")
+          .select("id, name, logo_url, primary_color, accent_color, background_color")
           .eq("id", clubId)
           .maybeSingle(),
         supabase
@@ -114,20 +114,22 @@ export function ClubThemeProvider({ children }: { children: ReactNode }) {
       if (cancelled) return;
 
       if (!club || !enabled) {
-        applyTheme(null, null);
+        applyTheme(null, null, null);
         setBranding(EMPTY);
         return;
       }
 
-      applyTheme(club.primary_color, club.accent_color);
+      applyTheme(club.primary_color, club.accent_color, club.background_color);
       setBranding({
         clubId: club.id,
         clubName: club.name ?? null,
         logoUrl: club.logo_url ?? null,
         primaryColor: club.primary_color ?? null,
         accentColor: club.accent_color ?? null,
+        backgroundColor: club.background_color ?? null,
         enabled: true,
       });
+
     };
 
     load();
