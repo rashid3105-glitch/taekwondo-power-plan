@@ -10,6 +10,9 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useSportProfile } from "@/hooks/useSportProfile";
+import { GradePicker } from "@/components/GradePicker";
+import { gradeLabelFor } from "@/lib/sportGrade";
 import { AIPlanCard } from "@/components/AIPlanCard";
 import { RehabPlanCard } from "@/components/RehabPlanCard";
 import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekSchedulePicker";
@@ -88,6 +91,7 @@ interface AthleteProfile {
   has_myfightbook: boolean | null;
   myfightbook_expires_at: string | null;
   antidoping_course_date: string | null;
+  club_id: string | null;
 }
 
 interface AthletePlan {
@@ -126,12 +130,12 @@ const DEFAULT_SCHEDULE: DaySchedule[] = [
   { day: "Sunday", type: "rest" },
 ];
 
-const BELT_LEVELS = ["white", "yellow", "green", "blue", "red", "black"];
 const EXPERIENCE_LEVELS = ["beginner", "intermediate", "elite"];
 
 export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: CoachAthleteDetailProps) {
   const { toast } = useToast();
   const { t, locale } = useLanguage();
+  const { profile: sportProfile } = useSportProfile(athlete.club_id ?? null);
   const navigate = useNavigate();
   const [generatingPlan, setGeneratingPlan] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -384,17 +388,14 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
                 />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs">{t("beltLevel")}</Label>
-                <Select value={beltLevel} onValueChange={setBeltLevel} disabled={!editing}>
-                  <SelectTrigger className="h-9">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {BELT_LEVELS.map((b) => (
-                      <SelectItem key={b} value={b}>{t(b)}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label className="text-xs">{gradeLabelFor(sportProfile.slug, t, locale)}</Label>
+                <GradePicker
+                  profile={sportProfile}
+                  value={beltLevel}
+                  onChange={setBeltLevel}
+                  disabled={!editing}
+                  className="h-9"
+                />
               </div>
               <div className="space-y-1">
                 <Label className="text-xs">{t("yearsOfExperience")}</Label>
