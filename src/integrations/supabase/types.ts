@@ -1005,6 +1005,7 @@ export type Database = {
       clubs: {
         Row: {
           accent_color: string | null
+          background_color: string | null
           created_at: string
           default_weekly_schedule: Json | null
           deleted_at: string | null
@@ -1019,6 +1020,7 @@ export type Database = {
         }
         Insert: {
           accent_color?: string | null
+          background_color?: string | null
           created_at?: string
           default_weekly_schedule?: Json | null
           deleted_at?: string | null
@@ -1033,6 +1035,7 @@ export type Database = {
         }
         Update: {
           accent_color?: string | null
+          background_color?: string | null
           created_at?: string
           default_weekly_schedule?: Json | null
           deleted_at?: string | null
