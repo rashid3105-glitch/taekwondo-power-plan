@@ -293,7 +293,7 @@ export function SquadOverview({
             <SelectContent>
               <SelectItem value="attention">{t("sortNeedsAttention")}</SelectItem>
               <SelectItem value="name">{t("sortByName")}</SelectItem>
-              <SelectItem value="belt">{t("sortByBelt")}</SelectItem>
+              {isTkd && <SelectItem value="belt">{t("sortByBelt")}</SelectItem>}
               <SelectItem value="lastActive">{t("sortLastActive")}</SelectItem>
             </SelectContent>
           </Select>
