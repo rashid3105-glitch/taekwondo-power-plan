@@ -39,7 +39,11 @@ export function useOfflineProfile() {
 
     const cached = await getCachedProfile(user.id);
     if (cached) {
-      setProfile(cached.profile);
+      // Older caches used the pre-rename column names.
+      const p: any = cached.profile || {};
+      if (p.sessions_per_week == null && p.tkd_sessions_per_week != null) p.sessions_per_week = p.tkd_sessions_per_week;
+      if (p.sport_start_date == null && p.tkd_start_date != null) p.sport_start_date = p.tkd_start_date;
+      setProfile(p);
       setIsFromCache(true);
       setCachedAt(cached.saved_at);
     } else {
