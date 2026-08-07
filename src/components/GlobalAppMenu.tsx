@@ -120,7 +120,6 @@ export function GlobalAppMenu() {
   const { pathname } = useLocation();
   const { t } = useLanguage();
   const { profile: sportProfile } = useMySportProfile();
-  const { activeMembership } = useActiveClub();
   const { hasCoachRole } = useRole();
   const { isCoachMode, setCoachMode } = useCoachMode();
   const { activeMembership } = useActiveClub();
