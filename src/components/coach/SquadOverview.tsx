@@ -215,7 +215,7 @@ export function SquadOverview({
       }
       return rowSeverity(b).score - rowSeverity(a).score;
     });
-  }, [filtered, sort]);
+  }, [filtered, sort, isTkd, sportProfile]);
 
   if (loading) {
     return (
