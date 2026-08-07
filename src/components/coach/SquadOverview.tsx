@@ -195,7 +195,7 @@ export function SquadOverview({
       );
     }
     return out;
-  }, [rows, pulseFilter, beltFilter, search]);
+  }, [rows, pulseFilter, beltFilter, search, isTkd]);
 
   const sorted = useMemo(() => {
     return [...filtered].sort((a, b) => {
