@@ -187,7 +187,7 @@ export default function PublicAthlete() {
               <div className="flex-1 min-w-0">
                 <h1 className="text-xl md:text-2xl font-extrabold tracking-tight uppercase">{profile.display_name}</h1>
                 <div className="flex flex-wrap gap-1.5 mt-2">
-                  <Badge variant="secondary">{gradeText} {gradeLabelText}</Badge>
+                  <Badge variant="secondary">{gradeText}</Badge>
                   <Badge variant="secondary" className="capitalize">{profile.discipline}</Badge>
                   {profile.country && <Badge variant="outline">{profile.country}</Badge>}
                 </div>
