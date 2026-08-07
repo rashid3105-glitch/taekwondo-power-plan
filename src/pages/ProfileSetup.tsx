@@ -19,12 +19,13 @@ import { PasskeySettings } from "@/components/PasskeySettings";
 import { PublicProfileSettings } from "@/components/profile/PublicProfileSettings";
 import { Switch } from "@/components/ui/switch";
 import { isPushSupported, getCurrentSubscriptionStatus, subscribeToPush, unsubscribeFromPush } from "@/lib/pushNotifications";
+import { useSportProfile } from "@/hooks/useSportProfile";
+import { GradePickerNative } from "@/components/GradePicker";
+import { gradeLabelFor } from "@/lib/sportGrade";
 
 
 import { COUNTRIES } from "@/data/countries";
 import { PHONE_CODES } from "@/data/phoneCodes";
-
-const BELT_LEVELS = ["white", "yellow", "green", "blue", "red", "black"];
 const GOAL_OPTIONS = [
   "Faster kicks",
   "More explosive footwork",

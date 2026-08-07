@@ -9,6 +9,8 @@ import { PageMeta } from "@/components/PageMeta";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAvatarUrl } from "@/hooks/useAvatarUrl";
 import { toast } from "sonner";
+import { useSportProfile } from "@/hooks/useSportProfile";
+import { gradeLabelFor } from "@/lib/sportGrade";
 
 const cardCls = "rounded-xl bg-white/[0.03] border border-white/10 p-5 sm:p-6";
 const sectionTitleCls = "text-xs uppercase tracking-wider text-white mb-4";

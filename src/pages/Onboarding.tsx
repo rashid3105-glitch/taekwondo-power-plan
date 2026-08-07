@@ -14,6 +14,9 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekSchedulePicker";
 import { haptics } from "@/lib/haptics";
 import { isNativeApp } from "@/lib/platform";
+import { useMySportProfile } from "@/hooks/useMySportProfile";
+import { GradePicker } from "@/components/GradePicker";
+import { gradeLabelFor } from "@/lib/sportGrade";
 
 const DEFAULT_SCHEDULE: DaySchedule[] = [
   { day: "Monday", type: "tkd" },
