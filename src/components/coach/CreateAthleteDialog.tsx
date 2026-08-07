@@ -37,6 +37,8 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel, open: ope
   const { t } = useLanguage();
   const { toast } = useToast();
   const { activeClubId, activeMembership, setActiveClubId } = useActiveClub();
+  const { profile: sportProfile } = useSportProfile(activeClubId);
+  const isTkd = isTkdBeltSystem(sportProfile.slug);
   const [openInner, setOpenInner] = useState(false);
   const open = openProp ?? openInner;
   const setOpen = (v: boolean) => { onOpenChange ? onOpenChange(v) : setOpenInner(v); };
