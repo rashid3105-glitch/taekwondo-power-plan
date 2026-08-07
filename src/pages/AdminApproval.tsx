@@ -597,7 +597,7 @@ export default function AdminApproval() {
             )}
             {u.belt_level && (
               <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
-                {formatGrade(u.sport, u.belt_level, t)} {gradeLabelFor(u.sport, t, locale)}
+                {formatGrade(u.sport, u.belt_level, t)}
               </span>
             )}
             {u.age && (
