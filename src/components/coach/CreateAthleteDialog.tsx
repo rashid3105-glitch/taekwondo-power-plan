@@ -314,26 +314,21 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel, open: ope
 
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1">
-                <Label className="text-xs">{t("beltLevel")}</Label>
-                <Select value={belt} onValueChange={setBelt}>
-                  <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {["white", "yellow", "green", "blue", "red", "black"].map((b) => (
-                      <SelectItem key={b} value={b}>{t(b)}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label className="text-xs">{isTkd ? t("beltLevel") : sportProfile.gradeLabelEn}</Label>
+                <GradePicker profile={sportProfile} value={belt} onChange={setBelt} className="h-9" />
               </div>
-              <div className="space-y-1">
-                <Label className="text-xs">{t("discipline")}</Label>
-                <Select value={discipline} onValueChange={setDiscipline}>
-                  <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="sparring">{t("sparring")}</SelectItem>
-                    <SelectItem value="poomsae">{t("poomsae")}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              {isTkd && (
+                <div className="space-y-1">
+                  <Label className="text-xs">{t("discipline")}</Label>
+                  <Select value={discipline} onValueChange={setDiscipline}>
+                    <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="sparring">{t("sparring")}</SelectItem>
+                      <SelectItem value="poomsae">{t("poomsae")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
 
             <Button onClick={createAthlete} disabled={creating || disabled || !name.trim() || !email.trim() || !password.trim() || (isMinor && !parentEmailValid)} className="w-full">
