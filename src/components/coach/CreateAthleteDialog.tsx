@@ -71,7 +71,7 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel, open: ope
 
   const reset = () => {
     setName(""); setEmail(""); setPassword(""); setAge("");
-    setBelt("white"); setExpYears(""); setDiscipline("sparring");
+    setBelt(isTkd ? "white" : (sportProfile.grades[0] || "")); setExpYears(""); setDiscipline("sparring");
     setParentEmail("");
     setCode("");
   };
