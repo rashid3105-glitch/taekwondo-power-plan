@@ -184,7 +184,7 @@ export function SquadOverview({
         return d !== null && d >= 7;
       });
     }
-    if (beltFilter !== "all") out = out.filter((r) => r.belt_level === beltFilter);
+    if (isTkd && beltFilter !== "all") out = out.filter((r) => r.belt_level === beltFilter);
     const q = search.trim().toLowerCase();
     if (q) {
       out = out.filter(
