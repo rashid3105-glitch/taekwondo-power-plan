@@ -407,7 +407,7 @@ export default function AdminApproval() {
       display_name: u.display_name || "",
       age: u.age ?? "",
       weight_kg: u.weight_kg ?? "",
-      belt_level: u.belt_level || "white",
+      belt_level: u.belt_level || (isTkdBeltSystem(u.sport) ? "white" : (getSportProfile(u.sport).grades[0] || "")),
       experience_years: u.experience_years ?? "",
       tkd_sessions_per_week: u.tkd_sessions_per_week || 3,
       discipline: u.discipline || "sparring",
