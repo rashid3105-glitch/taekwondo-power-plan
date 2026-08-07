@@ -61,12 +61,13 @@ interface PendingUser {
   phone?: string | null;
   phone_country_code?: string | null;
   athlete_code?: string | null;
+  sport?: string | null;
 }
 
 export default function AdminApproval() {
   const [users, setUsers] = useState<PendingUser[]>([]);
   const [coaches, setCoaches] = useState<{ user_id: string; display_name: string }[]>([]);
-  const [clubs, setClubs] = useState<{ id: string; name: string; max_athletes: number }[]>([]);
+  const [clubs, setClubs] = useState<{ id: string; name: string; max_athletes: number; sport?: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [reassigning, setReassigning] = useState<string | null>(null);
@@ -139,7 +140,7 @@ export default function AdminApproval() {
         .order("created_at", { ascending: false }),
       supabase.from("user_roles").select("user_id, role"),
       supabase.from("coach_athletes").select("coach_id, athlete_id"),
-      supabase.from("clubs" as any).select("id, name, max_athletes").order("name"),
+      supabase.from("clubs" as any).select("id, name, max_athletes, sport").order("name"),
     ]);
 
     const profiles = ((profilesRes.data || []) as PendingUser[]).filter((p) => p.user_id !== DELETED_USER_ID);
@@ -147,9 +148,10 @@ export default function AdminApproval() {
     const plans = (plansRes.data || []) as (UserPlan & { user_id: string })[];
     const roles = (rolesRes.data || []) as { user_id: string; role: string }[];
     const coachAthleteLinks = (coachAthletesRes.data || []) as { coach_id: string; athlete_id: string }[];
-    const clubsList = ((clubsRes.data as unknown as { id: string; name: string; max_athletes: number }[] | null) ?? []);
+    const clubsList = ((clubsRes.data as unknown as { id: string; name: string; max_athletes: number; sport?: string }[] | null) ?? []);
     setClubs(clubsList);
     const clubMap = new Map<string, string>(clubsList.map((club) => [club.id, club.name]));
+    const clubSportMap = new Map<string, string>(clubsList.map((club) => [club.id, club.sport || "taekwondo"]));
 
     const coachSet = new Set(roles.filter(r => r.role === "coach").map(r => r.user_id));
 
