@@ -273,17 +273,19 @@ export function SquadOverview({
           </div>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          <Select value={beltFilter} onValueChange={setBeltFilter}>
-            <SelectTrigger className="h-8 w-[130px] text-xs">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t("allBelts")}</SelectItem>
-              {BELT_ORDER.map((b) => (
-                <SelectItem key={b} value={b}>{t(b)}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {isTkd && (
+            <Select value={beltFilter} onValueChange={setBeltFilter}>
+              <SelectTrigger className="h-8 w-[130px] text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t("allBelts")}</SelectItem>
+                {BELT_ORDER.map((b) => (
+                  <SelectItem key={b} value={b}>{t(b)}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
           <Select value={sort} onValueChange={(v) => setSort(v as SortKey)}>
             <SelectTrigger className="h-8 w-[170px] text-xs">
               <SelectValue />
