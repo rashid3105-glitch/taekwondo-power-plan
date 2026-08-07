@@ -408,8 +408,8 @@ export default function ProfileEdit() {
               <Field label={t("profileBirthDate" as any)}>
                 <Input type="date" className={inputCls} value={birthDate} onChange={(e) => setBirthDate(e.target.value)} />
               </Field>
-              <Field label={t("profileBeltLevel" as any)}>
-                <Input className={inputCls} value={beltLevel} onChange={(e) => setBeltLevel(e.target.value)} placeholder="e.g. 1. dan" />
+              <Field label={gradeLabelFor(sportProfile.slug, t, locale)}>
+                <Input className={inputCls} value={beltLevel} onChange={(e) => setBeltLevel(e.target.value)} placeholder={sportProfile.slug === "taekwondo" ? "e.g. 1. dan" : "—"} />
               </Field>
               <Field label={t("profileWeight" as any)}>
                 <Input
@@ -429,7 +429,7 @@ export default function ProfileEdit() {
           <h2 className={sectionTitleCls}>{t("profileSportDiscipline" as any)}</h2>
           <div className="space-y-4">
             <Field label={t("profileSport" as any)}>
-              <Input className={inputCls} value="Taekwondo" disabled />
+              <Input className={inputCls} value={locale === "da" ? sportProfile.name : sportProfile.nameEn} disabled />
             </Field>
 
             <Field label={t("profileDiscipline" as any)}>
