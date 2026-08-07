@@ -58,7 +58,7 @@ function getEmbedUrl(url: string): string | null {
 
 export default function PublicAthlete() {
   const { code } = useParams<{ code: string }>();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const { toast } = useToast();
   const [bundle, setBundle] = useState<Bundle | null>(null);
   const [loading, setLoading] = useState(true);
