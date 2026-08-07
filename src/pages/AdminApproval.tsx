@@ -14,6 +14,8 @@ import { Label } from "@/components/ui/label";
 import { Loader2, CheckCircle, XCircle, ArrowLeft, Download, Shield, Trash2, Users, CreditCard, CalendarIcon, FlaskConical, ChevronDown, KeyRound, Search, Pencil, UserCheck, UserX, Crown, Building, LayoutGrid, FileText, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { getSportProfile } from "@/config/sportProfiles";
+import { formatGrade, gradeLabelFor, gradeOptions, gradeOptionLabel, isTkdBeltSystem } from "@/lib/sportGrade";
 import { format } from "date-fns";
 import { COUNTRIES } from "@/data/countries";
 import { PHONE_CODES } from "@/data/phoneCodes";
