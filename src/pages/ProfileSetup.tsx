@@ -69,8 +69,6 @@ export default function ProfileSetup() {
   const [savedAvatarUrl, setSavedAvatarUrl] = useState<string | null>(null);
   const avatarDisplayUrl = useAvatarUrl(avatarUrl);
   const [clubs, setClubs] = useState<ClubOption[]>([]);
-  const { profile: sportProfile } = useSportProfile(clubId || null);
-  const { locale } = useLanguage();
   const [clubId, setClubId] = useState("");
   const [country, setCountry] = useState("");
   const [phone, setPhone] = useState("");
