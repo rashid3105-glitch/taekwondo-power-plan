@@ -28,6 +28,7 @@ export default function ProfileEdit() {
   const [saving, setSaving] = useState(false);
 
   const [userId, setUserId] = useState<string>("");
+  const [clubId, setClubId] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState("");
   const [birthDate, setBirthDate] = useState("");
   const [beltLevel, setBeltLevel] = useState("");
@@ -59,7 +60,7 @@ export default function ProfileEdit() {
       setUserId(user.id);
       const { data: p } = await supabase
         .from("profiles")
-        .select("display_name, birth_date, belt_level, weight_kg, discipline, goals, avatar_url, roles, license_values")
+        .select("display_name, birth_date, belt_level, weight_kg, discipline, goals, avatar_url, roles, license_values, club_id")
         .eq("user_id", user.id)
         .maybeSingle();
       if (p) {
@@ -71,6 +72,7 @@ export default function ProfileEdit() {
         setGoalsText(Array.isArray(p.goals) ? p.goals.join(", ") : "");
         setAvatarUrl(p.avatar_url ?? null);
         setLicenseValues(((p as any).license_values ?? {}) as Record<string, LicenseValue>);
+        setClubId((p as any).club_id ?? null);
       }
 
       const roles: string[] = (p as any)?.roles ?? [];
@@ -99,6 +101,8 @@ export default function ProfileEdit() {
     })();
   }, [navigate]);
 
+  const { profile: sportProfile } = useSportProfile(clubId);
+  const { locale } = useLanguage();
 
   useEffect(() => {
     return () => {
