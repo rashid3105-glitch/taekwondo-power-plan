@@ -23,7 +23,19 @@ export const TKD_BELT_KEYS: Record<string, string> = {
   black: "onbBeltBlack",
 };
 
-export const TKD_BELT_ORDER = ["white", "yellow", "green", "blue", "red", "black"];
+export const TKD_BELT_ORDER = [
+  "white",
+  "yellow",
+  "green",
+  "blue",
+  "red",
+  "black",
+  "1st dan",
+  "2nd dan",
+  "3rd dan",
+  "4th dan",
+  "5th dan",
+];
 
 /**
  * Returns true if the sport uses the legacy TKD belt system
