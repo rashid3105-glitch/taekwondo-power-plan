@@ -175,6 +175,7 @@ export default function AdminApproval() {
     setUsers(profiles.map(p => ({
       ...p,
       club_name: p.club_id ? clubMap.get(p.club_id) || "" : "",
+      sport: p.club_id ? clubSportMap.get(p.club_id) || "taekwondo" : "taekwondo",
       email: emailMap[p.user_id] || "",
       plans: plansByUser[p.user_id] || [],
       isCoach: coachSet.has(p.user_id),
