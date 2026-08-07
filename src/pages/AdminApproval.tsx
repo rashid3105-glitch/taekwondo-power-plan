@@ -1175,12 +1175,12 @@ export default function AdminApproval() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label>{t("beltLevel") || "Belt Level"}</Label>
-                <Select value={editForm.belt_level || "white"} onValueChange={(v) => setEditForm(f => ({ ...f, belt_level: v }))}>
+                <Label>{gradeLabelFor(editingUser?.sport, t, locale) || t("beltLevel")}</Label>
+                <Select value={editForm.belt_level || (isTkdBeltSystem(editingUser?.sport) ? "white" : "")} onValueChange={(v) => setEditForm(f => ({ ...f, belt_level: v }))}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    {["white", "yellow", "green", "blue", "red", "black", "1st dan", "2nd dan", "3rd dan", "4th dan", "5th dan"].map(b => (
-                      <SelectItem key={b} value={b} className="capitalize">{b}</SelectItem>
+                    {gradeOptions(editingUser?.sport).map(b => (
+                      <SelectItem key={b} value={b}>{gradeOptionLabel(editingUser?.sport, b, t)}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
