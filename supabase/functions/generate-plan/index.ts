@@ -153,8 +153,9 @@ Return a valid JSON object with this exact structure:
       "dayOfWeek": "Monday",
       "sessions": [
         {
-          "type": "tkd" | "gym" | "selftraining" | "recovery",
-          "label": "string (e.g. 'Morning Strength' or 'Evening TKD')",
+          "type": "tkd" | "gym" | "selftraining" | "recovery"  ("tkd" means a club session in the athlete's sport — ${sport.sessionLabelEn}),
+          "label": "string (e.g. 'Morning Strength' or 'Evening ${sportName}')",
+
           "focus": "string",
           "exercises": [
             {
