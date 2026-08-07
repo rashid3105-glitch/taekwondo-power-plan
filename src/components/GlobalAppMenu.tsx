@@ -40,6 +40,8 @@ import {
 } from "lucide-react";
 import { BracketIcon } from "@/components/icons/BracketIcon";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useMySportProfile } from "@/hooks/useMySportProfile";
+import { formatGrade } from "@/lib/sportGrade";
 import { useRole } from "@/contexts/RoleContext";
 import { useCoachMode } from "@/contexts/CoachModeContext";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
