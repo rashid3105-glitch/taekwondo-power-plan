@@ -24,6 +24,8 @@ import { RehabPlanCard } from "@/components/RehabPlanCard";
 import { MedicalDocumentTranslator } from "@/components/MedicalDocumentTranslator";
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useMySportProfile } from "@/hooks/useMySportProfile";
+import { formatGrade } from "@/lib/sportGrade";
 import { useCoachMode } from "@/contexts/CoachModeContext";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { useRole } from "@/contexts/RoleContext";
