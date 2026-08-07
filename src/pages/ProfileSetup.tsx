@@ -69,6 +69,8 @@ export default function ProfileSetup() {
   const [savedAvatarUrl, setSavedAvatarUrl] = useState<string | null>(null);
   const avatarDisplayUrl = useAvatarUrl(avatarUrl);
   const [clubs, setClubs] = useState<ClubOption[]>([]);
+  const { profile: sportProfile } = useSportProfile(clubId || null);
+  const { locale } = useLanguage();
   const [clubId, setClubId] = useState("");
   const [country, setCountry] = useState("");
   const [phone, setPhone] = useState("");
@@ -671,17 +673,14 @@ export default function ProfileSetup() {
           </div>
 
           <div>
-            <Label htmlFor="belt">{t("beltLevel")}</Label>
-            <select
+            <Label htmlFor="belt">{gradeLabelFor(sportProfile.slug, t, locale)}</Label>
+            <GradePickerNative
               id="belt"
+              profile={sportProfile}
               value={belt}
-              onChange={(e) => setBelt(e.target.value)}
+              onChange={setBelt}
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              {BELT_LEVELS.map((b) => (
-                <option key={b} value={b}>{t(b)} {t("belt")}</option>
-              ))}
-            </select>
+            />
           </div>
 
           <div className="rounded-lg border border-border bg-muted/20 p-3 space-y-3">
