@@ -243,7 +243,7 @@ IMPORTANT: ALL text content MUST be written in ${lang} — with NO exceptions an
     const userPrompt = `Generate a training plan for a ${athleteLabel} athlete:
 - Goals: ${safeGoals.length ? safeGoals.join(', ') : 'general performance improvement'}
 - Weekly schedule: ${scheduleDescription}${injuryInfo}
-- Club sessions per week: ${profile.tkd_sessions_per_week || 4}
+- Club sessions per week: ${profile.sessions_per_week || 4}
 - Level: ${sanitizePromptText(profile.belt_level, 60) || 'not specified'} (${sport.gradeLabelEn})
 
 Design the program for ${profile.program_weeks || 8} weeks with appropriate periodization.${injuryInstructions}${currentPhaseContext}`;

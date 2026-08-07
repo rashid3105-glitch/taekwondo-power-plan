@@ -16,6 +16,8 @@ import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import type { TranslationKey } from "@/i18n/translations";
+import { useMySportProfile } from "@/hooks/useMySportProfile";
+import { drillsLabel } from "@/lib/sportTerms";
 
 const TITLE_KEYS: Record<string, TranslationKey> = {
   exercise: "exercisesTitle",
@@ -56,7 +58,8 @@ export default function Library({ forcedSection }: { forcedSection?: string } = 
   const { section: paramSection } = useParams<{ section: string }>();
   const section = forcedSection ?? paramSection;
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
+  const { profile: sportProfile } = useMySportProfile();
   const Icon = ICONS[section || ""] || BookOpen;
   const titleKey = TITLE_KEYS[section || ""];
 
@@ -92,7 +95,7 @@ export default function Library({ forcedSection }: { forcedSection?: string } = 
       if (!user) return;
       const { data } = await supabase
         .from("profiles")
-        .select("age, weight_kg, belt_level, discipline, tkd_sessions_per_week, experience_years, current_injury, custom_calories, birth_date")
+        .select("age, weight_kg, belt_level, discipline, sessions_per_week, experience_years, current_injury, custom_calories, birth_date")
         .eq("user_id", user.id)
         .maybeSingle();
       if (data && data.age == null && data.birth_date) {
@@ -143,7 +146,7 @@ export default function Library({ forcedSection }: { forcedSection?: string } = 
           <div className="flex items-center gap-2">
             <Icon className={`h-5 w-5 ${COLORS[section || ""] || "text-primary"}`} />
             <span className="text-base font-extrabold text-card-foreground">
-              {titleKey ? t(titleKey) : t("library")}
+              {section === "drills" ? drillsLabel(sportProfile.slug, t, locale) : titleKey ? t(titleKey) : t("library")}
             </span>
           </div>
         </div>

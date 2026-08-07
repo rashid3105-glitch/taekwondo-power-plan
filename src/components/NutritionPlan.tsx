@@ -16,7 +16,7 @@ interface NutritionPlanProps {
     weight_kg: number | null;
     belt_level: string;
     discipline: string;
-    tkd_sessions_per_week: number;
+    sessions_per_week: number;
     experience_years: number | null;
     current_injury: string | null;
     custom_calories?: number | null;

@@ -84,7 +84,7 @@ CRITICAL LANGUAGE REQUIREMENT: You MUST write ALL text content — including pla
 - Weight: ${profile?.weight_kg ? Number(profile.weight_kg) + " kg" : "not specified"}
 - Belt level: ${safeBelt}
 - Discipline: ${safeDiscipline}
-- TKD sessions per week: ${Number(profile?.tkd_sessions_per_week) || 3}
+- TKD sessions per week: ${Number(profile?.sessions_per_week) || 3}
 - Years of experience: ${safeExperience}
 - Nutrition goals: ${goalsText}
 - Daily calorie target: ${custom_calories ? Number(custom_calories) + " kcal (user-specified, use this as the baseline)" : "estimate based on profile"}

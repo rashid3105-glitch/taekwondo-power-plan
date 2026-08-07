@@ -39,7 +39,7 @@ interface AthleteProfile {
   belt_level: string;
   experience_years: number | null;
   goals: string[] | null;
-  tkd_sessions_per_week: number;
+  sessions_per_week: number;
   current_injury: string | null;
   program_weeks: number | null;
   weekly_schedule: any;
@@ -143,7 +143,7 @@ export default function CoachAthleteOverview() {
     const [profileRes, plansRes, rehabRes, clubsRes] = await Promise.all([
       supabase
         .from("profiles")
-        .select("user_id, display_name, athlete_code, age, weight_kg, belt_level, experience_years, goals, tkd_sessions_per_week, current_injury, program_weeks, weekly_schedule, avatar_url, discipline, club_id, country, gal_license, gal_license_expires_at, has_myfightbook, myfightbook_expires_at, antidoping_course_date")
+        .select("user_id, display_name, athlete_code, age, weight_kg, belt_level, experience_years, goals, sessions_per_week, current_injury, program_weeks, weekly_schedule, avatar_url, discipline, club_id, country, gal_license, gal_license_expires_at, has_myfightbook, myfightbook_expires_at, antidoping_course_date")
         .eq("user_id", athleteId)
         .maybeSingle(),
       plansQ,
@@ -355,7 +355,7 @@ export default function CoachAthleteOverview() {
             <AthleteOverviewTab
               athleteId={athlete.user_id}
               athleteName={athlete.display_name}
-              plannedSessionsPerWeek={athlete.tkd_sessions_per_week || 0}
+              plannedSessionsPerWeek={athlete.sessions_per_week || 0}
             />
           </TabsContent>
 

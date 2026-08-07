@@ -23,6 +23,7 @@ import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { isNativeApp } from "@/lib/platform";
 import { registerPushToken } from "@/lib/nativePush";
 import MfaSetupDialog from "@/components/MfaSetupDialog";
+import { sportName } from "@/lib/sportTerms";
 
 interface LicenseField {
   id: string;
@@ -390,7 +391,7 @@ export default function Profile() {
         {/* Sport & discipline */}
         <div className={cardCls}>
           <h2 className={sectionTitleCls}>{t("profileSportDiscipline" as any)}</h2>
-          <Row label={t("profileSport" as any)} value="Taekwondo" />
+          <Row label={t("profileSport" as any)} value={sportName(sportProfile.slug, locale)} />
           <Separator className="bg-white/10" />
           <div className="py-3">
             <p className="text-xs text-white mb-2">{t("profileDiscipline" as any)}</p>

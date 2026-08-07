@@ -28,7 +28,7 @@ interface SquadRow {
   avatar_url: string | null;
   belt_level: string;
   athlete_code: string | null;
-  tkd_sessions_per_week: number;
+  sessions_per_week: number;
   last_seen_at: string | null;
   has_active_injury: boolean;
   has_active_plan: boolean;
