@@ -924,23 +924,54 @@ function AIExerciseRow({ exercise, index, log, pending, onToggleComplete, onUpda
             <ExerciseFeedbackView feedback={feedback} onMarkRead={onMarkFeedbackRead} />
           ) : null}
 
-          {/* Prescribed details */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
-            <div className="rounded-md bg-muted p-2.5">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Prescribed Sets × Reps</p>
-              <p className="text-sm font-bold text-foreground">{exercise.sets} × {exercise.reps}</p>
-            </div>
-            <div className="rounded-md bg-muted p-2.5">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Rest</p>
-              <p className="text-sm font-bold text-foreground">{exercise.rest}</p>
-            </div>
-            {exercise.tempo && (
-              <div className="rounded-md bg-muted p-2.5">
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Tempo</p>
-                <p className="text-sm font-bold text-foreground">{exercise.tempo}</p>
+          {/* Prescribed details — editable */}
+          <div className="rounded-lg border border-border bg-muted/50 p-3 space-y-2">
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">{t("planPrescribed")}</p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <div>
+                <label className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1 block">{t("planSetsLabel")}</label>
+                <Input
+                  type="number" inputMode="numeric" min={1} max={20}
+                  defaultValue={exercise.sets ?? ""}
+                  onBlur={(e) => onUpdatePrescribed?.("sets", e.target.value)}
+                  className="h-8 text-sm"
+                />
               </div>
-            )}
+              <div>
+                <label className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1 block">{t("planRepsLabel")}</label>
+                <Input
+                  defaultValue={exercise.reps ?? ""}
+                  onBlur={(e) => onUpdatePrescribed?.("reps", e.target.value)}
+                  className="h-8 text-sm"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1 block">{t("planRestLabel")}</label>
+                <Input
+                  defaultValue={exercise.rest ?? ""}
+                  onBlur={(e) => onUpdatePrescribed?.("rest", e.target.value)}
+                  className="h-8 text-sm"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1 block">{t("planTempoLabel")}</label>
+                <Input
+                  defaultValue={exercise.tempo ?? ""}
+                  onBlur={(e) => onUpdatePrescribed?.("tempo", e.target.value)}
+                  className="h-8 text-sm"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1 block">{t("planCueLabel")}</label>
+              <Input
+                defaultValue={exercise.coachingCue ?? ""}
+                onBlur={(e) => onUpdatePrescribed?.("coachingCue", e.target.value)}
+                className="h-8 text-sm"
+              />
+            </div>
           </div>
+
           {exercise.muscleGroups?.length > 0 && (
             <div className="flex items-center gap-2">
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Muscles:</span>
