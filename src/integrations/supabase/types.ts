@@ -707,6 +707,68 @@ export type Database = {
           },
         ]
       }
+      club_drills: {
+        Row: {
+          category: string
+          club_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          duration_seconds: number | null
+          file_size_bytes: number | null
+          id: string
+          is_active: boolean
+          sort_order: number
+          source: string
+          storage_path: string | null
+          title: string
+          updated_at: string
+          video_url: string | null
+        }
+        Insert: {
+          category: string
+          club_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          duration_seconds?: number | null
+          file_size_bytes?: number | null
+          id?: string
+          is_active?: boolean
+          sort_order?: number
+          source?: string
+          storage_path?: string | null
+          title: string
+          updated_at?: string
+          video_url?: string | null
+        }
+        Update: {
+          category?: string
+          club_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          duration_seconds?: number | null
+          file_size_bytes?: number | null
+          id?: string
+          is_active?: boolean
+          sort_order?: number
+          source?: string
+          storage_path?: string | null
+          title?: string
+          updated_at?: string
+          video_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "taekwondo_drills_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       club_memberships: {
         Row: {
           club_id: string
@@ -3470,56 +3532,6 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
-      }
-      taekwondo_drills: {
-        Row: {
-          category: string
-          club_id: string | null
-          created_at: string
-          created_by: string | null
-          description: string | null
-          id: string
-          is_active: boolean
-          sort_order: number
-          title: string
-          updated_at: string
-          video_url: string | null
-        }
-        Insert: {
-          category: string
-          club_id?: string | null
-          created_at?: string
-          created_by?: string | null
-          description?: string | null
-          id?: string
-          is_active?: boolean
-          sort_order?: number
-          title: string
-          updated_at?: string
-          video_url?: string | null
-        }
-        Update: {
-          category?: string
-          club_id?: string | null
-          created_at?: string
-          created_by?: string | null
-          description?: string | null
-          id?: string
-          is_active?: boolean
-          sort_order?: number
-          title?: string
-          updated_at?: string
-          video_url?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "taekwondo_drills_club_id_fkey"
-            columns: ["club_id"]
-            isOneToOne: false
-            referencedRelation: "clubs"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       team_test_session_athletes: {
         Row: {
