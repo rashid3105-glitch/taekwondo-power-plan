@@ -625,14 +625,33 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
               {/* Current session header */}
               {currentSession && (
                 <>
-                  {currentDaySessions.length === 1 && (
-                    <p className="text-sm font-semibold text-card-foreground mb-1">{currentSession.label}</p>
-                  )}
+                  <div className="flex items-start gap-2 mb-1">
+                    {currentDaySessions.length === 1 && (
+                      <p className="text-sm font-semibold text-card-foreground flex-1">{currentSession.label}</p>
+                    )}
+                    <div className="ml-auto flex items-center gap-1">
+                      <button
+                        onClick={() => setEditSessionOpen(true)}
+                        className="p-1 text-primary hover:text-primary/80 transition-colors"
+                        title={t("planEditSession")}
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        onClick={() => setCopyMode({ dayIndex: selectedDay, sessionIndex: safeSessionIndex })}
+                        className="p-1 text-muted-foreground hover:text-primary transition-colors"
+                        title={t("planCopySession")}
+                      >
+                        <Copy className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </div>
                   {currentSession.focus && (
                     <p className="text-sm text-muted-foreground mb-3">{currentSession.focus}</p>
                   )}
                 </>
               )}
+
 
               {currentSession?.exercises?.length ? (
                 <DndContext
