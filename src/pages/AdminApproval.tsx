@@ -74,6 +74,7 @@ export default function AdminApproval() {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [staleWarning, setStaleWarning] = useState(false);
   const [reassigning, setReassigning] = useState<string | null>(null);
   const [downloadingPlan, setDownloadingPlan] = useState<string | null>(null);
   const [deletingUser, setDeletingUser] = useState<string | null>(null);
@@ -141,6 +142,7 @@ export default function AdminApproval() {
 
   const loadUsers = async () => {
     setLoadError(null);
+    setStaleWarning(false);
     const [profilesRes, emailsRes, plansRes, rolesRes, coachAthletesRes, clubsRes] = await Promise.all([
       supabase
         .from("profiles")
@@ -172,6 +174,12 @@ export default function AdminApproval() {
       setLoadError(profilesRes.error.message);
       setLoading(false);
       return;
+    }
+    // Old deployed function (no `profiles` payload) + zero rows from the
+    // RLS-scoped fallback = we cannot distinguish "empty" from "denied".
+    // Surface it instead of silently rendering zeros.
+    if (!functionProfiles && (profilesRes.data?.length ?? 0) === 0) {
+      setStaleWarning(true);
     }
     const profiles = ((functionProfiles ?? profilesRes.data ?? []) as PendingUser[])
       .filter((p) => p.user_id !== DELETED_USER_ID);
@@ -1012,6 +1020,18 @@ export default function AdminApproval() {
         {loadError && (
           <div className="rounded-xl border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive flex items-center justify-between gap-3">
             <span>Kunne ikke hente brugere: {loadError}</span>
+            <Button size="sm" variant="outline" onClick={() => { setLoading(true); checkAdminAndLoad(); }}>
+              Prøv igen
+            </Button>
+          </div>
+        )}
+
+        {!loadError && staleWarning && (
+          <div className="rounded-xl border border-[#F5C84B]/50 bg-[#F5C84B]/10 p-3 text-sm text-[#F5C84B] flex items-center justify-between gap-3">
+            <span>
+              Kunne ikke bekræfte admin-adgang — appen er muligvis forældet.
+              Opdatér appen til nyeste version, eller prøv igen.
+            </span>
             <Button size="sm" variant="outline" onClick={() => { setLoading(true); checkAdminAndLoad(); }}>
               Prøv igen
             </Button>
