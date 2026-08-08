@@ -156,6 +156,18 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
 export function useLanguage() {
   const ctx = useContext(LanguageContext);
-  if (!ctx) throw new Error("useLanguage must be used within LanguageProvider");
-  return ctx;
+  if (ctx) return ctx;
+  // Defensive fallback: during HMR (or if a component renders outside the
+  // provider) we degrade to English instead of crashing the whole app.
+  const saved = localStorage.getItem("tkd-lang");
+  const locale: Locale = isLocale(saved) ? saved : "en";
+  return {
+    locale,
+    setLocale: (l: Locale) => localStorage.setItem("tkd-lang", l),
+    t: (key: TranslationKey | (string & {})) => {
+      const k = key as TranslationKey;
+      return translations[locale][k] || translations.en[k] || (key as string);
+    },
+  } as LanguageContextType;
 }
+
