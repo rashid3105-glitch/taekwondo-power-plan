@@ -276,9 +276,9 @@ const Index = () => {
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
             {[
-              { k: "sportFootball", on: false }, { k: "sportHandball", on: true }, { k: "sportSwimming", on: false },
-              { k: "sportAthletics", on: false }, { k: "sportBadminton", on: true }, { k: "sportMartialArts", on: false },
-              { k: "sportCycling", on: false }, { k: "sportRowing", on: false }, { k: "sportGymnastics", on: true },
+              { k: "sportTaekwondo", on: true }, { k: "sportKarate", on: true }, { k: "sportKickboxing", on: true }, { k: "sportFitness", on: true },
+              { k: "sportMartialArts", on: false }, { k: "sportHandball", on: false }, { k: "sportFootball", on: false }, { k: "sportSwimming", on: false },
+              { k: "sportAthletics", on: false }, { k: "sportBadminton", on: false }, { k: "sportCycling", on: false }, { k: "sportGymnastics", on: false },
               { k: "sportVolleyball", on: false }, { k: "sportIceHockey", on: false }, { k: "sportBasketball", on: false },
             ].map((s) => (
               <span
