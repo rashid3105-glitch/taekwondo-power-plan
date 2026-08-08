@@ -761,6 +761,8 @@ interface AIExerciseRowProps {
   onUpdateNotes: (notes: string | null) => void;
   onSwap: () => void;
   onRemove: () => void;
+  onCopy?: () => void;
+  onUpdatePrescribed?: (field: string, value: string) => void;
   coachMode?: boolean;
   athleteUserId?: string;
   feedback?: ExerciseFeedback[];
