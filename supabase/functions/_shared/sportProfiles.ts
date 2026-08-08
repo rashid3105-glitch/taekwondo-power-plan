@@ -84,7 +84,8 @@ export const SPORT_PROFILES: Record<SportSlug, SportProfile> = {
     competitionFormats: ["Kumite", "Kata"],
     sessionLabel: "Karate-træning",
     sessionLabelEn: "Karate session",
-    hasMatchAnalysis: true,
+    // Taekwondo-only feature for now — no karate technique vocabulary yet.
+    hasMatchAnalysis: false,
     disciplines: [
       {
         key: "sparring",
@@ -123,7 +124,8 @@ export const SPORT_PROFILES: Record<SportSlug, SportProfile> = {
     competitionFormats: ["Full contact", "Light contact", "K1", "Point fighting"],
     sessionLabel: "Kickboxing-træning",
     sessionLabelEn: "Kickboxing session",
-    hasMatchAnalysis: true,
+    // Taekwondo-only feature for now — no kickboxing technique vocabulary yet.
+    hasMatchAnalysis: false,
     disciplines: [],
     demands: [
       "repeated high-intensity rounds (2-3 min work, 1 min rest)",
