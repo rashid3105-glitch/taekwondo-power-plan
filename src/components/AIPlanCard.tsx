@@ -733,6 +733,26 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
             }}
           />
 
+          {/* Copy to other days */}
+          <CopyToDaysDialog
+            open={!!copyMode}
+            onClose={() => setCopyMode(null)}
+            title={copyMode?.exerciseIndex !== undefined ? t("planCopyExercise") : t("planCopySession")}
+            days={schedule}
+            sourceDayIndex={copyMode?.dayIndex ?? -1}
+            onConfirm={handleCopyToDays}
+          />
+
+          {/* Edit session metadata */}
+          <EditSessionDialog
+            open={editSessionOpen}
+            onClose={() => setEditSessionOpen(false)}
+            session={currentSession ?? null}
+            onSave={handleSaveSession}
+          />
+
+
+
           {/* Periodization (collapsed at bottom) */}
           {periodization.length > 0 && (
             <Collapsible defaultOpen={false}>
