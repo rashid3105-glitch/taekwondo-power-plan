@@ -688,6 +688,8 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
                             onUpdateNotes={(notes) => upsertLog(j, { notes })}
                             onSwap={() => setPickerMode({ dayIndex: selectedDay, sessionIndex: safeSessionIndex, exerciseIndex: j })}
                             onRemove={() => handleRemoveExercise(selectedDay, j)}
+                            onCopy={() => setCopyMode({ dayIndex: selectedDay, sessionIndex: safeSessionIndex, exerciseIndex: j })}
+                            onUpdatePrescribed={(field, value) => handleUpdateExerciseField(j, field, value)}
                             coachMode={coachMode}
                             athleteUserId={effectiveAthleteId}
                             feedback={fb}
