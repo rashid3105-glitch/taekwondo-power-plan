@@ -35,7 +35,8 @@ export default function ProfileEdit() {
   const [beltLevel, setBeltLevel] = useState("");
   const [weightKg, setWeightKg] = useState<string>("");
   const [discipline, setDiscipline] = useState("sparring");
-  const [goalsText, setGoalsText] = useState("");
+  const [goals, setGoals] = useState<string[]>([]);
+  const [newGoal, setNewGoal] = useState("");
 
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
