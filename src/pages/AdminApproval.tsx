@@ -74,6 +74,7 @@ export default function AdminApproval() {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [staleWarning, setStaleWarning] = useState(false);
   const [reassigning, setReassigning] = useState<string | null>(null);
   const [downloadingPlan, setDownloadingPlan] = useState<string | null>(null);
   const [deletingUser, setDeletingUser] = useState<string | null>(null);
