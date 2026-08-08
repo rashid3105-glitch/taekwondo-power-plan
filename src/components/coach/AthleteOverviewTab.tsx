@@ -15,6 +15,7 @@ import { AthleteRecoveryTrend } from "@/components/coach/AthleteRecoveryTrend";
 import { PhysicalTestComparison } from "@/components/coach/PhysicalTestComparison";
 import { MonthlyDevelopmentReportsCard } from "@/components/coach/MonthlyDevelopmentReportsCard";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
+import { useClubMatchAnalysisEnabled } from "@/hooks/useMatchAnalysisEnabled";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -479,13 +480,15 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
             >
               <CalendarRange className="h-4 w-4 text-primary" /> {t("seasonPlannerTitle")}
             </button>
-            <button
-              type="button"
-              onClick={() => navigate(`/match-analysis/${athleteId}`)}
-              className="rounded-lg border border-border bg-card hover:bg-accent/30 transition-colors p-3 text-left text-xs flex items-center gap-2"
-            >
-              <VideoIcon className="h-4 w-4 text-primary" /> {t("matchAnalysisTitle")}
-            </button>
+            {matchAnalysisEnabled && (
+              <button
+                type="button"
+                onClick={() => navigate(`/match-analysis/${athleteId}`)}
+                className="rounded-lg border border-border bg-card hover:bg-accent/30 transition-colors p-3 text-left text-xs flex items-center gap-2"
+              >
+                <VideoIcon className="h-4 w-4 text-primary" /> {t("matchAnalysisTitle")}
+              </button>
+            )}
           </div>
         </div>
       </div>

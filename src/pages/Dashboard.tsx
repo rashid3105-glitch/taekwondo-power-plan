@@ -25,6 +25,7 @@ import { MedicalDocumentTranslator } from "@/components/MedicalDocumentTranslato
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useMySportProfile } from "@/hooks/useMySportProfile";
+import { useMatchAnalysisEnabled } from "@/hooks/useMatchAnalysisEnabled";
 import { formatGrade } from "@/lib/sportGrade";
 import { useCoachMode } from "@/contexts/CoachModeContext";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
@@ -211,6 +212,7 @@ export default function Dashboard() {
   const { role, hasCoachRole, loading: roleLoading } = useRole();
   const { enabled: clubBrandingEnabled } = useClubBranding();
   const { profile: sportProfile } = useMySportProfile();
+  const { matchAnalysisEnabled } = useMatchAnalysisEnabled();
   const { memberships, activeMembership, loading: activeClubLoading } = useActiveClub();
 
   // Stay in the coach dashboard when coach mode is explicitly active,
@@ -333,7 +335,9 @@ export default function Dashboard() {
     { key: "diary",        icon: NotebookPen,   labelKey: "diary",           color: "text-primary",       onClick: () => navigate("/diary") },
     { key: "testing",      icon: ClipboardList, labelKey: "testing",         color: "text-primary",       onClick: () => handleTabChange("testing") },
     { key: "calendar",     icon: CalendarIcon,  labelKey: "seasonCalendar",  color: "text-primary",       onClick: () => handleTabChange("calendar") },
-    { key: "match",        icon: VideoIcon,     labelKey: "hubMatchTitle",   color: "text-primary",       onClick: () => navigate("/match-analysis/me") },
+    ...(matchAnalysisEnabled
+      ? [{ key: "match", icon: VideoIcon, labelKey: "hubMatchTitle", color: "text-primary", onClick: () => navigate("/match-analysis/me") }]
+      : []),
   ] as const;
   const renderDemoLockedState = (featureKey: string) => (
     <div className="rounded-xl border border-border bg-card p-8 sm:p-10 text-center shadow-card space-y-4">
@@ -850,7 +854,9 @@ export default function Dashboard() {
             { key: "traen", label: t("train") || "Træn", icon: Zap, iconClassName: "text-tab-plan", active: activeTab === "plan", onClick: () => handleTabChange("plan") },
             { key: "kalender", label: t("seasonCalendar") || "Kalender", icon: CalendarRange, iconClassName: "text-tab-progress", active: activeTab === "calendar", onClick: () => handleTabChange("calendar") },
             { key: "health", label: t("healthNav") || "Sundhed", icon: Heart, iconClassName: "text-red-500 fill-red-500", active: false, onClick: () => navigate("/health") },
-            { key: "video", label: t("hubMatchTitle") || "Video", icon: VideoIcon, iconClassName: "text-tab-mental", active: false, onClick: () => navigate("/match-analysis/me") },
+            ...(matchAnalysisEnabled
+              ? [{ key: "video", label: t("hubMatchTitle") || "Video", icon: VideoIcon, iconClassName: "text-tab-mental", active: false, onClick: () => navigate("/match-analysis/me") }]
+              : []),
           ]).map(({ key, label, icon: Icon, active, onClick, dot, iconClassName }: any) => (
             <button
               key={key}
