@@ -4,6 +4,8 @@
 
 Forsiden (`src/pages/Index.tsx` linje 268–308) har allerede en "Enhver sport"-sektion med en række sport-pills. Nogle er markeret som aktive (guldfyldte), andre ikke. Problemet er at de aktive pills (håndbold, badminton, gymnastik) **ikke** svarer til de sportsgrene appen faktisk understøtter. Appen har konkrete sportprofiler for: **taekwondo, karate, kickboxing og fitness** (defineret i `src/config/sportProfiles.ts`).
 
+gør opmærksom på at der hen ad vejen vil komme flere sportsgrene til.
+
 Målet er at flette de 4 reelt understøttede sportsgrene ind på forsiden, så besøgende ser hvad platformen faktisk dækker i dag — samtidig med at budskabet om at "sporten skifter, kravene gør ikke" bevares.
 
 ## Ændringer
@@ -22,6 +24,7 @@ Disre navne matches mod `SPORT_PROFILES`-objektet (`name` / `nameEn` felter).
 ### 2. Opdater sport-pills på forsiden (`src/pages/Index.tsx`)
 
 Nuværende pill-liste (linje 278–282):
+
 ```js
 { k: "sportFootball", on: false }, { k: "sportHandball", on: true }, ...
 ```
