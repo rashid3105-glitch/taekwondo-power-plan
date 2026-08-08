@@ -24,6 +24,8 @@ import { normalizeDaySessions, type PlanSession } from "@/lib/planSessionUtils";
 import { localizeDayOfWeek, localizeExerciseName } from "@/lib/planTranslation";
 import { PlanProgramGrid } from "@/components/plan/PlanProgramGrid";
 import { PlanProgramMobile } from "@/components/plan/PlanProgramMobile";
+import { CopyToDaysDialog } from "@/components/plan/CopyToDaysDialog";
+import { EditSessionDialog } from "@/components/plan/EditSessionDialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 const CATEGORY_DOT: Record<string, string> = {
