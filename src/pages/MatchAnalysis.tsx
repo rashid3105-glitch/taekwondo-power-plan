@@ -20,6 +20,7 @@ import { VideoTagger } from "@/components/match/VideoTagger";
 import type { Discipline } from "@/lib/tkdTechniques";
 import { useMatchOffline } from "@/hooks/useMatchOffline";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
+import { useMatchAnalysisEnabled } from "@/hooks/useMatchAnalysisEnabled";
 
 import {
   cacheVideo, removeCachedVideo, queueOutboxUpload, removeOutboxUpload,
@@ -56,6 +57,7 @@ export default function MatchAnalysis() {
   const { t } = useLanguage();
   const offline = useMatchOffline();
   const { activeClubId } = useActiveClub();
+  const { matchAnalysisEnabled, loading: sportLoading } = useMatchAnalysisEnabled();
   const [me, setMe] = useState<string | null>(null);
 
   const [isCoach, setIsCoach] = useState(false);
@@ -543,6 +545,23 @@ export default function MatchAnalysis() {
 
   const activeVideo = videos.find((v) => v.id === activeId);
   const pendingTotal = offline.pendingTagCount + offline.pendingDeleteCount + offline.outbox.length;
+
+  // Match analysis is taekwondo-only for now (TKD-specific technique vocabulary).
+  if (!sportLoading && !matchAnalysisEnabled) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-6">
+        <PageMeta title={t("matchAnalysisTitle")} description={t("matchAnalysisMetaDesc")} noindex />
+        <div className="max-w-md text-center space-y-4">
+          <VideoIcon className="h-10 w-10 text-muted-foreground mx-auto" />
+          <h1 className="text-xl font-bold">{t("matchAnalysisTitle")}</h1>
+          <p className="text-sm text-muted-foreground">{t("matchAnalysisSportUnavailable")}</p>
+          <Button variant="outline" onClick={() => navigate("/dashboard")}>
+            <ArrowLeft className="h-4 w-4 mr-1" /> {t("matchBack")}
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background relative">
