@@ -785,7 +785,7 @@ function SortableExerciseRow(props: AIExerciseRowProps & { id: string }) {
   );
 }
 
-function AIExerciseRow({ exercise, index, log, pending, onToggleComplete, onUpdateSets, onUpdateReps, onUpdateNotes, onSwap, onRemove, coachMode, athleteUserId, feedback, onFeedbackChanged, onMarkFeedbackRead, dragHandleProps }: AIExerciseRowProps & { dragHandleProps?: any }) {
+function AIExerciseRow({ exercise, index, log, pending, onToggleComplete, onUpdateSets, onUpdateReps, onUpdateNotes, onSwap, onRemove, onCopy, onUpdatePrescribed, coachMode, athleteUserId, feedback, onFeedbackChanged, onMarkFeedbackRead, dragHandleProps }: AIExerciseRowProps & { dragHandleProps?: any }) {
   const [open, setOpen] = useState(false);
   const { locale, t } = useLanguage();
   const completed = log?.completed ?? false;
