@@ -175,6 +175,12 @@ export default function AdminApproval() {
       setLoading(false);
       return;
     }
+    // Old deployed function (no `profiles` payload) + zero rows from the
+    // RLS-scoped fallback = we cannot distinguish "empty" from "denied".
+    // Surface it instead of silently rendering zeros.
+    if (!functionProfiles && (profilesRes.data?.length ?? 0) === 0) {
+      setStaleWarning(true);
+    }
     const profiles = ((functionProfiles ?? profilesRes.data ?? []) as PendingUser[])
       .filter((p) => p.user_id !== DELETED_USER_ID);
     const emailMap: Record<string, string> = emailsRes.data?.emailMap || {};
