@@ -23,6 +23,7 @@ import {
 import { findPlanDayForToday, normalizeDaySessions, isRestDay } from "@/lib/planSessionUtils";
 import ComplianceAlertsCard from "@/components/ComplianceAlertsCard";
 import AnnouncementsCard from "@/components/AnnouncementsCard";
+import { useMatchAnalysisEnabled } from "@/hooks/useMatchAnalysisEnabled";
 
 interface TodaySession {
   type: string;
@@ -705,14 +706,16 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
                 <ClipboardList className="h-4 w-4" style={goldStyle} />
                 {t("ptTestingButton")}
               </button>
-              <button
-                type="button"
-                onClick={() => navigate("/match-analysis/me")}
-                className="rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white hover:bg-white/[0.08] transition-colors"
-              >
-                <Video className="h-4 w-4" style={goldStyle} />
-                {t("hubVideoAnalysis")}
-              </button>
+              {matchAnalysisEnabled && (
+                <button
+                  type="button"
+                  onClick={() => navigate("/match-analysis/me")}
+                  className="rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white hover:bg-white/[0.08] transition-colors"
+                >
+                  <Video className="h-4 w-4" style={goldStyle} />
+                  {t("hubVideoAnalysis")}
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => navigate("/library/supplement")}
@@ -735,14 +738,16 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
                 <BarChart3 className="h-4 w-4" />
                 {t("progress")}
               </button>
-              <button
-                type="button"
-                onClick={() => navigate("/match-analysis/me")}
-                className="rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white hover:bg-white/[0.08] transition-colors"
-              >
-                <Video className="h-4 w-4" style={goldStyle} />
-                {t("hubVideoAnalysis")}
-              </button>
+              {matchAnalysisEnabled && (
+                <button
+                  type="button"
+                  onClick={() => navigate("/match-analysis/me")}
+                  className="rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white hover:bg-white/[0.08] transition-colors"
+                >
+                  <Video className="h-4 w-4" style={goldStyle} />
+                  {t("hubVideoAnalysis")}
+                </button>
+              )}
             </>
           )}
         </section>
