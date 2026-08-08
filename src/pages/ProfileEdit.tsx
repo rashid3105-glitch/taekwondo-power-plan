@@ -224,7 +224,7 @@ export default function ProfileEdit() {
         belt_level: beltLevel || null,
         weight_kg: weight,
         discipline,
-        goals,
+        goals: cleanGoals,
         license_values: cleanedLicenseValues,
       };
       if (newAvatarPath) {
