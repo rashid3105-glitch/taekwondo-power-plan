@@ -861,6 +861,15 @@ function AIExerciseRow({ exercise, index, log, pending, onToggleComplete, onUpda
         >
           <ArrowLeftRight className="h-3.5 w-3.5" />
         </button>
+        {onCopy && (
+          <button
+            onClick={onCopy}
+            className="p-1 text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+            title={t("planCopyExercise")}
+          >
+            <Copy className="h-3.5 w-3.5" />
+          </button>
+        )}
         <button
           onClick={onRemove}
           className="p-1 text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
@@ -868,6 +877,7 @@ function AIExerciseRow({ exercise, index, log, pending, onToggleComplete, onUpda
         >
           <Trash2 className="h-3.5 w-3.5" />
         </button>
+
       </div>
 
       {open && (
