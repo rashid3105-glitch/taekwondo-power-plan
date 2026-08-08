@@ -105,7 +105,9 @@ export const SPORT_PROFILES: Record<SportSlug, SportProfile> = {
     testBattery: ["sprint_10m", "cmj", "sit_and_reach", "yoyo", "core_endurance"],
     sessionLabel: "Karate-træning",
     sessionLabelEn: "Karate session",
-    hasMatchAnalysis: true,
+    // Match analysis is taekwondo-only until karate-specific technique
+    // vocabulary exists (see src/lib/tkdTechniques.ts).
+    hasMatchAnalysis: false,
   },
   kickboxing: {
     slug: "kickboxing",
@@ -134,7 +136,9 @@ export const SPORT_PROFILES: Record<SportSlug, SportProfile> = {
     testBattery: ["sprint_10m", "cmj", "yoyo", "core_endurance", "grip_strength"],
     sessionLabel: "Kickboxing-træning",
     sessionLabelEn: "Kickboxing session",
-    hasMatchAnalysis: true,
+    // Match analysis is taekwondo-only until kickboxing-specific technique
+    // vocabulary exists (see src/lib/tkdTechniques.ts).
+    hasMatchAnalysis: false,
   },
   fitness: {
     slug: "fitness",

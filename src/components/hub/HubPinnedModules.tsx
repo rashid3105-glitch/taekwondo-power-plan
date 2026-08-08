@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Zap, BarChart3, Trophy, Video as VideoIcon, Lock, Pencil } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useMatchAnalysisEnabled } from "@/hooks/useMatchAnalysisEnabled";
 
 interface Props {
   hasActivePlan: boolean;
@@ -29,6 +30,7 @@ export function HubPinnedModules({
 }: Props) {
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const { matchAnalysisEnabled } = useMatchAnalysisEnabled();
 
   // ISO week number
   const isoWeek = (() => {
@@ -83,7 +85,7 @@ export function HubPinnedModules({
       onClick: () => navigate("/competitions"),
       locked: isDemo || isLocked("competitions"),
     },
-    {
+    ...(matchAnalysisEnabled ? [{
       key: "match",
       icon: VideoIcon,
       title: t("hubMatchTitle"),
@@ -92,7 +94,7 @@ export function HubPinnedModules({
       iconColor: "text-primary",
       onClick: () => navigate("/match-analysis/me"),
       locked: isDemo || isLocked("match_analysis"),
-    },
+    }] : []),
   ];
 
   return (

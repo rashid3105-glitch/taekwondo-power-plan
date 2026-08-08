@@ -648,6 +648,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
 
         <TabsContent value="activity" className="space-y-4 mt-3">
           <AthleteRecoveryTrend athleteId={athlete.user_id} />
+          {sportProfile.hasMatchAnalysis && (
           <button
             onClick={() => navigate(`/match-analysis/${athlete.user_id}`)}
             className="w-full rounded-xl border border-border bg-card hover:bg-accent/30 transition-colors p-4 sm:p-5 shadow-card text-left flex items-center gap-3"
@@ -660,6 +661,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
               <div className="text-xs text-muted-foreground truncate">{t("matchAnalysisMetaDesc")}</div>
             </div>
           </button>
+          )}
 
           <button
             onClick={() => navigate(`/season?athlete=${athlete.user_id}`)}

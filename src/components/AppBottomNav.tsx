@@ -4,6 +4,7 @@ import { Home, Zap, CalendarRange, Heart, Video as VideoIcon, Users, Trophy, Cli
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useRole } from "@/contexts/RoleContext";
 import { useCoachMode } from "@/contexts/CoachModeContext";
+import { useMatchAnalysisEnabled } from "@/hooks/useMatchAnalysisEnabled";
 import { cn } from "@/lib/utils";
 
 // Paths that should NOT show the persistent bottom nav.
@@ -32,6 +33,7 @@ export function AppBottomNav() {
   const { t } = useLanguage();
   const { hasCoachRole } = useRole();
   const { isCoachMode } = useCoachMode();
+  const { matchAnalysisEnabled } = useMatchAnalysisEnabled();
 
   const path = location.pathname;
   const hidden =
@@ -65,7 +67,9 @@ export function AppBottomNav() {
         { key: "traen", label: t("train") || "Træn", icon: Zap, iconClassName: "text-tab-plan", active: false, onClick: () => navigate("/dashboard?tab=plan") },
         { key: "kalender", label: t("seasonCalendar") || "Kalender", icon: CalendarRange, iconClassName: "text-tab-progress", active: false, onClick: () => navigate("/dashboard?tab=calendar") },
         { key: "health", label: t("healthNav"), icon: Heart, iconClassName: "text-red-500 fill-red-500", active: path.startsWith("/health"), onClick: () => navigate("/health") },
-        { key: "video", label: t("hubMatchTitle") || "Video", icon: VideoIcon, iconClassName: "text-tab-mental", active: path.startsWith("/match-analysis"), onClick: () => navigate("/match-analysis/me") },
+        ...(matchAnalysisEnabled
+          ? [{ key: "video", label: t("hubMatchTitle") || "Video", icon: VideoIcon, iconClassName: "text-tab-mental", active: path.startsWith("/match-analysis"), onClick: () => navigate("/match-analysis/me") }]
+          : []),
       ];
 
   return (

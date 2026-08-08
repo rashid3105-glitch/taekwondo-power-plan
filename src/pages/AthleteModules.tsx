@@ -4,6 +4,7 @@ import { ATHLETE_MODULES } from "@/config/modules";
 import { ChevronRight, Lock, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
+import { useSportProfile } from "@/hooks/useSportProfile";
 
 const MODULE_ROUTES: Record<string, string> = {
   plan:      '/dashboard',
@@ -19,6 +20,7 @@ const MODULE_ROUTES: Record<string, string> = {
 export default function AthleteModules() {
   const navigate = useNavigate();
   const { activeClubId } = useActiveClub();
+  const { profile: sportProfile } = useSportProfile(activeClubId);
   const [enabledKeys, setEnabledKeys] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
 
@@ -56,6 +58,8 @@ export default function AthleteModules() {
 
       const set = new Set<string>();
       ATHLETE_MODULES.forEach((m) => {
+        // Match analysis is taekwondo-only for now.
+        if (m.key === "video" && !sportProfile.hasMatchAnalysis) return;
         const resolved = ovMap[m.key] !== undefined
           ? ovMap[m.key]
           : (clubMap[m.key] !== undefined ? clubMap[m.key] : true);
@@ -64,8 +68,13 @@ export default function AthleteModules() {
       setEnabledKeys(set);
       setLoading(false);
     })();
-  }, [activeClubId]);
+  }, [activeClubId, sportProfile.hasMatchAnalysis]);
 
+
+  // Match analysis is taekwondo-only for now — hide the card entirely for other sports.
+  const visibleModules = ATHLETE_MODULES.filter(
+    (m) => m.key !== "video" || sportProfile.hasMatchAnalysis,
+  );
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
@@ -79,13 +88,13 @@ export default function AthleteModules() {
       <main className="max-w-2xl mx-auto px-4 py-6">
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {ATHLETE_MODULES.map((m) => (
+            {visibleModules.map((m) => (
               <div key={m.key} className="h-20 bg-white/10 animate-pulse rounded-xl" />
             ))}
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {ATHLETE_MODULES.map((m) => {
+          {visibleModules.map((m) => {
             const enabled = enabledKeys.has(m.key);
             const Icon = m.icon;
             const route = MODULE_ROUTES[m.key];
