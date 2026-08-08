@@ -71,7 +71,7 @@ export default function ProfileEdit() {
         setBeltLevel(p.belt_level ?? "");
         setWeightKg(p.weight_kg != null ? String(p.weight_kg) : "");
         setDiscipline(p.discipline ?? "sparring");
-        setGoalsText(Array.isArray(p.goals) ? p.goals.join(", ") : "");
+        setGoals(Array.isArray(p.goals) ? (p.goals as string[]).filter(Boolean) : []);
         setAvatarUrl(p.avatar_url ?? null);
         setLicenseValues(((p as any).license_values ?? {}) as Record<string, LicenseValue>);
         setClubId((p as any).club_id ?? null);
