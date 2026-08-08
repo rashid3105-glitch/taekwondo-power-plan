@@ -4,13 +4,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ChevronLeft, Save, Loader2, Camera, User as UserIcon } from "lucide-react";
+import { ChevronLeft, Save, Loader2, Camera, User as UserIcon, Plus, X } from "lucide-react";
 import { PageMeta } from "@/components/PageMeta";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAvatarUrl } from "@/hooks/useAvatarUrl";
 import { toast } from "sonner";
 import { useSportProfile } from "@/hooks/useSportProfile";
 import { gradeLabelFor } from "@/lib/sportGrade";
+import { GOAL_OPTIONS } from "@/config/goals";
 
 const cardCls = "rounded-xl bg-white/[0.03] border border-white/10 p-5 sm:p-6";
 const sectionTitleCls = "text-xs uppercase tracking-wider text-white mb-4";
@@ -34,7 +35,8 @@ export default function ProfileEdit() {
   const [beltLevel, setBeltLevel] = useState("");
   const [weightKg, setWeightKg] = useState<string>("");
   const [discipline, setDiscipline] = useState("sparring");
-  const [goalsText, setGoalsText] = useState("");
+  const [goals, setGoals] = useState<string[]>([]);
+  const [newGoal, setNewGoal] = useState("");
 
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
@@ -69,7 +71,7 @@ export default function ProfileEdit() {
         setBeltLevel(p.belt_level ?? "");
         setWeightKg(p.weight_kg != null ? String(p.weight_kg) : "");
         setDiscipline(p.discipline ?? "sparring");
-        setGoalsText(Array.isArray(p.goals) ? p.goals.join(", ") : "");
+        setGoals(Array.isArray(p.goals) ? (p.goals as string[]).filter(Boolean) : []);
         setAvatarUrl(p.avatar_url ?? null);
         setLicenseValues(((p as any).license_values ?? {}) as Record<string, LicenseValue>);
         setClubId((p as any).club_id ?? null);
@@ -202,7 +204,7 @@ export default function ProfileEdit() {
       }
 
       // 2. Gem profilen (inkl. avatar_url) via edge function — service role bypasser RLS.
-      const goals = goalsText.split(",").map((g) => g.trim()).filter(Boolean);
+      const cleanGoals = goals.map((g) => g.trim()).filter(Boolean);
       const weight = weightKg ? parseFloat(weightKg) : null;
 
       const cleanedLicenseValues: Record<string, LicenseValue> = {};
@@ -222,7 +224,7 @@ export default function ProfileEdit() {
         belt_level: beltLevel || null,
         weight_kg: weight,
         discipline,
-        goals,
+        goals: cleanGoals,
         license_values: cleanedLicenseValues,
       };
       if (newAvatarPath) {
@@ -544,15 +546,74 @@ export default function ProfileEdit() {
 
         <div className={cardCls}>
           <h2 className={sectionTitleCls}>{t("profileGoalsTitle" as any)}</h2>
-          <Field label={t("profileGoalsTitle" as any)}>
+
+          {goals.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {goals.map((g) => (
+                <span
+                  key={g}
+                  className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-black"
+                  style={{ backgroundColor: "var(--accent-hex)" }}
+                >
+                  {t(g as any) || g}
+                  <button
+                    type="button"
+                    onClick={() => setGoals((prev) => prev.filter((x) => x !== g))}
+                    aria-label={t("delete" as any)}
+                    className="opacity-70 hover:opacity-100"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
+
+          <p className="text-xs text-white/70 mb-2">{t("selectAllThatApply" as any)}</p>
+          <div className="flex flex-wrap gap-2">
+            {GOAL_OPTIONS.filter((g) => !goals.includes(g)).map((g) => (
+              <button
+                key={g}
+                type="button"
+                onClick={() => setGoals((prev) => [...prev, g])}
+                className="rounded-full border border-white/15 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-white/80 hover:text-white hover:border-white/30 transition-colors"
+              >
+                {t(g as any) || g}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex gap-2 mt-4">
             <Input
               className={inputCls}
-              value={goalsText}
-              onChange={(e) => setGoalsText(e.target.value)}
-              placeholder="goal1, goal2, ..."
+              value={newGoal}
+              onChange={(e) => setNewGoal(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  const v = newGoal.trim();
+                  if (v && !goals.includes(v)) setGoals((prev) => [...prev, v]);
+                  setNewGoal("");
+                }
+              }}
+              placeholder={t("addGoalPlaceholder" as any) || "Tilføj eget mål"}
             />
-          </Field>
+            <Button
+              type="button"
+              onClick={() => {
+                const v = newGoal.trim();
+                if (v && !goals.includes(v)) setGoals((prev) => [...prev, v]);
+                setNewGoal("");
+              }}
+              disabled={!newGoal.trim()}
+              className="text-black font-medium shrink-0"
+              style={{ backgroundColor: "var(--accent-hex)" }}
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
+
       </div>
     </div>
   );
