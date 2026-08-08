@@ -361,6 +361,87 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
     savePlanData(updateSessionExercises(dayIndex, safeSessionIndex, exercises));
   }, [getSessionExercises, safeSessionIndex, savePlanData, updateSessionExercises]);
 
+  /** Copy a single exercise or a whole session's exercises to other days. */
+  const handleCopyToDays = useCallback((targetDayIndexes: number[], mode: "append" | "replace") => {
+    if (!copyMode) return;
+    const src = getSessionExercises(copyMode.dayIndex, copyMode.sessionIndex);
+    const payload = copyMode.exerciseIndex !== undefined
+      ? [src[copyMode.exerciseIndex]].filter(Boolean)
+      : src;
+    if (payload.length === 0) return;
+
+    const newData = JSON.parse(JSON.stringify(localPlanData));
+    const sourceSession = normalizeDaySessions(newData.weeklySchedule[copyMode.dayIndex])[copyMode.sessionIndex];
+
+    for (const di of targetDayIndexes) {
+      const day = newData.weeklySchedule[di];
+      if (!day) continue;
+      const sessions = normalizeDaySessions(day);
+      // Prefer first non-rest session, otherwise create a strength session
+      let idx = sessions.findIndex((s) => s.type !== "rest");
+      if (idx === -1) {
+        sessions.push({
+          type: (sourceSession?.type as any) || "gym",
+          label: sourceSession?.label || t("sessionTypeStrength"),
+          focus: sourceSession?.focus,
+          exercises: [],
+        });
+        idx = sessions.length - 1;
+      }
+      const existing = sessions[idx].exercises || [];
+      const copies = JSON.parse(JSON.stringify(payload)).map((ex: any) => ({
+        ...ex,
+        ...(coachMode ? { modifiedBy: "coach" } : {}),
+      }));
+      sessions[idx] = {
+        ...sessions[idx],
+        exercises: mode === "replace" ? copies : [...existing, ...copies],
+      };
+      newData.weeklySchedule[di] = {
+        ...day,
+        type: sessions[0]?.type ?? day.type,
+        label: sessions.length === 1 ? (sessions[0]?.label ?? day.label) : day.label,
+        sessions,
+        exercises: sessions.length === 1 ? sessions[0].exercises : day.exercises,
+      };
+    }
+
+    savePlanData(newData);
+    toast({ title: t("planCopiedToDays").replace("{{n}}", String(targetDayIndexes.length)) });
+  }, [copyMode, getSessionExercises, localPlanData, savePlanData, toast, t, coachMode]);
+
+  /** Edit session metadata (type / label / focus). */
+  const handleSaveSession = useCallback((patch: { type: PlanSession["type"]; label: string; focus: string }) => {
+    if (selectedDay === null) return;
+    const newData = JSON.parse(JSON.stringify(localPlanData));
+    const day = newData.weeklySchedule[selectedDay];
+    const sessions = normalizeDaySessions(day);
+    sessions[safeSessionIndex] = { ...sessions[safeSessionIndex], ...patch };
+    newData.weeklySchedule[selectedDay] = {
+      ...day,
+      sessions,
+      type: sessions[0]?.type ?? day.type,
+      label: sessions.length === 1 ? patch.label : day.label,
+      focus: sessions.length === 1 ? patch.focus : day.focus,
+    };
+    savePlanData(newData);
+  }, [selectedDay, safeSessionIndex, localPlanData, savePlanData]);
+
+  /** Edit a prescribed field on an exercise (sets/reps/rest/tempo/coachingCue). */
+  const handleUpdateExerciseField = useCallback((exerciseIndex: number, field: string, value: string) => {
+    if (selectedDay === null) return;
+    const exercises = [...getSessionExercises(selectedDay, safeSessionIndex)];
+    const current = exercises[exerciseIndex];
+    if (!current) return;
+    exercises[exerciseIndex] = {
+      ...current,
+      [field]: field === "sets" ? (value ? Number(value) : current.sets) : value,
+      ...(coachMode ? { modifiedBy: "coach" } : {}),
+    };
+    savePlanData(updateSessionExercises(selectedDay, safeSessionIndex, exercises));
+  }, [selectedDay, safeSessionIndex, getSessionExercises, savePlanData, updateSessionExercises, coachMode]);
+
+
   const handleDownload = async () => {
     setExporting(true);
     try {
