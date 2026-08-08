@@ -1026,6 +1026,18 @@ export default function AdminApproval() {
           </div>
         )}
 
+        {!loadError && staleWarning && (
+          <div className="rounded-xl border border-[#F5C84B]/50 bg-[#F5C84B]/10 p-3 text-sm text-[#F5C84B] flex items-center justify-between gap-3">
+            <span>
+              Kunne ikke bekræfte admin-adgang — appen er muligvis forældet.
+              Opdatér appen til nyeste version, eller prøv igen.
+            </span>
+            <Button size="sm" variant="outline" onClick={() => { setLoading(true); checkAdminAndLoad(); }}>
+              Prøv igen
+            </Button>
+          </div>
+        )}
+
         {/* Landing announcement editor */}
         <AnnouncementEditor />
 
