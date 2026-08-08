@@ -422,7 +422,6 @@ export function GlobalAppMenu() {
                   <div className="ml-6 mt-1 mb-1 space-y-0.5 border-l border-border pl-2">
                     {[
                       { to: "/admin/approval", icon: Users, label: t("adminUsers") || "Users", color: "text-primary" },
-                      { to: "/admin/drills", icon: Dumbbell, label: t("adminDrills") || "TKD drills", color: "text-tab-mental" },
                       { to: "/admin/blog", icon: FileText, label: t("adminBlog") || "Blog", color: "text-primary" },
                       { to: "/admin/clubs", icon: Building, label: t("adminClubs") || "Clubs", color: "text-primary" },
                       { to: "/admin/payments", icon: CreditCard, label: t("adminPayments") || "Payments", color: "text-emerald-500" },
