@@ -1,44 +1,46 @@
-# Adgangsgennemgang: hvorfor du så 0 klubber og 0 brugere
+# Klubspecifikke drills med coach-upload
 
-## Kort svar: databasen fejler ikke
+Drill-biblioteket bliver klubbens eget: coaches kan selv oprette drills direkte på drill-siden — enten som YouTube-link (gratis, ingen plads) eller som uploadet videofil med fair use-grænser.
 
-Jeg har gennemgået alle adgangsregler (RLS) og testet admin-siden live — både i preview og på den publicerede sportstalent.dk med en rigtig admin-session. Begge steder viser den korrekt:
+## Hvad brugeren oplever
 
-- 76 brugere i alt, 51 betalende, 32 demo, 28 coaches
-- Alle 28 klubber vises grupperet med atletantal
+**Coach (på /library/drills)**
+- Ny knap "Tilføj drill" øverst på siden (kun synlig for coaches i klubben).
+- Formular: titel, kategori, beskrivelse, og valg mellem:
+  - YouTube-link (anbefalet — tæller ikke mod klubbens kvote)
+  - Upload video (maks 10 MB, mp4/mov/webm)
+- Hver klub kan have maks 5 uploadede videoer. Kvotelinje vises: "3 af 5 videoer brugt (12 MB)". Når kvoten er fuld, deaktiveres upload-valget med en venlig besked om at bruge YouTube-link i stedet.
+- Coach kan redigere og slette klubbens egne drills (sletning fjerner også filen og frigiver kvote). Globale drills kan ikke redigeres af coaches.
 
-Så tallene "0" på din telefon kom ikke fra manglende rettigheder i databasen.
+**Atlet/medlem**
+- Uændret visning, men uploadede klubvideoer afspilles inline i appen i stedet for at åbne YouTube.
 
-## Hvad gennemgangen viste (verificeret)
+**Admin**
+- Den nuværende admin-side beholdes til globale drills på tværs af klubber (og som fallback for support). Klub-drills flyttes reelt ud til siden.
 
-- 103 tabeller i databasen: **alle** har RLS slået til og mindst én adgangsregel. Ingen huller.
-- Data findes: 81 profiler, 28 klubber, 89 klubmedlemskaber, 29 rolle-rækker.
-- Admin-reglerne er intakte: admin kan læse alle profiler, alle klubber og alle roller.
-- Data-API-rettighederne (GRANTs) er på plads på alle tabeller.
-- Databasens sikkerhedsscanner rapporterer 0 fejl (kun 133 informative advarsler om, at interne funktioner kan kaldes af indloggede brugere — normalt for dette design, ikke et hul).
-- Kun én bruger har admin-rollen: Farooq Rashid. Superadmin-kontakten står pt. slået **fra**.
+## Best practice-anbefalinger
 
-## Den sandsynlige årsag på din telefon
-
-Siden viser tal uden fejlbesked, hvis dataforespørgslen fejler eller returnerer tomt — fx ved:
-
-1. udløbet/ugyldig session på mobilen (appen henter så 0 rækker i stedet for at sige fra), eller
-2. en gemt offline-version (service worker/PWA-cache) der viser en tom skal uden friske data.
-
-Begge fører til præcis det billede du sendte: siden loader, men alle tal er 0.
-
-## Hvad jeg foreslår at bygge
-
-1. **Synlige fejl i stedet for tavse nuller** på admin-siderne (Brugergodkendelse, Statistik, Klubstyring): hvis en forespørgsel fejler eller sessionen er udløbet, vis en tydelig fejlbesked med "Prøv igen"-knap i stedet for 0.
-2. **Session-tjek før indlæsning**: opdater sessionen automatisk, og send brugeren til login hvis den er udløbet — i stedet for at vise en tom side.
-3. **Ingen offline-cache på admin-sider**: admin-ruterne skal altid hente friske data, aldrig fra offline-lageret.
-4. **Superadmin-status synlig i toppen** af Brugergodkendelse, så det altid er tydeligt om du ser alt eller kun dine egne klubber.
-
-Ingen ændringer i databasen eller adgangsreglerne — de er sunde, og at pille ved dem ville kun sænke sikkerheden.
+- YouTube (eller Vimeo) som standard: unlisted-video koster ingen lagerplads, streamer bedre på mobil og virker offline-cachet af YouTube selv. Upload bør være undtagelsen til korte klip uden konto.
+- 10 MB rækker til ca. 20-40 sek. i 720p. Vis en tydelig hjælpetekst: "Optag kort, i 720p, og hold klippet under 30 sekunder."
+- Privat bucket + signerede URL'er (ikke offentlig bucket), så klubbens interne materiale ikke kan deles ud af huset.
+- Kvote håndhæves både i UI og i databasen (trigger), så grænsen ikke kan omgås.
+- Filstørrelse og filtype håndhæves på bucket-niveau, ikke kun i browseren.
+- Slet altid filen sammen med drill-rækken, ellers "lækker" kvoten.
 
 ## Teknisk
 
-- `src/pages/AdminApproval.tsx`: `loadUsers()` ignorerer i dag `error` på alle seks parallelle forespørgsler og sætter blot tomme lister. Tilføj fejl-state + retry.
-- Samme mønster i `src/pages/AdminStats.tsx` (RPC `get_admin_user_stats`) og `src/pages/AdminClubs.tsx`.
-- Sessionstjek via eksisterende `src/lib/authSession.ts` (`getCurrentUser` / `isDefinitelySignedOut`) før `is_admin`-kaldet, så udløbet token giver redirect til login frem for tom side.
-- Service worker: undtag `/admin/*` fra cache-first, så admin altid går på nettet.
+**Database (migration)**
+- Tilføj til `taekwondo_drills`: `storage_path text`, `file_size_bytes bigint`, `source text` ('youtube' | 'upload', default 'youtube').
+- Nye RLS-policies: coaches i klubben (`is_coach_of_club(club_id)`) kan INSERT/UPDATE/DELETE rækker hvor `club_id` = deres klub. Globale rækker (`club_id is null`) forbliver admin-only. Eksisterende medlems-SELECT bevares.
+- Trigger `enforce_club_drill_quota()` før INSERT: afvis hvis klubben allerede har 5 rækker med `source='upload'`, eller hvis `file_size_bytes > 10485760`.
+
+**Storage**
+- Ny privat bucket `club-drills` med `file_size_limit` 10 MB og mime-typer mp4/quicktime/webm.
+- RLS på `storage.objects`: sti-prefix `{club_id}/...`; klubmedlemmer kan læse, klub-coaches kan uploade/slette.
+
+**Frontend**
+- `src/components/DrillLibrary.tsx`: tilføj coach-tilstand (knap, kvotelinje), inline afspilning af uploadede videoer via signeret URL.
+- Ny `src/components/drills/DrillFormDialog.tsx`: opret/rediger med YouTube-link eller filupload, klientside-validering af 10 MB og kvote.
+- Kategorier gøres sport-drevet som resten af appen (drills-labelen bruger allerede `drillsLabel`).
+- Nye i18n-nøgler tilføjes for alle 7 sprog.
+- `src/pages/Help.tsx`: kort afsnit + changelog-bump.
