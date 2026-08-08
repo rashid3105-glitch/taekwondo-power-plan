@@ -23,7 +23,7 @@ export default function Programs() {
     <div className="min-h-screen bg-background flex flex-col relative">
       <PageMeta
         title="Training Programs — Sportstalent"
-        description="Explore periodized training programs for taekwondo athletes. Competition prep, general S&C, and poomsae-specific programs."
+        description="Explore periodized training programs for combat-sport and martial-arts athletes. Competition prep, general S&C, and discipline-specific programs."
         canonical="https://sportstalent.dk/programs"
       />
       <Watermark />
