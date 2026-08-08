@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import { ChevronDown, ChevronUp, Shield, Dumbbell, Battery, Download, Loader2, Check, Layers, Youtube, CalendarPlus, Bell, BellOff, ArrowLeftRight, Trash2, Plus, GripVertical, User as UserIcon } from "lucide-react";
+import { ChevronDown, ChevronUp, Shield, Dumbbell, Battery, Download, Loader2, Check, Layers, Youtube, CalendarPlus, Bell, BellOff, ArrowLeftRight, Trash2, Plus, GripVertical, User as UserIcon, Copy, Pencil } from "lucide-react";
 import { SelfTrainingLogDialog } from "@/components/SelfTrainingLogDialog";
 import { DndContext, closestCenter, PointerSensor, TouchSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from "@dnd-kit/sortable";
@@ -24,6 +24,8 @@ import { normalizeDaySessions, type PlanSession } from "@/lib/planSessionUtils";
 import { localizeDayOfWeek, localizeExerciseName } from "@/lib/planTranslation";
 import { PlanProgramGrid } from "@/components/plan/PlanProgramGrid";
 import { PlanProgramMobile } from "@/components/plan/PlanProgramMobile";
+import { CopyToDaysDialog } from "@/components/plan/CopyToDaysDialog";
+import { EditSessionDialog } from "@/components/plan/EditSessionDialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 const CATEGORY_DOT: Record<string, string> = {
@@ -235,6 +237,8 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
   const [exporting, setExporting] = useState(false);
   const [selfLogOpen, setSelfLogOpen] = useState(false);
   const [pickerMode, setPickerMode] = useState<{ dayIndex: number; sessionIndex: number; exerciseIndex?: number } | null>(null);
+  const [copyMode, setCopyMode] = useState<{ dayIndex: number; sessionIndex: number; exerciseIndex?: number } | null>(null);
+  const [editSessionOpen, setEditSessionOpen] = useState(false);
   const [localPlanData, setLocalPlanData] = useState(plan.plan_data);
   const programWeeks = (() => {
     const explicit = Number(plan.plan_data?.programWeeks);
@@ -358,6 +362,87 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
     });
     savePlanData(updateSessionExercises(dayIndex, safeSessionIndex, exercises));
   }, [getSessionExercises, safeSessionIndex, savePlanData, updateSessionExercises]);
+
+  /** Copy a single exercise or a whole session's exercises to other days. */
+  const handleCopyToDays = useCallback((targetDayIndexes: number[], mode: "append" | "replace") => {
+    if (!copyMode) return;
+    const src = getSessionExercises(copyMode.dayIndex, copyMode.sessionIndex);
+    const payload = copyMode.exerciseIndex !== undefined
+      ? [src[copyMode.exerciseIndex]].filter(Boolean)
+      : src;
+    if (payload.length === 0) return;
+
+    const newData = JSON.parse(JSON.stringify(localPlanData));
+    const sourceSession = normalizeDaySessions(newData.weeklySchedule[copyMode.dayIndex])[copyMode.sessionIndex];
+
+    for (const di of targetDayIndexes) {
+      const day = newData.weeklySchedule[di];
+      if (!day) continue;
+      const sessions = normalizeDaySessions(day);
+      // Prefer first non-rest session, otherwise create a strength session
+      let idx = sessions.findIndex((s) => s.type !== "rest");
+      if (idx === -1) {
+        sessions.push({
+          type: (sourceSession?.type as any) || "gym",
+          label: sourceSession?.label || t("sessionTypeStrength"),
+          focus: sourceSession?.focus,
+          exercises: [],
+        });
+        idx = sessions.length - 1;
+      }
+      const existing = sessions[idx].exercises || [];
+      const copies = JSON.parse(JSON.stringify(payload)).map((ex: any) => ({
+        ...ex,
+        ...(coachMode ? { modifiedBy: "coach" } : {}),
+      }));
+      sessions[idx] = {
+        ...sessions[idx],
+        exercises: mode === "replace" ? copies : [...existing, ...copies],
+      };
+      newData.weeklySchedule[di] = {
+        ...day,
+        type: sessions[0]?.type ?? day.type,
+        label: sessions.length === 1 ? (sessions[0]?.label ?? day.label) : day.label,
+        sessions,
+        exercises: sessions.length === 1 ? sessions[0].exercises : day.exercises,
+      };
+    }
+
+    savePlanData(newData);
+    toast({ title: t("planCopiedToDays").replace("{{n}}", String(targetDayIndexes.length)) });
+  }, [copyMode, getSessionExercises, localPlanData, savePlanData, toast, t, coachMode]);
+
+  /** Edit session metadata (type / label / focus). */
+  const handleSaveSession = useCallback((patch: { type: PlanSession["type"]; label: string; focus: string }) => {
+    if (selectedDay === null) return;
+    const newData = JSON.parse(JSON.stringify(localPlanData));
+    const day = newData.weeklySchedule[selectedDay];
+    const sessions = normalizeDaySessions(day);
+    sessions[safeSessionIndex] = { ...sessions[safeSessionIndex], ...patch };
+    newData.weeklySchedule[selectedDay] = {
+      ...day,
+      sessions,
+      type: sessions[0]?.type ?? day.type,
+      label: sessions.length === 1 ? patch.label : day.label,
+      focus: sessions.length === 1 ? patch.focus : day.focus,
+    };
+    savePlanData(newData);
+  }, [selectedDay, safeSessionIndex, localPlanData, savePlanData]);
+
+  /** Edit a prescribed field on an exercise (sets/reps/rest/tempo/coachingCue). */
+  const handleUpdateExerciseField = useCallback((exerciseIndex: number, field: string, value: string) => {
+    if (selectedDay === null) return;
+    const exercises = [...getSessionExercises(selectedDay, safeSessionIndex)];
+    const current = exercises[exerciseIndex];
+    if (!current) return;
+    exercises[exerciseIndex] = {
+      ...current,
+      [field]: field === "sets" ? (value ? Number(value) : current.sets) : value,
+      ...(coachMode ? { modifiedBy: "coach" } : {}),
+    };
+    savePlanData(updateSessionExercises(selectedDay, safeSessionIndex, exercises));
+  }, [selectedDay, safeSessionIndex, getSessionExercises, savePlanData, updateSessionExercises, coachMode]);
+
 
   const handleDownload = async () => {
     setExporting(true);
@@ -540,14 +625,33 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
               {/* Current session header */}
               {currentSession && (
                 <>
-                  {currentDaySessions.length === 1 && (
-                    <p className="text-sm font-semibold text-card-foreground mb-1">{currentSession.label}</p>
-                  )}
+                  <div className="flex items-start gap-2 mb-1">
+                    {currentDaySessions.length === 1 && (
+                      <p className="text-sm font-semibold text-card-foreground flex-1">{currentSession.label}</p>
+                    )}
+                    <div className="ml-auto flex items-center gap-1">
+                      <button
+                        onClick={() => setEditSessionOpen(true)}
+                        className="p-1 text-primary hover:text-primary/80 transition-colors"
+                        title={t("planEditSession")}
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        onClick={() => setCopyMode({ dayIndex: selectedDay, sessionIndex: safeSessionIndex })}
+                        className="p-1 text-muted-foreground hover:text-primary transition-colors"
+                        title={t("planCopySession")}
+                      >
+                        <Copy className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </div>
                   {currentSession.focus && (
                     <p className="text-sm text-muted-foreground mb-3">{currentSession.focus}</p>
                   )}
                 </>
               )}
+
 
               {currentSession?.exercises?.length ? (
                 <DndContext
@@ -584,6 +688,8 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
                             onUpdateNotes={(notes) => upsertLog(j, { notes })}
                             onSwap={() => setPickerMode({ dayIndex: selectedDay, sessionIndex: safeSessionIndex, exerciseIndex: j })}
                             onRemove={() => handleRemoveExercise(selectedDay, j)}
+                            onCopy={() => setCopyMode({ dayIndex: selectedDay, sessionIndex: safeSessionIndex, exerciseIndex: j })}
+                            onUpdatePrescribed={(field, value) => handleUpdateExerciseField(j, field, value)}
                             coachMode={coachMode}
                             athleteUserId={effectiveAthleteId}
                             feedback={fb}
@@ -627,6 +733,26 @@ export function AIPlanCard({ plan, onPlanUpdated, coachMode = false, athleteUser
             }}
           />
 
+          {/* Copy to other days */}
+          <CopyToDaysDialog
+            open={!!copyMode}
+            onClose={() => setCopyMode(null)}
+            title={copyMode?.exerciseIndex !== undefined ? t("planCopyExercise") : t("planCopySession")}
+            days={schedule}
+            sourceDayIndex={copyMode?.dayIndex ?? -1}
+            onConfirm={handleCopyToDays}
+          />
+
+          {/* Edit session metadata */}
+          <EditSessionDialog
+            open={editSessionOpen}
+            onClose={() => setEditSessionOpen(false)}
+            session={currentSession ?? null}
+            onSave={handleSaveSession}
+          />
+
+
+
           {/* Periodization (collapsed at bottom) */}
           {periodization.length > 0 && (
             <Collapsible defaultOpen={false}>
@@ -655,6 +781,8 @@ interface AIExerciseRowProps {
   onUpdateNotes: (notes: string | null) => void;
   onSwap: () => void;
   onRemove: () => void;
+  onCopy?: () => void;
+  onUpdatePrescribed?: (field: string, value: string) => void;
   coachMode?: boolean;
   athleteUserId?: string;
   feedback?: ExerciseFeedback[];
@@ -677,7 +805,7 @@ function SortableExerciseRow(props: AIExerciseRowProps & { id: string }) {
   );
 }
 
-function AIExerciseRow({ exercise, index, log, pending, onToggleComplete, onUpdateSets, onUpdateReps, onUpdateNotes, onSwap, onRemove, coachMode, athleteUserId, feedback, onFeedbackChanged, onMarkFeedbackRead, dragHandleProps }: AIExerciseRowProps & { dragHandleProps?: any }) {
+function AIExerciseRow({ exercise, index, log, pending, onToggleComplete, onUpdateSets, onUpdateReps, onUpdateNotes, onSwap, onRemove, onCopy, onUpdatePrescribed, coachMode, athleteUserId, feedback, onFeedbackChanged, onMarkFeedbackRead, dragHandleProps }: AIExerciseRowProps & { dragHandleProps?: any }) {
   const [open, setOpen] = useState(false);
   const { locale, t } = useLanguage();
   const completed = log?.completed ?? false;
@@ -717,6 +845,11 @@ function AIExerciseRow({ exercise, index, log, pending, onToggleComplete, onUpda
             {displayName}
           </span>
         </button>
+        {exercise.modifiedBy === "coach" && (
+          <Badge variant="outline" className="text-[9px] px-1.5 py-0 h-4 border-primary/40 text-primary bg-primary/10 flex-shrink-0">
+            {t("planCoachEdited")}
+          </Badge>
+        )}
         {pending && (
           <Badge variant="outline" className="text-[9px] px-1.5 py-0 h-4 border-border text-muted-foreground bg-secondary flex-shrink-0">
             {t("workoutLogPending")}
@@ -753,6 +886,15 @@ function AIExerciseRow({ exercise, index, log, pending, onToggleComplete, onUpda
         >
           <ArrowLeftRight className="h-3.5 w-3.5" />
         </button>
+        {onCopy && (
+          <button
+            onClick={onCopy}
+            className="p-1 text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+            title={t("planCopyExercise")}
+          >
+            <Copy className="h-3.5 w-3.5" />
+          </button>
+        )}
         <button
           onClick={onRemove}
           className="p-1 text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
@@ -760,6 +902,7 @@ function AIExerciseRow({ exercise, index, log, pending, onToggleComplete, onUpda
         >
           <Trash2 className="h-3.5 w-3.5" />
         </button>
+
       </div>
 
       {open && (
@@ -816,23 +959,54 @@ function AIExerciseRow({ exercise, index, log, pending, onToggleComplete, onUpda
             <ExerciseFeedbackView feedback={feedback} onMarkRead={onMarkFeedbackRead} />
           ) : null}
 
-          {/* Prescribed details */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
-            <div className="rounded-md bg-muted p-2.5">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Prescribed Sets × Reps</p>
-              <p className="text-sm font-bold text-foreground">{exercise.sets} × {exercise.reps}</p>
-            </div>
-            <div className="rounded-md bg-muted p-2.5">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Rest</p>
-              <p className="text-sm font-bold text-foreground">{exercise.rest}</p>
-            </div>
-            {exercise.tempo && (
-              <div className="rounded-md bg-muted p-2.5">
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-0.5">Tempo</p>
-                <p className="text-sm font-bold text-foreground">{exercise.tempo}</p>
+          {/* Prescribed details — editable */}
+          <div className="rounded-lg border border-border bg-muted/50 p-3 space-y-2">
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">{t("planPrescribed")}</p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <div>
+                <label className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1 block">{t("planSetsLabel")}</label>
+                <Input
+                  type="number" inputMode="numeric" min={1} max={20}
+                  defaultValue={exercise.sets ?? ""}
+                  onBlur={(e) => onUpdatePrescribed?.("sets", e.target.value)}
+                  className="h-8 text-sm"
+                />
               </div>
-            )}
+              <div>
+                <label className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1 block">{t("planRepsLabel")}</label>
+                <Input
+                  defaultValue={exercise.reps ?? ""}
+                  onBlur={(e) => onUpdatePrescribed?.("reps", e.target.value)}
+                  className="h-8 text-sm"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1 block">{t("planRestLabel")}</label>
+                <Input
+                  defaultValue={exercise.rest ?? ""}
+                  onBlur={(e) => onUpdatePrescribed?.("rest", e.target.value)}
+                  className="h-8 text-sm"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1 block">{t("planTempoLabel")}</label>
+                <Input
+                  defaultValue={exercise.tempo ?? ""}
+                  onBlur={(e) => onUpdatePrescribed?.("tempo", e.target.value)}
+                  className="h-8 text-sm"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1 block">{t("planCueLabel")}</label>
+              <Input
+                defaultValue={exercise.coachingCue ?? ""}
+                onBlur={(e) => onUpdatePrescribed?.("coachingCue", e.target.value)}
+                className="h-8 text-sm"
+              />
+            </div>
           </div>
+
           {exercise.muscleGroups?.length > 0 && (
             <div className="flex items-center gap-2">
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Muscles:</span>
