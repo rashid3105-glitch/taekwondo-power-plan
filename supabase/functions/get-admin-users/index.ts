@@ -25,10 +25,9 @@ Deno.serve(async (req) => {
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
 
     // Verify the caller is admin
-    const userClient = createClient(supabaseUrl, anonKey, {
-      global: { headers: { Authorization: authHeader } },
-    });
-    const { data: { user } } = await userClient.auth.getUser();
+    const token = authHeader.replace("Bearer ", "");
+    const userClient = createClient(supabaseUrl, anonKey);
+    const { data: { user } } = await userClient.auth.getUser(token);
     if (!user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
@@ -45,8 +44,21 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Use service role to list auth users and get emails
-    const { data: authUsers } = await adminClient.auth.admin.listUsers({ perPage: 1000 });
+    // Use the server-only admin client for both auth emails and approval data.
+    // Returning profiles here avoids platform-specific RLS/session races in an
+    // installed app while the caller is still explicitly verified above.
+    const [{ data: authUsers, error: authUsersError }, { data: profiles, error: profilesError }] = await Promise.all([
+      adminClient.auth.admin.listUsers({ perPage: 1000 }),
+      adminClient
+        .from("profiles")
+        .select("user_id, display_name, created_at, is_approved, age, weight_kg, belt_level, experience_years, goals, sessions_per_week, payment_status, payment_date, is_demo, demo_full_access, demo_expires_at, club_id, discipline, country, current_injury, last_seen_at, birth_date, sport_start_date, phone, phone_country_code, athlete_code")
+        .or("is_parent.is.null,is_parent.eq.false")
+        .order("created_at", { ascending: false }),
+    ]);
+
+    if (authUsersError || profilesError) {
+      throw authUsersError ?? profilesError;
+    }
 
     const emailMap: Record<string, string> = {};
     if (authUsers?.users) {
@@ -55,7 +67,7 @@ Deno.serve(async (req) => {
       }
     }
 
-    return new Response(JSON.stringify({ emailMap }), {
+    return new Response(JSON.stringify({ emailMap, profiles: profiles ?? [] }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {

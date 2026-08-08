@@ -123,11 +123,13 @@ export default function AdminApproval() {
 
   const checkAdminAndLoad = async () => {
     setLoadError(null);
-    // Installed/standalone app can hold a stale token; force a refresh first so
-    // RLS-scoped queries run with a valid session instead of returning nothing.
-    const { data: sessionRes } = await supabase.auth.getSession();
-    if (!sessionRes.session) {
-      await supabase.auth.refreshSession();
+    // Always refresh before privileged reads. A cached session can still exist
+    // while its access token is no longer suitable for a protected query.
+    const { error: refreshError } = await supabase.auth.refreshSession();
+    if (refreshError) {
+      setLoadError(refreshError.message);
+      setLoading(false);
+      return;
     }
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { navigate("/auth"); return; }
@@ -155,13 +157,24 @@ export default function AdminApproval() {
       supabase.from("clubs" as any).select("id, name, max_athletes, sport").order("name"),
     ]);
 
-    if (profilesRes.error) {
-      setLoadError(profilesRes.error.message);
+    if (emailsRes.error) {
+      setLoadError(emailsRes.error.message);
       setLoading(false);
       return;
     }
 
-    const profiles = ((profilesRes.data || []) as PendingUser[]).filter((p) => p.user_id !== DELETED_USER_ID);
+    // The protected function is the canonical admin source. Keep the direct
+    // query as a compatibility fallback while older deployed functions update.
+    const functionProfiles = Array.isArray(emailsRes.data?.profiles)
+      ? emailsRes.data.profiles as PendingUser[]
+      : null;
+    if (!functionProfiles && profilesRes.error) {
+      setLoadError(profilesRes.error.message);
+      setLoading(false);
+      return;
+    }
+    const profiles = ((functionProfiles ?? profilesRes.data ?? []) as PendingUser[])
+      .filter((p) => p.user_id !== DELETED_USER_ID);
     const emailMap: Record<string, string> = emailsRes.data?.emailMap || {};
 
     const plans = (plansRes.data || []) as (UserPlan & { user_id: string })[];
