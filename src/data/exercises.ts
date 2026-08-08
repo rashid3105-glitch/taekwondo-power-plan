@@ -75,6 +75,7 @@ interface ExerciseBase {
 
 import { exercisesAdditional } from "./exercisesAdditional";
 import { exercisesExpansion } from "./exercisesExpansion";
+import { exercisesMobilityPack } from "./exercisesMobilityPack";
 
 const exercisesDataBase: Record<string, ExerciseBase> = {
   trapBarDeadlift: {
