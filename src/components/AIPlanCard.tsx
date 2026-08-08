@@ -825,6 +825,11 @@ function AIExerciseRow({ exercise, index, log, pending, onToggleComplete, onUpda
             {displayName}
           </span>
         </button>
+        {exercise.modifiedBy === "coach" && (
+          <Badge variant="outline" className="text-[9px] px-1.5 py-0 h-4 border-primary/40 text-primary bg-primary/10 flex-shrink-0">
+            {t("planCoachEdited")}
+          </Badge>
+        )}
         {pending && (
           <Badge variant="outline" className="text-[9px] px-1.5 py-0 h-4 border-border text-muted-foreground bg-secondary flex-shrink-0">
             {t("workoutLogPending")}
