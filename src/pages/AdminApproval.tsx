@@ -121,6 +121,13 @@ export default function AdminApproval() {
   }, [clubScope]);
 
   const checkAdminAndLoad = async () => {
+    setLoadError(null);
+    // Installed/standalone app can hold a stale token; force a refresh first so
+    // RLS-scoped queries run with a valid session instead of returning nothing.
+    const { data: sessionRes } = await supabase.auth.getSession();
+    if (!sessionRes.session) {
+      await supabase.auth.refreshSession();
+    }
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { navigate("/auth"); return; }
     const { data: adminCheck } = await supabase.rpc("is_admin", { _user_id: user.id });
@@ -130,6 +137,7 @@ export default function AdminApproval() {
   };
 
   const loadUsers = async () => {
+    setLoadError(null);
     const [profilesRes, emailsRes, plansRes, rolesRes, coachAthletesRes, clubsRes] = await Promise.all([
       supabase
         .from("profiles")
@@ -146,8 +154,15 @@ export default function AdminApproval() {
       supabase.from("clubs" as any).select("id, name, max_athletes, sport").order("name"),
     ]);
 
+    if (profilesRes.error) {
+      setLoadError(profilesRes.error.message);
+      setLoading(false);
+      return;
+    }
+
     const profiles = ((profilesRes.data || []) as PendingUser[]).filter((p) => p.user_id !== DELETED_USER_ID);
     const emailMap: Record<string, string> = emailsRes.data?.emailMap || {};
+
     const plans = (plansRes.data || []) as (UserPlan & { user_id: string })[];
     const roles = (rolesRes.data || []) as { user_id: string; role: string }[];
     const coachAthleteLinks = (coachAthletesRes.data || []) as { coach_id: string; athlete_id: string }[];
