@@ -996,6 +996,15 @@ export default function AdminApproval() {
 
         <h1 className="text-xl font-extrabold text-foreground">{t("userApproval")}</h1>
 
+        {loadError && (
+          <div className="rounded-xl border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive flex items-center justify-between gap-3">
+            <span>Kunne ikke hente brugere: {loadError}</span>
+            <Button size="sm" variant="outline" onClick={() => { setLoading(true); checkAdminAndLoad(); }}>
+              Prøv igen
+            </Button>
+          </div>
+        )}
+
         {/* Landing announcement editor */}
         <AnnouncementEditor />
 
