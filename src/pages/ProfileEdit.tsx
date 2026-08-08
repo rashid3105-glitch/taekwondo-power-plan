@@ -546,15 +546,74 @@ export default function ProfileEdit() {
 
         <div className={cardCls}>
           <h2 className={sectionTitleCls}>{t("profileGoalsTitle" as any)}</h2>
-          <Field label={t("profileGoalsTitle" as any)}>
+
+          {goals.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {goals.map((g) => (
+                <span
+                  key={g}
+                  className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-black"
+                  style={{ backgroundColor: "var(--accent-hex)" }}
+                >
+                  {t(g as any) || g}
+                  <button
+                    type="button"
+                    onClick={() => setGoals((prev) => prev.filter((x) => x !== g))}
+                    aria-label={t("delete" as any)}
+                    className="opacity-70 hover:opacity-100"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
+
+          <p className="text-xs text-white/70 mb-2">{t("selectAllThatApply" as any)}</p>
+          <div className="flex flex-wrap gap-2">
+            {GOAL_OPTIONS.filter((g) => !goals.includes(g)).map((g) => (
+              <button
+                key={g}
+                type="button"
+                onClick={() => setGoals((prev) => [...prev, g])}
+                className="rounded-full border border-white/15 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-white/80 hover:text-white hover:border-white/30 transition-colors"
+              >
+                {t(g as any) || g}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex gap-2 mt-4">
             <Input
               className={inputCls}
-              value={goalsText}
-              onChange={(e) => setGoalsText(e.target.value)}
-              placeholder="goal1, goal2, ..."
+              value={newGoal}
+              onChange={(e) => setNewGoal(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  const v = newGoal.trim();
+                  if (v && !goals.includes(v)) setGoals((prev) => [...prev, v]);
+                  setNewGoal("");
+                }
+              }}
+              placeholder={t("addGoalPlaceholder" as any) || "Tilføj eget mål"}
             />
-          </Field>
+            <Button
+              type="button"
+              onClick={() => {
+                const v = newGoal.trim();
+                if (v && !goals.includes(v)) setGoals((prev) => [...prev, v]);
+                setNewGoal("");
+              }}
+              disabled={!newGoal.trim()}
+              className="text-black font-medium shrink-0"
+              style={{ backgroundColor: "var(--accent-hex)" }}
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
+
       </div>
     </div>
   );
