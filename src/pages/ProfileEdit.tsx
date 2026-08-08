@@ -4,13 +4,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ChevronLeft, Save, Loader2, Camera, User as UserIcon } from "lucide-react";
+import { ChevronLeft, Save, Loader2, Camera, User as UserIcon, Plus, X } from "lucide-react";
 import { PageMeta } from "@/components/PageMeta";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAvatarUrl } from "@/hooks/useAvatarUrl";
 import { toast } from "sonner";
 import { useSportProfile } from "@/hooks/useSportProfile";
 import { gradeLabelFor } from "@/lib/sportGrade";
+import { GOAL_OPTIONS } from "@/config/goals";
 
 const cardCls = "rounded-xl bg-white/[0.03] border border-white/10 p-5 sm:p-6";
 const sectionTitleCls = "text-xs uppercase tracking-wider text-white mb-4";
