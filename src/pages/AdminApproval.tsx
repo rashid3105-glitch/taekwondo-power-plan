@@ -73,6 +73,7 @@ export default function AdminApproval() {
   const [clubs, setClubs] = useState<{ id: string; name: string; max_athletes: number; sport?: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [reassigning, setReassigning] = useState<string | null>(null);
   const [downloadingPlan, setDownloadingPlan] = useState<string | null>(null);
   const [deletingUser, setDeletingUser] = useState<string | null>(null);
