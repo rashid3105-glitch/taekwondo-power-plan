@@ -66,6 +66,7 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
   const { t, locale } = useLanguage();
   const navigate = useNavigate();
   const { activeClubId } = useActiveClub();
+  const { matchAnalysisEnabled } = useClubMatchAnalysisEnabled(activeClubId);
   const [loading, setLoading] = useState(true);
   const [sessions, setSessions] = useState<SessionBucket[]>([]);
   const [upcoming, setUpcoming] = useState<UpcomingComp[]>([]);

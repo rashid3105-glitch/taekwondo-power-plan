@@ -71,6 +71,11 @@ export default function AthleteModules() {
   }, [activeClubId, sportProfile.hasMatchAnalysis]);
 
 
+  // Match analysis is taekwondo-only for now — hide the card entirely for other sports.
+  const visibleModules = ATHLETE_MODULES.filter(
+    (m) => m.key !== "video" || sportProfile.hasMatchAnalysis,
+  );
+
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
       <header className="sticky top-0 z-10 border-b border-white/10 bg-[#0a0a0a]/90 backdrop-blur px-4 py-3 flex items-center gap-3">
@@ -83,13 +88,13 @@ export default function AthleteModules() {
       <main className="max-w-2xl mx-auto px-4 py-6">
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {ATHLETE_MODULES.map((m) => (
+            {visibleModules.map((m) => (
               <div key={m.key} className="h-20 bg-white/10 animate-pulse rounded-xl" />
             ))}
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {ATHLETE_MODULES.map((m) => {
+          {visibleModules.map((m) => {
             const enabled = enabledKeys.has(m.key);
             const Icon = m.icon;
             const route = MODULE_ROUTES[m.key];
