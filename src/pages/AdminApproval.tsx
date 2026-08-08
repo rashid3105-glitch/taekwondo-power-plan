@@ -142,6 +142,7 @@ export default function AdminApproval() {
 
   const loadUsers = async () => {
     setLoadError(null);
+    setStaleWarning(false);
     const [profilesRes, emailsRes, plansRes, rolesRes, coachAthletesRes, clubsRes] = await Promise.all([
       supabase
         .from("profiles")
