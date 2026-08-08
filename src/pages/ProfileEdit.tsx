@@ -204,7 +204,7 @@ export default function ProfileEdit() {
       }
 
       // 2. Gem profilen (inkl. avatar_url) via edge function — service role bypasser RLS.
-      const goals = goalsText.split(",").map((g) => g.trim()).filter(Boolean);
+      const cleanGoals = goals.map((g) => g.trim()).filter(Boolean);
       const weight = weightKg ? parseFloat(weightKg) : null;
 
       const cleanedLicenseValues: Record<string, LicenseValue> = {};
