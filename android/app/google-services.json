@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "189767054340",
+    "project_id": "sportstalent",
+    "storage_bucket": "sportstalent.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:189767054340:android:5582e234ddaa5e47333151",
+        "android_client_info": {
+          "package_name": "dk.sportstalent.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDfI6ttFsTv3xyQcKuqe30nhJyHWYyeUMw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
