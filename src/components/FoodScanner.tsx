@@ -52,7 +52,7 @@ const dataUrlByteLength = (dataUrl: string) => Math.ceil(dataUrl.length * 0.75);
 const canvasToDataUrl = (canvas: HTMLCanvasElement, quality: number) =>
   canvas.toDataURL("image/jpeg", quality);
 
-async function downscaleImage(file: File, maxDim = 1280, quality = 0.82): Promise<string> {
+async function downscaleImage(file: File, maxDim = 896, quality = 0.7): Promise<string> {
   const dataUrl: string = await new Promise((res, rej) => {
     const r = new FileReader();
     r.onload = () => res(r.result as string);
@@ -138,7 +138,7 @@ export function FoodScanner({ onLogged }: Props) {
     setItems(null);
     setSelected(null);
     try {
-      const dataUrl = await downscaleImage(file, 1280, 0.8);
+      const dataUrl = await downscaleImage(file, 896, 0.7);
       if (dataUrlByteLength(dataUrl) > MAX_SCAN_IMAGE_BYTES) {
         toast.error("Billedet er for stort — prøv et beskåret eller mindre billede");
         return;
@@ -176,11 +176,11 @@ export function FoodScanner({ onLogged }: Props) {
       // the iOS WKWebView content process (white screen with no error). The
       // plugin already downscales and compresses, so we skip downscaleImage.
       const photo = await CapCamera.getPhoto({
-        quality: 60,
+        quality: 55,
         resultType: CameraResultType.Base64,
         source: fromCamera ? CameraSource.Camera : CameraSource.Photos,
         allowEditing: false,
-        width: 1024,
+        width: 896,
         correctOrientation: true,
         // popover keeps the WKWebView visible behind the camera UI so iOS
         // is much less likely to kill the web content process while the
