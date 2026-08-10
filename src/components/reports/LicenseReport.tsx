@@ -137,16 +137,38 @@ export function LicenseReport() {
   );
 
   const filtered = useMemo(() => {
-    return rows
+    const base = rows
       .filter((r) => (typeFilter === "all" ? true : r.fieldName === typeFilter))
-      .filter((r) => (statusFilter === "all" ? true : statusOf(r) === statusFilter))
-      .sort((a, b) => {
-        const ax = a.expiresAt || "9999-12-31";
-        const bx = b.expiresAt || "9999-12-31";
-        if (ax !== bx) return ax.localeCompare(bx);
-        return a.athlete.localeCompare(b.athlete);
-      });
-  }, [rows, statusFilter, typeFilter]);
+      .filter((r) => (statusFilter === "all" ? true : statusOf(r) === statusFilter));
+
+    const dir = sortDir === "asc" ? 1 : -1;
+    const cmp = (a: Row, b: Row) => {
+      let av: string;
+      let bv: string;
+      if (sortKey === "status") {
+        const order: Status[] = ["expired", "soon", "valid", "missing"];
+        av = String(order.indexOf(statusOf(a)));
+        bv = String(order.indexOf(statusOf(b)));
+      } else if (sortKey === "expiresAt") {
+        av = a.expiresAt || "9999-12-31";
+        bv = b.expiresAt || "9999-12-31";
+      } else if (sortKey === "value") {
+        av = (a.value || "").toLowerCase();
+        bv = (b.value || "").toLowerCase();
+      } else {
+        av = (a[sortKey] || "").toLowerCase();
+        bv = (b[sortKey] || "").toLowerCase();
+      }
+      if (av !== bv) return av.localeCompare(bv) * dir;
+      // tiebreaker: athlete name then type
+      const ax = a.athlete.toLowerCase();
+      const bx = b.athlete.toLowerCase();
+      if (ax !== bx) return ax.localeCompare(bx);
+      return a.fieldName.localeCompare(b.fieldName);
+    };
+
+    return [...base].sort(cmp);
+  }, [rows, statusFilter, typeFilter, sortKey, sortDir]);
 
   const exportCsv = () => {
     const header = [t("licenseReportAthlete"), t("licenseReportType"), t("licenseReportValue"), t("licenseReportExpiry"), t("licenseReportStatus")];
