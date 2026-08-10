@@ -240,11 +240,28 @@ export function LicenseReport() {
         <table className="w-full text-sm">
           <thead className="bg-muted/40">
             <tr className="text-left">
-              <th className="px-3 py-2 font-semibold text-foreground">{t("licenseReportAthlete")}</th>
-              <th className="px-3 py-2 font-semibold text-foreground">{t("licenseReportType")}</th>
-              <th className="px-3 py-2 font-semibold text-foreground">{t("licenseReportValue")}</th>
-              <th className="px-3 py-2 font-semibold text-foreground">{t("licenseReportExpiry")}</th>
-              <th className="px-3 py-2 font-semibold text-foreground">{t("licenseReportStatus")}</th>
+              {([
+                ["athlete", t("licenseReportAthlete")],
+                ["fieldName", t("licenseReportType")],
+                ["value", t("licenseReportValue")],
+                ["expiresAt", t("licenseReportExpiry")],
+                ["status", t("licenseReportStatus")],
+              ] as [SortKey, string][]).map(([key, label]) => (
+                <th key={key} className="px-3 py-2 font-semibold text-foreground">
+                  <button
+                    onClick={() => toggleSort(key)}
+                    className="inline-flex items-center gap-1 hover:text-primary transition-colors"
+                  >
+                    {label}
+                    {sortKey === key &&
+                      (sortDir === "asc" ? (
+                        <ArrowUp className="h-3.5 w-3.5" />
+                      ) : (
+                        <ArrowDown className="h-3.5 w-3.5" />
+                      ))}
+                  </button>
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
