@@ -33,12 +33,26 @@ const STATUS_CLASS: Record<Status, string> = {
   missing: "bg-muted text-muted-foreground border-border",
 };
 
+type SortKey = "athlete" | "fieldName" | "value" | "expiresAt" | "status";
+type SortDir = "asc" | "desc";
+
 export function LicenseReport() {
   const { t } = useLanguage();
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<Status | "all">("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [sortKey, setSortKey] = useState<SortKey>("expiresAt");
+  const [sortDir, setSortDir] = useState<SortDir>("asc");
+
+  const toggleSort = (key: SortKey) => {
+    if (sortKey === key) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDir(key === "athlete" || key === "fieldName" || key === "value" ? "asc" : "asc");
+    }
+  };
 
   useEffect(() => {
     (async () => {
