@@ -58,7 +58,9 @@ export function LicenseReport() {
         clubId
           ? supabase
               .from("profiles")
-              .select("user_id, display_name, license_values")
+              .select(
+                "user_id, display_name, license_values, gal_license, gal_license_expires_at, has_myfightbook, myfightbook_expires_at, antidoping_course_date",
+              )
               .eq("club_id", clubId)
               .neq("user_id", user.id)
           : Promise.resolve({ data: [] as any[] } as any),
@@ -67,13 +69,43 @@ export function LicenseReport() {
       const fields = ((fieldsRes.data as any[]) || []) as { id: string; field_name: string }[];
       const profiles = ((profilesRes as any).data as any[]) || [];
 
+      const addYear = (d: string) => {
+        const dt = new Date(d);
+        dt.setFullYear(dt.getFullYear() + 1);
+        return dt.toISOString().slice(0, 10);
+      };
+
       const out: Row[] = [];
       for (const p of profiles.sort((a, b) => (a.display_name || "").localeCompare(b.display_name || ""))) {
+        const name = p.display_name || "—";
+
+        // Standard license fields (stored as dedicated profile columns)
+        out.push({
+          athlete: name,
+          fieldName: t("galLicense") || "GAL license",
+          value: p.gal_license || null,
+          expiresAt: p.gal_license_expires_at || null,
+        });
+        out.push({
+          athlete: name,
+          fieldName: t("hasMyFightBook") || "MyFightBook",
+          value: p.has_myfightbook ? (t("yes") || "Yes") : null,
+          expiresAt: p.myfightbook_expires_at || null,
+        });
+        out.push({
+          athlete: name,
+          fieldName: t("antidopingCourseDate") || "Antidoping course",
+          value: p.antidoping_course_date || null,
+          expiresAt: p.antidoping_course_date ? addYear(p.antidoping_course_date) : null,
+        });
+
+        // Custom club license fields — only rows that actually hold data
         const values = (p.license_values || {}) as Record<string, { value?: string | null; expires_at?: string | null }>;
         for (const f of fields) {
           const v = values[f.id] || {};
+          if (!v.value && !v.expires_at) continue;
           out.push({
-            athlete: p.display_name || "—",
+            athlete: name,
             fieldName: f.field_name,
             value: v.value ?? null,
             expiresAt: v.expires_at ?? null,
