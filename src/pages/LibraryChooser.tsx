@@ -36,6 +36,13 @@ export default function LibraryChooser() {
     ? [
         ...libraries,
         {
+          id: "reports",
+          labelKey: "libReportsLabel" as TranslationKey,
+          descKey: "libReportsDesc" as TranslationKey,
+          icon: FileText,
+          color: "text-primary",
+        },
+        {
           id: "surveys",
           labelKey: "libSurveysLabel" as TranslationKey,
           descKey: "libSurveysDesc" as TranslationKey,
@@ -44,6 +51,7 @@ export default function LibraryChooser() {
         },
       ]
     : libraries;
+
 
   return (
     <div className="min-h-screen bg-background relative">
