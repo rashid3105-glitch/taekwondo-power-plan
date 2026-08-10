@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
-import { Download, Loader2 } from "lucide-react";
+import { ArrowDown, ArrowUp, Download, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Row {
