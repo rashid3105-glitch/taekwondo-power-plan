@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
-import { Download, Loader2 } from "lucide-react";
+import { ArrowDown, ArrowUp, Download, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Row {
@@ -33,12 +33,26 @@ const STATUS_CLASS: Record<Status, string> = {
   missing: "bg-muted text-muted-foreground border-border",
 };
 
+type SortKey = "athlete" | "fieldName" | "value" | "expiresAt" | "status";
+type SortDir = "asc" | "desc";
+
 export function LicenseReport() {
   const { t } = useLanguage();
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<Status | "all">("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [sortKey, setSortKey] = useState<SortKey>("expiresAt");
+  const [sortDir, setSortDir] = useState<SortDir>("asc");
+
+  const toggleSort = (key: SortKey) => {
+    if (sortKey === key) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDir(key === "athlete" || key === "fieldName" || key === "value" ? "asc" : "asc");
+    }
+  };
 
   useEffect(() => {
     (async () => {
@@ -123,16 +137,38 @@ export function LicenseReport() {
   );
 
   const filtered = useMemo(() => {
-    return rows
+    const base = rows
       .filter((r) => (typeFilter === "all" ? true : r.fieldName === typeFilter))
-      .filter((r) => (statusFilter === "all" ? true : statusOf(r) === statusFilter))
-      .sort((a, b) => {
-        const ax = a.expiresAt || "9999-12-31";
-        const bx = b.expiresAt || "9999-12-31";
-        if (ax !== bx) return ax.localeCompare(bx);
-        return a.athlete.localeCompare(b.athlete);
-      });
-  }, [rows, statusFilter, typeFilter]);
+      .filter((r) => (statusFilter === "all" ? true : statusOf(r) === statusFilter));
+
+    const dir = sortDir === "asc" ? 1 : -1;
+    const cmp = (a: Row, b: Row) => {
+      let av: string;
+      let bv: string;
+      if (sortKey === "status") {
+        const order: Status[] = ["expired", "soon", "valid", "missing"];
+        av = String(order.indexOf(statusOf(a)));
+        bv = String(order.indexOf(statusOf(b)));
+      } else if (sortKey === "expiresAt") {
+        av = a.expiresAt || "9999-12-31";
+        bv = b.expiresAt || "9999-12-31";
+      } else if (sortKey === "value") {
+        av = (a.value || "").toLowerCase();
+        bv = (b.value || "").toLowerCase();
+      } else {
+        av = (a[sortKey] || "").toLowerCase();
+        bv = (b[sortKey] || "").toLowerCase();
+      }
+      if (av !== bv) return av.localeCompare(bv) * dir;
+      // tiebreaker: athlete name then type
+      const ax = a.athlete.toLowerCase();
+      const bx = b.athlete.toLowerCase();
+      if (ax !== bx) return ax.localeCompare(bx);
+      return a.fieldName.localeCompare(b.fieldName);
+    };
+
+    return [...base].sort(cmp);
+  }, [rows, statusFilter, typeFilter, sortKey, sortDir]);
 
   const exportCsv = () => {
     const header = [t("licenseReportAthlete"), t("licenseReportType"), t("licenseReportValue"), t("licenseReportExpiry"), t("licenseReportStatus")];
@@ -204,11 +240,28 @@ export function LicenseReport() {
         <table className="w-full text-sm">
           <thead className="bg-muted/40">
             <tr className="text-left">
-              <th className="px-3 py-2 font-semibold text-foreground">{t("licenseReportAthlete")}</th>
-              <th className="px-3 py-2 font-semibold text-foreground">{t("licenseReportType")}</th>
-              <th className="px-3 py-2 font-semibold text-foreground">{t("licenseReportValue")}</th>
-              <th className="px-3 py-2 font-semibold text-foreground">{t("licenseReportExpiry")}</th>
-              <th className="px-3 py-2 font-semibold text-foreground">{t("licenseReportStatus")}</th>
+              {([
+                ["athlete", t("licenseReportAthlete")],
+                ["fieldName", t("licenseReportType")],
+                ["value", t("licenseReportValue")],
+                ["expiresAt", t("licenseReportExpiry")],
+                ["status", t("licenseReportStatus")],
+              ] as [SortKey, string][]).map(([key, label]) => (
+                <th key={key} className="px-3 py-2 font-semibold text-foreground">
+                  <button
+                    onClick={() => toggleSort(key)}
+                    className="inline-flex items-center gap-1 hover:text-primary transition-colors"
+                  >
+                    {label}
+                    {sortKey === key &&
+                      (sortDir === "asc" ? (
+                        <ArrowUp className="h-3.5 w-3.5" />
+                      ) : (
+                        <ArrowDown className="h-3.5 w-3.5" />
+                      ))}
+                  </button>
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
