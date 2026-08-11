@@ -212,7 +212,7 @@ const Index = () => {
           pointerEvents: "none",
         }} />
 
-        <div style={{ position: "relative", maxWidth: 1120, margin: "0 auto", display: "grid", gridTemplateColumns: isMobile || isTablet ? "1fr" : "1.05fr 1fr", gap: isMobile ? 24 : 56, alignItems: "center" }}>
+        <div style={{ position: "relative", maxWidth: 1120, margin: "0 auto", display: "grid", gridTemplateColumns: isMobile || isTablet ? "1fr" : "1.05fr 1fr", gap: isMobile ? 24 : 56, alignItems: isMobile || isTablet ? "center" : "start" }}>
           <div>
             <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(212,175,55,0.08)", border: "0.5px solid rgba(212,175,55,0.28)", borderRadius: 999, padding: isMobile ? "4px 12px" : "5px 14px", fontSize: isMobile ? 10 : 11, color: GOLD, fontWeight: 700, letterSpacing: "0.14em", marginBottom: isMobile ? 14 : 22, fontFamily: MONO }}>
               <span style={{ width: 6, height: 6, borderRadius: "50%", background: GOLD, boxShadow: `0 0 8px ${GOLD}` }} />
