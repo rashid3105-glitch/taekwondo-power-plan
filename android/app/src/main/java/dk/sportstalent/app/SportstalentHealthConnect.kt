@@ -7,9 +7,7 @@ import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
 import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.HeartRateRecord
-import androidx.health.connect.client.records.HeartRateVariabilityRmssdRecord
 import androidx.health.connect.client.records.Record
-import androidx.health.connect.client.records.RestingHeartRateRecord
 import androidx.health.connect.client.records.SleepSessionRecord
 import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.request.ReadRecordsRequest
@@ -83,8 +81,6 @@ class SportstalentHealthConnect : Plugin() {
 
     private fun recordClass(id: String): KClass<out Record>? = when (id) {
         "sleep", "sleepAnalysis", "SleepSessionRecord" -> SleepSessionRecord::class
-        "resting_hr", "restingHeartRate", "RestingHeartRateRecord" -> RestingHeartRateRecord::class
-        "hrv", "heartRateVariabilityRmssd", "HeartRateVariabilityRmssdRecord" -> HeartRateVariabilityRmssdRecord::class
         "heart_rate", "heartRate", "HeartRateRecord" -> HeartRateRecord::class
         "active_energy", "activeCaloriesBurned", "ActiveCaloriesBurnedRecord" -> ActiveCaloriesBurnedRecord::class
         "steps", "stepCount", "StepsRecord" -> StepsRecord::class
@@ -192,8 +188,7 @@ class SportstalentHealthConnect : Plugin() {
     }
 
     private fun unitFor(id: String): String = when (id) {
-        "resting_hr", "restingHeartRate", "heart_rate", "heartRate" -> "bpm"
-        "hrv", "heartRateVariabilityRmssd" -> "ms"
+        "heart_rate", "heartRate" -> "bpm"
         "active_energy", "activeCaloriesBurned" -> "kcal"
         "steps", "stepCount" -> "count"
         "sleep", "sleepAnalysis" -> "seconds"
@@ -237,16 +232,6 @@ class SportstalentHealthConnect : Plugin() {
                         obj.put("sourceName", meta.dataOrigin.packageName)
                         obj.put("unit", unit)
                         when (record) {
-                            is RestingHeartRateRecord -> {
-                                obj.put("startDate", record.time.toString())
-                                obj.put("endDate", record.time.toString())
-                                obj.put("value", record.beatsPerMinute.toDouble())
-                            }
-                            is HeartRateVariabilityRmssdRecord -> {
-                                obj.put("startDate", record.time.toString())
-                                obj.put("endDate", record.time.toString())
-                                obj.put("value", record.heartRateVariabilityMillis)
-                            }
                             is StepsRecord -> {
                                 obj.put("startDate", record.startTime.toString())
                                 obj.put("endDate", record.endTime.toString())
