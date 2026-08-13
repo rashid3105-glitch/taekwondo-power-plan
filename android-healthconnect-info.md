@@ -4,7 +4,9 @@ The `capacitor-health` plugin already installed for iOS also bridges Android **H
 
 ## 1. Prerequisites on the test device
 1. Install **Health Connect** from the Play Store (pre-installed on Android 14+).
-2. In Health Connect, grant your data sources (Wear OS watch, Fitbit, Samsung Health, Google Fit, etc.) permission to write **Sleep, Heart rate, HRV, Steps, Exercise**.
+2. In Health Connect, grant your data sources (Wear OS watch, Fitbit, Samsung Health, Google Fit, etc.) permission to write **Sleep, Heart rate, Steps, Active calories, Exercise**.
+
+> **Scope note (Aug 2026):** Resting heart rate and HRV were removed from the Android Health Connect scope to comply with Google Play's "Minimum Scope" policy — they never delivered data on Android. iOS HealthKit is unchanged and still reads resting HR and HRV.
 
 ## 2. After running `npx cap add android` on your Mac/PC
 
@@ -14,7 +16,6 @@ Open `android/app/src/main/AndroidManifest.xml` and add the following inside the
 <!-- Health Connect read permissions (MVP scope) -->
 <uses-permission android:name="android.permission.health.READ_SLEEP" />
 <uses-permission android:name="android.permission.health.READ_HEART_RATE" />
-<uses-permission android:name="android.permission.health.READ_HEART_RATE_VARIABILITY" />
 <uses-permission android:name="android.permission.health.READ_STEPS" />
 <uses-permission android:name="android.permission.health.READ_EXERCISE" />
 
