@@ -1,7 +1,7 @@
 // Health Connect bridge (Android-only). Safe no-op on web / iOS.
 //
 // V2 scope — pure observations, mirrors src/lib/healthkit.ts. Reads 7 Health
-// Connect record types (sleep, resting HR, HRV, heart rate, active energy,
+// Connect record types (sleep, heart rate, active energy,
 // steps, workouts) for the last 30 days (90 days on first sync), maps them
 // to the wearable_samples ingest shape, and posts them to the SAME
 // `wearable-ingest` edge function used by iOS — but with
