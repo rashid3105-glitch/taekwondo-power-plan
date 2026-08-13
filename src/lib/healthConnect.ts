@@ -25,10 +25,11 @@ const PROVIDER = "health_connect";
 // Short metric ids that the Kotlin plugin maps to Health Connect record
 // classes. Kept identical to the wearable_samples.metric_type domain so we
 // don't need to remap on the way out.
+// NOTE: resting_hr and hrv are intentionally NOT requested on Android —
+// the Health Connect permission scope was reduced per Google Play's
+// "Minimum Scope" policy (these types never delivered data).
 const READ_TYPES = [
   "sleep",
-  "resting_hr",
-  "hrv",
   "heart_rate",
   "active_energy",
   "steps",
@@ -175,8 +176,6 @@ export async function requestHealthConnectPermission(): Promise<{
 type IngestSample = {
   metric_type:
     | "sleep"
-    | "resting_hr"
-    | "hrv"
     | "heart_rate"
     | "active_energy"
     | "steps"
@@ -311,10 +310,8 @@ export async function syncHealthConnect(
     }
   };
 
-  const [sleep, rhr, hrv, hr, energy, steps, workouts] = await Promise.all([
+  const [sleep, hr, energy, steps, workouts] = await Promise.all([
     safeCat("sleep"),
-    safeQty("resting_hr"),
-    safeQty("hrv"),
     safeQty("heart_rate"),
     safeQty("active_energy"),
     safeQty("steps"),
@@ -323,8 +320,6 @@ export async function syncHealthConnect(
 
   const perType = {
     sleep: sleep.length,
-    resting_hr: rhr.length,
-    hrv: hrv.length,
     heart_rate: hr.length,
     active_energy: energy.length,
     steps: steps.length,
@@ -346,30 +341,6 @@ export async function syncHealthConnect(
       metric_type: "sleep",
       value_numeric: durMin,
       unit: "min",
-      start_at: s.startDate,
-      end_at: s.endDate,
-      external_id: extId(s),
-      source_device: s.sourceName ?? null,
-    });
-  }
-
-  for (const s of rhr) {
-    samples.push({
-      metric_type: "resting_hr",
-      value_numeric: s.value,
-      unit: "bpm",
-      start_at: s.startDate,
-      end_at: s.endDate,
-      external_id: extId(s),
-      source_device: s.sourceName ?? null,
-    });
-  }
-
-  for (const s of hrv) {
-    samples.push({
-      metric_type: "hrv",
-      value_numeric: s.value,
-      unit: "ms",
       start_at: s.startDate,
       end_at: s.endDate,
       external_id: extId(s),
