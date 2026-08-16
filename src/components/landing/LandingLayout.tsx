@@ -140,11 +140,14 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
           >
             {NAV_LINKS.map((l) => {
               const active = isActive(l.href);
+              // Red dot marks recently updated sections (new pricing structure).
+              const hasUpdate = l.href === "/priser";
               return (
                 <span
                   key={l.href}
                   onClick={() => navigate(l.href)}
                   style={{
+                    position: "relative",
                     color: active ? GOLD : "rgba(255,255,255,0.7)",
                     cursor: "pointer",
                     fontWeight: active ? 700 : 500,
@@ -159,6 +162,20 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
                   }}
                 >
                   {l.label}
+                  {hasUpdate && (
+                    <span
+                      aria-hidden="true"
+                      style={{
+                        position: "absolute",
+                        top: 2,
+                        right: 3,
+                        width: 6,
+                        height: 6,
+                        borderRadius: "50%",
+                        background: "#EF4444",
+                      }}
+                    />
+                  )}
                 </span>
               );
             })}
