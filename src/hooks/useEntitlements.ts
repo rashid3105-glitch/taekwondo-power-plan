@@ -52,9 +52,9 @@ export function useEntitlements(): EntitlementState {
         return;
       }
       if (roles?.some((r) => r.role === "coach")) {
-        cachedTier = "team_small";
+        cachedTier = "club";
         cachedAt = Date.now();
-        setTier("team_small");
+        setTier("club");
         return;
       }
 

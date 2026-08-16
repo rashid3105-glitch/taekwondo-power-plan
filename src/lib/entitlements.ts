@@ -3,6 +3,10 @@
 
 export type Tier =
   | "free"
+  // Current club licences (2026)
+  | "club"
+  | "club_plus"
+  // Legacy tiers — kept so grandfathered subscribers keep their access
   | "athlete"
   | "coach_solo"
   | "team_small"
@@ -25,6 +29,8 @@ export type PlanType = "training" | "mental" | "nutrition";
 // "*" = everything locked (free / unpaid).
 export const LOCKED_MODULES_BY_TIER: Record<Tier, LockedModule[] | ["*"]> = {
   free: ["*"],
+  club: [],
+  club_plus: [],
   athlete: ["testing", "match_analysis", "season_plan", "library"],
   coach_solo: [],
   team_small: [],
@@ -41,6 +47,8 @@ export const PLAN_LIMITS: Record<
   { training: number; mental: number; nutrition: number } | null
 > = {
   free: { training: 0, mental: 0, nutrition: 0 },
+  club: null,
+  club_plus: null,
   athlete: { training: 1, mental: 1, nutrition: 1 },
   coach_solo: { training: 1, mental: 1, nutrition: 1 },
   team_small: null,
@@ -74,5 +82,12 @@ export function canCreatePlan(
 }
 
 export function canManageAthletes(tier: Tier): boolean {
-  return tier === "team_small" || tier === "team_medium" || tier === "team_large" || tier === "admin";
+  return (
+    tier === "club" ||
+    tier === "club_plus" ||
+    tier === "team_small" ||
+    tier === "team_medium" ||
+    tier === "team_large" ||
+    tier === "admin"
+  );
 }

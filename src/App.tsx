@@ -56,7 +56,7 @@ import CoachMentalReview from "./pages/CoachMentalReview";
 import CoachAthleteOverview from "./pages/CoachAthleteOverview";
 import CoachCompetitions from "./pages/CoachCompetitions";
 import SeasonCalendar from "./pages/SeasonCalendar";
-import Pricing from "./pages/Pricing";
+
 import SubscriptionSettings from "./pages/SubscriptionSettings";
 import Help from "./pages/Help";
 import Diary from "./pages/Diary";
@@ -249,9 +249,7 @@ const AnimatedRoutes = () => {
         <Route path="/coach/testing/sessions/:sessionId" element={<Page><CoachTestSession /></Page>} />
         <Route path="/coach/surveys" element={<Page><CoachSurveys /></Page>} />
         <Route path="/surveys" element={<Page><AthleteSurveys /></Page>} />
-        <Route path="/pricing" element={<Navigate to={isNativeApp() ? "/dashboard" : "/#pricing"} replace />} />
-        {/* Pricing page hidden — uncomment to restore */}
-        {/* <Route path="/pricing" element={<Page><Pricing /></Page>} /> */}
+        <Route path="/pricing" element={<Navigate to={isNativeApp() ? "/dashboard" : "/priser"} replace />} />
         <Route path="/settings/subscription" element={<Page><SubscriptionSettings /></Page>} />
         <Route path="/help" element={<Page><Help /></Page>} />
         <Route path="/kostplan" element={<Page><Kostplan /></Page>} />

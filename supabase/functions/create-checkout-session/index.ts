@@ -8,36 +8,13 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+// Club licences (2026). DKK only, yearly billing, prices incl. VAT.
 const PRICE_IDS: Record<string, Record<string, string>> = {
-  // 2026 DKK pricing
-  athlete: {
-    monthly: "price_1TqtnDCrYQiZxdDXjymoOFKk", // 59 DKK/md
-    yearly: "price_1TqtnECrYQiZxdDXNpxU9KEJ",  // 590 DKK/år
+  club: {
+    yearly: "price_1U57F2CrYQiZxdDXfWfVxoXF", // 7.500 DKK/år — op til 50 medlemmer
   },
-  coach_solo: {
-    monthly: "price_1TS2U4CrYQiZxdDXDlVynkBK", // 99 DKK/md
-    yearly: "price_1TS2UhCrYQiZxdDXT0x1eJIJ",  // 950 DKK/år
-  },
-  team_small: {
-    monthly: "price_1TS2U4CrYQiZxdDXFXl0NoY3", // 399 DKK/md
-    yearly: "price_1TS2UjCrYQiZxdDXsSbn1ORg",  // 3.830 DKK/år
-  },
-  team_medium: {
-    monthly: "price_1TS2U5CrYQiZxdDXIRq2hIlv", // 699 DKK/md
-    yearly: "price_1TS2UkCrYQiZxdDX9yv9l5jB",  // 6.710 DKK/år
-  },
-  team_large: {
-    monthly: "price_1TqtnECrYQiZxdDXKmWrY5Xd", // 1299 DKK/md
-    yearly: "price_1TqtnFCrYQiZxdDXVYaBbiDA",  // 12.990 DKK/år
-  },
-  // Legacy aliases for grandfathered references
-  personal: {
-    monthly: "price_1TJuy5CrYQiZxdDX3rAwzI9Q",
-    yearly: "price_1TJuyKCrYQiZxdDXbXV54djF",
-  },
-  coach: {
-    monthly: "price_1TJuyLCrYQiZxdDX4r06jyr6",
-    yearly: "price_1TJuyMCrYQiZxdDX8pFtww0n",
+  club_plus: {
+    yearly: "price_1U57F3CrYQiZxdDX3TuxuGvu", // 12.000 DKK/år — 51-100 medlemmer
   },
 };
 
@@ -60,18 +37,15 @@ serve(async (req) => {
     if (authError || !data.user?.email) throw new Error("User not authenticated");
 
     const user = data.user;
-    const { tier, billingCycle, currency } = await req.json();
+    const { tier } = await req.json();
 
-    if (!tier || !billingCycle) throw new Error("Missing tier or billingCycle");
-    if (!PRICE_IDS[tier]?.[billingCycle]) throw new Error("Invalid tier or billing cycle");
+    // Club licences are yearly and DKK-only.
+    const billingCycle = "yearly";
+    if (!tier) throw new Error("Missing tier");
+    if (!PRICE_IDS[tier]?.[billingCycle]) throw new Error("Invalid tier");
 
     const priceId = PRICE_IDS[tier][billingCycle];
-
-    // Validate currency. Default to DKK if missing/unknown.
-    const allowedCurrencies = new Set(["dkk", "nok", "sek", "eur"]);
-    const checkoutCurrency = allowedCurrencies.has((currency || "").toLowerCase())
-      ? (currency as string).toLowerCase()
-      : "dkk";
+    const checkoutCurrency = "dkk";
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",
@@ -105,7 +79,7 @@ serve(async (req) => {
       line_items: [{ price: priceId, quantity: 1 }],
       mode: "subscription",
       success_url: `${origin}/payment-success`,
-      cancel_url: `${origin}/pricing`,
+      cancel_url: `${origin}/priser`,
       metadata: { tier, billingCycle, user_id: user.id, currency: checkoutCurrency },
     });
 
