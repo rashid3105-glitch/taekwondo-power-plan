@@ -76,52 +76,41 @@ export default function Priser() {
       </section>
 
       <div style={sec}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 12, alignItems: "stretch" }}>
-          {TIERS.map((tier) => {
-            const active = athletes >= tier.min && athletes <= tier.max;
-            return (
-              <div key={tier.min} style={{
-                background: active ? "rgba(212,175,55,0.07)" : "rgba(255,255,255,0.03)",
-                border: `0.5px solid ${active ? "rgba(212,175,55,0.35)" : "rgba(255,255,255,0.07)"}`,
-                borderRadius: 14, padding: "20px 18px",
-              }}>
-                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: active ? GOLD : "rgba(255,255,255,0.5)", marginBottom: 8 }}>
-                  {tier.min}–{tier.max} {t("pricingAthletesWord")}
-                </div>
-                <div style={{ fontSize: 38, fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 1 }}>{tier.rate}</div>
-                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", marginTop: 6 }}>{t("pricingPerAthleteMonth")}</div>
-                <div style={{ fontSize: 11, color: tier.discount ? GOLD : "rgba(255,255,255,0.35)", marginTop: 10, fontWeight: 700 }}>
-                  {tier.discount ? `−${tier.discount}% ${t("pricingDiscountWord")}` : "—"}
-                </div>
+        {/* Reference-club promo banner */}
+        <div style={{ background: "rgba(212,175,55,0.1)", border: "0.5px solid rgba(212,175,55,0.35)", borderRadius: 12, padding: "14px 18px", fontSize: 14, fontWeight: 700, color: GOLD, lineHeight: 1.5, marginBottom: 20, textAlign: "center" }}>
+          {t("pricingRefBanner")}
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 14, alignItems: "stretch" }}>
+          {PLANS.map((plan) => (
+            <div key={plan.id} style={{
+              background: plan.highlight ? "rgba(212,175,55,0.07)" : "rgba(255,255,255,0.03)",
+              border: `0.5px solid ${plan.highlight ? "rgba(212,175,55,0.35)" : "rgba(255,255,255,0.07)"}`,
+              borderRadius: 14, padding: "26px 22px", display: "flex", flexDirection: "column", gap: 10,
+            }}>
+              <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: "0.1em", textTransform: "uppercase", color: plan.highlight ? GOLD : "rgba(255,255,255,0.55)" }}>
+                {t(plan.nameKey as Parameters<typeof t>[0])}
               </div>
-            );
-          })}
+              <div style={{ fontSize: 13, color: "rgba(255,255,255,0.55)" }}>{t(plan.limitKey as Parameters<typeof t>[0])}</div>
+              <div style={{ fontSize: plan.price ? 36 : 26, fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 1.1, marginTop: 6 }}>
+                {plan.price ? plan.price.toLocaleString("da-DK") : t("pricingPlanContact")}
+              </div>
+              {plan.price && (
+                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>{t("pricingPerYearUnit")}</div>
+              )}
+              <button
+                onClick={() => (plan.price ? navigate("/auth") : document.getElementById("contact-form")?.scrollIntoView({ behavior: "smooth" }))}
+                style={{ marginTop: "auto", padding: "12px", borderRadius: 8, border: plan.highlight ? "none" : "0.5px solid rgba(212,175,55,0.5)", background: plan.highlight ? GOLD : "transparent", color: plan.highlight ? "#0B0C14" : GOLD, fontSize: 13, fontWeight: 800, cursor: "pointer" }}
+              >
+                {plan.price ? t("pricingPlanCta") : t("pricingPlanContact")}
+              </button>
+            </div>
+          ))}
         </div>
 
-        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", marginTop: 14, lineHeight: 1.6 }}>{t("pricingTierNote")}</div>
-
-        <div style={{ marginTop: 28, background: "rgba(212,175,55,0.06)", border: "0.5px solid rgba(212,175,55,0.28)", borderRadius: 14, padding: "26px 24px" }}>
-          <div style={{ fontSize: 15, fontWeight: 800, marginBottom: 16 }}>{t("pricingCalcTitle")}</div>
-          <label style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", display: "block", marginBottom: 8 }}>
-            {t("pricingCalcAthletes")}: <span style={{ color: GOLD, fontWeight: 800 }}>{athletes}</span>
-          </label>
-          <input type="range" min={1} max={50} value={athletes} onChange={(e) => setAthletes(Number(e.target.value))}
-            style={{ width: "100%", accentColor: GOLD }} />
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 20 }}>
-            <div>
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginBottom: 4 }}>{t("pricingCalcMonthly")}</div>
-              <div style={{ fontSize: 28, fontWeight: 900, letterSpacing: "-0.03em" }}>{monthly.toLocaleString("da-DK")} kr</div>
-            </div>
-            <div>
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginBottom: 4 }}>{t("pricingCalcYearly")}</div>
-              <div style={{ fontSize: 28, fontWeight: 900, letterSpacing: "-0.03em", color: GOLD }}>{yearly.toLocaleString("da-DK")} kr</div>
-            </div>
-          </div>
-          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", marginTop: 12 }}>{t("pricingBilledYearly")}</div>
-          <button onClick={() => navigate("/auth")} style={{ width: "100%", marginTop: 20, padding: "13px", borderRadius: 8, border: "none", background: GOLD, color: "#0B0C14", fontSize: 14, fontWeight: 800, cursor: "pointer" }}>{t("pricingCtaTrialClub")}</button>
-        </div>
-
+        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", marginTop: 16, lineHeight: 1.6 }}>{t("pricingVatNote")}</div>
       </div>
+
 
       {/* ── Let's talk ─────────────────────────────────────────── */}
       <div style={sec}>
