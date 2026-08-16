@@ -85,13 +85,3 @@ function perYear(locale: string): string {
   if (locale.startsWith("es")) return "/año";
   return "/yr";
 }
-
-export function getTierPrice(
-  tier: string,
-  currency: SupportedCurrency,
-  cycle: "monthly" | "yearly",
-): number | null {
-  const t = TIER_PRICES[tier];
-  if (!t) return null;
-  return t[currency][cycle];
-}
