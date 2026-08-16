@@ -145,14 +145,23 @@ export default function Priser() {
                 <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>{t("pricingPerYearUnit")}</div>
               )}
               <button
-                onClick={() => (plan.price ? navigate("/auth") : document.getElementById("contact-form")?.scrollIntoView({ behavior: "smooth" }))}
-                style={{ marginTop: "auto", padding: "12px", borderRadius: 8, border: plan.highlight ? "none" : "0.5px solid rgba(212,175,55,0.5)", background: plan.highlight ? GOLD : "transparent", color: plan.highlight ? "#0B0C14" : GOLD, fontSize: 13, fontWeight: 800, cursor: "pointer" }}
+                disabled={checkoutPlan === plan.id}
+                onClick={() => (plan.price ? handleCheckout(plan.id) : document.getElementById("contact-form")?.scrollIntoView({ behavior: "smooth" }))}
+                style={{ marginTop: "auto", padding: "12px", borderRadius: 8, border: plan.highlight ? "none" : "0.5px solid rgba(212,175,55,0.5)", background: plan.highlight ? GOLD : "transparent", color: plan.highlight ? "#0B0C14" : GOLD, fontSize: 13, fontWeight: 800, cursor: checkoutPlan === plan.id ? "wait" : "pointer", opacity: checkoutPlan === plan.id ? 0.7 : 1 }}
               >
-                {plan.price ? t("pricingPlanCta") : t("pricingPlanContact")}
+                {checkoutPlan === plan.id
+                  ? t("pricingCheckoutLoading")
+                  : plan.price ? t("pricingPlanCta") : t("pricingPlanContact")}
               </button>
             </div>
           ))}
         </div>
+
+        {checkoutError && (
+          <div style={{ marginTop: 14, background: "rgba(239,68,68,0.1)", border: "0.5px solid rgba(239,68,68,0.4)", borderRadius: 10, padding: "12px 16px", fontSize: 13, color: "#FCA5A5" }}>
+            {checkoutError}
+          </div>
+        )}
 
         <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", marginTop: 16, lineHeight: 1.6 }}>{t("pricingVatNote")}</div>
       </div>
