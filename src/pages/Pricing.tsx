@@ -91,51 +91,46 @@ export default function Pricing() {
     checkSubscription();
   }, [native]);
 
-  // Inject Product JSON-LD for subscription tiers (rich pricing results).
+  // Inject Product JSON-LD for the club licence (aggregate offer, prices incl. VAT).
   // Skipped in native — no pricing surface allowed at all.
   useEffect(() => {
     if (native) return;
-    const currencyCode = currency.toUpperCase();
-    const allTiers = [...teamTiers];
-    const products = allTiers.map((tier) => {
-      const monthly = getTierPrice(tier.key, currency, "monthly");
-      const yearly = getTierPrice(tier.key, currency, "yearly");
-      return {
-        "@context": "https://schema.org",
-        "@type": "Product",
-        name: `Sportstalent — ${t(tier.nameKey)}`,
-        description: t(tier.descKey),
-        brand: { "@type": "Brand", name: "Sportstalent" },
-        offers: [
-          monthly != null && {
-            "@type": "Offer",
-            price: monthly,
-            priceCurrency: currencyCode,
-            url: "https://sportstalent.dk/pricing",
-            availability: "https://schema.org/InStock",
-            category: "Monthly subscription",
-          },
-          yearly != null && {
-            "@type": "Offer",
-            price: yearly,
-            priceCurrency: currencyCode,
-            url: "https://sportstalent.dk/pricing",
-            availability: "https://schema.org/InStock",
-            category: "Yearly subscription",
-          },
-        ].filter(Boolean),
-      };
-    });
+    const product = {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: "Sportstalent klublicens",
+      description: "Klublicens til Sportstalent — årlig fakturering, alle priser inkl. moms.",
+      brand: { "@type": "Brand", name: "Sportstalent" },
+      offers: {
+        "@type": "AggregateOffer",
+        priceCurrency: "DKK",
+        lowPrice: 7500,
+        highPrice: 12000,
+        offerCount: 2,
+        valueAddedTaxIncluded: true,
+        url: "https://sportstalent.dk/priser",
+        availability: "https://schema.org/InStock",
+        priceSpecification: {
+          "@type": "UnitPriceSpecification",
+          priceCurrency: "DKK",
+          valueAddedTaxIncluded: true,
+          billingDuration: 12,
+          billingIncrement: 1,
+          unitCode: "ANN",
+        },
+      },
+    };
 
     const script = document.createElement("script");
     script.type = "application/ld+json";
     script.dataset.pricingProducts = "true";
-    script.textContent = JSON.stringify(products);
+    script.textContent = JSON.stringify(product);
     document.head.appendChild(script);
     return () => {
       script.remove();
     };
-  }, [currency, locale, t]);
+  }, [native]);
+
 
   const checkSubscription = async () => {
     const { data: { session } } = await supabase.auth.getSession();
