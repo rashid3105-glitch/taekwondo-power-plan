@@ -37,18 +37,15 @@ serve(async (req) => {
     if (authError || !data.user?.email) throw new Error("User not authenticated");
 
     const user = data.user;
-    const { tier, billingCycle, currency } = await req.json();
+    const { tier } = await req.json();
 
-    if (!tier || !billingCycle) throw new Error("Missing tier or billingCycle");
-    if (!PRICE_IDS[tier]?.[billingCycle]) throw new Error("Invalid tier or billing cycle");
+    // Club licences are yearly and DKK-only.
+    const billingCycle = "yearly";
+    if (!tier) throw new Error("Missing tier");
+    if (!PRICE_IDS[tier]?.[billingCycle]) throw new Error("Invalid tier");
 
     const priceId = PRICE_IDS[tier][billingCycle];
-
-    // Validate currency. Default to DKK if missing/unknown.
-    const allowedCurrencies = new Set(["dkk", "nok", "sek", "eur"]);
-    const checkoutCurrency = allowedCurrencies.has((currency || "").toLowerCase())
-      ? (currency as string).toLowerCase()
-      : "dkk";
+    const checkoutCurrency = "dkk";
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",
