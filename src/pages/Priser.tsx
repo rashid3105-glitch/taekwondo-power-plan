@@ -48,6 +48,33 @@ export default function Priser() {
   const [form, setForm] = useState({ name: "", email: "", club: "", message: "" });
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
+  const [checkoutPlan, setCheckoutPlan] = useState<string | null>(null);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+
+  // Starts a Stripe checkout for a club licence (yearly, DKK).
+  const handleCheckout = async (planId: string) => {
+    setCheckoutError(null);
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      navigate("/auth?redirect=/priser");
+      return;
+    }
+    setCheckoutPlan(planId);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout-session", {
+        body: { tier: planId },
+      });
+      if (error) throw error;
+      if (data?.url) window.open(data.url, "_blank");
+      else throw new Error("No checkout URL");
+    } catch (e) {
+      setCheckoutError(t("pricingCheckoutError"));
+    } finally {
+      setCheckoutPlan(null);
+    }
+  };
+
+
 
 
 
