@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { PageMeta } from "@/components/PageMeta";
 import { Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
-import { detectCurrency, getTierPrice, formatPrice } from "@/lib/currency";
+
 import { useLanguage } from "@/i18n/LanguageContext";
 import logo from "@/assets/logo.png";
 
@@ -31,9 +31,6 @@ export default function InviteSignup() {
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
 
-  const currency = detectCurrency();
-  const monthly = getTierPrice("athlete", currency, "monthly") ?? 49;
-  const priceLabel = formatPrice(monthly, currency, "monthly", locale as string);
 
   useEffect(() => {
     (async () => {
@@ -131,10 +128,11 @@ export default function InviteSignup() {
               <Card className="border-l-4 border-l-primary">
                 <CardContent className="p-4">
                   <p className="text-sm text-foreground leading-relaxed">
-                    <span className="font-bold">{priceLabel}</span> — ingen binding. Prøv gratis i 14 dage, derefter {priceLabel}. Opsig når som helst.
+                    <span className="font-bold">Gratis for dig</span> — din klub betaler licensen. Ingen binding og ingen betalingskort.
                   </p>
                 </CardContent>
               </Card>
+
 
               <div className="space-y-2">
                 <Button onClick={() => setStep("account")} className="w-full h-11 rounded-xl font-bold bg-landing-red hover:bg-landing-red/90 text-white">
