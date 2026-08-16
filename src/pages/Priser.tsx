@@ -33,6 +33,7 @@ const PRICING_JSONLD = {
     availability: "https://schema.org/InStock",
     priceSpecification: {
       "@type": "UnitPriceSpecification",
+      price: 7500,
       priceCurrency: "DKK",
       valueAddedTaxIncluded: true,
       billingDuration: 12,
@@ -146,12 +147,12 @@ export default function Priser() {
               )}
               <button
                 disabled={checkoutPlan === plan.id}
-                onClick={() => (plan.price ? handleCheckout(plan.id) : document.getElementById("contact-form")?.scrollIntoView({ behavior: "smooth" }))}
+                onClick={() => document.getElementById("contact-form")?.scrollIntoView({ behavior: "smooth" })}
                 style={{ marginTop: "auto", padding: "12px", borderRadius: 8, border: plan.highlight ? "none" : "0.5px solid rgba(212,175,55,0.5)", background: plan.highlight ? GOLD : "transparent", color: plan.highlight ? "#0B0C14" : GOLD, fontSize: 13, fontWeight: 800, cursor: checkoutPlan === plan.id ? "wait" : "pointer", opacity: checkoutPlan === plan.id ? 0.7 : 1 }}
               >
                 {checkoutPlan === plan.id
                   ? t("pricingCheckoutLoading")
-                  : plan.price ? t("pricingPlanCta") : t("pricingPlanContact")}
+                  : t("pricingPlanContact")}
               </button>
             </div>
           ))}
