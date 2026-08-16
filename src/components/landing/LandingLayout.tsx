@@ -221,6 +221,7 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
                   aria-label={l.label}
                   title={l.label}
                   style={{
+                    position: "relative",
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
@@ -236,6 +237,12 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
                     minHeight: 88,
                   }}
                 >
+                  {l.href === "/priser" && (
+                    <span
+                      aria-hidden="true"
+                      style={{ position: "absolute", top: 8, right: 8, width: 8, height: 8, borderRadius: "50%", background: "#EF4444" }}
+                    />
+                  )}
                   <Icon size={24} strokeWidth={1.8} />
                   <span style={{ fontSize: 11, fontWeight: 600, textAlign: "center", lineHeight: 1.2 }}>
                     {l.label}
