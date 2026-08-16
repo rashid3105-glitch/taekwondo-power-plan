@@ -257,8 +257,10 @@ export default function ProfileEdit() {
           return false;
         }
         if (avatarExtToPersist) {
-          const { data: assetCheck } = supabase.storage.from("avatars").getPublicUrl(newAvatarPath);
-          if (!assetCheck?.publicUrl) {
+          const { data: assetCheck } = await supabase.storage
+            .from("avatars")
+            .createSignedUrl(newAvatarPath, 60);
+          if (!assetCheck?.signedUrl) {
             toast.error("Profilbillede blev gemt, men kunne ikke læses tilbage");
             setSaving(false);
             return false;

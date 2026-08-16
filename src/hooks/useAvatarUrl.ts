@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 /**
@@ -5,27 +6,60 @@ import { supabase } from "@/integrations/supabase/client";
  * Handles both full public URLs and raw paths.
  */
 function extractPath(avatarUrl: string): string {
-  const marker = "/object/public/avatars/";
-  const idx = avatarUrl.indexOf(marker);
-  if (idx !== -1) {
-    return avatarUrl.substring(idx + marker.length).split("?")[0];
+  const publicMarker = "/object/public/avatars/";
+  const signMarker = "/object/sign/avatars/";
+  for (const marker of [publicMarker, signMarker]) {
+    const idx = avatarUrl.indexOf(marker);
+    if (idx !== -1) {
+      return avatarUrl.substring(idx + marker.length).split("?")[0];
+    }
   }
   return avatarUrl.split("?")[0];
 }
 
+// Simple in-memory cache so lists don't re-sign the same avatar repeatedly.
+const cache = new Map<string, { url: string; expires: number }>();
+const TTL_SECONDS = 60 * 60;
+
 /**
- * Returns a public URL for a given avatar_url stored in profiles.
- * The avatars bucket is public, so we use getPublicUrl (synchronous).
+ * Returns a signed URL for a given avatar_url stored in profiles.
+ * The avatars bucket is private, so access is granted per RLS relationship.
  */
 export function useAvatarUrl(avatarUrl: string | null | undefined): string | null {
-  if (!avatarUrl) return null;
-  const path = extractPath(avatarUrl);
-  const { data } = supabase.storage.from("avatars").getPublicUrl(path);
-  if (!data?.publicUrl) return null;
-  // Preserve cache-busting suffix if present
-  const qIdx = avatarUrl.indexOf("?");
-  if (qIdx !== -1) {
-    return data.publicUrl + avatarUrl.substring(qIdx);
-  }
-  return data.publicUrl;
+  const path = avatarUrl ? extractPath(avatarUrl) : null;
+  const cached = path ? cache.get(path) : undefined;
+  const initial = cached && cached.expires > Date.now() ? cached.url : null;
+  const [url, setUrl] = useState<string | null>(initial);
+
+  useEffect(() => {
+    let active = true;
+    if (!path) {
+      setUrl(null);
+      return;
+    }
+    const hit = cache.get(path);
+    if (hit && hit.expires > Date.now()) {
+      setUrl(hit.url);
+      return;
+    }
+    void supabase.storage
+      .from("avatars")
+      .createSignedUrl(path, TTL_SECONDS)
+      .then(({ data }) => {
+        if (!active) return;
+        const signed = data?.signedUrl ?? null;
+        if (signed) {
+          cache.set(path, { url: signed, expires: Date.now() + (TTL_SECONDS - 60) * 1000 });
+        }
+        setUrl(signed);
+      })
+      .catch(() => {
+        if (active) setUrl(null);
+      });
+    return () => {
+      active = false;
+    };
+  }, [path]);
+
+  return url;
 }
