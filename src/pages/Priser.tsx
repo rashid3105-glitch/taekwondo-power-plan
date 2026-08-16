@@ -8,19 +8,38 @@ import { useLanguage } from "@/i18n/LanguageContext";
 const GOLD = "#D4AF37";
 const sec = { maxWidth: 1000, margin: "0 auto", padding: "72px 32px" };
 
-// Per-athlete price ladder (DKK/athlete/month), 5% discount per tier.
-const TIERS = [
-  { min: 1, max: 10, rate: 49, discount: 0 },
-  { min: 11, max: 20, rate: 47, discount: 5 },
-  { min: 21, max: 30, rate: 44, discount: 10 },
-  { min: 31, max: 40, rate: 42, discount: 15 },
-  { min: 41, max: 50, rate: 39, discount: 20 },
+// Club licence plans — yearly billing, prices incl. VAT (DKK/year).
+const PLANS: { id: string; nameKey: string; limitKey: string; price: number | null; highlight?: boolean }[] = [
+  { id: "club", nameKey: "pricingPlanClub", limitKey: "pricingPlanClubLimit", price: 7500 },
+  { id: "club_plus", nameKey: "pricingPlanClubPlus", limitKey: "pricingPlanClubPlusLimit", price: 12000, highlight: true },
+  { id: "large", nameKey: "pricingPlanBig", limitKey: "pricingPlanBigLimit", price: null },
 ];
 
-function rateFor(count: number): number {
-  const tier = TIERS.find((tr) => count >= tr.min && count <= tr.max);
-  return tier ? tier.rate : TIERS[TIERS.length - 1].rate;
-}
+const PRICING_JSONLD = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: "Sportstalent klublicens",
+  description: "Klublicens til Sportstalent — årlig fakturering, alle priser inkl. moms.",
+  brand: { "@type": "Brand", name: "Sportstalent" },
+  offers: {
+    "@type": "AggregateOffer",
+    priceCurrency: "DKK",
+    lowPrice: 7500,
+    highPrice: 12000,
+    offerCount: 2,
+    valueAddedTaxIncluded: true,
+    url: "https://sportstalent.dk/priser",
+    availability: "https://schema.org/InStock",
+    priceSpecification: {
+      "@type": "UnitPriceSpecification",
+      priceCurrency: "DKK",
+      valueAddedTaxIncluded: true,
+      billingDuration: 12,
+      billingIncrement: 1,
+      unitCode: "ANN",
+    },
+  },
+};
 
 export default function Priser() {
   const navigate = useNavigate();
