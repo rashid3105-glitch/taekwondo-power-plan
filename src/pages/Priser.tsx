@@ -47,10 +47,8 @@ export default function Priser() {
   const [form, setForm] = useState({ name: "", email: "", club: "", message: "" });
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
-  const [athletes, setAthletes] = useState(20);
 
-  const monthly = athletes * rateFor(athletes);
-  const yearly = monthly * 12;
+
 
 
   const handleSubmit = async () => {
