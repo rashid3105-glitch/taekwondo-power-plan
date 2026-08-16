@@ -64,15 +64,17 @@ serve(async (req) => {
     let maxAthletes = 0;
 
     // Map Stripe product IDs to our internal tier + athlete cap.
-    // New 2026 DKK tiers + grandfathered legacy products.
+    // Current club licences + grandfathered legacy products.
     const PRODUCT_TIER_MAP: Record<string, { tier: string; maxAthletes: number }> = {
-      // 2026 DKK tiers
+      // 2026 club licences (yearly, DKK)
+      prod_V5HoMRxckpTPcf: { tier: "club", maxAthletes: 50 },
+      prod_V5HoWT93Bfbukz: { tier: "club_plus", maxAthletes: 100 },
+      // Legacy (grandfathered)
       prod_UQuIZRc7eLMmE0: { tier: "athlete", maxAthletes: 1 },
       prod_UQuIKmqozCZzN0: { tier: "coach_solo", maxAthletes: 0 },
       prod_UQuIXPiWckbl4r: { tier: "team_small", maxAthletes: 5 },
       prod_UQuI9cf28z44Af: { tier: "team_medium", maxAthletes: 15 },
       prod_UQuIQvV9maNhXb: { tier: "team_large", maxAthletes: 25 },
-      // Legacy (grandfathered)
       prod_UNmxepUc1kEm0x: { tier: "athlete", maxAthletes: 1 },
       prod_UNmxvBF3VPxR8F: { tier: "athlete", maxAthletes: 1 },
       prod_UNmxLjXYQZjVx8: { tier: "coach_solo", maxAthletes: 0 },

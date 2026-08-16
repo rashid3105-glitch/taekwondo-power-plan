@@ -79,7 +79,7 @@ serve(async (req) => {
       line_items: [{ price: priceId, quantity: 1 }],
       mode: "subscription",
       success_url: `${origin}/payment-success`,
-      cancel_url: `${origin}/pricing`,
+      cancel_url: `${origin}/priser`,
       metadata: { tier, billingCycle, user_id: user.id, currency: checkoutCurrency },
     });
 
