@@ -246,10 +246,7 @@ export default function CoachCompetitions() {
             upsert: false,
           });
         if (upErr) throw new Error(upErr.message);
-        const { data: pub } = supabase.storage
-          .from("competition-invitations")
-          .getPublicUrl(path);
-        nextPdfUrl = pub.publicUrl;
+        nextPdfUrl = path;
       }
 
       const { error } = await supabase
