@@ -67,7 +67,7 @@ export function useAvatarUrl(avatarUrl: string | null | undefined, nonce = 0): s
     return () => {
       active = false;
     };
-  }, [path]);
+  }, [path, nonce]);
 
   return url;
 }
