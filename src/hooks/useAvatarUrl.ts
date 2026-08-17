@@ -32,11 +32,12 @@ export function invalidateAvatarUrl(avatarUrl: string | null | undefined) {
  * Returns a signed URL for a given avatar_url stored in profiles.
  * The avatars bucket is private, so access is granted per RLS relationship.
  */
-export function useAvatarUrl(avatarUrl: string | null | undefined): string | null {
+export function useAvatarUrl(avatarUrl: string | null | undefined, nonce = 0): string | null {
   const path = avatarUrl ? extractPath(avatarUrl) : null;
   const cached = path ? cache.get(path) : undefined;
   const initial = cached && cached.expires > Date.now() ? cached.url : null;
   const [url, setUrl] = useState<string | null>(initial);
+
 
   useEffect(() => {
     let active = true;
