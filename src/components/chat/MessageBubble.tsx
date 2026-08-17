@@ -24,6 +24,7 @@ function renderBodyWithLinks(body: string | null | undefined) {
 }
 import { MoreHorizontal, Pencil, Trash2, Check, X } from "lucide-react";
 import { useChatAttachmentUrl } from "@/hooks/useChatAttachmentUrl";
+import { useAvatarUrl } from "@/hooks/useAvatarUrl";
 import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -71,6 +72,7 @@ export function MessageBubble({
   onReact,
 }: Props) {
   const url = useChatAttachmentUrl(message?.attachment_path);
+  const senderAvatarSigned = useAvatarUrl(senderAvatar);
   const isImage = message?.attachment_type?.startsWith("image/") ?? false;
   const isVideo = message?.attachment_type?.startsWith("video/") ?? false;
   const [editing, setEditing] = useState(false);
@@ -130,9 +132,9 @@ export function MessageBubble({
           {/* Avatar for other people's messages */}
           {!isOwn && (
             <div className="h-7 w-7 rounded-full flex-shrink-0 overflow-hidden bg-muted flex items-center justify-center text-[10px] font-semibold text-muted-foreground self-end mb-0.5">
-            {senderAvatar && !avatarError ? (
+            {senderAvatarSigned && !avatarError ? (
               <img
-                src={senderAvatar}
+                src={senderAvatarSigned}
                 alt={senderName || ""}
                 className="h-full w-full object-cover"
                 onError={() => setAvatarError(true)}
