@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { ArrowLeft, Trophy, MapPin, Calendar, Users, Sparkles, CheckCircle2, Clock, Pencil, Trash2, X, Check, FileText, Paperclip } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getSignedStorageUrl } from "@/lib/storageUrl";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { ClubSwitcher } from "@/components/ClubSwitcher";
 import { CoachBulkCreateCompetitionDialog } from "@/components/coach/CoachBulkCreateCompetitionDialog";
@@ -246,10 +247,7 @@ export default function CoachCompetitions() {
             upsert: false,
           });
         if (upErr) throw new Error(upErr.message);
-        const { data: pub } = supabase.storage
-          .from("competition-invitations")
-          .getPublicUrl(path);
-        nextPdfUrl = pub.publicUrl;
+        nextPdfUrl = path;
       }
 
       const { error } = await supabase
@@ -514,15 +512,21 @@ export default function CoachCompetitions() {
                       {openGroup.location && <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{openGroup.location}</span>}
                     </div>
                     {openGroup.invitation_pdf_url && (
-                      <a
-                        href={openGroup.invitation_pdf_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          const signed = await getSignedStorageUrl(
+                            "competition-invitations",
+                            openGroup.invitation_pdf_url,
+                          );
+                          if (signed) window.open(signed, "_blank", "noopener,noreferrer");
+                          else toast({ title: "Fejl", variant: "destructive" });
+                        }}
                         className="inline-flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 underline"
                       >
                         <FileText className="h-3.5 w-3.5" />
                         Invitation (PDF)
-                      </a>
+                      </button>
                     )}
                   </div>
                 ) : (

@@ -379,8 +379,7 @@ export function FoodScanner({ onLogged }: Props) {
             .from("meal-photos")
             .upload(path, blob, { contentType: "image/jpeg", cacheControl: "31536000", upsert: false });
           if (upErr) throw upErr;
-          const { data: pub } = supabase.storage.from("meal-photos").getPublicUrl(path);
-          imageUrl = pub.publicUrl;
+          imageUrl = path;
         } catch (e) {
           console.warn("meal photo upload failed", e);
         }
