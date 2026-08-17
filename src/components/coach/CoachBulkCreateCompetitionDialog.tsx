@@ -141,10 +141,7 @@ export function CoachBulkCreateCompetitionDialog({ athletes, onCreated }: Props)
           });
         setUploading(false);
         if (upErr) throw new Error(upErr.message);
-        const { data: pub } = supabase.storage
-          .from("competition-invitations")
-          .getPublicUrl(path);
-        invitationUrl = pub.publicUrl;
+        invitationUrl = path;
       }
 
       const { data, error } = await supabase.functions.invoke(
