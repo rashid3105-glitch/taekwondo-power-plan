@@ -511,15 +511,21 @@ export default function CoachCompetitions() {
                       {openGroup.location && <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{openGroup.location}</span>}
                     </div>
                     {openGroup.invitation_pdf_url && (
-                      <a
-                        href={openGroup.invitation_pdf_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          const signed = await getSignedStorageUrl(
+                            "competition-invitations",
+                            openGroup.invitation_pdf_url,
+                          );
+                          if (signed) window.open(signed, "_blank", "noopener,noreferrer");
+                          else toast({ title: "Fejl", variant: "destructive" });
+                        }}
                         className="inline-flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 underline"
                       >
                         <FileText className="h-3.5 w-3.5" />
                         Invitation (PDF)
-                      </a>
+                      </button>
                     )}
                   </div>
                 ) : (
