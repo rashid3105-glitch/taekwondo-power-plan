@@ -3930,7 +3930,15 @@ export type Database = {
           user_id?: string
           video_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "video_notes_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "match_videos"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       waitlist: {
         Row: {
