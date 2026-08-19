@@ -98,6 +98,8 @@ export default function Profile() {
   const [pushEnabled, setPushEnabled] = useState<boolean>(true);
   const [pushSaving, setPushSaving] = useState(false);
   const [mfaEnabled, setMfaEnabled] = useState(false);
+  const [antidopingDraft, setAntidopingDraft] = useState("");
+  const [antidopingSaving, setAntidopingSaving] = useState(false);
   const [mfaLoading, setMfaLoading] = useState(true);
   const [mfaDialogOpen, setMfaDialogOpen] = useState(false);
   const avatarDisplayUrl = useAvatarUrl(data?.avatar_url);
