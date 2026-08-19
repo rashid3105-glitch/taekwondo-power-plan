@@ -122,10 +122,11 @@ export async function downloadRunningProgramPdf(program: RunProgram, meta: RunPd
 
       // blank note field
       doc.setDrawColor(200);
-      doc.line(pageW - margin - 34, y + 0.8, pageW - margin, y + 0.8);
+      doc.line(pageW - margin - 34, y - 0.6, pageW - margin, y - 0.6);
       doc.setFontSize(6.5);
       doc.setTextColor(140);
-      doc.text(s("notes"), pageW - margin - 34, y + 4);
+      doc.text(s("notes"), pageW - margin - 34, y + 2.4);
+
       doc.setTextColor(0);
       doc.setFontSize(9);
 
