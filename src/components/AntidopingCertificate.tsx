@@ -64,7 +64,25 @@ export function AntidopingCertificate() {
       });
       if (error) throw error;
 
+      // Keep the profile's course date in sync (used by compliance alerts + reports)
+      try {
+        const { data: prof } = await supabase
+          .from("profiles")
+          .select("antidoping_course_date")
+          .eq("user_id", uid)
+          .maybeSingle();
+        const current = (prof as any)?.antidoping_course_date as string | null;
+        if (!current || testDate > current) {
+          await supabase.functions.invoke("update-my-profile", {
+            body: { antidoping_course_date: testDate },
+          });
+        }
+      } catch (syncErr) {
+        console.error("profile antidoping sync failed", syncErr);
+      }
+
       toast.success(t("adCertSaved") || "Certifikat gemt");
+
       setTestDate("");
       setFile(null);
       if (fileRef.current) fileRef.current.value = "";
