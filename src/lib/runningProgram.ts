@@ -84,6 +84,7 @@ export async function startProgram(userId: string, program: RunProgram): Promise
     user_id: userId,
     program_id: program.id,
     goal_km: program.goalKm,
+    goal_seconds: program.goalSeconds ?? null,
     weeks: program.weeks,
     per_week: program.perWeek,
     level: program.level,
