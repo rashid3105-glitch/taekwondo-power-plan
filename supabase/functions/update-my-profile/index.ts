@@ -45,6 +45,7 @@ const UpdateProfileSchema = z.object({
   gal_license_expires_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
   has_myfightbook: z.boolean().optional(),
   myfightbook_expires_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
+  antidoping_course_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
   sport_start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
   birth_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
   phone: z.string().max(40).nullable().optional(),
