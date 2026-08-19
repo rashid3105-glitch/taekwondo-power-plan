@@ -481,27 +481,47 @@ export default function Profile() {
           {isDanishCountry(data?.country) && (
           <>
           <Separator className="bg-white/10" />
-          <div className="flex items-start justify-between gap-3 py-3">
-            <div className="min-w-0 flex-1">
-              <p className="text-xs text-white">{t("antidopingCourse") || "Antidoping-kursus"}</p>
-              {data?.antidoping_course_date ? (
-                <p className="text-sm text-white mt-1">
-                  {t("antidopingCourseCompleted") || "Gennemført"}: {fmtDate(data.antidoping_course_date, locale)}
-                </p>
-              ) : (
-                <p className="text-sm text-white italic mt-1">
-                  {t("antidopingCourseMissing") || "Ikke registreret"}
-                </p>
+          <div className="py-3">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="text-xs text-white">{t("antidopingCourse") || "Antidoping-kursus"}</p>
+                {data?.antidoping_course_date ? (
+                  <p className="text-sm text-white mt-1">
+                    {t("antidopingCourseCompleted") || "Gennemført"}: {fmtDate(data.antidoping_course_date, locale)}
+                  </p>
+                ) : (
+                  <p className="text-sm text-white italic mt-1">
+                    {t("antidopingCourseMissing") || "Ikke registreret"}
+                  </p>
+                )}
+              </div>
+              {data?.antidoping_course_date && (
+                <span className="shrink-0 px-2 py-1 rounded-md text-xs font-medium" style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}>
+                  {t("profileLicenseActive" as any)}
+                </span>
               )}
             </div>
-            {data?.antidoping_course_date && (
-              <span className="shrink-0 px-2 py-1 rounded-md text-xs font-medium" style={{ backgroundColor: "var(--accent-hex)", color: "#000" }}>
-                {t("profileLicenseActive" as any)}
-              </span>
-            )}
+            <div className="mt-3 flex items-center gap-2">
+              <Input
+                type="date"
+                value={antidopingDraft}
+                max={new Date().toISOString().slice(0, 10)}
+                onChange={(e) => setAntidopingDraft(e.target.value)}
+                aria-label={t("antidopingCourseDate") || "Antidoping-kursus — dato for gennemførsel"}
+                className="h-11 bg-white/5 border-white/10 text-white"
+              />
+              <Button
+                onClick={saveAntidopingDate}
+                disabled={antidopingSaving || !antidopingDraft || antidopingDraft === (data?.antidoping_course_date ?? "")}
+                className="h-11 shrink-0"
+              >
+                {t("save") || "Gem"}
+              </Button>
+            </div>
           </div>
           </>
           )}
+
           <Separator className="bg-white/10" />
           <p className="text-xs text-white pt-3">
             {t("profileLicensesFooter" as any)}
