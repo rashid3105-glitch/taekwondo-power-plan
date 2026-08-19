@@ -25,16 +25,76 @@ export interface RunProgram {
   level: RunLevel;
   overview: string;
   plan: RunWeek[];
+  goalSeconds?: number; // optional target finish time for the goal distance
 }
 
 // --- Helpers used by the custom builder -------------------------------------
 
-export function buildCustomProgram(goalKm: number, weeks: number, currentLongestKm: number): RunProgram {
+/** mm:ss formatting of a pace/duration in seconds. */
+export function fmtPace(sec: number): string {
+  const s = Math.max(0, Math.round(sec));
+  return `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
+}
+
+/** hh:mm:ss (or mm:ss) formatting of a total duration in seconds. */
+export function fmtDuration(sec: number): string {
+  const s = Math.max(0, Math.round(sec));
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const r = s % 60;
+  if (h > 0) return `${h}:${m.toString().padStart(2, "0")}:${r.toString().padStart(2, "0")}`;
+  return `${m}:${r.toString().padStart(2, "0")}`;
+}
+
+/** Parses "50", "50:00" or "1:22:30" into seconds. Returns null when empty/invalid. */
+export function parseGoalTime(input: string): number | null {
+  const raw = (input || "").trim();
+  if (!raw) return null;
+  const parts = raw.split(":").map((p) => p.trim());
+  if (parts.some((p) => p === "" || !/^\d+$/.test(p))) return null;
+  const nums = parts.map(Number);
+  let sec = 0;
+  if (nums.length === 1) sec = nums[0] * 60; // plain minutes
+  else if (nums.length === 2) sec = nums[0] * 60 + nums[1];
+  else if (nums.length === 3) sec = nums[0] * 3600 + nums[1] * 60 + nums[2];
+  else return null;
+  return sec > 0 ? sec : null;
+}
+
+export interface PaceZones {
+  goal: number;
+  easy: number;
+  tempo: number;
+  interval: number;
+  long: number;
+}
+
+/** Derives training pace zones (sec/km) from a goal time over a goal distance. */
+export function paceZones(goalKm: number, goalSeconds: number): PaceZones | null {
+  if (!goalKm || !goalSeconds) return null;
+  const goal = goalSeconds / goalKm;
+  return {
+    goal,
+    easy: goal + 75,
+    tempo: goal + 10,
+    interval: Math.max(120, goal - 18),
+    long: goal + 55,
+  };
+}
+
+export function buildCustomProgram(
+  goalKm: number,
+  weeks: number,
+  currentLongestKm: number,
+  goalSeconds?: number | null,
+): RunProgram {
   const w = Math.max(3, Math.min(20, Math.round(weeks)));
   const target = Math.max(1, goalKm);
   const start = Math.max(1, Math.min(target * 0.6, currentLongestKm || Math.max(1, target * 0.25)));
   const taperWeeks = target >= 30 ? 3 : target >= 15 ? 2 : 1;
   const buildWeeks = w - taperWeeks;
+  const zones = goalSeconds ? paceZones(target, goalSeconds) : null;
+  const z = (sec: number) => (zones ? ` @ ~${fmtPace(sec)}/km` : "");
 
   const plan: RunWeek[] = [];
   for (let i = 1; i <= w; i++) {
@@ -52,28 +112,38 @@ export function buildCustomProgram(goalKm: number, weeks: number, currentLongest
     const easy = Math.max(1, Math.round(longRun * 0.5 * 10) / 10);
     const tempo = Math.max(1, Math.round(longRun * 0.4 * 10) / 10);
     const sessions: RunSession[] = [
-      { day: 2, focus: "Easy", detail: `${easy} km easy conversational pace` },
-      { day: 4, focus: target < 5 ? "Intervals" : "Tempo", detail: target < 5 ? `Warm-up 1 km · 6×200 m fast / 200 m walk · 1 km easy` : `${tempo} km at comfortably hard pace` },
-      { day: 6, focus: "Long", detail: `${longRun} km long run (relaxed pace)` },
+      { day: 2, focus: "Easy", detail: `${easy} km easy conversational pace${z(zones?.easy ?? 0)}` },
+      {
+        day: 4,
+        focus: target < 5 ? "Intervals" : "Tempo",
+        detail: target < 5
+          ? `Warm-up 1 km · 6×200 m fast${z(zones?.interval ?? 0)} / 200 m walk · 1 km easy`
+          : `${tempo} km at comfortably hard pace${z(zones?.tempo ?? 0)}`,
+      },
+      { day: 6, focus: "Long", detail: `${longRun} km long run (relaxed pace)${z(zones?.long ?? 0)}` },
     ];
     if (target >= 10 && i <= buildWeeks) {
-      sessions.splice(2, 0, { day: 5, focus: "Easy", detail: `${easy} km recovery jog` });
+      sessions.splice(2, 0, { day: 5, focus: "Easy", detail: `${easy} km recovery jog${z(zones?.easy ?? 0)}` });
     }
     const totalKm = Math.round(sessions.reduce((acc, s) => acc + (parseFloat(s.detail) || 0), 0) * 10) / 10;
     plan.push({ week: i, totalKm, sessions });
   }
 
   return {
-    id: `custom-${target}km-${w}w`,
+    id: `custom-${target}km-${w}w${goalSeconds ? `-${goalSeconds}s` : ""}`,
     goalKm: target,
     titleKey: "runningCustomTitle",
     weeks: w,
     perWeek: plan[0]?.sessions.length ?? 3,
     level: currentLongestKm >= target * 0.5 ? "intermediate" : "beginner",
-    overview: `Custom progression toward ${target} km in ${w} weeks.`,
+    overview: goalSeconds
+      ? `Custom progression toward ${target} km in ${w} weeks — target time ${fmtDuration(goalSeconds)} (${fmtPace(goalSeconds / target)}/km).`
+      : `Custom progression toward ${target} km in ${w} weeks.`,
     plan,
+    goalSeconds: goalSeconds ?? undefined,
   };
 }
+
 
 // --- Curated preset programs ------------------------------------------------
 
