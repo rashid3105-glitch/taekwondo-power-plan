@@ -160,6 +160,7 @@ export default function Profile() {
         country: (p as any)?.country ?? null,
         email: user.email ?? null,
       });
+      setAntidopingDraft(p?.antidoping_course_date ?? "");
       setHasCoach(!!fieldsOwner);
       setLicenseFields(fields);
 
@@ -167,6 +168,25 @@ export default function Profile() {
     })();
     return () => { mounted = false; };
   }, [navigate]);
+
+  const saveAntidopingDate = async () => {
+    if (!antidopingDraft) return;
+    setAntidopingSaving(true);
+    try {
+      const { error } = await supabase.functions.invoke("update-my-profile", {
+        body: { antidoping_course_date: antidopingDraft },
+      });
+      if (error) throw error;
+      setData((d) => (d ? { ...d, antidoping_course_date: antidopingDraft } : d));
+      toast.success(t("antidopingCourseSaved") || "Dato gemt");
+    } catch (e) {
+      console.error("antidoping save failed", e);
+      toast.error(t("antidopingCourseSaveFailed") || "Kunne ikke gemme datoen");
+    } finally {
+      setAntidopingSaving(false);
+    }
+  };
+
 
   useEffect(() => {
     let mounted = true;
