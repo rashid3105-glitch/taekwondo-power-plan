@@ -11,10 +11,11 @@ import {
 } from "recharts";
 import { LogRunDialog } from "@/components/running/LogRunDialog";
 import {
-  buildWeekSeries, fetchActiveEnrollment, fetchRunLogs, formatPace, programWeekIndex,
-  stopProgram, toISODate, weekStart,
+  buildWeekSeries, estimateFinishTime, fetchActiveEnrollment, fetchRunLogs, formatPace,
+  programWeekIndex, recentAvgPace, stopProgram, toISODate, weekStart,
   type RunLogRow, type RunningEnrollment, type WeekPoint,
 } from "@/lib/runningProgram";
+import { fmtDuration } from "@/data/runningPrograms";
 
 export function RunningStatsCard() {
   const { t } = useLanguage();
@@ -75,6 +76,12 @@ export function RunningStatsCard() {
   const completionPct = plannedTotal > 0 ? Math.min(100, Math.round((totalKm / plannedTotal) * 100)) : 0;
   const currentWeekPlan = enrollment?.plan?.[weekIdx - 1];
 
+  const goalSeconds = enrollment?.goal_seconds ?? null;
+  const goalPace = goalSeconds && enrollment ? goalSeconds / enrollment.goal_km : 0;
+  const avgPace = recentAvgPace(logs, 4);
+  const projected = enrollment && avgPace ? estimateFinishTime(enrollment.goal_km, avgPace) : 0;
+  const onTrack = goalSeconds && projected ? projected <= goalSeconds : false;
+
   return (
     <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4 sm:p-5 shadow-card space-y-4">
       <div className="flex items-center gap-2 flex-wrap">
@@ -100,6 +107,37 @@ export function RunningStatsCard() {
           <p className="text-[11px] text-muted-foreground">
             {t("runProgCompletion")}: {completionPct}% · {totalKm.toFixed(1)} / {plannedTotal.toFixed(0)} km
           </p>
+        </div>
+      )}
+
+      {enrollment && goalSeconds && (
+        <div className="rounded-lg border border-border bg-card p-3 space-y-2">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <span className="text-xs font-bold text-card-foreground">
+              {t("runProgGoalTime")}: {fmtDuration(goalSeconds)} · {formatPace(goalPace)}/km
+            </span>
+            {projected > 0 && (
+              <span className={`text-[10px] font-bold uppercase tracking-wide rounded-full px-2 py-0.5 ${onTrack ? "bg-emerald-500/15 text-emerald-600" : "bg-amber-500/15 text-amber-600"}`}>
+                {onTrack ? t("runProgOnTrack") : t("runProgBehind")}
+              </span>
+            )}
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            <div className="text-center">
+              <div className="text-sm font-bold text-card-foreground">{goalPace ? `${formatPace(goalPace)}/km` : "—"}</div>
+              <div className="text-[10px] text-muted-foreground uppercase tracking-wide">{t("runProgTargetPace")}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-sm font-bold text-card-foreground">{avgPace ? `${formatPace(avgPace)}/km` : "—"}</div>
+              <div className="text-[10px] text-muted-foreground uppercase tracking-wide">{t("runProgYourPace4w")}</div>
+            </div>
+            <div className="text-center">
+              <div className={`text-sm font-bold ${projected ? (onTrack ? "text-emerald-600" : "text-amber-600") : "text-card-foreground"}`}>
+                {projected ? fmtDuration(projected) : "—"}
+              </div>
+              <div className="text-[10px] text-muted-foreground uppercase tracking-wide">{t("runProgEstFinish")}</div>
+            </div>
+          </div>
         </div>
       )}
 
