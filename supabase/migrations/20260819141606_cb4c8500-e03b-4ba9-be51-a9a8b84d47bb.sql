@@ -1,0 +1,1 @@
+ALTER TABLE public.running_program_enrollments ADD COLUMN IF NOT EXISTS goal_seconds integer;

@@ -7,6 +7,7 @@ export interface RunningEnrollment {
   user_id: string;
   program_id: string;
   goal_km: number;
+  goal_seconds: number | null;
   weeks: number;
   per_week: number;
   level: string;
@@ -83,6 +84,7 @@ export async function startProgram(userId: string, program: RunProgram): Promise
     user_id: userId,
     program_id: program.id,
     goal_km: program.goalKm,
+    goal_seconds: program.goalSeconds ?? null,
     weeks: program.weeks,
     per_week: program.perWeek,
     level: program.level,
@@ -177,4 +179,26 @@ export function formatPace(secondsPerKm: number): string {
   const m = Math.floor(secondsPerKm / 60);
   const s = Math.round(secondsPerKm % 60);
   return `${m}:${s.toString().padStart(2, "0")}`;
+}
+
+/** Average pace (sec/km) across runs in the last `weeks` weeks. */
+export function recentAvgPace(logs: RunLogRow[], weeks = 4): number {
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - weeks * 7);
+  const cutoffISO = toISODate(cutoff);
+  const recent = logs.filter((r) => r.entry_date >= cutoffISO);
+  let km = 0;
+  let sec = 0;
+  for (const r of recent) {
+    const d = Number(r.run_distance_km) || 0;
+    const s = Number(r.run_duration_seconds) || (Number(r.run_pace_seconds_per_km) || 0) * d;
+    if (d > 0 && s > 0) { km += d; sec += s; }
+  }
+  return km > 0 ? sec / km : 0;
+}
+
+/** Naive projected finish time (seconds) for the goal distance at a given pace. */
+export function estimateFinishTime(goalKm: number, paceSecPerKm: number): number {
+  if (!goalKm || !paceSecPerKm) return 0;
+  return goalKm * paceSecPerKm;
 }

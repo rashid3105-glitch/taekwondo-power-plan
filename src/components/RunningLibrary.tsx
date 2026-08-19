@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ChevronDown, ChevronUp, Footprints, Sparkles, Trophy, Play, Check } from "lucide-react";
+import { ChevronDown, ChevronUp, Footprints, Sparkles, Trophy, Play, Check, FileDown } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import type { TranslationKey } from "@/i18n/translations";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,11 @@ import {
   fetchActiveEnrollment, programWeekIndex, startProgram, stopProgram,
   type RunningEnrollment,
 } from "@/lib/runningProgram";
-import { RUNNING_PROGRAMS, buildCustomProgram, type RunLevel, type RunProgram } from "@/data/runningPrograms";
+import {
+  RUNNING_PROGRAMS, buildCustomProgram, fmtDuration, fmtPace, parseGoalTime,
+  type RunLevel, type RunProgram,
+} from "@/data/runningPrograms";
+import { downloadRunningProgramPdf } from "@/lib/runningProgramPdf";
 
 
 const LEVEL_KEY: Record<RunLevel, TranslationKey> = {
@@ -33,12 +37,13 @@ function programLabel(p: RunProgram): string {
 }
 
 export function RunningLibrary() {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const [openId, setOpenId] = useState<string | null>(null);
   const [custom, setCustom] = useState<RunProgram | null>(null);
   const [goalKm, setGoalKm] = useState("7");
   const [weeks, setWeeks] = useState("8");
   const [currentKm, setCurrentKm] = useState("3");
+  const [goalTime, setGoalTime] = useState("");
 
   const programs = useMemo(() => RUNNING_PROGRAMS, []);
   const { toast } = useToast();
@@ -84,10 +89,25 @@ export function RunningLibrary() {
     const g = parseFloat(goalKm);
     const w = parseInt(weeks, 10);
     const c = parseFloat(currentKm) || 0;
+    const gs = parseGoalTime(goalTime);
     if (!Number.isFinite(g) || g <= 0 || !Number.isFinite(w) || w <= 0) return;
-    const p = buildCustomProgram(g, w, c);
+    if (goalTime.trim() && gs === null) {
+      toast({ title: t("runningGoalTimeInvalid"), variant: "destructive" });
+      return;
+    }
+    const p = buildCustomProgram(g, w, c, gs);
     setCustom(p);
     setOpenId(p.id);
+  }
+
+  async function handlePdf(p: RunProgram) {
+    const isActive = enrollment?.program_id === p.id;
+    await downloadRunningProgramPdf(p, {
+      locale,
+      programName: `${p.id.startsWith("custom-") ? `${t("runningCustomTitle")} — ` : ""}${programLabel(p)}`,
+      startDate: isActive ? enrollment?.start_date ?? null : null,
+      currentWeek: isActive && enrollment ? programWeekIndex(enrollment.start_date, enrollment.weeks) : null,
+    });
   }
 
   const displayed: RunProgram[] = custom ? [...programs, custom] : programs;
@@ -117,6 +137,11 @@ export function RunningLibrary() {
                   <div className="text-xs text-muted-foreground flex flex-wrap gap-x-3 gap-y-0.5 mt-0.5">
                     <span>{p.weeks} {t("runningWeeksLabel")}</span>
                     <span>{p.perWeek} {t("runningPerWeekLabel")}</span>
+                    {p.goalSeconds ? (
+                      <span className="inline-flex items-center px-1.5 rounded border border-primary/40 bg-primary/10 text-primary text-[10px] font-semibold">
+                        {fmtDuration(p.goalSeconds)} · {fmtPace(p.goalSeconds / p.goalKm)}/km
+                      </span>
+                    ) : null}
                     <span className={`inline-flex items-center px-1.5 rounded border text-[10px] font-semibold ${LEVEL_STYLE[p.level]}`}>
                       {t(LEVEL_KEY[p.level])}
                     </span>
@@ -134,16 +159,22 @@ export function RunningLibrary() {
               {isOpen && (
                 <div className="px-4 pb-4 pt-1 space-y-3 animate-slide-up">
                   <p className="text-xs text-card-foreground/80 leading-relaxed">{p.overview}</p>
-                  {isActive ? (
-                    <Button size="sm" variant="outline" className="w-full" disabled={busyId === p.id} onClick={handleStop}>
-                      {t("runProgStop")}
+                  <div className="flex gap-2">
+                    {isActive ? (
+                      <Button size="sm" variant="outline" className="flex-1" disabled={busyId === p.id} onClick={handleStop}>
+                        {t("runProgStop")}
+                      </Button>
+                    ) : (
+                      <Button size="sm" className="flex-1" disabled={busyId === p.id} onClick={() => handleStart(p)}>
+                        <Play className="h-3.5 w-3.5 mr-1" />
+                        {enrollment ? t("runProgSwitch") : t("runProgStart")}
+                      </Button>
+                    )}
+                    <Button size="sm" variant="outline" onClick={() => void handlePdf(p)} title={t("runProgDownloadPdf")}>
+                      <FileDown className="h-3.5 w-3.5 mr-1" />
+                      {t("runProgDownloadPdf")}
                     </Button>
-                  ) : (
-                    <Button size="sm" className="w-full" disabled={busyId === p.id} onClick={() => handleStart(p)}>
-                      <Play className="h-3.5 w-3.5 mr-1" />
-                      {enrollment ? t("runProgSwitch") : t("runProgStart")}
-                    </Button>
-                  )}
+                  </div>
 
                   <div className="space-y-2">
                     {p.plan.map((w) => (
@@ -179,7 +210,7 @@ export function RunningLibrary() {
           <span className="font-bold text-sm text-card-foreground">{t("runningCustomTitle")}</span>
         </div>
         <p className="text-xs text-muted-foreground">{t("runningCustomDesc")}</p>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           <div>
             <Label className="text-[11px]" htmlFor="goalKm">{t("runningCustomGoalKm")}</Label>
             <Input id="goalKm" inputMode="decimal" value={goalKm} onChange={(e) => setGoalKm(e.target.value)} className="h-9" />
@@ -192,7 +223,12 @@ export function RunningLibrary() {
             <Label className="text-[11px]" htmlFor="currentKm">{t("runningCustomCurrentKm")}</Label>
             <Input id="currentKm" inputMode="decimal" value={currentKm} onChange={(e) => setCurrentKm(e.target.value)} className="h-9" />
           </div>
+          <div>
+            <Label className="text-[11px]" htmlFor="goalTime">{t("runningCustomGoalTime")}</Label>
+            <Input id="goalTime" inputMode="numeric" placeholder="50:00" value={goalTime} onChange={(e) => setGoalTime(e.target.value)} className="h-9" />
+          </div>
         </div>
+        <p className="text-[11px] text-muted-foreground">{t("runningGoalTimeHint")}</p>
         <Button onClick={handleBuild} size="sm" className="w-full">{t("runningCustomBuild")}</Button>
       </div>
     </div>

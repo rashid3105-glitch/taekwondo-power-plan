@@ -2957,6 +2957,7 @@ export type Database = {
           club_id: string | null
           created_at: string
           goal_km: number
+          goal_seconds: number | null
           id: string
           is_active: boolean
           level: string
@@ -2972,6 +2973,7 @@ export type Database = {
           club_id?: string | null
           created_at?: string
           goal_km: number
+          goal_seconds?: number | null
           id?: string
           is_active?: boolean
           level?: string
@@ -2987,6 +2989,7 @@ export type Database = {
           club_id?: string | null
           created_at?: string
           goal_km?: number
+          goal_seconds?: number | null
           id?: string
           is_active?: boolean
           level?: string
