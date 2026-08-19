@@ -1,48 +1,44 @@
-# Diagnose: profilbilleder vises ikke i native iOS-app
+# Måltid i løbeprogrammet + PDF-download
 
-Ingen kodeændringer foretaget. Nedenfor er fundene.
+To tilføjelser til Løb-biblioteket: en måltid på det selvbyggede program (som styrer tempo-zoner og fremdrift), og PDF-download af hele programmet.
 
-## 1. Hvem renderer avataren?
+## 1. Måltid i "Byg dit eget program"
 
-- Header (I dag): `src/pages/Dashboard.tsx:821-826` — `<AvatarImg avatarUrl={profile?.avatar_url} ... />`
-- Hilsen ("Greeting line"), samme side: `src/pages/Dashboard.tsx:985-990`
-- Liste-kort: `src/pages/Dashboard.tsx:1288-1289`
-- Komponent: `src/components/AvatarImg.tsx` (hele filen), som bruger hook `src/hooks/useAvatarUrl.ts`
-- Profilsider bruger hooken direkte: `src/pages/Profile.tsx:103`, `src/pages/ProfileSetup.tsx:71`, `src/pages/ProfileEdit.tsx:52`
-- Chat: `src/components/chat/Conversation.tsx:51` (signeret via hook), men `Conversation.tsx:219` sender rå `avatar_url` videre til `MessageBubble.tsx:135`, hvor den sættes direkte som `src` — dét er et reelt hul (usigneret URL mod privat bucket).
+- Nyt felt ved siden af distance/uger: **Måltid** (tt:mm:ss, valgfrit).
+- Ud fra måltid og distance beregnes **måltempo** (min/km), som vises tydeligt på programkortet: "Mål: 10 km på 50:00 — 5:00 min/km".
+- Sessionerne får konkrete tempo-zoner afledt af måltempoet:
+  - Let/restitution: måltempo + ca. 60–90 sek/km
+  - Tempo: måltempo + ca. 10 sek/km
+  - Intervaller: måltempo − ca. 15–20 sek/km
+  - Langtur: måltempo + ca. 45–60 sek/km
+- Uden måltid opfører programmet sig præcis som i dag (kun distance).
+- De faste programmer (5k, 10k, HM, maraton) ændres ikke.
 
-## 2. Hvordan bygges URL'en?
+## 2. Fremdrift mod måltiden
 
-`src/hooks/useAvatarUrl.ts:52-60`:
+- Løbe-statistikkortet viser, når der er et aktivt program med måltid:
+  - Måltempo vs. dit gennemsnitstempo de seneste 4 uger.
+  - Estimeret sluttid ud fra dit nuværende tempo, med farvet indikator (på vej / bagud).
+  - Bedste tempo på en tur i programperioden.
+- Beregnes ud fra allerede loggede løbeture (`diary_entries` med løbedata) — ingen ny logning kræves.
 
-```ts
-void supabase.storage
-  .from("avatars")
-  .createSignedUrl(path, TTL_SECONDS)   // TTL_SECONDS = 3600
-```
+## 3. PDF-download af programmet
 
-Altså signed URL, ikke `getPublicUrl`, ikke download+blob. Klublogoet bruger derimod `getPublicUrl` mod en public bucket (`src/components/admin/ClubBrandingSection.tsx:82`) — derfor virker logoet altid.
+- Knap "Download som PDF" på hvert program (både faste og eget).
+- PDF'en indeholder:
+  - Forside/overskrift med programnavn, mål-distance, evt. måltid og måltempo, antal uger, niveau og startdato.
+  - Alle uger som tabel: uge nr., ugens total-km, hver session med dag, fokus og beskrivelse (inkl. tempo-zoner hvis måltid er sat).
+  - Tomme felter til håndskrevne noter (faktisk distance/tid) pr. session.
+  - Aktiv uge markeret hvis man er tilmeldt programmet.
+- Genereres lokalt med jsPDF på brugerens sprog.
 
-## 3. Håndteres begge formater i avatar_url?
+## Teknisk
 
-Ja. `src/hooks/useAvatarUrl.ts:8-20` normaliserer både absolutte URL'er (`/object/public/avatars/`, `/object/sign/avatars/`) og relative stier, og stripper `?t=`-suffiks. De 3 rækker med absolut URL og de 11 med relativ sti bliver derfor alle til korrekt objekt-sti. Formatblandingen er altså ikke årsagen.
-
-## 4. Signed URLs + Capacitor-forhold
-
-- Signeres ved første render pr. sti, caches in-memory i 59 min (`cache`, `TTL_SECONDS - 60`).
-- `createSignedUrl` er et autentificeret POST-kald: uden gyldig session eller uden SELECT-policy på `storage.objects` for `avatars` fejler det → hooken returnerer `null` → `AvatarImg` viser placeholder-ikonet (User-ikon), **ikke** et brudt billede.
-- Det er den afgørende detalje: den nuværende kode kan ikke producere et "brudt billede"-ikon i den første render — den viser fallback. Et brudt billede opstår kun, hvis en `<img src>` peger på en usigneret `/object/public/avatars/...` URL.
-
-## Mest sandsynlige årsag
-
-Den installerede iOS-app kører en **ældre webbundle** end web-appen. Capacitor er konfigureret uden `server.url` (`capacitor.config.ts` — `webDir: 'dist'`), så iOS serverer de assets, der lå i bundlen ved sidste `npm run build && npx cap sync ios`. Den bundle er fra før `avatars` blev gjort privat og satte `avatar_url` direkte som `src` (public-URL) → HTTP 400/404 → brudt billede-ikon. Web-appen henter derimod ny kode ved hver load og bruger signed URLs. Klublogoet påvirkes ikke, fordi dets bucket stadig er public.
-
-Sekundær (reel, men mindre sandsynlig som forklaring på headeren): `MessageBubble.tsx:135` bruger stadig rå `avatar_url` som `src` — brudte avatarer i chatten både på web og iOS.
-
-Bemærk også: service worker cacher billeder StaleWhileRevalidate (`vite.config.ts:65-76`), så tidligere fejlsvar for avatar-URL'er kan blive genbrugt et stykke tid efter en opdatering.
-
-## Foreslåede næste skridt (ikke udført)
-
-1. Byg og synk iOS-appen på ny (`npm run build && npx cap sync ios`) og verificér, at brudte billeder forsvinder.
-2. Ret `MessageBubble` til at signere afsender-avataren via `useAvatarUrl`.
-3. Overvej at ekskludere Supabase storage-URL'er fra image-runtime-caching, så udløbne/fejlende signerede svar ikke caches.
+- `src/data/runningPrograms.ts`: `RunProgram` udvides med `goalSeconds?: number`; `buildCustomProgram(goalKm, weeks, currentLongestKm, goalSeconds?)` tilføjer tempo-tekst til `RunSession.detail` via en ny `paceZones()`-hjælper.
+- `src/lib/runningProgram.ts`: gemmer/læser `goal_seconds` på enrollment; nye hjælpere `estimateFinishTime()` og `recentAvgPace()` oven på eksisterende `fetchRunLogs`/`formatPace`.
+- Migration: `ALTER TABLE public.running_program_enrollments ADD COLUMN goal_seconds integer` (nullable, ingen RLS-ændringer).
+- `src/components/RunningLibrary.tsx`: nyt måltid-input (mm:ss / t:mm:ss parsing), visning af måltempo, PDF-knap pr. program.
+- Ny fil `src/lib/runningProgramPdf.ts` efter samme mønster som `src/lib/testSheetPdf.ts` (jsPDF, oversættelser pr. locale i filen).
+- `src/components/RunningStatsCard.tsx`: fremdriftssektion mod måltiden.
+- Alle nye tekster tilføjes i `src/i18n/translations.ts` for alle 7 sprog.
+- Changelog og Help.tsx opdateres.
