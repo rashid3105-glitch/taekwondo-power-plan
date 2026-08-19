@@ -7,6 +7,7 @@ export interface RunningEnrollment {
   user_id: string;
   program_id: string;
   goal_km: number;
+  goal_seconds: number | null;
   weeks: number;
   per_week: number;
   level: string;
