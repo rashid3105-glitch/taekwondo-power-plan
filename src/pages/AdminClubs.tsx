@@ -118,7 +118,7 @@ export default function AdminClubs() {
       setOriginalClubs(prev => ({ ...prev, [club.id]: { ...club } }));
       toast({ title: t("clubUpdated") });
     } catch (err: any) {
-      toast({ title: t("error"), description: err.message, variant: "destructive" });
+      toast({ title: t("error"), description: describeError(err), variant: "destructive" });
     } finally {
       setSavingId(null);
     }
