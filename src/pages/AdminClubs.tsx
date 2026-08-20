@@ -137,7 +137,7 @@ export default function AdminClubs() {
       setNewClubMax(5);
       await loadClubs();
     } catch (err: any) {
-      toast({ title: t("error"), description: err.message, variant: "destructive" });
+      toast({ title: t("error"), description: describeError(err), variant: "destructive" });
     } finally {
       setCreating(false);
     }
