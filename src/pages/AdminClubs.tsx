@@ -80,6 +80,21 @@ export default function AdminClubs() {
     setClubs(prev => prev.map(c => c.id === clubId ? { ...c, ...patch } : c));
   };
 
+  // Turn raw database errors into something a human can act on.
+  const describeError = (err: any): string => {
+    const raw = `${err?.code ?? ""} ${err?.message ?? ""}`.toLowerCase();
+    if (
+      err?.code === "23505" ||
+      raw.includes("duplicate key") ||
+      raw.includes("clubs_name_key") ||
+      raw.includes("clubs_slug_key")
+    ) {
+      return t("clubNameExists") || "A club with that name already exists";
+    }
+    return err?.message ?? String(err);
+  };
+
+
   const isDirty = (club: Club) => {
     const orig = originalClubs[club.id];
     if (!orig) return false;
@@ -103,7 +118,7 @@ export default function AdminClubs() {
       setOriginalClubs(prev => ({ ...prev, [club.id]: { ...club } }));
       toast({ title: t("clubUpdated") });
     } catch (err: any) {
-      toast({ title: t("error"), description: err.message, variant: "destructive" });
+      toast({ title: t("error"), description: describeError(err), variant: "destructive" });
     } finally {
       setSavingId(null);
     }
@@ -122,7 +137,7 @@ export default function AdminClubs() {
       setNewClubMax(5);
       await loadClubs();
     } catch (err: any) {
-      toast({ title: t("error"), description: err.message, variant: "destructive" });
+      toast({ title: t("error"), description: describeError(err), variant: "destructive" });
     } finally {
       setCreating(false);
     }
