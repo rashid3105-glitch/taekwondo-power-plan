@@ -25440,6 +25440,7 @@ export type TranslationKey = keyof typeof translations.en;
 // AI-generated plans (training, nutrition, mental, rehab) are produced in
 // Spanish server-side regardless of UI string coverage.
 const esOverrides: Partial<Record<TranslationKey, string>> = {
+    clubNameExists: "Ya existe un club con ese nombre",
     brandingTitle: "Identidad visual",
     brandingUploadLogo: "Subir logotipo",
     brandingLogoHint: "PNG/SVG, máx. 2 MB. Cuadrado funciona mejor.",
