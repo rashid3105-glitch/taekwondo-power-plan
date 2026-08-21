@@ -50,11 +50,15 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- Health Connect read permissions -->
-    <uses-permission android:name="android.permission.health.READ_SLEEP" />
-    <uses-permission android:name="android.permission.health.READ_HEART_RATE" />
+    <!-- Health Connect read permissions - MINIMUM SCOPE (Aug 2026).
+         READ_SLEEP, READ_HEART_RATE and READ_STEPS were REMOVED after Google
+         Play enforcement 20 Aug 2026 ("Overdreven dataadgang for den angivne
+         funktion"). Google did NOT object to EXERCISE or ACTIVE_CALORIES.
+         Do not re-add a permission here without also adding it to
+         recordClass() in SportstalentHealthConnect.kt, READ_TYPES in
+         src/lib/healthConnect.ts, AND the Play Console Health apps
+         declaration + Data safety form. All four must match. -->
     <uses-permission android:name="android.permission.health.READ_EXERCISE" />
-    <uses-permission android:name="android.permission.health.READ_STEPS" />
     <uses-permission android:name="android.permission.health.READ_ACTIVE_CALORIES_BURNED" />
 
     <!-- Health Connect package visibility (Android 11+ requires this to detect the app). -->

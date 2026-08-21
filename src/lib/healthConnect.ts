@@ -1,12 +1,25 @@
 // Health Connect bridge (Android-only). Safe no-op on web / iOS.
 //
-// V2 scope — pure observations, mirrors src/lib/healthkit.ts. Reads 7 Health
-// Connect record types (sleep, heart rate, active energy,
-// steps, workouts) for the last 30 days (90 days on first sync), maps them
-// to the wearable_samples ingest shape, and posts them to the SAME
-// `wearable-ingest` edge function used by iOS — but with
-// provider='health_connect' so the backend routes samples, workouts, and the
-// wearable_connections row to the Android provider slot.
+// V3 scope - MINIMUM SCOPE (Aug 2026). Reads TWO Health Connect record types:
+// active energy and workouts. Maps them to the wearable_samples ingest shape
+// and posts them to the SAME `wearable-ingest` edge function used by iOS, but
+// with provider='health_connect' so the backend routes samples, workouts and
+// the wearable_connections row to the Android provider slot.
+//
+// Sleep, heart rate and steps were REMOVED after Google Play enforcement on
+// 20 Aug 2026 ("Overdreven dataadgang for den angivne funktion" - Health
+// Connect permissions policy, Minimum Scope). Google did NOT object to
+// EXERCISE or ACTIVE_CALORIES_BURNED. Resting HR and HRV had already been
+// removed in an earlier round of the same policy.
+//
+// iOS HealthKit (src/lib/healthkit.ts) is UNAFFECTED and still reads sleep,
+// resting HR, HRV, heart rate, active energy and workouts.
+//
+// Re-adding a type requires FOUR matching changes or it fails silently:
+//   1. android/app/src/main/AndroidManifest.xml
+//   2. recordClass() in SportstalentHealthConnect.kt
+//   3. READ_TYPES below
+//   4. Play Console -> Health apps declaration + Data safety
 //
 // The native side is a local Capacitor 8 App-target Kotlin plugin
 // (`android/app/src/main/java/dk/sportstalent/app/SportstalentHealthConnect.kt`).
@@ -25,16 +38,9 @@ const PROVIDER = "health_connect";
 // Short metric ids that the Kotlin plugin maps to Health Connect record
 // classes. Kept identical to the wearable_samples.metric_type domain so we
 // don't need to remap on the way out.
-// NOTE: resting_hr and hrv are intentionally NOT requested on Android —
-// the Health Connect permission scope was reduced per Google Play's
-// "Minimum Scope" policy (these types never delivered data).
-const READ_TYPES = [
-  "sleep",
-  "heart_rate",
-  "active_energy",
-  "steps",
-  "workout",
-];
+// MUST stay in sync with recordClass() in SportstalentHealthConnect.kt and
+// with the uses-permission list in AndroidManifest.xml.
+const READ_TYPES = ["active_energy", "workout"];
 
 interface QuantitySample {
   uuid: string;
@@ -45,17 +51,6 @@ interface QuantitySample {
   unit: string;
   sourceName?: string;
 }
-interface CategorySample {
-  // Sleep sessions from Health Connect. `value` = duration in SECONDS as
-  // emitted by the Kotlin plugin; we convert to minutes below.
-  uuid: string;
-  external_id?: string;
-  startDate: string;
-  endDate: string;
-  value: number;
-  unit?: string;
-  sourceName?: string;
-}
 interface WorkoutSample {
   uuid: string;
   external_id?: string;
@@ -64,6 +59,9 @@ interface WorkoutSample {
   duration: number; // seconds
   activityType: number | string;
   title?: string;
+  // avgHr / maxHr are no longer populated on Android - heart-rate enrichment
+  // was removed with the READ_HEART_RATE permission. Kept optional so the
+  // shared payload shape still matches iOS.
   avgHr?: number | null;
   maxHr?: number | null;
   calories?: number | null;
@@ -89,11 +87,6 @@ interface SportstalentHealthConnectPlugin {
     startDate: string;
     endDate: string;
   }): Promise<{ samples: QuantitySample[] }>;
-  queryCategory(opts: {
-    metricType: string;
-    startDate: string;
-    endDate: string;
-  }): Promise<{ samples: CategorySample[] }>;
   queryWorkouts(opts: {
     startDate: string;
     endDate: string;
@@ -174,12 +167,7 @@ export async function requestHealthConnectPermission(): Promise<{
 }
 
 type IngestSample = {
-  metric_type:
-    | "sleep"
-    | "heart_rate"
-    | "active_energy"
-    | "steps"
-    | "workout";
+  metric_type: "active_energy" | "workout";
   value_numeric?: number | null;
   unit?: string | null;
   start_at: string;
@@ -280,21 +268,6 @@ export async function syncHealthConnect(
       return [];
     }
   };
-  const safeCat = async (id: string) => {
-    try {
-      const r = await HealthConnect.queryCategory({
-        metricType: id,
-        startDate: startIso,
-        endDate: endIso,
-      });
-      return r?.samples ?? [];
-    } catch (e: any) {
-      const msg = e?.message ?? String(e);
-      console.warn(`HealthConnect queryCategory ${id} failed`, e);
-      nativeErrors.push(`cat:${id}:${msg}`);
-      return [];
-    }
-  };
   const safeWorkouts = async () => {
     try {
       const r = await HealthConnect.queryWorkouts({
@@ -310,19 +283,13 @@ export async function syncHealthConnect(
     }
   };
 
-  const [sleep, hr, energy, steps, workouts] = await Promise.all([
-    safeCat("sleep"),
-    safeQty("heart_rate"),
+  const [energy, workouts] = await Promise.all([
     safeQty("active_energy"),
-    safeQty("steps"),
     safeWorkouts(),
   ]);
 
   const perType = {
-    sleep: sleep.length,
-    heart_rate: hr.length,
     active_energy: energy.length,
-    steps: steps.length,
     workouts: workouts.length,
   };
   console.info("HC sync: per-type counts", perType, { nativeErrors });
@@ -330,53 +297,11 @@ export async function syncHealthConnect(
 
   const samples: IngestSample[] = [];
 
-  // Sleep — Health Connect delivers one session per record with the total
-  // duration in seconds. No stage filtering needed (unlike HealthKit).
-  // Convert seconds → minutes so it matches what wearable-ingest /
-  // recompute_wearable_summary expect (sleep_minutes).
-  for (const s of sleep) {
-    const durMin = Number.isFinite(s.value) ? s.value / 60 : null;
-    if (durMin === null) continue;
-    samples.push({
-      metric_type: "sleep",
-      value_numeric: durMin,
-      unit: "min",
-      start_at: s.startDate,
-      end_at: s.endDate,
-      external_id: extId(s),
-      source_device: s.sourceName ?? null,
-    });
-  }
-
-  for (const s of hr) {
-    samples.push({
-      metric_type: "heart_rate",
-      value_numeric: s.value,
-      unit: "bpm",
-      start_at: s.startDate,
-      end_at: s.endDate,
-      external_id: extId(s),
-      source_device: s.sourceName ?? null,
-    });
-  }
-
   for (const s of energy) {
     samples.push({
       metric_type: "active_energy",
       value_numeric: s.value,
       unit: "kcal",
-      start_at: s.startDate,
-      end_at: s.endDate,
-      external_id: extId(s),
-      source_device: s.sourceName ?? null,
-    });
-  }
-
-  for (const s of steps) {
-    samples.push({
-      metric_type: "steps",
-      value_numeric: s.value,
-      unit: "count",
       start_at: s.startDate,
       end_at: s.endDate,
       external_id: extId(s),

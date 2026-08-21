@@ -6,10 +6,7 @@ import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
 import androidx.health.connect.client.records.ExerciseSessionRecord
-import androidx.health.connect.client.records.HeartRateRecord
 import androidx.health.connect.client.records.Record
-import androidx.health.connect.client.records.SleepSessionRecord
-import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.activity.result.ActivityResultLauncher
@@ -29,8 +26,18 @@ import kotlin.reflect.KClass
 
 /**
  * Local Capacitor 8 plugin bridging Android Health Connect read access to the JS layer.
- * Mirrors iOS SportstalentHealthKit method surface: debugRegistration, isAvailable,
- * requestAuthorization, queryQuantity, queryCategory, queryWorkouts.
+ *
+ * MINIMUM SCOPE (Aug 2026). Sleep, heart rate and steps were removed after
+ * Google Play enforcement on 20 Aug 2026 ("Overdreven dataadgang for den
+ * angivne funktion"). Only ExerciseSessionRecord and ActiveCaloriesBurnedRecord
+ * remain - the two types Google did not object to.
+ *
+ * If a type is ever re-added it must be added in FOUR places or it fails
+ * silently: AndroidManifest.xml, recordClass() below, READ_TYPES in
+ * src/lib/healthConnect.ts, and the Play Console Health apps declaration.
+ *
+ * iOS HealthKit (SportstalentHealthKit.swift) is UNAFFECTED and still reads
+ * sleep, resting HR, HRV, heart rate, active energy and workouts.
  */
 @CapacitorPlugin(name = "SportstalentHealthConnect")
 class SportstalentHealthConnect : Plugin() {
@@ -78,12 +85,11 @@ class SportstalentHealthConnect : Plugin() {
 
 
     // MARK: - Type mapping (whitelist)
+    // Minimum scope: exercise sessions + active calories only.
+    // Anything not listed here can never be requested or queried - by design.
 
     private fun recordClass(id: String): KClass<out Record>? = when (id) {
-        "sleep", "sleepAnalysis", "SleepSessionRecord" -> SleepSessionRecord::class
-        "heart_rate", "heartRate", "HeartRateRecord" -> HeartRateRecord::class
         "active_energy", "activeCaloriesBurned", "ActiveCaloriesBurnedRecord" -> ActiveCaloriesBurnedRecord::class
-        "steps", "stepCount", "StepsRecord" -> StepsRecord::class
         "workout", "exercise", "ExerciseSessionRecord" -> ExerciseSessionRecord::class
         else -> null
     }
@@ -108,7 +114,7 @@ class SportstalentHealthConnect : Plugin() {
         res.put("jsName", "SportstalentHealthConnect")
         val methods = JSArray()
         listOf("debugRegistration", "isAvailable", "requestAuthorization",
-            "queryQuantity", "queryCategory", "queryWorkouts").forEach { methods.put(it) }
+            "queryQuantity", "queryWorkouts").forEach { methods.put(it) }
         res.put("methods", methods)
         call.resolve(res)
     }
@@ -134,7 +140,14 @@ class SportstalentHealthConnect : Plugin() {
             for (i in 0 until readIds.length()) {
                 val id = readIds.optString(i, "")
                 val perm = permissionFor(id)
-                if (perm != null) perms.add(perm)
+                if (perm != null) {
+                    perms.add(perm)
+                } else if (id.isNotEmpty()) {
+                    // Out-of-scope type requested by an older JS bundle. Ignore it
+                    // rather than requesting a permission the manifest does not
+                    // declare, which would make allGranted false and break connect.
+                    Log.w(tag, "requestAuthorization: ignoring out-of-scope type '$id'")
+                }
             }
         }
         if (perms.isEmpty()) {
@@ -188,10 +201,7 @@ class SportstalentHealthConnect : Plugin() {
     }
 
     private fun unitFor(id: String): String = when (id) {
-        "heart_rate", "heartRate" -> "bpm"
         "active_energy", "activeCaloriesBurned" -> "kcal"
-        "steps", "stepCount" -> "count"
-        "sleep", "sleepAnalysis" -> "seconds"
         else -> ""
     }
 
@@ -232,33 +242,10 @@ class SportstalentHealthConnect : Plugin() {
                         obj.put("sourceName", meta.dataOrigin.packageName)
                         obj.put("unit", unit)
                         when (record) {
-                            is StepsRecord -> {
-                                obj.put("startDate", record.startTime.toString())
-                                obj.put("endDate", record.endTime.toString())
-                                obj.put("value", record.count.toDouble())
-                            }
                             is ActiveCaloriesBurnedRecord -> {
                                 obj.put("startDate", record.startTime.toString())
                                 obj.put("endDate", record.endTime.toString())
                                 obj.put("value", record.energy.inKilocalories)
-                            }
-                            is HeartRateRecord -> {
-                                // Aggregate: one entry per HR sample inside the record.
-                                val samplesInner = record.samples
-                                if (samplesInner.isNotEmpty()) {
-                                    for (s in samplesInner) {
-                                        val inner = JSObject()
-                                        inner.put("uuid", "${meta.id}:${s.time}")
-                                        inner.put("external_id", "${meta.id}:${s.time}")
-                                        inner.put("sourceName", meta.dataOrigin.packageName)
-                                        inner.put("unit", unit)
-                                        inner.put("startDate", s.time.toString())
-                                        inner.put("endDate", s.time.toString())
-                                        inner.put("value", s.beatsPerMinute.toDouble())
-                                        samples.put(inner)
-                                    }
-                                    continue
-                                }
                             }
                             else -> {}
                         }
@@ -271,59 +258,6 @@ class SportstalentHealthConnect : Plugin() {
                 call.resolve(res)
             } catch (t: Throwable) {
                 Log.e(tag, "queryQuantity failed", t)
-                call.reject("Query failed: ${t.message}")
-            }
-        }
-    }
-
-    // MARK: - queryCategory (sleep sessions)
-
-    @PluginMethod
-    fun queryCategory(call: PluginCall) {
-        val metricType = call.getString("metricType") ?: call.getString("sampleType") ?: "sleep"
-        val start = parseInstant(call.getString("startDate"))
-        val end = parseInstant(call.getString("endDate"))
-        if (start == null || end == null) {
-            call.reject("startDate, endDate are required")
-            return
-        }
-        val kls = recordClass(metricType)
-        if (kls == null || kls != SleepSessionRecord::class) {
-            call.reject("Unsupported category type: $metricType")
-            return
-        }
-        Log.i(tag, "queryCategory metricType=$metricType range=$start..$end")
-        scope.launch {
-            try {
-                val client = HealthConnectClient.getOrCreate(context)
-                val samples = JSArray()
-                withContext(Dispatchers.IO) {
-                    val response = client.readRecords(
-                        ReadRecordsRequest(
-                            recordType = SleepSessionRecord::class,
-                            timeRangeFilter = TimeRangeFilter.between(start, end)
-                        )
-                    )
-                    for (record in response.records) {
-                        val meta = record.metadata
-                        val obj = JSObject()
-                        obj.put("uuid", meta.id)
-                        obj.put("external_id", meta.id)
-                        obj.put("sourceName", meta.dataOrigin.packageName)
-                        obj.put("startDate", record.startTime.toString())
-                        obj.put("endDate", record.endTime.toString())
-                        val durationSec = (record.endTime.epochSecond - record.startTime.epochSecond).toDouble()
-                        obj.put("value", durationSec)
-                        obj.put("unit", "seconds")
-                        samples.put(obj)
-                    }
-                }
-                val res = JSObject()
-                res.put("samples", samples)
-                Log.i(tag, "queryCategory metricType=$metricType returned ${samples.length()} samples")
-                call.resolve(res)
-            } catch (t: Throwable) {
-                Log.e(tag, "queryCategory failed", t)
                 call.reject("Query failed: ${t.message}")
             }
         }
@@ -364,30 +298,9 @@ class SportstalentHealthConnect : Plugin() {
                         obj.put("activityType", record.exerciseType)
                         record.title?.let { obj.put("title", it) }
 
-                        // Best-effort enrichment: aggregate HR + calories over the workout window.
-                        try {
-                            val sessionFilter = TimeRangeFilter.between(record.startTime, record.endTime)
-                            val hrResp = client.readRecords(
-                                ReadRecordsRequest(
-                                    recordType = HeartRateRecord::class,
-                                    timeRangeFilter = sessionFilter
-                                )
-                            )
-                            var sum = 0.0
-                            var count = 0
-                            var maxHr = 0L
-                            for (hr in hrResp.records) {
-                                for (s in hr.samples) {
-                                    sum += s.beatsPerMinute.toDouble()
-                                    count += 1
-                                    if (s.beatsPerMinute > maxHr) maxHr = s.beatsPerMinute
-                                }
-                            }
-                            if (count > 0) {
-                                obj.put("avgHr", sum / count)
-                                obj.put("maxHr", maxHr.toDouble())
-                            }
-                        } catch (_: Throwable) {}
+                        // Best-effort enrichment: active calories over the workout window.
+                        // NOTE: avg/max heart-rate enrichment was REMOVED with the
+                        // READ_HEART_RATE permission (Google Play minimum scope, Aug 2026).
                         try {
                             val sessionFilter = TimeRangeFilter.between(record.startTime, record.endTime)
                             val calResp = client.readRecords(

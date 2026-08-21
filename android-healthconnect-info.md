@@ -1,25 +1,74 @@
-# Android Health Connect setup (do this in Android Studio after `npx cap add android`)
+# Android Health Connect setup
 
-The `capacitor-health` plugin already installed for iOS also bridges Android **Health Connect**, so no extra npm package is needed. You only need to wire native permissions and (on Android 14+) declare the Health Connect intent filter.
+> ## SCOPE STATUS - READ THIS FIRST (21 Aug 2026)
+>
+> Health Connect on Android is on **MINIMUM SCOPE**. Only two permissions are
+> requested:
+>
+> | Permission | Status |
+> |---|---|
+> | `READ_EXERCISE` | active |
+> | `READ_ACTIVE_CALORIES_BURNED` | active |
+> | `READ_SLEEP` | **removed 21 Aug 2026** |
+> | `READ_HEART_RATE` | **removed 21 Aug 2026** |
+> | `READ_STEPS` | **removed 21 Aug 2026** |
+> | `READ_RESTING_HEART_RATE` | removed earlier (Aug 2026, same policy) |
+> | `READ_HEART_RATE_VARIABILITY` | removed earlier (Aug 2026, same policy) |
+>
+> **Why:** Google Play enforced "Politikken vedrorende tilladelser for Health
+> Connect by Android: Overdreven dataadgang for den angivne funktion" on
+> **20 Aug 2026**. The live Android version was blocked and an earlier version
+> served instead. Google explicitly listed HeartRate, SleepSession and
+> Steps as not required for the features the app declares. It did NOT object
+> to Exercise or ActiveCaloriesBurned.
+>
+> **This was the SECOND round of the same policy.** Resting HR and HRV were
+> removed in an earlier round. Do not treat this point as closed.
+>
+> **Re-adding any type requires FOUR matching changes, or it fails silently:**
+> 1. `android/app/src/main/AndroidManifest.xml`
+> 2. `recordClass()` in `android/app/src/main/java/dk/sportstalent/app/SportstalentHealthConnect.kt`
+> 3. `READ_TYPES` in `src/lib/healthConnect.ts`
+> 4. Play Console -> **Health apps declaration** AND **Data safety**
+>
+> The silent failure mode: `requestAuthorization` resolves
+> `allGranted = granted.containsAll(requested)`. If JS requests a type the
+> manifest does not declare, `allGranted` is false and the "Connect Health
+> Connect" button appears to fail - with no error shown to the user.
+>
+> **To get sleep / heart rate / steps back** you need a Health apps declaration
+> that maps each data type to a demonstrable in-app screen, plus a demo video
+> showing the navigation path to that screen with real data on it. That is a
+> separate submission - do not bundle it with an unrelated release.
+>
+> **iOS HealthKit is UNAFFECTED** and still reads sleep, resting HR, HRV,
+> heart rate, active energy and workouts. See `ios-healthkit-info.md`.
+
+---
+
+## Native plugin
+
+The Android bridge is a **local Capacitor 8 Kotlin plugin** at
+`android/app/src/main/java/dk/sportstalent/app/SportstalentHealthConnect.kt`,
+registered explicitly by `MainActivity`. There is **no npm package** - the old
+`capacitor-health` / Capgo plugin was removed and must not be re-added.
+
+Methods: `debugRegistration`, `isAvailable`, `requestAuthorization`,
+`queryQuantity`, `queryWorkouts`. (`queryCategory` was removed with the sleep
+permission.)
 
 ## 1. Prerequisites on the test device
 1. Install **Health Connect** from the Play Store (pre-installed on Android 14+).
-2. In Health Connect, grant your data sources (Wear OS watch, Fitbit, Samsung Health, Google Fit, etc.) permission to write **Sleep, Heart rate, Steps, Active calories, Exercise**.
+2. In Health Connect, grant your data sources (Wear OS watch, Fitbit, Samsung
+   Health, Google Fit, etc.) permission to write **Exercise** and
+   **Active calories**.
 
-> **Scope note (Aug 2026):** Resting heart rate and HRV were removed from the Android Health Connect scope to comply with Google Play's "Minimum Scope" policy — they never delivered data on Android. iOS HealthKit is unchanged and still reads resting HR and HRV.
-
-## 2. After running `npx cap add android` on your Mac/PC
-
-Open `android/app/src/main/AndroidManifest.xml` and add the following inside the top-level `<manifest>` element (NOT inside `<application>`):
+## 2. Manifest (already committed - do not re-add removed permissions)
 
 ```xml
-<!-- Health Connect read permissions (MVP scope) -->
-<uses-permission android:name="android.permission.health.READ_SLEEP" />
-<uses-permission android:name="android.permission.health.READ_HEART_RATE" />
-<uses-permission android:name="android.permission.health.READ_STEPS" />
 <uses-permission android:name="android.permission.health.READ_EXERCISE" />
+<uses-permission android:name="android.permission.health.READ_ACTIVE_CALORIES_BURNED" />
 
-<!-- Allows the system Health Connect privacy-policy screen to open ours -->
 <queries>
   <package android:name="com.google.android.apps.healthdata" />
   <intent>
@@ -28,13 +77,10 @@ Open `android/app/src/main/AndroidManifest.xml` and add the following inside the
 </queries>
 ```
 
-Then inside the existing `<activity android:name=".MainActivity" ...>` block, add this intent-filter so Health Connect can open a "How we use your data" screen (required for Play Store review):
-
-```xml
-<intent-filter>
-  <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
-</intent-filter>
-```
+Inside `<activity android:name=".MainActivity" ...>` there must be an
+intent-filter for `androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE`, and an
+`activity-alias` named `ViewPermissionUsageActivity` for Android 14+. Both are
+already in place and are required by Play review.
 
 ## 3. Set minSdk to 26
 Open `android/variables.gradle` and ensure:
