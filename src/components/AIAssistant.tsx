@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { AssistantDisclosure } from "@/components/AssistantDisclosure";
 
 interface Message {
   role: "user" | "assistant";
