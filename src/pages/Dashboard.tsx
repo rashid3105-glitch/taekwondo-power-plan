@@ -1239,6 +1239,7 @@ export default function Dashboard() {
                   loadData();
                 }
               }} />
+              </div>
             )}
 
             {/* Medical document translator */}
