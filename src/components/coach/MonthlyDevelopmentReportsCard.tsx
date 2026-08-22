@@ -180,9 +180,12 @@ export function MonthlyDevelopmentReportsCard({ athleteId, athleteName }: Props)
             {generating ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : <Sparkles className="h-3.5 w-3.5 mr-1" />}
             {t("monthlyDevReportGenerateFor")}
           </Button>
+        </div>
       </div>
 
       <AssistantDisclosure variant="short" />
+
+
 
 
 
