@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { ClipboardList, Download, Loader2, Sparkles, Trash2 } from "lucide-react";
+import { AssistantDisclosure } from "@/components/AssistantDisclosure";
 
 interface Props {
   athleteId: string;
