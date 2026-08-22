@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { AvatarImg } from "@/components/AvatarImg";
 import { cn } from "@/lib/utils";
 import { ChevronDown, ClipboardList, Loader2, Sparkles } from "lucide-react";
+import { AssistantDisclosure } from "@/components/AssistantDisclosure";
 
 interface AthleteLite {
   user_id: string;
@@ -111,6 +112,8 @@ export function BulkMonthlyReportsCard({ athletes }: Props) {
             />
           </button>
         </CollapsibleTrigger>
+
+        <AssistantDisclosure variant="short" />
 
         <CollapsibleContent className="space-y-3">
           <div className="flex items-center justify-end gap-1.5">

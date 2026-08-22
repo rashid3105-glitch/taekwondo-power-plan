@@ -41,6 +41,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { getCurrentUser } from "@/lib/authSession";
+import { AssistantDisclosure } from "@/components/AssistantDisclosure";
 
 interface Profile {
   belt_level: string;
@@ -818,6 +819,8 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
           <ChevronLeft className="h-4 w-4 mr-1" /> {txt.backToIntro}
         </Button>
       </div>
+
+      <AssistantDisclosure />
 
       <Card className="p-4 sm:p-6 text-center space-y-3">
         <Brain className="h-8 w-8 mx-auto text-primary" />

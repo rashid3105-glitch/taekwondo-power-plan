@@ -26,6 +26,7 @@ import jsPDF from "jspdf";
 import { isNativeApp } from "@/lib/platform";
 import { Filesystem, Directory } from "@capacitor/filesystem";
 import { Share } from "@capacitor/share";
+import { AssistantDisclosure } from "@/components/AssistantDisclosure";
 
 interface DailyRow {
   summary_date: string;
@@ -592,6 +593,7 @@ export default function Health() {
         <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
           {t("healthPageSubtitleManual")}
         </p>
+        <AssistantDisclosure className="mt-3" />
       </div>
 
       {/* Apple Health connection (iOS native only) */}

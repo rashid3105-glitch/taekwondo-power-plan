@@ -17,6 +17,7 @@ import { isNativeApp } from "@/lib/platform";
 import { useMySportProfile } from "@/hooks/useMySportProfile";
 import { GradePicker } from "@/components/GradePicker";
 import { gradeLabelFor } from "@/lib/sportGrade";
+import { AssistantDisclosure } from "@/components/AssistantDisclosure";
 
 const DEFAULT_SCHEDULE: DaySchedule[] = [
   { day: "Monday", type: "tkd" },
@@ -623,6 +624,8 @@ export default function Onboarding() {
                       </>
                     )}
                   </Button>
+
+                  <AssistantDisclosure variant="short" />
 
                   {generating && (
                     <div className="text-center text-sm text-muted-foreground">

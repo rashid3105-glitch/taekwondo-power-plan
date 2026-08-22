@@ -8,6 +8,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { isNativeApp } from "@/lib/platform";
 import { Filesystem, Directory } from "@capacitor/filesystem";
 import { Share } from "@capacitor/share";
+import { AssistantDisclosure } from "@/components/AssistantDisclosure";
 
 interface Props {
   open: boolean;
@@ -166,6 +167,7 @@ export function CompetitionPlanDialog({ open, onOpenChange, competitionName, pla
         </DialogHeader>
 
         <div className="space-y-4 text-sm">
+          <AssistantDisclosure />
           {meta && (
             <div className="flex flex-wrap gap-2">
               <Badge variant="outline">{t("compPlanCurrent")} {meta.currentKg} kg</Badge>

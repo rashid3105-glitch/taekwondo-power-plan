@@ -16,6 +16,7 @@ import {
 } from "@/data/coachMentalQuestions";
 import { useOfflineCoachMentalAssessments } from "@/hooks/useOfflineCoachMentalAssessments";
 import type { CachedCoachAssessment } from "@/lib/coachMentalAssessmentOfflineDB";
+import { AssistantDisclosure } from "@/components/AssistantDisclosure";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -509,6 +510,8 @@ export function CoachMentalAssessment({ profile }: { profile: Profile | null }) 
           <ChevronLeft className="h-4 w-4 mr-1" /> {txt.backToIntro}
         </Button>
       </div>
+
+      <AssistantDisclosure />
 
       <Card className="p-4 sm:p-6 text-center space-y-3">
         <Users className="h-8 w-8 mx-auto text-primary" />
