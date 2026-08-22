@@ -582,7 +582,10 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
               </Button>
             </div>
             {activePlan ? (
-              <AIPlanCard plan={activePlan} coachMode athleteUserId={athlete.user_id} />
+              <div className="space-y-2">
+                <AssistantDisclosure />
+                <AIPlanCard plan={activePlan} coachMode athleteUserId={athlete.user_id} />
+              </div>
             ) : (
               <div className="text-center py-6">
                 <Zap className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
