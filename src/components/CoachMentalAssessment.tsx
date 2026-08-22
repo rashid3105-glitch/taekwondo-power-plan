@@ -16,6 +16,7 @@ import {
 } from "@/data/coachMentalQuestions";
 import { useOfflineCoachMentalAssessments } from "@/hooks/useOfflineCoachMentalAssessments";
 import type { CachedCoachAssessment } from "@/lib/coachMentalAssessmentOfflineDB";
+import { AssistantDisclosure } from "@/components/AssistantDisclosure";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
