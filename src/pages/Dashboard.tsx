@@ -19,6 +19,7 @@ import { AvatarImg } from "@/components/AvatarImg";
 import logo from "@/assets/logo.png";
 import { useToast } from "@/hooks/use-toast";
 import { AIPlanCard } from "@/components/AIPlanCard";
+import { AssistantDisclosure } from "@/components/AssistantDisclosure";
 import { Badge } from "@/components/ui/badge";
 import { RehabPlanCard } from "@/components/RehabPlanCard";
 import { MedicalDocumentTranslator } from "@/components/MedicalDocumentTranslator";
