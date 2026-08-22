@@ -334,8 +334,11 @@ export default function Health() {
 
       ensure(10);
       doc.setFontSize(8); doc.setTextColor(130);
-      const disclaimer = t("assistantDisclosure");
-      doc.text(doc.splitTextToSize(disclaimer, maxW), margin, y);
+      const medical = doc.splitTextToSize(t("healthReportMedicalDisclaimer"), maxW);
+      doc.text(medical, margin, y);
+      y += medical.length * 4 + 4;
+      ensure(10);
+      doc.text(doc.splitTextToSize(t("assistantDisclosure"), maxW), margin, y);
 
       const filename = `health-report-${new Date().toISOString().slice(0, 10)}.pdf`;
       if (isNativeApp()) {
@@ -593,7 +596,10 @@ export default function Health() {
         <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
           {t("healthPageSubtitleManual")}
         </p>
-        <AssistantDisclosure className="mt-3" />
+        <p className="text-[11px] text-muted-foreground/80 mt-3 leading-relaxed">
+          {t("healthReportMedicalDisclaimer")}
+        </p>
+        <AssistantDisclosure className="mt-2" />
       </div>
 
       {/* Apple Health connection (iOS native only) */}
