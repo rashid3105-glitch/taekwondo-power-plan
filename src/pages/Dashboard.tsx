@@ -1229,6 +1229,8 @@ export default function Dashboard() {
 
             {/* Rehab plan result */}
             {rehabPlan && (
+              <div className="space-y-2">
+              <AssistantDisclosure />
               <RehabPlanCard plan={rehabPlan} onDelete={async () => {
                 const activeRP = rehabPlans.find(r => r.is_active);
                 if (activeRP) {
