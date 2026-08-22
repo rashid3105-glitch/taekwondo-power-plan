@@ -593,6 +593,7 @@ export default function Health() {
         <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
           {t("healthPageSubtitleManual")}
         </p>
+        <AssistantDisclosure className="mt-3" />
       </div>
 
       {/* Apple Health connection (iOS native only) */}
