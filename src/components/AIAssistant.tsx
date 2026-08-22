@@ -262,7 +262,8 @@ export function AIAssistant() {
             </div>
 
             {/* Input */}
-            <div className="p-3 border-t border-border shrink-0">
+            <div className="p-3 border-t border-border shrink-0 space-y-2">
+              <AssistantDisclosure variant="short" />
               <div className="flex gap-2 items-end">
                 <Textarea
                   value={input}
