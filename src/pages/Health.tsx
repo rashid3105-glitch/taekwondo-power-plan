@@ -334,7 +334,7 @@ export default function Health() {
 
       ensure(10);
       doc.setFontSize(8); doc.setTextColor(130);
-      const disclaimer = "Norms are general-population reference ranges (NSF sleep, AHA resting HR, RMSSD HRV literature). Trained athletes often sit below the RHR band and above the HRV band — that is usually a positive sign. This report is informational, not medical advice.";
+      const disclaimer = t("assistantDisclosure");
       doc.text(doc.splitTextToSize(disclaimer, maxW), margin, y);
 
       const filename = `health-report-${new Date().toISOString().slice(0, 10)}.pdf`;
