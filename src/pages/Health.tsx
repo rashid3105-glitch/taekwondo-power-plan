@@ -26,6 +26,7 @@ import jsPDF from "jspdf";
 import { isNativeApp } from "@/lib/platform";
 import { Filesystem, Directory } from "@capacitor/filesystem";
 import { Share } from "@capacitor/share";
+import { AssistantDisclosure } from "@/components/AssistantDisclosure";
 
 interface DailyRow {
   summary_date: string;
