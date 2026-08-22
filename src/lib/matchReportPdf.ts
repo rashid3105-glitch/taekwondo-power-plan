@@ -31,7 +31,7 @@ function priorityColor(p: string): [number, number, number] {
 
 export function generateMatchReportPdf(
   report: MatchReport,
-  meta: { athleteName: string; videoTitle: string; matchDate?: string }
+  meta: { athleteName: string; videoTitle: string; matchDate?: string; disclosure?: string }
 ): void {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const pageW = doc.internal.pageSize.getWidth();
@@ -226,6 +226,17 @@ export function generateMatchReportPdf(
   // ===== Tactical Notes =====
   sectionTitle("Tactical Notes");
   paragraph(report.tacticalNotes || "—");
+
+  if (meta.disclosure) {
+    ensureSpace(14);
+    doc.setFontSize(7.5);
+    doc.setTextColor(...MUTED);
+    const lines = doc.splitTextToSize(meta.disclosure, contentW);
+    doc.text(lines, margin, y);
+    y += lines.length * 3.5 + 2;
+    doc.setTextColor(...TEXT);
+    doc.setFontSize(9);
+  }
 
   addFooter();
 
