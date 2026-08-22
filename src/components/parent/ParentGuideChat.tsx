@@ -106,6 +106,10 @@ export function ParentGuideChat({ athleteId, athleteFirstName }: Props) {
         <ChevronDown className={cn("h-4 w-4 transition-transform", open && "rotate-180")} />
       </button>
 
+      {!open && <AssistantDisclosure variant="short" />}
+
+
+
       {open && (
         <div className="space-y-3 pt-1" dir={locale === "ar" ? "rtl" : "ltr"}>
           <p className="text-xs text-muted-foreground leading-relaxed flex items-start gap-1.5">

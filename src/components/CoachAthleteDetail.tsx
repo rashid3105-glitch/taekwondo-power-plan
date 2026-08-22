@@ -14,6 +14,7 @@ import { useSportProfile } from "@/hooks/useSportProfile";
 import { GradePicker } from "@/components/GradePicker";
 import { gradeLabelFor } from "@/lib/sportGrade";
 import { AIPlanCard } from "@/components/AIPlanCard";
+import { AssistantDisclosure } from "@/components/AssistantDisclosure";
 import { RehabPlanCard } from "@/components/RehabPlanCard";
 import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekSchedulePicker";
 import { Loader2, Plus, Zap, Heart, Save, Calendar, UserCog, Target, CalendarRange, Brain, Activity as ActivityIcon, ListChecks, Pencil, Lock, Scale } from "lucide-react";
@@ -582,7 +583,10 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
               </Button>
             </div>
             {activePlan ? (
-              <AIPlanCard plan={activePlan} coachMode athleteUserId={athlete.user_id} />
+              <div className="space-y-2">
+                <AssistantDisclosure />
+                <AIPlanCard plan={activePlan} coachMode athleteUserId={athlete.user_id} />
+              </div>
             ) : (
               <div className="text-center py-6">
                 <Zap className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
@@ -616,10 +620,13 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
               </Button>
             </div>
             {activeRehab && (
-              <RehabPlanCard plan={activeRehab.plan_data} onDelete={async () => {
-                await supabase.from("rehab_plans").delete().eq("id", activeRehab.id);
-                onRefresh();
-              }} />
+              <div className="space-y-2">
+                <AssistantDisclosure />
+                <RehabPlanCard plan={activeRehab.plan_data} onDelete={async () => {
+                  await supabase.from("rehab_plans").delete().eq("id", activeRehab.id);
+                  onRefresh();
+                }} />
+              </div>
             )}
           </CollapsiblePanel>
 

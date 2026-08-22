@@ -19,6 +19,7 @@ import { AvatarImg } from "@/components/AvatarImg";
 import logo from "@/assets/logo.png";
 import { useToast } from "@/hooks/use-toast";
 import { AIPlanCard } from "@/components/AIPlanCard";
+import { AssistantDisclosure } from "@/components/AssistantDisclosure";
 import { Badge } from "@/components/ui/badge";
 import { RehabPlanCard } from "@/components/RehabPlanCard";
 import { MedicalDocumentTranslator } from "@/components/MedicalDocumentTranslator";
@@ -1228,6 +1229,8 @@ export default function Dashboard() {
 
             {/* Rehab plan result */}
             {rehabPlan && (
+              <div className="space-y-2">
+              <AssistantDisclosure />
               <RehabPlanCard plan={rehabPlan} onDelete={async () => {
                 const activeRP = rehabPlans.find(r => r.is_active);
                 if (activeRP) {
@@ -1236,6 +1239,7 @@ export default function Dashboard() {
                   loadData();
                 }
               }} />
+              </div>
             )}
 
             {/* Medical document translator */}
@@ -1382,6 +1386,7 @@ export default function Dashboard() {
             {/* Active plan */}
             {activePlan ? (
               <div className="space-y-2">
+                <AssistantDisclosure />
                 <AIPlanCard plan={activePlan} />
               </div>
             ) : (!hasCoach || isPaid) ? (
