@@ -74,6 +74,7 @@ export function MatchReportButton({ tags, video, profile }: Props) {
         athleteName: profile.display_name,
         videoTitle: video.title,
         matchDate: video.match_date || undefined,
+        disclosure: t("assistantDisclosure"),
       });
     } catch (e: any) {
       toast({ title: t("matchReportError"), description: e.message, variant: "destructive" });

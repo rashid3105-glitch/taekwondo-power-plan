@@ -140,6 +140,15 @@ export function MonthlyDevelopmentReportsCard({ athleteId, athleteName }: Props)
       doc.text(line, margin, y);
       y += 15;
     }
+    y += 10;
+    if (y > doc.internal.pageSize.getHeight() - margin - 30) {
+      doc.addPage();
+      y = margin;
+    }
+    doc.setFontSize(8);
+    doc.setTextColor(130);
+    doc.text(doc.splitTextToSize(t("assistantDisclosure"), width), margin, y);
+    doc.setTextColor(0);
     doc.save(`${athleteName.replace(/\s+/g, "_")}-${r.period_year}-${String(r.period_month).padStart(2, "0")}.pdf`);
   }
 
