@@ -27,6 +27,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { getCurrentUser } from "@/lib/authSession";
+import { AssistantDisclosure } from "@/components/AssistantDisclosure";
 
 type SupportedLocale = "en" | "da" | "sv" | "de" | "ar" | "no";
 
