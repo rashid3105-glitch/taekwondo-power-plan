@@ -41,6 +41,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { getCurrentUser } from "@/lib/authSession";
+import { AssistantDisclosure } from "@/components/AssistantDisclosure";
 
 interface Profile {
   belt_level: string;
