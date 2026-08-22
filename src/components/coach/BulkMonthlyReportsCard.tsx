@@ -113,6 +113,8 @@ export function BulkMonthlyReportsCard({ athletes }: Props) {
           </button>
         </CollapsibleTrigger>
 
+        <AssistantDisclosure variant="short" />
+
         <CollapsibleContent className="space-y-3">
           <div className="flex items-center justify-end gap-1.5">
             <select
