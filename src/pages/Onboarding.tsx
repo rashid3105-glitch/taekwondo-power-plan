@@ -624,6 +624,8 @@ export default function Onboarding() {
                     )}
                   </Button>
 
+                  <AssistantDisclosure variant="short" />
+
                   {generating && (
                     <div className="text-center text-sm text-muted-foreground">
                       <p className="font-medium">{t("onbGeneratingPlan")}</p>
