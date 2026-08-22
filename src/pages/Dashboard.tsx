@@ -1382,6 +1382,7 @@ export default function Dashboard() {
             {/* Active plan */}
             {activePlan ? (
               <div className="space-y-2">
+                <AssistantDisclosure />
                 <AIPlanCard plan={activePlan} />
               </div>
             ) : (!hasCoach || isPaid) ? (
