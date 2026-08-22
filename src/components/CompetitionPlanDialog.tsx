@@ -167,6 +167,7 @@ export function CompetitionPlanDialog({ open, onOpenChange, competitionName, pla
         </DialogHeader>
 
         <div className="space-y-4 text-sm">
+          <AssistantDisclosure />
           {meta && (
             <div className="flex flex-wrap gap-2">
               <Badge variant="outline">{t("compPlanCurrent")} {meta.currentKg} kg</Badge>
