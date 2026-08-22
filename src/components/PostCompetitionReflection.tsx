@@ -490,6 +490,7 @@ function ResultsView({ reflection, competition, upcomingCompetitions, onChangeNe
 
   return (
     <div className="space-y-4">
+      <AssistantDisclosure variant="short" />
       <Card className="p-4 sm:p-5 space-y-3">
         <div className="flex items-start justify-between gap-2">
           <div>
