@@ -620,10 +620,13 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
               </Button>
             </div>
             {activeRehab && (
-              <RehabPlanCard plan={activeRehab.plan_data} onDelete={async () => {
-                await supabase.from("rehab_plans").delete().eq("id", activeRehab.id);
-                onRefresh();
-              }} />
+              <div className="space-y-2">
+                <AssistantDisclosure />
+                <RehabPlanCard plan={activeRehab.plan_data} onDelete={async () => {
+                  await supabase.from("rehab_plans").delete().eq("id", activeRehab.id);
+                  onRefresh();
+                }} />
+              </div>
             )}
           </CollapsiblePanel>
 
