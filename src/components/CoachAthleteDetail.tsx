@@ -14,6 +14,7 @@ import { useSportProfile } from "@/hooks/useSportProfile";
 import { GradePicker } from "@/components/GradePicker";
 import { gradeLabelFor } from "@/lib/sportGrade";
 import { AIPlanCard } from "@/components/AIPlanCard";
+import { AssistantDisclosure } from "@/components/AssistantDisclosure";
 import { RehabPlanCard } from "@/components/RehabPlanCard";
 import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekSchedulePicker";
 import { Loader2, Plus, Zap, Heart, Save, Calendar, UserCog, Target, CalendarRange, Brain, Activity as ActivityIcon, ListChecks, Pencil, Lock, Scale } from "lucide-react";
