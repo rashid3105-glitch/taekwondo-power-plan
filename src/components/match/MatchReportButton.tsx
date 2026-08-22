@@ -108,6 +108,7 @@ export function MatchReportButton({ tags, video, profile }: Props) {
         button
       )}
       <p className="text-xs text-muted-foreground">{t("matchReportHint")}</p>
+      <AssistantDisclosure />
     </div>
   );
 }
