@@ -819,6 +819,8 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
         </Button>
       </div>
 
+      <AssistantDisclosure />
+
       <Card className="p-4 sm:p-6 text-center space-y-3">
         <Brain className="h-8 w-8 mx-auto text-primary" />
         <h2 className="text-2xl font-extrabold text-card-foreground">{totalScore}/30</h2>
