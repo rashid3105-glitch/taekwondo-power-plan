@@ -620,7 +620,7 @@ export default function CoachLanding() {
 
   return (
     <div style={{ background: C.bg, color: C.text }} className="min-h-screen">
-      <PageMeta title={cl.metaTitle} description={cl.metaDesc} canonical="https://sportstalent.dk/" />
+      <PageMeta title={cl.metaTitle} description={cl.metaDesc} canonical="https://sportstalent.dk/for-traenere" />
       <Nav />
       <main>
         <Hero />
