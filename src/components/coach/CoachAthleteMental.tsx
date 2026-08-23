@@ -2,7 +2,7 @@
 // Lists the assessment history (latest first), shows category radar for the
 // most recent entry, and lets the coach drill into the AI-generated advice.
 
-import { MENTAL_SCHEMA_VERSION } from "@/data/mentalQuestions";
+import { MENTAL_SCHEMA_VERSION, MENTAL_CATEGORY_LABELS, MENTAL_MAX_SCORE } from "@/data/mentalQuestions";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -11,14 +11,7 @@ import { Brain, ChevronRight, Loader2 } from "lucide-react";
 
 type SupportedLocale = "en" | "da" | "sv" | "de" | "ar";
 
-const categoryLabels: Record<string, Record<SupportedLocale, string>> = {
-  mentalToughness: { en: "Mental Toughness", da: "Mental styrke", sv: "Mental styrka", de: "Mentale Stärke", ar: "القوة الذهنية" },
-  competitionAnxiety: { en: "Competition Anxiety", da: "Konkurrenceangst", sv: "Tävlingsångest", de: "Wettkampfangst", ar: "قلق المنافسة" },
-  focusConcentration: { en: "Focus & Concentration", da: "Fokus & koncentration", sv: "Fokus & koncentration", de: "Fokus & Konzentration", ar: "التركيز والانتباه" },
-  recoveryFromLoss: { en: "Recovery from Loss", da: "Håndtering af nederlag", sv: "Återhämtning efter förlust", de: "Erholung nach Niederlagen", ar: "التعافي من الخسارة" },
-  confidence: { en: "Confidence", da: "Selvtillid", sv: "Självförtroende", de: "Selbstvertrauen", ar: "الثقة بالنفs" },
-  motivation: { en: "Motivation", da: "Motivation", sv: "Motivation", de: "Motivation", ar: "التحفيز" },
-};
+const categoryLabels = MENTAL_CATEGORY_LABELS;
 
 const t = {
   en: {
@@ -200,7 +193,7 @@ export function CoachAthleteMental({ athleteId }: Props) {
                   </div>
                   <div className="text-2xl font-bold text-card-foreground">
                     {selected.total_score}
-                    <span className="text-xs text-muted-foreground font-normal"> / 30</span>
+                    <span className="text-xs text-muted-foreground font-normal"> / {MENTAL_MAX_SCORE}</span>
                   </div>
                 </div>
                 {previous && (
@@ -322,7 +315,7 @@ export function CoachAthleteMental({ athleteId }: Props) {
                       {formatDate(a.created_at, l)}
                     </div>
                     <div className="text-[10px] text-muted-foreground">
-                      {tr.score}: {a.total_score}/30
+                      {tr.score}: {a.total_score}/{MENTAL_MAX_SCORE}
                     </div>
                   </div>
                   <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />

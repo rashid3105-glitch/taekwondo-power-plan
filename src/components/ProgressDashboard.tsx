@@ -1,4 +1,4 @@
-import { MENTAL_SCHEMA_VERSION } from "@/data/mentalQuestions";
+import { MENTAL_SCHEMA_VERSION, MENTAL_CATEGORY_LABELS, MENTAL_MAX_SCORE } from "@/data/mentalQuestions";
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -85,7 +85,7 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<TimeRange>("all");
   const [editingSelfLog, setEditingSelfLog] = useState<SelfLogEditTarget | null>(null);
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   // TODO: health-sync skjult indtil native HealthKit (RN) er klar — vis for admin indtil da.
   const { isAdmin: canSeeHealthSync } = useIsAdmin();
 
@@ -513,7 +513,7 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
         {mentalStats ? (
           <div className="space-y-3">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <StatCard icon={Target} label={t("latestMentalScore")} value={`${mentalStats.latest.total_score}/30`} />
+              <StatCard icon={Target} label={t("latestMentalScore")} value={`${mentalStats.latest.total_score}/${MENTAL_MAX_SCORE}`} />
               <StatCard icon={Calendar} label={t("assessmentsTaken")} value={String(mentalStats.total)} />
               <StatCard icon={TrendingUp} label={t("topStrength")} value={categoryLabel(mentalStats.best[0])} />
               <StatCard icon={Zap} label={t("needsWork")} value={categoryLabel(mentalStats.worst[0])} />
