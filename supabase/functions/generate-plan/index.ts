@@ -187,14 +187,13 @@ IMPORTANT: Return ONLY the JSON object, no markdown, no code fences, no explanat
 IMPORTANT: ALL text content MUST be written in ${lang} — with NO exceptions and NO mixing of languages. This explicitly includes: planName, every periodization entry ("phase" name, "focus" and "keyChanges"), session labels, session focus, exercise names where a natural ${lang} name exists, coachingCues, whyItMatters and alternative reasons. The English examples in the JSON schema above are format hints ONLY — translate them into ${lang}. Never output an English phase name such as "Foundation & Movement", "Max Power & Speed" or "Peaking" when ${lang} is not English.`;
 
     const weeklySchedule = profile.weekly_schedule || [];
-    const scheduleDescription = weeklySchedule.length > 0
-      ? weeklySchedule.map((d: any) => {
-          if (d.sessions && d.sessions.length > 1) {
-            return `${d.day}: ${d.sessions.map((s: any) => s.type.toUpperCase()).join(' + ')}`;
-          }
-          return `${d.day}: ${d.type.toUpperCase()}`;
-        }).join(', ')
+    const scheduleAnalysis = analyzeSchedule(weeklySchedule);
+    const scheduleDescription = scheduleAnalysis.hasSchedule
+      ? scheduleAnalysis.days.map((d) => `${d.day}: ${d.types.map((t) => t.toUpperCase()).join(" + ")}`).join(", ")
       : 'Not specified';
+    const scheduleConstraints = buildScheduleConstraints(scheduleAnalysis, sportName, sport.sessionLabelEn);
+    const loadGuardrails = buildLoadGuardrails(sportName, typeof profile.weight_kg === "number" ? profile.weight_kg : null);
+
 
     const safeInjury = sanitizePromptText(profile.current_injury, 500);
     const safeGoals = Array.isArray(profile.goals)
