@@ -4445,6 +4445,10 @@ export type Database = {
         Args: { _athlete_id: string; _reason: string }
         Returns: Json
       }
+      admin_set_coach_role: {
+        Args: { _enable: boolean; _user_id: string }
+        Returns: Json
+      }
       apply_invite_to_my_profile: { Args: { _code: string }; Returns: Json }
       can_chat_with: { Args: { _a: string; _b: string }; Returns: boolean }
       cleanup_archived_survey_templates: { Args: never; Returns: undefined }
