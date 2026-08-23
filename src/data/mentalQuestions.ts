@@ -5,6 +5,29 @@
  */
 export const MENTAL_SCHEMA_VERSION = 4;
 
+/** The six dimensions of the current athlete question set (4 questions each). */
+export const MENTAL_DIMENSIONS = [
+  "focusConcentration",
+  "competitionAnxiety",
+  "motivation",
+  "confidence",
+  "mentalResilience",
+  "mentalFlexibility",
+] as const;
+
+/** Max total score = one 1-5 average per dimension. */
+export const MENTAL_MAX_SCORE = MENTAL_DIMENSIONS.length * 5;
+
+/** Localised dimension labels (all supported app locales). */
+export const MENTAL_CATEGORY_LABELS: Record<string, Record<string, string>> = {
+  focusConcentration: { en: "Focus & Concentration", da: "Fokus & koncentration", sv: "Fokus & koncentration", de: "Fokus & Konzentration", ar: "التركيز والانتباه", no: "Fokus og konsentrasjon", es: "Foco y concentración" },
+  competitionAnxiety: { en: "Competition Anxiety", da: "Konkurrenceangst", sv: "Tävlingsångest", de: "Wettkampfangst", ar: "قلق المنافسة", no: "Konkurranseangst", es: "Ansiedad de competición" },
+  motivation: { en: "Motivation", da: "Motivation", sv: "Motivation", de: "Motivation", ar: "التحفيز", no: "Motivasjon", es: "Motivación" },
+  confidence: { en: "Confidence", da: "Selvtillid", sv: "Självförtroende", de: "Selbstvertrauen", ar: "الثقة بالنفس", no: "Selvtillit", es: "Confianza" },
+  mentalResilience: { en: "Mental Resilience", da: "Mental robusthed", sv: "Mental motståndskraft", de: "Mentale Widerstandskraft", ar: "المرونة الذهنية", no: "Mental robusthet", es: "Resiliencia mental" },
+  mentalFlexibility: { en: "Mental Flexibility", da: "Mental fleksibilitet", sv: "Mental flexibilitet", de: "Mentale Flexibilität", ar: "المرونة في التكيّف", no: "Mental fleksibilitet", es: "Flexibilidad mental" },
+};
+
 export interface LangText {
   en: string;
   da: string;
