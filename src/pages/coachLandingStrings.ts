@@ -99,10 +99,10 @@ const en: CLStrings = {
   ],
   heroDesc:
     "Sportstalent replaces the spreadsheets, notebooks and group chats clubs use to track training. Every athlete gets a personalised plan, readiness tracking and competition prep, automatically. Data stays in the EU. You coach. You don't administrate.",
-  heroCtaPrimary: "Start Free — No Card Needed",
+  heroCtaPrimary: "Get started — no card needed",
   heroCtaSecondary: "See How It Works",
-  heroFinePrint: "14-day free trial · no commitment · cancel anytime",
-  heroPrice: "14-day free trial — contact us for pricing",
+  heroFinePrint: "Founding club — 50% off the first year · no commitment",
+  heroPrice: "The first five clubs get 50% off the first year — contact us for pricing",
   heroLeadMagnet: "Free guide: How to keep your athletes motivated all season →",
   heroLeadMagnetCta: "Download free (PDF)",
 
@@ -174,7 +174,7 @@ const en: CLStrings = {
   ],
 
   pricingTitle: "Choose your plan",
-  pricingSub: "14-day free trial on all plans · no commitment · cancel anytime",
+  pricingSub: "Founding club — 50% first year · one club licence, billed yearly",
   mostPopular: "Most popular",
   fromLabel: "",
   perMonth: "",
@@ -191,7 +191,7 @@ const en: CLStrings = {
 
   finalCtaTitle: "Your next champion is already in your club.",
   finalCtaDesc: "Give every athlete the coaching they deserve — without the spreadsheets and the burnout.",
-  finalCtaButton: "Start Free Today",
+  finalCtaButton: "Get Started Today",
 
   footerCols: [
     { title: "Platform", links: [
@@ -258,10 +258,10 @@ const da: CLStrings = {
   ],
   heroDesc:
     "Sportstalent erstatter de regneark, notesbøger og gruppechats, klubber bruger til at holde styr på træningen. Hver atlet får en personlig plan, parathedsmåling og konkurrenceforberedelse — automatisk. Data ligger i EU. Du træner. Du administrerer ikke.",
-  heroCtaPrimary: "Start gratis — intet kreditkort",
+  heroCtaPrimary: "Kom i gang — intet kreditkort",
   heroCtaSecondary: "Se hvordan det virker",
-  heroFinePrint: "14 dages gratis prøve · ingen binding · opsig når som helst",
-  heroPrice: "14 dages gratis prøveperiode — kontakt os for pris",
+  heroFinePrint: "Founding club — 50 % det første år · ingen binding",
+  heroPrice: "De første fem klubber får 50 % det første år — kontakt os for pris",
   heroLeadMagnet: "Gratis guide: Sådan holder du dine udøvere motiverede hele sæsonen →",
   heroLeadMagnetCta: "Download gratis (PDF)",
 
@@ -333,7 +333,7 @@ const da: CLStrings = {
   ],
 
   pricingTitle: "Vælg din plan",
-  pricingSub: "14 dages gratis prøve på alle planer · ingen binding · opsig når som helst",
+  pricingSub: "Founding club — 50 % første år · én klublicens, faktureres årligt",
   mostPopular: "Mest populær",
   fromLabel: "",
   perMonth: "",
@@ -350,7 +350,7 @@ const da: CLStrings = {
 
   finalCtaTitle: "Din næste mester er allerede i din klub.",
   finalCtaDesc: "Giv alle atleter den træning de fortjener — uden regneark og udbrændthed.",
-  finalCtaButton: "Start gratis i dag",
+  finalCtaButton: "Kom i gang i dag",
 
   footerCols: [
     { title: "Platform", links: [
@@ -417,10 +417,10 @@ const sv: CLStrings = {
   ],
   heroDesc:
     "Sportstalent ersätter kalkylblad, anteckningsböcker och gruppchattar som klubbar använder för att hålla koll på träningen. Varje atlet får en personlig plan, beredskapsmätning och tävlingsförberedelse — automatiskt. Data ligger i EU. Du tränar. Du administrerar inte.",
-  heroCtaPrimary: "Börja gratis — inget kort",
+  heroCtaPrimary: "Kom igång — inget kort",
   heroCtaSecondary: "Se hur det fungerar",
-  heroFinePrint: "14 dagars gratis prov · ingen bindning · avsluta när som helst",
-  heroPrice: "14 dagars gratis provperiod — kontakta oss för pris",
+  heroFinePrint: "Founding club — 50 % första året · ingen bindning",
+  heroPrice: "De första fem klubbarna får 50 % första året — kontakta oss för pris",
   heroLeadMagnet: "Gratis guide: Hur du håller dina utövare motiverade hela säsongen →",
   heroLeadMagnetCta: "Ladda ner gratis (PDF)",
 
@@ -480,7 +480,7 @@ const sv: CLStrings = {
   ],
 
   pricingTitle: "Välj din plan",
-  pricingSub: "14 dagars gratis prov på alla planer · ingen bindning · avsluta när som helst",
+  pricingSub: "Founding club — 50 % första året · en klubblicens, faktureras årligen",
   mostPopular: "Mest populär",
   fromLabel: "",
   perMonth: "",
@@ -497,7 +497,7 @@ const sv: CLStrings = {
 
   finalCtaTitle: "Din nästa mästare finns redan i din klubb.",
   finalCtaDesc: "Ge varje atlet den träning de förtjänar — utan kalkylblad och utan att bränna ut dig.",
-  finalCtaButton: "Börja gratis idag",
+  finalCtaButton: "Kom igång idag",
 
   footerCols: [
     { title: "Plattform", links: [
@@ -564,10 +564,10 @@ const no: CLStrings = {
   ],
   heroDesc:
     "Sportstalent erstatter regnearkene, notatbøkene og gruppechattene klubber bruker for å holde styr på treningen. Hver utøver får en personlig plan, beredskapsmåling og konkurranseforberedelse — automatisk. Data ligger i EU. Du trener. Du administrerer ikke.",
-  heroCtaPrimary: "Start gratis — intet kort",
+  heroCtaPrimary: "Kom i gang — intet kort",
   heroCtaSecondary: "Se hvordan det fungerer",
-  heroFinePrint: "14 dagers gratis prøve · ingen binding · si opp når som helst",
-  heroPrice: "14 dagers gratis prøveperiode — kontakt oss for pris",
+  heroFinePrint: "Founding club — 50 % det første året · ingen binding",
+  heroPrice: "De fem første klubbene får 50 % det første året — kontakt oss for pris",
   heroLeadMagnet: "Gratis guide: Slik holder du utøverne motiverte hele sesongen →",
   heroLeadMagnetCta: "Last ned gratis (PDF)",
 
@@ -627,7 +627,7 @@ const no: CLStrings = {
   ],
 
   pricingTitle: "Velg din plan",
-  pricingSub: "14 dagers gratis prøve på alle planer · ingen binding · si opp når som helst",
+  pricingSub: "Founding club — 50 % første året · én klubblisens, faktureres årlig",
   mostPopular: "Mest populær",
   fromLabel: "",
   perMonth: "",
@@ -644,7 +644,7 @@ const no: CLStrings = {
 
   finalCtaTitle: "Din neste mester er allerede i klubben din.",
   finalCtaDesc: "Gi hver utøver treningen de fortjener — uten regneark og uten å brenne ut.",
-  finalCtaButton: "Start gratis i dag",
+  finalCtaButton: "Kom i gang i dag",
 
   footerCols: [
     { title: "Plattform", links: [
@@ -711,10 +711,10 @@ const de: CLStrings = {
   ],
   heroDesc:
     "Sportstalent ersetzt die Tabellen, Notizbücher und Gruppenchats, mit denen Vereine das Training verfolgen. Jeder Athlet bekommt automatisch einen persönlichen Plan, Bereitschaftsmessung und Wettkampfvorbereitung. Die Daten bleiben in der EU. Du trainierst. Du verwaltest nicht.",
-  heroCtaPrimary: "Kostenlos starten — keine Kreditkarte nötig",
+  heroCtaPrimary: "Loslegen — keine Kreditkarte nötig",
   heroCtaSecondary: "So funktioniert es",
-  heroFinePrint: "14 Tage kostenlos testen · keine Bindung · jederzeit kündbar",
-  heroPrice: "14 Tage kostenlose Testphase — kontaktiere uns für Preise",
+  heroFinePrint: "Founding Club — 50 % im ersten Jahr · keine Bindung",
+  heroPrice: "Die ersten fünf Vereine erhalten 50 % im ersten Jahr — kontaktiere uns für Preise",
   heroLeadMagnet: "Gratis-Guide: So hältst du deine Athleten die ganze Saison motiviert →",
   heroLeadMagnetCta: "Kostenlos herunterladen (PDF)",
 
@@ -786,7 +786,7 @@ const de: CLStrings = {
   ],
 
   pricingTitle: "Wähle deinen Plan",
-  pricingSub: "14 Tage kostenlos auf allen Plänen · keine Bindung · jederzeit kündbar",
+  pricingSub: "Founding Club — 50 % im ersten Jahr · eine Vereinslizenz, jährliche Abrechnung",
   mostPopular: "Am beliebtesten",
   fromLabel: "",
   perMonth: "",
@@ -803,7 +803,7 @@ const de: CLStrings = {
 
   finalCtaTitle: "Dein nächster Champion ist bereits in deinem Verein.",
   finalCtaDesc: "Gib jedem Athleten das Training, das er verdient — ohne Tabellen und ohne Ausbrennen.",
-  finalCtaButton: "Heute kostenlos starten",
+  finalCtaButton: "Heute loslegen",
 
   footerCols: [
     { title: "Plattform", links: [
@@ -870,10 +870,10 @@ const ar: CLStrings = {
   ],
   heroDesc:
     "يحل Sportstalent محل جداول البيانات والدفاتر ومحادثات المجموعات التي تستخدمها الأندية لمتابعة التدريب. كل رياضي يحصل تلقائياً على خطة شخصية، ومتابعة للجاهزية، وتحضير للمنافسات. البيانات تبقى داخل الاتحاد الأوروبي. أنت تدرّب. أنت لا تدير الأوراق.",
-  heroCtaPrimary: "ابدأ مجاناً — بدون بطاقة",
+  heroCtaPrimary: "ابدأ الآن — بدون بطاقة",
   heroCtaSecondary: "شاهد كيف يعمل",
-  heroFinePrint: "تجربة مجانية 14 يوماً · بدون التزام · ألغِ في أي وقت",
-  heroPrice: "تجربة مجانية 14 يوماً — تواصل معنا للأسعار",
+  heroFinePrint: "نادٍ مؤسِّس — خصم 50٪ في السنة الأولى · بدون التزام",
+  heroPrice: "أول خمسة أندية تحصل على خصم 50٪ في السنة الأولى — تواصل معنا للأسعار",
   heroLeadMagnet: "دليل مجاني: كيف تحافظ على تحفيز رياضييك طوال الموسم ←",
   heroLeadMagnetCta: "تحميل مجاناً (PDF)",
 
@@ -945,7 +945,7 @@ const ar: CLStrings = {
   ],
 
   pricingTitle: "اختر خطتك",
-  pricingSub: "تجربة مجانية 14 يوماً على جميع الخطط · بدون التزام · ألغِ في أي وقت",
+  pricingSub: "نادٍ مؤسِّس — خصم 50٪ في السنة الأولى · رخصة نادٍ واحدة تُفوتر سنويًا",
   mostPopular: "الأكثر شعبية",
   fromLabel: "",
   perMonth: "",
@@ -962,7 +962,7 @@ const ar: CLStrings = {
 
   finalCtaTitle: "بطلك القادم موجود بالفعل في ناديك.",
   finalCtaDesc: "امنح كل رياضي التدريب الذي يستحقه — دون جداول بيانات ودون إرهاق.",
-  finalCtaButton: "ابدأ مجاناً اليوم",
+  finalCtaButton: "ابدأ اليوم",
 
   footerCols: [
     { title: "المنصة", links: [
@@ -1029,10 +1029,10 @@ const es: CLStrings = {
   ],
   heroDesc:
     "Sportstalent sustituye las hojas de cálculo, cuadernos y chats de grupo que usan los clubes para seguir el entrenamiento. Cada atleta recibe un plan personalizado, seguimiento de preparación y preparación para competiciones, de forma automática. Los datos permanecen en la UE. Tú entrenas. Tú no administras.",
-  heroCtaPrimary: "Empieza gratis — sin tarjeta",
+  heroCtaPrimary: "Empieza — sin tarjeta",
   heroCtaSecondary: "Ver cómo funciona",
-  heroFinePrint: "14 días de prueba gratuita · sin compromiso · cancela cuando quieras",
-  heroPrice: "14 días de prueba gratuita — contáctanos para precios",
+  heroFinePrint: "Club fundador — 50 % el primer año · sin compromiso",
+  heroPrice: "Los cinco primeros clubes obtienen un 50 % el primer año — contáctanos para precios",
   heroLeadMagnet: "Guía gratuita: Cómo mantener motivados a tus atletas toda la temporada →",
   heroLeadMagnetCta: "Descargar gratis (PDF)",
 
@@ -1104,7 +1104,7 @@ const es: CLStrings = {
   ],
 
   pricingTitle: "Elige tu plan",
-  pricingSub: "14 días de prueba gratuita en todos los planes · sin compromiso · cancela cuando quieras",
+  pricingSub: "Club fundador — 50 % el primer año · una licencia de club, facturación anual",
   mostPopular: "Más popular",
   fromLabel: "",
   perMonth: "",
@@ -1121,7 +1121,7 @@ const es: CLStrings = {
 
   finalCtaTitle: "Tu próximo campeón ya está en tu club.",
   finalCtaDesc: "Dale a cada atleta el entrenamiento que merece, sin hojas de cálculo ni agotamiento.",
-  finalCtaButton: "Empieza gratis hoy",
+  finalCtaButton: "Empieza hoy",
 
   footerCols: [
     { title: "Plataforma", links: [
