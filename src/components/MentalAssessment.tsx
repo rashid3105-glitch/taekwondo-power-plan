@@ -53,24 +53,23 @@ interface Profile {
 type SupportedLocale = "en" | "da" | "sv" | "de" | "ar" | "no";
 
 const categoryIcons: Record<string, React.ReactNode> = {
-  mentalToughness: <Shield className="h-4 w-4" />,
-  competitionAnxiety: <Target className="h-4 w-4" />,
   focusConcentration: <Eye className="h-4 w-4" />,
-  recoveryFromLoss: <RefreshCw className="h-4 w-4" />,
-  confidence: <Flame className="h-4 w-4" />,
+  competitionAnxiety: <Target className="h-4 w-4" />,
   motivation: <Trophy className="h-4 w-4" />,
-  fatigueMotivation: <Flame className="h-4 w-4" />,
+  confidence: <Flame className="h-4 w-4" />,
+  mentalResilience: <Shield className="h-4 w-4" />,
+  mentalFlexibility: <RefreshCw className="h-4 w-4" />,
 };
 
 const categoryLabels: Record<string, Record<SupportedLocale, string>> = {
-  mentalToughness: { en: "Mental Toughness", da: "Mental styrke", sv: "Mental styrka", de: "Mentale Stärke", ar: "القوة الذهنية", no: "Mental styrke" },
-  competitionAnxiety: { en: "Competition Anxiety", da: "Konkurrenceangst", sv: "Tävlingsångest", de: "Wettkampfangst", ar: "قلق المنافسة", no: "Konkurranseangst" },
   focusConcentration: { en: "Focus & Concentration", da: "Fokus & koncentration", sv: "Fokus & koncentration", de: "Fokus & Konzentration", ar: "التركيز والانتباه", no: "Fokus og konsentrasjon" },
-  recoveryFromLoss: { en: "Recovery from Loss", da: "Håndtering af nederlag", sv: "Återhämtning efter förlust", de: "Erholung nach Niederlagen", ar: "التعافي من الخسارة", no: "Håndtering av nederlag" },
-  confidence: { en: "Confidence", da: "Selvtillid", sv: "Självförtroende", de: "Selbstvertrauen", ar: "الثقة بالنفس", no: "Selvtillit" },
+  competitionAnxiety: { en: "Competition Anxiety", da: "Konkurrenceangst", sv: "Tävlingsångest", de: "Wettkampfangst", ar: "قلق المنافسة", no: "Konkurranseangst" },
   motivation: { en: "Motivation", da: "Motivation", sv: "Motivation", de: "Motivation", ar: "التحفيز", no: "Motivasjon" },
-  fatigueMotivation: { en: "Fatigue & Motivation", da: "Træthed & Motivation", sv: "Trötthet & Motivation", de: "Müdigkeit & Motivation", ar: "التعب والتحفيز", no: "Tretthet & Motivasjon" },
+  confidence: { en: "Confidence", da: "Selvtillid", sv: "Självförtroende", de: "Selbstvertrauen", ar: "الثقة بالنفس", no: "Selvtillit" },
+  mentalResilience: { en: "Mental Resilience", da: "Mental robusthed", sv: "Mental motståndskraft", de: "Mentale Widerstandskraft", ar: "المرونة الذهنية", no: "Mental robusthet" },
+  mentalFlexibility: { en: "Mental Flexibility", da: "Mental fleksibilitet", sv: "Mental flexibilitet", de: "Mentale Flexibilität", ar: "المرونة في التكيّف", no: "Mental fleksibilitet" },
 };
+
 
 interface Assessment {
   id: string;
