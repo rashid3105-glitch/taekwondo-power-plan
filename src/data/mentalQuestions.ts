@@ -204,7 +204,7 @@ export const adultQuestions: MentalQuestion[] = [
       { value: 2, label: { en: "Inconsistent, comes and goes", da: "Ustabil, kommer og går", sv: "Inkonsekvent, kommer och går", de: "Unbeständig, kommt und geht", ar: "غير منتظم، يأتي ويذهب" } },
       { value: 3, label: { en: "Steady but could be stronger", da: "Stabil, men kunne være stærkere", sv: "Stabil men kunde vara starkare", de: "Stabil aber könnte stärker sein", ar: "ثابت لكنه يمكن أن يكون أقوى" } },
       { value: 4, label: { en: "Strong, I'm committed to improvement", da: "Stærk, jeg er dedikeret til forbedring", sv: "Stark, jag är dedikerad till förbättring", de: "Stark, ich bin der Verbesserung verpflichtet", ar: "قوي، ملتزم بالتحسين" } },
-      { value: 5, label: { en: "Burning — TKD is my passion and purpose", da: "Brændende — TKD er min passion og mit formål", sv: "Brinnande — TKD är min passion och mitt syfte", de: "Brennend — TKD ist meine Leidenschaft und mein Ziel", ar: "متقد — التايكوندو شغفي وهدفي" } },
+      { value: 5, label: { en: "Burning — my sport is my passion and purpose", da: "Brændende — min sport er min passion og mit formål", sv: "Brinnande — min sport är min passion och mitt syfte", de: "Brennend — mein Sport ist meine Leidenschaft und mein Ziel", ar: "متقد — رياضتي شغفي وهدفي" } },
     ],
   },
   {
@@ -701,7 +701,7 @@ export const juniorQuestions: MentalQuestion[] = [
       ar: "عندما يتعلم أطفال آخرون في النادي أسرع مني، أنا..."
     },
     options: [
-      { value: 1, label: { en: "Think I'm bad at taekwondo and want to quit", da: "Tror jeg er dårlig til taekwondo og vil stoppe", sv: "Tror att jag är dålig på taekwondo och vill sluta", de: "Denke ich bin schlecht im Taekwondo und möchte aufhören", ar: "أعتقد أنني سيئ في التايكوندو وأريد التوقف" } },
+      { value: 1, label: { en: "Think I'm bad at my sport and want to quit", da: "Tror jeg er dårlig til min sport og vil stoppe", sv: "Tror att jag är dålig på min sport och vill sluta", de: "Denke ich bin schlecht in meinem Sport und möchte aufhören", ar: "أعتقد أنني سيئ في رياضتي وأريد التوقف" } },
       { value: 2, label: { en: "Feel sad and jealous", da: "Bliver ked af det og misundelig", sv: "Blir ledsen och avundsjuk", de: "Bin traurig und eifersüchtig", ar: "أشعر بالحزن والغيرة" } },
       { value: 3, label: { en: "Feel a bit left behind but keep trying", da: "Føler mig lidt bagud, men fortsætter med at prøve", sv: "Känner mig lite efter men fortsätter försöka", de: "Fühle mich etwas zurückgelassen, versuche aber weiter", ar: "أشعر بالتأخر قليلًا لكنني أستمر في المحاولة" } },
       { value: 4, label: { en: "Know that everyone learns at their own speed", da: "Ved at alle lærer i deres eget tempo", sv: "Vet att alla lär sig i sin egen takt", de: "Weiß dass jeder in seinem eigenen Tempo lernt", ar: "أعلم أن الجميع يتعلمون بسرعتهم الخاصة" } },
