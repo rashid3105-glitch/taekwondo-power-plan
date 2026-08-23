@@ -1257,6 +1257,7 @@ export type Database = {
           created_at: string
           id: string
           language: string | null
+          schema_version: number
           scores: Json
           total_score: number
           user_id: string
@@ -1267,6 +1268,7 @@ export type Database = {
           created_at?: string
           id?: string
           language?: string | null
+          schema_version?: number
           scores?: Json
           total_score?: number
           user_id: string
@@ -1277,6 +1279,7 @@ export type Database = {
           created_at?: string
           id?: string
           language?: string | null
+          schema_version?: number
           scores?: Json
           total_score?: number
           user_id?: string
@@ -2197,6 +2200,7 @@ export type Database = {
           club_id: string | null
           created_at: string
           id: string
+          schema_version: number
           scores: Json
           total_score: number
           user_id: string
@@ -2207,6 +2211,7 @@ export type Database = {
           club_id?: string | null
           created_at?: string
           id?: string
+          schema_version?: number
           scores?: Json
           total_score?: number
           user_id: string
@@ -2217,6 +2222,7 @@ export type Database = {
           club_id?: string | null
           created_at?: string
           id?: string
+          schema_version?: number
           scores?: Json
           total_score?: number
           user_id?: string
