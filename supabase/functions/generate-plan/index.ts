@@ -3,6 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { checkAIEntitlement } from "../_shared/checkEntitlement.ts";
 import { sanitizePromptText, asUserDataBlock } from "../_shared/sanitizePrompt.ts";
 import { getSportProfile } from "../_shared/sportProfiles.ts";
+import { analyzeSchedule, buildScheduleConstraints, buildLoadGuardrails, reconcilePlan } from "../_shared/scheduleFit.ts";
 
 
 const corsHeaders = {
@@ -245,7 +246,7 @@ IMPORTANT: ALL text content MUST be written in ${lang} — with NO exceptions an
 - Club sessions per week: ${profile.sessions_per_week || 4}
 - Level: ${sanitizePromptText(profile.belt_level, 60) || 'not specified'} (${sport.gradeLabelEn})
 
-Design the program for ${profile.program_weeks || 8} weeks with appropriate periodization.${injuryInstructions}${currentPhaseContext}`;
+Design the program for ${profile.program_weeks || 8} weeks with appropriate periodization.${scheduleConstraints}${loadGuardrails}${injuryInstructions}${currentPhaseContext}`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -299,6 +300,8 @@ Design the program for ${profile.program_weeks || 8} weeks with appropriate peri
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    plan = reconcilePlan(plan, scheduleAnalysis);
 
     return new Response(JSON.stringify({ success: true, plan }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
