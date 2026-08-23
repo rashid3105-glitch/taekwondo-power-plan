@@ -3,6 +3,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { MENTAL_SCHEMA_VERSION } from "@/data/mentalQuestions";
 import {
   listCachedAssessments,
   replaceCachedAssessments,
@@ -68,6 +69,8 @@ export function useOfflineMentalAssessments() {
         .from("mental_assessments")
         .select("*")
         .eq("user_id", user.id)
+        // Only rows from the current question/dimension schema are comparable.
+        .eq("schema_version", MENTAL_SCHEMA_VERSION)
         .order("created_at", { ascending: false });
       if (data) {
         const cached: CachedAssessment[] = data.map((a: any) => ({
@@ -78,12 +81,15 @@ export function useOfflineMentalAssessments() {
           answers: (a.answers as Record<string, number>) || {},
           ai_advice: parseAdvice(a.ai_advice),
           created_at: a.created_at,
+          schema_version: a.schema_version ?? MENTAL_SCHEMA_VERSION,
           pending: false,
         }));
         await replaceCachedAssessments(user.id, cached);
       }
     }
-    const local = await listCachedAssessments(user.id);
+    const local = (await listCachedAssessments(user.id)).filter(
+      (a) => (a.schema_version ?? MENTAL_SCHEMA_VERSION) === MENTAL_SCHEMA_VERSION,
+    );
     setAssessments(local);
     setLoading(false);
   }, []);
@@ -129,6 +135,7 @@ export function useOfflineMentalAssessments() {
         answers: input.answers,
         ai_advice: null,
         created_at: now,
+        schema_version: MENTAL_SCHEMA_VERSION,
         pending: true,
       };
       await putCachedAssessment(rec);

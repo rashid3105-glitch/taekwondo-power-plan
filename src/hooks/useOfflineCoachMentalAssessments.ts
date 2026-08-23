@@ -3,6 +3,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { COACH_MENTAL_SCHEMA_VERSION } from "@/data/coachMentalQuestions";
 import {
   listCachedCoachAssessments,
   replaceCachedCoachAssessments,
@@ -57,6 +58,8 @@ export function useOfflineCoachMentalAssessments() {
         .from("coach_mental_assessments" as any)
         .select("*")
         .eq("user_id", user.id)
+        // Only rows from the current question/dimension schema are comparable.
+        .eq("schema_version", COACH_MENTAL_SCHEMA_VERSION)
         .order("created_at", { ascending: false });
       if (data) {
         const cached: CachedCoachAssessment[] = (data as any[]).map((a: any) => ({
@@ -72,7 +75,9 @@ export function useOfflineCoachMentalAssessments() {
         await replaceCachedCoachAssessments(user.id, cached);
       }
     }
-    const local = await listCachedCoachAssessments(user.id);
+    const local = (await listCachedCoachAssessments(user.id)).filter(
+      (a) => (a.schema_version ?? COACH_MENTAL_SCHEMA_VERSION) === COACH_MENTAL_SCHEMA_VERSION,
+    );
     setAssessments(local);
     setLoading(false);
   }, []);
@@ -108,6 +113,7 @@ export function useOfflineCoachMentalAssessments() {
         answers: input.answers,
         ai_advice: null,
         created_at: now,
+        schema_version: COACH_MENTAL_SCHEMA_VERSION,
         pending: true,
       };
       await putCachedCoachAssessment(rec);
@@ -131,6 +137,7 @@ export function useOfflineCoachMentalAssessments() {
           .from("coach_mental_assessments" as any)
           .select("*")
           .eq("user_id", uid)
+          .eq("schema_version", COACH_MENTAL_SCHEMA_VERSION)
           .order("created_at", { ascending: false });
         if (data) {
           const cached: CachedCoachAssessment[] = (data as any[]).map((a: any) => ({

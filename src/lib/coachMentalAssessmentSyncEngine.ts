@@ -3,6 +3,7 @@
 // `generate-coach-mental-advice` edge function.
 
 import { supabase } from "@/integrations/supabase/client";
+import { COACH_MENTAL_SCHEMA_VERSION } from "@/data/coachMentalQuestions";
 import {
   listCoachMentalAssessmentOutbox,
   removeCoachMentalAssessmentIntent,
@@ -53,6 +54,7 @@ export async function syncCoachMentalAssessments(): Promise<CoachMentalAssessmen
             answers: intent.answers,
             scores: intent.scores,
             total_score: Math.round(intent.total_score),
+            schema_version: COACH_MENTAL_SCHEMA_VERSION,
             ai_advice: advice ? JSON.stringify(advice) : null,
             language: intent.language,
           } as any)
@@ -71,6 +73,7 @@ export async function syncCoachMentalAssessments(): Promise<CoachMentalAssessmen
           answers: intent.answers,
           ai_advice: advice,
           created_at: serverCreatedAt,
+          schema_version: COACH_MENTAL_SCHEMA_VERSION,
           pending: false,
         });
         await removeCoachMentalAssessmentIntent(intent.key);
