@@ -207,18 +207,8 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
     return { latest, previous, total: mentalAssessments.length, best, worst };
   }, [mentalAssessments]);
 
-  const categoryLabel = (key: string) => {
-    const map: Record<string, Record<string, string>> = {
-      toughness: { en: "Toughness", da: "Mental styrke" },
-      anxiety: { en: "Anxiety Mgmt", da: "Angst" },
-      focus: { en: "Focus", da: "Fokus" },
-      recovery: { en: "Recovery", da: "Restitution" },
-      confidence: { en: "Confidence", da: "Selvtillid" },
-      motivation: { en: "Motivation", da: "Motivation" },
-    };
-    const lang = (t("plan") === "Plan" && t("profile") === "Profile") ? "en" : "da";
-    return map[key]?.[lang] || key;
-  };
+  const categoryLabel = (key: string) =>
+    MENTAL_CATEGORY_LABELS[key]?.[locale] || MENTAL_CATEGORY_LABELS[key]?.en || key;
 
   const planProgress = useMemo(() => {
     if (!plan?.plan_data) return null;
