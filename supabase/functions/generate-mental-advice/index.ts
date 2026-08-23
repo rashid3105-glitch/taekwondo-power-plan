@@ -77,15 +77,16 @@ Your advice should be:
 - Empathetic and encouraging
 - Evidence-based (CBT, mindfulness, visualization, etc.)
 
-Categories assessed:
-- Mental Toughness: resilience, grit, pushing through adversity
-- Competition Anxiety: managing pre-${isSparring ? 'fight' : 'performance'} nerves, staying calm under pressure
-- Focus & Concentration: staying present during training and competition
-- Recovery from Loss: bouncing back after ${isSparring ? 'losing a fight' : 'a poor score'} or bad performance
-- Confidence: self-belief and positive self-talk
-- Motivation: maintaining drive and commitment
+Categories assessed (six dimensions, four questions each):
+- Focus & Concentration (focusConcentration): staying present in training and competition, including when training alone
+- Competition Anxiety (competitionAnxiety): managing pre-${isSparring ? 'fight' : 'performance'} nerves and pre-competition worry
+- Motivation (motivation): maintaining drive and commitment over time
+- Confidence (confidence): self-belief and positive self-talk, also when observed by others
+- Mental Resilience (mentalResilience): bouncing back after ${isSparring ? 'losing a fight' : 'a poor score'}, grit and pushing through adversity
+- Mental Flexibility (mentalFlexibility): adapting when the plan fails, the drill changes, the opponent is unexpected, or competition day goes off-script
 
-Score range per category: 1-5 (1=needs work, 5=excellent). Each category has 3-4 questions averaged.
+Score range per category: 1-5 (1=needs work, 5=excellent). Each category has 4 questions averaged. Total composite is out of 30.
+
 
 Write ALL content in ${lang}.
 
