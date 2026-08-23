@@ -4,6 +4,7 @@
 // pending flag and remap the placeholder id to the server-assigned id.
 
 import { supabase } from "@/integrations/supabase/client";
+import { MENTAL_SCHEMA_VERSION } from "@/data/mentalQuestions";
 import {
   listMentalAssessmentOutbox,
   removeMentalAssessmentIntent,
@@ -56,6 +57,7 @@ export async function syncMentalAssessments(): Promise<MentalAssessmentSyncResul
             scores: intent.scores,
             // total_score column is integer in the DB — round the decimal average.
             total_score: Math.round(intent.total_score),
+            schema_version: MENTAL_SCHEMA_VERSION,
             // ai_advice column is text — store as JSON string (parseAdvice normalises on read).
             ai_advice: advice ? JSON.stringify(advice) : null,
             ...(intent.club_id ? { club_id: intent.club_id } : {}),
@@ -76,6 +78,7 @@ export async function syncMentalAssessments(): Promise<MentalAssessmentSyncResul
           answers: intent.answers,
           ai_advice: advice,
           created_at: serverCreatedAt,
+          schema_version: MENTAL_SCHEMA_VERSION,
           pending: false,
         });
         await removeMentalAssessmentIntent(intent.key);

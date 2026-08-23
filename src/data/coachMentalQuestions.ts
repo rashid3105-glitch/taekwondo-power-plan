@@ -6,6 +6,13 @@
 // Total score = sum of 6 category averages (max 5 each) → "out of 30".
 
 
+/**
+ * Version of the coach mental question/dimension set.
+ * Scores from different schema versions must never be compared or charted
+ * together. Raise this whenever the dimension set changes.
+ */
+export const COACH_MENTAL_SCHEMA_VERSION = 1;
+
 export interface CoachLangText {
   en: string;
   da: string;

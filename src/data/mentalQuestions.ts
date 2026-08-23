@@ -1,3 +1,10 @@
+/**
+ * Version of the athlete mental question/dimension set.
+ * Scores from different schema versions must never be compared or charted
+ * together. Raise this whenever the dimension set changes.
+ */
+export const MENTAL_SCHEMA_VERSION = 3;
+
 export interface LangText {
   en: string;
   da: string;

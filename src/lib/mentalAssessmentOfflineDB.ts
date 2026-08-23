@@ -14,6 +14,8 @@ export interface CachedAssessment {
   answers: Record<string, number>;
   ai_advice: any | null;
   created_at: string;
+  // Question/dimension schema version this row was produced with.
+  schema_version?: number;
   // true when this row only exists locally and has not been synced yet.
   pending: boolean;
 }

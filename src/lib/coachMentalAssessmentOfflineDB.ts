@@ -13,6 +13,8 @@ export interface CachedCoachAssessment {
   answers: Record<string, number>;
   ai_advice: any | null;
   created_at: string;
+  // Question/dimension schema version this row was produced with.
+  schema_version?: number;
   pending: boolean;
 }
 
