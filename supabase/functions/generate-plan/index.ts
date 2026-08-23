@@ -3,6 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { checkAIEntitlement } from "../_shared/checkEntitlement.ts";
 import { sanitizePromptText, asUserDataBlock } from "../_shared/sanitizePrompt.ts";
 import { getSportProfile } from "../_shared/sportProfiles.ts";
+import { analyzeSchedule, buildScheduleConstraints, buildLoadGuardrails, reconcilePlan } from "../_shared/scheduleFit.ts";
 
 
 const corsHeaders = {
@@ -187,14 +188,13 @@ IMPORTANT: Return ONLY the JSON object, no markdown, no code fences, no explanat
 IMPORTANT: ALL text content MUST be written in ${lang} — with NO exceptions and NO mixing of languages. This explicitly includes: planName, every periodization entry ("phase" name, "focus" and "keyChanges"), session labels, session focus, exercise names where a natural ${lang} name exists, coachingCues, whyItMatters and alternative reasons. The English examples in the JSON schema above are format hints ONLY — translate them into ${lang}. Never output an English phase name such as "Foundation & Movement", "Max Power & Speed" or "Peaking" when ${lang} is not English.`;
 
     const weeklySchedule = profile.weekly_schedule || [];
-    const scheduleDescription = weeklySchedule.length > 0
-      ? weeklySchedule.map((d: any) => {
-          if (d.sessions && d.sessions.length > 1) {
-            return `${d.day}: ${d.sessions.map((s: any) => s.type.toUpperCase()).join(' + ')}`;
-          }
-          return `${d.day}: ${d.type.toUpperCase()}`;
-        }).join(', ')
+    const scheduleAnalysis = analyzeSchedule(weeklySchedule);
+    const scheduleDescription = scheduleAnalysis.hasSchedule
+      ? scheduleAnalysis.days.map((d) => `${d.day}: ${d.types.map((t) => t.toUpperCase()).join(" + ")}`).join(", ")
       : 'Not specified';
+    const scheduleConstraints = buildScheduleConstraints(scheduleAnalysis, sportName, sport.sessionLabelEn);
+    const loadGuardrails = buildLoadGuardrails(sportName, typeof profile.weight_kg === "number" ? profile.weight_kg : null);
+
 
     const safeInjury = sanitizePromptText(profile.current_injury, 500);
     const safeGoals = Array.isArray(profile.goals)
@@ -246,7 +246,7 @@ IMPORTANT: ALL text content MUST be written in ${lang} — with NO exceptions an
 - Club sessions per week: ${profile.sessions_per_week || 4}
 - Level: ${sanitizePromptText(profile.belt_level, 60) || 'not specified'} (${sport.gradeLabelEn})
 
-Design the program for ${profile.program_weeks || 8} weeks with appropriate periodization.${injuryInstructions}${currentPhaseContext}`;
+Design the program for ${profile.program_weeks || 8} weeks with appropriate periodization.${scheduleConstraints}${loadGuardrails}${injuryInstructions}${currentPhaseContext}`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -300,6 +300,8 @@ Design the program for ${profile.program_weeks || 8} weeks with appropriate peri
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    plan = reconcilePlan(plan, scheduleAnalysis);
 
     return new Response(JSON.stringify({ success: true, plan }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
