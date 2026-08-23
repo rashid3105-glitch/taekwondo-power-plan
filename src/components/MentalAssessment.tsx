@@ -414,14 +414,38 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
     }
   };
 
+  // Number of dimensions in the current question set — the maximum total score
+  // is derived from it (5 points per dimension) instead of being hardcoded.
+  const dimensions = useMemo(
+    () => Array.from(new Set(questions.map((q) => q.category))),
+    [questions],
+  );
+  const maxScore = dimensions.length * 5;
+
+  /** Question numbers (1-based) that have no answer yet. */
+  const unansweredNumbers = () =>
+    questions
+      .map((q, i) => (answers[q.id] === undefined ? i + 1 : null))
+      .filter((n): n is number => n !== null);
+
+  /** Dimensions where every question is unanswered — these block submission. */
+  const emptyDimensions = () =>
+    dimensions.filter((cat) =>
+      questions.filter((q) => q.category === cat).every((q) => answers[q.id] === undefined),
+    );
+
   const calculateScores = () => {
     const catSums: Record<string, number[]> = {};
     questions.forEach((q) => {
       if (!catSums[q.category]) catSums[q.category] = [];
-      catSums[q.category].push(answers[q.id] || 1);
+      const val = answers[q.id];
+      // Unanswered questions are excluded from the average rather than
+      // counted as the worst possible score.
+      if (typeof val === "number") catSums[q.category].push(val);
     });
     const catScores: Record<string, number> = {};
     for (const [cat, vals] of Object.entries(catSums)) {
+      if (vals.length === 0) continue;
       catScores[cat] = Math.round((vals.reduce((a, b) => a + b, 0) / vals.length) * 10) / 10;
     }
     const total = Math.round(Object.values(catScores).reduce((a, b) => a + b, 0) * 10) / 10;
@@ -429,6 +453,7 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
     setTotalScore(total);
     return { catScores, total };
   };
+
 
   const submitAssessment = async () => {
     const { catScores, total } = calculateScores();
