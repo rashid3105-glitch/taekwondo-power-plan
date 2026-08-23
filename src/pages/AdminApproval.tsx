@@ -316,15 +316,18 @@ export default function AdminApproval() {
   };
 
   const toggleCoachRole = async (userId: string, isCurrentlyCoach: boolean) => {
-    if (isCurrentlyCoach) {
-      await supabase.from("user_roles").delete().eq("user_id", userId).eq("role", "coach" as any);
-      toast({ title: t("coachRoleRevoked") });
+    const { error } = await supabase.rpc("admin_set_coach_role" as any, {
+      _user_id: userId,
+      _enable: !isCurrentlyCoach,
+    } as any);
+    if (error) {
+      toast({ title: t("error"), description: error.message, variant: "destructive" });
     } else {
-      await supabase.from("user_roles").insert({ user_id: userId, role: "coach" as any } as any);
-      toast({ title: t("coachRoleGranted") });
+      toast({ title: isCurrentlyCoach ? t("coachRoleRevoked") : t("coachRoleGranted") });
     }
     loadUsers();
   };
+
 
   const deleteUser = async (userId: string, displayName: string) => {
     if (userId === DELETED_USER_ID) return;
