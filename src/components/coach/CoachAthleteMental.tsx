@@ -2,6 +2,7 @@
 // Lists the assessment history (latest first), shows category radar for the
 // most recent entry, and lets the coach drill into the AI-generated advice.
 
+import { MENTAL_SCHEMA_VERSION } from "@/data/mentalQuestions";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -141,6 +142,8 @@ export function CoachAthleteMental({ athleteId }: Props) {
         .from("mental_assessments")
         .select("id, total_score, scores, ai_advice, created_at")
         .eq("user_id", athleteId)
+        // Only rows from the current question/dimension schema are comparable.
+        .eq("schema_version", MENTAL_SCHEMA_VERSION)
         .order("created_at", { ascending: false });
       if (cancelled) return;
       const rows: Assessment[] = (data || []).map((a: any) => ({

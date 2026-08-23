@@ -1,3 +1,4 @@
+import { MENTAL_SCHEMA_VERSION } from "@/data/mentalQuestions";
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -99,7 +100,7 @@ export function ProgressDashboard({ onGoToPlan }: { onGoToPlan?: () => void }) {
     const [logsRes, planRes, mentalRes] = await Promise.all([
       supabase.from("workout_logs").select("*").eq("user_id", user.id).order("logged_date", { ascending: true }),
       supabase.from("training_plans").select("id, plan_data, name, created_at").eq("user_id", user.id).eq("is_active", true).single(),
-      supabase.from("mental_assessments").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
+      supabase.from("mental_assessments").select("*").eq("user_id", user.id).eq("schema_version", MENTAL_SCHEMA_VERSION).order("created_at", { ascending: false }),
     ]);
 
     if (logsRes.data) setLogs(logsRes.data as unknown as WorkoutLog[]);
