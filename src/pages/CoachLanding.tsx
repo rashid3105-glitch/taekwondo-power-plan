@@ -492,7 +492,7 @@ function StoryRows() {
 }
 
 /* ───────────────── Pricing ───────────────── */
-const POPULAR_INDEX = 1;
+const POPULAR_INDEX = 0;
 
 function PricingTeaser() {
   const cl = useCL();
