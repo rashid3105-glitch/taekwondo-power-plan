@@ -75,6 +75,8 @@ const categoryLabels: Record<string, Record<SupportedLocale, string>> = {
 
 const translations: Record<SupportedLocale, Record<string, string>> = {
   en: {
+    incompleteTitle: "Assessment incomplete",
+    incompleteDesc: "Please answer at least one question in:",
     title: "Coach Mental Review", subtitle: "An honest monthly check-in on your inner coaching game — not for athletes, for you.",
     startAssessment: "Start review", viewHistory: "View history",
     question: "Question", of: "of", next: "Next", back: "Back",
@@ -97,6 +99,8 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     intro3: "Takes ~3 minutes. Repeat monthly to see trends.",
   },
   da: {
+    incompleteTitle: "Vurderingen er ikke færdig",
+    incompleteDesc: "Besvar mindst ét spørgsmål i:",
     title: "Mental gennemgang for trænere", subtitle: "En ærlig månedlig check-in på din indre coaching — ikke for atleter, for dig.",
     startAssessment: "Start gennemgang", viewHistory: "Se historik",
     question: "Spørgsmål", of: "af", next: "Næste", back: "Tilbage",
@@ -119,6 +123,8 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     intro3: "Tager ca. 3 minutter. Gentag månedligt for at se tendenser.",
   },
   sv: {
+    incompleteTitle: "Bedömningen är inte klar",
+    incompleteDesc: "Svara på minst en fråga i:",
     title: "Mental genomgång för tränare", subtitle: "En ärlig månadsvis check-in av din inre coaching — inte för atleter, för dig.",
     startAssessment: "Starta genomgång", viewHistory: "Visa historik",
     question: "Fråga", of: "av", next: "Nästa", back: "Tillbaka",
@@ -141,6 +147,8 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     intro3: "Tar ca 3 minuter. Upprepa månadsvis för att se trender.",
   },
   de: {
+    incompleteTitle: "Bewertung unvollständig",
+    incompleteDesc: "Bitte beantworte mindestens eine Frage in:",
     title: "Mentale Bestandsaufnahme für Trainer", subtitle: "Ein ehrlicher monatlicher Check-in zu deinem inneren Coaching — nicht für Athleten, für dich.",
     startAssessment: "Bestandsaufnahme starten", viewHistory: "Verlauf anzeigen",
     question: "Frage", of: "von", next: "Weiter", back: "Zurück",
@@ -163,6 +171,8 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     intro3: "Dauert ca. 3 Minuten. Monatlich wiederholen, um Trends zu sehen.",
   },
   ar: {
+    incompleteTitle: "التقييم غير مكتمل",
+    incompleteDesc: "يرجى الإجابة على سؤال واحد على الأقل في:",
     title: "المراجعة الذهنية للمدرب", subtitle: "تسجيل شهري صادق عن لعبتك الداخلية كمدرب — ليس للاعبين، بل لك.",
     startAssessment: "ابدأ المراجعة", viewHistory: "عرض السجل",
     question: "سؤال", of: "من", next: "التالي", back: "رجوع",
@@ -185,6 +195,8 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     intro3: "تستغرق نحو 3 دقائق. كرّر شهريًا لرصد الاتجاهات.",
   },
   no: {
+    incompleteTitle: "Vurderingen er ikke ferdig",
+    incompleteDesc: "Svar på minst ett spørsmål i:",
     title: "Mental gjennomgang for trenere", subtitle: "En ærlig månedlig sjekk på din indre coaching — ikke for utøvere, for deg.",
     startAssessment: "Start gjennomgang", viewHistory: "Vis historikk",
     question: "Spørsmål", of: "av", next: "Neste", back: "Tilbake",
@@ -207,6 +219,8 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     intro3: "Tar ca. 3 minutter. Gjenta månedlig for å se trender.",
   },
   es: {
+    incompleteTitle: "Evaluación incompleta",
+    incompleteDesc: "Responde al menos una pregunta en:",
     title: "Revisión mental para entrenadores", subtitle: "Un check-in mensual honesto sobre tu juego interno como entrenador — no para los atletas, para ti.",
     startAssessment: "Iniciar revisión", viewHistory: "Ver historial",
     question: "Pregunta", of: "de", next: "Siguiente", back: "Atrás",
@@ -276,14 +290,32 @@ export function CoachMentalAssessment({ profile }: { profile: Profile | null }) 
     if (currentQ < questions.length - 1) setCurrentQ(currentQ + 1);
   };
 
+  const dimensions = Array.from(new Set(questions.map((q) => q.category)));
+  const maxScore = dimensions.length * 5;
+
+  /** Question numbers (1-based) without an answer. */
+  const unansweredNumbers = () =>
+    questions
+      .map((q, i) => (answers[q.id] === undefined ? i + 1 : null))
+      .filter((n): n is number => n !== null);
+
+  /** Dimensions where no question at all has been answered. */
+  const emptyDimensions = () =>
+    dimensions.filter((cat) =>
+      questions.filter((q) => q.category === cat).every((q) => answers[q.id] === undefined),
+    );
+
   const calculateScores = () => {
     const catSums: Record<string, number[]> = {};
     questions.forEach((q) => {
       if (!catSums[q.category]) catSums[q.category] = [];
-      catSums[q.category].push(answers[q.id] || 1);
+      const val = answers[q.id];
+      // Unanswered questions are skipped instead of scoring the worst value.
+      if (typeof val === "number") catSums[q.category].push(val);
     });
     const catScores: Record<string, number> = {};
     for (const [cat, vals] of Object.entries(catSums)) {
+      if (vals.length === 0) continue;
       catScores[cat] = Math.round((vals.reduce((a, b) => a + b, 0) / vals.length) * 10) / 10;
     }
     const total = Math.round(Object.values(catScores).reduce((a, b) => a + b, 0) * 10) / 10;
@@ -293,6 +325,15 @@ export function CoachMentalAssessment({ profile }: { profile: Profile | null }) 
   };
 
   const submitAssessment = async () => {
+    const empties = emptyDimensions();
+    if (empties.length > 0) {
+      toast({
+        title: txt.incompleteTitle,
+        description: `${txt.incompleteDesc} ${empties.map((c) => categoryLabels[c]?.[l] || c).join(", ")} (${txt.question} ${unansweredNumbers().join(", ")})`,
+        variant: "destructive",
+      });
+      return;
+    }
     const { catScores, total } = calculateScores();
     setStep("results");
     setGenerating(true);
@@ -409,7 +450,7 @@ export function CoachMentalAssessment({ profile }: { profile: Profile | null }) 
                 onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); viewPastResult(h); } }}>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <p className="text-sm font-medium text-card-foreground">{txt.score}: {h.total_score}/30</p>
+                    <p className="text-sm font-medium text-card-foreground">{txt.score}: {h.total_score}/{maxScore}</p>
                     {h.pending && (
                       <Badge variant="outline" className="gap-1 text-[10px] py-0 h-5">
                         <CloudOff className="h-3 w-3" /> {txt.pending}
@@ -515,7 +556,7 @@ export function CoachMentalAssessment({ profile }: { profile: Profile | null }) 
 
       <Card className="p-4 sm:p-6 text-center space-y-3">
         <Users className="h-8 w-8 mx-auto text-primary" />
-        <h2 className="text-2xl font-extrabold text-card-foreground">{totalScore}/30</h2>
+        <h2 className="text-2xl font-extrabold text-card-foreground">{totalScore}/{maxScore}</h2>
         <p className="text-sm text-muted-foreground">{getOverallLabel(totalScore)}</p>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-3">

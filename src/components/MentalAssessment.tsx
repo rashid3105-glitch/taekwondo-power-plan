@@ -53,24 +53,23 @@ interface Profile {
 type SupportedLocale = "en" | "da" | "sv" | "de" | "ar" | "no";
 
 const categoryIcons: Record<string, React.ReactNode> = {
-  mentalToughness: <Shield className="h-4 w-4" />,
-  competitionAnxiety: <Target className="h-4 w-4" />,
   focusConcentration: <Eye className="h-4 w-4" />,
-  recoveryFromLoss: <RefreshCw className="h-4 w-4" />,
-  confidence: <Flame className="h-4 w-4" />,
+  competitionAnxiety: <Target className="h-4 w-4" />,
   motivation: <Trophy className="h-4 w-4" />,
-  fatigueMotivation: <Flame className="h-4 w-4" />,
+  confidence: <Flame className="h-4 w-4" />,
+  mentalResilience: <Shield className="h-4 w-4" />,
+  mentalFlexibility: <RefreshCw className="h-4 w-4" />,
 };
 
 const categoryLabels: Record<string, Record<SupportedLocale, string>> = {
-  mentalToughness: { en: "Mental Toughness", da: "Mental styrke", sv: "Mental styrka", de: "Mentale Stärke", ar: "القوة الذهنية", no: "Mental styrke" },
-  competitionAnxiety: { en: "Competition Anxiety", da: "Konkurrenceangst", sv: "Tävlingsångest", de: "Wettkampfangst", ar: "قلق المنافسة", no: "Konkurranseangst" },
   focusConcentration: { en: "Focus & Concentration", da: "Fokus & koncentration", sv: "Fokus & koncentration", de: "Fokus & Konzentration", ar: "التركيز والانتباه", no: "Fokus og konsentrasjon" },
-  recoveryFromLoss: { en: "Recovery from Loss", da: "Håndtering af nederlag", sv: "Återhämtning efter förlust", de: "Erholung nach Niederlagen", ar: "التعافي من الخسارة", no: "Håndtering av nederlag" },
-  confidence: { en: "Confidence", da: "Selvtillid", sv: "Självförtroende", de: "Selbstvertrauen", ar: "الثقة بالنفس", no: "Selvtillit" },
+  competitionAnxiety: { en: "Competition Anxiety", da: "Konkurrenceangst", sv: "Tävlingsångest", de: "Wettkampfangst", ar: "قلق المنافسة", no: "Konkurranseangst" },
   motivation: { en: "Motivation", da: "Motivation", sv: "Motivation", de: "Motivation", ar: "التحفيز", no: "Motivasjon" },
-  fatigueMotivation: { en: "Fatigue & Motivation", da: "Træthed & Motivation", sv: "Trötthet & Motivation", de: "Müdigkeit & Motivation", ar: "التعب والتحفيز", no: "Tretthet & Motivasjon" },
+  confidence: { en: "Confidence", da: "Selvtillid", sv: "Självförtroende", de: "Selbstvertrauen", ar: "الثقة بالنفس", no: "Selvtillit" },
+  mentalResilience: { en: "Mental Resilience", da: "Mental robusthed", sv: "Mental motståndskraft", de: "Mentale Widerstandskraft", ar: "المرونة الذهنية", no: "Mental robusthet" },
+  mentalFlexibility: { en: "Mental Flexibility", da: "Mental fleksibilitet", sv: "Mental flexibilitet", de: "Mentale Flexibilität", ar: "المرونة في التكيّف", no: "Mental fleksibilitet" },
 };
+
 
 interface Assessment {
   id: string;
@@ -126,6 +125,8 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     adviceRegenerated: "Advice regenerated",
     adviceRegenerateFailed: "Couldn't regenerate advice. Please try again.",
     tapToView: "Tap to view",
+    incompleteTitle: "Assessment incomplete",
+    incompleteDesc: "Please answer at least one question in:",
   },
   da: {
     title: "Mental præstation",
@@ -172,6 +173,8 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     adviceRegenerated: "Råd genereret igen",
     adviceRegenerateFailed: "Kunne ikke generere råd. Prøv igen.",
     tapToView: "Tryk for at se",
+    incompleteTitle: "Vurderingen er ikke færdig",
+    incompleteDesc: "Besvar mindst ét spørgsmål i:",
   },
   sv: {
     title: "Mental prestation",
@@ -218,6 +221,8 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     adviceRegenerated: "Råden har genererats igen",
     adviceRegenerateFailed: "Kunde inte generera råd. Försök igen.",
     tapToView: "Tryck för att visa",
+    incompleteTitle: "Bedömningen är inte klar",
+    incompleteDesc: "Svara på minst en fråga i:",
   },
   de: {
     title: "Mentale Leistung",
@@ -264,6 +269,8 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     adviceRegenerated: "Ratschläge neu generiert",
     adviceRegenerateFailed: "Ratschläge konnten nicht generiert werden. Bitte erneut versuchen.",
     tapToView: "Zum Anzeigen tippen",
+    incompleteTitle: "Bewertung unvollständig",
+    incompleteDesc: "Bitte beantworte mindestens eine Frage in:",
   },
   ar: {
     title: "الأداء الذهني",
@@ -310,6 +317,8 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     adviceRegenerated: "تم إعادة إنشاء النصائح",
     adviceRegenerateFailed: "تعذّر إنشاء النصائح. يرجى المحاولة مرة أخرى.",
     tapToView: "اضغط للعرض",
+    incompleteTitle: "التقييم غير مكتمل",
+    incompleteDesc: "يرجى الإجابة على سؤال واحد على الأقل في:",
   },
   no: {
     title: "Mental ytelse",
@@ -356,6 +365,8 @@ const translations: Record<SupportedLocale, Record<string, string>> = {
     adviceRegenerated: "Råd generert på nytt",
     adviceRegenerateFailed: "Kunne ikke generere råd. Prøv igjen.",
     tapToView: "Trykk for å se",
+    incompleteTitle: "Vurderingen er ikke ferdig",
+    incompleteDesc: "Svar på minst ett spørsmål i:",
   },
 };
 
@@ -415,14 +426,38 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
     }
   };
 
+  // Number of dimensions in the current question set — the maximum total score
+  // is derived from it (5 points per dimension) instead of being hardcoded.
+  const dimensions = useMemo(
+    () => Array.from(new Set(questions.map((q) => q.category))),
+    [questions],
+  );
+  const maxScore = dimensions.length * 5;
+
+  /** Question numbers (1-based) that have no answer yet. */
+  const unansweredNumbers = () =>
+    questions
+      .map((q, i) => (answers[q.id] === undefined ? i + 1 : null))
+      .filter((n): n is number => n !== null);
+
+  /** Dimensions where every question is unanswered — these block submission. */
+  const emptyDimensions = () =>
+    dimensions.filter((cat) =>
+      questions.filter((q) => q.category === cat).every((q) => answers[q.id] === undefined),
+    );
+
   const calculateScores = () => {
     const catSums: Record<string, number[]> = {};
     questions.forEach((q) => {
       if (!catSums[q.category]) catSums[q.category] = [];
-      catSums[q.category].push(answers[q.id] || 1);
+      const val = answers[q.id];
+      // Unanswered questions are excluded from the average rather than
+      // counted as the worst possible score.
+      if (typeof val === "number") catSums[q.category].push(val);
     });
     const catScores: Record<string, number> = {};
     for (const [cat, vals] of Object.entries(catSums)) {
+      if (vals.length === 0) continue;
       catScores[cat] = Math.round((vals.reduce((a, b) => a + b, 0) / vals.length) * 10) / 10;
     }
     const total = Math.round(Object.values(catScores).reduce((a, b) => a + b, 0) * 10) / 10;
@@ -431,7 +466,17 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
     return { catScores, total };
   };
 
+
   const submitAssessment = async () => {
+    const empties = emptyDimensions();
+    if (empties.length > 0) {
+      toast({
+        title: txt.incompleteTitle,
+        description: `${txt.incompleteDesc} ${empties.map((c) => categoryLabels[c]?.[l] || c).join(", ")} (${txt.question} ${unansweredNumbers().join(", ")})`,
+        variant: "destructive",
+      });
+      return;
+    }
     const { catScores, total } = calculateScores();
     setStep("results");
     setGenerating(true);
@@ -478,7 +523,7 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
 
       const content = [
         `🧠 ${txt.diaryNote}`,
-        `${txt.yourScore}: ${totalScore}/30 — ${getOverallLabel(totalScore)}`,
+        `${txt.yourScore}: ${totalScore}/${maxScore} — ${getOverallLabel(totalScore)}`,
         "",
         scoreLines,
         "",
@@ -496,8 +541,8 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
       const { error } = await supabase.from("diary_entries").insert({
         user_id: user.id,
         content,
-        mood: Math.round(totalScore / 6),
-        energy: Math.round(totalScore / 6),
+        mood: Math.round(totalScore / dimensions.length),
+        energy: Math.round(totalScore / dimensions.length),
         tags: ["mental-assessment"],
       });
 
@@ -573,7 +618,7 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
     };
 
     addText(txt.title, 20, true, [30, 64, 175]);
-    addText(`${txt.yourScore}: ${totalScore}/30 — ${getOverallLabel(totalScore)}`, 12, false);
+    addText(`${txt.yourScore}: ${totalScore}/${maxScore} — ${getOverallLabel(totalScore)}`, 12, false);
     y += 4;
 
     const radarLabels = Object.fromEntries(Object.entries(categoryLabels).map(([k, v]) => [k, v[l]]));
@@ -693,7 +738,7 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <p className="text-sm font-medium text-card-foreground">
-                      {txt.score}: {h.total_score}/30
+                      {txt.score}: {h.total_score}/{maxScore}
                     </p>
                     {h.pending && (
                       <Badge variant="outline" className="gap-1 text-[10px] py-0 h-5">
@@ -824,7 +869,7 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
 
       <Card className="p-4 sm:p-6 text-center space-y-3">
         <Brain className="h-8 w-8 mx-auto text-primary" />
-        <h2 className="text-2xl font-extrabold text-card-foreground">{totalScore}/30</h2>
+        <h2 className="text-2xl font-extrabold text-card-foreground">{totalScore}/{maxScore}</h2>
         <p className="text-sm text-muted-foreground">{getOverallLabel(totalScore)}</p>
 
         <div className="py-2">
