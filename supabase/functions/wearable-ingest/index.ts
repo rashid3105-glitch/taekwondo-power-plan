@@ -243,8 +243,14 @@ Deno.serve(async (req) => {
         .eq("id", existing.id);
       if (updErr) console.error("wearable_connections update failed", updErr);
     } else {
+      const { data: connProf } = await svc
+        .from("profiles")
+        .select("club_id")
+        .eq("user_id", userId)
+        .maybeSingle();
       const { error: insErr } = await svc.from("wearable_connections").insert({
         user_id: userId,
+        club_id: (connProf as any)?.club_id ?? null,
         provider,
         status: "active",
         last_sync_at: new Date().toISOString(),

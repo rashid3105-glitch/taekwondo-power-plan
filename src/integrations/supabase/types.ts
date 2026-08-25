@@ -198,6 +198,7 @@ export type Database = {
       }
       athlete_module_overrides: {
         Row: {
+          club_id: string | null
           created_at: string
           enabled: boolean
           id: string
@@ -205,6 +206,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          club_id?: string | null
           created_at?: string
           enabled: boolean
           id?: string
@@ -212,13 +214,22 @@ export type Database = {
           user_id: string
         }
         Update: {
+          club_id?: string | null
           created_at?: string
           enabled?: boolean
           id?: string
           module?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "athlete_module_overrides_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       athlete_modules: {
         Row: {
@@ -261,6 +272,7 @@ export type Database = {
       athlete_week_technique_focus: {
         Row: {
           athlete_id: string
+          club_id: string | null
           created_by: string | null
           id: string
           season_plan_id: string
@@ -270,6 +282,7 @@ export type Database = {
         }
         Insert: {
           athlete_id: string
+          club_id?: string | null
           created_by?: string | null
           id?: string
           season_plan_id: string
@@ -279,6 +292,7 @@ export type Database = {
         }
         Update: {
           athlete_id?: string
+          club_id?: string | null
           created_by?: string | null
           id?: string
           season_plan_id?: string
@@ -287,6 +301,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "athlete_week_technique_focus_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "athlete_week_technique_focus_season_plan_id_fkey"
             columns: ["season_plan_id"]
@@ -1761,6 +1782,7 @@ export type Database = {
       }
       diary_comments: {
         Row: {
+          club_id: string | null
           coach_id: string
           content: string
           created_at: string
@@ -1771,6 +1793,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          club_id?: string | null
           coach_id: string
           content?: string
           created_at?: string
@@ -1781,6 +1804,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          club_id?: string | null
           coach_id?: string
           content?: string
           created_at?: string
@@ -1791,6 +1815,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "diary_comments_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "diary_comments_diary_entry_id_fkey"
             columns: ["diary_entry_id"]

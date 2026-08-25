@@ -69,6 +69,13 @@ export async function upsertFeedback(params: {
     if (error) throw error;
     return data as ExerciseFeedback;
   }
+  // Stamp the athlete's club so the row is scoped for multi-club isolation.
+  const { data: prof } = await supabase
+    .from("profiles")
+    .select("club_id")
+    .eq("user_id", params.athlete_id)
+    .maybeSingle();
+  const clubId = (prof as any)?.club_id ?? null;
   const { data, error } = await supabase
     .from("workout_log_feedback")
     .insert({
@@ -77,6 +84,7 @@ export async function upsertFeedback(params: {
       coach_id: user.id,
       comment: params.comment,
       reaction: params.reaction,
+      ...(clubId ? { club_id: clubId } : {}),
     })
     .select()
     .single();

@@ -203,7 +203,14 @@ export default function AdminModuleAccess() {
         const clubDefault = clubDefForSelected[m.key] ?? true;
         const value = !!athleteDraft[m.key];
         if (value !== clubDefault) {
-          toUpsert.push({ user_id: selectedAthleteId, module: m.key, enabled: value });
+          const athleteClubId =
+            athletes.find((a) => a.user_id === selectedAthleteId)?.club_id ?? selectedClubId ?? null;
+          toUpsert.push({
+            user_id: selectedAthleteId,
+            module: m.key,
+            enabled: value,
+            ...(athleteClubId ? { club_id: athleteClubId } : {}),
+          } as any);
         } else {
           toDelete.push(m.key);
         }
