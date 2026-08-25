@@ -186,6 +186,12 @@ export default function CoachAthleteOverview() {
       setParents([]);
     }
 
+    try {
+      setAthleteTeams(await listTeamsForAthlete(p.user_id));
+    } catch {
+      setAthleteTeams([]);
+    }
+
     setAuthorized(true);
     setLoading(false);
   }
