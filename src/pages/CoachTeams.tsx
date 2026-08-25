@@ -2,10 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ArrowLeft, Plus, Pencil, Check, X, ChevronUp, ChevronDown, Users, Search } from "lucide-react";
+import { ArrowLeft, Plus, Pencil, Check, X, ChevronUp, ChevronDown, Users, Search, Trash2, Info, Loader2 } from "lucide-react";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { ClubSwitcher } from "@/components/ClubSwitcher";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useRole } from "@/contexts/RoleContext";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -14,16 +15,22 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   ClubTeam, listClubTeams, listTeamMembers, createClubTeam,
-  updateClubTeam, addTeamMember, removeTeamMember,
+  updateClubTeam, addTeamMember, removeTeamMember, deleteClubTeam,
 } from "@/lib/clubTeams";
 
 interface MemberOption { id: string; name: string; }
+
 
 export default function CoachTeams() {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const { activeClubId } = useActiveClub();
+  const { hasCoachRole, loading: roleLoading } = useRole();
 
   const [clubId, setClubId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -43,6 +50,18 @@ export default function CoachTeams() {
   const [openTeamMembers, setOpenTeamMembers] = useState<Set<string>>(new Set());
   const [search, setSearch] = useState("");
   const [busyUser, setBusyUser] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<ClubTeam | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  // -------- role gating --------
+  useEffect(() => {
+    if (roleLoading) return;
+    if (!hasCoachRole) {
+      toast.error(t("clubTeamsCoachOnly"));
+      navigate("/dashboard", { replace: true });
+    }
+  }, [roleLoading, hasCoachRole, navigate, t]);
+
 
   // -------- boot --------
   useEffect(() => {
@@ -186,6 +205,22 @@ export default function CoachTeams() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!deleteTarget || !clubId) return;
+    setDeleting(true);
+    try {
+      await deleteClubTeam(deleteTarget.id);
+      setDeleteTarget(null);
+      await loadTeams(clubId);
+      toast.success(t("clubTeamDeleted"));
+    } catch (e: any) {
+      const msg = String(e?.message ?? "");
+      toast.error(msg.includes("TEAM_NOT_EMPTY") ? t("clubTeamDeleteNotEmpty") : t("clubTeamDeleteError"));
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const filteredMembers = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return clubMembers;
@@ -204,6 +239,19 @@ export default function CoachTeams() {
 
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-4">
         <p className="text-sm text-white/60">{t("clubTeamsSubtitle")}</p>
+
+        <section className="rounded-xl border border-primary/25 bg-primary/[0.06] p-4 space-y-2">
+          <h2 className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-primary">
+            <Info className="h-3.5 w-3.5" /> {t("clubTeamsHowToTitle")}
+          </h2>
+          <ul className="space-y-1 text-sm text-white/70 list-disc ps-5">
+            <li>{t("clubTeamsHowTo1")}</li>
+            <li>{t("clubTeamsHowTo2")}</li>
+            <li>{t("clubTeamsHowTo3")}</li>
+            <li>{t("clubTeamsHowTo4")}</li>
+          </ul>
+        </section>
+
 
         {!loading && !clubId && (
           <div className="rounded-xl border border-white/10 bg-white/[0.03] p-6 text-center text-white/60 text-sm">
@@ -296,10 +344,21 @@ export default function CoachTeams() {
                               title={t("clubTeamRename")} className="gap-1 text-white/70">
                               <Pencil className="h-4 w-4" /> {t("clubTeamRename")}
                             </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => setDeleteTarget(team)}
+                              disabled={(counts[team.id] ?? 0) > 0}
+                              title={(counts[team.id] ?? 0) > 0 ? t("clubTeamDeleteNotEmpty") : t("clubTeamDelete")}
+                              className="gap-1 text-destructive hover:text-destructive disabled:opacity-40"
+                            >
+                              <Trash2 className="h-4 w-4" /> {t("clubTeamDelete")}
+                            </Button>
                             <Button size="sm" variant="outline" onClick={() => openMembers(team)}>
                               {t("clubTeamManageMembers")}
                             </Button>
                           </div>
+
                         </div>
                       </>
                     )}
@@ -339,6 +398,30 @@ export default function CoachTeams() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Delete confirmation */}
+      <AlertDialog open={!!deleteTarget} onOpenChange={(o) => { if (!o && !deleting) setDeleteTarget(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("clubTeamDeleteConfirmTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("clubTeamDeleteConfirmBody")} {deleteTarget?.name ? `— ${deleteTarget.name}` : ""}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>{t("cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => { e.preventDefault(); handleDelete(); }}
+              disabled={deleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleting && <Loader2 className="h-4 w-4 animate-spin me-2" />}
+              {t("clubTeamDelete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
+
   );
 }

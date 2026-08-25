@@ -21,6 +21,8 @@ import {
   AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import type { PulseFilter } from "./SquadPulse";
+import { ClubTeam, listClubTeams, listTeamMembers } from "@/lib/clubTeams";
+
 
 interface SquadRow {
   user_id: string;
@@ -127,6 +129,12 @@ export function SquadOverview({
   const [view, setView] = useState<ViewMode>("compact");
   const [search, setSearch] = useState("");
   const [beltFilter, setBeltFilter] = useState<string>("all");
+  const [teams, setTeams] = useState<ClubTeam[]>([]);
+  const [teamMembers, setTeamMembers] = useState<Record<string, string[]>>({});
+  const [teamFilter, setTeamFilter] = useState<string>(
+    () => sessionStorage.getItem("squadTeamFilter") || "all",
+  );
+
 
   const allowedKey = (allowedUserIds || []).slice().sort().join(",");
   const metaKey = (athleteMeta || []).map((m) => `${m.user_id}:${m.club_name || ""}`).join("|");
@@ -155,6 +163,31 @@ export function SquadOverview({
     return () => clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [coachId, allowedKey, metaKey, effectiveClubId]);
+
+  // Club groups (teams) for filtering
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      if (!effectiveClubId) { setTeams([]); setTeamMembers({}); return; }
+      try {
+        const list = (await listClubTeams(effectiveClubId)).filter((x) => x.is_active);
+        const rows = await listTeamMembers(list.map((x) => x.id));
+        if (!active) return;
+        const map: Record<string, string[]> = {};
+        rows.forEach((r) => { (map[r.team_id] ||= []).push(r.user_id); });
+        setTeams(list);
+        setTeamMembers(map);
+      } catch {
+        if (active) { setTeams([]); setTeamMembers({}); }
+      }
+    })();
+    return () => { active = false; };
+  }, [effectiveClubId]);
+
+  useEffect(() => {
+    sessionStorage.setItem("squadTeamFilter", teamFilter);
+  }, [teamFilter]);
+
 
   // Stats for parent
   useEffect(() => {
@@ -185,6 +218,10 @@ export function SquadOverview({
       });
     }
     if (isTkd && beltFilter !== "all") out = out.filter((r) => r.belt_level === beltFilter);
+    if (teamFilter !== "all") {
+      const ids = new Set(teamMembers[teamFilter] ?? []);
+      out = out.filter((r) => ids.has(r.user_id));
+    }
     const q = search.trim().toLowerCase();
     if (q) {
       out = out.filter(
@@ -195,7 +232,8 @@ export function SquadOverview({
       );
     }
     return out;
-  }, [rows, pulseFilter, beltFilter, search, isTkd]);
+  }, [rows, pulseFilter, beltFilter, search, isTkd, teamFilter, teamMembers]);
+
 
   const sorted = useMemo(() => {
     return [...filtered].sort((a, b) => {
@@ -286,6 +324,20 @@ export function SquadOverview({
               </SelectContent>
             </Select>
           )}
+          {teams.length > 0 && (
+            <Select value={teamFilter} onValueChange={setTeamFilter}>
+              <SelectTrigger className="h-8 w-[150px] text-xs" aria-label={t("clubTeamsTitle")}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t("allTeamsFilter")}</SelectItem>
+                {teams.map((tm) => (
+                  <SelectItem key={tm.id} value={tm.id}>{tm.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+
           <Select value={sort} onValueChange={(v) => setSort(v as SortKey)}>
             <SelectTrigger className="h-8 w-[170px] text-xs">
               <SelectValue />

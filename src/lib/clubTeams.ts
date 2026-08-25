@@ -92,3 +92,10 @@ export async function removeTeamMember(teamId: string, userId: string): Promise<
   const { error } = await supabase.from(MEMBERS).delete().eq("team_id", teamId).eq("user_id", userId);
   if (error) throw error;
 }
+
+/** Deletes a group. The database blocks deletion while the group still has members. */
+export async function deleteClubTeam(id: string): Promise<void> {
+  const { error } = await supabase.from(TEAMS).delete().eq("id", id);
+  if (error) throw error;
+}
+

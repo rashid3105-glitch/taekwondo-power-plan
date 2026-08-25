@@ -381,6 +381,17 @@ export function GlobalAppMenu() {
               </button>
             )}
 
+            {isCoach && (
+              <button
+                onClick={() => goAndClose("/hold/grupper")}
+                className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
+              >
+                <Users className="h-4 w-4 shrink-0 text-tab-progress" />
+                <span>{t("clubTeamsTitle") || "Grupper"}</span>
+              </button>
+            )}
+
+
             <button
               onClick={() => goAndClose("/profile-setup")}
               className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
