@@ -205,6 +205,22 @@ export default function CoachTeams() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!deleteTarget || !clubId) return;
+    setDeleting(true);
+    try {
+      await deleteClubTeam(deleteTarget.id);
+      setDeleteTarget(null);
+      await loadTeams(clubId);
+      toast.success(t("clubTeamDeleted"));
+    } catch (e: any) {
+      const msg = String(e?.message ?? "");
+      toast.error(msg.includes("TEAM_NOT_EMPTY") ? t("clubTeamDeleteNotEmpty") : t("clubTeamDeleteError"));
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const filteredMembers = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return clubMembers;
@@ -223,6 +239,19 @@ export default function CoachTeams() {
 
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-4">
         <p className="text-sm text-white/60">{t("clubTeamsSubtitle")}</p>
+
+        <section className="rounded-xl border border-primary/25 bg-primary/[0.06] p-4 space-y-2">
+          <h2 className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-primary">
+            <Info className="h-3.5 w-3.5" /> {t("clubTeamsHowToTitle")}
+          </h2>
+          <ul className="space-y-1 text-sm text-white/70 list-disc ps-5">
+            <li>{t("clubTeamsHowTo1")}</li>
+            <li>{t("clubTeamsHowTo2")}</li>
+            <li>{t("clubTeamsHowTo3")}</li>
+            <li>{t("clubTeamsHowTo4")}</li>
+          </ul>
+        </section>
+
 
         {!loading && !clubId && (
           <div className="rounded-xl border border-white/10 bg-white/[0.03] p-6 text-center text-white/60 text-sm">
