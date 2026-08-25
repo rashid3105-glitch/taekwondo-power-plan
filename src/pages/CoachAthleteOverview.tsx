@@ -267,6 +267,25 @@ export default function CoachAthleteOverview() {
                   </Badge>
                 )}
               </div>
+              {athleteTeams.length > 0 && (
+                <div className="mt-2 flex items-center gap-1.5 flex-wrap">
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                    {t("athleteTeamsLabel")}
+                  </span>
+                  {athleteTeams.map((tm) => (
+                    <button
+                      key={tm.id}
+                      type="button"
+                      onClick={() => navigate("/hold/grupper")}
+                      title={tm.description || tm.name}
+                    >
+                      <Badge variant="secondary" className="text-[10px] cursor-pointer hover:bg-secondary/80">
+                        {tm.name}
+                      </Badge>
+                    </button>
+                  ))}
+                </div>
+              )}
               <div className="mt-2 flex items-center gap-2 flex-wrap">
                 <CoachAvatarUpload
                   athleteId={athlete.user_id}
