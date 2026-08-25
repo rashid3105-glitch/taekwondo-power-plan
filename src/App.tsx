@@ -38,6 +38,7 @@ import DeleteAccount from "./pages/DeleteAccount";
 
 import AthleteModules from "./pages/AthleteModules";
 import CoachModules from "./pages/CoachModules";
+import CoachTeams from "./pages/CoachTeams";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
 import Library from "./pages/Library";
