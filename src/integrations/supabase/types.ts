@@ -988,6 +988,79 @@ export type Database = {
           },
         ]
       }
+      club_team_members: {
+        Row: {
+          created_at: string
+          id: string
+          team_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          team_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          team_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "club_team_members_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "club_teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      club_teams: {
+        Row: {
+          club_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          external_ref: string | null
+          id: string
+          is_active: boolean
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          club_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          external_ref?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          club_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          external_ref?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "club_teams_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       club_techniques: {
         Row: {
           category: string
