@@ -164,6 +164,31 @@ export function SquadOverview({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [coachId, allowedKey, metaKey, effectiveClubId]);
 
+  // Club groups (teams) for filtering
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      if (!effectiveClubId) { setTeams([]); setTeamMembers({}); return; }
+      try {
+        const list = (await listClubTeams(effectiveClubId)).filter((x) => x.is_active);
+        const rows = await listTeamMembers(list.map((x) => x.id));
+        if (!active) return;
+        const map: Record<string, string[]> = {};
+        rows.forEach((r) => { (map[r.team_id] ||= []).push(r.user_id); });
+        setTeams(list);
+        setTeamMembers(map);
+      } catch {
+        if (active) { setTeams([]); setTeamMembers({}); }
+      }
+    })();
+    return () => { active = false; };
+  }, [effectiveClubId]);
+
+  useEffect(() => {
+    sessionStorage.setItem("squadTeamFilter", teamFilter);
+  }, [teamFilter]);
+
+
   // Stats for parent
   useEffect(() => {
     if (!onStatsChange) return;
