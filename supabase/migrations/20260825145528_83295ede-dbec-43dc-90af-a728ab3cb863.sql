@@ -1,0 +1,1 @@
+REVOKE ALL ON FUNCTION public.stamp_club_id_from_diary_entry() FROM PUBLIC, anon, authenticated;
