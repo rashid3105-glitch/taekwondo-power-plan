@@ -127,6 +127,12 @@ export function SquadOverview({
   const [view, setView] = useState<ViewMode>("compact");
   const [search, setSearch] = useState("");
   const [beltFilter, setBeltFilter] = useState<string>("all");
+  const [teams, setTeams] = useState<ClubTeam[]>([]);
+  const [teamMembers, setTeamMembers] = useState<Record<string, string[]>>({});
+  const [teamFilter, setTeamFilter] = useState<string>(
+    () => sessionStorage.getItem("squadTeamFilter") || "all",
+  );
+
 
   const allowedKey = (allowedUserIds || []).slice().sort().join(",");
   const metaKey = (athleteMeta || []).map((m) => `${m.user_id}:${m.club_name || ""}`).join("|");
