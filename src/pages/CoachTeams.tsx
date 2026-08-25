@@ -30,6 +30,7 @@ export default function CoachTeams() {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const { activeClubId } = useActiveClub();
+  const { hasCoachRole, loading: roleLoading } = useRole();
 
   const [clubId, setClubId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -49,6 +50,18 @@ export default function CoachTeams() {
   const [openTeamMembers, setOpenTeamMembers] = useState<Set<string>>(new Set());
   const [search, setSearch] = useState("");
   const [busyUser, setBusyUser] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<ClubTeam | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  // -------- role gating --------
+  useEffect(() => {
+    if (roleLoading) return;
+    if (!hasCoachRole) {
+      toast.error(t("clubTeamsCoachOnly"));
+      navigate("/dashboard", { replace: true });
+    }
+  }, [roleLoading, hasCoachRole, navigate, t]);
+
 
   // -------- boot --------
   useEffect(() => {
