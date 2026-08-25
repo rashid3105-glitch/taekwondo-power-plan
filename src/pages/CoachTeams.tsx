@@ -2,10 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ArrowLeft, Plus, Pencil, Check, X, ChevronUp, ChevronDown, Users, Search } from "lucide-react";
+import { ArrowLeft, Plus, Pencil, Check, X, ChevronUp, ChevronDown, Users, Search, Trash2, Info, Loader2 } from "lucide-react";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { ClubSwitcher } from "@/components/ClubSwitcher";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useRole } from "@/contexts/RoleContext";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -14,11 +15,16 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   ClubTeam, listClubTeams, listTeamMembers, createClubTeam,
-  updateClubTeam, addTeamMember, removeTeamMember,
+  updateClubTeam, addTeamMember, removeTeamMember, deleteClubTeam,
 } from "@/lib/clubTeams";
 
 interface MemberOption { id: string; name: string; }
+
 
 export default function CoachTeams() {
   const navigate = useNavigate();
