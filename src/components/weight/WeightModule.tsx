@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -30,6 +31,7 @@ interface Props {
 
 export function WeightModule({ userId, profile, readOnly = false, canEditGoal = true, compact = false }: Props) {
   const { t } = useLanguage();
+  const { activeClubId } = useActiveClub();
   const [resolvedId, setResolvedId] = useState<string | null>(userId ?? null);
   const [loading, setLoading] = useState(true);
   const [logs, setLogs] = useState<WeightPoint[]>([]);

@@ -101,9 +101,15 @@ Deno.serve(async (req) => {
       if (existing) {
         await admin.from("consent_records").update(patch).eq("id", existing.id);
       } else {
+        const { data: athProf } = await admin
+          .from("profiles")
+          .select("club_id")
+          .eq("user_id", tk.athlete_id)
+          .maybeSingle();
         await admin.from("consent_records").insert({
           athlete_id: tk.athlete_id,
           consent_type: tk.consent_type,
+          club_id: (athProf as any)?.club_id ?? null,
           ...patch,
         });
       }
