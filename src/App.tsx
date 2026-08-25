@@ -263,6 +263,7 @@ const AnimatedRoutes = () => {
 
         <Route path="/moduler" element={<Page><AthleteModules /></Page>} />
         <Route path="/hold/moduler" element={<Page><CoachModules /></Page>} />
+        <Route path="/hold/grupper" element={<Page><CoachTeams /></Page>} />
         <Route path="/onboarding" element={<Page><Onboarding /></Page>} />
         <Route path="/health" element={<Page><Health /></Page>} />
         <Route path="/health/sync-setup" element={<Navigate to="/health" replace />} />
