@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { MessageSquare, Send, Trash2, Loader2, Users, Lock, Smile } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -34,6 +35,7 @@ export function DiaryComments({ entryId, canComment = false }: DiaryCommentsProp
   const [showEmoji, setShowEmoji] = useState(false);
   const { toast } = useToast();
   const { t } = useLanguage();
+  const { activeClubId, primaryClubId } = useActiveClub();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const EMOJIS = ["👍", "❤️", "🔥", "💪", "🥋", "🎯", "👏", "😄", "🙏", "✅", "😂", "🤩", "👌", "🚀"];
@@ -106,11 +108,13 @@ export function DiaryComments({ entryId, canComment = false }: DiaryCommentsProp
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setSubmitting(false); return; }
 
+    const clubId = activeClubId ?? primaryClubId ?? null;
     const { error } = await supabase.from("diary_comments" as any).insert({
       diary_entry_id: entryId,
       coach_id: user.id,
       content: newComment.trim().slice(0, 2000),
       is_shared: shareNew,
+      ...(clubId ? { club_id: clubId } : {}),
     } as any);
 
     if (error) {
