@@ -21,6 +21,8 @@ import {
   AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import type { PulseFilter } from "./SquadPulse";
+import { ClubTeam, listClubTeams, listTeamMembers } from "@/lib/clubTeams";
+
 
 interface SquadRow {
   user_id: string;
