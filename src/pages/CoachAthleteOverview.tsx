@@ -29,6 +29,7 @@ import { CoachDiaryView } from "@/components/coach/CoachDiaryView";
 import { SendReminderDialog } from "@/components/SendReminderDialog";
 import { CoachAvatarUpload } from "@/components/coach/CoachAvatarUpload";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
+import { ClubTeam, listTeamsForAthlete } from "@/lib/clubTeams";
 
 interface AthleteProfile {
   user_id: string;
@@ -85,6 +86,7 @@ export default function CoachAthleteOverview() {
   const [diaryEntries, setDiaryEntries] = useState<any[]>([]);
   const [diaryLoading, setDiaryLoading] = useState(false);
   const [parents, setParents] = useState<{ user_id: string; display_name: string | null }[]>([]);
+  const [athleteTeams, setAthleteTeams] = useState<ClubTeam[]>([]);
 
 
   const tabParam = (searchParams.get("tab") as TabKey) || "overview";
@@ -184,6 +186,12 @@ export default function CoachAthleteOverview() {
       setParents([]);
     }
 
+    try {
+      setAthleteTeams(await listTeamsForAthlete(p.user_id));
+    } catch {
+      setAthleteTeams([]);
+    }
+
     setAuthorized(true);
     setLoading(false);
   }
@@ -267,6 +275,25 @@ export default function CoachAthleteOverview() {
                   </Badge>
                 )}
               </div>
+              {athleteTeams.length > 0 && (
+                <div className="mt-2 flex items-center gap-1.5 flex-wrap">
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                    {t("athleteTeamsLabel")}
+                  </span>
+                  {athleteTeams.map((tm) => (
+                    <button
+                      key={tm.id}
+                      type="button"
+                      onClick={() => navigate("/hold/grupper")}
+                      title={tm.description || tm.name}
+                    >
+                      <Badge variant="secondary" className="text-[10px] cursor-pointer hover:bg-secondary/80">
+                        {tm.name}
+                      </Badge>
+                    </button>
+                  ))}
+                </div>
+              )}
               <div className="mt-2 flex items-center gap-2 flex-wrap">
                 <CoachAvatarUpload
                   athleteId={athlete.user_id}

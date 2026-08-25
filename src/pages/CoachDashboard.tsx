@@ -451,6 +451,9 @@ export default function CoachDashboard() {
               <Button variant="outline" size="sm" onClick={() => navigate("/coach/consents")}>
                 {t("consentsPageTitle")}
               </Button>
+              <Button variant="outline" size="sm" onClick={() => navigate("/hold/grupper")}>
+                {t("clubTeamsTitle")}
+              </Button>
               {coachUserId && (
                 <AthleteAddMenu
                   coachId={coachUserId}

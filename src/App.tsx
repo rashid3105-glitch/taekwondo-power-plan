@@ -38,6 +38,7 @@ import DeleteAccount from "./pages/DeleteAccount";
 
 import AthleteModules from "./pages/AthleteModules";
 import CoachModules from "./pages/CoachModules";
+import CoachTeams from "./pages/CoachTeams";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
 import Library from "./pages/Library";
@@ -262,6 +263,7 @@ const AnimatedRoutes = () => {
 
         <Route path="/moduler" element={<Page><AthleteModules /></Page>} />
         <Route path="/hold/moduler" element={<Page><CoachModules /></Page>} />
+        <Route path="/hold/grupper" element={<Page><CoachTeams /></Page>} />
         <Route path="/onboarding" element={<Page><Onboarding /></Page>} />
         <Route path="/health" element={<Page><Health /></Page>} />
         <Route path="/health/sync-setup" element={<Navigate to="/health" replace />} />
