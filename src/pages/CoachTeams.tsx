@@ -344,10 +344,21 @@ export default function CoachTeams() {
                               title={t("clubTeamRename")} className="gap-1 text-white/70">
                               <Pencil className="h-4 w-4" /> {t("clubTeamRename")}
                             </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => setDeleteTarget(team)}
+                              disabled={(counts[team.id] ?? 0) > 0}
+                              title={(counts[team.id] ?? 0) > 0 ? t("clubTeamDeleteNotEmpty") : t("clubTeamDelete")}
+                              className="gap-1 text-destructive hover:text-destructive disabled:opacity-40"
+                            >
+                              <Trash2 className="h-4 w-4" /> {t("clubTeamDelete")}
+                            </Button>
                             <Button size="sm" variant="outline" onClick={() => openMembers(team)}>
                               {t("clubTeamManageMembers")}
                             </Button>
                           </div>
+
                         </div>
                       </>
                     )}
