@@ -89,8 +89,9 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
     const w = parseFloat(weighIn.replace(",", "."));
     if (isNaN(w) || w < 20 || w > 250) { toast.error(t("wpInvalidWeight")); return; }
     setSaving(true);
+    const clubId = activeClubId ?? profile?.club_id ?? null;
     const { error } = await supabase.from("weight_logs").upsert(
-      { user_id: resolvedId, log_date: todayISO(), weight_kg: w, ...(profile?.club_id ? { club_id: profile.club_id } : {}) },
+      { user_id: resolvedId, log_date: todayISO(), weight_kg: w, ...(clubId ? { club_id: clubId } : {}) },
       { onConflict: "user_id,log_date" },
     );
     setSaving(false);
@@ -108,7 +109,7 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
       ...g,
       user_id: resolvedId,
       set_by: auth.user?.id ?? null,
-      ...(profile?.club_id ? { club_id: profile.club_id } : {}),
+      ...((activeClubId ?? profile?.club_id) ? { club_id: activeClubId ?? profile.club_id } : {}),
     };
     const { error } = goal
       ? await supabase.from("weight_goals").update(payload).eq("id", goal.id)
