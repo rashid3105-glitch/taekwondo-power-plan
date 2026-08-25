@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.enforce_team_member_same_club() FROM PUBLIC, anon, authenticated;
