@@ -109,7 +109,7 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
       ...g,
       user_id: resolvedId,
       set_by: auth.user?.id ?? null,
-      ...(profile?.club_id ? { club_id: profile.club_id } : {}),
+      ...((activeClubId ?? profile?.club_id) ? { club_id: activeClubId ?? profile.club_id } : {}),
     };
     const { error } = goal
       ? await supabase.from("weight_goals").update(payload).eq("id", goal.id)
