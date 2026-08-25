@@ -218,6 +218,10 @@ export function SquadOverview({
       });
     }
     if (isTkd && beltFilter !== "all") out = out.filter((r) => r.belt_level === beltFilter);
+    if (teamFilter !== "all") {
+      const ids = new Set(teamMembers[teamFilter] ?? []);
+      out = out.filter((r) => ids.has(r.user_id));
+    }
     const q = search.trim().toLowerCase();
     if (q) {
       out = out.filter(
@@ -228,7 +232,8 @@ export function SquadOverview({
       );
     }
     return out;
-  }, [rows, pulseFilter, beltFilter, search, isTkd]);
+  }, [rows, pulseFilter, beltFilter, search, isTkd, teamFilter, teamMembers]);
+
 
   const sorted = useMemo(() => {
     return [...filtered].sort((a, b) => {
