@@ -324,6 +324,20 @@ export function SquadOverview({
               </SelectContent>
             </Select>
           )}
+          {teams.length > 0 && (
+            <Select value={teamFilter} onValueChange={setTeamFilter}>
+              <SelectTrigger className="h-8 w-[150px] text-xs" aria-label={t("clubTeamsTitle")}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t("allTeamsFilter")}</SelectItem>
+                {teams.map((tm) => (
+                  <SelectItem key={tm.id} value={tm.id}>{tm.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+
           <Select value={sort} onValueChange={(v) => setSort(v as SortKey)}>
             <SelectTrigger className="h-8 w-[170px] text-xs">
               <SelectValue />
