@@ -349,6 +349,7 @@ export default function SeasonCalendar() {
       technique_ids: techIds,
       created_by: userId,
       updated_at: new Date().toISOString(),
+      ...(activeClubId ?? clubId ? { club_id: activeClubId ?? clubId } : {}),
     }, { onConflict: "season_plan_id,athlete_id,season_week" });
     setAthleteFocusMap((prev) => {
       const next = new Map(prev);

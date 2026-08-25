@@ -124,7 +124,7 @@ export default function CoachModules() {
     const { error } = await supabase
       .from("athlete_module_overrides" as any)
       .upsert(
-        { user_id: selectedAthlete, module: moduleKey, enabled: next },
+        { user_id: selectedAthlete, module: moduleKey, enabled: next, ...(clubId ? { club_id: clubId } : {}) },
         { onConflict: "user_id,module" }
       );
     if (error) {
