@@ -29,6 +29,7 @@ import { CoachDiaryView } from "@/components/coach/CoachDiaryView";
 import { SendReminderDialog } from "@/components/SendReminderDialog";
 import { CoachAvatarUpload } from "@/components/coach/CoachAvatarUpload";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
+import { ClubTeam, listTeamsForAthlete } from "@/lib/clubTeams";
 
 interface AthleteProfile {
   user_id: string;
