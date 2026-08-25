@@ -85,6 +85,7 @@ export default function CoachAthleteOverview() {
   const [diaryEntries, setDiaryEntries] = useState<any[]>([]);
   const [diaryLoading, setDiaryLoading] = useState(false);
   const [parents, setParents] = useState<{ user_id: string; display_name: string | null }[]>([]);
+  const [athleteTeams, setAthleteTeams] = useState<ClubTeam[]>([]);
 
 
   const tabParam = (searchParams.get("tab") as TabKey) || "overview";
