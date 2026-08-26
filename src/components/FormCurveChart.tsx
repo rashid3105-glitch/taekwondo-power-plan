@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ResponsiveContainer, ComposedChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceArea } from "recharts";
-import { Activity, AlertTriangle, RefreshCw, Loader2 } from "lucide-react";
+import { Activity, AlertTriangle, RefreshCw, Loader2, Info } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
