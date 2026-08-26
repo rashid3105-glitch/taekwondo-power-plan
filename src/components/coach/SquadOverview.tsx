@@ -168,7 +168,12 @@ export function SquadOverview({
   useEffect(() => {
     let active = true;
     (async () => {
-      if (!effectiveClubId) { setTeams([]); setTeamMembers({}); return; }
+      if (!effectiveClubId) {
+        setTeams([]);
+        setTeamMembers({});
+        setTeamFilter("all");
+        return;
+      }
       try {
         const list = (await listClubTeams(effectiveClubId)).filter((x) => x.is_active);
         const rows = await listTeamMembers(list.map((x) => x.id));
@@ -177,8 +182,15 @@ export function SquadOverview({
         rows.forEach((r) => { (map[r.team_id] ||= []).push(r.user_id); });
         setTeams(list);
         setTeamMembers(map);
+        setTeamFilter((current) => (
+          current === "all" || list.some((team) => team.id === current) ? current : "all"
+        ));
       } catch {
-        if (active) { setTeams([]); setTeamMembers({}); }
+        if (active) {
+          setTeams([]);
+          setTeamMembers({});
+          setTeamFilter("all");
+        }
       }
     })();
     return () => { active = false; };
@@ -218,7 +230,7 @@ export function SquadOverview({
       });
     }
     if (isTkd && beltFilter !== "all") out = out.filter((r) => r.belt_level === beltFilter);
-    if (teamFilter !== "all") {
+    if (teamFilter !== "all" && teamMembers[teamFilter]) {
       const ids = new Set(teamMembers[teamFilter] ?? []);
       out = out.filter((r) => ids.has(r.user_id));
     }
