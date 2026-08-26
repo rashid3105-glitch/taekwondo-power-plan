@@ -187,7 +187,7 @@ export function FormCurveChart({ userId }: FormCurveChartProps) {
                 <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
                 <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", fontSize: 12 }} />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
-                {riskBands.map((b, i) => (
+                {!hideRisk && riskBands.map((b, i) => (
                   <ReferenceArea key={i} x1={b.x1} x2={b.x2} strokeOpacity={0} fill="hsl(0, 80%, 55%)" fillOpacity={0.08} />
                 ))}
                 <Area type="monotone" dataKey="Form" stroke={COLOR_COMPOSITE} fill={COLOR_COMPOSITE} fillOpacity={0.18} strokeWidth={2} />
