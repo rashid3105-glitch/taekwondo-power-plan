@@ -127,7 +127,9 @@ export function FormCurveChart({ userId }: FormCurveChartProps) {
           <div>
             <CardTitle className="flex items-center gap-2 text-base">
               <Activity className="h-4 w-4 text-primary" />
-              {t("formCurveTitle")}
+              {coachView && clubName
+                ? t("formCurveClubScopeTitle").replace("{club}", clubName)
+                : t("formCurveTitle")}
             </CardTitle>
             <p className="text-xs text-muted-foreground mt-1">{t("formCurveDescription")}</p>
           </div>
