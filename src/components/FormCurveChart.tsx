@@ -4,9 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ResponsiveContainer, ComposedChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceArea } from "recharts";
-import { Activity, AlertTriangle, RefreshCw, Loader2 } from "lucide-react";
+import { Activity, AlertTriangle, RefreshCw, Loader2, Info } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 
 interface FormCurveRow {
   user_id: string;
@@ -30,10 +31,16 @@ const COLOR_COMPOSITE = "hsl(280, 70%, 60%)";
 export function FormCurveChart({ userId }: FormCurveChartProps) {
   const { t } = useLanguage();
   const { toast } = useToast();
+  const { activeMembership } = useActiveClub();
   const [data, setData] = useState<FormCurveRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [recomputing, setRecomputing] = useState(false);
   const [resolvedUserId, setResolvedUserId] = useState<string | null>(null);
+  const [multiClub, setMultiClub] = useState(false);
+
+  // Coach view = an explicit athlete id was passed in.
+  const coachView = !!userId;
+  const clubName = activeMembership?.club_name ?? "";
 
   useEffect(() => { void load(); /* eslint-disable-next-line */ }, [userId]);
 
@@ -54,8 +61,18 @@ export function FormCurveChart({ userId }: FormCurveChartProps) {
       .order("week_start", { ascending: true })
       .limit(12);
     setData((rows || []) as FormCurveRow[]);
+
+    if (userId) {
+      const { data: clubCount } = await supabase.rpc("athlete_active_club_count" as any, {
+        _athlete_id: userId,
+      } as any);
+      setMultiClub(typeof clubCount === "number" && clubCount > 1);
+    } else {
+      setMultiClub(false);
+    }
     setLoading(false);
   }
+
 
   async function recompute() {
     if (!resolvedUserId) return;
@@ -85,7 +102,10 @@ export function FormCurveChart({ userId }: FormCurveChartProps) {
   }));
 
   const latest = data[data.length - 1];
-  const atRisk = !!latest?.overtraining_flag;
+  // Multi-club athletes: this club only sees part of the training, so the
+  // overtraining flag would be misleading — hide it and explain instead.
+  const hideRisk = coachView && multiClub;
+  const atRisk = !hideRisk && !!latest?.overtraining_flag;
   const latestForm = latest ? Math.round(latest.composite_score) : 0;
 
   // Find risk windows for visual highlight
@@ -107,7 +127,9 @@ export function FormCurveChart({ userId }: FormCurveChartProps) {
           <div>
             <CardTitle className="flex items-center gap-2 text-base">
               <Activity className="h-4 w-4 text-primary" />
-              {t("formCurveTitle")}
+              {coachView && clubName
+                ? t("formCurveClubScopeTitle").replace("{club}", clubName)
+                : t("formCurveTitle")}
             </CardTitle>
             <p className="text-xs text-muted-foreground mt-1">{t("formCurveDescription")}</p>
           </div>
@@ -143,6 +165,12 @@ export function FormCurveChart({ userId }: FormCurveChartProps) {
           </div>
         ) : (
           <>
+            {hideRisk && (
+              <div className="mb-3 p-2 rounded-lg bg-muted/50 border border-border text-xs text-muted-foreground flex items-start gap-2">
+                <Info className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                <div>{t("formCurveMultiClubNote")}</div>
+              </div>
+            )}
             {atRisk && (
               <div className="mb-3 p-2 rounded-lg bg-destructive/10 border border-destructive/30 text-xs text-destructive flex items-start gap-2">
                 <AlertTriangle className="h-4 w-4 flex-shrink-0 mt-0.5" />
