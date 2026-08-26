@@ -4554,6 +4554,10 @@ export type Database = {
         Returns: Json
       }
       apply_invite_to_my_profile: { Args: { _code: string }; Returns: Json }
+      athlete_active_club_count: {
+        Args: { _athlete_id: string }
+        Returns: number
+      }
       can_chat_with: { Args: { _a: string; _b: string }; Returns: boolean }
       cleanup_archived_survey_templates: { Args: never; Returns: undefined }
       club_athlete_count: { Args: { _club_id: string }; Returns: number }
