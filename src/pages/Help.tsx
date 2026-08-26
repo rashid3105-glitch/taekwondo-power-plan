@@ -26,7 +26,7 @@ type TopicKey =
   | "helpConsents" | "helpAttendance" | "helpDeleteAthlete" | "helpCoachMentalReview"
   | "helpSubscription" | "helpSecurity" | "helpDeleteAccount" | "helpNotifications"
   | "helpTodayCard" | "helpRunning" | "helpCompetitions" | "helpCoachChecklist"
-  | "helpModuleAccess" | "helpSurveys" | "helpTeamTests" | "helpCompliance" | "helpClubAssessment" | "helpWeightPlanner" | "helpNutritionFaq";
+  | "helpFormCurve" | "helpModuleAccess" | "helpSurveys" | "helpTeamTests" | "helpCompliance" | "helpClubAssessment" | "helpWeightPlanner" | "helpNutritionFaq";
 
 type Topic = { key: TopicKey; icon: typeof UserCircle; isNew?: boolean };
 
@@ -66,6 +66,7 @@ const TOPICS: Record<TopicKey, Topic> = {
   helpRunning: { key: "helpRunning", icon: Footprints, isNew: true },
   helpCompetitions: { key: "helpCompetitions", icon: Trophy, isNew: true },
   helpCoachChecklist: { key: "helpCoachChecklist", icon: ListChecks, isNew: true },
+  helpFormCurve: { key: "helpFormCurve", icon: Activity, isNew: true },
   helpModuleAccess: { key: "helpModuleAccess", icon: LayoutGrid, isNew: true },
   helpSurveys: { key: "helpSurveys", icon: ClipboardList, isNew: true },
   helpTeamTests: { key: "helpTeamTests", icon: Activity, isNew: true },
@@ -94,7 +95,7 @@ const SECTIONS: SectionDef[] = [
     chipBg: "bg-primary",
     chipFg: "text-primary-foreground",
     accent: "bg-primary",
-    topics: ["helpTodayCard", "helpTrainingPlan", "helpSeasonPlan", "helpRunning", "helpPhysicalTesting", "helpCompetitions", "helpMatchAnalysis", "helpMatchReport", "helpProgress"],
+    topics: ["helpTodayCard", "helpTrainingPlan", "helpSeasonPlan", "helpRunning", "helpPhysicalTesting", "helpCompetitions", "helpMatchAnalysis", "helpMatchReport", "helpProgress", "helpFormCurve"],
   },
   {
     id: "health",
@@ -544,6 +545,7 @@ export default function Help() {
 // Build numbers start at v1.0.0 on 2026-05-29 (first build with semantic versioning).
 // MINOR bumps for new features, PATCH bumps for small tweaks/fixes. Older releases left unversioned.
 const CHANGELOG: { dateKey: string; entries: string[]; build?: string }[] = [
+  { dateKey: "changelog_2026_08_26", entries: ["changelogEntry236"], build: "v1.5.54" },
   { dateKey: "changelog_2026_08_25", entries: ["changelogEntry235"], build: "v1.5.53" },
   { dateKey: "changelog_2026_08_25", entries: ["changelogEntry234"], build: "v1.5.52" },
   { dateKey: "changelog_2026_08_25", entries: ["changelogEntry233"], build: "v1.5.51" },
