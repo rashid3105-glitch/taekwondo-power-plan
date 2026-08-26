@@ -102,7 +102,10 @@ export function FormCurveChart({ userId }: FormCurveChartProps) {
   }));
 
   const latest = data[data.length - 1];
-  const atRisk = !!latest?.overtraining_flag;
+  // Multi-club athletes: this club only sees part of the training, so the
+  // overtraining flag would be misleading — hide it and explain instead.
+  const hideRisk = coachView && multiClub;
+  const atRisk = !hideRisk && !!latest?.overtraining_flag;
   const latestForm = latest ? Math.round(latest.composite_score) : 0;
 
   // Find risk windows for visual highlight
