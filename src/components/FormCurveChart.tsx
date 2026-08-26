@@ -7,6 +7,7 @@ import { ResponsiveContainer, ComposedChart, Area, Line, XAxis, YAxis, Cartesian
 import { Activity, AlertTriangle, RefreshCw, Loader2 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 
 interface FormCurveRow {
   user_id: string;
@@ -30,10 +31,16 @@ const COLOR_COMPOSITE = "hsl(280, 70%, 60%)";
 export function FormCurveChart({ userId }: FormCurveChartProps) {
   const { t } = useLanguage();
   const { toast } = useToast();
+  const { activeMembership } = useActiveClub();
   const [data, setData] = useState<FormCurveRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [recomputing, setRecomputing] = useState(false);
   const [resolvedUserId, setResolvedUserId] = useState<string | null>(null);
+  const [multiClub, setMultiClub] = useState(false);
+
+  // Coach view = an explicit athlete id was passed in.
+  const coachView = !!userId;
+  const clubName = activeMembership?.club_name ?? "";
 
   useEffect(() => { void load(); /* eslint-disable-next-line */ }, [userId]);
 
@@ -54,8 +61,18 @@ export function FormCurveChart({ userId }: FormCurveChartProps) {
       .order("week_start", { ascending: true })
       .limit(12);
     setData((rows || []) as FormCurveRow[]);
+
+    if (userId) {
+      const { data: clubCount } = await supabase.rpc("athlete_active_club_count" as any, {
+        _athlete_id: userId,
+      } as any);
+      setMultiClub(typeof clubCount === "number" && clubCount > 1);
+    } else {
+      setMultiClub(false);
+    }
     setLoading(false);
   }
+
 
   async function recompute() {
     if (!resolvedUserId) return;
