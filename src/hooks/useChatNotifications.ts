@@ -93,7 +93,7 @@ export function useChatNotifications() {
               description: msg.body?.slice(0, 120) || "",
               action: {
                 label: t("chatOpen" as any) as string,
-                onClick: () => navigate(`/messages?thread=${msg.thread_id}`),
+                onClick: () => navigate("/messages"),
               },
             });
           },
