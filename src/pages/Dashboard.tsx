@@ -23,6 +23,7 @@ import { AssistantDisclosure } from "@/components/AssistantDisclosure";
 import { Badge } from "@/components/ui/badge";
 import { RehabPlanCard } from "@/components/RehabPlanCard";
 import { MedicalDocumentTranslator } from "@/components/MedicalDocumentTranslator";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useMySportProfile } from "@/hooks/useMySportProfile";
@@ -132,6 +133,7 @@ export default function Dashboard() {
   const [rehabInjury, setRehabInjury] = useState("");
   const [rehabPlan, setRehabPlan] = useState<any>(null);
   const [rehabPlans, setRehabPlans] = useState<RehabPlanRow[]>([]);
+  const [rehabModal, setRehabModal] = useState<RehabPlanRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [nextEvent, setNextEvent] = useState<{ name: string; event_date: string; location: string | null; priority: string } | null>(null);
   const [clubSeason, setClubSeason] = useState<{ plan: any; phases: any[]; template: any[] } | null>(null);
@@ -1227,57 +1229,76 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Rehab plan result */}
-            {rehabPlan && (
+            {/* Rehab plans — compact list, opens in modal */}
+            {rehabPlans.length > 0 && (
               <div className="space-y-2">
-              <AssistantDisclosure />
-              <RehabPlanCard plan={rehabPlan} onDelete={async () => {
-                const activeRP = rehabPlans.find(r => r.is_active);
-                if (activeRP) {
-                  await supabase.from("rehab_plans").delete().eq("id", activeRP.id);
-                  setRehabPlan(null);
-                  loadData();
-                }
-              }} />
+                <AssistantDisclosure variant="short" />
+                <div className="space-y-2">
+                  {[...rehabPlans]
+                    .sort((a, b) => (a.is_active === b.is_active ? 0 : a.is_active ? -1 : 1))
+                    .slice(0, 3)
+                    .map((rp) => (
+                      <div key={rp.id} className="rounded-lg border border-border bg-card text-card-foreground p-3 flex items-center justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="font-medium text-sm text-card-foreground truncate">
+                            {rp.name}
+                            {rp.is_active && (
+                              <span className="ml-2 rounded-full bg-primary/15 text-primary text-[10px] px-2 py-0.5 align-middle">{t("active")}</span>
+                            )}
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {rp.injury_description} · {new Date(rp.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <div className="flex gap-1.5 flex-shrink-0">
+                          <Button variant="outline" size="sm" onClick={() => setRehabModal(rp)}>
+                            {t("rehabOpenPlan")}
+                          </Button>
+                          {!rp.is_active && (
+                            <Button variant="ghost" size="sm" onClick={async () => {
+                              const user = await getCurrentUser();
+                              if (!user) return;
+                              await supabase.from("rehab_plans").update({ is_active: false } as any).eq("user_id", user.id);
+                              await supabase.from("rehab_plans").update({ is_active: true } as any).eq("id", rp.id);
+                              loadData();
+                            }}>
+                              {t("activate")}
+                            </Button>
+                          )}
+                          <Button variant="ghost" size="sm" className="text-destructive" onClick={async () => {
+                            await supabase.from("rehab_plans").delete().eq("id", rp.id);
+                            if (rp.is_active) setRehabPlan(null);
+                            loadData();
+                          }}>
+                            {t("delete")}
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+                {rehabPlans.length > 3 && (
+                  <p className="text-[11px] text-muted-foreground">{t("rehabPlansLimitNote")}</p>
+                )}
               </div>
             )}
 
             {/* Medical document translator */}
             <MedicalDocumentTranslator />
 
-            {/* Previous rehab plans */}
-            {rehabPlans.filter(p => !p.is_active).length > 0 && (
-              <div>
-                <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">{t("previousRehabPlans")}</h3>
-                <div className="space-y-3">
-                  {rehabPlans.filter(p => !p.is_active).map((rp) => (
-                    <div key={rp.id} className="rounded-lg border border-border bg-card/50 text-card-foreground p-4 flex items-center justify-between">
-                      <div>
-                        <p className="font-medium text-sm text-card-foreground">{rp.name}</p>
-                        <p className="text-xs text-muted-foreground">{rp.injury_description} · {new Date(rp.created_at).toLocaleDateString()}</p>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm" onClick={async () => {
-                          const user = await getCurrentUser();
-                          if (!user) return;
-                          await supabase.from("rehab_plans").update({ is_active: false } as any).eq("user_id", user.id);
-                          await supabase.from("rehab_plans").update({ is_active: true } as any).eq("id", rp.id);
-                          loadData();
-                        }}>
-                          {t("activate")}
-                        </Button>
-                        <Button variant="ghost" size="sm" className="text-destructive" onClick={async () => {
-                          await supabase.from("rehab_plans").delete().eq("id", rp.id);
-                          loadData();
-                        }}>
-                          {t("delete")}
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            <Dialog open={!!rehabModal} onOpenChange={(o) => !o && setRehabModal(null)}>
+              <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>{rehabModal?.name}</DialogTitle>
+                </DialogHeader>
+                {rehabModal && (
+                  <div className="space-y-3">
+                    <AssistantDisclosure variant="short" />
+                    <RehabPlanCard plan={rehabModal.plan_data} />
+                  </div>
+                )}
+              </DialogContent>
+            </Dialog>
+
           </>
           )}</>
         ) : (

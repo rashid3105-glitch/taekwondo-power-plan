@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
-import { FileText, Upload, Loader2, Copy, X, AlertTriangle, Stethoscope } from "lucide-react";
+import { FileText, Upload, Loader2, Copy, X, AlertTriangle, Stethoscope, Download } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -52,6 +53,7 @@ export function MedicalDocumentTranslator() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<TranslationResult | null>(null);
   const [tab, setTab] = useState<"text" | "file">("text");
+  const [resultOpen, setResultOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -112,6 +114,7 @@ export function MedicalDocumentTranslator() {
         return;
       }
       setResult(data.result);
+      setResultOpen(true);
       haptics.success();
     } catch (e: any) {
       toast.error(e?.message || t("error"));
@@ -121,10 +124,67 @@ export function MedicalDocumentTranslator() {
   };
 
   const handleClear = () => {
+    setResultOpen(false);
     setResult(null);
     setText("");
     setFile(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!result) return;
+    const { jsPDF } = await import("jspdf");
+    const doc = new jsPDF({ unit: "pt", format: "a4" });
+    const margin = 48;
+    const width = doc.internal.pageSize.getWidth() - margin * 2;
+    const bottom = doc.internal.pageSize.getHeight() - margin;
+    let y = margin;
+    const ensure = (h: number) => { if (y + h > bottom) { doc.addPage(); y = margin; } };
+    const heading = (txt: string) => {
+      ensure(28);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.text(txt, margin, y);
+      y += 16;
+    };
+    const body = (txt: string) => {
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      for (const line of doc.splitTextToSize(txt, width)) {
+        ensure(14);
+        doc.text(line, margin, y);
+        y += 14;
+      }
+      y += 6;
+    };
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.text(t("medDocTitle"), margin, y);
+    y += 24;
+
+    heading(t("medDocSummary"));
+    body(result.summary);
+
+    if (result.keyFindings.length > 0) {
+      heading(t("medDocKeyFindings"));
+      result.keyFindings.forEach((f) => body(`• ${f.term}: ${f.explanation}`));
+    }
+    if (result.trainingImplications) {
+      heading(t("medDocTrainingImplications"));
+      body(result.trainingImplications);
+    }
+    if (result.questionsForDoctor.length > 0) {
+      heading(t("medDocQuestionsForDoctor"));
+      result.questionsForDoctor.forEach((q) => body(`• ${q}`));
+    }
+
+    ensure(40);
+    doc.setFontSize(8);
+    doc.setTextColor(130);
+    doc.text(doc.splitTextToSize(t("medDocDisclaimer"), width), margin, y);
+    doc.setTextColor(0);
+    doc.save("medical-document-summary.pdf");
   };
 
   const handleCopy = async () => {
@@ -236,67 +296,98 @@ export function MedicalDocumentTranslator() {
       )}
 
       {result && (
-        <div className="space-y-4">
-          <div className="space-y-1">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              {t("medDocSummary")}
-            </h4>
-            <p className="text-sm text-card-foreground leading-relaxed">{result.summary}</p>
+        <div className="rounded-lg border border-border bg-muted/30 p-3 flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-card-foreground">{t("medDocResultReady")}</p>
+            <p className="text-xs text-muted-foreground truncate">{result.summary}</p>
           </div>
-
-          {result.keyFindings.length > 0 && (
-            <div className="space-y-2">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                {t("medDocKeyFindings")}
-              </h4>
-              <ul className="space-y-2">
-                {result.keyFindings.map((f, i) => (
-                  <li key={i} className="rounded-md border border-border bg-muted/30 p-2.5">
-                    <p className="text-sm font-semibold text-card-foreground">{f.term}</p>
-                    <p className="text-sm text-muted-foreground mt-0.5">{f.explanation}</p>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {result.trainingImplications && (
-            <div className="space-y-1">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                {t("medDocTrainingImplications")}
-              </h4>
-              <p className="text-sm text-card-foreground leading-relaxed">{result.trainingImplications}</p>
-            </div>
-          )}
-
-          {result.questionsForDoctor.length > 0 && (
-            <div className="space-y-1">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                {t("medDocQuestionsForDoctor")}
-              </h4>
-              <ul className="space-y-1.5 text-sm text-card-foreground list-disc pl-5">
-                {result.questionsForDoctor.map((q, i) => (
-                  <li key={i}>{q}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          <div className="rounded-md border border-amber-500/40 bg-amber-500/15 p-2.5 flex gap-2">
-            <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-            <p className="text-xs text-amber-900 dark:text-amber-100">{t("medDocDisclaimer")}</p>
-          </div>
-
-          <div className="flex gap-2">
-            <Button onClick={handleCopy} variant="outline" size="sm" className="flex-1">
-              <Copy className="h-4 w-4 mr-1.5" /> {t("medDocCopy")}
+          <div className="flex gap-1.5 flex-shrink-0">
+            <Button size="sm" variant="outline" onClick={() => setResultOpen(true)}>
+              {t("medDocOpenResult")}
             </Button>
-            <Button onClick={handleClear} variant="ghost" size="sm" className="flex-1">
-              <X className="h-4 w-4 mr-1.5" /> {t("medDocClear")}
+            <Button size="sm" variant="ghost" onClick={handleClear}>
+              <X className="h-4 w-4" />
             </Button>
           </div>
         </div>
       )}
+
+      <Dialog open={resultOpen && !!result} onOpenChange={setResultOpen}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Stethoscope className="h-5 w-5 text-tab-rehab" />
+              {t("medDocTitle")}
+            </DialogTitle>
+          </DialogHeader>
+          {result && (
+            <div className="space-y-4">
+              <div className="space-y-1">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  {t("medDocSummary")}
+                </h4>
+                <p className="text-sm text-card-foreground leading-relaxed">{result.summary}</p>
+              </div>
+
+              {result.keyFindings.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    {t("medDocKeyFindings")}
+                  </h4>
+                  <ul className="space-y-2">
+                    {result.keyFindings.map((f, i) => (
+                      <li key={i} className="rounded-md border border-border bg-muted/30 p-2.5">
+                        <p className="text-sm font-semibold text-card-foreground">{f.term}</p>
+                        <p className="text-sm text-muted-foreground mt-0.5">{f.explanation}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {result.trainingImplications && (
+                <div className="space-y-1">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    {t("medDocTrainingImplications")}
+                  </h4>
+                  <p className="text-sm text-card-foreground leading-relaxed">{result.trainingImplications}</p>
+                </div>
+              )}
+
+              {result.questionsForDoctor.length > 0 && (
+                <div className="space-y-1">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    {t("medDocQuestionsForDoctor")}
+                  </h4>
+                  <ul className="space-y-1.5 text-sm text-card-foreground list-disc pl-5">
+                    {result.questionsForDoctor.map((q, i) => (
+                      <li key={i}>{q}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <div className="rounded-md border border-amber-500/40 bg-amber-500/15 p-2.5 flex gap-2">
+                <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                <p className="text-xs text-amber-900 dark:text-amber-100">{t("medDocDisclaimer")}</p>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <Button onClick={handleDownloadPdf} size="sm" className="flex-1 min-w-[140px]">
+                  <Download className="h-4 w-4 mr-1.5" /> {t("medDocDownloadPdf")}
+                </Button>
+                <Button onClick={handleCopy} variant="outline" size="sm" className="flex-1 min-w-[120px]">
+                  <Copy className="h-4 w-4 mr-1.5" /> {t("medDocCopy")}
+                </Button>
+                <Button onClick={handleClear} variant="ghost" size="sm" className="flex-1 min-w-[120px]">
+                  <X className="h-4 w-4 mr-1.5" /> {t("medDocClear")}
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 }
