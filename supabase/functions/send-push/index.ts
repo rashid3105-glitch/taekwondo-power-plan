@@ -100,25 +100,40 @@ Deno.serve(async (req) => {
     if (targets.length === 0) return json({ sent: 0, reason: "opted_out" });
 
     const { data: subs } = await supa.from("push_subscriptions")
-      .select("id, fcm_token")
+      .select("id, fcm_token, endpoint, p256dh, auth")
       .in("user_id", targets)
-      .eq("is_active", true)
-      .not("fcm_token", "is", null);
-    if (!subs?.length) return json({ sent: 0, reason: "no_tokens" });
-
-    const { token: accessToken, projectId } = await getFcmAccessToken();
+      .eq("is_active", true);
+    const fcmSubs = (subs || []).filter((s: any) => !!s.fcm_token);
+    const webSubs = (subs || []).filter((s: any) => !s.fcm_token && s.endpoint && s.p256dh && s.auth);
+    if (!fcmSubs.length && !webSubs.length) return json({ sent: 0, reason: "no_tokens" });
 
     let sent = 0;
     const dead: string[] = [];
-    await Promise.all(subs.map(async (s: any) => {
-      const r = await sendFcmMessage({
-        accessToken, projectId, token: s.fcm_token,
-        title, body, data, url,
-      });
-      if (r.ok) sent++;
-      else if (r.unregistered) dead.push(s.id);
-      else console.error("fcm send error", { id: s.id, err: r.error });
-    }));
+
+    if (fcmSubs.length) {
+      const { token: accessToken, projectId } = await getFcmAccessToken();
+      await Promise.all(fcmSubs.map(async (s: any) => {
+        const r = await sendFcmMessage({
+          accessToken, projectId, token: s.fcm_token,
+          title, body, data, url,
+        });
+        if (r.ok) sent++;
+        else if (r.unregistered) dead.push(s.id);
+        else console.error("fcm send error", { id: s.id, err: r.error });
+      }));
+    }
+
+    if (webSubs.length) {
+      await Promise.all(webSubs.map(async (s: any) => {
+        const r = await sendWebPush(
+          { endpoint: s.endpoint, p256dh: s.p256dh, auth: s.auth },
+          { title, body, url, data, tag: data?.type },
+        );
+        if (r.ok) sent++;
+        else if (r.gone) dead.push(s.id);
+        else console.error("webpush send error", { id: s.id, err: r.error });
+      }));
+    }
 
     if (dead.length) {
       await supa.from("push_subscriptions")
@@ -126,7 +141,8 @@ Deno.serve(async (req) => {
         .in("id", dead);
     }
 
-    return json({ sent, deactivated: dead.length });
+    return json({ sent, deactivated: dead.length, fcm: fcmSubs.length, web: webSubs.length });
+
   } catch (e) {
     console.error("send-push error", e);
     return json({ error: (e as Error).message || "server_error" }, 500);
