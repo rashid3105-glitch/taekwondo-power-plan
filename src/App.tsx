@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
+import { useChatNotifications } from "@/hooks/useChatNotifications";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -320,6 +321,11 @@ const AnimatedRoutes = () => {
   );
 };
 
+const ChatNotifications = () => {
+  useChatNotifications();
+  return null;
+};
+
 const App = () => {
   // Splash is a native-app affordance only. On the web it covered the page for
   // ~3s and made the landing pages feel unscrollable.
@@ -341,6 +347,7 @@ const App = () => {
                 <CoachModeProvider>
                   <ClubThemeProvider>
                     <ThemeSync />
+                    <ChatNotifications />
                     <OfflineBanner />
                     <ConsentGate>
                       <AnimatedRoutes />

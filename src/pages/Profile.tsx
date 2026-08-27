@@ -11,7 +11,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { LogOut, Pencil, Download, KeyRound, Trash2, ChevronLeft, Apple, Smartphone, ShieldOff, Bell, Shield } from "lucide-react";
+import { LogOut, Pencil, Download, KeyRound, Trash2, ChevronLeft, Apple, Smartphone, ShieldOff, Bell, Shield, Volume2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { PageMeta } from "@/components/PageMeta";
 import { AppFooter } from "@/components/AppFooter";
@@ -96,6 +96,9 @@ export default function Profile() {
   const [hasCoach, setHasCoach] = useState(false);
   const [loading, setLoading] = useState(true);
   const [pushEnabled, setPushEnabled] = useState<boolean>(true);
+  const [chatToast, setChatToast] = useState<boolean>(true);
+  const [chatSound, setChatSound] = useState<boolean>(true);
+  const [chatSaving, setChatSaving] = useState(false);
   const [pushSaving, setPushSaving] = useState(false);
   const [mfaEnabled, setMfaEnabled] = useState(false);
   const [antidopingDraft, setAntidopingDraft] = useState("");
@@ -115,10 +118,12 @@ export default function Profile() {
       }
       const { data: prof } = await supabase
         .from("profiles")
-        .select("display_name, avatar_url, discipline, club_id, coach_club_name, roles, birth_date, belt_level, weight_kg, goals, license_values, antidoping_course_date, country, push_enabled, clubs:club_id(name)")
+        .select("display_name, avatar_url, discipline, club_id, coach_club_name, roles, birth_date, belt_level, weight_kg, goals, license_values, antidoping_course_date, country, push_enabled, chat_toast_enabled, chat_sound_enabled, clubs:club_id(name)")
         .eq("user_id", user.id)
         .maybeSingle();
       setPushEnabled((prof as any)?.push_enabled !== false);
+      setChatToast((prof as any)?.chat_toast_enabled !== false);
+      setChatSound((prof as any)?.chat_sound_enabled !== false);
 
       const { data: ca } = await supabase
         .from("coach_athletes")
@@ -238,6 +243,34 @@ export default function Profile() {
       toast.error(e?.message || t("error"));
     } finally {
       setPushSaving(false);
+    }
+  };
+
+  const handleToggleChatPref = async (
+    column: "chat_toast_enabled" | "chat_sound_enabled",
+    next: boolean,
+  ) => {
+    const setter = column === "chat_toast_enabled" ? setChatToast : setChatSound;
+    const prev = column === "chat_toast_enabled" ? chatToast : chatSound;
+    setChatSaving(true);
+    setter(next);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("no user");
+      const { error } = await supabase
+        .from("profiles")
+        .update(
+          column === "chat_toast_enabled"
+            ? { chat_toast_enabled: next }
+            : { chat_sound_enabled: next },
+        )
+        .eq("user_id", user.id);
+      if (error) throw error;
+    } catch (e: any) {
+      setter(prev);
+      toast.error(e?.message || t("error"));
+    } finally {
+      setChatSaving(false);
     }
   };
 
@@ -605,6 +638,36 @@ export default function Profile() {
               </div>
           </>
         )}
+        <Separator className="bg-white/10" />
+        <div className="flex items-center justify-between py-3 px-1 gap-3">
+          <div className="flex items-start gap-3 min-w-0">
+            <Bell className="h-4 w-4 mt-0.5 shrink-0 text-white/70" />
+            <div className="min-w-0">
+              <div className="text-sm text-white">{t("profileChatToastTitle" as any)}</div>
+              <div className="text-xs text-white/60">{t("profileChatToastSub" as any)}</div>
+            </div>
+          </div>
+          <Switch
+            checked={chatToast}
+            disabled={chatSaving}
+            onCheckedChange={(v) => handleToggleChatPref("chat_toast_enabled", v)}
+          />
+        </div>
+        <Separator className="bg-white/10" />
+        <div className="flex items-center justify-between py-3 px-1 gap-3">
+          <div className="flex items-start gap-3 min-w-0">
+            <Volume2 className="h-4 w-4 mt-0.5 shrink-0 text-white/70" />
+            <div className="min-w-0">
+              <div className="text-sm text-white">{t("profileChatSoundTitle" as any)}</div>
+              <div className="text-xs text-white/60">{t("profileChatSoundSub" as any)}</div>
+            </div>
+          </div>
+          <Switch
+            checked={chatSound}
+            disabled={chatSaving}
+            onCheckedChange={(v) => handleToggleChatPref("chat_sound_enabled", v)}
+          />
+        </div>
         <Separator className="bg-white/10" />
         <ActionRow
           icon={<Shield className="h-4 w-4" />}

@@ -2708,6 +2708,8 @@ export type Database = {
           avatar_url: string | null
           belt_level: string
           birth_date: string | null
+          chat_sound_enabled: boolean
+          chat_toast_enabled: boolean
           club_id: string | null
           coach_athlete_count_band: string | null
           coach_club_name: string | null
@@ -2770,6 +2772,8 @@ export type Database = {
           avatar_url?: string | null
           belt_level?: string
           birth_date?: string | null
+          chat_sound_enabled?: boolean
+          chat_toast_enabled?: boolean
           club_id?: string | null
           coach_athlete_count_band?: string | null
           coach_club_name?: string | null
@@ -2832,6 +2836,8 @@ export type Database = {
           avatar_url?: string | null
           belt_level?: string
           birth_date?: string | null
+          chat_sound_enabled?: boolean
+          chat_toast_enabled?: boolean
           club_id?: string | null
           coach_athlete_count_band?: string | null
           coach_club_name?: string | null
