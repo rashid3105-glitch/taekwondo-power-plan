@@ -259,7 +259,11 @@ export default function Profile() {
       if (!user) throw new Error("no user");
       const { error } = await supabase
         .from("profiles")
-        .update({ [column]: next })
+        .update(
+          column === "chat_toast_enabled"
+            ? { chat_toast_enabled: next }
+            : { chat_sound_enabled: next },
+        )
         .eq("user_id", user.id);
       if (error) throw error;
     } catch (e: any) {
