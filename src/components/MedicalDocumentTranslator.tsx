@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
-import { FileText, Upload, Loader2, Copy, X, AlertTriangle, Stethoscope } from "lucide-react";
+import { FileText, Upload, Loader2, Copy, X, AlertTriangle, Stethoscope, Download } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -52,6 +53,7 @@ export function MedicalDocumentTranslator() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<TranslationResult | null>(null);
   const [tab, setTab] = useState<"text" | "file">("text");
+  const [resultOpen, setResultOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -112,6 +114,7 @@ export function MedicalDocumentTranslator() {
         return;
       }
       setResult(data.result);
+      setResultOpen(true);
       haptics.success();
     } catch (e: any) {
       toast.error(e?.message || t("error"));
@@ -121,10 +124,67 @@ export function MedicalDocumentTranslator() {
   };
 
   const handleClear = () => {
+    setResultOpen(false);
     setResult(null);
     setText("");
     setFile(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!result) return;
+    const { jsPDF } = await import("jspdf");
+    const doc = new jsPDF({ unit: "pt", format: "a4" });
+    const margin = 48;
+    const width = doc.internal.pageSize.getWidth() - margin * 2;
+    const bottom = doc.internal.pageSize.getHeight() - margin;
+    let y = margin;
+    const ensure = (h: number) => { if (y + h > bottom) { doc.addPage(); y = margin; } };
+    const heading = (txt: string) => {
+      ensure(28);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.text(txt, margin, y);
+      y += 16;
+    };
+    const body = (txt: string) => {
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      for (const line of doc.splitTextToSize(txt, width)) {
+        ensure(14);
+        doc.text(line, margin, y);
+        y += 14;
+      }
+      y += 6;
+    };
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.text(t("medDocTitle"), margin, y);
+    y += 24;
+
+    heading(t("medDocSummary"));
+    body(result.summary);
+
+    if (result.keyFindings.length > 0) {
+      heading(t("medDocKeyFindings"));
+      result.keyFindings.forEach((f) => body(`• ${f.term}: ${f.explanation}`));
+    }
+    if (result.trainingImplications) {
+      heading(t("medDocTrainingImplications"));
+      body(result.trainingImplications);
+    }
+    if (result.questionsForDoctor.length > 0) {
+      heading(t("medDocQuestionsForDoctor"));
+      result.questionsForDoctor.forEach((q) => body(`• ${q}`));
+    }
+
+    ensure(40);
+    doc.setFontSize(8);
+    doc.setTextColor(130);
+    doc.text(doc.splitTextToSize(t("medDocDisclaimer"), width), margin, y);
+    doc.setTextColor(0);
+    doc.save("medical-document-summary.pdf");
   };
 
   const handleCopy = async () => {
