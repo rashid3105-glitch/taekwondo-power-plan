@@ -23,6 +23,7 @@ import { AssistantDisclosure } from "@/components/AssistantDisclosure";
 import { Badge } from "@/components/ui/badge";
 import { RehabPlanCard } from "@/components/RehabPlanCard";
 import { MedicalDocumentTranslator } from "@/components/MedicalDocumentTranslator";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useMySportProfile } from "@/hooks/useMySportProfile";
@@ -132,6 +133,7 @@ export default function Dashboard() {
   const [rehabInjury, setRehabInjury] = useState("");
   const [rehabPlan, setRehabPlan] = useState<any>(null);
   const [rehabPlans, setRehabPlans] = useState<RehabPlanRow[]>([]);
+  const [rehabModal, setRehabModal] = useState<RehabPlanRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [nextEvent, setNextEvent] = useState<{ name: string; event_date: string; location: string | null; priority: string } | null>(null);
   const [clubSeason, setClubSeason] = useState<{ plan: any; phases: any[]; template: any[] } | null>(null);
