@@ -230,7 +230,7 @@ export function SquadOverview({
       });
     }
     if (isTkd && beltFilter !== "all") out = out.filter((r) => r.belt_level === beltFilter);
-    if (teamFilter !== "all" && teamMembers[teamFilter]) {
+    if (teamFilter !== "all" && teams.some((tm) => tm.id === teamFilter)) {
       const ids = new Set(teamMembers[teamFilter] ?? []);
       out = out.filter((r) => ids.has(r.user_id));
     }
