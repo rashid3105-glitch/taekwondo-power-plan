@@ -117,12 +117,13 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
 
   const memberMap = new Map(members.map((m) => [m.user_id, m]));
 
-  return (
+return (
     <div className={cn("relative flex flex-col h-full bg-background min-h-0 pointer-events-auto touch-manipulation", variant === "floating" && "bg-card")}>
+      {/* Compact header */}
       <div
         className={cn(
-          "sticky top-0 z-10 flex items-center gap-3 border-b border-border bg-card px-3 py-2.5",
-          variant === "floating" && "px-4 py-3"
+          "sticky top-0 z-10 flex items-center gap-2.5 border-b border-border/60 bg-card px-2.5 py-2",
+          variant === "floating" && "px-3 py-2.5"
         )}
       >
         {onBack && (
@@ -136,19 +137,23 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
           </button>
         )}
         {thread.kind === "group" ? (
-          <div className="h-10 w-10 rounded-full bg-muted border border-primary/40 flex items-center justify-center shrink-0">
-            <Users className="h-4 w-4 text-primary" />
+          <div className="h-9 w-9 rounded-full bg-muted border border-gold/50 flex items-center justify-center shrink-0">
+            <Users className="h-4 w-4 text-gold" />
           </div>
         ) : (
-          <AvatarImg avatarUrl={headerAvatar} className="h-10 w-10 rounded-full object-cover border border-primary/40 shrink-0" />
+          <div className="relative shrink-0">
+            <AvatarImg avatarUrl={headerAvatar} className="h-9 w-9 rounded-full object-cover border-2 border-gold shrink-0" />
+            {/* Online status dot */}
+            <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-400 border-2 border-card" />
+          </div>
         )}
         <div
           className={cn("flex-1 min-w-0", thread.kind === "group" && "cursor-pointer")}
           onClick={() => thread.kind === "group" && setMembersOpen(true)}
         >
           <div className="text-sm font-semibold tracking-tight truncate">{headerTitle}</div>
-          <div className="text-[10px] font-medium uppercase tracking-widest text-primary truncate">
-            {thread.kind === "group" ? `${members.length} medlemmer` : "Samtale"}
+          <div className="text-[10px] font-medium text-gold truncate">
+            {thread.kind === "group" ? `${members.length} medlemmer` : "Aktiv nu"}
           </div>
         </div>
         {thread.kind === "group" && (
@@ -156,7 +161,7 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
             onClick={() => setAddOpen(true)}
             aria-label="Tilføj personer"
             title="Tilføj personer"
-            className="p-2 text-muted-foreground hover:text-primary transition-colors shrink-0"
+            className="p-2 text-muted-foreground hover:text-gold transition-colors shrink-0"
           >
             <UserPlus className="h-4 w-4" />
           </button>
@@ -166,7 +171,7 @@ export function Conversation({ thread, onBack, onExit, variant = "pane" }: Props
             onClick={onExit}
             aria-label="Luk chat"
             title="Luk chat"
-            className="shrink-0 flex items-center gap-1.5 rounded-lg border border-primary/30 px-3 py-1.5 text-primary hover:bg-primary/10 transition-colors"
+            className="shrink-0 flex items-center gap-1 rounded-lg border border-gold/40 px-2.5 py-1.5 text-gold hover:bg-gold/10 transition-colors"
           >
             <span className="text-[11px] font-bold uppercase tracking-tight">Luk</span>
             <X className="h-3 w-3" />
