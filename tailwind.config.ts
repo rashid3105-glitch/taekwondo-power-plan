@@ -58,6 +58,11 @@ export default {
           input: "hsl(var(--video-analysis-input))",
           "input-foreground": "hsl(var(--video-analysis-input-foreground))",
         },
+gold: {
+          DEFAULT: "var(--gold)",
+          light: "var(--gold-light)",
+          dark: "var(--gold-dark)",
+        },
         energy: "hsl(var(--energy))",
         power: "hsl(var(--power))",
         speed: "hsl(var(--speed))",
