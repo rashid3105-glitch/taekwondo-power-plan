@@ -80,20 +80,25 @@ export function ThreadList({ threads, selectedId, onSelect, loading, onRefresh }
               onSelect(t);
             }
           }}
-          className={cn(
+className={cn(
             "w-full flex items-center gap-3 px-3 py-3 pr-10 border-b border-border text-left hover:bg-muted/50 transition cursor-pointer",
-            selectedId === t.id && "bg-muted",
+            selectedId === t.id && "bg-muted/70",
           )}
         >
           {t.kind === "group" ? (
-            <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center shrink-0">
-              <Users className="h-5 w-5 text-muted-foreground" />
+            <div className="h-10 w-10 rounded-full bg-muted border border-gold/40 flex items-center justify-center shrink-0">
+              <Users className="h-5 w-5 text-gold" />
             </div>
           ) : (
-            <AvatarImg
-              avatarUrl={other?.avatar_url}
-              className="h-10 w-10 rounded-full object-cover shrink-0"
-            />
+            <div className="relative shrink-0">
+              <AvatarImg
+                avatarUrl={other?.avatar_url}
+                className="h-10 w-10 rounded-full object-cover border border-gold/30 shrink-0"
+              />
+              {unread > 0 && !archived && (
+                <span className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full bg-gold border-2 border-card" />
+              )}
+            </div>
           )}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
@@ -101,7 +106,7 @@ export function ThreadList({ threads, selectedId, onSelect, loading, onRefresh }
                 {title}
               </span>
               {unread > 0 && !archived && (
-                <span className="bg-primary text-primary-foreground text-[10px] font-bold rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center">
+                <span className="bg-gold text-gold-dark text-[10px] font-bold rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center">
                   {unread}
                 </span>
               )}

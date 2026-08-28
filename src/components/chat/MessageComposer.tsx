@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { Send, Image, X, Mic, MicOff, Smile } from "lucide-react";
 
 import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { sendMessage, MAX_ATTACHMENT_BYTES, type ChatMessage } from "@/lib/chatApi";
 import { cn } from "@/lib/utils";
@@ -87,8 +88,8 @@ export function MessageComposer({ threadId, onSent }: Props) {
     }
   };
 
-  return (
-    <div className="border-t border-border bg-card p-3 pb-nav-safe relative">
+return (
+    <div className="border-t border-border/60 bg-card/95 backdrop-blur px-3 pt-2.5 pb-nav-safe">
       {file && (
         <div className="flex items-center gap-2 mb-2 text-xs bg-muted rounded-md px-2 py-1">
           <Image className="h-3 w-3" />
@@ -99,7 +100,8 @@ export function MessageComposer({ threadId, onSent }: Props) {
           </button>
         </div>
       )}
-      <div className="flex items-end gap-1 rounded-2xl border border-border bg-background p-1.5 focus-within:border-primary/50 transition-colors">
+      {/* Unified rounded composer bar */}
+      <div className="flex items-end gap-1 rounded-2xl bg-card border border-border/70 shadow-[0_2px_12px_rgba(0,0,0,0.08)] p-1.5 focus-within:border-gold/60 transition-colors">
         <input
           ref={fileRef}
           type="file"
@@ -108,39 +110,45 @@ export function MessageComposer({ threadId, onSent }: Props) {
           onChange={(e) => handleFile(e.target.files?.[0] ?? null)}
         />
         {/* Image attach */}
-        <button
+        <Button
           type="button"
-          className="h-9 w-9 shrink-0 flex items-center justify-center rounded-lg text-muted-foreground hover:text-primary transition-colors"
+          variant="ghost"
+          size="icon"
+          className="h-9 w-9 shrink-0 rounded-lg text-muted-foreground hover:text-gold hover:bg-gold/10"
           onClick={() => fileRef.current?.click()}
           aria-label={t("iconHintAttachImage")} title={t("iconHintAttachImage")}
         >
           <Image className="h-5 w-5" />
-        </button>
+        </Button>
         {/* Mic — voice to text */}
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="icon"
           className={cn(
-            "h-9 w-9 shrink-0 flex items-center justify-center rounded-lg transition-colors",
+            "h-9 w-9 shrink-0 rounded-lg transition-colors",
             recording
-              ? "text-destructive animate-pulse"
-              : "text-muted-foreground hover:text-primary"
+              ? "text-destructive animate-pulse bg-destructive/10"
+              : "text-muted-foreground hover:text-gold hover:bg-gold/10"
           )}
           onClick={toggleRecording}
           aria-label={recording ? t("iconHintStopRecording") : t("iconHintVoiceRecord")} title={recording ? t("iconHintStopRecording") : t("iconHintVoiceRecord")}
         >
           {recording ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
-        </button>
+        </Button>
         {/* Emoji picker toggle */}
-        <button
+        <Button
           type="button"
-          className="h-9 w-9 shrink-0 flex items-center justify-center rounded-lg text-muted-foreground hover:text-primary transition-colors"
+          variant="ghost"
+          size="icon"
+          className="h-9 w-9 shrink-0 rounded-lg text-muted-foreground hover:text-gold hover:bg-gold/10"
           onClick={() => setShowEmoji((s) => !s)}
           aria-label={t("iconHintEmoji")} title={t("iconHintEmoji")}
         >
           <Smile className="h-5 w-5" />
-        </button>
+        </Button>
         {showEmoji && (
-          <div className="absolute bottom-16 left-2 z-20 flex flex-wrap gap-1 p-2 bg-card border border-border rounded-lg shadow-lg max-w-[260px]">
+          <div className="absolute bottom-20 left-2 z-20 flex flex-wrap gap-1 p-2 bg-card border border-border rounded-xl shadow-lg max-w-[260px]">
             {EMOJIS.map((e) => (
               <button
                 key={e}
@@ -162,7 +170,7 @@ export function MessageComposer({ threadId, onSent }: Props) {
           placeholder={recording ? "Optager…" : "Skriv en besked…"}
           rows={1}
           maxLength={2000}
-          className="min-h-[36px] max-h-32 flex-1 resize-none border-0 bg-transparent px-2 py-2 text-base leading-snug shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
+          className="min-h-[38px] max-h-32 flex-1 resize-none border-0 bg-transparent px-1 py-2.5 text-base leading-snug shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
@@ -170,16 +178,21 @@ export function MessageComposer({ threadId, onSent }: Props) {
             }
           }}
         />
-        {/* Send */}
-        <button
+        {/* Send — gold */}
+        <Button
           type="button"
-          className="h-10 w-10 shrink-0 flex items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-[0_2px_8px_hsl(var(--primary)/0.25)] transition-transform active:scale-95 disabled:opacity-40 disabled:shadow-none"
+          variant="ghost"
+          className="h-10 w-10 shrink-0 flex items-center justify-center rounded-xl bg-gold text-gold-dark shadow-[0_2px_10px_rgba(212,175,55,0.35)] hover:bg-gold-light transition-transform active:scale-95 disabled:opacity-40 disabled:shadow-none disabled:hover:bg-gold"
           onClick={send}
           disabled={sending || (!body.trim() && !file)}
           aria-label={t("iconHintSend")} title={t("iconHintSend")}
         >
-          <Send className="h-4 w-4" />
-        </button>
+          {sending ? (
+            <span className="h-4 w-4 rounded-full border-2 border-gold-dark/30 border-t-gold-dark animate-spin" />
+          ) : (
+            <Send className="h-4 w-4" />
+          )}
+        </Button>
       </div>
     </div>
   );
