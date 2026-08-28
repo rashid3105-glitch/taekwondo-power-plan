@@ -209,9 +209,9 @@ return (
               const partner = members.find((p) => p.user_id !== meId);
               return (
                 <div key={m.id}>
-                  {dayChanged && (
-                    <div className="flex justify-center py-3">
-                      <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground/70">
+{dayChanged && (
+                    <div className="flex justify-center py-2.5">
+                      <span className="px-3 py-1 rounded-full bg-card border border-border/60 text-[10px] font-medium uppercase tracking-[0.15em] text-muted-foreground">
                         {dayLabel(m.created_at)}
                       </span>
                     </div>
