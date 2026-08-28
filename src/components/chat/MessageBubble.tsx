@@ -104,10 +104,10 @@ export function MessageBubble({
     setEditing(false);
   };
 
-  return (
+return (
     <div className={cn("flex flex-col mb-3 group max-w-[85%]", isOwn ? "items-end ml-auto" : "items-start mr-auto")}>
       {showSender && !isOwn && senderName && (
-        <span className="text-[10px] text-muted-foreground ml-2 mb-0.5">{senderName}</span>
+        <span className="text-[10px] text-muted-foreground ml-2 mb-1">{senderName}</span>
       )}
 
       {editing ? (
@@ -122,16 +122,16 @@ export function MessageBubble({
             <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditing(false)} aria-label="Cancel" title="Cancel">
               <X className="h-3.5 w-3.5" />
             </Button>
-            <Button size="icon" className="h-7 w-7" onClick={confirmEdit} aria-label="Save" title="Save">
+            <Button size="icon" className="h-7 w-7 bg-gold hover:bg-gold-light text-gold-dark" onClick={confirmEdit} aria-label="Save" title="Save">
               <Check className="h-3.5 w-3.5" />
             </Button>
           </div>
         </div>
       ) : (
         <div className="flex items-end gap-1.5">
-          {/* Avatar for other people's messages */}
+          {/* Avatar for other people's messages — small, refined */}
           {!isOwn && (
-            <div className="h-7 w-7 rounded-full flex-shrink-0 overflow-hidden bg-muted flex items-center justify-center text-[10px] font-semibold text-muted-foreground self-end mb-0.5">
+            <div className="h-7 w-7 rounded-full flex-shrink-0 overflow-hidden bg-muted flex items-center justify-center text-[10px] font-semibold text-muted-foreground self-end mb-0.5 ring-1 ring-border">
             {senderAvatarSigned && !avatarError ? (
               <img
                 src={senderAvatarSigned}
@@ -144,6 +144,7 @@ export function MessageBubble({
             )}
             </div>
           )}
+          {/* Actions — own messages only */}
           {isOwn && (onEdit || onDelete) && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -175,10 +176,10 @@ export function MessageBubble({
           )}
           <div
             className={cn(
-              "relative rounded-2xl px-4 py-2.5 text-[13px] leading-relaxed break-words",
+              "relative rounded-2xl px-4 py-2.5 text-[14px] leading-relaxed break-words font-medium",
               isOwn
-                ? "bg-primary text-primary-foreground rounded-tr-sm shadow-[0_4px_12px_hsl(var(--primary)/0.15)]"
-                : "bg-card text-foreground border border-border rounded-tl-sm",
+                ? "bg-gold text-gold-dark rounded-br-sm shadow-[0_4px_16px_rgba(212,175,55,0.18)]"
+                : "bg-card text-foreground border border-border/60 rounded-bl-sm",
             )}
 
             onTouchStart={handleTouchStart}
@@ -216,8 +217,9 @@ export function MessageBubble({
         </div>
       )}
 
+      {/* Reactions — refined gold-tinted pills */}
       {reactions && reactions.length > 0 && (
-        <div className={cn("flex flex-wrap gap-1 mt-0.5", isOwn ? "justify-end" : "justify-start")}>
+        <div className={cn("flex flex-wrap gap-1 mt-1", isOwn ? "justify-end" : "justify-start")}>
           {reactions.map((r) => (
             <button
               key={r.emoji}
@@ -225,7 +227,7 @@ export function MessageBubble({
               className={cn(
                 "flex items-center gap-0.5 rounded-full border px-1.5 py-0.5 text-xs transition-colors",
                 r.byMe
-                  ? "bg-primary/15 border-primary/40 text-primary"
+                  ? "bg-gold/15 border-gold/40 text-gold"
                   : "bg-muted border-border text-muted-foreground hover:bg-muted/80",
               )}
             >
@@ -236,7 +238,8 @@ export function MessageBubble({
         </div>
       )}
 
-      <span className="text-[10px] text-muted-foreground/70 mt-1 mx-1.5 tabular-nums">
+      {/* Timestamp — inline, muted */}
+      <span className={cn("text-[10px] text-muted-foreground/70 mt-1 tabular-nums", isOwn ? "mr-1.5" : "ml-2")}>
         {time}
         {message.edited_at && <span className="ml-1">(redigeret)</span>}
       </span>
