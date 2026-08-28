@@ -251,13 +251,13 @@ return (
                       }
                     }}
                   />
-                  {showRead && (
+{showRead && (
                     <div className="flex justify-end pr-1 -mt-1 mb-1">
                       <div className="flex items-center gap-1">
                         {partnerAvatarUrl ? (
                           <img
                             src={partnerAvatarUrl}
-                            className="h-4 w-4 rounded-full object-cover"
+                            className="h-4 w-4 rounded-full object-cover ring-1 ring-gold/40"
                             alt=""
                           />
                         ) : (
@@ -265,7 +265,10 @@ return (
                             {((partner as any)?.display_name || "?").slice(0, 1).toUpperCase()}
                           </div>
                         )}
-                        <span className="text-[10px] text-primary/80 font-medium">Set</span>
+                        <span className="text-[10px] text-gold font-medium flex items-center gap-0.5">
+                          Set
+                          <Check className="h-3 w-3" />
+                        </span>
                       </div>
                     </div>
                   )}
