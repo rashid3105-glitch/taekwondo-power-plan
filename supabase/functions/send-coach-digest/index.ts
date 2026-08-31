@@ -124,23 +124,21 @@ Deno.serve(async (req) => {
         }
       }
 
-      // Send email via existing transactional pipeline
+      // Send email through the managed email API
       try {
-        await supa.functions.invoke("send-transactional-email", {
-          body: {
-            template_name: "coach-weekly-digest",
-            to: meta.email,
-            data: {
-              coachName: meta.name,
-              totalAthletes: athleteIds.length,
-              trendingUp,
-              atRisk,
-              inactive,
-              dashboardUrl: `${SITE_URL}/coach`,
-            },
+        const result = await sendTemplateEmail("coach-weekly-digest", meta.email, {
+          idempotencyKey: `coach-digest-${coachId}-${new Date().toISOString().slice(0, 10)}`,
+          templateData: {
+            coachName: meta.name,
+            totalAthletes: athleteIds.length,
+            trendingUp,
+            atRisk,
+            inactive,
+            dashboardUrl: `${SITE_URL}/coach`,
           },
         });
-        processed++;
+        if (result.sent) processed++;
+        else skipped++;
       } catch (sendErr) {
         console.error("digest send failed", coachId, sendErr);
       }
