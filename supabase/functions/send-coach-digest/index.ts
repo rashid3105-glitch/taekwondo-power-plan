@@ -1,7 +1,8 @@
 // Weekly Monday digest for every coach. Designed to be invoked by pg_cron with the service role.
-// Calls send-transactional-email per coach using template "coach-weekly-digest".
+// Sends the "coach-weekly-digest" template through Lovable's managed email API.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { checkCronAuth } from "../_shared/cronAuth.ts";
+import { sendTemplateEmail } from "../_shared/transactional-email-templates/send-email.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
