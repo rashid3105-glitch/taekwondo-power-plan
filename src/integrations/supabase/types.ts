@@ -4577,18 +4577,9 @@ export type Database = {
         Returns: string
       }
       delete_chat_message: { Args: { _id: string }; Returns: undefined }
-      delete_email: {
-        Args: { message_id: number; queue_name: string }
-        Returns: boolean
-      }
       edit_chat_message: {
         Args: { _body: string; _id: string }
         Returns: undefined
-      }
-      email_queue_dispatch: { Args: never; Returns: undefined }
-      enqueue_email: {
-        Args: { payload: Json; queue_name: string }
-        Returns: number
       }
       enqueue_monthly_reports: { Args: never; Returns: number }
       get_admin_user_stats: { Args: never; Returns: Json }
@@ -4729,23 +4720,6 @@ export type Database = {
       mark_workout_feedback_read: {
         Args: { _feedback_id: string }
         Returns: undefined
-      }
-      move_to_dlq: {
-        Args: {
-          dlq_name: string
-          message_id: number
-          payload: Json
-          source_queue: string
-        }
-        Returns: number
-      }
-      read_email_batch: {
-        Args: { batch_size: number; queue_name: string; vt: number }
-        Returns: {
-          message: Json
-          msg_id: number
-          read_ct: number
-        }[]
       }
       recompute_wearable_summary: {
         Args: { _from: string; _to: string; _user_id: string }
