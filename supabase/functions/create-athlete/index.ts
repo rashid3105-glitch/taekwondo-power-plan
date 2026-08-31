@@ -186,34 +186,19 @@ Deno.serve(async (req) => {
         expires_at: expiresAt,
       });
 
-      // Email parent via existing transactional pipeline.
-      // Use service-role auth: this template is restricted to trusted server
-      // callers (we have already authenticated and authorized the coach above).
+      // Email parent through the managed email API.
       try {
         const consentUrl = `${APP_URL}/consent/${token}`;
-        const emailRes = await fetch(`${supabaseUrl}/functions/v1/send-transactional-email`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${serviceRoleKey}`,
+        const result = await sendTemplateEmail("parental-consent-request", parent_email.trim(), {
+          idempotencyKey: `parental-consent-${newUser.user!.id}-${token.slice(0, 8)}`,
+          templateData: {
+            athleteName: name,
+            consentUrl,
+            expiresInDays: 14,
           },
-          body: JSON.stringify({
-            templateName: "parental-consent-request",
-            recipientEmail: parent_email.trim(),
-            idempotencyKey: `parental-consent-${newUser.user!.id}-${token.slice(0, 8)}`,
-            templateData: {
-              athleteName: name,
-              consentUrl,
-              expiresInDays: 14,
-            },
-          }),
         });
-        const emailBody = await emailRes.text();
-        if (emailRes.ok) {
-          consentSent = true;
-        } else {
-          console.warn("consent email send failed:", emailRes.status, emailBody);
-        }
+        if (result.sent) consentSent = true;
+        else console.warn("consent email not sent:", result.reason);
       } catch (e) {
         console.warn("consent email send failed:", e);
       }
