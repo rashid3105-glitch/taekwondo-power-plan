@@ -1,10 +1,11 @@
 // Daily compliance scan: GAL license, MyFightBook and anti-doping course.
-// Creates in-app alerts (compliance_alerts) and queues emails for the athlete
+// Creates in-app alerts (compliance_alerts) and sends emails to the athlete
 // and their coaches. Triggered by pg_cron.
 import { createClient } from "npm:@supabase/supabase-js@2";
-import * as React from "npm:react@18.3.1";
-import { renderAsync } from "npm:@react-email/components@0.0.22";
 import { TEMPLATES } from "../_shared/transactional-email-templates/registry.ts";
+import { sendTemplateEmail } from "../_shared/transactional-email-templates/send-email.ts";
+
+
 
 
 const cors = {
