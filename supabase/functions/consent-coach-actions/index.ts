@@ -26,29 +26,26 @@ function randomToken(bytes = 32) {
 }
 
 async function invokeSendEmail(
-  supabaseUrl: string,
-  serviceKey: string,
+  _supabaseUrl: string,
+  _serviceKey: string,
   payload: Record<string, unknown>,
 ): Promise<{ ok: boolean; status: number; error?: string }> {
   try {
-    // Use service-role auth: consent templates are restricted to trusted
-    // server callers (we have already authenticated the coach above).
-    const res = await fetch(`${supabaseUrl}/functions/v1/send-transactional-email`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${serviceKey}`,
+    const result = await sendTemplateEmail(
+      String(payload.templateName),
+      String(payload.recipientEmail ?? ""),
+      {
+        idempotencyKey: payload.idempotencyKey as string | undefined,
+        templateData: (payload.templateData ?? {}) as Record<string, unknown>,
       },
-      body: JSON.stringify(payload),
-    });
-    const text = await res.text();
-    if (!res.ok) {
-      console.warn("send-transactional-email failed", res.status, text);
-      return { ok: false, status: res.status, error: text };
+    );
+    if (!result.sent) {
+      console.warn("consent email not sent", result.reason);
+      return { ok: false, status: 200, error: result.reason };
     }
-    return { ok: true, status: res.status };
+    return { ok: true, status: 200 };
   } catch (e) {
-    console.warn("send-transactional-email fetch threw", e);
+    console.warn("consent email send failed", e);
     return { ok: false, status: 0, error: String((e as Error)?.message || e) };
   }
 }
