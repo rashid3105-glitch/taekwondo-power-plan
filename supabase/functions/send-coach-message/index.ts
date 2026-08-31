@@ -139,26 +139,20 @@ Deno.serve(async (req) => {
         const email = emailMap.get(row.athlete_id);
         if (!email) continue;
         try {
-          const { error: emailErr } = await admin.functions.invoke(
-            "send-transactional-email",
-            {
-              body: {
-                templateName: "coach-message",
-                recipientEmail: email,
-                idempotencyKey: `coach-message-${row.id}`,
-                templateData: {
-                  athleteName: nameMap.get(row.athlete_id) || "Athlete",
-                  coachName,
-                  subject,
-                  body,
-                  inboxUrl: APP_DASHBOARD_URL,
-                },
-              },
+          const result = await sendTemplateEmail("coach-message", email, {
+            idempotencyKey: `coach-message-${row.id}`,
+            templateData: {
+              athleteName: nameMap.get(row.athlete_id) || "Athlete",
+              coachName,
+              subject,
+              body,
+              inboxUrl: APP_DASHBOARD_URL,
             },
-          );
-          if (emailErr) failed++;
-          else emailed++;
-        } catch {
+          });
+          if (result.sent) emailed++;
+          else failed++;
+        } catch (e) {
+          console.error("coach-message send failed", e);
           failed++;
         }
       }
