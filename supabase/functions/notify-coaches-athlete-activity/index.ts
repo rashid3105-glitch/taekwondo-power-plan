@@ -128,21 +128,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const templateEntry = TEMPLATES["athlete-activity-notification"];
-    if (!templateEntry) {
-      return new Response(JSON.stringify({ queued: 0, reason: "template_not_found" }), {
-        status: 500, headers: { ...cors, "Content-Type": "application/json" },
-      });
-    }
     const templateData = { athleteName, activityType, competitionName };
-    const html = await renderAsync(React.createElement(templateEntry.component, templateData));
-    const plainText = await renderAsync(
-      React.createElement(templateEntry.component, templateData),
-      { plainText: true },
-    );
-    const subject = typeof templateEntry.subject === "function"
-      ? templateEntry.subject(templateData)
-      : templateEntry.subject;
 
     let queued = 0;
     for (const coach of coachProfiles) {
@@ -150,74 +136,38 @@ Deno.serve(async (req) => {
       const coachEmail = au?.user?.email;
       if (!coachEmail) continue;
 
-      const normalizedEmail = coachEmail.toLowerCase();
-
-      const { data: suppressed } = await admin
-        .from("suppressed_emails")
-        .select("id")
-        .eq("email", normalizedEmail)
-        .maybeSingle();
-      if (suppressed) continue;
-
-      let unsubToken: string;
-      const { data: existingToken } = await admin
-        .from("email_unsubscribe_tokens")
-        .select("token, used_at")
-        .eq("email", normalizedEmail)
-        .maybeSingle();
-      if (existingToken && !existingToken.used_at) {
-        unsubToken = existingToken.token;
-      } else {
-        unsubToken = generateToken();
-        await admin.from("email_unsubscribe_tokens").upsert(
-          { token: unsubToken, email: normalizedEmail },
-          { onConflict: "email", ignoreDuplicates: true },
-        );
-        const { data: stored } = await admin
-          .from("email_unsubscribe_tokens")
-          .select("token")
-          .eq("email", normalizedEmail)
-          .maybeSingle();
-        if (stored) unsubToken = stored.token;
-      }
-
-      const messageId = crypto.randomUUID();
       const idemKey = `athlete-activity-${athleteUserId}-${activityType}-${coach.user_id}-${new Date().toISOString().slice(0, 10)}`;
+      const metadata = {
+        athlete_user_id: athleteUserId,
+        activity_type: activityType,
+        coach_user_id: coach.user_id,
+      };
 
-      await admin.from("email_send_log").insert({
-        message_id: messageId,
-        template_name: "athlete-activity-notification",
-        recipient_email: coachEmail,
-        status: "pending",
-        metadata: {
-          athlete_user_id: athleteUserId,
-          activity_type: activityType,
-          coach_user_id: coach.user_id,
-        },
-      }).then(() => {}, () => {});
+      const logSend = async (status: string, errorMessage?: string) => {
+        const { error } = await admin.from("email_send_log").insert({
+          template_name: "athlete-activity-notification",
+          recipient_email: coachEmail,
+          status,
+          error_message: errorMessage ?? null,
+          metadata,
+        });
+        if (error) console.error("email_send_log insert failed", error);
+      };
 
-      const { error: enqueueErr } = await admin.rpc("enqueue_email", {
-        queue_name: "transactional_emails",
-        payload: {
-          message_id: messageId,
-          to: coachEmail,
-          from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
-          sender_domain: SENDER_DOMAIN,
-          subject,
-          html,
-          text: plainText,
-          purpose: "transactional",
-          label: "athlete-activity-notification",
-          idempotency_key: idemKey,
-          unsubscribe_token: unsubToken,
-          queued_at: new Date().toISOString(),
-        },
-      });
-
-      if (!enqueueErr) {
-        queued++;
-      } else {
-        console.error("enqueue_email error", { coachEmail, enqueueErr });
+      try {
+        const result = await sendTemplateEmail("athlete-activity-notification", coachEmail, {
+          idempotencyKey: idemKey,
+          templateData,
+        });
+        if (result.sent) {
+          await logSend("sent");
+          queued++;
+        } else {
+          await logSend("suppressed");
+        }
+      } catch (sendErr: any) {
+        console.error("athlete-activity notification send failed", sendErr?.message || sendErr);
+        await logSend("failed", String(sendErr?.message || sendErr));
       }
     }
 
