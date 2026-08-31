@@ -1,9 +1,7 @@
 // Notifies coaches in the athlete's club when a diary entry or competition
-// reflection is saved. Uses enqueue_email RPC directly with service role.
+// reflection is saved. Sends through Lovable's managed email API.
 import { createClient } from "npm:@supabase/supabase-js@2";
-import * as React from "npm:react@18.3.1";
-import { renderAsync } from "npm:@react-email/components@0.0.22";
-import { TEMPLATES } from "../_shared/transactional-email-templates/registry.ts";
+import { sendTemplateEmail } from "../_shared/transactional-email-templates/send-email.ts";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -11,15 +9,6 @@ const cors = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-const SITE_NAME = "Sportstalent";
-const SENDER_DOMAIN = "notify.sportstalent.dk";
-const FROM_DOMAIN = "sportstalent.dk";
-
-function generateToken(): string {
-  const bytes = new Uint8Array(32);
-  crypto.getRandomValues(bytes);
-  return Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("");
-}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
