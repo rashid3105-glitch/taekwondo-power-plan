@@ -61,23 +61,10 @@ export function SendReminderDialog({ athleteId, athleteName, athleteEmail }: Sen
       });
       if (error) throw error;
 
-      // Send email if athlete email is known
+      // Send email if athlete email is known (server-side fan-out)
       if (athleteEmail) {
-        await supabase.functions.invoke("send-transactional-email", {
-          body: {
-            templateName: "event-reminder",
-            recipientEmail: athleteEmail,
-            idempotencyKey: `event-reminder-${reminderId}`,
-            templateData: {
-              athleteName,
-              coachName: coachProfile?.display_name || "Your coach",
-              eventTitle: title.trim(),
-              eventDate,
-              message: message.trim(),
-              diaryUrl: `${window.location.origin}/diary`,
-            },
-
-          },
+        await supabase.functions.invoke("send-coach-message", {
+          body: { reminderIds: [reminderId] },
         });
       }
 
