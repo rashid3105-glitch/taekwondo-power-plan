@@ -2,7 +2,7 @@
 // Used by both the athlete diary page and the coach's diary view of an athlete.
 
 import {
-  Dumbbell, Trophy, Heart, Brain, Bandage, NotebookPen, Footprints,
+  Dumbbell, Trophy, Heart, Brain, Bandage, NotebookPen, Footprints, Star,
 } from "lucide-react";
 import type { DiaryEntryType } from "@/lib/diaryOfflineDB";
 
@@ -41,6 +41,7 @@ export const ENTRY_TYPES: TypeMeta[] = [
   { value: "mental", i18nKey: "diaryTypeMental", Icon: Brain, color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/40" },
   { value: "injury", i18nKey: "diaryTypeInjury", Icon: Bandage, color: "text-destructive", bg: "bg-destructive/10", border: "border-destructive/40" },
   { value: "running", i18nKey: "diaryTypeRunning", Icon: Footprints, color: "text-emerald-500", bg: "bg-emerald-500/10", border: "border-emerald-500/30" },
+  { value: "favorite", i18nKey: "diaryTypeFavorite", Icon: Star, color: "text-primary", bg: "bg-primary/10", border: "border-primary/40" },
 ];
 
 export const typeMeta = (t: DiaryEntryType | null | undefined): TypeMeta =>
@@ -49,8 +50,8 @@ export const typeMeta = (t: DiaryEntryType | null | undefined): TypeMeta =>
 export function computeTypeCounts<E extends DiaryEntryLike>(entries: E[]): Record<string, number> {
   const c: Record<string, number> = { all: entries.length };
   for (const e of entries) {
-    const k = e.entry_type || "general";
-    c[k] = (c[k] || 0) + 1;
+    const types = e.entry_types && e.entry_types.length > 0 ? e.entry_types : [e.entry_type || "general"];
+    for (const k of new Set(types)) c[k] = (c[k] || 0) + 1;
   }
   return c;
 }

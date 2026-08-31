@@ -31,8 +31,8 @@ export function AppBottomNav() {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useLanguage();
-  const { hasCoachRole } = useRole();
-  const { isCoachMode } = useCoachMode();
+  const { hasCoachRole, loading: roleLoading } = useRole();
+  const { isCoachMode, isCoachRoute } = useCoachMode();
   const { matchAnalysisEnabled } = useMatchAnalysisEnabled();
 
   const path = location.pathname;
@@ -51,15 +51,17 @@ export function AppBottomNav() {
   }, [hidden]);
 
   if (hidden) return null;
+  // Avoid flashing the athlete nav before the role/club state has resolved.
+  if (roleLoading) return null;
 
-  const coachMode = isCoachMode && hasCoachRole;
+  const coachMode = (isCoachMode || isCoachRoute) && hasCoachRole;
 
 
   const items = coachMode
     ? [
         { key: "coach-hold", label: t("coachNav") || "Hold", icon: Users, iconClassName: "text-primary", active: path === "/coach", onClick: () => navigate("/coach") },
         { key: "coach-traening", label: t("train") || "Træning", icon: CalendarRange, iconClassName: "text-tab-plan", active: path.startsWith("/coach/season-calendar"), onClick: () => navigate("/coach/season-calendar") },
-        { key: "coach-staevner", label: t("competitions") || "Stævner", icon: Trophy, iconClassName: "text-amber-500", active: path.startsWith("/coach/competitions"), onClick: () => navigate("/coach/competitions") },
+        { key: "coach-staevner", label: t("competitionsTitle") || "Stævner", icon: Trophy, iconClassName: "text-amber-500", active: path.startsWith("/coach/competitions"), onClick: () => navigate("/coach/competitions") },
         { key: "coach-surveys", label: t("surveysTitle") || "Spørgeskemaer", icon: ClipboardList, iconClassName: "text-tab-mental", active: path.startsWith("/coach/surveys"), onClick: () => navigate("/coach/surveys") },
       ]
     : [
