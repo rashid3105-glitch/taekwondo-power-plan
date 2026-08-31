@@ -596,10 +596,10 @@ export default function Diary() {
             </div>
 
             {/* Type chips */}
-            <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-none">
+            <div className="flex flex-wrap gap-1.5 pb-1">
               <button
                 onClick={() => setTypeFilter("all")}
-                className={`shrink-0 rounded-full px-3 h-8 text-xs font-semibold border transition-colors ${
+                className={`rounded-full px-3 h-8 text-xs font-semibold border transition-colors ${
                   typeFilter === "all" ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground"
                 }`}
               >
@@ -614,7 +614,7 @@ export default function Diary() {
                   <button
                     key={meta.value}
                     onClick={() => setTypeFilter(meta.value)}
-                    className={`shrink-0 flex items-center gap-1 rounded-full px-3 h-8 text-xs font-semibold border transition-colors ${
+                    className={`flex items-center gap-1 rounded-full px-3 h-8 text-xs font-semibold border transition-colors ${
                       active ? `${meta.bg} ${meta.border} ${meta.color}` : "border-border text-muted-foreground"
                     }`}
                   >
