@@ -141,20 +141,18 @@ return (
             <Users className="h-4 w-4 text-gold" />
           </div>
         ) : (
-          <div className="relative shrink-0">
-            <AvatarImg avatarUrl={headerAvatar} className="h-9 w-9 rounded-full object-cover border-2 border-gold shrink-0" />
-            {/* Online status dot */}
-            <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-400 border-2 border-card" />
-          </div>
+          <AvatarImg avatarUrl={headerAvatar} className="h-9 w-9 rounded-full object-cover border-2 border-gold shrink-0" />
         )}
         <div
           className={cn("flex-1 min-w-0", thread.kind === "group" && "cursor-pointer")}
           onClick={() => thread.kind === "group" && setMembersOpen(true)}
         >
           <div className="text-sm font-semibold tracking-tight truncate">{headerTitle}</div>
-          <div className="text-[10px] font-medium text-gold truncate">
-            {thread.kind === "group" ? `${members.length} medlemmer` : "Aktiv nu"}
-          </div>
+          {thread.kind === "group" && (
+            <div className="text-[10px] font-medium text-gold truncate">
+              {members.length} medlemmer
+            </div>
+          )}
         </div>
         {thread.kind === "group" && (
           <button
