@@ -1,10 +1,11 @@
 // Daily compliance scan: GAL license, MyFightBook and anti-doping course.
-// Creates in-app alerts (compliance_alerts) and queues emails for the athlete
+// Creates in-app alerts (compliance_alerts) and sends emails to the athlete
 // and their coaches. Triggered by pg_cron.
 import { createClient } from "npm:@supabase/supabase-js@2";
-import * as React from "npm:react@18.3.1";
-import { renderAsync } from "npm:@react-email/components@0.0.22";
 import { TEMPLATES } from "../_shared/transactional-email-templates/registry.ts";
+import { sendTemplateEmail } from "../_shared/transactional-email-templates/send-email.ts";
+
+
 
 
 const cors = {
@@ -245,11 +246,6 @@ Deno.serve(async (req) => {
         // Email
         const recipientEmail = await emailFor(recipientId);
         if (!recipientEmail || !templateEntry) continue;
-        const normalizedEmail = recipientEmail.toLowerCase();
-
-        const { data: suppressed } = await admin
-          .from("suppressed_emails").select("id").eq("email", normalizedEmail).maybeSingle();
-        if (suppressed) continue;
 
         const isSelf = recipientId === f.athleteId;
         const templateData = {
@@ -262,63 +258,39 @@ Deno.serve(async (req) => {
           actionUrl: isSelf ? `${APP_URL}/profile-setup` : `${APP_URL}/coach/athlete/${f.athleteId}?tab=manage`,
         };
 
-        const html = await renderAsync(React.createElement(templateEntry.component, templateData));
-        const plainText = await renderAsync(
-          React.createElement(templateEntry.component, templateData), { plainText: true },
-        );
-        const subject = typeof templateEntry.subject === "function"
-          ? templateEntry.subject(templateData)
-          : templateEntry.subject;
+        const metadata = {
+          athlete_user_id: f.athleteId,
+          recipient_user_id: recipientId,
+          alert_type: f.alertType,
+          severity: f.severity,
+        };
 
-        let unsubToken: string;
-        const { data: existingToken } = await admin
-          .from("email_unsubscribe_tokens").select("token, used_at").eq("email", normalizedEmail).maybeSingle();
-        if (existingToken && !(existingToken as any).used_at) {
-          unsubToken = (existingToken as any).token;
-        } else {
-          unsubToken = generateToken();
-          await admin.from("email_unsubscribe_tokens").upsert(
-            { token: unsubToken, email: normalizedEmail },
-            { onConflict: "email", ignoreDuplicates: true },
-          );
-          const { data: stored } = await admin
-            .from("email_unsubscribe_tokens").select("token").eq("email", normalizedEmail).maybeSingle();
-          if (stored) unsubToken = (stored as any).token;
+        const logSend = async (status: string, errorMessage?: string) => {
+          const { error } = await admin.from("email_send_log").insert({
+            template_name: "compliance-alert",
+            recipient_email: recipientEmail,
+            status,
+            error_message: errorMessage ?? null,
+            metadata,
+          });
+          if (error) console.error("email_send_log insert failed", error);
+        };
+
+        try {
+          const result = await sendTemplateEmail("compliance-alert", recipientEmail, {
+            idempotencyKey: `compliance-${f.alertType}-${f.athleteId}-${recipientId}-${f.periodKey}`,
+            templateData,
+          });
+          if (result.sent) {
+            await logSend("sent");
+            emailsQueued++;
+          } else {
+            await logSend("suppressed");
+          }
+        } catch (sendErr: any) {
+          console.error("compliance alert send failed", sendErr?.message || sendErr);
+          await logSend("failed", String(sendErr?.message || sendErr));
         }
-
-        const messageId = crypto.randomUUID();
-        await admin.from("email_send_log").insert({
-          message_id: messageId,
-          template_name: "compliance-alert",
-          recipient_email: recipientEmail,
-          status: "pending",
-          metadata: {
-            athlete_user_id: f.athleteId,
-            recipient_user_id: recipientId,
-            alert_type: f.alertType,
-            severity: f.severity,
-          },
-        }).then(() => {}, () => {});
-
-        const { error: enqueueErr } = await admin.rpc("enqueue_email", {
-          queue_name: "transactional_emails",
-          payload: {
-            message_id: messageId,
-            to: recipientEmail,
-            from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
-            sender_domain: SENDER_DOMAIN,
-            subject,
-            html,
-            text: plainText,
-            purpose: "transactional",
-            label: "compliance-alert",
-            idempotency_key: `compliance-${f.alertType}-${f.athleteId}-${recipientId}-${f.periodKey}`,
-            unsubscribe_token: unsubToken,
-            queued_at: new Date().toISOString(),
-          },
-        });
-        if (!enqueueErr) emailsQueued++;
-        else console.error("enqueue_email error", enqueueErr);
       }
     }
 

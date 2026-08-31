@@ -427,17 +427,7 @@ export default function ProfileSetup() {
         const { data: protectedFields } = await supabase.rpc("get_profile_protected_fields", { _user_id: user.id });
         const pf = Array.isArray(protectedFields) ? protectedFields[0] : protectedFields;
         if (pf && !pf.is_approved) {
-          await supabase.functions.invoke("send-transactional-email", {
-            body: {
-              templateName: "coach-profile-ready",
-              templateData: {
-                userName: user.user_metadata?.display_name || user.email,
-                userEmail: user.email,
-                belt,
-                discipline,
-              },
-            },
-          });
+          await supabase.functions.invoke("notify-profile-ready", { body: {} });
         }
       } catch {
         // Non-critical — don't block the user

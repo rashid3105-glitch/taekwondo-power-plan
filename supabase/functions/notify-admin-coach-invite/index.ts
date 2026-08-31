@@ -1,4 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { sendTemplateEmail } from "../_shared/transactional-email-templates/send-email.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -67,27 +68,20 @@ Deno.serve(async (req) => {
       admin.auth.admin.getUserById(invite.coach_id),
     ]);
 
-    const payload = {
-      templateName: "coach-invite-admin-notification",
-      idempotencyKey: `coach-invite-${invite.code}`,
-      templateData: {
-        coachName: coachProfile?.display_name || authUser?.user?.email || "Unknown",
-        coachEmail: authUser?.user?.email || null,
-        clubName: (club as any)?.name || null,
-        inviteCode: invite.code,
-        inviteUrl: `https://sportstalent.dk/join/${invite.code}`,
-        createdAt: invite.created_at,
-      },
-    };
-
-    const res = await fetch(`${supabaseUrl}/functions/v1/send-transactional-email`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${serviceKey}` },
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok) {
-      const errText = await res.text();
-      console.error("send-transactional-email failed", res.status, errText);
+    try {
+      await sendTemplateEmail("coach-invite-admin-notification", "", {
+        idempotencyKey: `coach-invite-${invite.code}`,
+        templateData: {
+          coachName: coachProfile?.display_name || authUser?.user?.email || "Unknown",
+          coachEmail: authUser?.user?.email || null,
+          clubName: (club as any)?.name || null,
+          inviteCode: invite.code,
+          inviteUrl: `https://sportstalent.dk/join/${invite.code}`,
+          createdAt: invite.created_at,
+        },
+      });
+    } catch (sendErr) {
+      console.error("coach invite notification send failed", sendErr);
       return new Response(JSON.stringify({ error: "send_failed" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });

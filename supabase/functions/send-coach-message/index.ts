@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { sendTemplateEmail } from "../_shared/transactional-email-templates/send-email.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -139,26 +140,20 @@ Deno.serve(async (req) => {
         const email = emailMap.get(row.athlete_id);
         if (!email) continue;
         try {
-          const { error: emailErr } = await admin.functions.invoke(
-            "send-transactional-email",
-            {
-              body: {
-                templateName: "coach-message",
-                recipientEmail: email,
-                idempotencyKey: `coach-message-${row.id}`,
-                templateData: {
-                  athleteName: nameMap.get(row.athlete_id) || "Athlete",
-                  coachName,
-                  subject,
-                  body,
-                  inboxUrl: APP_DASHBOARD_URL,
-                },
-              },
+          const result = await sendTemplateEmail("coach-message", email, {
+            idempotencyKey: `coach-message-${row.id}`,
+            templateData: {
+              athleteName: nameMap.get(row.athlete_id) || "Athlete",
+              coachName,
+              subject,
+              body,
+              inboxUrl: APP_DASHBOARD_URL,
             },
-          );
-          if (emailErr) failed++;
-          else emailed++;
-        } catch {
+          });
+          if (result.sent) emailed++;
+          else failed++;
+        } catch (e) {
+          console.error("coach-message send failed", e);
           failed++;
         }
       }
@@ -199,27 +194,21 @@ Deno.serve(async (req) => {
         const email = emailMap.get(r.athlete_id);
         if (!email) continue;
         try {
-          const { error: emailErr } = await admin.functions.invoke(
-            "send-transactional-email",
-            {
-              body: {
-                templateName: "event-reminder",
-                recipientEmail: email,
-                idempotencyKey: `event-reminder-${r.id}`,
-                templateData: {
-                  athleteName: nameMap.get(r.athlete_id) || "Athlete",
-                  coachName,
-                  eventTitle: r.title,
-                  eventDate: r.event_date,
-                  message: r.message || "",
-                  diaryUrl: APP_DIARY_URL,
-                },
-              },
+          const result = await sendTemplateEmail("event-reminder", email, {
+            idempotencyKey: `event-reminder-${r.id}`,
+            templateData: {
+              athleteName: nameMap.get(r.athlete_id) || "Athlete",
+              coachName,
+              eventTitle: r.title,
+              eventDate: r.event_date,
+              message: r.message || "",
+              diaryUrl: APP_DIARY_URL,
             },
-          );
-          if (emailErr) failed++;
-          else emailed++;
-        } catch {
+          });
+          if (result.sent) emailed++;
+          else failed++;
+        } catch (e) {
+          console.error("event-reminder send failed", e);
           failed++;
         }
       }

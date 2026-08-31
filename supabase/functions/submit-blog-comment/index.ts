@@ -1,4 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
+import { sendTemplateEmail } from '../_shared/transactional-email-templates/send-email.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -99,31 +100,21 @@ Deno.serve(async (req) => {
   // Referer/Origin header injection that could phish users with attacker URLs.
   const confirmUrl = `https://sportstalent.dk/blog-comment/confirm?token=${verification_token}`
 
-  // Send verification email via send-transactional-email using service-role auth
+  // Send verification email through the managed email API
   try {
-    const res = await fetch(`${supabaseUrl}/functions/v1/send-transactional-email`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${serviceKey}`,
+    const result = await sendTemplateEmail('blog-comment-verification', author_email, {
+      idempotencyKey: `blog-comment-verify-${inserted.id}`,
+      templateData: {
+        authorName: author_name,
+        confirmUrl,
+        postTitle: (post as any).title,
       },
-      body: JSON.stringify({
-        templateName: 'blog-comment-verification',
-        recipientEmail: author_email,
-        idempotencyKey: `blog-comment-verify-${inserted.id}`,
-        templateData: {
-          authorName: author_name,
-          confirmUrl,
-          postTitle: (post as any).title,
-        },
-      }),
     })
-    if (!res.ok) {
-      const txt = await res.text()
-      console.warn('send-transactional-email failed', res.status, txt)
+    if (!result.sent) {
+      console.warn('blog comment verification not sent', result.reason)
     }
   } catch (e) {
-    console.warn('send-transactional-email fetch threw', e)
+    console.warn('blog comment verification send failed', e)
   }
 
   return json({ success: true })
