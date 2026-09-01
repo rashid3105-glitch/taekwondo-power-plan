@@ -3,6 +3,10 @@ export type Locale = "en" | "da" | "sv" | "de" | "ar" | "no" | "es";
 const translations = {
   en: {
     changelog_2026_09_01: "1 September 2026",
+    changelogEntry240: "Log today's training straight from the home screen with a one-tap entry, plus an evening reminder on your own training days.",
+    changelogEntry241: "Coaches get a morning triage list, an evening feed of the squad's entries with one-tap replies, and quick attendance in one place.",
+    changelogEntry242: "One bottom bar everywhere with chat and unread badge, Health and Video moved under Me, one shared upload limit, and competition week now shows a countdown checklist on the home screen.",
+    changelog_2026_09_02: "2 September 2026",
     changelogEntry239: "Chat attachments now compress images automatically so photos always fit the size limit, and the sign-in screen plus message composer are fully translated.",
     changelogEntry238: "Profile setup is now split into three clear steps (Basics, Training, Settings), and the bottom navigation stays visible across the app with the current page highlighted.",
     profileStepBasics: "Basics",
@@ -4438,6 +4442,10 @@ const translations = {
   },
   da: {
     changelog_2026_09_01: "1. september 2026",
+    changelogEntry240: "Log dagens træning direkte fra forsiden med ét tap, plus en aftenpåmindelse på dine egne træningsdage.",
+    changelogEntry241: "Trænere får en morgen-triage, et aftenfeed med holdets opslag og hurtige svar, samt fremmøde samlet ét sted.",
+    changelogEntry242: "Én bundbar overalt med chat og ulæst-badge, Sundhed og Video flyttet under Mig, én fælles uploadgrænse, og stævneuge vises nu som nedtælling med tjekliste på forsiden.",
+    changelog_2026_09_02: "2. september 2026",
     changelogEntry239: "Chatvedhæftninger komprimerer nu billeder automatisk, så fotos altid overholder størrelsesgrænsen, og login-skærmen samt beskedfeltet er fuldt oversat.",
     changelogEntry238: "Profilopsætning er nu delt op i tre trin (Basis, Træning, Indstillinger), og bundnavigationen er synlig i hele appen med markering af den aktuelle side.",
     profileStepBasics: "Basis",
@@ -8856,6 +8864,10 @@ const translations = {
   },
   sv: {
     changelog_2026_09_01: "1 september 2026",
+    changelogEntry240: "Logga dagens träning direkt från startsidan med ett tryck, plus en kvällspåminnelse på dina egna träningsdagar.",
+    changelogEntry241: "Tränare får en morgontriage, ett kvällsflöde med lagets inlägg och snabbsvar, samt närvaro samlat på ett ställe.",
+    changelogEntry242: "En bottenrad överallt med chatt och oläst-märke, Hälsa och Video flyttade under Jag, en gemensam uppladdningsgräns, och tävlingsvecka visas nu som nedräkning med checklista.",
+    changelog_2026_09_02: "2 september 2026",
     changelogEntry239: "Chattbilagor komprimerar nu bilder automatiskt så att foton alltid håller sig inom storleksgränsen, och inloggningsskärmen samt meddelandefältet är helt översatta.",
     changelogEntry238: "Profilinställningen är nu uppdelad i tre steg (Bas, Träning, Inställningar), och bottennavigeringen syns i hela appen med aktuell sida markerad.",
     profileStepBasics: "Bas",
@@ -13233,6 +13245,10 @@ const translations = {
   },
   de: {
     changelog_2026_09_01: "1. September 2026",
+    changelogEntry240: "Trage das heutige Training mit einem Tipp direkt auf der Startseite ein, plus Abenderinnerung an deinen Trainingstagen.",
+    changelogEntry241: "Trainer erhalten eine Morgen-Triage, einen Abend-Feed mit den Einträgen des Teams samt Schnellantwort und die Anwesenheit an einem Ort.",
+    changelogEntry242: "Eine Navigationsleiste überall mit Chat und Ungelesen-Badge, Gesundheit und Video unter Ich, ein gemeinsames Upload-Limit und die Wettkampfwoche als Countdown mit Checkliste.",
+    changelog_2026_09_02: "2. September 2026",
     changelogEntry239: "Chat-Anhänge komprimieren Bilder jetzt automatisch, damit Fotos immer die Größenbeschränkung einhalten; Anmeldebildschirm und Nachrichtenfeld sind vollständig übersetzt.",
     changelogEntry238: "Die Profileinrichtung ist jetzt in drei Schritte unterteilt (Basis, Training, Einstellungen), und die untere Navigation bleibt überall sichtbar mit Markierung der aktuellen Seite.",
     profileStepBasics: "Basis",
@@ -17560,6 +17576,10 @@ const translations = {
   },
   ar: {
     changelog_2026_09_01: "1 سبتمبر 2026",
+    changelogEntry240: "سجّل تدريب اليوم مباشرة من الصفحة الرئيسية بنقرة واحدة، مع تذكير مسائي في أيام تدريبك.",
+    changelogEntry241: "يحصل المدربون على قائمة فرز صباحية، وتدفق مسائي لتدوينات الفريق مع رد سريع، والحضور في مكان واحد.",
+    changelogEntry242: "شريط سفلي واحد في كل مكان مع الدردشة وشارة غير المقروء، ونقل الصحة والفيديو إلى «أنا»، وحد رفع موحّد، وأسبوع البطولة يظهر كعد تنازلي مع قائمة تحقق.",
+    changelog_2026_09_02: "2 سبتمبر 2026",
     changelogEntry239: "تضغط مرفقات الدردشة الصور تلقائيًا الآن لتبقى ضمن حد الحجم، كما تمت ترجمة شاشة تسجيل الدخول وحقل الرسائل بالكامل.",
     changelogEntry238: "تم تقسيم إعداد الملف الشخصي إلى ثلاث خطوات (الأساسيات، التدريب، الإعدادات)، ويظل شريط التنقل السفلي ظاهرًا في التطبيق مع إبراز الصفحة الحالية.",
     profileStepBasics: "الأساسيات",
@@ -21888,6 +21908,10 @@ const translations = {
   },
   no: {
     changelog_2026_09_01: "1. september 2026",
+    changelogEntry240: "Logg dagens trening rett fra forsiden med ett trykk, pluss en kveldspåminnelse på dine egne treningsdager.",
+    changelogEntry241: "Trenere får en morgentriage, en kveldsfeed med lagets innlegg og raske svar, samt oppmøte samlet ett sted.",
+    changelogEntry242: "Én bunnlinje overalt med chat og ulest-merke, Helse og Video flyttet under Meg, én felles opplastingsgrense, og stevneuke vises nå som nedtelling med sjekkliste.",
+    changelog_2026_09_02: "2. september 2026",
     changelogEntry239: "Chatvedlegg komprimerer nå bilder automatisk slik at de alltid holder seg innenfor størrelsesgrensen, og innloggingsskjermen og meldingsfeltet er fullstendig oversatt.",
     changelogEntry238: "Profiloppsett er nå delt i tre trinn (Basis, Trening, Innstillinger), og bunnnavigasjonen er synlig i hele appen med markering av gjeldende side.",
     profileStepBasics: "Basis",
@@ -28137,6 +28161,10 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
 
 (translations as unknown as Record<string, Record<string, string>>).es = {
     changelog_2026_09_01: "1 de septiembre de 2026",
+    changelogEntry240: "Registra el entrenamiento de hoy desde la pantalla de inicio con un toque, además de un recordatorio nocturno en tus días de entrenamiento.",
+    changelogEntry241: "Los entrenadores tienen un triaje matutino, un feed nocturno con las entradas del equipo y respuesta rápida, y la asistencia en un solo lugar.",
+    changelogEntry242: "Una barra inferior en todas partes con chat e indicador de no leídos, Salud y Vídeo bajo Yo, un límite de subida común y la semana de competición como cuenta atrás con lista.",
+    changelog_2026_09_02: "2 de septiembre de 2026",
     changelogEntry239: "Los archivos adjuntos del chat ahora comprimen las imágenes automáticamente para respetar el límite de tamaño, y la pantalla de inicio de sesión y el campo de mensajes están totalmente traducidos.",
     changelogEntry238: "La configuración del perfil ahora se divide en tres pasos (Básico, Entrenamiento, Ajustes), y la navegación inferior permanece visible en toda la app resaltando la página actual.",
     profileStepBasics: "Básico",
