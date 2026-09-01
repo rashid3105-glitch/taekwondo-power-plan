@@ -2,13 +2,15 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   Home, Zap, CalendarRange, Heart, Video as VideoIcon, Users, Trophy,
-  MessageCircle, User as UserIcon, BookOpen, HelpCircle, Repeat,
+  MessageCircle, User as UserIcon, BookOpen, HelpCircle, Repeat, ClipboardList,
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useRole } from "@/contexts/RoleContext";
 import { useCoachMode } from "@/contexts/CoachModeContext";
 import { useMatchAnalysisEnabled } from "@/hooks/useMatchAnalysisEnabled";
 import { useThreads } from "@/hooks/useThreads";
+import { useSuperadminLab } from "@/hooks/useSuperadminLab";
+import { useCoachLogCount } from "@/hooks/useCoachLogCount";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
@@ -37,6 +39,7 @@ export function AppBottomNav() {
   const { isCoachMode, isCoachRoute } = useCoachMode();
   const { matchAnalysisEnabled } = useMatchAnalysisEnabled();
   const { totalUnread } = useThreads();
+  const { labEnabled } = useSuperadminLab();
   const [meOpen, setMeOpen] = useState(false);
 
   const path = location.pathname;
@@ -88,6 +91,9 @@ export function AppBottomNav() {
   const items = coachMode
     ? [
         { key: "coach-idag", label: t("todayTab") || "I dag", icon: Home, iconClassName: "text-primary", active: path.startsWith("/coach/today"), badge: 0, onClick: () => navigate("/coach/today") },
+        ...(labEnabled
+          ? [{ key: "coach-logs", label: t("labLogsNav") || "Logs", icon: ClipboardList, iconClassName: "text-primary", active: path.startsWith("/coach/logs"), badge: logCount, onClick: () => navigate("/coach/logs") }]
+          : []),
         { key: "coach-hold", label: t("coachNav") || "Hold", icon: Users, iconClassName: "text-tab-plan", active: path === "/coach", badge: 0, onClick: () => navigate("/coach") },
         { key: "coach-staevner", label: t("competitionsTitle") || "Stævner", icon: Trophy, iconClassName: "text-amber-500", active: path.startsWith("/coach/competitions"), badge: 0, onClick: () => navigate("/coach/competitions") },
         chatItem,
