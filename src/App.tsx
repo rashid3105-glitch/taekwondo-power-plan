@@ -26,6 +26,7 @@ import { SplashScreen } from "@/components/SplashScreen";
 import { isNativeApp } from "@/lib/platform";
 import Index from "./pages/Index";
 import PostTrainingLogV2 from "./pages/prototypes/PostTrainingLogV2";
+import PostTrainingLogLive from "./pages/lab/PostTrainingLogLive";
 import CoachLanding from "./pages/CoachLanding";
 import Klubanalyse from "./pages/Klubanalyse";
 import { PublicSeo, DefaultNoIndex } from "@/components/seo/SeoHead";
