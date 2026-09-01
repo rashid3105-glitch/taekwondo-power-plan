@@ -366,10 +366,17 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
       {activeRole !== "coach" && <CompetitionWeekCard />}
 
       {activeRole !== "coach" && !isLoading && (
-        <QuickTrainingLog
-          isRestDay={todayPlan?.isRest !== false}
-          sessionLabel={todayPlan?.sessions?.[0]?.type ?? null}
-        />
+        labEnabled ? (
+          <TrainingLogCard
+            isRestDay={todayPlan?.isRest !== false}
+            sessionLabel={todayPlan?.sessions?.[0]?.type ?? null}
+          />
+        ) : (
+          <QuickTrainingLog
+            isRestDay={todayPlan?.isRest !== false}
+            sessionLabel={todayPlan?.sessions?.[0]?.type ?? null}
+          />
+        )
       )}
 
       {/* Plans: two separate panels */}
