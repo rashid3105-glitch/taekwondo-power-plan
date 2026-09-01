@@ -783,9 +783,19 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
           </DialogHeader>
           {latestDiary && (
             <div className="space-y-4">
-              <p className="text-sm text-white whitespace-pre-wrap">
-                {latestDiary.content || <span className="text-white/50 italic">{t("hubEmptyEntry")}</span>}
-              </p>
+              <div className="space-y-2">
+                <p className="text-sm text-white whitespace-pre-wrap line-clamp-2">
+                  {latestDiary.content || <span className="text-white/50 italic">{t("hubEmptyEntry")}</span>}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => { setDiaryOpen(false); navigate("/diary"); }}
+                  className="text-xs font-semibold underline underline-offset-2"
+                  style={goldStyle}
+                >
+                  {t("hubOpenDiaryToReadMore")}
+                </button>
+              </div>
 
               {latestDiary.comments.length > 0 && (
                 <div className="space-y-2 pt-2 border-t border-white/10">
