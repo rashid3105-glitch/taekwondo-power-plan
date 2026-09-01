@@ -109,7 +109,7 @@ export function AppBottomNav() {
           ...(matchAnalysisEnabled
             ? [{ key: "video", label: t("hubMatchTitle") || "Video", icon: VideoIcon, to: "/match-analysis/me" }]
             : []),
-          { key: "library", label: t("libraryTitle") || "Bibliotek", icon: BookOpen, to: "/library" },
+          { key: "library", label: t("library"), icon: BookOpen, to: "/library" },
         ]),
     { key: "profile", label: t("profile") || "Profil", icon: UserIcon, to: "/profile" },
     ...(hasCoachRole
