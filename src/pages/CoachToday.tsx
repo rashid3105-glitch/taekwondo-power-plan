@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Loader2, CalendarCheck } from "lucide-react";
+import { ArrowLeft, Loader2, CalendarCheck, ClipboardList } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { ClubSwitcher } from "@/components/ClubSwitcher";
@@ -31,6 +31,7 @@ export default function CoachToday() {
   const [loading, setLoading] = useState(true);
   const [statsOpen, setStatsOpen] = useState(false);
   const { labEnabled } = useSuperadminLab();
+  const { count: logCount } = useCoachLogCount(labEnabled);
 
   useEffect(() => {
     (async () => {
