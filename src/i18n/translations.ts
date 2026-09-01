@@ -2,6 +2,8 @@ export type Locale = "en" | "da" | "sv" | "de" | "ar" | "no" | "es";
 
 const translations = {
   en: {
+    changelog_2026_09_01: "1 September 2026",
+    changelogEntry238: "Profile setup is now split into three clear steps (Basics, Training, Settings), and the bottom navigation stays visible across the app with the current page highlighted.",
     profileStepBasics: "Basics",
     profileStepTraining: "Training",
     profileStepSettings: "Settings",
@@ -4385,6 +4387,8 @@ const translations = {
     pricingTalkNote: "We reply within 48 hours with a concrete proposal.",
   },
   da: {
+    changelog_2026_09_01: "1. september 2026",
+    changelogEntry238: "Profilopsætning er nu delt op i tre trin (Basis, Træning, Indstillinger), og bundnavigationen er synlig i hele appen med markering af den aktuelle side.",
     profileStepBasics: "Basis",
     profileStepTraining: "Træning",
     profileStepSettings: "Indstillinger",
@@ -8751,6 +8755,8 @@ const translations = {
     pricingTalkNote: "Vi svarer inden for 48 timer med et konkret oplæg.",
   },
   sv: {
+    changelog_2026_09_01: "1 september 2026",
+    changelogEntry238: "Profilinställningen är nu uppdelad i tre steg (Bas, Träning, Inställningar), och bottennavigeringen syns i hela appen med aktuell sida markerad.",
     profileStepBasics: "Bas",
     profileStepTraining: "Träning",
     profileStepSettings: "Inställningar",
@@ -13076,6 +13082,8 @@ const translations = {
     pricingTalkNote: "Vi svarar inom 48 timmar med ett konkret förslag.",
   },
   de: {
+    changelog_2026_09_01: "1. September 2026",
+    changelogEntry238: "Die Profileinrichtung ist jetzt in drei Schritte unterteilt (Basis, Training, Einstellungen), und die untere Navigation bleibt überall sichtbar mit Markierung der aktuellen Seite.",
     profileStepBasics: "Basis",
     profileStepTraining: "Training",
     profileStepSettings: "Einstellungen",
@@ -17351,6 +17359,8 @@ const translations = {
     pricingTalkNote: "Wir antworten innerhalb von 48 Stunden mit einem konkreten Vorschlag.",
   },
   ar: {
+    changelog_2026_09_01: "1 سبتمبر 2026",
+    changelogEntry238: "تم تقسيم إعداد الملف الشخصي إلى ثلاث خطوات (الأساسيات، التدريب، الإعدادات)، ويظل شريط التنقل السفلي ظاهرًا في التطبيق مع إبراز الصفحة الحالية.",
     profileStepBasics: "الأساسيات",
     profileStepTraining: "التدريب",
     profileStepSettings: "الإعدادات",
@@ -21627,6 +21637,8 @@ const translations = {
     pricingTalkNote: "نرد خلال 48 ساعة بعرض محدد.",
   },
   no: {
+    changelog_2026_09_01: "1. september 2026",
+    changelogEntry238: "Profiloppsett er nå delt i tre trinn (Basis, Trening, Innstillinger), og bunnnavigasjonen er synlig i hele appen med markering av gjeldende side.",
     profileStepBasics: "Basis",
     profileStepTraining: "Trening",
     profileStepSettings: "Innstillinger",
@@ -27775,6 +27787,8 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
 } as const;
 
 (translations as unknown as Record<string, Record<string, string>>).es = {
+    changelog_2026_09_01: "1 de septiembre de 2026",
+    changelogEntry238: "La configuración del perfil ahora se divide en tres pasos (Básico, Entrenamiento, Ajustes), y la navegación inferior permanece visible en toda la app resaltando la página actual.",
     profileStepBasics: "Básico",
     profileStepTraining: "Entrenamiento",
     profileStepSettings: "Ajustes",
