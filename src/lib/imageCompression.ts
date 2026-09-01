@@ -59,7 +59,6 @@ export async function compressImageFile(file: File, maxBytes: number): Promise<F
         canvas.height = h;
         const ctx = canvas.getContext("2d");
         if (!ctx) return file;
-        ctx.drawImage as unknown; // keep TS happy about union draw
         src.draw(ctx, w, h);
 
         for (const quality of [0.82, 0.7, 0.58, 0.45]) {
