@@ -109,5 +109,45 @@ Deno.serve(async (req) => {
     }
   }
 
+  // 4. Post-training log nudge at 17:45 UTC (~19:45 CET) — only on the
+  //    athlete's own training days, and only if nothing is logged yet today.
+  if (hour === 17 && now.getUTCMinutes() >= 45) {
+    const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const todayName = DAY_NAMES[now.getUTCDay()];
+    const { data: people } = await supa
+      .from("profiles")
+      .select("user_id, weekly_schedule")
+      .eq("is_approved", true);
+
+    const trainingToday = (people || [])
+      .filter((p: any) => {
+        const sched = Array.isArray(p.weekly_schedule) ? p.weekly_schedule : [];
+        const day = sched.find((d: any) => d?.day === todayName);
+        return day ? day.type !== "rest" : false;
+      })
+      .map((p: any) => p.user_id as string);
+
+    if (trainingToday.length) {
+      const { data: logged } = await supa
+        .from("diary_entries")
+        .select("user_id")
+        .eq("entry_date", todayStr)
+        .in("user_id", trainingToday);
+      const loggedSet = new Set((logged || []).map((r: any) => r.user_id));
+      const need = trainingToday.filter((u) => !loggedSet.has(u));
+      if (need.length) {
+        await sendPush(
+          need.slice(0, 400),
+          "How did training go today?",
+          "10 seconds: completed, partly or skipped.",
+          "/dashboard?tab=hub",
+          "training",
+          `traininglog-${todayStr}`,
+        );
+        triggered += need.length;
+      }
+    }
+  }
+
   return new Response(JSON.stringify({ triggered }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
 });

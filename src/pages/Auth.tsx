@@ -22,6 +22,8 @@ import {
   getBiometryLabel,
 } from "@/lib/biometricAuth";
 import MfaChallengeDialog from "@/components/MfaChallengeDialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Button as UIButton } from "@/components/ui/button";
 import { isDeviceRemembered, rememberDevice } from "@/lib/mfaRemember";
 import coachAthlete from "@/assets/coach-athlete.jpg";
 
@@ -38,6 +40,7 @@ export default function AuthPage() {
   const [bioHasCreds, setBioHasCreds] = useState(false);
   const [bioLabel, setBioLabel] = useState("Face ID");
   const [bioLoading, setBioLoading] = useState(false);
+  const [bioOfferOpen, setBioOfferOpen] = useState(false);
   const [mfaChallengeOpen, setMfaChallengeOpen] = useState(false);
   const [mfaFactorId, setMfaFactorId] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -165,16 +168,27 @@ export default function AuthPage() {
 
   const completeLogin = async () => {
     await applyPendingInviteAndPush();
-    // Offer to save credentials for biometric login on native
-    if (bioAvailable && !bioHasCreds) {
-      try {
-        const ok = window.confirm(t("authEnableBiometricPrompt").replace("{label}", bioLabel));
-        if (ok) {
-          await saveBiometricCredentials(email, password);
-          setBioHasCreds(true);
-        }
-      } catch { /* ignore */ }
+    // Offer to save credentials for biometric login — in-app card, never a
+    // browser dialog, and a "not now" is remembered.
+    if (bioAvailable && !bioHasCreds && localStorage.getItem("bio_offer_declined") !== "1") {
+      setBioOfferOpen(true);
+      return;
     }
+    navigate(redirectTo || "/dashboard");
+  };
+
+  const acceptBiometricOffer = async () => {
+    try {
+      await saveBiometricCredentials(email, password);
+      setBioHasCreds(true);
+    } catch { /* ignore */ }
+    setBioOfferOpen(false);
+    navigate(redirectTo || "/dashboard");
+  };
+
+  const declineBiometricOffer = () => {
+    localStorage.setItem("bio_offer_declined", "1");
+    setBioOfferOpen(false);
     navigate(redirectTo || "/dashboard");
   };
 
@@ -476,7 +490,21 @@ export default function AuthPage() {
           />
         </div>
 
+        <Dialog open={bioOfferOpen} onOpenChange={(o) => { if (!o) declineBiometricOffer(); }}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{t("authEnableBiometricPrompt").replace("{label}", bioLabel)}</DialogTitle>
+            </DialogHeader>
+            <DialogFooter className="gap-2">
+              <UIButton variant="ghost" onClick={declineBiometricOffer}>{t("notNow")}</UIButton>
+              <UIButton onClick={() => void acceptBiometricOffer()}>{t("save")}</UIButton>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
         {mfaFactorId && (
+
+
           <MfaChallengeDialog
             open={mfaChallengeOpen}
             factorId={mfaFactorId}
