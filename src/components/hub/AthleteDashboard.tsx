@@ -90,6 +90,7 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
   const navigate = useNavigate();
   const { t, locale } = useLanguage();
   const { totalUnread } = useThreads();
+  const { labEnabled } = useSuperadminLab();
   const { matchAnalysisEnabled } = useMatchAnalysisEnabled();
 
   const [todayPlan, setTodayPlan] = useState<TodayPlan | null>(null);
