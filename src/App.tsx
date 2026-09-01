@@ -317,6 +317,7 @@ const AnimatedRoutes = () => {
         <Route path="/mockup/season-onboarding" element={<Page><MockupSeasonOnboarding /></Page>} />
         <Route path="/mockup/athlete-goals" element={<Page><MockupAthleteGoals /></Page>} />
         <Route path="/prototypes/post-training-log-v2" element={<PostTrainingLogV2 />} />
+        <Route path="/lab/post-training-log" element={<Page><PostTrainingLogLive /></Page>} />
         <Route path="*" element={<Page><NotFound /></Page>} />
       </Routes>
       </AnimatePresence>
