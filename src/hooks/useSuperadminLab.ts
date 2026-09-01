@@ -16,7 +16,9 @@ export function useSuperadminLab() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) { if (!cancelled) { setLabEnabled(false); setLoading(false); } return; }
-        const { data } = await supabase.rpc("is_superadmin", { _user_id: user.id } as any);
+        // Platform admins only — independent of the superadmin read-access
+        // toggle, so the lab stays reachable while testing normally.
+        const { data } = await supabase.rpc("is_admin", { _user_id: user.id } as any);
         if (!cancelled) setLabEnabled(data === true);
       } catch {
         if (!cancelled) setLabEnabled(false);
