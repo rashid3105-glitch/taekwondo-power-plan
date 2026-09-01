@@ -26,6 +26,7 @@ import { SplashScreen } from "@/components/SplashScreen";
 import { isNativeApp } from "@/lib/platform";
 import Index from "./pages/Index";
 import PostTrainingLogV2 from "./pages/prototypes/PostTrainingLogV2";
+import PostTrainingLogLive from "./pages/lab/PostTrainingLogLive";
 import CoachLanding from "./pages/CoachLanding";
 import Klubanalyse from "./pages/Klubanalyse";
 import { PublicSeo, DefaultNoIndex } from "@/components/seo/SeoHead";
@@ -316,6 +317,7 @@ const AnimatedRoutes = () => {
         <Route path="/mockup/season-onboarding" element={<Page><MockupSeasonOnboarding /></Page>} />
         <Route path="/mockup/athlete-goals" element={<Page><MockupAthleteGoals /></Page>} />
         <Route path="/prototypes/post-training-log-v2" element={<PostTrainingLogV2 />} />
+        <Route path="/lab/post-training-log" element={<Page><PostTrainingLogLive /></Page>} />
         <Route path="*" element={<Page><NotFound /></Page>} />
       </Routes>
       </AnimatePresence>
