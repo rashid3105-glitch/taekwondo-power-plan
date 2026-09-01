@@ -112,9 +112,9 @@ export default function AuthPage() {
     haptics.tap();
     try {
       const creds = await getBiometricCredentialsWithPrompt(
-        bioLabel === "Face ID" ? "Log ind med Face ID" : "Log ind med biometri"
+        t("authBiometricLogin").replace("{label}", bioLabel)
       );
-      if (!creds) throw new Error("Ingen gemte oplysninger");
+      if (!creds) throw new Error(t("authBiometricNoCreds"));
       const { error } = await supabase.auth.signInWithPassword({
         email: creds.email,
         password: creds.password,
@@ -125,7 +125,7 @@ export default function AuthPage() {
     } catch (e: any) {
       toast({
         title: t("error"),
-        description: e?.message || "Biometrisk login fejlede",
+        description: e?.message || t("authBiometricFailed"),
         variant: "destructive",
       });
     } finally {
@@ -168,7 +168,7 @@ export default function AuthPage() {
     // Offer to save credentials for biometric login on native
     if (bioAvailable && !bioHasCreds) {
       try {
-        const ok = window.confirm(`Vil du aktivere ${bioLabel} til hurtigt login næste gang?`);
+        const ok = window.confirm(t("authEnableBiometricPrompt").replace("{label}", bioLabel));
         if (ok) {
           await saveBiometricCredentials(email, password);
           setBioHasCreds(true);
@@ -211,7 +211,7 @@ export default function AuthPage() {
       toast({
         title: t("error"),
         description: isPreviewProxyFailure
-          ? "Netværksfejl i preview. Prøv at åbne siden i en ny fane eller på sportstalent.dk."
+          ? t("authNetworkPreviewError")
           : msg,
         variant: "destructive",
       });
@@ -343,7 +343,7 @@ export default function AuthPage() {
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 <>
-                  <Fingerprint className="h-4 w-4" /> Log ind med {bioLabel}
+                  <Fingerprint className="h-4 w-4" /> {t("authBiometricLogin").replace("{label}", bioLabel)}
                 </>
               )}
             </button>
@@ -471,7 +471,7 @@ export default function AuthPage() {
         >
           <img
             src={coachAthlete}
-            alt="Coach og atlet ved sidelinjen til en taekwondo-kamp"
+            alt={t("authLoginImageAlt")}
             style={{ width: "100%", display: "block" }}
           />
         </div>

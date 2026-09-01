@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { sendMessage, MAX_ATTACHMENT_BYTES, type ChatMessage } from "@/lib/chatApi";
+import { compressImageFile } from "@/lib/imageCompression";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/i18n/LanguageContext";
 
@@ -20,22 +21,40 @@ export function MessageComposer({ threadId, onSent }: Props) {
   const [sending, setSending] = useState(false);
   const [recording, setRecording] = useState(false);
   const [showEmoji, setShowEmoji] = useState(false);
+  const [processing, setProcessing] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<any>(null);
 
   const EMOJIS = ["👍", "❤️", "🔥", "💪", "🥋", "🎯", "👏", "😄", "🙏", "✅"];
 
-  const handleFile = (f: File | null) => {
+  const limitLabel = `${Math.round(MAX_ATTACHMENT_BYTES / 1024 / 1024)} MB`;
+
+  const handleFile = async (f: File | null) => {
     if (!f) return setFile(null);
-    if (f.size > MAX_ATTACHMENT_BYTES) {
-      toast.error("Filen er for stor. Maks 1 MB.");
-      return;
-    }
     if (!f.type.startsWith("image/") && !f.type.startsWith("video/")) {
-      toast.error("Kun billeder eller video tilladt");
+      toast.error(t("composerOnlyMedia"));
       return;
     }
-    setFile(f);
+    // Images are compressed client-side so they fit the shared attachment limit.
+    let next = f;
+    if (f.type.startsWith("image/") && f.size > MAX_ATTACHMENT_BYTES) {
+      setProcessing(true);
+      const toastId = toast.loading(t("composerCompressing"));
+      try {
+        next = await compressImageFile(f, MAX_ATTACHMENT_BYTES);
+      } finally {
+        toast.dismiss(toastId);
+        setProcessing(false);
+      }
+      if (next.size <= MAX_ATTACHMENT_BYTES && next !== f) {
+        toast.success(t("composerCompressed").replace("{size}", `${(next.size / 1024).toFixed(0)} KB`));
+      }
+    }
+    if (next.size > MAX_ATTACHMENT_BYTES) {
+      toast.error(t("composerFileTooLarge").replace("{size}", limitLabel));
+      return;
+    }
+    setFile(next);
   };
 
   const toggleRecording = () => {
@@ -47,7 +66,7 @@ export function MessageComposer({ threadId, onSent }: Props) {
     const SpeechRecognition =
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      toast.error("Stemmeoptager understøttes ikke i denne browser");
+      toast.error(t("composerVoiceUnsupported"));
       return;
     }
     const rec = new SpeechRecognition();
@@ -82,7 +101,7 @@ export function MessageComposer({ threadId, onSent }: Props) {
       if (fileRef.current) fileRef.current.value = "";
       onSent?.(sent);
     } catch (e: any) {
-      toast.error(e?.message || "Kunne ikke sende");
+      toast.error(e?.message || t("composerSendFailed"));
     } finally {
       setSending(false);
     }
@@ -107,7 +126,7 @@ return (
           type="file"
           accept="image/*,video/*"
           className="hidden"
-          onChange={(e) => handleFile(e.target.files?.[0] ?? null)}
+          onChange={(e) => { void handleFile(e.target.files?.[0] ?? null); }}
         />
         {/* Image attach */}
         <Button
@@ -167,7 +186,7 @@ return (
         <Textarea
           value={body}
           onChange={(e) => setBody(e.target.value)}
-          placeholder={recording ? "Optager…" : "Skriv en besked…"}
+          placeholder={recording ? t("composerRecording") : t("composerPlaceholder")}
           rows={1}
           maxLength={2000}
           className="min-h-[38px] max-h-32 flex-1 resize-none border-0 bg-transparent px-1 py-2.5 text-base leading-snug shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -184,7 +203,7 @@ return (
           variant="ghost"
           className="h-10 w-10 shrink-0 flex items-center justify-center rounded-xl bg-gold text-gold-dark shadow-[0_2px_10px_rgba(212,175,55,0.35)] hover:bg-gold-light transition-transform active:scale-95 disabled:opacity-40 disabled:shadow-none disabled:hover:bg-gold"
           onClick={send}
-          disabled={sending || (!body.trim() && !file)}
+          disabled={sending || processing || (!body.trim() && !file)}
           aria-label={t("iconHintSend")} title={t("iconHintSend")}
         >
           {sending ? (
