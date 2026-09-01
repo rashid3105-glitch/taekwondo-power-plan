@@ -12,11 +12,14 @@ import { SessionAttendance } from "@/components/coach/SessionAttendance";
 import { AttendanceStatsDialog } from "@/components/coach/AttendanceStatsDialog";
 import { CoachTriage } from "@/components/coach/CoachTriage";
 import { CoachEveningFeed } from "@/components/coach/CoachEveningFeed";
+import { CoachLogQueue } from "@/components/lab/CoachLogQueue";
+import { useSuperadminLab } from "@/hooks/useSuperadminLab";
 
 interface MiniAthlete {
   user_id: string;
   display_name: string;
   avatar_url: string | null;
+  birth_date?: string | null;
 }
 
 export default function CoachToday() {
@@ -27,6 +30,7 @@ export default function CoachToday() {
   const [athletes, setAthletes] = useState<MiniAthlete[]>([]);
   const [loading, setLoading] = useState(true);
   const [statsOpen, setStatsOpen] = useState(false);
+  const { labEnabled } = useSuperadminLab();
 
   useEffect(() => {
     (async () => {
@@ -67,12 +71,12 @@ export default function CoachToday() {
 
       const { data: profiles } = await supabase
         .from("profiles")
-        .select("user_id, display_name, avatar_url, club_id")
+        .select("user_id, display_name, avatar_url, club_id, birth_date")
         .in("user_id", athleteIds);
 
       const filtered = ((profiles || []) as any[])
         .filter((a) => !activeClubId || memberIds.has(a.user_id) || a.club_id === activeClubId)
-        .map((a) => ({ user_id: a.user_id, display_name: a.display_name, avatar_url: a.avatar_url }))
+        .map((a) => ({ user_id: a.user_id, display_name: a.display_name, avatar_url: a.avatar_url, birth_date: a.birth_date }))
         .sort((a, b) => (a.display_name || "").localeCompare(b.display_name || ""));
 
       setAthletes(filtered);
@@ -107,6 +111,8 @@ export default function CoachToday() {
       <main className="container max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4">
 
         <CoachTriage athletes={athletes} />
+
+        {labEnabled && <CoachLogQueue athletes={athletes} />}
 
         {coachUserId && (
           <CoachEveningFeed coachId={coachUserId} athletes={athletes} activeClubId={activeClubId} />
