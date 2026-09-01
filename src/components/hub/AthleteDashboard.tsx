@@ -23,6 +23,8 @@ import {
 import { findPlanDayForToday, normalizeDaySessions, isRestDay } from "@/lib/planSessionUtils";
 import ComplianceAlertsCard from "@/components/ComplianceAlertsCard";
 import { QuickTrainingLog } from "@/components/hub/QuickTrainingLog";
+import { TrainingLogCard } from "@/components/lab/TrainingLogCard";
+import { useSuperadminLab } from "@/hooks/useSuperadminLab";
 import { CompetitionWeekCard } from "@/components/hub/CompetitionWeekCard";
 import AnnouncementsCard from "@/components/AnnouncementsCard";
 import { useMatchAnalysisEnabled } from "@/hooks/useMatchAnalysisEnabled";
