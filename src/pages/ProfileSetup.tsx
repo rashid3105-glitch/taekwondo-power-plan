@@ -22,6 +22,8 @@ import { isPushSupported, getCurrentSubscriptionStatus, subscribeToPush, unsubsc
 import { useSportProfile } from "@/hooks/useSportProfile";
 import { GradePickerNative } from "@/components/GradePicker";
 import { gradeLabelFor } from "@/lib/sportGrade";
+import { cn } from "@/lib/utils";
+
 
 
 import { COUNTRIES } from "@/data/countries";
@@ -57,7 +59,9 @@ interface ClubOption {
 }
 
 export default function ProfileSetup() {
+  const [step, setStep] = useState(1);
   const [age, setAge] = useState("");
+
   const [weight, setWeight] = useState("");
   const [belt, setBelt] = useState("white");
   const [experience, setExperience] = useState("");
@@ -449,6 +453,8 @@ export default function ProfileSetup() {
     );
   }
 
+  const stepLabels = [t("profileStepBasics"), t("profileStepTraining"), t("profileStepSettings")];
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container max-w-lg mx-auto px-4 py-6 sm:py-8">
@@ -466,7 +472,30 @@ export default function ProfileSetup() {
           <p className="text-sm text-muted-foreground">{t("profileSubtitle")}</p>
         </div>
 
+        {/* Step indicator */}
+        <div className="mb-6">
+          <div className="flex items-center gap-2">
+            {stepLabels.map((label, i) => (
+              <button
+                key={label}
+                type="button"
+                onClick={() => setStep(i + 1)}
+                className="flex-1 text-left"
+                aria-current={step === i + 1}
+              >
+                <div className={cn("h-1.5 rounded-full transition-colors", step >= i + 1 ? "bg-primary" : "bg-muted")} />
+                <span className={cn("mt-1 block text-[10px] font-semibold uppercase tracking-wide", step === i + 1 ? "text-primary" : "text-muted-foreground")}>
+                  {label}
+                </span>
+              </button>
+            ))}
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">{t("profileStepOf").replace("{n}", String(step))}</p>
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-5">
+          <div className={step === 1 ? "space-y-5" : "hidden"}>
+
           <div className="flex justify-center">
             <button
               type="button"
@@ -489,11 +518,6 @@ export default function ProfileSetup() {
                 {avatarUrl ? t("changePhoto") : t("addPhoto")}
               </span>
             </button>
-            {avatarUrl && avatarUrl.split("?")[0] !== (savedAvatarUrl || "") && !uploading && (
-              <div className="absolute mt-28 sm:mt-32 text-[10px] text-destructive font-medium">
-                ⚠ Click Save to keep this photo
-              </div>
-            )}
             <input
               ref={fileInputRef}
               type="file"
@@ -517,46 +541,6 @@ export default function ProfileSetup() {
               ))}
             </select>
           </div>
-
-          <div>
-            <Label htmlFor="defaultLocale">{t("defaultLanguage")}</Label>
-            <p className="text-xs text-muted-foreground mb-1">{t("defaultLanguageHint")}</p>
-            <select
-              id="defaultLocale"
-              value={defaultLocale}
-              onChange={(e) => {
-                const v = e.target.value as Locale | "";
-                setDefaultLocale(v);
-                if (v) setLocale(v);
-              }}
-              className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <option value="">{`— ${t("defaultLanguage")} —`}</option>
-              <option value="en">🇬🇧 English</option>
-              <option value="da">🇩🇰 Dansk</option>
-              <option value="sv">🇸🇪 Svenska</option>
-              <option value="no">🇳🇴 Norsk</option>
-              <option value="de">🇩🇪 Deutsch</option>
-              <option value="ar">🇸🇦 العربية</option>
-              <option value="es">🇪🇸 Español</option>
-            </select>
-          </div>
-
-          {pushSupported && (
-            <div className="space-y-2">
-              <Label>{t("pushNotifications")}</Label>
-              <div className="flex items-center justify-between rounded-xl border border-border bg-muted/30 px-4 py-3">
-                <div className="space-y-0.5">
-                  <p className="text-sm font-medium">{t("pushNotificationsTitle")}</p>
-                  <p className="text-xs text-muted-foreground">{t("pushNotificationsDesc")}</p>
-                </div>
-                <Switch checked={pushEnabled} onCheckedChange={handlePushToggle} />
-              </div>
-            </div>
-          )}
-
-
-
 
           <div>
             <Label htmlFor="club">{t("club")}</Label>
@@ -584,11 +568,6 @@ export default function ProfileSetup() {
                 onChange={(e) => setBirthDate(e.target.value)}
                 max={new Date().toISOString().split("T")[0]}
               />
-              {birthDate && (
-                <p className="text-xs text-muted-foreground mt-1">
-                  {t("age") || "Alder"}: {Math.floor((Date.now() - new Date(birthDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000))} {t("years") || "år"}
-                </p>
-              )}
               {birthDate && derivedAge && (
                 <p className="text-xs text-muted-foreground mt-1">
                   {t("profileAge")}: <span className="font-semibold text-foreground">{derivedAge} {t("years")}</span>
@@ -647,172 +626,243 @@ export default function ProfileSetup() {
               />
             </div>
           </div>
-
-          <div>
-            <Label htmlFor="customCalories">{t("dailyCalorieTarget")}</Label>
-            <p className="text-xs text-muted-foreground mb-1">{t("dailyCalorieHint")}</p>
-            <Input
-              id="customCalories"
-              type="number"
-              value={customCalories}
-              onChange={(e) => setCustomCalories(e.target.value)}
-              placeholder="2500"
-              min={500}
-              max={10000}
-            />
           </div>
 
-          <div>
-            <Label htmlFor="belt">{gradeLabelFor(sportProfile.slug, t, locale)}</Label>
-            <GradePickerNative
-              id="belt"
-              profile={sportProfile}
-              value={belt}
-              onChange={setBelt}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            />
-          </div>
-
-          <div className="rounded-lg border border-border bg-muted/20 p-3 space-y-3">
+          {/* ---------- Step 2: Training ---------- */}
+          <div className={step === 2 ? "space-y-5" : "hidden"}>
             <div>
-              <Label className="text-sm font-semibold">{t("licenses") || "Licenses"}</Label>
-              <p className="text-xs text-muted-foreground">{t("licensesHint") || "Optional — for competition eligibility"}</p>
+              <Label htmlFor="belt">{gradeLabelFor(sportProfile.slug, t, locale)}</Label>
+              <GradePickerNative
+                id="belt"
+                profile={sportProfile}
+                value={belt}
+                onChange={setBelt}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <Label htmlFor="gal_license" className="text-xs">{t("galLicense") || "GAL license"}</Label>
-                <Input
-                  id="gal_license"
-                  value={galLicense}
-                  onChange={(e) => setGalLicense(e.target.value)}
-                  placeholder="—"
-                  maxLength={50}
-                />
-              </div>
-              <div>
-                <Label htmlFor="gal_expires" className="text-xs">{t("expiresAt") || "Expires"}</Label>
-                <Input
-                  id="gal_expires"
-                  type="date"
-                  value={galLicenseExpires}
-                  onChange={(e) => setGalLicenseExpires(e.target.value)}
-                />
+            <div>
+              <Label>{t("discipline")}</Label>
+              <p className="text-xs text-muted-foreground mb-2">{disciplineHintFor(sportProfile.slug, t)}</p>
+              <div className="flex gap-2">
+                {(["sparring", "poomsae"] as const).map((d) => (
+                  <button
+                    key={d}
+                    type="button"
+                    onClick={() => setDiscipline(d)}
+                    data-active={discipline === d}
+                    className="flex-1 rounded-lg px-4 py-3 text-sm font-semibold border border-border transition-colors cursor-pointer
+                      data-[active=true]:bg-primary data-[active=true]:text-primary-foreground data-[active=true]:border-primary
+                      data-[active=false]:text-muted-foreground hover:text-foreground"
+                  >
+                    {t(d)}
+                  </button>
+                ))}
               </div>
             </div>
 
-            {country === "Denmark" && (
-              <div className="space-y-2 pt-2 border-t border-border/60">
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="has_mfb"
-                    checked={hasMyFightBook}
-                    onCheckedChange={(c) => setHasMyFightBook(!!c)}
-                  />
-                  <Label htmlFor="has_mfb" className="text-sm font-normal cursor-pointer">
-                    {t("hasMyFightBook") || "MyFightBook"}
-                  </Label>
-                </div>
-                {hasMyFightBook && (
-                  <div>
-                    <Label htmlFor="mfb_expires" className="text-xs">{t("expiresAt") || "Expires"}</Label>
-                    <Input
-                      id="mfb_expires"
-                      type="date"
-                      value={myFightBookExpires}
-                      onChange={(e) => setMyFightBookExpires(e.target.value)}
-                    />
+            <div>
+              <Label>{t("programLength")}</Label>
+              <p className="text-xs text-muted-foreground mb-3">
+                {programWeeks} {t("weeks")}
+              </p>
+              <Slider
+                value={[programWeeks]}
+                onValueChange={(v) => setProgramWeeks(v[0])}
+                min={4}
+                max={12}
+                step={1}
+                className="w-full"
+              />
+              <div className="flex justify-between text-[10px] text-muted-foreground mt-1">
+                <span>4 {t("weeks")}</span>
+                <span>12 {t("weeks")}</span>
+              </div>
+            </div>
+
+            <div>
+              <Label>{t("weeklySchedule")}</Label>
+              <p className="text-xs text-muted-foreground mb-2">{t("weeklyScheduleHint")}</p>
+              <WeekSchedulePicker schedule={schedule} onChange={setSchedule} />
+            </div>
+
+            <div>
+              <Label>{t("trainingGoals")}</Label>
+              <p className="text-xs text-muted-foreground mb-2">{t("selectAllThatApply")}</p>
+              <div className="flex flex-wrap gap-2">
+                {GOAL_OPTIONS.map((goal) => (
+                  <button
+                    key={goal}
+                    type="button"
+                    onClick={() => toggleGoal(goal)}
+                    data-active={goals.includes(goal)}
+                    className="rounded-full px-3 py-1.5 text-xs font-medium border border-border transition-colors cursor-pointer
+                      data-[active=true]:bg-primary data-[active=true]:text-primary-foreground
+                      data-[active=false]:text-muted-foreground hover:text-foreground"
+                  >
+                    {t(goal)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* ---------- Step 3: Settings ---------- */}
+          <div className={step === 3 ? "space-y-5" : "hidden"}>
+            <div>
+              <Label htmlFor="defaultLocale">{t("defaultLanguage")}</Label>
+              <p className="text-xs text-muted-foreground mb-1">{t("defaultLanguageHint")}</p>
+              <select
+                id="defaultLocale"
+                value={defaultLocale}
+                onChange={(e) => {
+                  const v = e.target.value as Locale | "";
+                  setDefaultLocale(v);
+                  if (v) setLocale(v);
+                }}
+                className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <option value="">{`— ${t("defaultLanguage")} —`}</option>
+                <option value="en">🇬🇧 English</option>
+                <option value="da">🇩🇰 Dansk</option>
+                <option value="sv">🇸🇪 Svenska</option>
+                <option value="no">🇳🇴 Norsk</option>
+                <option value="de">🇩🇪 Deutsch</option>
+                <option value="ar">🇸🇦 العربية</option>
+                <option value="es">🇪🇸 Español</option>
+              </select>
+            </div>
+
+            {pushSupported && (
+              <div className="space-y-2">
+                <Label>{t("pushNotifications")}</Label>
+                <div className="flex items-center justify-between rounded-xl border border-border bg-muted/30 px-4 py-3">
+                  <div className="space-y-0.5">
+                    <p className="text-sm font-medium">{t("pushNotificationsTitle")}</p>
+                    <p className="text-xs text-muted-foreground">{t("pushNotificationsDesc")}</p>
                   </div>
-                )}
+                  <Switch checked={pushEnabled} onCheckedChange={handlePushToggle} />
+                </div>
               </div>
+            )}
+
+            <div>
+              <Label htmlFor="customCalories">{t("dailyCalorieTarget")}</Label>
+              <p className="text-xs text-muted-foreground mb-1">{t("dailyCalorieHint")}</p>
+              <Input
+                id="customCalories"
+                type="number"
+                value={customCalories}
+                onChange={(e) => setCustomCalories(e.target.value)}
+                placeholder="2500"
+                min={500}
+                max={10000}
+              />
+            </div>
+
+            <div className="rounded-lg border border-border bg-muted/20 p-3 space-y-3">
+              <div>
+                <Label className="text-sm font-semibold">{t("licenses") || "Licenses"}</Label>
+                <p className="text-xs text-muted-foreground">{t("licensesHint") || "Optional — for competition eligibility"}</p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <Label htmlFor="gal_license" className="text-xs">{t("galLicense") || "GAL license"}</Label>
+                  <Input
+                    id="gal_license"
+                    value={galLicense}
+                    onChange={(e) => setGalLicense(e.target.value)}
+                    placeholder="—"
+                    maxLength={50}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="gal_expires" className="text-xs">{t("expiresAt") || "Expires"}</Label>
+                  <Input
+                    id="gal_expires"
+                    type="date"
+                    value={galLicenseExpires}
+                    onChange={(e) => setGalLicenseExpires(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              {country === "Denmark" && (
+                <div className="space-y-2 pt-2 border-t border-border/60">
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="has_mfb"
+                      checked={hasMyFightBook}
+                      onCheckedChange={(c) => setHasMyFightBook(!!c)}
+                    />
+                    <Label htmlFor="has_mfb" className="text-sm font-normal cursor-pointer">
+                      {t("hasMyFightBook") || "MyFightBook"}
+                    </Label>
+                  </div>
+                  {hasMyFightBook && (
+                    <div>
+                      <Label htmlFor="mfb_expires" className="text-xs">{t("expiresAt") || "Expires"}</Label>
+                      <Input
+                        id="mfb_expires"
+                        type="date"
+                        value={myFightBookExpires}
+                        onChange={(e) => setMyFightBookExpires(e.target.value)}
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {avatarUrl && avatarUrl.split("?")[0] !== (savedAvatarUrl || "") && !uploading && (
+            <p className="text-[10px] text-destructive font-medium text-center">⚠ {t("saveProfileContinue")}</p>
+          )}
+
+          <div className="flex gap-2">
+            {step > 1 && (
+              <Button type="button" variant="outline" className="flex-1" onClick={() => setStep((s) => s - 1)}>
+                {t("back")}
+              </Button>
+            )}
+            {step < 3 ? (
+              <Button type="button" className="flex-1" onClick={() => setStep((s) => s + 1)}>
+                {t("next")}
+              </Button>
+            ) : (
+              <Button type="submit" className="flex-1" disabled={loading || uploading}>
+                {uploading || loading ? t("saving") : t("saveProfileContinue")}
+              </Button>
             )}
           </div>
 
-          <div>
-            <Label>{t("discipline")}</Label>
-            <p className="text-xs text-muted-foreground mb-2">{disciplineHintFor(sportProfile.slug, t)}</p>
-            <div className="flex gap-2">
-              {(["sparring", "poomsae"] as const).map((d) => (
-                <button
-                  key={d}
-                  type="button"
-                  onClick={() => setDiscipline(d)}
-                  data-active={discipline === d}
-                  className="flex-1 rounded-lg px-4 py-3 text-sm font-semibold border border-border transition-colors cursor-pointer
-                    data-[active=true]:bg-primary data-[active=true]:text-primary-foreground data-[active=true]:border-primary
-                    data-[active=false]:text-muted-foreground hover:text-foreground"
-                >
-                  {t(d)}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <Label>{t("programLength")}</Label>
-            <p className="text-xs text-muted-foreground mb-3">
-              {programWeeks} {t("weeks")}
-            </p>
-            <Slider
-              value={[programWeeks]}
-              onValueChange={(v) => setProgramWeeks(v[0])}
-              min={4}
-              max={12}
-              step={1}
-              className="w-full"
-            />
-            <div className="flex justify-between text-[10px] text-muted-foreground mt-1">
-              <span>4 {t("weeks")}</span>
-              <span>12 {t("weeks")}</span>
-            </div>
-          </div>
-
-          <div>
-            <Label>{t("weeklySchedule")}</Label>
-            <p className="text-xs text-muted-foreground mb-2">{t("weeklyScheduleHint")}</p>
-            <WeekSchedulePicker schedule={schedule} onChange={setSchedule} />
-          </div>
-
-          <div>
-            <Label>{t("trainingGoals")}</Label>
-            <p className="text-xs text-muted-foreground mb-2">{t("selectAllThatApply")}</p>
-            <div className="flex flex-wrap gap-2">
-              {GOAL_OPTIONS.map((goal) => (
-                <button
-                  key={goal}
-                  type="button"
-                  onClick={() => toggleGoal(goal)}
-                  data-active={goals.includes(goal)}
-                  className="rounded-full px-3 py-1.5 text-xs font-medium border border-border transition-colors cursor-pointer
-                    data-[active=true]:bg-primary data-[active=true]:text-primary-foreground
-                    data-[active=false]:text-muted-foreground hover:text-foreground"
-                >
-                  {t(goal)}
-                </button>
-              ))}
-            </div>
-          </div>
-
-
-          <Button type="submit" className="w-full" disabled={loading || uploading}>
-            {uploading ? t("saving") : loading ? t("saving") : t("saveProfileContinue")}
-          </Button>
+          {step < 3 && (
+            <Button type="submit" variant="ghost" className="w-full" disabled={loading || uploading}>
+              {uploading || loading ? t("saving") : t("save")}
+            </Button>
+          )}
         </form>
 
-        <div className="mt-6">
-          <PublicProfileSettings />
-        </div>
+        {step === 3 && (
+          <>
+            <div className="mt-6">
+              <PublicProfileSettings />
+            </div>
 
-        {(!derivedAge || parseInt(derivedAge, 10) < 18) && (
-          <div className="mt-6">
-            <ParentInviteSection />
-          </div>
+            {(!derivedAge || parseInt(derivedAge, 10) < 18) && (
+              <div className="mt-6">
+                <ParentInviteSection />
+              </div>
+            )}
+            <PasskeySettings />
+
+            <AccountDangerZone />
+          </>
         )}
-        <PasskeySettings />
-
-        <AccountDangerZone />
       </div>
 
     </div>
   );
 }
+

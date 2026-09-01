@@ -843,46 +843,8 @@ export default function Dashboard() {
 
 
 
-      {/* Mobile bottom nav — 5 tabs */}
-      <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-card/95 backdrop-blur-sm sm:hidden pb-safe">
-        <div className="flex items-stretch justify-around px-1 pt-1.5">
-          {(coachAthleteMode === "coach" && isCoach ? [
-            { key: "coach-hold", label: t("coachNav") || "Hold", icon: Users, iconClassName: "text-primary", active: false, onClick: () => navigate("/coach"), dot: coachReportsUnread > 0 },
-            { key: "coach-traening", label: t("train") || "Træning", icon: CalendarRange, iconClassName: "text-tab-plan", active: false, onClick: () => navigate("/coach/season-calendar") },
-            { key: "coach-staevner", label: t("competitions") || "Stævner", icon: Trophy, iconClassName: "text-amber-500", active: false, onClick: () => navigate("/coach/competitions") },
-            { key: "coach-surveys", label: t("surveysTitle") || "Spørgeskemaer", icon: ClipboardList, iconClassName: "text-tab-mental", active: false, onClick: () => navigate("/coach/surveys") },
+      {/* Mobile bottom nav is rendered globally by <AppBottomNav /> */}
 
-          ] : [
-            { key: "idag", label: t("today") || "I dag", icon: Home, iconClassName: "text-primary", active: activeTab === "hub", dot: !seenDots.has("hub_today_multisession"), onClick: () => { markDotSeen("hub_today_multisession"); handleTabChange("hub"); } },
-            { key: "traen", label: t("train") || "Træn", icon: Zap, iconClassName: "text-tab-plan", active: activeTab === "plan", onClick: () => handleTabChange("plan") },
-            { key: "kalender", label: t("seasonCalendar") || "Kalender", icon: CalendarRange, iconClassName: "text-tab-progress", active: activeTab === "calendar", onClick: () => handleTabChange("calendar") },
-            { key: "health", label: t("healthNav") || "Sundhed", icon: Heart, iconClassName: "text-red-500 fill-red-500", active: false, onClick: () => navigate("/health") },
-            ...(matchAnalysisEnabled
-              ? [{ key: "video", label: t("hubMatchTitle") || "Video", icon: VideoIcon, iconClassName: "text-tab-mental", active: false, onClick: () => navigate("/match-analysis/me") }]
-              : []),
-          ]).map(({ key, label, icon: Icon, active, onClick, dot, iconClassName }: any) => (
-            <button
-              key={key}
-              onClick={() => {
-                import("@/lib/haptics").then(h => h.tap()).catch(() => {});
-                onClick();
-              }}
-              aria-label={label}
-              className={cn(
-                "relative flex flex-1 min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg px-1 py-1.5 transition-colors active:scale-95",
-                active ? "text-primary" : "text-muted-foreground"
-              )}
-              style={{ minHeight: 48 }}
-            >
-              <Icon className={cn("h-5 w-5", iconClassName)} />
-              {dot && (
-                <span className="absolute top-1 right-3 h-2 w-2 rounded-full bg-destructive" aria-hidden="true" />
-              )}
-              <span className="text-[9px] font-semibold uppercase tracking-wide leading-tight truncate max-w-full">{label}</span>
-            </button>
-          ))}
-        </div>
-      </nav>
 
       <main className="container max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
         <InviteWelcomeBanner />

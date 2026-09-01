@@ -25,7 +25,7 @@ const HIDDEN_PREFIXES = [
 ];
 
 
-const EXACT_HIDDEN = new Set(["/", "/dashboard"]);
+const EXACT_HIDDEN = new Set(["/"]);
 
 export function AppBottomNav() {
   const location = useLocation();
@@ -56,6 +56,11 @@ export function AppBottomNav() {
 
   const coachMode = (isCoachMode || isCoachRoute) && hasCoachRole;
 
+  // Route-based active state — the dashboard keeps its tab in ?tab=
+  const onDashboard = path === "/dashboard";
+  const dashboardTab = onDashboard
+    ? new URLSearchParams(location.search).get("tab") || "hub"
+    : null;
 
   const items = coachMode
     ? [
@@ -65,9 +70,9 @@ export function AppBottomNav() {
         { key: "coach-surveys", label: t("surveysTitle") || "Spørgeskemaer", icon: ClipboardList, iconClassName: "text-tab-mental", active: path.startsWith("/coach/surveys"), onClick: () => navigate("/coach/surveys") },
       ]
     : [
-        { key: "idag", label: t("today") || "I dag", icon: Home, iconClassName: "text-primary", active: false, onClick: () => navigate("/dashboard?tab=hub") },
-        { key: "traen", label: t("train") || "Træn", icon: Zap, iconClassName: "text-tab-plan", active: false, onClick: () => navigate("/dashboard?tab=plan") },
-        { key: "kalender", label: t("seasonCalendar") || "Kalender", icon: CalendarRange, iconClassName: "text-tab-progress", active: false, onClick: () => navigate("/dashboard?tab=calendar") },
+        { key: "idag", label: t("today") || "I dag", icon: Home, iconClassName: "text-primary", active: dashboardTab === "hub", onClick: () => navigate("/dashboard?tab=hub") },
+        { key: "traen", label: t("train") || "Træn", icon: Zap, iconClassName: "text-tab-plan", active: dashboardTab === "plan", onClick: () => navigate("/dashboard?tab=plan") },
+        { key: "kalender", label: t("seasonCalendar") || "Kalender", icon: CalendarRange, iconClassName: "text-tab-progress", active: dashboardTab === "calendar", onClick: () => navigate("/dashboard?tab=calendar") },
         { key: "health", label: t("healthNav"), icon: Heart, iconClassName: "text-red-500 fill-red-500", active: path.startsWith("/health"), onClick: () => navigate("/health") },
         ...(matchAnalysisEnabled
           ? [{ key: "video", label: t("hubMatchTitle") || "Video", icon: VideoIcon, iconClassName: "text-tab-mental", active: path.startsWith("/match-analysis"), onClick: () => navigate("/match-analysis/me") }]
@@ -75,7 +80,14 @@ export function AppBottomNav() {
       ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-card/95 backdrop-blur-sm pb-safe">
+    <nav
+      className={cn(
+        "fixed bottom-0 left-0 right-0 z-20 border-t border-border bg-card/95 backdrop-blur-sm pb-safe",
+        // On the dashboard the desktop layout has its own top tab bar
+        onDashboard && "sm:hidden"
+      )}
+    >
+
       <div className="flex items-stretch justify-around px-1 pt-1.5">
         {items.map(({ key, label, icon: Icon, active, onClick, iconClassName }) => (
           <button
