@@ -51,12 +51,15 @@ export function CoachLogQueue({ athletes, bare }: Props) {
 
     const { data: entries } = await supabase
       .from("diary_entries")
-      .select("id, user_id, content, mood, energy, entry_date, is_private")
+      .select("id, user_id, content, mood, energy, entry_date, is_private, entry_type, entry_types")
       .eq("entry_date", today)
       .in("user_id", ids)
       .order("created_at", { ascending: true });
 
-    const list = ((entries as any[]) || []).filter((e) => e.is_private !== true);
+    const list = ((entries as any[]) || []).filter(
+      (e) => e.is_private !== true &&
+        (e.entry_type === "training" || ((e.entry_types as string[]) || []).includes("training")),
+    );
     if (list.length === 0) { setRows([]); return; }
 
     const { data: comments } = await supabase
@@ -78,7 +81,7 @@ export function CoachLogQueue({ athletes, bare }: Props) {
         id: e.id,
         user_id: e.user_id,
         name: a?.display_name || "—",
-        content: e.content || "",
+        content: (e.content || "").slice(0, 600),
         effort: e.mood ?? e.energy ?? null,
         isMinor,
         handledBy: handled.get(e.id) ?? null,
