@@ -12,7 +12,7 @@ import { SessionAttendance } from "@/components/coach/SessionAttendance";
 import { AttendanceStatsDialog } from "@/components/coach/AttendanceStatsDialog";
 import { CoachTriage } from "@/components/coach/CoachTriage";
 import { CoachEveningFeed } from "@/components/coach/CoachEveningFeed";
-import { CoachLogQueue } from "@/components/lab/CoachLogQueue";
+import { useCoachLogCount } from "@/hooks/useCoachLogCount";
 import { useSuperadminLab } from "@/hooks/useSuperadminLab";
 
 interface MiniAthlete {
@@ -112,7 +112,19 @@ export default function CoachToday() {
 
         <CoachTriage athletes={athletes} />
 
-        {labEnabled && <CoachLogQueue athletes={athletes} />}
+        {labEnabled && (
+          <button
+            type="button"
+            onClick={() => navigate("/coach/logs")}
+            className="w-full flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2.5 text-left"
+          >
+            <ClipboardList className="h-4 w-4 text-primary" />
+            <span className="text-sm font-semibold text-card-foreground">
+              {(t("labLogsPending") || "{n}").replace("{n}", String(logCount))}
+            </span>
+            <span className="ml-auto text-xs font-bold text-primary">{t("labLogsOpen")}</span>
+          </button>
+        )}
 
         {coachUserId && (
           <CoachEveningFeed coachId={coachUserId} athletes={athletes} activeClubId={activeClubId} />

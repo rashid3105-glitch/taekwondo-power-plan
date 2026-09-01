@@ -62,6 +62,7 @@ export function AppBottomNav() {
   if (roleLoading) return null;
 
   const coachMode = (isCoachMode || isCoachRoute) && hasCoachRole;
+  const { count: logCount } = useCoachLogCount(labEnabled && coachMode);
 
   // Route-based active state — the dashboard keeps its tab in ?tab=
   const onDashboard = path === "/dashboard";
