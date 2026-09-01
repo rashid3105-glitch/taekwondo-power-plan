@@ -31,7 +31,9 @@ type State =
   | { kind: "loading" }
   | { kind: "ok" }
   | { kind: "banner"; graceUntil: string; clubName: string | null }
+  | { kind: "minor"; clubName: string | null; guardianEmail: string | null; guardianLinked: boolean }
   | { kind: "blocking"; clubName: string | null };
+
 
 function fillPlaceholders(template: string, vars: Record<string, string>) {
   return template.replace(/\{(\w+)\}/g, (_m, key) => vars[key] ?? `{${key}}`);
@@ -48,6 +50,8 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
   // GDPR requires unambiguous, active consent — checkbox starts UNCHECKED
   // and the submit button stays disabled until the user ticks it.
   const [checked, setChecked] = useState(false);
+  const [guardianLink, setGuardianLink] = useState<string | null>(null);
+
 
   const evaluate = useCallback(async () => {
     try {
@@ -58,10 +62,10 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
       }
       const uid = session.user.id;
 
-      const [{ data: profile }, { data: consent }] = await Promise.all([
+      const [{ data: profile }, { data: consent }, { data: parents }] = await Promise.all([
         supabase
           .from("profiles")
-          .select("role, active_role, birth_date, age, club_id, clubs:club_id(name)")
+          .select("role, active_role, birth_date, age, guardian_email, club_id, clubs:club_id(name)")
           .eq("user_id", uid)
           .maybeSingle(),
         supabase
@@ -70,6 +74,11 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
           .eq("athlete_id", uid)
           .eq("consent_type", "health_data_processing")
           .maybeSingle(),
+        supabase
+          .from("parent_athletes" as any)
+          .select("id")
+          .eq("athlete_id", uid)
+          .limit(1),
       ]);
 
       const isAthlete =
@@ -80,30 +89,46 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
         return;
       }
 
+      const clubName: string | null = (profile as any)?.clubs?.name ?? null;
+      const status = (consent as any)?.status;
+      const grace = (consent as any)?.grace_until as string | null | undefined;
+      const inGrace = !!grace && new Date(grace).getTime() > Date.now();
+
       const age = effectiveAge(
         (profile as any)?.birth_date ?? null,
         (profile as any)?.age ?? null,
       );
-      // Minor → handled separately (parental consent flow).
-      if (age != null && age < 18) {
-        setState({ kind: "ok" });
+      // Minors (and accounts with no known age) need guardian consent before
+      // health features open up.
+      if (age == null || age < 18) {
+        if (status === "granted") {
+          setState({ kind: "ok" });
+          return;
+        }
+        if (inGrace) {
+          setState({ kind: "banner", graceUntil: grace as string, clubName });
+          return;
+        }
+        setState({
+          kind: "minor",
+          clubName,
+          guardianEmail: ((profile as any)?.guardian_email as string | null) ?? null,
+          guardianLinked: Array.isArray(parents) && parents.length > 0,
+        });
         return;
       }
 
-      const clubName: string | null = (profile as any)?.clubs?.name ?? null;
-
-      const status = (consent as any)?.status;
       if (status === "granted") {
         setState({ kind: "ok" });
         return;
       }
 
-      const grace = (consent as any)?.grace_until as string | null | undefined;
-      if (grace && new Date(grace).getTime() > Date.now()) {
-        setState({ kind: "banner", graceUntil: grace, clubName });
+      if (inGrace) {
+        setState({ kind: "banner", graceUntil: grace as string, clubName });
         return;
       }
       setState({ kind: "blocking", clubName });
+
     } catch (e) {
       // Fail open — never lock users out on a network/RLS error.
       console.warn("ConsentGate evaluation failed; failing open:", e);
@@ -142,14 +167,47 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
     navigate("/auth", { replace: true });
   };
 
+  // Minor flow: create (or reuse) a guardian invite link the athlete can share.
+  const createGuardianInvite = async () => {
+    setSubmitting(true);
+    setError(null);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const uid = session?.user?.id;
+      if (!uid) throw new Error("no session");
+      const { data: existing } = await supabase
+        .from("parent_invites" as any)
+        .select("code")
+        .eq("athlete_id", uid)
+        .order("created_at", { ascending: false })
+        .limit(1);
+      let code = (existing as any)?.[0]?.code as string | undefined;
+      if (!code) {
+        code = Array.from({ length: 8 }, () =>
+          "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.floor(Math.random() * 32)],
+        ).join("");
+        const { error: insErr } = await supabase
+          .from("parent_invites" as any)
+          .insert({ athlete_id: uid, code });
+        if (insErr) throw insErr;
+      }
+      setGuardianLink(`${window.location.origin}/parent-join/${code}`);
+    } catch (e: any) {
+      setError(e.message || t("error"));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const onPublic = isPublicRoute(location.pathname);
 
   // Compute placeholder vars — only meaningful inside banner/blocking states.
   const clubName =
-    (state.kind === "blocking" || state.kind === "banner")
+    (state.kind === "blocking" || state.kind === "banner" || state.kind === "minor")
       ? (state.clubName?.trim() || t("privacyConsentYourClub"))
       : t("privacyConsentYourClub");
   const vars = useMemo(() => ({ clubName }), [clubName]);
+
 
   // Always render children on public routes; never block sign-in flow.
   if (onPublic) return <>{children}</>;
@@ -184,7 +242,68 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
     );
   }
 
+  if (state.kind === "minor") {
+    return (
+      <div className="min-h-dvh bg-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-lg p-6 space-y-5">
+          <div className="flex items-center gap-3">
+            <ShieldCheck className="h-6 w-6 text-primary" />
+            <h1 className="text-xl font-semibold">{t("privacyConsentMinorTitle")}</h1>
+          </div>
+          <p className="text-sm leading-relaxed">
+            {fillPlaceholders(t("privacyConsentMinorBody"), vars)}
+          </p>
+
+          {state.guardianLinked ? (
+            <div className="rounded-md border border-border bg-muted/30 p-3 text-sm leading-relaxed">
+              {t("privacyConsentMinorWaiting")}
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {state.guardianEmail && (
+                <p className="text-xs text-muted-foreground">{state.guardianEmail}</p>
+              )}
+              {guardianLink ? (
+                <div className="space-y-2">
+                  <div className="rounded-md border border-border bg-muted/30 p-3 text-xs break-all">
+                    {guardianLink}
+                  </div>
+                  <Button
+                    variant="secondary"
+                    className="w-full"
+                    onClick={() => navigator.clipboard?.writeText(guardianLink)}
+                  >
+                    {t("privacyConsentMinorCopyLink")}
+                  </Button>
+                </div>
+              ) : (
+                <Button onClick={createGuardianInvite} disabled={submitting} className="w-full">
+                  {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t("privacyConsentMinorInviteBtn")}
+                </Button>
+              )}
+            </div>
+          )}
+
+          <p className="text-xs text-muted-foreground">
+            <Link to="/privacy" className="underline">{t("privacyConsentPolicyLink")}</Link>
+          </p>
+
+          {error && <p className="text-sm text-destructive">{error}</p>}
+          <div className="flex flex-col gap-2">
+            <Button onClick={() => { setState({ kind: "loading" }); evaluate(); }} variant="secondary" className="w-full">
+              {t("privacyConsentMinorRefresh")}
+            </Button>
+            <Button onClick={logout} variant="ghost" className="w-full">
+              {t("selfConsentLogout")}
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
   // Blocking
+
   return (
     <div className="min-h-dvh bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-lg p-6 space-y-5">
