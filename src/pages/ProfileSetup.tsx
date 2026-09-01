@@ -449,6 +449,8 @@ export default function ProfileSetup() {
     );
   }
 
+  const stepLabels = [t("profileStepBasics"), t("profileStepTraining"), t("profileStepSettings")];
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container max-w-lg mx-auto px-4 py-6 sm:py-8">
@@ -466,7 +468,30 @@ export default function ProfileSetup() {
           <p className="text-sm text-muted-foreground">{t("profileSubtitle")}</p>
         </div>
 
+        {/* Step indicator */}
+        <div className="mb-6">
+          <div className="flex items-center gap-2">
+            {stepLabels.map((label, i) => (
+              <button
+                key={label}
+                type="button"
+                onClick={() => setStep(i + 1)}
+                className="flex-1 text-left"
+                aria-current={step === i + 1}
+              >
+                <div className={cn("h-1.5 rounded-full transition-colors", step >= i + 1 ? "bg-primary" : "bg-muted")} />
+                <span className={cn("mt-1 block text-[10px] font-semibold uppercase tracking-wide", step === i + 1 ? "text-primary" : "text-muted-foreground")}>
+                  {label}
+                </span>
+              </button>
+            ))}
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">{t("profileStepOf").replace("{n}", String(step))}</p>
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-5">
+          <div className={step === 1 ? "space-y-5" : "hidden"}>
+
           <div className="flex justify-center">
             <button
               type="button"
