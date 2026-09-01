@@ -40,6 +40,8 @@ export function AppBottomNav() {
   const { matchAnalysisEnabled } = useMatchAnalysisEnabled();
   const { totalUnread } = useThreads();
   const { labEnabled } = useSuperadminLab();
+  const coachModeActive = (isCoachMode || isCoachRoute) && hasCoachRole;
+  const { count: logCount } = useCoachLogCount(labEnabled && coachModeActive);
   const [meOpen, setMeOpen] = useState(false);
 
   const path = location.pathname;
@@ -61,8 +63,7 @@ export function AppBottomNav() {
   // Avoid flashing the athlete nav before the role/club state has resolved.
   if (roleLoading) return null;
 
-  const coachMode = (isCoachMode || isCoachRoute) && hasCoachRole;
-  const { count: logCount } = useCoachLogCount(labEnabled && coachMode);
+  const coachMode = coachModeActive;
 
   // Route-based active state — the dashboard keeps its tab in ?tab=
   const onDashboard = path === "/dashboard";
