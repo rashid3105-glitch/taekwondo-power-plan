@@ -31,7 +31,7 @@ export function MessageComposer({ threadId, onSent }: Props) {
 
   const handleFile = async (f: File | null) => {
     if (!f) return setFile(null);
-    if (!f.type.startsWith("image/")) {
+    if (!f.type.startsWith("image/") && !f.type.startsWith("video/")) {
       toast.error(t("composerOnlyMedia"));
       return;
     }
@@ -127,7 +127,7 @@ return (
         <input
           ref={fileRef}
           type="file"
-          accept="image/*"
+          accept="image/*,video/*"
           className="hidden"
           onChange={(e) => { void handleFile(e.target.files?.[0] ?? null); }}
         />

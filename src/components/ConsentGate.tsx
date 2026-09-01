@@ -98,9 +98,10 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
         (profile as any)?.birth_date ?? null,
         (profile as any)?.age ?? null,
       );
-      // Minors (and accounts with no known age) need guardian consent before
-      // health features open up.
-      if (age == null || age < 18) {
+      // Minors need guardian consent before health features open up.
+      // Accounts with no known age must NOT hit the guardian wall — they fall
+      // through to the adult flow, which has a self-service path forward.
+      if (age != null && age < 18) {
         if (status === "granted") {
           setState({ kind: "ok" });
           return;
