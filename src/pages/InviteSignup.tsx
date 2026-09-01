@@ -30,7 +30,22 @@ export default function InviteSignup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
+  const [birthDate, setBirthDate] = useState("");
+  const [guardianEmail, setGuardianEmail] = useState("");
+  const [accepted, setAccepted] = useState(false);
 
+  // Calendar-correct age from the entered birth date (null until valid).
+  const age = (() => {
+    if (!birthDate) return null;
+    const d = new Date(birthDate);
+    if (Number.isNaN(d.getTime())) return null;
+    const now = new Date();
+    let a = now.getFullYear() - d.getFullYear();
+    const m = now.getMonth() - d.getMonth();
+    if (m < 0 || (m === 0 && now.getDate() < d.getDate())) a--;
+    return a >= 0 && a < 120 ? a : null;
+  })();
+  const isMinor = age != null && age < 18;
 
   useEffect(() => {
     (async () => {
@@ -50,14 +65,32 @@ export default function InviteSignup() {
       toast({ title: "Adgangskoden skal være mindst 8 tegn", variant: "destructive" });
       return;
     }
+    if (age == null) {
+      toast({ title: "Indtast din fødselsdato", variant: "destructive" });
+      return;
+    }
+    if (isMinor && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guardianEmail.trim())) {
+      toast({ title: "Indtast din værges e-mail", variant: "destructive" });
+      return;
+    }
+    if (!accepted) {
+      toast({ title: "Du skal acceptere vilkårene", variant: "destructive" });
+      return;
+    }
     setSubmitting(true);
     try {
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: { display_name: name },
-          emailRedirectTo: `${window.location.origin}/auth?tab=signin`,
+          data: {
+            display_name: name,
+            birth_date: birthDate,
+            ...(isMinor ? { guardian_email: guardianEmail.trim().toLowerCase() } : {}),
+          },
+          // Carry the invite code in the confirmation link so it survives
+          // confirming the mail on another device than the one used to sign up.
+          emailRedirectTo: `${window.location.origin}/auth?tab=signin${code ? `&ic=${encodeURIComponent(code)}` : ""}`,
         },
       });
       if (error) throw error;
@@ -76,6 +109,7 @@ export default function InviteSignup() {
       setSubmitting(false);
     }
   };
+
 
   if (loading) {
     return (
@@ -121,14 +155,14 @@ export default function InviteSignup() {
                   <Badge variant="secondary" className="text-[10px] font-semibold">{info.club_name}</Badge>
                 )}
                 <p className="text-sm text-muted-foreground pt-1">
-                  Track din træning, se din fremgang, tæl ned til dit næste stævne.
+                  Tager to minutter. Din træner kan se din træningslog og dine testresultater — din dagbog er din egen, medmindre du deler den.
                 </p>
               </div>
 
               <Card className="border-l-4 border-l-primary">
                 <CardContent className="p-4">
                   <p className="text-sm text-foreground leading-relaxed">
-                    <span className="font-bold">Gratis for dig</span> — din klub betaler licensen. Ingen binding og ingen betalingskort.
+                    <span className="font-bold">Din klub har betalt din plads</span> — appen er gratis for dig. Ingen binding og intet betalingskort.
                   </p>
                 </CardContent>
               </Card>
@@ -136,10 +170,10 @@ export default function InviteSignup() {
 
               <div className="space-y-2">
                 <Button onClick={() => setStep("account")} className="w-full h-11 rounded-xl font-bold bg-landing-red hover:bg-landing-red/90 text-white">
-                  Start 14 dages gratis prøveperiode
+                  Acceptér invitation
                 </Button>
-                <p className="text-center text-[11px] text-muted-foreground">Intet kreditkort krævet for prøveperioden</p>
               </div>
+
             </>
           )}
 
@@ -177,6 +211,57 @@ export default function InviteSignup() {
                   </div>
                   <p className="text-[10px] text-muted-foreground/70">{t("passwordRequirementsHint")}</p>
                 </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="birthDate" className="text-xs font-medium">Fødselsdato</Label>
+                  <Input
+                    id="birthDate"
+                    type="date"
+                    value={birthDate}
+                    onChange={(e) => setBirthDate(e.target.value)}
+                    required
+                    max={new Date().toISOString().slice(0, 10)}
+                    className="h-11 rounded-xl"
+                  />
+                  {age != null && (
+                    <p className="text-[10px] text-muted-foreground/70">{age} år</p>
+                  )}
+                </div>
+
+                {isMinor && (
+                  <div className="space-y-1.5 rounded-xl border border-primary/40 bg-primary/5 p-3">
+                    <Label htmlFor="guardianEmail" className="text-xs font-bold">Din værges e-mail</Label>
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">
+                      Du er under 18, så en forælder eller værge skal godkende, at klubben må bruge dine helbredsdata. Vi holder helbredsfunktionerne lukkede, indtil din værge har sagt ja.
+                    </p>
+                    <Input
+                      id="guardianEmail"
+                      type="email"
+                      inputMode="email"
+                      autoCapitalize="none"
+                      value={guardianEmail}
+                      onChange={(e) => setGuardianEmail(e.target.value)}
+                      required
+                      className="h-11 rounded-xl bg-background"
+                    />
+                  </div>
+                )}
+
+                <label className="flex items-start gap-2.5 text-[11px] leading-relaxed text-muted-foreground">
+                  <input
+                    type="checkbox"
+                    checked={accepted}
+                    onChange={(e) => setAccepted(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
+                    required
+                  />
+                  <span>
+                    Din klub og din træner kan se din træning, dine test og dine aftaler. Din dagbog og dine private noter deles ikke. Jeg accepterer{" "}
+                    <a href="/terms" target="_blank" rel="noreferrer" className="underline">vilkårene</a> og{" "}
+                    <a href="/privacy" target="_blank" rel="noreferrer" className="underline">privatlivspolitikken</a>.
+                  </span>
+                </label>
+
 
                 <Button type="submit" disabled={submitting} className="w-full h-11 rounded-xl font-bold bg-landing-red hover:bg-landing-red/90 text-white">
                   {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : (<>Kom i gang <ArrowRight className="h-4 w-4 ml-1" /></>)}

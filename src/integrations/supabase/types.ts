@@ -2728,6 +2728,7 @@ export type Database = {
           gal_license: string | null
           gal_license_expires_at: string | null
           goals: string[] | null
+          guardian_email: string | null
           has_myfightbook: boolean
           id: string
           is_approved: boolean
@@ -2792,6 +2793,7 @@ export type Database = {
           gal_license?: string | null
           gal_license_expires_at?: string | null
           goals?: string[] | null
+          guardian_email?: string | null
           has_myfightbook?: boolean
           id?: string
           is_approved?: boolean
@@ -2856,6 +2858,7 @@ export type Database = {
           gal_license?: string | null
           gal_license_expires_at?: string | null
           goals?: string[] | null
+          guardian_email?: string | null
           has_myfightbook?: boolean
           id?: string
           is_approved?: boolean

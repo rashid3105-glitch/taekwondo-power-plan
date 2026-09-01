@@ -47,11 +47,20 @@ export default function AuthPage() {
   const params = new URLSearchParams(window.location.search);
   const redirectTo = params.get("redirect");
   const inviteCode = params.get("invite");
+  // `ic` is carried in the e-mail confirmation link so the invite survives
+  // confirming the mail on a different device than the sign-up happened on.
+  const carriedInviteCode = params.get("ic");
   const tab = params.get("tab");
 
   // Redirect legacy signup/invite entry points to the correct flows.
   // Athletes now only join via invitation link; coaches sign up on /signup/coach.
   useEffect(() => {
+    if (carriedInviteCode) {
+      try {
+        sessionStorage.setItem("pending_invite_code", carriedInviteCode);
+        localStorage.setItem("pending_invite_code", carriedInviteCode);
+      } catch {}
+    }
     if (inviteCode) {
       try { sessionStorage.setItem("pending_invite_code", inviteCode); } catch {}
       navigate(`/invite-signup?code=${encodeURIComponent(inviteCode)}`, { replace: true });
@@ -60,7 +69,8 @@ export default function AuthPage() {
     if (tab === "signup") {
       navigate("/signup/coach", { replace: true });
     }
-  }, [inviteCode, tab, navigate]);
+  }, [inviteCode, carriedInviteCode, tab, navigate]);
+
 
   useEffect(() => {
     (async () => {

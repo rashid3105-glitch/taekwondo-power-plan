@@ -42,13 +42,16 @@ Deno.serve(async (req) => {
 
     const displayName = `${firstName} ${lastName}`.trim();
 
-    // 2. Create auth user (auto-confirmed). If already exists, recover.
+    // 2. Create auth user. The mailbox MUST be verified before the parent is
+    // linked to a child's account, so the user is created UNCONFIRMED.
     let userId: string | null = null;
     let createdNow = false;
+    let emailVerified = false;
     const { data: created, error: createErr } = await admin.auth.admin.createUser({
       email,
       password,
-      email_confirm: true,
+      email_confirm: false,
+
       user_metadata: {
         display_name: displayName,
         first_name: firstName,
@@ -82,10 +85,13 @@ Deno.serve(async (req) => {
       const { error: signInErr } = await anonClient.auth.signInWithPassword({ email, password });
       if (signInErr) return json({ error: "already_registered" }, 400);
       userId = existing.id;
+      emailVerified = !!existing.email_confirmed_at;
     } else {
       userId = created.user.id;
       createdNow = true;
+      emailVerified = !!created.user.email_confirmed_at;
     }
+
 
     // 3. Upsert profile (no `phone` column on profiles — phone lives in user_metadata)
     const { error: profErr } = await admin
@@ -108,7 +114,32 @@ Deno.serve(async (req) => {
       return json({ error: "server_error" }, 500);
     }
 
+    // 3b. Unverified mailbox → send a confirmation link and stop here.
+    // The invite stays unused and no parent/child link is created until the
+    // guardian proves they control the mailbox and returns to /parent-join.
+    if (!emailVerified) {
+      const origin = req.headers.get("origin") || Deno.env.get("SITE_URL") || "";
+      const anon = createClient(
+        Deno.env.get("SUPABASE_URL")!,
+        Deno.env.get("SUPABASE_ANON_KEY")!,
+        { auth: { persistSession: false } },
+      );
+      const { error: otpErr } = await anon.auth.signInWithOtp({
+        email,
+        options: {
+          shouldCreateUser: false,
+          emailRedirectTo: origin ? `${origin}/parent-join/${code}` : undefined,
+        },
+      });
+      if (otpErr) {
+        console.error("parent-signup verification mail error", otpErr);
+        return json({ error: "server_error" }, 500);
+      }
+      return json({ ok: true, verify_email: true });
+    }
+
     // 4. Mark invite used and link parent_athletes
+
     const { error: invUpdErr } = await admin
       .from("parent_invites")
       .update({ used_at: new Date().toISOString(), parent_user_id: userId })

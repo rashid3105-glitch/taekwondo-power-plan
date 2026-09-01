@@ -17,7 +17,7 @@ interface InviteInfo {
   athlete_belt?: string;
 }
 
-type Phase = "signup" | "login" | "confirm";
+type Phase = "signup" | "login" | "confirm" | "verify";
 
 export default function ParentJoin() {
   const { code } = useParams<{ code: string }>();
@@ -108,7 +108,13 @@ export default function ParentJoin() {
       }
       if (!data?.ok) throw new Error(data?.error || "signup_failed");
 
-      // Establish session for the auto-confirmed user
+      // Mailbox not verified yet — the guardian must click the link we just
+      // e-mailed before the child account is linked.
+      if (data?.verify_email) {
+        setPhase("verify");
+        return;
+      }
+
       const { error: signInErr } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password,
@@ -117,6 +123,7 @@ export default function ParentJoin() {
 
       toast({ title: t("parentJoinSuccess") });
       navigate("/parent-dashboard");
+
     } catch (e: any) {
       toast({ title: e.message || "Error", variant: "destructive" });
     } finally {
@@ -192,7 +199,19 @@ export default function ParentJoin() {
               </div>
             </div>
 
+            {phase === "verify" && (
+              <div className="space-y-3 text-center">
+                <p className="text-sm text-foreground font-semibold">{t("parentVerifyTitle")}</p>
+                <p className="text-sm text-muted-foreground">{t("parentVerifyDesc")}</p>
+                <p className="text-sm font-medium break-all">{email.trim()}</p>
+                <Button onClick={() => navigate("/")} variant="ghost" className="w-full">
+                  {t("close")}
+                </Button>
+              </div>
+            )}
+
             {phase === "confirm" && (
+
               <div className="space-y-3">
                 <p className="text-sm text-muted-foreground text-center">{t("parentConfirmDesc")}</p>
                 <Button onClick={handleConfirm} disabled={submitting} className="w-full">
