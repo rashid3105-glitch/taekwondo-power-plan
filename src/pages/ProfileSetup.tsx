@@ -57,7 +57,9 @@ interface ClubOption {
 }
 
 export default function ProfileSetup() {
+  const [step, setStep] = useState(1);
   const [age, setAge] = useState("");
+
   const [weight, setWeight] = useState("");
   const [belt, setBelt] = useState("white");
   const [experience, setExperience] = useState("");
