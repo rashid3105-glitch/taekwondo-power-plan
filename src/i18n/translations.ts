@@ -3,6 +3,7 @@ export type Locale = "en" | "da" | "sv" | "de" | "ar" | "no" | "es";
 const translations = {
   en: {
     changelog_2026_09_01: "1 September 2026",
+    changelogEntry239: "Chat attachments now compress images automatically so photos always fit the size limit, and the sign-in screen plus message composer are fully translated.",
     changelogEntry238: "Profile setup is now split into three clear steps (Basics, Training, Settings), and the bottom navigation stays visible across the app with the current page highlighted.",
     profileStepBasics: "Basics",
     profileStepTraining: "Training",
@@ -4402,6 +4403,7 @@ const translations = {
   },
   da: {
     changelog_2026_09_01: "1. september 2026",
+    changelogEntry239: "Chatvedhæftninger komprimerer nu billeder automatisk, så fotos altid overholder størrelsesgrænsen, og login-skærmen samt beskedfeltet er fuldt oversat.",
     changelogEntry238: "Profilopsætning er nu delt op i tre trin (Basis, Træning, Indstillinger), og bundnavigationen er synlig i hele appen med markering af den aktuelle side.",
     profileStepBasics: "Basis",
     profileStepTraining: "Træning",
@@ -8784,6 +8786,7 @@ const translations = {
   },
   sv: {
     changelog_2026_09_01: "1 september 2026",
+    changelogEntry239: "Chattbilagor komprimerar nu bilder automatiskt så att foton alltid håller sig inom storleksgränsen, och inloggningsskärmen samt meddelandefältet är helt översatta.",
     changelogEntry238: "Profilinställningen är nu uppdelad i tre steg (Bas, Träning, Inställningar), och bottennavigeringen syns i hela appen med aktuell sida markerad.",
     profileStepBasics: "Bas",
     profileStepTraining: "Träning",
@@ -13125,6 +13128,7 @@ const translations = {
   },
   de: {
     changelog_2026_09_01: "1. September 2026",
+    changelogEntry239: "Chat-Anhänge komprimieren Bilder jetzt automatisch, damit Fotos immer die Größenbeschränkung einhalten; Anmeldebildschirm und Nachrichtenfeld sind vollständig übersetzt.",
     changelogEntry238: "Die Profileinrichtung ist jetzt in drei Schritte unterteilt (Basis, Training, Einstellungen), und die untere Navigation bleibt überall sichtbar mit Markierung der aktuellen Seite.",
     profileStepBasics: "Basis",
     profileStepTraining: "Training",
@@ -17416,6 +17420,7 @@ const translations = {
   },
   ar: {
     changelog_2026_09_01: "1 سبتمبر 2026",
+    changelogEntry239: "تضغط مرفقات الدردشة الصور تلقائيًا الآن لتبقى ضمن حد الحجم، كما تمت ترجمة شاشة تسجيل الدخول وحقل الرسائل بالكامل.",
     changelogEntry238: "تم تقسيم إعداد الملف الشخصي إلى ثلاث خطوات (الأساسيات، التدريب، الإعدادات)، ويظل شريط التنقل السفلي ظاهرًا في التطبيق مع إبراز الصفحة الحالية.",
     profileStepBasics: "الأساسيات",
     profileStepTraining: "التدريب",
@@ -21708,6 +21713,7 @@ const translations = {
   },
   no: {
     changelog_2026_09_01: "1. september 2026",
+    changelogEntry239: "Chatvedlegg komprimerer nå bilder automatisk slik at de alltid holder seg innenfor størrelsesgrensen, og innloggingsskjermen og meldingsfeltet er fullstendig oversatt.",
     changelogEntry238: "Profiloppsett er nå delt i tre trinn (Basis, Trening, Innstillinger), og bunnnavigasjonen er synlig i hele appen med markering av gjeldende side.",
     profileStepBasics: "Basis",
     profileStepTraining: "Trening",
@@ -27886,6 +27892,7 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
 
 (translations as unknown as Record<string, Record<string, string>>).es = {
     changelog_2026_09_01: "1 de septiembre de 2026",
+    changelogEntry239: "Los archivos adjuntos del chat ahora comprimen las imágenes automáticamente para respetar el límite de tamaño, y la pantalla de inicio de sesión y el campo de mensajes están totalmente traducidos.",
     changelogEntry238: "La configuración del perfil ahora se divide en tres pasos (Básico, Entrenamiento, Ajustes), y la navegación inferior permanece visible en toda la app resaltando la página actual.",
     profileStepBasics: "Básico",
     profileStepTraining: "Entrenamiento",
