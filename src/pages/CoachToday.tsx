@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Loader2, CalendarCheck } from "lucide-react";
+import { ArrowLeft, Loader2, CalendarCheck, ClipboardList } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { ClubSwitcher } from "@/components/ClubSwitcher";
@@ -12,7 +12,7 @@ import { SessionAttendance } from "@/components/coach/SessionAttendance";
 import { AttendanceStatsDialog } from "@/components/coach/AttendanceStatsDialog";
 import { CoachTriage } from "@/components/coach/CoachTriage";
 import { CoachEveningFeed } from "@/components/coach/CoachEveningFeed";
-import { CoachLogQueue } from "@/components/lab/CoachLogQueue";
+import { useCoachLogCount } from "@/hooks/useCoachLogCount";
 import { useSuperadminLab } from "@/hooks/useSuperadminLab";
 
 interface MiniAthlete {
@@ -31,6 +31,7 @@ export default function CoachToday() {
   const [loading, setLoading] = useState(true);
   const [statsOpen, setStatsOpen] = useState(false);
   const { labEnabled } = useSuperadminLab();
+  const { count: logCount } = useCoachLogCount(labEnabled);
 
   useEffect(() => {
     (async () => {
@@ -112,7 +113,19 @@ export default function CoachToday() {
 
         <CoachTriage athletes={athletes} />
 
-        {labEnabled && <CoachLogQueue athletes={athletes} />}
+        {labEnabled && (
+          <button
+            type="button"
+            onClick={() => navigate("/coach/logs")}
+            className="w-full flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2.5 text-left"
+          >
+            <ClipboardList className="h-4 w-4 text-primary" />
+            <span className="text-sm font-semibold text-card-foreground">
+              {(t("labLogsPending") || "{n}").replace("{n}", String(logCount))}
+            </span>
+            <span className="ml-auto text-xs font-bold text-primary">{t("labLogsOpen")}</span>
+          </button>
+        )}
 
         {coachUserId && (
           <CoachEveningFeed coachId={coachUserId} athletes={athletes} activeClubId={activeClubId} />

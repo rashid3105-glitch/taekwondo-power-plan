@@ -55,6 +55,7 @@ import AdminModuleAccess from "./pages/AdminModuleAccess";
 import CoachDashboard from "./pages/CoachDashboard";
 import CoachConsents from "./pages/CoachConsents";
 import CoachToday from "./pages/CoachToday";
+import CoachLogs from "./pages/coach/CoachLogs";
 import CoachMessages from "./pages/CoachMessages";
 import CoachMentalReview from "./pages/CoachMentalReview";
 import CoachAthleteOverview from "./pages/CoachAthleteOverview";
@@ -244,6 +245,7 @@ const AnimatedRoutes = () => {
         <Route path="/coach" element={<Page><CoachDashboard /></Page>} />
         <Route path="/coach/consents" element={<Page><CoachConsents /></Page>} />
         <Route path="/coach/today" element={<Page><CoachToday /></Page>} />
+        <Route path="/coach/logs" element={<Page><CoachLogs /></Page>} />
         <Route path="/coach/messages" element={<Page><CoachMessages /></Page>} />
         <Route path="/coach/mental" element={<Page><CoachMentalReview /></Page>} />
         <Route path="/coach/athlete/:athleteId" element={<Page><CoachAthleteOverview /></Page>} />
