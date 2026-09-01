@@ -10,6 +10,8 @@ import { Watermark } from "@/components/Watermark";
 import { AppFooter } from "@/components/AppFooter";
 import { SessionAttendance } from "@/components/coach/SessionAttendance";
 import { AttendanceStatsDialog } from "@/components/coach/AttendanceStatsDialog";
+import { CoachTriage } from "@/components/coach/CoachTriage";
+import { CoachEveningFeed } from "@/components/coach/CoachEveningFeed";
 
 interface MiniAthlete {
   user_id: string;
@@ -103,6 +105,12 @@ export default function CoachToday() {
       </header>
 
       <main className="container max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4">
+
+        <CoachTriage athletes={athletes} />
+
+        {coachUserId && (
+          <CoachEveningFeed coachId={coachUserId} athletes={athletes} activeClubId={activeClubId} />
+        )}
 
         {coachUserId && (
           <SessionAttendance coachId={coachUserId} athletes={athletes} activeClubId={activeClubId} onOpenStats={() => setStatsOpen(true)} />

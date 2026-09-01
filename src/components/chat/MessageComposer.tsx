@@ -31,7 +31,7 @@ export function MessageComposer({ threadId, onSent }: Props) {
 
   const handleFile = async (f: File | null) => {
     if (!f) return setFile(null);
-    if (!f.type.startsWith("image/") && !f.type.startsWith("video/")) {
+    if (!f.type.startsWith("image/")) {
       toast.error(t("composerOnlyMedia"));
       return;
     }
@@ -119,12 +119,15 @@ return (
           </button>
         </div>
       )}
+      <p className="mb-1 text-[10px] text-muted-foreground">
+        {t("composerLimitHint").replace("{size}", limitLabel)}
+      </p>
       {/* Unified rounded composer bar */}
       <div className="flex items-end gap-1 rounded-2xl bg-card border border-border/70 shadow-[0_2px_12px_rgba(0,0,0,0.08)] p-1.5 focus-within:border-gold/60 transition-colors">
         <input
           ref={fileRef}
           type="file"
-          accept="image/*,video/*"
+          accept="image/*"
           className="hidden"
           onChange={(e) => { void handleFile(e.target.files?.[0] ?? null); }}
         />

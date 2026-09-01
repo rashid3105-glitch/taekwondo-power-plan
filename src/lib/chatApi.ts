@@ -5,7 +5,10 @@ import {
   queueChatIntent, listChatOutboxForThread,
 } from "@/lib/chatOfflineDB";
 
-export const MAX_ATTACHMENT_BYTES = 1_048_576; // 1 MB
+import { UPLOAD_LIMITS } from "@/lib/uploadLimits";
+
+/** Chat ceiling — see src/lib/uploadLimits.ts for the shared table. */
+export const MAX_ATTACHMENT_BYTES = UPLOAD_LIMITS.chatImage;
 
 export interface ChatThread {
   id: string;

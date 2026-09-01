@@ -22,6 +22,8 @@ import {
 } from "@/lib/seasonCalendar";
 import { findPlanDayForToday, normalizeDaySessions, isRestDay } from "@/lib/planSessionUtils";
 import ComplianceAlertsCard from "@/components/ComplianceAlertsCard";
+import { QuickTrainingLog } from "@/components/hub/QuickTrainingLog";
+import { CompetitionWeekCard } from "@/components/hub/CompetitionWeekCard";
 import AnnouncementsCard from "@/components/AnnouncementsCard";
 import { useMatchAnalysisEnabled } from "@/hooks/useMatchAnalysisEnabled";
 
@@ -357,6 +359,15 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
       <AnnouncementsCard />
 
       <ComplianceAlertsCard />
+
+      {activeRole !== "coach" && <CompetitionWeekCard />}
+
+      {activeRole !== "coach" && !isLoading && (
+        <QuickTrainingLog
+          isRestDay={todayPlan?.isRest !== false}
+          sessionLabel={todayPlan?.sessions?.[0]?.type ?? null}
+        />
+      )}
 
       {/* Plans: two separate panels */}
       {isLoading ? (
