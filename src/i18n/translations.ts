@@ -2,6 +2,10 @@ export type Locale = "en" | "da" | "sv" | "de" | "ar" | "no" | "es";
 
 const translations = {
   en: {
+    profileStepBasics: "Basics",
+    profileStepTraining: "Training",
+    profileStepSettings: "Settings",
+    profileStepOf: "Step {n} of 3",
     adminStats: "User statistics",
     statsSummary: "Summary",
     statsUsersTable: "Users",
@@ -4381,6 +4385,10 @@ const translations = {
     pricingTalkNote: "We reply within 48 hours with a concrete proposal.",
   },
   da: {
+    profileStepBasics: "Basis",
+    profileStepTraining: "Træning",
+    profileStepSettings: "Indstillinger",
+    profileStepOf: "Trin {n} af 3",
     adminStats: "Brugerstatistik",
     statsSummary: "Overblik",
     statsUsersTable: "Brugere",
@@ -8743,6 +8751,10 @@ const translations = {
     pricingTalkNote: "Vi svarer inden for 48 timer med et konkret oplæg.",
   },
   sv: {
+    profileStepBasics: "Bas",
+    profileStepTraining: "Träning",
+    profileStepSettings: "Inställningar",
+    profileStepOf: "Steg {n} av 3",
     adminStats: "Användarstatistik",
     statsSummary: "Översikt",
     statsUsersTable: "Användare",
@@ -13064,6 +13076,10 @@ const translations = {
     pricingTalkNote: "Vi svarar inom 48 timmar med ett konkret förslag.",
   },
   de: {
+    profileStepBasics: "Basis",
+    profileStepTraining: "Training",
+    profileStepSettings: "Einstellungen",
+    profileStepOf: "Schritt {n} von 3",
     adminStats: "Nutzerstatistik",
     statsSummary: "Übersicht",
     statsUsersTable: "Nutzer",
@@ -17335,6 +17351,10 @@ const translations = {
     pricingTalkNote: "Wir antworten innerhalb von 48 Stunden mit einem konkreten Vorschlag.",
   },
   ar: {
+    profileStepBasics: "الأساسيات",
+    profileStepTraining: "التدريب",
+    profileStepSettings: "الإعدادات",
+    profileStepOf: "الخطوة {n} من 3",
     adminStats: "إحصاءات المستخدمين",
     statsSummary: "ملخص",
     statsUsersTable: "المستخدمون",
@@ -21607,6 +21627,10 @@ const translations = {
     pricingTalkNote: "نرد خلال 48 ساعة بعرض محدد.",
   },
   no: {
+    profileStepBasics: "Basis",
+    profileStepTraining: "Trening",
+    profileStepSettings: "Innstillinger",
+    profileStepOf: "Trinn {n} av 3",
     adminStats: "Brukerstatistikk",
     statsSummary: "Oversikt",
     statsUsersTable: "Brukere",
@@ -27751,6 +27775,10 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
 } as const;
 
 (translations as unknown as Record<string, Record<string, string>>).es = {
+    profileStepBasics: "Básico",
+    profileStepTraining: "Entrenamiento",
+    profileStepSettings: "Ajustes",
+    profileStepOf: "Paso {n} de 3",
   ...(translations.en as unknown as Record<string, string>),
   ...(esOverrides as Record<string, string>),
   helpRolesTitle: "Roles",
