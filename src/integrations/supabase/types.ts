@@ -4681,6 +4681,7 @@ export type Database = {
         Args: { _thread: string; _uid: string }
         Returns: boolean
       }
+      is_club_admin: { Args: { _club_id: string }; Returns: boolean }
       is_coach_of_athletes_club: {
         Args: { _athlete_id: string }
         Returns: boolean
