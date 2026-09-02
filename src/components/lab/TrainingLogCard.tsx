@@ -56,6 +56,33 @@ export function TrainingLogCard({ isRestDay, sessionLabel, bare }: Props) {
   const [saving, setSaving] = useState(false);
   const [savedId, setSavedId] = useState<string | null>(null);
   const [replies, setReplies] = useState<{ id: string; content: string }[]>([]);
+  const [snoozedUntil, setSnoozedUntil] = useState<number>(() => readSnooze());
+
+  const endOfDay = () => {
+    const d = new Date();
+    d.setHours(23, 59, 59, 999);
+    return d.getTime();
+  };
+
+  const snooze = (until: number) => {
+    try { localStorage.setItem(SNOOZE_KEY, String(until)); } catch { /* ignore */ }
+    setSnoozedUntil(until);
+  };
+
+  const clearSnooze = () => {
+    try { localStorage.removeItem(SNOOZE_KEY); } catch { /* ignore */ }
+    setSnoozedUntil(0);
+  };
+
+  // Re-show automatically when the snooze window expires.
+  useEffect(() => {
+    if (!snoozedUntil) return;
+    const ms = snoozedUntil - Date.now();
+    if (ms <= 0) { setSnoozedUntil(0); return; }
+    const id = window.setTimeout(() => setSnoozedUntil(0), Math.min(ms, 2147483647));
+    return () => window.clearTimeout(id);
+  }, [snoozedUntil]);
+
 
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
